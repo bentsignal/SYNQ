@@ -2,11 +2,32 @@ import { StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
 export const Styles = StyleSheet.create({
-  container: {
+  body: {
     flex: 1,
     alignItems: 'center',
-    marginLeft: 20,
-    marginRight: 20
+    width: '90%',
+    margin: 'auto'
+  },
+  appName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: Colors.green,
+  },
+  top: {
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    marginBottom: 30
+  },
+  pageTitle: {
+    fontSize: 36,
+    fontWeight: 'bold',
+    textAlign: 'left',
+    alignSelf: 'stretch',
+    color: Colors.text,
+    marginBottom: 20
   },
   buttonContainer: {
     width: 100,
@@ -19,11 +40,5 @@ export const Styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center'
   },
-  pageTitle: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    textAlign: 'left',
-    alignSelf: 'stretch',
-    color: Colors.text,
-  }
+  
 });

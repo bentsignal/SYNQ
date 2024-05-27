@@ -7,6 +7,6 @@ export const Colors = {
   altButton: '#ffffff',
   background: '#101010',
   footer: '#0D0D0D',
-  tabIconDefault: '#9B9B9B',
-  tabIconSelected: '#ffffff',
+  tabInactive: '#9B9B9B',
+  tabActive: '#ffffff',
 };

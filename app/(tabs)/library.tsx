@@ -8,7 +8,7 @@ import { Top } from "@/components/Top";
 
 const Library = () => {
   return (
-    <SafeAreaView style={Styles.container}>
+    <SafeAreaView style={Styles.body}>
       <Top />
       <PageTitle title='Your Library'/>
     </SafeAreaView>

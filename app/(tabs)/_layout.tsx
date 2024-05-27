@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 
-import { TabBarIcon } from '@/components/navigation/TabBarIcon'
+import { HomeIcon, LibraryIcon } from '@/components/TabBarIcons'
 import { Colors } from '@/constants/Colors'
 
 const TabLayout = () => {
@@ -9,10 +9,16 @@ const TabLayout = () => {
         <Tabs
           screenOptions={{
             headerShown: false,
-            tabBarActiveTintColor: Colors.tabIconSelected,
-            tabBarInactiveTintColor: Colors.tabIconDefault,
+            tabBarActiveTintColor: Colors.tabActive,
+            tabBarInactiveTintColor: Colors.tabInactive,
             tabBarStyle: {
               backgroundColor: Colors.footer,
+              height: '11%',
+              paddingTop: 10
+            },
+            tabBarLabelStyle: {
+              fontSize: 12,
+              fontWeight: 'bold'
             }
           }}
           sceneContainerStyle={{
@@ -24,16 +30,16 @@ const TabLayout = () => {
               options={{
                 title: 'Home',
                 tabBarIcon: ({ color, focused }) => (
-                  <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color}/>
-                )
-              }} 
+                  <HomeIcon focused={focused}/>
+                ),
+              }}
             />
             <Tabs.Screen 
               name='library'
               options={{
                 title:'Library',
                 tabBarIcon: ({ color, focused }) => (
-                  <TabBarIcon name={focused ? 'library' : 'library-outline'} color={color}/>
+                  <LibraryIcon focused={focused}/>
                 )
               }}
             />

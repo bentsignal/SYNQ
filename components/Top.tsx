@@ -1,27 +1,11 @@
 import { View, Text, Image } from 'react-native'
-import { Colors } from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
 
 export const Top = () => {
   return (
-    <View
-      style={{
-        alignSelf: 'stretch',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginTop: 10,
-        marginBottom: 30
-      }}
-    >
+    <View style={Styles.top}>
       <View>
-        <Text
-          style={{
-            fontSize: 24,
-            fontWeight: 'bold',
-            color: Colors.green,
-          }}
-        >
+        <Text style={Styles.appName}>
           synk
         </Text>
       </View>

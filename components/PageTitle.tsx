@@ -2,7 +2,7 @@ import { Text } from "react-native";
 import { Styles } from "@/constants/Styles"
 
 type PageTitleProps = {
-    title?: string;
+    title: string;
 }
 
 export const PageTitle = ({

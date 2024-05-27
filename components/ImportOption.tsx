@@ -1,0 +1,58 @@
+import { Text, View, Image, TouchableOpacity, ImageSourcePropType } from 'react-native'
+import { Colors } from '@/constants/Colors'
+
+type ImportOptionProps = {
+  title: string;
+  desc: string;
+  icon: ImageSourcePropType;
+  handlePress: () => void;
+}
+
+export const ImportOption = ({
+  title,
+  desc,
+  icon,
+  handlePress
+}:ImportOptionProps) => {
+  return (
+    <TouchableOpacity
+      onPress={handlePress}
+      activeOpacity={1}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        backgroundColor: Colors.green,
+        borderRadius: 10,
+        padding: 20,
+        marginBottom: 10
+      }}
+    >
+      <Image 
+        source={icon} 
+        style={{
+          width: 36,
+          height: 36,
+          marginRight: 16
+        }}
+      />
+      <View>
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: 'bold'
+          }}
+        >
+          {title}
+        </Text>
+        <Text
+          style={{
+            fontSize: 16
+          }}
+        >
+          {desc}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  )
+}

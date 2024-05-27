@@ -1,6 +1,6 @@
 export const Colors = {
   green: '#4FF190',
-  text: '#ECEDEE',
+  text: '#fff',
   infoText: '#939393',
   textbox: '#262626',
   popup: '#1A1A1A',

@@ -1,23 +1,19 @@
 import { Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
+import { PageTitle } from '@/components/PageTitle'
 import { Colors } from "@/constants/Colors";
 
 const Library = () => {
   return (
-    <View
+    <SafeAreaView
       style={{
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+        alignItems: "center"
       }}
     >
-      <Text 
-        style={{
-          fontFamily: 'JakartaSans',
-          color: Colors.text
-        }}
-      >Library</Text>
-    </View>
+      <PageTitle title='Your Library'/>
+    </SafeAreaView>
   );
 }
 

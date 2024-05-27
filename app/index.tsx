@@ -1,5 +1,5 @@
 import { Text, View, TouchableOpacity } from 'react-native'
-import { MainButton } from '@/components/MainButton'
+import { CustomButton } from '@/components/CustomButton'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 
@@ -11,11 +11,13 @@ const Welcome = () => {
       style={{
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: Colors.background
       }}
     >
-      <MainButton 
+      <CustomButton 
         title='Begin'
+        background={Colors.green}
         handlePress={() => router.replace('home')}
       />
     </SafeAreaView>

@@ -6,7 +6,7 @@ import 'react-native-reanimated';
 
 import { Colors } from "@/constants/Colors";
 
-export default function RootLayout() {
+const RootLayout = () => {
 
   const [loaded] = useFonts({
     JakartaSans: require('../assets/fonts/PlusJakartaSans-VariableFont_wght.ttf')
@@ -24,7 +24,10 @@ export default function RootLayout() {
 
   return (
     <Stack>
-      <Stack.Screen name="tabs" options={{ headerShown: false }} />
+      <Stack.Screen name='index' options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
     </Stack>
   );
 }
+
+export default RootLayout;

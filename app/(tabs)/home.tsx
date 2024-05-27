@@ -1,8 +1,8 @@
 import { Text, View } from "react-native";
 
-import { Colors } from "@/constants/Colors";
+import { Colors } from '@/constants/Colors'
 
-export default function Library() {
+const Home = () => {
   return (
     <View
       style={{
@@ -16,7 +16,9 @@ export default function Library() {
           fontFamily: 'JakartaSans',
           color: Colors.text
         }}
-      >Library</Text>
+      >Home</Text>
     </View>
   );
 }
+
+export default Home;

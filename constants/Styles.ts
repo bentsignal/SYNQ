@@ -40,5 +40,8 @@ export const Styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center'
   },
-  
+  infoText: {
+    fontSize: 14,
+    color: Colors.text
+  }
 });

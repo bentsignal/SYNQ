@@ -1,7 +1,7 @@
 import { View, Text, Image } from 'react-native'
 import { Styles } from '@/constants/Styles'
 
-export const Top = () => {
+const Top = () => {
   return (
     <View style={Styles.top}>
       <View>
@@ -19,3 +19,5 @@ export const Top = () => {
     </View>
   )
 }
+
+export default Top;

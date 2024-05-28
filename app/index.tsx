@@ -1,5 +1,5 @@
 import { Text, View, TouchableOpacity } from 'react-native'
-import { CustomButton } from '@/components/CustomButton'
+import CustomButton from '@/components/CustomButton'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 

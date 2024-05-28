@@ -5,7 +5,7 @@ type PageTitleProps = {
     title: string;
 }
 
-export const PageTitle = ({
+const PageTitle = ({
     title
 }: PageTitleProps) => {
     return (
@@ -14,3 +14,5 @@ export const PageTitle = ({
         </Text>
     )
 }
+
+export default PageTitle;

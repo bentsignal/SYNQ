@@ -8,7 +8,7 @@ type ImportOptionProps = {
   handlePress: () => void;
 }
 
-export const ImportOption = ({
+const ImportOption = ({
   title,
   desc,
   icon,
@@ -56,3 +56,5 @@ export const ImportOption = ({
     </TouchableOpacity>
   )
 }
+
+export default ImportOption;

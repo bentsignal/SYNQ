@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import * as SplashScreen from 'expo-splash-screen'
 import 'react-native-reanimated';
 
+import GlobalProvider from "@/context/GlobalProvider";
 import { Colors } from "@/constants/Colors";
 
 const RootLayout = () => {
@@ -23,10 +24,12 @@ const RootLayout = () => {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name='index' options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    </Stack>
+    <GlobalProvider>
+      <Stack>
+        <Stack.Screen name='index' options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+    </GlobalProvider>
   );
 }
 

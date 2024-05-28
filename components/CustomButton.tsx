@@ -7,7 +7,7 @@ type MainButtonProps = {
   handlePress?: () => void;
 };
 
-export const CustomButton = ({
+const CustomButton = ({
   title,
   background,
   handlePress
@@ -24,3 +24,5 @@ export const CustomButton = ({
     </TouchableOpacity>
   )
 }
+
+export default CustomButton;

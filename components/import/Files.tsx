@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native'
+import { Text, View, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 
@@ -26,9 +26,29 @@ const Files = () => {
           marginBottom: 10
         }}
       >
-        <Text
-          style={Styles.infoText}
-        >Content</Text>
+        <Image 
+          source={require('@/assets/icons/upload.png')}
+          style={{
+            width: 35,
+            height: 35
+          }}
+        />
+        <Text style={[Styles.infoText, {
+          paddingTop: 20
+        }]}>
+          press browse to begin importing files
+        </Text>
+        <Text style={[Styles.infoText, {
+          paddingTop: 10,
+          paddingBottom: 20
+        }]}>
+          Supports: mp3
+        </Text>
+        <CustomButton 
+          title='Browse'
+          background={Colors.altButton}
+          handlePress={() => {}}
+        />
       </View>
       <View
         style={{
@@ -50,6 +70,7 @@ const Files = () => {
             router.replace('/library');
             setHomeState(0);
           }}
+          disabled={true}
         />
       </View>
     </SafeAreaView>

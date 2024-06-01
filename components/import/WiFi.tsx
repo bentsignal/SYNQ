@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native'
+import { Text, View, ActivityIndicator } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 
@@ -34,7 +34,12 @@ const WiFi = () => {
       >
         <Text
           style={Styles.infoText}
-        >Content</Text>
+        >
+          songs will appear here once uploaded
+        </Text>
+        <ActivityIndicator style={{
+          padding: 20
+        }}/>
       </View>
       <View
         style={{
@@ -56,6 +61,7 @@ const WiFi = () => {
             router.replace('/library');
             setHomeState(0);
           }}
+          disabled={true}
         />
       </View>
     </SafeAreaView>

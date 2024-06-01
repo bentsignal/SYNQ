@@ -18,7 +18,7 @@ const TabLayout = () => {
             },
             tabBarLabelStyle: {
               fontSize: 12,
-              fontWeight: 'bold'
+              fontWeight: 'bold',
             }
           }}
           sceneContainerStyle={{

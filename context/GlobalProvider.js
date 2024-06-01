@@ -5,11 +5,14 @@ export const useGlobalContext = () => useContext(GlobalContext);
 
 const GlobalProvider = ({ children }) => {
   const [homeState, setHomeState] = useState(0);
+  const [fileResults, setFileResults] = useState([]);
   return (
     <GlobalContext.Provider
       value={{
         homeState,
-        setHomeState
+        setHomeState,
+        fileResults,
+        setFileResults
       }}
     >
       {children}

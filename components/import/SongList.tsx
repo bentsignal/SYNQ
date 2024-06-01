@@ -8,9 +8,10 @@ import CustomButton from '../CustomButton'
 
 type SongProps = {
   name: string;
+  uri: string;
 };
 
-const Song = ({name}: SongProps) => {
+const Song = ({name, uri}: SongProps) => {
   return (
     <View>
       <Text
@@ -35,13 +36,12 @@ const renderItem = ({item} : {item: ItemData}) => {
   return (
     <Song 
       name={item.name}
+      uri={item.uri}
     />
   )
 }
 
-const SongList = () => {
-  const { fileResults } = useGlobalContext();
-  console.log(fileResults);
+const SongList = (data: any) => {
   return (
     <View
       style={{
@@ -52,9 +52,9 @@ const SongList = () => {
       }}
     >
       <FlatList 
-        data={fileResults}
+        data={data.songs}
         renderItem={renderItem}
-        keyExtractor={item => item.name}
+        keyExtractor={song => song.name}
       />
     </View>
   )

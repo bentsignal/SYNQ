@@ -41,7 +41,7 @@ const FilesEmpty = () => {
         background={Colors.altButton}
         handlePress={async () => {
           const result = await DocumentPicker.getDocumentAsync({
-            type: "*/*",
+            type: "audio/mpeg",
             multiple: true,
             copyToCacheDirectory: true
           });

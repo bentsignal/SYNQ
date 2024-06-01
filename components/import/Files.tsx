@@ -21,7 +21,7 @@ const Files = () => {
     body = <FilesEmpty />
   }
   else {
-    body = <SongList />
+    body = <SongList songs={fileResults}/>
   }
   return (
     <SafeAreaView style={Styles.body}>

@@ -60,7 +60,9 @@ const Files = () => {
                 zip.file(song.name, base64_content, {base64: true})
               }
               zip.generateAsync({type:"base64"}).then((content) => {
-                const destination = FileSystem.documentDirectory + 'test.zip'
+                const date = new Date();
+                const fileName = `${date.getMonth()}-${date.getDate()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}.zip`
+                const destination = FileSystem.documentDirectory + fileName
                 FileSystem.writeAsStringAsync(destination, content, {encoding: 'base64'}).then(async () => {
                   const shareSong = await Sharing.shareAsync(destination)
                 })

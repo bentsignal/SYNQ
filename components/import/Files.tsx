@@ -51,16 +51,28 @@ const Files = () => {
           title='Import'
           background={Colors.green}
           handlePress={async () => {
-            const zip = new JSZip();
-            const song1 = fileResults[0]
-            const song1_base64 = await FileSystem.readAsStringAsync(song1.uri, {encoding: 'base64'})
-            zip.file(song1.name, song1_base64, {base64: true})
-            zip.generateAsync({type:"string"}).then((content) => {
-              const destination = FileSystem.documentDirectory + 'test.zip'
-              FileSystem.writeAsStringAsync(destination, content, {encoding: 'base64'}).then(async () => {
-                const shareSong = await Sharing.shareAsync(destination)
+            if (fileResults.length > 1) {
+              const zip = new JSZip();
+              let base64_content, song
+              for (let i = 0; i < fileResults.length; i++) {
+                song = fileResults[i]
+                base64_content = await FileSystem.readAsStringAsync(song.uri, {encoding: 'base64'})
+                zip.file(song.name, base64_content, {base64: true})
+              }
+              zip.generateAsync({type:"base64"}).then((content) => {
+                const destination = FileSystem.documentDirectory + 'test.zip'
+                FileSystem.writeAsStringAsync(destination, content, {encoding: 'base64'}).then(async () => {
+                  const shareSong = await Sharing.shareAsync(destination)
+                })
               })
-            })
+            }
+            else if (fileResults.length == 1) {
+              const original = fileResults[0]
+              const renamed = FileSystem.documentDirectory + original.name
+              const rename = await FileSystem.moveAsync({from: original.uri, to:renamed}).then(async () => {
+                const shareSong = await Sharing.shareAsync(renamed)
+              })
+            }
             router.replace('/library');
             setHomeState(0);
             setFileResults([]);

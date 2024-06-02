@@ -8,7 +8,7 @@ import { Colors } from '@/constants/Colors'
 import CustomButton from '../CustomButton'
 
 const FilesEmpty = () => {
-  const { homeState, setHomeState, fileResults, setFileResults } = useGlobalContext();
+  const { homeState, setHomeState, fileResults, setFileResults, setImportDisabled } = useGlobalContext();
   return (
     <View
       style={{
@@ -48,6 +48,7 @@ const FilesEmpty = () => {
           });
           if (result.assets != null) {
             setFileResults(result.assets)
+            setImportDisabled(false)
             const info = await FileSystem.getInfoAsync(result.assets[0].uri)
             const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {encoding: 'base64'})
           }

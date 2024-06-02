@@ -18,7 +18,9 @@ import ImportInstructions from '@/components/import/ImportInstructions'
 import CustomButton from '../CustomButton'
 
 const Files = () => {
-  const { homeState, setHomeState, fileResults, setFileResults } = useGlobalContext();
+  const { homeState, setHomeState, fileResults, setFileResults,
+    importDisabled, setImportDisabled
+   } = useGlobalContext();
   let body;
   if (fileResults.length == 0) {
     body = <FilesEmpty />
@@ -51,6 +53,7 @@ const Files = () => {
           title='Import'
           background={Colors.green}
           handlePress={async () => {
+            setImportDisabled(true);
             if (fileResults.length > 1) {
               const zip = new JSZip();
               let base64_content, song
@@ -79,7 +82,7 @@ const Files = () => {
             setHomeState(0);
             setFileResults([]);
           }}
-          disabled={fileResults.length == 0 ? true : false}
+          disabled={importDisabled}
         />
       </View>
     </SafeAreaView>

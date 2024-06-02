@@ -3,7 +3,7 @@ export const Colors = {
   text: '#fff',
   infoText: '#939393',
   textbox: '#262626',
-  popup: '#1A1A1A',
+  popup: '#242424',
   altButton: '#ffffff',
   disabledButton: "#1f8045",
   background: '#101010',

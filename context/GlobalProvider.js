@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react'
+import { SongProps } from '@/components/Song'
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -7,6 +8,9 @@ const GlobalProvider = ({ children }) => {
   const [homeState, setHomeState] = useState(0);
   const [fileResults, setFileResults] = useState([]);
   const [importDisabled, setImportDisabled] = useState(true);
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleteSong, setDeleteSong] = useState({});
+  const [showEdit, setShowEdit] = useState(false);
   return (
     <GlobalContext.Provider
       value={{
@@ -15,7 +19,13 @@ const GlobalProvider = ({ children }) => {
         fileResults,
         setFileResults,
         importDisabled,
-        setImportDisabled
+        setImportDisabled,
+        showDelete, 
+        setShowDelete,
+        deleteSong,
+        setDeleteSong,
+        showEdit,
+        setShowEdit
       }}
     >
       {children}

@@ -3,10 +3,10 @@ import { Text, View, Image, FlatList, TouchableOpacity } from 'react-native'
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
-import CustomButton from '../CustomButton'
+import CustomButton from '@/components/CustomButton'
 import { addWhitelistedNativeProps } from 'react-native-reanimated/lib/typescript/ConfigHelper'
 
-type SongProps = {
+export type SongProps = {
   name: string;
   uri: string;
 };
@@ -74,6 +74,7 @@ const SongInfo = ({name, uri}: SongProps) => {
 }
 
 const Song = ({name, uri}: SongProps) => {
+  const {showDelete, setShowDelete, showEdit, setShowEdit, setDeleteSong } = useGlobalContext();
   return (
     <View
       style={{
@@ -106,7 +107,12 @@ const Song = ({name, uri}: SongProps) => {
           />
         </View>
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          setShowDelete(true);
+          setDeleteSong({name, uri})
+        }}
+      >
         <View
           style={{
             height: '100%',
@@ -124,48 +130,8 @@ const Song = ({name, uri}: SongProps) => {
           />
         </View>
       </TouchableOpacity>
-      
     </View>
   )
 }
 
-type ItemData = {
-  "mimeType": string;
-  "name": string;
-  "size": Int16Array;
-  "uri": string;
-};
-
-const renderItem = ({item} : {item: ItemData}) => {
-  return (
-    <Song 
-      name={item.name}
-      uri={item.uri}
-    />
-  )
-}
-
-const SongList = (data: any) => {
-  return (
-    <View
-      style={{
-        alignSelf: 'stretch',
-        alignItems: 'center',
-        height: '75%',
-        width: '100%',
-        marginBottom: 10
-      }}
-    >
-      <FlatList 
-        data={data.songs}
-        renderItem={renderItem}
-        keyExtractor={song => song.name}
-        style={{
-          width: '100%'
-        }}
-      />
-    </View>
-  )
-}
-
-export default SongList;
+export default Song

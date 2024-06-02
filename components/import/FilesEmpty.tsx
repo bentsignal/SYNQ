@@ -1,5 +1,6 @@
 import { Text, View, Image } from 'react-native'
 import * as DocumentPicker from 'expo-document-picker'
+import * as FileSystem from 'expo-file-system'
 
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
@@ -47,6 +48,8 @@ const FilesEmpty = () => {
           });
           if (result.assets != null) {
             setFileResults(result.assets)
+            const info = await FileSystem.getInfoAsync(result.assets[0].uri)
+            const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {encoding: 'base64'})
           }
         }}
       />

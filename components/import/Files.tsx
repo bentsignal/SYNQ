@@ -2,6 +2,9 @@ import { Text, View, Image } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import * as DocumentPicker from 'expo-document-picker'
+import * as FileSystem from 'expo-file-system'
+import * as Sharing from 'expo-sharing'
+import JSZip from 'jszip'
 
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
@@ -47,7 +50,17 @@ const Files = () => {
         <CustomButton 
           title='Import'
           background={Colors.green}
-          handlePress={() => {
+          handlePress={async () => {
+            const zip = new JSZip();
+            const song1 = fileResults[0]
+            const song1_base64 = await FileSystem.readAsStringAsync(song1.uri, {encoding: 'base64'})
+            zip.file(song1.name, song1_base64, {base64: true})
+            zip.generateAsync({type:"string"}).then((content) => {
+              const destination = FileSystem.documentDirectory + 'test.zip'
+              FileSystem.writeAsStringAsync(destination, content, {encoding: 'base64'}).then(async () => {
+                const shareSong = await Sharing.shareAsync(destination)
+              })
+            })
             router.replace('/library');
             setHomeState(0);
             setFileResults([]);

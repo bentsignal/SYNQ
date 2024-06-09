@@ -8,8 +8,8 @@ import { Colors } from '@/constants/Colors'
 import PageTitle from '@/components/PageTitle'
 import Top from '@/components/Top'
 import ImportOption from '@/components/import/ImportOption'
-import ImportInstructions from '@/components/import/ImportInstructions'
-import CustomButton from '../CustomButton'
+import ImportInstructions from '@/components/import/wifi/ImportInstructions'
+import CustomButton from '@/components/CustomButton'
 
 const WiFi = () => {
   const { homeState, setHomeState } = useGlobalContext();

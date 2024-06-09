@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState } from 'react'
-import { SongProps } from '@/components/Song'
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);

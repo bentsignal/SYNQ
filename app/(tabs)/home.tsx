@@ -8,8 +8,8 @@ import { Colors } from '@/constants/Colors';
 import PageTitle from '@/components/PageTitle';
 import Top from "@/components/Top";
 import ImportOption from "@/components/import/ImportOption";
-import WiFi from "@/components/import/WiFi";
-import Files from "@/components/import/Files";
+import WiFi from "@/components/import/wifi/WiFi";
+import Files from "@/components/import/files/Files";
 import CustomButton from '@/components/CustomButton'
 
 const Home = () => {

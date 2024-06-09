@@ -5,7 +5,7 @@ import * as FileSystem from 'expo-file-system'
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
-import CustomButton from '../CustomButton'
+import CustomButton from '@/components/CustomButton'
 
 const FilesEmpty = () => {
   const { homeState, setHomeState, fileResults, setFileResults, setImportDisabled } = useGlobalContext();

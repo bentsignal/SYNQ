@@ -3,6 +3,7 @@ import { useFonts } from 'expo-font';
 import { useEffect } from 'react'
 import * as SplashScreen from 'expo-splash-screen'
 import 'react-native-reanimated';
+import { router } from 'expo-router'
 
 import GlobalProvider from "@/context/GlobalProvider";
 import { Colors } from "@/constants/Colors";

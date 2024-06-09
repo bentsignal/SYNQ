@@ -17,7 +17,7 @@ const Delete = () => {
       <Modal
         transparent={true}
         visible={showDelete}
-        animationType='slide'
+        animationType='fade'
       >
         <View
           style={{
@@ -32,7 +32,7 @@ const Delete = () => {
               padding: 20,
               justifyContent: 'center',
               alignItems: 'center',
-              width: '80%',
+              width: '70%',
               borderRadius: 10
             }}
           >
@@ -75,7 +75,7 @@ const Delete = () => {
                 background={Colors.green}
                 handlePress={() => {
                   setShowDelete(false);
-                  // TODO: delete song
+                  // TODO: delete
                 }}
               />
             </View>

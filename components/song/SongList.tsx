@@ -1,12 +1,7 @@
-import { Text, View, Image, FlatList, TouchableOpacity } from 'react-native'
+import { View, FlatList } from 'react-native'
 
-import { useGlobalContext } from '@/context/GlobalProvider'
-import { Styles } from '@/constants/Styles'
-import { Colors } from '@/constants/Colors'
-import CustomButton from '@/components/CustomButton'
-import Song from '@/components/Song'
+import Song from '@/components/song/Song'
 import Delete from '@/components/modals/Delete'
-import { addWhitelistedNativeProps } from 'react-native-reanimated/lib/typescript/ConfigHelper'
 
 type ItemData = {
   "mimeType": string;

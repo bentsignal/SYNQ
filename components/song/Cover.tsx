@@ -25,7 +25,7 @@ const NoCover = () => {
   )
 }
 
-const Cover = (tags?: any) => {
+const Cover = (tags: any) => {
   let cover = false;
   if (cover) {
     return (

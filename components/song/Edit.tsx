@@ -1,7 +1,7 @@
 import { Text, View, Image, FlatList, TouchableOpacity } from 'react-native'
 import { useGlobalContext } from '@/context/GlobalProvider'
 
-const Edit = () => {
+const Edit = ({name, uri}: any) => {
   return (
     <TouchableOpacity>
       <View

@@ -6,6 +6,7 @@ import Delete from '@/components/modals/Delete'
 type ItemData = {
   "name": string;
   "uri": string;
+  "data": string;
   "tags": {}
 };
 
@@ -14,6 +15,7 @@ const renderItem = ({item} : {item: ItemData}) => {
     <Song 
       name={item.name}
       uri={item.uri}
+      data={item.data}
       tags={item.tags}
     />
   )

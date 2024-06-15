@@ -1,17 +1,17 @@
 import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
+import { ID3Writer } from 'browser-id3-writer'
 import JSZip from 'jszip'
 
 export const exportSongs = async (songs: any) => {
   console.log(songs)
   if (songs.length > 1) {
     const zip = new JSZip();
-    let base64_content, song
+    let  song
     for (let i = 0; i < songs.length; i++) {
       song = songs[i]
-      base64_content = await FileSystem.readAsStringAsync(song.uri, {encoding: 'base64'})
-      zip.file(song.name, base64_content, {base64: true})
+      zip.file(song.name, song.data, {base64: true})
     }
     zip.generateAsync({type:"base64"}).then((content) => {
       const date = new Date();
@@ -31,6 +31,15 @@ export const exportSongs = async (songs: any) => {
   }
 }
 
+export const addArtist = (artist: string, data: string) => {
+  let songBuffer = base64ToArrayBuffer(data);
+  const writer = new ID3Writer(songBuffer);
+  writer.setFrame('TPE1', ['Kendrick Lamar']);
+  writer.addTag();
+  const blob = writer.getBlob;
+  console.log(blob)
+}
+
 export const importSongs = async () => {
   const results = await DocumentPicker.getDocumentAsync({
     type: "audio/mpeg",
@@ -39,14 +48,14 @@ export const importSongs = async () => {
   });
   const songs: {}[] = []
   if (results.canceled == false) {
-    const NodeID3 = require('@/lib/node-id3')
+    let data
     for (let i = 0; i < results.assets.length; i++) {
-      const data = await FileSystem.readAsStringAsync(results.assets[i].uri, {encoding: 'base64'})
+      data = await FileSystem.readAsStringAsync(results.assets[i].uri, {encoding: 'base64'})
       songs.push({
         'name': results.assets[i].name,
         'uri': results.assets[i].uri,
         'data': data,
-        'tags': NodeID3.readExpo(data)
+        'tags': getTags(data)
       })
     }
     return songs
@@ -56,4 +65,18 @@ export const importSongs = async () => {
   }
     // const info = await FileSystem.getInfoAsync(result.assets[0].uri)
     // const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {encoding: 'base64'})
+}
+
+export const getTags = (data: string) => {
+  const NodeID3 = require('@/lib/node-id3')
+  return NodeID3.readExpo(data)
+}
+
+const base64ToArrayBuffer = (base64: string) => {
+  var binaryString = atob(base64);
+  var bytes = new Uint8Array(binaryString.length);
+  for (var i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
 }

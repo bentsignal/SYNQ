@@ -18,6 +18,7 @@
     "@expo/vector-icons": "^14.0.0",
     "@klarna/react-native-zlib": "^1.0.1",
     "@react-navigation/native": "^6.0.2",
+    "browser-id3-writer": "^6.1.0",
     "buffer": "^6.0.3",
     "expo": "~51.0.8",
     "expo-constants": "~16.0.1",

@@ -13,10 +13,11 @@ import Cover from '@/components/song/Cover'
 export type SongProps = {
   name: string;
   uri: string;
+  data: string;
   tags: {};
 };
 
-const Song = ({name, uri, tags}: SongProps) => {
+const Song = ({name, uri, data, tags}: SongProps) => {
   return (
     <View
       style={{

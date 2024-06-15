@@ -1,7 +1,6 @@
 import { Text, View, Image, FlatList, TouchableOpacity } from 'react-native'
 
 import { useGlobalContext } from '@/context/GlobalProvider'
-import { readTags } from '@/lib/tagManager'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
 
@@ -14,11 +13,10 @@ import Cover from '@/components/song/Cover'
 export type SongProps = {
   name: string;
   uri: string;
+  tags: {};
 };
 
-const Song = ({name, uri}: SongProps) => {
-  const {showDelete, setShowDelete, showEdit, setShowEdit, setDeleteSong } = useGlobalContext();
-  const tags = readTags(uri);
+const Song = ({name, uri, tags}: SongProps) => {
   return (
     <View
       style={{

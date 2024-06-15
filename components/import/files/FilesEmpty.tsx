@@ -6,6 +6,7 @@ import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
 import CustomButton from '@/components/CustomButton'
+import { importSongs } from '@/lib/SongManager'
 
 const FilesEmpty = () => {
   const { homeState, setHomeState, fileResults, setFileResults, setImportDisabled } = useGlobalContext();
@@ -41,16 +42,10 @@ const FilesEmpty = () => {
         title='Browse'
         background={Colors.altButton}
         handlePress={async () => {
-          const result = await DocumentPicker.getDocumentAsync({
-            type: "audio/mpeg",
-            multiple: true,
-            copyToCacheDirectory: true
-          });
-          if (result.assets != null) {
-            setFileResults(result.assets)
+          const results = await importSongs()
+          if (results.length > 0) {
             setImportDisabled(false)
-            const info = await FileSystem.getInfoAsync(result.assets[0].uri)
-            const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {encoding: 'base64'})
+            setFileResults(results)
           }
         }}
       />

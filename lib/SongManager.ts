@@ -1,8 +1,9 @@
 import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
+import * as DocumentPicker from 'expo-document-picker'
 import JSZip from 'jszip'
 
-const importSongs = async (songs: any) => {
+export const exportSongs = async (songs: any) => {
   console.log(songs)
   if (songs.length > 1) {
     const zip = new JSZip();
@@ -30,4 +31,29 @@ const importSongs = async (songs: any) => {
   }
 }
 
-export default importSongs
+export const importSongs = async () => {
+  const results = await DocumentPicker.getDocumentAsync({
+    type: "audio/mpeg",
+    multiple: true,
+    copyToCacheDirectory: true
+  });
+  const songs: {}[] = []
+  if (results.canceled == false) {
+    const NodeID3 = require('@/lib/node-id3')
+    for (let i = 0; i < results.assets.length; i++) {
+      const data = await FileSystem.readAsStringAsync(results.assets[i].uri, {encoding: 'base64'})
+      songs.push({
+        'name': results.assets[i].name,
+        'uri': results.assets[i].uri,
+        'data': data,
+        'tags': NodeID3.readExpo(data)
+      })
+    }
+    return songs
+  }
+  else {
+    return songs
+  }
+    // const info = await FileSystem.getInfoAsync(result.assets[0].uri)
+    // const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {encoding: 'base64'})
+}

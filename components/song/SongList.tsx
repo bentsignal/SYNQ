@@ -4,10 +4,9 @@ import Song from '@/components/song/Song'
 import Delete from '@/components/modals/Delete'
 
 type ItemData = {
-  "mimeType": string;
   "name": string;
-  "size": Int16Array;
   "uri": string;
+  "tags": {}
 };
 
 const renderItem = ({item} : {item: ItemData}) => {
@@ -15,6 +14,7 @@ const renderItem = ({item} : {item: ItemData}) => {
     <Song 
       name={item.name}
       uri={item.uri}
+      tags={item.tags}
     />
   )
 }

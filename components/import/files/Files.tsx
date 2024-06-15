@@ -10,7 +10,7 @@ import Top from '@/components/Top'
 import FilesEmpty from '@/components/import/files/FilesEmpty'
 import SongList from '@/components/song/SongList'
 import CustomButton from '@/components/CustomButton'
-import importSongs from '@/lib/importSongs'
+import { exportSongs } from '@/lib/SongManager'
 
 const Files = () => {
   const { homeState, setHomeState, fileResults, setFileResults,
@@ -42,6 +42,7 @@ const Files = () => {
           handlePress={() => {
             setHomeState(0)
             setFileResults([])
+            setImportDisabled(true)
           }}
         />
         <CustomButton 
@@ -49,7 +50,7 @@ const Files = () => {
           background={Colors.green}
           handlePress={async () => {
             setImportDisabled(true);
-            await importSongs(fileResults)
+            await exportSongs(fileResults)
             router.replace('/library');
             setHomeState(0);
             setFileResults([]);

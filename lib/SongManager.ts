@@ -2,10 +2,11 @@ import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { ID3Writer } from 'browser-id3-writer'
+import { getAudioMetadata } from '@missingcore/audio-metadata';
+import MusicInfo from 'expo-music-info-2';
 import JSZip from 'jszip'
 
 export const exportSongs = async (songs: any) => {
-  console.log(songs)
   if (songs.length > 1) {
     const zip = new JSZip();
     let  song
@@ -47,15 +48,24 @@ export const importSongs = async () => {
     copyToCacheDirectory: true
   });
   const songs: {}[] = []
+  const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
+  let data;
   if (results.canceled == false) {
-    let data
     for (let i = 0; i < results.assets.length; i++) {
       data = await FileSystem.readAsStringAsync(results.assets[i].uri, {encoding: 'base64'})
+      let info = {}
+      await getAudioMetadata(results.assets[i].uri, wantedTags)
+        .then((data) => {
+          info = data
+        })
+        .catch((error) => {
+          console.log(error)
+        })
       songs.push({
         'name': results.assets[i].name,
         'uri': results.assets[i].uri,
         'data': data,
-        'tags': getTags(data)
+        'info': info
       })
     }
     return songs

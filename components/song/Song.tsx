@@ -14,10 +14,10 @@ export type SongProps = {
   name: string;
   uri: string;
   data: string;
-  tags: {};
+  info: {};
 };
 
-const Song = ({name, uri, data, tags}: SongProps) => {
+const Song = ({name, uri, data, info}: SongProps) => {
   return (
     <View
       style={{
@@ -30,8 +30,8 @@ const Song = ({name, uri, data, tags}: SongProps) => {
         marginBottom: 5
       }}
     >
-      <Cover tags={tags}/>
-      <SongInfo tags={tags} name={name}/>
+      <Cover tags={info}/>
+      <SongInfo tags={info} name={name}/>
       <Edit name={name} uri={uri}/>
       <Delete name={name} uri={uri}/>
     </View>

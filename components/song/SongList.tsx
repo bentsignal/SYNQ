@@ -7,7 +7,7 @@ type ItemData = {
   "name": string;
   "uri": string;
   "data": string;
-  "tags": {}
+  "info": {}
 };
 
 const renderItem = ({item} : {item: ItemData}) => {
@@ -16,7 +16,7 @@ const renderItem = ({item} : {item: ItemData}) => {
       name={item.name}
       uri={item.uri}
       data={item.data}
-      tags={item.tags}
+      info={item.info}
     />
   )
 }

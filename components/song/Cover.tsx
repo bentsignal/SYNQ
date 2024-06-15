@@ -25,12 +25,12 @@ const NoCover = () => {
   )
 }
 
-const Cover = (tags: any) => {
-  let cover = false;
-  if (cover) {
+const Cover = (info: any) => {
+  
+  if (Object.hasOwn(info, 'tags') && Object.hasOwn(info.tags, 'metadata') && Object.hasOwn(info.tags.metadata, 'artwork')) {
     return (
       <Image 
-        source={require('@/assets/images/damn.jpeg')}
+        source={info.tags.metadata.artwork}
         style={{
           width: 60,
           height: 60

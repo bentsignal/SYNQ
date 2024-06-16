@@ -12,6 +12,7 @@ const GlobalProvider = ({ children }) => {
   const [showEdit, setShowEdit] = useState(false);
   const [loading, setLoading] = useState(false);
   const [zipping, setZipping] = useState(false);
+  const [importing, setImporting] = useState(false);
   return (
     <GlobalContext.Provider
       value={{
@@ -29,6 +30,10 @@ const GlobalProvider = ({ children }) => {
         setShowEdit,
         loading,
         setLoading,
+        zipping, 
+        setZipping,
+        importing,
+        setImporting
       }}
     >
       {children}

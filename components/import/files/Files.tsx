@@ -17,10 +17,24 @@ const Files = () => {
 
   const { homeState, setHomeState, fileResults, setFileResults,
     importDisabled, setImportDisabled, loading, setLoading,
+    zipping, setZipping, importing, setImporting
   } = useGlobalContext();
 
   const getBody = () => {
     if (loading) {
+      let message = <></>
+      if (zipping) {
+        message = 
+          <Text style={Styles.infoText}>
+            Preparing your files...
+          </Text>
+      }
+      else if (importing) {
+        message=
+          <Text style={Styles.infoText}>
+            Importing your files...
+          </Text>
+      }
       return (
         <View
           style={{
@@ -31,6 +45,7 @@ const Files = () => {
             marginBottom: 10
           }}
         >
+          {message}
           <ActivityIndicator style={{
               padding: 20
           }}/>
@@ -67,6 +82,8 @@ const Files = () => {
           background={Colors.text}
           handlePress={() => {
             setLoading(false);
+            setZipping(false);
+            setImporting(false);
             setHomeState(0)
             setFileResults([])
             setImportDisabled(true)
@@ -78,9 +95,11 @@ const Files = () => {
           handlePress={() => {
             setImportDisabled(true);
             setLoading(true);
+            setZipping(true);
             setTimeout(() => {
               exportSongs(fileResults).then(() => {
                 setLoading(false);
+                setZipping(false);
                 router.replace('/library');
                 setHomeState(0);
                 setFileResults([]);

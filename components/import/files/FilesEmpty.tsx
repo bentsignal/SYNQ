@@ -10,7 +10,7 @@ import { importFiles } from '@/lib/SongManager'
 
 const FilesEmpty = () => {
   const { homeState, setHomeState, fileResults, setFileResults, setImportDisabled, 
-    loading, setLoading
+    loading, setLoading, setImporting
   } = useGlobalContext();
   return (
     <View
@@ -45,7 +45,9 @@ const FilesEmpty = () => {
         background={Colors.altButton}
         handlePress={() => {
           setLoading(true)
+          setImporting(true);
           importFiles().then((results) => {
+            setImporting(false);
             setLoading(false)
             if (results.length > 0) {
               setImportDisabled(false)

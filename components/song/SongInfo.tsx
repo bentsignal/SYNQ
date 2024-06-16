@@ -3,21 +3,13 @@ import { fn } from '@/lib/SongManager'
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
+import { InfoType } from '@/lib/Types'
 
 const SongInfo = ({info, name}: {
-  "info": {
-    "fileType"?: string;
-    "format"?: string;
-    "metadata"?: {
-      "album"?: string;
-      "artist"?: string;
-      "artwork"?: string;
-      "name"?: string;
-    }
-  };
+  "info": InfoType
   name: string;
 }) => {
-  if (fn(info) && fn(info.metadata) && fn(info.metadata.name) && fn(info.metadata.artist)) {
+  if (info.metadata?.artist && info.metadata?.name) {
     return (
       <View
         style={{

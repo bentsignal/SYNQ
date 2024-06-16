@@ -1,7 +1,13 @@
 import { Text, View, Image, FlatList, TouchableOpacity } from 'react-native'
 import { useGlobalContext } from '@/context/GlobalProvider'
+import { InfoType } from '@/lib/Types';
 
-const Edit = ({name, uri, data, info}: any) => {
+const Edit = ({name, uri, data, info}: {
+  name: string;
+  uri: string;
+  data: string;
+  info: InfoType;
+}) => {
   const { showEdit, setShowEdit, editSong, setEditSong } = useGlobalContext();
   return (
     <TouchableOpacity

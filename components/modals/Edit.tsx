@@ -1,5 +1,6 @@
-import { Text, View, TouchableOpacity, Modal } from 'react-native'
+import { Text, View, TouchableOpacity, Modal, TextInput } from 'react-native'
 
+import { useState } from 'react'
 import PageTitle from '@/components/PageTitle'
 import CustomButton from '@/components/CustomButton'
 import { Colors } from '@/constants/Colors'
@@ -61,6 +62,11 @@ const EditModal = () => {
               >
                 {editSong.name}
               </Text>
+              <TextInput 
+                editable
+                numberOfLines={1}
+
+              />
             </View>
             <View
               style={{

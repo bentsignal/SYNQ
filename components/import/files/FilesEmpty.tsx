@@ -9,9 +9,10 @@ import CustomButton from '@/components/CustomButton'
 import { importFiles } from '@/lib/SongManager'
 
 const FilesEmpty = () => {
-  const { homeState, setHomeState, fileResults, setFileResults, setImportDisabled, 
-    loading, setLoading, setImporting
+
+  const { setFileResults, setImportDisabled, setLoading, setImporting
   } = useGlobalContext();
+
   return (
     <View
       style={{
@@ -58,6 +59,7 @@ const FilesEmpty = () => {
       />
     </View>
   );
+  
 }
 
 export default FilesEmpty;

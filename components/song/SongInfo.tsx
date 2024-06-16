@@ -32,6 +32,7 @@ const SongInfo = ({info, name}: {
             fontWeight: 'bold',
             fontSize: 16,
           }}
+          numberOfLines={1}
         >
           {info.metadata.name}
         </Text>
@@ -41,6 +42,7 @@ const SongInfo = ({info, name}: {
             fontWeight: 'medium',
             fontSize: 14,
           }}
+          numberOfLines={1}
         >
           {info.metadata.artist}
         </Text>
@@ -62,6 +64,7 @@ const SongInfo = ({info, name}: {
             fontWeight: 'bold',
             fontSize: 16,
           }}
+          numberOfLines={1}
         >
           {name}
         </Text>

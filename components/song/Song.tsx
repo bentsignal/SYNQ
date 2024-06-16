@@ -11,13 +11,23 @@ import CustomButton from '@/components/CustomButton'
 import Cover from '@/components/song/Cover'
 
 export type SongProps = {
-  name: string;
-  uri: string;
-  data: string;
-  info: {};
+  "name": string;
+  "uri": string;
+  "data": string;
+  "info": {
+    "fileType"?: string;
+    "format"?: string;
+    "metadata"?: {
+      "album"?: string;
+      "artist"?: string;
+      "artwork"?: string;
+      "name"?: string;
+    }
+  }
 };
 
 const Song = ({name, uri, data, info}: SongProps) => {
+  console.log(info)
   return (
     <View
       style={{
@@ -30,8 +40,8 @@ const Song = ({name, uri, data, info}: SongProps) => {
         marginBottom: 5
       }}
     >
-      <Cover tags={info}/>
-      <SongInfo tags={info} name={name}/>
+      <Cover info={info}/>
+      <SongInfo info={info} name={name}/>
       <Edit name={name} uri={uri}/>
       <Delete name={name} uri={uri}/>
     </View>

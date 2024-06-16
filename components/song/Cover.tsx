@@ -4,6 +4,7 @@ import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
 import CustomButton from '@/components/CustomButton'
+import { fn } from '@/lib/SongManager'
 
 const NoCover = () => {
   return (
@@ -25,12 +26,22 @@ const NoCover = () => {
   )
 }
 
-const Cover = (info: any) => {
-  
-  if (Object.hasOwn(info, 'tags') && Object.hasOwn(info.tags, 'metadata') && Object.hasOwn(info.tags.metadata, 'artwork')) {
+const Cover = (info: {
+  "info": {
+    "fileType"?: string;
+    "format"?: string;
+    "metadata"?: {
+      "album"?: string;
+      "artist"?: string;
+      "artwork"?: string;
+      "name"?: string;
+    }
+  };
+}) => {
+  if (fn(info) && fn(info.metadata) && fn(info.metadata.artwork)) {
     return (
       <Image 
-        source={info.tags.metadata.artwork}
+        source={info.metadata.artwork}
         style={{
           width: 60,
           height: 60

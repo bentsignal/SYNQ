@@ -1,16 +1,9 @@
 import { View, FlatList } from 'react-native'
 
-import Song from '@/components/song/Song'
+import Song, { SongProps } from '@/components/song/Song'
 import Delete from '@/components/modals/Delete'
 
-type ItemData = {
-  "name": string;
-  "uri": string;
-  "data": string;
-  "info": {}
-};
-
-const renderItem = ({item} : {item: ItemData}) => {
+const renderItem = ({item} : {item: SongProps}) => {
   return (
     <Song 
       name={item.name}

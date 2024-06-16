@@ -55,8 +55,8 @@ export const importSongs = async () => {
       data = await FileSystem.readAsStringAsync(results.assets[i].uri, {encoding: 'base64'})
       let info = {}
       await getAudioMetadata(results.assets[i].uri, wantedTags)
-        .then((data) => {
-          info = data
+        .then((meta) => {
+          info = meta
         })
         .catch((error) => {
           console.log(error)
@@ -89,4 +89,8 @@ const base64ToArrayBuffer = (base64: string) => {
       bytes[i] = binaryString.charCodeAt(i);
   }
   return bytes.buffer;
+}
+
+export const fn = (data: any) => {
+  return data !== undefined;
 }

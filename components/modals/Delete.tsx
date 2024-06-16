@@ -5,7 +5,7 @@ import CustomButton from '@/components/CustomButton'
 import { Colors } from '@/constants/Colors'
 import { useGlobalContext } from '@/context/GlobalProvider';
 
-const Delete = () => {
+const DeleteModal = () => {
   const { showDelete, setShowDelete, deleteSong } = useGlobalContext();
   return (
     <View
@@ -32,7 +32,7 @@ const Delete = () => {
               padding: 20,
               justifyContent: 'center',
               alignItems: 'center',
-              width: '70%',
+              width: '80%',
               borderRadius: 10
             }}
           >
@@ -51,6 +51,7 @@ const Delete = () => {
                 margin: 30,
                 fontSize: 16
               }}
+              numberOfLines={1}
             >
               {deleteSong.name}
             </Text>
@@ -86,4 +87,4 @@ const Delete = () => {
   )
 }
 
-export default Delete;
+export default DeleteModal;

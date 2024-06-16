@@ -10,6 +10,7 @@ const GlobalProvider = ({ children }) => {
   const [showDelete, setShowDelete] = useState(false);
   const [deleteSong, setDeleteSong] = useState({});
   const [showEdit, setShowEdit] = useState(false);
+  const [editSong, setEditSong] = useState({});
   const [loading, setLoading] = useState(false);
   const [zipping, setZipping] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -28,6 +29,8 @@ const GlobalProvider = ({ children }) => {
         setDeleteSong,
         showEdit,
         setShowEdit,
+        editSong,
+        setEditSong,
         loading,
         setLoading,
         zipping, 

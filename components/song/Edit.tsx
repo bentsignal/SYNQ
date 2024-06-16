@@ -1,9 +1,15 @@
 import { Text, View, Image, FlatList, TouchableOpacity } from 'react-native'
 import { useGlobalContext } from '@/context/GlobalProvider'
 
-const Edit = ({name, uri}: any) => {
+const Edit = ({name, uri, data, info}: any) => {
+  const { showEdit, setShowEdit, editSong, setEditSong } = useGlobalContext();
   return (
-    <TouchableOpacity>
+    <TouchableOpacity
+      onPress={() => {
+        setShowEdit(true);
+        setEditSong({name, uri, data, info})
+      }}
+    >
       <View
         style={{
           height: '100%',

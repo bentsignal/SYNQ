@@ -40,7 +40,7 @@ const Song = ({name, uri, data, info}: SongProps) => {
     >
       <Cover info={info}/>
       <SongInfo info={info} name={name}/>
-      <Edit name={name} uri={uri}/>
+      <Edit name={name} uri={uri} data={data} info={info}/>
       <Delete name={name} uri={uri}/>
     </View>
   )

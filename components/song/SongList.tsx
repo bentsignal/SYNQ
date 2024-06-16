@@ -1,7 +1,8 @@
 import { View, FlatList } from 'react-native'
 
 import Song, { SongProps } from '@/components/song/Song'
-import Delete from '@/components/modals/Delete'
+import DeleteModal from '@/components/modals/Delete'
+import EditModal from '@/components/modals/Edit'
 
 const renderItem = ({item} : {item: SongProps}) => {
   return (
@@ -25,7 +26,8 @@ const SongList = (data: any) => {
         marginBottom: 10
       }}
     >
-      <Delete />
+      <DeleteModal />
+      <EditModal />
       <FlatList 
         data={data.songs}
         renderItem={renderItem}

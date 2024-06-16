@@ -10,6 +10,8 @@ const GlobalProvider = ({ children }) => {
   const [showDelete, setShowDelete] = useState(false);
   const [deleteSong, setDeleteSong] = useState({});
   const [showEdit, setShowEdit] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [zipping, setZipping] = useState(false);
   return (
     <GlobalContext.Provider
       value={{
@@ -24,7 +26,9 @@ const GlobalProvider = ({ children }) => {
         deleteSong,
         setDeleteSong,
         showEdit,
-        setShowEdit
+        setShowEdit,
+        loading,
+        setLoading,
       }}
     >
       {children}

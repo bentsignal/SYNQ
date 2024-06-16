@@ -6,10 +6,12 @@ import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
 import CustomButton from '@/components/CustomButton'
-import { importSongs } from '@/lib/SongManager'
+import { importFiles } from '@/lib/SongManager'
 
 const FilesEmpty = () => {
-  const { homeState, setHomeState, fileResults, setFileResults, setImportDisabled } = useGlobalContext();
+  const { homeState, setHomeState, fileResults, setFileResults, setImportDisabled, 
+    loading, setLoading
+  } = useGlobalContext();
   return (
     <View
       style={{
@@ -41,12 +43,15 @@ const FilesEmpty = () => {
       <CustomButton 
         title='Browse'
         background={Colors.altButton}
-        handlePress={async () => {
-          const results = await importSongs()
-          if (results.length > 0) {
-            setImportDisabled(false)
-            setFileResults(results)
-          }
+        handlePress={() => {
+          setLoading(true)
+          importFiles().then((results) => {
+            setLoading(false)
+            if (results.length > 0) {
+              setImportDisabled(false)
+              setFileResults(results)
+            }
+          })
         }}
       />
     </View>

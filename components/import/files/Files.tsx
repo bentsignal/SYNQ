@@ -1,4 +1,5 @@
-import { Text, View, Image } from 'react-native'
+import { Text, View, Image, ActivityIndicator } from 'react-native'
+import { useEffect, useReducer } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 
@@ -13,21 +14,46 @@ import CustomButton from '@/components/CustomButton'
 import { exportSongs } from '@/lib/SongManager'
 
 const Files = () => {
+
   const { homeState, setHomeState, fileResults, setFileResults,
-    importDisabled, setImportDisabled
-   } = useGlobalContext();
-  let body;
-  if (fileResults.length == 0) {
-    body = <FilesEmpty />
+    importDisabled, setImportDisabled, loading, setLoading,
+  } = useGlobalContext();
+
+  const getBody = () => {
+    if (loading) {
+      return (
+        <View
+          style={{
+            alignSelf: 'stretch',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '75%',
+            marginBottom: 10
+          }}
+        >
+          <ActivityIndicator style={{
+              padding: 20
+          }}/>
+        </View>
+      )
+    }
+    else if (fileResults.length > 0) {
+      return (
+        <SongList songs={fileResults} />
+      )
+    }
+    else {
+      return (
+        <FilesEmpty />
+      )
+    }
   }
-  else {
-    body = <SongList songs={fileResults}/>
-  }
+
   return (
     <SafeAreaView style={Styles.body}>
       <Top />
       <PageTitle title='Import Music' />
-      {body}
+      {getBody()}
       <View
         style={{
           flexDirection: 'row',
@@ -40,6 +66,7 @@ const Files = () => {
           title='Cancel'
           background={Colors.text}
           handlePress={() => {
+            setLoading(false);
             setHomeState(0)
             setFileResults([])
             setImportDisabled(true)
@@ -48,12 +75,21 @@ const Files = () => {
         <CustomButton 
           title='Import'
           background={Colors.green}
-          handlePress={async () => {
+          handlePress={() => {
             setImportDisabled(true);
-            await exportSongs(fileResults)
-            router.replace('/library');
-            setHomeState(0);
-            setFileResults([]);
+            setLoading(true);
+            setTimeout(() => {
+              exportSongs(fileResults).then(() => {
+                setLoading(false);
+                router.replace('/library');
+                setHomeState(0);
+                setFileResults([]);
+              })
+              .catch((error) => {
+                console.log(error)
+                console.log('failed to export files')
+              })
+            }, 1000)
           }}
           disabled={importDisabled}
         />

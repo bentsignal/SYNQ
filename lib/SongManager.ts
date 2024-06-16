@@ -3,31 +3,30 @@ import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { ID3Writer } from 'browser-id3-writer'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
-import MusicInfo from 'expo-music-info-2';
 import JSZip from 'jszip'
 
 export const exportSongs = async (songs: any) => {
   if (songs.length > 1) {
     const zip = new JSZip();
-    let  song
+    let song;
     for (let i = 0; i < songs.length; i++) {
-      song = songs[i]
-      zip.file(song.name, song.data, {base64: true})
+      song = songs[i];
+      zip.file(song.name, song.data, {base64: true});
     }
-    zip.generateAsync({type:"base64"}).then((content) => {
+    await zip.generateAsync({type:"base64"}).then(async (content) => {
       const date = new Date();
       const fileName = `${date.getMonth()}-${date.getDate()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}.zip`
       const destination = FileSystem.documentDirectory + fileName
-      FileSystem.writeAsStringAsync(destination, content, {encoding: 'base64'}).then(async () => {
-        const shareSong = await Sharing.shareAsync(destination)
+      await FileSystem.writeAsStringAsync(destination, content, {encoding: 'base64'}).then(async () => {
+        await Sharing.shareAsync(destination)
       })
     })
   }
   else if (songs.length == 1) {
     const original = songs[0]
     const renamed = FileSystem.documentDirectory + original.name
-    const rename = await FileSystem.moveAsync({from: original.uri, to:renamed}).then(async () => {
-      const shareSong = await Sharing.shareAsync(renamed)
+    await FileSystem.moveAsync({from: original.uri, to:renamed}).then(async () => {
+      await Sharing.shareAsync(renamed)
     })
   }
 }
@@ -41,7 +40,7 @@ export const addArtist = (artist: string, data: string) => {
   console.log(blob)
 }
 
-export const importSongs = async () => {
+export const importFiles = async () => {
   const results = await DocumentPicker.getDocumentAsync({
     type: "audio/mpeg",
     multiple: true,

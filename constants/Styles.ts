@@ -43,5 +43,19 @@ export const Styles = StyleSheet.create({
   infoText: {
     fontSize: 14,
     color: Colors.text
+  },
+  textbox: {
+    backgroundColor: Colors.textbox,
+    color: Colors.text,
+    borderRadius: 10,
+    paddingTop: 15,
+    paddingBottom: 15,
+    paddingLeft: 20,
+    marginBottom: 10,
+  },
+  textboxLabel: {
+    fontSize: 14,
+    color: Colors.text,
+    marginBottom: 5
   }
 });

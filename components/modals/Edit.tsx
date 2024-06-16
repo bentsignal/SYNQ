@@ -4,10 +4,15 @@ import { useState } from 'react'
 import PageTitle from '@/components/PageTitle'
 import CustomButton from '@/components/CustomButton'
 import { Colors } from '@/constants/Colors'
+import { Styles } from '@/constants/Styles'
 import { useGlobalContext } from '@/context/GlobalProvider';
 
 const EditModal = () => {
   const { showEdit, setShowEdit, editSong } = useGlobalContext();
+  const [title, setTitle] = useState(editSong.info?.metadata?.name ? editSong.info.metadata.name : '')
+  const [artist, setArtist] = useState(editSong.info?.metadata?.artist ? editSong.info.metadata.artist : '')
+  const [album, setAlbum] = useState(editSong.info?.metadata?.album ? editSong.info.metadata.album : '')
+  const [artwork, setArtwork] = useState(editSong.info?.metadata?.artwork ? editSong.info.metadata.work : '')
   return (
     <View
       style={{
@@ -25,6 +30,7 @@ const EditModal = () => {
             justifyContent: 'center',
             alignItems: 'center',
             height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)'
           }}
         >
           <View
@@ -62,10 +68,47 @@ const EditModal = () => {
               >
                 {editSong.name}
               </Text>
+              <Text
+                style={Styles.textboxLabel}
+              >
+                Song Title
+              </Text>
               <TextInput 
+                style={Styles.textbox}
+                autoCorrect={false}
                 editable
                 numberOfLines={1}
-
+                value={title}
+                onChangeText={text => setTitle(text)}
+                placeholder={'Enter song title...'}
+              />
+              <Text
+                style={Styles.textboxLabel}
+              >
+                Artist
+              </Text>
+              <TextInput
+                style={Styles.textbox}
+                autoCorrect={false}
+                editable
+                numberOfLines={1}
+                value={artist}
+                onChangeText={text => setArtist(text)}
+                placeholder={'Enter artist(s)...'}
+              />
+              <Text
+                style={Styles.textboxLabel}
+              >
+                Album
+              </Text>
+              <TextInput
+                style={Styles.textbox}
+                autoCorrect={false}
+                editable
+                numberOfLines={1}
+                value={album}
+                onChangeText={text => setAlbum(album)}
+                placeholder={'Enter album name...'}
               />
             </View>
             <View
@@ -74,6 +117,7 @@ const EditModal = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 gap: 10,
+                marginTop: 10,
                 marginBottom: 5
               }}
             >

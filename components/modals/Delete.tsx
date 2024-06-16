@@ -24,6 +24,7 @@ const DeleteModal = () => {
             justifyContent: 'center',
             alignItems: 'center',
             height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)'
           }}
         >
           <View

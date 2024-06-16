@@ -27,7 +27,6 @@ export type SongProps = {
 };
 
 const Song = ({name, uri, data, info}: SongProps) => {
-  console.log(info)
   return (
     <View
       style={{

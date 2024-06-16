@@ -26,7 +26,7 @@ const NoCover = () => {
   )
 }
 
-const Cover = (info: {
+const Cover = ({info}: {
   "info": {
     "fileType"?: string;
     "format"?: string;
@@ -41,7 +41,7 @@ const Cover = (info: {
   if (fn(info) && fn(info.metadata) && fn(info.metadata.artwork)) {
     return (
       <Image 
-        source={info.metadata.artwork}
+        source={{uri: info.metadata.artwork}}
         style={{
           width: 60,
           height: 60

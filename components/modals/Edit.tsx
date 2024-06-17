@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useState } from 'react'
 import CustomButton from '@/components/CustomButton'
+import { newCover } from '@/lib/SongManager'
 import { EditCover } from '@/components/song/Cover'
 import { Colors } from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
@@ -67,7 +68,13 @@ const EditModal = () => {
                   marginBottom: 20
                 }}
               >
-                <EditCover image={editArtwork}/>
+                <EditCover 
+                  image={editArtwork}
+                  handlePress={async () => {
+                    const cover = await newCover();
+                    setEditArtwork(cover);
+                  }}
+                />
                 <Text
                   style={{
                     color: 'white',

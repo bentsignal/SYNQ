@@ -4,6 +4,8 @@ import * as DocumentPicker from 'expo-document-picker'
 import { ID3Writer } from 'browser-id3-writer'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
 import { InfoType } from '@/constants/Types'
+import { manipulateAsync, FlipType, SaveFormat } from 'expo-image-manipulator';
+import * as ImagePicker from 'expo-image-picker';
 import JSZip from 'jszip'
 
 export const exportSongs = async (songs: any) => {
@@ -97,6 +99,22 @@ export const removeSongFromResults = (
     }
   }
   return newResults;
+}
+
+export const newCover = async () => {
+  // TODO: import image and crop and save value to cover
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
+    allowsEditing: true,
+    aspect: [1, 1],
+    quality: 1,
+  });
+  if (result.assets && result.assets.length > 0) {
+    const uri = result.assets[0].uri;
+    const cover = await FileSystem.readAsStringAsync(uri, {encoding: 'base64'})
+    return cover
+  }
+  return '';
 }
 
 export const getTags = (data: string) => {

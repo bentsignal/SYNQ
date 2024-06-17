@@ -1,4 +1,4 @@
-import { View, Image,} from 'react-native'
+import { View, Image, TouchableOpacity } from 'react-native'
 import { InfoType } from '@/constants/Types'
 
 export const ListCover = ({info}: {
@@ -36,69 +36,79 @@ export const ListCover = ({info}: {
   }
 }
 
-export const EditCover = (info: {image?: string;}) => {
-  if (info.image) {
+export const EditCover = ({image, handlePress}: {
+  image?: string; 
+  handlePress?: () => void;
+}) => {
+  if (image) {
     return (
-      <View
-        style={{
-          width: 120, 
-          height: 120
-        }}
+      <TouchableOpacity
+        onPress={handlePress}
       >
-        <Image 
-          source={{uri: info.image}}
-          style={{
-            width: 120, 
-            height: 120,
-            position: 'absolute'
-          }}
-        />
-        <View 
-          style={{
-            width: 120,
-            height: 120,
-            position: 'absolute',
-            backgroundColor: 'rgba(0, 0, 0, 0.6)'
-          }}
-        />
         <View
           style={{
             width: 120, 
-            height: 120,
-            position: 'absolute',
-            justifyContent: 'center',
-            alignItems: 'center'
+            height: 120
           }}
         >
           <Image 
-            source={require('@/assets/icons/edit.png')}
+            source={{uri: image}}
+            style={{
+              width: 120, 
+              height: 120,
+              position: 'absolute'
+            }}
+          />
+          <View 
+            style={{
+              width: 120,
+              height: 120,
+              position: 'absolute',
+              backgroundColor: 'rgba(0, 0, 0, 0.6)'
+            }}
+          />
+          <View
+            style={{
+              width: 120, 
+              height: 120,
+              position: 'absolute',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            <Image 
+              source={require('@/assets/icons/edit.png')}
+              style={{
+                width: 20,
+                height: 20
+              }}
+            />
+          </View>
+        </View>
+      </TouchableOpacity>
+    )
+  }
+  else {
+    return (
+      <TouchableOpacity
+        onPress={handlePress}
+      >
+        <View style={{
+          backgroundColor: '#D2D2D2',
+          width: 120,
+          height: 120,
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}>
+          <Image 
+            source={require('@/assets/icons/edit-black.png')}
             style={{
               width: 20,
               height: 20
             }}
           />
         </View>
-      </View>
-      
-    )
-  }
-  else {
-    return (
-      <View style={{
-        backgroundColor: '#D2D2D2',
-        width: 120,
-        height: 120,
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}>
-        <Image 
-          source={require('@/assets/icons/edit-black.png')}
-          style={{
-            width: 20,
-            height: 20
-          }}
-        />
-      </View>
+      </TouchableOpacity>
     )
   }
 }

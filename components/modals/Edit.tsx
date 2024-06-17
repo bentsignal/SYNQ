@@ -3,10 +3,10 @@ import { useEffect } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useState } from 'react'
 import CustomButton from '@/components/CustomButton'
+import { EditCover } from '@/components/song/Cover'
 import { Colors } from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
 import { useGlobalContext } from '@/context/GlobalProvider';
-
 
 const EditModal = () => {
   
@@ -61,17 +61,25 @@ const EditModal = () => {
               >
                 Edit song
               </Text>
-              <Text
+              <View
                 style={{
-                  color: 'white',
-                  marginTop: 30,
-                  marginBottom: 30,
-                  fontSize: 16
+                  marginTop: 20,
+                  marginBottom: 20
                 }}
-                numberOfLines={1}
               >
-                {editSong.name}
-              </Text>
+                <EditCover image={editArtwork}/>
+                <Text
+                  style={{
+                    color: 'white',
+                    fontWeight: 'bold',
+                    marginTop: 10,
+                    fontSize: 16
+                  }}
+                  numberOfLines={1}
+                >
+                  {editSong.name}
+                </Text>
+              </View>
               <Text
                 style={Styles.textboxLabel}
               >

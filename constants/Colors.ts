@@ -7,7 +7,8 @@ export const Colors = {
   altButton: '#ffffff',
   disabledButton: "#1f8045",
   background: '#101010',
-  footer: '#0D0D0D',
+  footer: '#101010',
+  // footer: '#0D0D0D',
   tabInactive: '#9B9B9B',
   tabActive: '#ffffff',
 };

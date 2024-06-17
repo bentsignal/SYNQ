@@ -8,12 +8,13 @@ const Edit = ({name, uri, data, info}: {
   data: string;
   info: InfoType;
 }) => {
-  const { setShowEdit, setEditSong, setEditTitle, setEditArtist,
-    setEditAlbum, setEditArtwork
+  const { 
+    setEditSong, setShowEdit, setEditTitle, setEditArtist, setEditAlbum, setEditArtwork
    } = useGlobalContext();
   return (
     <TouchableOpacity
       onPress={() => {
+        setEditSong({name, uri, data, info})
         setEditTitle(info.metadata?.name ? info.metadata.name : '')
         setEditArtist(info.metadata?.artist ? info.metadata.artist : '')
         setEditAlbum(info.metadata?.album ? info.metadata.album : '')

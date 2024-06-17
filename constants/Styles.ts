@@ -51,6 +51,7 @@ export const Styles = StyleSheet.create({
     paddingTop: 15,
     paddingBottom: 15,
     paddingLeft: 20,
+    paddingRight: 20,
     marginBottom: 10,
   },
   textboxLabel: {

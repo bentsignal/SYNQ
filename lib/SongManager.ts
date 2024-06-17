@@ -3,6 +3,7 @@ import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { ID3Writer } from 'browser-id3-writer'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
+import { InfoType } from '@/constants/Types'
 import JSZip from 'jszip'
 
 export const exportSongs = async (songs: any) => {
@@ -74,6 +75,28 @@ export const importFiles = async () => {
   }
     // const info = await FileSystem.getInfoAsync(result.assets[0].uri)
     // const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {encoding: 'base64'})
+}
+
+export const deleteSongFromFiles = async (uri: string) => {
+  await FileSystem.deleteAsync(uri)
+}
+
+export const removeSongFromResults = (
+  results: [{
+    name?: string;
+    data?: string;
+    uri?: string;
+    info?: InfoType
+  }],
+  uri: string
+) => {
+  let newResults = [];
+  for (let i = 0; i < results.length; i++) {
+    if (results[i].uri && results[i].uri != uri) {
+      newResults.push(results[i]);
+    }
+  }
+  return newResults;
 }
 
 export const getTags = (data: string) => {

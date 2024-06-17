@@ -1,10 +1,5 @@
-import { Text, View, Image, FlatList, TouchableOpacity } from 'react-native'
-
-import { useGlobalContext } from '@/context/GlobalProvider'
-import { Styles } from '@/constants/Styles'
-import { Colors } from '@/constants/Colors'
-import CustomButton from '@/components/CustomButton'
-import { InfoType } from '@/lib/Types'
+import { View, Image,} from 'react-native'
+import { InfoType } from '@/constants/Types'
 
 const NoCover = () => {
   return (

@@ -4,9 +4,10 @@ import PageTitle from '@/components/PageTitle'
 import CustomButton from '@/components/CustomButton'
 import { Colors } from '@/constants/Colors'
 import { useGlobalContext } from '@/context/GlobalProvider';
+import { deleteSongFromFiles, removeSongFromResults} from '@/lib/SongManager';
 
 const DeleteModal = () => {
-  const { showDelete, setShowDelete, deleteSong } = useGlobalContext();
+  const { showDelete, setShowDelete, deleteSong, fileResults, setFileResults, setImportDisabled} = useGlobalContext();
   return (
     <View
       style={{
@@ -75,9 +76,14 @@ const DeleteModal = () => {
               <CustomButton 
                 title='Delete'
                 background={Colors.green}
-                handlePress={() => {
+                handlePress={async () => {
                   setShowDelete(false);
-                  // TODO: delete
+                  const newResults = removeSongFromResults(fileResults, deleteSong.uri);
+                  if (newResults.length <= 0) {
+                    setImportDisabled(true);
+                  }
+                  setFileResults(newResults);
+                  deleteSongFromFiles(deleteSong.uri)
                 }}
               />
             </View>

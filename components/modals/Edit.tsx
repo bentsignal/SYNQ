@@ -1,18 +1,22 @@
-import { Text, View, TouchableOpacity, Modal, TextInput } from 'react-native'
-
+import { Text, View, Modal, TextInput } from 'react-native'
+import { useEffect } from 'react'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useState } from 'react'
-import PageTitle from '@/components/PageTitle'
 import CustomButton from '@/components/CustomButton'
 import { Colors } from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
 import { useGlobalContext } from '@/context/GlobalProvider';
 
+
 const EditModal = () => {
-  const { showEdit, setShowEdit, editSong } = useGlobalContext();
-  const [title, setTitle] = useState(editSong.info?.metadata?.name ? editSong.info.metadata.name : '')
-  const [artist, setArtist] = useState(editSong.info?.metadata?.artist ? editSong.info.metadata.artist : '')
-  const [album, setAlbum] = useState(editSong.info?.metadata?.album ? editSong.info.metadata.album : '')
-  const [artwork, setArtwork] = useState(editSong.info?.metadata?.artwork ? editSong.info.metadata.work : '')
+  
+  const { showEdit, setShowEdit, editSong,
+    editTitle, setEditTitle,
+    editArtist, setEditArtist,
+    editAlbum, setEditAlbum, 
+    editArtwork, setEditArtwork
+   } = useGlobalContext();
+
   return (
     <View
       style={{
@@ -78,8 +82,8 @@ const EditModal = () => {
                 autoCorrect={false}
                 editable
                 numberOfLines={1}
-                value={title}
-                onChangeText={text => setTitle(text)}
+                value={editTitle}
+                onChangeText={text => setEditTitle(text)}
                 placeholder={'Enter song title...'}
               />
               <Text
@@ -92,8 +96,8 @@ const EditModal = () => {
                 autoCorrect={false}
                 editable
                 numberOfLines={1}
-                value={artist}
-                onChangeText={text => setArtist(text)}
+                value={editArtist}
+                onChangeText={text => setEditArtist(text)}
                 placeholder={'Enter artist(s)...'}
               />
               <Text
@@ -106,8 +110,8 @@ const EditModal = () => {
                 autoCorrect={false}
                 editable
                 numberOfLines={1}
-                value={album}
-                onChangeText={text => setAlbum(album)}
+                value={editAlbum}
+                onChangeText={text => setEditAlbum(text)}
                 placeholder={'Enter album name...'}
               />
             </View>

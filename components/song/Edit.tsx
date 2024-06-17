@@ -1,6 +1,6 @@
-import { Text, View, Image, FlatList, TouchableOpacity } from 'react-native'
+import { View, Image, TouchableOpacity } from 'react-native'
 import { useGlobalContext } from '@/context/GlobalProvider'
-import { InfoType } from '@/lib/Types';
+import { InfoType } from '@/constants/Types';
 
 const Edit = ({name, uri, data, info}: {
   name: string;
@@ -8,12 +8,17 @@ const Edit = ({name, uri, data, info}: {
   data: string;
   info: InfoType;
 }) => {
-  const { showEdit, setShowEdit, editSong, setEditSong } = useGlobalContext();
+  const { setShowEdit, setEditSong, setEditTitle, setEditArtist,
+    setEditAlbum, setEditArtwork
+   } = useGlobalContext();
   return (
     <TouchableOpacity
       onPress={() => {
+        setEditTitle(info.metadata?.name ? info.metadata.name : '')
+        setEditArtist(info.metadata?.artist ? info.metadata.artist : '')
+        setEditAlbum(info.metadata?.album ? info.metadata.album : '')
+        setEditArtwork(info.metadata?.artwork ? info.metadata.artwork : '')
         setShowEdit(true);
-        setEditSong({name, uri, data, info})
       }}
     >
       <View

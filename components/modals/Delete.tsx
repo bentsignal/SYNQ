@@ -87,7 +87,7 @@ const DeleteModal = () => {
                 }}
               />
             </View>
-          </View>
+          </View> 
         </View>
       </Modal>
     </View>

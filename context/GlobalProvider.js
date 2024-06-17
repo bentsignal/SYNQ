@@ -11,6 +11,10 @@ const GlobalProvider = ({ children }) => {
   const [deleteSong, setDeleteSong] = useState({});
   const [showEdit, setShowEdit] = useState(false);
   const [editSong, setEditSong] = useState({});
+  const [editTitle, setEditTitle] = useState('');
+  const [editArtist, setEditArtist] = useState('');
+  const [editAlbum, setEditAlbum] = useState('');
+  const [editArtwork, setEditArtwork] = useState('');
   const [loading, setLoading] = useState(false);
   const [zipping, setZipping] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -30,6 +34,13 @@ const GlobalProvider = ({ children }) => {
         showEdit,
         setShowEdit,
         editSong,
+        
+        // edit song modal
+        editTitle, setEditTitle,
+        editArtist, setEditArtist,
+        editAlbum, setEditAlbum,
+        editArtwork, setEditArtwork,
+        
         setEditSong,
         loading,
         setLoading,

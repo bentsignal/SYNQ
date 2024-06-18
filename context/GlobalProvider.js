@@ -18,6 +18,7 @@ const GlobalProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [zipping, setZipping] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [editLoad, setEditLoad] = useState(false);
   return (
     <GlobalContext.Provider
       value={{
@@ -36,11 +37,12 @@ const GlobalProvider = ({ children }) => {
         editSong,
         
         // edit song modal
+        editLoad, setEditLoad,
         editTitle, setEditTitle,
         editArtist, setEditArtist,
         editAlbum, setEditAlbum,
         editArtwork, setEditArtwork,
-        
+
         setEditSong,
         loading,
         setLoading,

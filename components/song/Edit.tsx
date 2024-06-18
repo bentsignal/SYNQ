@@ -9,7 +9,10 @@ const Edit = ({name, uri, data, info}: {
   info: InfoType;
 }) => {
   const { 
-    setEditSong, setShowEdit, setEditTitle, setEditArtist, setEditAlbum, setEditArtwork
+    setEditSong, setShowEdit, 
+    setEditTitle, setEditArtist, 
+    setEditAlbum, setEditArtwork,
+    setEditLoad
    } = useGlobalContext();
   return (
     <TouchableOpacity

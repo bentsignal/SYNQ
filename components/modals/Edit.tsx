@@ -1,4 +1,4 @@
-import { Text, View, Modal, TextInput } from 'react-native'
+import { Text, View, Modal, TextInput, ActivityIndicator } from 'react-native'
 import { useEffect } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useState } from 'react'
@@ -15,7 +15,8 @@ const EditModal = () => {
     editTitle, setEditTitle,
     editArtist, setEditArtist,
     editAlbum, setEditAlbum, 
-    editArtwork, setEditArtwork
+    editArtwork, setEditArtwork,
+    editLoad, setEditLoad
    } = useGlobalContext();
 
   return (
@@ -35,13 +36,12 @@ const EditModal = () => {
             justifyContent: 'center',
             alignItems: 'center',
             height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.8)'
+            backgroundColor: 'rgba(0, 0, 0, 0.95)'
           }}
         >
           <View
             style={{
               backgroundColor: Colors.popup,
-              padding: 20,
               justifyContent: 'center',
               alignItems: 'center',
               width: '90%',
@@ -51,110 +51,133 @@ const EditModal = () => {
             <View
               style={{
                 width: '100%',
+                padding: 20
               }}
             >
-              <Text
-                style={{
-                  color: 'white',
-                  fontSize: 36,
-                  fontWeight: 'bold'
-                }}
-              >
-                Edit song
-              </Text>
               <View
                 style={{
-                  marginTop: 20,
-                  marginBottom: 20
+                  width: '100%',
                 }}
               >
-                <EditCover 
-                  image={editArtwork}
-                  handlePress={async () => {
-                    const cover = await newCover();
-                    setEditArtwork(cover);
-                  }}
-                />
                 <Text
                   style={{
                     color: 'white',
-                    fontWeight: 'bold',
-                    marginTop: 10,
-                    fontSize: 16
+                    fontSize: 36,
+                    fontWeight: 'bold'
                   }}
-                  numberOfLines={1}
                 >
-                  {editSong.name}
+                  Edit song
                 </Text>
+                <View
+                  style={{
+                    marginTop: 20,
+                    marginBottom: 20
+                  }}
+                >
+                  <EditCover 
+                    image={editArtwork}
+                    handlePress={async () => {
+                      setEditLoad(true);
+                      const cover = await newCover();
+                      setEditLoad(false);
+                      setEditArtwork(cover);
+                    }}
+                  />
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontWeight: 'bold',
+                      marginTop: 10,
+                      fontSize: 16
+                    }}
+                    numberOfLines={1}
+                  >
+                    {editSong.name}
+                  </Text>
+                </View>
+                <Text
+                  style={Styles.textboxLabel}
+                >
+                  Song Title
+                </Text>
+                <TextInput 
+                  style={Styles.textbox}
+                  autoCorrect={false}
+                  editable
+                  numberOfLines={1}
+                  value={editTitle}
+                  onChangeText={text => setEditTitle(text)}
+                  placeholder={'Enter song title...'}
+                />
+                <Text
+                  style={Styles.textboxLabel}
+                >
+                  Artist
+                </Text>
+                <TextInput
+                  style={Styles.textbox}
+                  autoCorrect={false}
+                  editable
+                  numberOfLines={1}
+                  value={editArtist}
+                  onChangeText={text => setEditArtist(text)}
+                  placeholder={'Enter artist(s)...'}
+                />
+                <Text
+                  style={Styles.textboxLabel}
+                >
+                  Album
+                </Text>
+                <TextInput
+                  style={Styles.textbox}
+                  autoCorrect={false}
+                  editable
+                  numberOfLines={1}
+                  value={editAlbum}
+                  onChangeText={text => setEditAlbum(text)}
+                  placeholder={'Enter album name...'}
+                />
               </View>
-              <Text
-                style={Styles.textboxLabel}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: 10,
+                  marginTop: 10,
+                  marginBottom: 5
+                }}
               >
-                Song Title
-              </Text>
-              <TextInput 
-                style={Styles.textbox}
-                autoCorrect={false}
-                editable
-                numberOfLines={1}
-                value={editTitle}
-                onChangeText={text => setEditTitle(text)}
-                placeholder={'Enter song title...'}
-              />
-              <Text
-                style={Styles.textboxLabel}
-              >
-                Artist
-              </Text>
-              <TextInput
-                style={Styles.textbox}
-                autoCorrect={false}
-                editable
-                numberOfLines={1}
-                value={editArtist}
-                onChangeText={text => setEditArtist(text)}
-                placeholder={'Enter artist(s)...'}
-              />
-              <Text
-                style={Styles.textboxLabel}
-              >
-                Album
-              </Text>
-              <TextInput
-                style={Styles.textbox}
-                autoCorrect={false}
-                editable
-                numberOfLines={1}
-                value={editAlbum}
-                onChangeText={text => setEditAlbum(text)}
-                placeholder={'Enter album name...'}
-              />
+                <CustomButton 
+                  title='Cancel'
+                  background={Colors.altButton}
+                  handlePress={() => {
+                    setShowEdit(false);
+                  }}
+                />
+                <CustomButton 
+                  title='Save'
+                  background={Colors.green}
+                  handlePress={() => {
+                    setShowEdit(false);
+                    // TODO: Edit
+                  }}
+                />
+              </View>
             </View>
             <View
               style={{
-                flexDirection: 'row',
+                position: 'absolute',
+                display: editLoad ? 'flex' : 'none',
+                width: '100%',
+                height: '100%',
                 justifyContent: 'center',
                 alignItems: 'center',
-                gap: 10,
-                marginTop: 10,
-                marginBottom: 5
+                padding: 20,
+                backgroundColor: 'rgba(0, 0, 0, 0.6)'
               }}
             >
-              <CustomButton 
-                title='Cancel'
-                background={Colors.altButton}
-                handlePress={() => {
-                  setShowEdit(false);
-                }}
-              />
-              <CustomButton 
-                title='Save'
-                background={Colors.green}
-                handlePress={() => {
-                  setShowEdit(false);
-                  // TODO: Edit
-                }}
-              />
+              <ActivityIndicator />
             </View>
           </View>
         </View>

@@ -103,9 +103,9 @@ export const removeSongFromResults = (
 export const newCover = async () => {
   // TODO: import image and crop and save value to cover
   const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
     base64: true,
     selectionLimit: 1,
-    mediaTypes: ImagePicker.MediaTypeOptions.All,
     allowsEditing: true,
     aspect: [1, 1],
     quality: 1,

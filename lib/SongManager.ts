@@ -4,7 +4,6 @@ import * as DocumentPicker from 'expo-document-picker'
 import { ID3Writer } from 'browser-id3-writer'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
 import { InfoType } from '@/constants/Types'
-import { manipulateAsync, FlipType, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import JSZip from 'jszip'
 

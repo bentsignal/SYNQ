@@ -162,7 +162,7 @@ const EditModal = () => {
                   background={Colors.green}
                   handlePress={() => {
                     setShowEdit(false);
-                    // TODO: Edit
+                    // TODO: save edits
                   }}
                 />
               </View>

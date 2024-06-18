@@ -81,7 +81,8 @@ const EditModal = () => {
                   <View
                     style={{
                       marginTop: 20,
-                      marginBottom: 20
+                      marginBottom: 20,
+                      alignSelf: 'flex-start'
                     }}
                   >
                     <EditCover 

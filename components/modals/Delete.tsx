@@ -18,7 +18,7 @@ const DeleteModal = () => {
       <Modal
         transparent={true}
         visible={showDelete}
-        animationType='fade'
+        animationType='slide'
       >
         <View
           style={{

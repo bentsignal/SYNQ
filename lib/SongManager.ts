@@ -104,17 +104,25 @@ export const removeSongFromResults = (
 export const newCover = async () => {
   // TODO: import image and crop and save value to cover
   const result = await ImagePicker.launchImageLibraryAsync({
+    base64: true,
+    selectionLimit: 1,
     mediaTypes: ImagePicker.MediaTypeOptions.All,
     allowsEditing: true,
     aspect: [1, 1],
     quality: 1,
   });
-  if (result.assets && result.assets.length > 0) {
-    const uri = result.assets[0].uri;
-    const cover = await FileSystem.readAsStringAsync(uri, {encoding: 'base64'})
-    return cover
+  if (
+    result.assets && 
+    result.assets.length > 0 && 
+    result.assets[0].base64 && 
+    result.assets[0].mimeType &&
+    !result.canceled 
+  ) {
+    return `data:${result.assets[0].mimeType};base64,${result.assets[0].base64}`
   }
-  return '';
+  else {
+    return '';
+  }
 }
 
 export const getTags = (data: string) => {

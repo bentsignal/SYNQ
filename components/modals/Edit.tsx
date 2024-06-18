@@ -80,7 +80,9 @@ const EditModal = () => {
                       setEditLoad(true);
                       const cover = await newCover();
                       setEditLoad(false);
-                      setEditArtwork(cover);
+                      if (cover != '') {
+                        setEditArtwork(cover);
+                      }
                     }}
                   />
                   <Text

@@ -12,6 +12,8 @@ const TabLayout = () => {
             tabBarActiveTintColor: Colors.tabActive,
             tabBarInactiveTintColor: Colors.tabInactive,
             tabBarStyle: {
+              borderTopWidth: 1,
+              borderTopColor: Colors.popup,
               backgroundColor: Colors.footer,
               height: '11%',
               paddingTop: 10

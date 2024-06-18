@@ -12,12 +12,16 @@ const Edit = ({name, uri, data, info}: {
     setEditSong, setShowEdit, 
     setEditTitle, setEditArtist, 
     setEditAlbum, setEditArtwork,
-    setEditLoad
+    setEditFilename, setEditURI,
+    setEditData, setEditLoad
    } = useGlobalContext();
   return (
     <TouchableOpacity
       onPress={() => {
         setEditSong({name, uri, data, info})
+        setEditFilename(name);
+        setEditURI(uri);
+        setEditData(data);
         setEditTitle(info.metadata?.name ? info.metadata.name : '')
         setEditArtist(info.metadata?.artist ? info.metadata.artist : '')
         setEditAlbum(info.metadata?.album ? info.metadata.album : '')

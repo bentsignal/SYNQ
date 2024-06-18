@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useState } from 'react'
 import CustomButton from '@/components/CustomButton'
-import { newCover } from '@/lib/SongManager'
+import { newCover, saveEdits } from '@/lib/SongManager'
 import { EditCover } from '@/components/song/Cover'
 import { Colors } from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
@@ -11,7 +11,12 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 
 const EditModal = () => {
   
-  const { showEdit, setShowEdit, editSong,
+  const { 
+    fileResults, setFileResults,
+    showEdit, setShowEdit, editSong,
+    editFilename, setEditFilename,
+    editURI, setEditURI,
+    editData, setEditData,
     editTitle, setEditTitle,
     editArtist, setEditArtist,
     editAlbum, setEditAlbum, 
@@ -171,9 +176,20 @@ const EditModal = () => {
                   <CustomButton 
                     title='Save'
                     background={Colors.green}
-                    handlePress={() => {
+                    handlePress={async () => {
+                      setEditLoad(true);
+                      const newResults = await saveEdits(
+                        fileResults,
+                        editURI,
+                        editData,
+                        editTitle,
+                        editArtist,
+                        editAlbum,
+                        editArtwork
+                      )
+                      setFileResults(newResults);
+                      setEditLoad(false);
                       setShowEdit(false);
-                      // TODO: save edits
                     }}
                   />
                 </View>

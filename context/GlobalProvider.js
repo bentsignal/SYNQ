@@ -11,6 +11,9 @@ const GlobalProvider = ({ children }) => {
   const [deleteSong, setDeleteSong] = useState({});
   const [showEdit, setShowEdit] = useState(false);
   const [editSong, setEditSong] = useState({});
+  const [editFilename, setEditFilename] = useState('');
+  const [editURI, setEditURI] = useState('');
+  const [editData, setEditData] = useState('');
   const [editTitle, setEditTitle] = useState('');
   const [editArtist, setEditArtist] = useState('');
   const [editAlbum, setEditAlbum] = useState('');
@@ -36,8 +39,11 @@ const GlobalProvider = ({ children }) => {
         setShowEdit,
         editSong,
         
-        // edit song modal
+        // edit song 
         editLoad, setEditLoad,
+        editFilename, setEditFilename,
+        editURI, setEditURI,
+        editData, setEditData,
         editTitle, setEditTitle,
         editArtist, setEditArtist,
         editAlbum, setEditAlbum,

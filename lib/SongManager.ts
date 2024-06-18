@@ -124,11 +124,6 @@ export const newCover = async () => {
   }
 }
 
-export const getTags = (data: string) => {
-  const NodeID3 = require('@/lib/node-id3')
-  return NodeID3.readExpo(data)
-}
-
 const base64ToArrayBuffer = (base64: string) => {
   var binaryString = atob(base64);
   var bytes = new Uint8Array(binaryString.length);

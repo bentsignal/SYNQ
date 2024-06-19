@@ -176,20 +176,22 @@ const EditModal = () => {
                   <CustomButton 
                     title='Save'
                     background={Colors.green}
-                    handlePress={async () => {
+                    handlePress={() => {
                       setEditLoad(true);
-                      const newResults = await saveEdits(
-                        fileResults,
-                        editURI,
-                        editData,
-                        editTitle,
-                        editArtist,
-                        editAlbum,
-                        editArtwork
-                      )
-                      setFileResults(newResults);
-                      setEditLoad(false);
-                      setShowEdit(false);
+                      setTimeout(() => {
+                        const newResults = saveEdits(
+                          fileResults,
+                          editURI,
+                          editData,
+                          editTitle,
+                          editArtist,
+                          editAlbum,
+                          editArtwork
+                        )
+                        setFileResults(newResults);
+                        setEditLoad(false);
+                        setShowEdit(false);
+                      }, 1000)
                     }}
                   />
                 </View>

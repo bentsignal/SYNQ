@@ -6,40 +6,21 @@ import { getAudioMetadata } from '@missingcore/audio-metadata';
 import { InfoType } from '@/constants/Types'
 import * as ImagePicker from 'expo-image-picker';
 import JSZip from 'jszip'
+import { btoa, atob, toByteArray, fromByteArray } from 'react-native-quick-base64'
 
 export const exportSongs = async (songs: any) => {
-  if (songs.length > 1) {
-    const zip = new JSZip();
-    let song;
-    for (let i = 0; i < songs.length; i++) {
-      song = songs[i];
-      zip.file(song.name, song.data, {base64: true});
-    }
-    await zip.generateAsync({type:"base64"}).then(async (content) => {
-      const date = new Date();
-      const fileName = `${date.getMonth()}-${date.getDate()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}.zip`
-      const destination = FileSystem.documentDirectory + fileName
-      await FileSystem.writeAsStringAsync(destination, content, {encoding: 'base64'}).then(async () => {
-        await Sharing.shareAsync(destination)
-      })
-    })
+  const zip = new JSZip();
+  for (let i = 0; i < songs.length; i++) {
+    zip.file(songs[i].name, songs[i].data, {base64: true});
   }
-  else if (songs.length == 1) {
-    const original = songs[0]
-    const renamed = FileSystem.documentDirectory + original.name
-    await FileSystem.moveAsync({from: original.uri, to:renamed}).then(async () => {
-      await Sharing.shareAsync(renamed)
+  await zip.generateAsync({type:"base64"}).then(async (content) => {
+    const date = new Date();
+    const fileName = `${date.getMonth()}-${date.getDate()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}.zip`
+    const destination = FileSystem.documentDirectory + fileName
+    await FileSystem.writeAsStringAsync(destination, content, {encoding: 'base64'}).then(async () => {
+      await Sharing.shareAsync(destination)
     })
-  }
-}
-
-export const addArtist = (artist: string, data: string) => {
-  let songBuffer = base64ToArrayBuffer(data);
-  const writer = new ID3Writer(songBuffer);
-  writer.setFrame('TPE1', ['Kendrick Lamar']);
-  writer.addTag();
-  const blob = writer.getBlob;
-  console.log(blob)
+  })
 }
 
 export const importFiles = async () => {
@@ -74,8 +55,6 @@ export const importFiles = async () => {
   else {
     return songs
   }
-    // const info = await FileSystem.getInfoAsync(result.assets[0].uri)
-    // const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {encoding: 'base64'})
 }
 
 export const deleteSongFromFiles = async (uri: string) => {
@@ -108,7 +87,7 @@ export const newCover = async () => {
     selectionLimit: 1,
     allowsEditing: true,
     aspect: [1, 1],
-    quality: 1,
+    quality: 0.3,
   });
   if (
     result.assets && 
@@ -124,12 +103,12 @@ export const newCover = async () => {
   }
 }
 
-export const saveEdits = async (
+export const saveEdits = (
   results: [{
     name?: string;
-    data?: string;
+    data: string;
     uri?: string;
-    info?: InfoType
+    info: InfoType
   }],
   uri: string,
   data: string,
@@ -138,16 +117,29 @@ export const saveEdits = async (
   album: string,
   artwork: string
 ) => {
-  return results
-}
-
-const base64ToArrayBuffer = (base64: string) => {
-  var binaryString = atob(base64);
-  var bytes = new Uint8Array(binaryString.length);
-  for (var i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
+  const NodeID3 = require('@/lib/node-id3')
+  const tags = {
+    title: title,
+    artist: artist,
+    album: album
   }
-  return bytes.buffer;
+  const newData = fromByteArray(NodeID3.writeExpo(toByteArray(data), tags))
+  console.log(newData.slice(0, 4000))
+  for (let i = 0; i < results.length; i++) {
+    if (results[i].uri && results[i].uri == uri) {
+      results[i].data = newData
+      if (results[i].info.metadata) {
+        results[i].info.metadata = {
+          name: title,
+          artist: artist,
+          album: album,
+          artwork: artwork
+        }
+      }
+    }
+  }
+  return results
+  
 }
 
 export const fn = (data: any) => {

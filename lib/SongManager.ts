@@ -7,6 +7,7 @@ import { InfoType } from '@/constants/Types'
 import * as ImagePicker from 'expo-image-picker';
 import JSZip from 'jszip'
 import { btoa, atob, toByteArray, fromByteArray } from 'react-native-quick-base64'
+import { APIC } from './node-id3/src/ID3Frames';
 
 export const exportSongs = async (songs: any) => {
   const zip = new JSZip();
@@ -121,14 +122,15 @@ export const saveEdits = (
   const tags = {
     title: title,
     artist: artist,
-    album: album
+    album: album,
+    // APIC: artwork
   }
   const newData = fromByteArray(NodeID3.writeExpo(toByteArray(data), tags))
   console.log(newData.slice(0, 4000))
   for (let i = 0; i < results.length; i++) {
     if (results[i].uri && results[i].uri == uri) {
       results[i].data = newData
-      if (results[i].info.metadata) {
+      if (results[i].info) {
         results[i].info.metadata = {
           name: title,
           artist: artist,

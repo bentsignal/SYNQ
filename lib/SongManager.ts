@@ -126,7 +126,8 @@ export const saveEdits = (
     album?: string;
     APIC?: {
       description: string;
-      imageBuffer: Uint8Array;
+      // imageBuffer: Uint8Array;
+      imageBuffer: string;
       mime: string;
     }
   }
@@ -141,11 +142,10 @@ export const saveEdits = (
     tags.album = album
   }
   if (artwork) {
-    console.log(artwork.split(/,(.*)/s)[0])
-    console.log(artwork.split(/,(.*)/s)[1].slice(0, 1000))
     tags.APIC = {
       description: 'Album Cover',
-      imageBuffer: toByteArray(artwork.split(/,(.*)/s)[1]),
+      imageBuffer: artwork.split(/,(.*)/s)[1],
+      // imageBuffer: toByteArray(artwork.split(/,(.*)/s)[1]),
       mime: 'image/jpeg'
     }
   }

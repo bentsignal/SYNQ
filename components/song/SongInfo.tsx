@@ -3,7 +3,7 @@ import { fn } from '@/lib/SongManager'
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
-import { InfoType } from '@/lib/Types'
+import { InfoType } from '@/constants/Types'
 
 const SongInfo = ({info, name}: {
   "info": InfoType

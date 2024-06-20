@@ -95,6 +95,7 @@ export const newCover = async () => {
     result.assets.length > 0 && 
     result.assets[0].base64 && 
     result.assets[0].mimeType &&
+    (result.assets[0].mimeType == 'image/jpeg' || result.assets[0].mimeType == 'image/png') &&
     !result.canceled 
   ) {
     return `data:${result.assets[0].mimeType};base64,${result.assets[0].base64}`
@@ -119,14 +120,36 @@ export const saveEdits = (
   artwork: string
 ) => {
   const NodeID3 = require('@/lib/node-id3')
-  const tags = {
-    title: title,
-    artist: artist,
-    album: album,
-    // APIC: artwork
+  type tagsType = {
+    title?: string;
+    artist?: string;
+    album?: string;
+    APIC?: {
+      description: string;
+      imageBuffer: Uint8Array;
+      mime: string;
+    }
+  }
+  let tags: tagsType = {}
+  if (title) {
+    tags.title = title
+  }
+  if (artist) {
+    tags.artist = artist
+  }
+  if (album) {
+    tags.album = album
+  }
+  if (artwork) {
+    console.log(artwork.split(/,(.*)/s)[0])
+    console.log(artwork.split(/,(.*)/s)[1].slice(0, 1000))
+    tags.APIC = {
+      description: 'Album Cover',
+      imageBuffer: toByteArray(artwork.split(/,(.*)/s)[1]),
+      mime: 'image/jpeg'
+    }
   }
   const newData = fromByteArray(NodeID3.writeExpo(toByteArray(data), tags))
-  console.log(newData.slice(0, 4000))
   for (let i = 0; i < results.length; i++) {
     if (results[i].uri && results[i].uri == uri) {
       results[i].data = newData

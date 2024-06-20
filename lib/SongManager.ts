@@ -142,11 +142,18 @@ export const saveEdits = (
     tags.album = album
   }
   if (artwork) {
+    // really stupid way to extract either image/png or image/jpeg from start of string
+    const infoString = artwork.split(/,(.*)/s)[0]
+    const mimeTypeFull = infoString.split(/;(.*)/s)[0]
+    const mimeType = mimeTypeFull.split(/:(.*)/s)[1]
+    // buffer after mimetype and encoding scheme
+    const bufferString = artwork.split(/,(.*)/s)[1]
+    console.log(mimeType)
     tags.APIC = {
       description: 'Album Cover',
-      imageBuffer: artwork.split(/,(.*)/s)[1],
+      imageBuffer: bufferString,
       // imageBuffer: toByteArray(artwork.split(/,(.*)/s)[1]),
-      mime: 'image/jpeg'
+      mime: mimeType
     }
   }
   const newData = fromByteArray(NodeID3.writeExpo(toByteArray(data), tags))

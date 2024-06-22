@@ -1,10 +1,9 @@
 import { Text, View, Image } from 'react-native'
-import * as DocumentPicker from 'expo-document-picker'
-import * as FileSystem from 'expo-file-system'
 
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
+
 import CustomButton from '@/components/CustomButton'
 import { importFiles } from '@/lib/SongManager'
 

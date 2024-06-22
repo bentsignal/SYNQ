@@ -22,7 +22,7 @@ const ImportInstructions = ({
         flexDirection: 'row',
         alignItems: 'center',
         width: '100%',
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.main,
         borderRadius: 10,
         padding: 20,
         marginBottom: 10

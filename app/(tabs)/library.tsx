@@ -3,6 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
+
 import PageTitle from '@/components/PageTitle'
 import Top from "@/components/Top";
 
@@ -11,6 +12,17 @@ const Library = () => {
     <SafeAreaView style={Styles.body}>
       <Top />
       <PageTitle title='Your Library'/>
+      <View
+        style={{
+          alignSelf: 'stretch',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '75%',
+          marginBottom: 10
+        }}
+      >
+        <Text style={Styles.infoText}>Coming soon...</Text>
+      </View>
     </SafeAreaView>
   );
 }

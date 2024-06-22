@@ -75,7 +75,7 @@ const DeleteModal = () => {
               />
               <CustomButton 
                 title='Delete'
-                background={Colors.green}
+                background={Colors.main}
                 handlePress={async () => {
                   setShowDelete(false);
                   const newResults = removeSongFromResults(fileResults, deleteSong.uri);

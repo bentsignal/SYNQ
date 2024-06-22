@@ -56,7 +56,7 @@ const WiFi = () => {
         />
         <CustomButton 
           title='Import'
-          background={Colors.green}
+          background={Colors.main}
           handlePress={() => {
             router.replace('/library');
             setHomeState(0);

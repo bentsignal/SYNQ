@@ -175,7 +175,7 @@ const EditModal = () => {
                   />
                   <CustomButton 
                     title='Save'
-                    background={Colors.green}
+                    background={Colors.main}
                     handlePress={() => {
                       setEditLoad(true);
                       setTimeout(() => {

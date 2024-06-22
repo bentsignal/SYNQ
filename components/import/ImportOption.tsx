@@ -5,6 +5,7 @@ type ImportOptionProps = {
   title: string;
   desc: string;
   icon: ImageSourcePropType;
+  disabled: boolean;
   handlePress: () => void;
 }
 
@@ -12,17 +13,18 @@ const ImportOption = ({
   title,
   desc,
   icon,
+  disabled,
   handlePress
 }:ImportOptionProps) => {
   return (
     <TouchableOpacity
-      onPress={handlePress}
+      onPress={disabled ? () => {} : handlePress}
       activeOpacity={1}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
         width: '100%',
-        backgroundColor: Colors.green,
+        backgroundColor: disabled ? Colors.disabled : Colors.main,
         borderRadius: 10,
         padding: 20,
         marginBottom: 10

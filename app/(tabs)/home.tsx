@@ -30,16 +30,25 @@ const Home = () => {
         <Top />
         <PageTitle title='Import Music'/>
         <ImportOption 
-          title='WiFi Transfer'
-          desc='Import from your computer'
-          icon={require('@/assets/icons/wifi.png')}
-          handlePress={() => setHomeState(1)}
-        />
-        <ImportOption 
           title='Files'
           desc='Import from your files'
           icon={require('@/assets/icons/folder.png')}
+          disabled={false}
           handlePress={() => setHomeState(2)}
+        />
+        <ImportOption 
+          title='WiFi Transfer'
+          desc='Import from your computer'
+          icon={require('@/assets/icons/wifi.png')}
+          disabled={true}
+          handlePress={() => {setHomeState(1)}}
+        />
+        <ImportOption 
+          title='Download'
+          desc='Import from the web via URL'
+          icon={require('@/assets/icons/download.png')}
+          disabled={true}
+          handlePress={() => {setHomeState(3)}}
         />
       </SafeAreaView>
     );

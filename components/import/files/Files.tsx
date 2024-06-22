@@ -91,7 +91,7 @@ const Files = () => {
         />
         <CustomButton 
           title='Import'
-          background={Colors.green}
+          background={Colors.main}
           handlePress={() => {
             setImportDisabled(true);
             setLoading(true);

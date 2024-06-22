@@ -11,7 +11,7 @@ export const Styles = StyleSheet.create({
   appName: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: Colors.green,
+    color: Colors.main,
   },
   top: {
     alignSelf: 'stretch',

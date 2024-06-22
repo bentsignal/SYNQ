@@ -20,7 +20,7 @@ const CustomButton = ({
       onPress={handlePress}
       activeOpacity={0.8}
       style={[Styles.buttonContainer, {
-        backgroundColor: disabled ? Colors.disabledButton : background, 
+        backgroundColor: disabled ? Colors.disabled : background, 
         height: 42}
       ]}
       disabled={disabled}

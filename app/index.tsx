@@ -17,7 +17,7 @@ const Welcome = () => {
     >
       <CustomButton 
         title='Begin'
-        background={Colors.green}
+        background={Colors.main}
         handlePress={() => router.replace('home')}
       />
     </SafeAreaView>

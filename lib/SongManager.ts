@@ -1,27 +1,34 @@
 import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
-import { ID3Writer } from 'browser-id3-writer'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
 import { InfoType } from '@/constants/Types'
 import * as ImagePicker from 'expo-image-picker';
-import JSZip from 'jszip'
-import { btoa, atob, toByteArray, fromByteArray } from 'react-native-quick-base64'
-import { APIC } from './node-id3/src/ID3Frames';
+import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 
 export const exportSongs = async (songs: any) => {
-  const zip = new JSZip();
-  for (let i = 0; i < songs.length; i++) {
-    zip.file(songs[i].name, songs[i].data, {base64: true});
+
+  const date = new Date();
+  const dir = `${FileSystem.documentDirectory}${date.getMonth()}-${date.getDate()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`;
+  let destination;
+  
+  await FileSystem.makeDirectoryAsync(dir);
+  
+  if (songs.length === 1) {
+    destination = `${dir}/${songs[0].name}`;
+    await FileSystem.writeAsStringAsync(destination, songs[0].data, {encoding: 'base64'});
+    await Sharing.shareAsync(destination);
   }
-  await zip.generateAsync({type:"base64"}).then(async (content) => {
-    const date = new Date();
-    const fileName = `${date.getMonth()}-${date.getDate()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}.zip`
-    const destination = FileSystem.documentDirectory + fileName
-    await FileSystem.writeAsStringAsync(destination, content, {encoding: 'base64'}).then(async () => {
-      await Sharing.shareAsync(destination)
-    })
-  })
+  else if (songs.length > 1) {
+    for (let i = 0; i < songs.length; i++) {
+      destination = `${dir}/${songs[i].name}`;
+      await FileSystem.writeAsStringAsync(destination, songs[i].data, {encoding: 'base64'});
+    }
+    await Sharing.shareAsync(dir);
+  }
+  
+  await FileSystem.deleteAsync(dir);
+
 }
 
 export const importFiles = async () => {
@@ -148,7 +155,6 @@ export const saveEdits = (
     const mimeType = mimeTypeFull.split(/:(.*)/s)[1]
     // buffer after mimetype and encoding scheme
     const bufferString = artwork.split(/,(.*)/s)[1]
-    console.log(mimeType)
     tags.APIC = {
       description: 'Album Cover',
       imageBuffer: bufferString,

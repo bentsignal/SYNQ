@@ -100,13 +100,17 @@ const Files = () => {
               exportSongs(fileResults).then(() => {
                 setLoading(false);
                 setZipping(false);
-                router.replace('/library');
+                // router.replace('/library');
                 setHomeState(0);
                 setFileResults([]);
               })
               .catch((error) => {
                 console.log(error)
                 console.log('failed to export files')
+                setLoading(false);
+                setZipping(false);
+                setHomeState(0);
+                setFileResults([]);
               })
             }, 1000)
           }}

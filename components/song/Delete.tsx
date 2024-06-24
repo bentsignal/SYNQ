@@ -3,9 +3,6 @@ import { Text, View, Image, FlatList, TouchableOpacity } from 'react-native'
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
-import SongInfo from '@/components/song/SongInfo'
-import CustomButton from '@/components/CustomButton'
-import Cover from '@/components/song/Cover'
 
 const Delete = ({name, uri}: any) => {
   const {showDelete, setShowDelete, showEdit, setShowEdit, setDeleteSong } = useGlobalContext();

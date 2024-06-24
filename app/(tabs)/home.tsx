@@ -1,4 +1,4 @@
-import { Text, View, Image } from "react-native";
+import { Text, View, Image, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 
@@ -13,6 +13,8 @@ import Files from "@/components/import/files/Files";
 import CustomButton from '@/components/CustomButton'
 
 const Home = () => {
+  console.log('app/(tabs)/home')
+  console.log(Dimensions.get('screen').height)
   const { homeState, setHomeState } = useGlobalContext();
   if (homeState === 1) {
     return (

@@ -29,10 +29,12 @@ export const Styles = StyleSheet.create({
     color: Colors.text,
     marginBottom: 20
   },
+  roundedContainer: {
+    borderRadius: 15
+  },
   buttonContainer: {
     width: 100,
     height: 42,
-    borderRadius: 10,
     justifyContent: 'center',
   },
   buttonText: {

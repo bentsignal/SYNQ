@@ -1,12 +1,13 @@
 import { Text, View, TouchableOpacity } from 'react-native'
 import CustomButton from '@/components/CustomButton'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { router } from 'expo-router'
+import { router, Redirect } from 'expo-router'
 
 import { Colors } from '@/constants/Colors'
 
 const Welcome = () => {
-  return (
+  if (true) return <Redirect href='/home/' />
+  else return (
     <SafeAreaView
       style={{
         flex: 1,

@@ -1,6 +1,7 @@
 import { Text, View, Image, ActivityIndicator } from 'react-native'
 import { useEffect, useReducer } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { router } from 'expo-router'
 
 import { useGlobalContext } from '@/context/GlobalProvider'
@@ -74,7 +75,10 @@ const Files = () => {
           flexDirection: 'row',
           justifyContent: 'center',
           alignItems: 'center',
-          gap: 10
+          gap: 10,
+          position: 'absolute',
+          padding: 5,
+          bottom: 10
         }}
       >
         <CustomButton 

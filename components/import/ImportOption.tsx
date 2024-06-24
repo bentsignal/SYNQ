@@ -1,5 +1,6 @@
 import { Text, View, Image, TouchableOpacity, ImageSourcePropType } from 'react-native'
 import { Colors } from '@/constants/Colors'
+import { Styles } from '@/constants/Styles'
 
 type ImportOptionProps = {
   title: string;
@@ -20,15 +21,14 @@ const ImportOption = ({
     <TouchableOpacity
       onPress={disabled ? () => {} : handlePress}
       activeOpacity={1}
-      style={{
+      style={[Styles.roundedContainer, {
         flexDirection: 'row',
         alignItems: 'center',
         width: '100%',
         backgroundColor: disabled ? Colors.disabled : Colors.main,
-        borderRadius: 10,
         padding: 20,
         marginBottom: 10
-      }}
+      }]}
     >
       <Image 
         source={icon} 

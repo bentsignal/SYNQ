@@ -33,7 +33,8 @@ const SongList = (data: any) => {
         renderItem={renderItem}
         keyExtractor={song => song.name}
         style={{
-          width: '100%'
+          width: '100%',
+          paddingRight: 5
         }}
       />
     </View>

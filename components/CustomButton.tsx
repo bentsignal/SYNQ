@@ -19,7 +19,7 @@ const CustomButton = ({
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.8}
-      style={[Styles.buttonContainer, {
+      style={[Styles.buttonContainer, , Styles.roundedContainer, {
         backgroundColor: disabled ? Colors.disabled : background, 
         height: 42}
       ]}

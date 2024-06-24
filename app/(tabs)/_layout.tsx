@@ -1,8 +1,9 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
+import { Dimensions } from 'react-native';
 
 import { HomeIcon, LibraryIcon } from '@/components/TabBarIcons'
 import { Colors } from '@/constants/Colors'
+import { Styles } from '@/constants/Styles'
 
 const TabLayout = () => {
     return (
@@ -11,17 +12,8 @@ const TabLayout = () => {
             headerShown: false,
             tabBarActiveTintColor: Colors.tabActive,
             tabBarInactiveTintColor: Colors.tabInactive,
-            tabBarStyle: {
-              borderTopWidth: 1,
-              borderTopColor: Colors.popup,
-              backgroundColor: Colors.footer,
-              height: '11%',
-              paddingTop: 10
-            },
-            tabBarLabelStyle: {
-              fontSize: 12,
-              fontWeight: 'bold',
-            }
+            tabBarStyle: Styles.tabBar,
+            tabBarLabelStyle: Styles.tabBarLabel
           }}
           sceneContainerStyle={{
             backgroundColor: Colors.background,

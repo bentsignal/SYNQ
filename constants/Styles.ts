@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
 export const Styles = StyleSheet.create({
@@ -7,6 +7,18 @@ export const Styles = StyleSheet.create({
     alignItems: 'center',
     width: '90%',
     margin: 'auto'
+  },
+  tabBar: {
+    borderTopWidth: 1,
+    borderTopColor: Colors.popup,
+    backgroundColor: Colors.footer,
+    height: '11%',
+    paddingTop: 10,
+    paddingBottom: Dimensions.get('screen').height < 700 ? 15 : 30
+  },
+  tabBarLabel: {
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   appName: {
     fontSize: 24,

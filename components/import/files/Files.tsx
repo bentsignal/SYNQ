@@ -38,13 +38,9 @@ const Files = () => {
       }
       return (
         <View
-          style={{
-            alignSelf: 'stretch',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '75%',
-            marginBottom: 10
-          }}
+          style={[Styles.main, {
+            paddingBottom: 50
+          }]}
         >
           {message}
           <ActivityIndicator style={{

@@ -1,4 +1,4 @@
-import { View, FlatList } from 'react-native'
+import { View, FlatList, Dimensions } from 'react-native'
 
 import { Styles } from '@/constants/Styles'
 
@@ -21,7 +21,7 @@ const SongList = (data: any) => {
   return (
     <View
       style={[Styles.main, {
-        paddingBottom: 50
+        paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
       }]}
     >
       <DeleteModal />

@@ -119,7 +119,7 @@ const EditModal = () => {
                     Song Title
                   </Text>
                   <TextInput 
-                    style={Styles.textbox}
+                    style={[Styles.textbox, Styles.roundedContainer]}
                     autoCorrect={false}
                     editable
                     numberOfLines={1}
@@ -133,7 +133,7 @@ const EditModal = () => {
                     Artist
                   </Text>
                   <TextInput
-                    style={Styles.textbox}
+                    style={[Styles.textbox, Styles.roundedContainer]}
                     autoCorrect={false}
                     editable
                     numberOfLines={1}
@@ -147,7 +147,7 @@ const EditModal = () => {
                     Album
                   </Text>
                   <TextInput
-                    style={Styles.textbox}
+                    style={[Styles.textbox, Styles.roundedContainer]}
                     autoCorrect={false}
                     editable
                     numberOfLines={1}

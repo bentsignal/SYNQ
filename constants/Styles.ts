@@ -67,7 +67,6 @@ export const Styles = StyleSheet.create({
   textbox: {
     backgroundColor: Colors.textbox,
     color: Colors.text,
-    borderRadius: 10,
     paddingTop: 15,
     paddingBottom: 15,
     paddingLeft: 20,

@@ -15,7 +15,7 @@ const Library = () => {
       <View
         style={Styles.main}
       >
-        <Text style={Styles.infoText}>Coming soon...</Text>
+        <Text style={Styles.infoText}>Import history will appear here...</Text>
       </View>
     </SafeAreaView>
   );

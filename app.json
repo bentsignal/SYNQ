@@ -12,6 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#101010"
     },
+    "backgroundColor": "#101010",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.directedbyshawn.synk"

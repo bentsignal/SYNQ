@@ -13,8 +13,6 @@ import Files from "@/components/import/files/Files";
 import CustomButton from '@/components/CustomButton'
 
 const Home = () => {
-  console.log('app/(tabs)/home')
-  console.log(Dimensions.get('screen').height)
   const { homeState, setHomeState } = useGlobalContext();
   if (homeState === 1) {
     return (

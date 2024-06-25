@@ -101,6 +101,14 @@ const EditModal = () => {
                         setEditLoad(false);
                       }}
                     />
+                    <Text 
+                      style={[Styles.infoText, {
+                        marginTop: 5,
+                        fontSize: 12
+                      }]
+                    }>
+                      Supports: jpeg/png
+                    </Text>
                     <Text
                       style={{
                         color: 'white',

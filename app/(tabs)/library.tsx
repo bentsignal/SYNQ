@@ -13,13 +13,7 @@ const Library = () => {
       <Top />
       <PageTitle title='Your Library'/>
       <View
-        style={{
-          alignSelf: 'stretch',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '75%',
-          marginBottom: 10
-        }}
+        style={Styles.main}
       >
         <Text style={Styles.infoText}>Coming soon...</Text>
       </View>

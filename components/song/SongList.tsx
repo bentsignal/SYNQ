@@ -1,5 +1,7 @@
 import { View, FlatList } from 'react-native'
 
+import { Styles } from '@/constants/Styles'
+
 import Song, { SongProps } from '@/components/song/Song'
 import DeleteModal from '@/components/modals/Delete'
 import EditModal from '@/components/modals/Edit'
@@ -18,13 +20,9 @@ const renderItem = ({item} : {item: SongProps}) => {
 const SongList = (data: any) => {
   return (
     <View
-      style={{
-        alignSelf: 'stretch',
-        alignItems: 'center',
-        height: '75%',
-        width: '100%',
-        marginBottom: 10
-      }}
+      style={[Styles.main, {
+        paddingBottom: 50
+      }]}
     >
       <DeleteModal />
       <EditModal />

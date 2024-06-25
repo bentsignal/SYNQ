@@ -8,6 +8,12 @@ export const Styles = StyleSheet.create({
     width: '90%',
     margin: 'auto'
   },
+  main: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
   tabBar: {
     borderTopWidth: 1,
     borderTopColor: Colors.popup,

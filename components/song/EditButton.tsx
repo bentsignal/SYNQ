@@ -2,7 +2,7 @@ import { View, Image, TouchableOpacity } from 'react-native'
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { InfoType } from '@/constants/Types';
 
-const Edit = ({name, uri, data, info}: {
+const EditButton = ({name, uri, data, info}: {
   name: string;
   uri: string;
   data: string;
@@ -49,4 +49,4 @@ const Edit = ({name, uri, data, info}: {
   )
 }
 
-export default Edit;
+export default EditButton;

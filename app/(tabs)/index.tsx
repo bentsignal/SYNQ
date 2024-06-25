@@ -11,6 +11,7 @@ import ImportOption from "@/components/import/ImportOption";
 import WiFi from "@/components/import/wifi/WiFi";
 import Files from "@/components/import/files/Files";
 import CustomButton from '@/components/CustomButton'
+import WelcomeModal from "@/components/modals/WelcomeModal";
 
 const Home = () => {
   const { homeState, setHomeState } = useGlobalContext();
@@ -27,6 +28,7 @@ const Home = () => {
   else {
     return (
       <SafeAreaView style={Styles.body}>
+        <WelcomeModal />
         <Top />
         <PageTitle title='Import Music'/>
         <ImportOption 

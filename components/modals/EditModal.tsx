@@ -36,14 +36,7 @@ const EditModal = () => {
         visible={showEdit}
         animationType='slide'
       >
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.95)'
-          }}
-        >
+        <View style={Styles.popupBackdrop}>
           <KeyboardAwareScrollView
             style={{
               width: '100%'
@@ -55,13 +48,9 @@ const EditModal = () => {
             }}
           >
             <View
-              style={{
-                backgroundColor: Colors.popup,
-                justifyContent: 'center',
-                alignItems: 'center',
+              style={[ Styles.popupBody, Styles.roundedContainer, {
                 width: '90%',
-                borderRadius: 10
-              }}
+              }]}
             >
               <View
                 style={{

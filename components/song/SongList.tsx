@@ -3,8 +3,8 @@ import { View, FlatList, Dimensions } from 'react-native'
 import { Styles } from '@/constants/Styles'
 
 import Song, { SongProps } from '@/components/song/Song'
-import DeleteModal from '@/components/modals/Delete'
-import EditModal from '@/components/modals/Edit'
+import DeleteModal from '@/components/modals/DeleteModal'
+import EditModal from '@/components/modals/EditModal'
 
 const renderItem = ({item} : {item: SongProps}) => {
   return (

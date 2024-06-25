@@ -3,6 +3,7 @@ import { Text, View, TouchableOpacity, Modal } from 'react-native'
 import PageTitle from '@/components/PageTitle'
 import CustomButton from '@/components/CustomButton'
 import { Colors } from '@/constants/Colors'
+import { Styles } from '@/constants/Styles'
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { deleteSongFromFiles, removeSongFromResults} from '@/lib/SongManager';
 
@@ -20,23 +21,12 @@ const DeleteModal = () => {
         visible={showDelete}
         animationType='slide'
       >
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.8)'
-          }}
-        >
+        <View style={Styles.popupBackdrop}>
           <View
-            style={{
-              backgroundColor: Colors.popup,
+            style={[Styles.popupBody, Styles.roundedContainer, {
               padding: 20,
-              justifyContent: 'center',
-              alignItems: 'center',
               width: '80%',
-              borderRadius: 10
-            }}
+            }]}
           >
             <Text
               style={{

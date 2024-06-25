@@ -50,6 +50,17 @@ export const Styles = StyleSheet.create({
   roundedContainer: {
     borderRadius: 15
   },
+  popupBackdrop: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.95)'
+  },
+  popupBody: {
+    backgroundColor: Colors.popup,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   buttonContainer: {
     width: 100,
     height: 42,

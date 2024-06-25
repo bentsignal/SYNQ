@@ -5,8 +5,8 @@ import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
 
 import SongInfo from '@/components/song/SongInfo'
-import Edit from '@/components/song/Edit'
-import Delete from '@/components/song/Delete'
+import EditButton from '@/components/song/EditButton'
+import DeleteButton from '@/components/song/DeleteButton'
 import { ListCover } from '@/components/song/Cover'
 
 export type SongProps = {
@@ -40,8 +40,8 @@ const Song = ({name, uri, data, info}: SongProps) => {
     >
       <ListCover info={info}/>
       <SongInfo info={info} name={name}/>
-      <Edit name={name} uri={uri} data={data} info={info}/>
-      <Delete name={name} uri={uri}/>
+      <EditButton name={name} uri={uri} data={data} info={info}/>
+      <DeleteButton name={name} uri={uri}/>
     </View>
   )
 }

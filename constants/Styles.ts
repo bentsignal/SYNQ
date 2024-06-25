@@ -72,7 +72,7 @@ export const Styles = StyleSheet.create({
     textAlign: 'center'
   },
   infoText: {
-    fontSize: 14,
+    fontSize: 16,
     color: Colors.text
   },
   textbox: {

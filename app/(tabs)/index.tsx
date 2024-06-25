@@ -1,6 +1,4 @@
-import { Text, View, Image, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
 import { useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -12,7 +10,6 @@ import Top from "@/components/Top";
 import ImportOption from "@/components/import/ImportOption";
 import WiFi from "@/components/import/wifi/WiFi";
 import Files from "@/components/import/files/Files";
-import CustomButton from '@/components/CustomButton'
 import WelcomeModal from "@/components/modals/WelcomeModal";
 
 const getShowWelcome = async() => {

@@ -1,12 +1,9 @@
-import { Text, View, Modal } from 'react-native'
+import { Text, View, Modal, Image, ScrollView } from 'react-native'
 import CheckBox from 'expo-checkbox'
-import { useEffect } from 'react'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useState } from 'react'
 import CustomButton from '@/components/CustomButton'
-import { newCover, saveEdits } from '@/lib/SongManager'
-import { EditCover } from '@/components/song/Cover'
 import { Colors } from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
 import { useGlobalContext } from '@/context/GlobalProvider';
@@ -29,7 +26,10 @@ const WelcomeModal = () => {
         <View style={Styles.popupBackdrop}>
           <View
             style={[Styles.popupBody, Styles.roundedContainer, {
-              padding: 20,
+              paddingLeft: 10,
+              paddingRight: 10,
+              paddingTop: 20,
+              paddingBottom: 20,
               width: '90%',
             }]}
           >
@@ -42,6 +42,70 @@ const WelcomeModal = () => {
             >
               Welcome
             </Text>
+            <View
+              style={{
+                padding: 15
+              }}
+            >
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  paddingBottom: 10
+                }}
+              >
+                To get started:
+              </Text>
+              <View style={{
+                height: 400,
+              }}>
+                <ScrollView style={{paddingRight: 20}}>
+                  <View style={{paddingBottom: 5}}>
+                    <Text
+                      style={[Styles.infoText, {fontWeight: 'bold'}]}
+                    >
+                      1. Enable local files in Spotify
+                    </Text>
+                    <Text
+                      style={[Styles.infoText, {
+                        paddingLeft: 16,
+                        paddingTop: 5
+                      }]}
+                    >
+                      Spotify → Settings → Local Files ↓
+                    </Text>
+                    <Image 
+                      source={require('@/assets/images/local-files-enable.jpg')}
+                      style={{width: '100%', height: 200}}
+                      resizeMode='contain'
+                    />
+                  </View>
+                  <View>
+                    <Text
+                      style={[Styles.infoText, {fontWeight: 'bold'}]}
+                    >
+                      2. Save your music to:
+                    </Text>
+                    <Image 
+                      source={require('@/assets/images/destination-folder.jpg')}
+                      style={{width: '100%', height: 250}}
+                      resizeMode='contain'
+                    />
+                    <Text
+                      style={[Styles.infoText, {paddingBottom: 40}]}
+                    >
+                      On My iPhone / Spotify / Synced Files
+                    </Text>
+                  </View>
+                </ScrollView>
+                <LinearGradient
+                  style={{position:'absolute', bottom:0, width:'100%', height:50}}
+                  colors={['rgba(24, 24, 24, 0)', 'rgba(24, 24, 24, 1)']}
+                  pointerEvents={'none'}
+                />
+              </View>
+            </View>
             <View
               style={{
                 flexDirection: 'row',

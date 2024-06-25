@@ -1,6 +1,8 @@
 import { Text, View, Image, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import { useEffect } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
@@ -13,7 +15,23 @@ import Files from "@/components/import/files/Files";
 import CustomButton from '@/components/CustomButton'
 import WelcomeModal from "@/components/modals/WelcomeModal";
 
+const getShowWelcome = async() => {
+  return await AsyncStorage.getItem('showWelcome')
+}
+
 const Home = () => {
+
+  const {showWelcome, setShowWelcome} = useGlobalContext();
+
+  useEffect(() => {
+    getShowWelcome().then((value) => {
+      value === 'false' ? setShowWelcome(false) : setShowWelcome(true)
+    })
+    .catch((error) => {
+      setShowWelcome(false)
+    })
+  }, [])
+
   const { homeState, setHomeState } = useGlobalContext();
   if (homeState === 1) {
     return (

@@ -26,6 +26,7 @@ const TabLayout = () => {
                 tabBarIcon: ({ color, focused }) => (
                   <HomeIcon focused={focused}/>
                 ),
+                headerShown: false,
               }}
             />
             <Tabs.Screen 
@@ -34,7 +35,8 @@ const TabLayout = () => {
                 title:'Settings',
                 tabBarIcon: ({ color, focused }) => (
                   <SettingsIcon focused={focused}/>
-                )
+                ),
+                headerShown: false,
               }}
             />
         </Tabs>

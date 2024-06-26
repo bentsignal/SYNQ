@@ -1,5 +1,6 @@
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from 'expo-router'
 
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
@@ -25,7 +26,7 @@ const Library = () => {
         desc="How to import music to Spotify"
         icon={require('@/assets/icons/instructions.png')}
         disabled={false}
-        handlePress={() => {}}
+        handlePress={() => {router.replace('/settings/instructions')}}
       />
     </SafeAreaView>
   );

@@ -8,7 +8,11 @@ import { Colors } from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
 import { useGlobalContext } from '@/context/GlobalProvider';
 
-const WelcomeModal = () => {
+type InstructionsModalProps = {
+  dontShowOption?: boolean;
+}
+
+const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
   const {showWelcome, setShowWelcome} = useGlobalContext();
   const [checked, setChecked] = useState(false);
   return (
@@ -26,8 +30,8 @@ const WelcomeModal = () => {
         <View style={Styles.popupBackdrop}>
           <View
             style={[Styles.popupBody, Styles.roundedContainer, {
-              paddingLeft: 10,
-              paddingRight: 10,
+              // paddingLeft: 5,
+              // paddingRight: 5,
               paddingTop: 20,
               paddingBottom: 20,
               width: '90%',
@@ -40,14 +44,14 @@ const WelcomeModal = () => {
                 fontWeight: 'bold'
               }}
             >
-              Welcome
+              Instructions
             </Text>
             <View
               style={{
                 padding: 15
               }}
             >
-              <Text
+              {/* <Text
                 style={{
                   color: 'white',
                   fontSize: 18,
@@ -56,24 +60,24 @@ const WelcomeModal = () => {
                 }}
               >
                 To get started:
-              </Text>
+              </Text> */}
               <View style={{
                 height: 400,
               }}>
                 <ScrollView style={{paddingRight: 20}}>
                   <View style={{paddingBottom: 5}}>
                     <Text
-                      style={[Styles.infoText, {fontWeight: 'bold'}]}
+                      style={[Styles.infoText, {fontWeight: 'bold', paddingBottom: 5}]}
                     >
                       1. Enable local files in Spotify
                     </Text>
                     <Text
                       style={[Styles.infoText, {
-                        paddingLeft: 16,
+                        // paddingLeft: 16,
                         paddingTop: 5
                       }]}
                     >
-                      Spotify → Settings → Local Files ↓
+                      Spotify → Settings → Local Files
                     </Text>
                     <Image 
                       source={require('@/assets/images/local-files-enable.jpg')}
@@ -83,20 +87,24 @@ const WelcomeModal = () => {
                   </View>
                   <View>
                     <Text
-                      style={[Styles.infoText, {fontWeight: 'bold'}]}
+                      style={[Styles.infoText, {fontWeight: 'bold', paddingBottom: 5}]}
                     >
                       2. Save your music to:
                     </Text>
+                    <Text
+                      style={[Styles.infoText, {paddingBottom: 10, paddingTop: 5}]}
+                    >
+                      On My iPhone → Spotify → Synced Files
+                    </Text>
                     <Image 
                       source={require('@/assets/images/destination-folder.jpg')}
-                      style={{width: '100%', height: 250}}
+                      style={{
+                        width: '100%', 
+                        height: 250,
+                        marginBottom: 40
+                      }}
                       resizeMode='contain'
                     />
-                    <Text
-                      style={[Styles.infoText, {paddingBottom: 40}]}
-                    >
-                      On My iPhone / Spotify / Synced Files
-                    </Text>
                   </View>
                 </ScrollView>
                 <LinearGradient
@@ -106,7 +114,7 @@ const WelcomeModal = () => {
                 />
               </View>
             </View>
-            <View
+            {dontShowOption ? <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'center',
@@ -117,7 +125,7 @@ const WelcomeModal = () => {
             >
               <CheckBox value={checked} onValueChange={setChecked}/>
               <Text style={Styles.infoText}>Don't show again</Text>
-            </View>
+            </View> : <></>}
             <CustomButton 
               title="Close"
               background={Colors.main}
@@ -135,4 +143,4 @@ const WelcomeModal = () => {
   )
 }
 
-export default WelcomeModal;
+export default InstructionsModal;

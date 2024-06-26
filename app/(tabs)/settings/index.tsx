@@ -5,13 +5,17 @@ import { router } from 'expo-router'
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 
+import { useGlobalContext } from '@/context/GlobalProvider'
+import InstructionsModal from "@/components/modals/InstructionsModal";
 import PageTitle from '@/components/PageTitle'
 import Option from "@/components/Option";
 import Top from "@/components/Top";
 
 const Library = () => {
+  const {showWelcome, setShowWelcome} = useGlobalContext();
   return (
     <SafeAreaView style={Styles.body}>
+      <InstructionsModal />
       <Top />
       <PageTitle title='Settings'/>
       {/* <Option 
@@ -26,7 +30,7 @@ const Library = () => {
         desc="How to import music to Spotify"
         icon={require('@/assets/icons/instructions.png')}
         disabled={false}
-        handlePress={() => {router.replace('/settings/instructions')}}
+        handlePress={() => {setShowWelcome(true)}}
       />
     </SafeAreaView>
   );

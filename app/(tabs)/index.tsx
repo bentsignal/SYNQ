@@ -10,7 +10,7 @@ import Top from "@/components/Top";
 import Option from "@/components/Option";
 import WiFi from "@/components/import/wifi/WiFi";
 import Files from "@/components/import/files/Files";
-import WelcomeModal from "@/components/modals/WelcomeModal";
+import InstructionsModal from "@/components/modals/InstructionsModal";
 
 const getShowWelcome = async() => {
   return await AsyncStorage.getItem('showWelcome')
@@ -43,7 +43,7 @@ const Home = () => {
   else {
     return (
       <SafeAreaView style={Styles.body}>
-        <WelcomeModal />
+        <InstructionsModal dontShowOption={true}/>
         <Top />
         <PageTitle title='Import Music'/>
         <Option 

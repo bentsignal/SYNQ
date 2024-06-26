@@ -1,6 +1,7 @@
-import { Text, View, Image, ScrollView, Dimensions } from "react-native";
+import { Text, View, Image, ScrollView, Dimensions, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from "expo-router";
 
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
@@ -13,13 +14,54 @@ const Instructions = () => {
   return (
     <SafeAreaView style={Styles.body}>
       <Top />
-      <PageTitle title='Instructions'/>
+      <View
+        style={{
+          width: '100%',
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginBottom: 20
+        }}
+      >
+        <TouchableOpacity 
+          style={{
+            width: 'auto',
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+          onPress={() => router.replace('settings')}
+        >
+          <Image 
+            source={require('@/assets/icons/back.png')}
+            style={{
+              height: 15,
+              width: 15,
+              marginRight: 5
+            }}
+          />
+          <Text 
+            style={[Styles.infoText, {
+              color: Colors.main
+            }]}
+          >
+            back
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <PageTitle title="Instructions" />
       <View 
         style={[Styles.main, {
           width: '100%',
           paddingBottom: Dimensions.get('screen').height < 700 ? 10 : 0
         }]}>
-          <ScrollView style={{paddingRight: 20, width: '100%'}}>
+          <ScrollView 
+            style={{
+              paddingRight: 0, 
+              width: '100%'
+            }}
+            contentContainerStyle={{
+              justifyContent: 'flex-start'
+            }}
+          >
             <View style={{paddingBottom: 5}}>
               <Text
                 style={[Styles.infoText, {fontWeight: 'bold'}]}
@@ -32,7 +74,7 @@ const Instructions = () => {
                   paddingTop: 5
                 }]}
               >
-                Spotify → Settings → Local Files ↓
+                Spotify → Settings → Local Files
               </Text>
               <Image 
                 source={require('@/assets/images/local-files-enable.jpg')}
@@ -42,20 +84,21 @@ const Instructions = () => {
             </View>
             <View>
               <Text
-                style={[Styles.infoText, {fontWeight: 'bold'}]}
+                style={[Styles.infoText, {fontWeight: 'bold', paddingBottom: 5}]}
               >
                 2. Save your music to:
               </Text>
+              <Text
+                style={[Styles.infoText, {paddingBottom: 10, paddingTop: 5, paddingLeft: 19,}]}
+              >
+                On My iPhone → Spotify → Synced Files
+              </Text>
               <Image 
                 source={require('@/assets/images/destination-folder.jpg')}
-                style={{width: '100%', height: 250}}
+                style={{width: '100%', height: 250, marginBottom: 40}}
                 resizeMode='contain'
               />
-              <Text
-                style={[Styles.infoText, {paddingBottom: 40}]}
-              >
-                On My iPhone / Spotify / Synced Files
-              </Text>
+              
             </View>
           </ScrollView>
           <LinearGradient

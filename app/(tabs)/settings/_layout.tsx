@@ -7,8 +7,11 @@ const StackLayout = () => {
       screenOptions={{
         contentStyle: {
           backgroundColor: Colors.background
-        }
+        },
+        gestureEnabled: true,
+        gestureDirection: 'horizontal'
       }}
+      
     >
       <Stack.Screen 
         name="index"

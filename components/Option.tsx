@@ -23,7 +23,7 @@ const Option = ({
   return (
     <TouchableOpacity
       onPress={disabled ? () => {} : handlePress}
-      activeOpacity={1}
+      activeOpacity={0.9}
       style={[Styles.roundedContainer, {
         flexDirection: 'row',
         alignItems: 'center',

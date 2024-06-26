@@ -10,7 +10,7 @@ const Top = () => {
         </Text>
       </View>
       <Image 
-        source={require('@/assets/icons/gear.png')}
+        source={require('@/assets/icons/synk.png')}
         style={{
           height: 25,
           width: 25,

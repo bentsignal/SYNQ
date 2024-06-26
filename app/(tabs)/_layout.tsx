@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Dimensions } from 'react-native';
 
-import { HomeIcon, LibraryIcon } from '@/components/TabBarIcons'
+import { HomeIcon, LibraryIcon, SettingsIcon } from '@/components/TabBarIcons'
 import { Colors } from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
 
@@ -29,11 +29,11 @@ const TabLayout = () => {
               }}
             />
             <Tabs.Screen 
-              name='library'
+              name='settings'
               options={{
-                title:'Library',
+                title:'Settings',
                 tabBarIcon: ({ color, focused }) => (
-                  <LibraryIcon focused={focused}/>
+                  <SettingsIcon focused={focused}/>
                 )
               }}
             />

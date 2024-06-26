@@ -7,7 +7,7 @@ import { Styles } from "@/constants/Styles";
 import { Colors } from '@/constants/Colors';
 import PageTitle from '@/components/PageTitle';
 import Top from "@/components/Top";
-import ImportOption from "@/components/import/ImportOption";
+import Option from "@/components/Option";
 import WiFi from "@/components/import/wifi/WiFi";
 import Files from "@/components/import/files/Files";
 import WelcomeModal from "@/components/modals/WelcomeModal";
@@ -46,21 +46,21 @@ const Home = () => {
         <WelcomeModal />
         <Top />
         <PageTitle title='Import Music'/>
-        <ImportOption 
+        <Option 
           title='Files'
           desc='Import from your files'
           icon={require('@/assets/icons/folder.png')}
           disabled={false}
           handlePress={() => setHomeState(2)}
         />
-        <ImportOption 
+        <Option 
           title='WiFi Transfer'
           desc='Import from your computer'
           icon={require('@/assets/icons/wifi.png')}
           disabled={true}
           handlePress={() => {setHomeState(1)}}
         />
-        <ImportOption 
+        <Option 
           title='Download'
           desc='Import from the web via URL'
           icon={require('@/assets/icons/download.png')}

@@ -6,7 +6,7 @@ const Top = () => {
     <View style={Styles.top}>
       <View>
         <Text style={Styles.appName}>
-          synk
+          n-synk
         </Text>
       </View>
       <Image 

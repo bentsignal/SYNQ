@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "synk",
-    "slug": "synk",
+    "name": "n-synk",
+    "slug": "n-synk",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "synk",
+    "scheme": "n-synk",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -15,14 +15,14 @@
     "backgroundColor": "#101010",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.directedbyshawn.synk"
+      "bundleIdentifier": "com.directedbyshawn.n-synk"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#101010"
       },
-      "package": "com.directedbyshawn.synk"
+      "package": "com.directedbyshawn.n-synk"
     },
     "web": {
       "bundler": "metro",
@@ -40,7 +40,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "0c63db58-b7a2-4940-9656-0e481632b01b"
+        "projectId": "e0c7f3fa-7112-4713-85b5-5bed857cc5a3"
       }
     }
   }

@@ -1,8 +1,9 @@
 import { Text, View, Image, ActivityIndicator } from 'react-native'
-import { useEffect, useReducer } from 'react'
+import { useEffect, useReducer, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { router } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
@@ -12,13 +13,18 @@ import Top from '@/components/Top'
 import FilesEmpty from '@/components/import/files/FilesEmpty'
 import SongList from '@/components/song/SongList'
 import CustomButton from '@/components/CustomButton'
+import SaveInstructionsModal from '@/components/modals/SaveInstructionsModal';
 import { exportSongs } from '@/lib/SongManager'
+
+const getShowSaveInst = async() => {
+  return await AsyncStorage.getItem('showSaveInst')
+}
 
 const Files = () => {
 
   const { homeState, setHomeState, fileResults, setFileResults,
     importDisabled, setImportDisabled, loading, setLoading,
-    zipping, setZipping, importing, setImporting
+    zipping, setZipping, importing, setImporting, 
   } = useGlobalContext();
 
   const getBody = () => {
@@ -31,7 +37,7 @@ const Files = () => {
           </Text>
       }
       else if (importing) {
-        message=
+        message =
           <Text style={Styles.infoText}>
             Importing your files...
           </Text>
@@ -63,6 +69,7 @@ const Files = () => {
 
   return (
     <SafeAreaView style={Styles.body}>
+      <SaveInstructionsModal dontShowOption={true} />
       <Top />
       <PageTitle title='Import Music' />
       {getBody()}
@@ -90,7 +97,7 @@ const Files = () => {
           }}
         />
         <CustomButton 
-          title='Import'
+          title='Export'
           background={Colors.main}
           handlePress={() => {
             setImportDisabled(true);

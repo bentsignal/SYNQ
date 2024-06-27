@@ -94,7 +94,7 @@ const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
                     <Text
                       style={[Styles.infoText, {paddingBottom: 10, paddingTop: 5}]}
                     >
-                      On My iPhone → Spotify → Synced Files
+                      On My iPhone → Spotify
                     </Text>
                     <Image 
                       source={require('@/assets/images/destination-folder.jpg')}

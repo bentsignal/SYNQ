@@ -24,7 +24,7 @@ const Files = () => {
 
   const { homeState, setHomeState, fileResults, setFileResults,
     importDisabled, setImportDisabled, loading, setLoading,
-    zipping, setZipping, importing, setImporting, 
+    zipping, setZipping, importing, setImporting, setShowSaveInst, 
   } = useGlobalContext();
 
   const getBody = () => {
@@ -71,7 +71,10 @@ const Files = () => {
     <SafeAreaView style={Styles.body}>
       <SaveInstructionsModal dontShowOption={true} />
       <Top />
-      <PageTitle title='Import Music' />
+      <PageTitle 
+        title='Import Music'
+        infoHandler={() => setShowSaveInst(true)}
+      />
       {getBody()}
       <View
         style={{

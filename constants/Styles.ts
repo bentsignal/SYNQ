@@ -45,7 +45,6 @@ export const Styles = StyleSheet.create({
     textAlign: 'left',
     alignSelf: 'stretch',
     color: Colors.text,
-    marginBottom: 20
   },
   roundedContainer: {
     borderRadius: 15

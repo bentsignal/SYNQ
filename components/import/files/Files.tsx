@@ -111,7 +111,7 @@ const Files = () => {
                 setLoading(false);
                 setZipping(false);
                 // router.replace('/library');
-                setHomeState(0);
+                setHomeState(3);
                 setFileResults([]);
               })
               .catch((error) => {
@@ -119,7 +119,7 @@ const Files = () => {
                 console.log('failed to export files')
                 setLoading(false);
                 setZipping(false);
-                setHomeState(0);
+                setHomeState(4);
                 setFileResults([]);
               })
             }, 1000)

@@ -10,6 +10,7 @@ import Top from "@/components/Top";
 import Option from "@/components/Option";
 import WiFi from "@/components/import/wifi/WiFi";
 import Files from "@/components/import/files/Files";
+import { Success, Failure } from "@/components/Outcome";
 import InstructionsModal from "@/components/modals/InstructionsModal";
 
 const getShowWelcome = async() => {
@@ -39,6 +40,16 @@ const Home = () => {
     return (
       <Files />
     );
+  }
+  else if (homeState === 3) {
+    return (
+      <Success />
+    )
+  }
+  else if (homeState === 4) {
+    return (
+      <Failure />
+    )
   }
   else {
     return (

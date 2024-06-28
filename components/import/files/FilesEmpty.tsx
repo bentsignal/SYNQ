@@ -16,7 +16,7 @@ const FilesEmpty = () => {
 
   const { 
     setFileResults, setImportDisabled, setLoading, setImporting,
-    setShowSaveInst, 
+    setShowSaveInst, setHomeState
   } = useGlobalContext();
 
   return (
@@ -62,6 +62,11 @@ const FilesEmpty = () => {
               setImportDisabled(false)
               setFileResults(results)
             }
+          })
+          .catch((error) => {
+            setLoading(false);
+            setImporting(false);
+            setHomeState(4)
           })
         }}
       />

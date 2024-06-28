@@ -5,6 +5,7 @@ import { getAudioMetadata } from '@missingcore/audio-metadata';
 import { InfoType } from '@/constants/Types'
 import * as ImagePicker from 'expo-image-picker';
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
+import { Promise } from 'node-id3';
 
 export const exportSongs = async (songs: any) => {
 

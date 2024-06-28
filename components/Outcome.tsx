@@ -1,6 +1,7 @@
 import { Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import LottieView from 'lottie-react-native'
+import * as Haptics from 'expo-haptics';
 
 import { useGlobalContext } from "@/context/GlobalProvider"
 import Top from "@/components/Top"
@@ -8,8 +9,11 @@ import CustomButton from '@/components/CustomButton'
 import { Styles } from "@/constants/Styles"
 import { Colors } from "@/constants/Colors"
 
-const Failure = () => {
+const Success = () => {
   const {setHomeState} = useGlobalContext();
+  Haptics.notificationAsync(
+    Haptics.NotificationFeedbackType.Success
+  )
   return (
     <SafeAreaView style={Styles.body}>
       <Top />
@@ -31,8 +35,11 @@ const Failure = () => {
   )
 }
 
-const Success = () => {
+const Failure = () => {
   const {setHomeState} = useGlobalContext();
+  Haptics.notificationAsync(
+    Haptics.NotificationFeedbackType.Error
+  )
   return (
     <SafeAreaView style={Styles.body}>
       <Top />
@@ -47,7 +54,7 @@ const Success = () => {
           ERROR
         </Text>
         <Text style={Styles.infoText}>
-          Could not export your songs, try again.
+          Sorry, something went wrong.
         </Text>
         <View
           style={{

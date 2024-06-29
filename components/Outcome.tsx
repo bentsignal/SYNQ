@@ -1,7 +1,9 @@
-import { Text, View } from "react-native"
+import { Text, View, Linking } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import LottieView from 'lottie-react-native'
 import * as Haptics from 'expo-haptics';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as StoreReview from 'expo-store-review'
 
 import { useGlobalContext } from "@/context/GlobalProvider"
 import Top from "@/components/Top"
@@ -25,8 +27,31 @@ const Success = () => {
           style={{flexGrow: 1, width: 100}}
           renderMode={'SOFTWARE'}
           onAnimationFinish={() => {
-            setTimeout(() => {
+            setTimeout(async () => {
               setHomeState(0);
+              let countStr = await AsyncStorage.getItem('importCount')
+              if (countStr) {
+                try {
+                  let count = parseInt(countStr);
+                  count++;
+                  if (count === 10) {
+                    try {
+                      await StoreReview.isAvailableAsync()
+                      await StoreReview.requestReview()
+                    }
+                    catch (error) {
+                      console.log('failed to request app store review')
+                    }
+                  }
+                  await AsyncStorage.setItem('importCount', `${count}`)
+                }
+                catch(error) {
+                  console.log(error)
+                }
+              }
+              else {
+                await AsyncStorage.setItem('importCount', '1');
+              }
             }, 1500)
           }}
         />

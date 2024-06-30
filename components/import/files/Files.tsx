@@ -20,15 +20,7 @@ const getShowSaveInst = async () => {
   return await AsyncStorage.getItem('showSaveInst')
 }
 
-const getImportCount = async () => {
-  return await AsyncStorage.getItem('importCount')
-}
-
 const Files = () => {
-
-  getImportCount().then((count) => {
-    console.log(count)
-  })
 
   const { homeState, setHomeState, fileResults, setFileResults,
     importDisabled, setImportDisabled, loading, setLoading,

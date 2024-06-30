@@ -10,6 +10,11 @@ npm-debug.*
 *.orig.*
 web-build/
 app-example/
+build
+commands.md
+*.gz
+*.tar
+*.ipa
 
 # macOS
 .DS_Store

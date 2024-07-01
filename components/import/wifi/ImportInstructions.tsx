@@ -5,6 +5,7 @@ type ImportInstructionsProps = {
   title: string;
   desc: string;
   icon: ImageSourcePropType;
+  disabled?: boolean;
   handlePress: () => void;
 }
 
@@ -12,17 +13,18 @@ const ImportInstructions = ({
   title,
   desc,
   icon,
+  disabled,
   handlePress
 }:ImportInstructionsProps) => {
   return (
     <TouchableOpacity
       onPress={handlePress}
-      activeOpacity={1}
+      activeOpacity={disabled ? 1 : .9}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
         width: '100%',
-        backgroundColor: Colors.main,
+        backgroundColor: disabled ? Colors.disabled : Colors.main,
         borderRadius: 10,
         padding: 20,
         marginBottom: 10

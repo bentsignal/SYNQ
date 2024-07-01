@@ -1,9 +1,10 @@
-import { Text, View, ActivityIndicator } from 'react-native'
+import { Text, View, ActivityIndicator, Platform } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useEffect, useState } from 'react'
 import * as server from "expo-http-server";
 import * as Network from 'expo-network';
+import Constants from 'expo-constants'
 
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
@@ -13,6 +14,7 @@ import Top from '@/components/Top'
 import ImportOption from '@/components/Option'
 import ImportInstructions from '@/components/import/wifi/ImportInstructions'
 import CustomButton from '@/components/CustomButton'
+import { transferHTML } from '@/static/Transfer';
 
 const getIP = async () => {
   return await Network.getIpAddressAsync();
@@ -24,48 +26,39 @@ const WiFi = () => {
   const [ip, setIP] = useState('0.0.0.0')
   const PORT = 3000
 
-  const html = `
-    <!DOCTYPE html>
-    <html>
-      <body style="background-color:powderblue;">
-        <h1>expo-http-server</h1>
-        <p>You can load HTML!</p>
-      </body>
-    </html>
-  `;
-
-  const obj = { app: "expo-http-server", desc: "You can load JSON!" };
-
   useEffect(() => {
-    getIP().then((value) => {
-      setIP(value)
-    })
-    try {
-      server.setup(PORT, (event: server.StatusEvent) => {
-        if (event.status == 'ERROR') {
-          console.log('server error')
-        }
-        else {
-          console.log('server state inflicted')
-        }
+    if (Constants.appOwnership !== 'expo') {
+      getIP().then((value) => {
+        setIP(value)
       })
-      server.route("/", "GET", async (request: server.RequestEvent) => {
-        console.log("Request", "/html", "GET", request);
-        // setLastCalled(Date.now());
-        return {
-          statusCode: 200,
-          statusDescription: "OK - CUSTOM STATUS",
-          contentType: "text/html",
-          body: html,
+      try {
+        server.setup(PORT, (event: server.StatusEvent) => {
+          if (event.status == 'ERROR') {
+            console.log('server error')
+          }
+          else {
+            console.log('server state inflicted')
+          }
+        })
+        server.route("/", "GET", async (request: server.RequestEvent) => {
+          console.log("Request", "/html", "GET", request);
+          // setLastCalled(Date.now());
+          return {
+            statusCode: 200,
+            statusDescription: "OK - CUSTOM STATUS",
+            contentType: "text/html",
+            body: transferHTML(),
+          };
+        });
+        server.start();
+        return () => {
+          server.stop();
         };
-      });
-      server.start();
-      return () => {
-        server.stop();
-      };
-    }
-    catch (error) {
-      console.log(`ERROR: Couldn't run server: ${error}`)
+      }
+      catch (error) {
+        console.log(`ERROR: Couldn't run server: ${error}`)
+        setHomeState(4);
+      }
     }
   }, [])
 

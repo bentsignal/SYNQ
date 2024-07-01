@@ -34,7 +34,7 @@ const Success = () => {
                 try {
                   let count = parseInt(countStr);
                   count++;
-                  if (count === 10) {
+                  if (count === 4) {
                     try {
                       await StoreReview.isAvailableAsync()
                       await StoreReview.requestReview()

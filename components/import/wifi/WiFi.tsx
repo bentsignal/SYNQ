@@ -69,7 +69,7 @@ const WiFi = () => {
       }
     }
     else {
-      setDisabled(false);
+      setDisabled(true);
     }
   }, [])
 
@@ -78,6 +78,7 @@ const WiFi = () => {
       return (
         <View
           style={[Styles.main, {
+            flexGrow: 1,
             paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
           }]}
         >

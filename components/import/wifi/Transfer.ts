@@ -5,7 +5,6 @@ export const Transfer = () => {
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>n-synk</title>
-          <script type="text/javascript" src="https://livejs.com/live.js"></script>
           <style>
               @charset "UTF-8";
   
@@ -77,12 +76,20 @@ export const Transfer = () => {
   
               button {
                   display: inline-block;
-                  width: 100px;
-                  height: 42px;
                   border-radius: 15px;
                   border: none;
                   font-size: 16px;
-                  font-weight: '400'
+                  font-weight: '400';
+                  width: 100px;
+                  height: 42px;
+              }
+  
+              label {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                height: 100%;
               }
   
               button:hover {

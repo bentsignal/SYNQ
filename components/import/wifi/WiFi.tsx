@@ -49,19 +49,7 @@ const WiFi = () => {
           console.log('server state inflicted')
         }
       })
-      server.route("/", "GET", async (request) => {
-        console.log("Request", "/", "GET", request);
-        // setLastCalled(Date.now());
-        return {
-          statusCode: 200,
-          headers: {
-            "Custom-Header": "Bazinga",
-          },
-          contentType: "application/json",
-          body: JSON.stringify(obj),
-        };
-      });
-      server.route("/html", "GET", async (request: server.RequestEvent) => {
+      server.route("/", "GET", async (request: server.RequestEvent) => {
         console.log("Request", "/html", "GET", request);
         // setLastCalled(Date.now());
         return {

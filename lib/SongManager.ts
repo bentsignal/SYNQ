@@ -35,7 +35,7 @@ export const exportSongs = async (songs: any) => {
 export const importFiles = async () => {
   const results = await DocumentPicker.getDocumentAsync({
     type: "audio/mpeg",
-    multiple: false,
+    multiple: true,
     copyToCacheDirectory: true
   });
   const songs: {}[] = []

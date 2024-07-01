@@ -3,6 +3,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useEffect, useState } from 'react'
 import * as server from "expo-http-server";
+import { Asset } from 'expo-asset'
+import { readAsStringAsync } from 'expo-file-system';
 import * as Network from 'expo-network';
 import Constants from 'expo-constants'
 
@@ -14,10 +16,16 @@ import Top from '@/components/Top'
 import ImportOption from '@/components/Option'
 import ImportInstructions from '@/components/import/wifi/ImportInstructions'
 import CustomButton from '@/components/CustomButton'
-import { transferHTML } from '@/static/Transfer';
 
 const getIP = async () => {
   return await Network.getIpAddressAsync();
+}
+
+const readTransferHTML = async () => {
+  const [{ localUri }] = await Asset.loadAsync(require('@/constants/Transfer.html'))
+  if (localUri) {
+    return await readAsStringAsync(localUri);
+  }
 }
 
 const WiFi = () => {
@@ -35,21 +43,24 @@ const WiFi = () => {
         server.setup(PORT, (event: server.StatusEvent) => {
           if (event.status == 'ERROR') {
             console.log('server error')
+            setHomeState(4);
           }
           else {
             console.log('server state inflicted')
           }
         })
-        server.route("/", "GET", async (request: server.RequestEvent) => {
-          console.log("Request", "/html", "GET", request);
-          // setLastCalled(Date.now());
-          return {
-            statusCode: 200,
-            statusDescription: "OK - CUSTOM STATUS",
-            contentType: "text/html",
-            body: transferHTML(),
-          };
-        });
+        readTransferHTML().then((html) => {
+          server.route("/", "GET", async (request: server.RequestEvent) => {
+            console.log("Request", "/html", "GET", request);
+            // setLastCalled(Date.now());
+            return {
+              statusCode: 200,
+              statusDescription: "OK - CUSTOM STATUS",
+              contentType: "text/html",
+              body: html,
+            };
+          });
+        })
         server.start();
         return () => {
           server.stop();

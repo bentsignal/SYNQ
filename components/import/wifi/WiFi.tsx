@@ -49,18 +49,22 @@ const WiFi = () => {
             console.log('server state inflicted')
           }
         })
-        readTransferHTML().then((html) => {
-          server.route("/", "GET", async (request: server.RequestEvent) => {
-            console.log("Request", "/html", "GET", request);
-            // setLastCalled(Date.now());
-            return {
-              statusCode: 200,
-              statusDescription: "OK - CUSTOM STATUS",
-              contentType: "text/html",
-              body: html,
-            };
-          });
-        })
+        server.route("/", "GET", async (request: server.RequestEvent) => {
+          console.log("Request", "/html", "GET", request);
+          let html;
+          try {
+            html = await readTransferHTML();
+          }
+          catch {
+            html = '<html><p>ERROR: Could not load server<p></html'
+          }
+          return {
+            statusCode: 200,
+            statusDescription: "OK - CUSTOM STATUS",
+            contentType: "text/html",
+            body: html,
+          };
+        });
         server.start();
         return () => {
           server.stop();

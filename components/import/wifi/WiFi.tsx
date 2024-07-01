@@ -16,16 +16,10 @@ import Top from '@/components/Top'
 import ImportOption from '@/components/Option'
 import ImportInstructions from '@/components/import/wifi/ImportInstructions'
 import CustomButton from '@/components/CustomButton'
+import { Transfer } from '@/components/import/wifi/Transfer';
 
 const getIP = async () => {
   return await Network.getIpAddressAsync();
-}
-
-const readTransferHTML = async () => {
-  const [{ localUri }] = await Asset.loadAsync(require('@/constants/Transfer.html'))
-  if (localUri) {
-    return await readAsStringAsync(localUri);
-  }
 }
 
 const WiFi = () => {
@@ -50,19 +44,11 @@ const WiFi = () => {
           }
         })
         server.route("/", "GET", async (request: server.RequestEvent) => {
-          console.log("Request", "/html", "GET", request);
-          let html;
-          try {
-            html = await readTransferHTML();
-          }
-          catch {
-            html = '<html><p>ERROR: Could not load server<p></html'
-          }
           return {
             statusCode: 200,
             statusDescription: "OK - CUSTOM STATUS",
             contentType: "text/html",
-            body: html,
+            body: Transfer(),
           };
         });
         server.start();

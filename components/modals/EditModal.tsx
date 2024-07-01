@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useState } from 'react'
 import CustomButton from '@/components/CustomButton'
+import Loading from '@/components/Loading'
 import { newCover, saveEdits } from '@/lib/SongManager'
 import { EditCover } from '@/components/song/Cover'
 import { Colors } from '@/constants/Colors'
@@ -205,7 +206,8 @@ const EditModal = () => {
                   backgroundColor: 'rgba(0, 0, 0, 0.6)'
                 }}
               >
-                <ActivityIndicator />
+                <Loading height={100} width={200}/>
+                {/* <ActivityIndicator /> */}
               </View>
             </View>
           </KeyboardAwareScrollView>

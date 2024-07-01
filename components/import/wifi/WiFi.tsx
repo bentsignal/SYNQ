@@ -11,11 +11,13 @@ import Constants from 'expo-constants'
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
-import { SongList } from '@/components/song/SongList'
+import SongList from '@/components/song/SongList'
+import Loading from '@/components/Loading'
 import PageTitle from '@/components/PageTitle'
 import Top from '@/components/Top'
 import ImportInstructions from '@/components/import/wifi/ImportInstructions'
 import CustomButton from '@/components/CustomButton'
+
 import { Transfer } from '@/components/import/wifi/Transfer';
 
 const getIP = async () => {
@@ -67,7 +69,7 @@ const WiFi = () => {
       }
     }
     else {
-      setDisabled(true);
+      setDisabled(false);
     }
   }, [])
 
@@ -92,6 +94,7 @@ const WiFi = () => {
       return (
         <View
           style={[Styles.main, {
+            flexGrow: 1,
             paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
           }]}
         >
@@ -100,9 +103,10 @@ const WiFi = () => {
           >
             Songs will appear here once uploaded
           </Text>
-          <ActivityIndicator style={{
+          <Loading height={100} width={200}/>
+          {/* <ActivityIndicator style={{
             padding: 20
-          }}/>
+          }}/> */}
         </View>
       )
     }

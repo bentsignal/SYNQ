@@ -9,6 +9,7 @@ import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
 import PageTitle from '@/components/PageTitle'
+import Loading from '@/components/Loading';
 import Top from '@/components/Top'
 import FilesEmpty from '@/components/import/files/FilesEmpty'
 import SongList from '@/components/song/SongList'
@@ -49,9 +50,10 @@ const Files = () => {
           }]}
         >
           {message}
-          <ActivityIndicator style={{
+          <Loading height={100} width={200}/>
+          {/* <ActivityIndicator style={{
               padding: 20
-          }}/>
+          }}/> */}
         </View>
       )
     }

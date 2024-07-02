@@ -56,7 +56,13 @@ const WiFi = () => {
           };
         });
         server.route("/fileUpload", "POST", async (request: server.RequestEvent) => {
-          console.log(request);
+          const body = JSON.parse(request.body)
+          const name = body.name ? body.name : 'song.mp3'
+          const type = body.type ? body.type : 'audo/mpeg'
+          const data = body.data ? body.data : ''
+          if (data) {
+            console.log(name)
+          }
           return {
             statusCode: 200,
             statusDescription: "OK - FILE RECEIVED",

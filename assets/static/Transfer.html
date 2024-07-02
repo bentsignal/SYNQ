@@ -116,6 +116,7 @@
                 if (event.target.files) {
                   for (let i = 0; i < event.target.files.length; i++) {
                     const name = event.target.files[i].name
+                    const type = event.target.files[i].type
                     const data = await event.target.files[i].text()
                     const b64 = btoa(unescape(encodeURIComponent(data)));
                     try {
@@ -125,7 +126,11 @@
                           'Accept': 'application/json',
                           'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({"name": name, "data": b64})
+                        body: JSON.stringify({
+                          "name": name, 
+                          "type": type,
+                          "data": b64
+                        })
                       })
                     }
                     catch (error) {

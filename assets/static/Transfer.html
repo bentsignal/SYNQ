@@ -112,7 +112,7 @@
         <script>
             document.addEventListener('DOMContentLoaded', () => {
               document.getElementById('browseFiles').addEventListener('change', async (event) => {
-                let endpoint = `${window.location.href}/fileUpload`
+                let endpoint = `${window.location.href}fileUpload`
                 if (event.target.files) {
                   for (let i = 0; i < event.target.files.length; i++) {
                     const name = event.target.files[i].name

@@ -1,6 +1,8 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { readAsStringAsync } from 'expo-file-system';
+import { useAssets } from 'expo-asset';
 
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
@@ -13,13 +15,24 @@ import Files from "@/components/import/files/Files";
 import { Success, Failure } from "@/components/Outcome";
 import InstructionsModal from "@/components/modals/InstructionsModal";
 
-const getShowWelcome = async() => {
+const getShowWelcome = async () => {
   return await AsyncStorage.getItem('showWelcome')
+}
+
+const getTransferPage = async (assets: any) => {
+  return await readAsStringAsync(assets[0].localUri ?? '')
 }
 
 const Home = () => {
 
-  const {showWelcome, setShowWelcome} = useGlobalContext();
+  const {setShowWelcome, setTransferPage} = useGlobalContext();
+  const [assets, error] = useAssets([require("../../assets/static/Transfer.html")]);
+
+  if (assets) {
+    readAsStringAsync(assets[0].localUri ?? '').then((page) => {
+      setTransferPage(page);
+    })
+  }
 
   useEffect(() => {
     getShowWelcome().then((value) => {

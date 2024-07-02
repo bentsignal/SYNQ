@@ -15,6 +15,7 @@ commands.md
 *.gz
 *.tar
 *.ipa
+*.app
 
 # macOS
 .DS_Store

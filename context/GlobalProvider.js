@@ -24,6 +24,7 @@ const GlobalProvider = ({ children }) => {
   const [zipping, setZipping] = useState(false);
   const [importing, setImporting] = useState(false);
   const [editLoad, setEditLoad] = useState(false);
+  const [transferPage, setTransferPage] = useState('<html><body><p>ERROR: Could not load page</p></body></html>');
   return (
     <GlobalContext.Provider
       value={{
@@ -44,6 +45,8 @@ const GlobalProvider = ({ children }) => {
         setShowWelcome,
         showSaveInst, 
         setShowSaveInst,
+        transferPage,
+        setTransferPage,
         
         // edit song 
         editLoad, setEditLoad,

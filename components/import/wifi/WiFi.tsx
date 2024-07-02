@@ -2,8 +2,7 @@ import { Text, View, ActivityIndicator, Dimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useEffect, useState } from 'react'
-// import * as server from "expo-http-server";
-import * as Linking from 'expo-linking'
+import * as server from "expo-http-server";
 import * as WebBrowser from 'expo-web-browser'
 import * as Network from 'expo-network';
 import Constants from 'expo-constants'
@@ -18,45 +17,50 @@ import Top from '@/components/Top'
 import ImportInstructions from '@/components/import/wifi/ImportInstructions'
 import CustomButton from '@/components/CustomButton'
 
-import { Transfer } from '@/components/import/wifi/Transfer';
-
 const getIP = async () => {
   return await Network.getIpAddressAsync();
 }
 
 const WiFi = () => {
 
-  const { homeState, setHomeState, fileResults, setFileResults } = useGlobalContext();
+  const { homeState, setHomeState, fileResults, setFileResults, transferPage } = useGlobalContext();
   const [ip, setIP] = useState('0.0.0.0')
   const [disabled, setDisabled] = useState(false);
   const PORT = 3000
 
   useEffect(() => {
-    if (Constants.appOwnership !== 'expo') {
-      getIP().then((value) => {
-        setIP(value)
-      })
-      .catch((error) => {
+
+    const startServer = async () => {
+      try {
+        setIP(await getIP());
+      }
+      catch {
         setHomeState(4);
-      })
+      }
       try {
         server.setup(PORT, (event: server.StatusEvent) => {
           if (event.status == 'ERROR') {
             console.log('server error')
-            setDisabled(false);
+            setDisabled(true);
           }
           else {
-            console.log('server state inflicted')
             setDisabled(false);
           }
         })
         server.route("/", "GET", async (request: server.RequestEvent) => {
           return {
             statusCode: 200,
-            statusDescription: "OK - CUSTOM STATUS",
+            statusDescription: "OK",
             contentType: "text/html",
-            body: Transfer(),
+            body: transferPage,
           };
+        });
+        server.route("/fileUpload", "POST", async (request: server.RequestEvent) => {
+          console.log(request);
+          return {
+            statusCode: 200,
+            statusDescription: "OK - FILE RECEIVED",
+          }
         });
         server.start();
         return () => {
@@ -68,9 +72,14 @@ const WiFi = () => {
         setDisabled(true);
       }
     }
+
+    if (Constants.appOwnership !== 'expo') {
+      startServer();
+    }
     else {
       setDisabled(true);
     }
+
   }, [])
 
   const getBody = () => {
@@ -143,14 +152,17 @@ const WiFi = () => {
         <CustomButton 
           title='Cancel'
           background={Colors.text}
-          handlePress={() => setHomeState(0)}
+          handlePress={() => {
+            setHomeState(0)
+            server.stop();
+          }}
         />
         <CustomButton 
-          title='Import'
+          title='Export'
           background={Colors.main}
           handlePress={() => {
-            router.replace('/library');
             setHomeState(0);
+            server.stop()
           }}
           disabled={true}
         />

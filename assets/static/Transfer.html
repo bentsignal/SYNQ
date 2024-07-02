@@ -111,21 +111,29 @@
     <body>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-
-                // set form action to upload endpoint
-                // const form = document.getElementById('fileUpload')
-                // form.action = `${window.location.href}/fileUpload`
-
-                document.getElementById('browseFiles').addEventListener('change', (event) => {
-                  if (event.target.files[0]) {
-                    const file = event.target.files[0]
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                      console.log(e.target.result)
+              document.getElementById('browseFiles').addEventListener('change', async (event) => {
+                let endpoint = `${window.location.href}/fileUpload`
+                if (event.target.files) {
+                  for (let i = 0; i < event.target.files.length; i++) {
+                    const name = event.target.files[i].name
+                    const data = await event.target.files[i].text()
+                    const b64 = btoa(unescape(encodeURIComponent(data)));
+                    try {
+                      await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                          'Accept': 'application/json',
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({"name": name, "data": b64})
+                      })
                     }
-                    reader.readAsDataURL(file)
+                    catch (error) {
+                      console.log(`ERROR: Failed to send file`)
+                    }
                   }
-                })
+                }
+              })
             })
         </script>
         <header>

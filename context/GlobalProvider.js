@@ -5,6 +5,7 @@ export const useGlobalContext = () => useContext(GlobalContext);
 
 const GlobalProvider = ({ children }) => {
   const [homeState, setHomeState] = useState(0);
+  const [wifiResults, setWifiResults] = useState([]);
   const [fileResults, setFileResults] = useState([]);
   const [importDisabled, setImportDisabled] = useState(true);
   const [showDelete, setShowDelete] = useState(false);
@@ -32,6 +33,8 @@ const GlobalProvider = ({ children }) => {
         setHomeState,
         fileResults,
         setFileResults,
+        wifiResults, 
+        setWifiResults,
         importDisabled,
         setImportDisabled,
         showDelete, 

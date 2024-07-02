@@ -112,7 +112,6 @@
         <script>
             document.addEventListener('DOMContentLoaded', () => {
               document.getElementById('browseFiles').addEventListener('change', async (event) => {
-                let endpoint = `${window.location.href}fileUpload`
                 if (event.target.files) {
                   for (let i = 0; i < event.target.files.length; i++) {
                     const name = event.target.files[i].name
@@ -120,7 +119,7 @@
                     const data = await event.target.files[i].text()
                     const b64 = btoa(unescape(encodeURIComponent(data)));
                     try {
-                      await fetch(endpoint, {
+                      await fetch(`${window.location.href}fileUpload`, {
                         method: 'POST',
                         headers: {
                           'Accept': 'application/json',

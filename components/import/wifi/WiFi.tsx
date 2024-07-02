@@ -10,6 +10,7 @@ import Constants from 'expo-constants'
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
+import { getWifiInfo, exportSongs } from '@/lib/SongManager'
 import SongList from '@/components/song/SongList'
 import Loading from '@/components/Loading'
 import PageTitle from '@/components/PageTitle'
@@ -23,9 +24,10 @@ const getIP = async () => {
 
 const WiFi = () => {
 
-  const { homeState, setHomeState, fileResults, setFileResults, transferPage } = useGlobalContext();
+  const { homeState, setHomeState, wifiResults, setWifiResults, transferPage } = useGlobalContext();
   const [ip, setIP] = useState('0.0.0.0')
   const [disabled, setDisabled] = useState(false);
+  const [exportDisabled, setExportDisabled] = useState(wifiResults.length > 0 ? false : true);
   const PORT = 3000
 
   useEffect(() => {
@@ -57,11 +59,20 @@ const WiFi = () => {
         });
         server.route("/fileUpload", "POST", async (request: server.RequestEvent) => {
           const body = JSON.parse(request.body)
-          const name = body.name ? body.name : 'song.mp3'
-          const type = body.type ? body.type : 'audo/mpeg'
+          const name = body.name ? body.name : ''
+          const type = body.type ? body.type : ''
           const data = body.data ? body.data : ''
-          if (data) {
-            console.log(name)
+          if (name && type && data) {
+            const info = await getWifiInfo(name, type, data)
+            const results = wifiResults;
+            results.push({
+              'name': name,
+              'uri': 'wifi',
+              'data': data,
+              'info': info
+            })
+            setWifiResults(results);
+            setExportDisabled(false);
           }
           return {
             statusCode: 200,
@@ -101,9 +112,9 @@ const WiFi = () => {
         </View>
       )
     }
-    else if (fileResults.length > 0) {
+    else if (wifiResults.length > 0) {
       return (
-        <SongList songs={fileResults} />
+        <SongList songs={wifiResults} />
       )
     }
     else {
@@ -160,6 +171,7 @@ const WiFi = () => {
           background={Colors.text}
           handlePress={() => {
             setHomeState(0)
+            setWifiResults([]);
             server.stop();
           }}
         />
@@ -167,10 +179,29 @@ const WiFi = () => {
           title='Export'
           background={Colors.main}
           handlePress={() => {
-            setHomeState(0);
+            setExportDisabled(true);
+            setLoading(true);
+            setZipping(true);
+            setTimeout(() => {
+              exportSongs(wifiResults).then(() => {
+                setLoading(false);
+                setZipping(false);
+                // router.replace('/library');
+                setHomeState(3);
+                setWifiResults([]);
+              })
+              .catch((error) => {
+                console.log(error)
+                console.log('failed to export files')
+                setLoading(false);
+                setZipping(false);
+                setHomeState(4);
+                setWifiResults([]);
+              })
+            }, 1000)
             server.stop()
           }}
-          disabled={true}
+          disabled={exportDisabled}
         />
       </View>
     </SafeAreaView>

@@ -2,7 +2,7 @@ import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
-import { InfoType, WifiType } from '@/constants/Types'
+import { InfoType } from '@/constants/Types'
 import * as ImagePicker from 'expo-image-picker';
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 import { Promise } from 'node-id3';
@@ -38,7 +38,7 @@ export const getWifiInfo = async (name: string, type: string, data: string) => {
   const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
   const info = await getAudioMetadata(destination, wantedTags)
   await FileSystem.deleteAsync(destination);
-  return info;
+  return info
 }
 
 export const importFiles = async () => {

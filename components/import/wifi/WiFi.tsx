@@ -26,6 +26,7 @@ const WiFi = () => {
 
   const { homeState, setHomeState, wifiResults, setWifiResults, transferPage } = useGlobalContext();
   const [ip, setIP] = useState('0.0.0.0')
+  const [loading, setLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);
   const [exportDisabled, setExportDisabled] = useState(wifiResults.length > 0 ? false : true);
   const PORT = 3000
@@ -71,6 +72,7 @@ const WiFi = () => {
               'data': data,
               'info': info
             })
+            setLoading(false);
             setWifiResults(results);
             setExportDisabled(false);
           }
@@ -112,12 +114,16 @@ const WiFi = () => {
         </View>
       )
     }
-    else if (wifiResults.length > 0) {
-      return (
-        <SongList songs={wifiResults} />
-      )
-    }
-    else {
+    else if (loading) {
+      let message = <></>
+      if (wifiResults.length == 0) {
+        message = 
+          <Text
+            style={Styles.infoText}
+          >
+            Songs will appear here once uploaded
+          </Text>
+      }
       return (
         <View
           style={[Styles.main, {
@@ -125,16 +131,22 @@ const WiFi = () => {
             paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
           }]}
         >
-          <Text
-            style={Styles.infoText}
-          >
-            Songs will appear here once uploaded
-          </Text>
+          {message}
           <Loading height={100} width={200}/>
           {/* <ActivityIndicator style={{
             padding: 20
           }}/> */}
         </View>
+      )
+    }
+    else if (wifiResults.length > 0) {
+      return (
+        <SongList songs={wifiResults} />
+      )
+    }
+    else {
+      return (
+        <></>
       )
     }
   }
@@ -181,11 +193,11 @@ const WiFi = () => {
           handlePress={() => {
             setExportDisabled(true);
             setLoading(true);
-            setZipping(true);
+            // setZipping(true);
             setTimeout(() => {
               exportSongs(wifiResults).then(() => {
                 setLoading(false);
-                setZipping(false);
+                // setZipping(false);
                 // router.replace('/library');
                 setHomeState(3);
                 setWifiResults([]);
@@ -194,7 +206,7 @@ const WiFi = () => {
                 console.log(error)
                 console.log('failed to export files')
                 setLoading(false);
-                setZipping(false);
+                // setZipping(false);
                 setHomeState(4);
                 setWifiResults([]);
               })

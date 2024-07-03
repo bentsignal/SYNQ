@@ -113,6 +113,11 @@
             document.addEventListener('DOMContentLoaded', () => {
               document.getElementById('browseFiles').addEventListener('change', async (event) => {
                 if (event.target.files) {
+                  const reader = new FileReader()
+                  reader.onload = ((file) => {
+                    console.log(file)
+                  })
+                  reader.readAsDataURL(event.target.files[0])
                   for (let i = 0; i < event.target.files.length; i++) {
                     const name = event.target.files[i].name
                     const type = event.target.files[i].type

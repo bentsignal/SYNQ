@@ -63,10 +63,11 @@ export const importFiles = async () => {
         })
       songs.push({
         'name': results.assets[i].name,
-        'uri': results.assets[i].uri,
+        'id': idgen(10),
         'data': data,
         'info': info
       })
+      await FileSystem.deleteAsync(results.assets[i].uri)
     }
     return songs
   }
@@ -75,22 +76,17 @@ export const importFiles = async () => {
   }
 }
 
-export const deleteSongFromFiles = async (uri: string) => {
-  await FileSystem.deleteAsync(uri)
-}
-
-export const removeSongFromResults = (
+export const removeSong = (
   results: [{
     name?: string;
-    data?: string;
-    uri?: string;
+    id?: string;
     info?: InfoType
   }],
-  uri: string
+  id: string
 ) => {
   let newResults = [];
   for (let i = 0; i < results.length; i++) {
-    if (results[i].uri && results[i].uri != uri) {
+    if (results[i].id && results[i].id !== id) {
       newResults.push(results[i]);
     }
   }
@@ -159,7 +155,7 @@ export const saveEdits = (
     tags.album = album
   }
   if (artwork) {
-    // really stupid way to extract either image/png or image/jpeg from start of string
+    // really questionable way to extract mime from start of string
     const infoString = artwork.split(/,(.*)/s)[0]
     const mimeTypeFull = infoString.split(/;(.*)/s)[0]
     const mimeType = mimeTypeFull.split(/:(.*)/s)[1]
@@ -190,6 +186,10 @@ export const saveEdits = (
   
 }
 
-export const fn = (data: any) => {
-  return data !== undefined;
+export const idgen = (len: number) => {
+  let result = '';
+  for (let i = 0; i < len; i++) {
+    result += Math.floor(Math.random()*10).toString();
+  }
+  return result;
 }

@@ -2,9 +2,9 @@ import { View, Image, TouchableOpacity } from 'react-native'
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { InfoType } from '@/constants/Types';
 
-const EditButton = ({name, uri, data, info}: {
+const EditButton = ({name, id, data, info}: {
   name: string;
-  uri: string;
+  id: string;
   data: string;
   info: InfoType;
 }) => {
@@ -12,15 +12,15 @@ const EditButton = ({name, uri, data, info}: {
     setEditSong, setShowEdit, 
     setEditTitle, setEditArtist, 
     setEditAlbum, setEditArtwork,
-    setEditFilename, setEditURI,
+    setEditFilename, setEditID,
     setEditData, setEditLoad
    } = useGlobalContext();
   return (
     <TouchableOpacity
       onPress={() => {
-        setEditSong({name, uri, data, info})
+        setEditSong({name, id, data, info})
         setEditFilename(name);
-        setEditURI(uri);
+        setEditID(id);
         setEditData(data);
         setEditTitle(info.metadata?.name ? info.metadata.name : '')
         setEditArtist(info.metadata?.artist ? info.metadata.artist : '')

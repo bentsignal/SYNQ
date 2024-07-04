@@ -23,7 +23,7 @@ const getShowSaveInst = async () => {
 
 const Files = () => {
 
-  const { homeState, setHomeState, fileResults, setFileResults,
+  const { homeState, setHomeState, results, setResults,
     importDisabled, setImportDisabled, loading, setLoading,
     zipping, setZipping, importing, setImporting, setShowSaveInst, 
   } = useGlobalContext();
@@ -57,9 +57,9 @@ const Files = () => {
         </View>
       )
     }
-    else if (fileResults.length > 0) {
+    else if (results.length > 0) {
       return (
-        <SongList songs={fileResults} />
+        <SongList songs={results} />
       )
     }
     else {
@@ -97,7 +97,7 @@ const Files = () => {
             setZipping(false);
             setImporting(false);
             setHomeState(0)
-            setFileResults([])
+            setResults([])
             setImportDisabled(true)
           }}
         />
@@ -109,12 +109,12 @@ const Files = () => {
             setLoading(true);
             setZipping(true);
             setTimeout(() => {
-              exportSongs(fileResults).then(() => {
+              exportSongs(results).then(() => {
                 setLoading(false);
                 setZipping(false);
                 // router.replace('/library');
                 setHomeState(3);
-                setFileResults([]);
+                setResults([]);
               })
               .catch((error) => {
                 console.log(error)
@@ -122,7 +122,7 @@ const Files = () => {
                 setLoading(false);
                 setZipping(false);
                 setHomeState(4);
-                setFileResults([]);
+                setResults([]);
               })
             }, 1000)
           }}

@@ -15,7 +15,7 @@ const getShowSaveInst = async() => {
 const FilesEmpty = () => {
 
   const { 
-    setFileResults, setImportDisabled, setLoading, setImporting,
+    setResults, setImportDisabled, setLoading, setImporting,
     setShowSaveInst, setHomeState
   } = useGlobalContext();
 
@@ -60,7 +60,7 @@ const FilesEmpty = () => {
                 setShowSaveInst(false)
               })
               setImportDisabled(false)
-              setFileResults(results)
+              setResults(results)
             }
           })
           .catch((error) => {

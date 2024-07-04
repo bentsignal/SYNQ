@@ -6,7 +6,7 @@ export const useGlobalContext = () => useContext(GlobalContext);
 const GlobalProvider = ({ children }) => {
   const [homeState, setHomeState] = useState(0);
   const [wifiResults, setWifiResults] = useState([]);
-  const [fileResults, setFileResults] = useState([]);
+  const [results, setResults] = useState([]);
   const [importDisabled, setImportDisabled] = useState(true);
   const [showDelete, setShowDelete] = useState(false);
   const [deleteSong, setDeleteSong] = useState({});
@@ -15,7 +15,7 @@ const GlobalProvider = ({ children }) => {
   const [showSaveInst, setShowSaveInst] = useState(false);
   const [editSong, setEditSong] = useState({});
   const [editFilename, setEditFilename] = useState('');
-  const [editURI, setEditURI] = useState('');
+  const [editID, setEditID] = useState('');
   const [editData, setEditData] = useState('');
   const [editTitle, setEditTitle] = useState('');
   const [editArtist, setEditArtist] = useState('');
@@ -29,10 +29,15 @@ const GlobalProvider = ({ children }) => {
   return (
     <GlobalContext.Provider
       value={{
+
+        // home page state, between values 
         homeState,
         setHomeState,
-        fileResults,
-        setFileResults,
+
+        // song data during import phase
+        results,
+        setResults,
+        
         wifiResults, 
         setWifiResults,
         importDisabled,
@@ -54,7 +59,7 @@ const GlobalProvider = ({ children }) => {
         // edit song 
         editLoad, setEditLoad,
         editFilename, setEditFilename,
-        editURI, setEditURI,
+        editID, setEditID,
         editData, setEditData,
         editTitle, setEditTitle,
         editArtist, setEditArtist,

@@ -13,10 +13,10 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 const EditModal = () => {
   
   const { 
-    fileResults, setFileResults,
+    results, setResults,
     showEdit, setShowEdit, editSong,
     editFilename, setEditFilename,
-    editURI, setEditURI,
+    editID, setEditID,
     editData, setEditData,
     editTitle, setEditTitle,
     editArtist, setEditArtist,
@@ -178,15 +178,15 @@ const EditModal = () => {
                       setEditLoad(true);
                       setTimeout(() => {
                         const newResults = saveEdits(
-                          fileResults,
-                          editURI,
+                          results,
+                          editID,
                           editData,
                           editTitle,
                           editArtist,
                           editAlbum,
                           editArtwork
                         )
-                        setFileResults(newResults);
+                        setResults(newResults);
                         setEditLoad(false);
                         setShowEdit(false);
                       }, 1000)

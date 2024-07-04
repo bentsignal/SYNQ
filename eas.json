@@ -10,6 +10,10 @@
         "simulator": true
       }
     },
+    "development-c": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
     "development": {
       "distribution": "internal"
     },

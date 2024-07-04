@@ -24,7 +24,7 @@ const getShowSaveInst = async () => {
 const Files = () => {
 
   const { homeState, setHomeState, results, setResults,
-    importDisabled, setImportDisabled, loading, setLoading,
+    exportDisabled, setExportDisabled, loading, setLoading,
     zipping, setZipping, importing, setImporting, setShowSaveInst, 
   } = useGlobalContext();
 
@@ -98,14 +98,14 @@ const Files = () => {
             setImporting(false);
             setHomeState(0)
             setResults([])
-            setImportDisabled(true)
+            setExportDisabled(true)
           }}
         />
         <CustomButton 
           title='Export'
           background={Colors.main}
           handlePress={() => {
-            setImportDisabled(true);
+            setExportDisabled(true);
             setLoading(true);
             setZipping(true);
             setTimeout(() => {
@@ -126,7 +126,7 @@ const Files = () => {
               })
             }, 1000)
           }}
-          disabled={importDisabled}
+          disabled={exportDisabled}
         />
       </View>
     </SafeAreaView>

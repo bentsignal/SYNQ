@@ -8,7 +8,23 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { removeSong } from '@/lib/SongManager';
 
 const DeleteModal = () => {
-  const { showDelete, setShowDelete, deleteSong, results, setResults, setImportDisabled} = useGlobalContext();
+  
+  const { 
+    
+    // show/hide modal
+    showDelete, setShowDelete, 
+
+    // song to be deleted
+    deleteSong, 
+
+    // all songs being imported
+    results, setResults, 
+
+    // allow export of files
+    setExportDisabled
+    
+  } = useGlobalContext();
+
   return (
     <View
       style={{
@@ -70,7 +86,7 @@ const DeleteModal = () => {
                   setShowDelete(false);
                   const newResults = removeSong(results, deleteSong.id);
                   if (newResults.length <= 0) {
-                    setImportDisabled(true);
+                    setExportDisabled(true);
                   }
                   setResults(newResults);
                 }}

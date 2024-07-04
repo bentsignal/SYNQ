@@ -2,7 +2,7 @@ import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
-import { InfoType } from '@/constants/Types'
+import { InfoType, SongType } from '@/constants/Types'
 import * as ImagePicker from 'expo-image-picker';
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 import { Promise } from 'node-id3';
@@ -77,11 +77,7 @@ export const importFiles = async () => {
 }
 
 export const removeSong = (
-  results: [{
-    name?: string;
-    id?: string;
-    info?: InfoType
-  }],
+  results: [SongType],
   id: string
 ) => {
   let newResults = [];
@@ -119,13 +115,8 @@ export const newCover = async () => {
 }
 
 export const saveEdits = (
-  results: [{
-    name?: string;
-    data: string;
-    uri?: string;
-    info: InfoType
-  }],
-  uri: string,
+  results: [SongType],
+  id: string,
   data: string,
   title: string,
   artist: string,
@@ -170,7 +161,7 @@ export const saveEdits = (
   }
   const newData = fromByteArray(NodeID3.writeExpo(toByteArray(data), tags))
   for (let i = 0; i < results.length; i++) {
-    if (results[i].uri && results[i].uri == uri) {
+    if (results[i].id && results[i].id == id) {
       results[i].data = newData
       if (results[i].info) {
         results[i].info.metadata = {
@@ -192,4 +183,8 @@ export const idgen = (len: number) => {
     result += Math.floor(Math.random()*10).toString();
   }
   return result;
+}
+
+export const maybeString = (value: any) => {
+  return value ? value : ''
 }

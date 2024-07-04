@@ -1,31 +1,28 @@
 import { View, Image, TouchableOpacity } from 'react-native'
 import { useGlobalContext } from '@/context/GlobalProvider'
-import { InfoType } from '@/constants/Types';
+import { SongType } from '@/constants/Types';
 
-const EditButton = ({name, id, data, info}: {
-  name: string;
-  id: string;
-  data: string;
-  info: InfoType;
-}) => {
-  const { 
-    setEditSong, setShowEdit, 
-    setEditTitle, setEditArtist, 
-    setEditAlbum, setEditArtwork,
-    setEditFilename, setEditID,
-    setEditData, setEditLoad
-   } = useGlobalContext();
+const EditButton = ({name, id, data, info}: SongType) => {
+
+  const {
+    
+    // song to be edited in modal
+    setEditSong, 
+    
+    // show/hide modal
+    setShowEdit
+    
+  } = useGlobalContext();
+  
   return (
     <TouchableOpacity
       onPress={() => {
-        setEditSong({name, id, data, info})
-        setEditFilename(name);
-        setEditID(id);
-        setEditData(data);
-        setEditTitle(info.metadata?.name ? info.metadata.name : '')
-        setEditArtist(info.metadata?.artist ? info.metadata.artist : '')
-        setEditAlbum(info.metadata?.album ? info.metadata.album : '')
-        setEditArtwork(info.metadata?.artwork ? info.metadata.artwork : '')
+        setEditSong({
+          "name": name, 
+          "id": id, 
+          "data": data, 
+          "info": info
+        })
         setShowEdit(true);
       }}
     >

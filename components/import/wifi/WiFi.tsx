@@ -10,7 +10,8 @@ import Constants from 'expo-constants'
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
-import { getWifiInfo, exportSongs } from '@/lib/SongManager'
+import { getWifiInfo, exportSongs, idgen } from '@/lib/SongManager'
+import Transfer from '@/assets/static/Transfer';
 import SongList from '@/components/song/SongList'
 import Loading from '@/components/Loading'
 import PageTitle from '@/components/PageTitle'
@@ -24,11 +25,18 @@ const getIP = async () => {
 
 const WiFi = () => {
 
-  const { homeState, setHomeState, wifiResults, setWifiResults, transferPage } = useGlobalContext();
+  const { 
+
+    homeState, setHomeState, 
+    results, setResults, 
+    transferPage 
+
+  } = useGlobalContext();
+
   const [ip, setIP] = useState('0.0.0.0')
   const [loading, setLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);
-  const [exportDisabled, setExportDisabled] = useState(wifiResults.length > 0 ? false : true);
+  const [exportDisabled, setExportDisabled] = useState(results.length > 0 ? false : true);
   const PORT = 3000
 
   useEffect(() => {
@@ -55,7 +63,7 @@ const WiFi = () => {
             statusCode: 200,
             statusDescription: "OK",
             contentType: "text/html",
-            body: transferPage,
+            body: Transfer(),
           };
         });
         server.route("/fileUpload", "POST", async (request: server.RequestEvent) => {
@@ -63,17 +71,17 @@ const WiFi = () => {
           const name = body.name ? body.name : ''
           const type = body.type ? body.type : ''
           const data = body.data ? body.data : ''
-          if (name && type && data) {
+          if (name && type == 'audio/mpeg' && data) {
             const info = await getWifiInfo(name, type, data)
-            const results = wifiResults;
+            const newResults = results;
             results.push({
               'name': name,
-              'uri': 'wifi',
+              'id': idgen(10),
               'data': data,
               'info': info
             })
             setLoading(false);
-            setWifiResults(results);
+            setResults(newResults);
             setExportDisabled(false);
           }
           return {
@@ -116,7 +124,7 @@ const WiFi = () => {
     }
     else if (loading) {
       let message = <></>
-      if (wifiResults.length == 0) {
+      if (results.length == 0) {
         message = 
           <Text
             style={Styles.infoText}
@@ -133,15 +141,12 @@ const WiFi = () => {
         >
           {message}
           <Loading height={100} width={200}/>
-          {/* <ActivityIndicator style={{
-            padding: 20
-          }}/> */}
         </View>
       )
     }
-    else if (wifiResults.length > 0) {
+    else if (results.length > 0) {
       return (
-        <SongList songs={wifiResults} />
+        <SongList songs={results} />
       )
     }
     else {
@@ -183,7 +188,7 @@ const WiFi = () => {
           background={Colors.text}
           handlePress={() => {
             setHomeState(0)
-            setWifiResults([]);
+            setResults([]);
             server.stop();
           }}
         />
@@ -193,25 +198,21 @@ const WiFi = () => {
           handlePress={() => {
             setExportDisabled(true);
             setLoading(true);
-            // setZipping(true);
             setTimeout(() => {
-              exportSongs(wifiResults).then(() => {
+              exportSongs(results).then(() => {
                 setLoading(false);
-                // setZipping(false);
-                // router.replace('/library');
                 setHomeState(3);
-                setWifiResults([]);
+                setResults([]);
               })
               .catch((error) => {
                 console.log(error)
                 console.log('failed to export files')
                 setLoading(false);
-                // setZipping(false);
                 setHomeState(4);
-                setWifiResults([]);
+                setResults([]);
               })
             }, 1000)
-            server.stop()
+            // server.stop() seems to be the cause of the app crashing
           }}
           disabled={exportDisabled}
         />

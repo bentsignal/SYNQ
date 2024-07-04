@@ -119,8 +119,9 @@
                     const data = await event.target.files[i].text()
                     console.log(data)
                     const b64 = btoa(unescape(encodeURIComponent(data)));
+                    const endpoint = window.location.href + 'fileUpload'
                     try {
-                      await fetch(`${window.location.href}fileUpload`, {
+                      await fetch(endpoint, {
                         method: 'POST',
                         headers: {
                           'Accept': 'application/json',
@@ -134,7 +135,7 @@
                       })
                     }
                     catch (error) {
-                      console.log(`ERROR: Failed to send file`)
+                      console.log('ERROR: Failed to send file')
                     }
                   }
                 }

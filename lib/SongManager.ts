@@ -33,7 +33,7 @@ export const exportSongs = async (songs: any) => {
 }
 
 export const getWifiInfo = async (name: string, type: string, data: string) => {
-  const destination = `${FileSystem.documentDirectory}/${name}`
+  const destination = `${FileSystem.documentDirectory}${name}`
   await FileSystem.writeAsStringAsync(destination, data, {encoding: 'base64'})
   const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
   const info = await getAudioMetadata(destination, wantedTags)

@@ -34,7 +34,9 @@
       [
         "expo-asset", 
         {
-          "assets": ["./assets/static/Transfer.html"]
+          "assets": [
+            "./assets/static/Transfer.html"
+          ]
         }
       ]
     ],

@@ -28,8 +28,7 @@ const WiFi = () => {
   const { 
 
     homeState, setHomeState, 
-    results, setResults, 
-    transferPage 
+    results, setResults
 
   } = useGlobalContext();
 
@@ -58,6 +57,7 @@ const WiFi = () => {
             setDisabled(false);
           }
         })
+        
         server.route("/", "GET", async (request: server.RequestEvent) => {
           return {
             statusCode: 200,
@@ -66,6 +66,20 @@ const WiFi = () => {
             body: Transfer(),
           };
         });
+        server.route("/startTransfer", "POST", async (request: server.RequestEvent) => {
+          /* 
+          
+            TODO: LOCAL STATE FOR RESULTS, ONLY UPDATE GLOBAL STATE ONCE
+            /endTransfer endpoint is called
+
+          */
+          const body = JSON.parse(request.body)
+          const count = body.count ? body.count : 0
+          return {
+            statusCode: 200,
+            statusDescription: 'OK - READY TO TRANSFER'
+          }
+        })
         server.route("/fileUpload", "POST", async (request: server.RequestEvent) => {
           const body = JSON.parse(request.body)
           const name = body.name ? body.name : ''

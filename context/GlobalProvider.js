@@ -14,6 +14,7 @@ const GlobalProvider = ({ children }) => {
   const [showEdit, setShowEdit] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
   const [showSaveInst, setShowSaveInst] = useState(false);
+  const [selectedId, setSelectedId] = useState('');
   const [editSong, setEditSong] = useState({});
   const [loading, setLoading] = useState(false);
   const [zipping, setZipping] = useState(false);
@@ -56,7 +57,9 @@ const GlobalProvider = ({ children }) => {
         zipping, 
         setZipping,
         importing,
-        setImporting
+        setImporting,
+        selectedId, 
+        setSelectedId
       }}
     >
       {children}

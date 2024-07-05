@@ -28,7 +28,8 @@ const WiFi = () => {
   const { 
 
     homeState, setHomeState, 
-    results, setResults
+    results, setResults,
+    setSelectedId
 
   } = useGlobalContext();
 
@@ -70,7 +71,7 @@ const WiFi = () => {
           /* 
           
             TODO: LOCAL STATE FOR RESULTS, ONLY UPDATE GLOBAL STATE ONCE
-            /endTransfer endpoint is called
+            /endTransfer endpoint is calleddisa
 
           */
           const body = JSON.parse(request.body)
@@ -85,17 +86,20 @@ const WiFi = () => {
           const name = body.name ? body.name : ''
           const type = body.type ? body.type : ''
           const data = body.data ? body.data : ''
+          console.log(body)
           if (name && type == 'audio/mpeg' && data) {
-            const info = await getWifiInfo(name, type, data)
+            const id = idgen(10);
+            const info = await getWifiInfo(name, id, type, data)
             const newResults = results;
             results.push({
               'name': name,
-              'id': idgen(10),
+              'id': id,
               'data': data,
               'info': info
             })
             setLoading(false);
             setResults(newResults);
+            setSelectedId(id);
             setExportDisabled(false);
           }
           return {

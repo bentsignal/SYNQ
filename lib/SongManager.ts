@@ -16,6 +16,7 @@ export const exportSongs = async (songs: any) => {
   
   if (songs.length === 1) {
     destination = `${dir}/${songs[0].name}`;
+    console.log(songs[0].data)
     await FileSystem.writeAsStringAsync(destination, songs[0].data, {encoding: 'base64'});
     await Sharing.shareAsync(destination);
   }
@@ -36,12 +37,23 @@ export const getWifiInfo = async (name: string, id: string, type: string, data: 
     const destination = `${FileSystem.documentDirectory}${id}${name}`
     await FileSystem.writeAsStringAsync(destination, data, {encoding: 'base64'})
     const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
+    // return {
+    //   "fileType": "audio/mpeg",
+    //   "format": "mp3",
+    //   "metadata": {
+    //     "album": "Test Album",
+    //     "artist": "Test Artist",
+    //     "artwork": "",
+    //     "name": "Test Song"
+    //   }
+    // }
     const info = await getAudioMetadata(destination, wantedTags)
     await FileSystem.deleteAsync(destination);
     return info
   }
-  catch {
+  catch (error) {
     console.log(`ERROR: Could not read tags for: ${name} with id: ${id}`)
+    console.log(`More info: ${error}`)
     return null;
   }
 }

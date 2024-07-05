@@ -82,10 +82,10 @@ const WiFi = () => {
           const body = JSON.parse(request.body)
           const name = body.name ? body.name : ''
           const type = body.type ? body.type : ''
-          const buffer = body.data ? new Uint8Array(body.data) : new Uint8Array();
-          console.log(buffer)
-          const b64 = fromByteArray(buffer);
-          console.log(b64);
+          const b64 = body.data ? body.data : ''
+          // const buffer = body.data ? Uint8Array.from(body.data) : new Uint8Array([]);
+          // console.log(buffer)
+          // const b64 = fromByteArray(buffer);
           if (name && type == 'audio/mpeg' && b64) {
             const id = idgen(10);
             const info = await getWifiInfo(name, id, type, b64)
@@ -105,7 +105,7 @@ const WiFi = () => {
           }
           return {
             statusCode: 200,
-            statusDescription: "OK - FILE RECEIVED",
+            statusDescription: `OK - ${name} RECEIVED`,
           }
         });
         server.start();

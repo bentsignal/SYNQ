@@ -113,50 +113,57 @@
             document.addEventListener('DOMContentLoaded', () => {
               document.getElementById('browseFiles').addEventListener('change', async (event) => {
                 if (event.target.files) {
-                  const startEndpoint = window.location.href + 'startTransfer'
-                  fetch(startEndpoint, {
-                    method: 'POST',
-                    headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                      "size": event.target.files.length
-                    })
-                  })
-                  .then((response) => {
-                    console.log('App says transfer good to go')
-                  })
-                  let file;
-                  for (let i = 0; i < event.target.files.length; i++) {
-                    file = event.target.files[i]
-                    const name = file.name
-                    const type = file.type
-                    const blob = new Blob( [file], { type: type } )
-                    const arrayBuffer = await blob.arrayBuffer()
-                    const byteArray = new Uint8Array(arrayBuffer);
-                    // const b64 = btoa(String.fromCharCode.apply(null, byteArray));
-                    // console.log(b64);
-                    // const data = await file.text()
-                    // const b64 = btoa(unescape(encodeURIComponent(data)));
-                    const transferEndpoint = window.location.href + 'fileUpload'
-                    try {
-                      await fetch(transferEndpoint, {
-                        method: 'POST',
-                        headers: {
-                          'Accept': 'application/json',
-                          'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                          "name": name, 
-                          "type": type,
-                          "data": byteArray
-                        })
+                  try {
+                    const startEndpoint = window.location.href + 'startTransfer'
+                    const startResponse = await fetch(startEndpoint, {
+                      method: 'POST',
+                      headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({
+                        "size": event.target.files.length
                       })
+                    })
+                    console.log('Server: ' + startResponse.statusText)
+                    let file;
+                    for (let i = 0; i < event.target.files.length; i++) {
+                      file = event.target.files[i]
+                      const name = file.name
+                      const type = file.type
+                      const blob = new Blob( [file], { type: type } )
+                      const arrayBuffer = await blob.arrayBuffer()
+                      const byteArray = new Uint8Array(arrayBuffer);
+                      const b64 = btoa(byteArray.reduce((data, byte) => {
+                        return data + String.fromCharCode(byte);
+                      }, ''));
+                      // const b64 = btoa(String.fromCharCode.apply(null, byteArray));
+                      // const data = await file.text()
+                      // const b64 = btoa(unescape(encodeURIComponent(data)));
+                      console.log('Sending file ' + name)
+                      const transferEndpoint = window.location.href + 'fileUpload'
+                      try {
+                        const sendResponse = await fetch(transferEndpoint, {
+                          method: 'POST',
+                          headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            "name": name, 
+                            "type": type,
+                            "data": b64
+                          })
+                        })
+                        console.log('Server: ' + sendResponse.statusText)
+                      }
+                      catch (error) {
+                        console.log('Error: Could not send file. More info: ' + error)
+                      }
                     }
-                    catch (error) {
-                      console.log('ERROR: Failed to send file')
-                    }
+                  }
+                  catch (error) {
+                    console.log(error)
                   }
                 }
               })

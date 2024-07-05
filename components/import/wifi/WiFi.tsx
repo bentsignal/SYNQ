@@ -6,11 +6,12 @@ import * as server from "expo-http-server";
 import * as WebBrowser from 'expo-web-browser'
 import * as Network from 'expo-network';
 import Constants from 'expo-constants'
+import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
-import { getWifiInfo, exportSongs, idgen } from '@/lib/SongManager'
+import { getWifiInfo, exportSongs, idgen} from '@/lib/SongManager'
 import Transfer from '@/assets/static/Transfer';
 import SongList from '@/components/song/SongList'
 import Loading from '@/components/Loading'
@@ -36,6 +37,7 @@ const WiFi = () => {
   const [ip, setIP] = useState('0.0.0.0')
   const [loading, setLoading] = useState(true);
   const [disabled, setDisabled] = useState(false);
+  const [transferSize, setTransferSize] = useState(0);
   const [exportDisabled, setExportDisabled] = useState(results.length > 0 ? false : true);
   const PORT = 3000
 
@@ -67,39 +69,38 @@ const WiFi = () => {
             body: Transfer(),
           };
         });
-        server.route("/startTransfer", "POST", async (request: server.RequestEvent) => {
-          /* 
-          
-            TODO: LOCAL STATE FOR RESULTS, ONLY UPDATE GLOBAL STATE ONCE
-            /endTransfer endpoint is calleddisa
-
-          */
-          const body = JSON.parse(request.body)
-          const count = body.count ? body.count : 0
-          return {
+        server.route('/startTransfer', 'POST', async (request: server.RequestEvent) => {
+          const body = JSON.parse(request.body);
+          const size = body.size ? body.size : 0;
+          setTransferSize(size);
+          return ({
             statusCode: 200,
-            statusDescription: 'OK - READY TO TRANSFER'
-          }
+            statusDescription: "OK - READY TO TRANSFER"
+          })
         })
         server.route("/fileUpload", "POST", async (request: server.RequestEvent) => {
           const body = JSON.parse(request.body)
           const name = body.name ? body.name : ''
           const type = body.type ? body.type : ''
-          const data = body.data ? body.data : ''
-          console.log(body)
-          if (name && type == 'audio/mpeg' && data) {
+          const buffer = body.data ? new Uint8Array(body.data) : new Uint8Array();
+          console.log(buffer)
+          const b64 = fromByteArray(buffer);
+          console.log(b64);
+          if (name && type == 'audio/mpeg' && b64) {
             const id = idgen(10);
-            const info = await getWifiInfo(name, id, type, data)
-            const newResults = results;
-            results.push({
-              'name': name,
-              'id': id,
-              'data': data,
-              'info': info
-            })
+            const info = await getWifiInfo(name, id, type, b64)
+            if (info) {
+              const newResults = results;
+              results.push({
+                'name': name,
+                'id': id,
+                'data': b64,
+                'info': info
+              })
+              setResults(newResults);
+              setSelectedId(id);
+            }
             setLoading(false);
-            setResults(newResults);
-            setSelectedId(id);
             setExportDisabled(false);
           }
           return {
@@ -142,7 +143,25 @@ const WiFi = () => {
     }
     else if (loading) {
       let message = <></>
-      if (results.length == 0) {
+      if (transferSize > 0) {
+        if (transferSize === 1) {
+          message = 
+            <Text
+              style={Styles.infoText}
+            >
+              Transferring {transferSize} file...
+            </Text>
+        }
+        else {
+          message = 
+            <Text
+              style={Styles.infoText}
+            >
+              Transferring {transferSize} files...
+            </Text>
+        }
+      }
+      else if (results.length == 0) {
         message = 
           <Text
             style={Styles.infoText}
@@ -206,8 +225,8 @@ const WiFi = () => {
           background={Colors.text}
           handlePress={() => {
             setHomeState(0)
+            setLoading(false);
             setResults([]);
-            server.stop();
           }}
         />
         <CustomButton 

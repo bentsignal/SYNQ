@@ -5,7 +5,6 @@ import { getAudioMetadata } from '@missingcore/audio-metadata';
 import { InfoType, SongType } from '@/constants/Types'
 import * as ImagePicker from 'expo-image-picker';
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
-import { Promise } from 'node-id3';
 
 export const exportSongs = async (songs: any) => {
 
@@ -33,12 +32,18 @@ export const exportSongs = async (songs: any) => {
 }
 
 export const getWifiInfo = async (name: string, id: string, type: string, data: string) => {
-  const destination = `${FileSystem.documentDirectory}${id}${name}`
-  await FileSystem.writeAsStringAsync(destination, data, {encoding: 'base64'})
-  const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
-  const info = await getAudioMetadata(destination, wantedTags)
-  await FileSystem.deleteAsync(destination);
-  return info
+  try {
+    const destination = `${FileSystem.documentDirectory}${id}${name}`
+    await FileSystem.writeAsStringAsync(destination, data, {encoding: 'base64'})
+    const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
+    const info = await getAudioMetadata(destination, wantedTags)
+    await FileSystem.deleteAsync(destination);
+    return info
+  }
+  catch {
+    console.log(`ERROR: Could not read tags for: ${name} with id: ${id}`)
+    return null;
+  }
 }
 
 export const importFiles = async () => {

@@ -113,15 +113,35 @@
             document.addEventListener('DOMContentLoaded', () => {
               document.getElementById('browseFiles').addEventListener('change', async (event) => {
                 if (event.target.files) {
+                  const startEndpoint = window.location.href + 'startTransfer'
+                  fetch(startEndpoint, {
+                    method: 'POST',
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      "size": event.target.files.length
+                    })
+                  })
+                  .then((response) => {
+                    console.log('App says transfer good to go')
+                  })
+                  let file;
                   for (let i = 0; i < event.target.files.length; i++) {
-                    const name = event.target.files[i].name
-                    const type = event.target.files[i].type
-                    const data = await event.target.files[i].text()
-                    console.log(data)
-                    const b64 = btoa(unescape(encodeURIComponent(data)));
-                    const endpoint = window.location.href + 'fileUpload'
+                    file = event.target.files[i]
+                    const name = file.name
+                    const type = file.type
+                    const blob = new Blob( [file], { type: type } )
+                    const arrayBuffer = await blob.arrayBuffer()
+                    const byteArray = new Uint8Array(arrayBuffer);
+                    // const b64 = btoa(String.fromCharCode.apply(null, byteArray));
+                    // console.log(b64);
+                    // const data = await file.text()
+                    // const b64 = btoa(unescape(encodeURIComponent(data)));
+                    const transferEndpoint = window.location.href + 'fileUpload'
                     try {
-                      await fetch(endpoint, {
+                      await fetch(transferEndpoint, {
                         method: 'POST',
                         headers: {
                           'Accept': 'application/json',
@@ -130,7 +150,7 @@
                         body: JSON.stringify({
                           "name": name, 
                           "type": type,
-                          "data": b64
+                          "data": byteArray
                         })
                       })
                     }

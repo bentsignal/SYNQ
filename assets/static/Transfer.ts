@@ -138,9 +138,6 @@ const Transfer = () => {
                         const b64 = btoa(byteArray.reduce((data, byte) => {
                           return data + String.fromCharCode(byte);
                         }, ''));
-                        // const b64 = btoa(String.fromCharCode.apply(null, byteArray));
-                        // const data = await file.text()
-                        // const b64 = btoa(unescape(encodeURIComponent(data)));
                         console.log('Sending file ' + name)
                         const transferEndpoint = window.location.href + 'fileUpload'
                         try {
@@ -161,6 +158,23 @@ const Transfer = () => {
                         catch (error) {
                           console.log('Error: Could not send file. More info: ' + error)
                         }
+                      }
+                      try {
+                        const finishEndpoint = window.location.href + 'finishTransfer'
+                        const finishResponse = await fetch(finishEndpoint, {
+                          method: 'POST',
+                          headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                          },
+                          body: JSON.stringify({
+                            "size": event.target.files.length
+                          })
+                        })
+                        console.log('Server: ' + endResponse.statusText)
+                      }
+                      catch (error) {
+                        console.log('Server: ' + error)
                       }
                     }
                     catch (error) {

@@ -20,6 +20,7 @@ const GlobalProvider = ({ children }) => {
   const [zipping, setZipping] = useState(false);
   const [importing, setImporting] = useState(false);
   const [editLoad, setEditLoad] = useState(false);
+  const [transferSize, setTransferSize] = useState(0);
   const [transferPage, setTransferPage] = useState('<html><body><p>ERROR: Could not load page</p></body></html>');
 
   return (
@@ -59,7 +60,9 @@ const GlobalProvider = ({ children }) => {
         importing,
         setImporting,
         selectedId, 
-        setSelectedId
+        setSelectedId,
+        transferSize,
+        setTransferSize
       }}
     >
       {children}

@@ -1,7 +1,7 @@
 import { Text, View, ActivityIndicator, Dimensions } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import * as server from "expo-http-server";
 import * as WebBrowser from 'expo-web-browser'
 import * as Network from 'expo-network';
@@ -40,13 +40,13 @@ const Server = () => {
 
   } = useGlobalContext();
 
-  const [serverResults, setServerResults] = useState(results);
-
-  const PORT = 3000;
+  const resultsRef = useRef<Array<any>>([]);
 
   useEffect(() => {
-    setServerResults(results);
+    resultsRef.current = results
   }, [results])
+
+  const PORT = 3000;
 
   useEffect(() => {
 
@@ -85,7 +85,7 @@ const Server = () => {
           }
         })
         server.route('/startTransfer', 'POST', async (request: server.RequestEvent) => {
-          console.log(results.length);
+          console.log(resultsRef.current.length);
           console.log();
           console.log('-----------------------------------')
           console.log('Received request to begin transfer')
@@ -129,7 +129,7 @@ const Server = () => {
             const info = await getWifiInfo(name, id, type, b64)
             if (info) {
               console.log(`Successfully retrieved metadata from ${name}.`)
-              const newResults = serverResults;
+              const newResults = resultsRef.current;
               newResults.push({
                 'name': name,
                 'id': id,
@@ -137,6 +137,7 @@ const Server = () => {
                 'info': info
               })
               setResults(newResults);
+              resultsRef.current = newResults;
               console.log(`Added ${name} to results.`)
               console.log();
               console.log();

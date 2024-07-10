@@ -7,6 +7,7 @@ import * as WebBrowser from 'expo-web-browser'
 import * as Network from 'expo-network';
 import Constants from 'expo-constants'
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
+import axios from 'axios';
 
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
@@ -19,10 +20,6 @@ import PageTitle from '@/components/PageTitle'
 import Top from '@/components/Top'
 import ImportInstructions from '@/components/import/wifi/ImportInstructions'
 import CustomButton from '@/components/CustomButton'
-
-const getIP = async () => {
-  return await Network.getIpAddressAsync();
-}
 
 const WiFi = () => {
 
@@ -41,6 +38,7 @@ const WiFi = () => {
   } = useGlobalContext();
 
   const [exporting, setExporting] = useState(false);
+  const [URL, setURL] = useState('');
   // const [ip, setIP] = useState('0.0.0.0')
   // const [loading, setLoading] = useState(true);
   // const [disabled, setDisabled] = useState(false);
@@ -52,8 +50,23 @@ const WiFi = () => {
     setExportDisabled(results.length > 0 ? false : true);
     setLoading(true);
     setResults([]);
+    setURL(!wifiDisabled ? `http://${ip}:${PORT}` : '')
 
   }, [])
+
+  const callReset = async () => {
+    return await axios.get(`${URL}/reset`);
+  }
+  
+  const resetResults = () => {
+    console.log('Sending request to server to reset results')
+    callReset().then((response) => {
+      console.log('Server successfully reset results')
+    })
+    .catch((error) => {
+      console.log(`ERROR: Call to reset results failed. More info: ${error} `)
+    })
+  }
 
   const getBody = () => {
     if (wifiDisabled) {
@@ -124,21 +137,29 @@ const WiFi = () => {
     }
   }
 
+  const getInstructions = () => {
+    if (!wifiDisabled) {
+      return (
+        <ImportInstructions
+          title='On your computer, visit:'
+          desc={URL}
+          icon={require('@/assets/icons/wifi.png')}
+          disabled={wifiDisabled}
+          handlePress={() => {
+            if (!wifiDisabled) {
+              WebBrowser.openBrowserAsync(URL)
+            }
+          }}
+        />
+      )
+    }
+  }
+
   return (
     <SafeAreaView style={Styles.body}>
       <Top />
       <PageTitle title='Import Music' />
-      <ImportInstructions
-        title='On your computer, visit:'
-        desc={`http://${ip}:${PORT}`}
-        icon={require('@/assets/icons/wifi.png')}
-        disabled={wifiDisabled}
-        handlePress={() => {
-          if (!wifiDisabled) {
-            WebBrowser.openBrowserAsync(`http://${ip}:${PORT}`)
-          }
-        }}
-      />
+      {getInstructions()}
       {getBody()}
       <View
         style={{
@@ -160,6 +181,7 @@ const WiFi = () => {
             setResults([]);
             setTransferSize(0);
             setExportDisabled(true);
+            resetResults();
           }}
         />
         <CustomButton 
@@ -175,6 +197,7 @@ const WiFi = () => {
                 setResults([]);
                 setTransferSize(0);
                 setExportDisabled(true);
+                resetResults();
               })
               .catch((error) => {
                 console.log(error)
@@ -184,6 +207,7 @@ const WiFi = () => {
                 setResults([]);
                 setTransferSize(0);
                 setExportDisabled(true);
+                resetResults();
               })
             }, 1000)
           }}

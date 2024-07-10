@@ -32,13 +32,21 @@
     "plugins": [
       "expo-router",
       [
-        "expo-asset", 
+        "expo-asset",
         {
           "assets": [
             "./assets/static/Transfer.html"
           ]
         }
-      ]
+      ],
+      ["expo-build-properties", {
+        "android": {
+          "usesCleartextTraffic": true
+        },
+        "ios": {
+          "flipper": true
+        }
+      }]
     ],
     "experiments": {
       "typedRoutes": true

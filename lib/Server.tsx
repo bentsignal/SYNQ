@@ -39,7 +39,14 @@ const Server = () => {
     setSelectedId
 
   } = useGlobalContext();
+
+  const [serverResults, setServerResults] = useState(results);
+
   const PORT = 3000;
+
+  useEffect(() => {
+    setServerResults(results);
+  }, [results])
 
   useEffect(() => {
 
@@ -62,7 +69,6 @@ const Server = () => {
             setWifiDisabled(false);
           }
         })
-        
         server.route("/", "GET", async (request: server.RequestEvent) => {
           return {
             statusCode: 200,
@@ -71,7 +77,15 @@ const Server = () => {
             body: Transfer(),
           };
         });
+        server.route("/reset", "GET", async (request: server.RequestEvent) => {
+          setResults([]);
+          return {
+            statusCode: 200,
+            statusDescription: "OK - RESET RESULTS"
+          }
+        })
         server.route('/startTransfer', 'POST', async (request: server.RequestEvent) => {
+          console.log(results.length);
           console.log();
           console.log('-----------------------------------')
           console.log('Received request to begin transfer')
@@ -115,17 +129,18 @@ const Server = () => {
             const info = await getWifiInfo(name, id, type, b64)
             if (info) {
               console.log(`Successfully retrieved metadata from ${name}.`)
-              const newResults = results;
-              results.push({
+              const newResults = serverResults;
+              newResults.push({
                 'name': name,
                 'id': id,
                 'data': b64,
                 'info': info
               })
+              setResults(newResults);
               console.log(`Added ${name} to results.`)
               console.log();
               console.log();
-              setResults(newResults);
+              
               setSelectedId(id);
               // setTransferSize(transferSize - 1);
               return {

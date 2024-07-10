@@ -152,7 +152,6 @@ const Server = () => {
               statusDescription: `ERROR - Bad data from ${name}`
             }
           }
-          console.log();
         });
         server.start();
         return () => {

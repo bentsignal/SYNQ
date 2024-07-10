@@ -40,6 +40,7 @@ const WiFi = () => {
 
   } = useGlobalContext();
 
+  const [exporting, setExporting] = useState(false);
   // const [ip, setIP] = useState('0.0.0.0')
   // const [loading, setLoading] = useState(true);
   // const [disabled, setDisabled] = useState(false);
@@ -50,6 +51,7 @@ const WiFi = () => {
 
     setExportDisabled(results.length > 0 ? false : true);
     setLoading(true);
+    setResults([]);
 
   }, [])
 
@@ -69,7 +71,10 @@ const WiFi = () => {
     }
     else if (loading) {
       let message = <></>
-      if (transferSize > 0) {
+      if (exporting) {
+        message = <Text style={Styles.infoText}>Exporting your files...</Text>
+      }
+      else if (transferSize > 0) {
         if (transferSize === 1) {
           message = 
             <Text

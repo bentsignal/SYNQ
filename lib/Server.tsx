@@ -72,7 +72,11 @@ const Server = () => {
           };
         });
         server.route('/startTransfer', 'POST', async (request: server.RequestEvent) => {
+          console.log();
+          console.log('-----------------------------------')
           console.log('Received request to begin transfer')
+          console.log('-----------------------------------')
+          console.log();
           const body = JSON.parse(request.body);
           const size = body.size ? body.size : 0;
           setTransferSize(Number(size));
@@ -84,7 +88,13 @@ const Server = () => {
           })
         })
         server.route('/finishTransfer', 'POST', async (request: server.RequestEvent) => {
+          console.log();
+          console.log('-----------------------------------')
           console.log('Received request to finish transfer')
+          console.log('-----------------------------------')
+          console.log();
+          console.log();
+          console.log();
           setLoading(false);
           setExportDisabled(false);
           setTransferSize(0);
@@ -94,7 +104,7 @@ const Server = () => {
           })
         })
         server.route("/fileUpload", "POST", async (request: server.RequestEvent) => {
-          console.log('\n\nReceieved fileUpload request')
+          console.log('Receieved fileUpload request')
           const body = JSON.parse(request.body)
           const name = body.name ? body.name : ''
           const type = body.type ? body.type : ''
@@ -113,6 +123,8 @@ const Server = () => {
                 'info': info
               })
               console.log(`Added ${name} to results.`)
+              console.log();
+              console.log();
               setResults(newResults);
               setSelectedId(id);
               // setTransferSize(transferSize - 1);
@@ -123,6 +135,8 @@ const Server = () => {
             }
             else {
               console.log(`Failed to retrieve metadata from ${name}`)
+              console.log();
+              console.log();
               return {
                 statusCode: 409,
                 statusDescription: `ERROR - Bad data from ${name}`
@@ -131,11 +145,14 @@ const Server = () => {
           }
           else {
             console.log('Rejected upload request, bad data.')
+            console.log();
+            console.log();
             return {
               statusCode: 409,
               statusDescription: `ERROR - Bad data from ${name}`
             }
           }
+          console.log();
         });
         server.start();
         return () => {

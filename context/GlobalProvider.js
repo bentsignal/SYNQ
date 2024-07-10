@@ -20,7 +20,10 @@ const GlobalProvider = ({ children }) => {
   const [zipping, setZipping] = useState(false);
   const [importing, setImporting] = useState(false);
   const [editLoad, setEditLoad] = useState(false);
+  const [ip, setIP] = useState('0.0.0.0')
   const [transferSize, setTransferSize] = useState(0);
+  const [serverStarted, setServerStarted] = useState(false);
+  const [wifiDisabled, setWifiDisabled] = useState(false);
   const [transferPage, setTransferPage] = useState('<html><body><p>ERROR: Could not load page</p></body></html>');
 
   return (
@@ -62,7 +65,11 @@ const GlobalProvider = ({ children }) => {
         selectedId, 
         setSelectedId,
         transferSize,
-        setTransferSize
+        setTransferSize,
+        serverStarted,
+        setServerStarted,
+        ip, setIP,
+        wifiDisabled, setWifiDisabled
       }}
     >
       {children}

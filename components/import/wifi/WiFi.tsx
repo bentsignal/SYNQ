@@ -31,133 +31,30 @@ const WiFi = () => {
     homeState, setHomeState, 
     results, setResults,
     transferSize, setTransferSize,
+    serverStarted, setServerStarted,
+    exportDisabled, setExportDisabled,
+    loading, setLoading,
+    ip, setIP,
+    wifiDisabled, setWifiDisabled,
     setSelectedId
 
   } = useGlobalContext();
 
-  const [ip, setIP] = useState('0.0.0.0')
-  const [loading, setLoading] = useState(true);
-  const [disabled, setDisabled] = useState(false);
-  const [allowTransfer, setAllowTransfer] = useState(false);
-  const [exportDisabled, setExportDisabled] = useState(results.length > 0 ? false : true);
+  // const [ip, setIP] = useState('0.0.0.0')
+  // const [loading, setLoading] = useState(true);
+  // const [disabled, setDisabled] = useState(false);
+  // const [allowTransfer, setAllowTransfer] = useState(false);
   const PORT = 3000
 
   useEffect(() => {
 
-    const startServer = async () => {
-      try {
-        setIP(await getIP());
-      }
-      catch {
-        setHomeState(4);
-      }
-      try {
-        server.setup(PORT, (event: server.StatusEvent) => {
-          if (event.status == 'ERROR') {
-            console.log('server error')
-            setDisabled(true);
-          }
-          else {
-            setDisabled(false);
-          }
-        })
-        
-        server.route("/", "GET", async (request: server.RequestEvent) => {
-          return {
-            statusCode: 200,
-            statusDescription: "OK",
-            contentType: "text/html",
-            body: Transfer(),
-          };
-        });
-        server.route('/startTransfer', 'POST', async (request: server.RequestEvent) => {
-          console.log('Received request to begin transfer')
-          const body = JSON.parse(request.body);
-          const size = body.size ? body.size : 0;
-          setTransferSize(Number(size));
-          setLoading(true);
-          setExportDisabled(true);
-          return ({
-            statusCode: 200,
-            statusDescription: "OK - READY TO TRANSFER"
-          })
-        })
-        server.route('/finishTransfer', 'POST', async (request: server.RequestEvent) => {
-          console.log('Received request to finish transfer')
-          setLoading(false);
-          setExportDisabled(false);
-          setTransferSize(0);
-          return ({
-            statusCode: 200,
-            statusDescription: "OK - FINISHED TRANSFER"
-          })
-        })
-        server.route("/fileUpload", "POST", async (request: server.RequestEvent) => {
-          console.log('\n\nReceieved fileUpload request')
-          const body = JSON.parse(request.body)
-          const name = body.name ? body.name : ''
-          const type = body.type ? body.type : ''
-          const b64 = body.data ? body.data : ''
-          if (name && type == 'audio/mpeg' && b64) {
-            console.log(`Attempting to retrieve metadata from ${name}`)
-            const id = idgen(10);
-            const info = await getWifiInfo(name, id, type, b64)
-            if (info) {
-              console.log(`Successfully retrieved metadata from ${name}.`)
-              const newResults = results;
-              results.push({
-                'name': name,
-                'id': id,
-                'data': b64,
-                'info': info
-              })
-              console.log(`Added ${name} to results.`)
-              setResults(newResults);
-              setSelectedId(id);
-              // setTransferSize(transferSize - 1);
-              return {
-                statusCode: 200,
-                statusDescription: `OK - ${name} RECEIVED`,
-              }
-            }
-            else {
-              console.log(`Failed to retrieve metadata from ${name}`)
-              return {
-                statusCode: 409,
-                statusDescription: `ERROR - Bad data from ${name}`
-              }
-            }
-          }
-          else {
-            console.log('Rejected upload request, bad data.')
-            return {
-              statusCode: 409,
-              statusDescription: `ERROR - Bad data from ${name}`
-            }
-          }
-        });
-        server.start();
-        return () => {
-          server.stop();
-        };
-      }
-      catch (error) {
-        console.log(`ERROR: Couldn't run server: ${error}`)
-        setDisabled(true);
-      }
-    }
-
-    if (Constants.appOwnership !== 'expo') {
-      startServer();
-    }
-    else {
-      setDisabled(true);
-    }
+    setExportDisabled(results.length > 0 ? false : true);
+    setLoading(true);
 
   }, [])
 
   const getBody = () => {
-    if (disabled) {
+    if (wifiDisabled) {
       return (
         <View
           style={[Styles.main, {
@@ -165,7 +62,8 @@ const WiFi = () => {
             paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
           }]}
         >
-          <Text style={Styles.infoText}>Failed to start server</Text>
+          <Text style={Styles.infoText}>Failed to start server.</Text>
+          <Text style={[Styles.infoText, {marginTop: 10}]}>Try restarting the app.</Text>
         </View>
       )
     }
@@ -229,9 +127,9 @@ const WiFi = () => {
         title='On your computer, visit:'
         desc={`http://${ip}:${PORT}`}
         icon={require('@/assets/icons/wifi.png')}
-        disabled={disabled}
+        disabled={wifiDisabled}
         handlePress={() => {
-          if (!disabled) {
+          if (!wifiDisabled) {
             WebBrowser.openBrowserAsync(`http://${ip}:${PORT}`)
           }
         }}
@@ -256,6 +154,7 @@ const WiFi = () => {
             setLoading(false);
             setResults([]);
             setTransferSize(0);
+            setExportDisabled(true);
           }}
         />
         <CustomButton 
@@ -270,6 +169,7 @@ const WiFi = () => {
                 setHomeState(3);
                 setResults([]);
                 setTransferSize(0);
+                setExportDisabled(true);
               })
               .catch((error) => {
                 console.log(error)
@@ -278,9 +178,9 @@ const WiFi = () => {
                 setHomeState(4);
                 setResults([]);
                 setTransferSize(0);
+                setExportDisabled(true);
               })
             }, 1000)
-            // server.stop() seems to be the cause of the app crashing
           }}
           disabled={exportDisabled}
         />

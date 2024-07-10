@@ -171,7 +171,7 @@ const Transfer = () => {
                             "size": event.target.files.length
                           })
                         })
-                        console.log('Server: ' + endResponse.statusText)
+                        console.log('Server: ' + finishResponse.statusText)
                       }
                       catch (error) {
                         console.log('Server: ' + error)

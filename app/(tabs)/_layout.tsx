@@ -1,6 +1,8 @@
 import { Tabs } from 'expo-router';
 import { Dimensions } from 'react-native';
+import { useEffect } from 'react';
 
+import Server from '@/lib/Server';
 import { HomeIcon, LibraryIcon, SettingsIcon } from '@/components/TabBarIcons'
 import { Colors } from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
@@ -9,6 +11,8 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 const TabLayout = () => {
 
   return (
+    <>
+      <Server />
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -42,6 +46,7 @@ const TabLayout = () => {
             }}
           />
       </Tabs>
+    </>
   )
 }
 

@@ -16,6 +16,7 @@
                 --disabled: #1d3c68;
                 --alt-button: #fff;
                 --info-text: #8d8d8d;
+                --popup: #393939;
             }
 
             html {
@@ -106,11 +107,49 @@
                 margin: 0 0 10px 0;
             }
 
+            #overlay {
+              position: absolute;
+              width: 100vw;
+              height: 100vh;
+              background-color: rgba(0, 0, 0, .5);
+              backdrop-filter: blur(5px);
+              top: 0;
+              z-index: 1;
+              display: none;
+              justify-content: center;
+              align-items: center;
+            }
+
+            #popup {
+              background-color: var(--popup);
+              border-radius: 15px;
+              padding: 10px 25px;
+              user-select: none;
+              text-align: center;
+              display: flex;
+              justify-content: flex-start;
+              align-items: center;
+              flex-direction: column;
+              position: relative;
+              height: 100px;
+            }
+
+            #loading {
+              width: 200px; 
+              height: 80px;
+              position: absolute;
+              bottom: 0;
+            }
+
         </style>
     </head>
     <body>
-        <script>
+      <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script> 
+      <script>
             document.addEventListener('DOMContentLoaded', () => {
+              const overlay = document.getElementById('overlay')
+              const count = document.getElementById('transferCount');
+              
               document.getElementById('browseFiles').addEventListener('change', async (event) => {
                 if (event.target.files) {
                   try {
@@ -126,8 +165,10 @@
                       })
                     })
                     console.log('Server: ' + startResponse.statusText)
+                    overlay.style.display = "flex";
                     let file;
                     for (let i = 0; i < event.target.files.length; i++) {
+                      count.innerText = (event.target.files.length - i);
                       file = event.target.files[i]
                       const name = file.name
                       const type = file.type
@@ -158,6 +199,7 @@
                         console.log('Error: Could not send file. More info: ' + error)
                       }
                     }
+                    overlay.style.display = "none";
                     try {
                       const finishEndpoint = window.location.href + 'finishTransfer'
                       const finishResponse = await fetch(finishEndpoint, {
@@ -249,7 +291,7 @@
                       <line class="cls-1" x1="746.59" y1="298.08" x2="500" y2="51.49"/>
                     </g>
                   </svg>
-                <p class="info-text" style="margin-top: 15px;">Drag & drop or hit <span style="color: white">Browse</span> to begin</p>
+                <p class="info-text" style="margin-top: 15px;">Select files for transfer. You can send multiple files at once.</p>
                 <p class="info-text" style="margin-bottom: 15px">Supports: mp3</p>
                 <button id="browse">
                     <label for="browseFiles" id="file-label">
@@ -259,5 +301,13 @@
                 <input type="file" id="browseFiles" style="display:none;" accept="audio/mpeg" multiple>
             </div>
         </main>
+        <div id="overlay">
+          <div id="popup">
+            <p style="font-size: 14pt;">
+               <span id="transferCount">0</span> files remaining
+            </p>
+            <dotlottie-player src="https://lottie.host/369f338a-1c9f-42fd-ab69-4ae003f59b1b/SnX6MiLZSM.json" background="transparent" speed="1" id="loading" loop autoplay></dotlottie-player>
+          </div>
+        </div>
     </body>
 </html>

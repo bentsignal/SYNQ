@@ -1,5 +1,6 @@
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useEffect } from 'react'
+import { View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { readAsStringAsync } from 'expo-file-system';
 import { useAssets } from 'expo-asset';
@@ -44,6 +45,8 @@ const Home = () => {
   }, [])
 
   const { homeState, setHomeState } = useGlobalContext();
+  const insets = useSafeAreaInsets();
+
   if (homeState === 1) {
     return (
       <WiFi />
@@ -66,7 +69,7 @@ const Home = () => {
   }
   else {
     return (
-      <SafeAreaView style={Styles.body}>
+      <View style={[Styles.body, {paddingTop: insets.top}]}>
         <InstructionsModal dontShowOption={true}/>
         <Top />
         <PageTitle title='Import Music'/>
@@ -91,7 +94,7 @@ const Home = () => {
           disabled={true}
           handlePress={() => {setHomeState(3)}}
         />
-      </SafeAreaView>
+      </View>
     );
   }
 }

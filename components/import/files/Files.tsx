@@ -1,6 +1,6 @@
 import { Text, View, Image, ActivityIndicator } from 'react-native'
 import { useEffect, useReducer, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -27,6 +27,8 @@ const Files = () => {
     exportDisabled, setExportDisabled, loading, setLoading,
     zipping, setZipping, importing, setImporting, setShowSaveInst, 
   } = useGlobalContext();
+
+  const insets = useSafeAreaInsets();
 
   const getBody = () => {
     if (loading) {
@@ -70,7 +72,7 @@ const Files = () => {
   }
 
   return (
-    <SafeAreaView style={Styles.body}>
+    <View style={[Styles.body, {paddingTop: insets.top}]}>
       <SaveInstructionsModal dontShowOption={true} />
       <Top />
       <PageTitle 
@@ -129,7 +131,7 @@ const Files = () => {
           disabled={exportDisabled}
         />
       </View>
-    </SafeAreaView>
+    </View>
   )
 }
 

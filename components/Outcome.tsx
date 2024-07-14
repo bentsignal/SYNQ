@@ -1,5 +1,5 @@
 import { Text, View, Linking } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import LottieView from 'lottie-react-native'
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -12,12 +12,17 @@ import { Styles } from "@/constants/Styles"
 import { Colors } from "@/constants/Colors"
 
 const Success = () => {
+
   const {setHomeState} = useGlobalContext();
+
+  const insets = useSafeAreaInsets();
+
   Haptics.notificationAsync(
     Haptics.NotificationFeedbackType.Success
   )
+
   return (
-    <SafeAreaView style={Styles.body}>
+    <View style={[Styles.body, {paddingTop: insets.top}]}>
       <Top />
       <View style={Styles.main}>
         <LottieView 
@@ -56,17 +61,23 @@ const Success = () => {
           }}
         />
       </View>
-    </SafeAreaView>
+    </View>
   )
+
 }
 
 const Failure = () => {
+
   const {setHomeState} = useGlobalContext();
+
+  const insets = useSafeAreaInsets();
+
   Haptics.notificationAsync(
     Haptics.NotificationFeedbackType.Error
   )
+
   return (
-    <SafeAreaView style={Styles.body}>
+    <View style={[Styles.body, {paddingTop: insets.top}]}>
       <Top />
       <View style={[Styles.main, {
         flexGrow: 1
@@ -114,8 +125,9 @@ const Failure = () => {
           }}
         />
       </View>
-    </SafeAreaView>
+    </View>
   )
+
 }
 
 export { Success, Failure };

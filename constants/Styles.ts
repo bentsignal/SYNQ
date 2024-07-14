@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '@/constants/Colors';
 
 export const Styles = StyleSheet.create({

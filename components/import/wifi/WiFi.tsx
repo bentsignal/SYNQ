@@ -1,5 +1,5 @@
 import { Text, View, ActivityIndicator, Dimensions } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { useEffect, useState } from 'react'
 import * as server from "expo-http-server";
@@ -36,6 +36,8 @@ const WiFi = () => {
     setSelectedId
 
   } = useGlobalContext();
+
+  const insets = useSafeAreaInsets();
 
   const [exporting, setExporting] = useState(false);
   const [URL, setURL] = useState('');
@@ -156,7 +158,7 @@ const WiFi = () => {
   }
 
   return (
-    <SafeAreaView style={Styles.body}>
+    <View style={[Styles.body, {paddingTop: insets.top}]}>
       <Top />
       <PageTitle title='Import Music' />
       {getInstructions()}
@@ -214,7 +216,7 @@ const WiFi = () => {
           disabled={exportDisabled}
         />
       </View>
-    </SafeAreaView>
+    </View>
   )
 }
 

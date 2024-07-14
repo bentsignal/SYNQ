@@ -113,7 +113,7 @@ const EditModal = () => {
                         fontSize: 12
                       }]
                     }>
-                      Supports: jpeg/png
+                      Supports: jpeg/png/heif
                     </Text>
                     <Text
                       style={{

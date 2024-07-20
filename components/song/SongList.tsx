@@ -37,7 +37,10 @@ const SongList = (data: any) => {
         extraData={selectedId}
         style={{
           width: '100%',
-          paddingRight: 5
+          paddingRight: 10,
+        }}
+        contentContainerStyle={{
+          paddingBottom: 40
         }}
       />
       <LinearGradient

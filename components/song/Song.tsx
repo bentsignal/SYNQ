@@ -13,15 +13,17 @@ import { ListCover } from '@/components/song/Cover'
 const Song = ({name, id, data, info}: SongType) => {
   return (
     <View
-      style={{
+      style={[Styles.roundedContainer, {
         alignSelf: 'stretch',
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        height: 60,
-        marginBottom: 5
-      }}
+        height: 80,
+        marginBottom: 5,
+        backgroundColor: Colors.song,
+        padding: 10,
+      }]}
     >
       <ListCover image={info.metadata?.artwork ? info.metadata.artwork : ''}/>
       <SongInfo info={info} name={name}/>

@@ -23,7 +23,7 @@ const Song = ({name, id, data, info}: SongType) => {
         marginBottom: 5
       }}
     >
-      <ListCover info={info}/>
+      <ListCover image={info.metadata?.artwork ? info.metadata.artwork : ''}/>
       <SongInfo info={info} name={name}/>
       <EditButton name={name} id={id} data={data} info={info}/>
       <DeleteButton name={name} id={id}/>

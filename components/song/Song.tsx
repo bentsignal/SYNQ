@@ -20,7 +20,7 @@ const Song = ({name, id, data, info}: SongType) => {
         justifyContent: 'flex-start',
         alignItems: 'center',
         height: 80,
-        marginBottom: 5,
+        marginBottom: 10,
         backgroundColor: Colors.song,
         padding: 10,
       }]}

@@ -72,7 +72,10 @@ const Home = () => {
       <View style={[Styles.body, {paddingTop: insets.top}]}>
         <InstructionsModal dontShowOption={true}/>
         <Top />
-        <PageTitle title='Import Music'/>
+        <PageTitle 
+          title='Import Music'
+          infoHandler={() => setShowWelcome(true)}
+          />
         <Option 
           title='Files'
           desc='Import from your files'

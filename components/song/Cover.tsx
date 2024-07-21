@@ -22,7 +22,8 @@ export const ListCover = ({image}: {
       width: 60,
       height: 60,
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      marginLeft: 3
     }}>
       <Image 
         source={src ? {uri: src} : require('@/assets/icons/music.png')}

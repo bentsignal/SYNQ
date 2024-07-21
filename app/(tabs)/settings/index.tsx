@@ -19,20 +19,13 @@ const Library = () => {
       <InstructionsModal />
       <Top />
       <PageTitle title='Settings'/>
-      {/* <Option 
+      <Option 
         title="Synk Premium"
         desc="Manage your subcription"
         icon={require('@/assets/icons/premium.png')}
-        disabled={false}
+        disabled={true}
         handlePress={() => {}}
-      /> */}
-      <Option 
-        title="Instructions"
-        desc="How to import music to Spotify"
-        icon={require('@/assets/icons/instructions.png')}
-        disabled={false}
-        handlePress={() => {setShowWelcome(true)}}
-      />
+      /> 
     </View>
   );
 }

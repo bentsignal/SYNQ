@@ -124,7 +124,7 @@ const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
               }}
             >
               <CheckBox value={checked} onValueChange={setChecked}/>
-              <Text style={Styles.infoText}>Don't show again</Text>
+              <Text style={Styles.infoText}>Don't show automatically</Text>
             </View> : <></>}
             <CustomButton 
               title="Close"

@@ -127,6 +127,23 @@ const WiFi = () => {
         </View>
       )
     }
+    else if (results.length === 0) {
+      return (
+        <View
+          style={[Styles.main, {
+            flexGrow: 1,
+            paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
+          }]}
+        >
+          <Text
+            style={Styles.infoText}
+          >
+            Songs will appear here once uploaded
+          </Text>
+          <Loading height={100} width={200}/>
+        </View>
+      )
+    }
     else if (results.length > 0) {
       return (
         <SongList songs={results} />

@@ -42,10 +42,15 @@ const Server = () => {
   } = useGlobalContext();
 
   const resultsRef = useRef<Array<any>>([]);
+  const homeStateRef = useRef(0);
 
   useEffect(() => {
     resultsRef.current = results
   }, [results])
+
+  useEffect(() => {
+    homeStateRef.current = homeState
+  }, [homeState])
 
   const PORT = 3000;
 
@@ -94,21 +99,30 @@ const Server = () => {
           }
         })
         server.route('/startTransfer', 'POST', async (request: server.RequestEvent) => {
-          console.log(resultsRef.current.length);
           console.log();
           console.log('-----------------------------------')
           console.log('Received request to begin transfer')
           console.log('-----------------------------------')
           console.log();
-          const body = JSON.parse(request.body);
-          const size = body.size ? body.size : 0;
-          setTransferSize(Number(size));
-          setLoading(true);
-          setExportDisabled(true);
-          return ({
-            statusCode: 200,
-            statusDescription: "OK - READY TO TRANSFER"
-          })
+          if (homeStateRef.current === 1) {
+            console.log('Accepted transfer request')
+            const body = JSON.parse(request.body);
+            const size = body.size ? body.size : 0;
+            setTransferSize(Number(size));
+            setLoading(true);
+            setExportDisabled(true);
+            return ({
+              statusCode: 200,
+              statusDescription: "OK - READY TO TRANSFER"
+            })
+          }
+          else {
+            console.log("Rejected transfer request")
+            return ({
+              statusCode: 400,
+              statusDescription: 'ERROR - NOT ON WIFI PAGE IN APP'
+            })
+          }
         })
         server.route('/finishTransfer', 'POST', async (request: server.RequestEvent) => {
           console.log();

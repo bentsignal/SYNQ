@@ -154,6 +154,10 @@
               align-items: center;
             }
 
+            #server-name {
+              font-weight: 800;
+            }
+
             .connecting {
               color: white;
             }
@@ -200,69 +204,74 @@
                         "size": event.target.files.length
                       })
                     })
+                    
                     console.log('Server: ' + startResponse.statusText)
-                    overlay.style.display = "flex";
-                    let file;
-                    for (let i = 0; i < event.target.files.length; i++) {
-                      count.innerText = (event.target.files.length - i);
-                      file = event.target.files[i]
-                      const name = file.name
-                      const type = file.type
-                      const blob = new Blob( [file], { type: type } )
-                      const arrayBuffer = await blob.arrayBuffer()
-                      const byteArray = new Uint8Array(arrayBuffer);
-                      const b64 = btoa(byteArray.reduce((data, byte) => {
-                        return data + String.fromCharCode(byte);
-                      }, ''));
-                      console.log('Sending file ' + name)
-                      const transferEndpoint = window.location.href + 'fileUpload'
+                    if (startResponse.status === 200) {
+                      overlay.style.display = "flex";
+                      let file;
+                      for (let i = 0; i < event.target.files.length; i++) {
+                        count.innerText = (event.target.files.length - i);
+                        file = event.target.files[i]
+                        const name = file.name
+                        const type = file.type
+                        const blob = new Blob( [file], { type: type } )
+                        const arrayBuffer = await blob.arrayBuffer()
+                        const byteArray = new Uint8Array(arrayBuffer);
+                        const b64 = btoa(byteArray.reduce((data, byte) => {
+                          return data + String.fromCharCode(byte);
+                        }, ''));
+                        console.log('Sending file ' + name)
+                        const transferEndpoint = window.location.href + 'fileUpload'
+                        try {
+                          const sendResponse = await fetch(transferEndpoint, {
+                            method: 'POST',
+                            headers: {
+                              'Accept': 'application/json',
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                              "name": name, 
+                              "type": type,
+                              "data": b64
+                            })
+                          })
+                          console.log('Server: ' + sendResponse.statusText)
+                        }
+                        catch (error) {
+                          console.log('Error: Could not send file. More info: ' + error)
+                        }
+                      }
+                      overlay.style.display = "none";
                       try {
-                        const sendResponse = await fetch(transferEndpoint, {
+                        const finishEndpoint = window.location.href + 'finishTransfer'
+                        const finishResponse = await fetch(finishEndpoint, {
                           method: 'POST',
                           headers: {
                             'Accept': 'application/json',
-                            'Content-Type': 'application/json',
+                            'Content-Type': 'application/json'
                           },
                           body: JSON.stringify({
-                            "name": name, 
-                            "type": type,
-                            "data": b64
+                            "size": event.target.files.length
                           })
                         })
-                        console.log('Server: ' + sendResponse.statusText)
+                        console.log('Server: ' + finishResponse.statusText)
                       }
                       catch (error) {
-                        console.log('Error: Could not send file. More info: ' + error)
+                        console.log('Server: ' + error)
                       }
-                    }
-                    overlay.style.display = "none";
-                    try {
-                      const finishEndpoint = window.location.href + 'finishTransfer'
-                      const finishResponse = await fetch(finishEndpoint, {
-                        method: 'POST',
-                        headers: {
-                          'Accept': 'application/json',
-                          'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                          "size": event.target.files.length
-                        })
-                      })
-                      console.log('Server: ' + finishResponse.statusText)
-                    }
-                    catch (error) {
-                      console.log('Server: ' + error)
                     }
                   }
                   catch (error) {
                     console.log(error)
                   }
                 }
+                document.getElementById('browseFiles').value = '';
               })
 
               const setConnected = async (response) => {
                 let body = await response.text()
-                connectionStatus.innerHTML = '<span class="connected">Connected to ' + body + '</span>'
+                let device = body ? body : 'server'
+                connectionStatus.innerHTML = '<span class="connected">Connected to <span id="server-name">' + device + '</span></span>'
               }
 
               const setDisconnected = () => {

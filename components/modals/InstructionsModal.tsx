@@ -106,6 +106,27 @@ const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
                       resizeMode='contain'
                     />
                   </View>
+                  <View>
+                    <Text
+                      style={[Styles.infoText, {fontWeight: 'bold', paddingBottom: 5}]}
+                    >
+                      3. Listen in Spotify:
+                    </Text>
+                    <Text
+                      style={[Styles.infoText, {paddingBottom: 10, paddingTop: 5}]}
+                    >
+                      Playlists → Local Files
+                    </Text>
+                    <Image 
+                      source={require('@/assets/images/local-files-playlist.jpg')}
+                      style={{
+                        width: '100%', 
+                        height: 250,
+                        marginBottom: 40
+                      }}
+                      resizeMode='contain'
+                    />
+                  </View>
                 </ScrollView>
                 <LinearGradient
                   style={{position:'absolute', bottom:0, width:'100%', height:50}}

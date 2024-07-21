@@ -19,10 +19,13 @@ const Song = ({name, id, data, info}: SongType) => {
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        height: 80,
+        height: 90,
         marginBottom: 10,
         backgroundColor: Colors.song,
-        padding: 10,
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingTop: 15,
+        paddingBottom: 15
       }]}
     >
       <ListCover image={info.metadata?.artwork ? info.metadata.artwork : ''}/>

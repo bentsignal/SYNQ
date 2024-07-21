@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from 'react'
 import * as server from "expo-http-server";
 import * as WebBrowser from 'expo-web-browser'
 import * as Network from 'expo-network';
+import * as Device from 'expo-device'
 import Constants from 'expo-constants'
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 
@@ -82,6 +83,14 @@ const Server = () => {
           return {
             statusCode: 200,
             statusDescription: "OK - RESET RESULTS"
+          }
+        })
+        server.route("/checkConnection", "GET", async (request: server.RequestEvent) => {
+          return {
+            statusCode: 200,
+            statusDescription: "OK - CONNECTED",
+            contentType: "text/html",
+            body: Device.deviceName ? Device.deviceName : undefined
           }
         })
         server.route('/startTransfer', 'POST', async (request: server.RequestEvent) => {

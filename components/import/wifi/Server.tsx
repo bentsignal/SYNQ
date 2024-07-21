@@ -120,7 +120,7 @@ const Server = () => {
             console.log("Rejected transfer request")
             return ({
               statusCode: 400,
-              statusDescription: 'ERROR - NOT ON WIFI PAGE IN APP'
+              statusDescription: 'Must be on Wifi Transfer page in app'
             })
           }
         })

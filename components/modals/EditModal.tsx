@@ -107,14 +107,14 @@ const EditModal = () => {
                         setLoading(false);
                       }}
                     />
-                    <Text 
+                    {/* <Text 
                       style={[Styles.infoText, {
                         marginTop: 5,
                         fontSize: 12
                       }]
                     }>
                       Supports: jpeg/png/heif
-                    </Text>
+                    </Text> */}
                     <Text
                       style={{
                         color: 'white',

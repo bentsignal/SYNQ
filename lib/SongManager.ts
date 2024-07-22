@@ -3,13 +3,39 @@ import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
 import { InfoType, SongType } from '@/constants/Types'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as ImagePicker from 'expo-image-picker';
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
+
+const isValidNumString = (str: string) => {
+  return !isNaN(Number(str));
+}
+
+const getExportNumber = async () => {
+  try {
+    const numberString = await AsyncStorage.getItem('exportNumber');
+    if (numberString && isValidNumString(numberString)) {
+      let number = Number(numberString);
+      number++;
+      await AsyncStorage.setItem('exportNumber', number.toString());
+      return number;
+    }
+    else {
+      throw new Error('Bad data')
+    }
+  }
+  catch (error) {
+    await AsyncStorage.setItem('exportNumber', '1');
+    return 1;
+  }
+}
 
 export const exportSongs = async (songs: any) => {
 
   const date = new Date();
-  const dir = `${FileSystem.documentDirectory}${date.getMonth()}-${date.getDate()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`;
+  const exportNumber = await getExportNumber();
+  const dir = `${FileSystem.documentDirectory}batch ${1000}  -  ${date.getMonth()}.${date.getDate()}.${date.getFullYear()}`;
+  // const dir = `${FileSystem.documentDirectory}${date.getMonth()}-${date.getDate()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`;
   let destination;
   
   await FileSystem.makeDirectoryAsync(dir);

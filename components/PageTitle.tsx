@@ -38,9 +38,9 @@ const PageTitle = ({
   return (
     <View
       style={{
+        width: '90%',
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        alignSelf: 'flex-start',
         alignItems: 'center',
         marginBottom: 20
       }}

@@ -6,7 +6,7 @@ export const Styles = StyleSheet.create({
   body: {
     flex: 1,
     alignItems: 'center',
-    width: '90%',
+    width: '100%',
     margin: 'auto'
   },
   main: {
@@ -33,7 +33,8 @@ export const Styles = StyleSheet.create({
     color: Colors.main,
   },
   top: {
-    alignSelf: 'stretch',
+    width: '90%',
+    alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

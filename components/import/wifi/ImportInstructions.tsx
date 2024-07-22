@@ -24,7 +24,7 @@ const ImportInstructions = ({
       style={[Styles.roundedContainer, {
         flexDirection: 'row',
         alignItems: 'center',
-        width: '100%',
+        width: '90%',
         backgroundColor: disabled ? Colors.disabled : Colors.main,
         padding: 20,
         marginBottom: 10

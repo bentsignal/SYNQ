@@ -27,7 +27,7 @@ const Option = ({
       style={[Styles.roundedContainer, {
         flexDirection: 'row',
         alignItems: 'center',
-        width: '100%',
+        width: '90%',
         backgroundColor: disabled ? Colors.disabled : color,
         padding: 20,
         marginBottom: 10

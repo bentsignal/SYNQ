@@ -36,7 +36,10 @@ const SongList = (data: any) => {
         keyExtractor={song => song.id}
         extraData={selectedId}
         style={{
-          width: '100%'
+          width: '100%',
+          paddingLeft: 20,
+          paddingRight: 20
+
         }}
         contentContainerStyle={{
           paddingBottom: 40

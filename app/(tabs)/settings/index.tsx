@@ -20,7 +20,7 @@ const Library = () => {
       <Top />
       <PageTitle title='Settings'/>
       <Option 
-        title="Synk Premium"
+        title="Premium"
         desc="Manage your subcription"
         icon={require('@/assets/icons/premium.png')}
         disabled={true}

@@ -34,7 +34,7 @@ export const exportSongs = async (songs: any) => {
 
   const date = new Date();
   const exportNumber = await getExportNumber();
-  const dir = `${FileSystem.documentDirectory}batch ${1000}  -  ${date.getMonth()}.${date.getDate()}.${date.getFullYear()}`;
+  const dir = `${FileSystem.documentDirectory}batch ${exportNumber}  -  ${date.getMonth()}.${date.getDate()}.${date.getFullYear()}`;
   // const dir = `${FileSystem.documentDirectory}${date.getMonth()}-${date.getDate()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`;
   let destination;
   

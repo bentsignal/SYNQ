@@ -36,13 +36,12 @@ const SongList = (data: any) => {
         keyExtractor={song => song.id}
         extraData={selectedId}
         style={{
-          width: '100%',
-          paddingLeft: 20,
-          paddingRight: 20
-
+          width: '100%'
         }}
         contentContainerStyle={{
-          paddingBottom: 40
+          paddingBottom: 40,
+          display: 'flex',
+          alignItems: 'center'
         }}
       />
       <LinearGradient

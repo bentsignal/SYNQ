@@ -238,6 +238,7 @@
                     
                     console.log('Server: ' + startResponse.statusText)
                     if (startResponse.status === 200) {
+                      transferPopup.style.display = "none";
                       overlay.style.display = "flex";
                       transferPopup.style.display = "flex";
                       let file;
@@ -273,6 +274,7 @@
                           console.log('Error: Could not send file. More info: ' + error)
                         }
                       }
+                      
                       overlay.style.display = "none";
                       transferPopup.style.display = "none";
                       try {
@@ -294,12 +296,14 @@
                       }
                     }
                     else {
+                      transferPopup.style.display = "none";
                       overlay.style.display = "flex";
                       errorPopup.style.display = "flex";
                       errorMessage.innerText = startResponse.statusText;
                     }
                   }
                   catch (error) {
+                    transferPopup.style.display = "none";
                     overlay.style.display = "flex";
                     errorPopup.style.display = "flex";
                     errorMessage.innerText = "Something went wrong. Please try again."

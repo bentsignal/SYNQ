@@ -15,7 +15,7 @@ const Song = ({name, id, data, info}: SongType) => {
     <View
       style={[Styles.roundedContainer, {
         alignSelf: 'stretch',
-        width: '100%',
+        width: '90%',
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',

@@ -1,4 +1,4 @@
-import { Text, View, Image, ActivityIndicator } from 'react-native'
+import { Text, View, Image, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { useEffect, useReducer, useState } from 'react'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
@@ -26,6 +26,7 @@ const Files = () => {
   const { homeState, setHomeState, results, setResults,
     exportDisabled, setExportDisabled, loading, setLoading,
     zipping, setZipping, importing, setImporting, setShowSaveInst, 
+    selectEnabled
   } = useGlobalContext();
 
   const insets = useSafeAreaInsets();
@@ -78,6 +79,7 @@ const Files = () => {
       <PageTitle 
         title='Import Music'
         infoHandler={() => setShowSaveInst(true)}
+        showList={true}
       />
       {getBody()}
       <View
@@ -91,6 +93,45 @@ const Files = () => {
           bottom: 10
         }}
       >
+        <View
+          style={{
+            position: 'absolute',
+            top: -70,
+            display: selectEnabled ? 'flex' : 'none',
+            flexDirection: 'row',
+            gap: 10
+          }}
+        >
+          <TouchableOpacity
+            style={[Styles.roundedContainer, Styles.backgroundBlendShadow, {
+              backgroundColor: Colors.song,
+              
+              padding: 15
+            }]}
+          >
+            <Image 
+              source={require('@/assets/icons/edit.png')}
+              style={{
+                width: 20,
+                height: 20,
+              }}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[Styles.roundedContainer, Styles.backgroundBlendShadow, {
+              backgroundColor: Colors.song,
+              padding: 15
+            }]}
+          >
+            <Image 
+              source={require('@/assets/icons/delete.png')}
+              style={{
+                width: 20,
+                height: 20,
+              }}
+            />
+          </TouchableOpacity>
+        </View>
         <CustomButton 
           title='Cancel'
           background={Colors.text}

@@ -1,15 +1,20 @@
 import { Text, Image, TouchableOpacity, View } from "react-native";
 import { Styles } from "@/constants/Styles"
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 type PageTitleProps = {
   title: string;
   infoHandler?: () => void;
+  showList?: boolean;
 }
 
 const PageTitle = ({
   title,
-  infoHandler
+  infoHandler,
+  showList
 }: PageTitleProps) => {
+
+  const { selectEnabled, setSelectEnabled } = useGlobalContext();
 
   const info = () => {
     if (infoHandler) {
@@ -35,6 +40,40 @@ const PageTitle = ({
     }
   }
 
+  const list = () => {
+    if (showList) {
+      return (
+        <View
+          style={{
+            flexGrow: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'flex-end',
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => {
+              setSelectEnabled(!selectEnabled);
+            }}
+          >
+            <Image 
+              source={selectEnabled ? require('@/assets/icons/list-active.png') : require('@/assets/icons/list.png')}
+              style={{
+                width: 20,
+                height: 20
+              }}
+            />
+          </TouchableOpacity>
+        </View>
+      )
+    }
+    else {
+      return (
+        <></>
+      )
+    }
+  }
+
   return (
     <View
       style={{
@@ -49,6 +88,7 @@ const PageTitle = ({
         {title}
       </Text>
       {info()}
+      {list()}
     </View>
   )
 }

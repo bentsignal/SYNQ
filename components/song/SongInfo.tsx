@@ -1,5 +1,4 @@
 import { Text, View, Image, FlatList, TouchableOpacity } from 'react-native'
-import { fn } from '@/lib/SongManager'
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'

@@ -1,4 +1,5 @@
-import { View } from 'react-native'
+import { View, TouchableOpacity } from 'react-native'
+import { useState, useEffect } from 'react'
 
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
@@ -8,9 +9,18 @@ import { SongType } from '@/constants/Types'
 import SongInfo from '@/components/song/SongInfo'
 import EditButton from '@/components/song/EditButton'
 import DeleteButton from '@/components/song/DeleteButton'
+import Select from '@/components/song/Select';
 import { ListCover } from '@/components/song/Cover'
 
 const Song = ({name, id, data, info}: SongType) => {
+
+  const [selected, setSelected] = useState(false);
+  const { selectEnabled } = useGlobalContext(); 
+
+  useEffect(() => {
+    setSelected(false);
+  }, [selectEnabled])
+
   return (
     <View
       style={[Styles.roundedContainer, {
@@ -25,15 +35,32 @@ const Song = ({name, id, data, info}: SongType) => {
         paddingLeft: 15,
         paddingRight: 15,
         paddingTop: 15,
-        paddingBottom: 15
+        paddingBottom: 15,
+        opacity: !selectEnabled || (selectEnabled && selected) ? 1 : 0.6
       }]}
     >
       <ListCover image={info.metadata?.artwork ? info.metadata.artwork : ''}/>
       <SongInfo info={info} name={name}/>
-      <EditButton name={name} id={id} data={data} info={info}/>
-      <DeleteButton name={name} id={id}/>
+      {
+        selectEnabled ? 
+        <>
+          <TouchableOpacity
+            onPress={() => {
+              setSelected(!selected);
+            }}
+          >
+            <Select active={selected} />
+          </TouchableOpacity>
+        </> 
+        : 
+        <>
+          <EditButton name={name} id={id} data={data} info={info}/>
+          <DeleteButton name={name} id={id}/>
+        </>
+      }
     </View>
   )
+
 }
 
 export default Song

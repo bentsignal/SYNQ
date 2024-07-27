@@ -89,5 +89,14 @@ export const Styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text,
     marginBottom: 5
+  },
+  backgroundBlendShadow: {
+    shadowColor: Colors.background,
+    shadowOffset: {
+      width: 0,
+      height: 0
+    },
+    shadowOpacity: 1,
+    shadowRadius: 5,
   }
 });

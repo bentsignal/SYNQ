@@ -1,29 +1,20 @@
 import { Text, View, TouchableOpacity, Modal } from 'react-native'
 
-import PageTitle from '@/components/PageTitle'
 import CustomButton from '@/components/CustomButton'
 import { Colors } from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
 import { useGlobalContext } from '@/context/GlobalProvider';
-import { removeSong } from '@/lib/SongManager';
 
-const DeleteModal = () => {
+const DeleteModal = ( {show, title, message, handler} : {
+
+  show: boolean;
+  title: string;
+  message: any;
+  handler: () => void;
+
+} ) => {
   
-  const { 
-    
-    // show/hide modal
-    showDelete, setShowDelete, 
-
-    // song to be deleted
-    deleteSong, 
-
-    // all songs being imported
-    results, setResults, 
-
-    // allow export of files
-    setExportDisabled
-    
-  } = useGlobalContext();
+  const { setShowDelete }  = useGlobalContext();
 
   return (
     <View
@@ -34,7 +25,7 @@ const DeleteModal = () => {
     >
       <Modal
         transparent={true}
-        visible={showDelete}
+        visible={show}
         animationType='slide'
       >
         <View style={Styles.popupBackdrop}>
@@ -51,7 +42,7 @@ const DeleteModal = () => {
                 fontWeight: 'bold'
               }}
             >
-              Delete song
+              {title}
             </Text>
             <Text
               style={{
@@ -61,7 +52,7 @@ const DeleteModal = () => {
               }}
               numberOfLines={1}
             >
-              {deleteSong.name}
+              {message}
             </Text>
             <View
               style={{
@@ -82,14 +73,7 @@ const DeleteModal = () => {
               <CustomButton 
                 title='Delete'
                 background={Colors.main}
-                handlePress={async () => {
-                  setShowDelete(false);
-                  const newResults = removeSong(results, deleteSong.id);
-                  if (newResults.length <= 0) {
-                    setExportDisabled(true);
-                  }
-                  setResults(newResults);
-                }}
+                handlePress={handler}
               />
             </View>
           </View> 

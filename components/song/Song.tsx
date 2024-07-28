@@ -71,7 +71,7 @@ const Song = ({name, id, data, info}: SongType) => {
               else if (selected) {
                 for (i = 0; i < selectedSongs.length; i++) {
                   if (selectedSongs[i] != id) {
-                    newSongs[i] = selectedSongs[i];
+                    newSongs.push(selectedSongs[i]);
                   }
                 }
                 setSelectedSongs(newSongs);

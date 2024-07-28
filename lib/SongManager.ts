@@ -118,13 +118,13 @@ export const importFiles = async () => {
   }
 }
 
-export const removeSong = (
+export const removeSongs = (
   results: [SongType],
-  id: string
+  ids: string[]
 ) => {
   let newResults = [];
   for (let i = 0; i < results.length; i++) {
-    if (results[i].id && results[i].id !== id) {
+    if (results[i].id && !ids.includes(results[i].id)) {
       newResults.push(results[i]);
     }
   }

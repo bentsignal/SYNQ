@@ -15,7 +15,8 @@ import FilesEmpty from '@/components/import/files/FilesEmpty'
 import SongList from '@/components/song/SongList'
 import CustomButton from '@/components/CustomButton'
 import SaveInstructionsModal from '@/components/modals/SaveInstructionsModal';
-import { exportSongs } from '@/lib/SongManager'
+import DeleteModal from '@/components/modals/DeleteModal'
+import { exportSongs, removeSongs } from '@/lib/SongManager'
 
 const getShowSaveInst = async () => {
   return await AsyncStorage.getItem('showSaveInst')
@@ -26,12 +27,38 @@ const Files = () => {
   const { homeState, setHomeState, results, setResults,
     exportDisabled, setExportDisabled, loading, setLoading,
     zipping, setZipping, importing, setImporting, setShowSaveInst, 
-    selectEnabled, selectedSongs
+    selectEnabled, setSelectEnabled, selectedSongs, showDelete, 
+    setShowDelete, deleteSong
   } = useGlobalContext();
+
+  const [showSingleDelete, setShowSingleDelete] = useState(false);
+  const [showBatchDelete, setShowBatchDelete] = useState(false);
+
+  useEffect(() => {
+    if (showDelete) {
+      if (selectedSongs.length > 0) {
+        setShowBatchDelete(true);
+      }
+      else {
+        setShowSingleDelete(true);
+      }
+    }
+    else {
+      setShowSingleDelete(false);
+      setShowBatchDelete(false);
+    }
+  }, [showDelete])
 
   const insets = useSafeAreaInsets();
 
-  
+  const handleDelete = async (ids: string[]) => {
+    setShowDelete(false);
+    const newResults = removeSongs(results, ids);
+    if (newResults.length <= 0) {
+      setExportDisabled(true);
+    }
+    setResults(newResults);
+  }
 
   const getBody = () => {
     if (loading) {
@@ -77,6 +104,21 @@ const Files = () => {
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>
       <SaveInstructionsModal dontShowOption={true} />
+      <DeleteModal 
+        show={showSingleDelete}
+        title={'Delete Song'}
+        message={deleteSong.name}
+        handler={() => handleDelete([deleteSong.id])}
+      />
+      <DeleteModal 
+        show={showBatchDelete}
+        title={'Delete Songs'}
+        message={`Delete ${selectedSongs.length} songs?`}
+        handler={() => {
+          handleDelete(selectedSongs)
+          setSelectEnabled(false);
+        }}
+      />
       <Top />
       <PageTitle 
         title='Import Music'
@@ -112,6 +154,7 @@ const Files = () => {
               backgroundColor: Colors.song,
               padding: 15
             }]}
+            onPress={() => setShowDelete(true)}
           >
             <Image 
               source={require('@/assets/icons/delete.png')}

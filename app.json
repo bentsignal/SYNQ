@@ -2,7 +2,7 @@
   "expo": {
     "name": "n-synk",
     "slug": "n-synk",
-    "version": "1.0.1",
+    "version": "1.1.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "n-synk",
@@ -30,7 +30,23 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-asset",
+        {
+          "assets": [
+            "./assets/static/Transfer.html"
+          ]
+        }
+      ],
+      ["expo-build-properties", {
+        "android": {
+          "usesCleartextTraffic": true
+        },
+        "ios": {
+          "flipper": true
+        }
+      }]
     ],
     "experiments": {
       "typedRoutes": true

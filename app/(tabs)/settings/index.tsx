@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeArea, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from 'expo-router'
 
 import { Styles } from "@/constants/Styles";
@@ -13,26 +13,20 @@ import Top from "@/components/Top";
 
 const Library = () => {
   const {showWelcome, setShowWelcome} = useGlobalContext();
+  const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView style={Styles.body}>
+    <View style={[Styles.body, {paddingTop: insets.top}]}>
       <InstructionsModal />
       <Top />
       <PageTitle title='Settings'/>
-      {/* <Option 
+      <Option 
         title="Synk Premium"
         desc="Manage your subcription"
         icon={require('@/assets/icons/premium.png')}
-        disabled={false}
+        disabled={true}
         handlePress={() => {}}
-      /> */}
-      <Option 
-        title="Instructions"
-        desc="How to import music to Spotify"
-        icon={require('@/assets/icons/instructions.png')}
-        disabled={false}
-        handlePress={() => {setShowWelcome(true)}}
-      />
-    </SafeAreaView>
+      /> 
+    </View>
   );
 }
 

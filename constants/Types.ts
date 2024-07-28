@@ -8,3 +8,10 @@ export type InfoType = {
     "name"?: string;
   };
 }
+
+export type SongType = {
+  "name": string;
+  "id": string;
+  "data": string;
+  "info": InfoType
+};

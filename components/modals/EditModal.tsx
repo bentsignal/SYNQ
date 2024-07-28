@@ -1,9 +1,9 @@
-import { Text, View, Modal, TextInput, ActivityIndicator, ScrollView } from 'react-native'
-import { useEffect } from 'react'
+import { Text, View, Modal, TextInput } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import CustomButton from '@/components/CustomButton'
-import { newCover, saveEdits } from '@/lib/SongManager'
+import Loading from '@/components/Loading'
+import { newCover, saveEdits, maybeString } from '@/lib/SongManager'
 import { EditCover } from '@/components/song/Cover'
 import { Colors } from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
@@ -12,17 +12,34 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 const EditModal = () => {
   
   const { 
-    fileResults, setFileResults,
-    showEdit, setShowEdit, editSong,
-    editFilename, setEditFilename,
-    editURI, setEditURI,
-    editData, setEditData,
-    editTitle, setEditTitle,
-    editArtist, setEditArtist,
-    editAlbum, setEditAlbum, 
-    editArtwork, setEditArtwork,
-    editLoad, setEditLoad
-   } = useGlobalContext();
+
+    // all songs being imported
+    results, setResults,
+
+    // show/hide modal
+    showEdit, setShowEdit,
+
+    // song being edited
+    editSong,
+
+  } = useGlobalContext();
+
+  // info being edited in modal
+  const [title, setTitle] = useState(maybeString(editSong.info?.metadata?.name));
+  const [artist, setArtist] = useState(maybeString(editSong.info?.metadata?.artist));
+  const [album, setAlbum] = useState(maybeString(editSong.info?.metadata?.album));
+  const [cover, setCover] = useState(maybeString(editSong.info?.metadata?.artwork))
+  const [loading, setLoading] = useState(false);
+
+  // get new info every time modal is shown
+  useEffect(() => {
+    if (showEdit) {
+      setTitle(maybeString(editSong.info?.metadata?.name));
+      setArtist(maybeString(editSong.info?.metadata?.artist));
+      setAlbum(maybeString(editSong.info?.metadata?.album));
+      setCover(maybeString(editSong.info?.metadata?.artwork));
+    }
+  }, [showEdit])
 
   return (
     <View
@@ -80,24 +97,24 @@ const EditModal = () => {
                     }}
                   >
                     <EditCover 
-                      image={editArtwork}
+                      image={cover}
                       handlePress={async () => {
-                        setEditLoad(true);
+                        setLoading(true);
                         const cover = await newCover();
-                        if (cover != '') {
-                          setEditArtwork(cover);
+                        if (cover) {
+                          setCover(cover)
                         }
-                        setEditLoad(false);
+                        setLoading(false);
                       }}
                     />
-                    <Text 
+                    {/* <Text 
                       style={[Styles.infoText, {
                         marginTop: 5,
                         fontSize: 12
                       }]
                     }>
-                      Supports: jpeg/png
-                    </Text>
+                      Supports: jpeg/png/heif
+                    </Text> */}
                     <Text
                       style={{
                         color: 'white',
@@ -107,7 +124,7 @@ const EditModal = () => {
                       }}
                       numberOfLines={1}
                     >
-                      {editSong.name}
+                      {maybeString(editSong.name)}
                     </Text>
                   </View>
                   <Text
@@ -120,8 +137,8 @@ const EditModal = () => {
                     autoCorrect={false}
                     editable
                     numberOfLines={1}
-                    value={editTitle}
-                    onChangeText={text => setEditTitle(text)}
+                    value={title}
+                    onChangeText={text => setTitle(text)}
                     placeholder={'Enter song title...'}
                   />
                   <Text
@@ -134,8 +151,8 @@ const EditModal = () => {
                     autoCorrect={false}
                     editable
                     numberOfLines={1}
-                    value={editArtist}
-                    onChangeText={text => setEditArtist(text)}
+                    value={artist}
+                    onChangeText={text => setArtist(text)}
                     placeholder={'Enter artist(s)...'}
                   />
                   <Text
@@ -148,8 +165,8 @@ const EditModal = () => {
                     autoCorrect={false}
                     editable
                     numberOfLines={1}
-                    value={editAlbum}
-                    onChangeText={text => setEditAlbum(text)}
+                    value={album}
+                    onChangeText={text => setAlbum(text)}
                     placeholder={'Enter album name...'}
                   />
                 </View>
@@ -174,19 +191,19 @@ const EditModal = () => {
                     title='Save'
                     background={Colors.main}
                     handlePress={() => {
-                      setEditLoad(true);
+                      setLoading(true);
                       setTimeout(() => {
                         const newResults = saveEdits(
-                          fileResults,
-                          editURI,
-                          editData,
-                          editTitle,
-                          editArtist,
-                          editAlbum,
-                          editArtwork
+                          results,
+                          editSong.id,
+                          editSong.data,
+                          title,
+                          artist,
+                          album,
+                          cover
                         )
-                        setFileResults(newResults);
-                        setEditLoad(false);
+                        setResults(newResults);
+                        setLoading(false);
                         setShowEdit(false);
                       }, 1000)
                     }}
@@ -196,7 +213,7 @@ const EditModal = () => {
               <View
                 style={{
                   position: 'absolute',
-                  display: editLoad ? 'flex' : 'none',
+                  display: loading ? 'flex' : 'none',
                   width: '100%',
                   height: '100%',
                   justifyContent: 'center',
@@ -205,7 +222,7 @@ const EditModal = () => {
                   backgroundColor: 'rgba(0, 0, 0, 0.6)'
                 }}
               >
-                <ActivityIndicator />
+                <Loading height={100} width={200}/>
               </View>
             </View>
           </KeyboardAwareScrollView>

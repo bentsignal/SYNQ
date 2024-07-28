@@ -3,15 +3,17 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { Styles } from '@/constants/Styles'
 
-import Song, { SongProps } from '@/components/song/Song'
+import { SongType } from '@/constants/Types';
+import { useGlobalContext } from '@/context/GlobalProvider';
+import Song from '@/components/song/Song'
 import DeleteModal from '@/components/modals/DeleteModal'
 import EditModal from '@/components/modals/EditModal'
 
-const renderItem = ({item} : {item: SongProps}) => {
+const renderItem = ({item} : {item: SongType}) => {
   return (
     <Song 
       name={item.name}
-      uri={item.uri}
+      id={item.id}
       data={item.data}
       info={item.info}
     />
@@ -19,6 +21,7 @@ const renderItem = ({item} : {item: SongProps}) => {
 }
 
 const SongList = (data: any) => {
+  const { selectedId } = useGlobalContext();
   return (
     <View
       style={[Styles.main, {
@@ -30,10 +33,13 @@ const SongList = (data: any) => {
       <FlatList 
         data={data.songs}
         renderItem={renderItem}
-        keyExtractor={song => song.name}
+        keyExtractor={song => song.id}
+        extraData={selectedId}
         style={{
-          width: '100%',
-          paddingRight: 5
+          width: '100%'
+        }}
+        contentContainerStyle={{
+          paddingBottom: 40
         }}
       />
       <LinearGradient

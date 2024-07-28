@@ -1,6 +1,9 @@
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useEffect } from 'react'
+import { View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { readAsStringAsync } from 'expo-file-system';
+import { useAssets } from 'expo-asset';
 
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
@@ -10,15 +13,27 @@ import Top from "@/components/Top";
 import Option from "@/components/Option";
 import WiFi from "@/components/import/wifi/WiFi";
 import Files from "@/components/import/files/Files";
+import { Success, Failure } from "@/components/Outcome";
 import InstructionsModal from "@/components/modals/InstructionsModal";
 
-const getShowWelcome = async() => {
+const getShowWelcome = async () => {
   return await AsyncStorage.getItem('showWelcome')
+}
+
+const getTransferPage = async (assets: any) => {
+  return await readAsStringAsync(assets[0].localUri ?? '')
 }
 
 const Home = () => {
 
-  const {showWelcome, setShowWelcome} = useGlobalContext();
+  const {setShowWelcome, setTransferPage} = useGlobalContext();
+  const [assets, error] = useAssets([require("../../assets/static/Transfer.html")]);
+
+  if (assets) {
+    readAsStringAsync(assets[0].localUri ?? '').then((page) => {
+      setTransferPage(page);
+    })
+  }
 
   useEffect(() => {
     getShowWelcome().then((value) => {
@@ -30,6 +45,8 @@ const Home = () => {
   }, [])
 
   const { homeState, setHomeState } = useGlobalContext();
+  const insets = useSafeAreaInsets();
+
   if (homeState === 1) {
     return (
       <WiFi />
@@ -40,12 +57,25 @@ const Home = () => {
       <Files />
     );
   }
+  else if (homeState === 3) {
+    return (
+      <Success />
+    )
+  }
+  else if (homeState === 4) {
+    return (
+      <Failure />
+    )
+  }
   else {
     return (
-      <SafeAreaView style={Styles.body}>
+      <View style={[Styles.body, {paddingTop: insets.top}]}>
         <InstructionsModal dontShowOption={true}/>
         <Top />
-        <PageTitle title='Import Music'/>
+        <PageTitle 
+          title='Import Music'
+          infoHandler={() => setShowWelcome(true)}
+          />
         <Option 
           title='Files'
           desc='Import from your files'
@@ -54,10 +84,10 @@ const Home = () => {
           handlePress={() => setHomeState(2)}
         />
         <Option 
-          title='WiFi Transfer'
+          title='Wifi Transfer'
           desc='Import from your computer'
           icon={require('@/assets/icons/wifi.png')}
-          disabled={true}
+          disabled={false}
           handlePress={() => {setHomeState(1)}}
         />
         <Option 
@@ -67,7 +97,7 @@ const Home = () => {
           disabled={true}
           handlePress={() => {setHomeState(3)}}
         />
-      </SafeAreaView>
+      </View>
     );
   }
 }

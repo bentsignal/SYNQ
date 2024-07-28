@@ -2,20 +2,47 @@ import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
-import { InfoType } from '@/constants/Types'
+import { InfoType, SongType } from '@/constants/Types'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as ImagePicker from 'expo-image-picker';
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
+
+const isValidNumString = (str: string) => {
+  return !isNaN(Number(str));
+}
+
+const getExportNumber = async () => {
+  try {
+    const numberString = await AsyncStorage.getItem('exportNumber');
+    if (numberString && isValidNumString(numberString)) {
+      let number = Number(numberString);
+      number++;
+      await AsyncStorage.setItem('exportNumber', number.toString());
+      return number;
+    }
+    else {
+      throw new Error('Bad data')
+    }
+  }
+  catch (error) {
+    await AsyncStorage.setItem('exportNumber', '1');
+    return 1;
+  }
+}
 
 export const exportSongs = async (songs: any) => {
 
   const date = new Date();
-  const dir = `${FileSystem.documentDirectory}${date.getMonth()}-${date.getDate()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`;
+  const exportNumber = await getExportNumber();
+  const dir = `${FileSystem.documentDirectory}batch ${1000}  -  ${date.getMonth()}.${date.getDate()}.${date.getFullYear()}`;
+  // const dir = `${FileSystem.documentDirectory}${date.getMonth()}-${date.getDate()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`;
   let destination;
   
   await FileSystem.makeDirectoryAsync(dir);
   
   if (songs.length === 1) {
     destination = `${dir}/${songs[0].name}`;
+    console.log(songs[0].data)
     await FileSystem.writeAsStringAsync(destination, songs[0].data, {encoding: 'base64'});
     await Sharing.shareAsync(destination);
   }
@@ -31,10 +58,35 @@ export const exportSongs = async (songs: any) => {
 
 }
 
+export const getWifiInfo = async (name: string, id: string, type: string, data: string) => {
+  try {
+    const destination = `${FileSystem.documentDirectory}${id}${name}`
+    await FileSystem.writeAsStringAsync(destination, data, {encoding: 'base64'})
+    const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
+    const info = await getAudioMetadata(destination, wantedTags)
+    await FileSystem.deleteAsync(destination);
+    return info
+  }
+  catch (error) {
+    console.log(`ERROR: Could not read tags for: ${name} with id: ${id}`)
+    console.log(`More info: ${error}`)
+    return {
+      "fileType": type,
+      "format": 'mp3',
+      "metadata": {
+        "album": '',
+        "artist": '',
+        "artwork": '',
+        "name": ''
+      }
+    }
+  }
+}
+
 export const importFiles = async () => {
   const results = await DocumentPicker.getDocumentAsync({
     type: "audio/mpeg",
-    multiple: false,
+    multiple: true,
     copyToCacheDirectory: true
   });
   const songs: {}[] = []
@@ -53,10 +105,11 @@ export const importFiles = async () => {
         })
       songs.push({
         'name': results.assets[i].name,
-        'uri': results.assets[i].uri,
+        'id': idgen(10),
         'data': data,
         'info': info
       })
+      await FileSystem.deleteAsync(results.assets[i].uri)
     }
     return songs
   }
@@ -65,22 +118,13 @@ export const importFiles = async () => {
   }
 }
 
-export const deleteSongFromFiles = async (uri: string) => {
-  await FileSystem.deleteAsync(uri)
-}
-
-export const removeSongFromResults = (
-  results: [{
-    name?: string;
-    data?: string;
-    uri?: string;
-    info?: InfoType
-  }],
-  uri: string
+export const removeSong = (
+  results: [SongType],
+  id: string
 ) => {
   let newResults = [];
   for (let i = 0; i < results.length; i++) {
-    if (results[i].uri && results[i].uri != uri) {
+    if (results[i].id && results[i].id !== id) {
       newResults.push(results[i]);
     }
   }
@@ -113,13 +157,8 @@ export const newCover = async () => {
 }
 
 export const saveEdits = (
-  results: [{
-    name?: string;
-    data: string;
-    uri?: string;
-    info: InfoType
-  }],
-  uri: string,
+  results: [SongType],
+  id: string,
   data: string,
   title: string,
   artist: string,
@@ -149,7 +188,7 @@ export const saveEdits = (
     tags.album = album
   }
   if (artwork) {
-    // really stupid way to extract either image/png or image/jpeg from start of string
+    // really questionable way to extract mime from start of string
     const infoString = artwork.split(/,(.*)/s)[0]
     const mimeTypeFull = infoString.split(/;(.*)/s)[0]
     const mimeType = mimeTypeFull.split(/:(.*)/s)[1]
@@ -164,7 +203,7 @@ export const saveEdits = (
   }
   const newData = fromByteArray(NodeID3.writeExpo(toByteArray(data), tags))
   for (let i = 0; i < results.length; i++) {
-    if (results[i].uri && results[i].uri == uri) {
+    if (results[i].id && results[i].id == id) {
       results[i].data = newData
       if (results[i].info) {
         results[i].info.metadata = {
@@ -180,6 +219,14 @@ export const saveEdits = (
   
 }
 
-export const fn = (data: any) => {
-  return data !== undefined;
+export const idgen = (len: number) => {
+  let result = '';
+  for (let i = 0; i < len; i++) {
+    result += Math.floor(Math.random()*10).toString();
+  }
+  return result;
+}
+
+export const maybeString = (value: any) => {
+  return value ? value : ''
 }

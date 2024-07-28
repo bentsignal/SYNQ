@@ -4,44 +4,34 @@ import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
 
+import { SongType } from '@/constants/Types'
 import SongInfo from '@/components/song/SongInfo'
 import EditButton from '@/components/song/EditButton'
 import DeleteButton from '@/components/song/DeleteButton'
 import { ListCover } from '@/components/song/Cover'
 
-export type SongProps = {
-  "name": string;
-  "uri": string;
-  "data": string;
-  "info": {
-    "fileType"?: string;
-    "format"?: string;
-    "metadata"?: {
-      "album"?: string;
-      "artist"?: string;
-      "artwork"?: string;
-      "name"?: string;
-    }
-  }
-};
-
-const Song = ({name, uri, data, info}: SongProps) => {
+const Song = ({name, id, data, info}: SongType) => {
   return (
     <View
-      style={{
+      style={[Styles.roundedContainer, {
         alignSelf: 'stretch',
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        height: 60,
-        marginBottom: 5
-      }}
+        height: 90,
+        marginBottom: 10,
+        backgroundColor: Colors.song,
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingTop: 15,
+        paddingBottom: 15
+      }]}
     >
-      <ListCover info={info}/>
+      <ListCover image={info.metadata?.artwork ? info.metadata.artwork : ''}/>
       <SongInfo info={info} name={name}/>
-      <EditButton name={name} uri={uri} data={data} info={info}/>
-      <DeleteButton name={name} uri={uri}/>
+      <EditButton name={name} id={id} data={data} info={info}/>
+      <DeleteButton name={name} id={id}/>
     </View>
   )
 }

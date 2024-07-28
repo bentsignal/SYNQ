@@ -4,13 +4,23 @@ import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
 
-const DeleteButton = ({name, uri}: any) => {
-  const {showDelete, setShowDelete, showEdit, setShowEdit, setDeleteSong } = useGlobalContext();
+const DeleteButton = ({name, id}: {name: string; id: string;}) => {
+
+  const {
+
+    // show/hide modal
+    setShowDelete, 
+    
+    // song being deleted
+    setDeleteSong 
+    
+  } = useGlobalContext();
+
   return (
     <TouchableOpacity
       onPress={() => {
         setShowDelete(true);
-        setDeleteSong({name, uri})
+        setDeleteSong({name, id})
       }}
     >
       <View

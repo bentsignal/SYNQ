@@ -1,6 +1,6 @@
 import { Text, View, Image, ActivityIndicator } from 'react-native'
 import { useEffect, useReducer, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -9,6 +9,7 @@ import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
 import PageTitle from '@/components/PageTitle'
+import Loading from '@/components/Loading';
 import Top from '@/components/Top'
 import FilesEmpty from '@/components/import/files/FilesEmpty'
 import SongList from '@/components/song/SongList'
@@ -16,16 +17,18 @@ import CustomButton from '@/components/CustomButton'
 import SaveInstructionsModal from '@/components/modals/SaveInstructionsModal';
 import { exportSongs } from '@/lib/SongManager'
 
-const getShowSaveInst = async() => {
+const getShowSaveInst = async () => {
   return await AsyncStorage.getItem('showSaveInst')
 }
 
 const Files = () => {
 
-  const { homeState, setHomeState, fileResults, setFileResults,
-    importDisabled, setImportDisabled, loading, setLoading,
-    zipping, setZipping, importing, setImporting, 
+  const { homeState, setHomeState, results, setResults,
+    exportDisabled, setExportDisabled, loading, setLoading,
+    zipping, setZipping, importing, setImporting, setShowSaveInst, 
   } = useGlobalContext();
+
+  const insets = useSafeAreaInsets();
 
   const getBody = () => {
     if (loading) {
@@ -49,15 +52,16 @@ const Files = () => {
           }]}
         >
           {message}
-          <ActivityIndicator style={{
+          <Loading height={100} width={200}/>
+          {/* <ActivityIndicator style={{
               padding: 20
-          }}/>
+          }}/> */}
         </View>
       )
     }
-    else if (fileResults.length > 0) {
+    else if (results.length > 0) {
       return (
-        <SongList songs={fileResults} />
+        <SongList songs={results} />
       )
     }
     else {
@@ -68,10 +72,13 @@ const Files = () => {
   }
 
   return (
-    <SafeAreaView style={Styles.body}>
+    <View style={[Styles.body, {paddingTop: insets.top}]}>
       <SaveInstructionsModal dontShowOption={true} />
       <Top />
-      <PageTitle title='Import Music' />
+      <PageTitle 
+        title='Import Music'
+        infoHandler={() => setShowSaveInst(true)}
+      />
       {getBody()}
       <View
         style={{
@@ -92,39 +99,39 @@ const Files = () => {
             setZipping(false);
             setImporting(false);
             setHomeState(0)
-            setFileResults([])
-            setImportDisabled(true)
+            setResults([])
+            setExportDisabled(true)
           }}
         />
         <CustomButton 
           title='Export'
           background={Colors.main}
           handlePress={() => {
-            setImportDisabled(true);
+            setExportDisabled(true);
             setLoading(true);
             setZipping(true);
             setTimeout(() => {
-              exportSongs(fileResults).then(() => {
+              exportSongs(results).then(() => {
                 setLoading(false);
                 setZipping(false);
                 // router.replace('/library');
-                setHomeState(0);
-                setFileResults([]);
+                setHomeState(3);
+                setResults([]);
               })
               .catch((error) => {
                 console.log(error)
                 console.log('failed to export files')
                 setLoading(false);
                 setZipping(false);
-                setHomeState(0);
-                setFileResults([]);
+                setHomeState(4);
+                setResults([]);
               })
             }, 1000)
           }}
-          disabled={importDisabled}
+          disabled={exportDisabled}
         />
       </View>
-    </SafeAreaView>
+    </View>
   )
 }
 

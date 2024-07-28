@@ -63,7 +63,7 @@ const SaveInstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
                     </Text>
                     <Image 
                       source={require('@/assets/images/save-instructions-3.jpg')}
-                      style={{width: '100%', height: 200}}
+                      style={{width: '100%', height: 200, marginBottom: 40}}
                       resizeMode='contain'
                     />
                     <Text
@@ -73,7 +73,7 @@ const SaveInstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
                     </Text>
                     <Image 
                       source={require('@/assets/images/save-instructions.jpg')}
-                      style={{width: '100%', height: 200, marginBottom: 20}}
+                      style={{width: '100%', height: 200, marginBottom: 40}}
                       resizeMode='contain'
                     />
                   </View>
@@ -116,7 +116,7 @@ const SaveInstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
               }}
             >
               <CheckBox value={checked} onValueChange={setChecked}/>
-              <Text style={Styles.infoText}>Don't show again</Text>
+              <Text style={Styles.infoText}>Don't show automatically</Text>
             </View> : <></>}
             <CustomButton 
               title="Close"

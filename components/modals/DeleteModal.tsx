@@ -5,10 +5,26 @@ import CustomButton from '@/components/CustomButton'
 import { Colors } from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
 import { useGlobalContext } from '@/context/GlobalProvider';
-import { deleteSongFromFiles, removeSongFromResults} from '@/lib/SongManager';
+import { removeSong } from '@/lib/SongManager';
 
 const DeleteModal = () => {
-  const { showDelete, setShowDelete, deleteSong, fileResults, setFileResults, setImportDisabled} = useGlobalContext();
+  
+  const { 
+    
+    // show/hide modal
+    showDelete, setShowDelete, 
+
+    // song to be deleted
+    deleteSong, 
+
+    // all songs being imported
+    results, setResults, 
+
+    // allow export of files
+    setExportDisabled
+    
+  } = useGlobalContext();
+
   return (
     <View
       style={{
@@ -68,12 +84,11 @@ const DeleteModal = () => {
                 background={Colors.main}
                 handlePress={async () => {
                   setShowDelete(false);
-                  const newResults = removeSongFromResults(fileResults, deleteSong.uri);
+                  const newResults = removeSong(results, deleteSong.id);
                   if (newResults.length <= 0) {
-                    setImportDisabled(true);
+                    setExportDisabled(true);
                   }
-                  setFileResults(newResults);
-                  deleteSongFromFiles(deleteSong.uri)
+                  setResults(newResults);
                 }}
               />
             </View>

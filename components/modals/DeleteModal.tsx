@@ -4,17 +4,14 @@ import CustomButton from '@/components/CustomButton'
 import { Colors } from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
 import { useGlobalContext } from '@/context/GlobalProvider';
+import { removeSongs } from '@/lib/SongManager';
 
-const DeleteModal = ( {show, title, message, handler} : {
-
-  show: boolean;
-  title: string;
-  message: any;
-  handler: () => void;
-
-} ) => {
+const DeleteModal = () => {
   
-  const { setShowDelete }  = useGlobalContext();
+  const { 
+    setShowDelete, showDelete, selectedSongs, deleteSong,
+    results, setResults, setExportDisabled, setSelectEnabled
+  }  = useGlobalContext();
 
   return (
     <View
@@ -25,7 +22,7 @@ const DeleteModal = ( {show, title, message, handler} : {
     >
       <Modal
         transparent={true}
-        visible={show}
+        visible={showDelete}
         animationType='slide'
       >
         <View style={Styles.popupBackdrop}>
@@ -42,7 +39,7 @@ const DeleteModal = ( {show, title, message, handler} : {
                 fontWeight: 'bold'
               }}
             >
-              {title}
+              {selectedSongs.length > 0 ? 'Delete Songs' : 'Delete Song'}
             </Text>
             <Text
               style={{
@@ -52,7 +49,7 @@ const DeleteModal = ( {show, title, message, handler} : {
               }}
               numberOfLines={1}
             >
-              {message}
+              {selectedSongs.length > 0 ? `Delete ${selectedSongs.length} songs?` : deleteSong.name}
             </Text>
             <View
               style={{
@@ -73,7 +70,16 @@ const DeleteModal = ( {show, title, message, handler} : {
               <CustomButton 
                 title='Delete'
                 background={Colors.main}
-                handlePress={handler}
+                handlePress={() => {
+                  setShowDelete(false);
+                  const ids = selectedSongs.length > 0 ? selectedSongs : [deleteSong.id]
+                  const newResults = removeSongs(results, ids);
+                  if (newResults.length <= 0) {
+                    setExportDisabled(true);
+                  }
+                  setResults(newResults);
+                  setSelectEnabled(false);
+                }}
               />
             </View>
           </View> 

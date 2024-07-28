@@ -7,6 +7,7 @@ import { SongType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import Song from '@/components/song/Song'
 import EditModal from '@/components/modals/EditModal'
+import DeleteModal from '@/components/modals/DeleteModal'
 
 const renderItem = ({item} : {item: SongType}) => {
   return (
@@ -28,6 +29,7 @@ const SongList = (data: any) => {
       }]}
     >
       <EditModal />
+      <DeleteModal />
       <FlatList 
         data={data.songs}
         renderItem={renderItem}

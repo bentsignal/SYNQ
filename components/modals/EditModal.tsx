@@ -22,6 +22,8 @@ const EditModal = () => {
     // song being edited
     editSong,
 
+    selectedSongs
+
   } = useGlobalContext();
 
   // info being edited in modal
@@ -87,7 +89,7 @@ const EditModal = () => {
                       fontWeight: 'bold'
                     }}
                   >
-                    Edit song
+                    {selectedSongs.length > 0 ? 'Edit Songs' : 'Edit Song'}
                   </Text>
                   <View
                     style={{
@@ -124,7 +126,7 @@ const EditModal = () => {
                       }}
                       numberOfLines={1}
                     >
-                      {maybeString(editSong.name)}
+                      {selectedSongs.length > 0 ? '' : maybeString(editSong.name)}
                     </Text>
                   </View>
                   <Text

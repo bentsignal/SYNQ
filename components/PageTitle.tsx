@@ -14,7 +14,7 @@ const PageTitle = ({
   showList
 }: PageTitleProps) => {
 
-  const { selectEnabled, setSelectEnabled } = useGlobalContext();
+  const { selectEnabled, setSelectEnabled, results } = useGlobalContext();
 
   const info = () => {
     if (infoHandler) {
@@ -41,7 +41,7 @@ const PageTitle = ({
   }
 
   const list = () => {
-    if (showList) {
+    if (showList && results.length > 1) {
       return (
         <View
           style={{

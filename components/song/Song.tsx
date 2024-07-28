@@ -15,10 +15,13 @@ import { ListCover } from '@/components/song/Cover'
 const Song = ({name, id, data, info}: SongType) => {
 
   const [selected, setSelected] = useState(false);
-  const { selectEnabled } = useGlobalContext(); 
+  const { selectEnabled, selectedSongs, setSelectedSongs } = useGlobalContext(); 
 
   useEffect(() => {
     setSelected(false);
+    if (!selectEnabled) {
+      setSelectedSongs([]);
+    }
   }, [selectEnabled])
 
   return (
@@ -42,21 +45,50 @@ const Song = ({name, id, data, info}: SongType) => {
       <ListCover image={info.metadata?.artwork ? info.metadata.artwork : ''}/>
       <SongInfo info={info} name={name}/>
       {
-        selectEnabled ? 
+
+        selectEnabled 
+
+        ? 
+
         <>
           <TouchableOpacity
             onPress={() => {
               setSelected(!selected);
+              let newSongs = [];
+              let i = 0;
+              if (!selected && !selectedSongs.includes(id)) {
+                if (selectedSongs.length == 0) {
+                  newSongs[0] = id;
+                }
+                else {
+                  for (i = 0; i < selectedSongs.length; i++) {
+                    newSongs[i] = selectedSongs[i];
+                  }
+                  newSongs[i] = id;
+                }
+                setSelectedSongs(newSongs);
+              }
+              else if (selected) {
+                for (i = 0; i < selectedSongs.length; i++) {
+                  if (selectedSongs[i] != id) {
+                    newSongs[i] = selectedSongs[i];
+                  }
+                }
+                setSelectedSongs(newSongs);
+              }
             }}
           >
             <Select active={selected} />
           </TouchableOpacity>
         </> 
+
         : 
+
         <>
           <EditButton name={name} id={id} data={data} info={info}/>
           <DeleteButton name={name} id={id}/>
         </>
+
       }
     </View>
   )

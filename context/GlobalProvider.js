@@ -25,6 +25,7 @@ const GlobalProvider = ({ children }) => {
   const [serverStarted, setServerStarted] = useState(false);
   const [wifiDisabled, setWifiDisabled] = useState(false);
   const [selectEnabled, setSelectEnabled] = useState(false);
+  const [selectedSongs, setSelectedSongs] = useState([]);
   const [transferPage, setTransferPage] = useState('<html><body><p>ERROR: Could not load page</p></body></html>');
 
   return (
@@ -56,7 +57,8 @@ const GlobalProvider = ({ children }) => {
         serverStarted, setServerStarted,
         ip, setIP,
         wifiDisabled, setWifiDisabled,
-        selectEnabled, setSelectEnabled
+        selectEnabled, setSelectEnabled,
+        selectedSongs, setSelectedSongs
         
       }}
     >

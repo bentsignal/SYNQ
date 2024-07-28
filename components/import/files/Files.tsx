@@ -26,10 +26,12 @@ const Files = () => {
   const { homeState, setHomeState, results, setResults,
     exportDisabled, setExportDisabled, loading, setLoading,
     zipping, setZipping, importing, setImporting, setShowSaveInst, 
-    selectEnabled
+    selectEnabled, selectedSongs
   } = useGlobalContext();
 
   const insets = useSafeAreaInsets();
+
+  
 
   const getBody = () => {
     if (loading) {
@@ -83,21 +85,10 @@ const Files = () => {
       />
       {getBody()}
       <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: 10,
-          position: 'absolute',
-          padding: 5,
-          bottom: 10
-        }}
-      >
-        <View
           style={{
             position: 'absolute',
-            top: -70,
-            display: selectEnabled ? 'flex' : 'none',
+            bottom: 10,
+            display: selectEnabled && selectedSongs.length > 0 ? 'flex' : 'none',
             flexDirection: 'row',
             gap: 10
           }}
@@ -105,7 +96,6 @@ const Files = () => {
           <TouchableOpacity
             style={[Styles.roundedContainer, Styles.backgroundBlendShadow, {
               backgroundColor: Colors.song,
-              
               padding: 15
             }]}
           >
@@ -132,6 +122,18 @@ const Files = () => {
             />
           </TouchableOpacity>
         </View>
+      <View
+        style={{
+          display: selectEnabled ? 'none' : 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 10,
+          position: 'absolute',
+          padding: 5,
+          bottom: 10
+        }}
+      >
         <CustomButton 
           title='Cancel'
           background={Colors.text}

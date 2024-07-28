@@ -27,7 +27,7 @@ const Files = () => {
     exportDisabled, setExportDisabled, loading, setLoading,
     zipping, setZipping, importing, setImporting, setShowSaveInst, 
     selectEnabled, setSelectEnabled, selectedSongs, showDelete, 
-    setShowDelete, deleteSong
+    setShowDelete, deleteSong, setEditSong, setShowEdit
   } = useGlobalContext();
 
   const insets = useSafeAreaInsets();
@@ -97,6 +97,15 @@ const Files = () => {
               backgroundColor: Colors.song,
               padding: 15
             }]}
+            onPress={() => {
+              setEditSong({
+                "name": "",
+                "id": "",
+                "data": "",
+                "info": ""
+              })
+              setShowEdit(true);
+            }}
           >
             <Image 
               source={require('@/assets/icons/edit.png')}
@@ -157,7 +166,6 @@ const Files = () => {
               exportSongs(results).then(() => {
                 setLoading(false);
                 setZipping(false);
-                // router.replace('/library');
                 setHomeState(3);
                 setResults([]);
               })

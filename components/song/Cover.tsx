@@ -6,6 +6,7 @@ export const ListCover = ({image}: {
 }) => {
 
   const [src, setSrc] = useState(image ? image : '');
+  const [loaded, setLoaded] = useState(false);
   let dim = src ? 60 : 20;
 
   useEffect(() => {
@@ -20,6 +21,7 @@ export const ListCover = ({image}: {
       height: 60,
       justifyContent: 'center',
       alignItems: 'center',
+      opacity: loaded ? 1 : 0
     }}>
       <Image 
         source={src ? {uri: src} : require('@/assets/icons/music.png')}
@@ -28,10 +30,11 @@ export const ListCover = ({image}: {
           height: dim
         }}
         onLoad={() => {
-          return null;
+          setLoaded(true);
         }}
         onError={(error) => {
           setSrc('');
+          setLoaded(true);
         }}
       />
     </View>

@@ -22,7 +22,8 @@ const EditModal = () => {
     // song being edited
     editSong,
 
-    selectedSongs
+    selectedSongs,
+    setSelectEnabled
 
   } = useGlobalContext();
 
@@ -205,18 +206,20 @@ const EditModal = () => {
                     handlePress={() => {
                       setLoading(true);
                       setTimeout(() => {
+                        const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id]
                         const newResults = saveEdits(
                           results,
-                          editSong.id,
-                          editSong.data,
+                          ids,
                           title,
                           artist,
                           album,
                           cover
                         )
+
                         setResults(newResults);
                         setLoading(false);
                         setShowEdit(false);
+                        setSelectEnabled(false);
                       }, 1000)
                     }}
                   />

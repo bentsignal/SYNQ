@@ -5,6 +5,7 @@ import { Colors } from '@/constants/Colors';
 type MainButtonProps = {
   title?: string;
   background?: string;
+  disabledColor?: string;
   handlePress?: () => void;
   disabled?: boolean;
 };
@@ -12,6 +13,7 @@ type MainButtonProps = {
 const CustomButton = ({
   title,
   background,
+  disabledColor,
   handlePress,
   disabled
 }: MainButtonProps) => {
@@ -20,7 +22,7 @@ const CustomButton = ({
       onPress={handlePress}
       activeOpacity={0.8}
       style={[Styles.buttonContainer, , Styles.roundedContainer, {
-        backgroundColor: disabled ? Colors.disabled : background, 
+        backgroundColor: disabled ? disabledColor : background, 
         height: 42}
       ]}
       disabled={disabled}

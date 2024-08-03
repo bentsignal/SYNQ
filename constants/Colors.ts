@@ -5,6 +5,7 @@ export const Colors = {
   textbox: '#262626',
   popup: '#181818',
   altButton: '#ffffff',
+  altDisabled: '#6e6e6e',
   disabled: "#1d3c68",
   background: '#101010',
   song: '#1F1E1E',

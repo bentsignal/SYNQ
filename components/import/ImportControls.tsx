@@ -9,13 +9,14 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
 
   const { 
 
-    setHomeState, results, setResults,
+    setHomeState, results, setResults, loading,
+    transferSize, homeState,
     exportDisabled, setExportDisabled, setLoading,
     setZipping, setImporting, 
     selectEnabled, selectedSongs,
     setShowDelete, setEditSong, setShowEdit,
     setTransferSize
-    
+
   } = useGlobalContext();
 
   return (
@@ -82,7 +83,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
       >
         <CustomButton 
           title='Cancel'
-          background={Colors.text}
+          background={Colors.altButton}
           handlePress={() => {
             setLoading(false);
             setZipping(false);
@@ -96,6 +97,8 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
               reset();
             }
           }}
+          disabled={(homeState == 1 && transferSize > 0) || (homeState == 2 && loading)}
+          disabledColor={Colors.altDisabled}
         />
         <CustomButton 
           title='Export'
@@ -130,6 +133,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
             }, 1000)
           }}
           disabled={exportDisabled}
+          disabledColor={Colors.disabled}
         />
       </View>
     </>

@@ -1,31 +1,21 @@
-import { Text, View, Image, ActivityIndicator, TouchableOpacity } from 'react-native'
-import { useEffect, useReducer, useState } from 'react'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { router } from 'expo-router'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import axios from 'axios';
-
+import { View, Image, TouchableOpacity } from 'react-native'
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
-import PageTitle from '@/components/PageTitle'
-import Loading from '@/components/Loading';
-import Top from '@/components/Top'
-import FilesEmpty from '@/components/import/files/FilesEmpty'
-import SongList from '@/components/song/SongList'
 import CustomButton from '@/components/CustomButton'
-import SaveInstructionsModal from '@/components/modals/SaveInstructionsModal';
-import { exportSongs, removeSongs } from '@/lib/SongManager'
+import { exportSongs} from '@/lib/SongManager'
 
 const ImportControls = ({reset}: {reset?: () => void}) => {
 
-  const { homeState, setHomeState, results, setResults,
-    exportDisabled, setExportDisabled, loading, setLoading,
-    zipping, setZipping, importing, setImporting, setShowSaveInst, 
-    selectEnabled, setSelectEnabled, selectedSongs, showDelete, 
-    setShowDelete, deleteSong, setEditSong, setShowEdit,
+  const { 
+
+    setHomeState, results, setResults,
+    exportDisabled, setExportDisabled, setLoading,
+    setZipping, setImporting, 
+    selectEnabled, selectedSongs,
+    setShowDelete, setEditSong, setShowEdit,
     setTransferSize
+    
   } = useGlobalContext();
 
   return (

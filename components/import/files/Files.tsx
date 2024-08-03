@@ -1,9 +1,5 @@
-import { Text, View, Image, ActivityIndicator, TouchableOpacity } from 'react-native'
-import { useEffect, useReducer, useState } from 'react'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { router } from 'expo-router'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Text, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
@@ -13,22 +9,17 @@ import Loading from '@/components/Loading';
 import Top from '@/components/Top'
 import FilesEmpty from '@/components/import/files/FilesEmpty'
 import SongList from '@/components/song/SongList'
-import CustomButton from '@/components/CustomButton'
 import SaveInstructionsModal from '@/components/modals/SaveInstructionsModal';
 import ImportControls from '../ImportControls';
-import { exportSongs, removeSongs } from '@/lib/SongManager'
-
-const getShowSaveInst = async () => {
-  return await AsyncStorage.getItem('showSaveInst')
-}
 
 const Files = () => {
 
-  const { homeState, setHomeState, results, setResults,
-    exportDisabled, setExportDisabled, loading, setLoading,
-    zipping, setZipping, importing, setImporting, setShowSaveInst, 
-    selectEnabled, setSelectEnabled, selectedSongs, showDelete, 
-    setShowDelete, deleteSong, setEditSong, setShowEdit
+  const { 
+    
+    results, loading,
+    zipping, importing,
+    setShowSaveInst, 
+
   } = useGlobalContext();
 
   const insets = useSafeAreaInsets();

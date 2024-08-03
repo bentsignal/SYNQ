@@ -1,26 +1,17 @@
-import { Text, View, ActivityIndicator, Dimensions } from 'react-native'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { router } from 'expo-router'
+import { Text, View, Dimensions } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useEffect, useState } from 'react'
-import * as server from "expo-http-server";
 import * as WebBrowser from 'expo-web-browser'
-import * as Network from 'expo-network';
-import Constants from 'expo-constants'
-import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 import axios from 'axios';
 
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
-import { Colors } from '@/constants/Colors'
-import { getWifiInfo, exportSongs, idgen} from '@/lib/SongManager'
-import Transfer from '@/assets/static/Transfer';
 import SongList from '@/components/song/SongList'
 import Loading from '@/components/Loading'
 import PageTitle from '@/components/PageTitle'
 import Top from '@/components/Top'
 import ImportInstructions from '@/components/import/wifi/ImportInstructions'
 import ImportControls from '../ImportControls';
-import CustomButton from '@/components/CustomButton'
 
 const WiFi = () => {
 

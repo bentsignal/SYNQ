@@ -19,21 +19,17 @@ import Loading from '@/components/Loading'
 import PageTitle from '@/components/PageTitle'
 import Top from '@/components/Top'
 import ImportInstructions from '@/components/import/wifi/ImportInstructions'
+import ImportControls from '../ImportControls';
 import CustomButton from '@/components/CustomButton'
 
 const WiFi = () => {
 
   const { 
 
-    homeState, setHomeState, 
     results, setResults,
-    transferSize, setTransferSize,
-    serverStarted, setServerStarted,
-    exportDisabled, setExportDisabled,
+    transferSize,  setExportDisabled,
     loading, setLoading,
-    ip, setIP,
-    wifiDisabled, setWifiDisabled,
-    setSelectedId
+    ip, wifiDisabled,
 
   } = useGlobalContext();
 
@@ -41,10 +37,6 @@ const WiFi = () => {
 
   const [exporting, setExporting] = useState(false);
   const [URL, setURL] = useState('');
-  // const [ip, setIP] = useState('0.0.0.0')
-  // const [loading, setLoading] = useState(true);
-  // const [disabled, setDisabled] = useState(false);
-  // const [allowTransfer, setAllowTransfer] = useState(false);
   const PORT = 3000
 
   useEffect(() => {
@@ -177,62 +169,13 @@ const WiFi = () => {
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>
       <Top />
-      <PageTitle title='Import Music' />
+      <PageTitle 
+        title='Import Music'
+        showList={true}
+      />
       {getInstructions()}
       {getBody()}
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: 10,
-          position: 'absolute',
-          padding: 5,
-          bottom: 10
-        }}
-      >
-        <CustomButton 
-          title='Cancel'
-          background={Colors.text}
-          handlePress={() => {
-            setHomeState(0)
-            setLoading(false);
-            setResults([]);
-            setTransferSize(0);
-            setExportDisabled(true);
-            resetResults();
-          }}
-        />
-        <CustomButton 
-          title='Export'
-          background={Colors.main}
-          handlePress={() => {
-            setExportDisabled(true);
-            setLoading(true);
-            setTimeout(() => {
-              exportSongs(results).then(() => {
-                setLoading(false);
-                setHomeState(3);
-                setResults([]);
-                setTransferSize(0);
-                setExportDisabled(true);
-                resetResults();
-              })
-              .catch((error) => {
-                console.log(error)
-                console.log('failed to export files')
-                setLoading(false);
-                setHomeState(4);
-                setResults([]);
-                setTransferSize(0);
-                setExportDisabled(true);
-                resetResults();
-              })
-            }, 1000)
-          }}
-          disabled={exportDisabled}
-        />
-      </View>
+      <ImportControls reset={resetResults}/>
     </View>
   )
 }

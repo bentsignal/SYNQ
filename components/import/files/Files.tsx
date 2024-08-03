@@ -15,6 +15,7 @@ import FilesEmpty from '@/components/import/files/FilesEmpty'
 import SongList from '@/components/song/SongList'
 import CustomButton from '@/components/CustomButton'
 import SaveInstructionsModal from '@/components/modals/SaveInstructionsModal';
+import ImportControls from '../ImportControls';
 import { exportSongs, removeSongs } from '@/lib/SongManager'
 
 const getShowSaveInst = async () => {
@@ -83,105 +84,7 @@ const Files = () => {
         showList={true}
       />
       {getBody()}
-      <View
-          style={{
-            position: 'absolute',
-            bottom: 10,
-            display: selectEnabled && selectedSongs.length > 0 ? 'flex' : 'none',
-            flexDirection: 'row',
-            gap: 10
-          }}
-        >
-          <TouchableOpacity
-            style={[Styles.roundedContainer, Styles.backgroundBlendShadow, {
-              backgroundColor: Colors.song,
-              padding: 15
-            }]}
-            onPress={() => {
-              setEditSong({
-                "name": "",
-                "id": "",
-                "data": "",
-                "info": ""
-              })
-              setShowEdit(true);
-            }}
-          >
-            <Image 
-              source={require('@/assets/icons/edit.png')}
-              style={{
-                width: 20,
-                height: 20,
-              }}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[Styles.roundedContainer, Styles.backgroundBlendShadow, {
-              backgroundColor: Colors.song,
-              padding: 15
-            }]}
-            onPress={() => setShowDelete(true)}
-          >
-            <Image 
-              source={require('@/assets/icons/delete.png')}
-              style={{
-                width: 20,
-                height: 20,
-              }}
-            />
-          </TouchableOpacity>
-        </View>
-      <View
-        style={{
-          display: selectEnabled ? 'none' : 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: 10,
-          position: 'absolute',
-          padding: 5,
-          bottom: 10
-        }}
-      >
-        <CustomButton 
-          title='Cancel'
-          background={Colors.text}
-          handlePress={() => {
-            setLoading(false);
-            setZipping(false);
-            setImporting(false);
-            setHomeState(0)
-            setResults([])
-            setExportDisabled(true)
-          }}
-        />
-        <CustomButton 
-          title='Export'
-          background={Colors.main}
-          handlePress={() => {
-            setExportDisabled(true);
-            setLoading(true);
-            setZipping(true);
-            setTimeout(() => {
-              exportSongs(results).then(() => {
-                setLoading(false);
-                setZipping(false);
-                setHomeState(3);
-                setResults([]);
-              })
-              .catch((error) => {
-                console.log(error)
-                console.log('failed to export files')
-                setLoading(false);
-                setZipping(false);
-                setHomeState(4);
-                setResults([]);
-              })
-            }, 1000)
-          }}
-          disabled={exportDisabled}
-        />
-      </View>
+      <ImportControls />
     </View>
   )
 }

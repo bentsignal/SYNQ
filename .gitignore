@@ -16,6 +16,8 @@ commands.md
 *.tar
 *.ipa
 *.app
+credentials
+repos
 
 # macOS
 .DS_Store

@@ -341,7 +341,7 @@ const Transfer = () => {
               })
           </script>
           <header>
-            <p>n-synk</p>
+            <p>cynk</p>
             <div id="connection-status">
               <span class="connecting">Connecting to server...</span>
             </div>

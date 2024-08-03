@@ -1,13 +1,11 @@
-import { View, FlatList, Dimensions } from 'react-native'
+import { View, FlatList, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
-import { Styles } from '@/constants/Styles'
-
+import { Styles } from '@/constants/Styles';
 import { SongType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
-import Song from '@/components/song/Song'
-import EditModal from '@/components/modals/EditModal'
-import DeleteModal from '@/components/modals/DeleteModal'
+import Song from '@/components/song/Song';
+import EditModal from '@/components/modals/EditModal';
+import DeleteModal from '@/components/modals/DeleteModal';
 
 const renderItem = ({item} : {item: SongType}) => {
   return (
@@ -17,11 +15,13 @@ const renderItem = ({item} : {item: SongType}) => {
       data={item.data}
       info={item.info}
     />
-  )
+  );
 }
 
 const SongList = (data: any) => {
+
   const { selectedId } = useGlobalContext();
+
   return (
     <View
       style={[Styles.main, {
@@ -50,7 +50,8 @@ const SongList = (data: any) => {
         pointerEvents={'none'}
       />
     </View>
-  )
+  );
+
 }
 
 export default SongList;

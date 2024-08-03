@@ -1,19 +1,15 @@
-import { Text, View } from "react-native";
-import { SafeAreaView, useSafeArea, useSafeAreaInsets } from "react-native-safe-area-context";
-import { router } from 'expo-router'
-
+import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Styles } from "@/constants/Styles";
-import { Colors } from "@/constants/Colors";
-
-import { useGlobalContext } from '@/context/GlobalProvider'
 import InstructionsModal from "@/components/modals/InstructionsModal";
-import PageTitle from '@/components/PageTitle'
+import PageTitle from '@/components/PageTitle';
 import Option from "@/components/Option";
 import Top from "@/components/Top";
 
 const Library = () => {
-  const {showWelcome, setShowWelcome} = useGlobalContext();
+
   const insets = useSafeAreaInsets();
+
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>
       <InstructionsModal />
@@ -28,6 +24,7 @@ const Library = () => {
       /> 
     </View>
   );
+  
 }
 
 export default Library;

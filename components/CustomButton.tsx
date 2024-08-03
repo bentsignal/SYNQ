@@ -1,6 +1,5 @@
 import { Text, TouchableOpacity } from 'react-native';
 import { Styles } from '@/constants/Styles';
-import { Colors } from '@/constants/Colors';
 
 type MainButtonProps = {
   title?: string;

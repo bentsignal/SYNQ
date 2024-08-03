@@ -1,16 +1,14 @@
-import { View, TouchableOpacity } from 'react-native'
-import { useState, useEffect } from 'react'
-
-import { useGlobalContext } from '@/context/GlobalProvider'
-import { Styles } from '@/constants/Styles'
-import { Colors } from '@/constants/Colors'
-
-import { SongType } from '@/constants/Types'
-import SongInfo from '@/components/song/SongInfo'
-import EditButton from '@/components/song/EditButton'
-import DeleteButton from '@/components/song/DeleteButton'
+import { View, TouchableOpacity } from 'react-native';
+import { useState, useEffect } from 'react';
+import { useGlobalContext } from '@/context/GlobalProvider';
+import { Styles } from '@/constants/Styles';
+import { Colors } from '@/constants/Colors';
+import { SongType } from '@/constants/Types';
+import SongInfo from '@/components/song/SongInfo';
+import EditButton from '@/components/song/EditButton';
+import DeleteButton from '@/components/song/DeleteButton';
 import Select from '@/components/song/Select';
-import { ListCover } from '@/components/song/Cover'
+import { ListCover } from '@/components/song/Cover';
 
 const Song = ({name, id, data, info}: SongType) => {
 
@@ -22,7 +20,7 @@ const Song = ({name, id, data, info}: SongType) => {
     if (!selectEnabled) {
       setSelectedSongs([]);
     }
-  }, [selectEnabled])
+  }, [selectEnabled]);
 
   return (
     <View
@@ -91,8 +89,8 @@ const Song = ({name, id, data, info}: SongType) => {
 
       }
     </View>
-  )
+  );
 
 }
 
-export default Song
+export default Song;

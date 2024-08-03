@@ -1,8 +1,5 @@
-import { View, Image, TouchableOpacity } from 'react-native'
-import { InfoType } from '@/constants/Types'
-import { useEffect, useState, useRef } from 'react'
-import { Colors } from '@/constants/Colors'
-import Loading from '../Loading'
+import { View, Image, TouchableOpacity } from 'react-native';
+import { useEffect, useState } from 'react';
 
 export const ListCover = ({image}: {
   image?: string;
@@ -14,7 +11,7 @@ export const ListCover = ({image}: {
   useEffect(() => {
     setSrc(image ? image : '');
     dim = src ? 60 : 20;
-  }, [image])
+  }, [image]);
 
   return (
     <View style={{
@@ -34,12 +31,11 @@ export const ListCover = ({image}: {
           return null;
         }}
         onError={(error) => {
-          console.log('ERROR: Corrupt list image cover.')
           setSrc('');
         }}
       />
     </View>
-  )
+  );
 
 }
 
@@ -53,7 +49,7 @@ export const EditCover = ({image, handlePress}: {
 
   useEffect(() => {
     setSrc(image ? image : '')
-  }, [image])
+  }, [image]);
 
   return (
     <TouchableOpacity
@@ -106,6 +102,6 @@ export const EditCover = ({image, handlePress}: {
         </View>
       </View>
     </TouchableOpacity>
-  )
+  );
 
 }

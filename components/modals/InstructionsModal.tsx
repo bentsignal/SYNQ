@@ -1,20 +1,19 @@
-import { Text, View, Modal, Image, ScrollView } from 'react-native'
-import CheckBox from 'expo-checkbox'
+import { Text, View, Modal, Image, ScrollView } from 'react-native';
+import CheckBox from 'expo-checkbox';
 import { LinearGradient } from 'expo-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useState } from 'react'
-import CustomButton from '@/components/CustomButton'
-import { Colors } from '@/constants/Colors'
-import { Styles } from '@/constants/Styles'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState } from 'react';
+import CustomButton from '@/components/CustomButton';
+import { Colors } from '@/constants/Colors';
+import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
-
-type InstructionsModalProps = {
-  dontShowOption?: boolean;
-}
+import { InstructionsModalProps } from '@/constants/Types';
 
 const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
+
   const {showWelcome, setShowWelcome} = useGlobalContext();
   const [checked, setChecked] = useState(false);
+
   return (
     <View
       style={{
@@ -30,8 +29,6 @@ const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
         <View style={Styles.popupBackdrop}>
           <View
             style={[Styles.popupBody, Styles.roundedContainer, {
-              // paddingLeft: 5,
-              // paddingRight: 5,
               paddingTop: 20,
               paddingBottom: 20,
               width: '90%',
@@ -51,16 +48,6 @@ const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
                 padding: 15
               }}
             >
-              {/* <Text
-                style={{
-                  color: 'white',
-                  fontSize: 18,
-                  fontWeight: 'bold',
-                  paddingBottom: 10
-                }}
-              >
-                To get started:
-              </Text> */}
               <View style={{
                 height: 400,
               }}>
@@ -73,7 +60,6 @@ const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
                     </Text>
                     <Text
                       style={[Styles.infoText, {
-                        // paddingLeft: 16,
                         paddingTop: 5
                       }]}
                     >
@@ -153,7 +139,7 @@ const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
               handlePress={async () => {
                 setShowWelcome(false);
                 if (checked) {
-                  await AsyncStorage.setItem('showWelcome', 'false')
+                  await AsyncStorage.setItem('showWelcome', 'false');
                 }
               }}
             />
@@ -161,7 +147,8 @@ const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
         </View>
       </Modal>
     </View>
-  )
+  );
+
 }
 
 export default InstructionsModal;

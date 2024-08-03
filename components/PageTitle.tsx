@@ -1,5 +1,5 @@
 import { Text, Image, TouchableOpacity, View } from "react-native";
-import { Styles } from "@/constants/Styles"
+import { Styles } from "@/constants/Styles";
 import { useGlobalContext } from "@/context/GlobalProvider";
 
 type PageTitleProps = {
@@ -31,12 +31,12 @@ const PageTitle = ({
             }}
           />
         </TouchableOpacity>
-      )
+      );
     }
     else {
       return (
         <></>
-      )
+      );
     }
   }
 
@@ -70,7 +70,7 @@ const PageTitle = ({
     else {
       return (
         <></>
-      )
+      );
     }
   }
 
@@ -90,7 +90,8 @@ const PageTitle = ({
       {info()}
       {list()}
     </View>
-  )
+  );
+  
 }
 
 export default PageTitle;

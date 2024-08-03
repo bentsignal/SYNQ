@@ -1,20 +1,21 @@
-import { View, Image, TouchableOpacity } from 'react-native'
-import { useGlobalContext } from '@/context/GlobalProvider'
-import { Styles } from '@/constants/Styles'
-import { Colors } from '@/constants/Colors'
-import CustomButton from '@/components/CustomButton'
-import { exportSongs} from '@/lib/SongManager'
+import { View, Image, TouchableOpacity } from 'react-native';
+import { useGlobalContext } from '@/context/GlobalProvider';
+import { Styles } from '@/constants/Styles';
+import { Colors } from '@/constants/Colors';
+import CustomButton from '@/components/CustomButton';
+import { exportSongs} from '@/lib/SongManager';
 
 const ImportControls = ({reset}: {reset?: () => void}) => {
 
-  const { 
+  const {
 
-    setHomeState, results, setResults, loading,
-    transferSize, homeState,
-    exportDisabled, setExportDisabled, setLoading,
-    setZipping, setImporting, 
-    selectEnabled, selectedSongs,
-    setShowDelete, setEditSong, setShowEdit,
+    results, loading, transferSize,
+    exportDisabled, homeState, selectEnabled,
+    selectedSongs,
+
+    setHomeState, setResults, setExportDisabled,
+    setLoading, setZipping, setImporting, 
+    setShowDelete, setEditSong, setShowEdit, 
     setTransferSize
 
   } = useGlobalContext();
@@ -41,7 +42,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
               "id": "",
               "data": "",
               "info": ""
-            })
+            });
             setShowEdit(true);
           }}
         >
@@ -93,7 +94,6 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
             setResults([]);
             setExportDisabled(true);
             if (reset) {
-              console.log('reset')
               reset();
             }
           }}
@@ -115,7 +115,6 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
                 setTransferSize(0);
                 setResults([]);
                 if (reset) {
-                  console.log('reset')
                   reset();
                 }
               })
@@ -126,7 +125,6 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
                 setTransferSize(0);
                 setResults([]);
                 if (reset) {
-                  console.log('reset')
                   reset();
                 }
               })
@@ -138,6 +136,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
       </View>
     </>
   );
+
 }
 
 export default ImportControls;

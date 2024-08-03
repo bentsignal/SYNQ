@@ -1,6 +1,6 @@
-import { Text, View, Image, TouchableOpacity, ImageSourcePropType } from 'react-native'
-import { Colors } from '@/constants/Colors'
-import { Styles } from '@/constants/Styles'
+import { Text, View, Image, TouchableOpacity, ImageSourcePropType } from 'react-native';
+import { Colors } from '@/constants/Colors';
+import { Styles } from '@/constants/Styles';
 
 type ImportInstructionsProps = {
   title: string;
@@ -8,15 +8,20 @@ type ImportInstructionsProps = {
   icon: ImageSourcePropType;
   disabled?: boolean;
   handlePress: () => void;
-}
+};
 
-const ImportInstructions = ({
-  title,
-  desc,
-  icon,
-  disabled,
-  handlePress
-}:ImportInstructionsProps) => {
+const ImportInstructions = (
+
+  {
+    title,
+    desc,
+    icon,
+    disabled,
+    handlePress
+  } : ImportInstructionsProps
+
+) => {
+
   return (
     <TouchableOpacity
       onPress={handlePress}
@@ -56,7 +61,8 @@ const ImportInstructions = ({
         </Text>
       </View>
     </TouchableOpacity>
-  )
+  );
+
 }
 
 export default ImportInstructions;

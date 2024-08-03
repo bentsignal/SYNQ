@@ -1,20 +1,9 @@
-import { Text, View, Image, FlatList, TouchableOpacity } from 'react-native'
-
-import { useGlobalContext } from '@/context/GlobalProvider'
-import { Styles } from '@/constants/Styles'
-import { Colors } from '@/constants/Colors'
+import { View, Image, TouchableOpacity } from 'react-native';
+import { useGlobalContext } from '@/context/GlobalProvider';
 
 const DeleteButton = ({name, id}: {name: string; id: string;}) => {
 
-  const {
-
-    // show/hide modal
-    setShowDelete, 
-    
-    // song being deleted
-    setDeleteSong 
-    
-  } = useGlobalContext();
+  const { setShowDelete, setDeleteSong } = useGlobalContext();
 
   return (
     <TouchableOpacity
@@ -40,7 +29,8 @@ const DeleteButton = ({name, id}: {name: string; id: string;}) => {
         />
       </View>
     </TouchableOpacity>
-  )
+  );
+  
 }
 
 export default DeleteButton;

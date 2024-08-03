@@ -1,40 +1,31 @@
-import { Text, View, Modal, TextInput } from 'react-native'
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { useState, useEffect } from 'react'
-import CustomButton from '@/components/CustomButton'
-import Loading from '@/components/Loading'
-import { newCover, saveEdits, maybeString } from '@/lib/SongManager'
-import { EditCover } from '@/components/song/Cover'
-import { Colors } from '@/constants/Colors'
-import { Styles } from '@/constants/Styles'
+import { Text, View, Modal, TextInput } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useState, useEffect } from 'react';
+import CustomButton from '@/components/CustomButton';
+import Loading from '@/components/Loading';
+import { newCover, saveEdits, maybeString } from '@/lib/SongManager';
+import { EditCover } from '@/components/song/Cover';
+import { Colors } from '@/constants/Colors';
+import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
 
 const EditModal = () => {
-  
-  const { 
 
-    // all songs being imported
-    results, setResults,
+  const {
 
-    // show/hide modal
-    showEdit, setShowEdit,
-
-    // song being edited
-    editSong,
-
+    results, showEdit, editSong,
     selectedSongs,
-    setSelectEnabled
+
+    setResults, setShowEdit, setSelectEnabled
 
   } = useGlobalContext();
 
-  // info being edited in modal
   const [title, setTitle] = useState(maybeString(editSong.info?.metadata?.name));
   const [artist, setArtist] = useState(maybeString(editSong.info?.metadata?.artist));
   const [album, setAlbum] = useState(maybeString(editSong.info?.metadata?.album));
-  const [cover, setCover] = useState(maybeString(editSong.info?.metadata?.artwork))
+  const [cover, setCover] = useState(maybeString(editSong.info?.metadata?.artwork));
   const [loading, setLoading] = useState(false);
 
-  // get new info every time modal is shown
   useEffect(() => {
     if (showEdit) {
       setTitle(maybeString(editSong.info?.metadata?.name));
@@ -42,7 +33,7 @@ const EditModal = () => {
       setAlbum(maybeString(editSong.info?.metadata?.album));
       setCover(maybeString(editSong.info?.metadata?.artwork));
     }
-  }, [showEdit])
+  }, [showEdit]);
 
   return (
     <View
@@ -206,7 +197,7 @@ const EditModal = () => {
                     handlePress={() => {
                       setLoading(true);
                       setTimeout(() => {
-                        const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id]
+                        const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id];
                         const newResults = saveEdits(
                           results,
                           ids,
@@ -214,8 +205,7 @@ const EditModal = () => {
                           artist,
                           album,
                           cover
-                        )
-
+                        );
                         setResults(newResults);
                         setLoading(false);
                         setShowEdit(false);
@@ -245,6 +235,7 @@ const EditModal = () => {
       </Modal>
     </View>
   );
+
 }
 
 export default EditModal;

@@ -1,10 +1,10 @@
-import { Text, View, Image } from 'react-native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useGlobalContext } from '@/context/GlobalProvider'
-import { Styles } from '@/constants/Styles'
-import { Colors } from '@/constants/Colors'
-import CustomButton from '@/components/CustomButton'
-import { importFiles } from '@/lib/SongManager'
+import { Text, View, Image } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useGlobalContext } from '@/context/GlobalProvider';
+import { Styles } from '@/constants/Styles';
+import { Colors } from '@/constants/Colors';
+import CustomButton from '@/components/CustomButton';
+import { importFiles } from '@/lib/SongManager';
 
 const getShowSaveInst = async() => {
   return await AsyncStorage.getItem('showSaveInst')
@@ -13,8 +13,10 @@ const getShowSaveInst = async() => {
 const FilesEmpty = () => {
 
   const { 
+
     setResults, setExportDisabled, setLoading, setImporting,
     setShowSaveInst, setHomeState
+
   } = useGlobalContext();
 
   return (
@@ -45,26 +47,26 @@ const FilesEmpty = () => {
         title='Browse'
         background={Colors.altButton}
         handlePress={() => {
-          setLoading(true)
+          setLoading(true);
           setImporting(true);
           importFiles().then((results) => {
             setImporting(false);
             setLoading(false)
             if (results.length > 0) {
               getShowSaveInst().then((value) => {
-                value === 'false' ? setShowSaveInst(false) : setShowSaveInst(true)
+                value === 'false' ? setShowSaveInst(false) : setShowSaveInst(true);
               })
               .catch((error) => {
-                setShowSaveInst(false)
+                setShowSaveInst(false);
               })
-              setExportDisabled(false)
-              setResults(results)
+              setExportDisabled(false);
+              setResults(results);
             }
           })
           .catch((error) => {
             setLoading(false);
             setImporting(false);
-            setHomeState(4)
+            setHomeState(4);
           })
         }}
       />

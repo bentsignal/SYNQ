@@ -1,17 +1,16 @@
-import { Text, View, Linking } from "react-native"
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
-import LottieView from 'lottie-react-native'
+import { Text, View,} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import LottieView from 'lottie-react-native';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as StoreReview from 'expo-store-review'
+import * as StoreReview from 'expo-store-review';
+import { useGlobalContext } from "@/context/GlobalProvider";
+import Top from "@/components/Top";
+import CustomButton from '@/components/CustomButton';
+import { Styles } from "@/constants/Styles";
+import { Colors } from "@/constants/Colors";
 
-import { useGlobalContext } from "@/context/GlobalProvider"
-import Top from "@/components/Top"
-import CustomButton from '@/components/CustomButton'
-import { Styles } from "@/constants/Styles"
-import { Colors } from "@/constants/Colors"
-
-const Success = () => {
+export const Success = () => {
 
   const {setHomeState} = useGlobalContext();
 
@@ -19,7 +18,7 @@ const Success = () => {
 
   Haptics.notificationAsync(
     Haptics.NotificationFeedbackType.Success
-  )
+  );
 
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>
@@ -34,39 +33,39 @@ const Success = () => {
           onAnimationFinish={() => {
             setTimeout(async () => {
               setHomeState(0);
-              let countStr = await AsyncStorage.getItem('importCount')
+              let countStr = await AsyncStorage.getItem('importCount');
               if (countStr) {
                 try {
                   let count = parseInt(countStr);
                   count++;
                   if (count === 4) {
                     try {
-                      await StoreReview.isAvailableAsync()
-                      await StoreReview.requestReview()
+                      await StoreReview.isAvailableAsync();
+                      await StoreReview.requestReview();
                     }
                     catch (error) {
-                      console.log('failed to request app store review')
+                      console.log('failed to request app store review');
                     }
                   }
-                  await AsyncStorage.setItem('importCount', `${count}`)
+                  await AsyncStorage.setItem('importCount', `${count}`);
                 }
                 catch(error) {
-                  console.log(error)
+                  console.log(error);
                 }
               }
               else {
                 await AsyncStorage.setItem('importCount', '1');
               }
-            }, 1500)
+            }, 1500);
           }}
         />
       </View>
     </View>
-  )
+  );
 
 }
 
-const Failure = () => {
+export const Failure = () => {
 
   const {setHomeState} = useGlobalContext();
 
@@ -121,7 +120,7 @@ const Failure = () => {
           title='Back'
           background={Colors.text}
           handlePress={() => {
-            setHomeState(0)
+            setHomeState(0);
           }}
         />
       </View>
@@ -129,5 +128,3 @@ const Failure = () => {
   )
 
 }
-
-export { Success, Failure };

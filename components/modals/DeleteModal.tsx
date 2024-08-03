@@ -1,17 +1,21 @@
-import { Text, View, TouchableOpacity, Modal } from 'react-native'
-
-import CustomButton from '@/components/CustomButton'
-import { Colors } from '@/constants/Colors'
-import { Styles } from '@/constants/Styles'
+import { Text, View, Modal } from 'react-native';
+import CustomButton from '@/components/CustomButton';
+import { Colors } from '@/constants/Colors';
+import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { removeSongs } from '@/lib/SongManager';
 
 const DeleteModal = () => {
-  
-  const { 
-    setShowDelete, showDelete, selectedSongs, deleteSong,
-    results, setResults, setExportDisabled, setSelectEnabled
-  }  = useGlobalContext();
+
+  const {
+
+    selectedSongs, deleteSong, results,
+    showDelete, 
+
+    setShowDelete, setResults, setExportDisabled,
+    setSelectEnabled
+
+  } = useGlobalContext();
 
   return (
     <View
@@ -63,9 +67,7 @@ const DeleteModal = () => {
               <CustomButton 
                 title='Cancel'
                 background={Colors.altButton}
-                handlePress={() => {
-                  setShowDelete(false);
-                }}
+                handlePress={() => {setShowDelete(false)}}
               />
               <CustomButton 
                 title='Delete'
@@ -86,7 +88,8 @@ const DeleteModal = () => {
         </View>
       </Modal>
     </View>
-  )
+  );
+  
 }
 
 export default DeleteModal;

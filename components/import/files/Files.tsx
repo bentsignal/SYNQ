@@ -1,14 +1,12 @@
-import { Text, View } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-
-import { useGlobalContext } from '@/context/GlobalProvider'
-import { Styles } from '@/constants/Styles'
-import { Colors } from '@/constants/Colors'
-import PageTitle from '@/components/PageTitle'
+import { Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useGlobalContext } from '@/context/GlobalProvider';
+import { Styles } from '@/constants/Styles';
+import PageTitle from '@/components/PageTitle';
 import Loading from '@/components/Loading';
-import Top from '@/components/Top'
-import FilesEmpty from '@/components/import/files/FilesEmpty'
-import SongList from '@/components/song/SongList'
+import Top from '@/components/Top';
+import FilesEmpty from '@/components/import/files/FilesEmpty';
+import SongList from '@/components/song/SongList';
 import SaveInstructionsModal from '@/components/modals/SaveInstructionsModal';
 import ImportControls from '../ImportControls';
 
@@ -18,6 +16,7 @@ const Files = () => {
     
     results, loading,
     zipping, importing,
+
     setShowSaveInst, 
 
   } = useGlobalContext();
@@ -25,6 +24,7 @@ const Files = () => {
   const insets = useSafeAreaInsets();
 
   const getBody = () => {
+
     if (loading) {
       let message = <></>
       if (zipping) {
@@ -56,13 +56,14 @@ const Files = () => {
     else if (results.length > 0) {
       return (
         <SongList songs={results} />
-      )
+      );
     }
     else {
       return (
         <FilesEmpty />
-      )
+      );
     }
+
   }
 
   return (
@@ -77,7 +78,8 @@ const Files = () => {
       {getBody()}
       <ImportControls />
     </View>
-  )
+  );
+  
 }
 
 export default Files;

@@ -406,7 +406,7 @@ const Transfer = () => {
             </div>
           </div>
       </body>
-  </html>`)
+  </html>`);
 }
 
-export default Transfer
+export default Transfer;

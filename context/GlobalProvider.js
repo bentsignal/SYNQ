@@ -31,15 +31,8 @@ const GlobalProvider = ({ children }) => {
   return (
     <GlobalContext.Provider
       value={{
-
-        // home page state, between values 
-        homeState,
-        setHomeState,
-
-        // song data during import phase
-        results,
-        setResults,
-        
+        homeState, setHomeState,
+        results, setResults,
         wifiResults, setWifiResults,
         exportDisabled, setExportDisabled,
         showDelete, setShowDelete,
@@ -59,7 +52,6 @@ const GlobalProvider = ({ children }) => {
         wifiDisabled, setWifiDisabled,
         selectEnabled, setSelectEnabled,
         selectedSongs, setSelectedSongs
-        
       }}
     >
       {children}
@@ -68,4 +60,4 @@ const GlobalProvider = ({ children }) => {
 
 };
 
-export default GlobalProvider
+export default GlobalProvider;

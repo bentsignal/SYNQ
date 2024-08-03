@@ -1,20 +1,19 @@
-import { Text, View, Modal, Image, ScrollView } from 'react-native'
-import CheckBox from 'expo-checkbox'
+import { Text, View, Modal, Image, ScrollView } from 'react-native';
+import CheckBox from 'expo-checkbox';
 import { LinearGradient } from 'expo-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useState } from 'react'
-import CustomButton from '@/components/CustomButton'
-import { Colors } from '@/constants/Colors'
-import { Styles } from '@/constants/Styles'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useState } from 'react';
+import CustomButton from '@/components/CustomButton';
+import { Colors } from '@/constants/Colors';
+import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
-
-type InstructionsModalProps = {
-  dontShowOption?: boolean;
-}
+import { InstructionsModalProps } from '@/constants/Types';
 
 const SaveInstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
+
   const {showSaveInst, setShowSaveInst} = useGlobalContext();
   const [checked, setChecked] = useState(false);
+
   return (
     <View
       style={{
@@ -30,8 +29,6 @@ const SaveInstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
         <View style={Styles.popupBackdrop}>
           <View
             style={[Styles.popupBody, Styles.roundedContainer, {
-              // paddingLeft: 5,
-              // paddingRight: 5,
               paddingTop: 20,
               paddingBottom: 20,
               width: '90%',
@@ -124,7 +121,7 @@ const SaveInstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
               handlePress={async () => {
                 setShowSaveInst(false);
                 if (checked) {
-                  await AsyncStorage.setItem('showSaveInst', 'false')
+                  await AsyncStorage.setItem('showSaveInst', 'false');
                 }
               }}
             />
@@ -132,7 +129,8 @@ const SaveInstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
         </View>
       </Modal>
     </View>
-  )
+  );
+  
 }
 
 export default SaveInstructionsModal;

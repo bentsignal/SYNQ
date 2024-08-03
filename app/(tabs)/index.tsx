@@ -1,13 +1,9 @@
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { useEffect } from 'react'
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useEffect } from 'react';
 import { View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { readAsStringAsync } from 'expo-file-system';
-import { useAssets } from 'expo-asset';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
-import { Colors } from '@/constants/Colors';
 import PageTitle from '@/components/PageTitle';
 import Top from "@/components/Top";
 import Option from "@/components/Option";
@@ -20,20 +16,9 @@ const getShowWelcome = async () => {
   return await AsyncStorage.getItem('showWelcome')
 }
 
-const getTransferPage = async (assets: any) => {
-  return await readAsStringAsync(assets[0].localUri ?? '')
-}
-
 const Home = () => {
 
-  const {setShowWelcome, setTransferPage} = useGlobalContext();
-  const [assets, error] = useAssets([require("../../assets/static/Transfer.html")]);
-
-  if (assets) {
-    readAsStringAsync(assets[0].localUri ?? '').then((page) => {
-      setTransferPage(page);
-    })
-  }
+  const { setShowWelcome } = useGlobalContext();
 
   useEffect(() => {
     getShowWelcome().then((value) => {
@@ -42,7 +27,7 @@ const Home = () => {
     .catch((error) => {
       setShowWelcome(false)
     })
-  }, [])
+  }, []);
 
   const { homeState, setHomeState } = useGlobalContext();
   const insets = useSafeAreaInsets();
@@ -60,12 +45,12 @@ const Home = () => {
   else if (homeState === 3) {
     return (
       <Success />
-    )
+    );
   }
   else if (homeState === 4) {
     return (
       <Failure />
-    )
+    );
   }
   else {
     return (
@@ -100,6 +85,7 @@ const Home = () => {
       </View>
     );
   }
+  
 }
 
 export default Home;

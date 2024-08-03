@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { Colors } from "@/constants/Colors";
 
 const StackLayout = () => {
+
   return (
     <Stack
       screenOptions={{
@@ -11,7 +12,6 @@ const StackLayout = () => {
         gestureEnabled: true,
         gestureDirection: 'horizontal'
       }}
-      
     >
       <Stack.Screen 
         name="index"
@@ -20,14 +20,9 @@ const StackLayout = () => {
           animation: 'none'
         }}
       />
-      <Stack.Screen 
-        name="instructions"
-        options={{
-          headerShown: false
-        }}
-      />
     </Stack>
-  )
+  );
+
 }
 
 export default StackLayout;

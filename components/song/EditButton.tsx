@@ -1,18 +1,10 @@
-import { View, Image, TouchableOpacity } from 'react-native'
-import { useGlobalContext } from '@/context/GlobalProvider'
+import { View, Image, TouchableOpacity } from 'react-native';
+import { useGlobalContext } from '@/context/GlobalProvider';
 import { SongType } from '@/constants/Types';
 
 const EditButton = ({name, id, data, info}: SongType) => {
 
-  const {
-    
-    // song to be edited in modal
-    setEditSong, 
-    
-    // show/hide modal
-    setShowEdit
-    
-  } = useGlobalContext();
+  const { setEditSong, setShowEdit } = useGlobalContext();
   
   return (
     <TouchableOpacity
@@ -22,7 +14,7 @@ const EditButton = ({name, id, data, info}: SongType) => {
           "id": id, 
           "data": data, 
           "info": info
-        })
+        });
         setShowEdit(true);
       }}
     >
@@ -43,7 +35,8 @@ const EditButton = ({name, id, data, info}: SongType) => {
         />
       </View>
     </TouchableOpacity>
-  )
+  );
+
 }
 
 export default EditButton;

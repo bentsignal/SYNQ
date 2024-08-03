@@ -11,6 +11,7 @@ import PageTitle from '@/components/PageTitle';
 import Top from '@/components/Top';
 import ImportInstructions from '@/components/import/wifi/ImportInstructions';
 import ImportControls from '../ImportControls';
+import SaveInstructionsModal from '@/components/modals/SaveInstructionsModal';
 
 const WiFi = () => {
 
@@ -19,7 +20,8 @@ const WiFi = () => {
     results, transferSize, loading,
     ip, wifiDisabled,
 
-    setResults, setExportDisabled, setLoading
+    setResults, setExportDisabled, setLoading,
+    setShowSaveInst
 
   } = useGlobalContext();
 
@@ -43,12 +45,12 @@ const WiFi = () => {
   }
   
   const resetResults = () => {
-    console.log('Sending request to server to reset results');
     callReset().then((response) => {
-      console.log('Server successfully reset results')
+      return null;
     })
     .catch((error) => {
-      console.log(`ERROR: Call to reset results failed. More info: ${error} `)
+      console.log(error);
+      return null;
     })
   }
 
@@ -158,10 +160,12 @@ const WiFi = () => {
 
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>
+      <SaveInstructionsModal dontShowOption={false}/>
       <Top />
       <PageTitle 
         title='Import Music'
         showList={true}
+        infoHandler={() => setShowSaveInst(true)}
       />
       {getInstructions()}
       {getBody()}

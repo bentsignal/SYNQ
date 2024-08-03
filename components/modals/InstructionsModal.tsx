@@ -78,7 +78,7 @@ const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
                       2. Save your music to:
                     </Text>
                     <Text
-                      style={[Styles.infoText, {paddingBottom: 10, paddingTop: 5}]}
+                      style={[Styles.infoText, {paddingBottom: 0, paddingTop: 5}]}
                     >
                       On My iPhone → Spotify
                     </Text>
@@ -87,7 +87,7 @@ const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
                       style={{
                         width: '100%', 
                         height: 250,
-                        marginBottom: 40
+                        marginBottom: 20
                       }}
                       resizeMode='contain'
                     />

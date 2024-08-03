@@ -19,8 +19,7 @@ const GlobalProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [zipping, setZipping] = useState(false);
   const [importing, setImporting] = useState(false);
-  const [editLoad, setEditLoad] = useState(false);
-  const [ip, setIP] = useState('0.0.0.0')
+  const [ip, setIP] = useState('0.0.0.0');
   const [transferSize, setTransferSize] = useState(0);
   const [serverStarted, setServerStarted] = useState(false);
   const [wifiDisabled, setWifiDisabled] = useState(false);
@@ -51,7 +50,7 @@ const GlobalProvider = ({ children }) => {
         ip, setIP,
         wifiDisabled, setWifiDisabled,
         selectEnabled, setSelectEnabled,
-        selectedSongs, setSelectedSongs
+        selectedSongs, setSelectedSongs,
       }}
     >
       {children}

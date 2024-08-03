@@ -41,7 +41,6 @@ export const exportSongs = async (songs: any) => {
   
   if (songs.length === 1) {
     destination = `${dir}/${songs[0].name}`;
-    console.log(songs[0].data);
     await FileSystem.writeAsStringAsync(destination, songs[0].data, {encoding: 'base64'});
     await Sharing.shareAsync(destination);
   }

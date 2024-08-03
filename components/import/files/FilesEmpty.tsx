@@ -35,7 +35,7 @@ const FilesEmpty = () => {
       <Text style={[Styles.infoText, {
         paddingTop: 20
       }]}>
-        Press browse to begin importing files
+        Press browse to import files
       </Text>
       <Text style={[Styles.infoText, {
         paddingTop: 10,

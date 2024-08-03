@@ -22,6 +22,9 @@ const EditModal = () => {
     // song being edited
     editSong,
 
+    selectedSongs,
+    setSelectEnabled
+
   } = useGlobalContext();
 
   // info being edited in modal
@@ -87,7 +90,7 @@ const EditModal = () => {
                       fontWeight: 'bold'
                     }}
                   >
-                    Edit song
+                    {selectedSongs.length > 0 ? 'Edit Songs' : 'Edit Song'}
                   </Text>
                   <View
                     style={{
@@ -115,32 +118,42 @@ const EditModal = () => {
                     }>
                       Supports: jpeg/png/heif
                     </Text> */}
-                    <Text
-                      style={{
-                        color: 'white',
-                        fontWeight: 'bold',
-                        marginTop: 10,
-                        fontSize: 16
-                      }}
-                      numberOfLines={1}
-                    >
-                      {maybeString(editSong.name)}
-                    </Text>
+                    { selectedSongs.length == 0 ? 
+                      <Text
+                        style={{
+                          color: 'white',
+                          fontWeight: 'bold',
+                          marginTop: 10,
+                          fontSize: 16
+                        }}
+                        numberOfLines={1}
+                      >
+                        {maybeString(editSong.name)}
+                      </Text>
+                      :
+                      <></>
+                    }
                   </View>
-                  <Text
-                    style={Styles.textboxLabel}
-                  >
-                    Song Title
-                  </Text>
-                  <TextInput 
-                    style={[Styles.textbox, Styles.roundedContainer]}
-                    autoCorrect={false}
-                    editable
-                    numberOfLines={1}
-                    value={title}
-                    onChangeText={text => setTitle(text)}
-                    placeholder={'Enter song title...'}
-                  />
+                  { selectedSongs.length == 0 ? 
+                    <>
+                      <Text
+                        style={Styles.textboxLabel}
+                      >
+                        Song Title
+                      </Text>
+                      <TextInput 
+                        style={[Styles.textbox, Styles.roundedContainer]}
+                        autoCorrect={false}
+                        editable
+                        numberOfLines={1}
+                        value={title}
+                        onChangeText={text => setTitle(text)}
+                        placeholder={'Enter song title...'}
+                      />
+                    </>
+                    :
+                    <></>
+                  }
                   <Text
                     style={Styles.textboxLabel}
                   >
@@ -193,18 +206,20 @@ const EditModal = () => {
                     handlePress={() => {
                       setLoading(true);
                       setTimeout(() => {
+                        const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id]
                         const newResults = saveEdits(
                           results,
-                          editSong.id,
-                          editSong.data,
+                          ids,
                           title,
                           artist,
                           album,
                           cover
                         )
+
                         setResults(newResults);
                         setLoading(false);
                         setShowEdit(false);
+                        setSelectEnabled(false);
                       }, 1000)
                     }}
                   />

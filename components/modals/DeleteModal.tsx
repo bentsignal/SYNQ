@@ -1,29 +1,17 @@
 import { Text, View, TouchableOpacity, Modal } from 'react-native'
 
-import PageTitle from '@/components/PageTitle'
 import CustomButton from '@/components/CustomButton'
 import { Colors } from '@/constants/Colors'
 import { Styles } from '@/constants/Styles'
 import { useGlobalContext } from '@/context/GlobalProvider';
-import { removeSong } from '@/lib/SongManager';
+import { removeSongs } from '@/lib/SongManager';
 
 const DeleteModal = () => {
   
   const { 
-    
-    // show/hide modal
-    showDelete, setShowDelete, 
-
-    // song to be deleted
-    deleteSong, 
-
-    // all songs being imported
-    results, setResults, 
-
-    // allow export of files
-    setExportDisabled
-    
-  } = useGlobalContext();
+    setShowDelete, showDelete, selectedSongs, deleteSong,
+    results, setResults, setExportDisabled, setSelectEnabled
+  }  = useGlobalContext();
 
   return (
     <View
@@ -51,7 +39,7 @@ const DeleteModal = () => {
                 fontWeight: 'bold'
               }}
             >
-              Delete song
+              {selectedSongs.length > 0 ? 'Delete Songs' : 'Delete Song'}
             </Text>
             <Text
               style={{
@@ -61,7 +49,7 @@ const DeleteModal = () => {
               }}
               numberOfLines={1}
             >
-              {deleteSong.name}
+              {selectedSongs.length > 0 ? `Delete ${selectedSongs.length} songs?` : deleteSong.name}
             </Text>
             <View
               style={{
@@ -82,13 +70,15 @@ const DeleteModal = () => {
               <CustomButton 
                 title='Delete'
                 background={Colors.main}
-                handlePress={async () => {
+                handlePress={() => {
                   setShowDelete(false);
-                  const newResults = removeSong(results, deleteSong.id);
+                  const ids = selectedSongs.length > 0 ? selectedSongs : [deleteSong.id]
+                  const newResults = removeSongs(results, ids);
                   if (newResults.length <= 0) {
                     setExportDisabled(true);
                   }
                   setResults(newResults);
+                  setSelectEnabled(false);
                 }}
               />
             </View>

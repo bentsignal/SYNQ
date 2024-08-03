@@ -34,7 +34,7 @@ export const exportSongs = async (songs: any) => {
 
   const date = new Date();
   const exportNumber = await getExportNumber();
-  const dir = `${FileSystem.documentDirectory}batch ${1000}  -  ${date.getMonth()}.${date.getDate()}.${date.getFullYear()}`;
+  const dir = `${FileSystem.documentDirectory}batch ${exportNumber}  -  ${date.getMonth()}.${date.getDate()}.${date.getFullYear()}`;
   // const dir = `${FileSystem.documentDirectory}${date.getMonth()}-${date.getDate()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`;
   let destination;
   
@@ -118,13 +118,13 @@ export const importFiles = async () => {
   }
 }
 
-export const removeSong = (
+export const removeSongs = (
   results: [SongType],
-  id: string
+  ids: string[]
 ) => {
   let newResults = [];
   for (let i = 0; i < results.length; i++) {
-    if (results[i].id && results[i].id !== id) {
+    if (results[i].id && !ids.includes(results[i].id)) {
       newResults.push(results[i]);
     }
   }
@@ -157,6 +157,124 @@ export const newCover = async () => {
 }
 
 export const saveEdits = (
+  
+  results: SongType[],
+  ids: string[],
+  title: string,
+  artist: string,
+  album: string,
+  artwork: string
+
+) => {
+
+  /*
+
+
+      TODO: Batch edits are kinda working, but sometimes it updates the song title, which it shouldn't
+
+
+  */
+
+  const NodeID3 = require('@/lib/node-id3')
+
+  type tagsType = {
+    title?: string;
+    artist?: string;
+    album?: string;
+    APIC?: {
+      description: string;
+      // imageBuffer: Uint8Array;
+      imageBuffer: string;
+      mime: string;
+    }
+  }
+
+  let tags: tagsType = {}
+
+  let meta;
+  for (let i = 0; i < results.length; i++) {
+    if (results[i].id && ids.includes(results[i].id)) {
+
+      let newTitle = ''
+      let newArtist = '' 
+      let newAlbum = ''
+      let newArtwork = ''
+
+      if (results[i].info.metadata) {
+        meta = results[i].info.metadata
+      }
+
+      if (title) {
+        newTitle = title
+        tags.title = newTitle
+      }
+      else if (meta && meta.name) {
+        newTitle = meta.name
+        tags.title = newTitle
+      }
+
+      if (artist) {
+        newArtist = artist
+        tags.artist = newArtist
+      }
+      else if (meta && meta.artist) {
+        newArtist = meta.artist
+        tags.artist = newArtist
+      }
+
+      if (album) {
+        newAlbum = album
+        tags.album = newAlbum
+      }
+      else if (meta && meta.album) {
+        newAlbum = meta.album
+        tags.album = newAlbum
+      }
+
+      if (artwork) {
+        newArtwork = artwork
+      }
+      else if (meta && meta.artwork) {
+        newArtwork = meta.artwork;
+      }
+
+      if (newArtwork) {
+        // questionable way to extract mime from start of string
+        const infoString = newArtwork.split(/,(.*)/s)[0]
+        const mimeTypeFull = infoString.split(/;(.*)/s)[0]
+        const mimeType = mimeTypeFull.split(/:(.*)/s)[1]
+        // buffer after mimetype and encoding scheme
+        const bufferString = newArtwork.split(/,(.*)/s)[1]
+        tags.APIC = {
+          description: 'Album Cover',
+          imageBuffer: bufferString,
+          // imageBuffer: toByteArray(artwork.split(/,(.*)/s)[1]),
+          mime: mimeType
+        }
+      }
+
+      if (results[i].data) {
+        const newData = fromByteArray(NodeID3.writeExpo(toByteArray(results[i].data), tags))
+        results[i].data = newData
+      }
+
+      if (results[i].info) {
+        results[i].info.metadata = {
+          name: newTitle,
+          artist: newArtist,
+          album: newAlbum,
+          artwork: newArtwork
+        }
+      }
+
+    }
+  }
+  
+  return results
+  
+}
+
+export const saveEditsOld = (
   results: [SongType],
   id: string,
   data: string,
@@ -188,7 +306,7 @@ export const saveEdits = (
     tags.album = album
   }
   if (artwork) {
-    // really questionable way to extract mime from start of string
+    // questionable way to extract mime from start of string
     const infoString = artwork.split(/,(.*)/s)[0]
     const mimeTypeFull = infoString.split(/;(.*)/s)[0]
     const mimeType = mimeTypeFull.split(/:(.*)/s)[1]

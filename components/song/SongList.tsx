@@ -6,8 +6,8 @@ import { Styles } from '@/constants/Styles'
 import { SongType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import Song from '@/components/song/Song'
-import DeleteModal from '@/components/modals/DeleteModal'
 import EditModal from '@/components/modals/EditModal'
+import DeleteModal from '@/components/modals/DeleteModal'
 
 const renderItem = ({item} : {item: SongType}) => {
   return (
@@ -28,8 +28,8 @@ const SongList = (data: any) => {
         paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
       }]}
     >
-      <DeleteModal />
       <EditModal />
+      <DeleteModal />
       <FlatList 
         data={data.songs}
         renderItem={renderItem}
@@ -39,7 +39,9 @@ const SongList = (data: any) => {
           width: '100%'
         }}
         contentContainerStyle={{
-          paddingBottom: 40
+          paddingBottom: 40,
+          display: 'flex',
+          alignItems: 'center'
         }}
       />
       <LinearGradient

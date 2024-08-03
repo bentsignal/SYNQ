@@ -239,6 +239,7 @@ const Transfer = () => {
                       
                       console.log('Server: ' + startResponse.statusText)
                       if (startResponse.status === 200) {
+                        transferPopup.style.display = "none";
                         overlay.style.display = "flex";
                         transferPopup.style.display = "flex";
                         let file;
@@ -274,6 +275,7 @@ const Transfer = () => {
                             console.log('Error: Could not send file. More info: ' + error)
                           }
                         }
+                        
                         overlay.style.display = "none";
                         transferPopup.style.display = "none";
                         try {
@@ -295,12 +297,14 @@ const Transfer = () => {
                         }
                       }
                       else {
+                        transferPopup.style.display = "none";
                         overlay.style.display = "flex";
                         errorPopup.style.display = "flex";
                         errorMessage.innerText = startResponse.statusText;
                       }
                     }
                     catch (error) {
+                      transferPopup.style.display = "none";
                       overlay.style.display = "flex";
                       errorPopup.style.display = "flex";
                       errorMessage.innerText = "Something went wrong. Please try again."
@@ -337,7 +341,7 @@ const Transfer = () => {
               })
           </script>
           <header>
-            <p>n-synk</p>
+            <p>cynk</p>
             <div id="connection-status">
               <span class="connecting">Connecting to server...</span>
             </div>

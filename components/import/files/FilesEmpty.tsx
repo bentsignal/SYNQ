@@ -1,10 +1,8 @@
 import { Text, View, Image } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
 import { Colors } from '@/constants/Colors'
-
 import CustomButton from '@/components/CustomButton'
 import { importFiles } from '@/lib/SongManager'
 

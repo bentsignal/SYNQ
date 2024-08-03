@@ -6,7 +6,7 @@ export const Styles = StyleSheet.create({
   body: {
     flex: 1,
     alignItems: 'center',
-    width: '90%',
+    width: '100%',
     margin: 'auto'
   },
   main: {
@@ -33,7 +33,8 @@ export const Styles = StyleSheet.create({
     color: Colors.main,
   },
   top: {
-    alignSelf: 'stretch',
+    width: '90%',
+    alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -88,5 +89,14 @@ export const Styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text,
     marginBottom: 5
+  },
+  backgroundBlendShadow: {
+    shadowColor: Colors.background,
+    shadowOffset: {
+      width: 0,
+      height: 0
+    },
+    shadowOpacity: 1,
+    shadowRadius: 5,
   }
 });

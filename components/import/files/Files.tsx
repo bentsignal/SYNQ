@@ -1,9 +1,5 @@
-import { Text, View, Image, ActivityIndicator } from 'react-native'
-import { useEffect, useReducer, useState } from 'react'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { router } from 'expo-router'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Text, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { useGlobalContext } from '@/context/GlobalProvider'
 import { Styles } from '@/constants/Styles'
@@ -13,19 +9,17 @@ import Loading from '@/components/Loading';
 import Top from '@/components/Top'
 import FilesEmpty from '@/components/import/files/FilesEmpty'
 import SongList from '@/components/song/SongList'
-import CustomButton from '@/components/CustomButton'
 import SaveInstructionsModal from '@/components/modals/SaveInstructionsModal';
-import { exportSongs } from '@/lib/SongManager'
-
-const getShowSaveInst = async () => {
-  return await AsyncStorage.getItem('showSaveInst')
-}
+import ImportControls from '../ImportControls';
 
 const Files = () => {
 
-  const { homeState, setHomeState, results, setResults,
-    exportDisabled, setExportDisabled, loading, setLoading,
-    zipping, setZipping, importing, setImporting, setShowSaveInst, 
+  const { 
+    
+    results, loading,
+    zipping, importing,
+    setShowSaveInst, 
+
   } = useGlobalContext();
 
   const insets = useSafeAreaInsets();
@@ -78,59 +72,10 @@ const Files = () => {
       <PageTitle 
         title='Import Music'
         infoHandler={() => setShowSaveInst(true)}
+        showList={true}
       />
       {getBody()}
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: 10,
-          position: 'absolute',
-          padding: 5,
-          bottom: 10
-        }}
-      >
-        <CustomButton 
-          title='Cancel'
-          background={Colors.text}
-          handlePress={() => {
-            setLoading(false);
-            setZipping(false);
-            setImporting(false);
-            setHomeState(0)
-            setResults([])
-            setExportDisabled(true)
-          }}
-        />
-        <CustomButton 
-          title='Export'
-          background={Colors.main}
-          handlePress={() => {
-            setExportDisabled(true);
-            setLoading(true);
-            setZipping(true);
-            setTimeout(() => {
-              exportSongs(results).then(() => {
-                setLoading(false);
-                setZipping(false);
-                // router.replace('/library');
-                setHomeState(3);
-                setResults([]);
-              })
-              .catch((error) => {
-                console.log(error)
-                console.log('failed to export files')
-                setLoading(false);
-                setZipping(false);
-                setHomeState(4);
-                setResults([]);
-              })
-            }, 1000)
-          }}
-          disabled={exportDisabled}
-        />
-      </View>
+      <ImportControls />
     </View>
   )
 }

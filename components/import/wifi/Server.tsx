@@ -1,25 +1,12 @@
-import { Text, View, ActivityIndicator, Dimensions } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { router } from 'expo-router'
 import { useEffect, useState, useRef } from 'react'
 import * as server from "expo-http-server";
-import * as WebBrowser from 'expo-web-browser'
 import * as Network from 'expo-network';
 import * as Device from 'expo-device'
 import Constants from 'expo-constants'
-import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 
 import { useGlobalContext } from '@/context/GlobalProvider'
-import { Styles } from '@/constants/Styles'
-import { Colors } from '@/constants/Colors'
-import { getWifiInfo, exportSongs, idgen} from '@/lib/SongManager'
+import { getWifiInfo, idgen} from '@/lib/SongManager'
 import Transfer from '@/assets/static/Transfer';
-import SongList from '@/components/song/SongList'
-import Loading from '@/components/Loading'
-import PageTitle from '@/components/PageTitle'
-import Top from '@/components/Top'
-import ImportInstructions from '@/components/import/wifi/ImportInstructions'
-import CustomButton from '@/components/CustomButton'
 
 const getIP = async () => {
   return await Network.getIpAddressAsync();
@@ -43,6 +30,7 @@ const Server = () => {
 
   const resultsRef = useRef<Array<any>>([]);
   const homeStateRef = useRef(0);
+  const midTransfer = useRef(false);
 
   useEffect(() => {
     resultsRef.current = results
@@ -104,23 +92,31 @@ const Server = () => {
           console.log('Received request to begin transfer')
           console.log('-----------------------------------')
           console.log();
-          if (homeStateRef.current === 1) {
+          if (homeStateRef.current != 1) {
+            console.log("Rejected transfer request")
+            return ({
+              statusCode: 400,
+              statusDescription: 'Must be on Wifi Transfer page in app'
+            })
+          }
+          else if (midTransfer.current === true) {
+            console.log('Rejected transfer start, already mid transfer')
+            return ({
+              statusCode: 400,
+              statusDescription: 'Transfer already in progress'
+            })
+          }
+          else {
             console.log('Accepted transfer request')
             const body = JSON.parse(request.body);
             const size = body.size ? body.size : 0;
             setTransferSize(Number(size));
             setLoading(true);
             setExportDisabled(true);
+            midTransfer.current = true;
             return ({
               statusCode: 200,
               statusDescription: "OK - READY TO TRANSFER"
-            })
-          }
-          else {
-            console.log("Rejected transfer request")
-            return ({
-              statusCode: 400,
-              statusDescription: 'Must be on Wifi Transfer page in app'
             })
           }
         })
@@ -135,6 +131,7 @@ const Server = () => {
           setLoading(false);
           setExportDisabled(false);
           setTransferSize(0);
+          midTransfer.current = false;
           return ({
             statusCode: 200,
             statusDescription: "OK - FINISHED TRANSFER"

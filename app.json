@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "n-synk",
-    "slug": "n-synk",
+    "name": "cynk",
+    "slug": "cynk",
     "version": "1.1.4",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "n-synk",
+    "scheme": "cynk",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -15,14 +15,14 @@
     "backgroundColor": "#101010",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.directedbyshawn.n-synk"
+      "bundleIdentifier": "com.directedbyshawn.cynk"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#101010"
       },
-      "package": "com.directedbyshawn.n-synk"
+      "package": "com.directedbyshawn.cynk"
     },
     "web": {
       "bundler": "metro",
@@ -39,14 +39,17 @@
           ]
         }
       ],
-      ["expo-build-properties", {
-        "android": {
-          "usesCleartextTraffic": true
-        },
-        "ios": {
-          "flipper": true
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          },
+          "ios": {
+            "flipper": true
+          }
         }
-      }]
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -56,7 +59,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "e0c7f3fa-7112-4713-85b5-5bed857cc5a3"
+        "projectId": "b5a530ae-5598-4b1a-869b-4c4ac7ec38d2"
       }
     }
   }

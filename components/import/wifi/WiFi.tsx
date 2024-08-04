@@ -1,7 +1,6 @@
 import { Text, View, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
-import * as WebBrowser from 'expo-web-browser';
 import axios from 'axios';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
@@ -148,11 +147,7 @@ const WiFi = () => {
           desc={URL}
           icon={require('@/assets/icons/wifi.png')}
           disabled={wifiDisabled}
-          handlePress={() => {
-            if (!wifiDisabled) {
-              WebBrowser.openBrowserAsync(URL)
-            }
-          }}
+          handlePress={() => {}}
         />
       );
     }

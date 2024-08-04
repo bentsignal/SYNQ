@@ -25,7 +25,7 @@ const ImportInstructions = (
   return (
     <TouchableOpacity
       onPress={handlePress}
-      activeOpacity={disabled ? 1 : .9}
+      activeOpacity={1}//disabled ? 1 : .9}
       style={[Styles.roundedContainer, {
         flexDirection: 'row',
         alignItems: 'center',

@@ -1,4 +1,4 @@
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Text } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
@@ -9,11 +9,26 @@ import EditButton from '@/components/song/EditButton';
 import DeleteButton from '@/components/song/DeleteButton';
 import Select from '@/components/song/Select';
 import { ListCover } from '@/components/song/Cover';
+import { BlurView } from 'expo-blur';
 
 const Song = ({name, id, data, info}: SongType) => {
 
   const [selected, setSelected] = useState(false);
-  const { selectEnabled, selectedSongs, setSelectedSongs } = useGlobalContext(); 
+  const { 
+
+    selectEnabled, selectedSongs, results,
+    premium,
+
+    setSelectedSongs 
+
+  } = useGlobalContext(); 
+
+  let blur = false;
+  if (results && results[0] && results[0].id) {
+    if (!premium && results[0].id != id) {
+      blur = true;
+    }
+  }
 
   useEffect(() => {
     setSelected(false);
@@ -23,72 +38,87 @@ const Song = ({name, id, data, info}: SongType) => {
   }, [selectEnabled]);
 
   return (
-    <View
-      style={[Styles.roundedContainer, {
-        alignSelf: 'stretch',
-        width: '90%',
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        height: 90,
-        marginBottom: 10,
-        backgroundColor: Colors.song,
-        paddingLeft: 15,
-        paddingRight: 15,
-        paddingTop: 15,
-        paddingBottom: 15,
-        opacity: !selectEnabled || (selectEnabled && selected) ? 1 : 0.6
-      }]}
-    >
-      <ListCover image={info.metadata?.artwork ? info.metadata.artwork : ''}/>
-      <SongInfo info={info} name={name}/>
-      {
+    <>
+      <View
+        style={[Styles.roundedContainer, {
+          alignSelf: 'stretch',
+          width: '90%',
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          height: 90,
+          marginBottom: 10,
+          backgroundColor: blur ? Colors.background : Colors.song,
+          paddingLeft: 15,
+          paddingRight: 15,
+          paddingTop: 15,
+          paddingBottom: 15,
+          opacity: !selectEnabled || (selectEnabled && selected) ? 1 : 0.6
+        }]}
+      >
+        <ListCover image={info.metadata?.artwork ? info.metadata.artwork : ''}/>
+        <SongInfo info={info} name={name}/>
+        {
 
-        selectEnabled 
+          selectEnabled 
 
-        ? 
+          ? 
 
-        <>
-          <TouchableOpacity
-            onPress={() => {
-              setSelected(!selected);
-              let newSongs = [];
-              let i = 0;
-              if (!selected && !selectedSongs.includes(id)) {
-                if (selectedSongs.length == 0) {
-                  newSongs[0] = id;
+          <>
+            <TouchableOpacity
+              onPress={() => {
+                setSelected(!selected);
+                let newSongs = [];
+                let i = 0;
+                if (!selected && !selectedSongs.includes(id)) {
+                  if (selectedSongs.length == 0) {
+                    newSongs[0] = id;
+                  }
+                  else {
+                    for (i = 0; i < selectedSongs.length; i++) {
+                      newSongs[i] = selectedSongs[i];
+                    }
+                    newSongs[i] = id;
+                  }
+                  setSelectedSongs(newSongs);
                 }
-                else {
+                else if (selected) {
                   for (i = 0; i < selectedSongs.length; i++) {
-                    newSongs[i] = selectedSongs[i];
+                    if (selectedSongs[i] != id) {
+                      newSongs.push(selectedSongs[i]);
+                    }
                   }
-                  newSongs[i] = id;
+                  setSelectedSongs(newSongs);
                 }
-                setSelectedSongs(newSongs);
-              }
-              else if (selected) {
-                for (i = 0; i < selectedSongs.length; i++) {
-                  if (selectedSongs[i] != id) {
-                    newSongs.push(selectedSongs[i]);
-                  }
-                }
-                setSelectedSongs(newSongs);
-              }
-            }}
-          >
-            <Select active={selected} />
-          </TouchableOpacity>
-        </> 
+              }}
+            >
+              <Select active={selected} />
+            </TouchableOpacity>
+          </> 
 
-        : 
+          : 
 
-        <>
-          <EditButton name={name} id={id} data={data} info={info}/>
-          <DeleteButton name={name} id={id}/>
-        </>
+          <>
+            <EditButton name={name} id={id} data={data} info={info}/>
+            <DeleteButton name={name} id={id}/>
+          </>
 
-      }
-    </View>
+        }
+      </View>
+      <BlurView
+        style={[Styles.roundedContainer, {
+          display: blur ? 'flex' : 'none',
+          overflow: 'hidden',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '90%',
+          height: 90,
+          padding: 15
+        }]}
+        intensity={20}
+      />
+    </>
   );
 
 }

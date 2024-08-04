@@ -11,7 +11,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
 
     results, loading, transferSize,
     exportDisabled, homeState, selectEnabled,
-    selectedSongs,
+    selectedSongs, premium,
 
     setHomeState, setResults, setExportDisabled,
     setLoading, setZipping, setImporting, 
@@ -107,8 +107,9 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
             setExportDisabled(true);
             setLoading(true);
             setZipping(true);
+            const songs = premium ? results : [results[0]]
             setTimeout(() => {
-              exportSongs(results).then(() => {
+              exportSongs(songs).then(() => {
                 setLoading(false);
                 setZipping(false);
                 setHomeState(3);

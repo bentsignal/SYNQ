@@ -6,6 +6,7 @@ export const useGlobalContext = () => useContext(GlobalContext);
 const GlobalProvider = ({ children }) => {
 
   const [homeState, setHomeState] = useState(0);
+  const [premium, setPremium] = useState(false);
   const [wifiResults, setWifiResults] = useState([]);
   const [results, setResults] = useState([]);
   const [exportDisabled, setExportDisabled] = useState(true);
@@ -31,6 +32,7 @@ const GlobalProvider = ({ children }) => {
     <GlobalContext.Provider
       value={{
         homeState, setHomeState,
+        premium, setPremium,
         results, setResults,
         wifiResults, setWifiResults,
         exportDisabled, setExportDisabled,

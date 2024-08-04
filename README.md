@@ -1,1 +1,1 @@
-# n-synk
+# cynk

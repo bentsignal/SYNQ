@@ -1,4 +1,5 @@
 import { View, TouchableOpacity, Text } from 'react-native';
+import { router } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
@@ -10,6 +11,7 @@ import DeleteButton from '@/components/song/DeleteButton';
 import Select from '@/components/song/Select';
 import { ListCover } from '@/components/song/Cover';
 import { BlurView } from 'expo-blur';
+import CustomButton from '../CustomButton';
 
 const Song = ({name, id, data, info}: SongType) => {
 
@@ -24,9 +26,15 @@ const Song = ({name, id, data, info}: SongType) => {
   } = useGlobalContext(); 
 
   let blur = false;
-  if (results && results[0] && results[0].id) {
-    if (!premium && results[0].id != id) {
-      blur = true;
+  let message = false
+  if (results && results[0] && results[1] && results[0].id && results[1].id) {
+    if (!premium) {
+      if (results[0].id != id) {
+        blur = true;
+      }
+      if (results[1].id == id) {
+        message = true;
+      }
     }
   }
 
@@ -110,14 +118,46 @@ const Song = ({name, id, data, info}: SongType) => {
           display: blur ? 'flex' : 'none',
           overflow: 'hidden',
           position: 'absolute',
+          justifyContent: 'center',
+          alignItems: 'center',
           top: 0,
           left: 0,
           width: '90%',
           height: 90,
-          padding: 15
+          padding: 15,
+          zIndex: 1
         }]}
         intensity={20}
-      />
+      >
+        <View
+          style={{
+            display: message ? 'flex' : 'none',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+        <Text
+          style={{
+            color: 'white',
+            fontWeight: 'bold',
+            fontSize: 16,
+            paddingBottom: 5,
+            textShadowColor: Colors.background,
+            textShadowOffset: { width: 2, height: 2 },
+            textShadowRadius: 10
+          }}
+        >
+          Import multiple files with <Text style={{color: Colors.main}}>Premium</Text>
+        </Text>
+        <CustomButton 
+          title={'Sign Up'}
+          background={Colors.main}
+          disabledColor={Colors.disabled}
+          opacity={.90}
+          handlePress={() => router.push('/premium')}
+        />
+        </View>
+      </BlurView>
     </>
   );
 

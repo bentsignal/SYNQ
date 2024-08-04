@@ -24,7 +24,20 @@ const RootLayout = () => {
   return (
     <GlobalProvider>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: 'none' }} />
+        <Stack.Screen 
+          name="(tabs)" 
+          options={{ 
+            headerShown: false, 
+            animation: 'none' 
+          }} 
+        />
+        <Stack.Screen 
+          name="premium"
+          options={{
+            presentation: "modal",
+            headerShown: false,
+          }}
+        />
       </Stack>
     </GlobalProvider>
   );

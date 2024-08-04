@@ -1,6 +1,7 @@
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Styles } from "@/constants/Styles";
+import { router } from "expo-router";
 import InstructionsModal from "@/components/modals/InstructionsModal";
 import PageTitle from '@/components/PageTitle';
 import Option from "@/components/Option";
@@ -19,8 +20,8 @@ const Library = () => {
         title="Premium"
         desc="Manage your subcription"
         icon={require('@/assets/icons/premium.png')}
-        disabled={true}
-        handlePress={() => {}}
+        disabled={false}
+        handlePress={() => router.push("/premium")}
       /> 
     </View>
   );

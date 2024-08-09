@@ -3,15 +3,16 @@ import { Styles } from "@/constants/Styles";
 import { router } from "expo-router";
 import PageTitle from '@/components/PageTitle';
 import Option from "@/components/Option";
+import Bar from "@/components/modals/Bar";
 import { Colors } from "@/constants/Colors";
 
 const Settings = () => {
 
   return (
     <View style={[Styles.body, {
-      paddingTop: 20,
       backgroundColor: Colors.background,
       }]}>
+      <Bar />
       <PageTitle title='Settings'/>
       <Option 
         title="Premium"

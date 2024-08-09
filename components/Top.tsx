@@ -1,22 +1,36 @@
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { router } from 'expo-router';
 import { Styles } from '@/constants/Styles';
 
 const Top = () => {
 
   return (
     <View style={Styles.top}>
-      <View>
+      {/* <View>
         <Text style={Styles.appName}>
-          cynk
+          SYNQ
         </Text>
-      </View>
+      </View> */}
       <Image 
-        source={require('@/assets/icons/cynk.png')}
+        source={require('@/assets/icons/logo-color.png')}
         style={{
           height: 25,
           width: 25,
         }}
       />
+      <TouchableOpacity
+        onPress={() => {
+          router.push('/settings')
+        }}
+      >
+        <Image 
+          source={require('@/assets/icons/gear.png')}
+          style={{
+            height: 25,
+            width: 25,
+          }}
+        />
+      </TouchableOpacity>
     </View>
   );
 

@@ -15,7 +15,10 @@
     "backgroundColor": "#101010",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.directedbyshawn.cynk"
+      "bundleIdentifier": "com.directedbyshawn.cynk",
+      "infoPlist": {
+        "CFBundleDisplayName": "SYNQ"
+      }
     },
     "android": {
       "adaptiveIcon": {

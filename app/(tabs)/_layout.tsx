@@ -39,6 +39,7 @@ const TabLayout = () => {
                 <SettingsIcon focused={focused}/>
               ),
               headerShown: false,
+              // href: null,
             }}
           />
       </Tabs>

@@ -32,6 +32,13 @@ const RootLayout = () => {
           }} 
         />
         <Stack.Screen 
+          name="settings"
+          options={{
+            presentation: "modal",
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen 
           name="premium"
           options={{
             presentation: "modal",

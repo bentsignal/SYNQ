@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import Server from '@/components/import/wifi/Server';
-import { HomeIcon, SettingsIcon } from '@/components/TabBarIcons';
+import { HomeIcon, LibraryIcon } from '@/components/TabBarIcons';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 
@@ -32,14 +32,13 @@ const TabLayout = () => {
             }}
           />
           <Tabs.Screen 
-            name='settings'
+            name='library'
             options={{
-              title:'Settings',
+              title:'Library',
               tabBarIcon: ({ color, focused }) => (
-                <SettingsIcon focused={focused}/>
+                <LibraryIcon focused={focused}/>
               ),
               headerShown: false,
-              // href: null,
             }}
           />
       </Tabs>

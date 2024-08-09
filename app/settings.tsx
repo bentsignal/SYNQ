@@ -1,20 +1,17 @@
 import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Styles } from "@/constants/Styles";
 import { router } from "expo-router";
-import InstructionsModal from "@/components/modals/InstructionsModal";
 import PageTitle from '@/components/PageTitle';
 import Option from "@/components/Option";
-import Top from "@/components/Top";
+import { Colors } from "@/constants/Colors";
 
-const Library = () => {
-
-  const insets = useSafeAreaInsets();
+const Settings = () => {
 
   return (
-    <View style={[Styles.body, {paddingTop: insets.top}]}>
-      <InstructionsModal />
-      <Top />
+    <View style={[Styles.body, {
+      paddingTop: 20,
+      backgroundColor: Colors.background,
+      }]}>
       <PageTitle title='Settings'/>
       <Option 
         title="Premium"
@@ -28,4 +25,4 @@ const Library = () => {
   
 }
 
-export default Library;
+export default Settings;

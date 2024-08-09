@@ -93,9 +93,9 @@ const WiFi = () => {
       else if (results.length == 0) {
         message = 
           <Text
-            style={Styles.infoText}
+            style={[Styles.infoText]}
           >
-            Songs will appear here once uploaded
+            Waiting for transfer
           </Text>
       }
       return (

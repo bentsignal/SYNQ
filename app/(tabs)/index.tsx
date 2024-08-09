@@ -69,8 +69,8 @@ const Home = () => {
           handlePress={() => setHomeState(2)}
         />
         <Option 
-          title='Wifi Transfer'
-          desc='Import from your computer'
+          title='Network Transfer'
+          desc='Import from another device'
           icon={require('@/assets/icons/wifi.png')}
           disabled={false}
           handlePress={() => {setHomeState(1)}}

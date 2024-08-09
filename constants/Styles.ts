@@ -73,6 +73,7 @@ export const Styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 16,
+    fontWeight: 'bold',
     color: Colors.text
   },
   textbox: {

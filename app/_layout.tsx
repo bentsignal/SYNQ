@@ -1,7 +1,8 @@
 import { Stack } from "expo-router";
 import { useFonts } from 'expo-font';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
+import * as Network from 'expo-network';
 import 'react-native-reanimated';
 import GlobalProvider from "@/context/GlobalProvider";
 
@@ -11,15 +12,52 @@ const RootLayout = () => {
     JakartaSans: require('../assets/fonts/PlusJakartaSans-VariableFont_wght.ttf')
   });
 
+  const [allow, setAllow] = useState(false);
+
   useEffect(() => {
-    if (loaded) {
+
+    SplashScreen.preventAutoHideAsync();
+
+    const checkConnection = async () => {
+      try {
+        const networkState = await Network.getNetworkStateAsync();
+        return networkState.isConnected ? networkState.isConnected : false;
+      }
+      catch {
+        return false;
+      }
+    }
+
+    const checkSubscribed = async () => {
+      return true;
+    }
+
+    const checkAllow = async () => {
+      try {
+        if (await checkSubscribed()) {
+          setAllow(true);
+        }
+        else if (await checkConnection()) {
+          setAllow(true);
+        }
+        else {
+          setAllow(false);
+        }
+      }
+      catch {
+        setAllow(false);
+      }
+    }
+
+    checkAllow();
+
+  }, []);
+
+  useEffect(() => {
+    if (loaded && allow) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
+  }, [loaded, allow]);
 
   return (
     <GlobalProvider>

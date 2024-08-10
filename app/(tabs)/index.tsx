@@ -1,6 +1,6 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useEffect } from 'react';
-import { View } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
@@ -61,27 +61,36 @@ const Home = () => {
           title='Import Music'
           infoHandler={() => setShowWelcome(true)}
           />
-        <Option 
-          title='Files'
-          desc='Import from your files'
-          icon={require('@/assets/icons/folder.png')}
-          disabled={false}
-          handlePress={() => setHomeState(2)}
-        />
-        <Option 
-          title='Transfer'
-          desc='Import from another device'
-          icon={require('@/assets/icons/wifi.png')}
-          disabled={false}
-          handlePress={() => {setHomeState(1)}}
-        />
-        <Option 
-          title='Download'
-          desc='Import from the web'
-          icon={require('@/assets/icons/download.png')}
-          disabled={true}
-          handlePress={() => {setHomeState(3)}}
-        />
+        <ScrollView
+          style={{
+            width: '100%'
+          }}
+          contentContainerStyle={{
+            alignItems: 'center',
+          }}
+        >
+          <Option 
+            title='Files'
+            desc='Import from your files'
+            icon={require('@/assets/icons/folder.png')}
+            disabled={false}
+            handlePress={() => setHomeState(2)}
+          />
+          <Option 
+            title='Transfer'
+            desc='Import from another device'
+            icon={require('@/assets/icons/wifi.png')}
+            disabled={false}
+            handlePress={() => {setHomeState(1)}}
+          />
+          <Option 
+            title='Download'
+            desc='Import from the web'
+            icon={require('@/assets/icons/download.png')}
+            disabled={true}
+            handlePress={() => {setHomeState(3)}}
+          />
+        </ScrollView>
       </View>
     );
   }

@@ -14,7 +14,7 @@ const Premium = () => {
   const { premium, setPremium } = useGlobalContext();
   
   const [selected, setSelected] = useState(0);
-  const [buttonText, setButtonText] = useState('Start 1 month free trial');
+  const [purchaseText, setPurchaseText] = useState('Start 1 month free trial');
 
   return (
     <View style={[Styles.body, {
@@ -111,7 +111,7 @@ const Premium = () => {
               activeOpacity={1}
               onPress={() => {
                 setSelected(0);
-                setButtonText('Start 1 month free trial')
+                setPurchaseText('Start 1 month free trial')
               }}
             >
               <Text style={Styles.subClass}>Monthly</Text>
@@ -124,7 +124,7 @@ const Premium = () => {
               activeOpacity={1}
               onPress={() => {
                 setSelected(1);
-                setButtonText('Start 3 month free trial')
+                setPurchaseText('Start 3 month free trial')
               }}
             >
               <Text style={Styles.subClass}>Yearly</Text>
@@ -137,7 +137,7 @@ const Premium = () => {
               activeOpacity={1}
               onPress={() => {
                 setSelected(2);
-                setButtonText('Purchase')
+                setPurchaseText('Purchase')
               }}
             >
               <Text style={Styles.subClass}>Lifetime</Text>
@@ -168,11 +168,14 @@ const Premium = () => {
             </TouchableOpacity>
           </View>
           <CustomButton 
-            title={buttonText}
+            title={purchaseText}
             background={Colors.main}
             disabledColor={Colors.disabled}
             textColor={Colors.text}
             buttonWidth={240}
+            handlePress={() => {
+              setPremium(!premium);
+            }}
           />
           <TouchableOpacity 
             activeOpacity={.9}

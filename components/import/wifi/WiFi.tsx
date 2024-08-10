@@ -17,10 +17,10 @@ const WiFi = () => {
   const {
 
     results, transferSize, loading,
-    ip, wifiDisabled,
+    ip, wifiDisabled, premium,
 
     setResults, setExportDisabled, setLoading,
-    setShowSaveInst
+    setShowSaveInst,
 
   } = useGlobalContext();
 
@@ -159,7 +159,7 @@ const WiFi = () => {
       <Top />
       <PageTitle 
         title='Import Music'
-        showList={true}
+        showList={results.length > 1 && premium}
         infoHandler={() => setShowSaveInst(true)}
       />
       {getInstructions()}

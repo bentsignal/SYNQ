@@ -14,8 +14,8 @@ const Files = () => {
 
   const { 
     
-    results, loading,
-    zipping, importing,
+    results, loading, zipping, 
+    importing, premium,
 
     setShowSaveInst, 
 
@@ -73,7 +73,7 @@ const Files = () => {
       <PageTitle 
         title='Import Music'
         infoHandler={() => setShowSaveInst(true)}
-        showList={true}
+        showList={results.length > 1 && premium}
       />
       {getBody()}
       <ImportControls />

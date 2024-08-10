@@ -16,9 +16,9 @@ const PageTitle = ({
 
   const { 
 
-    selectEnabled, results, premium,
+    selectEnabled, 
     
-    setSelectEnabled
+    setSelectEnabled,
   
   } = useGlobalContext();
 
@@ -47,7 +47,7 @@ const PageTitle = ({
   }
 
   const list = () => {
-    if (showList && results.length > 1 && premium) {
+    if (showList) {
       return (
         <View
           style={{
@@ -63,7 +63,10 @@ const PageTitle = ({
             }}
           >
             <Image 
-              source={selectEnabled ? require('@/assets/icons/list-active.png') : require('@/assets/icons/list.png')}
+              source={selectEnabled 
+                        ? require('@/assets/icons/list-active.png') 
+                        : require('@/assets/icons/list.png')
+                      }
               style={{
                 width: 20,
                 height: 20

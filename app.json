@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "cynk",
-    "slug": "cynk",
+    "name": "synq",
+    "slug": "synq",
     "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,7 +15,7 @@
     "backgroundColor": "#101010",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.directedbyshawn.cynk",
+      "bundleIdentifier": "com.directedbyshawn.synq",
       "infoPlist": {
         "CFBundleDisplayName": "SYNQ"
       }
@@ -25,7 +25,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#101010"
       },
-      "package": "com.directedbyshawn.cynk"
+      "package": "com.directedbyshawn.synq"
     },
     "web": {
       "bundler": "metro",
@@ -62,7 +62,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "b5a530ae-5598-4b1a-869b-4c4ac7ec38d2"
+        "projectId": "df86bb9d-1587-48b7-a40e-85a09eee2a72"
       }
     }
   }

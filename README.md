@@ -1,1 +1,1 @@
-# cynk
+# SYNQ

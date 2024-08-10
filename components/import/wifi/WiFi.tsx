@@ -73,22 +73,12 @@ const WiFi = () => {
         message = <Text style={Styles.infoText}>Exporting your files...</Text>
       }
       else if (transferSize > 0) {
-        if (transferSize === 1) {
-          message = 
-            <Text
-              style={Styles.infoText}
-            >
-              Transferring {transferSize} file...
-            </Text>
-        }
-        else {
-          message = 
-            <Text
-              style={Styles.infoText}
-            >
-              Transferring {transferSize} files...
-            </Text>
-        }
+        message = 
+          <Text
+            style={Styles.infoText}
+          >
+            Transferring {transferSize} file{transferSize > 1 ? 's' : ''}...
+          </Text>
       }
       else if (results.length == 0) {
         message = 

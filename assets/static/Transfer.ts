@@ -209,7 +209,7 @@ const Transfer = () => {
                 const errorPopup = document.getElementById('error-popup')
                 const errorClose = document.getElementById('close-error')
                 const errorMessage = document.getElementById('error-message')
-                const count = document.getElementById('transferCount');
+                const countString = document.getElementById('transferCount');
                 const checkEndpoint = window.location.href + 'checkConnection'
                 const connectionStatus = document.getElementById('connection-status')
   
@@ -249,7 +249,9 @@ const Transfer = () => {
                         transferPopup.style.display = "flex";
                         let file;
                         for (let i = 0; i < event.target.files.length; i++) {
-                          count.innerText = (event.target.files.length - i);
+                          const count = (event.target.files.length - i);
+                          const s = count === 1 ? '' : 's'
+                          countString.innerText = String(count) + ' file' + s + ' remaining'
                           file = event.target.files[i]
                           const name = file.name
                           const type = file.type
@@ -398,8 +400,8 @@ const Transfer = () => {
           </main>
           <div id="overlay">
             <div id="transfer-popup" class="popup">
-              <p style="font-size: 14pt;">
-                 <span id="transferCount">0</span> files remaining
+              <p id="transferCount" style="font-size: 14pt;">
+                 1 file remaining
               </p>
               <dotlottie-player src="https://lottie.host/369f338a-1c9f-42fd-ab69-4ae003f59b1b/SnX6MiLZSM.json" background="transparent" speed="1" id="loading" loop autoplay></dotlottie-player>
             </div>

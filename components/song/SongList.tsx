@@ -45,7 +45,12 @@ const SongList = (data: any) => {
         }}
       />
       <LinearGradient
-        style={{position:'absolute', bottom:Dimensions.get('screen').height < 700 ? 70 : 50, width:'100%', height:50}}
+        style={{
+          position: 'absolute', 
+          bottom: Dimensions.get('screen').height < 700 ? 70 : 50, 
+          width: '100%', 
+          height: 50,
+        }}
         colors={['rgba(16, 16, 16, 0)', 'rgba(16, 16, 16, 1)']}
         pointerEvents={'none'}
       />

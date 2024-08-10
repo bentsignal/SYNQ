@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { Colors } from "@/constants/Colors";
 
-const Bar = () => {
+const Bar = ({color}: {color?: string;}) => {
   return (
     <View style={{
       width: '100%',
@@ -9,7 +9,7 @@ const Bar = () => {
       alignItems: 'center',
     }}>
       <View style={{
-        backgroundColor: Colors.altDisabled,
+        backgroundColor: color ? color : Colors.altDisabled,
         width: 80,
         height: 5,
         borderRadius: 100,

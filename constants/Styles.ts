@@ -62,14 +62,14 @@ export const Styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonContainer: {
-    width: 100,
+    minWidth: 100,
     height: 42,
     justifyContent: 'center',
   },
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   infoText: {
     fontSize: 16,
@@ -98,5 +98,28 @@ export const Styles = StyleSheet.create({
     },
     shadowOpacity: 1,
     shadowRadius: 5,
+  },
+  subOption: {
+    backgroundColor: 'grey',//Colors.song,
+    paddingTop: 20,
+    paddingBottom: 20,
+    paddingLeft: 10,
+    paddingRight: 10,
+    width: '30%',
+    borderRadius: 10,
+  },
+  subClass: {
+    color: 'white',
+    fontSize: 16,
+    // fontWeight: 'bold',
+  },
+  subCost: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  subInfo: {
+    color: 'white',
+    fontSize: 12,
   }
 });

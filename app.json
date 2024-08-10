@@ -52,7 +52,8 @@
             "flipper": true
           }
         }
-      ]
+      ],
+      "react-native-iap"
     ],
     "experiments": {
       "typedRoutes": true

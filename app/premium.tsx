@@ -97,7 +97,7 @@ const Premium = () => {
       setError(true);
       setLoading(false);
     }
-    setLoading(false);
+    // setLoading(false);
   }
 
   const purchase = async () => {
@@ -321,7 +321,7 @@ const Premium = () => {
               <PremiumOption 
                 tier={'Monthly'}
                 price={'$0.99'}
-                skeleton={false}
+                skeleton={loading}
                 bgColor={selected === 0 ? Colors.main : Colors.song}
                 handler={() => {
                   if (!loading && !active && !error) {
@@ -333,7 +333,7 @@ const Premium = () => {
               <PremiumOption 
                 tier={'Yearly'}
                 price={'$2.99'}
-                skeleton={false}
+                skeleton={loading}
                 bgColor={selected === 1 ? Colors.main : Colors.song}
                 handler={() => {
                   if (!loading && !active && !error) {
@@ -345,7 +345,7 @@ const Premium = () => {
               <PremiumOption 
                 tier={'Lifetime'}
                 price={'$9.99'}
-                skeleton={false}
+                skeleton={loading}
                 bgColor={selected === 2 ? Colors.main : Colors.song}
                 handler={() => {
                   if (!loading && !active && !error) {

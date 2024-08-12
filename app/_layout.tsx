@@ -3,7 +3,6 @@ import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Network from 'expo-network';
-import 'react-native-reanimated';
 import GlobalProvider from "@/context/GlobalProvider";
 
 const RootLayout = () => {
@@ -50,6 +49,7 @@ const RootLayout = () => {
     }
 
     checkAllow();
+    SplashScreen.hideAsync();
 
   }, []);
 

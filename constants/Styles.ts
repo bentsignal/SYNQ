@@ -100,12 +100,10 @@ export const Styles = StyleSheet.create({
     shadowRadius: 5,
   },
   subOption: {
-    backgroundColor: 'grey',//Colors.song,
     paddingTop: 20,
     paddingBottom: 20,
     paddingLeft: 10,
     paddingRight: 10,
-    width: '30%',
     borderRadius: 10,
   },
   subTier: {

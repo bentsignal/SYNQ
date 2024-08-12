@@ -12,7 +12,23 @@ type OptionProps = {
 
 const PremiumOption = ({handler, bgColor, tier, price, skeleton}: OptionProps) => {
   return (
-    <>
+    <View
+      style={{
+        width: '30%',
+        position: 'relative',
+      }}
+    >
+      <View 
+        style={{
+          display: skeleton ? 'flex' : 'none',
+          backgroundColor: 'red',
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+          zIndex: 1,
+          borderRadius: 10,
+        }}
+      />
       <TouchableOpacity 
         style={[Styles.subOption, {
           backgroundColor: bgColor,
@@ -23,7 +39,7 @@ const PremiumOption = ({handler, bgColor, tier, price, skeleton}: OptionProps) =
         <Text style={Styles.subTier}>{tier}</Text>
         <Text style={Styles.subCost}>{price}</Text>
       </TouchableOpacity>
-    </>
+    </View>
   );
 }
 

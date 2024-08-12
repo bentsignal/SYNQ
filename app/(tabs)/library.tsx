@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { View, Text, } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Styles } from "@/constants/Styles";
 import { router } from "expo-router";
@@ -14,6 +14,22 @@ const Library = () => {
       <InstructionsModal />
       <Top />
       <PageTitle title='Library'/>
+      <View
+        style={{
+          flexGrow: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <Text
+          style={{
+            color: 'white',
+
+          }}
+        >
+          Coming soon
+        </Text>
+      </View>
     </View>
   );
 }

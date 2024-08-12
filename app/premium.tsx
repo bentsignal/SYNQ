@@ -7,7 +7,9 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { LinearGradient } from 'expo-linear-gradient';
 import Bar from '@/components/modals/Bar';
 import CustomButton from '@/components/CustomButton';
-import * as IAP from 'react-native-iap';
+// import * as IAP from 'react-native-iap';
+import PremiumOption from '@/components/premium/PremiumOption';
+import Purchases from 'react-native-purchases';
 import Loading from '@/components/Loading';
 
 const monthlyId = 'com.directedbyshawn.synq.SYNQPremiumMonthly';
@@ -18,10 +20,10 @@ const Premium = () => {
 
   const { premium, setPremium } = useGlobalContext();
   
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState(-1);
   const [renew, setRenew] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [end, setEnd] = useState('July 5, 2024');
+  const [end, setEnd] = useState('January 1, 2000');
   const [active, setActive] = useState(false);
   const [purchaseText, setPurchaseText] = useState('Purchase');
   const [monthlyText, setMonthlyText] = useState('Purchase');
@@ -31,44 +33,63 @@ const Premium = () => {
   useEffect(() => {
     connect();
     checkStatus();
-    return () => {
-      IAP.endConnection();
-    }
+    // return () => {
+    //   IAP.endConnection();
+    // }
   }, [])
 
   const connect = async () => {
-    try {
-      await IAP.initConnection();
-    }
-    catch (error) {
-      console.log(`Error connecting to app store, ${error}`);
-    }
+    Purchases.configure({
+      apiKey: 'appl_qzTfhRrmSegqQhRUukTmiUsVMIq',
+      appUserID: null,
+    });
+    // try {
+    //   await IAP.initConnection();
+    // }
+    // catch (error) {
+    //   console.log(`Error connecting to app store, ${error}`);
+    // }
   }
 
   const checkStatus = async () => {
     try {
-      const purchases = await IAP.getAvailablePurchases();
-      const lifetimePurchase = purchases.find(purchase => purchase.productId === lifetimeId);
-      if (lifetimePurchase) {
-        setError(false);
-        setActive(true);
-        setSelected(2);
-        setLoading(false);
-        return;
-      }
-      const monthlyPurchase = purchases.find(purchase => purchase.productId === monthlyId);
-      const yearlyPurchase = purchases.find(purchase => purchase.productId === yearlyId);
+
+      console.log('get');
+
+      // const purchases = await IAP.getAvailablePurchases();
+
+      // // lifetime purchase, no need to look further
+      // const lifetimePurchase = purchases.find(purchase => purchase.productId === lifetimeId);
+      // if (lifetimePurchase) {
+      //   setError(false);
+      //   setActive(true);
+      //   setSelected(2);
+      //   setLoading(false);
+      //   return;
+      // }
+
+      // // check for recurring sub
+      // const monthlyPurchase = purchases.find(purchase => purchase.productId === monthlyId);
+      // const yearlyPurchase = purchases.find(purchase => purchase.productId === yearlyId);
       
-      if (!monthlyPurchase && !yearlyPurchase) {
-        setError(false);
-        setActive(false);
-        setMonthlyText('Start 1 month free trial');
-        setYearlyText('Start 3 month free trial');
-        setSelected(0);
-        setPurchaseText(monthlyText);
-        setLoading(false);
-        return;
-      }
+      // // no sub purchase ever
+      // if (!monthlyPurchase && !yearlyPurchase) {
+      //   setSelected(0);
+      //   setError(false);
+      //   setActive(false);
+      //   setMonthlyText('Start 1 month free trial');
+      //   setYearlyText('Start 3 month free trial');
+      //   setSelected(0);
+      //   setPurchaseText(monthlyText);
+      //   setLoading(false);
+      //   return;
+      // }
+
+      // previously on either, no trial allowed
+
+      // currently on monthly
+
+      // currently on yearly
 
     }
     catch (error) {
@@ -77,6 +98,25 @@ const Premium = () => {
       setLoading(false);
     }
     setLoading(false);
+  }
+
+  const purchase = async () => {
+    // if (selected === 0) {
+    //   await IAP.requestSubscription({ 
+    //     sku: monthlyId, 
+    //     andDangerouslyFinishTransactionAutomaticallyIOS: false, 
+    //   });
+    // }
+    // else if (selected === 1) {
+    //   await IAP.requestSubscription({ 
+    //     sku: yearlyId,
+    //     andDangerouslyFinishTransactionAutomaticallyIOS: false, 
+    //   });
+    // }
+    // else if (selected === 2) {
+    //   await IAP.requestPurchase({ sku: lifetimeId });
+    // }
+    return true;
   }
 
   const getBottom = () => {
@@ -162,8 +202,7 @@ const Premium = () => {
             textColor={Colors.text}
             buttonWidth={240}
             handlePress={async () => {
-              setPremium(!premium);
-              // await IAP.requestSubscription({ sku: monthlyId });
+              const result = await purchase();
             }}
           />
           <TouchableOpacity 
@@ -279,51 +318,42 @@ const Premium = () => {
                 marginBottom: 20,
               }}
             >
-              <TouchableOpacity 
-                style={[Styles.subOption, {
-                  backgroundColor: selected === 0 ? Colors.main : Colors.song
-                }]}
-                activeOpacity={1}
-                onPress={() => {
+              <PremiumOption 
+                tier={'Monthly'}
+                price={'$0.99'}
+                skeleton={false}
+                bgColor={selected === 0 ? Colors.main : Colors.song}
+                handler={() => {
                   if (!loading && !active && !error) {
                     setSelected(0);
                     setPurchaseText(monthlyText);
                   }
                 }}
-              >
-                <Text style={Styles.subClass}>Monthly</Text>
-                <Text style={Styles.subCost}>$0.99</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[Styles.subOption, {
-                  backgroundColor: selected === 1 ? Colors.main : Colors.song
-                }]}
-                activeOpacity={1}
-                onPress={() => {
+              />
+              <PremiumOption 
+                tier={'Yearly'}
+                price={'$2.99'}
+                skeleton={false}
+                bgColor={selected === 1 ? Colors.main : Colors.song}
+                handler={() => {
                   if (!loading && !active && !error) {
                     setSelected(1);
                     setPurchaseText(yearlyText);
                   }
                 }}
-              >
-                <Text style={Styles.subClass}>Yearly</Text>
-                <Text style={Styles.subCost}>$2.99</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[Styles.subOption, {
-                  backgroundColor: selected === 2 ? Colors.main : Colors.song
-                }]}
-                activeOpacity={1}
-                onPress={() => {
+              />
+              <PremiumOption 
+                tier={'Lifetime'}
+                price={'$9.99'}
+                skeleton={false}
+                bgColor={selected === 2 ? Colors.main : Colors.song}
+                handler={() => {
                   if (!loading && !active && !error) {
                     setSelected(2);
                     setPurchaseText('Purchase')
                   }
                 }}
-              >
-                <Text style={Styles.subClass}>Lifetime</Text>
-                <Text style={Styles.subCost}>$9.99</Text>
-              </TouchableOpacity>
+              />
             </View>
             {getBottom()}
           </View>

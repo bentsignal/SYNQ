@@ -108,7 +108,7 @@ export const Styles = StyleSheet.create({
     width: '30%',
     borderRadius: 10,
   },
-  subClass: {
+  subTier: {
     color: 'white',
     fontSize: 16,
     // fontWeight: 'bold',

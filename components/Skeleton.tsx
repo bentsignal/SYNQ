@@ -1,5 +1,5 @@
 import { TouchableOpacity, View, Text, Animated } from "react-native";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 
@@ -11,8 +11,11 @@ type SkeletonProps = {
 const Skeleton = ({show, styles}: SkeletonProps) => {
 
   const skeletonAnimation = useRef(new Animated.Value(0)).current;
+  const fadeAnimation = useRef(new Animated.Value(1)).current;
+  const [render, setRender] = useState(true);
 
   useEffect(() => {
+
     const pulse = Animated.loop(
       Animated.sequence([
         Animated.timing(skeletonAnimation, {
@@ -28,20 +31,36 @@ const Skeleton = ({show, styles}: SkeletonProps) => {
       ])
     );
     pulse.start();
+
   }, [skeletonAnimation]);
+
+  useEffect(() => {
+    if (!show) {
+      Animated.timing(fadeAnimation, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: false,
+      }).start(() => {
+        setRender(false);
+      });
+    }
+  }, [show])
 
   const backgroundColor = skeletonAnimation.interpolate({
     inputRange: [0, 1],
     outputRange: [Colors.song, Colors.bone],
   });
 
+  if (!render) return null;
+
   return (
-    <Animated.View style={[{ backgroundColor }, styles, {
-        display: show ? 'flex' : 'none'
+    <Animated.View style={[{ backgroundColor, opacity: fadeAnimation, }, styles, {
+        display: render ? 'flex' : 'none',
       }]} 
+      pointerEvents={show ? 'auto' : 'none'}
     />
   );
-  
+
 }
 
 export default Skeleton;

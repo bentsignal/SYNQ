@@ -97,7 +97,7 @@ const Premium = () => {
       setError(true);
       setLoading(false);
     }
-    // setLoading(false);
+    setLoading(false);
   }
 
   const purchase = async () => {

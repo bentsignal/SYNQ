@@ -13,4 +13,5 @@ export const Colors = {
   footer: '#101010',
   tabInactive: '#9B9B9B',
   tabActive: '#ffffff',
+  bone: '#2e2c2c',
 };

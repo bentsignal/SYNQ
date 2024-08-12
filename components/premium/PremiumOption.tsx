@@ -1,16 +1,17 @@
 import { TouchableOpacity, View, Text } from "react-native";
 import { Styles } from "@/constants/Styles";
-import { Colors } from "@/constants/Colors";
+import Skeleton from "../Skeleton";
 
 type OptionProps = {
   handler: () => void;
   bgColor: string;
   tier: string;
   price: string;
-  skeleton: boolean;
+  loading: boolean;
 }
 
-const PremiumOption = ({handler, bgColor, tier, price, skeleton}: OptionProps) => {
+const PremiumOption = ({handler, bgColor, tier, price, loading}: OptionProps) => {
+  
   return (
     <View
       style={{
@@ -18,10 +19,9 @@ const PremiumOption = ({handler, bgColor, tier, price, skeleton}: OptionProps) =
         position: 'relative',
       }}
     >
-      <View 
-        style={{
-          display: skeleton ? 'flex' : 'none',
-          backgroundColor: 'red',
+      <Skeleton 
+        show={loading}
+        styles={{
           position: 'absolute',
           width: '100%',
           height: '100%',
@@ -41,6 +41,7 @@ const PremiumOption = ({handler, bgColor, tier, price, skeleton}: OptionProps) =
       </TouchableOpacity>
     </View>
   );
+  
 }
 
 export default PremiumOption;

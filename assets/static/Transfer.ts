@@ -198,6 +198,12 @@ const Transfer = () => {
                 padding: 20px 40px;
               }
   
+              @media screen and (max-width: 500px) {
+                #connection-status {
+                  font-size: 12pt;
+                }
+              }
+  
           </style>
       </head>
       <body>
@@ -388,7 +394,7 @@ const Transfer = () => {
                         <line class="cls-1" x1="746.59" y1="298.08" x2="500" y2="51.49"/>
                       </g>
                     </svg>
-                  <p class="info-text" style="margin-top: 15px;">Select files for transfer. You can send multiple files at once.</p>
+                  <p class="info-text" style="margin-top: 15px;">Select files for transfer</p>
                   <p class="info-text" style="margin-bottom: 15px">Supports: mp3</p>
                   <button id="browse">
                       <label for="browseFiles" id="file-label">

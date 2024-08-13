@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Linking } from 'react-native';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { Styles } from '@/constants/Styles';
@@ -33,10 +33,25 @@ const Premium = () => {
   useEffect(() => {
     connect();
     checkStatus();
+    fetchOfferings();
     // return () => {
     //   IAP.endConnection();
     // }
   }, [])
+
+  const openURL = (url: string) => {
+    Linking.openURL(url).catch((err) => console.error("Failed to open URL:", err));
+  };
+
+  const fetchOfferings = async () => {
+    try {
+      const offerings = await Purchases.getOfferings();
+      console.log(offerings);
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
 
   const connect = async () => {
     Purchases.configure({
@@ -181,7 +196,7 @@ const Premium = () => {
             <TouchableOpacity
               activeOpacity={.9}
               onPress={() => {
-                console.log('TOS')
+                openURL('https://directedbyshawn.com/synq-terms-conditions');
               }}
             >
               <Text style={{color: 'white'}}>Terms of Service · </Text>
@@ -189,7 +204,7 @@ const Premium = () => {
             <TouchableOpacity
               activeOpacity={.9}
               onPress={() => {
-                console.log('Privacy')
+                openURL('https://directedbyshawn.com/synq-privacy-policy');
               }}
             >
               <Text style={{color: 'white'}}>Privacy Policy</Text>

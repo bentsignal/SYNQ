@@ -18,7 +18,7 @@ const Settings = () => {
         title="Premium"
         desc="Manage your subcription"
         icon={require('@/assets/icons/premium.png')}
-        disabled={false}
+        disabled={true}
         handlePress={() => router.push("/premium")}
       /> 
     </View>

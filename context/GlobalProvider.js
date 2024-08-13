@@ -6,7 +6,7 @@ export const useGlobalContext = () => useContext(GlobalContext);
 const GlobalProvider = ({ children }) => {
 
   const [homeState, setHomeState] = useState(0);
-  const [premium, setPremium] = useState(false);
+  const [premium, setPremium] = useState(true);
   const [wifiResults, setWifiResults] = useState([]);
   const [results, setResults] = useState([]);
   const [exportDisabled, setExportDisabled] = useState(true);

@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Linking, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { Styles } from '@/constants/Styles';
@@ -12,15 +12,11 @@ import PremiumOption from '@/components/premium/PremiumOption';
 import Purchases from 'react-native-purchases';
 import Loading from '@/components/Loading';
 
-const monthlyId = 'com.directedbyshawn.synq.SYNQPremiumMonthly';
-const yearlyId = 'com.directedbyshawn.synq.SYNQPremiumYearly';
-const lifetimeId = 'com.directedbyshawn.synq.SYNQPremiumLifetime';
-
 const Premium = () => {
 
   const { premium, setPremium } = useGlobalContext();
   
-  const [selected, setSelected] = useState(-1);
+  const [selected, setSelected] = useState(0);
   const [renew, setRenew] = useState(true);
   const [loading, setLoading] = useState(true);
   const [end, setEnd] = useState('January 1, 2000');
@@ -28,110 +24,91 @@ const Premium = () => {
   const [purchaseText, setPurchaseText] = useState('Purchase');
   const [monthlyText, setMonthlyText] = useState('Purchase');
   const [yearlyText, setYearlyText] = useState('Purchase');
+  const [monthlyOffering, setMonthlyOffering] = useState();
+  const [yearlyOffering, setYearlyOffering] = useState();
+  const [lifetimeOffering, setLifetimeOffering] = useState();
   const [error, setError] = useState(false);
 
   useEffect(() => {
     connect();
-    checkStatus();
     fetchOfferings();
-    // return () => {
-    //   IAP.endConnection();
-    // }
   }, [])
 
   const openURL = (url: string) => {
     Linking.openURL(url).catch((err) => console.error("Failed to open URL:", err));
   };
 
+  const connect = async () => {
+    Purchases.configure({
+      apiKey: 'appl_qzTfhRrmSegqQhRUukTmiUsVMIq',
+      appUserID: null,
+    });
+    setTimeout(() => {
+      setLoading(false);
+    }, 800);
+  }
+
   const fetchOfferings = async () => {
     try {
-      const offerings = await Purchases.getOfferings();
-      console.log(offerings);
+      // const offerings = await Purchases.getOfferings();
     }
     catch (error) {
       console.log(error);
     }
   }
 
-  const connect = async () => {
-    Purchases.configure({
-      apiKey: 'appl_qzTfhRrmSegqQhRUukTmiUsVMIq',
-      appUserID: null,
-    });
-    // try {
-    //   await IAP.initConnection();
-    // }
-    // catch (error) {
-    //   console.log(`Error connecting to app store, ${error}`);
-    // }
-  }
-
-  const checkStatus = async () => {
-    try {
-
-      console.log('get');
-
-      // const purchases = await IAP.getAvailablePurchases();
-
-      // // lifetime purchase, no need to look further
-      // const lifetimePurchase = purchases.find(purchase => purchase.productId === lifetimeId);
-      // if (lifetimePurchase) {
-      //   setError(false);
-      //   setActive(true);
-      //   setSelected(2);
-      //   setLoading(false);
-      //   return;
-      // }
-
-      // // check for recurring sub
-      // const monthlyPurchase = purchases.find(purchase => purchase.productId === monthlyId);
-      // const yearlyPurchase = purchases.find(purchase => purchase.productId === yearlyId);
-      
-      // // no sub purchase ever
-      // if (!monthlyPurchase && !yearlyPurchase) {
-      //   setSelected(0);
-      //   setError(false);
-      //   setActive(false);
-      //   setMonthlyText('Start 1 month free trial');
-      //   setYearlyText('Start 3 month free trial');
-      //   setSelected(0);
-      //   setPurchaseText(monthlyText);
-      //   setLoading(false);
-      //   return;
-      // }
-
-      // previously on either, no trial allowed
-
-      // currently on monthly
-
-      // currently on yearly
-
-    }
-    catch (error) {
-      console.log(`Error pulling previous purchases, ${error}`);
-      setError(true);
-      setLoading(false);
-    }
-    setLoading(false);
-  }
-
   const purchase = async () => {
-    // if (selected === 0) {
-    //   await IAP.requestSubscription({ 
-    //     sku: monthlyId, 
-    //     andDangerouslyFinishTransactionAutomaticallyIOS: false, 
-    //   });
-    // }
-    // else if (selected === 1) {
-    //   await IAP.requestSubscription({ 
-    //     sku: yearlyId,
-    //     andDangerouslyFinishTransactionAutomaticallyIOS: false, 
-    //   });
-    // }
-    // else if (selected === 2) {
-    //   await IAP.requestPurchase({ sku: lifetimeId });
-    // }
-    return true;
+    setLoading(true);
+    const offerings = await Purchases.getOfferings();
+    let name = '';
+    if (selected === 0) {
+      name = 'Premium Monthly';
+    }
+    else if (selected === 1) {
+      name = 'Premium Yearly';
+    }
+    else if (selected === 2) {
+      name = 'Premium Lifetime';
+    }
+    if (name) {
+      try {
+        if (offerings.all 
+            && offerings.all[name] 
+            && offerings.all[name].availablePackages
+          ) {
+            try {
+              await Purchases.purchasePackage(offerings.all[name].availablePackages[0]);
+              setPremium(true);
+              Alert.alert(
+                'Purchase successful',
+                'Thank you for purchasing SYNQ Premium!',
+                [{
+                  text: 'Ok',
+                  onPress: () => {
+                    setLoading(false);
+                    router.back();
+                  }
+                }]
+              );
+              return true;
+            }
+            catch (error) {
+              console.log('Failed purchase');
+              setLoading(false);
+              return false;
+            }
+        }
+        else {
+          setLoading(false);
+          console.log('No offerings available');
+          return false;
+        }
+      }
+      catch (error) {
+        setLoading(false);
+        return false;
+      }
+    }
   }
 
   const getBottom = () => {
@@ -217,13 +194,39 @@ const Premium = () => {
             textColor={Colors.text}
             buttonWidth={240}
             handlePress={async () => {
-              const result = await purchase();
+              try {
+                const result = await purchase();
+                if (result) {
+                  console.log('Purchase: Success');
+                }
+                else {
+                  console.log('Purchase: Failed');
+                }
+              }
+              catch (error) {
+                console.log(error)
+              }
             }}
           />
           <TouchableOpacity 
             activeOpacity={.9}
-            onPress={() => {
-              console.log('restore');
+            onPress={async () => {
+              setLoading(true);
+              try {
+                const restorePurchases = await Purchases.restorePurchases();
+                setLoading(false);
+              }
+              catch (error) {
+                console.log(error);
+                setLoading(false);
+                Alert.alert(
+                  'ERROR',
+                  'Could not restore purchases',
+                  [{
+                    text: 'Ok'
+                  }]
+                )
+              }
             }}
           >
             <Text 

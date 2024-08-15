@@ -1,6 +1,6 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useEffect } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
@@ -11,6 +11,7 @@ import WiFi from "@/components/import/wifi/WiFi";
 import Files from "@/components/import/files/Files";
 import { Success, Failure } from "@/components/Outcome";
 import InstructionsModal from "@/components/modals/InstructionsModal";
+import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
 
 const getShowWelcome = async () => {
   return await AsyncStorage.getItem('showWelcome')
@@ -21,6 +22,16 @@ const Home = () => {
   const { setShowWelcome } = useGlobalContext();
 
   useEffect(() => {
+    const requestTracking = async () => {
+      const { status } = await requestTrackingPermissionsAsync();
+      if (status === 'granted') {
+        console.log('granted');
+      }
+      else {
+        console.log('denied');
+      }
+    }
+    requestTracking();
     getShowWelcome().then((value) => {
       value === 'false' ? setShowWelcome(false) : setShowWelcome(true)
     })
@@ -83,13 +94,13 @@ const Home = () => {
             disabled={false}
             handlePress={() => {setHomeState(1)}}
           />
-          <Option 
+          {/* <Option 
             title='Download'
             desc='Import from the web'
             icon={require('@/assets/icons/download.png')}
             disabled={true}
             handlePress={() => {setHomeState(3)}}
-          />
+          /> */}
         </ScrollView>
       </View>
     );

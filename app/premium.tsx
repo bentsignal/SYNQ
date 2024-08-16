@@ -24,14 +24,29 @@ const Premium = () => {
   const [purchaseText, setPurchaseText] = useState('Purchase');
   const [monthlyText, setMonthlyText] = useState('Purchase');
   const [yearlyText, setYearlyText] = useState('Purchase');
-  const [monthlyOffering, setMonthlyOffering] = useState();
-  const [yearlyOffering, setYearlyOffering] = useState();
-  const [lifetimeOffering, setLifetimeOffering] = useState();
+  const [monthlyCost, setMonthlyCost] = useState('$5.00');
+  const [yearlyCost, setYearlyCost] = useState('$5.00');
+  const [lifetimeCost, setLifetimeCost] = useState('$5.00');
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    connect();
-    fetchOfferings();
+
+    const run = async () => {
+      try {
+        await connect();
+        await checkStatus();
+        await getOfferings();
+        setLoading(false);
+      }
+      catch (error) {
+        setError(true);
+        setLoading(false);
+      }
+    }
+
+    run();
+
+    
   }, [])
 
   const openURL = (url: string) => {
@@ -39,21 +54,52 @@ const Premium = () => {
   };
 
   const connect = async () => {
-    Purchases.configure({
-      apiKey: 'appl_qzTfhRrmSegqQhRUukTmiUsVMIq',
-      appUserID: null,
-    });
-    setTimeout(() => {
-      setLoading(false);
-    }, 800);
-  }
-
-  const fetchOfferings = async () => {
     try {
-      // const offerings = await Purchases.getOfferings();
+      Purchases.configure({
+        apiKey: 'appl_qzTfhRrmSegqQhRUukTmiUsVMIq',
+        appUserID: null,
+      });
+      return true;
     }
     catch (error) {
-      console.log(error);
+      setError(true);
+      return false;
+    }
+  }
+
+  const getOfferings = async () => {
+    try {
+      const offerings = await Purchases.getOfferings();
+      if (offerings) {
+        try {
+          const lifetimePrice = offerings.all['Premium Lifetime'].availablePackages[0].product.priceString;
+          setLifetimeCost(lifetimePrice);
+          const monthlyPrice = offerings.all['Premium Monthly'].availablePackages[0].product.priceString;
+          setMonthlyCost(monthlyPrice);
+          const yearlyPrice = offerings.all['Premium Yearly'].availablePackages[0].product.priceString;
+          setYearlyCost(yearlyPrice);
+        }
+        catch (error) {
+          setError(true);
+          return false;
+        }
+      }
+    }
+    catch (error) {
+      setError(true);
+      return false;
+    }
+  }
+
+  const checkStatus = async () => {
+    try {
+      const customerInfo = await Purchases.getCustomerInfo();
+      const activeSubscriptions = customerInfo.activeSubscriptions;
+      return true;
+    }
+    catch (error) {
+      setError(true);
+      return false;
     }
   }
 
@@ -79,33 +125,38 @@ const Premium = () => {
             try {
               await Purchases.purchasePackage(offerings.all[name].availablePackages[0]);
               setPremium(true);
-              Alert.alert(
-                'Purchase successful',
-                'Thank you for purchasing SYNQ Premium!',
-                [{
-                  text: 'Ok',
-                  onPress: () => {
-                    setLoading(false);
-                    router.back();
-                  }
-                }]
-              );
+              setLoading(false);
+              router.back();
+              // Alert.alert(
+              //   'Purchase successful',
+              //   'Thank you for purchasing SYNQ Premium!',
+              //   [{
+              //     text: 'Ok',
+              //     onPress: () => {
+              //       setLoading(false);
+              //       router.back();
+              //     }
+              //   }]
+              // );
               return true;
             }
             catch (error) {
               console.log('Failed purchase');
               setLoading(false);
+              setError(true);
               return false;
             }
         }
         else {
           setLoading(false);
           console.log('No offerings available');
+          setError(true);
           return false;
         }
       }
       catch (error) {
         setLoading(false);
+        setError(true);
         return false;
       }
     }
@@ -338,7 +389,7 @@ const Premium = () => {
             >
               <PremiumOption 
                 tier={'Monthly'}
-                price={'$0.99'}
+                price={monthlyCost}
                 loading={loading}
                 bgColor={selected === 0 ? Colors.main : Colors.song}
                 handler={() => {
@@ -350,7 +401,7 @@ const Premium = () => {
               />
               <PremiumOption 
                 tier={'Yearly'}
-                price={'$2.99'}
+                price={yearlyCost}
                 loading={loading}
                 bgColor={selected === 1 ? Colors.main : Colors.song}
                 handler={() => {
@@ -362,7 +413,7 @@ const Premium = () => {
               />
               <PremiumOption 
                 tier={'Lifetime'}
-                price={'$9.99'}
+                price={lifetimeCost}
                 loading={loading}
                 bgColor={selected === 2 ? Colors.main : Colors.song}
                 handler={() => {

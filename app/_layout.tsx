@@ -60,9 +60,10 @@ const RootLayout = () => {
   }, []);
 
   useEffect(() => {
-    if (loaded && allow) {
-      SplashScreen.hideAsync();
-    }
+    // if (loaded && allow) {
+    //   SplashScreen.hideAsync();
+    // }
+    SplashScreen.hideAsync();
   }, [loaded, allow]);
 
   return (

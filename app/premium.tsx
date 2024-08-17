@@ -8,7 +8,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Bar from '@/components/modals/Bar';
 import CustomButton from '@/components/CustomButton';
 // import * as IAP from 'react-native-iap';
-import PremiumOption from '@/components/premium/PremiumOption';
+import PremiumOption from '@/components/PremiumOption';
 import Purchases from 'react-native-purchases';
 import Loading from '@/components/Loading';
 
@@ -24,9 +24,9 @@ const Premium = () => {
   const [purchaseText, setPurchaseText] = useState('Purchase');
   const [monthlyText, setMonthlyText] = useState('Purchase');
   const [yearlyText, setYearlyText] = useState('Purchase');
-  const [monthlyCost, setMonthlyCost] = useState('$5.00');
-  const [yearlyCost, setYearlyCost] = useState('$5.00');
-  const [lifetimeCost, setLifetimeCost] = useState('$5.00');
+  const [monthlyCost, setMonthlyCost] = useState('$0.99');
+  const [yearlyCost, setYearlyCost] = useState('$2.99');
+  const [lifetimeCost, setLifetimeCost] = useState('$9.99');
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -34,8 +34,8 @@ const Premium = () => {
     const run = async () => {
       try {
         await connect();
+        await getPrices();
         await checkStatus();
-        await getOfferings();
         setLoading(false);
       }
       catch (error) {
@@ -45,7 +45,6 @@ const Premium = () => {
     }
 
     run();
-
     
   }, [])
 
@@ -67,7 +66,7 @@ const Premium = () => {
     }
   }
 
-  const getOfferings = async () => {
+  const getPrices = async () => {
     try {
       const offerings = await Purchases.getOfferings();
       if (offerings) {
@@ -80,12 +79,14 @@ const Premium = () => {
           setYearlyCost(yearlyPrice);
         }
         catch (error) {
+          console.log('error pulling individual offerings');
           setError(true);
           return false;
         }
       }
     }
     catch (error) {
+      console.log('error pulling offerings');
       setError(true);
       return false;
     }
@@ -93,11 +94,40 @@ const Premium = () => {
 
   const checkStatus = async () => {
     try {
+
       const customerInfo = await Purchases.getCustomerInfo();
       const activeSubscriptions = customerInfo.activeSubscriptions;
+      const purchases = customerInfo.nonSubscriptionTransactions;
+      const all = customerInfo.allPurchaseDates;
+      // check for lifetime
+      if (purchases.length > 0 && purchases[0].productIdentifier === 'SYNQPremiumLifetime') {
+        setActive(true);
+        setSelected(2);
+      }
+      // check for active recurring sub
+      else if (activeSubscriptions.length > 0) {
+        setActive(true);
+        if (activeSubscriptions[0] === 'SYNQPremiumMonthly') {
+          setSelected(0);
+        }
+        else if (activeSubscriptions[0] === 'SYNQPremiumYearly') {
+          setSelected(1);
+        }
+        else if (activeSubscriptions[0] === 'SYNQPremiumLifetime') {
+          setSelected(2);
+        }
+      }
+      // check to see if intro offer is available
+      else if (Object.keys(all).length === 0) {
+        setSelected(0);
+        setMonthlyText("Start your 1 month free trial");
+        setYearlyText("Start your 3 month free trial");
+        setPurchaseText("Start your 1 month free trial");
+      }
       return true;
     }
     catch (error) {
+      console.log('error checking status');
       setError(true);
       return false;
     }
@@ -126,7 +156,7 @@ const Premium = () => {
               await Purchases.purchasePackage(offerings.all[name].availablePackages[0]);
               setPremium(true);
               setLoading(false);
-              router.back();
+              checkStatus();
               // Alert.alert(
               //   'Purchase successful',
               //   'Thank you for purchasing SYNQ Premium!',
@@ -143,7 +173,6 @@ const Premium = () => {
             catch (error) {
               console.log('Failed purchase');
               setLoading(false);
-              setError(true);
               return false;
             }
         }
@@ -399,7 +428,7 @@ const Premium = () => {
                   }
                 }}
               />
-              <PremiumOption 
+              <PremiumOption
                 tier={'Yearly'}
                 price={yearlyCost}
                 loading={loading}

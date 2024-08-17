@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Network from 'expo-network';
 import GlobalProvider from "@/context/GlobalProvider";
+import Purchases from 'react-native-purchases';
 
 const RootLayout = () => {
 
@@ -12,6 +13,8 @@ const RootLayout = () => {
   });
 
   const [allow, setAllow] = useState(false);
+
+  const bypassAllow = true;
 
   useEffect(() => {
 
@@ -28,12 +31,16 @@ const RootLayout = () => {
     }
 
     const checkSubscribed = async () => {
+      // TODO: Store file when purchasing premium, then check here for file
       return true;
     }
 
     const checkAllow = async () => {
       try {
-        if (await checkSubscribed()) {
+        if (bypassAllow) {
+          setAllow(true);
+        }
+        else if (await checkSubscribed()) {
           setAllow(true);
         }
         else if (await checkConnection()) {
@@ -49,7 +56,6 @@ const RootLayout = () => {
     }
 
     checkAllow();
-    SplashScreen.hideAsync();
 
   }, []);
 

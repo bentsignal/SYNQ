@@ -1,6 +1,6 @@
 import { TouchableOpacity, View, Text } from "react-native";
 import { Styles } from "@/constants/Styles";
-import Skeleton from "../Skeleton";
+import Skeleton from "./Skeleton";
 
 type OptionProps = {
   handler: () => void;
@@ -36,8 +36,8 @@ const PremiumOption = ({handler, bgColor, tier, price, loading}: OptionProps) =>
         activeOpacity={1}
         onPress={handler}
       >
-        <Text style={Styles.subTier}>{tier}</Text>
         <Text style={Styles.subCost}>{price}</Text>
+        <Text style={Styles.subTier}>{tier}</Text>
       </TouchableOpacity>
     </View>
   );

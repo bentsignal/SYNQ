@@ -34,9 +34,10 @@ const Files = () => {
           </Text>
       }
       else if (importing) {
+        console.log(transferSize);
         if (transferSize < 1) {
           message = 
-            <Text>
+            <Text style={Styles.infoText}>
               Importing your files...
             </Text>
         }

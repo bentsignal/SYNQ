@@ -32,12 +32,12 @@ const Home = () => {
       }
     }
     requestTracking();
-    getShowWelcome().then((value) => {
-      value === 'false' ? setShowWelcome(false) : setShowWelcome(true)
-    })
-    .catch((error) => {
-      setShowWelcome(false)
-    })
+    // getShowWelcome().then((value) => {
+    //   value === 'false' ? setShowWelcome(false) : setShowWelcome(true)
+    // })
+    // .catch((error) => {
+    //   setShowWelcome(false)
+    // })
   }, []);
 
   const { homeState, setHomeState } = useGlobalContext();

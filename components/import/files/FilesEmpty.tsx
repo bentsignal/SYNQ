@@ -53,12 +53,12 @@ const FilesEmpty = () => {
             setImporting(false);
             setLoading(false)
             if (results.length > 0) {
-              getShowSaveInst().then((value) => {
-                value === 'false' ? setShowSaveInst(false) : setShowSaveInst(true);
-              })
-              .catch((error) => {
-                setShowSaveInst(false);
-              })
+              // getShowSaveInst().then((value) => {
+              //   value === 'false' ? setShowSaveInst(false) : setShowSaveInst(true);
+              // })
+              // .catch((error) => {
+              //   setShowSaveInst(false);
+              // })
               setExportDisabled(false);
               setResults(results);
             }

@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import * as server from "expo-http-server";
 import * as Network from 'expo-network';
 import * as Device from 'expo-device';
-import Constants from 'expo-constants';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { getWifiInfo, idgen} from '@/lib/SongManager';
 import Transfer from '@/assets/static/Transfer';
@@ -164,9 +163,7 @@ const Server = () => {
       }
     }
 
-    if (Constants.appOwnership !== 'expo') {
-      startServer();
-    }
+    startServer();
 
   }, []);
   

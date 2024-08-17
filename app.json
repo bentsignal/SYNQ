@@ -35,14 +35,6 @@
     "plugins": [
       "expo-router",
       [
-        "expo-asset",
-        {
-          "assets": [
-            "./assets/static/Transfer.html"
-          ]
-        }
-      ],
-      [
         "expo-build-properties",
         {
           "android": {
@@ -53,7 +45,6 @@
           }
         }
       ],
-      "react-native-iap",
       [
         "expo-tracking-transparency"
       ]

@@ -1,8 +1,9 @@
 import { View, Image, TouchableOpacity } from 'react-native';
 import { useEffect, useState } from 'react';
 
-export const ListCover = ({image}: {
+export const ListCover = ({image, propOnLoad}: {
   image?: string;
+  propOnLoad: () => void;
 }) => {
 
   const [src, setSrc] = useState(image ? image : '');
@@ -31,10 +32,12 @@ export const ListCover = ({image}: {
         }}
         onLoad={() => {
           setLoaded(true);
+          propOnLoad()
         }}
         onError={(error) => {
           setSrc('');
           setLoaded(true);
+          propOnLoad();
         }}
       />
     </View>

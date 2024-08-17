@@ -12,10 +12,12 @@ import Select from '@/components/song/Select';
 import { ListCover } from '@/components/song/Cover';
 import { BlurView } from 'expo-blur';
 import CustomButton from '../CustomButton';
+import Skeleton from '../Skeleton';
 
 const Song = ({name, id, data, info}: SongType) => {
 
   const [selected, setSelected] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const { 
 
     selectEnabled, selectedSongs, results,
@@ -64,7 +66,12 @@ const Song = ({name, id, data, info}: SongType) => {
           opacity: !selectEnabled || (selectEnabled && selected) ? 1 : 0.6
         }]}
       >
-        <ListCover image={info.metadata?.artwork ? info.metadata.artwork : ''}/>
+        <ListCover 
+          image={info.metadata?.artwork ? info.metadata.artwork : ''}
+          propOnLoad={() => {
+            setLoaded(true);
+          }}
+        />
         <SongInfo info={info} name={name}/>
         {
 
@@ -113,6 +120,15 @@ const Song = ({name, id, data, info}: SongType) => {
 
         }
       </View>
+      <Skeleton
+        show={!loaded}
+        styles={[Styles.roundedContainer, {
+          position: 'absolute',
+          width: '90%',
+          height: 90,
+          zIndex: 1,
+        }]}
+      />
       <BlurView
         style={[Styles.roundedContainer, {
           display: blur ? 'flex' : 'none',
@@ -125,7 +141,7 @@ const Song = ({name, id, data, info}: SongType) => {
           width: '90%',
           height: 90,
           padding: 15,
-          zIndex: 1
+          zIndex: 2
         }]}
         intensity={20}
       >

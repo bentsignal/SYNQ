@@ -14,8 +14,9 @@ const FilesEmpty = () => {
 
   const { 
 
-    setResults, setExportDisabled, setLoading, setImporting,
-    setShowSaveInst, setHomeState
+    setResults, setExportDisabled, setLoading, 
+    setImporting, setShowSaveInst, setHomeState,
+    setTransferSize,
 
   } = useGlobalContext();
 
@@ -38,6 +39,7 @@ const FilesEmpty = () => {
         Press browse to import files
       </Text>
       <Text style={[Styles.infoText, {
+        fontWeight: 'regular',
         paddingTop: 10,
         paddingBottom: 20
       }]}>
@@ -49,7 +51,11 @@ const FilesEmpty = () => {
         handlePress={() => {
           setLoading(true);
           setImporting(true);
-          importFiles().then((results) => {
+          setTransferSize(0);
+          const updateCountdown = (value: number) => {
+            setTransferSize(value);
+          }
+          importFiles(updateCountdown).then((results) => {
             setImporting(false);
             setLoading(false)
             if (results.length > 0) {

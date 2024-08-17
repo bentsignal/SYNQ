@@ -79,7 +79,7 @@ export const getWifiInfo = async (name: string, id: string, type: string, data: 
   }
 }
 
-export const importFiles = async () => {
+export const importFiles = async (callback: (value: number) => void) => {
   const results = await DocumentPicker.getDocumentAsync({
     type: "audio/mpeg",
     multiple: true,
@@ -90,6 +90,7 @@ export const importFiles = async () => {
   let data;
   if (results.canceled == false) {
     for (let i = 0; i < results.assets.length; i++) {
+      callback(results.assets.length - i);
       data = await FileSystem.readAsStringAsync(results.assets[i].uri, {encoding: 'base64'});
       let info = {};
       await getAudioMetadata(results.assets[i].uri, wantedTags)

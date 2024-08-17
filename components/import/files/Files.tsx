@@ -15,9 +15,9 @@ const Files = () => {
   const { 
     
     results, loading, zipping, 
-    importing, premium,
+    importing, premium, transferSize,
 
-    setShowSaveInst, 
+    setShowSaveInst,
 
   } = useGlobalContext();
 
@@ -34,10 +34,18 @@ const Files = () => {
           </Text>
       }
       else if (importing) {
-        message =
-          <Text style={Styles.infoText}>
-            Importing your files...
-          </Text>
+        if (transferSize < 1) {
+          message = 
+            <Text>
+              Importing your files...
+            </Text>
+        }
+        else {
+          message =
+            <Text style={Styles.infoText}>
+              {transferSize} file{transferSize > 1 ? 's' : ''} remaining...
+            </Text>
+        }
       }
       return (
         <View

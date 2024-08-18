@@ -65,6 +65,9 @@ const Premium = () => {
       return false;
     }
   }
+  const getMonthName = (monthNumber: number) => {
+    return new Date(2024, monthNumber - 1, 1).toLocaleString('en-US', { month: 'long' });
+  }
 
   const getPrices = async () => {
     try {
@@ -115,6 +118,25 @@ const Premium = () => {
         }
         else if (activeSubscriptions[0] === 'SYNQPremiumLifetime') {
           setSelected(2);
+        }
+        try {
+          if (customerInfo && customerInfo.entitlements && customerInfo.entitlements.active) {
+            const entitlement = customerInfo.entitlements.active.Premium;
+            setRenew(entitlement.willRenew);
+            const periodEnd = entitlement.expirationDate; 
+            if (periodEnd) {
+              const periodEndDate = new Date(periodEnd);
+              let dateString = '';
+              const month = getMonthName(periodEndDate.getMonth()+1);
+              const day = periodEndDate.getDate();
+              const year = periodEndDate.getFullYear();
+              dateString = `${month} ${day}, ${year}`;
+              setEnd(dateString);
+            }
+          }
+        }
+        catch (error) {
+          console.log('error gettting renewal status');
         }
       }
       // check to see if intro offer is available

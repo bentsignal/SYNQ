@@ -14,9 +14,12 @@ const FilesEmpty = () => {
 
   const { 
 
+    transferSize, loadAnimInProgress,
+
     setResults, setExportDisabled, setLoading, 
     setImporting, setShowSaveInst, setHomeState,
-    setTransferSize,
+    setTransferSize, setTransferProgress, 
+    setLoadAnimInProgress,
 
   } = useGlobalContext();
 
@@ -51,29 +54,30 @@ const FilesEmpty = () => {
         handlePress={() => {
           setLoading(true);
           setImporting(true);
-          setTransferSize(0);
-          const updateCountdown = (value: number) => {
-            setTransferSize(value);
-          }
-          importFiles(updateCountdown).then((results) => {
+          const updateCountdown = (value: number) => setTransferProgress(value);
+          const updateSize = (value: number) => {
+            setTransferSize(value)
+            if (value > 2) {
+              setLoadAnimInProgress(true);
+            }
+          };
+          importFiles(updateCountdown, updateSize).then((results) => {
+            setTransferSize(-1);
+            setTransferProgress(-1);
             setImporting(false);
-            setLoading(false)
+            setLoading(false);
             if (results.length > 0) {
-              // getShowSaveInst().then((value) => {
-              //   value === 'false' ? setShowSaveInst(false) : setShowSaveInst(true);
-              // })
-              // .catch((error) => {
-              //   setShowSaveInst(false);
-              // })
               setExportDisabled(false);
               setResults(results);
             }
           })
           .catch((error) => {
+            console.log(error);
             setLoading(false);
             setImporting(false);
             setHomeState(4);
           })
+
         }}
       />
     </View>

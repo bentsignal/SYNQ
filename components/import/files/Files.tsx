@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
+import { useEffect, useState } from 'react';
 import PageTitle from '@/components/PageTitle';
 import Loading from '@/components/Loading';
 import Top from '@/components/Top';
@@ -9,6 +10,7 @@ import FilesEmpty from '@/components/import/files/FilesEmpty';
 import SongList from '@/components/song/SongList';
 import SaveInstructionsModal from '@/components/modals/SaveInstructionsModal';
 import ImportControls from '../ImportControls';
+import Progress from '@/components/Progress';
 
 const Files = () => {
 
@@ -16,49 +18,34 @@ const Files = () => {
     
     results, loading, zipping, 
     importing, premium, transferSize,
+    transferProgress, loadAnimInProgress,
 
     setShowSaveInst,
 
   } = useGlobalContext();
 
+  const [completion, setCompletion] = useState(0);
+
   const insets = useSafeAreaInsets();
 
-  const getBody = () => {
+  useEffect(() => {
+    if (transferSize >= 0 && transferProgress >= 0) {
+      setCompletion((1 - ((transferProgress - 1) / transferSize)) * 100);
+    }
+  }, [transferProgress]);
 
-    if (loading) {
-      let message = <></>
-      if (zipping) {
-        message = 
-          <Text style={Styles.infoText}>
-            Preparing your files...
-          </Text>
-      }
-      else if (importing) {
-        console.log(transferSize);
-        if (transferSize < 1) {
-          message = 
-            <Text style={Styles.infoText}>
-              Importing your files...
-            </Text>
-        }
-        else {
-          message =
-            <Text style={Styles.infoText}>
-              {transferSize} file{transferSize > 1 ? 's' : ''} remaining...
-            </Text>
-        }
-      }
+  const getBody = () => {
+    if (loading || loadAnimInProgress) {
       return (
         <View
           style={[Styles.main, {
             paddingBottom: 50
           }]}
         >
-          {message}
-          <Loading height={100} width={200}/>
-          {/* <ActivityIndicator style={{
-              padding: 20
-          }}/> */}
+          <Progress 
+            completion={completion} 
+            showCircle={loadAnimInProgress}
+          />
         </View>
       )
     }

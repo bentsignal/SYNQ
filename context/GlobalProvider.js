@@ -22,10 +22,12 @@ const GlobalProvider = ({ children }) => {
   const [importing, setImporting] = useState(false);
   const [ip, setIP] = useState('0.0.0.0');
   const [transferSize, setTransferSize] = useState(0);
+  const [transferProgress, setTransferProgress] = useState(0);
   const [serverStarted, setServerStarted] = useState(false);
   const [wifiDisabled, setWifiDisabled] = useState(false);
   const [selectEnabled, setSelectEnabled] = useState(false);
   const [selectedSongs, setSelectedSongs] = useState([]);
+  const [loadAnimInProgress, setLoadAnimInProgress] = useState(false);
   const [transferPage, setTransferPage] = useState('<html><body><p>ERROR: Could not load page</p></body></html>');
 
   return (
@@ -53,6 +55,8 @@ const GlobalProvider = ({ children }) => {
         wifiDisabled, setWifiDisabled,
         selectEnabled, setSelectEnabled,
         selectedSongs, setSelectedSongs,
+        transferProgress, setTransferProgress,
+        loadAnimInProgress, setLoadAnimInProgress,
       }}
     >
       {children}

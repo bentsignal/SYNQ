@@ -1,4 +1,5 @@
-import { View, FlatList, Dimensions } from 'react-native';
+import { View, FlatList, Dimensions, Animated, Easing} from 'react-native';
+import { useRef, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Styles } from '@/constants/Styles';
 import { SongType } from '@/constants/Types';
@@ -22,10 +23,22 @@ const SongList = (data: any) => {
 
   const { selectedId } = useGlobalContext();
 
+  const opacityRef = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(opacityRef, {
+      toValue: 1,
+      duration: 200,
+      easing: Easing.in(Easing.ease),
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   return (
-    <View
+    <Animated.View
       style={[Styles.main, {
-        paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
+        paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50,
+        opacity: opacityRef,
       }]}
     >
       <EditModal />
@@ -54,7 +67,7 @@ const SongList = (data: any) => {
         colors={['rgba(16, 16, 16, 0)', 'rgba(16, 16, 16, 1)']}
         pointerEvents={'none'}
       />
-    </View>
+    </Animated.View>
   );
 
 }

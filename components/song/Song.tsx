@@ -38,7 +38,8 @@ const Song = ({name, id, data, info}: SongType) => {
     selectEnabled, selectedSongs, results,
     premium, showSongOptions, 
 
-    setSelectedSongs, setShowSongOptions
+    setSelectedSongs, setShowSongOptions,
+    setEditSong,
 
   } = useGlobalContext(); 
 
@@ -139,6 +140,12 @@ const Song = ({name, id, data, info}: SongType) => {
               }}
               activeOpacity={.8}
               onPress={() => {
+                setEditSong({
+                  "name": name, 
+                  "id": id, 
+                  "data": data, 
+                  "info": info
+                });
                 setShowSongOptions(!showSongOptions);
               }}
             >

@@ -4,7 +4,7 @@ import { InfoType } from '@/constants/Types';
 
 const SongInfo = ({info, name}: {info: InfoType, name: string}) => {
 
-  if (info.metadata?.artist && info.metadata?.name) {
+  if (info.metadata?.artist && info.metadata?.name && info.metadata?.album) {
     return (
       <View
         style={{
@@ -31,7 +31,7 @@ const SongInfo = ({info, name}: {info: InfoType, name: string}) => {
           }}
           numberOfLines={1}
         >
-          {info.metadata.artist}
+          {info.metadata.artist} · {info.metadata.album}
         </Text>
       </View>
     );

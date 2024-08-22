@@ -1,17 +1,20 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
+import SongInfo from '@/components/song/SongInfo';
+import { ListCover } from '@/components/song/Cover';
 import BottomSheet, { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 
 const SongOptions = () => {
 
   const { 
     
-    showSongOptions,
+    showSongOptions, editSong, 
 
-    setShowSongOptions,
+    setShowSongOptions, setShowEdit,
+    setShowDelete, setDeleteSong,
   
   } = useGlobalContext();
 
@@ -74,13 +77,65 @@ const SongOptions = () => {
             zIndex: 100,
           }}
         >
-          <Text style={{
-            color: Colors.text,
-            fontSize: 20,
-            fontWeight: 'bold',
-          }}>
-            Hello
-          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginBottom: 20,
+              paddingBottom: 20,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderBottomColor: '#222222',
+              borderBottomWidth: 1,
+            }}
+          >
+            <ListCover 
+              image={editSong.info?.metadata?.artwork}
+              propOnLoad={() => {}}
+            />
+            <SongInfo 
+              info={editSong.info ? editSong.info : {metadata: {}}} 
+              name={editSong.name ? editSong.name : ''}
+            />
+          </View>
+          <View>
+            <TouchableOpacity
+              style={Styles.songOptionActionContainer}
+              activeOpacity={0.9}
+              onPress={() => {
+                bottomSheetRef.current?.close();
+                setTimeout(() => {
+                  setShowEdit(true);
+                }, 100);
+              }}
+            >
+              <Image 
+                source={require('@/assets/icons/edit.png')}
+                style={Styles.songOptionIcon}
+              />
+              <Text style={Styles.songOptionActionText}>
+                Edit song
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={Styles.songOptionActionContainer}
+              activeOpacity={0.9}
+              onPress={() => {
+                bottomSheetRef.current?.close();
+                setTimeout(() => {
+                  setShowDelete(true);
+                  setDeleteSong({name: editSong.name, id: editSong.id});
+                }, 100);
+              }}
+            >
+              <Image 
+                source={require('@/assets/icons/delete.png')}
+                style={Styles.songOptionIcon}
+              />
+              <Text style={Styles.songOptionActionText}>
+                Delete
+              </Text>
+            </TouchableOpacity>
+          </View>
         </BottomSheetView>
       </BottomSheet>
     </>

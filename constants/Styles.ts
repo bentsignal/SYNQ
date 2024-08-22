@@ -119,5 +119,22 @@ export const Styles = StyleSheet.create({
   subInfo: {
     color: 'white',
     fontSize: 12,
-  }
+  },
+  songOptionActionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 5,
+    paddingBottom: 5,
+    marginBottom: 10,
+  },
+  songOptionActionText: {
+    color: Colors.text,
+    fontSize: 18,
+    fontWeight: 'bold'
+  },
+  songOptionIcon: {
+    marginRight: 15,
+    width: 20,
+    height: 20
+  },
 });

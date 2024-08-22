@@ -22,13 +22,15 @@ export const ListCover = ({image, propOnLoad}: {
       height: 60,
       justifyContent: 'center',
       alignItems: 'center',
+      borderRadius: 10,
       opacity: loaded ? 1 : 0
     }}>
       <Image 
         source={src ? {uri: src} : require('@/assets/icons/music.png')}
         style={{
           width: dim,
-          height: dim
+          height: dim,
+          borderRadius: src ? 9 : 0,
         }}
         onLoad={() => {
           setLoaded(true);

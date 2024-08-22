@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
@@ -22,7 +22,7 @@ const SongOptions = () => {
   useEffect(() => {
     if (showSongOptions) {
       bottomSheetRef.current?.expand();
-      setSheetIndex(1);
+      setSheetIndex(0);
     }
     else {
       bottomSheetRef.current?.close();
@@ -31,44 +31,59 @@ const SongOptions = () => {
   }, [showSongOptions]);
 
   return (
-    <BottomSheet
-      ref={bottomSheetRef}
-      index={sheetIndex}
-      snapPoints={['100%', '50%']}
-      enablePanDownToClose={true}
-      enableOverDrag={true}
-      style={{
-        zIndex: 100,
-        backgroundColor: 'red',
-      }}
-      onClose={() => {
-        setSheetIndex(-1);
-        setShowSongOptions(false);
-      }}
-      onChange={(index) => {
-        setSheetIndex(index);
-        console.log('here');
-      }}
-    >
-      <BottomSheetView 
+    <>
+      <TouchableOpacity 
         style={{
+          width: '100%',
+          flexGrow: 1,
+        }}
+        onPress={() => {
+          bottomSheetRef.current?.close();
+        }}
+      />
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={sheetIndex}
+        snapPoints={['50%']}
+        enablePanDownToClose={true}
+        enableOverDrag={false}
+        handleIndicatorStyle={{
+          backgroundColor: Colors.altDisabled,
+          width: 80,
+          marginTop: 5,
+        }}
+        backgroundStyle={{
           backgroundColor: Colors.popup,
-          padding: 20,
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          flex: 1,
-          zIndex: 100,
+        }}
+        onClose={() => {
+          setSheetIndex(-1);
+          setShowSongOptions(false);
         }}
       >
-        <Text style={{
-          color: Colors.text,
-          fontSize: 20,
-          fontWeight: 'bold',
-        }}>
-          Hello
-        </Text>
-      </BottomSheetView>
-    </BottomSheet>
+        <BottomSheetView 
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            backgroundColor: Colors.popup,
+            padding: 20,
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            flex: 1,
+            flexGrow: 1,
+            zIndex: 100,
+          }}
+        >
+          <Text style={{
+            color: Colors.text,
+            fontSize: 20,
+            fontWeight: 'bold',
+          }}>
+            Hello
+          </Text>
+        </BottomSheetView>
+      </BottomSheet>
+    </>
   );
 }
 

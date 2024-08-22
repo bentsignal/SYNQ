@@ -9,6 +9,7 @@ import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import Purchases from 'react-native-purchases';
 import Overlay from '@/components/Overlay';
+import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
 
 const TabLayout = () => {
 
@@ -21,6 +22,15 @@ const TabLayout = () => {
   } = useGlobalContext();
 
   useEffect(() => {
+    const requestTracking = async () => {
+      const { status } = await requestTrackingPermissionsAsync();
+      if (status === 'granted') {
+        console.log('granted');
+      }
+      else {
+        console.log('denied');
+      }
+    }
     const checkPremium = async () => {
       try {
         Purchases.configure({
@@ -39,11 +49,13 @@ const TabLayout = () => {
         else {
           setPremium(false);
         }
+        setPremium(true);
       }
       catch (error) {
         console.log('error checking premium');
       }
     }
+    requestTracking();
     checkPremium();
   }, [])
 

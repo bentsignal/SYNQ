@@ -16,7 +16,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
     setHomeState, setResults, setExportDisabled,
     setLoading, setZipping, setImporting, 
     setShowDelete, setEditSong, setShowEdit, 
-    setTransferSize
+    setTransferSize, setShowOverlay
 
   } = useGlobalContext();
 
@@ -43,6 +43,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
               "data": "",
               "info": ""
             });
+            setShowOverlay(true);
             setShowEdit(true);
           }}
         >
@@ -59,7 +60,10 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
             backgroundColor: Colors.song,
             padding: 15
           }]}
-          onPress={() => setShowDelete(true)}
+          onPress={() => {
+            setShowOverlay(true);
+            setShowDelete(true);
+          }}
         >
           <Image 
             source={require('@/assets/icons/delete.png')}

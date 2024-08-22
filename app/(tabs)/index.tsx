@@ -11,7 +11,6 @@ import WiFi from "@/components/import/wifi/WiFi";
 import Files from "@/components/import/files/Files";
 import { Success, Failure } from "@/components/Outcome";
 import InstructionsModal from "@/components/modals/InstructionsModal";
-import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
 
 const getShowWelcome = async () => {
   return await AsyncStorage.getItem('showWelcome')
@@ -21,24 +20,14 @@ const Home = () => {
 
   const { setShowWelcome } = useGlobalContext();
 
-  useEffect(() => {
-    const requestTracking = async () => {
-      const { status } = await requestTrackingPermissionsAsync();
-      if (status === 'granted') {
-        console.log('granted');
-      }
-      else {
-        console.log('denied');
-      }
-    }
-    requestTracking();
-    // getShowWelcome().then((value) => {
-    //   value === 'false' ? setShowWelcome(false) : setShowWelcome(true)
-    // })
-    // .catch((error) => {
-    //   setShowWelcome(false)
-    // })
-  }, []);
+  // useEffect(() => {
+  //   getShowWelcome().then((value) => {
+  //     value === 'false' ? setShowWelcome(false) : setShowWelcome(true)
+  //   })
+  //   .catch((error) => {
+  //     setShowWelcome(false)
+  //   })
+  // }, []);
 
   const { homeState, setHomeState } = useGlobalContext();
   const insets = useSafeAreaInsets();

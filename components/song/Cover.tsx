@@ -69,7 +69,8 @@ export const EditCover = ({image, handlePress}: {
           width: 120, 
           height: 120,
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
+          borderRadius: 10,
         }}
       >
         <Image 
@@ -77,7 +78,8 @@ export const EditCover = ({image, handlePress}: {
           style={{
             width: 120, 
             height: 120,
-            position: 'absolute'
+            position: 'absolute',
+            borderRadius: 10,
           }}
           onError={() => {
             setSrc('');
@@ -88,7 +90,8 @@ export const EditCover = ({image, handlePress}: {
             width: 120,
             height: 120,
             position: 'absolute',
-            backgroundColor: `rgba(0, 0, 0, ${src ? 0.6 : 0})`
+            backgroundColor: `rgba(0, 0, 0, ${src ? 0.6 : 0})`,
+            borderRadius: 10,
           }}
         />
         <View
@@ -104,7 +107,7 @@ export const EditCover = ({image, handlePress}: {
             source={src ? require('@/assets/icons/edit.png') : require('@/assets/icons/edit-black.png')}
             style={{
               width: 20,
-              height: 20
+              height: 20,
             }}
           />
         </View>

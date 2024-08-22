@@ -14,7 +14,13 @@ import Loading from '@/components/Loading';
 
 const Premium = () => {
 
-  const { premium, setPremium } = useGlobalContext();
+  const { 
+    
+    premium, errorMessage,
+    
+    setPremium, setErrorMessage, 
+  
+  } = useGlobalContext();
   
   const [selected, setSelected] = useState(0);
   const [renew, setRenew] = useState(true);
@@ -27,7 +33,7 @@ const Premium = () => {
   const [monthlyCost, setMonthlyCost] = useState('$0.99');
   const [yearlyCost, setYearlyCost] = useState('$2.99');
   const [lifetimeCost, setLifetimeCost] = useState('$9.99');
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(true);
 
   useEffect(() => {
 
@@ -40,6 +46,7 @@ const Premium = () => {
       }
       catch (error) {
         setError(true);
+        setErrorMessage('1: ' + error);
         setLoading(false);
       }
     }
@@ -62,6 +69,7 @@ const Premium = () => {
     }
     catch (error) {
       setError(true);
+      setErrorMessage('2: ' + error);
       return false;
     }
   }
@@ -84,6 +92,7 @@ const Premium = () => {
         catch (error) {
           console.log('error pulling individual offerings');
           setError(true);
+          setErrorMessage('3: ' + error);
           return false;
         }
       }
@@ -91,6 +100,7 @@ const Premium = () => {
     catch (error) {
       console.log('error pulling offerings');
       setError(true);
+      setErrorMessage('4: ' + error);
       return false;
     }
   }
@@ -151,6 +161,7 @@ const Premium = () => {
     catch (error) {
       console.log('error checking status');
       setError(true);
+      setErrorMessage('5: ' + error);
       return false;
     }
   }
@@ -202,12 +213,14 @@ const Premium = () => {
           setLoading(false);
           console.log('No offerings available');
           setError(true);
+          setErrorMessage('6: ' + 'No offerings available');
           return false;
         }
       }
       catch (error) {
         setLoading(false);
         setError(true);
+        setErrorMessage('7: ' + error);
         return false;
       }
     }
@@ -221,14 +234,25 @@ const Premium = () => {
     }
     else if (error) {
       return (
-        <Text 
-          style={{
-            color: Colors.text,
-            fontWeight: 'bold',
-          }}
-        >
-          An error occured, please try again later
-        </Text>
+        <>
+          <Text 
+            style={{
+              color: Colors.text,
+              fontWeight: 'bold',
+              marginBottom: 10,
+            }}
+          >
+            An error occured, please try again later
+          </Text>
+          <Text 
+            style={{
+              color: Colors.text,
+              textAlign: 'center',
+            }}
+          >
+            {errorMessage}
+          </Text>
+        </>
       )
     }
     else if (active) {

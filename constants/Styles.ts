@@ -54,7 +54,7 @@ export const Styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.95)'
+    // backgroundColor: 'rgba(0, 0, 0, 0.95)'
   },
   popupBody: {
     backgroundColor: Colors.popup,

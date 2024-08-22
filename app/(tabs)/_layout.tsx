@@ -8,6 +8,7 @@ import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import Purchases from 'react-native-purchases';
+import Overlay from '@/components/Overlay';
 
 const TabLayout = () => {
 
@@ -18,24 +19,6 @@ const TabLayout = () => {
     setPremium, 
   
   } = useGlobalContext();
-
-  let overlayOpacity = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    let to;
-    if (showSongOptions) {
-      to = 0.7;
-    }
-    else {
-      to = 0;
-    }
-    Animated.timing(overlayOpacity, {
-      toValue: to,
-      duration: 200,
-      easing: showSongOptions ? Easing.out(Easing.ease) : Easing.in(Easing.ease),
-      useNativeDriver: true,
-    }).start();
-  }, [showSongOptions])
 
   useEffect(() => {
     const checkPremium = async () => {
@@ -71,24 +54,12 @@ const TabLayout = () => {
           height: '100%', 
           zIndex: 100,
           width: '100%',
-          // display: showSongOptions ? 'flex' : 'none',
           pointerEvents: showSongOptions ? 'auto' : 'none',
         }}
       >
         <SongOptions />
       </View>
-      {/* <Animated.View 
-          style={{
-            position: 'absolute',
-            backgroundColor: 'black',
-            width: '100%',
-            height: '100%',
-            zIndex: 80,
-            opacity: overlayOpacity,
-            // display: showSongOptions ? 'flex' : 'none',
-            pointerEvents: showSongOptions ? 'auto' : 'none',
-          }}
-        /> */}
+      <Overlay />
       <Server />
       <Tabs
         screenOptions={{

@@ -30,6 +30,7 @@ const GlobalProvider = ({ children }) => {
   const [loadAnimInProgress, setLoadAnimInProgress] = useState(false);
   const [showSongOptions, setShowSongOptions] = useState(false);
   const [transferPage, setTransferPage] = useState('<html><body><p>ERROR: Could not load page</p></body></html>');
+  const [showOverlay, setShowOverlay] = useState(false);
 
   return (
     <GlobalContext.Provider
@@ -58,7 +59,8 @@ const GlobalProvider = ({ children }) => {
         selectedSongs, setSelectedSongs,
         transferProgress, setTransferProgress,
         loadAnimInProgress, setLoadAnimInProgress,
-        showSongOptions, setShowSongOptions
+        showSongOptions, setShowSongOptions,
+        showOverlay, setShowOverlay,
       }}
     >
       {children}

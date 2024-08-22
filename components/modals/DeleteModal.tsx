@@ -13,7 +13,7 @@ const DeleteModal = () => {
     showDelete, 
 
     setShowDelete, setResults, setExportDisabled,
-    setSelectEnabled
+    setSelectEnabled, setShowOverlay, 
 
   } = useGlobalContext();
 
@@ -67,12 +67,16 @@ const DeleteModal = () => {
               <CustomButton 
                 title='Cancel'
                 background={Colors.altButton}
-                handlePress={() => {setShowDelete(false)}}
+                handlePress={() => {
+                  setShowOverlay(false);
+                  setShowDelete(false)
+                }}
               />
               <CustomButton 
                 title='Delete'
                 background={Colors.main}
                 handlePress={() => {
+                  setShowOverlay(false);
                   setShowDelete(false);
                   const ids = selectedSongs.length > 0 ? selectedSongs : [deleteSong.id]
                   const newResults = removeSongs(results, ids);

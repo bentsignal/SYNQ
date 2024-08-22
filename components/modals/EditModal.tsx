@@ -16,7 +16,8 @@ const EditModal = () => {
     results, showEdit, editSong,
     selectedSongs,
 
-    setResults, setShowEdit, setSelectEnabled
+    setResults, setShowEdit, setSelectEnabled,
+    setShowOverlay, 
 
   } = useGlobalContext();
 
@@ -188,6 +189,7 @@ const EditModal = () => {
                     title='Cancel'
                     background={Colors.altButton}
                     handlePress={() => {
+                      setShowOverlay(false);
                       setShowEdit(false);
                     }}
                   />
@@ -208,6 +210,7 @@ const EditModal = () => {
                         );
                         setResults(newResults);
                         setLoading(false);
+                        setShowOverlay(false);
                         setShowEdit(false);
                         setSelectEnabled(false);
                       }, 1000)

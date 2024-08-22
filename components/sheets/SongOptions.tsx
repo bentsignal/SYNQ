@@ -5,7 +5,7 @@ import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import SongInfo from '@/components/song/SongInfo';
 import { ListCover } from '@/components/song/Cover';
-import BottomSheet, { BottomSheetScrollView, BottomSheetView, BottomSheetBackdropProps } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetScrollView, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import Backdrop from './Backdrop';
 
 const SongOptions = () => {
@@ -40,14 +40,21 @@ const SongOptions = () => {
           bottomSheetRef.current?.close();
           setShowSongOptions(false);
         }}
-      /> */}
+      // /> */}
         <BottomSheet
           ref={bottomSheetRef}
           index={sheetIndex}
           snapPoints={['50%']}
           enablePanDownToClose={true}
           enableOverDrag={false}
-          backdropComponent={Backdrop}
+          backdropComponent={props => (
+            <BottomSheetBackdrop
+              {...props}
+              opacity={0.5}  // Set your desired opacity
+              disappearsOnIndex={-1}  // When the sheet is fully closed, the backdrop disappears
+              appearsOnIndex={0}  // The backdrop appears when the sheet is at the first snap point
+            />
+          )}
           handleIndicatorStyle={{
             backgroundColor: Colors.altDisabled,
             width: 80,
@@ -55,6 +62,9 @@ const SongOptions = () => {
           }}
           backgroundStyle={{
             backgroundColor: Colors.popup,
+          }}
+          style={{
+            flexGrow: 1,
           }}
           onClose={() => {
             setShowSongOptions(false);

@@ -28,6 +28,7 @@ const GlobalProvider = ({ children }) => {
   const [selectEnabled, setSelectEnabled] = useState(false);
   const [selectedSongs, setSelectedSongs] = useState([]);
   const [loadAnimInProgress, setLoadAnimInProgress] = useState(false);
+  const [showSongOptions, setShowSongOptions] = useState(false);
   const [transferPage, setTransferPage] = useState('<html><body><p>ERROR: Could not load page</p></body></html>');
 
   return (
@@ -57,6 +58,7 @@ const GlobalProvider = ({ children }) => {
         selectedSongs, setSelectedSongs,
         transferProgress, setTransferProgress,
         loadAnimInProgress, setLoadAnimInProgress,
+        showSongOptions, setShowSongOptions
       }}
     >
       {children}

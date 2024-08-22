@@ -7,6 +7,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import Song from '@/components/song/Song';
 import EditModal from '@/components/modals/EditModal';
 import DeleteModal from '@/components/modals/DeleteModal';
+import SongOptions from '../sheets/SongOptions';
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -60,51 +61,53 @@ const SongList = (data: any) => {
   }
 
   return (
-    <Animated.View
-      style={[Styles.main, {
-        paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50,
-        opacity: globalOpacityRef,
-      }]}
-    >
-      <EditModal />
-      <DeleteModal />
-      <FlatList 
-        data={data.songs}
-        renderItem={renderItem}
-        keyExtractor={song => song.id}
-        extraData={selectedId}
-        onScroll={handleScroll}
-        style={{
-          width: '100%'
-        }}
-        contentContainerStyle={{
-          paddingBottom: 40,
-          display: 'flex',
-          alignItems: 'center'
-        }}
-      />
-      <AnimatedGradient
-        style={{
-          position: 'absolute', 
-          top: 0, 
-          width: '100%', 
-          height: 50,
-          opacity: topGradientOpacityRef,
-        }}
-        colors={[ 'rgba(16, 16, 16, 1)', 'rgba(16, 16, 16, 0)']}
-        pointerEvents={'none'}
-      />
-      <LinearGradient
-        style={{
-          position: 'absolute', 
-          bottom: Dimensions.get('screen').height < 700 ? 70 : 50, 
-          width: '100%', 
-          height: 50,
-        }}
-        colors={['rgba(16, 16, 16, 0)', 'rgba(16, 16, 16, 1)']}
-        pointerEvents={'none'}
-      />
-    </Animated.View>
+    <>
+      <Animated.View
+        style={[Styles.main, {
+          paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50,
+          opacity: globalOpacityRef,
+        }]}
+      >
+        <EditModal />
+        <DeleteModal />
+        <FlatList 
+          data={data.songs}
+          renderItem={renderItem}
+          keyExtractor={song => song.id}
+          extraData={selectedId}
+          onScroll={handleScroll}
+          style={{
+            width: '100%'
+          }}
+          contentContainerStyle={{
+            paddingBottom: 40,
+            display: 'flex',
+            alignItems: 'center'
+          }}
+        />
+        <AnimatedGradient
+          style={{
+            position: 'absolute', 
+            top: 0, 
+            width: '100%', 
+            height: 50,
+            opacity: topGradientOpacityRef,
+          }}
+          colors={[ 'rgba(16, 16, 16, 1)', 'rgba(16, 16, 16, 0)']}
+          pointerEvents={'none'}
+        />
+        <LinearGradient
+          style={{
+            position: 'absolute', 
+            bottom: Dimensions.get('screen').height < 700 ? 70 : 50, 
+            width: '100%', 
+            height: 50,
+          }}
+          colors={['rgba(16, 16, 16, 0)', 'rgba(16, 16, 16, 1)']}
+          pointerEvents={'none'}
+        />
+      </Animated.View>
+    </>
   );
 
 }

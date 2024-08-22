@@ -1,4 +1,6 @@
 import { Tabs } from 'expo-router';
+import { View } from 'react-native';
+import SongOptions from '@/components/sheets/SongOptions';
 import { useEffect } from 'react';
 import Server from '@/components/import/wifi/Server';
 import { HomeIcon, LibraryIcon } from '@/components/TabBarIcons';
@@ -9,7 +11,13 @@ import Purchases from 'react-native-purchases';
 
 const TabLayout = () => {
 
-  const { premium, setPremium } = useGlobalContext();
+  const { 
+    
+    premium, showSongOptions,
+    
+    setPremium, 
+  
+  } = useGlobalContext();
 
   useEffect(() => {
     const checkPremium = async () => {
@@ -40,6 +48,16 @@ const TabLayout = () => {
 
   return (
     <>
+      <View style={{
+          position: 'absolute', 
+          height: '100%', 
+          zIndex: 100,
+          width: '100%',
+          display: showSongOptions ? 'flex' : 'none',
+        }}
+      >
+        <SongOptions />
+      </View>
       <Server />
       <Tabs
         screenOptions={{

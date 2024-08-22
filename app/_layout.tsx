@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as Network from 'expo-network';
 import GlobalProvider from "@/context/GlobalProvider";
 import Purchases from 'react-native-purchases';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const RootLayout = () => {
 
@@ -67,31 +68,33 @@ const RootLayout = () => {
   }, [loaded, allow]);
 
   return (
-    <GlobalProvider>
-      <Stack>
-        <Stack.Screen 
-          name="(tabs)" 
-          options={{ 
-            headerShown: false, 
-            animation: 'none' 
-          }} 
-        />
-        <Stack.Screen 
-          name="settings"
-          options={{
-            presentation: "modal",
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen 
-          name="premium"
-          options={{
-            presentation: "modal",
-            headerShown: false,
-          }}
-        />
-      </Stack>
-    </GlobalProvider>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <GlobalProvider>
+        <Stack>
+          <Stack.Screen 
+            name="(tabs)" 
+            options={{ 
+              headerShown: false, 
+              animation: 'none' 
+            }} 
+          />
+          <Stack.Screen 
+            name="settings"
+            options={{
+              presentation: "modal",
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen 
+            name="premium"
+            options={{
+              presentation: "modal",
+              headerShown: false,
+            }}
+          />
+        </Stack>
+      </GlobalProvider>
+    </GestureHandlerRootView>
   );
   
 }

@@ -14,6 +14,21 @@ import { BlurView } from 'expo-blur';
 import CustomButton from '../CustomButton';
 import Skeleton from '../Skeleton';
 
+const Dot = () => {
+  return (
+    <View 
+      style={{
+        width: 4,
+        height: 4,
+        borderRadius: 15,
+        backgroundColor: Colors.text,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    />
+  );
+}
+
 const Song = ({name, id, data, info}: SongType) => {
 
   const [selected, setSelected] = useState(false);
@@ -21,9 +36,9 @@ const Song = ({name, id, data, info}: SongType) => {
   const { 
 
     selectEnabled, selectedSongs, results,
-    premium,
+    premium, showSongOptions, 
 
-    setSelectedSongs 
+    setSelectedSongs, setShowSongOptions
 
   } = useGlobalContext(); 
 
@@ -114,9 +129,29 @@ const Song = ({name, id, data, info}: SongType) => {
           : 
 
           <>
-            <EditButton name={name} id={id} data={data} info={info}/>
-            <DeleteButton name={name} id={id}/>
+            <TouchableOpacity
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: 15,
+                gap: 3,
+              }}
+              activeOpacity={.8}
+              onPress={() => {
+                setShowSongOptions(!showSongOptions);
+              }}
+            >
+              <Dot />
+              <Dot />
+              <Dot />
+            </TouchableOpacity>
           </>
+
+          // <>
+          //   <EditButton name={name} id={id} data={data} info={info}/>
+          //   <DeleteButton name={name} id={id}/>
+          // </>
 
         }
       </View>

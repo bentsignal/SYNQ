@@ -18,7 +18,7 @@ const PageTitle = ({
 
     selectEnabled, 
     
-    setSelectEnabled,
+    setSelectEnabled, setShowOverlay,
   
   } = useGlobalContext();
 
@@ -26,7 +26,10 @@ const PageTitle = ({
     if (infoHandler) {
       return (
         <TouchableOpacity
-          onPress={infoHandler}
+          onPress={() => {
+            infoHandler();
+            setShowOverlay(true);
+          }}
         >
           <Image 
             source={require('@/assets/icons/info.png')}

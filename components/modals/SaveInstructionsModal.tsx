@@ -11,7 +11,14 @@ import { InstructionsModalProps } from '@/constants/Types';
 
 const SaveInstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
 
-  const {showSaveInst, setShowSaveInst} = useGlobalContext();
+  const {
+    
+    showSaveInst, 
+    
+    setShowSaveInst, setShowOverlay,
+  
+  } = useGlobalContext();
+
   const [checked, setChecked] = useState(false);
 
   return (
@@ -120,6 +127,7 @@ const SaveInstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
               background={Colors.main}
               handlePress={async () => {
                 setShowSaveInst(false);
+                setShowOverlay(false);
                 if (checked) {
                   await AsyncStorage.setItem('showSaveInst', 'false');
                 }

@@ -11,7 +11,14 @@ import { InstructionsModalProps } from '@/constants/Types';
 
 const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
 
-  const {showWelcome, setShowWelcome} = useGlobalContext();
+  const {
+    
+    showWelcome, 
+    
+    setShowWelcome, setShowOverlay
+  
+  } = useGlobalContext();
+
   const [checked, setChecked] = useState(false);
 
   return (
@@ -138,6 +145,7 @@ const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
               background={Colors.main}
               handlePress={async () => {
                 setShowWelcome(false);
+                setShowOverlay(false);
                 if (checked) {
                   await AsyncStorage.setItem('showWelcome', 'false');
                 }

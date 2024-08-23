@@ -6,6 +6,7 @@ import { Colors } from '@/constants/Colors';
 import SongInfo from '@/components/song/SongInfo';
 import { ListCover } from '@/components/song/Cover';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import SongOption from './SongOption';
 
 const SongOptions = () => {
 
@@ -96,29 +97,21 @@ const SongOptions = () => {
             />
           </View>
           <View>
-            <TouchableOpacity
-              style={Styles.songOptionActionContainer}
-              activeOpacity={0.9}
-              onPress={() => {
+            <SongOption 
+              icon={require('@/assets/icons/edit.png')}
+              text={'Edit'}
+              handler={() => {
                 bottomSheetRef.current?.close();
                 setTimeout(() => {
                   setShowOverlay(true);
                   setShowEdit(true);
                 }, 100);
               }}
-            >
-              <Image 
-                source={require('@/assets/icons/edit.png')}
-                style={Styles.songOptionIcon}
-              />
-              <Text style={Styles.songOptionActionText}>
-                Edit song
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={Styles.songOptionActionContainer}
-              activeOpacity={0.9}
-              onPress={() => {
+            />
+            <SongOption
+              icon={require('@/assets/icons/delete.png')}
+              text={'Delete'}
+              handler={() => {
                 bottomSheetRef.current?.close();
                 setTimeout(() => {
                   setShowOverlay(true);
@@ -126,15 +119,7 @@ const SongOptions = () => {
                   setDeleteSong({name: editSong.name, id: editSong.id});
                 }, 100);
               }}
-            >
-              <Image 
-                source={require('@/assets/icons/delete.png')}
-                style={Styles.songOptionIcon}
-              />
-              <Text style={Styles.songOptionActionText}>
-                Delete
-              </Text>
-            </TouchableOpacity>
+            />
           </View>
         </BottomSheetView>
       </BottomSheet>

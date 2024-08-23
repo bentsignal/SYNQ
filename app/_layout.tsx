@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as Network from 'expo-network';
 import GlobalProvider from "@/context/GlobalProvider";
 import Purchases from 'react-native-purchases';
+import { router } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const RootLayout = () => {

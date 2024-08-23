@@ -129,12 +129,13 @@ export const Styles = StyleSheet.create({
   },
   songOptionActionText: {
     color: Colors.text,
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold'
   },
   songOptionIcon: {
     marginRight: 15,
     width: 20,
-    height: 20
+    height: 20,
+    tintColor: Colors.tabInactive,
   },
 });

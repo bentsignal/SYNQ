@@ -375,7 +375,7 @@ const Premium = () => {
     <View style={[Styles.body, {
       backgroundColor: Colors.background,
       }]}>
-      <Bar color={'white'}/>
+      <Bar />
       <View
         style={{
           height: '100%',
@@ -392,7 +392,7 @@ const Premium = () => {
           }}
         >
           <Image 
-            source={require('@/assets/images/premium-bg-downscaled.jpg')}
+            source={require('@/assets/images/premium-bg-2-downscaled.jpg')}
             style={{
               height: '100%',
               width: '100%'

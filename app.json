@@ -49,6 +49,17 @@
       ],
       [
         "expo-tracking-transparency"
+      ],
+      [
+        "expo-icon-handler",
+        {
+          "icons": [
+            {
+              "name": "icon-blue",
+              "path": "./assets/images/icon.png"
+            }
+          ]
+        }
       ]
     ],
     "experiments": {

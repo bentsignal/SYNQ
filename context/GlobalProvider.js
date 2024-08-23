@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react'
+import { Colors } from '@/constants/Colors';
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -32,6 +33,7 @@ const GlobalProvider = ({ children }) => {
   const [transferPage, setTransferPage] = useState('<html><body><p>ERROR: Could not load page</p></body></html>');
   const [showOverlay, setShowOverlay] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [theme, setTheme] = useState(Colors.main);
 
   return (
     <GlobalContext.Provider
@@ -63,6 +65,7 @@ const GlobalProvider = ({ children }) => {
         showSongOptions, setShowSongOptions,
         showOverlay, setShowOverlay,
         errorMessage, setErrorMessage,
+        theme, setTheme,
       }}
     >
       {children}

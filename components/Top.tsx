@@ -6,11 +6,6 @@ const Top = () => {
 
   return (
     <View style={Styles.top}>
-      {/* <View>
-        <Text style={Styles.appName}>
-          SYNQ
-        </Text>
-      </View> */}
       <Image 
         source={require('@/assets/icons/logo-color.png')}
         style={{

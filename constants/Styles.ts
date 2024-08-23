@@ -138,4 +138,16 @@ export const Styles = StyleSheet.create({
     height: 20,
     tintColor: Colors.tabInactive,
   },
+  settingsCategoryHeader: {
+    color: Colors.text,
+    fontSize: 20,
+    fontWeight: 'bold',
+    width: '90%',
+    textAlign: 'left',
+    marginTop: 10,
+  },
+  settingsCategoryContainer: {
+    width: '90%',
+    marginBottom: 10,
+  },
 });

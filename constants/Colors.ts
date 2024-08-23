@@ -2,7 +2,7 @@ export const Themes = {
   red: '#f56c64',
   orange: '#f78f6f',
   yellow: '#f7e16f',
-  green: '#4eed66',
+  // green: '#4eed66',
   mint: '#6ff7a6',
   blue: '#63a3ff',
   purple: '#cf75f0',
@@ -10,7 +10,7 @@ export const Themes = {
 }
 
 export const Colors = {
-  main: Themes.blue,
+  main: Themes.red,
   text: '#fff',
   infoText: '#939393',
   textbox: '#262626',

@@ -49,7 +49,6 @@ const TabLayout = () => {
         else {
           setPremium(false);
         }
-        setPremium(true);
       }
       catch (error) {
         console.log('error checking premium');

@@ -33,7 +33,7 @@ const Premium = () => {
   const [monthlyCost, setMonthlyCost] = useState('$0.99');
   const [yearlyCost, setYearlyCost] = useState('$2.99');
   const [lifetimeCost, setLifetimeCost] = useState('$9.99');
-  const [error, setError] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
 

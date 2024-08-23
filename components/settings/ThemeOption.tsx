@@ -9,7 +9,13 @@ type ThemeOptionProps = {
 }
 
 const ThemeOption = ({ color, index }: ThemeOptionProps) => {
-  const { theme, setTheme } = useGlobalContext();
+  const { 
+
+    theme, premium, 
+
+    setTheme 
+  
+  } = useGlobalContext();
   return (
     <TouchableOpacity 
       style={{
@@ -24,8 +30,10 @@ const ThemeOption = ({ color, index }: ThemeOptionProps) => {
       }}
       activeOpacity={.9}
       onPress={() => {
-        setTheme(color);
-        AsyncStorage.setItem('theme', color);
+        if (premium) {
+          setTheme(color);
+          AsyncStorage.setItem('theme', color);
+        }
       }}
     />
   );

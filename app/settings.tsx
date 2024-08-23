@@ -6,8 +6,12 @@ import Bar from "@/components/modals/Bar";
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 import Theme from "@/components/settings/Theme";
+import CategoryTitle from "@/components/settings/CategoryTitle";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 const Settings = () => {
+
+  const { premium } = useGlobalContext();
 
   return (
     <View style={[Styles.body, {
@@ -17,12 +21,12 @@ const Settings = () => {
       <PageTitle title='Settings'/>
       <Option 
         title="Premium"
-        desc="Manage your subcription"
+        desc={premium ? "Manage your subcription" : 'Unlock all features'}
         icon={require('@/assets/icons/premium.png')}
         disabled={false}
         handlePress={() => router.push("/premium")}
       /> 
-      <Text style={Styles.settingsCategoryHeader}>Theme</Text>
+      <CategoryTitle title="Theme" />
       <View style={Styles.settingsCategoryContainer}>
         <Theme />
       </View>

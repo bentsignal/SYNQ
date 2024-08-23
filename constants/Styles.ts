@@ -142,9 +142,7 @@ export const Styles = StyleSheet.create({
     color: Colors.text,
     fontSize: 20,
     fontWeight: 'bold',
-    width: '90%',
     textAlign: 'left',
-    marginTop: 10,
   },
   settingsCategoryContainer: {
     width: '90%',

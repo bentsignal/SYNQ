@@ -7,8 +7,10 @@ import * as StoreReview from 'expo-store-review';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import Top from "@/components/Top";
 import CustomButton from '@/components/CustomButton';
+import { replaceColor } from 'lottie-colorify';
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
+import { darkenColor } from "@/lib/Color";
 
 export const Success = () => {
 
@@ -20,19 +22,29 @@ export const Success = () => {
     Haptics.NotificationFeedbackType.Success
   );
 
+  let source = replaceColor('#4173b9', darkenColor(Colors.main, 10, 20), require('@/assets/anim/success.json')); // accent
+  source = replaceColor('#63a3ff', Colors.main, source); // main
+
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>
       <Top />
       <View style={Styles.main}>
         <LottieView 
-          source={require('@/assets/anim/success.json')}
+          source={source}
+          // source={flatten('#ff0000', require('@/assets/anim/success.json'))}
           autoPlay
           loop={false}
           style={{flexGrow: 1, width: 100}}
           renderMode={'SOFTWARE'}
           onAnimationFinish={() => {
             setTimeout(async () => {
+
+
+
               setHomeState(0);
+
+
+              
               let countStr = await AsyncStorage.getItem('importCount');
               if (countStr) {
                 try {

@@ -33,7 +33,8 @@ const FilesEmpty = () => {
         source={require('@/assets/icons/upload.png')}
         style={{
           width: 35,
-          height: 35
+          height: 35,
+          tintColor: Colors.main,
         }}
       />
       <Text style={[Styles.infoText, {

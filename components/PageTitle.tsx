@@ -1,6 +1,7 @@
 import { Text, Image, TouchableOpacity, View } from "react-native";
 import { Styles } from "@/constants/Styles";
 import { useGlobalContext } from "@/context/GlobalProvider";
+import { Colors } from "@/constants/Colors";
 
 type PageTitleProps = {
   title: string;
@@ -36,7 +37,8 @@ const PageTitle = ({
             style={{
               height: 25,
               width: 25,
-              marginLeft: 10
+              marginLeft: 10,
+              tintColor: Colors.main,
             }}
           />
         </TouchableOpacity>

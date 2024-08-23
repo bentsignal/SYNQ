@@ -1,5 +1,7 @@
 import { View } from "react-native";
 import LottieView from 'lottie-react-native';
+import MaskedView from '@react-native-masked-view/masked-view';
+import { Colors } from "@/constants/Colors";
 
 type LoadingProps = {
   width: number;
@@ -9,14 +11,41 @@ type LoadingProps = {
 const Loading = ({width, height}: LoadingProps) => {
 
   return (
-    <View style={{height: height}}>
-      <LottieView 
-        source={require('@/assets/anim/loading.json')}
-        autoPlay
-        loop={true}
-        style={{flexGrow: 1, width: width}}
-        renderMode={'SOFTWARE'}
-      />
+    <View 
+      style={{
+        height: height,
+      }}
+    >
+      <MaskedView
+        style={{
+          height: height,
+          width: width,
+        }}
+        maskElement= {
+          <LottieView 
+            source={require('@/assets/anim/loading.json')}
+            autoPlay
+            loop={true}
+            style={{
+              flexGrow: 1, 
+              width: width,
+              backgroundColor: 'transparent',
+            }}
+            renderMode={'SOFTWARE'}
+          />
+        }
+      >
+        <View 
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            backgroundColor: Colors.main,
+            opacity: 1,
+          }}
+        />
+      </MaskedView>
+      
     </View>
   );
   

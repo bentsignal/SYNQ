@@ -1,6 +1,7 @@
 import { Text, View, Image, TouchableOpacity, ImageSourcePropType } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
+import { darkenColor } from '@/lib/Color';
 
 type ImportOptionProps = {
   title: string;
@@ -30,7 +31,7 @@ const Option = ({
         flexDirection: 'row',
         alignItems: 'center',
         width: '90%',
-        backgroundColor: disabled ? Colors.disabled : color,
+        backgroundColor: disabled ? darkenColor(color, 40, 50) : color,
         padding: 20,
         marginBottom: 10
       }]}

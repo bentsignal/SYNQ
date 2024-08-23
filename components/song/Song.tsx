@@ -13,6 +13,7 @@ import { ListCover } from '@/components/song/Cover';
 import { BlurView } from 'expo-blur';
 import CustomButton from '../CustomButton';
 import Skeleton from '../Skeleton';
+import { darkenColor } from '@/lib/Color';
 
 const Dot = () => {
   return (
@@ -210,7 +211,7 @@ const Song = ({name, id, data, info}: SongType) => {
         <CustomButton 
           title={'Sign Up'}
           background={Colors.main}
-          disabledColor={Colors.disabled}
+          disabledColor={darkenColor(Colors.main, 40, 50)}
           opacity={.90}
           handlePress={() => router.push('/premium')}
         />

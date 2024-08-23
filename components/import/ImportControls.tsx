@@ -4,6 +4,7 @@ import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import CustomButton from '@/components/CustomButton';
 import { exportSongs} from '@/lib/SongManager';
+import { darkenColor } from '@/lib/Color';
 
 const ImportControls = ({reset}: {reset?: () => void}) => {
 
@@ -136,7 +137,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
             }, 1000)
           }}
           disabled={exportDisabled}
-          disabledColor={Colors.disabled}
+          disabledColor={darkenColor(Colors.main, 40, 50)}
         />
       </View>
     </>

@@ -11,6 +11,7 @@ import CustomButton from '@/components/CustomButton';
 import PremiumOption from '@/components/PremiumOption';
 import Purchases from 'react-native-purchases';
 import Loading from '@/components/Loading';
+import { darkenColor } from '@/lib/Color';
 
 const Premium = () => {
 
@@ -316,7 +317,7 @@ const Premium = () => {
           <CustomButton 
             title={purchaseText}
             background={Colors.main}
-            disabledColor={Colors.disabled}
+            disabledColor={darkenColor(Colors.main, 40, 50)}
             textColor={Colors.text}
             buttonWidth={240}
             handlePress={async () => {

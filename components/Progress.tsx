@@ -104,7 +104,7 @@ const Progress = ({ completion, showCircle }: {completion: number; showCircle: b
           fill={'rgba(0, 0, 0, 0)'}
           strokeDasharray={`${45 * 3.14 * 2}`}
           strokeDashoffset={completionRef}   
-          opacity={circleOpacityRef} 
+          opacity={circleOpacityRef}
         />
       </Svg>
       <Svg 

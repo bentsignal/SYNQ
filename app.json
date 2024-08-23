@@ -2,7 +2,7 @@
   "expo": {
     "name": "synq",
     "slug": "synq",
-    "version": "1.2.4",
+    "version": "1.2.5",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "cynk",
@@ -16,6 +16,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.directedbyshawn.synq",
+      "buildNumber": "1",
       "infoPlist": {
         "CFBundleDisplayName": "SYNQ"
       }

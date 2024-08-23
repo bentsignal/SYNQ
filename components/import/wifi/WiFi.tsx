@@ -28,14 +28,14 @@ const WiFi = () => {
 
   const [exporting, setExporting] = useState(false);
   const [URL, setURL] = useState('');
-  const PORT = 3000;
+  const PORT = 80;
 
   useEffect(() => {
 
     setExportDisabled(results.length > 0 ? false : true);
     setLoading(true);
     setResults([]);
-    setURL(!wifiDisabled ? `http://${ip}:${PORT}` : '');
+    setURL(!wifiDisabled ? `http://${ip}` : '');
 
   }, []);
 
@@ -133,7 +133,7 @@ const WiFi = () => {
     if (!wifiDisabled) {
       return (
         <ImportInstructions
-          title='On your computer, visit:'
+          title='In your browser, visit:'
           desc={URL}
           icon={require('@/assets/icons/wifi.png')}
           disabled={wifiDisabled}

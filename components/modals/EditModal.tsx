@@ -14,7 +14,7 @@ const EditModal = () => {
   const {
 
     results, showEdit, editSong,
-    selectedSongs,
+    selectedSongs, theme, 
 
     setResults, setShowEdit, setSelectEnabled,
     setShowOverlay, 
@@ -195,7 +195,7 @@ const EditModal = () => {
                   />
                   <CustomButton 
                     title='Save'
-                    background={Colors.main}
+                    background={theme}
                     handlePress={() => {
                       setLoading(true);
                       setTimeout(() => {

@@ -10,7 +10,7 @@ export const Themes = {
 }
 
 export const Colors = {
-  main: Themes.red,
+  main: Themes.blue,
   text: '#fff',
   infoText: '#939393',
   textbox: '#262626',

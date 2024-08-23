@@ -17,7 +17,7 @@ const Premium = () => {
 
   const { 
     
-    premium, errorMessage,
+    premium, errorMessage, theme,
     
     setPremium, setErrorMessage, 
   
@@ -316,9 +316,9 @@ const Premium = () => {
           </View>
           <CustomButton 
             title={purchaseText}
-            background={Colors.main}
-            disabledColor={darkenColor(Colors.main, 40, 50)}
-            textColor={Colors.text}
+            background={theme}
+            disabledColor={darkenColor(theme, 40, 50)}
+            textColor={'black'}
             buttonWidth={240}
             handlePress={async () => {
               try {
@@ -359,7 +359,7 @@ const Premium = () => {
             <Text 
               style={{
                 marginTop: 10,
-                color: Colors.main,
+                color: theme,
                 fontSize: 16,
               }}
             >
@@ -467,7 +467,7 @@ const Premium = () => {
                 tier={'Monthly'}
                 price={monthlyCost}
                 loading={loading}
-                bgColor={selected === 0 ? Colors.main : Colors.song}
+                selected={selected === 0}
                 handler={() => {
                   if (!loading && !active && !error) {
                     setSelected(0);
@@ -479,7 +479,7 @@ const Premium = () => {
                 tier={'Yearly'}
                 price={yearlyCost}
                 loading={loading}
-                bgColor={selected === 1 ? Colors.main : Colors.song}
+                selected={selected === 1}
                 handler={() => {
                   if (!loading && !active && !error) {
                     setSelected(1);
@@ -491,7 +491,7 @@ const Premium = () => {
                 tier={'Lifetime'}
                 price={lifetimeCost}
                 loading={loading}
-                bgColor={selected === 2 ? Colors.main : Colors.song}
+                selected={selected === 2}
                 handler={() => {
                   if (!loading && !active && !error) {
                     setSelected(2);

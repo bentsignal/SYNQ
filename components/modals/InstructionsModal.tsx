@@ -13,7 +13,7 @@ const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
 
   const {
     
-    showWelcome, 
+    showWelcome, theme, 
     
     setShowWelcome, setShowOverlay
   
@@ -142,7 +142,7 @@ const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
             </View> : <></>}
             <CustomButton 
               title="Close"
-              background={Colors.main}
+              background={theme}
               handlePress={async () => {
                 setShowWelcome(false);
                 setShowOverlay(false);

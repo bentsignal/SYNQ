@@ -10,7 +10,7 @@ const DeleteModal = () => {
   const {
 
     selectedSongs, deleteSong, results,
-    showDelete, 
+    showDelete, theme, 
 
     setShowDelete, setResults, setExportDisabled,
     setSelectEnabled, setShowOverlay, 
@@ -74,7 +74,7 @@ const DeleteModal = () => {
               />
               <CustomButton 
                 title='Delete'
-                background={Colors.main}
+                background={theme}
                 handlePress={() => {
                   setShowOverlay(false);
                   setShowDelete(false);

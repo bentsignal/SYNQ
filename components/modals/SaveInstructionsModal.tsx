@@ -13,7 +13,7 @@ const SaveInstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
 
   const {
     
-    showSaveInst, 
+    showSaveInst, theme, 
     
     setShowSaveInst, setShowOverlay,
   
@@ -124,7 +124,7 @@ const SaveInstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
             </View> : <></>}
             <CustomButton 
               title="Close"
-              background={Colors.main}
+              background={theme}
               handlePress={async () => {
                 setShowSaveInst(false);
                 setShowOverlay(false);

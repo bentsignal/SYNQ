@@ -12,7 +12,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
 
     results, loading, transferSize,
     exportDisabled, homeState, selectEnabled,
-    selectedSongs, premium,
+    selectedSongs, premium, theme,
 
     setHomeState, setResults, setExportDisabled,
     setLoading, setZipping, setImporting, 
@@ -107,7 +107,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
         />
         <CustomButton 
           title='Export'
-          background={Colors.main}
+          background={theme}
           handlePress={() => {
             setExportDisabled(true);
             setLoading(true);
@@ -137,7 +137,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
             }, 1000)
           }}
           disabled={exportDisabled}
-          disabledColor={darkenColor(Colors.main, 40, 50)}
+          disabledColor={darkenColor(theme, 40, 50)}
         />
       </View>
     </>

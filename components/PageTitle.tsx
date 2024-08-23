@@ -17,7 +17,7 @@ const PageTitle = ({
 
   const { 
 
-    selectEnabled, 
+    selectEnabled, theme,
     
     setSelectEnabled, setShowOverlay,
   
@@ -38,7 +38,7 @@ const PageTitle = ({
               height: 25,
               width: 25,
               marginLeft: 10,
-              tintColor: Colors.main,
+              tintColor: theme,
             }}
           />
         </TouchableOpacity>

@@ -2,6 +2,7 @@ import { View } from "react-native";
 import LottieView from 'lottie-react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { Colors } from "@/constants/Colors";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 type LoadingProps = {
   width: number;
@@ -9,6 +10,8 @@ type LoadingProps = {
 };
 
 const Loading = ({width, height}: LoadingProps) => {
+
+  const { theme } = useGlobalContext();
 
   return (
     <View 
@@ -40,7 +43,7 @@ const Loading = ({width, height}: LoadingProps) => {
             position: 'absolute',
             width: '100%',
             height: '100%',
-            backgroundColor: Colors.main,
+            backgroundColor: theme,
             opacity: 1,
           }}
         />

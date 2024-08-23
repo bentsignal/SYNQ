@@ -14,7 +14,7 @@ const FilesEmpty = () => {
 
   const { 
 
-    transferSize, loadAnimInProgress,
+    transferSize, loadAnimInProgress, theme, 
 
     setResults, setExportDisabled, setLoading, 
     setImporting, setShowSaveInst, setHomeState,
@@ -34,7 +34,7 @@ const FilesEmpty = () => {
         style={{
           width: 35,
           height: 35,
-          tintColor: Colors.main,
+          tintColor: theme,
         }}
       />
       <Text style={[Styles.infoText, {

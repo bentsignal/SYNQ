@@ -14,7 +14,13 @@ import { darkenColor } from "@/lib/Color";
 
 export const Success = () => {
 
-  const {setHomeState} = useGlobalContext();
+  const { 
+    
+    theme, 
+
+    setHomeState,
+  
+  } = useGlobalContext();
 
   const insets = useSafeAreaInsets();
 
@@ -22,8 +28,8 @@ export const Success = () => {
     Haptics.NotificationFeedbackType.Success
   );
 
-  let source = replaceColor('#4173b9', darkenColor(Colors.main, 10, 20), require('@/assets/anim/success.json')); // accent
-  source = replaceColor('#63a3ff', Colors.main, source); // main
+  let source = replaceColor('#4173b9', darkenColor(theme, 10, 20), require('@/assets/anim/success.json')); // accent
+  source = replaceColor('#63a3ff', theme, source); // main
 
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>

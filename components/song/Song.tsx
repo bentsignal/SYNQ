@@ -37,7 +37,7 @@ const Song = ({name, id, data, info}: SongType) => {
   const { 
 
     selectEnabled, selectedSongs, results,
-    premium, showSongOptions, 
+    premium, showSongOptions, theme, 
 
     setSelectedSongs, setShowSongOptions,
     setEditSong,
@@ -206,12 +206,12 @@ const Song = ({name, id, data, info}: SongType) => {
             textShadowRadius: 10
           }}
         >
-          Import multiple files with <Text style={{color: Colors.main}}>Premium</Text>
+          Import multiple files with <Text style={{color: theme}}>Premium</Text>
         </Text>
         <CustomButton 
           title={'Sign Up'}
-          background={Colors.main}
-          disabledColor={darkenColor(Colors.main, 40, 50)}
+          background={theme}
+          disabledColor={darkenColor(theme, 40, 50)}
           opacity={.90}
           handlePress={() => router.push('/premium')}
         />

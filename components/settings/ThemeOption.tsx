@@ -1,6 +1,7 @@
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useGlobalContext } from "@/context/GlobalProvider";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type ThemeOptionProps = {
   color: string;
@@ -22,7 +23,10 @@ const ThemeOption = ({ color, index }: ThemeOptionProps) => {
         borderColor: color === theme ? Colors.text : 'transparent',
       }}
       activeOpacity={.9}
-      onPress={() => setTheme(color)}
+      onPress={() => {
+        setTheme(color);
+        AsyncStorage.setItem('theme', color);
+      }}
     />
   );
 }

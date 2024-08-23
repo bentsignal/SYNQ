@@ -1,10 +1,18 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
 import { Colors } from '@/constants/Colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
 
-const GlobalProvider = ({ children }) => {
+
+const GlobalProvider = ({ children, initTheme }) => {
+
+  useEffect(() => {
+    if (initTheme !== '') {
+      setTheme(initTheme);
+    }
+  }, [initTheme]);
 
   const [homeState, setHomeState] = useState(0);
   const [premium, setPremium] = useState(false);
@@ -33,7 +41,7 @@ const GlobalProvider = ({ children }) => {
   const [transferPage, setTransferPage] = useState('<html><body><p>ERROR: Could not load page</p></body></html>');
   const [showOverlay, setShowOverlay] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [theme, setTheme] = useState(Colors.main);
+  const [theme, setTheme] = useState(initTheme ? initTheme : Colors.main);
 
   return (
     <GlobalContext.Provider

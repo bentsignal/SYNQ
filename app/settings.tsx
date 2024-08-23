@@ -4,8 +4,7 @@ import PageTitle from '@/components/PageTitle';
 import Option from "@/components/Option";
 import Bar from "@/components/modals/Bar";
 import { Styles } from "@/constants/Styles";
-import { Themes, Colors } from "@/constants/Colors";
-import ThemeOption from "@/components/settings/ThemeOption";
+import { Colors } from "@/constants/Colors";
 import Theme from "@/components/settings/Theme";
 
 const Settings = () => {

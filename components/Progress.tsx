@@ -15,7 +15,7 @@ const Progress = ({ completion, showCircle }: {completion: number; showCircle: b
 
   const { 
     
-    loadAnimInProgress, loading,
+    loadAnimInProgress, loading, theme,
     
     setLoadAnimInProgress 
   
@@ -99,7 +99,7 @@ const Progress = ({ completion, showCircle }: {completion: number; showCircle: b
           cx="50"
           cy="50"
           r="45"
-          stroke={Colors.main}
+          stroke={theme}
           strokeWidth="5"
           fill={'rgba(0, 0, 0, 0)'}
           strokeDasharray={`${45 * 3.14 * 2}`}

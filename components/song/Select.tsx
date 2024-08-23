@@ -1,6 +1,7 @@
 import { Image, View } from "react-native";
 
 const Select = ({active}: {active: boolean}) => {
+
   return (
     <View 
       style={{
@@ -19,7 +20,8 @@ const Select = ({active}: {active: boolean}) => {
         }}
       />
     </View>
-  )
+  );
+  
 }
 
 export default Select;

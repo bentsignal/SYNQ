@@ -1,21 +1,23 @@
-import { View, Image, TouchableOpacity } from 'react-native'
-import { useGlobalContext } from '@/context/GlobalProvider'
-import { Styles } from '@/constants/Styles'
-import { Colors } from '@/constants/Colors'
-import CustomButton from '@/components/CustomButton'
-import { exportSongs} from '@/lib/SongManager'
+import { View, Image, TouchableOpacity } from 'react-native';
+import { useGlobalContext } from '@/context/GlobalProvider';
+import { Styles } from '@/constants/Styles';
+import { Colors } from '@/constants/Colors';
+import CustomButton from '@/components/CustomButton';
+import { exportSongs} from '@/lib/SongManager';
 
 const ImportControls = ({reset}: {reset?: () => void}) => {
 
-  const { 
+  const {
 
-    setHomeState, results, setResults,
-    exportDisabled, setExportDisabled, setLoading,
-    setZipping, setImporting, 
-    selectEnabled, selectedSongs,
-    setShowDelete, setEditSong, setShowEdit,
-    setTransferSize
-    
+    results, loading, transferSize,
+    exportDisabled, homeState, selectEnabled,
+    selectedSongs, premium,
+
+    setHomeState, setResults, setExportDisabled,
+    setLoading, setZipping, setImporting, 
+    setShowDelete, setEditSong, setShowEdit, 
+    setTransferSize, setShowOverlay
+
   } = useGlobalContext();
 
   return (
@@ -40,7 +42,8 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
               "id": "",
               "data": "",
               "info": ""
-            })
+            });
+            setShowOverlay(true);
             setShowEdit(true);
           }}
         >
@@ -57,7 +60,10 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
             backgroundColor: Colors.song,
             padding: 15
           }]}
-          onPress={() => setShowDelete(true)}
+          onPress={() => {
+            setShowOverlay(true);
+            setShowDelete(true);
+          }}
         >
           <Image 
             source={require('@/assets/icons/delete.png')}
@@ -82,7 +88,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
       >
         <CustomButton 
           title='Cancel'
-          background={Colors.text}
+          background={Colors.altButton}
           handlePress={() => {
             setLoading(false);
             setZipping(false);
@@ -92,10 +98,11 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
             setResults([]);
             setExportDisabled(true);
             if (reset) {
-              console.log('reset')
               reset();
             }
           }}
+          disabled={(homeState == 1 && transferSize > 0) || (homeState == 2 && loading)}
+          disabledColor={Colors.altDisabled}
         />
         <CustomButton 
           title='Export'
@@ -104,15 +111,15 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
             setExportDisabled(true);
             setLoading(true);
             setZipping(true);
+            const songs = premium ? results : [results[0]]
             setTimeout(() => {
-              exportSongs(results).then(() => {
+              exportSongs(songs).then(() => {
                 setLoading(false);
                 setZipping(false);
                 setHomeState(3);
                 setTransferSize(0);
                 setResults([]);
                 if (reset) {
-                  console.log('reset')
                   reset();
                 }
               })
@@ -123,17 +130,18 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
                 setTransferSize(0);
                 setResults([]);
                 if (reset) {
-                  console.log('reset')
                   reset();
                 }
               })
             }, 1000)
           }}
           disabled={exportDisabled}
+          disabledColor={Colors.disabled}
         />
       </View>
     </>
   );
+
 }
 
 export default ImportControls;

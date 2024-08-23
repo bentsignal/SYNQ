@@ -1,26 +1,26 @@
-import { Text, View, Dimensions } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useEffect, useState } from 'react'
-import * as WebBrowser from 'expo-web-browser'
+import { Text, View, Dimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
-
-import { useGlobalContext } from '@/context/GlobalProvider'
-import { Styles } from '@/constants/Styles'
-import SongList from '@/components/song/SongList'
-import Loading from '@/components/Loading'
-import PageTitle from '@/components/PageTitle'
-import Top from '@/components/Top'
-import ImportInstructions from '@/components/import/wifi/ImportInstructions'
+import { useGlobalContext } from '@/context/GlobalProvider';
+import { Styles } from '@/constants/Styles';
+import SongList from '@/components/song/SongList';
+import Loading from '@/components/Loading';
+import PageTitle from '@/components/PageTitle';
+import Top from '@/components/Top';
+import ImportInstructions from '@/components/import/wifi/ImportInstructions';
 import ImportControls from '../ImportControls';
+import SaveInstructionsModal from '@/components/modals/SaveInstructionsModal';
 
 const WiFi = () => {
 
-  const { 
+  const {
 
-    results, setResults,
-    transferSize,  setExportDisabled,
-    loading, setLoading,
-    ip, wifiDisabled,
+    results, transferSize, loading,
+    ip, wifiDisabled, premium,
+
+    setResults, setExportDisabled, setLoading,
+    setShowSaveInst,
 
   } = useGlobalContext();
 
@@ -28,28 +28,28 @@ const WiFi = () => {
 
   const [exporting, setExporting] = useState(false);
   const [URL, setURL] = useState('');
-  const PORT = 3000
+  const PORT = 3000;
 
   useEffect(() => {
 
     setExportDisabled(results.length > 0 ? false : true);
     setLoading(true);
     setResults([]);
-    setURL(!wifiDisabled ? `http://${ip}:${PORT}` : '')
+    setURL(!wifiDisabled ? `http://${ip}:${PORT}` : '');
 
-  }, [])
+  }, []);
 
   const callReset = async () => {
     return await axios.get(`${URL}/reset`);
   }
   
   const resetResults = () => {
-    console.log('Sending request to server to reset results')
     callReset().then((response) => {
-      console.log('Server successfully reset results')
+      return null;
     })
     .catch((error) => {
-      console.log(`ERROR: Call to reset results failed. More info: ${error} `)
+      console.log(error);
+      return null;
     })
   }
 
@@ -65,7 +65,7 @@ const WiFi = () => {
           <Text style={Styles.infoText}>Failed to start server.</Text>
           <Text style={[Styles.infoText, {marginTop: 10}]}>Try restarting the app.</Text>
         </View>
-      )
+      );
     }
     else if (loading) {
       let message = <></>
@@ -73,29 +73,19 @@ const WiFi = () => {
         message = <Text style={Styles.infoText}>Exporting your files...</Text>
       }
       else if (transferSize > 0) {
-        if (transferSize === 1) {
-          message = 
-            <Text
-              style={Styles.infoText}
-            >
-              Transferring {transferSize} file...
-            </Text>
-        }
-        else {
-          message = 
-            <Text
-              style={Styles.infoText}
-            >
-              Transferring {transferSize} files...
-            </Text>
-        }
-      }
-      else if (results.length == 0) {
         message = 
           <Text
             style={Styles.infoText}
           >
-            Songs will appear here once uploaded
+            Transferring {transferSize} file{transferSize > 1 ? 's' : ''}...
+          </Text>
+      }
+      else if (results.length == 0) {
+        message = 
+          <Text
+            style={[Styles.infoText]}
+          >
+            Waiting for transfer
           </Text>
       }
       return (
@@ -108,7 +98,7 @@ const WiFi = () => {
           {message}
           <Loading height={100} width={200}/>
         </View>
-      )
+      );
     }
     else if (results.length === 0) {
       return (
@@ -125,17 +115,17 @@ const WiFi = () => {
           </Text>
           <Loading height={100} width={200}/>
         </View>
-      )
+      );
     }
     else if (results.length > 0) {
       return (
         <SongList songs={results} />
-      )
+      );
     }
     else {
       return (
         <></>
-      )
+      );
     }
   }
 
@@ -147,22 +137,20 @@ const WiFi = () => {
           desc={URL}
           icon={require('@/assets/icons/wifi.png')}
           disabled={wifiDisabled}
-          handlePress={() => {
-            if (!wifiDisabled) {
-              WebBrowser.openBrowserAsync(URL)
-            }
-          }}
+          handlePress={() => {}}
         />
-      )
+      );
     }
   }
 
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>
+      <SaveInstructionsModal dontShowOption={false}/>
       <Top />
       <PageTitle 
         title='Import Music'
-        showList={true}
+        showList={results.length > 1 && premium}
+        infoHandler={() => setShowSaveInst(true)}
       />
       {getInstructions()}
       {getBody()}

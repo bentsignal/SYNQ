@@ -2,7 +2,7 @@ import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
-import { InfoType, SongType } from '@/constants/Types'
+import { SongType } from '@/constants/Types'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as ImagePicker from 'expo-image-picker';
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
@@ -21,7 +21,7 @@ const getExportNumber = async () => {
       return number;
     }
     else {
-      throw new Error('Bad data')
+      throw new Error('Bad data');
     }
   }
   catch (error) {
@@ -35,14 +35,12 @@ export const exportSongs = async (songs: any) => {
   const date = new Date();
   const exportNumber = await getExportNumber();
   const dir = `${FileSystem.documentDirectory}batch ${exportNumber}  -  ${date.getMonth()}.${date.getDate()}.${date.getFullYear()}`;
-  // const dir = `${FileSystem.documentDirectory}${date.getMonth()}-${date.getDate()}-${date.getFullYear()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`;
   let destination;
   
   await FileSystem.makeDirectoryAsync(dir);
   
   if (songs.length === 1) {
     destination = `${dir}/${songs[0].name}`;
-    console.log(songs[0].data)
     await FileSystem.writeAsStringAsync(destination, songs[0].data, {encoding: 'base64'});
     await Sharing.shareAsync(destination);
   }
@@ -60,16 +58,14 @@ export const exportSongs = async (songs: any) => {
 
 export const getWifiInfo = async (name: string, id: string, type: string, data: string) => {
   try {
-    const destination = `${FileSystem.documentDirectory}${id}${name}`
-    await FileSystem.writeAsStringAsync(destination, data, {encoding: 'base64'})
+    const destination = `${FileSystem.documentDirectory}${id}${name}`;
+    await FileSystem.writeAsStringAsync(destination, data, {encoding: 'base64'});
     const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
-    const info = await getAudioMetadata(destination, wantedTags)
+    const info = await getAudioMetadata(destination, wantedTags);
     await FileSystem.deleteAsync(destination);
-    return info
+    return info;
   }
   catch (error) {
-    console.log(`ERROR: Could not read tags for: ${name} with id: ${id}`)
-    console.log(`More info: ${error}`)
     return {
       "fileType": type,
       "format": 'mp3',
@@ -79,29 +75,34 @@ export const getWifiInfo = async (name: string, id: string, type: string, data: 
         "artwork": '',
         "name": ''
       }
-    }
+    };
   }
 }
 
-export const importFiles = async () => {
+export const importFiles = async (
+  countdown: (value: number) => void,
+  updateSize: (value: number) => void,
+) => {
   const results = await DocumentPicker.getDocumentAsync({
     type: "audio/mpeg",
     multiple: true,
     copyToCacheDirectory: true
   });
-  const songs: {}[] = []
+  const songs: {}[] = [];
   const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
   let data;
   if (results.canceled == false) {
+    updateSize(results.assets.length);
     for (let i = 0; i < results.assets.length; i++) {
-      data = await FileSystem.readAsStringAsync(results.assets[i].uri, {encoding: 'base64'})
-      let info = {}
+      countdown(results.assets.length - i);
+      data = await FileSystem.readAsStringAsync(results.assets[i].uri, {encoding: 'base64'});
+      let info = {};
       await getAudioMetadata(results.assets[i].uri, wantedTags)
         .then((meta) => {
-          info = meta
+          info = meta;
         })
         .catch((error) => {
-          console.log(error)
+          console.log(error);
         })
       songs.push({
         'name': results.assets[i].name,
@@ -109,12 +110,12 @@ export const importFiles = async () => {
         'data': data,
         'info': info
       })
-      await FileSystem.deleteAsync(results.assets[i].uri)
+      await FileSystem.deleteAsync(results.assets[i].uri);
     }
-    return songs
+    return songs;
   }
   else {
-    return songs
+    return songs;
   }
 }
 
@@ -149,7 +150,7 @@ export const newCover = async () => {
     (result.assets[0].mimeType == 'image/jpeg' || result.assets[0].mimeType == 'image/png') &&
     !result.canceled 
   ) {
-    return `data:${result.assets[0].mimeType};base64,${result.assets[0].base64}`
+    return `data:${result.assets[0].mimeType};base64,${result.assets[0].base64}`;
   }
   else {
     return '';
@@ -195,44 +196,44 @@ export const saveEdits = (
   for (let i = 0; i < results.length; i++) {
     if (results[i].id && ids.includes(results[i].id)) {
 
-      let newTitle = ''
-      let newArtist = '' 
-      let newAlbum = ''
-      let newArtwork = ''
+      let newTitle = '';
+      let newArtist = '';
+      let newAlbum = '';
+      let newArtwork = '';
 
       if (results[i].info.metadata) {
-        meta = results[i].info.metadata
+        meta = results[i].info.metadata;
       }
 
       if (title) {
-        newTitle = title
-        tags.title = newTitle
+        newTitle = title;
+        tags.title = newTitle;
       }
       else if (meta && meta.name) {
-        newTitle = meta.name
-        tags.title = newTitle
+        newTitle = meta.name;
+        tags.title = newTitle;
       }
 
       if (artist) {
-        newArtist = artist
-        tags.artist = newArtist
+        newArtist = artist;
+        tags.artist = newArtist;
       }
       else if (meta && meta.artist) {
-        newArtist = meta.artist
-        tags.artist = newArtist
+        newArtist = meta.artist;
+        tags.artist = newArtist;
       }
 
       if (album) {
-        newAlbum = album
-        tags.album = newAlbum
+        newAlbum = album;
+        tags.album = newAlbum;
       }
       else if (meta && meta.album) {
-        newAlbum = meta.album
-        tags.album = newAlbum
+        newAlbum = meta.album;
+        tags.album = newAlbum;
       }
 
       if (artwork) {
-        newArtwork = artwork
+        newArtwork = artwork;
       }
       else if (meta && meta.artwork) {
         newArtwork = meta.artwork;
@@ -240,22 +241,22 @@ export const saveEdits = (
 
       if (newArtwork) {
         // questionable way to extract mime from start of string
-        const infoString = newArtwork.split(/,(.*)/s)[0]
-        const mimeTypeFull = infoString.split(/;(.*)/s)[0]
-        const mimeType = mimeTypeFull.split(/:(.*)/s)[1]
+        const infoString = newArtwork.split(/,(.*)/s)[0];
+        const mimeTypeFull = infoString.split(/;(.*)/s)[0];
+        const mimeType = mimeTypeFull.split(/:(.*)/s)[1];
         // buffer after mimetype and encoding scheme
-        const bufferString = newArtwork.split(/,(.*)/s)[1]
+        const bufferString = newArtwork.split(/,(.*)/s)[1];
         tags.APIC = {
           description: 'Album Cover',
           imageBuffer: bufferString,
           // imageBuffer: toByteArray(artwork.split(/,(.*)/s)[1]),
           mime: mimeType
-        }
+        };
       }
 
       if (results[i].data) {
-        const newData = fromByteArray(NodeID3.writeExpo(toByteArray(results[i].data), tags))
-        results[i].data = newData
+        const newData = fromByteArray(NodeID3.writeExpo(toByteArray(results[i].data), tags));
+        results[i].data = newData;
       }
 
       if (results[i].info) {
@@ -264,13 +265,13 @@ export const saveEdits = (
           artist: newArtist,
           album: newAlbum,
           artwork: newArtwork
-        }
+        };
       }
 
     }
   }
   
-  return results
+  return results;
   
 }
 
@@ -283,7 +284,9 @@ export const saveEditsOld = (
   album: string,
   artwork: string
 ) => {
-  const NodeID3 = require('@/lib/node-id3')
+
+  const NodeID3 = require('@/lib/node-id3');
+
   type tagsType = {
     title?: string;
     artist?: string;
@@ -294,46 +297,51 @@ export const saveEditsOld = (
       imageBuffer: string;
       mime: string;
     }
-  }
+  };
+
   let tags: tagsType = {}
+
   if (title) {
-    tags.title = title
+    tags.title = title;
   }
   if (artist) {
-    tags.artist = artist
+    tags.artist = artist;
   }
   if (album) {
-    tags.album = album
+    tags.album = album;
   }
   if (artwork) {
     // questionable way to extract mime from start of string
-    const infoString = artwork.split(/,(.*)/s)[0]
-    const mimeTypeFull = infoString.split(/;(.*)/s)[0]
-    const mimeType = mimeTypeFull.split(/:(.*)/s)[1]
+    const infoString = artwork.split(/,(.*)/s)[0];
+    const mimeTypeFull = infoString.split(/;(.*)/s)[0];
+    const mimeType = mimeTypeFull.split(/:(.*)/s)[1];
     // buffer after mimetype and encoding scheme
-    const bufferString = artwork.split(/,(.*)/s)[1]
+    const bufferString = artwork.split(/,(.*)/s)[1];
     tags.APIC = {
       description: 'Album Cover',
       imageBuffer: bufferString,
       // imageBuffer: toByteArray(artwork.split(/,(.*)/s)[1]),
       mime: mimeType
-    }
+    };
   }
-  const newData = fromByteArray(NodeID3.writeExpo(toByteArray(data), tags))
+
+  const newData = fromByteArray(NodeID3.writeExpo(toByteArray(data), tags));
+
   for (let i = 0; i < results.length; i++) {
     if (results[i].id && results[i].id == id) {
-      results[i].data = newData
+      results[i].data = newData;
       if (results[i].info) {
         results[i].info.metadata = {
           name: title,
           artist: artist,
           album: album,
           artwork: artwork
-        }
+        };
       }
     }
   }
-  return results
+
+  return results;
   
 }
 
@@ -346,5 +354,5 @@ export const idgen = (len: number) => {
 }
 
 export const maybeString = (value: any) => {
-  return value ? value : ''
+  return value ? value : '';
 }

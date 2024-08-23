@@ -1,13 +1,9 @@
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { useEffect } from 'react'
-import { View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { readAsStringAsync } from 'expo-file-system';
-import { useAssets } from 'expo-asset';
-
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useEffect } from 'react';
+import { View, ScrollView, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
-import { Colors } from '@/constants/Colors';
 import PageTitle from '@/components/PageTitle';
 import Top from "@/components/Top";
 import Option from "@/components/Option";
@@ -20,29 +16,18 @@ const getShowWelcome = async () => {
   return await AsyncStorage.getItem('showWelcome')
 }
 
-const getTransferPage = async (assets: any) => {
-  return await readAsStringAsync(assets[0].localUri ?? '')
-}
-
 const Home = () => {
 
-  const {setShowWelcome, setTransferPage} = useGlobalContext();
-  const [assets, error] = useAssets([require("../../assets/static/Transfer.html")]);
+  const { setShowWelcome } = useGlobalContext();
 
-  if (assets) {
-    readAsStringAsync(assets[0].localUri ?? '').then((page) => {
-      setTransferPage(page);
-    })
-  }
-
-  useEffect(() => {
-    getShowWelcome().then((value) => {
-      value === 'false' ? setShowWelcome(false) : setShowWelcome(true)
-    })
-    .catch((error) => {
-      setShowWelcome(false)
-    })
-  }, [])
+  // useEffect(() => {
+  //   getShowWelcome().then((value) => {
+  //     value === 'false' ? setShowWelcome(false) : setShowWelcome(true)
+  //   })
+  //   .catch((error) => {
+  //     setShowWelcome(false)
+  //   })
+  // }, []);
 
   const { homeState, setHomeState } = useGlobalContext();
   const insets = useSafeAreaInsets();
@@ -60,12 +45,12 @@ const Home = () => {
   else if (homeState === 3) {
     return (
       <Success />
-    )
+    );
   }
   else if (homeState === 4) {
     return (
       <Failure />
-    )
+    );
   }
   else {
     return (
@@ -76,30 +61,40 @@ const Home = () => {
           title='Import Music'
           infoHandler={() => setShowWelcome(true)}
           />
-        <Option 
-          title='Files'
-          desc='Import from your files'
-          icon={require('@/assets/icons/folder.png')}
-          disabled={false}
-          handlePress={() => setHomeState(2)}
-        />
-        <Option 
-          title='Wifi Transfer'
-          desc='Import from your computer'
-          icon={require('@/assets/icons/wifi.png')}
-          disabled={false}
-          handlePress={() => {setHomeState(1)}}
-        />
-        <Option 
-          title='Download'
-          desc='Import from the web via URL'
-          icon={require('@/assets/icons/download.png')}
-          disabled={true}
-          handlePress={() => {setHomeState(3)}}
-        />
+        <ScrollView
+          style={{
+            width: '100%'
+          }}
+          contentContainerStyle={{
+            alignItems: 'center',
+          }}
+        >
+          <Option 
+            title='Files'
+            desc='Import from your files'
+            icon={require('@/assets/icons/folder.png')}
+            disabled={false}
+            handlePress={() => setHomeState(2)}
+          />
+          <Option 
+            title='Network'
+            desc='Import from your computer'
+            icon={require('@/assets/icons/wifi.png')}
+            disabled={false}
+            handlePress={() => {setHomeState(1)}}
+          />
+          {/* <Option 
+            title='Download'
+            desc='Import from the web'
+            icon={require('@/assets/icons/download.png')}
+            disabled={true}
+            handlePress={() => {setHomeState(3)}}
+          /> */}
+        </ScrollView>
       </View>
     );
   }
+  
 }
 
 export default Home;

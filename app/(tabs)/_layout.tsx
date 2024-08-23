@@ -1,17 +1,76 @@
 import { Tabs } from 'expo-router';
-import { Dimensions } from 'react-native';
-import { useEffect } from 'react';
-
+import { View, Animated, Easing } from 'react-native';
+import SongOptions from '@/components/sheets/SongOptions';
+import { useEffect, useRef } from 'react';
 import Server from '@/components/import/wifi/Server';
-import { HomeIcon, LibraryIcon, SettingsIcon } from '@/components/TabBarIcons'
-import { Colors } from '@/constants/Colors'
-import { Styles } from '@/constants/Styles'
+import { HomeIcon, LibraryIcon } from '@/components/TabBarIcons';
+import { Colors } from '@/constants/Colors';
+import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
+import Purchases from 'react-native-purchases';
+import Overlay from '@/components/Overlay';
+import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
 
 const TabLayout = () => {
 
+  const { 
+    
+    premium, showSongOptions,
+    
+    setPremium, 
+  
+  } = useGlobalContext();
+
+  useEffect(() => {
+    const requestTracking = async () => {
+      const { status } = await requestTrackingPermissionsAsync();
+      if (status === 'granted') {
+        console.log('granted');
+      }
+      else {
+        console.log('denied');
+      }
+    }
+    const checkPremium = async () => {
+      try {
+        Purchases.configure({
+          apiKey: 'appl_qzTfhRrmSegqQhRUukTmiUsVMIq',
+          appUserID: null,
+        });
+        const customerInfo = await Purchases.getCustomerInfo();
+        const active = customerInfo.activeSubscriptions;
+        const purchases = customerInfo.nonSubscriptionTransactions;
+        if (active.length > 0) {
+          setPremium(true);
+        }
+        else if (purchases.length > 0 && purchases[0].productIdentifier === 'SYNQPremiumLifetime') {
+          setPremium(true);
+        }
+        else {
+          setPremium(false);
+        }
+      }
+      catch (error) {
+        console.log('error checking premium');
+      }
+    }
+    requestTracking();
+    checkPremium();
+  }, [])
+
   return (
     <>
+      <View style={{
+          position: 'absolute', 
+          height: '100%', 
+          zIndex: 100,
+          width: '100%',
+          pointerEvents: showSongOptions ? 'auto' : 'none',
+        }}
+      >
+        <SongOptions />
+      </View>
+      <Overlay />
       <Server />
       <Tabs
         screenOptions={{
@@ -36,18 +95,19 @@ const TabLayout = () => {
             }}
           />
           <Tabs.Screen 
-            name='settings'
+            name='library'
             options={{
-              title:'Settings',
+              title:'Library',
               tabBarIcon: ({ color, focused }) => (
-                <SettingsIcon focused={focused}/>
+                <LibraryIcon focused={focused}/>
               ),
               headerShown: false,
             }}
           />
       </Tabs>
     </>
-  )
+  );
+
 }
 
 export default TabLayout;

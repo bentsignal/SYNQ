@@ -1,20 +1,19 @@
-import { View, Image, TouchableOpacity } from 'react-native'
-import { InfoType } from '@/constants/Types'
-import { useEffect, useState, useRef } from 'react'
-import { Colors } from '@/constants/Colors'
-import Loading from '../Loading'
+import { View, Image, TouchableOpacity } from 'react-native';
+import { useEffect, useState } from 'react';
 
-export const ListCover = ({image}: {
+export const ListCover = ({image, propOnLoad}: {
   image?: string;
+  propOnLoad: () => void;
 }) => {
 
   const [src, setSrc] = useState(image ? image : '');
+  const [loaded, setLoaded] = useState(false);
   let dim = src ? 60 : 20;
 
   useEffect(() => {
     setSrc(image ? image : '');
     dim = src ? 60 : 20;
-  }, [image])
+  }, [image]);
 
   return (
     <View style={{
@@ -23,23 +22,28 @@ export const ListCover = ({image}: {
       height: 60,
       justifyContent: 'center',
       alignItems: 'center',
+      borderRadius: 10,
+      opacity: loaded ? 1 : 0
     }}>
       <Image 
         source={src ? {uri: src} : require('@/assets/icons/music.png')}
         style={{
           width: dim,
-          height: dim
+          height: dim,
+          borderRadius: src ? 9 : 0,
         }}
         onLoad={() => {
-          return null;
+          setLoaded(true);
+          propOnLoad()
         }}
         onError={(error) => {
-          console.log('ERROR: Corrupt list image cover.')
           setSrc('');
+          setLoaded(true);
+          propOnLoad();
         }}
       />
     </View>
-  )
+  );
 
 }
 
@@ -53,7 +57,7 @@ export const EditCover = ({image, handlePress}: {
 
   useEffect(() => {
     setSrc(image ? image : '')
-  }, [image])
+  }, [image]);
 
   return (
     <TouchableOpacity
@@ -65,7 +69,8 @@ export const EditCover = ({image, handlePress}: {
           width: 120, 
           height: 120,
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
+          borderRadius: 12,
         }}
       >
         <Image 
@@ -73,7 +78,8 @@ export const EditCover = ({image, handlePress}: {
           style={{
             width: 120, 
             height: 120,
-            position: 'absolute'
+            position: 'absolute',
+            borderRadius: 10,
           }}
           onError={() => {
             setSrc('');
@@ -84,7 +90,8 @@ export const EditCover = ({image, handlePress}: {
             width: 120,
             height: 120,
             position: 'absolute',
-            backgroundColor: `rgba(0, 0, 0, ${src ? 0.6 : 0})`
+            backgroundColor: `rgba(0, 0, 0, ${src ? 0.6 : 0})`,
+            borderRadius: 10,
           }}
         />
         <View
@@ -100,12 +107,12 @@ export const EditCover = ({image, handlePress}: {
             source={src ? require('@/assets/icons/edit.png') : require('@/assets/icons/edit-black.png')}
             style={{
               width: 20,
-              height: 20
+              height: 20,
             }}
           />
         </View>
       </View>
     </TouchableOpacity>
-  )
+  );
 
 }

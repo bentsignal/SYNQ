@@ -7,11 +7,15 @@ export type InfoType = {
     "artwork"?: string;
     "name"?: string;
   };
-}
+};
 
 export type SongType = {
   "name": string;
   "id": string;
   "data": string;
   "info": InfoType
+};
+
+export type InstructionsModalProps = {
+  dontShowOption?: boolean;
 };

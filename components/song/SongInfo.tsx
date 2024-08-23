@@ -1,14 +1,10 @@
-import { Text, View, Image, FlatList, TouchableOpacity } from 'react-native'
-import { useGlobalContext } from '@/context/GlobalProvider'
-import { Styles } from '@/constants/Styles'
-import { Colors } from '@/constants/Colors'
-import { InfoType } from '@/constants/Types'
+import { Text, View } from 'react-native';
+import { Colors } from '@/constants/Colors';
+import { InfoType } from '@/constants/Types';
 
-const SongInfo = ({info, name}: {
-  "info": InfoType
-  name: string;
-}) => {
-  if (info.metadata?.artist && info.metadata?.name) {
+const SongInfo = ({info, name}: {info: InfoType, name: string}) => {
+
+  if (info.metadata?.artist && info.metadata?.name && info.metadata?.album) {
     return (
       <View
         style={{
@@ -35,10 +31,10 @@ const SongInfo = ({info, name}: {
           }}
           numberOfLines={1}
         >
-          {info.metadata.artist}
+          {info.metadata.artist} · {info.metadata.album}
         </Text>
       </View>
-    )
+    );
   }
   else {
     return (
@@ -60,8 +56,9 @@ const SongInfo = ({info, name}: {
           {name}
         </Text>
       </View>
-    )
+    );
   }
+
 }
 
-export default SongInfo
+export default SongInfo;

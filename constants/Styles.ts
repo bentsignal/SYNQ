@@ -1,5 +1,4 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '@/constants/Colors';
 
 export const Styles = StyleSheet.create({
@@ -55,7 +54,7 @@ export const Styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.95)'
+    // backgroundColor: 'rgba(0, 0, 0, 0.95)'
   },
   popupBody: {
     backgroundColor: Colors.popup,
@@ -63,17 +62,18 @@ export const Styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonContainer: {
-    width: 100,
+    minWidth: 100,
     height: 42,
     justifyContent: 'center',
   },
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   infoText: {
     fontSize: 16,
+    fontWeight: 'bold',
     color: Colors.text
   },
   textbox: {
@@ -98,5 +98,43 @@ export const Styles = StyleSheet.create({
     },
     shadowOpacity: 1,
     shadowRadius: 5,
-  }
+  },
+  subOption: {
+    paddingTop: 20,
+    paddingBottom: 20,
+    paddingLeft: 10,
+    paddingRight: 10,
+    borderRadius: 10,
+  },
+  subTier: {
+    color: 'white',
+    fontSize: 16,
+    // fontWeight: 'bold',
+  },
+  subCost: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  subInfo: {
+    color: 'white',
+    fontSize: 12,
+  },
+  songOptionActionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 5,
+    paddingBottom: 5,
+    marginBottom: 10,
+  },
+  songOptionActionText: {
+    color: Colors.text,
+    fontSize: 18,
+    fontWeight: 'bold'
+  },
+  songOptionIcon: {
+    marginRight: 15,
+    width: 20,
+    height: 20
+  },
 });

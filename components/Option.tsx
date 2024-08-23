@@ -1,6 +1,6 @@
-import { Text, View, Image, TouchableOpacity, ImageSourcePropType } from 'react-native'
-import { Colors } from '@/constants/Colors'
-import { Styles } from '@/constants/Styles'
+import { Text, View, Image, TouchableOpacity, ImageSourcePropType } from 'react-native';
+import { Colors } from '@/constants/Colors';
+import { Styles } from '@/constants/Styles';
 
 type ImportOptionProps = {
   title: string;
@@ -9,7 +9,7 @@ type ImportOptionProps = {
   disabled: boolean;
   bg?: string;
   handlePress: () => void;
-}
+};
 
 const Option = ({
   title,
@@ -18,8 +18,10 @@ const Option = ({
   disabled,
   bg,
   handlePress
-}:ImportOptionProps) => {
-  const color = bg ? bg : Colors.main
+} : ImportOptionProps) => {
+
+  const color = bg ? bg : Colors.main;
+
   return (
     <TouchableOpacity
       onPress={disabled ? () => {} : handlePress}
@@ -59,7 +61,8 @@ const Option = ({
         </Text>
       </View>
     </TouchableOpacity>
-  )
+  );
+
 }
 
 export default Option;

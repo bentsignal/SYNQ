@@ -3,24 +3,28 @@
     "version": ">= 9.1.0"
   },
   "build": {
-    "development-simulator": {
+    "development-client-simulator": {
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
         "simulator": true
       }
     },
-    "development-c": {
+    "development-client": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "ios": {
+        "simulator": false
+      }
     },
     "development": {
       "distribution": "internal"
     },
-    "preview": {
-      "distribution": "internal"
-    },
-    "production": {}
+    "production": {
+      "ios": {
+        "buildNumber": 2
+      }
+    }
   },
   "submit": {
     "production": {}

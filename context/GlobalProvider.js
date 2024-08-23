@@ -6,6 +6,7 @@ export const useGlobalContext = () => useContext(GlobalContext);
 const GlobalProvider = ({ children }) => {
 
   const [homeState, setHomeState] = useState(0);
+  const [premium, setPremium] = useState(false);
   const [wifiResults, setWifiResults] = useState([]);
   const [results, setResults] = useState([]);
   const [exportDisabled, setExportDisabled] = useState(true);
@@ -19,27 +20,25 @@ const GlobalProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [zipping, setZipping] = useState(false);
   const [importing, setImporting] = useState(false);
-  const [editLoad, setEditLoad] = useState(false);
-  const [ip, setIP] = useState('0.0.0.0')
+  const [ip, setIP] = useState('0.0.0.0');
   const [transferSize, setTransferSize] = useState(0);
+  const [transferProgress, setTransferProgress] = useState(0);
   const [serverStarted, setServerStarted] = useState(false);
   const [wifiDisabled, setWifiDisabled] = useState(false);
   const [selectEnabled, setSelectEnabled] = useState(false);
   const [selectedSongs, setSelectedSongs] = useState([]);
+  const [loadAnimInProgress, setLoadAnimInProgress] = useState(false);
+  const [showSongOptions, setShowSongOptions] = useState(false);
   const [transferPage, setTransferPage] = useState('<html><body><p>ERROR: Could not load page</p></body></html>');
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   return (
     <GlobalContext.Provider
       value={{
-
-        // home page state, between values 
-        homeState,
-        setHomeState,
-
-        // song data during import phase
-        results,
-        setResults,
-        
+        homeState, setHomeState,
+        premium, setPremium,
+        results, setResults,
         wifiResults, setWifiResults,
         exportDisabled, setExportDisabled,
         showDelete, setShowDelete,
@@ -58,8 +57,12 @@ const GlobalProvider = ({ children }) => {
         ip, setIP,
         wifiDisabled, setWifiDisabled,
         selectEnabled, setSelectEnabled,
-        selectedSongs, setSelectedSongs
-        
+        selectedSongs, setSelectedSongs,
+        transferProgress, setTransferProgress,
+        loadAnimInProgress, setLoadAnimInProgress,
+        showSongOptions, setShowSongOptions,
+        showOverlay, setShowOverlay,
+        errorMessage, setErrorMessage,
       }}
     >
       {children}
@@ -68,4 +71,4 @@ const GlobalProvider = ({ children }) => {
 
 };
 
-export default GlobalProvider
+export default GlobalProvider;

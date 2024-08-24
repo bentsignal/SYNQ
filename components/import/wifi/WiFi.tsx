@@ -35,7 +35,7 @@ const WiFi = () => {
     setExportDisabled(results.length > 0 ? false : true);
     setLoading(true);
     setResults([]);
-    setURL(!wifiDisabled ? `http://${ip}` : '');
+    setURL(!wifiDisabled ? `${ip}` : '');
 
   }, []);
 
@@ -133,7 +133,7 @@ const WiFi = () => {
     if (!wifiDisabled) {
       return (
         <ImportInstructions
-          title='In your browser, visit:'
+          title='In your web browser, enter:'
           desc={URL}
           icon={require('@/assets/icons/wifi.png')}
           disabled={wifiDisabled}

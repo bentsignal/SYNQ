@@ -92,7 +92,8 @@ const Theme = () => {
         }}
       >
         {Object.entries(Themes).map(([key, color], index) => (
-          <ThemeOption 
+          <ThemeOption
+            name={key}
             color={color}
             index={index}
             key={key}
@@ -123,7 +124,7 @@ const Theme = () => {
           top: 0,
           zIndex: 5,
           opacity: 0.5,
-          display: false ? 'none' : 'flex',
+          display: premium ? 'none' : 'flex',
         }}
       />
     </View>

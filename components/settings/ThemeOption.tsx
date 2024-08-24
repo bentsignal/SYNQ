@@ -2,20 +2,24 @@ import { TouchableOpacity } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getLogo } from "@/constants/Logos";
 
 type ThemeOptionProps = {
+  name: string;
   color: string;
   index: number;
 }
 
-const ThemeOption = ({ color, index }: ThemeOptionProps) => {
+const ThemeOption = ({ name, color, index }: ThemeOptionProps) => {
+
   const { 
 
     theme, premium, 
 
-    setTheme 
+    setTheme, setLogo,
   
   } = useGlobalContext();
+
   return (
     <TouchableOpacity 
       style={{
@@ -32,6 +36,7 @@ const ThemeOption = ({ color, index }: ThemeOptionProps) => {
       onPress={() => {
         if (premium) {
           setTheme(color);
+          setLogo(getLogo(name));
           AsyncStorage.setItem('theme', color);
         }
       }}

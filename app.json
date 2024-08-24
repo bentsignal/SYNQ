@@ -4,7 +4,7 @@
     "slug": "synq",
     "version": "1.2.5",
     "orientation": "portrait",
-    "icon": "./assets/icons/icon-blue.png",
+    "icon": "./assets/appIcons/icon-blue.png",
     "scheme": "cynk",
     "userInterfaceStyle": "automatic",
     "splash": {

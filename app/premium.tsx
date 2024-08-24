@@ -18,6 +18,7 @@ const Premium = () => {
   const { 
     
     premium, errorMessage, theme,
+    logo, 
     
     setPremium, setErrorMessage, 
   
@@ -419,7 +420,7 @@ const Premium = () => {
           }}
         >
           <Image 
-            source={require('@/assets/logo/logo-color.png')}
+            source={logo}
             style={{
               width: 50,
               height: 50,

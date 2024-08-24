@@ -1,4 +1,6 @@
 node_modules/
+ios
+.ruby-version
 .expo/
 dist/
 npm-debug.*

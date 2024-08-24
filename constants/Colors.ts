@@ -1,12 +1,11 @@
 export const Themes = {
-  red: '#f56c64',
+  blue: '#63a3ff',
+  purple: '#8f5ef7',
+  pink: '#ff96e7',
+  red: '#ff6b6b',
   orange: '#f78f6f',
   yellow: '#f7e16f',
-  // green: '#4eed66',
   mint: '#6ff7a6',
-  blue: '#63a3ff',
-  purple: '#cf75f0',
-  pink: '#ff96e7',
 }
 
 export const Colors = {

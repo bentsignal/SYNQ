@@ -419,7 +419,7 @@ const Premium = () => {
           }}
         >
           <Image 
-            source={require('@/assets/icons/logo-color.png')}
+            source={require('@/assets/logo/logo-color.png')}
             style={{
               width: 50,
               height: 50,

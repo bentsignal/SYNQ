@@ -4,7 +4,7 @@
     "slug": "synq",
     "version": "1.2.5",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/icons/icon-blue.png",
     "scheme": "cynk",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -56,7 +56,7 @@
           "icons": [
             {
               "name": "icon-blue",
-              "path": "./assets/images/icon.png"
+              "path": "./assets/appIcons/icon-blue.png"
             }
           ]
         }

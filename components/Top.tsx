@@ -7,7 +7,7 @@ const Top = () => {
   return (
     <View style={Styles.top}>
       <Image 
-        source={require('@/assets/icons/logo-color.png')}
+        source={require('@/assets/logo/logo-color.png')}
         style={{
           height: 25,
           width: 25,

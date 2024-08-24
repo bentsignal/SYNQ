@@ -34,7 +34,7 @@ const Server = () => {
     homeStateRef.current = homeState
   }, [homeState]);
 
-  const PORT = 3000;
+  const PORT = 80;
 
   useEffect(() => {
 

@@ -5,15 +5,29 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as Network from 'expo-network';
 import GlobalProvider from "@/context/GlobalProvider";
 import Purchases from 'react-native-purchases';
+import { router } from "expo-router";
+import { Colors } from "@/constants/Colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const RootLayout = () => {
 
-  const [loaded] = useFonts({
+  const [fontLoaded] = useFonts({
     JakartaSans: require('../assets/fonts/PlusJakartaSans-VariableFont_wght.ttf')
   });
 
+  const loadTheme = async () => {
+    try {
+      const theme = await AsyncStorage.getItem('theme');
+      return theme ? theme : Colors.main;
+    }
+    catch {
+      return Colors.main;
+    }
+  }
+
   const [allow, setAllow] = useState(false);
+  const [theme, setTheme] = useState('');
 
   const bypassAllow = true;
 
@@ -56,20 +70,26 @@ const RootLayout = () => {
       }
     }
 
-    checkAllow();
+    // checkAllow();
+
+    loadTheme().then((theme: string) => {
+      setTheme(theme);
+    })
+    .catch(() => {
+      setTheme(Colors.main);
+    })
 
   }, []);
 
   useEffect(() => {
-    // if (loaded && allow) {
-    //   SplashScreen.hideAsync();
-    // }
-    SplashScreen.hideAsync();
-  }, [loaded, allow]);
+    if (fontLoaded && theme !== '') {
+      SplashScreen.hideAsync();
+    }
+  }, [fontLoaded, allow, theme]);
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
-      <GlobalProvider>
+      <GlobalProvider initTheme={theme}>
         <Stack>
           <Stack.Screen 
             name="(tabs)" 

@@ -2,9 +2,9 @@
   "expo": {
     "name": "synq",
     "slug": "synq",
-    "version": "1.2.4",
+    "version": "1.2.5",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/appIcons/icon-blue.png",
     "scheme": "cynk",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -16,8 +16,10 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.directedbyshawn.synq",
+      "buildNumber": "1",
       "infoPlist": {
-        "CFBundleDisplayName": "SYNQ"
+        "CFBundleDisplayName": "SYNQ",
+        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you."
       }
     },
     "android": {
@@ -47,6 +49,41 @@
       ],
       [
         "expo-tracking-transparency"
+      ],
+      [
+        "expo-icon-handler",
+        {
+          "icons": [
+            {
+              "name": "icon-blue",
+              "path": "./assets/appIcons/icon-blue.png"
+            },
+            {
+              "name": "icon-mint",
+              "path": "./assets/appIcons/icon-mint.png"
+            },
+            {
+              "name": "icon-red",
+              "path": "./assets/appIcons/icon-red.png"
+            },
+            {
+              "name": "icon-yellow",
+              "path": "./assets/appIcons/icon-yellow.png"
+            },
+            {
+              "name": "icon-purple",
+              "path": "./assets/appIcons/icon-purple.png"
+            },
+            {
+              "name": "icon-orange",
+              "path": "./assets/appIcons/icon-orange.png"
+            },
+            {
+              "name": "icon-pink",
+              "path": "./assets/appIcons/icon-pink.png"
+            }
+          ]
+        }
       ]
     ],
     "experiments": {

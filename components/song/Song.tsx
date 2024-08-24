@@ -13,6 +13,7 @@ import { ListCover } from '@/components/song/Cover';
 import { BlurView } from 'expo-blur';
 import CustomButton from '../CustomButton';
 import Skeleton from '../Skeleton';
+import { darkenColor } from '@/lib/Color';
 
 const Dot = () => {
   return (
@@ -36,7 +37,7 @@ const Song = ({name, id, data, info}: SongType) => {
   const { 
 
     selectEnabled, selectedSongs, results,
-    premium, showSongOptions, 
+    premium, showSongOptions, theme, 
 
     setSelectedSongs, setShowSongOptions,
     setEditSong,
@@ -205,12 +206,12 @@ const Song = ({name, id, data, info}: SongType) => {
             textShadowRadius: 10
           }}
         >
-          Import multiple files with <Text style={{color: Colors.main}}>Premium</Text>
+          Import multiple files with <Text style={{color: theme}}>Premium</Text>
         </Text>
         <CustomButton 
           title={'Sign Up'}
-          background={Colors.main}
-          disabledColor={Colors.disabled}
+          background={theme}
+          disabledColor={darkenColor(theme, 40, 50)}
           opacity={.90}
           handlePress={() => router.push('/premium')}
         />

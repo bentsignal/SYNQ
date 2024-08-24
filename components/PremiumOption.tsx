@@ -1,17 +1,21 @@
 import { TouchableOpacity, View, Text } from "react-native";
 import { Styles } from "@/constants/Styles";
+import { Colors } from "@/constants/Colors";
+import { useGlobalContext } from "@/context/GlobalProvider";
 import Skeleton from "./Skeleton";
 
 type OptionProps = {
   handler: () => void;
-  bgColor: string;
   tier: string;
   price: string;
   loading: boolean;
+  selected: boolean;
 }
 
-const PremiumOption = ({handler, bgColor, tier, price, loading}: OptionProps) => {
+const PremiumOption = ({handler, tier, price, loading, selected}: OptionProps) => {
   
+  const { theme } = useGlobalContext();
+
   return (
     <View
       style={{
@@ -31,13 +35,13 @@ const PremiumOption = ({handler, bgColor, tier, price, loading}: OptionProps) =>
       />
       <TouchableOpacity 
         style={[Styles.subOption, {
-          backgroundColor: bgColor,
+          backgroundColor: selected ? theme : Colors.song,
         }]}
         activeOpacity={1}
         onPress={handler}
       >
-        <Text style={Styles.subCost}>{price}</Text>
-        <Text style={Styles.subTier}>{tier}</Text>
+        <Text style={[Styles.subCost, {color: selected ? 'black' : Colors.text}]}>{price}</Text>
+        <Text style={[Styles.subTier, {color: selected ? 'black' : Colors.text}]}>{tier}</Text>
       </TouchableOpacity>
     </View>
   );

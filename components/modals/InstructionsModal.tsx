@@ -11,7 +11,14 @@ import { InstructionsModalProps } from '@/constants/Types';
 
 const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
 
-  const {showWelcome, setShowWelcome} = useGlobalContext();
+  const {
+    
+    showWelcome, theme, 
+    
+    setShowWelcome, setShowOverlay
+  
+  } = useGlobalContext();
+
   const [checked, setChecked] = useState(false);
 
   return (
@@ -135,9 +142,10 @@ const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
             </View> : <></>}
             <CustomButton 
               title="Close"
-              background={Colors.main}
+              background={theme}
               handlePress={async () => {
                 setShowWelcome(false);
+                setShowOverlay(false);
                 if (checked) {
                   await AsyncStorage.setItem('showWelcome', 'false');
                 }

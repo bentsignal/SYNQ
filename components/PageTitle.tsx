@@ -1,6 +1,7 @@
 import { Text, Image, TouchableOpacity, View } from "react-native";
 import { Styles } from "@/constants/Styles";
 import { useGlobalContext } from "@/context/GlobalProvider";
+import { Colors } from "@/constants/Colors";
 
 type PageTitleProps = {
   title: string;
@@ -16,9 +17,9 @@ const PageTitle = ({
 
   const { 
 
-    selectEnabled, 
+    selectEnabled, theme,
     
-    setSelectEnabled,
+    setSelectEnabled, setShowOverlay,
   
   } = useGlobalContext();
 
@@ -26,14 +27,18 @@ const PageTitle = ({
     if (infoHandler) {
       return (
         <TouchableOpacity
-          onPress={infoHandler}
+          onPress={() => {
+            infoHandler();
+            setShowOverlay(true);
+          }}
         >
           <Image 
             source={require('@/assets/icons/info.png')}
             style={{
               height: 25,
               width: 25,
-              marginLeft: 10
+              marginLeft: 10,
+              tintColor: theme,
             }}
           />
         </TouchableOpacity>

@@ -1,6 +1,8 @@
 import { Text, View, Image, TouchableOpacity, ImageSourcePropType } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
+import { darkenColor } from '@/lib/Color';
+import { useGlobalContext } from '@/context/GlobalProvider';
 
 type ImportInstructionsProps = {
   title: string;
@@ -22,6 +24,8 @@ const ImportInstructions = (
 
 ) => {
 
+  const { theme } = useGlobalContext();
+
   return (
     <TouchableOpacity
       onPress={handlePress}
@@ -30,7 +34,7 @@ const ImportInstructions = (
         flexDirection: 'row',
         alignItems: 'center',
         width: '90%',
-        backgroundColor: disabled ? Colors.disabled : Colors.main,
+        backgroundColor: disabled ? darkenColor(theme, 40, 50) : theme,
         padding: 20,
         marginBottom: 10
       }]}

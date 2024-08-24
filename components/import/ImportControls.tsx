@@ -4,6 +4,7 @@ import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import CustomButton from '@/components/CustomButton';
 import { exportSongs} from '@/lib/SongManager';
+import { darkenColor } from '@/lib/Color';
 
 const ImportControls = ({reset}: {reset?: () => void}) => {
 
@@ -11,7 +12,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
 
     results, loading, transferSize,
     exportDisabled, homeState, selectEnabled,
-    selectedSongs, premium,
+    selectedSongs, premium, theme,
 
     setHomeState, setResults, setExportDisabled,
     setLoading, setZipping, setImporting, 
@@ -106,7 +107,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
         />
         <CustomButton 
           title='Export'
-          background={Colors.main}
+          background={theme}
           handlePress={() => {
             setExportDisabled(true);
             setLoading(true);
@@ -136,7 +137,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
             }, 1000)
           }}
           disabled={exportDisabled}
-          disabledColor={Colors.disabled}
+          disabledColor={darkenColor(theme, 40, 50)}
         />
       </View>
     </>

@@ -1,18 +1,16 @@
 import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { Styles } from '@/constants/Styles';
+import { useGlobalContext } from '@/context/GlobalProvider';
 
 const Top = () => {
 
+  const { logo } = useGlobalContext();
+
   return (
     <View style={Styles.top}>
-      {/* <View>
-        <Text style={Styles.appName}>
-          SYNQ
-        </Text>
-      </View> */}
       <Image 
-        source={require('@/assets/icons/logo-color.png')}
+        source={logo}
         style={{
           height: 25,
           width: 25,

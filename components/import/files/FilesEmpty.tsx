@@ -14,7 +14,7 @@ const FilesEmpty = () => {
 
   const { 
 
-    transferSize, loadAnimInProgress,
+    transferSize, loadAnimInProgress, theme, 
 
     setResults, setExportDisabled, setLoading, 
     setImporting, setShowSaveInst, setHomeState,
@@ -33,7 +33,8 @@ const FilesEmpty = () => {
         source={require('@/assets/icons/upload.png')}
         style={{
           width: 35,
-          height: 35
+          height: 35,
+          tintColor: theme,
         }}
       />
       <Text style={[Styles.infoText, {

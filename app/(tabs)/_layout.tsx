@@ -24,12 +24,6 @@ const TabLayout = () => {
   useEffect(() => {
     const requestTracking = async () => {
       const { status } = await requestTrackingPermissionsAsync();
-      if (status === 'granted') {
-        console.log('granted');
-      }
-      else {
-        console.log('denied');
-      }
     }
     const checkPremium = async () => {
       try {

@@ -11,12 +11,14 @@ import CustomButton from '@/components/CustomButton';
 import PremiumOption from '@/components/PremiumOption';
 import Purchases from 'react-native-purchases';
 import Loading from '@/components/Loading';
+import { darkenColor } from '@/lib/Color';
 
 const Premium = () => {
 
   const { 
     
-    premium, errorMessage,
+    premium, errorMessage, theme,
+    logo, 
     
     setPremium, setErrorMessage, 
   
@@ -315,9 +317,9 @@ const Premium = () => {
           </View>
           <CustomButton 
             title={purchaseText}
-            background={Colors.main}
-            disabledColor={Colors.disabled}
-            textColor={Colors.text}
+            background={theme}
+            disabledColor={darkenColor(theme, 40, 50)}
+            textColor={'black'}
             buttonWidth={240}
             handlePress={async () => {
               try {
@@ -358,7 +360,7 @@ const Premium = () => {
             <Text 
               style={{
                 marginTop: 10,
-                color: Colors.main,
+                color: theme,
                 fontSize: 16,
               }}
             >
@@ -374,7 +376,7 @@ const Premium = () => {
     <View style={[Styles.body, {
       backgroundColor: Colors.background,
       }]}>
-      <Bar color={'white'}/>
+      <Bar />
       <View
         style={{
           height: '100%',
@@ -391,7 +393,7 @@ const Premium = () => {
           }}
         >
           <Image 
-            source={require('@/assets/images/premium-bg-downscaled.jpg')}
+            source={require('@/assets/images/premium-bg-2-downscaled.jpg')}
             style={{
               height: '100%',
               width: '100%'
@@ -418,7 +420,7 @@ const Premium = () => {
           }}
         >
           <Image 
-            source={require('@/assets/icons/logo-color.png')}
+            source={logo}
             style={{
               width: 50,
               height: 50,
@@ -466,7 +468,7 @@ const Premium = () => {
                 tier={'Monthly'}
                 price={monthlyCost}
                 loading={loading}
-                bgColor={selected === 0 ? Colors.main : Colors.song}
+                selected={selected === 0}
                 handler={() => {
                   if (!loading && !active && !error) {
                     setSelected(0);
@@ -478,7 +480,7 @@ const Premium = () => {
                 tier={'Yearly'}
                 price={yearlyCost}
                 loading={loading}
-                bgColor={selected === 1 ? Colors.main : Colors.song}
+                selected={selected === 1}
                 handler={() => {
                   if (!loading && !active && !error) {
                     setSelected(1);
@@ -490,7 +492,7 @@ const Premium = () => {
                 tier={'Lifetime'}
                 price={lifetimeCost}
                 loading={loading}
-                bgColor={selected === 2 ? Colors.main : Colors.song}
+                selected={selected === 2}
                 handler={() => {
                   if (!loading && !active && !error) {
                     setSelected(2);

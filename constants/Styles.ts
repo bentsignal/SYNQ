@@ -129,12 +129,23 @@ export const Styles = StyleSheet.create({
   },
   songOptionActionText: {
     color: Colors.text,
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold'
   },
   songOptionIcon: {
     marginRight: 15,
     width: 20,
-    height: 20
+    height: 20,
+    tintColor: Colors.tabInactive,
+  },
+  settingsCategoryHeader: {
+    color: Colors.text,
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'left',
+  },
+  settingsCategoryContainer: {
+    width: '90%',
+    marginBottom: 10,
   },
 });

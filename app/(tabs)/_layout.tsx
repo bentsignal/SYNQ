@@ -9,6 +9,7 @@ import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import Purchases from 'react-native-purchases';
 import Overlay from '@/components/Overlay';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
 
 const TabLayout = () => {
@@ -17,14 +18,16 @@ const TabLayout = () => {
     
     premium, showSongOptions,
     
-    setPremium, 
+    setPremium, setHaptic,
   
   } = useGlobalContext();
 
   useEffect(() => {
+
     const requestTracking = async () => {
       const { status } = await requestTrackingPermissionsAsync();
     }
+
     const checkPremium = async () => {
       try {
         Purchases.configure({
@@ -48,9 +51,22 @@ const TabLayout = () => {
         console.log('error checking premium');
       }
     }
+
+    const loadHapticSetting = async () => {
+      try {
+        const haptic = await AsyncStorage.getItem('haptic');
+        setHaptic(haptic === 'true' ? true : false);
+      }
+      catch {
+        setHaptic(true);
+      }
+    }
+
+    loadHapticSetting();
     requestTracking();
     checkPremium();
-  }, [])
+
+  }, []);
 
   return (
     <>

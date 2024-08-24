@@ -146,6 +146,5 @@ export const Styles = StyleSheet.create({
   },
   settingsCategoryContainer: {
     width: '90%',
-    marginBottom: 10,
   },
 });

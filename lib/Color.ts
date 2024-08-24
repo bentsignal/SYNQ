@@ -12,3 +12,7 @@ export const calculateDarkeningAmount = (mainColor: string, disabledColor: strin
   const disabledLuminance = tinycolor(disabledColor).getLuminance();
   return (mainLuminance - disabledLuminance) * 100;
 };
+
+export const getDisabledColor = (mainColor: string) => {
+  return darkenColor(mainColor, 40, 50);
+}

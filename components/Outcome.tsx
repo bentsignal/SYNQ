@@ -16,7 +16,7 @@ export const Success = () => {
 
   const { 
     
-    theme, 
+    theme, haptic,
 
     setHomeState,
   
@@ -24,10 +24,12 @@ export const Success = () => {
 
   const insets = useSafeAreaInsets();
 
-  Haptics.notificationAsync(
-    Haptics.NotificationFeedbackType.Success
-  );
-
+  if (haptic) {
+    Haptics.notificationAsync(
+      Haptics.NotificationFeedbackType.Success
+    );
+  }
+  
   let source = replaceColor('#4173b9', darkenColor(theme, 10, 20), require('@/assets/anim/success.json')); // accent
   source = replaceColor('#63a3ff', theme, source); // main
 
@@ -44,13 +46,7 @@ export const Success = () => {
           renderMode={'SOFTWARE'}
           onAnimationFinish={() => {
             setTimeout(async () => {
-
-
-
               setHomeState(0);
-
-
-              
               let countStr = await AsyncStorage.getItem('importCount');
               if (countStr) {
                 try {
@@ -85,13 +81,21 @@ export const Success = () => {
 
 export const Failure = () => {
 
-  const {setHomeState} = useGlobalContext();
+  const {
+
+    haptic,
+    
+    setHomeState
+  
+  } = useGlobalContext();
 
   const insets = useSafeAreaInsets();
 
-  Haptics.notificationAsync(
-    Haptics.NotificationFeedbackType.Error
-  )
+  if (haptic) {
+    Haptics.notificationAsync(
+      Haptics.NotificationFeedbackType.Error
+    )
+  }
 
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>

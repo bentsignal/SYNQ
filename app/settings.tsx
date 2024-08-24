@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, } from "react-native";
 import { router } from "expo-router";
 import PageTitle from '@/components/PageTitle';
 import Option from "@/components/Option";
@@ -8,10 +8,15 @@ import { Colors } from "@/constants/Colors";
 import Theme from "@/components/settings/Theme";
 import CategoryTitle from "@/components/settings/CategoryTitle";
 import { useGlobalContext } from "@/context/GlobalProvider";
+import Haptic from "@/components/settings/Haptic";
 
 const Settings = () => {
 
-  const { premium } = useGlobalContext();
+  const { 
+    
+    premium, 
+  
+  } = useGlobalContext();
 
   return (
     <View style={[Styles.body, {
@@ -26,9 +31,13 @@ const Settings = () => {
         disabled={false}
         handlePress={() => router.push("/premium")}
       /> 
-      <CategoryTitle title="Theme" />
+      <CategoryTitle title="Theme" requiresPremium={true}/>
       <View style={Styles.settingsCategoryContainer}>
         <Theme />
+      </View>
+      <CategoryTitle title="Haptic Feedback" />
+      <View style={Styles.settingsCategoryContainer}>
+        <Haptic />
       </View>
     </View>
   );

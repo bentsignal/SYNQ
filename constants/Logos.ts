@@ -36,3 +36,30 @@ export const getLogo = (id: string) => {
     return Logos.blue;
   }
 }
+
+export const getIcon = (id: string) => {
+  if (id === Themes.blue || id === 'blue') {
+    return 'icon-blue';
+  }
+  else if (id === Themes.purple || id === 'purple') {
+    return 'icon-purple';
+  }
+  else if (id === Themes.pink || id === 'pink') {
+    return 'icon-pink';
+  }
+  else if (id === Themes.red || id === 'red') {
+    return 'icon-red';
+  }
+  else if (id === Themes.orange || id === 'orange') {
+    return 'icon-orange';
+  }
+  else if (id === Themes.yellow || id === 'yellow') {
+    return 'icon-yellow';
+  }
+  else if (id === Themes.mint || id === 'mint') {
+    return 'icon-mint';
+  }
+  else {
+    return 'icon-blue';
+  }
+}

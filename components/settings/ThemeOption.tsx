@@ -2,7 +2,8 @@ import { TouchableOpacity } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getLogo } from "@/constants/Logos";
+import { getLogo, getIcon } from "@/constants/Logos";
+import { setAppIcon } from "expo-icon-handler";
 
 type ThemeOptionProps = {
   name: string;
@@ -37,6 +38,7 @@ const ThemeOption = ({ name, color, index }: ThemeOptionProps) => {
         if (premium) {
           setTheme(color);
           setLogo(getLogo(name));
+          const success = setAppIcon(getIcon(name));
           AsyncStorage.setItem('theme', color);
         }
       }}

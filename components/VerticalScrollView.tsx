@@ -12,9 +12,10 @@ type VerticalScrollViewProps = {
   children: React.ReactNode;
   backgroundColor: string;
   maxHeight?: any;
+  minHeight?: any;
 }
 
-const VerticalScrollView = ({ children, backgroundColor, maxHeight }: VerticalScrollViewProps) => {
+const VerticalScrollView = ({ children, backgroundColor, maxHeight, minHeight }: VerticalScrollViewProps) => {
 
   const topGradientOpacityRef = useRef(new Animated.Value(0)).current;
   
@@ -76,6 +77,7 @@ const VerticalScrollView = ({ children, backgroundColor, maxHeight }: VerticalSc
         style={{
           width: '100%',
           maxHeight: maxHeight ? maxHeight : '70%',
+          minHeight: minHeight ? maxHeight : '0',
         }}
         contentContainerStyle={{
           alignItems: 'center',

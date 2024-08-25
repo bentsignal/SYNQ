@@ -5,18 +5,19 @@ import CustomButton from "../CustomButton";
 import ModalTitle from "./ModalTitle";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Colors } from "@/constants/Colors";
+import InfoContainer from "./InfoContainer";
 
 const InfoModal = () => {
 
   const { 
 
-    showInfoModal,
+    showInfoModal, theme, 
     
     setShowInfoModal, setShowOverlay,
   
   } = useGlobalContext();
 
-  const textComponents = Array.from({ length: 100 }, (_, index) => (
+  const textComponents = Array.from({ length: 20 }, (_, index) => (
     <Text style={{color: 'white'}} key={index}>Text {index + 1}</Text>
   ));
 
@@ -38,23 +39,28 @@ const InfoModal = () => {
         <VerticalScrollView
           backgroundColor={Colors.popup}
           maxHeight={Dimensions.get('screen').height * 0.58}
+          minHeight={Dimensions.get('screen').height * 0.58}
         >
           <View
             style={{
-              width: '100%',
+              width: '95%',
               justifyContent: 'flex-start',
               alignItems: 'center',
               marginTop: 20,
               marginBottom: 50
             }}
           >
-            {textComponents}
-            <Text style={{color: 'white', backgroundColor: 'red', width: '100%'}}>Test Info</Text>
+            <InfoContainer title={'Export to Spotify'}>
+              {textComponents}
+            </InfoContainer>
+            <InfoContainer title={'Edit a song'}>
+              {textComponents}
+            </InfoContainer>
           </View>
         </VerticalScrollView>
         <CustomButton 
           title='Close'
-          background={Colors.main}
+          background={theme}
           handlePress={() => {
             setShowOverlay(false);
             setShowInfoModal(false);

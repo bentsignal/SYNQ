@@ -1,7 +1,7 @@
-import { View, Text, TouchableOpacity, } from "react-native";
-import { useRef, useState } from "react";
-import { Colors } from "@/constants/Colors";
-import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming, interpolate } from 'react-native-reanimated';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { useState, useEffect } from 'react';
+import { Colors } from '@/constants/Colors';
+import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 type InfoContainerProps = {
   title: string;
@@ -9,13 +9,12 @@ type InfoContainerProps = {
 };
 
 const InfoContainer = ({ title, children }: InfoContainerProps) => {
-
-  const rotate = useSharedValue(-45);
-  const height = useSharedValue(0);
   const [open, setOpen] = useState(false);
+  const height = useSharedValue(0);
+  const rotate = useSharedValue(-45);
 
-
-  const toggleOpen = () => {
+  useEffect(() => {
+    // Set the initial height and rotation
     height.value = withTiming(open ? 200 : 0, {
       duration: 300,
       easing: Easing.ease,
@@ -24,13 +23,16 @@ const InfoContainer = ({ title, children }: InfoContainerProps) => {
       duration: 300,
       easing: Easing.ease,
     });
+  }, [open]);
+
+  const toggleOpen = () => {
     setOpen(!open);
-  }
+  };
 
   const animatedContentStyle = useAnimatedStyle(() => {
     return {
       height: height.value,
-      opacity: withTiming(open ? 0 : 1, {
+      opacity: withTiming(open ? 1 : 0, {
         duration: 300,
         easing: Easing.ease,
       }),
@@ -44,11 +46,7 @@ const InfoContainer = ({ title, children }: InfoContainerProps) => {
   });
 
   return (
-    <View
-      style={{
-        flex: 1,
-      }}
-    >
+    <View style={{ flex: 1 }}>
       <TouchableOpacity
         style={{
           flexDirection: 'row',
@@ -62,24 +60,17 @@ const InfoContainer = ({ title, children }: InfoContainerProps) => {
         onPress={toggleOpen}
         activeOpacity={1}
       >
-        <Text
-          style={{
-            fontSize: 24,
-            fontWeight: 'bold',
-            color: Colors.text,
-          }}
-        >
+        <Text style={{ fontSize: 24, fontWeight: 'bold', color: Colors.text }}>
           {title}
         </Text>
         <Animated.View
           style={[rotateStyle, {
             flexDirection: 'row',
-            position: 'relative',
             width: 15,
             height: 15,
           }]}
         >
-          <View 
+          <View
             style={{
               position: 'absolute',
               top: 0,
@@ -90,7 +81,7 @@ const InfoContainer = ({ title, children }: InfoContainerProps) => {
               backgroundColor: Colors.text,
             }}
           />
-          <View 
+          <View
             style={{
               position: 'absolute',
               top: 0,
@@ -106,16 +97,14 @@ const InfoContainer = ({ title, children }: InfoContainerProps) => {
       <Animated.View
         style={[animatedContentStyle, {
           width: '100%',
-          top: 0,
           position: 'relative',
           overflow: 'hidden',
-          zIndex: -1,
         }]}
       >
         {children}
       </Animated.View>
     </View>
   );
-}
+};
 
 export default InfoContainer;

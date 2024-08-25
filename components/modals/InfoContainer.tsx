@@ -1,6 +1,7 @@
-import { View, Text, TouchableOpacity, LayoutChangeEvent} from 'react-native';
-import { useState, useEffect, SyntheticEvent } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { useState, useEffect } from 'react';
 import { Colors } from '@/constants/Colors';
+import { useGlobalContext } from '@/context/GlobalProvider';
 import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 type InfoContainerProps = {
@@ -14,6 +15,7 @@ const InfoContainer = ({ title, contentHeight, children }: InfoContainerProps) =
   const [open, setOpen] = useState(false);
   const height = useSharedValue(0);
   const rotate = useSharedValue(-45);
+  const { theme } = useGlobalContext();
 
   useEffect(() => {
     // Set the initial height and rotation
@@ -67,7 +69,7 @@ const InfoContainer = ({ title, contentHeight, children }: InfoContainerProps) =
         onPress={toggleOpen}
         activeOpacity={1}
       >
-        <Text style={{ fontSize: 24, fontWeight: 'bold', color: Colors.text }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold', color: theme }}>
           {title}
         </Text>
         <Animated.View
@@ -85,7 +87,7 @@ const InfoContainer = ({ title, contentHeight, children }: InfoContainerProps) =
               width: 3,
               height: 15,
               borderRadius: 100,
-              backgroundColor: Colors.text,
+              backgroundColor: theme,
             }}
           />
           <View
@@ -96,7 +98,7 @@ const InfoContainer = ({ title, contentHeight, children }: InfoContainerProps) =
               width: 15,
               height: 3,
               borderRadius: 100,
-              backgroundColor: Colors.text,
+              backgroundColor: theme,
             }}
           />
         </Animated.View>

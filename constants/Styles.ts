@@ -147,4 +147,23 @@ export const Styles = StyleSheet.create({
   settingsCategoryContainer: {
     width: '90%',
   },
+  infoContentContainer: {
+    width: '100%',
+    marginTop: 20,
+  },
+  infoStepContainer: {
+    width: '100%',
+    marginBottom: 20,
+  },
+  infoStepTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.text,
+    marginBottom: 5,
+  },
+  infoStepDescription: {
+    fontSize: 16,
+    color: Colors.infoText,
+    marginBottom: 20,
+  }
 });

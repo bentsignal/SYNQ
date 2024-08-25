@@ -53,24 +53,14 @@ const InfoModal = () => {
           >
             <InfoContainer 
               title={'Spotify Setup'} 
-              contentHeight={900}
+              contentHeight={980}
             >
-              <View
-                style={{
-                  width: '100%',
-                }}
-              >
-                <View style={{paddingBottom: 5}}>
-                  <Text
-                    style={[Styles.infoText, {fontWeight: 'bold', paddingBottom: 5}]}
-                  >
+              <View style={Styles.infoContentContainer}>
+                <View style={Styles.infoStepContainer}>
+                  <Text style={Styles.infoStepTitle}>
                     1. Enable local files in Spotify
                   </Text>
-                  <Text
-                    style={[Styles.infoText, {
-                      paddingTop: 5
-                    }]}
-                  >
+                  <Text style={Styles.infoStepDescription}>
                     Spotify → Settings → Local Files
                   </Text>
                   <Image 
@@ -79,45 +69,29 @@ const InfoModal = () => {
                     resizeMode='contain'
                   />
                 </View>
-                <View>
-                  <Text
-                    style={[Styles.infoText, {fontWeight: 'bold', paddingBottom: 5}]}
-                  >
+                <View style={Styles.infoStepContainer}>
+                  <Text style={Styles.infoStepTitle}>
                     2. Save your music to:
                   </Text>
-                  <Text
-                    style={[Styles.infoText, {paddingBottom: 0, paddingTop: 5}]}
-                  >
+                  <Text style={Styles.infoStepDescription}>
                     On My iPhone → Spotify
                   </Text>
                   <Image 
                     source={require('@/assets/images/destination-folder.jpg')}
-                    style={{
-                      width: '100%', 
-                      height: 250,
-                      marginBottom: 20
-                    }}
+                    style={{ width: '100%', height: 250 }}
                     resizeMode='contain'
                   />
                 </View>
-                <View>
-                  <Text
-                    style={[Styles.infoText, {fontWeight: 'bold', paddingBottom: 5}]}
-                  >
+                <View style={Styles.infoStepContainer}>
+                  <Text style={Styles.infoStepTitle}>
                     3. Listen in Spotify:
                   </Text>
-                  <Text
-                    style={[Styles.infoText, {paddingBottom: 10, paddingTop: 5}]}
-                  >
+                  <Text style={Styles.infoStepDescription}>
                     Playlists → Local Files
                   </Text>
                   <Image 
                     source={require('@/assets/images/local-files-playlist.jpg')}
-                    style={{
-                      width: '100%', 
-                      height: 250,
-                      marginBottom: 40
-                    }}
+                    style={{ width: '100%', height: 250 }}
                     resizeMode='contain'
                   />
                 </View>
@@ -127,15 +101,9 @@ const InfoModal = () => {
               title={'How to Export'}
               contentHeight={900}
             >
-              <View
-                style={{
-                  width: '100%',
-                }}
-              >
-                <View style={{paddingBottom: 5}}>
-                  <Text
-                    style={[Styles.infoText, {fontWeight: 'bold', paddingBottom: 5}]}
-                  >
+              <View style={Styles.infoContentContainer}>
+                <View style={Styles.infoStepContainer}>
+                  <Text style={[Styles.infoStepTitle, {marginBottom: 20}]}>
                     1. Hit the blue "Export" button
                   </Text>
                   <Image 
@@ -143,9 +111,7 @@ const InfoModal = () => {
                     style={{width: '100%', height: 200, marginBottom: 40}}
                     resizeMode='contain'
                   />
-                  <Text
-                    style={[Styles.infoText, {fontWeight: 'bold', paddingBottom: 20}]}
-                  >
+                  <Text style={[Styles.infoStepTitle, {marginBottom: 20}]}>
                     2. Hit "Save to Files" in the popup
                   </Text>
                   <Image 
@@ -155,14 +121,10 @@ const InfoModal = () => {
                   />
                 </View>
                 <View>
-                  <Text
-                    style={[Styles.infoText, {fontWeight: 'bold', paddingBottom: 5}]}
-                  >
+                  <Text style={Styles.infoStepTitle}>
                     3. Find Spotify folder and hit Save:
                   </Text>
-                  <Text
-                    style={[Styles.infoText, {paddingBottom: 20, paddingTop: 5}]}
-                  >
+                  <Text style={Styles.infoStepDescription}>
                     On My iPhone → Spotify
                   </Text>
                   <Image 

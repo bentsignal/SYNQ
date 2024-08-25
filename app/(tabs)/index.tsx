@@ -10,7 +10,6 @@ import Option from "@/components/Option";
 import WiFi from "@/components/import/wifi/WiFi";
 import Files from "@/components/import/files/Files";
 import { Success, Failure } from "@/components/Outcome";
-import InstructionsModal from "@/components/modals/InstructionsModal";
 import InfoModal from "@/components/modals/InfoModal";
 
 const getShowWelcome = async () => {
@@ -60,7 +59,6 @@ const Home = () => {
   else {
     return (
       <View style={[Styles.body, {paddingTop: insets.top}]}>
-        <InstructionsModal dontShowOption={true}/>
         <InfoModal />
         <Top />
         <PageTitle 

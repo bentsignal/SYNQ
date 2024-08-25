@@ -10,7 +10,7 @@ import PageTitle from '@/components/PageTitle';
 import Top from '@/components/Top';
 import ImportInstructions from '@/components/import/wifi/ImportInstructions';
 import ImportControls from '../ImportControls';
-import SaveInstructionsModal from '@/components/modals/SaveInstructionsModal';
+import InfoModal from '@/components/modals/InfoModal';
 
 const WiFi = () => {
 
@@ -20,7 +20,7 @@ const WiFi = () => {
     ip, wifiDisabled, premium,
 
     setResults, setExportDisabled, setLoading,
-    setShowSaveInst,
+    setShowSaveInst, setShowInfoModal,
 
   } = useGlobalContext();
 
@@ -145,12 +145,12 @@ const WiFi = () => {
 
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>
-      <SaveInstructionsModal dontShowOption={false}/>
+      <InfoModal />
       <Top />
       <PageTitle 
         title='Import Music'
         showList={results.length > 1 && premium}
-        infoHandler={() => setShowSaveInst(true)}
+        infoHandler={() => setShowInfoModal(true)}
       />
       {getInstructions()}
       {getBody()}

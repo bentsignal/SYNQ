@@ -1,21 +1,23 @@
-import { View, Text, TouchableOpacity } from 'react-native';
-import { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, LayoutChangeEvent} from 'react-native';
+import { useState, useEffect, SyntheticEvent } from 'react';
 import { Colors } from '@/constants/Colors';
 import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 type InfoContainerProps = {
   title: string;
+  contentHeight: number;
   children?: React.ReactNode;
 };
 
-const InfoContainer = ({ title, children }: InfoContainerProps) => {
+const InfoContainer = ({ title, contentHeight, children }: InfoContainerProps) => {
+
   const [open, setOpen] = useState(false);
   const height = useSharedValue(0);
   const rotate = useSharedValue(-45);
 
   useEffect(() => {
     // Set the initial height and rotation
-    height.value = withTiming(open ? 200 : 0, {
+    height.value = withTiming(open ? contentHeight : 0, {
       duration: 300,
       easing: Easing.ease,
     });
@@ -23,7 +25,7 @@ const InfoContainer = ({ title, children }: InfoContainerProps) => {
       duration: 300,
       easing: Easing.ease,
     });
-  }, [open]);
+  }, [open, contentHeight]);
 
   const toggleOpen = () => {
     setOpen(!open);
@@ -46,7 +48,12 @@ const InfoContainer = ({ title, children }: InfoContainerProps) => {
   });
 
   return (
-    <View style={{ flex: 1 }}>
+    <View 
+      style={{ 
+        flex: 1,
+        width: '100%',
+      }}
+    >
       <TouchableOpacity
         style={{
           flexDirection: 'row',
@@ -98,7 +105,6 @@ const InfoContainer = ({ title, children }: InfoContainerProps) => {
         style={[animatedContentStyle, {
           width: '100%',
           position: 'relative',
-          overflow: 'hidden',
         }]}
       >
         {children}

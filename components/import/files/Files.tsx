@@ -8,9 +8,9 @@ import Loading from '@/components/Loading';
 import Top from '@/components/Top';
 import FilesEmpty from '@/components/import/files/FilesEmpty';
 import SongList from '@/components/song/SongList';
-import SaveInstructionsModal from '@/components/modals/SaveInstructionsModal';
 import ImportControls from '../ImportControls';
 import Progress from '@/components/Progress';
+import InfoModal from '@/components/modals/InfoModal';
 
 const Files = () => {
 
@@ -20,7 +20,7 @@ const Files = () => {
     importing, premium, transferSize,
     transferProgress, loadAnimInProgress,
 
-    setShowSaveInst,
+    setShowInfoModal,
 
   } = useGlobalContext();
 
@@ -64,11 +64,11 @@ const Files = () => {
 
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>
-      <SaveInstructionsModal dontShowOption={true} />
+      <InfoModal />
       <Top />
       <PageTitle 
         title='Import Music'
-        infoHandler={() => setShowSaveInst(true)}
+        infoHandler={() => setShowInfoModal(true)}
         showList={results.length > 1 && premium}
       />
       {getBody()}

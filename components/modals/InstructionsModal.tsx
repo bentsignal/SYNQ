@@ -38,7 +38,7 @@ const InstructionsModal = ({dontShowOption}: InstructionsModalProps) => {
             style={[Styles.popupBody, Styles.roundedContainer, {
               paddingTop: 20,
               paddingBottom: 20,
-              width: '90%',
+              width: '95%',
             }]}
           >
             <Text

@@ -10,6 +10,7 @@ type MainButtonProps = {
   disabled?: boolean;
   buttonWidth?: number;
   textColor?: string;
+  customStyles?: {};
 };
 
 const CustomButton = ({
@@ -21,12 +22,13 @@ const CustomButton = ({
   disabled,
   textColor,
   buttonWidth,
+  customStyles,
 }: MainButtonProps) => {
   return (
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={opacity ? opacity : 0.8}
-      style={[Styles.buttonContainer, , Styles.roundedContainer, {
+      style={[customStyles ? customStyles : {}, Styles.buttonContainer, Styles.roundedContainer, {
           backgroundColor: disabled ? disabledColor : background, 
           width: buttonWidth ? buttonWidth: 100,
         }

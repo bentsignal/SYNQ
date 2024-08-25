@@ -46,6 +46,7 @@ const GlobalProvider = ({ children, initTheme }) => {
   const [theme, setTheme] = useState(initTheme ? initTheme : Colors.main);
   const [logo, setLogo] = useState(require('@/assets/logo/logo-blue.png'));
   const [haptic, setHaptic] = useState(true);
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   return (
     <GlobalContext.Provider
@@ -80,6 +81,7 @@ const GlobalProvider = ({ children, initTheme }) => {
         theme, setTheme,
         logo, setLogo,
         haptic, setHaptic,
+        showInfoModal, setShowInfoModal,
       }}
     >
       {children}

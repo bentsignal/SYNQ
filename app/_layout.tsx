@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
 import { useFonts } from 'expo-font';
+import { StatusBar } from "react-native";
 import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Network from 'expo-network';
@@ -89,6 +90,7 @@ const RootLayout = () => {
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
+      <StatusBar barStyle="light-content" />
       <GlobalProvider initTheme={theme}>
         <Stack>
           <Stack.Screen 

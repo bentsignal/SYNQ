@@ -97,19 +97,6 @@ const Tracking = () => {
           }}
         >
           <CustomButton
-            title={"Don't Allow"}
-            background={Colors.altButton}
-            handlePress={() => {
-              requestTrackingPermissionsAsync().then((status) => {
-                router.push('/(tabs)');
-              })
-              .catch(() => {
-                router.push('/(tabs)');
-              })
-            }}
-            buttonWidth={'100%'}
-          />
-          <CustomButton
             title={'Allow'}
             background={Colors.main}
             handlePress={() => {
@@ -122,6 +109,20 @@ const Tracking = () => {
             }}
             buttonWidth={'100%'}
           />
+          <CustomButton
+            title={"Don't Allow"}
+            background={Colors.altButton}
+            handlePress={() => {
+              requestTrackingPermissionsAsync().then((status) => {
+                router.push('/(tabs)');
+              })
+              .catch(() => {
+                router.push('/(tabs)');
+              })
+            }}
+            buttonWidth={'100%'}
+          />
+          
         </View>
       </View>
     </View>

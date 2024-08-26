@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { View, Animated, Easing } from 'react-native';
+import { View } from 'react-native';
 import SongOptions from '@/components/sheets/SongOptions';
 import { useEffect, useRef } from 'react';
 import Server from '@/components/import/wifi/Server';
@@ -10,7 +10,6 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import Purchases from 'react-native-purchases';
 import Overlay from '@/components/Overlay';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
 
 const TabLayout = () => {
 
@@ -23,11 +22,6 @@ const TabLayout = () => {
   } = useGlobalContext();
 
   useEffect(() => {
-
-    const requestTracking = async () => {
-      // const { status } = await requestTrackingPermissionsAsync();
-      return true;
-    }
 
     const checkPremium = async () => {
       try {
@@ -64,7 +58,6 @@ const TabLayout = () => {
     }
 
     loadHapticSetting();
-    requestTracking();
     checkPremium();
 
   }, []);

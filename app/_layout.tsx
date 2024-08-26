@@ -5,10 +5,8 @@ import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Network from 'expo-network';
 import GlobalProvider from "@/context/GlobalProvider";
-import Purchases from 'react-native-purchases';
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
-import Tracking from "./tracking";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -85,10 +83,10 @@ const RootLayout = () => {
 
   useEffect(() => {
     if (fontLoaded && theme !== '') {
-      router.replace('tracking')
+      router.replace('bucket');
       setTimeout(() => {
         SplashScreen.hideAsync();
-      }, 100);
+      }, 300);
     }
   }, [fontLoaded, allow, theme]);
 
@@ -104,12 +102,19 @@ const RootLayout = () => {
               animation: 'fade'
             }} 
           />
+          <Stack.Screen
+            name="bucket"
+            options={{
+              headerShown: false,
+              animation: 'fade',
+            }}
+          />
           <Stack.Screen 
             name="tracking"
             options={{
               headerShown: false,
               presentation: "fullScreenModal",
-              animation: 'none',
+              animation: 'fade',
             }}
           />
           <Stack.Screen 

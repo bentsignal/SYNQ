@@ -4,7 +4,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { useEffect, useState } from 'react';
 import PageTitle from '@/components/PageTitle';
-import Loading from '@/components/Loading';
+import { getCompletion } from '@/lib/SongManager';
 import Top from '@/components/Top';
 import FilesEmpty from '@/components/import/files/FilesEmpty';
 import SongList from '@/components/song/SongList';
@@ -30,7 +30,7 @@ const Files = () => {
 
   useEffect(() => {
     if (transferSize >= 0 && transferProgress >= 0) {
-      setCompletion((1 - ((transferProgress - 1) / transferSize)) * 100);
+      setCompletion(getCompletion(transferSize, transferProgress));
     }
   }, [transferProgress]);
 

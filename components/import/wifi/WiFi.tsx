@@ -11,6 +11,8 @@ import Top from '@/components/Top';
 import ImportInstructions from '@/components/import/wifi/ImportInstructions';
 import ImportControls from '../ImportControls';
 import InfoModal from '@/components/modals/InfoModal';
+import { getCompletion } from '@/lib/SongManager';
+import Progress from '@/components/Progress';
 
 const WiFi = () => {
 
@@ -18,6 +20,7 @@ const WiFi = () => {
 
     results, transferSize, loading,
     ip, wifiDisabled, premium,
+    transferProgress, loadAnimInProgress,
 
     setResults, setExportDisabled, setLoading,
     setShowSaveInst, setShowInfoModal,
@@ -27,6 +30,7 @@ const WiFi = () => {
   const insets = useSafeAreaInsets();
 
   const [exporting, setExporting] = useState(false);
+  const [completion, setCompletion] = useState(0);
   const [URL, setURL] = useState('');
   const PORT = 80;
 
@@ -38,6 +42,12 @@ const WiFi = () => {
     setURL(!wifiDisabled ? `${ip}` : '');
 
   }, []);
+
+  useEffect(() => {
+    if (transferSize > 0 && transferProgress >= 0) {
+      setCompletion(((transferProgress / transferSize) * 100));
+    }
+  }, [transferProgress]);
 
   const callReset = async () => {
     return await axios.get(`${URL}/reset`);
@@ -62,32 +72,17 @@ const WiFi = () => {
             paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
           }]}
         >
-          <Text style={Styles.infoText}>Failed to start server.</Text>
-          <Text style={[Styles.infoText, {marginTop: 10}]}>Try restarting the app.</Text>
+          <Text style={Styles.infoText}>Failed to start server</Text>
+          <Text style={[Styles.infoText, {
+            marginTop: 10,
+            fontWeight: 'normal',
+            }]}>
+              Try restarting the app
+              </Text>
         </View>
       );
     }
-    else if (loading) {
-      let message = <></>
-      if (exporting) {
-        message = <Text style={Styles.infoText}>Exporting your files...</Text>
-      }
-      else if (transferSize > 0) {
-        message = 
-          <Text
-            style={Styles.infoText}
-          >
-            Transferring {transferSize} file{transferSize > 1 ? 's' : ''}...
-          </Text>
-      }
-      else if (results.length == 0) {
-        message = 
-          <Text
-            style={[Styles.infoText]}
-          >
-            Waiting for transfer
-          </Text>
-      }
+    else if (loading || loadAnimInProgress) {
       return (
         <View
           style={[Styles.main, {
@@ -95,8 +90,10 @@ const WiFi = () => {
             paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
           }]}
         >
-          {message}
-          <Loading height={100} width={200}/>
+          <Progress 
+            completion={completion} 
+            showCircle={loadAnimInProgress}
+          />
         </View>
       );
     }
@@ -108,11 +105,6 @@ const WiFi = () => {
             paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
           }]}
         >
-          <Text
-            style={Styles.infoText}
-          >
-            Songs will appear here once uploaded
-          </Text>
           <Loading height={100} width={200}/>
         </View>
       );
@@ -149,7 +141,7 @@ const WiFi = () => {
       <Top />
       <PageTitle 
         title='Import Music'
-        showList={results.length > 1 && premium}
+        showList={results.length > 1 && premium && !loadAnimInProgress}
         infoHandler={() => setShowInfoModal(true)}
       />
       {getInstructions()}

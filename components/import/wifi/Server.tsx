@@ -14,11 +14,12 @@ const Server = () => {
 
   const {
 
-    homeState, results,
+    homeState, results, transferProgress,
 
     setHomeState, setResults, setTransferSize,
     setExportDisabled, setWifiDisabled, setLoading,
-    setIP, setSelectedId
+    setIP, setSelectedId, setTransferProgress,
+    setLoadAnimInProgress,
 
   } = useGlobalContext();
 
@@ -95,7 +96,11 @@ const Server = () => {
           else {
             const body = JSON.parse(request.body);
             const size = body.size ? body.size : 0;
+            if (size > 2) {
+              setLoadAnimInProgress(true);
+            }
             setTransferSize(Number(size));
+            setTransferProgress(0);
             setLoading(true);
             setExportDisabled(true);
             midTransfer.current = true;
@@ -109,6 +114,8 @@ const Server = () => {
           setLoading(false);
           setExportDisabled(false);
           setTransferSize(0);
+          setTransferProgress(0);
+          setLoadAnimInProgress(false);
           midTransfer.current = false;
           return ({
             statusCode: 200,
@@ -133,6 +140,7 @@ const Server = () => {
               });
               setResults(newResults);
               resultsRef.current = newResults;
+              setTransferProgress(newResults.length);
               setSelectedId(id);
               return {
                 statusCode: 200,

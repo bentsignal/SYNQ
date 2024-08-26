@@ -99,7 +99,7 @@ const InfoModal = () => {
             </InfoContainer>
             <InfoContainer 
               title={'How to Export'}
-              contentHeight={940}
+              contentHeight={900}
             >
               <View style={Styles.infoContentContainer}>
                 <View style={Styles.infoStepContainer}>
@@ -108,19 +108,21 @@ const InfoModal = () => {
                   </Text>
                   <Image 
                     source={require('@/assets/images/save-instructions-3.jpg')}
-                    style={{width: '100%', height: 200, marginBottom: 40}}
+                    style={{ width: '100%', height: 200 }}
                     resizeMode='contain'
                   />
+                </View>
+                <View style={Styles.infoStepContainer}>
                   <Text style={[Styles.infoStepTitle, {marginBottom: 20}]}>
                     2. Hit "Save to Files" in the popup
                   </Text>
                   <Image 
                     source={require('@/assets/images/save-instructions.jpg')}
-                    style={{width: '100%', height: 200, marginBottom: 40}}
+                    style={{ width: '100%', height: 200 }}
                     resizeMode='contain'
                   />
                 </View>
-                <View>
+                <View style={Styles.infoStepContainer}>
                   <Text style={Styles.infoStepTitle}>
                     3. Find Spotify folder and hit Save:
                   </Text>
@@ -129,10 +131,7 @@ const InfoModal = () => {
                   </Text>
                   <Image 
                     source={require('@/assets/images/save-instructions-2.jpg')}
-                    style={{
-                      width: '100%', 
-                      height: 250,
-                    }}
+                    style={{ width: '100%', height: 250 }}
                     resizeMode='contain'
                   />
                 </View>

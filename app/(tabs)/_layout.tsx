@@ -25,7 +25,8 @@ const TabLayout = () => {
   useEffect(() => {
 
     const requestTracking = async () => {
-      const { status } = await requestTrackingPermissionsAsync();
+      // const { status } = await requestTrackingPermissionsAsync();
+      return true;
     }
 
     const checkPremium = async () => {

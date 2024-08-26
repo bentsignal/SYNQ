@@ -8,7 +8,7 @@ type MainButtonProps = {
   opacity?: number;
   handlePress?: () => void;
   disabled?: boolean;
-  buttonWidth?: number;
+  buttonWidth?: any;
   textColor?: string;
   customStyles?: {};
 };

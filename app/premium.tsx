@@ -413,6 +413,7 @@ const Premium = () => {
         </View>
         <View
           style={{
+            marginTop: 10,
             flexGrow: 1,
             width: '100%',
             justifyContent: 'flex-start',

@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 import { useFonts } from 'expo-font';
-import { StatusBar } from "react-native";
+import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Network from 'expo-network';
@@ -8,6 +8,7 @@ import GlobalProvider from "@/context/GlobalProvider";
 import Purchases from 'react-native-purchases';
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
+import Tracking from "./tracking";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
@@ -84,21 +85,32 @@ const RootLayout = () => {
 
   useEffect(() => {
     if (fontLoaded && theme !== '') {
-      SplashScreen.hideAsync();
+      router.replace('tracking')
+      setTimeout(() => {
+        SplashScreen.hideAsync();
+      }, 100);
     }
   }, [fontLoaded, allow, theme]);
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar style="light" />
       <GlobalProvider initTheme={theme}>
         <Stack>
           <Stack.Screen 
             name="(tabs)" 
             options={{ 
-              headerShown: false, 
-              animation: 'none' 
+              headerShown: false,
+              animation: 'fade'
             }} 
+          />
+          <Stack.Screen 
+            name="tracking"
+            options={{
+              headerShown: false,
+              presentation: "fullScreenModal",
+              animation: 'none',
+            }}
           />
           <Stack.Screen 
             name="settings"

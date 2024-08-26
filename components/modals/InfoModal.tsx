@@ -99,7 +99,7 @@ const InfoModal = () => {
             </InfoContainer>
             <InfoContainer 
               title={'How to Export'}
-              contentHeight={900}
+              contentHeight={940}
             >
               <View style={Styles.infoContentContainer}>
                 <View style={Styles.infoStepContainer}>
@@ -132,10 +132,37 @@ const InfoModal = () => {
                     style={{
                       width: '100%', 
                       height: 250,
-                      marginBottom: 40
                     }}
                     resizeMode='contain'
                   />
+                </View>
+              </View>
+            </InfoContainer>
+            <InfoContainer
+              title={"Network Transfer"}
+              contentHeight={400}
+            >
+              <View style={Styles.infoContentContainer}>
+                <View style={Styles.infoStepContainer}>
+                  <Text style={Styles.infoStepTitle}>
+                    How does it work?
+                  </Text>
+                  <Text style={Styles.infoStepDescription}>
+                    When you go to the Network Transfer tab, a small web server is started
+                    on your device, running inside this app. The server is only accessible 
+                    from other devices on your Wifi network, and cannot be accessed from elsewhere 
+                    without additional setup.
+                  </Text>
+                  <Text style={Styles.infoStepDescription}>
+                    To access this web server, go to a web browser on your computer, or any other
+                    device on your network. In the address bar, type in the IP address shown on 
+                    the Network Transfer page, and the server running on your phone will return 
+                    the web page to the web browser. 
+                  </Text>
+                  <Text style={Styles.infoStepDescription}>
+                    From there, you can upload files from your web browser, straight into the app.
+                    The server will send the files over your local network, never using the internet. 
+                  </Text>
                 </View>
               </View>
             </InfoContainer>

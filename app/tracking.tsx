@@ -5,7 +5,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { router } from 'expo-router';
 import CustomButton from '@/components/CustomButton';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
+import { requestTrackingPermissionsAsync, getTrackingPermissionsAsync } from 'expo-tracking-transparency';
 
 const Tracking = () => {
 
@@ -13,6 +13,23 @@ const Tracking = () => {
 
   const learn = () => {
     Linking.openURL('https://directedbyshawn.com/synq-privacy-policy');
+  }
+
+  const handleRequest = async () => {
+    try {
+      const status = await getTrackingPermissionsAsync();
+      if (status) {
+        await requestTrackingPermissionsAsync();
+        router.replace('/(tabs)');
+      }
+      else {
+        await requestTrackingPermissionsAsync();
+        router.replace('/(tabs)');
+      }
+    }
+    catch {
+      router.replace("/(tabs)");
+    }
   }
   
   return (
@@ -67,7 +84,8 @@ const Tracking = () => {
             marginBottom: 10,
           }}
         >
-          Allow <Text style={{color: Colors.main}}>SYNQ</Text> to use your app and website activity?
+          Allow <Text style={{color: Colors.main}}>SYNQ</Text> to 
+          use your app and website activity?
         </Text>
         <Text 
           style={[Styles.infoStepDescription, {
@@ -83,8 +101,8 @@ const Tracking = () => {
             width: '100%'
           }]}
         >
-          <Text style={{color: Colors.main}} onPress={learn}>Learn more</Text> about how we limit our use of
-          your activity if you choose to decline this device setting. 
+          <Text style={{color: Colors.main}} onPress={learn}>Learn more</Text> about how
+           we limit our use of your activity if you choose to decline this setting. 
         </Text>
         <View
           style={{
@@ -99,27 +117,13 @@ const Tracking = () => {
           <CustomButton
             title={'Allow'}
             background={Colors.main}
-            handlePress={() => {
-              requestTrackingPermissionsAsync().then((status) => {
-                router.push('/(tabs)');
-              })
-              .catch(() => {
-                router.push('/(tabs)');
-              });
-            }}
+            handlePress={handleRequest}
             buttonWidth={'100%'}
           />
           <CustomButton
             title={"Don't Allow"}
             background={Colors.altButton}
-            handlePress={() => {
-              requestTrackingPermissionsAsync().then((status) => {
-                router.push('/(tabs)');
-              })
-              .catch(() => {
-                router.push('/(tabs)');
-              })
-            }}
+            handlePress={handleRequest}
             buttonWidth={'100%'}
           />
           

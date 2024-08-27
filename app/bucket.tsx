@@ -2,13 +2,40 @@ import { View, Image } from "react-native";
 import { useEffect } from 'react';
 import { Colors } from "@/constants/Colors";
 import { router } from "expo-router";
+import { getTrackingPermissionsAsync } from "expo-tracking-transparency";
 
 const Bucket = () => {
 
   useEffect(() => {
-    setTimeout(() => {
-      router.push('/(tabs)');
-    }, 300);
+
+    const checkTrackingRequested = async () => {
+      try {
+        const { status } = await getTrackingPermissionsAsync();
+        return status
+      }
+      catch {
+        return 'undetermined';
+      }
+    }
+
+    checkTrackingRequested().then((status) => {
+      if (status === 'undetermined') {
+        setTimeout(() => {
+          router.push('/tracking');
+        }, 300);
+      }
+      else {
+        setTimeout(() => {
+          router.push('/(tabs)');
+        }, 300);
+      }
+    })
+    .catch((error) => {
+      setTimeout(() => {
+        router.push('/(tabs)');
+      }, 300);
+    });
+
   }, []);
 
   return (

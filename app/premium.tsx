@@ -154,10 +154,10 @@ const Premium = () => {
       }
       // check to see if intro offer is available
       else if (Object.keys(all).length === 0) {
-        setSelected(0);
+        setSelected(1);
         setMonthlyText("Start 1 month free trial");
         setYearlyText("Start 3 month free trial");
-        setPurchaseText("Start 1 month free trial");
+        setPurchaseText("Start 3 month free trial");
       }
       return true;
     }

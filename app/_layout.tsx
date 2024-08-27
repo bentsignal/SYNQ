@@ -16,6 +16,8 @@ const RootLayout = () => {
     JakartaSans: require('../assets/fonts/PlusJakartaSans-VariableFont_wght.ttf')
   });
 
+  const [startup, setStartup] = useState(true);
+
   const loadTheme = async () => {
     try {
       const theme = await AsyncStorage.getItem('theme');
@@ -83,7 +85,10 @@ const RootLayout = () => {
 
   useEffect(() => {
     if (fontLoaded && theme !== '') {
-      router.replace('bucket');
+      if (startup) {
+        setStartup(false);
+        router.push('bucket');
+      }
       setTimeout(() => {
         SplashScreen.hideAsync();
       }, 300);

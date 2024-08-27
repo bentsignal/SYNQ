@@ -89,9 +89,10 @@ const RootLayout = () => {
         setStartup(false);
         router.push('bucket');
       }
+      // SplashScreen.hideAsync();
       setTimeout(() => {
         SplashScreen.hideAsync();
-      }, 300);
+      }, 500);
     }
   }, [fontLoaded, allow, theme]);
 
@@ -111,6 +112,7 @@ const RootLayout = () => {
             name="bucket"
             options={{
               headerShown: false,
+              // presentation: "fullScreenModal",
               animation: 'fade',
             }}
           />
@@ -118,7 +120,7 @@ const RootLayout = () => {
             name="tracking"
             options={{
               headerShown: false,
-              presentation: "fullScreenModal",
+              // presentation: "fullScreenModal",
               animation: 'fade',
             }}
           />

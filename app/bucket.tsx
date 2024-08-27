@@ -20,20 +20,23 @@ const Bucket = () => {
 
     checkTrackingRequested().then((status) => {
       if (status === 'undetermined') {
-        setTimeout(() => {
-          router.push('/tracking');
-        }, 300);
+        router.push('/tracking');
+        // setTimeout(() => {
+        //   router.push('/tracking');
+        // }, 300);
       }
       else {
-        setTimeout(() => {
-          router.push('/(tabs)');
-        }, 300);
+        router.push('/(tabs)');
+        // setTimeout(() => {
+        //   router.push('/(tabs)');
+        // }, 300);
       }
     })
     .catch((error) => {
-      setTimeout(() => {
-        router.push('/(tabs)');
-      }, 300);
+      router.push('/(tabs)');
+      // setTimeout(() => {
+      //   router.push('/(tabs)');
+      // }, 300);
     });
 
   }, []);

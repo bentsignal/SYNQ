@@ -89,7 +89,6 @@ const RootLayout = () => {
         setStartup(false);
         router.push('bucket');
       }
-      // SplashScreen.hideAsync();
       setTimeout(() => {
         SplashScreen.hideAsync();
       }, 500);

@@ -11,6 +11,7 @@ import WiFi from "@/components/import/wifi/WiFi";
 import Files from "@/components/import/files/Files";
 import { Success, Failure } from "@/components/Outcome";
 import InfoModal from "@/components/modals/InfoModal";
+import Notifications from "@/components/notifications/Notifications";
 
 const getShowWelcome = async () => {
   return await AsyncStorage.getItem('showWelcome')
@@ -95,6 +96,12 @@ const Home = () => {
             handlePress={() => {setHomeState(3)}}
           /> */}
         </ScrollView>
+        <Notifications 
+          customStyles={{
+            position: 'absolute',
+            bottom: 0,
+          }}
+        />
       </View>
     );
   }

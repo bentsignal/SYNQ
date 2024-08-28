@@ -1,10 +1,9 @@
 import { View, Text, } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Styles } from "@/constants/Styles";
-import { router } from "expo-router";
 import PageTitle from '@/components/PageTitle';
-import Option from "@/components/Option";
 import Top from "@/components/Top";
+import Notifications from "@/components/notifications/Notifications";
 
 const Library = () => {
   const insets = useSafeAreaInsets();
@@ -28,6 +27,12 @@ const Library = () => {
           Coming soon
         </Text>
       </View>
+      <Notifications  
+        customStyles={{
+          position: 'absolute',
+          bottom: 0,
+        }}
+      />
     </View>
   );
 }

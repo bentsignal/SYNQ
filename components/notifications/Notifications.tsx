@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native';
 import { useEffect, useState } from 'react';
 import Notification from './Notification';
+import { NotificationType } from '@/constants/Types';
 
 type NotificationsProps = {
   customStyles?: {};
@@ -13,21 +14,36 @@ const Notifications = ({ customStyles }: NotificationsProps) => {
   useEffect(() => {
     setTimeout(() => {
       setShow(true);
-    }, 500);
+    }, 5000);
   }, [])
 
   return (
     <View
       style={[customStyles, {
         width: '100%',
-        height: 50,
-        backgroundColor: 'red',
+        justifyContent: 'flex-end',
         zIndex: 10
       }]}
     >
-      <Notification 
+      <Notification
+        title={'Upload Success'}
+        brief={'3 files uploaded'}
         message="test"
-        show={show}
+        type={NotificationType.GENERAL}
+        onDismiss={() => console.log('dismissed')}
+      />
+      <Notification
+        title={'Save Failure'}
+        brief={'couuldnt save fart.mp3'}
+        message="test"
+        type={NotificationType.ERROR}
+        onDismiss={() => console.log('dismissed')}
+      />
+      <Notification 
+        title={'Export Failure'}
+        brief={'couuldnt export fart.mp3'}
+        message="testdfkljasdlkfjas;lkdjf;l ksjdfl;kajsdlfkjas;dlfkj"
+        type={NotificationType.ERROR}
         onDismiss={() => console.log('dismissed')}
       />
     </View>

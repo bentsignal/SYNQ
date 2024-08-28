@@ -19,3 +19,8 @@ export type SongType = {
 export type InstructionsModalProps = {
   dontShowOption?: boolean;
 };
+
+export enum NotificationType {
+  GENERAL = 1,
+  ERROR = 2,
+}

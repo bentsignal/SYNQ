@@ -1,28 +1,58 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Animated, PanResponder, StyleSheet, Easing } from 'react-native';
+import { View, Text, Animated, PanResponder, 
+  StyleSheet, Easing, TouchableOpacity } from 'react-native';
+import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
+import { Colors } from '@/constants/Colors';
+import { NotificationType } from '@/constants/Types';
 
 type NotificationProps = {
+  title?: string;
+  brief: string;
   message: string;
-  show: boolean;
+  type: NotificationType;
   onDismiss: () => void;
 }
 
-const Notification = ({ message, show, onDismiss }: NotificationProps) => {
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+
+const Notification = ({ title, message, type, onDismiss }: NotificationProps) => {
+
   const translateX = useRef(new Animated.Value(0)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(1)).current;
   const [visible, setVisible] = useState(true);
+  const showFor = 5000000;
+
+  const {
+
+    theme,
+
+    setShowOverlay, setNotificationType,
+    setNotificationMessage, setNotificationTitle,
+    setShowNotificationModal,
+
+  } = useGlobalContext();
 
   useEffect(() => {
-    if (show) {
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-        easing: Easing.in(Easing.ease)
-      }).start();
-    }
-  }, [show]);
+    Animated.timing(translateX, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+      easing: Easing.in(Easing.ease)
+    }).start(() => {
+      setTimeout(() => {
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+          easing: Easing.out(Easing.ease)
+        }).start(() => {
+          setVisible(false);
+          onDismiss();
+        });
+      }, showFor);
+    });
+  }, []);
 
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
@@ -58,27 +88,64 @@ const Notification = ({ message, show, onDismiss }: NotificationProps) => {
       {...panResponder.panHandlers}
       style={[BannerStyles.body, Styles.roundedContainer, { 
         opacity: opacity,
+        backgroundColor: type === NotificationType.GENERAL ? theme : Colors.error,
         transform: [{ translateX }] 
       }]}
     >
-      <Text style={BannerStyles.text}>{message}</Text>
+      <TouchableOpacity
+        style={{
+          flexDirection: 'row',
+        }}
+        activeOpacity={0.7}
+        onPress={() => {
+          setNotificationMessage(message);
+          setNotificationTitle(title);
+          setNotificationType(type);
+          setShowNotificationModal(true);
+          setShowOverlay(true);
+          setVisible(false);
+          onDismiss();
+        }}
+      >
+        <Text 
+          style={[BannerStyles.title, {
+            display: title ? 'flex' : 'none'
+          }]}
+        >
+          {title} ▸
+        </Text>
+        <Text 
+          style={[BannerStyles.brief, {
+            paddingRight: 10,
+          }]}
+          numberOfLines={1}
+        >
+          {message}
+        </Text>
+      </TouchableOpacity>
     </Animated.View>
   );
 
 };
 
-export default Notification;
-
 const BannerStyles = StyleSheet.create({
   body: {
-    left: 0,
-    right: 0,
-    backgroundColor: '#333',
     padding: 15,
     marginHorizontal: 10,
+    marginBottom: 10,
+    zIndex: 11,
   },
-  text: {
-    color: '#fff',
+  brief: {
+    color: 'black',
     fontSize: 16,
+    width: '60%',
   },
+  title: {
+    color: 'black',
+    fontSize: 16,
+    fontWeight: 'bold',
+    paddingRight: 10,
+  }
 });
+
+export default Notification;

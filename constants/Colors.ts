@@ -24,6 +24,7 @@ export const Colors = {
   tabInactive: '#9B9B9B',
   tabActive: '#ffffff',
   bone: '#2e2c2c',
+  error: '#FA5858',
 };
 
 

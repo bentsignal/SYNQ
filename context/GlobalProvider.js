@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { Colors } from '@/constants/Colors';
 import { getLogo } from '@/constants/Logos';
+import { NotificationType } from '@/constants/Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GlobalContext = createContext();
@@ -47,6 +48,10 @@ const GlobalProvider = ({ children, initTheme }) => {
   const [logo, setLogo] = useState(require('@/assets/logo/logo-blue.png'));
   const [haptic, setHaptic] = useState(true);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [notificationType, setNotificationType] = useState(NotificationType.GENERAL);
+  const [notificationTitle, setNotificationTitle] = useState('');
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
 
   return (
     <GlobalContext.Provider
@@ -82,6 +87,10 @@ const GlobalProvider = ({ children, initTheme }) => {
         logo, setLogo,
         haptic, setHaptic,
         showInfoModal, setShowInfoModal,
+        notificationType, setNotificationType,
+        notificationTitle, setNotificationTitle,
+        notificationMessage, setNotificationMessage,
+        showNotificationModal, setShowNotificationModal,
       }}
     >
       {children}

@@ -394,7 +394,7 @@ const Premium = () => {
           }}
         >
           <Image 
-            source={require('@/assets/images/premium-bg-2-downscaled.jpg')}
+            source={require('@/assets/images/premium-bg-downscaled.jpg')}
             style={{
               height: '100%',
               width: '100%'

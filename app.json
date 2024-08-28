@@ -2,7 +2,7 @@
   "expo": {
     "name": "synq",
     "slug": "synq",
-    "version": "1.2.6",
+    "version": "1.2.7",
     "orientation": "portrait",
     "icon": "./assets/appIcons/icon-blue.png",
     "scheme": "synq",

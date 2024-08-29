@@ -7,16 +7,17 @@ import { Colors } from '@/constants/Colors';
 import { NotificationType } from '@/constants/Types';
 
 type NotificationProps = {
-  title?: string;
+  title: string;
   brief: string;
   message: string;
+  trace?: string;
   type: NotificationType;
   onDismiss: () => void;
 }
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
-const Notification = ({ title, message, type, onDismiss }: NotificationProps) => {
+const Notification = ({ title, message, trace, type, onDismiss }: NotificationProps) => {
 
   const translateX = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(1)).current;
@@ -29,7 +30,7 @@ const Notification = ({ title, message, type, onDismiss }: NotificationProps) =>
 
     setShowOverlay, setNotificationType,
     setNotificationMessage, setNotificationTitle,
-    setShowNotificationModal,
+    setShowNotificationModal, setNotificationTrace,
 
   } = useGlobalContext();
 
@@ -86,7 +87,7 @@ const Notification = ({ title, message, type, onDismiss }: NotificationProps) =>
   return (
     <Animated.View
       {...panResponder.panHandlers}
-      style={[BannerStyles.body, Styles.roundedContainer, { 
+      style={[BannerStyles.body, Styles.roundedContainer, Styles.backgroundBlendShadow, { 
         opacity: opacity,
         backgroundColor: type === NotificationType.GENERAL ? theme : Colors.error,
         transform: [{ translateX }] 
@@ -101,6 +102,7 @@ const Notification = ({ title, message, type, onDismiss }: NotificationProps) =>
           setNotificationMessage(message);
           setNotificationTitle(title);
           setNotificationType(type);
+          setNotificationTrace(trace ? trace : '');
           setShowNotificationModal(true);
           setShowOverlay(true);
           setVisible(false);

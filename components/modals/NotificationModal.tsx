@@ -14,12 +14,13 @@ const NotificationModal = () => {
       
       showNotificationModal, theme,
       notificationType, notificationMessage,
-      notificationTitle,
+      notificationTitle, notificationTrace,
       
       setShowNotificationModal, setShowOverlay,
     
   } = useGlobalContext();
-  
+
+  console.log(notificationTrace);
 
   return (
     <CustomModal
@@ -46,7 +47,7 @@ const NotificationModal = () => {
               width: '95%',
               justifyContent: 'flex-start',
               alignItems: 'center',
-              marginTop: 20,
+              marginTop: 30,
               marginBottom: 50
             }}
           >
@@ -54,11 +55,27 @@ const NotificationModal = () => {
               style={{
                 color: Colors.text,
                 fontSize: 18,
-                textAlign: 'center'
+                textAlign: 'center',
+                marginBottom: 30,
               }}
             >
               {notificationMessage}
             </Text>
+            {
+
+              notificationTrace !== null && notificationTrace.length > 0 ? 
+
+              <InfoContainer
+                title={'More Info'}
+                contentHeight={1000}
+              >
+                <Text style={Styles.infoStepDescription}>{notificationTrace}</Text>
+              </InfoContainer>
+
+              : null
+
+            }
+            
           </View>
         </VerticalScrollView>
         <CustomButton 

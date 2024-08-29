@@ -36,13 +36,15 @@ const Notifications = ({ customStyles }: NotificationsProps) => {
         title={'Save Failure'}
         brief={'couuldnt save fart.mp3'}
         message="test"
+        trace="Type Error: Cannot read property 'length' of undefined"
         type={NotificationType.ERROR}
         onDismiss={() => console.log('dismissed')}
       />
       <Notification 
         title={'Export Failure'}
-        brief={'couuldnt export fart.mp3'}
-        message="testdfkljasdlkfjas;lkdjf;l ksjdfl;kajsdlfkjas;dlfkj"
+        brief={'couldnt export fart.mp3'}
+        message="Error occured when exporting fart.mp3"
+        trace="Type Error: Cannot read property 'length' of undefined"
         type={NotificationType.ERROR}
         onDismiss={() => console.log('dismissed')}
       />

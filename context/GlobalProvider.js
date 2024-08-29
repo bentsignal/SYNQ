@@ -52,6 +52,7 @@ const GlobalProvider = ({ children, initTheme }) => {
   const [notificationTitle, setNotificationTitle] = useState('');
   const [notificationMessage, setNotificationMessage] = useState('');
   const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [notificationTrace, setNotificationTrace] = useState('');
 
   return (
     <GlobalContext.Provider
@@ -91,6 +92,7 @@ const GlobalProvider = ({ children, initTheme }) => {
         notificationTitle, setNotificationTitle,
         notificationMessage, setNotificationMessage,
         showNotificationModal, setShowNotificationModal,
+        notificationTrace, setNotificationTrace,
       }}
     >
       {children}

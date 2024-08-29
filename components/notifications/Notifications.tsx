@@ -10,11 +10,7 @@ type NotificationsProps = {
 
 const Notifications = ({ customStyles }: NotificationsProps) => {
 
-  const {
-
-    notifications, setNotifications
-
-  } = useGlobalContext();
+  const { notifications } = useGlobalContext();
 
   const [show, setShow] = useState(false);
 
@@ -41,9 +37,7 @@ const Notifications = ({ customStyles }: NotificationsProps) => {
           message={notification.message}
           trace={notification.trace}
           type={notification.type}
-          onDismiss={() => {
-            console.log('dismissed');
-          }}
+          onDismiss={() => {}}
         />
       ))}
     </View>

@@ -20,8 +20,6 @@ const NotificationModal = () => {
     
   } = useGlobalContext();
 
-  console.log(notificationTrace);
-
   return (
     <CustomModal
       show={showNotificationModal}

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Animated, PanResponder, 
   StyleSheet, Easing, TouchableOpacity } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
@@ -21,13 +22,13 @@ const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 const Notification = ({ id, title, message, trace, type, onDismiss }: NotificationProps) => {
 
-  const translateX = useRef(new Animated.Value(0)).current;
+  const translateX = useRef(new Animated.Value(600)).current;
   const opacity = useRef(new Animated.Value(1)).current;
   const [visible, setVisible] = useState(true);
 
   const {
 
-    theme,
+    theme, haptic,
 
     setShowOverlay, setNotificationType,
     setNotificationMessage, setNotificationTitle,
@@ -37,26 +38,40 @@ const Notification = ({ id, title, message, trace, type, onDismiss }: Notificati
   } = useGlobalContext();
 
   useEffect(() => {
+    if (haptic) {
+      if (type === NotificationType.ERROR) {
+        Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Error
+        );
+      }
+      else {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    }
     Animated.timing(translateX, {
       toValue: 0,
-      duration: 300,
+      duration: 500,
       useNativeDriver: true,
-      easing: Easing.in(Easing.ease)
+      easing: Easing.out(Easing.ease)
     }).start(() => {
       setTimeout(() => {
-        Animated.timing(opacity, {
-          toValue: 0,
-          duration: 1000,
-          useNativeDriver: true,
-          easing: Easing.out(Easing.ease)
-        }).start(() => {
-          removeNotification(id);
-          setVisible(false);
-          onDismiss();
-        });
+        hideBanner();
       }, CFG.notificationDuration);
     });
   }, []);
+
+  const hideBanner = () => {
+    Animated.timing(opacity, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+      easing: Easing.out(Easing.ease)
+    }).start(() => {
+      removeNotification(id);
+      setVisible(false);
+      onDismiss();
+    });
+  }
 
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
@@ -108,8 +123,7 @@ const Notification = ({ id, title, message, trace, type, onDismiss }: Notificati
           setNotificationTrace(trace);
           setShowNotificationModal(true);
           setShowOverlay(true);
-          setVisible(false);
-          onDismiss();
+          hideBanner();
         }}
       >
         <Text 

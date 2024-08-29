@@ -1,5 +1,5 @@
 const CFG = {
-  notificationDuration: 500000,
+  notificationDuration: 5000,
 }
 
 export default CFG;

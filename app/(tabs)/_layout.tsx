@@ -9,6 +9,7 @@ import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import Purchases from 'react-native-purchases';
 import Overlay from '@/components/Overlay';
+import NotificationModal from '@/components/modals/NotificationModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TabLayout = () => {
@@ -74,6 +75,7 @@ const TabLayout = () => {
       >
         <SongOptions />
       </View>
+      <NotificationModal />
       <Overlay />
       <Server />
       <Tabs

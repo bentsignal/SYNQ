@@ -115,9 +115,7 @@ const Notification = ({ title, message, type, onDismiss }: NotificationProps) =>
           {title} ▸
         </Text>
         <Text 
-          style={[BannerStyles.brief, {
-            paddingRight: 10,
-          }]}
+          style={[BannerStyles.brief, ]}
           numberOfLines={1}
         >
           {message}
@@ -144,7 +142,7 @@ const BannerStyles = StyleSheet.create({
     color: 'black',
     fontSize: 16,
     fontWeight: 'bold',
-    paddingRight: 10,
+    paddingRight: 5,
   }
 });
 

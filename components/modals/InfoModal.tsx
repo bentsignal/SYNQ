@@ -18,10 +18,6 @@ const InfoModal = () => {
   
   } = useGlobalContext();
 
-  const textComponents = Array.from({ length: 20 }, (_, index) => (
-    <Text style={{color: 'white'}} key={index}>Text {index + 1}</Text>
-  ));
-
   return (
     <CustomModal
       show={showInfoModal}

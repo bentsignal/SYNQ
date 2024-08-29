@@ -3,10 +3,18 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Styles } from "@/constants/Styles";
 import PageTitle from '@/components/PageTitle';
 import Top from "@/components/Top";
+import CustomButton from "@/components/CustomButton";
+import { Colors } from "@/constants/Colors";
 import Notifications from "@/components/notifications/Notifications";
+import { NotificationType } from "@/constants/Types";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 const Library = () => {
+
   const insets = useSafeAreaInsets();
+
+  const { addNotification } = useGlobalContext();
+
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>
       <Top />
@@ -26,6 +34,13 @@ const Library = () => {
         >
           Coming soon
         </Text>
+        <CustomButton 
+          title={'Send Notification'}
+          handlePress={() => {
+            addNotification(NotificationType.GENERAL, 'Test', 'This is a test notification', 'Test trace');
+          }}
+          background={Colors.main}
+        />
       </View>
       <Notifications  
         customStyles={{

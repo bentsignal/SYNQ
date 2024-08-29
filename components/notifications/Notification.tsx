@@ -5,24 +5,25 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import { NotificationType } from '@/constants/Types';
+import CFG from '@/constants/Config';
 
 type NotificationProps = {
+  id: string;
   title: string;
   brief: string;
   message: string;
-  trace?: string;
+  trace: string;
   type: NotificationType;
   onDismiss: () => void;
 }
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
-const Notification = ({ title, message, trace, type, onDismiss }: NotificationProps) => {
+const Notification = ({ id, title, message, trace, type, onDismiss }: NotificationProps) => {
 
   const translateX = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(1)).current;
   const [visible, setVisible] = useState(true);
-  const showFor = 5000000;
 
   const {
 
@@ -31,6 +32,7 @@ const Notification = ({ title, message, trace, type, onDismiss }: NotificationPr
     setShowOverlay, setNotificationType,
     setNotificationMessage, setNotificationTitle,
     setShowNotificationModal, setNotificationTrace,
+    notifications, removeNotification
 
   } = useGlobalContext();
 
@@ -48,10 +50,11 @@ const Notification = ({ title, message, trace, type, onDismiss }: NotificationPr
           useNativeDriver: true,
           easing: Easing.out(Easing.ease)
         }).start(() => {
+          removeNotification(id);
           setVisible(false);
           onDismiss();
         });
-      }, showFor);
+      }, CFG.notificationDuration);
     });
   }, []);
 
@@ -102,7 +105,7 @@ const Notification = ({ title, message, trace, type, onDismiss }: NotificationPr
           setNotificationMessage(message);
           setNotificationTitle(title);
           setNotificationType(type);
-          setNotificationTrace(trace ? trace : '');
+          setNotificationTrace(trace);
           setShowNotificationModal(true);
           setShowOverlay(true);
           setVisible(false);

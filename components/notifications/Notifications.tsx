@@ -2,12 +2,19 @@ import { View, Text } from 'react-native';
 import { useEffect, useState } from 'react';
 import Notification from './Notification';
 import { NotificationType } from '@/constants/Types';
+import { useGlobalContext } from '@/context/GlobalProvider';
 
 type NotificationsProps = {
   customStyles?: {};
 }
 
 const Notifications = ({ customStyles }: NotificationsProps) => {
+
+  const {
+
+    notifications, setNotifications
+
+  } = useGlobalContext();
 
   const [show, setShow] = useState(false);
 
@@ -25,29 +32,20 @@ const Notifications = ({ customStyles }: NotificationsProps) => {
         zIndex: 10
       }]}
     >
-      <Notification
-        title={'Upload Success'}
-        brief={'3 files uploaded'}
-        message="test"
-        type={NotificationType.GENERAL}
-        onDismiss={() => console.log('dismissed')}
-      />
-      <Notification
-        title={'Save Failure'}
-        brief={'couuldnt save fart.mp3'}
-        message="test"
-        trace="Type Error: Cannot read property 'length' of undefined"
-        type={NotificationType.ERROR}
-        onDismiss={() => console.log('dismissed')}
-      />
-      <Notification 
-        title={'Export Failure'}
-        brief={'couldnt export fart.mp3'}
-        message="Error occured when exporting fart.mp3"
-        trace="Type Error: Cannot read property 'length' of undefined"
-        type={NotificationType.ERROR}
-        onDismiss={() => console.log('dismissed')}
-      />
+      {notifications.map((notification: any) => (
+        <Notification
+          key={notification.id}
+          id={notification.id}
+          title={notification.title}
+          brief={notification.brief}
+          message={notification.message}
+          trace={notification.trace}
+          type={notification.type}
+          onDismiss={() => {
+            console.log('dismissed');
+          }}
+        />
+      ))}
     </View>
   );
 }

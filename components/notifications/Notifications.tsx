@@ -12,19 +12,12 @@ const Notifications = ({ customStyles }: NotificationsProps) => {
 
   const { notifications } = useGlobalContext();
 
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setShow(true);
-    }, 5000);
-  }, [])
-
   return (
     <View
       style={[customStyles, {
         width: '100%',
         justifyContent: 'flex-end',
+        alignItems: 'center',
         zIndex: 10
       }]}
     >
@@ -32,12 +25,12 @@ const Notifications = ({ customStyles }: NotificationsProps) => {
         <Notification
           key={notification.id}
           id={notification.id}
+          type={notification.type}
           title={notification.title}
           brief={notification.brief}
           message={notification.message}
           trace={notification.trace}
-          type={notification.type}
-          onDismiss={() => {}}
+          onClick={notification.onClick}
         />
       ))}
     </View>

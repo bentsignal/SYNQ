@@ -34,13 +34,6 @@ const Library = () => {
         >
           Coming soon
         </Text>
-        <CustomButton 
-          title={'Send Notification'}
-          handlePress={() => {
-            addNotification(NotificationType.GENERAL, 'Test', 'This is a test notification', 'Test trace');
-          }}
-          background={Colors.main}
-        />
       </View>
       <Notifications  
         customStyles={{

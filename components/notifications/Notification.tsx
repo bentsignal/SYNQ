@@ -10,17 +10,17 @@ import CFG from '@/constants/Config';
 
 type NotificationProps = {
   id: string;
+  type: NotificationType;
   title: string;
   brief: string;
   message: string;
   trace: string;
-  type: NotificationType;
-  onDismiss: () => void;
+  onClick: () => void;
 }
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
-const Notification = ({ id, title, message, trace, type, onDismiss }: NotificationProps) => {
+const Notification = ({ id, type, title, brief, message, trace, onClick, }: NotificationProps) => {
 
   const translateX = useRef(new Animated.Value(600)).current;
   const opacity = useRef(new Animated.Value(1)).current;
@@ -69,7 +69,6 @@ const Notification = ({ id, title, message, trace, type, onDismiss }: Notificati
     }).start(() => {
       removeNotification(id);
       setVisible(false);
-      onDismiss();
     });
   }
 
@@ -88,7 +87,6 @@ const Notification = ({ id, title, message, trace, type, onDismiss }: Notificati
           useNativeDriver: true,
         }).start(() => {
           setVisible(false);
-          onDismiss();
         });
       } else {
         // Snap back if the swipe isn't strong enough
@@ -114,6 +112,7 @@ const Notification = ({ id, title, message, trace, type, onDismiss }: Notificati
       <TouchableOpacity
         style={{
           flexDirection: 'row',
+          width: '100%',
         }}
         activeOpacity={0.7}
         onPress={() => {
@@ -121,8 +120,7 @@ const Notification = ({ id, title, message, trace, type, onDismiss }: Notificati
           setNotificationTitle(title);
           setNotificationType(type);
           setNotificationTrace(trace);
-          setShowNotificationModal(true);
-          setShowOverlay(true);
+          onClick();
           hideBanner();
         }}
       >
@@ -137,7 +135,7 @@ const Notification = ({ id, title, message, trace, type, onDismiss }: Notificati
           style={[BannerStyles.brief, ]}
           numberOfLines={1}
         >
-          {message}
+          {brief}
         </Text>
       </TouchableOpacity>
     </Animated.View>
@@ -151,11 +149,13 @@ const BannerStyles = StyleSheet.create({
     marginHorizontal: 10,
     marginBottom: 10,
     zIndex: 11,
+    width: '95%',
+    overflow: 'hidden',
   },
   brief: {
     color: 'black',
     fontSize: 16,
-    width: '60%',
+    flex: 1,
   },
   title: {
     color: 'black',

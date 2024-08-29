@@ -7,11 +7,14 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { LinearGradient } from 'expo-linear-gradient';
 import Bar from '@/components/modals/Bar';
 import CustomButton from '@/components/CustomButton';
+import { NotificationType } from '@/constants/Types';
+import Notifications from '@/components/notifications/Notifications';
 // import * as IAP from 'react-native-iap';
 import PremiumOption from '@/components/PremiumOption';
 import Purchases from 'react-native-purchases';
 import Loading from '@/components/Loading';
 import { darkenColor } from '@/lib/Color';
+import { errorHasMessage } from '@/lib/Errors';
 
 const Premium = () => {
 
@@ -20,7 +23,10 @@ const Premium = () => {
     premium, errorMessage, theme,
     logo, 
     
+    addNotification,
+    
     setPremium, setErrorMessage, 
+    setShowOverlay, setShowNotificationModal,
   
   } = useGlobalContext();
   
@@ -32,10 +38,33 @@ const Premium = () => {
   const [purchaseText, setPurchaseText] = useState('Purchase');
   const [monthlyText, setMonthlyText] = useState('Purchase');
   const [yearlyText, setYearlyText] = useState('Purchase');
-  const [monthlyCost, setMonthlyCost] = useState('$0.99');
-  const [yearlyCost, setYearlyCost] = useState('$2.99');
-  const [lifetimeCost, setLifetimeCost] = useState('$9.99');
+  const [monthlyCost, setMonthlyCost] = useState('$∞');
+  const [yearlyCost, setYearlyCost] = useState('$∞');
+  const [lifetimeCost, setLifetimeCost] = useState('$∞');
   const [error, setError] = useState(false);
+
+  const sendErrorNotification = (
+    title: string,
+    message: string, 
+    brief: string, 
+    trace: string
+  ) => {
+    addNotification(
+      NotificationType.ERROR,
+      'Premium Error',
+      brief,
+      message,
+      trace,
+      () => {
+        router.back();
+        router.back();
+        setTimeout(() => {
+          setShowOverlay(true);
+          setShowNotificationModal(true);
+        }, 100);
+      }
+    );
+  }
 
   useEffect(() => {
 
@@ -47,6 +76,13 @@ const Premium = () => {
         setLoading(false);
       }
       catch (error) {
+        const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+        sendErrorNotification(
+          'Premium Error',
+          'We ran into an issue trying to load premium options, please try again later', 
+          'Unable to load options', 
+          trace
+        );
         setError(true);
         setErrorMessage('1: ' + error);
         setLoading(false);
@@ -70,6 +106,13 @@ const Premium = () => {
       return true;
     }
     catch (error) {
+      const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+        sendErrorNotification(
+          'Connection Error',
+          'We ran into an issue connecting to our financial services, so we are unable to load premium info at the moment. Please try again later', 
+          'Unable to connect', 
+          trace
+        );
       setError(true);
       setErrorMessage('2: ' + error);
       return false;
@@ -93,7 +136,13 @@ const Premium = () => {
           setYearlyCost(yearlyPrice);
         }
         catch (error) {
-          console.log('error pulling individual offerings');
+          const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+          sendErrorNotification(
+            'Premium Error',
+            'We were unable to get a list of all premium offerings unfortunately, please try again later', 
+            'Unable to pull offerings', 
+            trace
+          );
           setError(true);
           setErrorMessage('3: ' + error);
           return false;
@@ -149,7 +198,13 @@ const Premium = () => {
           }
         }
         catch (error) {
-          console.log('error gettting renewal status');
+          const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+          sendErrorNotification(
+            'Premium Error',
+            'We ran into an issue trying to get the renewal status of your subscription, please try again later', 
+            'Unable to get renewal status', 
+            trace
+          );
         }
       }
       // check to see if intro offer is available
@@ -162,7 +217,13 @@ const Premium = () => {
       return true;
     }
     catch (error) {
-      console.log('error checking status');
+      const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+      sendErrorNotification(
+        'Premium Error',
+        'We ran into an issue trying to get the renewal status of your subscription, please try again later', 
+        'Unable to get renewal status', 
+        trace
+      );
       setError(true);
       setErrorMessage('5: ' + error);
       return false;
@@ -193,34 +254,41 @@ const Premium = () => {
               setPremium(true);
               setLoading(false);
               checkStatus();
-              // Alert.alert(
-              //   'Purchase successful',
-              //   'Thank you for purchasing SYNQ Premium!',
-              //   [{
-              //     text: 'Ok',
-              //     onPress: () => {
-              //       setLoading(false);
-              //       router.back();
-              //     }
-              //   }]
-              // );
               return true;
             }
             catch (error) {
-              console.log('Failed purchase');
+              const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+              sendErrorNotification(
+                'Premium Error',
+                'We ran into an issue trying to complete your purchase, please try again later', 
+                'Unable to complete purchase', 
+                trace
+              );
               setLoading(false);
               return false;
             }
         }
         else {
+          sendErrorNotification(
+            'Premium Error',
+            'We were unable to locate any premium offerings, please check back later', 
+            'No offerings found', 
+            ''
+          );
           setLoading(false);
-          console.log('No offerings available');
           setError(true);
           setErrorMessage('6: ' + 'No offerings available');
           return false;
         }
       }
       catch (error) {
+        const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+          sendErrorNotification(
+            'Premium Error',
+            'We ran into an unknown issue when loading the page, please try again later', 
+            'Unknown error', 
+            trace
+          );
         setLoading(false);
         setError(true);
         setErrorMessage('7: ' + error);
@@ -247,14 +315,14 @@ const Premium = () => {
           >
             An error occured, please try again later
           </Text>
-          <Text 
+          {/* <Text 
             style={{
               color: Colors.text,
               textAlign: 'center',
             }}
           >
             {errorMessage}
-          </Text>
+          </Text> */}
         </>
       )
     }
@@ -333,7 +401,13 @@ const Premium = () => {
                 }
               }
               catch (error) {
-                console.log(error)
+                const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+                sendErrorNotification(
+                  'Premium Error',
+                  'We ran into an issue trying to complete your purchase, please try again later', 
+                  'Unable to complete purchase', 
+                  trace
+                );
               }
             }}
           />
@@ -506,6 +580,12 @@ const Premium = () => {
             {getBottom()}
           </View>
         </View>
+        <Notifications 
+          customStyles={{
+            position: 'absolute',
+            bottom: 30,
+          }}
+        />
       </View> 
     </View>
   );

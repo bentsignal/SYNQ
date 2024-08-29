@@ -37,24 +37,26 @@ const NotificationModal = () => {
         <ModalTitle title={notificationTitle}/>
         <VerticalScrollView
           backgroundColor={Colors.popup}
-          maxHeight={Dimensions.get('screen').height * 0.4}
-          minHeight={Dimensions.get('screen').height * 0.20}
+          maxHeight={Dimensions.get('screen').height * 0.3}
+          minHeight={Dimensions.get('screen').height * 0.5}
         >
           <View 
-            style={{
+            style={[Styles.roundedContainer, {
               width: '95%',
               justifyContent: 'flex-start',
               alignItems: 'center',
-              marginTop: 30,
-              marginBottom: 50
-            }}
+              marginTop: 20,
+              marginBottom: 20,
+              // backgroundColor: Colors.background,
+            }]}
           >
             <Text
               style={{
                 color: Colors.text,
                 fontSize: 18,
                 textAlign: 'center',
-                marginBottom: 30,
+                marginBottom: 20,
+                width: '90%',
               }}
             >
               {notificationMessage}
@@ -63,12 +65,18 @@ const NotificationModal = () => {
 
               notificationTrace !== null && notificationTrace.length > 0 ? 
 
-              <InfoContainer
-                title={'More Info'}
-                contentHeight={1000}
+              <View
+                style={{
+                  width: '90%',
+                }}
               >
-                <Text style={Styles.infoStepDescription}>{notificationTrace}</Text>
-              </InfoContainer>
+                <InfoContainer
+                  title={'More Info'}
+                  contentHeight={1000}
+                >
+                  <Text style={Styles.infoStepDescription}>{notificationTrace}</Text>
+                </InfoContainer>
+              </View>
 
               : null
 

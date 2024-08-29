@@ -18,9 +18,9 @@ const GlobalProvider = ({ children, initTheme }) => {
     }
   }, [initTheme]);
 
-  const addNotification = useCallback((type, title, message, trace) => {
+  const addNotification = useCallback((type, title, brief, message, trace, onClick ) => {
     const id = Date.now().toString();
-    setNotifications((prev) => [...prev, { id, type, title, message, trace }]);
+    setNotifications((prev) => [...prev, { id, type, title, brief, message, trace, onClick }]);
   }, []);
 
   const removeNotification = useCallback((id) => {

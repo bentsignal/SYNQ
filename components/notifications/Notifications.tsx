@@ -1,7 +1,5 @@
-import { View, Text } from 'react-native';
-import { useEffect, useState } from 'react';
+import { View } from 'react-native';
 import Notification from './Notification';
-import { NotificationType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
 
 type NotificationsProps = {

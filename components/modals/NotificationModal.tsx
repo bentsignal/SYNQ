@@ -72,7 +72,7 @@ const NotificationModal = () => {
               >
                 <InfoContainer
                   title={'More Info'}
-                  contentHeight={1000}
+                  contentHeight={3000}
                 >
                   <Text style={Styles.infoStepDescription}>{notificationTrace}</Text>
                 </InfoContainer>

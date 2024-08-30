@@ -14,13 +14,14 @@ import Purchases from 'react-native-purchases';
 import Loading from '@/components/Loading';
 import { darkenColor } from '@/lib/Color';
 import { errorHasMessage } from '@/lib/Errors';
+import * as Haptics from 'expo-haptics';
 
 const Premium = () => {
 
   const { 
     
     premium, errorMessage, theme,
-    logo, 
+    logo, haptic,
     
     addNotification,
     
@@ -120,6 +121,14 @@ const Premium = () => {
   
   const getMonthName = (monthNumber: number) => {
     return new Date(2024, monthNumber - 1, 1).toLocaleString('en-US', { month: 'long' });
+  }
+
+  const setOption = (option: number, purchaseText: string) => {
+    if (!loading && !active && !error) {
+      setSelected(option);
+      setPurchaseText(purchaseText);
+    }
+  
   }
 
   const getPrices = async () => {
@@ -229,6 +238,27 @@ const Premium = () => {
     }
   }
 
+  const triggerPurchase = async () => {
+    try {
+      const result = await purchase();
+      if (result) {
+        console.log('Purchase: Success');
+      }
+      else {
+        console.log('Purchase: Failed');
+      }
+    }
+    catch (error) {
+      const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+      sendErrorNotification(
+        'Premium Error',
+        'We ran into an issue trying to complete your purchase, please try again later', 
+        'Unable to complete purchase', 
+        trace
+      );
+    }
+  }
+
   const purchase = async () => {
     setLoading(true);
     const offerings = await Purchases.getOfferings();
@@ -250,6 +280,11 @@ const Premium = () => {
           ) {
             try {
               await Purchases.purchasePackage(offerings.all[name].availablePackages[0]);
+              if (haptic) {
+                Haptics.notificationAsync(
+                  Haptics.NotificationFeedbackType.Success
+                );
+              }
               setPremium(true);
               setLoading(false);
               checkStatus();
@@ -298,6 +333,70 @@ const Premium = () => {
     }
   }
 
+  const restorePurchases = async () => {
+    setLoading(true);
+    try {
+      const restoredData = await Purchases.restorePurchases();
+      const { allPurchasedProductIdentifiers, allExpirationDates } = restoredData;
+
+      const premiumSubscriptions = ['SYNQPremiumLifetime', 'SYNQPremiumMonthly', 'SYNQPremiumYearly'];
+
+      for (const productId of premiumSubscriptions) {
+        if (allPurchasedProductIdentifiers.includes(productId)) {
+          const expirationDateString = allExpirationDates[productId];
+          const expirationDate = expirationDateString ? new Date(expirationDateString) : null;
+          const currentDate = new Date();
+
+          if (!expirationDate || expirationDate > currentDate) {
+            setPremium(true);
+            setActive(true);
+            
+            let message = 'Successfully restored ';
+            if (productId === 'SYNQPremiumMonthly') {
+              setSelected(0);
+              message += 'your monthly subscription.';
+            }
+            else if (productId === 'SYNQPremiumYearly') {
+              setSelected(1);
+              message += 'your yearly subscription.';
+            }
+            else if (productId === 'SYNQPremiumLifetime') {
+              setSelected(2);
+              message += 'your lifetime subscription.';
+            }
+            else {
+              message += ' your purchase.';
+            }
+            if (haptic) {
+              Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Success
+              );
+            }
+            Alert.alert('Success', message, [{text: 'Ok'}]);
+            break;
+          }
+        }
+      }
+      setLoading(false);
+    }
+    catch (error) {
+      console.log(error);
+      setLoading(false);
+      if (haptic) {
+        Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Error
+        )
+      }
+      Alert.alert(
+        'ERROR',
+        'Could not restore purchases',
+        [{
+          text: 'Ok'
+        }]
+      )
+    }
+  }
+
   const getBottom = () => {
     if (loading) {
       return (
@@ -316,14 +415,6 @@ const Premium = () => {
           >
             An error occured, please try again later
           </Text>
-          {/* <Text 
-            style={{
-              color: Colors.text,
-              textAlign: 'center',
-            }}
-          >
-            {errorMessage}
-          </Text> */}
         </>
       )
     }
@@ -370,17 +461,13 @@ const Premium = () => {
           >
             <TouchableOpacity
               activeOpacity={.9}
-              onPress={() => {
-                openURL('https://directedbyshawn.com/synq-terms-conditions');
-              }}
+              onPress={() => openURL('https://directedbyshawn.com/synq-terms-conditions')}
             >
               <Text style={{color: 'white'}}>Terms of Service · </Text>
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={.9}
-              onPress={() => {
-                openURL('https://directedbyshawn.com/synq-privacy-policy');
-              }}
+              onPress={() => openURL('https://directedbyshawn.com/synq-privacy-policy')}
             >
               <Text style={{color: 'white'}}>Privacy Policy</Text>
             </TouchableOpacity>
@@ -391,47 +478,11 @@ const Premium = () => {
             disabledColor={darkenColor(theme, 40, 50)}
             textColor={'black'}
             buttonWidth={240}
-            handlePress={async () => {
-              try {
-                const result = await purchase();
-                if (result) {
-                  console.log('Purchase: Success');
-                }
-                else {
-                  console.log('Purchase: Failed');
-                }
-              }
-              catch (error) {
-                const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
-                sendErrorNotification(
-                  'Premium Error',
-                  'We ran into an issue trying to complete your purchase, please try again later', 
-                  'Unable to complete purchase', 
-                  trace
-                );
-              }
-            }}
+            handlePress={triggerPurchase}
           />
           <TouchableOpacity 
             activeOpacity={.9}
-            onPress={async () => {
-              setLoading(true);
-              try {
-                const restorePurchases = await Purchases.restorePurchases();
-                setLoading(false);
-              }
-              catch (error) {
-                console.log(error);
-                setLoading(false);
-                Alert.alert(
-                  'ERROR',
-                  'Could not restore purchases',
-                  [{
-                    text: 'Ok'
-                  }]
-                )
-              }
-            }}
+            onPress={restorePurchases}
           >
             <Text 
               style={{
@@ -546,36 +597,21 @@ const Premium = () => {
                 price={monthlyCost}
                 loading={loading}
                 selected={selected === 0}
-                handler={() => {
-                  if (!loading && !active && !error) {
-                    setSelected(0);
-                    setPurchaseText(monthlyText);
-                  }
-                }}
+                handler={() => {setOption(0, monthlyText)}}
               />
               <PremiumOption
                 tier={'Yearly'}
                 price={yearlyCost}
                 loading={loading}
                 selected={selected === 1}
-                handler={() => {
-                  if (!loading && !active && !error) {
-                    setSelected(1);
-                    setPurchaseText(yearlyText);
-                  }
-                }}
+                handler={() => {setOption(1, yearlyText)}}
               />
               <PremiumOption 
                 tier={'Lifetime'}
                 price={lifetimeCost}
                 loading={loading}
                 selected={selected === 2}
-                handler={() => {
-                  if (!loading && !active && !error) {
-                    setSelected(2);
-                    setPurchaseText('Purchase')
-                  }
-                }}
+                handler={() => {setOption(2, 'Purchase')}}
               />
             </View>
             {getBottom()}

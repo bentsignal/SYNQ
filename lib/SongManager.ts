@@ -11,6 +11,27 @@ const isValidNumString = (str: string) => {
   return !isNaN(Number(str));
 }
 
+export const getCompletion = (size: number, progress: number) => {
+  try {
+    if (size === 0) {
+      return 0;
+    }
+    let result = ((1 - ((progress - 1) / size)) * 100);
+    if (result < 0) {
+      return 0;
+    }
+    else if (result > 100) {
+      return 100;
+    }
+    else {
+      return result;
+    }
+  }
+  catch {
+    return 0;
+  }
+}
+
 const getExportNumber = async () => {
   try {
     const numberString = await AsyncStorage.getItem('exportNumber');

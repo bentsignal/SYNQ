@@ -229,12 +229,20 @@ const Transfer = () => {
                   }
                 }
   
+                const idgen = (len) => {
+                  let result = '';
+                  for (let i = 0; i < len; i++) {
+                    result += Math.floor(Math.random()*10).toString();
+                  }
+                  return result;
+                }
+  
                 errorClose.addEventListener('click', () => {
                   overlay.style.display = 'none';
                   errorPopup.style.display = 'none';
                 })
                 
-                document.getElementById('browseFiles').addEventListener('change', async (event) => {
+                const handleFileChange = async (event) => {
                   if (event.target.files) {
                     try {
                       const startEndpoint = window.location.href + 'startTransfer'
@@ -262,15 +270,16 @@ const Transfer = () => {
                           file = event.target.files[i]
                           const name = file.name
                           const type = file.type
+                          const id = idgen(10);
                           const blob = new Blob( [file], { type: type } )
                           const arrayBuffer = await blob.arrayBuffer()
                           const byteArray = new Uint8Array(arrayBuffer);
                           const b64 = btoa(byteArray.reduce((data, byte) => {
                             return data + String.fromCharCode(byte);
                           }, ''));
-                          console.log('Sending file ' + name)
                           const transferEndpoint = window.location.href + 'fileUpload'
                           try {
+                            console.log('Sending file ' + name);
                             const sendResponse = await fetch(transferEndpoint, {
                               method: 'POST',
                               headers: {
@@ -278,6 +287,7 @@ const Transfer = () => {
                                 'Content-Type': 'application/json',
                               },
                               body: JSON.stringify({
+                                "id": id,
                                 "name": name, 
                                 "type": type,
                                 "data": b64
@@ -325,7 +335,13 @@ const Transfer = () => {
                     }
                   }
                   document.getElementById('browseFiles').value = '';
-                })
+                }
+  
+                const browseFilesElement = document.getElementById('browseFiles');
+                if (browseFilesElement) {
+                  browseFilesElement.removeEventListener('change', handleFileChange);
+                  browseFilesElement.addEventListener('change', handleFileChange);
+                }
   
                 const setConnected = async (response) => {
                   let body = await response.text()

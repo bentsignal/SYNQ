@@ -1,6 +1,6 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useEffect } from 'react';
-import { View, ScrollView, Alert } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
@@ -10,7 +10,8 @@ import Option from "@/components/Option";
 import WiFi from "@/components/import/wifi/WiFi";
 import Files from "@/components/import/files/Files";
 import { Success, Failure } from "@/components/Outcome";
-import InstructionsModal from "@/components/modals/InstructionsModal";
+import InfoModal from "@/components/modals/InfoModal";
+import Notifications from "@/components/notifications/Notifications";
 
 const getShowWelcome = async () => {
   return await AsyncStorage.getItem('showWelcome')
@@ -18,7 +19,11 @@ const getShowWelcome = async () => {
 
 const Home = () => {
 
-  const { setShowWelcome } = useGlobalContext();
+  const { 
+    
+    setShowWelcome, setShowInfoModal,
+  
+  } = useGlobalContext();
 
   // useEffect(() => {
   //   getShowWelcome().then((value) => {
@@ -55,11 +60,11 @@ const Home = () => {
   else {
     return (
       <View style={[Styles.body, {paddingTop: insets.top}]}>
-        <InstructionsModal dontShowOption={true}/>
+        <InfoModal />
         <Top />
         <PageTitle 
           title='Import Music'
-          infoHandler={() => setShowWelcome(true)}
+          infoHandler={() => setShowInfoModal(true)}
           />
         <ScrollView
           style={{
@@ -91,6 +96,12 @@ const Home = () => {
             handlePress={() => {setHomeState(3)}}
           /> */}
         </ScrollView>
+        <Notifications 
+          customStyles={{
+            position: 'absolute',
+            bottom: 0,
+          }}
+        />
       </View>
     );
   }

@@ -1,13 +1,15 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { Colors } from '@/constants/Colors';
 import { getLogo } from '@/constants/Logos';
+import { NotificationType } from '@/constants/Types';
+import CFG from '@/constants/Config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
 
 
-const GlobalProvider = ({ children, initTheme }) => {
+const GlobalProvider = ({ children, initTheme, initPremium }) => {
 
   useEffect(() => {
     if (initTheme !== '') {
@@ -16,8 +18,21 @@ const GlobalProvider = ({ children, initTheme }) => {
     }
   }, [initTheme]);
 
+  useEffect(() => {
+    setPremium(initPremium);
+  }, [initPremium]);
+
+  const addNotification = useCallback((type, title, brief, message, trace, onClick ) => {
+    const id = Date.now().toString();
+    setNotifications((prev) => [...prev, { id, type, title, brief, message, trace, onClick }]);
+  }, []);
+
+  const removeNotification = useCallback((id) => {
+    setNotifications((prev) => prev.filter((item) => item.id !== id));
+  }, []);
+
   const [homeState, setHomeState] = useState(0);
-  const [premium, setPremium] = useState(false);
+  const [premium, setPremium] = useState(initPremium ? initPremium : false);
   const [wifiResults, setWifiResults] = useState([]);
   const [results, setResults] = useState([]);
   const [exportDisabled, setExportDisabled] = useState(true);
@@ -45,6 +60,14 @@ const GlobalProvider = ({ children, initTheme }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [theme, setTheme] = useState(initTheme ? initTheme : Colors.main);
   const [logo, setLogo] = useState(require('@/assets/logo/logo-blue.png'));
+  const [haptic, setHaptic] = useState(true);
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [notificationType, setNotificationType] = useState(NotificationType.GENERAL);
+  const [notificationTitle, setNotificationTitle] = useState('');
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [notificationTrace, setNotificationTrace] = useState('');
 
   return (
     <GlobalContext.Provider
@@ -78,6 +101,15 @@ const GlobalProvider = ({ children, initTheme }) => {
         errorMessage, setErrorMessage,
         theme, setTheme,
         logo, setLogo,
+        haptic, setHaptic,
+        showInfoModal, setShowInfoModal,
+        notifications, setNotifications,
+        notificationType, setNotificationType,
+        notificationTitle, setNotificationTitle,
+        notificationMessage, setNotificationMessage,
+        showNotificationModal, setShowNotificationModal,
+        notificationTrace, setNotificationTrace,
+        addNotification, removeNotification,
       }}
     >
       {children}

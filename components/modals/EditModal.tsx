@@ -141,6 +141,7 @@ const EditModal = () => {
                         value={title}
                         onChangeText={text => setTitle(text)}
                         placeholder={'Enter song title...'}
+                        placeholderTextColor={Colors.altDisabled}
                       />
                     </>
                     :
@@ -159,6 +160,7 @@ const EditModal = () => {
                     value={artist}
                     onChangeText={text => setArtist(text)}
                     placeholder={'Enter artist(s)...'}
+                    placeholderTextColor={Colors.altDisabled}
                   />
                   <Text
                     style={Styles.textboxLabel}
@@ -173,6 +175,7 @@ const EditModal = () => {
                     value={album}
                     onChangeText={text => setAlbum(text)}
                     placeholder={'Enter album name...'}
+                    placeholderTextColor={Colors.altDisabled}
                   />
                 </View>
                 <View

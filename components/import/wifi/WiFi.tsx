@@ -10,7 +10,9 @@ import PageTitle from '@/components/PageTitle';
 import Top from '@/components/Top';
 import ImportInstructions from '@/components/import/wifi/ImportInstructions';
 import ImportControls from '../ImportControls';
-import SaveInstructionsModal from '@/components/modals/SaveInstructionsModal';
+import InfoModal from '@/components/modals/InfoModal';
+import { getCompletion } from '@/lib/SongManager';
+import Progress from '@/components/Progress';
 
 const WiFi = () => {
 
@@ -18,15 +20,17 @@ const WiFi = () => {
 
     results, transferSize, loading,
     ip, wifiDisabled, premium,
+    transferProgress, loadAnimInProgress,
 
     setResults, setExportDisabled, setLoading,
-    setShowSaveInst,
+    setShowSaveInst, setShowInfoModal,
 
   } = useGlobalContext();
 
   const insets = useSafeAreaInsets();
 
   const [exporting, setExporting] = useState(false);
+  const [completion, setCompletion] = useState(0);
   const [URL, setURL] = useState('');
   const PORT = 80;
 
@@ -35,9 +39,15 @@ const WiFi = () => {
     setExportDisabled(results.length > 0 ? false : true);
     setLoading(true);
     setResults([]);
-    setURL(!wifiDisabled ? `http://${ip}` : '');
+    setURL(!wifiDisabled ? `${ip}` : '');
 
   }, []);
+
+  useEffect(() => {
+    if (transferSize > 0 && transferProgress >= 0) {
+      setCompletion(((transferProgress / transferSize) * 100));
+    }
+  }, [transferProgress]);
 
   const callReset = async () => {
     return await axios.get(`${URL}/reset`);
@@ -62,32 +72,17 @@ const WiFi = () => {
             paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
           }]}
         >
-          <Text style={Styles.infoText}>Failed to start server.</Text>
-          <Text style={[Styles.infoText, {marginTop: 10}]}>Try restarting the app.</Text>
+          <Text style={Styles.infoText}>Failed to start server</Text>
+          <Text style={[Styles.infoText, {
+            marginTop: 10,
+            fontWeight: 'normal',
+            }]}>
+              Try restarting the app
+              </Text>
         </View>
       );
     }
-    else if (loading) {
-      let message = <></>
-      if (exporting) {
-        message = <Text style={Styles.infoText}>Exporting your files...</Text>
-      }
-      else if (transferSize > 0) {
-        message = 
-          <Text
-            style={Styles.infoText}
-          >
-            Transferring {transferSize} file{transferSize > 1 ? 's' : ''}...
-          </Text>
-      }
-      else if (results.length == 0) {
-        message = 
-          <Text
-            style={[Styles.infoText]}
-          >
-            Waiting for transfer
-          </Text>
-      }
+    else if (loading || loadAnimInProgress) {
       return (
         <View
           style={[Styles.main, {
@@ -95,8 +90,10 @@ const WiFi = () => {
             paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
           }]}
         >
-          {message}
-          <Loading height={100} width={200}/>
+          <Progress 
+            completion={completion} 
+            showCircle={loadAnimInProgress}
+          />
         </View>
       );
     }
@@ -108,12 +105,10 @@ const WiFi = () => {
             paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
           }]}
         >
-          <Text
-            style={Styles.infoText}
-          >
-            Songs will appear here once uploaded
-          </Text>
-          <Loading height={100} width={200}/>
+          <Progress 
+            completion={completion} 
+            showCircle={false}
+          />
         </View>
       );
     }
@@ -133,7 +128,7 @@ const WiFi = () => {
     if (!wifiDisabled) {
       return (
         <ImportInstructions
-          title='In your browser, visit:'
+          title='In your web browser, enter:'
           desc={URL}
           icon={require('@/assets/icons/wifi.png')}
           disabled={wifiDisabled}
@@ -145,12 +140,12 @@ const WiFi = () => {
 
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>
-      <SaveInstructionsModal dontShowOption={false}/>
+      <InfoModal />
       <Top />
       <PageTitle 
         title='Import Music'
-        showList={results.length > 1 && premium}
-        infoHandler={() => setShowSaveInst(true)}
+        showList={results.length > 1 && premium && !loadAnimInProgress}
+        infoHandler={() => setShowInfoModal(true)}
       />
       {getInstructions()}
       {getBody()}

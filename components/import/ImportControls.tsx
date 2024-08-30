@@ -5,6 +5,7 @@ import { Colors } from '@/constants/Colors';
 import CustomButton from '@/components/CustomButton';
 import { exportSongs} from '@/lib/SongManager';
 import { darkenColor } from '@/lib/Color';
+import Notifications from '@/components/notifications/Notifications';
 
 const ImportControls = ({reset}: {reset?: () => void}) => {
 
@@ -22,11 +23,18 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
   } = useGlobalContext();
 
   return (
-    <>
+    <View
+      style={{
+        position: 'absolute',
+        bottom: 10,
+        width: '100%',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+      }}
+    >
+      <Notifications />
       <View
         style={{
-          position: 'absolute',
-          bottom: 10,
           display: selectEnabled && selectedSongs.length > 0 ? 'flex' : 'none',
           flexDirection: 'row',
           gap: 10
@@ -82,9 +90,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
           justifyContent: 'center',
           alignItems: 'center',
           gap: 10,
-          position: 'absolute',
           padding: 5,
-          bottom: 10
         }}
       >
         <CustomButton 
@@ -140,7 +146,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
           disabledColor={darkenColor(theme, 40, 50)}
         />
       </View>
-    </>
+    </View>
   );
 
 }

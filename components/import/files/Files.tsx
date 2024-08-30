@@ -4,13 +4,13 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { useEffect, useState } from 'react';
 import PageTitle from '@/components/PageTitle';
-import Loading from '@/components/Loading';
+import { getCompletion } from '@/lib/SongManager';
 import Top from '@/components/Top';
 import FilesEmpty from '@/components/import/files/FilesEmpty';
 import SongList from '@/components/song/SongList';
-import SaveInstructionsModal from '@/components/modals/SaveInstructionsModal';
 import ImportControls from '../ImportControls';
 import Progress from '@/components/Progress';
+import InfoModal from '@/components/modals/InfoModal';
 
 const Files = () => {
 
@@ -20,7 +20,7 @@ const Files = () => {
     importing, premium, transferSize,
     transferProgress, loadAnimInProgress,
 
-    setShowSaveInst,
+    setShowInfoModal,
 
   } = useGlobalContext();
 
@@ -30,7 +30,7 @@ const Files = () => {
 
   useEffect(() => {
     if (transferSize >= 0 && transferProgress >= 0) {
-      setCompletion((1 - ((transferProgress - 1) / transferSize)) * 100);
+      setCompletion(getCompletion(transferSize, transferProgress));
     }
   }, [transferProgress]);
 
@@ -64,11 +64,11 @@ const Files = () => {
 
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>
-      <SaveInstructionsModal dontShowOption={true} />
+      <InfoModal />
       <Top />
       <PageTitle 
         title='Import Music'
-        infoHandler={() => setShowSaveInst(true)}
+        infoHandler={() => setShowInfoModal(true)}
         showList={results.length > 1 && premium}
       />
       {getBody()}

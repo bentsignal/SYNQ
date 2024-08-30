@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { View, Animated, Easing } from 'react-native';
+import { View } from 'react-native';
 import SongOptions from '@/components/sheets/SongOptions';
 import { useEffect, useRef } from 'react';
 import Server from '@/components/import/wifi/Server';
@@ -9,7 +9,8 @@ import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import Purchases from 'react-native-purchases';
 import Overlay from '@/components/Overlay';
-import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
+import NotificationModal from '@/components/modals/NotificationModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TabLayout = () => {
 
@@ -17,14 +18,12 @@ const TabLayout = () => {
     
     premium, showSongOptions,
     
-    setPremium, 
+    setPremium, setHaptic,
   
   } = useGlobalContext();
 
   useEffect(() => {
-    const requestTracking = async () => {
-      const { status } = await requestTrackingPermissionsAsync();
-    }
+
     const checkPremium = async () => {
       try {
         Purchases.configure({
@@ -48,9 +47,21 @@ const TabLayout = () => {
         console.log('error checking premium');
       }
     }
-    requestTracking();
+
+    const loadHapticSetting = async () => {
+      try {
+        const haptic = await AsyncStorage.getItem('haptic');
+        setHaptic(haptic === 'false' ? false : true);
+      }
+      catch {
+        setHaptic(true);
+      }
+    }
+
+    loadHapticSetting();
     checkPremium();
-  }, [])
+
+  }, []);
 
   return (
     <>
@@ -64,6 +75,7 @@ const TabLayout = () => {
       >
         <SongOptions />
       </View>
+      <NotificationModal />
       <Overlay />
       <Server />
       <Tabs

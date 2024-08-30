@@ -5,9 +5,10 @@ import { Colors } from '@/constants/Colors';
 
 type CategoryTitleProps = {
   title: string;
+  requiresPremium?: boolean;
 }
 
-const CategoryTitle = ({ title }: CategoryTitleProps) => {
+const CategoryTitle = ({ title, requiresPremium }: CategoryTitleProps) => {
 
   const { theme, premium } = useGlobalContext();
 
@@ -24,7 +25,7 @@ const CategoryTitle = ({ title }: CategoryTitleProps) => {
       <Text style={Styles.settingsCategoryHeader}>
         {title}
       </Text>
-      {!premium 
+      {!premium && requiresPremium
         ? <Text
             style={{
               color: theme,

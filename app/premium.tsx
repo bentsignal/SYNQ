@@ -7,20 +7,26 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { LinearGradient } from 'expo-linear-gradient';
 import Bar from '@/components/modals/Bar';
 import CustomButton from '@/components/CustomButton';
-// import * as IAP from 'react-native-iap';
+import { NotificationType } from '@/constants/Types';
+import Notifications from '@/components/notifications/Notifications';
 import PremiumOption from '@/components/PremiumOption';
 import Purchases from 'react-native-purchases';
 import Loading from '@/components/Loading';
 import { darkenColor } from '@/lib/Color';
+import { errorHasMessage } from '@/lib/Errors';
+import * as Haptics from 'expo-haptics';
 
 const Premium = () => {
 
   const { 
     
     premium, errorMessage, theme,
-    logo, 
+    logo, haptic,
+    
+    addNotification,
     
     setPremium, setErrorMessage, 
+    setShowOverlay, setShowNotificationModal,
   
   } = useGlobalContext();
   
@@ -32,10 +38,33 @@ const Premium = () => {
   const [purchaseText, setPurchaseText] = useState('Purchase');
   const [monthlyText, setMonthlyText] = useState('Purchase');
   const [yearlyText, setYearlyText] = useState('Purchase');
-  const [monthlyCost, setMonthlyCost] = useState('$0.99');
-  const [yearlyCost, setYearlyCost] = useState('$2.99');
-  const [lifetimeCost, setLifetimeCost] = useState('$9.99');
+  const [monthlyCost, setMonthlyCost] = useState('$∞');
+  const [yearlyCost, setYearlyCost] = useState('$∞');
+  const [lifetimeCost, setLifetimeCost] = useState('$∞');
   const [error, setError] = useState(false);
+
+  const sendErrorNotification = (
+    title: string,
+    message: string, 
+    brief: string, 
+    trace: string
+  ) => {
+    addNotification(
+      NotificationType.ERROR,
+      'Premium Error',
+      brief,
+      message,
+      trace,
+      () => {
+        router.back();
+        router.back();
+        setTimeout(() => {
+          setShowOverlay(true);
+          setShowNotificationModal(true);
+        }, 100);
+      }
+    );
+  }
 
   useEffect(() => {
 
@@ -47,6 +76,13 @@ const Premium = () => {
         setLoading(false);
       }
       catch (error) {
+        const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+        sendErrorNotification(
+          'Premium Error',
+          'We ran into an issue trying to load premium options, please try again later', 
+          'Unable to load options', 
+          trace
+        );
         setError(true);
         setErrorMessage('1: ' + error);
         setLoading(false);
@@ -70,13 +106,29 @@ const Premium = () => {
       return true;
     }
     catch (error) {
+      const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+      sendErrorNotification(
+        'Connection Error',
+        'We ran into an issue connecting to our financial services, so we are unable to load premium info at the moment. Please try again later', 
+        'Unable to connect', 
+        trace
+      );
       setError(true);
       setErrorMessage('2: ' + error);
       return false;
     }
   }
+  
   const getMonthName = (monthNumber: number) => {
     return new Date(2024, monthNumber - 1, 1).toLocaleString('en-US', { month: 'long' });
+  }
+
+  const setOption = (option: number, purchaseText: string) => {
+    if (!loading && !active && !error) {
+      setSelected(option);
+      setPurchaseText(purchaseText);
+    }
+  
   }
 
   const getPrices = async () => {
@@ -92,7 +144,13 @@ const Premium = () => {
           setYearlyCost(yearlyPrice);
         }
         catch (error) {
-          console.log('error pulling individual offerings');
+          const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+          sendErrorNotification(
+            'Premium Error',
+            'We were unable to get a list of all premium offerings unfortunately, please try again later', 
+            'Unable to pull offerings', 
+            trace
+          );
           setError(true);
           setErrorMessage('3: ' + error);
           return false;
@@ -148,20 +206,32 @@ const Premium = () => {
           }
         }
         catch (error) {
-          console.log('error gettting renewal status');
+          const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+          sendErrorNotification(
+            'Premium Error',
+            'We ran into an issue trying to get the renewal status of your subscription, please try again later', 
+            'Unable to get renewal status', 
+            trace
+          );
         }
       }
       // check to see if intro offer is available
       else if (Object.keys(all).length === 0) {
-        setSelected(0);
+        setSelected(1);
         setMonthlyText("Start 1 month free trial");
         setYearlyText("Start 3 month free trial");
-        setPurchaseText("Start 1 month free trial");
+        setPurchaseText("Start 3 month free trial");
       }
       return true;
     }
     catch (error) {
-      console.log('error checking status');
+      const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+      sendErrorNotification(
+        'Premium Error',
+        'We ran into an issue trying to get the renewal status of your subscription, please try again later', 
+        'Unable to get renewal status', 
+        trace
+      );
       setError(true);
       setErrorMessage('5: ' + error);
       return false;
@@ -189,42 +259,120 @@ const Premium = () => {
           ) {
             try {
               await Purchases.purchasePackage(offerings.all[name].availablePackages[0]);
+              if (haptic) {
+                Haptics.notificationAsync(
+                  Haptics.NotificationFeedbackType.Success
+                );
+              }
               setPremium(true);
               setLoading(false);
               checkStatus();
-              // Alert.alert(
-              //   'Purchase successful',
-              //   'Thank you for purchasing SYNQ Premium!',
-              //   [{
-              //     text: 'Ok',
-              //     onPress: () => {
-              //       setLoading(false);
-              //       router.back();
-              //     }
-              //   }]
-              // );
               return true;
             }
             catch (error) {
-              console.log('Failed purchase');
+              const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+              if (!trace.includes('cancelled')) {
+                sendErrorNotification(
+                  'Premium Error',
+                  'We ran into an issue trying to complete your purchase, please try again later', 
+                  'Unable to complete purchase', 
+                  trace
+                );
+              }
               setLoading(false);
               return false;
             }
         }
         else {
+          sendErrorNotification(
+            'Premium Error',
+            'We were unable to locate any premium offerings, please check back later', 
+            'No offerings found', 
+            ''
+          );
           setLoading(false);
-          console.log('No offerings available');
           setError(true);
           setErrorMessage('6: ' + 'No offerings available');
           return false;
         }
       }
       catch (error) {
+        const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+          sendErrorNotification(
+            'Premium Error',
+            'We ran into an unknown issue when loading the page, please try again later', 
+            'Unknown error', 
+            trace
+          );
         setLoading(false);
         setError(true);
         setErrorMessage('7: ' + error);
         return false;
       }
+    }
+  }
+
+  const restorePurchases = async () => {
+    setLoading(true);
+    try {
+      const restoredData = await Purchases.restorePurchases();
+      const { allPurchasedProductIdentifiers, allExpirationDates } = restoredData;
+
+      const premiumSubscriptions = ['SYNQPremiumLifetime', 'SYNQPremiumMonthly', 'SYNQPremiumYearly'];
+
+      for (const productId of premiumSubscriptions) {
+        if (allPurchasedProductIdentifiers.includes(productId)) {
+          const expirationDateString = allExpirationDates[productId];
+          const expirationDate = expirationDateString ? new Date(expirationDateString) : null;
+          const currentDate = new Date();
+
+          if (!expirationDate || expirationDate > currentDate) {
+            setPremium(true);
+            setActive(true);
+            
+            let message = 'Successfully restored ';
+            if (productId === 'SYNQPremiumMonthly') {
+              setSelected(0);
+              message += 'your monthly subscription.';
+            }
+            else if (productId === 'SYNQPremiumYearly') {
+              setSelected(1);
+              message += 'your yearly subscription.';
+            }
+            else if (productId === 'SYNQPremiumLifetime') {
+              setSelected(2);
+              message += 'your lifetime subscription.';
+            }
+            else {
+              message += 'your purchase.';
+            }
+            if (haptic) {
+              Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Success
+              );
+            }
+            Alert.alert('Success', message, [{text: 'Ok'}]);
+            break;
+          }
+        }
+      }
+      setLoading(false);
+    }
+    catch (error) {
+      console.log(error);
+      setLoading(false);
+      if (haptic) {
+        Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Error
+        )
+      }
+      Alert.alert(
+        'ERROR',
+        'Could not restore purchases',
+        [{
+          text: 'Ok'
+        }]
+      )
     }
   }
 
@@ -245,14 +393,6 @@ const Premium = () => {
             }}
           >
             An error occured, please try again later
-          </Text>
-          <Text 
-            style={{
-              color: Colors.text,
-              textAlign: 'center',
-            }}
-          >
-            {errorMessage}
           </Text>
         </>
       )
@@ -300,17 +440,13 @@ const Premium = () => {
           >
             <TouchableOpacity
               activeOpacity={.9}
-              onPress={() => {
-                openURL('https://directedbyshawn.com/synq-terms-conditions');
-              }}
+              onPress={() => openURL('https://directedbyshawn.com/synq-terms-conditions')}
             >
               <Text style={{color: 'white'}}>Terms of Service · </Text>
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={.9}
-              onPress={() => {
-                openURL('https://directedbyshawn.com/synq-privacy-policy');
-              }}
+              onPress={() => openURL('https://directedbyshawn.com/synq-privacy-policy')}
             >
               <Text style={{color: 'white'}}>Privacy Policy</Text>
             </TouchableOpacity>
@@ -321,41 +457,11 @@ const Premium = () => {
             disabledColor={darkenColor(theme, 40, 50)}
             textColor={'black'}
             buttonWidth={240}
-            handlePress={async () => {
-              try {
-                const result = await purchase();
-                if (result) {
-                  console.log('Purchase: Success');
-                }
-                else {
-                  console.log('Purchase: Failed');
-                }
-              }
-              catch (error) {
-                console.log(error)
-              }
-            }}
+            handlePress={async () => await purchase()}
           />
           <TouchableOpacity 
             activeOpacity={.9}
-            onPress={async () => {
-              setLoading(true);
-              try {
-                const restorePurchases = await Purchases.restorePurchases();
-                setLoading(false);
-              }
-              catch (error) {
-                console.log(error);
-                setLoading(false);
-                Alert.alert(
-                  'ERROR',
-                  'Could not restore purchases',
-                  [{
-                    text: 'Ok'
-                  }]
-                )
-              }
-            }}
+            onPress={restorePurchases}
           >
             <Text 
               style={{
@@ -393,7 +499,7 @@ const Premium = () => {
           }}
         >
           <Image 
-            source={require('@/assets/images/premium-bg-2-downscaled.jpg')}
+            source={require('@/assets/images/premium-bg-downscaled.jpg')}
             style={{
               height: '100%',
               width: '100%'
@@ -412,6 +518,7 @@ const Premium = () => {
         </View>
         <View
           style={{
+            marginTop: 10,
             flexGrow: 1,
             width: '100%',
             justifyContent: 'flex-start',
@@ -469,41 +576,32 @@ const Premium = () => {
                 price={monthlyCost}
                 loading={loading}
                 selected={selected === 0}
-                handler={() => {
-                  if (!loading && !active && !error) {
-                    setSelected(0);
-                    setPurchaseText(monthlyText);
-                  }
-                }}
+                handler={() => {setOption(0, monthlyText)}}
               />
               <PremiumOption
                 tier={'Yearly'}
                 price={yearlyCost}
                 loading={loading}
                 selected={selected === 1}
-                handler={() => {
-                  if (!loading && !active && !error) {
-                    setSelected(1);
-                    setPurchaseText(yearlyText);
-                  }
-                }}
+                handler={() => {setOption(1, yearlyText)}}
               />
               <PremiumOption 
                 tier={'Lifetime'}
                 price={lifetimeCost}
                 loading={loading}
                 selected={selected === 2}
-                handler={() => {
-                  if (!loading && !active && !error) {
-                    setSelected(2);
-                    setPurchaseText('Purchase')
-                  }
-                }}
+                handler={() => {setOption(2, 'Purchase')}}
               />
             </View>
             {getBottom()}
           </View>
         </View>
+        <Notifications 
+          customStyles={{
+            position: 'absolute',
+            bottom: 30,
+          }}
+        />
       </View> 
     </View>
   );

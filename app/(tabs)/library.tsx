@@ -1,17 +1,22 @@
 import { View, Text, } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Styles } from "@/constants/Styles";
-import { router } from "expo-router";
-import InstructionsModal from "@/components/modals/InstructionsModal";
 import PageTitle from '@/components/PageTitle';
-import Option from "@/components/Option";
 import Top from "@/components/Top";
+import CustomButton from "@/components/CustomButton";
+import { Colors } from "@/constants/Colors";
+import Notifications from "@/components/notifications/Notifications";
+import { NotificationType } from "@/constants/Types";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 const Library = () => {
+
   const insets = useSafeAreaInsets();
+
+  const { addNotification } = useGlobalContext();
+
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>
-      <InstructionsModal />
       <Top />
       <PageTitle title='Library'/>
       <View
@@ -30,6 +35,12 @@ const Library = () => {
           Coming soon
         </Text>
       </View>
+      <Notifications  
+        customStyles={{
+          position: 'absolute',
+          bottom: 0,
+        }}
+      />
     </View>
   );
 }

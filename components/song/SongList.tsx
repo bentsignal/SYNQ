@@ -40,11 +40,11 @@ const SongList = (data: any) => {
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const yOffset = event.nativeEvent.contentOffset.y;
-    if (yOffset <= 5 && !atTop) {
+    if (yOffset <= 0 && !atTop) {
       setAtTop(true);
       Animated.timing(topGradientOpacityRef, {
         toValue: 0,
-        duration: 200,
+        duration: 100,
         easing: Easing.out(Easing.ease),
         useNativeDriver: true,
       }).start();

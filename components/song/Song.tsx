@@ -6,14 +6,13 @@ import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import { SongType } from '@/constants/Types';
 import SongInfo from '@/components/song/SongInfo';
-import EditButton from '@/components/song/EditButton';
-import DeleteButton from '@/components/song/DeleteButton';
 import Select from '@/components/song/Select';
 import { ListCover } from '@/components/song/Cover';
 import { BlurView } from 'expo-blur';
 import CustomButton from '../CustomButton';
 import Skeleton from '../Skeleton';
 import { darkenColor } from '@/lib/Color';
+import * as Haptics from 'expo-haptics';
 
 const Dot = () => {
   return (
@@ -38,6 +37,7 @@ const Song = ({name, id, data, info}: SongType) => {
 
     selectEnabled, selectedSongs, results,
     premium, showSongOptions, theme, 
+    haptic,
 
     setSelectedSongs, setShowSongOptions,
     setEditSong,
@@ -141,6 +141,9 @@ const Song = ({name, id, data, info}: SongType) => {
               }}
               activeOpacity={.8}
               onPress={() => {
+                if (haptic) {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }
                 setEditSong({
                   "name": name, 
                   "id": id, 
@@ -155,11 +158,6 @@ const Song = ({name, id, data, info}: SongType) => {
               <Dot />
             </TouchableOpacity>
           </>
-
-          // <>
-          //   <EditButton name={name} id={id} data={data} info={info}/>
-          //   <DeleteButton name={name} id={id}/>
-          // </>
 
         }
       </View>

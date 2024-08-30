@@ -9,7 +9,6 @@ import Bar from '@/components/modals/Bar';
 import CustomButton from '@/components/CustomButton';
 import { NotificationType } from '@/constants/Types';
 import Notifications from '@/components/notifications/Notifications';
-// import * as IAP from 'react-native-iap';
 import PremiumOption from '@/components/PremiumOption';
 import Purchases from 'react-native-purchases';
 import Loading from '@/components/Loading';

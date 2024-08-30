@@ -51,7 +51,7 @@ const TabLayout = () => {
     const loadHapticSetting = async () => {
       try {
         const haptic = await AsyncStorage.getItem('haptic');
-        setHaptic(haptic === 'true' ? true : false);
+        setHaptic(haptic === 'false' ? false : true);
       }
       catch {
         setHaptic(true);

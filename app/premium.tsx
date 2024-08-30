@@ -107,12 +107,12 @@ const Premium = () => {
     }
     catch (error) {
       const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
-        sendErrorNotification(
-          'Connection Error',
-          'We ran into an issue connecting to our financial services, so we are unable to load premium info at the moment. Please try again later', 
-          'Unable to connect', 
-          trace
-        );
+      sendErrorNotification(
+        'Connection Error',
+        'We ran into an issue connecting to our financial services, so we are unable to load premium info at the moment. Please try again later', 
+        'Unable to connect', 
+        trace
+      );
       setError(true);
       setErrorMessage('2: ' + error);
       return false;
@@ -238,27 +238,6 @@ const Premium = () => {
     }
   }
 
-  const triggerPurchase = async () => {
-    try {
-      const result = await purchase();
-      if (result) {
-        console.log('Purchase: Success');
-      }
-      else {
-        console.log('Purchase: Failed');
-      }
-    }
-    catch (error) {
-      const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
-      sendErrorNotification(
-        'Premium Error',
-        'We ran into an issue trying to complete your purchase, please try again later', 
-        'Unable to complete purchase', 
-        trace
-      );
-    }
-  }
-
   const purchase = async () => {
     setLoading(true);
     const offerings = await Purchases.getOfferings();
@@ -365,7 +344,7 @@ const Premium = () => {
               message += 'your lifetime subscription.';
             }
             else {
-              message += ' your purchase.';
+              message += 'your purchase.';
             }
             if (haptic) {
               Haptics.notificationAsync(
@@ -478,7 +457,7 @@ const Premium = () => {
             disabledColor={darkenColor(theme, 40, 50)}
             textColor={'black'}
             buttonWidth={240}
-            handlePress={triggerPurchase}
+            handlePress={async () => await purchase()}
           />
           <TouchableOpacity 
             activeOpacity={.9}

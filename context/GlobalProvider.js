@@ -9,7 +9,7 @@ const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
 
 
-const GlobalProvider = ({ children, initTheme }) => {
+const GlobalProvider = ({ children, initTheme, initPremium }) => {
 
   useEffect(() => {
     if (initTheme !== '') {
@@ -17,6 +17,10 @@ const GlobalProvider = ({ children, initTheme }) => {
       setLogo(getLogo(initTheme));
     }
   }, [initTheme]);
+
+  useEffect(() => {
+    setPremium(initPremium);
+  }, [initPremium]);
 
   const addNotification = useCallback((type, title, brief, message, trace, onClick ) => {
     const id = Date.now().toString();
@@ -28,7 +32,7 @@ const GlobalProvider = ({ children, initTheme }) => {
   }, []);
 
   const [homeState, setHomeState] = useState(0);
-  const [premium, setPremium] = useState(false);
+  const [premium, setPremium] = useState(initPremium ? initPremium : false);
   const [wifiResults, setWifiResults] = useState([]);
   const [results, setResults] = useState([]);
   const [exportDisabled, setExportDisabled] = useState(true);

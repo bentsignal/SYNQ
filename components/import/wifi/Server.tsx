@@ -17,6 +17,7 @@ const Server = () => {
   const {
 
     homeState, results, transferProgress,
+    serverStarted,
 
     addNotification,
 
@@ -24,13 +25,14 @@ const Server = () => {
     setExportDisabled, setWifiDisabled, setLoading,
     setIP, setSelectedId, setTransferProgress,
     setLoadAnimInProgress, setShowOverlay,
-    setShowNotificationModal,
+    setShowNotificationModal, setServerStarted,
 
   } = useGlobalContext();
 
   const resultsRef = useRef<Array<any>>([]);
   const homeStateRef = useRef(0);
   const midTransfer = useRef(false);
+  const receivedRequests = new Set();
 
   useEffect(() => {
     resultsRef.current = results
@@ -53,12 +55,19 @@ const Server = () => {
         setShowOverlay(true);
         setShowNotificationModal(true);
       }
-    )
+    );
   }
 
   useEffect(() => {
 
     const startServer = async () => {
+
+      if (serverStarted){
+        return;
+      }
+      else {
+        setServerStarted(true);
+      }
 
       try {
         setIP(await getIP());
@@ -72,6 +81,7 @@ const Server = () => {
         server.setup(PORT, (event: server.StatusEvent) => {
           if (event.status == 'ERROR') {
             setWifiDisabled(true);
+            setServerStarted(false);
             sendErrorNotification(event.message);
           }
           else {
@@ -149,17 +159,16 @@ const Server = () => {
           });
         });
 
-        server.route("/fileUpload", "POST", async (request: server.RequestEvent) => {
-          console.log('upload')
-          const body = JSON.parse(request.body);
+        server.route("/fileUpload", "POST", async (request: server.RequestEvent) => {const body = JSON.parse(request.body);
           const name = body.name ? body.name : '';
           const type = body.type ? body.type : '';
           const b64 = body.data ? body.data : '';
-          if (name && type == 'audio/mpeg' && b64) {
-            const id = idgen(10);
+          const id = body.id ? body.id : '';
+
+          if (name && type == 'audio/mpeg' && b64 && !receivedRequests.has(id)) {
             const info = await getWifiInfo(name, id, type, b64);
             if (info) {
-              console.log('file is good, adding')
+              receivedRequests.add(id);
               const newResults = resultsRef.current;
               newResults.push({
                 'name': name,
@@ -194,6 +203,7 @@ const Server = () => {
         server.start();
 
         return () => {
+          console.log('stop')
           server.stop();
         };
 

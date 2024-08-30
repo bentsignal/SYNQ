@@ -229,6 +229,14 @@ const Transfer = () => {
                   }
                 }
   
+                const idgen = (len) => {
+                  let result = '';
+                  for (let i = 0; i < len; i++) {
+                    result += Math.floor(Math.random()*10).toString();
+                  }
+                  return result;
+                }
+  
                 errorClose.addEventListener('click', () => {
                   overlay.style.display = 'none';
                   errorPopup.style.display = 'none';
@@ -262,6 +270,7 @@ const Transfer = () => {
                           file = event.target.files[i]
                           const name = file.name
                           const type = file.type
+                          const id = idgen(10);
                           const blob = new Blob( [file], { type: type } )
                           const arrayBuffer = await blob.arrayBuffer()
                           const byteArray = new Uint8Array(arrayBuffer);
@@ -278,6 +287,7 @@ const Transfer = () => {
                                 'Content-Type': 'application/json',
                               },
                               body: JSON.stringify({
+                                "id": id,
                                 "name": name, 
                                 "type": type,
                                 "data": b64

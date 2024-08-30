@@ -117,6 +117,7 @@ const Server = () => {
 
         server.route('/startTransfer', 'POST', async (request: server.RequestEvent) => {
           if (homeStateRef.current != 1) {
+            console.log(homeStateRef.current);
             return ({
               statusCode: 400,
               statusDescription: 'Must be on Wifi Transfer page in app'

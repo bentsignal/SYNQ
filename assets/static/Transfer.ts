@@ -234,7 +234,7 @@ const Transfer = () => {
                   errorPopup.style.display = 'none';
                 })
                 
-                document.getElementById('browseFiles').addEventListener('change', async (event) => {
+                const handleFileChange = async (event) => {
                   if (event.target.files) {
                     try {
                       const startEndpoint = window.location.href + 'startTransfer'
@@ -268,9 +268,9 @@ const Transfer = () => {
                           const b64 = btoa(byteArray.reduce((data, byte) => {
                             return data + String.fromCharCode(byte);
                           }, ''));
-                          console.log('Sending file ' + name)
                           const transferEndpoint = window.location.href + 'fileUpload'
                           try {
+                            console.log('Sending file ' + name);
                             const sendResponse = await fetch(transferEndpoint, {
                               method: 'POST',
                               headers: {
@@ -325,7 +325,13 @@ const Transfer = () => {
                     }
                   }
                   document.getElementById('browseFiles').value = '';
-                })
+                }
+  
+                const browseFilesElement = document.getElementById('browseFiles');
+                if (browseFilesElement) {
+                  browseFilesElement.removeEventListener('change', handleFileChange);
+                  browseFilesElement.addEventListener('change', handleFileChange);
+                }
   
                 const setConnected = async (response) => {
                   let body = await response.text()

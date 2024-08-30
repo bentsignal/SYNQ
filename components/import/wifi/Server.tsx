@@ -5,6 +5,8 @@ import * as Device from 'expo-device';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { getWifiInfo, idgen} from '@/lib/SongManager';
 import Transfer from '@/assets/static/Transfer';
+import { NotificationType } from '@/constants/Types';
+import { errorHasMessage } from '@/lib/Errors';
 
 const getIP = async () => {
   return await Network.getIpAddressAsync();
@@ -16,10 +18,13 @@ const Server = () => {
 
     homeState, results, transferProgress,
 
+    addNotification,
+
     setHomeState, setResults, setTransferSize,
     setExportDisabled, setWifiDisabled, setLoading,
     setIP, setSelectedId, setTransferProgress,
-    setLoadAnimInProgress,
+    setLoadAnimInProgress, setShowOverlay,
+    setShowNotificationModal,
 
   } = useGlobalContext();
 
@@ -37,6 +42,20 @@ const Server = () => {
 
   const PORT = 80;
 
+  const sendErrorNotification = (trace: string) => {
+    addNotification(
+      NotificationType.ERROR,
+      'Server Error',
+      'Failed to start server',
+      'There was an issue starting the server for web transfer. Restarting the app will usually resolve this',
+      trace,
+      () => {
+        setShowOverlay(true);
+        setShowNotificationModal(true);
+      }
+    )
+  }
+
   useEffect(() => {
 
     const startServer = async () => {
@@ -49,14 +68,17 @@ const Server = () => {
       }
 
       try {
+
         server.setup(PORT, (event: server.StatusEvent) => {
           if (event.status == 'ERROR') {
             setWifiDisabled(true);
+            sendErrorNotification(event.message);
           }
           else {
             setWifiDisabled(false);
           }
         });
+
         server.route("/", "GET", async (request: server.RequestEvent) => {
           return {
             statusCode: 200,
@@ -65,6 +87,7 @@ const Server = () => {
             body: Transfer(),
           };
         });
+        
         server.route("/reset", "GET", async (request: server.RequestEvent) => {
           setResults([]);
           return {
@@ -72,6 +95,7 @@ const Server = () => {
             statusDescription: "OK - RESET RESULTS"
           };
         });
+
         server.route("/checkConnection", "GET", async (request: server.RequestEvent) => {
           return {
             statusCode: 200,
@@ -80,6 +104,7 @@ const Server = () => {
             body: Device.deviceName ? Device.deviceName : undefined
           };
         });
+
         server.route('/startTransfer', 'POST', async (request: server.RequestEvent) => {
           if (homeStateRef.current != 1) {
             return ({
@@ -110,6 +135,7 @@ const Server = () => {
             });
           }
         });
+
         server.route('/finishTransfer', 'POST', async (request: server.RequestEvent) => {
           setLoading(false);
           setExportDisabled(false);
@@ -122,7 +148,9 @@ const Server = () => {
             statusDescription: "OK - FINISHED TRANSFER"
           });
         });
+
         server.route("/fileUpload", "POST", async (request: server.RequestEvent) => {
+          console.log('upload')
           const body = JSON.parse(request.body);
           const name = body.name ? body.name : '';
           const type = body.type ? body.type : '';
@@ -131,6 +159,7 @@ const Server = () => {
             const id = idgen(10);
             const info = await getWifiInfo(name, id, type, b64);
             if (info) {
+              console.log('file is good, adding')
               const newResults = resultsRef.current;
               newResults.push({
                 'name': name,
@@ -161,12 +190,17 @@ const Server = () => {
             };
           }
         });
+
         server.start();
+
         return () => {
           server.stop();
         };
+
       }
       catch (error) {
+        const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+        sendErrorNotification(trace);
         setWifiDisabled(true);
       }
     }

@@ -105,7 +105,10 @@ const WiFi = () => {
             paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
           }]}
         >
-          <Loading height={100} width={200}/>
+          <Progress 
+            completion={completion} 
+            showCircle={false}
+          />
         </View>
       );
     }

@@ -257,12 +257,14 @@ const Premium = () => {
             }
             catch (error) {
               const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
-              sendErrorNotification(
-                'Premium Error',
-                'We ran into an issue trying to complete your purchase, please try again later', 
-                'Unable to complete purchase', 
-                trace
-              );
+              if (!trace.includes('cancelled')) {
+                sendErrorNotification(
+                  'Premium Error',
+                  'We ran into an issue trying to complete your purchase, please try again later', 
+                  'Unable to complete purchase', 
+                  trace
+                );
+              }
               setLoading(false);
               return false;
             }

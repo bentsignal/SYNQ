@@ -1,7 +1,7 @@
 import { Text, View, Image, TouchableOpacity, ImageSourcePropType } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
-import { darkenColor } from '@/lib/Color';
+import { darkenColor } from '@/lib/ColorManager';
 import { useGlobalContext } from '@/context/GlobalProvider';
 
 type ImportInstructionsProps = {

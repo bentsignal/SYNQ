@@ -3,7 +3,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { useRef, useState } from 'react';
-import { hexToRGB } from '@/lib/Color';
+import { hexToRGB } from '@/lib/ColorManager';
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);

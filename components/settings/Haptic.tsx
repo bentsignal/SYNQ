@@ -1,7 +1,7 @@
 import { Switch } from "react-native-gesture-handler";
 import { Colors } from "@/constants/Colors";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import { getDisabledColor } from "@/lib/Color";
+import { getDisabledColor } from "@/lib/ColorManager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Haptic = () => {

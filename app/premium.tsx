@@ -11,7 +11,7 @@ import { NotificationType } from '@/constants/Types';
 import Notifications from '@/components/notifications/Notifications';
 import PremiumOption from '@/components/PremiumOption';
 import Loading from '@/components/Loading';
-import { darkenColor } from '@/lib/Color';
+import { darkenColor } from '@/lib/ColorManager';
 import * as Haptics from 'expo-haptics';
 import * as PurchaseManager from '@/lib/PurchaseManager';
 

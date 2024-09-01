@@ -10,7 +10,7 @@ import CustomButton from '@/components/CustomButton';
 import { replaceColor } from 'lottie-colorify';
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
-import { darkenColor } from "@/lib/Color";
+import { darkenColor } from "@/lib/ColorManager";
 
 export const Success = () => {
 

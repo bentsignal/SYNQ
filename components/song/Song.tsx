@@ -11,7 +11,7 @@ import { ListCover } from '@/components/song/Cover';
 import { BlurView } from 'expo-blur';
 import CustomButton from '../CustomButton';
 import Skeleton from '../Skeleton';
-import { darkenColor } from '@/lib/Color';
+import { darkenColor } from '@/lib/ColorManager';
 import * as Haptics from 'expo-haptics';
 
 const Dot = () => {

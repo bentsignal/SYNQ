@@ -4,7 +4,7 @@ import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import CustomButton from '@/components/CustomButton';
 import { exportSongs} from '@/lib/SongManager';
-import { darkenColor } from '@/lib/Color';
+import { darkenColor } from '@/lib/ColorManager';
 import Notifications from '@/components/notifications/Notifications';
 
 const ImportControls = ({reset}: {reset?: () => void}) => {

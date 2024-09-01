@@ -81,7 +81,9 @@ const Server = () => {
           if (event.status == 'ERROR') {
             setWifiDisabled(true);
             setServerStarted(false);
-            sendErrorNotification(event.message);
+            if (event.message !== 'Address already in use') {
+              sendErrorNotification(event.message);
+            }
           }
           else {
             setWifiDisabled(false);

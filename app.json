@@ -16,7 +16,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.directedbyshawn.synq",
-      "buildNumber": "1",
+      "buildNumber": "3",
       "infoPlist": {
         "CFBundleDisplayName": "SYNQ",
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",

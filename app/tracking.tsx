@@ -54,13 +54,14 @@ const Tracking = () => {
             width: '100%',
             height: '100%',
           }}
+          resizeMode='cover'
         />
         <LinearGradient
           style={{
             position: 'absolute', 
-            top: 0,
+            bottom: 0,
             width: '100%', 
-            height: '100%',
+            height: '40%',
           }}
           colors={['rgba(16, 16, 16, 0)', 'rgba(16, 16, 16, 1)']}
           pointerEvents={'none'}
@@ -92,7 +93,7 @@ const Tracking = () => {
             width: '100%'
           }]}
         >
-          While we do have to serve ads, we don't want to be too annoying. To 
+          While we do have to serve ads, we don't want to be annoying. To 
           provide a better experience, we can use activity provided by other 
           apps and websites on your device to provide a more personalized experience.
         </Text>
@@ -109,23 +110,23 @@ const Tracking = () => {
             gap: 10,
             flex: 1,
             width: '100%',
-            justifyContent: 'flex-end',
+            justifyContent: 'flex-start',
             alignItems: 'center',
             marginBottom: insets.bottom + 10,
           }}
         >
           <CustomButton
-            title={'Allow'}
+            title={'Continue'}
             background={Colors.main}
             handlePress={handleRequest}
             buttonWidth={'100%'}
           />
-          <CustomButton
+          {/* <CustomButton
             title={"Don't Allow"}
             background={Colors.altButton}
             handlePress={handleRequest}
             buttonWidth={'100%'}
-          />
+          /> */}
           
         </View>
       </View>

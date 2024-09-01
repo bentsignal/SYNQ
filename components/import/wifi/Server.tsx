@@ -6,7 +6,6 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { getWifiInfo, idgen} from '@/lib/SongManager';
 import Transfer from '@/assets/static/Transfer';
 import { NotificationType } from '@/constants/Types';
-import { errorHasMessage } from '@/lib/Errors';
 
 const getIP = async () => {
   return await Network.getIpAddressAsync();
@@ -210,7 +209,7 @@ const Server = () => {
 
       }
       catch (error) {
-        const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+        const trace = error instanceof Error ? error.message : String(error);
         sendErrorNotification(trace);
         setWifiDisabled(true);
       }

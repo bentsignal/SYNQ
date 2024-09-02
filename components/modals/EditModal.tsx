@@ -37,189 +37,165 @@ const EditModal = () => {
   }, [showEdit]);
 
   return (
-    <View
-      style={{
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}
+    <Modal
+      transparent={true}
+      visible={showEdit}
+      animationType='slide'
     >
-      <Modal
-        transparent={true}
-        visible={showEdit}
-        animationType='slide'
+      <KeyboardAwareScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ flexGrow: 1 }}
       >
-        <View style={Styles.popupBackdrop}>
-          <KeyboardAwareScrollView
-            style={{
-              width: '100%'
-            }}
-            contentContainerStyle={{
-              flexGrow: 1,
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            <View
-              style={[ Styles.popupBody, Styles.roundedContainer, {
-                width: '90%',
-              }]}
-            >
-              <View
-                style={{
-                  width: '100%',
-                  padding: 20
-                }}
-              >
-                <View
+        <View style={[Styles.popupBackdrop, { minHeight: '100%' }]}>
+          <View style={[
+            Styles.popupBody,
+            Styles.roundedContainer,
+            {
+              width: '90%',
+              maxWidth: 400,
+              marginVertical: 100,
+              alignSelf: 'center'
+            }
+          ]}>
+            <View style={{ width: '100%', padding: 20 }}>
+              <View style={{ width: '100%', }}>
+                <Text
                   style={{
-                    width: '100%',
+                    color: 'white',
+                    fontSize: 36,
+                    fontWeight: 'bold'
                   }}
                 >
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontSize: 36,
-                      fontWeight: 'bold'
+                  {selectedSongs.length > 0 ? 'Edit Songs' : 'Edit Song'}
+                </Text>
+                
+                <View
+                  style={{
+                    marginTop: 20,
+                    marginBottom: 20,
+                    alignSelf: 'flex-start'
+                  }}
+                >
+                  <EditCover 
+                    image={cover}
+                    handlePress={async () => {
+                      setLoading(true);
+                      const cover = await newCover();
+                      if (cover) {
+                        setCover(cover)
+                      }
+                      setLoading(false);
                     }}
-                  >
-                    {selectedSongs.length > 0 ? 'Edit Songs' : 'Edit Song'}
-                  </Text>
-                  <View
-                    style={{
-                      marginTop: 20,
-                      marginBottom: 20,
-                      alignSelf: 'flex-start'
-                    }}
-                  >
-                    <EditCover 
-                      image={cover}
-                      handlePress={async () => {
-                        setLoading(true);
-                        const cover = await newCover();
-                        if (cover) {
-                          setCover(cover)
-                        }
-                        setLoading(false);
-                      }}
-                    />
-                    {/* <Text 
-                      style={[Styles.infoText, {
-                        marginTop: 5,
-                        fontSize: 12
-                      }]
-                    }>
-                      Supports: jpeg/png/heif
-                    </Text> */}
-                    { selectedSongs.length == 0 ? 
-                      <Text
-                        style={{
-                          color: 'white',
-                          fontWeight: 'bold',
-                          marginTop: 10,
-                          fontSize: 16
-                        }}
-                        numberOfLines={1}
-                      >
-                        {maybeString(editSong.name)}
-                      </Text>
-                      :
-                      <></>
-                    }
-                  </View>
+                  />
                   { selectedSongs.length == 0 ? 
-                    <>
-                      <Text
-                        style={Styles.textboxLabel}
-                      >
-                        Song Title
-                      </Text>
-                      <TextInput 
-                        style={[Styles.textbox, Styles.roundedContainer]}
-                        autoCorrect={false}
-                        editable
-                        numberOfLines={1}
-                        value={title}
-                        onChangeText={text => setTitle(text)}
-                        placeholder={'Enter song title...'}
-                        placeholderTextColor={Colors.altDisabled}
-                      />
-                    </>
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontWeight: 'bold',
+                        marginTop: 10,
+                        fontSize: 16
+                      }}
+                      numberOfLines={1}
+                    >
+                      {maybeString(editSong.name)}
+                    </Text>
                     :
                     <></>
                   }
-                  <Text
-                    style={Styles.textboxLabel}
-                  >
-                    Artist
-                  </Text>
-                  <TextInput
-                    style={[Styles.textbox, Styles.roundedContainer]}
-                    autoCorrect={false}
-                    editable
-                    numberOfLines={1}
-                    value={artist}
-                    onChangeText={text => setArtist(text)}
-                    placeholder={'Enter artist(s)...'}
-                    placeholderTextColor={Colors.altDisabled}
-                  />
-                  <Text
-                    style={Styles.textboxLabel}
-                  >
-                    Album
-                  </Text>
-                  <TextInput
-                    style={[Styles.textbox, Styles.roundedContainer]}
-                    autoCorrect={false}
-                    editable
-                    numberOfLines={1}
-                    value={album}
-                    onChangeText={text => setAlbum(text)}
-                    placeholder={'Enter album name...'}
-                    placeholderTextColor={Colors.altDisabled}
-                  />
                 </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: 10,
-                    marginTop: 10,
-                    marginBottom: 5
-                  }}
+                { selectedSongs.length == 0 ? 
+                  <>
+                    <Text
+                      style={Styles.textboxLabel}
+                    >
+                      Song Title
+                    </Text>
+                    <TextInput 
+                      style={[Styles.textbox, Styles.roundedContainer]}
+                      autoCorrect={false}
+                      editable
+                      numberOfLines={1}
+                      value={title}
+                      onChangeText={text => setTitle(text)}
+                      placeholder={'Enter song title...'}
+                      placeholderTextColor={Colors.altDisabled}
+                    />
+                  </>
+                  :
+                  <></>
+                }
+                <Text
+                  style={Styles.textboxLabel}
                 >
-                  <CustomButton 
-                    title='Cancel'
-                    background={Colors.altButton}
-                    handlePress={() => {
+                  Artist
+                </Text>
+                <TextInput
+                  style={[Styles.textbox, Styles.roundedContainer]}
+                  autoCorrect={false}
+                  editable
+                  numberOfLines={1}
+                  value={artist}
+                  onChangeText={text => setArtist(text)}
+                  placeholder={'Enter artist(s)...'}
+                  placeholderTextColor={Colors.altDisabled}
+                />
+                <Text
+                  style={Styles.textboxLabel}
+                >
+                  Album
+                </Text>
+                <TextInput
+                  style={[Styles.textbox, Styles.roundedContainer]}
+                  autoCorrect={false}
+                  editable
+                  numberOfLines={1}
+                  value={album}
+                  onChangeText={text => setAlbum(text)}
+                  placeholder={'Enter album name...'}
+                  placeholderTextColor={Colors.altDisabled}
+                />
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: 10,
+                  marginTop: 10,
+                  marginBottom: 5
+                }}
+              >
+                <CustomButton 
+                  title='Cancel'
+                  background={Colors.altButton}
+                  handlePress={() => {
+                    setShowOverlay(false);
+                    setShowEdit(false);
+                  }}
+                />
+                <CustomButton 
+                  title='Save'
+                  background={theme}
+                  handlePress={() => {
+                    setLoading(true);
+                    setTimeout(() => {
+                      const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id];
+                      const newResults = saveEdits(
+                        results,
+                        ids,
+                        title,
+                        artist,
+                        album,
+                        cover
+                      );
+                      setResults(newResults);
+                      setLoading(false);
                       setShowOverlay(false);
                       setShowEdit(false);
-                    }}
-                  />
-                  <CustomButton 
-                    title='Save'
-                    background={theme}
-                    handlePress={() => {
-                      setLoading(true);
-                      setTimeout(() => {
-                        const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id];
-                        const newResults = saveEdits(
-                          results,
-                          ids,
-                          title,
-                          artist,
-                          album,
-                          cover
-                        );
-                        setResults(newResults);
-                        setLoading(false);
-                        setShowOverlay(false);
-                        setShowEdit(false);
-                        setSelectEnabled(false);
-                      }, 1000)
-                    }}
-                  />
-                </View>
+                      setSelectEnabled(false);
+                    }, 1000)
+                  }}
+                />
               </View>
               <View
                 style={{
@@ -236,10 +212,10 @@ const EditModal = () => {
                 <Loading height={100} width={200}/>
               </View>
             </View>
-          </KeyboardAwareScrollView>
+          </View>
         </View>
-      </Modal>
-    </View>
+      </KeyboardAwareScrollView>
+    </Modal>
   );
 
 }

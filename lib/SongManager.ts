@@ -27,7 +27,8 @@ export const getCompletion = (size: number, progress: number) => {
       return result;
     }
   }
-  catch {
+  catch (error) {
+    console.error('Error getting completion percentage:', error);
     return 0;
   }
 }

@@ -112,7 +112,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
           disabledColor={Colors.altDisabled}
         />
         <CustomButton 
-          title='Export'
+          title='Import'
           background={theme}
           handlePress={() => {
             setExportDisabled(true);

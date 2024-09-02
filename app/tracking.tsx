@@ -121,13 +121,6 @@ const Tracking = () => {
             handlePress={handleRequest}
             buttonWidth={'100%'}
           />
-          {/* <CustomButton
-            title={"Don't Allow"}
-            background={Colors.altButton}
-            handlePress={handleRequest}
-            buttonWidth={'100%'}
-          /> */}
-          
         </View>
       </View>
     </View>

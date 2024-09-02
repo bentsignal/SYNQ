@@ -41,7 +41,7 @@ const RootLayout = () => {
         await AsyncStorage.setItem('first', 'false');
         await connect();
         const restored = await restorePurchases();
-        if (restored.success) {
+        if (restored !== '') {
           setPremium(true);
         }
       }

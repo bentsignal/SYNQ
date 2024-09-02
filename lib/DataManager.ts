@@ -48,13 +48,13 @@ class DataManager {
       await this.db?.execAsync(`
         CREATE TABLE IF NOT EXISTS songs (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
+          path TEXT NOT NULL,
           title TEXT,
           artists TEXT,
           album TEXT,
           genre TEXT,
-          duration INTEGER NOT NULL,
-          path TEXT NOT NULL
-        )
+          duration INTEGER,
+        );
       `);
       return true;
     }

@@ -29,7 +29,7 @@ const ImportInstructions = (
   return (
     <TouchableOpacity
       onPress={handlePress}
-      activeOpacity={1}//disabled ? 1 : .9}
+      activeOpacity={1}
       style={[Styles.roundedContainer, {
         flexDirection: 'row',
         alignItems: 'center',
@@ -48,19 +48,10 @@ const ImportInstructions = (
         }}
       />
       <View>
-        <Text
-          style={{
-            fontSize: 16,
-          }}
-        >
+        <Text style={Styles.p}>
           {title}
         </Text>
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: 'bold'
-          }}
-        >
+        <Text style={Styles.h4}>
           {desc}
         </Text>
       </View>

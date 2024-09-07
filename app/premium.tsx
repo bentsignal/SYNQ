@@ -254,7 +254,7 @@ const Premium = () => {
       }
       return (
         <>
-          <Text style={{ color: Colors.text, fontWeight: 'bold', marginBottom: 10 }}>
+          <Text style={[{ color: Colors.text, fontWeight: 'bold', marginBottom: 10 }]}>
             {first}
           </Text>
           <Text style={{ color: Colors.text }}>
@@ -357,23 +357,19 @@ const Premium = () => {
             }}
           />
           <Text
-            style={{
-              color: 'white',
-              fontSize: 28,
-              fontWeight: 'bold',
-              marginBottom: 20,
-            }}
+            style={[Styles.h2, {
+              color: Colors.text,
+              marginBottom: 15,
+            }]}
           >
             Premium
           </Text>
           <Text
-            style={{
-              color: 'white',
-              fontSize: 20,
-              fontWeight: 'bold',
+            style={[Styles.h4, {
+              color: Colors.text,
               width: '80%',
               textAlign: 'center',
-            }}
+            }]}
           >
             Ad free. No limits.
           </Text>

@@ -48,19 +48,10 @@ const Option = ({
         }}
       />
       <View>
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: 'bold'
-          }}
-        >
+        <Text style={Styles.h4}>
           {title}
         </Text>
-        <Text
-          style={{
-            fontSize: 16
-          }}
-        >
+        <Text style={Styles.p}>
           {desc}
         </Text>
       </View>

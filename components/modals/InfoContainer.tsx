@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useState, useEffect } from 'react';
+import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
@@ -69,7 +70,7 @@ const InfoContainer = ({ title, contentHeight, children }: InfoContainerProps) =
         onPress={toggleOpen}
         activeOpacity={1}
       >
-        <Text style={{ fontSize: 24, fontWeight: 'bold', color: theme }}>
+        <Text style={[Styles.h3, { color: theme } ]}>
           {title}
         </Text>
         <Animated.View

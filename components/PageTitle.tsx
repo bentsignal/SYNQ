@@ -1,4 +1,4 @@
-import { Text, Image, TouchableOpacity, View } from "react-native";
+import { Text, Image, TouchableOpacity, View, StyleSheet } from "react-native";
 import { Styles } from "@/constants/Styles";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Colors } from "@/constants/Colors";
@@ -23,6 +23,38 @@ const PageTitle = ({
   
   } = useGlobalContext();
 
+  const Local = StyleSheet.create({
+    pageTitle: {
+      textAlign: 'left',
+      alignSelf: 'stretch',
+      color: Colors.text,
+    },
+    pageTitleContainer: {
+      width: '90%',
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      marginBottom: 20
+    },
+    listWrapper: {
+      flexGrow: 1,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'flex-end',
+    },
+    listIcon: {
+      width: 20,
+      height: 20,
+      tintColor: selectEnabled ? theme : 'white',
+    },
+    infoIcon: {
+      height: 25,
+      width: 25,
+      marginLeft: 10,
+      tintColor: theme,
+    }
+  });
+
   const info = () => {
     if (infoHandler) {
       return (
@@ -34,12 +66,7 @@ const PageTitle = ({
         >
           <Image 
             source={require('@/assets/icons/info.png')}
-            style={{
-              height: 25,
-              width: 25,
-              marginLeft: 10,
-              tintColor: theme,
-            }}
+            style={Local.infoIcon}
           />
         </TouchableOpacity>
       );
@@ -54,14 +81,7 @@ const PageTitle = ({
   const list = () => {
     if (showList) {
       return (
-        <View
-          style={{
-            flexGrow: 1,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'flex-end',
-          }}
-        >
+        <View style={Local.listWrapper}>
           <TouchableOpacity
             onPress={() => {
               setSelectEnabled(!selectEnabled);
@@ -72,34 +92,17 @@ const PageTitle = ({
                         ? require('@/assets/icons/list-active.png') 
                         : require('@/assets/icons/list.png')
                       }
-              style={{
-                width: 20,
-                height: 20,
-                tintColor: selectEnabled ? theme : 'white',
-              }}
+              style={Local.listIcon}
             />
           </TouchableOpacity>
         </View>
       )
     }
-    else {
-      return (
-        <></>
-      );
-    }
   }
 
   return (
-    <View
-      style={{
-        width: '90%',
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        marginBottom: 20
-      }}
-    >
-      <Text style={Styles.pageTitle}>
+    <View style={Local.pageTitleContainer}>
+      <Text style={[Styles.h1, Local.pageTitle]}>
         {title}
       </Text>
       {info()}
@@ -108,5 +111,7 @@ const PageTitle = ({
   );
   
 }
+
+
 
 export default PageTitle;

@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { InfoType } from '@/constants/Types';
+import { Styles } from '@/constants/Styles';
 
 const SongInfo = ({info, name}: {info: InfoType, name: string}) => {
 
@@ -14,24 +15,16 @@ const SongInfo = ({info, name}: {info: InfoType, name: string}) => {
         }}
       >
         <Text
-          style={{
-            color: Colors.text,
-            fontWeight: 'bold',
-            fontSize: 16,
-          }}
+          style={[Styles.h5, { color: Colors.text}]}
           numberOfLines={1}
         >
           {info.metadata.name}
         </Text>
         <Text
-          style={{
-            color: Colors.text,
-            fontWeight: 'medium',
-            fontSize: 14,
-          }}
+          style={[Styles.sub, { color: Colors.text }]}
           numberOfLines={1}
         >
-          {info.metadata.artist} · {info.metadata.album}
+          {info.metadata.artist} {info.metadata.album ? `· ${info.metadata.album}` : ''}
         </Text>
       </View>
     );
@@ -46,11 +39,7 @@ const SongInfo = ({info, name}: {info: InfoType, name: string}) => {
         }}
       >
         <Text
-          style={{
-            color: Colors.text,
-            fontWeight: 'bold',
-            fontSize: 16,
-          }}
+          style={[Styles.h5, { color: Colors.text }]}
           numberOfLines={1}
         >
           {name}

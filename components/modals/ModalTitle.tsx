@@ -1,14 +1,10 @@
 import { Text } from "react-native";
+import { Styles } from "@/constants/Styles";
+import { Colors } from "@/constants/Colors";
 
 const ModalTitle = ({title}: {title: string;}) => {
   return (
-    <Text
-      style={{
-        color: 'white',
-        fontSize: 36,
-        fontWeight: 'bold'
-      }}
-    >
+    <Text style={[Styles.h1, { color: Colors.text }]}>
       {title}
     </Text>
   );

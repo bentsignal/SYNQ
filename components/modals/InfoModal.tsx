@@ -1,4 +1,4 @@
-import { Text, View, Dimensions, Image, } from "react-native";
+import { Text, View, Dimensions, Image, StyleSheet, } from "react-native";
 import CustomModal from "./CustomModal";
 import VerticalScrollView from "../VerticalScrollView";
 import CustomButton from "../CustomButton";
@@ -18,45 +18,65 @@ const InfoModal = () => {
   
   } = useGlobalContext();
 
+  const Local = StyleSheet.create({
+    wrapper: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '95%',
+      marginTop: 20,
+      marginBottom: 20,
+    },
+    container: {
+      width: '95%',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      marginTop: 20,
+      marginBottom: 50,
+    },
+    infoContentContainer: {
+      width: '100%',
+      marginTop: 20,
+    },
+    infoStepContainer: {
+      width: '100%',
+      marginBottom: 20,
+    },
+    infoStepTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: Colors.text,
+      marginBottom: 5,
+    },
+    infoStepDescription: {
+      fontSize: 16,
+      color: Colors.infoText,
+      marginBottom: 20,
+    },
+  });
+
   return (
     <CustomModal
       show={showInfoModal}
       width={'95%'}
     >
-      <View
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '95%',
-          marginTop: 20,
-          marginBottom: 20,
-        }}
-      >
+      <View style={Local.wrapper}>
         <ModalTitle title={'Instructions'} />
         <VerticalScrollView
           backgroundColor={Colors.popup}
           maxHeight={Dimensions.get('screen').height * 0.58}
           minHeight={Dimensions.get('screen').height * 0.58}
         >
-          <View
-            style={{
-              width: '95%',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              marginTop: 20,
-              marginBottom: 50
-            }}
-          >
+          <View style={Local.container}>
             <InfoContainer 
               title={'Spotify Setup'} 
               contentHeight={980}
             >
-              <View style={Styles.infoContentContainer}>
-                <View style={Styles.infoStepContainer}>
-                  <Text style={Styles.infoStepTitle}>
+              <View style={Local.infoContentContainer}>
+                <View style={Local.infoStepContainer}>
+                  <Text style={Local.infoStepTitle}>
                     1. Enable local files in Spotify
                   </Text>
-                  <Text style={Styles.infoStepDescription}>
+                  <Text style={Local.infoStepDescription}>
                     Spotify → Settings → Local Files
                   </Text>
                   <Image 
@@ -65,11 +85,11 @@ const InfoModal = () => {
                     resizeMode='contain'
                   />
                 </View>
-                <View style={Styles.infoStepContainer}>
-                  <Text style={Styles.infoStepTitle}>
+                <View style={Local.infoStepContainer}>
+                  <Text style={Local.infoStepTitle}>
                     2. Save your music to:
                   </Text>
-                  <Text style={Styles.infoStepDescription}>
+                  <Text style={Local.infoStepDescription}>
                     On My iPhone → Spotify
                   </Text>
                   <Image 
@@ -78,11 +98,11 @@ const InfoModal = () => {
                     resizeMode='contain'
                   />
                 </View>
-                <View style={Styles.infoStepContainer}>
-                  <Text style={Styles.infoStepTitle}>
+                <View style={Local.infoStepContainer}>
+                  <Text style={Local.infoStepTitle}>
                     3. Listen in Spotify:
                   </Text>
-                  <Text style={Styles.infoStepDescription}>
+                  <Text style={Local.infoStepDescription}>
                     Playlists → Local Files
                   </Text>
                   <Image 
@@ -95,11 +115,11 @@ const InfoModal = () => {
             </InfoContainer>
             <InfoContainer 
               title={'How to Export'}
-              contentHeight={900}
+              contentHeight={950}
             >
-              <View style={Styles.infoContentContainer}>
-                <View style={Styles.infoStepContainer}>
-                  <Text style={[Styles.infoStepTitle, {marginBottom: 20}]}>
+              <View style={Local.infoContentContainer}>
+                <View style={Local.infoStepContainer}>
+                  <Text style={[Local.infoStepTitle, {marginBottom: 20}]}>
                     1. Hit the blue "Export" button
                   </Text>
                   <Image 
@@ -108,21 +128,21 @@ const InfoModal = () => {
                     resizeMode='contain'
                   />
                 </View>
-                <View style={Styles.infoStepContainer}>
-                  <Text style={[Styles.infoStepTitle, {marginBottom: 20}]}>
+                <View style={Local.infoStepContainer}>
+                  <Text style={[Local.infoStepTitle, {marginBottom: 20}]}>
                     2. Hit "Save to Files" in the popup
                   </Text>
                   <Image 
                     source={require('@/assets/images/save-instructions.jpg')}
-                    style={{ width: '100%', height: 200 }}
+                    style={{ width: '100%', height: 250 }}
                     resizeMode='contain'
                   />
                 </View>
-                <View style={Styles.infoStepContainer}>
-                  <Text style={Styles.infoStepTitle}>
+                <View style={Local.infoStepContainer}>
+                  <Text style={Local.infoStepTitle}>
                     3. Find Spotify folder and hit Save:
                   </Text>
-                  <Text style={Styles.infoStepDescription}>
+                  <Text style={Local.infoStepDescription}>
                     On My iPhone → Spotify
                   </Text>
                   <Image 
@@ -137,24 +157,24 @@ const InfoModal = () => {
               title={"Network Transfer"}
               contentHeight={400}
             >
-              <View style={Styles.infoContentContainer}>
-                <View style={Styles.infoStepContainer}>
-                  <Text style={Styles.infoStepTitle}>
+              <View style={Local.infoContentContainer}>
+                <View style={Local.infoStepContainer}>
+                  <Text style={Local.infoStepTitle}>
                     How does it work?
                   </Text>
-                  <Text style={Styles.infoStepDescription}>
+                  <Text style={Local.infoStepDescription}>
                     When you go to the Network Transfer tab, a small web server is started
                     on your device, running inside this app. The server is only accessible 
                     from other devices on your Wifi network, and cannot be accessed from elsewhere 
                     without additional setup.
                   </Text>
-                  <Text style={Styles.infoStepDescription}>
+                  <Text style={Local.infoStepDescription}>
                     To access this web server, go to a web browser on your computer, or any other
                     device on your network. In the address bar, type in the IP address shown on 
                     the Network Transfer page, and the server running on your phone will return 
                     the web page to the web browser. 
                   </Text>
-                  <Text style={Styles.infoStepDescription}>
+                  <Text style={Local.infoStepDescription}>
                     From there, you can upload files from your web browser, straight into the app.
                     The server will send the files over your local network, never using the internet. 
                   </Text>
@@ -170,9 +190,7 @@ const InfoModal = () => {
             setShowOverlay(false);
             setShowInfoModal(false);
           }}
-          customStyles={{
-            marginTop: 10
-          }}
+          customStyles={{ marginTop: 10 }}
         />
       </View>
     </CustomModal>

@@ -1,4 +1,4 @@
-import { View, Text, } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import PageTitle from '@/components/PageTitle';
 import Option from "@/components/Option";
@@ -18,10 +18,17 @@ const Settings = () => {
   
   } = useGlobalContext();
 
-  return (
-    <View style={[Styles.body, {
+  const Local = StyleSheet.create({
+    container: {
       backgroundColor: Colors.background,
-      }]}>
+    },
+    settingsCategoryContainer: {
+      width: '90%',
+    }
+  });
+
+  return (
+    <View style={[Styles.body, Local.container]}>
       <Bar />
       <PageTitle title='Settings'/>
       <Option 
@@ -32,11 +39,11 @@ const Settings = () => {
         handlePress={() => router.push("/premium")}
       /> 
       <CategoryTitle title="Theme" requiresPremium={true}/>
-      <View style={Styles.settingsCategoryContainer}>
+      <View style={Local.settingsCategoryContainer}>
         <Theme />
       </View>
       <CategoryTitle title="Haptic Feedback" />
-      <View style={Styles.settingsCategoryContainer}>
+      <View style={Local.settingsCategoryContainer}>
         <Haptic />
       </View>
     </View>

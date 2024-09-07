@@ -1,14 +1,25 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
-import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
 
 const Top = () => {
 
   const { logo } = useGlobalContext();
 
+  const Local = StyleSheet.create({
+    top: {
+      width: '90%',
+      alignSelf: 'center',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: 10,
+      marginBottom: 30
+    },
+  });
+
   return (
-    <View style={Styles.top}>
+    <View style={Local.top}>
       <Image 
         source={logo}
         style={{

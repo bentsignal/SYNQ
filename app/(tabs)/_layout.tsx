@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { View } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import SongOptions from '@/components/sheets/SongOptions';
 import { useEffect, useRef } from 'react';
 import Server from '@/components/import/wifi/Server';
@@ -21,6 +21,21 @@ const TabLayout = () => {
     setPremium, setHaptic,
   
   } = useGlobalContext();
+
+  const Local = StyleSheet.create({
+    tabBar: {
+      borderTopWidth: 1,
+      borderTopColor: Colors.popup,
+      backgroundColor: Colors.footer,
+      height: '11%',
+      paddingTop: 10,
+      paddingBottom: Dimensions.get('screen').height < 700 ? 15 : 30
+    },
+    tabBarLabel: {
+      fontSize: 12,
+      fontWeight: 'bold',
+    },
+  });
 
   useEffect(() => {
 
@@ -83,8 +98,8 @@ const TabLayout = () => {
           headerShown: false,
           tabBarActiveTintColor: Colors.tabActive,
           tabBarInactiveTintColor: Colors.tabInactive,
-          tabBarStyle: Styles.tabBar,
-          tabBarLabelStyle: Styles.tabBarLabel
+          tabBarStyle: Local.tabBar,
+          tabBarLabelStyle: Styles.h6
         }}
         sceneContainerStyle={{
           backgroundColor: Colors.background,

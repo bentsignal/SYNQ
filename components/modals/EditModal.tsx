@@ -1,4 +1,4 @@
-import { Text, View, Modal, TextInput } from 'react-native';
+import { Text, View, Modal, TextInput, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useState, useEffect } from 'react';
 import CustomButton from '@/components/CustomButton';
@@ -87,7 +87,7 @@ const EditModal = () => {
                       setLoading(false);
                     }}
                   />
-                  { selectedSongs.length == 0 ? 
+                  { selectedSongs.length === 0 ? 
                     <Text
                       style={{
                         color: 'white',
@@ -108,7 +108,7 @@ const EditModal = () => {
                     <Text
                       style={Styles.textboxLabel}
                     >
-                      Song Title
+                      Title
                     </Text>
                     <TextInput 
                       style={[Styles.textbox, Styles.roundedContainer]}
@@ -127,33 +127,120 @@ const EditModal = () => {
                 <Text
                   style={Styles.textboxLabel}
                 >
-                  Artist
+                  Artists
                 </Text>
-                <TextInput
-                  style={[Styles.textbox, Styles.roundedContainer]}
-                  autoCorrect={false}
-                  editable
-                  numberOfLines={1}
-                  value={artist}
-                  onChangeText={text => setArtist(text)}
-                  placeholder={'Enter artist(s)...'}
-                  placeholderTextColor={Colors.altDisabled}
-                />
-                <Text
-                  style={Styles.textboxLabel}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginBottom: 15,
+                    maxHeight: 50,
+                  }}
                 >
-                  Album
-                </Text>
-                <TextInput
-                  style={[Styles.textbox, Styles.roundedContainer]}
-                  autoCorrect={false}
-                  editable
-                  numberOfLines={1}
-                  value={album}
-                  onChangeText={text => setAlbum(text)}
-                  placeholder={'Enter album name...'}
-                  placeholderTextColor={Colors.altDisabled}
-                />
+                  <TextInput
+                    style={[Styles.textbox, Styles.roundedContainer, { marginBottom: 0, flex: 1}]}
+                    autoCorrect={false}
+                    editable
+                    numberOfLines={1}
+                    value={artist}
+                    onChangeText={text => setArtist(text)}
+                    placeholder={'Add artist...'}
+                    placeholderTextColor={Colors.altDisabled}
+                  />
+                  <TouchableOpacity 
+                    style={[Styles.roundedContainer, {
+                      width: 50,
+                      marginBottom: 15,
+                      marginLeft: 10,
+                      height: '100%',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      backgroundColor: Colors.altButton,
+                    }]}
+                    activeOpacity={0.6}
+                  >
+                     <View style={{
+                        width: 15,
+                        height: 3.5,
+                        backgroundColor: 'black',
+                        borderRadius: 2,
+                        position: 'absolute',
+                      }} />
+                      <View style={{
+                        width: 3.5,
+                        height: 15,
+                        backgroundColor: 'black',
+                        borderRadius: 2,
+                        position: 'absolute',
+                      }} />
+                  </TouchableOpacity>
+                </View>
+                { selectedSongs.length === 0 ?
+                  <>
+                    <View
+                      style={[Styles.roundedContainer, {
+                        flexDirection: 'row',
+                        width: '100%',
+                        height: 50,
+                        maxHeight: 50,
+                      }]}
+                    >
+                      <TouchableOpacity
+                        style={{
+                          flex: 1,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          backgroundColor: theme,
+                          borderTopLeftRadius: 15,
+                          borderBottomLeftRadius: 15,
+                        }}
+                        activeOpacity={0.6}
+                      >
+                        <Text style={{
+                          fontWeight: 'bold',
+                          fontSize: 16
+                        }}>
+                          Single
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={{
+                          flex: 1,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          backgroundColor: Colors.altButton,
+                          borderTopRightRadius: 15,
+                          borderBottomRightRadius: 15,
+                        }}
+                        activeOpacity={0.6}
+                      >
+                        <Text style={{
+                          fontWeight: 'bold',
+                          fontSize: 16
+                        }}>
+                          Album
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                  :
+                  <>
+                    <Text
+                      style={Styles.textboxLabel}
+                    >
+                      Album
+                    </Text>
+                    <TextInput
+                      style={[Styles.textbox, Styles.roundedContainer]}
+                      autoCorrect={false}
+                      editable
+                      numberOfLines={1}
+                      value={album}
+                      onChangeText={text => setAlbum(text)}
+                      placeholder={'Enter album name...'}
+                      placeholderTextColor={Colors.altDisabled}
+                    />
+                  </>
+                }
               </View>
               <View
                 style={{

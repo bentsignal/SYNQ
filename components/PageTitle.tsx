@@ -74,7 +74,8 @@ const PageTitle = ({
                       }
               style={{
                 width: 20,
-                height: 20
+                height: 20,
+                tintColor: selectEnabled ? theme : 'white',
               }}
             />
           </TouchableOpacity>

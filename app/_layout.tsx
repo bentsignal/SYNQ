@@ -3,7 +3,6 @@ import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
-import * as Network from 'expo-network';
 import GlobalProvider from "@/context/GlobalProvider";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";

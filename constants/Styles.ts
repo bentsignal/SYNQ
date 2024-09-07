@@ -2,6 +2,8 @@ import { StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
 export const Styles = StyleSheet.create({
+
+  // Text styles
   h1: {
     fontSize: 36,
     fontWeight: 'bold',
@@ -32,6 +34,18 @@ export const Styles = StyleSheet.create({
   sub: {
     fontSize: 14,
   },
+  textboxLabel: {
+    fontSize: 14,
+    color: Colors.text,
+    marginBottom: 5
+  },
+  infoText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.text
+  },
+
+  // Container styles
   body: {
     flex: 1,
     alignItems: 'center',
@@ -57,11 +71,6 @@ export const Styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  infoText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.text
-  },
   textbox: {
     backgroundColor: Colors.textbox,
     color: Colors.text,
@@ -70,11 +79,6 @@ export const Styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     marginBottom: 10,
-  },
-  textboxLabel: {
-    fontSize: 14,
-    color: Colors.text,
-    marginBottom: 5
   },
   backgroundBlendShadow: {
     shadowColor: Colors.background,
@@ -85,4 +89,5 @@ export const Styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 5,
   },
+  
 });

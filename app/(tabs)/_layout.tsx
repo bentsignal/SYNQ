@@ -35,6 +35,13 @@ const TabLayout = () => {
       fontSize: 12,
       fontWeight: 'bold',
     },
+    bottomSheetWrapper: {
+      position: 'absolute', 
+      height: '100%', 
+      zIndex: 100,
+      width: '100%',
+      pointerEvents: showSongOptions ? 'auto' : 'none',
+    },
   });
 
   useEffect(() => {
@@ -80,14 +87,7 @@ const TabLayout = () => {
 
   return (
     <>
-      <View style={{
-          position: 'absolute', 
-          height: '100%', 
-          zIndex: 100,
-          width: '100%',
-          pointerEvents: showSongOptions ? 'auto' : 'none',
-        }}
-      >
+      <View style={Local.bottomSheetWrapper}>
         <SongOptions />
       </View>
       <NotificationModal />

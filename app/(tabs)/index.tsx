@@ -1,7 +1,5 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useEffect } from 'react';
-import { View, ScrollView } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
 import PageTitle from '@/components/PageTitle';
@@ -13,10 +11,6 @@ import { Success, Failure } from "@/components/Outcome";
 import InfoModal from "@/components/modals/InfoModal";
 import Notifications from "@/components/notifications/Notifications";
 
-const getShowWelcome = async () => {
-  return await AsyncStorage.getItem('showWelcome')
-}
-
 const Home = () => {
 
   const { 
@@ -25,17 +19,24 @@ const Home = () => {
   
   } = useGlobalContext();
 
-  // useEffect(() => {
-  //   getShowWelcome().then((value) => {
-  //     value === 'false' ? setShowWelcome(false) : setShowWelcome(true)
-  //   })
-  //   .catch((error) => {
-  //     setShowWelcome(false)
-  //   })
-  // }, []);
-
   const { homeState, setHomeState } = useGlobalContext();
   const insets = useSafeAreaInsets();
+
+  const Local = StyleSheet.create({
+    notifications: {
+      position: 'absolute',
+      bottom: 0,
+    },
+    container: {
+      paddingTop: insets.top,
+    },
+    scrollView: {
+      width: '100%',
+    },
+    scrollViewContent: {
+      alignItems: 'center',
+    }
+  });
 
   if (homeState === 1) {
     return (
@@ -59,7 +60,7 @@ const Home = () => {
   }
   else {
     return (
-      <View style={[Styles.body, {paddingTop: insets.top}]}>
+      <View style={[Styles.body, Local.container]}>
         <InfoModal />
         <Top />
         <PageTitle 
@@ -67,12 +68,8 @@ const Home = () => {
           infoHandler={() => setShowInfoModal(true)}
           />
         <ScrollView
-          style={{
-            width: '100%'
-          }}
-          contentContainerStyle={{
-            alignItems: 'center',
-          }}
+          style={Local.scrollView}
+          contentContainerStyle={Local.scrollViewContent}
         >
           <Option 
             title='Files'
@@ -88,20 +85,8 @@ const Home = () => {
             disabled={false}
             handlePress={() => {setHomeState(1)}}
           />
-          {/* <Option 
-            title='Download'
-            desc='Import from the web'
-            icon={require('@/assets/icons/download.png')}
-            disabled={true}
-            handlePress={() => {setHomeState(3)}}
-          /> */}
         </ScrollView>
-        <Notifications 
-          customStyles={{
-            position: 'absolute',
-            bottom: 0,
-          }}
-        />
+        <Notifications customStyles={Local.notifications}/>
       </View>
     );
   }

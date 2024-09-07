@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, Linking, Alert } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Linking, Alert, StyleSheet } from 'react-native';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { Styles } from '@/constants/Styles';
@@ -41,6 +41,82 @@ const Premium = () => {
   const [yearlyCost, setYearlyCost] = useState('$∞');
   const [lifetimeCost, setLifetimeCost] = useState('$∞');
   const [error, setError] = useState(false);
+
+  const Local = StyleSheet.create({
+    wrapper: {
+      backgroundColor: Colors.background
+    },
+    container: {
+      height: '100%',
+      width: '100%',
+      position: 'absolute',
+      top: 0,
+      zIndex: -1,
+    },
+    imageContainer: {
+      height: '40%',
+      width: '100%',
+    },
+    coverImage: {
+      height: '100%',
+      width: '100%',
+    },
+    coverGradient: {
+      position: 'absolute', 
+      top: 0,
+      width: '100%', 
+      height: '100%',
+    },
+    contentContainer: {
+      marginTop: 10,
+      flexGrow: 1,
+      width: '100%',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      position: 'relative',
+    },
+    logo: {
+      width: 50,
+      height: 50,
+      position: 'absolute',
+      top: -80
+    },
+    premiumText: {
+      color: Colors.text,
+      marginBottom: 15,
+    },
+    text: {
+      color: Colors.text,
+    },
+    bottomContainer: {
+      alignItems: 'center',
+    },
+    optionsContainer: {
+      flexDirection: 'row',
+      width: '90%',
+      justifyContent: 'center',
+      gap: 10,
+      marginTop: 20,
+      marginBottom: 20,
+    },
+    notifications: {
+      position: 'absolute',
+      bottom: 30,
+    },
+    messageText: {
+      color: Colors.text,
+      fontWeight: 'bold',
+      marginBottom: 10,
+    },
+    linkContainer: {
+      flexDirection: 'row',
+      paddingBottom: 10
+    },
+    restore: {
+      marginTop: 10, 
+      color: theme
+    }
+  });
 
   const sendErrorNotification = (
     title: string,
@@ -234,12 +310,10 @@ const Premium = () => {
     }
     else if (error) {
       return (
-        <>
-          <Text style={{ color: Colors.text, fontWeight: 'bold', marginBottom: 10 }}>
-            An error occured, please try again later
-          </Text>
-        </>
-      )
+        <Text style={Local.messageText}>
+          An error occured, please try again later
+        </Text>
+      );
     }
     else if (active) {
       let first = '';
@@ -254,10 +328,10 @@ const Premium = () => {
       }
       return (
         <>
-          <Text style={[{ color: Colors.text, fontWeight: 'bold', marginBottom: 10 }]}>
+          <Text style={Local.messageText}>
             {first}
           </Text>
-          <Text style={{ color: Colors.text }}>
+          <Text style={Local.text}>
             {second}
           </Text>
         </>
@@ -266,18 +340,18 @@ const Premium = () => {
     else {
       return (
         <>
-          <View style={{ flexDirection: 'row', paddingBottom: 10 }}>
+          <View style={Local.linkContainer}>
             <TouchableOpacity
               activeOpacity={.9}
               onPress={() => openURL('https://directedbyshawn.com/synq-terms-conditions')}
             >
-              <Text style={{color: 'white'}}>Terms of Service · </Text>
+              <Text style={Local.text}>Terms of Service · </Text>
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={.9}
               onPress={() => openURL('https://directedbyshawn.com/synq-privacy-policy')}
             >
-              <Text style={{color: 'white'}}>Privacy Policy</Text>
+              <Text style={Local.text}>Privacy Policy</Text>
             </TouchableOpacity>
           </View>
           <CustomButton 
@@ -292,7 +366,7 @@ const Premium = () => {
             activeOpacity={.9}
             onPress={handleRestore}
           >
-            <Text style={{ marginTop: 10, color: theme, fontSize: 16 }}>
+            <Text style={[Styles.p, Local.restore]}>
               Restore
             </Text>
           </TouchableOpacity>
@@ -302,92 +376,33 @@ const Premium = () => {
   }
 
   return (
-    <View style={[Styles.body, { backgroundColor: Colors.background }]}>
+    <View style={[Styles.body, Local.wrapper]}>
       <Bar />
-      <View
-        style={{
-          height: '100%',
-          width: '100%',
-          position: 'absolute',
-          top: 0,
-          zIndex: -1,
-        }}
-      >
-        <View
-          style={{
-            height: '40%',
-            width: '100%',
-          }}
-        >
+      <View style={Local.container}>
+        <View style={Local.imageContainer}>
           <Image 
             source={require('@/assets/images/premium-bg-downscaled.jpg')}
-            style={{
-              height: '100%',
-              width: '100%'
-            }}
-            />
+            style={Local.coverImage}
+          />
           <LinearGradient
-            style={{
-              position: 'absolute', 
-              top: 0,
-              width: '100%', 
-              height: '100%',
-            }}
+            style={Local.coverGradient}
             colors={['rgba(16, 16, 16, 0)', 'rgba(16, 16, 16, 1)']}
             pointerEvents={'none'}
           />
         </View>
-        <View
-          style={{
-            marginTop: 10,
-            flexGrow: 1,
-            width: '100%',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-            position: 'relative',
-          }}
-        >
+        <View style={Local.contentContainer}>
           <Image 
             source={logo}
-            style={{
-              width: 50,
-              height: 50,
-              position: 'absolute',
-              top: -80
-            }}
+            style={Local.logo}
           />
-          <Text
-            style={[Styles.h2, {
-              color: Colors.text,
-              marginBottom: 15,
-            }]}
-          >
+          <Text style={[Styles.h2, Local.premiumText]}>
             Premium
           </Text>
-          <Text
-            style={[Styles.h4, {
-              color: Colors.text,
-              width: '80%',
-              textAlign: 'center',
-            }]}
-          >
+          <Text style={[Styles.h4, Local.text]}>
             Ad free. No limits.
           </Text>
-          <View
-            style={{
-              alignItems: 'center',
-            }}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                width: '90%',
-                justifyContent: 'center',
-                gap: 10,
-                marginTop: 20,
-                marginBottom: 20,
-              }}
-            >
+          <View style={Local.bottomContainer}>
+            <View style={Local.optionsContainer}>
               <PremiumOption 
                 tier={'Monthly'}
                 price={monthlyCost}
@@ -413,12 +428,7 @@ const Premium = () => {
             {getBottom()}
           </View>
         </View>
-        <Notifications 
-          customStyles={{
-            position: 'absolute',
-            bottom: 30,
-          }}
-        />
+        <Notifications customStyles={Local.notifications} />
       </View> 
     </View>
   );

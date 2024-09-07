@@ -1,4 +1,4 @@
-import { View, Image } from "react-native";
+import { View, Image, StyleSheet } from "react-native";
 import { useEffect } from 'react';
 import { Colors } from "@/constants/Colors";
 import { router } from "expo-router";
@@ -32,19 +32,22 @@ const Bucket = () => {
 
   }, []);
 
+  const Local = StyleSheet.create({
+    wrapper: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: Colors.background
+    },
+    image: {
+      width: '100%'
+    }
+  });
+
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: Colors.background
-      }}
-    >
+    <View style={Local.wrapper}>
       <Image
-        style={{
-          width: '100%'
-        }}
+        style={Local.image}
         resizeMode="contain"
         source={require('../assets/images/splash.png')}
       />

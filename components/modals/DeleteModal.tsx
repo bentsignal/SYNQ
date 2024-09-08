@@ -1,9 +1,11 @@
-import { Text, View, Modal } from 'react-native';
+import { Text, View, Modal, StyleSheet } from 'react-native';
 import CustomButton from '@/components/CustomButton';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { removeSongs } from '@/lib/SongManager';
+import { ListCover } from '@/components/song/Cover';
+import SongInfo from '@/components/song/SongInfo';
 
 const DeleteModal = () => {
 
@@ -11,50 +13,80 @@ const DeleteModal = () => {
 
     selectedSongs, deleteSong, results,
     showDelete, theme, homeState,
+    editSong,
 
     setShowDelete, setResults, setExportDisabled,
     setSelectEnabled, setShowOverlay, setHomeState,
 
   } = useGlobalContext();
 
+  const Local = StyleSheet.create({
+    container: {
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    contentContainer: {
+      padding: 20,
+      width: '80%',
+    },
+    textColor: {
+      color: Colors.text
+    }
+  });
+
+  const getBody = () => {
+    if (selectedSongs.length > 0) {
+      return (
+        <Text
+          style={{
+            color: 'white',
+            margin: 30,
+            fontSize: 16,
+            textAlign: 'center'
+          }}
+          // numberOfLines={1}
+        >
+          Are you sure?
+        </Text>
+      );
+    }
+    else {
+      return (
+        <View
+          style={{
+            flexDirection: 'row',
+            marginTop: 10,
+            marginBottom: 20,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <ListCover 
+            image={editSong.info?.metadata?.artwork}
+            propOnLoad={() => {}}
+          />
+          <SongInfo 
+            info={editSong.info ? editSong.info : {metadata: {}}} 
+            name={editSong.name ? editSong.name : ''}
+          />
+        </View>
+      );
+    }
+  }
+
   return (
-    <View
-      style={{
-        justifyContent: 'center',
-        alignItems: 'center'
-      }}
-    >
+    <View style={Local.container}>
       <Modal
         transparent={true}
         visible={showDelete}
         animationType='slide'
       >
         <View style={Styles.popupBackdrop}>
-          <View
-            style={[Styles.popupBody, Styles.roundedContainer, {
-              padding: 20,
-              width: '80%',
-            }]}
-          >
-            <Text
-              style={{
-                color: 'white',
-                fontSize: 36,
-                fontWeight: 'bold'
-              }}
-            >
-              {selectedSongs.length > 0 ? 'Delete Songs' : 'Delete Song'}
+          <View style={[Styles.popupBody, Styles.roundedContainer, Local.contentContainer]}>
+            <Text style={[Styles.h2, Local.textColor]}>
+              {selectedSongs.length > 1 ? `Delete ${selectedSongs.length} Songs` : 'Delete Song'}
             </Text>
-            <Text
-              style={{
-                color: 'white',
-                margin: 30,
-                fontSize: 16
-              }}
-              numberOfLines={1}
-            >
-              {selectedSongs.length > 0 ? `Delete ${selectedSongs.length} songs?` : deleteSong.name}
-            </Text>
+            {getBody()}
             <View
               style={{
                 flexDirection: 'row',

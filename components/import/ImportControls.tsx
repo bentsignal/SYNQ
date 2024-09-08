@@ -1,4 +1,4 @@
-import { View, Image, TouchableOpacity } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
@@ -22,29 +22,43 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
 
   } = useGlobalContext();
 
+  const Local = StyleSheet.create({
+    container: {
+      position: 'absolute',
+      bottom: 10,
+      width: '100%',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+    },
+    batchButtonContainer: {
+      display: selectEnabled && selectedSongs.length > 0 ? 'flex' : 'none',
+      flexDirection: 'row',
+      gap: 10
+    },
+    batchButtonWrapper: {
+      backgroundColor: Colors.song,
+      padding: 15
+    },
+    batchButtonIcon: {
+      width: 20,
+      height: 20,
+    },
+    mainButtonContainer: {
+      display: selectEnabled ? 'none' : 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 10,
+      padding: 5,
+    }
+  });
+
   return (
-    <View
-      style={{
-        position: 'absolute',
-        bottom: 10,
-        width: '100%',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-      }}
-    >
+    <View style={Local.container}>
       <Notifications />
-      <View
-        style={{
-          display: selectEnabled && selectedSongs.length > 0 ? 'flex' : 'none',
-          flexDirection: 'row',
-          gap: 10
-        }}
-      >
+      <View style={Local.batchButtonContainer}>
         <TouchableOpacity
-          style={[Styles.roundedContainer, Styles.backgroundBlendShadow, {
-            backgroundColor: Colors.song,
-            padding: 15
-          }]}
+          style={[Styles.roundedContainer, Styles.backgroundBlendShadow, Local.batchButtonWrapper]}
           onPress={() => {
             setEditSong({
               "name": "",
@@ -58,17 +72,11 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
         >
           <Image 
             source={require('@/assets/icons/edit.png')}
-            style={{
-              width: 20,
-              height: 20,
-            }}
+            style={Local.batchButtonIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity
-          style={[Styles.roundedContainer, Styles.backgroundBlendShadow, {
-            backgroundColor: Colors.song,
-            padding: 15
-          }]}
+          style={[Styles.roundedContainer, Styles.backgroundBlendShadow, Local.batchButtonWrapper]}
           onPress={() => {
             setShowOverlay(true);
             setShowDelete(true);
@@ -76,23 +84,11 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
         >
           <Image 
             source={require('@/assets/icons/delete.png')}
-            style={{
-              width: 20,
-              height: 20,
-            }}
+            style={Local.batchButtonIcon}
           />
         </TouchableOpacity>
       </View>
-      <View
-        style={{
-          display: selectEnabled ? 'none' : 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: 10,
-          padding: 5,
-        }}
-      >
+      <View style={Local.mainButtonContainer}>
         <CustomButton 
           title='Cancel'
           background={Colors.altButton}

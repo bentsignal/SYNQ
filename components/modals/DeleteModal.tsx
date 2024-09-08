@@ -10,10 +10,10 @@ const DeleteModal = () => {
   const {
 
     selectedSongs, deleteSong, results,
-    showDelete, theme, 
+    showDelete, theme, homeState,
 
     setShowDelete, setResults, setExportDisabled,
-    setSelectEnabled, setShowOverlay, 
+    setSelectEnabled, setShowOverlay, setHomeState,
 
   } = useGlobalContext();
 
@@ -82,6 +82,9 @@ const DeleteModal = () => {
                   const newResults = removeSongs(results, ids);
                   if (newResults.length <= 0) {
                     setExportDisabled(true);
+                  }
+                  if (newResults.length === 0) {
+                    setHomeState(0);
                   }
                   setResults(newResults);
                   setSelectEnabled(false);

@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import PageTitle from '@/components/PageTitle';
 import { getCompletion } from '@/lib/SongManager';
 import Top from '@/components/Top';
-import FilesEmpty from '@/components/import/files/FilesEmpty';
 import SongList from '@/components/song/SongList';
 import ImportControls from '../ImportControls';
 import Progress from '@/components/Progress';
@@ -56,10 +55,9 @@ const Files = () => {
     }
     else {
       return (
-        <FilesEmpty />
+        <></>
       );
     }
-
   }
 
   return (

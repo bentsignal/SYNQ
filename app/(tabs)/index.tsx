@@ -2,6 +2,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
+import { importFiles } from "@/lib/SongManager";
 import PageTitle from '@/components/PageTitle';
 import Top from "@/components/Top";
 import Option from "@/components/Option";
@@ -16,6 +17,9 @@ const Home = () => {
   const { 
     
     setShowWelcome, setShowInfoModal,
+    setLoading, setImporting, setTransferProgress, 
+    setTransferSize, setLoadAnimInProgress, 
+    setExportDisabled, setResults,
   
   } = useGlobalContext();
 
@@ -37,6 +41,37 @@ const Home = () => {
       alignItems: 'center',
     }
   });
+
+  const browseFiles = () => {
+    setLoading(true);
+    setImporting(true);
+    const updateCountdown = (value: number) => setTransferProgress(value);
+    const updateSize = (value: number) => {
+      setTransferSize(value)
+      if (value > 2) {
+        setLoadAnimInProgress(true);
+      }
+    };
+    importFiles(updateCountdown, updateSize).then((results) => {
+      setTransferSize(-1);
+      setTransferProgress(-1);
+      setImporting(false);
+      setLoading(false);
+      if (results.length > 0) {
+        setExportDisabled(false);
+        setResults(results);
+      }
+      else {
+        setHomeState(0);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      setLoading(false);
+      setImporting(false);
+      setHomeState(4);
+    })
+  }
 
   if (homeState === 1) {
     return (
@@ -76,7 +111,13 @@ const Home = () => {
             desc='Import from your files'
             icon={require('@/assets/icons/folder.png')}
             disabled={false}
-            handlePress={() => setHomeState(2)}
+            handlePress={() => {
+              setLoading(true);
+              setHomeState(2);
+              setTimeout(() => {
+                browseFiles();
+              }, 10);
+            }}
           />
           <Option 
             title='Network'

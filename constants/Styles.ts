@@ -89,5 +89,5 @@ export const Styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 5,
   },
-  
+
 });

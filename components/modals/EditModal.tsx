@@ -1,4 +1,4 @@
-import { Text, View, Modal, TextInput, TouchableOpacity } from 'react-native';
+import { Text, View, Modal, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useState, useEffect } from 'react';
 import CustomButton from '@/components/CustomButton';
@@ -25,7 +25,98 @@ const EditModal = () => {
   const [artist, setArtist] = useState(maybeString(editSong.info?.metadata?.artist));
   const [album, setAlbum] = useState(maybeString(editSong.info?.metadata?.album));
   const [cover, setCover] = useState(maybeString(editSong.info?.metadata?.artwork));
+  const [single, setSingle] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const Local = StyleSheet.create({
+    container: {
+      width: '90%',
+      maxWidth: 400,
+      marginVertical: 100,
+      alignSelf: 'center'
+    },
+    textColor: {
+      color: Colors.text
+    },
+    contentWrapper: {
+      width: '100%',
+      padding: 20
+    },
+    contentContainer: {
+      width: '100%',
+    },
+    coverContainer: {
+      marginTop: 20,
+      marginBottom: 20,
+      alignSelf: 'flex-start'
+    },
+    fileName: {
+      marginTop: 10,
+    },
+    artistContainer: {
+      flexDirection: 'row',
+      marginBottom: 15,
+      maxHeight: 50,
+    },
+    artistInput: {
+      marginBottom: 0,
+      flex: 1,
+    },
+    addButton: {
+      width: 50,
+      marginBottom: 15,
+      marginLeft: 10,
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: Colors.altButton,
+    },
+    addButtonLine: {
+      backgroundColor: 'black',
+      borderRadius: 2,
+      position: 'absolute',
+    },
+    albumSingleContainer: {
+      flexDirection: 'row',
+      width: '100%',
+      height: 50,
+      maxHeight: 50,
+      marginBottom: 15,
+    },
+    albumSingleButton: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    singleButton: {
+      backgroundColor: single ? theme : Colors.altButton,
+      borderTopLeftRadius: 15,
+      borderBottomLeftRadius: 15,
+    },
+    albumButton: {
+      backgroundColor: single ? Colors.altButton : theme,
+      borderTopRightRadius: 15,
+      borderBottomRightRadius: 15,
+    },
+    controlButtonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 10,
+      marginTop: 10,
+      marginBottom: 5
+    },
+    loadingWrapper: {
+      position: 'absolute',
+      display: loading ? 'flex' : 'none',
+      width: '100%',
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+      backgroundColor: 'rgba(0, 0, 0, 0.6)'
+    }
+  });
 
   useEffect(() => {
     if (showEdit) {
@@ -47,35 +138,13 @@ const EditModal = () => {
         contentContainerStyle={{ flexGrow: 1 }}
       >
         <View style={[Styles.popupBackdrop, { minHeight: '100%' }]}>
-          <View style={[
-            Styles.popupBody,
-            Styles.roundedContainer,
-            {
-              width: '90%',
-              maxWidth: 400,
-              marginVertical: 100,
-              alignSelf: 'center'
-            }
-          ]}>
-            <View style={{ width: '100%', padding: 20 }}>
-              <View style={{ width: '100%', }}>
-                <Text
-                  style={{
-                    color: 'white',
-                    fontSize: 36,
-                    fontWeight: 'bold'
-                  }}
-                >
+          <View style={[Styles.popupBody, Styles.roundedContainer, Local.container]}>
+            <View style={Local.contentWrapper}>
+              <View style={Local.contentContainer}>
+                <Text style={[Local.textColor, Styles.h1]}>
                   {selectedSongs.length > 0 ? 'Edit Songs' : 'Edit Song'}
                 </Text>
-                
-                <View
-                  style={{
-                    marginTop: 20,
-                    marginBottom: 20,
-                    alignSelf: 'flex-start'
-                  }}
-                >
+                <View style={Local.coverContainer}>
                   <EditCover 
                     image={cover}
                     handlePress={async () => {
@@ -87,57 +156,42 @@ const EditModal = () => {
                       setLoading(false);
                     }}
                   />
-                  { selectedSongs.length === 0 ? 
-                    <Text
-                      style={{
-                        color: 'white',
-                        fontWeight: 'bold',
-                        marginTop: 10,
-                        fontSize: 16
-                      }}
-                      numberOfLines={1}
-                    >
-                      {maybeString(editSong.name)}
-                    </Text>
-                    :
-                    <></>
+                  { selectedSongs.length === 0 
+                    ? <Text
+                        style={[Styles.h5, Local.fileName, Local.textColor]}
+                        numberOfLines={1}
+                      >
+                        {maybeString(editSong.name)}
+                      </Text>
+                    : <></>
                   }
                 </View>
-                { selectedSongs.length == 0 ? 
-                  <>
-                    <Text
-                      style={Styles.textboxLabel}
-                    >
-                      Title
-                    </Text>
-                    <TextInput 
-                      style={[Styles.textbox, Styles.roundedContainer]}
-                      autoCorrect={false}
-                      editable
-                      numberOfLines={1}
-                      value={title}
-                      onChangeText={text => setTitle(text)}
-                      placeholder={'Enter song title...'}
-                      placeholderTextColor={Colors.altDisabled}
-                    />
-                  </>
-                  :
-                  <></>
+                { selectedSongs.length == 0 
+                  ? <>
+                      <Text style={Styles.textboxLabel}>
+                        Title
+                      </Text>
+                      <TextInput 
+                        style={[Styles.textbox, Styles.roundedContainer]}
+                        autoCorrect={false}
+                        editable
+                        numberOfLines={1}
+                        value={title}
+                        onChangeText={text => setTitle(text)}
+                        placeholder={'Enter song title...'}
+                        placeholderTextColor={Colors.altDisabled}
+                      />
+                    </>
+                  : <></>
                 }
                 <Text
                   style={Styles.textboxLabel}
                 >
                   Artists
                 </Text>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    marginBottom: 15,
-                    maxHeight: 50,
-                  }}
-                >
+                <View style={Local.artistContainer}>
                   <TextInput
-                    style={[Styles.textbox, Styles.roundedContainer, { marginBottom: 0, flex: 1}]}
+                    style={[Styles.textbox, Styles.roundedContainer, Local.artistInput]}
                     autoCorrect={false}
                     editable
                     numberOfLines={1}
@@ -147,84 +201,17 @@ const EditModal = () => {
                     placeholderTextColor={Colors.altDisabled}
                   />
                   <TouchableOpacity 
-                    style={[Styles.roundedContainer, {
-                      width: 50,
-                      marginBottom: 15,
-                      marginLeft: 10,
-                      height: '100%',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      backgroundColor: Colors.altButton,
-                    }]}
+                    style={[Styles.roundedContainer, Local.addButton]}
                     activeOpacity={0.6}
                   >
-                     <View style={{
-                        width: 15,
-                        height: 3.5,
-                        backgroundColor: 'black',
-                        borderRadius: 2,
-                        position: 'absolute',
-                      }} />
-                      <View style={{
-                        width: 3.5,
-                        height: 15,
-                        backgroundColor: 'black',
-                        borderRadius: 2,
-                        position: 'absolute',
-                      }} />
+                    <View style={[Local.addButtonLine, { width: 15, height: 3.5 }]} />
+                    <View style={[Local.addButtonLine, { width: 3.5, height: 15 }]} />
                   </TouchableOpacity>
                 </View>
-                { selectedSongs.length === 0 ?
+                {
+                  selectedSongs.length > 0 || !single ?
                   <>
-                    <View
-                      style={[Styles.roundedContainer, {
-                        flexDirection: 'row',
-                        width: '100%',
-                        height: 50,
-                        maxHeight: 50,
-                      }]}
-                    >
-                      <TouchableOpacity
-                        style={{
-                          flex: 1,
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          backgroundColor: theme,
-                          borderTopLeftRadius: 15,
-                          borderBottomLeftRadius: 15,
-                        }}
-                        activeOpacity={0.6}
-                      >
-                        <Text style={{
-                          fontWeight: 'bold',
-                          fontSize: 16
-                        }}>
-                          Single
-                        </Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={{
-                          flex: 1,
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          backgroundColor: Colors.altButton,
-                          borderTopRightRadius: 15,
-                          borderBottomRightRadius: 15,
-                        }}
-                        activeOpacity={0.6}
-                      >
-                        <Text style={{
-                          fontWeight: 'bold',
-                          fontSize: 16
-                        }}>
-                          Album
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  </>
-                  :
-                  <>
-                    <Text
+                  <Text
                       style={Styles.textboxLabel}
                     >
                       Album
@@ -240,18 +227,42 @@ const EditModal = () => {
                       placeholderTextColor={Colors.altDisabled}
                     />
                   </>
+                  :
+                  <></>
                 }
+                { selectedSongs.length === 0 ?
+                  <>
+                    <View style={[Styles.roundedContainer, Local.albumSingleContainer]}>
+                      <TouchableOpacity
+                        style={[Local.albumSingleButton, Local.singleButton]}
+                        activeOpacity={0.9}
+                        onPress={() => {
+                          setSingle(true);
+                        }}
+                      >
+                        <Text style={Styles.h5}>
+                          Single
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[Local.albumSingleButton, Local.albumButton]}
+                        activeOpacity={0.9}
+                        onPress={() => {
+                          setSingle(false);
+                        }}
+                      >
+                        <Text style={Styles.h5}>
+                          Album
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                  :
+                  <></>
+                }
+                
               </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: 10,
-                  marginTop: 10,
-                  marginBottom: 5
-                }}
-              >
+              <View style={Local.controlButtonContainer}>
                 <CustomButton 
                   title='Cancel'
                   background={Colors.altButton}
@@ -284,18 +295,7 @@ const EditModal = () => {
                   }}
                 />
               </View>
-              <View
-                style={{
-                  position: 'absolute',
-                  display: loading ? 'flex' : 'none',
-                  width: '100%',
-                  height: '100%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: 20,
-                  backgroundColor: 'rgba(0, 0, 0, 0.6)'
-                }}
-              >
+              <View style={Local.loadingWrapper}>
                 <Loading height={100} width={200}/>
               </View>
             </View>

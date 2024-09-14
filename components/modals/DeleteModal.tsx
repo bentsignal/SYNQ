@@ -31,36 +31,41 @@ const DeleteModal = () => {
     },
     textColor: {
       color: Colors.text
+    },
+    infoContainer: {
+      flexDirection: 'row',
+      marginTop: 15,
+      marginBottom: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: Colors.song,
+      padding: 15,
+    },
+    bulkMessage: {
+      color: Colors.text,
+      margin: 30,
+      textAlign: 'center'
+    },
+    buttonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 10,
+      marginBottom: 5
     }
   });
 
   const getBody = () => {
     if (selectedSongs.length > 0) {
       return (
-        <Text
-          style={{
-            color: 'white',
-            margin: 30,
-            fontSize: 16,
-            textAlign: 'center'
-          }}
-          // numberOfLines={1}
-        >
+        <Text style={[Styles.p, Local.bulkMessage]}>
           Are you sure?
         </Text>
       );
     }
     else {
       return (
-        <View
-          style={{
-            flexDirection: 'row',
-            marginTop: 10,
-            marginBottom: 20,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
+        <View style={[Local.infoContainer, Styles.roundedContainer]}>
           <ListCover 
             image={editSong.info?.metadata?.artwork}
             propOnLoad={() => {}}
@@ -87,15 +92,7 @@ const DeleteModal = () => {
               {selectedSongs.length > 1 ? `Delete ${selectedSongs.length} Songs` : 'Delete Song'}
             </Text>
             {getBody()}
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: 10,
-                marginBottom: 5
-              }}
-            >
+            <View style={Local.buttonContainer}>
               <CustomButton 
                 title='Cancel'
                 background={Colors.altButton}

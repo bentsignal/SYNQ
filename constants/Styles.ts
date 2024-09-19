@@ -44,6 +44,12 @@ export const Styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.text
   },
+  description: {
+    fontSize: 16,
+    color: Colors.infoText,
+    marginBottom: 20,
+    width: '100%',
+  },
 
   // Container styles
   body: {

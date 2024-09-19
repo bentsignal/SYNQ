@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
@@ -17,6 +17,50 @@ const InfoContainer = ({ title, contentHeight, children }: InfoContainerProps) =
   const height = useSharedValue(0);
   const rotate = useSharedValue(-45);
   const { theme } = useGlobalContext();
+
+  const Local = StyleSheet.create({
+    container: {
+      flex: 1,
+      width: '100%',
+    },
+    pressable: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      width: '100%',
+      justifyContent: 'space-between',
+      paddingRight: 5,
+      paddingTop: 10,
+      paddingBottom: 10,
+    },
+    pressableText: {
+      ...Styles.h3,
+      color: theme,
+    },
+    arrowContainer: {
+      flexDirection: 'row',
+      width: 15,
+      height: 15,
+    },
+    arrow: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      borderRadius: 100,
+      backgroundColor: theme,
+    },
+    topArrow: {
+      width: 3,
+      height: 15,
+    },
+    bottomArrow: {
+      width: 15,
+      height: 3,
+    },
+    childWrapper: {
+      width: '100%',
+      position: 'relative',
+    }
+  })
 
   useEffect(() => {
     // Set the initial height and rotation
@@ -51,65 +95,21 @@ const InfoContainer = ({ title, contentHeight, children }: InfoContainerProps) =
   });
 
   return (
-    <View 
-      style={{ 
-        flex: 1,
-        width: '100%',
-      }}
-    >
+    <View style={Local.container}>
       <TouchableOpacity
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          width: '100%',
-          justifyContent: 'space-between',
-          paddingRight: 5,
-          paddingTop: 10,
-          paddingBottom: 10,
-        }}
+        style={Local.pressable}
         onPress={toggleOpen}
         activeOpacity={1}
       >
-        <Text style={[Styles.h3, { color: theme } ]}>
+        <Text style={Local.pressableText}>
           {title}
         </Text>
-        <Animated.View
-          style={[rotateStyle, {
-            flexDirection: 'row',
-            width: 15,
-            height: 15,
-          }]}
-        >
-          <View
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: 3,
-              height: 15,
-              borderRadius: 100,
-              backgroundColor: theme,
-            }}
-          />
-          <View
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: 15,
-              height: 3,
-              borderRadius: 100,
-              backgroundColor: theme,
-            }}
-          />
+        <Animated.View style={[rotateStyle, Local.arrowContainer]}>
+          <View style={[Local.arrow, Local.topArrow]}/>
+          <View style={[Local.arrow, Local.bottomArrow]}/>
         </Animated.View>
       </TouchableOpacity>
-      <Animated.View
-        style={[animatedContentStyle, {
-          width: '100%',
-          position: 'relative',
-        }]}
-      >
+      <Animated.View style={[animatedContentStyle, Local.childWrapper]}>
         {children}
       </Animated.View>
     </View>

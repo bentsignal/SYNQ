@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent} from "react-native";
+import { View, Text, ScrollView, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent, StyleSheet } from "react-native";
 import { useRef, useEffect, useState } from "react";
 import { Styles } from "@/constants/Styles";
 import { Themes, Colors } from "@/constants/Colors";
@@ -11,6 +11,32 @@ const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 const Theme = () => {
 
   const { premium } = useGlobalContext();
+
+  const Local = StyleSheet.create({
+    gradient: {
+      position: 'absolute', 
+      top: 0,
+      width: 30,
+      height: 130, 
+      zIndex: 2,
+    },
+    scrollView: {
+      paddingTop: 15,
+      paddingBottom: 15,
+      maxHeight: 100,
+      position: 'relative',
+    },
+    premiumOverlayLock: {
+      height: 100,
+      width: '100%',
+      backgroundColor: Colors.background,
+      position: 'absolute',
+      top: 0,
+      zIndex: 5,
+      opacity: 0.5,
+      display: premium ? 'none' : 'flex',
+    }
+  });
 
   const leftGradientOpacityRef = useRef(new Animated.Value(0)).current;
   const rightGradientOpacityRef = useRef(new Animated.Value(1)).current;
@@ -67,15 +93,10 @@ const Theme = () => {
   return (
     <View>
       <AnimatedGradient
-          style={{
-            position: 'absolute', 
-            top: 0,
-            left: 0,
-            width: 30,
-            height: 130, 
-            zIndex: 2,
+          style={[Local.gradient, { 
             opacity: leftGradientOpacityRef,
-          }}
+            left: 0,
+          }]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           colors={[ 'rgba(16, 16, 16, 1)', 'rgba(16, 16, 16, 0)']}
@@ -84,12 +105,7 @@ const Theme = () => {
       <ScrollView 
         horizontal
         onScroll={handleScroll}
-        style={{
-          paddingTop: 15,
-          paddingBottom: 15,
-          maxHeight: 100,
-          position: 'relative',
-        }}
+        style={Local.scrollView}
       >
         {Object.entries(Themes).map(([key, color], index) => (
           <ThemeOption
@@ -101,32 +117,16 @@ const Theme = () => {
         ))}
       </ScrollView>
       <AnimatedGradient
-        style={{
-          position: 'absolute', 
-          top: 0,
-          right: 0,
-          width: 30,
-          height: 130, 
-          zIndex: 2,
+        style={[Local.gradient, {
           opacity: rightGradientOpacityRef,
-        }}
+          right: 0, 
+        }]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 0 }}
         colors={['rgba(16, 16, 16, 1)', 'rgba(16, 16, 16, 0)']}
         pointerEvents={'none'}
       />
-      <View 
-        style={{
-          height: 100,
-          width: '100%',
-          backgroundColor: Colors.background,
-          position: 'absolute',
-          top: 0,
-          zIndex: 5,
-          opacity: 0.5,
-          display: premium ? 'none' : 'flex',
-        }}
-      />
+      <View style={Local.premiumOverlayLock} />
     </View>
   );
 

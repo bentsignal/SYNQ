@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
@@ -19,6 +19,41 @@ const SongOptions = () => {
     setShowOverlay,
   
   } = useGlobalContext();
+
+  const Local = StyleSheet.create({
+    handle: {
+      backgroundColor: Colors.altDisabled,
+      width: 80,
+      marginTop: 5,
+    },
+    background: {
+      backgroundColor: Colors.popup,
+    },
+    sheetStyle: {
+      flexGrow: 1,
+    },
+    bottomSheet: {
+      width: '100%',
+      height: '100%',
+      position: 'absolute',
+      backgroundColor: Colors.popup,
+      padding: 20,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      flex: 1,
+      flexGrow: 1,
+      zIndex: 100,
+    },
+    container: {
+      flexDirection: 'row',
+      marginBottom: 20,
+      paddingBottom: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderBottomColor: '#222222',
+      borderBottomWidth: 1,
+    }
+  });
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [sheetIndex, setSheetIndex] = useState(-1);
@@ -46,47 +81,16 @@ const SongOptions = () => {
             appearsOnIndex={0}
           />
         )}
-        handleIndicatorStyle={{
-          backgroundColor: Colors.altDisabled,
-          width: 80,
-          marginTop: 5,
-        }}
-        backgroundStyle={{
-          backgroundColor: Colors.popup,
-        }}
-        style={{
-          flexGrow: 1,
-        }}
+        handleIndicatorStyle={Local.handle}
+        backgroundStyle={Local.background}
+        style={Local.sheetStyle}
         onClose={() => {
           setShowSongOptions(false);
           setSheetIndex(-1);
         }}
       >
-        <BottomSheetView 
-          style={{
-            width: '100%',
-            height: '100%',
-            position: 'absolute',
-            backgroundColor: Colors.popup,
-            padding: 20,
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            flex: 1,
-            flexGrow: 1,
-            zIndex: 100,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: 'row',
-              marginBottom: 20,
-              paddingBottom: 20,
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderBottomColor: '#222222',
-              borderBottomWidth: 1,
-            }}
-          >
+        <BottomSheetView style={Local.bottomSheet}>
+          <View style={Local.container}>
             <ListCover 
               image={editSong.info?.metadata?.artwork}
               propOnLoad={() => {}}

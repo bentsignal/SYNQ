@@ -1,27 +1,37 @@
-import { Text, View } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { InfoType } from '@/constants/Types';
 import { Styles } from '@/constants/Styles';
 
 const SongInfo = ({info, name}: {info: InfoType, name: string}) => {
 
+  const Local = StyleSheet.create({
+    infoContainer: {
+      flex: 1,
+      paddingLeft: 10,
+      flexGrow: 1
+    },
+    title: {
+      ...Styles.h5,
+      color: Colors.text
+    },
+    artistAlbum: {
+      ...Styles.sub,
+      color: Colors.text
+    }
+  });
+
   if (info.metadata?.artist && info.metadata?.name && info.metadata?.album) {
     return (
-      <View
-        style={{
-          flex: 1,
-          paddingLeft: 10,
-          flexGrow: 1
-        }}
-      >
+      <View style={ Local.infoContainer }>
         <Text
-          style={[Styles.h5, { color: Colors.text}]}
+          style={ Local.title }
           numberOfLines={1}
         >
           {info.metadata.name}
         </Text>
         <Text
-          style={[Styles.sub, { color: Colors.text }]}
+          style={ Local.artistAlbum }
           numberOfLines={1}
         >
           {info.metadata.artist} {info.metadata.album ? `· ${info.metadata.album}` : ''}
@@ -31,15 +41,9 @@ const SongInfo = ({info, name}: {info: InfoType, name: string}) => {
   }
   else {
     return (
-      <View
-        style={{
-          flex: 1,
-          paddingLeft: 10,
-          flexGrow: 1
-        }}
-      >
+      <View style={ Local.infoContainer }>
         <Text
-          style={[Styles.h5, { color: Colors.text }]}
+          style={ Local.title }
           numberOfLines={1}
         >
           {name}

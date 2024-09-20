@@ -1,4 +1,4 @@
-import { View, FlatList, Dimensions, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { View, FlatList, Dimensions, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent, StyleSheet } from 'react-native';
 import { useRef, useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Styles } from '@/constants/Styles';
@@ -7,7 +7,6 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import Song from '@/components/song/Song';
 import EditModal from '@/components/modals/EditModal';
 import DeleteModal from '@/components/modals/DeleteModal';
-import SongOptions from '../sheets/SongOptions';
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -60,14 +59,38 @@ const SongList = (data: any) => {
     }
   }
 
+  const Local = StyleSheet.create({
+    container: {
+      ...Styles.main,
+      paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50,
+      opacity: globalOpacityRef,
+    },
+    list: {
+      width: '100%'
+    },
+    listContent: {
+      paddingBottom: 40,
+      display: 'flex',
+      alignItems: 'center'
+    },
+    topGradient: {
+      position: 'absolute', 
+      top: 0, 
+      width: '100%', 
+      height: 50,
+      opacity: topGradientOpacityRef,
+    },
+    bottomGradient: {
+      position: 'absolute', 
+      bottom: Dimensions.get('screen').height < 700 ? 70 : 50, 
+      width: '100%', 
+      height: 50,
+    }
+  });
+
   return (
     <>
-      <Animated.View
-        style={[Styles.main, {
-          paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50,
-          opacity: globalOpacityRef,
-        }]}
-      >
+      <Animated.View style={ Local.container}>
         <EditModal />
         <DeleteModal />
         <FlatList 
@@ -76,33 +99,16 @@ const SongList = (data: any) => {
           keyExtractor={song => song.id}
           extraData={selectedId}
           onScroll={handleScroll}
-          style={{
-            width: '100%'
-          }}
-          contentContainerStyle={{
-            paddingBottom: 40,
-            display: 'flex',
-            alignItems: 'center'
-          }}
+          style={Local.list}
+          contentContainerStyle={ Local.listContent }
         />
         <AnimatedGradient
-          style={{
-            position: 'absolute', 
-            top: 0, 
-            width: '100%', 
-            height: 50,
-            opacity: topGradientOpacityRef,
-          }}
+          style={ Local.topGradient }
           colors={[ 'rgba(16, 16, 16, 1)', 'rgba(16, 16, 16, 0)']}
           pointerEvents={'none'}
         />
         <LinearGradient
-          style={{
-            position: 'absolute', 
-            bottom: Dimensions.get('screen').height < 700 ? 70 : 50, 
-            width: '100%', 
-            height: 50,
-          }}
+          style={ Local.bottomGradient }
           colors={['rgba(16, 16, 16, 0)', 'rgba(16, 16, 16, 1)']}
           pointerEvents={'none'}
         />

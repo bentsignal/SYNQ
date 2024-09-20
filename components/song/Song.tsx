@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, Text } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { useState, useEffect } from 'react';
 import { useGlobalContext } from '@/context/GlobalProvider';
@@ -13,21 +13,7 @@ import CustomButton from '../CustomButton';
 import Skeleton from '../Skeleton';
 import { darkenColor } from '@/lib/ColorManager';
 import * as Haptics from 'expo-haptics';
-
-const Dot = () => {
-  return (
-    <View 
-      style={{
-        width: 4,
-        height: 4,
-        borderRadius: 15,
-        backgroundColor: Colors.text,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    />
-  );
-}
+import More from '@/components/More';
 
 const Song = ({name, id, data, info}: SongType) => {
 
@@ -64,25 +50,61 @@ const Song = ({name, id, data, info}: SongType) => {
     }
   }, [selectEnabled]);
 
+  const Local = StyleSheet.create({
+    mainContainer: {
+      ...Styles.roundedContainer,
+      alignSelf: 'stretch',
+      width: '90%',
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      height: 90,
+      marginBottom: 10,
+      backgroundColor: blur ? Colors.background : Colors.song,
+      paddingLeft: 15,
+      paddingRight: 15,
+      paddingTop: 15,
+      paddingBottom: 15,
+      opacity: !selectEnabled || (selectEnabled && selected) ? 1 : 0.6
+    },
+    skeleton: {
+      ...Styles.roundedContainer,
+      position: 'absolute',
+      width: '90%',
+      height: 90,
+      zIndex: 1,
+    },
+    blur: {
+      ...Styles.roundedContainer,
+      display: blur ? 'flex' : 'none',
+      overflow: 'hidden',
+      position: 'absolute',
+      justifyContent: 'center',
+      alignItems: 'center',
+      top: 0,
+      left: 0,
+      width: '90%',
+      height: 90,
+      padding: 15,
+      zIndex: 2
+    },
+    premiumMessageContainer: {
+      display: message ? 'flex' : 'none',
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    premiumMessageText: {
+      ...Styles.infoText,
+      paddingBottom: 5,
+      textShadowColor: Colors.background,
+      textShadowOffset: { width: 2, height: 2 },
+      textShadowRadius: 10
+    }
+  });
+
   return (
     <>
-      <View
-        style={[Styles.roundedContainer, {
-          alignSelf: 'stretch',
-          width: '90%',
-          flexDirection: 'row',
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-          height: 90,
-          marginBottom: 10,
-          backgroundColor: blur ? Colors.background : Colors.song,
-          paddingLeft: 15,
-          paddingRight: 15,
-          paddingTop: 15,
-          paddingBottom: 15,
-          opacity: !selectEnabled || (selectEnabled && selected) ? 1 : 0.6
-        }]}
-      >
+      <View style={Local.mainContainer}>
         <ListCover 
           image={info.metadata?.artwork ? info.metadata.artwork : ''}
           propOnLoad={() => {
@@ -95,124 +117,74 @@ const Song = ({name, id, data, info}: SongType) => {
           selectEnabled 
 
           ? 
-
-          <>
-            <TouchableOpacity
-              onPress={() => {
-                setSelected(!selected);
-                let newSongs = [];
-                let i = 0;
-                if (!selected && !selectedSongs.includes(id)) {
-                  if (selectedSongs.length == 0) {
-                    newSongs[0] = id;
-                  }
-                  else {
-                    for (i = 0; i < selectedSongs.length; i++) {
-                      newSongs[i] = selectedSongs[i];
-                    }
-                    newSongs[i] = id;
-                  }
-                  setSelectedSongs(newSongs);
+          
+          <Select 
+            active={selected} 
+            handlePress={() => {
+              setSelected(!selected);
+              let newSongs = [];
+              let i = 0;
+              if (!selected && !selectedSongs.includes(id)) {
+                if (selectedSongs.length == 0) {
+                  newSongs[0] = id;
                 }
-                else if (selected) {
+                else {
                   for (i = 0; i < selectedSongs.length; i++) {
-                    if (selectedSongs[i] != id) {
-                      newSongs.push(selectedSongs[i]);
-                    }
+                    newSongs[i] = selectedSongs[i];
                   }
-                  setSelectedSongs(newSongs);
+                  newSongs[i] = id;
                 }
-              }}
-            >
-              <Select active={selected} />
-            </TouchableOpacity>
-          </> 
+                setSelectedSongs(newSongs);
+              }
+              else if (selected) {
+                for (i = 0; i < selectedSongs.length; i++) {
+                  if (selectedSongs[i] != id) {
+                    newSongs.push(selectedSongs[i]);
+                  }
+                }
+                setSelectedSongs(newSongs);
+              }
+            }}
+          />
 
           : 
 
-          <>
-            <TouchableOpacity
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: 15,
-                gap: 3,
-              }}
-              activeOpacity={.8}
-              onPress={() => {
-                if (haptic) {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                }
-                setEditSong({
-                  "name": name, 
-                  "id": id, 
-                  "data": data, 
-                  "info": info
-                });
-                setShowSongOptions(!showSongOptions);
-              }}
-            >
-              <Dot />
-              <Dot />
-              <Dot />
-            </TouchableOpacity>
-          </>
+          <More 
+            handlePress={() => {
+              if (haptic) {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }
+              setEditSong({
+                "name": name, 
+                "id": id, 
+                "data": data, 
+                "info": info
+              });
+              setShowSongOptions(!showSongOptions);
+            }}
+          />
 
         }
       </View>
       <Skeleton
         show={!loaded}
-        styles={[Styles.roundedContainer, {
-          position: 'absolute',
-          width: '90%',
-          height: 90,
-          zIndex: 1,
-        }]}
+        styles={Local.skeleton}
       />
       <BlurView
-        style={[Styles.roundedContainer, {
-          display: blur ? 'flex' : 'none',
-          overflow: 'hidden',
-          position: 'absolute',
-          justifyContent: 'center',
-          alignItems: 'center',
-          top: 0,
-          left: 0,
-          width: '90%',
-          height: 90,
-          padding: 15,
-          zIndex: 2
-        }]}
+        style={Local.blur}
         intensity={20}
       >
-        <View
-          style={{
-            display: message ? 'flex' : 'none',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-        <Text
-          style={{
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: 16,
-            paddingBottom: 5,
-            textShadowColor: Colors.background,
-            textShadowOffset: { width: 2, height: 2 },
-            textShadowRadius: 10
-          }}
-        >
-          Import multiple files with <Text style={{color: theme}}>Premium</Text>
-        </Text>
-        <CustomButton 
-          title={'Sign Up'}
-          background={theme}
-          disabledColor={darkenColor(theme, 40, 50)}
-          opacity={.90}
-          handlePress={() => router.push('/premium')}
-        />
+        <View style={Local.premiumMessageContainer}>
+          <Text style={Local.premiumMessageText}>
+            Import multiple files with <Text style={{color: theme}}>Premium</Text>
+          </Text>
+          <CustomButton 
+            title={'Sign Up'}
+            background={theme}
+            disabledColor={darkenColor(theme, 40, 50)}
+            opacity={.90}
+            handlePress={() => router.push('/premium')}
+          />
         </View>
       </BlurView>
     </>

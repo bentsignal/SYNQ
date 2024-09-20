@@ -1,4 +1,4 @@
-import { View, Image, TouchableOpacity } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 
 export const ListCover = ({image, propOnLoad}: {
@@ -15,8 +15,8 @@ export const ListCover = ({image, propOnLoad}: {
     dim = src ? 60 : 20;
   }, [image]);
 
-  return (
-    <View style={{
+  const Local = StyleSheet.create({
+    container: {
       backgroundColor: '#D2D2D2',
       width: 60,
       height: 60,
@@ -24,14 +24,19 @@ export const ListCover = ({image, propOnLoad}: {
       alignItems: 'center',
       borderRadius: 10,
       opacity: loaded ? 1 : 0
-    }}>
+    },
+    artwork: {
+      width: dim, 
+      height: dim,
+      borderRadius: src ? 9 : 0,
+    }
+  });
+
+  return (
+    <View style={Local.container}>
       <Image 
         source={src ? {uri: src} : require('@/assets/icons/music.png')}
-        style={{
-          width: dim,
-          height: dim,
-          borderRadius: src ? 9 : 0,
-        }}
+        style={Local.artwork}
         onLoad={() => {
           setLoaded(true);
           propOnLoad()
@@ -59,56 +64,56 @@ export const EditCover = ({image, handlePress}: {
     setSrc(image ? image : '')
   }, [image]);
 
+  const Local = StyleSheet.create({
+    container: {
+      backgroundColor: '#D2D2D2',
+      width: 120, 
+      height: 120,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 12,
+    },
+    artwork: {
+      width: 120, 
+      height: 120,
+      position: 'absolute',
+      borderRadius: 10,
+    },
+    tintOverlay: {
+      width: 120,
+      height: 120,
+      position: 'absolute',
+      backgroundColor: `rgba(0, 0, 0, ${src ? 0.6 : 0})`,
+      borderRadius: 10,
+    },
+    iconWrapper: {
+      width: 120, 
+      height: 120,
+      position: 'absolute',
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    icon: {
+      width: 20,
+      height: 20,
+    }
+  });
+
   return (
     <TouchableOpacity
       onPress={handlePress}
     >
-      <View
-        style={{
-          backgroundColor: '#D2D2D2',
-          width: 120, 
-          height: 120,
-          justifyContent: 'center',
-          alignItems: 'center',
-          borderRadius: 12,
-        }}
-      >
+      <View style={Local.container}>
         <Image 
           source={src ? {uri: src} : {uri: transparent}}
-          style={{
-            width: 120, 
-            height: 120,
-            position: 'absolute',
-            borderRadius: 10,
-          }}
-          onError={() => {
-            setSrc('');
-          }}
+          style={Local.artwork}
+          onError={() => setSrc('')}
         />
-        <View 
-          style={{
-            width: 120,
-            height: 120,
-            position: 'absolute',
-            backgroundColor: `rgba(0, 0, 0, ${src ? 0.6 : 0})`,
-            borderRadius: 10,
-          }}
-        />
-        <View
-          style={{
-            width: 120, 
-            height: 120,
-            position: 'absolute',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
+        <View style={Local.tintOverlay}/>
+        <View style={Local.iconWrapper}>
           <Image 
             source={src ? require('@/assets/icons/edit.png') : require('@/assets/icons/edit-black.png')}
-            style={{
-              width: 20,
-              height: 20,
-            }}
+            style={Local.icon}
           />
         </View>
       </View>

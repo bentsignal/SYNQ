@@ -42,6 +42,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
     batchButtonIcon: {
       width: 20,
       height: 20,
+      tintColor: Colors.text
     },
     mainButtonContainer: {
       display: selectEnabled ? 'none' : 'flex',
@@ -72,6 +73,17 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
         >
           <Image 
             source={require('@/assets/icons/edit.png')}
+            style={Local.batchButtonIcon}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[Styles.roundedContainer, Styles.backgroundBlendShadow, Local.batchButtonWrapper]}
+          onPress={() => {
+            console.log('share');
+          }}
+        >
+          <Image
+            source={require('@/assets/icons/share.png')}
             style={Local.batchButtonIcon}
           />
         </TouchableOpacity>

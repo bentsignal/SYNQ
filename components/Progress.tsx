@@ -81,6 +81,7 @@ const Progress = ({ completion, showCircle }: {completion: number; showCircle: b
       justifyContent: 'center',
       alignItems: 'center',
       opacity: globalOpacityRef,
+      zIndex: 50,
     },
     svg: {
       position: 'absolute',

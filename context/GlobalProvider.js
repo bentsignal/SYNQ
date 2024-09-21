@@ -2,8 +2,6 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { Colors } from '@/constants/Colors';
 import { getLogo } from '@/constants/Logos';
 import { NotificationType } from '@/constants/Types';
-import CFG from '@/constants/Config';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -68,6 +66,8 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [notificationMessage, setNotificationMessage] = useState('');
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [notificationTrace, setNotificationTrace] = useState('');
+  const [showGlobalProgress, setShowGlobalProgress] = useState(false);
+  const [globalProgress, setGlobalProgress] = useState(0);
 
   return (
     <GlobalContext.Provider
@@ -110,6 +110,8 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         showNotificationModal, setShowNotificationModal,
         notificationTrace, setNotificationTrace,
         addNotification, removeNotification,
+        showGlobalProgress, setShowGlobalProgress,
+        globalProgress, setGlobalProgress,
       }}
     >
       {children}

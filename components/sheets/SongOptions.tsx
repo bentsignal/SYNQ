@@ -112,6 +112,13 @@ const SongOptions = () => {
                 }, 100);
               }}
             />
+            <SongOption 
+              icon={require('@/assets/icons/share.png')}
+              text={'Export'}
+              handler={() => {
+                console.log('share');
+              }}
+            />
             <SongOption
               icon={require('@/assets/icons/delete.png')}
               text={'Delete'}

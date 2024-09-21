@@ -1,4 +1,4 @@
-import { Animated, Easing } from 'react-native';
+import { Animated, Easing, StyleSheet } from 'react-native';
 import { useEffect, useRef } from 'react';
 import { useGlobalContext } from '@/context/GlobalProvider';
 
@@ -25,20 +25,20 @@ const Overlay = () => {
     }).start();
   }, [showOverlay])
 
-  return (
-    <Animated.View 
-      style={{
-        position: 'absolute',
-        backgroundColor: 'black',
-        width: '100%',
-        height: '100%',
-        zIndex: 20,
-        opacity: overlayOpacity,
-        // display: showOverlay ? 'flex' : 'none',
-        pointerEvents: showOverlay ? 'auto' : 'none',
-      }}
-    />
-  )
+  const Local = StyleSheet.create({
+    overlay: {
+      position: 'absolute',
+      backgroundColor: 'black',
+      width: '100%',
+      height: '100%',
+      zIndex: 20,
+      opacity: overlayOpacity,
+      pointerEvents: showOverlay ? 'auto' : 'none',
+    }
+  });
+
+  return <Animated.View style={Local.overlay}/>
+
 }
 
 export default Overlay;

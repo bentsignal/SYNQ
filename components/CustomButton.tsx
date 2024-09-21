@@ -1,4 +1,5 @@
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 
 type MainButtonProps = {
@@ -27,14 +28,19 @@ const CustomButton = ({
 
   const Local = StyleSheet.create({
     buttonWrapper: {
+      ...Styles.roundedContainer,
+      ...customStyles,
       minWidth: 100,
       height: 42,
       justifyContent: 'center',
+      backgroundColor: disabled ? disabledColor : background,
+      width: buttonWidth ? buttonWidth: 100,
     },
     buttonText: {
       fontSize: 16,
       fontWeight: 'bold',
       textAlign: 'center',
+      color: textColor ? textColor: 'black',
     },
   });
 
@@ -42,16 +48,10 @@ const CustomButton = ({
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={opacity ? opacity : 0.8}
-      style={[customStyles ? customStyles : {}, Local.buttonWrapper, Styles.roundedContainer, {
-          backgroundColor: disabled ? disabledColor : background, 
-          width: buttonWidth ? buttonWidth: 100,
-        }
-      ]}
+      style={Local.buttonWrapper}
       disabled={disabled}
     >
-      <Text style={[Local.buttonText, {
-        color: textColor ? textColor: 'black',
-      }]}>
+      <Text style={Local.buttonText}>
         {title}
       </Text>
     </TouchableOpacity>

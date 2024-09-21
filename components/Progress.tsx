@@ -1,4 +1,4 @@
-import { View, Animated, Easing } from 'react-native';
+import { View, Animated, Easing, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useRef, useEffect } from 'react';
 import Svg, { Circle } from 'react-native-svg';
@@ -76,23 +76,28 @@ const Progress = ({ completion, showCircle }: {completion: number; showCircle: b
 
   }, [completion]);
 
+  const Local = StyleSheet.create({
+    container: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      opacity: globalOpacityRef,
+    },
+    svg: {
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+    },
+  });
+
   return (
-    <Animated.View
-      style={{
-        justifyContent: 'center',
-        alignItems: 'center',
-        opacity: globalOpacityRef,
-      }}
-    >
+    <Animated.View style={Local.container}>
       <Svg 
         height="100" 
         width="100" 
         viewBox="0 0 100 100" 
         style={{
-          position: 'absolute',
+          ...Local.svg,
           zIndex: 2,
-          width: '100%',
-          height: '100%',
         }}
       >
         <AnimatedCircle 
@@ -112,10 +117,8 @@ const Progress = ({ completion, showCircle }: {completion: number; showCircle: b
         width="100" 
         viewBox="0 0 100 100" 
         style={{
-          position: 'absolute',
+          ...Local.svg,
           zIndex: 1,
-          width: '100%',
-          height: '100%',
         }}
       >
         <AnimatedCircle 

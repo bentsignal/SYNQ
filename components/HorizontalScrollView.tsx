@@ -1,8 +1,6 @@
-import { View, Text, ScrollView, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent} from "react-native";
-import { useRef, useEffect, useState } from "react";
-import { Styles } from "@/constants/Styles";
-import { Themes, Colors } from "@/constants/Colors";
-import ThemeOption from "@/components/settings/ThemeOption";
+import { View, StyleSheet, ScrollView, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent} from "react-native";
+import { useRef, useState } from "react";
+import { Colors } from "@/constants/Colors";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useGlobalContext } from "@/context/GlobalProvider";
 
@@ -68,18 +66,44 @@ const HorizontalScrollView = ({ children }: HorizontalScrollViewProps) => {
     }
   }
 
+  const Local = StyleSheet.create({
+    gradient: {
+      position: 'absolute', 
+      top: 0,
+      width: 30,
+      height: 130, 
+      zIndex: 2,
+    },
+    leftGradient: {
+      left: 0,
+      opacity: leftGradientOpacityRef,
+    },
+    rightGradient: {
+      right: 0,
+      opacity: rightGradientOpacityRef,
+    },
+    contentWrapper: {
+      paddingTop: 15,
+      paddingBottom: 15,
+      maxHeight: 100,
+      position: 'relative',
+    },
+    tintOverlay: {
+      height: 100,
+      width: '100%',
+      backgroundColor: Colors.background,
+      position: 'absolute',
+      top: 0,
+      zIndex: 5,
+      opacity: 0.5,
+      display: premium ? 'none' : 'flex',
+    }
+  });
+
   return (
     <View>
       <AnimatedGradient
-          style={{
-            position: 'absolute', 
-            top: 0,
-            left: 0,
-            width: 30,
-            height: 130, 
-            zIndex: 2,
-            opacity: leftGradientOpacityRef,
-          }}
+          style={[Local.gradient, Local.leftGradient]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           colors={[ 'rgba(16, 16, 16, 1)', 'rgba(16, 16, 16, 0)']}
@@ -88,42 +112,18 @@ const HorizontalScrollView = ({ children }: HorizontalScrollViewProps) => {
       <ScrollView 
         horizontal
         onScroll={handleScroll}
-        style={{
-          paddingTop: 15,
-          paddingBottom: 15,
-          maxHeight: 100,
-          position: 'relative',
-        }}
+        style={Local.contentWrapper}
       >
         {children}
       </ScrollView>
       <AnimatedGradient
-        style={{
-          position: 'absolute', 
-          top: 0,
-          right: 0,
-          width: 30,
-          height: 130, 
-          zIndex: 2,
-          opacity: rightGradientOpacityRef,
-        }}
+        style={[Local.gradient, Local.rightGradient]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 0 }}
         colors={['rgba(16, 16, 16, 1)', 'rgba(16, 16, 16, 0)']}
         pointerEvents={'none'}
       />
-      <View 
-        style={{
-          height: 100,
-          width: '100%',
-          backgroundColor: Colors.background,
-          position: 'absolute',
-          top: 0,
-          zIndex: 5,
-          opacity: 0.5,
-          display: premium ? 'none' : 'flex',
-        }}
-      />
+      <View style={Local.tintOverlay}/>
     </View>
   );
 

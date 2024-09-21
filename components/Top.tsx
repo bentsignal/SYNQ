@@ -7,7 +7,7 @@ const Top = () => {
   const { logo } = useGlobalContext();
 
   const Local = StyleSheet.create({
-    top: {
+    container: {
       width: '90%',
       alignSelf: 'center',
       flexDirection: 'row',
@@ -16,28 +16,22 @@ const Top = () => {
       marginTop: 10,
       marginBottom: 30
     },
+    icon: {
+      height: 25,
+      width: 25,
+    }
   });
 
   return (
-    <View style={Local.top}>
+    <View style={Local.container}>
       <Image 
         source={logo}
-        style={{
-          height: 25,
-          width: 25,
-        }}
+        style={Local.icon}
       />
-      <TouchableOpacity
-        onPress={() => {
-          router.push('/settings')
-        }}
-      >
+      <TouchableOpacity onPress={() => router.push('/settings')}>
         <Image 
           source={require('@/assets/icons/gear.png')}
-          style={{
-            height: 25,
-            width: 25,
-          }}
+          style={Local.icon}
         />
       </TouchableOpacity>
     </View>

@@ -11,6 +11,7 @@ import { replaceColor } from 'lottie-colorify';
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 import { darkenColor } from "@/lib/ColorManager";
+import { useEffect } from "react";
 
 export const Success = () => {
 
@@ -24,11 +25,13 @@ export const Success = () => {
 
   const insets = useSafeAreaInsets();
 
-  if (haptic) {
-    Haptics.notificationAsync(
-      Haptics.NotificationFeedbackType.Success
-    );
-  }
+  useEffect(() => {
+    if (haptic) {
+      Haptics.notificationAsync(
+        Haptics.NotificationFeedbackType.Success
+      );
+    }
+  }, [haptic]);
   
   let source = replaceColor('#4173b9', darkenColor(theme, 10, 20), require('@/assets/anim/success.json')); // accent
   source = replaceColor('#63a3ff', theme, source); // main
@@ -99,11 +102,13 @@ export const Failure = () => {
 
   const insets = useSafeAreaInsets();
 
-  if (haptic) {
-    Haptics.notificationAsync(
-      Haptics.NotificationFeedbackType.Error
-    )
-  }
+  useEffect(() => {
+    if (haptic) {
+      Haptics.notificationAsync(
+        Haptics.NotificationFeedbackType.Error
+      )
+    }
+  }, [haptic]);
 
   const Local = StyleSheet.create({
     wrapper: {

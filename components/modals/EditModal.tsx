@@ -295,9 +295,9 @@ const EditModal = () => {
                   }}
                 />
               </View>
-              <View style={Local.loadingWrapper}>
-                <Loading height={100} width={200}/>
-              </View>
+            </View>
+            <View style={Local.loadingWrapper}>
+              <Loading height={100} width={200}/>
             </View>
           </View>
         </View>

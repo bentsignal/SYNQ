@@ -190,14 +190,6 @@ export const saveEdits = (
 
 ) => {
 
-  /*
-
-
-      TODO: Batch edits are kinda working, but sometimes it updates the song title, which it shouldn't
-
-
-  */
-
   const NodeID3 = require('@/lib/node-id3')
 
   type tagsType = {
@@ -206,7 +198,6 @@ export const saveEdits = (
     album?: string;
     APIC?: {
       description: string;
-      // imageBuffer: Uint8Array;
       imageBuffer: string;
       mime: string;
     }
@@ -262,7 +253,7 @@ export const saveEdits = (
       }
 
       if (newArtwork) {
-        // questionable way to extract mime from start of string
+        // extract mime from start of string
         const infoString = newArtwork.split(/,(.*)/s)[0];
         const mimeTypeFull = infoString.split(/;(.*)/s)[0];
         const mimeType = mimeTypeFull.split(/:(.*)/s)[1];
@@ -271,7 +262,6 @@ export const saveEdits = (
         tags.APIC = {
           description: 'Album Cover',
           imageBuffer: bufferString,
-          // imageBuffer: toByteArray(artwork.split(/,(.*)/s)[1]),
           mime: mimeType
         };
       }

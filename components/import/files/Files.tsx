@@ -43,6 +43,7 @@ const Files = () => {
         >
           <Progress 
             completion={completion} 
+            loading={loading}
             showCircle={loadAnimInProgress}
           />
         </View>

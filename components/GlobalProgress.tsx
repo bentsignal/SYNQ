@@ -5,11 +5,17 @@ import Progress from "./Progress";
 
 const GlobalProgress = () => {
 
-  const { globalProgress, showGlobalProgress } = useGlobalContext();
+  const { 
+    
+    globalProgress, showGlobalLoading,
+    
+    showGlobalProgress 
+  
+  } = useGlobalContext();
 
   const Local = StyleSheet.create({
     container: {
-      display: showGlobalProgress ? 'flex' : 'none',
+      display: showGlobalLoading ? 'flex' : 'none',
       width: '100%',
       height: '100%',
       justifyContent: 'center',
@@ -23,8 +29,8 @@ const GlobalProgress = () => {
 
   return (
     <View style={Local.container}>
-      <Progress completion={globalProgress} showCircle={showGlobalProgress}/>
-      <Overlay show={showGlobalProgress} activeOpacity={0.7}/>
+      <Progress completion={globalProgress} loading={showGlobalLoading} showCircle={showGlobalProgress}/>
+      <Overlay show={showGlobalLoading} activeOpacity={0.7}/>
     </View>
   );
 }

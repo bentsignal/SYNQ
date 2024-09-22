@@ -7,6 +7,7 @@ import SongInfo from '@/components/song/SongInfo';
 import { ListCover } from '@/components/song/Cover';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import SongOption from './SongOption';
+import { exportSongs } from '@/lib/SongManager';
 
 const SongOptions = () => {
 
@@ -16,9 +17,11 @@ const SongOptions = () => {
 
     setShowSongOptions, setShowEdit,
     setShowDelete, setDeleteSong,
-    setShowOverlay,
+    setShowOverlay, setShowGlobalLoading,
   
   } = useGlobalContext();
+
+  const actionDelay = 10;
 
   const Local = StyleSheet.create({
     handle: {
@@ -37,7 +40,9 @@ const SongOptions = () => {
       height: '100%',
       position: 'absolute',
       backgroundColor: Colors.popup,
-      padding: 20,
+      paddingLeft: 20,
+      paddingRight: 20,
+      paddingTop: 10,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
       flex: 1,
@@ -109,14 +114,21 @@ const SongOptions = () => {
                 setTimeout(() => {
                   setShowOverlay(true);
                   setShowEdit(true);
-                }, 100);
+                }, actionDelay);
               }}
             />
             <SongOption 
               icon={require('@/assets/icons/share.png')}
               text={'Export'}
-              handler={() => {
-                console.log('share');
+              handler={async () => {
+                try {
+                  setShowGlobalLoading(true);
+                  await exportSongs([editSong]);
+                  setShowGlobalLoading(false);
+                }
+                catch (error) {
+                  setShowGlobalLoading(false);
+                }
               }}
             />
             <SongOption
@@ -128,7 +140,7 @@ const SongOptions = () => {
                   setShowOverlay(true);
                   setShowDelete(true);
                   setDeleteSong({name: editSong.name, id: editSong.id});
-                }, 100);
+                }, actionDelay);
               }}
             />
           </View>

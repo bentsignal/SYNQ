@@ -92,6 +92,7 @@ const WiFi = () => {
         <View style={[Styles.main, Local.container]}>
           <Progress 
             completion={completion} 
+            loading={loading}
             showCircle={loadAnimInProgress}
           />
         </View>

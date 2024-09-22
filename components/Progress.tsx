@@ -7,7 +7,13 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-const Progress = ({ completion, showCircle }: {completion: number; showCircle: boolean;}) => {
+type ProgressProps = {
+  completion: number;
+  loading: boolean;
+  showCircle: boolean;
+}
+
+const Progress = ({ completion, loading, showCircle }: ProgressProps) => {
 
   let completionRef = useRef(new Animated.Value(283)).current;
   let circleOpacityRef = useRef(new Animated.Value(0)).current;
@@ -15,7 +21,7 @@ const Progress = ({ completion, showCircle }: {completion: number; showCircle: b
 
   const { 
     
-    loadAnimInProgress, loading, theme,
+    loadAnimInProgress, theme,
     
     setLoadAnimInProgress 
   

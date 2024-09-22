@@ -18,7 +18,8 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
     setHomeState, setResults, setExportDisabled,
     setLoading, setZipping, setImporting, 
     setShowDelete, setEditSong, setShowEdit, 
-    setTransferSize, setShowOverlay
+    setTransferSize, setShowOverlay,
+    setShowGlobalLoading,
 
   } = useGlobalContext();
 
@@ -78,8 +79,16 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[Styles.roundedContainer, Styles.backgroundBlendShadow, Local.batchButtonWrapper]}
-          onPress={() => {
-            console.log('share');
+          onPress={async () => {
+            try {
+              setShowGlobalLoading(true);
+              let songs = results.filter((result: any) => selectedSongs.includes(result.id));
+              await exportSongs(songs);
+              setShowGlobalLoading(false);
+            }
+            catch (error) {
+              setShowGlobalLoading(false);
+            }
           }}
         >
           <Image
@@ -148,7 +157,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
                   reset();
                 }
               })
-            }, 1000)
+            }, 10)
           }}
           disabled={exportDisabled}
           disabledColor={darkenColor(theme, 40, 50)}

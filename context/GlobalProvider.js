@@ -66,6 +66,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [notificationMessage, setNotificationMessage] = useState('');
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [notificationTrace, setNotificationTrace] = useState('');
+  const [showGlobalLoading, setShowGlobalLoading] = useState(false);
   const [showGlobalProgress, setShowGlobalProgress] = useState(false);
   const [globalProgress, setGlobalProgress] = useState(0);
 
@@ -110,6 +111,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         showNotificationModal, setShowNotificationModal,
         notificationTrace, setNotificationTrace,
         addNotification, removeNotification,
+        showGlobalLoading, setShowGlobalLoading,
         showGlobalProgress, setShowGlobalProgress,
         globalProgress, setGlobalProgress,
       }}

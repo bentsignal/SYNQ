@@ -12,6 +12,7 @@ import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 import { darkenColor } from "@/lib/ColorManager";
 import { useEffect } from "react";
+import { router } from "expo-router";
 
 export const Success = () => {
 
@@ -38,6 +39,7 @@ export const Success = () => {
 
   const handleAnimFinish = () => {
     setTimeout(async () => {
+      router.replace('/(tabs)/library')
       setHomeState(0);
       let countStr = await AsyncStorage.getItem('importCount');
       if (countStr) {
@@ -166,6 +168,7 @@ export const Failure = () => {
           title='Back'
           background={Colors.text}
           handlePress={() => {
+            router.replace('/(tabs)/library')
             setHomeState(0);
           }}
         />

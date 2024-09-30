@@ -5,8 +5,10 @@ import { getAudioMetadata } from '@missingcore/audio-metadata';
 import { SongType } from '@/constants/Types'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
+import { SaveFormat } from 'expo-image-manipulator';
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
-
+import DataManager from './DataManager';
 const isValidNumString = (str: string) => {
   return !isNaN(Number(str));
 }
@@ -131,7 +133,7 @@ export const importFiles = async (
         'id': idgen(10),
         'data': data,
         'info': info
-      })
+      });
       await FileSystem.deleteAsync(results.assets[i].uri);
     }
     return songs;
@@ -259,6 +261,8 @@ export const saveEdits = (
         const mimeType = mimeTypeFull.split(/:(.*)/s)[1];
         // buffer after mimetype and encoding scheme
         const bufferString = newArtwork.split(/,(.*)/s)[1];
+        // is this possiblly why the image is corrupting? Maybe try to pass the full
+        // artwork string instead of the buffer string?
         tags.APIC = {
           description: 'Album Cover',
           imageBuffer: bufferString,
@@ -286,6 +290,51 @@ export const saveEdits = (
   return results;
   
 }
+
+export const saveToLibrary = async (
+  songs: SongType[],
+  progress: (value: number) => void,
+) => {
+  try {
+    const db = DataManager.getInstance();
+    await db.initConnection();
+    for (let i = 0; i < songs.length; i++) {
+      try {
+        const song = songs[i];
+        const title = song.info.metadata?.name ? song.info.metadata.name : '';
+        const artists = song.info.metadata?.artist ? song.info.metadata.artist : '';
+        const album = song.info.metadata?.album ? song.info.metadata.album : '';
+        const artwork = song.info.metadata?.artwork ? song.info.metadata.artwork : '';
+        const fileName = song.name;
+        const genre = 'Music';
+        const duration = 0;
+        // insert song into database
+        const id = await db.insertSong(title, artists, album, genre, duration, fileName);
+        console.log(`Inserted song with ID: ${id}`);
+        if (id !== -1) {
+          // create directory and write song data
+          const dir = `${FileSystem.documentDirectory}library/${id}`;
+          await FileSystem.makeDirectoryAsync(dir);
+          await FileSystem.writeAsStringAsync(`${dir}/${fileName}`, song.data, {encoding: 'base64'});
+          // TODO: write small and large artwork files
+          const mimeType = artwork.split(/:(.*)/s)[1];
+          await FileSystem.writeAsStringAsync(`${dir}/cover_full.${mimeType}`, artwork, {encoding: 'base64'});
+          await FileSystem.writeAsStringAsync(`${dir}/cover_small.${mimeType}`, artwork, {encoding: 'base64'});
+          await ImageManipulator.manipulateAsync(`${dir}/cover_small.${mimeType}`, [{resize: {width: 120, height: 120}}], {compress: 0.5, format: SaveFormat.JPEG});
+        }
+        progress(i+1);
+      }
+      catch (error) {
+        console.error('Error inserting song: ', error);
+        progress(i+1);
+      }
+    }
+  }
+  catch (error) {
+    const trace = error instanceof Error ? error.message : String(error);
+    throw new Error('Error saving to library: ' + trace);
+  }
+};
 
 export const idgen = (len: number) => {
   let result = '';

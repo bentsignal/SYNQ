@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import { SongType } from '@/constants/Types';
 
 class DataManager {
   private static instance: DataManager;
@@ -48,12 +49,13 @@ class DataManager {
       await this.db?.execAsync(`
         CREATE TABLE IF NOT EXISTS songs (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          path TEXT NOT NULL,
           title TEXT,
+          edited BOOLEAN DEFAULT FALSE,
           artists TEXT,
           album TEXT,
           genre TEXT,
           duration INTEGER,
+          fileName TEXT
         );
       `);
       return true;
@@ -63,4 +65,29 @@ class DataManager {
     }
   }
 
+  async insertSong(
+    title: string,
+    artists: string,
+    album: string,
+    genre: string,
+    duration: number,
+    fileName: string
+  ): Promise<number> {
+    try {
+      if (!this.db) {
+        await this.initConnection();
+      } 
+      const result = await this.db?.runAsync(
+        `INSERT INTO songs (title, artists, album, genre, duration, fileName)
+         VALUES (${title}, ${artists}, ${album}, ${genre}, ${duration}, ${fileName})`
+      );
+      return result?.lastInsertRowId ? result.lastInsertRowId : -1;
+    } catch (error) {
+      console.error(`Error inserting song: ${title}`, error);
+      throw new Error('Failed to insert song');
+    }
+  }
+
 }
+
+export default DataManager;

@@ -2,7 +2,7 @@ import { View, Text, Image, TouchableOpacity, Linking, Alert, StyleSheet } from 
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { Styles } from '@/constants/Styles';
-import { Colors } from '@/constants/Colors';
+import { Colors, Themes } from '@/constants/Colors';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { LinearGradient } from 'expo-linear-gradient';
 import Bar from '@/components/modals/Bar';
@@ -171,6 +171,33 @@ const Premium = () => {
     Linking.openURL(url).catch((err) => console.error("Failed to open URL:", err));
   };
 
+  const getHeart = () => {
+    if (theme === Themes.blue) {
+      return '💙';
+    }
+    else if (theme === Themes.purple) {
+      return '💜';
+    }
+    else if (theme === Themes.pink) {
+      return '💕';
+    }
+    else if (theme === Themes.red) {
+      return '❤️';
+    }
+    else if (theme === Themes.orange) {
+      return '🧡';
+    }
+    else if (theme === Themes.yellow) {
+      return '💛';
+    }
+    else if (theme === Themes.mint) {
+      return '💚';
+    }
+    else {
+      return '💙';
+    }
+  }
+
   const setOption = (option: number, purchaseText: string) => {
     if (!loading && !active && !error) {
       setSelected(option);
@@ -320,7 +347,7 @@ const Premium = () => {
       let second = '';
       if (selected === 2) {
         first = 'Your subscription will never expire';
-        second = 'Thank you for your support 💙';
+        second = `Thank you for your support ${getHeart()}`;
       }
       else {
         first = `Your subscription will ${renew ? 'renew' : 'expire'} ${end}`;

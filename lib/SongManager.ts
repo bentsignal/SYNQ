@@ -311,17 +311,39 @@ export const saveToLibrary = async (
         // insert song into database
         const id = await db.insertSong(title, artists, album, genre, duration, fileName);
         console.log(`Inserted song with ID: ${id}`);
-        return true;
         if (id !== -1) {
           // create directory and write song data
           const dir = `${FileSystem.documentDirectory}library/${id}`;
           await FileSystem.makeDirectoryAsync(dir);
           await FileSystem.writeAsStringAsync(`${dir}/${fileName}`, song.data, {encoding: 'base64'});
-          // TODO: write small and large artwork files
-          const mimeType = artwork.split(/:(.*)/s)[1];
-          await FileSystem.writeAsStringAsync(`${dir}/cover_full.${mimeType}`, artwork, {encoding: 'base64'});
-          await FileSystem.writeAsStringAsync(`${dir}/cover_small.${mimeType}`, artwork, {encoding: 'base64'});
-          await ImageManipulator.manipulateAsync(`${dir}/cover_small.${mimeType}`, [{resize: {width: 120, height: 120}}], {compress: 0.5, format: SaveFormat.JPEG});
+          // get image file type
+          const infoString = artwork.split(/,(.*)/s)[0];
+          const mimeTypeFull = infoString.split(/;(.*)/s)[0];
+          const mimeType = mimeTypeFull.split(/:(.*)/s)[1];
+          let extension = '';
+          let format = '';
+          if (mimeType === 'image/jpeg') {
+            extension = 'jpg';
+            format = SaveFormat.JPEG;
+          }
+          else if (mimeType === 'image/png') {
+            extension = 'png';
+            format = SaveFormat.PNG;
+          }
+          // write images if valid format
+          /*
+
+                TODO: check to see if images and audio files save properly, read in data in library to new songlist
+
+          */
+          if (extension !== '') {
+            await FileSystem.writeAsStringAsync(`${dir}/cover_full.${mimeType}`, artwork, {encoding: 'base64'});
+            await FileSystem.writeAsStringAsync(`${dir}/cover_small.${mimeType}`, artwork, {encoding: 'base64'});
+            await ImageManipulator.manipulateAsync(`${dir}/cover_small.${mimeType}`, [{resize: {width: 120, height: 120}}], {compress: 0.5, format: SaveFormat.JPEG});
+          }
+          else {
+            console.log('invalid image format: ', mimeType);
+          }
         }
         progress(i+1);
       }

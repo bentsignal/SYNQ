@@ -35,14 +35,10 @@ const RootLayout = () => {
     SplashScreen.preventAutoHideAsync();
 
     const checkPurchases = async () => {
-      const first = await AsyncStorage.getItem('first');
-      if (first !== 'false') {
-        await AsyncStorage.setItem('first', 'false');
-        await connect();
-        const restored = await restorePurchases();
-        if (restored !== '') {
-          setPremium(true);
-        }
+      await connect();
+      const restored = await restorePurchases();
+      if (restored !== '') {
+        setPremium(true);
       }
     }
 

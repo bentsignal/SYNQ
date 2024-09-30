@@ -311,6 +311,7 @@ export const saveToLibrary = async (
         // insert song into database
         const id = await db.insertSong(title, artists, album, genre, duration, fileName);
         console.log(`Inserted song with ID: ${id}`);
+        return true;
         if (id !== -1) {
           // create directory and write song data
           const dir = `${FileSystem.documentDirectory}library/${id}`;

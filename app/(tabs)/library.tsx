@@ -8,12 +8,21 @@ import { Colors } from "@/constants/Colors";
 import Notifications from "@/components/notifications/Notifications";
 import { NotificationType } from "@/constants/Types";
 import { useGlobalContext } from "@/context/GlobalProvider";
+import DataManager from "@/lib/DataManager";
+import { useEffect } from "react";
 
 const Library = () => {
 
   const insets = useSafeAreaInsets();
 
-  const { addNotification } = useGlobalContext();
+  const { addNotification, homeState } = useGlobalContext();
+
+  useEffect(() => {
+    const db = DataManager.getInstance();
+    db.getSongs().then((result) => {
+      console.log(result);
+    });
+  }, [homeState]);
 
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>
@@ -29,7 +38,6 @@ const Library = () => {
         <Text
           style={{
             color: 'white',
-
           }}
         >
           Coming soon

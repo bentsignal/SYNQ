@@ -65,6 +65,19 @@ class DataManager {
     }
   }
 
+  async clearSongsTable(): Promise<boolean> {
+    try {
+      if (!this.db) {
+        await this.initConnection();
+      }
+      await this.db?.execAsync(`DELETE FROM songs;`);
+      return true;
+    } catch (error) {
+      console.error('Error clearing songs table:', error);
+      return false;
+    }
+  }
+
   async insertSong(
     title: string,
     artists: string,
@@ -79,12 +92,25 @@ class DataManager {
       } 
       const result = await this.db?.runAsync(
         `INSERT INTO songs (title, artists, album, genre, duration, fileName)
-         VALUES (${title}, ${artists}, ${album}, ${genre}, ${duration}, ${fileName})`
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [title, artists, album, genre, duration, fileName] 
       );
       return result?.lastInsertRowId ? result.lastInsertRowId : -1;
     } catch (error) {
       console.error(`Error inserting song: ${title}`, error);
       throw new Error('Failed to insert song');
+    }
+  }
+
+  async getSongs(): Promise<any> {
+    try {
+      if (!this.db) {
+        await this.initConnection();
+      }
+      const result = await this.db?.getAllAsync(`SELECT * FROM songs;`);
+      return result ? result : [];
+    } catch (error) {
+      console.error('Error getting songs:', error);
     }
   }
 

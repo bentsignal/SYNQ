@@ -3,7 +3,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import CustomButton from '@/components/CustomButton';
-import { exportSongs} from '@/lib/SongManager';
+import { exportSongs, saveToLibrary } from '@/lib/SongManager';
 import { darkenColor } from '@/lib/ColorManager';
 import Notifications from '@/components/notifications/Notifications';
 
@@ -136,8 +136,12 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
             setLoading(true);
             setZipping(true);
             const songs = premium ? results : [results[0]]
+            const progress = (value: number) => {
+              console.log(value);
+            }
             setTimeout(() => {
-              exportSongs(songs).then(() => {
+              // exportSongs(songs).then(() => {
+              saveToLibrary(songs, progress).then(() => {
                 setLoading(false);
                 setZipping(false);
                 setHomeState(3);

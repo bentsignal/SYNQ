@@ -9,6 +9,7 @@ import { Colors } from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { connect, restorePurchases } from "@/lib/PurchaseManager";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import DataManager from "@/lib/DataManager";
 
 const RootLayout = () => {
 
@@ -42,6 +43,18 @@ const RootLayout = () => {
       }
     }
 
+    const checkDB = async () => {
+      try {
+        const db = DataManager.getInstance();
+        await db.initConnection();
+        await db.createTables();
+      }
+      catch (error) {
+        console.error('Error creatingdatabase:', error);
+      }
+    }
+
+    checkDB();
     checkPurchases();
     loadTheme();
 

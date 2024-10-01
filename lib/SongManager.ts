@@ -301,11 +301,16 @@ export const saveToLibrary = async (
     for (let i = 0; i < songs.length; i++) {
       try {
         const song = songs[i];
+        console.log('song: ', song);
         const title = song.info.metadata?.name ? song.info.metadata.name : '';
         const artists = song.info.metadata?.artist ? song.info.metadata.artist : '';
         const album = song.info.metadata?.album ? song.info.metadata.album : '';
         const artwork = song.info.metadata?.artwork ? song.info.metadata.artwork : '';
-        const fileName = song.name;
+        const fileType = song.info.fileType ? song.info.fileType : '';
+        let fileName = song.info.name ? song.info.name : '';
+        if (fileName === '' && fileType !== '') {
+          fileName = `song.${fileType}`;
+        }
         const genre = 'Music';
         const duration = 0;
         // insert song into database
@@ -314,35 +319,60 @@ export const saveToLibrary = async (
         if (id !== -1) {
           // create directory and write song data
           const dir = `${FileSystem.documentDirectory}library/${id}`;
-          await FileSystem.makeDirectoryAsync(dir);
-          await FileSystem.writeAsStringAsync(`${dir}/${fileName}`, song.data, {encoding: 'base64'});
+          try {
+            
+            console.log('dir: ', dir);
+            await FileSystem.makeDirectoryAsync(dir);
+            console.log(`${dir}/${fileName}`);
+            await FileSystem.writeAsStringAsync(`${dir}/${fileName}`, song.data, {encoding: 'base64'});
+          }
+          catch (error) {
+            console.log('error writing audio: ', error);
+          }
           // get image file type
-          const infoString = artwork.split(/,(.*)/s)[0];
-          const mimeTypeFull = infoString.split(/;(.*)/s)[0];
-          const mimeType = mimeTypeFull.split(/:(.*)/s)[1];
-          let extension = '';
-          let format = '';
-          if (mimeType === 'image/jpeg') {
-            extension = 'jpg';
-            format = SaveFormat.JPEG;
-          }
-          else if (mimeType === 'image/png') {
-            extension = 'png';
-            format = SaveFormat.PNG;
-          }
-          // write images if valid format
-          /*
+          if (artwork !== null && artwork !== undefined && artwork !== '') {
+            const infoString = artwork.split(/,(.*)/s)[0];
+            const mimeTypeFull = infoString.split(/;(.*)/s)[0];
+            const mimeType = mimeTypeFull.split(/:(.*)/s)[1];
+            let extension = '';
+            let format = SaveFormat.JPEG;
+            if (mimeType === 'image/jpeg') {
+              extension = 'jpg';
+              format = SaveFormat.JPEG;
+            }
+            else if (mimeType === 'image/png') {
+              extension = 'png';
+              format = SaveFormat.PNG;
+            }
+            // write images if valid format
+            /*
 
-                TODO: check to see if images and audio files save properly, read in data in library to new songlist
+                  TODO: check to see if images and audio files save properly, read in data in library to new songlist
 
-          */
-          if (extension !== '') {
-            await FileSystem.writeAsStringAsync(`${dir}/cover_full.${mimeType}`, artwork, {encoding: 'base64'});
-            await FileSystem.writeAsStringAsync(`${dir}/cover_small.${mimeType}`, artwork, {encoding: 'base64'});
-            await ImageManipulator.manipulateAsync(`${dir}/cover_small.${mimeType}`, [{resize: {width: 120, height: 120}}], {compress: 0.5, format: SaveFormat.JPEG});
+            */
+            if (extension !== '') {
+              await FileSystem.writeAsStringAsync(`${dir}/cover_full.${extension}`, artwork, {encoding: 'base64'});
+              await FileSystem.writeAsStringAsync(`${dir}/cover_small.${extension}`, artwork, {encoding: 'base64'});
+              await ImageManipulator.manipulateAsync(
+                `${dir}/cover_small.${extension}`, 
+                [{
+                  resize: {
+                    width: 120, 
+                    height: 120
+                  }
+                }], 
+                {
+                  compress: 0.5, 
+                  format: format
+                }
+              );
+            }
+            else {
+              console.log('invalid image format: ', mimeType);
+            }
           }
           else {
-            console.log('invalid image format: ', mimeType);
+            console.log('no artwork');
           }
         }
         progress(i+1);

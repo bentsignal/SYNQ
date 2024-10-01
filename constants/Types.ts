@@ -1,6 +1,7 @@
 export type InfoType = {
   "fileType"?: string;
   "format"?: string;
+  "name"?: string;
   "metadata"?: {
     "album"?: string;
     "artist"?: string;
@@ -13,7 +14,10 @@ export type SongType = {
   "name": string;
   "id": string;
   "data": string;
-  "info": InfoType
+  "info": InfoType;
+  "audio"?: string;
+  "artwork"?: string;
+  "artwork_small"?: string;
 };
 
 export type InstructionsModalProps = {

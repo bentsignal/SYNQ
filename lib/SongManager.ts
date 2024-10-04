@@ -359,8 +359,8 @@ export const saveToLibrary = async (
               // convert image to jpeg, save full size
               const fullConvert = await ImageManipulator.manipulateAsync(
                 `${dir}/cover_temp.${extension}`,
-                [],
-                { compress: 0.8, format: SaveFormat.JPEG}
+                [{ resize: { width: 1000, height: 1000 } }],
+                { compress: 1, format: SaveFormat.JPEG, base64: true }
               );
               if (fullConvert.base64) {
                 await FileSystem.writeAsStringAsync(`${dir}/cover_full.jpg`, fullConvert.base64, {encoding: 'base64'});
@@ -368,12 +368,13 @@ export const saveToLibrary = async (
               // convert image to jpeg, save small size
               const smallConvert = await ImageManipulator.manipulateAsync(
                 `${dir}/cover_temp.${extension}`,
-                [{ resize: { width: 120, height: 120 } }],
-                { compress: 0.5, format: SaveFormat.JPEG }
+                [{ resize: { width: 200, height: 200 } }],
+                { compress: 0.5, format: SaveFormat.JPEG, base64: true }
               );
               if (smallConvert.base64) {
                 await FileSystem.writeAsStringAsync(`${dir}/cover_small.jpg`, smallConvert.base64, {encoding: 'base64'});
               }
+              await Sharing.shareAsync(`${dir}`);
               // delete temp image
               await FileSystem.deleteAsync(`${dir}/cover_temp.${extension}`);
             }

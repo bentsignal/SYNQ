@@ -15,13 +15,13 @@ export const ListCover = ({image, id, propOnLoad}: {
   useEffect(() => {
 
     const getImage = async () => {
-      console.log(image);
       if (image?.includes('file://')) {
         try {
           const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}library/${id}`);
-          console.log(contents);
-          const data = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}library/${id}/cover_small.jpg`, { encoding: 'base64' });
-          setSrc(data);
+          if (contents.includes('cover_small.jpg')) {
+            const data = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}library/${id}/cover_small.jpg`, { encoding: 'base64' });
+            setSrc(`data:image/jpeg;base64,${data}`);
+          }
         }
         catch (error) {
           console.log(error);
@@ -55,8 +55,6 @@ export const ListCover = ({image, id, propOnLoad}: {
     }
   });
 
-  console.log(src);
-
   return (
     <View style={Local.container}>
       <Image 
@@ -67,6 +65,7 @@ export const ListCover = ({image, id, propOnLoad}: {
           propOnLoad()
         }}
         onError={(error) => {
+          console.log('error loading list cover: ', error);
           setSrc('');
           setLoaded(true);
           propOnLoad();

@@ -1,8 +1,10 @@
 import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
+import * as FileSystem from 'expo-file-system';
 
-export const ListCover = ({image, propOnLoad}: {
+export const ListCover = ({image, id, propOnLoad}: {
   image?: string;
+  id: string;
   propOnLoad: () => void;
 }) => {
 
@@ -11,8 +13,29 @@ export const ListCover = ({image, propOnLoad}: {
   let dim = src ? 60 : 20;
 
   useEffect(() => {
-    setSrc(image ? image : '');
-    dim = src ? 60 : 20;
+
+    const getImage = async () => {
+      console.log(image);
+      if (image?.includes('file://')) {
+        try {
+          const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}library/${id}`);
+          console.log(contents);
+          const data = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}library/${id}/cover_small.jpg`, { encoding: 'base64' });
+          setSrc(data);
+        }
+        catch (error) {
+          console.log(error);
+          setSrc('');
+        }
+      }
+      else {
+        setSrc(image ? image : '');
+      }
+      dim = src ? 60 : 20;
+    }
+
+    getImage();
+    
   }, [image]);
 
   const Local = StyleSheet.create({
@@ -31,6 +54,8 @@ export const ListCover = ({image, propOnLoad}: {
       borderRadius: src ? 9 : 0,
     }
   });
+
+  console.log(src);
 
   return (
     <View style={Local.container}>

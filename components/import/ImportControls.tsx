@@ -137,10 +137,10 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
             setZipping(true);
             const songs = premium ? results : [results[0]]
             const progress = (value: number) => {
+              // TODO: Implement progress
               console.log(value);
             }
             setTimeout(() => {
-              // exportSongs(songs).then(() => {
               saveToLibrary(songs, progress).then(() => {
                 setLoading(false);
                 setZipping(false);

@@ -15,7 +15,7 @@ import { darkenColor } from '@/lib/ColorManager';
 import * as Haptics from 'expo-haptics';
 import More from '@/components/More';
 
-const Song = ({name, id, data, info}: SongType) => {
+const Song = ({song}: {song: SongType}) => {
 
   const [selected, setSelected] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -34,13 +34,21 @@ const Song = ({name, id, data, info}: SongType) => {
   let message = false
   if (results && results[0] && results[1] && results[0].id && results[1].id) {
     if (!premium) {
-      if (results[0].id != id) {
+      if (results[0].id != song.id) {
         blur = true;
       }
-      if (results[1].id == id) {
+      if (results[1].id == song.id) {
         message = true;
       }
     }
+  }
+
+  let image = '';
+  if (song.artworkPath) {
+    image = song.artworkPath;
+  }
+  else if (song.info.metadata?.artwork) {
+    image = song.info.metadata.artwork;
   }
 
   useEffect(() => {
@@ -106,12 +114,13 @@ const Song = ({name, id, data, info}: SongType) => {
     <>
       <View style={Local.mainContainer}>
         <ListCover 
-          image={info.metadata?.artwork ? info.metadata.artwork : ''}
+          image={image}
+          id={song.id}
           propOnLoad={() => {
             setLoaded(true);
           }}
         />
-        <SongInfo info={info} name={name}/>
+        <SongInfo info={song.info} name={song.name}/>
         {
 
           selectEnabled 
@@ -124,21 +133,21 @@ const Song = ({name, id, data, info}: SongType) => {
               setSelected(!selected);
               let newSongs = [];
               let i = 0;
-              if (!selected && !selectedSongs.includes(id)) {
+              if (!selected && !selectedSongs.includes(song.id)) {
                 if (selectedSongs.length == 0) {
-                  newSongs[0] = id;
+                  newSongs[0] = song.id;
                 }
                 else {
                   for (i = 0; i < selectedSongs.length; i++) {
                     newSongs[i] = selectedSongs[i];
                   }
-                  newSongs[i] = id;
+                  newSongs[i] = song.id;
                 }
                 setSelectedSongs(newSongs);
               }
               else if (selected) {
                 for (i = 0; i < selectedSongs.length; i++) {
-                  if (selectedSongs[i] != id) {
+                  if (selectedSongs[i] != song.id) {
                     newSongs.push(selectedSongs[i]);
                   }
                 }
@@ -155,10 +164,10 @@ const Song = ({name, id, data, info}: SongType) => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }
               setEditSong({
-                "name": name, 
-                "id": id, 
-                "data": data, 
-                "info": info
+                "name": song.name, 
+                "id": song.id, 
+                "data": song.data, 
+                "info": song.info
               });
               setShowSongOptions(!showSongOptions);
             }}

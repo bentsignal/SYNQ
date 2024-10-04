@@ -15,9 +15,9 @@ export type SongType = {
   "id": string;
   "data": string;
   "info": InfoType;
-  "audio"?: string;
-  "artwork"?: string;
-  "artwork_small"?: string;
+  "audioPath"?: string;
+  "artworkPath"?: string;
+  "artwork_smallPath"?: string;
 };
 
 export type InstructionsModalProps = {

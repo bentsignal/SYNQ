@@ -13,10 +13,7 @@ const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 const renderItem = ({item} : {item: SongType}) => {
   return (
     <Song 
-      name={item.name}
-      id={item.id}
-      data={item.data}
-      info={item.info}
+      song={item}
     />
   );
 }
@@ -48,11 +45,11 @@ const SongList = (data: any) => {
         useNativeDriver: true,
       }).start();
     }
-    else if (yOffset > 5 && atTop) {
+    else if (yOffset > 0 && atTop) {
       setAtTop(false);
       Animated.timing(topGradientOpacityRef, {
         toValue: 1,
-        duration: 200,
+        duration: 100,
         easing: Easing.in(Easing.ease),
         useNativeDriver: true,
       }).start();

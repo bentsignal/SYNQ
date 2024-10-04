@@ -291,6 +291,15 @@ export const saveEdits = (
   
 }
 
+const createLibraryDir = async () => {
+  try {
+    await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}library`);
+  }
+  catch (error) {
+    console.log('error creating library directory: ', error);
+  }
+}
+
 export const saveToLibrary = async (
   songs: SongType[],
   progress: (value: number) => void,
@@ -301,13 +310,12 @@ export const saveToLibrary = async (
     for (let i = 0; i < songs.length; i++) {
       try {
         const song = songs[i];
-        console.log('song: ', song);
         const title = song.info.metadata?.name ? song.info.metadata.name : '';
         const artists = song.info.metadata?.artist ? song.info.metadata.artist : '';
         const album = song.info.metadata?.album ? song.info.metadata.album : '';
         const artwork = song.info.metadata?.artwork ? song.info.metadata.artwork : '';
         const fileType = song.info.fileType ? song.info.fileType : '';
-        let fileName = song.info.name ? song.info.name : '';
+        let fileName = song.name ? song.name : '';
         if (fileName === '' && fileType !== '') {
           fileName = `song.${fileType}`;
         }
@@ -315,25 +323,25 @@ export const saveToLibrary = async (
         const duration = 0;
         // insert song into database
         const id = await db.insertSong(title, artists, album, genre, duration, fileName);
-        console.log(`Inserted song with ID: ${id}`);
         if (id !== -1) {
-          // create directory and write song data
+          // create directory and write song data if successfully inserted into DB
+          await createLibraryDir();
           const dir = `${FileSystem.documentDirectory}library/${id}`;
           try {
-            
-            console.log('dir: ', dir);
             await FileSystem.makeDirectoryAsync(dir);
-            console.log(`${dir}/${fileName}`);
             await FileSystem.writeAsStringAsync(`${dir}/${fileName}`, song.data, {encoding: 'base64'});
           }
           catch (error) {
             console.log('error writing audio: ', error);
+            // TODO: delete song from DB
+            continue;
           }
           // get image file type
           if (artwork !== null && artwork !== undefined && artwork !== '') {
             const infoString = artwork.split(/,(.*)/s)[0];
             const mimeTypeFull = infoString.split(/;(.*)/s)[0];
             const mimeType = mimeTypeFull.split(/:(.*)/s)[1];
+            const buffer = artwork.split(',')[1];
             let extension = '';
             let format = SaveFormat.JPEG;
             if (mimeType === 'image/jpeg') {
@@ -345,27 +353,29 @@ export const saveToLibrary = async (
               format = SaveFormat.PNG;
             }
             // write images if valid format
-            /*
-
-                  TODO: check to see if images and audio files save properly, read in data in library to new songlist
-
-            */
             if (extension !== '') {
-              await FileSystem.writeAsStringAsync(`${dir}/cover_full.${extension}`, artwork, {encoding: 'base64'});
-              await FileSystem.writeAsStringAsync(`${dir}/cover_small.${extension}`, artwork, {encoding: 'base64'});
-              await ImageManipulator.manipulateAsync(
-                `${dir}/cover_small.${extension}`, 
-                [{
-                  resize: {
-                    width: 120, 
-                    height: 120
-                  }
-                }], 
-                {
-                  compress: 0.5, 
-                  format: format
-                }
+              // write image as is
+              await FileSystem.writeAsStringAsync(`${dir}/cover_temp.${extension}`, buffer, { encoding: 'base64' });
+              // convert image to jpeg, save full size
+              const fullConvert = await ImageManipulator.manipulateAsync(
+                `${dir}/cover_temp.${extension}`,
+                [],
+                { compress: 0.8, format: SaveFormat.JPEG}
               );
+              if (fullConvert.base64) {
+                await FileSystem.writeAsStringAsync(`${dir}/cover_full.jpg`, fullConvert.base64, {encoding: 'base64'});
+              }
+              // convert image to jpeg, save small size
+              const smallConvert = await ImageManipulator.manipulateAsync(
+                `${dir}/cover_temp.${extension}`,
+                [{ resize: { width: 120, height: 120 } }],
+                { compress: 0.5, format: SaveFormat.JPEG }
+              );
+              if (smallConvert.base64) {
+                await FileSystem.writeAsStringAsync(`${dir}/cover_small.jpg`, smallConvert.base64, {encoding: 'base64'});
+              }
+              // delete temp image
+              await FileSystem.deleteAsync(`${dir}/cover_temp.${extension}`);
             }
             else {
               console.log('invalid image format: ', mimeType);

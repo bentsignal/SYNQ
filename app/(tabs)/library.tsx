@@ -12,6 +12,7 @@ import DataManager from "@/lib/DataManager";
 import { useEffect, useState } from "react";
 import SongList from "@/components/song/SongList";
 import { SongType } from "@/constants/Types";
+import * as FileSystem from 'expo-file-system';
 
 const Library = () => {
 
@@ -24,11 +25,16 @@ const Library = () => {
     const db = DataManager.getInstance();
     db.getSongs().then((results) => {
       let songs: SongType[] = [];
+      let dir;
       for (let i = 0; i < results.length; i++) {
+        dir = `${FileSystem.documentDirectory}library/${results[i].id}`;
         const song = {
-          name: results[i].name,
+          name: results[i].fileName,
           id: results[i].id,
           data: '',
+          audioPath: `${dir}/${results[i].fileName}`,
+          artworkPath: `${dir}/cover_full.jpg`,
+          artwork_smallPath: `${dir}/cover_small.jpg`,
           info: {
             fileType: 'mp3',
             format: 'id3v2.4',
@@ -45,9 +51,7 @@ const Library = () => {
       }
       setSongs(songs);
     });
-  }, [homeState, songs]);
-
-  console.log('songs: ', songs);
+  }, [homeState]);
 
   return (
     <View style={[Styles.body, {paddingTop: insets.top}]}>

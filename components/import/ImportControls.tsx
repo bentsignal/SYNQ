@@ -138,7 +138,6 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
             const songs = premium ? results : [results[0]]
             const progress = (value: number) => {
               // TODO: Implement progress
-              console.log(value);
             }
             setTimeout(() => {
               saveToLibrary(songs, progress).then(() => {

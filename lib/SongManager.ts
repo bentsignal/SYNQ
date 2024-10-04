@@ -296,7 +296,10 @@ const createLibraryDir = async () => {
     await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}library`);
   }
   catch (error) {
-    console.log('error creating library directory: ', error);
+    const message = error instanceof Error ? error.message : String(error);
+    if (!message.includes('already exists')) {
+      console.log('error creating library directory: ', error);
+    }
   }
 }
 
@@ -374,7 +377,7 @@ export const saveToLibrary = async (
               if (smallConvert.base64) {
                 await FileSystem.writeAsStringAsync(`${dir}/cover_small.jpg`, smallConvert.base64, {encoding: 'base64'});
               }
-              await Sharing.shareAsync(`${dir}`);
+              // await Sharing.shareAsync(`${dir}`);
               // delete temp image
               await FileSystem.deleteAsync(`${dir}/cover_temp.${extension}`);
             }

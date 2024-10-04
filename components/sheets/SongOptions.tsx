@@ -97,6 +97,7 @@ const SongOptions = () => {
         <BottomSheetView style={Local.bottomSheet}>
           <View style={Local.container}>
             <ListCover 
+              id={editSong.id}
               image={editSong.info?.metadata?.artwork}
               propOnLoad={() => {}}
             />

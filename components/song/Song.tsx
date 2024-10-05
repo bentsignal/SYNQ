@@ -148,6 +148,7 @@ const Song = ({song}: {song: SongType}) => {
         }}
       >
         <ListCover 
+          image={song.info?.metadata?.artwork ? song.info.metadata.artwork : ''}
           id={song.id}
           propOnLoad={() => {
             setLoaded(true);

@@ -15,23 +15,25 @@ export const ListCover = ({image, id, propOnLoad}: {
   useEffect(() => {
 
     const getImage = async () => {
-      try {
-        const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}library/${id}`);
-        if (contents.includes('cover_small.jpg')) {
+      const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}library/${id}`);
+      if (contents.includes('cover_small.jpg')) {
+        try {
           const data = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}library/${id}/cover_small.jpg`, { encoding: 'base64' });
           setSrc(`data:image/jpeg;base64,${data}`);
         }
-        else {
-          setSrc('');
+        catch (error) {
+          console.log(error);
         }
       }
-      catch (error) {
-        console.log(error);
+      else if (image) {
+        setSrc(image);
+      }
+      else {
         setSrc('');
       }
       dim = src ? 60 : 20;
     }
-    
+
     getImage();
     
   }, [image]);

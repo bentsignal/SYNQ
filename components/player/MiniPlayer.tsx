@@ -5,12 +5,15 @@ import { router } from "expo-router";
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import { useEffect, useState } from "react";
+import PlayButton from "./PlayButton";
+import PauseButton from "./PauseButton";
 
 const MiniPlayer = () => {
   const { 
+    theme, songPlaying, paused,
     
-    theme, songPlaying
-  
+    setPaused,
+
   } = useGlobalContext();
 
   const [sound, setSound] = useState<Audio.Sound | null>(null);
@@ -27,31 +30,33 @@ const MiniPlayer = () => {
       justifyContent: 'center',
       alignItems: 'center',
       display: songPlaying ? 'flex' : 'none'
-    }
+    },
+    buttonContainer: {
+      width: 40,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 10
+    },
   });
 
   useEffect(() => {
 
     const playSong = async () => {
       if (songPlaying !== null) {
-        console.log(1);
         if (sound) {
-          console.log(3);
           await sound.stopAsync();
           await sound.unloadAsync();
         }
         const song = songPlaying;
         const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;          
         try {
-          console.log(4);
           setSound(null);
           const contents = await FileSystem.readDirectoryAsync(libraryPath);  
-          console.log(6);          
           if (contents.includes(song.name)) {
-            console.log(5);
             const path = `${libraryPath}/${song.name}`;
             const { sound } = await Audio.Sound.createAsync({ uri: path }, { shouldPlay: true });
             setSound(sound);
+            setPaused(false);
             sound.setOnPlaybackStatusUpdate((status) => {
               // TODO: Add playback status update, probably used to update time remaining?
               // if (status.isLoaded) {
@@ -61,9 +66,7 @@ const MiniPlayer = () => {
               // }
             });
           } else {
-            console.log(7);
             if (sound) {
-              console.log(8);
               await sound.stopAsync();
               await sound.unloadAsync();
               setSound(null);
@@ -82,6 +85,21 @@ const MiniPlayer = () => {
 
   }, [songPlaying]);
 
+  const togglePlayPause = async () => {
+    if (sound) {
+      const status = await sound.getStatusAsync();
+      if (status.isLoaded) {
+        if (status.isPlaying) {
+          setPaused(true);
+          await sound.pauseAsync();
+        } else {
+          setPaused(false);
+          await sound.playAsync();
+        }
+      }
+    }
+  }
+
   return (
     <TouchableOpacity 
       style={Local.container}
@@ -90,7 +108,13 @@ const MiniPlayer = () => {
         router.push('/player');
       }}
     >
-      <Text>MiniPlayer</Text>
+      <TouchableOpacity
+        style={Local.buttonContainer}
+        onPress={togglePlayPause}
+        activeOpacity={0.5}
+      >
+        {paused ? <PlayButton size={25}/> : <PauseButton size={25}/>}
+      </TouchableOpacity>
     </TouchableOpacity>
   )
 }

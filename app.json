@@ -22,7 +22,8 @@
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
         "UIStatusBarStyle": "UIStatusBarStyleLightContent",
         "UIFileSharingEnabled": true,
-        "LSSupportsOpeningDocumentsInPlace": true
+        "LSSupportsOpeningDocumentsInPlace": true,
+        "UIBackgroundModes": ["audio"]
       }
     },
     "android": {

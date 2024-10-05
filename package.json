@@ -64,7 +64,8 @@
     "react-native-tracking-transparency": "^0.1.2",
     "react-native-web": "~0.19.10",
     "tinycolor2": "^1.6.0",
-    "expo-sqlite": "~14.0.6"
+    "expo-sqlite": "~14.0.6",
+    "expo-av": "~14.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

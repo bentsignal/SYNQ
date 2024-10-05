@@ -32,9 +32,6 @@ const Library = () => {
           name: results[i].fileName,
           id: results[i].id,
           data: '',
-          audioPath: `${dir}/${results[i].fileName}`,
-          artworkPath: `${dir}/cover_full.jpg`,
-          artwork_smallPath: `${dir}/cover_small.jpg`,
           info: {
             fileType: 'mp3',
             format: 'id3v2.4',

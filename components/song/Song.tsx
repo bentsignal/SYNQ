@@ -14,19 +14,22 @@ import Skeleton from '../Skeleton';
 import { darkenColor } from '@/lib/ColorManager';
 import * as Haptics from 'expo-haptics';
 import More from '@/components/More';
+import { Audio } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
 
 const Song = ({song}: {song: SongType}) => {
 
   const [selected, setSelected] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
   const { 
 
     selectEnabled, selectedSongs, results,
     premium, showSongOptions, theme, 
-    haptic,
+    haptic, songPlaying,
 
     setSelectedSongs, setShowSongOptions,
-    setEditSong,
+    setEditSong, setSongPlaying,
 
   } = useGlobalContext(); 
 
@@ -43,20 +46,20 @@ const Song = ({song}: {song: SongType}) => {
     }
   }
 
-  let image = '';
-  if (song.artworkPath) {
-    image = song.artworkPath;
-  }
-  else if (song.info.metadata?.artwork) {
-    image = song.info.metadata.artwork;
-  }
-
   useEffect(() => {
     setSelected(false);
     if (!selectEnabled) {
       setSelectedSongs([]);
     }
   }, [selectEnabled]);
+
+  let bg = Colors.song;
+  if (song.id == songPlaying) {
+    bg = theme;
+  }
+  else if (blur) {
+    bg = Colors.background;
+  }
 
   const Local = StyleSheet.create({
     mainContainer: {
@@ -68,7 +71,7 @@ const Song = ({song}: {song: SongType}) => {
       alignItems: 'center',
       height: 90,
       marginBottom: 10,
-      backgroundColor: blur ? Colors.background : Colors.song,
+      backgroundColor: bg,
       paddingLeft: 15,
       paddingRight: 15,
       paddingTop: 15,
@@ -112,9 +115,39 @@ const Song = ({song}: {song: SongType}) => {
 
   return (
     <>
-      <View style={Local.mainContainer}>
+      <TouchableOpacity 
+        style={Local.mainContainer}
+        activeOpacity={0.8}
+        onPress={async () => {
+          const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;          
+          try {
+            const contents = await FileSystem.readDirectoryAsync(libraryPath);            
+            if (song.id != songPlaying && contents.includes(song.name)) {
+              setSongPlaying(song.id);
+              const path = `${libraryPath}/${song.name}`;
+              const { sound } = await Audio.Sound.createAsync({ uri: path }, { shouldPlay: true });
+              setSound(sound);
+              sound.setOnPlaybackStatusUpdate((status) => {
+                // if (status.isLoaded) {
+                //   console.log(`Playback status: ${status.isPlaying ? 'playing' : 'paused'}`);
+                // } else {
+                //   console.log('Sound is not loaded');
+                // }
+              });
+            } else {
+              setSongPlaying('');
+              if (sound) {
+                await sound.stopAsync();
+                await sound.unloadAsync();
+                setSound(null);
+              }
+            }
+          } catch (error) {
+            console.error('Error in audio playback:', error);
+          }
+        }}
+      >
         <ListCover 
-          image={image}
           id={song.id}
           propOnLoad={() => {
             setLoaded(true);
@@ -174,7 +207,7 @@ const Song = ({song}: {song: SongType}) => {
           />
 
         }
-      </View>
+      </TouchableOpacity>
       <Skeleton
         show={!loaded}
         styles={Local.skeleton}

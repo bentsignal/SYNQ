@@ -1,5 +1,5 @@
 import { View, StyleSheet } from "react-native";
-
+import { Colors } from "@/constants/Colors";
 const PauseButton = ({size}: {size: number}) => {
 
   const Local = StyleSheet.create({
@@ -13,7 +13,7 @@ const PauseButton = ({size}: {size: number}) => {
       borderRadius: 10,
       height: size,
       width: 7,
-      backgroundColor: 'black' ,
+      backgroundColor: Colors.text ,
     },
   });
 

@@ -7,9 +7,11 @@ import * as FileSystem from 'expo-file-system';
 import { useEffect, useState } from "react";
 import PlayButton from "./PlayButton";
 import PauseButton from "./PauseButton";
+import SongInfo from '@/components/song/SongInfo';
 
 const MiniPlayer = () => {
   const { 
+
     theme, songPlaying, paused,
     
     setPaused,
@@ -24,9 +26,12 @@ const MiniPlayer = () => {
       ...Styles.roundedContainer,
       position: 'absolute',
       bottom: 0,
-      height: 60,
+      height: 80,
+      paddingRight: 20,
+      paddingLeft: 20,
       width: '90%',
       backgroundColor: theme,
+      flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
       display: songPlaying ? 'flex' : 'none'
@@ -100,14 +105,25 @@ const MiniPlayer = () => {
     }
   }
 
+  const getInfo = () => {
+    if (songPlaying !== null && songPlaying.info) {
+      console.log('here');
+      console.log(songPlaying.info);
+      return <SongInfo info={songPlaying.info} name={songPlaying.name}/>
+    }
+    else {
+      console.log('here2');
+      return <Text>Loading...</Text>
+    }
+  }
+
   return (
     <TouchableOpacity 
       style={Local.container}
       activeOpacity={0.8}
-      onPress={() => {
-        router.push('/player');
-      }}
+      onPress={() => router.push('/player')}
     >
+      {getInfo()}
       <TouchableOpacity
         style={Local.buttonContainer}
         onPress={togglePlayPause}

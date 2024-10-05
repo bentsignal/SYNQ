@@ -128,6 +128,7 @@ const Song = ({song}: {song: SongType}) => {
               const { sound } = await Audio.Sound.createAsync({ uri: path }, { shouldPlay: true });
               setSound(sound);
               sound.setOnPlaybackStatusUpdate((status) => {
+                // TODO: Add playback status update, probably used to update time remaining?
                 // if (status.isLoaded) {
                 //   console.log(`Playback status: ${status.isPlaying ? 'playing' : 'paused'}`);
                 // } else {

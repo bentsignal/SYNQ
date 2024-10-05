@@ -67,7 +67,7 @@ const RootLayout = () => {
     checkPurchases();
     loadTheme();
     setupAudio();
-    
+
   }, []);
 
   useEffect(() => {
@@ -122,6 +122,18 @@ const RootLayout = () => {
             name="premium"
             options={{
               presentation: "modal",
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen 
+            name="player"
+            options={{
+              presentation: "card",
+              animation: 'slide_from_bottom',
+              contentStyle: { backgroundColor: Colors.popup },
+              gestureEnabled: true,
+              gestureDirection: "vertical",
+              fullScreenGestureEnabled: true,
               headerShown: false,
             }}
           />

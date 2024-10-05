@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import SongList from "@/components/song/SongList";
 import { SongType } from "@/constants/Types";
 import * as FileSystem from 'expo-file-system';
+import MiniPlayer from "@/components/player/MiniPlayer";
 
 const Library = () => {
 
@@ -55,6 +56,7 @@ const Library = () => {
       <Top />
       <PageTitle title='Library'/>
       <SongList songs={songs} />
+      <MiniPlayer />
       <Notifications  
         customStyles={{
           position: 'absolute',

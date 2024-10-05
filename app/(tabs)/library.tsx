@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import SongList from "@/components/song/SongList";
 import { SongType } from "@/constants/Types";
 import * as FileSystem from 'expo-file-system';
-import MiniPlayer from "@/components/player/MiniPlayer";
+import MiniPlayer from '@/components/player/MiniPlayer';
 
 const Library = () => {
 

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { Colors } from '@/constants/Colors';
 import { getLogo } from '@/constants/Logos';
-import { NotificationType } from '@/constants/Types';
+import { NotificationType, SongType } from '@/constants/Types';
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -69,7 +69,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [showGlobalLoading, setShowGlobalLoading] = useState(false);
   const [showGlobalProgress, setShowGlobalProgress] = useState(false);
   const [globalProgress, setGlobalProgress] = useState(0);
-  const [songPlaying, setSongPlaying] = useState('');
+  const [songPlaying, setSongPlaying] = useState(null);
 
   return (
     <GlobalContext.Provider

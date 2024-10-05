@@ -54,7 +54,7 @@ const Song = ({song}: {song: SongType}) => {
   }, [selectEnabled]);
 
   let bg = Colors.song;
-  if (song.id == songPlaying) {
+  if (songPlaying !== null && song.id == songPlaying.id) {
     bg = theme;
   }
   else if (blur) {
@@ -119,33 +119,7 @@ const Song = ({song}: {song: SongType}) => {
         style={Local.mainContainer}
         activeOpacity={0.8}
         onPress={async () => {
-          const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;          
-          try {
-            const contents = await FileSystem.readDirectoryAsync(libraryPath);            
-            if (song.id != songPlaying && contents.includes(song.name)) {
-              setSongPlaying(song.id);
-              const path = `${libraryPath}/${song.name}`;
-              const { sound } = await Audio.Sound.createAsync({ uri: path }, { shouldPlay: true });
-              setSound(sound);
-              sound.setOnPlaybackStatusUpdate((status) => {
-                // TODO: Add playback status update, probably used to update time remaining?
-                // if (status.isLoaded) {
-                //   console.log(`Playback status: ${status.isPlaying ? 'playing' : 'paused'}`);
-                // } else {
-                //   console.log('Sound is not loaded');
-                // }
-              });
-            } else {
-              setSongPlaying('');
-              if (sound) {
-                await sound.stopAsync();
-                await sound.unloadAsync();
-                setSound(null);
-              }
-            }
-          } catch (error) {
-            console.error('Error in audio playback:', error);
-          }
+          setSongPlaying(song);
         }}
       >
         <ListCover 

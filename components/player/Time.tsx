@@ -184,6 +184,7 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 12,
     color: '#888',
+    fontVariant: ['tabular-nums'],
   },
 });
 

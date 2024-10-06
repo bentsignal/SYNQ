@@ -95,7 +95,9 @@ const Player = () => {
       </View>
       <Time progressColor={progressColor}/>
       <View style={Local.controlsContainer}>
-        <SkipLeft size={20}/>
+        <TouchableOpacity onPress={() => {}}>
+          <SkipLeft size={20}/>
+        </TouchableOpacity>
         <TouchableOpacity 
           onPress={() => setFullPause(!fullPause)}
           style={Local.pausePlay}
@@ -103,7 +105,9 @@ const Player = () => {
         >
           {paused ? <PlayButton size={30}/> : <PauseButton height={30} width={9}/>}
         </TouchableOpacity>
-        <SkipRight size={20}/>
+        <TouchableOpacity onPress={() => {}}>
+          <SkipRight size={20}/>
+        </TouchableOpacity>
       </View>
     </View>
   );

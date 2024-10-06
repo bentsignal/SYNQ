@@ -7,7 +7,7 @@ const PauseButton = ({width, height}: {width: number, height: number}) => {
       justifyContent: 'center',
       alignItems: 'center',
       flexDirection: 'row',
-      gap: 5
+      gap: 5,
     },
     pause: {
       borderRadius: 10,

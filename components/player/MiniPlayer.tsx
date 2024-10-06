@@ -9,6 +9,7 @@ import PlayButton from "./PlayButton";
 import PauseButton from "./PauseButton";
 import SongInfo from '@/components/song/SongInfo';
 import { ListCover } from "../song/Cover";
+import { SkipLeft, SkipRight } from "@/components/player/Skip";
 
 const MiniPlayer = () => {
   const { 
@@ -39,10 +40,20 @@ const MiniPlayer = () => {
       display: songPlaying ? 'flex' : 'none'
     },
     buttonContainer: {
-      width: 40,
+      flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
-      padding: 10
+      gap: 10,
+    },
+    playPauseButtonWrapper: {
+      width: 35,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 5,
+    },
+    buttonWrapper: {
+      paddingTop: 5,
+      paddingBottom: 5,
     },
   });
 
@@ -134,13 +145,28 @@ const MiniPlayer = () => {
     >
       <ListCover id={songPlaying?.id} propOnLoad={() => {}}/>
       {getInfo()}
-      <TouchableOpacity
-        style={Local.buttonContainer}
-        onPress={togglePlayPause}
-        activeOpacity={0.5}
-      >
-        {paused ? <PlayButton size={25}/> : <PauseButton height={25} width={7}/>}
-      </TouchableOpacity>
+      <View style={Local.buttonContainer}>
+        <TouchableOpacity 
+          style={Local.buttonWrapper}
+          onPress={() => {}}
+        >
+          <SkipLeft size={18}/>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={Local.playPauseButtonWrapper}
+          onPress={togglePlayPause}
+          activeOpacity={0.5}
+        >
+          {paused ? <PlayButton size={25}/> : <PauseButton height={25} width={7}/>}
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={Local.buttonWrapper}
+          onPress={() => {}}
+        >
+          <SkipRight size={18}/>
+        </TouchableOpacity>
+      </View>
+      
     </TouchableOpacity>
   )
 }

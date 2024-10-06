@@ -6,6 +6,7 @@ export const SkipRight = ({size}: {size: number}) => {
   const Local = StyleSheet.create({
     container: {
       flexDirection: 'row',
+      // backgroundColor: 'red',
     },
     second: {
       transform: [{translateX: -5}]

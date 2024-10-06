@@ -39,7 +39,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     timeline: {
       width: '100%',
       backgroundColor: '#e0e0e0',
-      borderRadius: 10,
+      borderRadius: 20,
       overflow: 'hidden',
     },
     progress: {

@@ -9,6 +9,8 @@ import More from "@/components/More";
 import PauseButton from "@/components/player/PauseButton";
 import PlayButton from "@/components/player/PlayButton";
 import Time from "@/components/player/Time";
+import { SkipLeft, SkipRight } from "@/components/player/Skip";
+
 const Player = () => {
 
   const { 
@@ -38,6 +40,7 @@ const Player = () => {
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
+      gap: 15,
     },
     pausePlay: {
       width: 50,
@@ -57,6 +60,7 @@ const Player = () => {
       </View>
       <Time />
       <View style={Local.controlsContainer}>
+        <SkipLeft size={20}/>
         <TouchableOpacity 
           onPress={() => setFullPause(!fullPause)}
           style={Local.pausePlay}
@@ -64,6 +68,7 @@ const Player = () => {
         >
           {paused ? <PlayButton size={30}/> : <PauseButton size={30}/>}
         </TouchableOpacity>
+        <SkipRight size={20}/>
       </View>
     </View>
   );

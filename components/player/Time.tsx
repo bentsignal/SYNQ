@@ -16,12 +16,9 @@ const Time = ({ progressColor }: { progressColor: string }) => {
   } = useGlobalContext();
   
   const [scrubbing, setScrubbing] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [startProgress, setStartProgress] = useState(0);
   const [elapsedSec, setElapsedSec] = useState(0);
   const [remainingSec, setRemainingSec] = useState(0);
 
-  const sliderWidth = useRef(new Animated.Value(0)).current;
   const progressScale = useRef(new Animated.Value(msToSec(currentTime) / msToSec(duration))).current; // New animated value for progress scale
   const sliderHeight = useRef(new Animated.Value(7)).current; // New animated value for height
 
@@ -34,12 +31,16 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     },
     timelineContainer: {
       width: '85%',
-      overflow: 'hidden',
-      borderRadius: 5,
+      // backgroundColor: 'red',
+      paddingTop: 5,
+      paddingBottom: 5,
+      marginBottom: 5,
     },
     timeline: {
       width: '100%',
       backgroundColor: '#e0e0e0',
+      borderRadius: 5,
+      overflow: 'hidden',
     },
     progress: {
       borderRadius: 0,
@@ -85,23 +86,19 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     },
   });
 
-  // Update elapsed and remaining time based on call from miniplayer
+  // Update elapsed/remaining time, as well as progress bar AS LONG AS USER ISN'T SCRUBBING
   useEffect(() => {
     const elapsed = msToSec(currentTime);
-    const total = msToSec(duration);
-    if (elapsed != elapsedSec) {
+    if (elapsed !== elapsedSec && !scrubbing) {
+      const total = msToSec(duration);
       setElapsedSec(elapsed);
       setRemainingSec(total - elapsed);
-      console.log(elapsed / total)
-      // animate progress bar using scaleX
-      if (!scrubbing) {
-        Animated.timing(progressScale, {
-          toValue: elapsed / total,
-          duration: 1000,
-          useNativeDriver: true,
-          easing: Easing.linear,
-        }).start();
-      }
+      Animated.timing(progressScale, {
+        toValue: elapsed / total,
+        duration: 1000,
+        useNativeDriver: true,
+        easing: Easing.linear,
+      }).start();
     }
   }, [currentTime]);
 
@@ -110,48 +107,48 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     setElapsedSec(0);
     setRemainingSec(msToSec(duration));
   }, [duration]);
-
-  const pan = () => {
   
-  // const panResponder = useRef(
-  //   PanResponder.create({
-  //     onStartShouldSetPanResponder: () => true,
-  //     onMoveShouldSetPanResponder: () => true,
-  //     onPanResponderGrant: (evt) => {
-  //       setScrubbing(true);
-  //       setStartX(evt.nativeEvent.locationX);
-  //       setStartProgress(currentTime / duration);
-  //       // Animate slider height to 1.5x
-  //       Animated.timing(sliderHeight, {
-  //         toValue: 10.5, // 7 * 1.5
-  //         duration: 200,
-  //         useNativeDriver: true,
-  //       }).start();
-  //     },
-  //     onPanResponderMove: (evt, gestureState) => {
-  //       const newProgress = startProgress + (gestureState.dx / sliderWidth.current);
-  //       const clampedProgress = Math.max(0, Math.min(newProgress, 1));
-  //       const newTime = clampedProgress * duration;
-  //       setCurrentTime(newTime);
-  //     },
-  //     onPanResponderRelease: (evt, gestureState) => {
-  //       setScrubbing(false);
-  //       // Animate slider height back to original
-  //       Animated.timing(sliderHeight, {
-  //         toValue: 7,
-  //         duration: 200,
-  //         useNativeDriver: true,
-  //       }).start();
-  //       if (sound) {
-  //         const newProgress = startProgress + (gestureState.dx / sliderWidth.current);
-  //         const clampedProgress = Math.max(0, Math.min(newProgress, 1));
-  //         const newTime = clampedProgress * duration;
-  //         sound.setPositionAsync(newTime);
-  //         setCurrentTime(newTime);
-  //       }
-  //     },
-  //   })
-  // ).current;
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (evt) => {
+        console.log('here');
+        setScrubbing(true);
+        // setStartX(evt.nativeEvent.locationX);
+        // setStartProgress(currentTime / duration);
+        // // Animate slider height to 1.5x
+        // Animated.timing(sliderHeight, {
+        //   toValue: 10.5, // 7 * 1.5
+        //   duration: 200,
+        //   useNativeDriver: true,
+        // }).start();
+      },
+      onPanResponderMove: (evt, gestureState) => {
+        // const newProgress = startProgress + (gestureState.dx / sliderWidth.current);
+        // const clampedProgress = Math.max(0, Math.min(newProgress, 1));
+        // const newTime = clampedProgress * duration;
+        // setCurrentTime(newTime);
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        console.log('there');
+        setScrubbing(false);
+        // Animate slider height back to original
+        // Animated.timing(sliderHeight, {
+        //   toValue: 7,
+        //   duration: 200,
+        //   useNativeDriver: true,
+        // }).start();
+        // if (sound) {
+        //   const newProgress = startProgress + (gestureState.dx / sliderWidth.current);
+        //   const clampedProgress = Math.max(0, Math.min(newProgress, 1));
+        //   const newTime = clampedProgress * duration;
+        //   sound.setPositionAsync(newTime);
+        //   setCurrentTime(newTime);
+        // }
+      },
+    })
+  ).current;
 
   // useEffect(() => {
   //   const listener = panX.addListener(({ value }) => {
@@ -167,8 +164,6 @@ const Time = ({ progressColor }: { progressColor: string }) => {
 
   // const progressWidth = (currentTime / duration) * sliderWidth.current;
 
-  }
-
   const formatTime = (totalSeconds: number) => {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -177,22 +172,28 @@ const Time = ({ progressColor }: { progressColor: string }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.timelineContainer}>
+      <View 
+        style={styles.timelineContainer}
+        {...panResponder.panHandlers}
+      >
         <Animated.View 
           style={[
             styles.timeline,
             { height: 7 }
           ]}
+          
         >
-          <Animated.View style={[
-            styles.progress, 
-            { 
-              backgroundColor: progressColor,
-              height: 7,
-              transform: [{ scaleX: progressScale }],
-              transformOrigin: 'left', // Add this line
-            }
-          ]} />
+          <Animated.View 
+            style={[
+              styles.progress, 
+              { 
+                backgroundColor: progressColor,
+                height: 7,
+                transform: [{ scaleX: progressScale }],
+                transformOrigin: 'left', // Add this line
+              }
+            ]}
+          />
         </Animated.View>
       </View>
       <View style={styles.timeContainer}>

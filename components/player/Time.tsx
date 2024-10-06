@@ -19,8 +19,8 @@ const Time = ({ progressColor }: { progressColor: string }) => {
   const [elapsedSec, setElapsedSec] = useState(0);
   const [remainingSec, setRemainingSec] = useState(0);
 
-  const progressScale = useRef(new Animated.Value(msToSec(currentTime) / msToSec(duration))).current; // New animated value for progress scale
-  const sliderHeight = useRef(new Animated.Value(7)).current; // New animated value for height
+  const progressScale = useRef(new Animated.Value(msToSec(currentTime) / msToSec(duration))).current;
+  const sliderHeight = useRef(new Animated.Value(1)).current;
 
   const styles = StyleSheet.create({
     container: {
@@ -39,7 +39,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     timeline: {
       width: '100%',
       backgroundColor: '#e0e0e0',
-      borderRadius: 5,
+      borderRadius: 10,
       overflow: 'hidden',
     },
     progress: {
@@ -48,28 +48,6 @@ const Time = ({ progressColor }: { progressColor: string }) => {
       position: 'absolute',
       left: 0,
       top: 0,
-    },
-    thumbContainer: {
-      width: 44,
-      height: 44,
-      position: 'absolute',
-      backgroundColor: 'white',
-      opacity: 1,
-      top: -20,
-      left: -22,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    thumb: {
-      width: 16,
-      height: 16,
-      borderRadius: 8,
-      backgroundColor: 'white',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5,
     },
     timeContainer: {
       flexDirection: 'row',
@@ -113,16 +91,15 @@ const Time = ({ progressColor }: { progressColor: string }) => {
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (evt) => {
-        console.log('here');
         setScrubbing(true);
         // setStartX(evt.nativeEvent.locationX);
         // setStartProgress(currentTime / duration);
         // // Animate slider height to 1.5x
-        // Animated.timing(sliderHeight, {
-        //   toValue: 10.5, // 7 * 1.5
-        //   duration: 200,
-        //   useNativeDriver: true,
-        // }).start();
+        Animated.timing(sliderHeight, {
+          toValue: 1.5, 
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
       },
       onPanResponderMove: (evt, gestureState) => {
         // const newProgress = startProgress + (gestureState.dx / sliderWidth.current);
@@ -131,14 +108,13 @@ const Time = ({ progressColor }: { progressColor: string }) => {
         // setCurrentTime(newTime);
       },
       onPanResponderRelease: (evt, gestureState) => {
-        console.log('there');
         setScrubbing(false);
         // Animate slider height back to original
-        // Animated.timing(sliderHeight, {
-        //   toValue: 7,
-        //   duration: 200,
-        //   useNativeDriver: true,
-        // }).start();
+        Animated.timing(sliderHeight, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
         // if (sound) {
         //   const newProgress = startProgress + (gestureState.dx / sliderWidth.current);
         //   const clampedProgress = Math.max(0, Math.min(newProgress, 1));
@@ -179,9 +155,11 @@ const Time = ({ progressColor }: { progressColor: string }) => {
         <Animated.View 
           style={[
             styles.timeline,
-            { height: 7 }
+            { 
+              height: 7,
+              transform: [{ scaleY: sliderHeight }],
+            }
           ]}
-          
         >
           <Animated.View 
             style={[
@@ -190,7 +168,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
                 backgroundColor: progressColor,
                 height: 7,
                 transform: [{ scaleX: progressScale }],
-                transformOrigin: 'left', // Add this line
+                transformOrigin: 'left',
               }
             ]}
           />

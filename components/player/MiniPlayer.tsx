@@ -15,7 +15,7 @@ const MiniPlayer = () => {
 
     theme, songPlaying, paused, fullPause,
     
-    setPaused,
+    setPaused, setDuration, setCurrentTime,
 
   } = useGlobalContext();
 
@@ -67,7 +67,14 @@ const MiniPlayer = () => {
             const { sound } = await Audio.Sound.createAsync({ uri: path }, { shouldPlay: true });
             setSound(sound);
             setPaused(false);
+            const status = await sound.getStatusAsync();
+            if (status.isLoaded) {
+              setDuration(status.durationMillis);
+            }
             sound.setOnPlaybackStatusUpdate((status) => {
+              if (status.isLoaded) {
+                setCurrentTime(status.positionMillis);
+              }
               // TODO: Add playback status update, probably used to update time remaining?
               // if (status.isLoaded) {
               //   console.log(`Playback status: ${status.isPlaying ? 'playing' : 'paused'}`);

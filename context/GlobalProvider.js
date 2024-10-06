@@ -72,6 +72,9 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [songPlaying, setSongPlaying] = useState(null);
   const [paused, setPaused] = useState(false);
   const [fullPause, setFullPause] = useState(false);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+
   return (
     <GlobalContext.Provider
       value={{
@@ -119,6 +122,8 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         songPlaying, setSongPlaying,
         paused, setPaused,
         fullPause, setFullPause,
+        duration, setDuration,
+        currentTime, setCurrentTime,
       }}
     >
       {children}

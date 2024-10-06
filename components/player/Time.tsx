@@ -3,9 +3,13 @@ import { View, StyleSheet, PanResponder, Animated, Text } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 
 const Time = () => {
-  const { theme, songPlaying, sound } = useGlobalContext();
-  const [duration, setDuration] = useState(120);
-  const [currentPosition, setCurrentPosition] = useState(0);
+
+  const { 
+    theme, sound,
+    duration, currentTime,
+    setDuration, setCurrentTime,
+  } = useGlobalContext();
+  
   const [scrubbing, setScrubbing] = useState(false);
 
   const sliderWidth = useRef(300); // Default width, will be updated
@@ -27,12 +31,12 @@ const Time = () => {
       if (sound && !scrubbing) {
         const status = await sound.getStatusAsync();
         if (status.isLoaded) {
-          setCurrentPosition(status.positionMillis);
+          setCurrentTime(status.positionMillis);
         }
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [sound, scrubbing]);
+  }, [sound, scrubbing, setCurrentTime]);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -66,7 +70,7 @@ const Time = () => {
             const newPosition = Math.max(0, Math.min(value, sliderWidth.current));
             const newTime = (newPosition / sliderWidth.current) * duration;
             sound.setPositionAsync(newTime);
-            setCurrentPosition(newTime);
+            setCurrentTime(newTime);
           });
         }
       },
@@ -77,13 +81,13 @@ const Time = () => {
     const listener = panX.addListener(({ value }) => {
       const newPosition = Math.max(0, Math.min(value, sliderWidth.current));
       const newTime = (newPosition / sliderWidth.current) * duration;
-      setCurrentPosition(newTime);
+      setCurrentTime(newTime);
     });
 
     return () => {
       panX.removeListener(listener);
     };
-  }, [panX, duration]);
+  }, [panX, duration, setCurrentTime]);
 
   const formatTime = (milliseconds: number) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
@@ -92,7 +96,7 @@ const Time = () => {
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
-  const progressWidth = (currentPosition / duration) * sliderWidth.current;
+  const progressWidth = (currentTime / duration) * sliderWidth.current;
 
   return (
     <View style={styles.container}>
@@ -132,7 +136,7 @@ const Time = () => {
         </Animated.View>
       </Animated.View>
       <View style={styles.timeContainer}>
-        <Text style={styles.timeText}>{formatTime(currentPosition)}</Text>
+        <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
         <Text style={styles.timeText}>{formatTime(duration)}</Text>
       </View>
     </View>

@@ -3,11 +3,12 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useState, useEffect } from 'react';
 import CustomButton from '@/components/CustomButton';
 import Loading from '@/components/Loading';
-import { newCover, saveEdits, maybeString } from '@/lib/SongManager';
+import { newCover, saveEdits } from '@/lib/SongManager';
 import { EditCover } from '@/components/song/Cover';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
+import { maybe } from '@/lib/Util';
 
 const EditModal = () => {
 
@@ -21,10 +22,10 @@ const EditModal = () => {
 
   } = useGlobalContext();
 
-  const [title, setTitle] = useState(maybeString(editSong.info?.metadata?.name));
-  const [artist, setArtist] = useState(maybeString(editSong.info?.metadata?.artist));
-  const [album, setAlbum] = useState(maybeString(editSong.info?.metadata?.album));
-  const [cover, setCover] = useState(maybeString(editSong.info?.metadata?.artwork));
+  const [title, setTitle] = useState(maybe(editSong.info?.metadata?.name));
+  const [artist, setArtist] = useState(maybe(editSong.info?.metadata?.artist));
+  const [album, setAlbum] = useState(maybe(editSong.info?.metadata?.album));
+  const [cover, setCover] = useState(maybe(editSong.info?.metadata?.artwork));
   const [single, setSingle] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -120,10 +121,10 @@ const EditModal = () => {
 
   useEffect(() => {
     if (showEdit) {
-      setTitle(maybeString(editSong.info?.metadata?.name));
-      setArtist(maybeString(editSong.info?.metadata?.artist));
-      setAlbum(maybeString(editSong.info?.metadata?.album));
-      setCover(maybeString(editSong.info?.metadata?.artwork));
+      setTitle(maybe(editSong.info?.metadata?.name));
+      setArtist(maybe(editSong.info?.metadata?.artist));
+      setAlbum(maybe(editSong.info?.metadata?.album));
+      setCover(maybe(editSong.info?.metadata?.artwork));
     }
   }, [showEdit]);
 
@@ -161,7 +162,7 @@ const EditModal = () => {
                         style={[Styles.h5, Local.fileName, Local.textColor]}
                         numberOfLines={1}
                       >
-                        {maybeString(editSong.name)}
+                        {maybe(editSong.name)}
                       </Text>
                     : <></>
                   }

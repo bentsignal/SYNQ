@@ -3,9 +3,10 @@ import * as server from "expo-http-server";
 import * as Network from 'expo-network';
 import * as Device from 'expo-device';
 import { useGlobalContext } from '@/context/GlobalProvider';
-import { getWifiInfo, idgen} from '@/lib/SongManager';
+import { getWifiInfo } from '@/lib/SongManager';
 import Transfer from '@/assets/static/Transfer';
 import { NotificationType } from '@/constants/Types';
+import { idgen } from '@/lib/Util';
 
 const getIP = async () => {
   return await Network.getIpAddressAsync();

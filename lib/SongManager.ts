@@ -9,9 +9,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { SaveFormat } from 'expo-image-manipulator';
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 import DataManager from './DataManager';
-const isValidNumString = (str: string) => {
-  return !isNaN(Number(str));
-}
+import { isValidNumString, idgen } from './Util';
 
 export const getCompletion = (size: number, progress: number) => {
   try {
@@ -419,16 +417,4 @@ export const getCoverImageData = async (id: string) => {
   catch (error) {
     console.log('error: ', error);
   }
-}
-
-export const idgen = (len: number) => {
-  let result = '';
-  for (let i = 0; i < len; i++) {
-    result += Math.floor(Math.random()*10).toString();
-  }
-  return result;
-}
-
-export const maybeString = (value: any) => {
-  return value ? value : '';
 }

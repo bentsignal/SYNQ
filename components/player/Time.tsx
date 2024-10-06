@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, PanResponder, Animated, Text } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
+import { msToSec } from '@/lib/Util';
 
 const Time = () => {
 
@@ -25,8 +26,8 @@ const Time = () => {
   const sliderHeight = useRef(new Animated.Value(7)).current; // New animated value for height
 
   useEffect(() => {
-    const elapsed = getSec(currentTime);
-    const remaining = getSec(duration);
+    const elapsed = msToSec(currentTime);
+    const remaining = msToSec(duration);
     if (elapsed != elapsedSec) {
       setElapsedSec(elapsed);
       setRemainingSec(remaining - elapsed);
@@ -87,10 +88,6 @@ const Time = () => {
     };
   }, [panX, duration, setCurrentTime]);
 
-  const getSec = (milliseconds: number) => {
-    return Math.floor(milliseconds / 1000);
-  };
-
   const formatTime = (totalSeconds: number) => {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -99,7 +96,7 @@ const Time = () => {
 
   useEffect(() => {
     setElapsedSec(0);
-    setRemainingSec(getSec(duration));
+    setRemainingSec(msToSec(duration));
   }, [duration]);
 
   const progressWidth = (currentTime / duration) * sliderWidth.current;

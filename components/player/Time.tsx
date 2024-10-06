@@ -10,6 +10,7 @@ const Time = () => {
 
   const sliderWidth = useRef(300); // Default width, will be updated
   const panX = useRef(new Animated.Value(0)).current;
+  const sliderHeight = useRef(new Animated.Value(7)).current; // New animated value for height
 
   useEffect(() => {
     if (sound) {
@@ -40,6 +41,12 @@ const Time = () => {
       onPanResponderGrant: () => {
         setScrubbing(true);
         panX.extractOffset();
+        // Animate slider height to 1.5x
+        Animated.timing(sliderHeight, {
+          toValue: 10.5, // 7 * 1.5
+          duration: 200,
+          useNativeDriver: false,
+        }).start();
       },
       onPanResponderMove: Animated.event(
         [null, { dx: panX }],
@@ -48,6 +55,12 @@ const Time = () => {
       onPanResponderRelease: () => {
         panX.flattenOffset();
         setScrubbing(false);
+        // Animate slider height back to original
+        Animated.timing(sliderHeight, {
+          toValue: 7,
+          duration: 200,
+          useNativeDriver: false,
+        }).start();
         if (sound) {
           panX.stopAnimation((value) => {
             const newPosition = Math.max(0, Math.min(value, sliderWidth.current));
@@ -83,13 +96,23 @@ const Time = () => {
 
   return (
     <View style={styles.container}>
-      <View 
-        style={styles.timeline}
+      <Animated.View 
+        style={[
+          styles.timeline,
+          { height: sliderHeight } // Use animated height
+        ]}
         onLayout={(event) => {
           sliderWidth.current = event.nativeEvent.layout.width;
         }}
       >
-        <View style={[styles.progress, { width: progressWidth, backgroundColor: theme }]} />
+        <Animated.View style={[
+          styles.progress, 
+          { 
+            width: progressWidth, 
+            backgroundColor: theme,
+            height: sliderHeight // Use animated height
+          }
+        ]} />
         <Animated.View
           style={[
             styles.thumbContainer,
@@ -107,7 +130,7 @@ const Time = () => {
         >
           <View style={styles.thumb} />
         </Animated.View>
-      </View>
+      </Animated.View>
       <View style={styles.timeContainer}>
         <Text style={styles.timeText}>{formatTime(currentPosition)}</Text>
         <Text style={styles.timeText}>{formatTime(duration)}</Text>
@@ -125,12 +148,10 @@ const styles = StyleSheet.create({
   },
   timeline: {
     width: '85%',
-    height: 7,
     backgroundColor: '#e0e0e0',
     borderRadius: 5,
   },
   progress: {
-    height: '100%',
     borderRadius: 5,
   },
   thumbContainer: {

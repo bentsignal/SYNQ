@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import PlayButton from "./PlayButton";
 import PauseButton from "./PauseButton";
 import SongInfo from '@/components/song/SongInfo';
+import { ListCover } from "../song/Cover";
 
 const MiniPlayer = () => {
   const { 
@@ -19,7 +20,7 @@ const MiniPlayer = () => {
   } = useGlobalContext();
 
   const [sound, setSound] = useState<Audio.Sound | null>(null);
-
+  const [currentId, setCurrentId] = useState<string | null>(null);
 
   const Local = StyleSheet.create({
     container: {
@@ -27,8 +28,9 @@ const MiniPlayer = () => {
       position: 'absolute',
       bottom: 0,
       height: 80,
-      paddingRight: 20,
-      paddingLeft: 20,
+      paddingRight: 10,
+      paddingLeft: 10,
+      marginBottom: 10,
       width: '90%',
       backgroundColor: theme,
       flexDirection: 'row',
@@ -45,6 +47,9 @@ const MiniPlayer = () => {
   });
 
   useEffect(() => {
+
+    setCurrentId(songPlaying?.id);
+    console.log(songPlaying?.id);
 
     const playSong = async () => {
       if (songPlaying !== null) {
@@ -90,6 +95,10 @@ const MiniPlayer = () => {
 
   }, [songPlaying]);
 
+  useEffect(() => {
+    togglePlayPause();
+  }, [paused]);
+
   const togglePlayPause = async () => {
     if (sound) {
       const status = await sound.getStatusAsync();
@@ -107,13 +116,7 @@ const MiniPlayer = () => {
 
   const getInfo = () => {
     if (songPlaying !== null && songPlaying.info) {
-      console.log('here');
-      console.log(songPlaying.info);
       return <SongInfo info={songPlaying.info} name={songPlaying.name}/>
-    }
-    else {
-      console.log('here2');
-      return <Text>Loading...</Text>
     }
   }
 
@@ -123,6 +126,7 @@ const MiniPlayer = () => {
       activeOpacity={0.8}
       onPress={() => router.push('/player')}
     >
+      <ListCover id={songPlaying?.id} propOnLoad={() => {}}/>
       {getInfo()}
       <TouchableOpacity
         style={Local.buttonContainer}

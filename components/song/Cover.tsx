@@ -1,6 +1,8 @@
-import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { useEffect, useState } from 'react';
 import * as FileSystem from 'expo-file-system';
+import { Styles } from '@/constants/Styles';
+import { Colors } from '@/constants/Colors';
 
 export const ListCover = ({image, id, propOnLoad}: {
   image?: string;
@@ -36,7 +38,7 @@ export const ListCover = ({image, id, propOnLoad}: {
 
     getImage();
     
-  }, [image]);
+  }, [image, id]);
 
   const Local = StyleSheet.create({
     container: {
@@ -142,6 +144,68 @@ export const EditCover = ({image, handlePress}: {
         </View>
       </View>
     </TouchableOpacity>
+  );
+
+}
+
+export const PlayerCover = ({id}: {id: string}) => {
+
+  const [src, setSrc] = useState('');
+
+  useEffect(() => {
+    const getImage = async () => {
+      const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}library/${id}`);
+      if (contents.includes('cover_small.jpg')) {
+        try {
+          const data = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}library/${id}/cover_full.jpg`, { encoding: 'base64' });
+          setSrc(`data:image/jpeg;base64,${data}`);
+        }
+        catch (error) {
+          console.log(error);
+        }
+      }
+    }
+    
+    getImage();
+
+  }, [id]);
+
+  const coverPercent = 0.85;
+
+  const Local = StyleSheet.create({
+    container: {
+      backgroundColor: '#D2D2D2',
+      width: Dimensions.get('screen').width * coverPercent, 
+      height: Dimensions.get('screen').width * coverPercent,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 12,
+      shadowColor: Colors.background,
+      shadowOffset: {
+        width: 0,
+        height: 0
+      },
+      shadowOpacity: 0.9,
+      shadowRadius: 20,
+    },
+    artwork: {
+      width: Dimensions.get('screen').width * coverPercent, 
+      height: Dimensions.get('screen').width * coverPercent,
+      borderRadius: 10,
+    },
+    empty: {
+      width: 100,
+      height: 100,
+    }
+  });
+
+  return (
+    <View style={Local.container}>
+      <Image 
+        source={src ? {uri: src} : require('@/assets/icons/music.png')}
+        style={src ? Local.artwork : Local.empty}
+      />  
+    </View>
   );
 
 }

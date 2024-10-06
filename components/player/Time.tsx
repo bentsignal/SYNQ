@@ -16,22 +16,23 @@ const Time = () => {
   const [scrubbing, setScrubbing] = useState(false);
   const [startX, setStartX] = useState(0);
   const [startProgress, setStartProgress] = useState(0);
+  const [elapsedSec, setElapsedSec] = useState(0);
+  const [remainingSec, setRemainingSec] = useState(0);
 
   const sliderWidth = useRef(300); // Default width, will be updated
   const panX = useRef(new Animated.Value(0)).current;
   const sliderHeight = useRef(new Animated.Value(7)).current; // New animated value for height
 
   useEffect(() => {
-    const interval = setInterval(async () => {
-      if (sound && !scrubbing) {
-        const status = await sound.getStatusAsync();
-        if (status.isLoaded) {
-          setCurrentTime(status.positionMillis);
-        }
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [scrubbing, setCurrentTime]);
+    const elapsed = getSec(currentTime);
+    const remaining = getSec(duration);
+    if (elapsed != elapsedSec) {
+      setElapsedSec(elapsed);
+      setRemainingSec(remaining - elapsed);
+    }
+  }, [scrubbing, currentTime]);
+
+  
 
   const panResponder = useRef(
     PanResponder.create({
@@ -85,12 +86,20 @@ const Time = () => {
     };
   }, [panX, duration, setCurrentTime]);
 
-  const formatTime = (milliseconds: number) => {
-    const totalSeconds = Math.floor(milliseconds / 1000);
+  const getSec = (milliseconds: number) => {
+    return Math.floor(milliseconds / 1000);
+  };
+
+  const formatTime = (totalSeconds: number) => {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
+
+  useEffect(() => {
+    setElapsedSec(0);
+    setRemainingSec(getSec(duration));
+  }, [duration]);
 
   const progressWidth = (currentTime / duration) * sliderWidth.current;
 
@@ -118,8 +127,8 @@ const Time = () => {
         </Animated.View>
       </View>
       <View style={styles.timeContainer}>
-        <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
-        <Text style={styles.timeText}>{formatTime(duration - currentTime)}</Text>
+        <Text style={styles.timeText}>{formatTime(elapsedSec)}</Text>
+        <Text style={styles.timeText}>{formatTime(remainingSec)}</Text>
       </View>
     </View>
   );

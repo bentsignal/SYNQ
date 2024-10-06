@@ -26,6 +26,7 @@ const Player = () => {
   } = useGlobalContext();
 
   const [bg, setBg] = useState(Colors.song);
+  const [progressColor, setProgressColor] = useState(theme);
 
   const insets = useSafeAreaInsets();
 
@@ -43,6 +44,7 @@ const Player = () => {
           });
           const cast = colors as IOSImageColors;
           setBg(cast.background);
+          setProgressColor(cast.primary);
         }
         catch (error) {
           console.log(error);
@@ -91,7 +93,7 @@ const Player = () => {
         <SongInfo info={songPlaying?.info} name={songPlaying?.name}/>
         <More handlePress={() => {}}/>
       </View>
-      <Time />
+      <Time progressColor={progressColor}/>
       <View style={Local.controlsContainer}>
         <SkipLeft size={20}/>
         <TouchableOpacity 

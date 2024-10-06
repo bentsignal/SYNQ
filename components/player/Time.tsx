@@ -4,7 +4,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import { msToSec } from '@/lib/Util';
 
-const Time = () => {
+const Time = ({ progressColor }: { progressColor: string }) => {
 
   const { 
 
@@ -25,6 +25,66 @@ const Time = () => {
   const progressScale = useRef(new Animated.Value(0)).current; // New animated value for progress scale
   const sliderHeight = useRef(new Animated.Value(7)).current; // New animated value for height
 
+  const styles = StyleSheet.create({
+    container: {
+      width: '100%',
+      alignItems: 'center',
+      marginTop: 20,
+      height: 40,
+    },
+    timelineContainer: {
+      width: '85%',
+      overflow: 'hidden',
+      borderRadius: 5,
+    },
+    timeline: {
+      width: '100%',
+      backgroundColor: '#e0e0e0',
+    },
+    progress: {
+      borderRadius: 0,
+      width: '100%',
+      position: 'absolute',
+      left: 0,
+      top: 0,
+    },
+    thumbContainer: {
+      width: 44,
+      height: 44,
+      position: 'absolute',
+      backgroundColor: 'white',
+      opacity: 1,
+      top: -20,
+      left: -22,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    thumb: {
+      width: 16,
+      height: 16,
+      borderRadius: 8,
+      backgroundColor: 'white',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+    timeContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '85%',
+      marginTop: 10,
+    },
+    timeText: {
+      fontSize: 12,
+      // color: '#888',
+      color: Colors.text,
+      fontWeight: '700',
+      fontVariant: ['tabular-nums'],
+    },
+  });
+
   // Update elapsed and remaining time based on call from miniplayer
   useEffect(() => {
     const elapsed = msToSec(currentTime);
@@ -44,7 +104,6 @@ const Time = () => {
       }
     }
   }, [currentTime]);
-
 
   // set elapsed to 0 and remaining time to duration on call from miniplayer
   useEffect(() => {
@@ -128,7 +187,7 @@ const Time = () => {
           <Animated.View style={[
             styles.progress, 
             { 
-              backgroundColor: theme,
+              backgroundColor: progressColor,
               height: 7,
               transform: [{ scaleX: progressScale }],
               transformOrigin: 'left', // Add this line
@@ -143,65 +202,5 @@ const Time = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    alignItems: 'center',
-    marginTop: 20,
-    height: 40,
-  },
-  timelineContainer: {
-    width: '85%',
-    overflow: 'hidden',
-    borderRadius: 5,
-  },
-  timeline: {
-    width: '100%',
-    backgroundColor: '#e0e0e0',
-  },
-  progress: {
-    borderRadius: 0,
-    width: '100%',
-    position: 'absolute',
-    left: 0,
-    top: 0,
-  },
-  thumbContainer: {
-    width: 44,
-    height: 44,
-    position: 'absolute',
-    backgroundColor: 'white',
-    opacity: 1,
-    top: -20,
-    left: -22,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  thumb: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  timeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '85%',
-    marginTop: 10,
-  },
-  timeText: {
-    fontSize: 12,
-    // color: '#888',
-    color: Colors.text,
-    fontWeight: '700',
-    fontVariant: ['tabular-nums'],
-  },
-});
 
 export default Time;

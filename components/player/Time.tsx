@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, PanResponder, Animated, Text } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
+import { Colors } from '@/constants/Colors';
 
 const Time = () => {
 
@@ -183,7 +184,8 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: 12,
-    color: '#888',
+    // color: '#888',
+    color: Colors.text,
     fontWeight: '700',
     fontVariant: ['tabular-nums'],
   },

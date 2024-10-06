@@ -10,6 +10,10 @@ import PauseButton from "@/components/player/PauseButton";
 import PlayButton from "@/components/player/PlayButton";
 import Time from "@/components/player/Time";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";
+import { Colors } from "@/constants/Colors";
+import { getCoverImageData } from "@/lib/SongManager";
+import { getColors } from "react-native-image-colors";
+import { IOSImageColors } from "react-native-image-colors/build/types";
 
 const Player = () => {
 
@@ -20,14 +24,42 @@ const Player = () => {
     setPaused, setFullPause,
   
   } = useGlobalContext();
+
+  const [bg, setBg] = useState(Colors.song);
+
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+
+    const callGetColors = async () => {
+      if (songPlaying) {
+        try {
+          const data = await getCoverImageData(songPlaying.id);
+          const uri = `data:image/jpeg;base64,${data}`;
+          const colors = await getColors(uri, {
+            fallback: Colors.song,
+            cache: true,
+            key: uri,
+          });
+          const cast = colors as IOSImageColors;
+          setBg(cast.background);
+        }
+        catch (error) {
+          console.log(error);
+        }
+      }
+    }
+
+    callGetColors();
+
+  }, [songPlaying])
 
   const Local = StyleSheet.create({
     container: {
-      backgroundColor: 'red',
       flex: 1,
       paddingTop: insets.top,
       alignItems: 'center',
+      backgroundColor: bg,
     },
     infoContainer: {
       marginTop: 20,

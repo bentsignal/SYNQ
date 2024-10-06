@@ -403,6 +403,24 @@ export const saveToLibrary = async (
   }
 };
 
+export const getCoverImageData = async (id: string) => {
+  try {
+    const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}library/${id}`);
+    if (contents.includes('cover_small.jpg')) {
+      try {
+        const data = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}library/${id}/cover_full.jpg`, { encoding: 'base64' });
+        return data;
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+  }
+  catch (error) {
+    console.log('error: ', error);
+  }
+}
+
 export const idgen = (len: number) => {
   let result = '';
   for (let i = 0; i < len; i++) {

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import * as FileSystem from 'expo-file-system';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
+import { getCoverImageData } from '@/lib/SongManager';
 
 export const ListCover = ({image, id, propOnLoad}: {
   image?: string;
@@ -18,15 +19,9 @@ export const ListCover = ({image, id, propOnLoad}: {
 
     const getImage = async () => {
       try {
-        const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}library/${id}`);
-        if (contents.includes('cover_small.jpg')) {
-          try {
-            const data = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}library/${id}/cover_small.jpg`, { encoding: 'base64' });
-            setSrc(`data:image/jpeg;base64,${data}`);
-          }
-          catch (error) {
-            console.log(error);
-          }
+        const data = await getCoverImageData(id);
+        if (data) {
+          setSrc(`data:image/jpeg;base64,${data}`);
         }
         else if (image) {
           setSrc(image);
@@ -164,15 +159,9 @@ export const PlayerCover = ({id}: {id: string}) => {
     
     const getImage = async () => {
       try {
-        const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}library/${id}`);
-        if (contents.includes('cover_small.jpg')) {
-          try {
-            const data = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}library/${id}/cover_full.jpg`, { encoding: 'base64' });
-            setSrc(`data:image/jpeg;base64,${data}`);
-          }
-          catch (error) {
-            console.log(error);
-          }
+        const data = await getCoverImageData(id);
+        if (data) {
+          setSrc(`data:image/jpeg;base64,${data}`);
         }
       }
       catch (error) {

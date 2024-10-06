@@ -16,8 +16,8 @@ const Time = ({ progressColor }: { progressColor: string }) => {
   } = useGlobalContext();
   
   const [scrubbing, setScrubbing] = useState(false);
-  const [elapsedSec, setElapsedSec] = useState(0);
-  const [remainingSec, setRemainingSec] = useState(0);
+  const [elapsedSec, setElapsedSec] = useState(msToSec(currentTime));
+  const [remainingSec, setRemainingSec] = useState(msToSec(duration) - msToSec(currentTime));
 
   const progressScale = useRef(new Animated.Value(msToSec(currentTime) / msToSec(duration))).current;
   const sliderHeight = useRef(new Animated.Value(1)).current;

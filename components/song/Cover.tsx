@@ -17,23 +17,31 @@ export const ListCover = ({image, id, propOnLoad}: {
   useEffect(() => {
 
     const getImage = async () => {
-      const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}library/${id}`);
-      if (contents.includes('cover_small.jpg')) {
-        try {
-          const data = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}library/${id}/cover_small.jpg`, { encoding: 'base64' });
-          setSrc(`data:image/jpeg;base64,${data}`);
+      try {
+        const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}library/${id}`);
+        if (contents.includes('cover_small.jpg')) {
+          try {
+            const data = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}library/${id}/cover_small.jpg`, { encoding: 'base64' });
+            setSrc(`data:image/jpeg;base64,${data}`);
+          }
+          catch (error) {
+            console.log(error);
+          }
         }
-        catch (error) {
-          console.log(error);
+        else if (image) {
+          setSrc(image);
+        }
+        else {
+          setSrc('');
+        }
+        dim = src ? 60 : 20;
+      }
+      catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (!message.includes('folder')) {
+          console.log('error: ', message);
         }
       }
-      else if (image) {
-        setSrc(image);
-      }
-      else {
-        setSrc('');
-      }
-      dim = src ? 60 : 20;
     }
 
     getImage();
@@ -153,16 +161,22 @@ export const PlayerCover = ({id}: {id: string}) => {
   const [src, setSrc] = useState('');
 
   useEffect(() => {
+    
     const getImage = async () => {
-      const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}library/${id}`);
-      if (contents.includes('cover_small.jpg')) {
-        try {
-          const data = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}library/${id}/cover_full.jpg`, { encoding: 'base64' });
-          setSrc(`data:image/jpeg;base64,${data}`);
+      try {
+        const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}library/${id}`);
+        if (contents.includes('cover_small.jpg')) {
+          try {
+            const data = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}library/${id}/cover_full.jpg`, { encoding: 'base64' });
+            setSrc(`data:image/jpeg;base64,${data}`);
+          }
+          catch (error) {
+            console.log(error);
+          }
         }
-        catch (error) {
-          console.log(error);
-        }
+      }
+      catch (error) {
+        console.log('error: ', error);
       }
     }
     

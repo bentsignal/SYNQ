@@ -54,10 +54,10 @@ const Song = ({song}: {song: SongType}) => {
   }, [selectEnabled]);
 
   let bg = Colors.song;
-  if (songPlaying !== null && song.id == songPlaying.id) {
-    bg = theme;
-  }
-  else if (blur) {
+  // if (songPlaying !== null && song.id == songPlaying.id) {
+  //   bg = theme;
+  // }
+  if (blur) {
     bg = Colors.background;
   }
 

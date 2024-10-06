@@ -49,7 +49,6 @@ const MiniPlayer = () => {
   useEffect(() => {
 
     setCurrentId(songPlaying?.id);
-    console.log(songPlaying?.id);
 
     const playSong = async () => {
       if (songPlaying !== null) {
@@ -69,18 +68,12 @@ const MiniPlayer = () => {
             setPaused(false);
             const status = await sound.getStatusAsync();
             if (status.isLoaded) {
-              setDuration(status.durationMillis);
+              setDuration(status.playableDurationMillis);
             }
             sound.setOnPlaybackStatusUpdate((status) => {
               if (status.isLoaded) {
                 setCurrentTime(status.positionMillis);
               }
-              // TODO: Add playback status update, probably used to update time remaining?
-              // if (status.isLoaded) {
-              //   console.log(`Playback status: ${status.isPlaying ? 'playing' : 'paused'}`);
-              // } else {
-              //   console.log('Sound is not loaded');
-              // }
             });
           } else {
             if (sound) {
@@ -123,7 +116,13 @@ const MiniPlayer = () => {
 
   const getInfo = () => {
     if (songPlaying !== null && songPlaying.info) {
-      return <SongInfo info={songPlaying.info} name={songPlaying.name}/>
+      return (
+        <SongInfo 
+          info={songPlaying.info} 
+          name={songPlaying.name}
+          showAlbum={false}
+        />
+      );
     }
   }
 

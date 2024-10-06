@@ -23,32 +23,37 @@ const Library = () => {
   const [songs, setSongs] = useState<SongType[]>([]);
 
   useEffect(() => {
-    const db = DataManager.getInstance();
-    db.getSongs().then((results) => {
-      let songs: SongType[] = [];
-      let dir;
-      for (let i = 0; i < results.length; i++) {
-        dir = `${FileSystem.documentDirectory}library/${results[i].id}`;
-        const song = {
-          name: results[i].fileName,
-          id: results[i].id,
-          data: '',
-          info: {
-            fileType: 'mp3',
-            format: 'id3v2.4',
-            name: results[i].name,
-            metadata: {
-              album: results[i].album,
-              artist: results[i].artists,
-              artwork: '',
-              name: results[i].title,
+    try {
+      const db = DataManager.getInstance();
+      db.getSongs().then((results) => {
+        let songs: SongType[] = [];
+        let dir;
+        for (let i = 0; i < results.length; i++) {
+          dir = `${FileSystem.documentDirectory}library/${results[i].id}`;
+          const song = {
+            name: results[i].fileName,
+            id: results[i].id,
+            data: '',
+            info: {
+              fileType: 'mp3',
+              format: 'id3v2.4',
+              name: results[i].name,
+              metadata: {
+                album: results[i].album,
+                artist: results[i].artists,
+                artwork: '',
+                name: results[i].title,
+              }
             }
           }
+          songs.push(song);
         }
-        songs.push(song);
-      }
-      setSongs(songs);
-    });
+        setSongs(songs);
+      });
+    }
+    catch (error) {
+      console.log(error);
+    }
   }, [homeState]);
 
   return (

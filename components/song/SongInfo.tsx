@@ -3,7 +3,7 @@ import { Colors } from '@/constants/Colors';
 import { InfoType } from '@/constants/Types';
 import { Styles } from '@/constants/Styles';
 
-const SongInfo = ({info, name}: {info: InfoType, name: string}) => {
+const SongInfo = ({info, name, showAlbum}: {info: InfoType, name: string, showAlbum?: boolean}) => {
 
   const Local = StyleSheet.create({
     infoContainer: {
@@ -34,7 +34,7 @@ const SongInfo = ({info, name}: {info: InfoType, name: string}) => {
           style={ Local.artistAlbum }
           numberOfLines={1}
         >
-          {info.metadata.artist} {info.metadata.album ? `· ${info.metadata.album}` : ''}
+          {info.metadata.artist} {showAlbum && info.metadata.album ? `· ${info.metadata.album}` : ''}
         </Text>
       </View>
     );

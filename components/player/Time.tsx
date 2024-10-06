@@ -5,26 +5,21 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 const Time = () => {
 
   const { 
+
     theme, sound,
     duration, currentTime,
+
     setDuration, setCurrentTime,
+
   } = useGlobalContext();
   
   const [scrubbing, setScrubbing] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [startProgress, setStartProgress] = useState(0);
 
   const sliderWidth = useRef(300); // Default width, will be updated
   const panX = useRef(new Animated.Value(0)).current;
   const sliderHeight = useRef(new Animated.Value(7)).current; // New animated value for height
-
-  useEffect(() => {
-    if (sound) {
-      sound.getStatusAsync().then((status: any) => {
-        if (status.isLoaded) {
-          setDuration(status.durationMillis || 0);
-        }
-      });
-    }
-  }, [sound]);
 
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -36,42 +31,43 @@ const Time = () => {
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [sound, scrubbing, setCurrentTime]);
+  }, [scrubbing, setCurrentTime]);
 
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: () => {
+      onPanResponderGrant: (evt) => {
         setScrubbing(true);
-        panX.extractOffset();
+        setStartX(evt.nativeEvent.locationX);
+        setStartProgress(currentTime / duration);
         // Animate slider height to 1.5x
         Animated.timing(sliderHeight, {
           toValue: 10.5, // 7 * 1.5
           duration: 200,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }).start();
       },
-      onPanResponderMove: Animated.event(
-        [null, { dx: panX }],
-        { useNativeDriver: false }
-      ),
-      onPanResponderRelease: () => {
-        panX.flattenOffset();
+      onPanResponderMove: (evt, gestureState) => {
+        const newProgress = startProgress + (gestureState.dx / sliderWidth.current);
+        const clampedProgress = Math.max(0, Math.min(newProgress, 1));
+        const newTime = clampedProgress * duration;
+        setCurrentTime(newTime);
+      },
+      onPanResponderRelease: (evt, gestureState) => {
         setScrubbing(false);
         // Animate slider height back to original
         Animated.timing(sliderHeight, {
           toValue: 7,
           duration: 200,
-          useNativeDriver: false,
+          useNativeDriver: true,
         }).start();
         if (sound) {
-          panX.stopAnimation((value) => {
-            const newPosition = Math.max(0, Math.min(value, sliderWidth.current));
-            const newTime = (newPosition / sliderWidth.current) * duration;
-            sound.setPositionAsync(newTime);
-            setCurrentTime(newTime);
-          });
+          const newProgress = startProgress + (gestureState.dx / sliderWidth.current);
+          const clampedProgress = Math.max(0, Math.min(newProgress, 1));
+          const newTime = clampedProgress * duration;
+          sound.setPositionAsync(newTime);
+          setCurrentTime(newTime);
         }
       },
     })
@@ -98,8 +94,6 @@ const Time = () => {
 
   const progressWidth = (currentTime / duration) * sliderWidth.current;
 
-  const remainingTime = duration - currentTime;
-
   return (
     <View style={styles.container}>
       <View style={styles.timelineContainer}>
@@ -111,6 +105,7 @@ const Time = () => {
           onLayout={(event) => {
             sliderWidth.current = event.nativeEvent.layout.width;
           }}
+          {...panResponder.panHandlers}
         >
           <Animated.View style={[
             styles.progress, 
@@ -120,28 +115,11 @@ const Time = () => {
               height: sliderHeight // Use animated height
             }
           ]} />
-          <Animated.View
-            style={[
-              styles.thumbContainer,
-              {
-                transform: [{
-                  translateX: panX.interpolate({
-                    inputRange: [0, sliderWidth.current],
-                    outputRange: [0, sliderWidth.current],
-                    extrapolate: 'clamp'
-                  })
-                }]
-              }
-            ]}
-            {...panResponder.panHandlers}
-          >
-            <View style={styles.thumb} />
-          </Animated.View>
         </Animated.View>
       </View>
       <View style={styles.timeContainer}>
         <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
-        <Text style={styles.timeText}>{formatTime(remainingTime)}</Text>
+        <Text style={styles.timeText}>{formatTime(duration - currentTime)}</Text>
       </View>
     </View>
   );

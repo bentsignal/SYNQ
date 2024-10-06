@@ -8,7 +8,7 @@ import { PlayerCover } from "@/components/song/Cover";
 import More from "@/components/More";
 import PauseButton from "@/components/player/PauseButton";
 import PlayButton from "@/components/player/PlayButton";
-
+import Time from "@/components/player/Time";
 const Player = () => {
 
   const { 
@@ -55,6 +55,7 @@ const Player = () => {
         <SongInfo info={songPlaying?.info} name={songPlaying?.name}/>
         <More handlePress={() => {}}/>
       </View>
+      <Time />
       <View style={Local.controlsContainer}>
         <TouchableOpacity 
           onPress={() => setFullPause(!fullPause)}

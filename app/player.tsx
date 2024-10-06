@@ -24,6 +24,7 @@ const Player = () => {
 
   const Local = StyleSheet.create({
     container: {
+      backgroundColor: 'red',
       flex: 1,
       paddingTop: insets.top,
       alignItems: 'center',
@@ -66,7 +67,7 @@ const Player = () => {
           style={Local.pausePlay}
           activeOpacity={0.5}
         >
-          {paused ? <PlayButton size={30}/> : <PauseButton size={30}/>}
+          {paused ? <PlayButton size={30}/> : <PauseButton height={30} width={9}/>}
         </TouchableOpacity>
         <SkipRight size={20}/>
       </View>

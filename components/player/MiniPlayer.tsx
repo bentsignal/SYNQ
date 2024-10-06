@@ -139,7 +139,7 @@ const MiniPlayer = () => {
         onPress={togglePlayPause}
         activeOpacity={0.5}
       >
-        {paused ? <PlayButton size={25}/> : <PauseButton size={25}/>}
+        {paused ? <PlayButton size={25}/> : <PauseButton height={25} width={7}/>}
       </TouchableOpacity>
     </TouchableOpacity>
   )

@@ -13,7 +13,7 @@ import { ListCover } from "../song/Cover";
 const MiniPlayer = () => {
   const { 
 
-    theme, songPlaying, paused,
+    theme, songPlaying, paused, fullPause,
     
     setPaused,
 
@@ -97,7 +97,7 @@ const MiniPlayer = () => {
 
   useEffect(() => {
     togglePlayPause();
-  }, [paused]);
+  }, [fullPause]);
 
   const togglePlayPause = async () => {
     if (sound) {

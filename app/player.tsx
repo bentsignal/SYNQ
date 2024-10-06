@@ -13,9 +13,9 @@ const Player = () => {
 
   const { 
     
-    theme, songPlaying, paused, 
+    theme, songPlaying, paused, fullPause, 
     
-    setPaused,
+    setPaused, setFullPause,
   
   } = useGlobalContext();
   const insets = useSafeAreaInsets();
@@ -57,7 +57,7 @@ const Player = () => {
       </View>
       <View style={Local.controlsContainer}>
         <TouchableOpacity 
-          onPress={() => setPaused(!paused)}
+          onPress={() => setFullPause(!fullPause)}
           style={Local.pausePlay}
           activeOpacity={0.5}
         >

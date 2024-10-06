@@ -11,7 +11,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     theme, sound,
     duration, currentTime,
 
-    setDuration, setCurrentTime,
+    setCurrentTime,
 
   } = useGlobalContext();
   
@@ -22,7 +22,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
   const [remainingSec, setRemainingSec] = useState(0);
 
   const sliderWidth = useRef(new Animated.Value(0)).current;
-  const progressScale = useRef(new Animated.Value(0)).current; // New animated value for progress scale
+  const progressScale = useRef(new Animated.Value(msToSec(currentTime) / msToSec(duration))).current; // New animated value for progress scale
   const sliderHeight = useRef(new Animated.Value(7)).current; // New animated value for height
 
   const styles = StyleSheet.create({

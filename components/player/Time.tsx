@@ -102,41 +102,43 @@ const Time = () => {
 
   return (
     <View style={styles.container}>
-      <Animated.View 
-        style={[
-          styles.timeline,
-          { height: sliderHeight } // Use animated height
-        ]}
-        onLayout={(event) => {
-          sliderWidth.current = event.nativeEvent.layout.width;
-        }}
-      >
-        <Animated.View style={[
-          styles.progress, 
-          { 
-            width: progressWidth, 
-            backgroundColor: theme,
-            height: sliderHeight // Use animated height
-          }
-        ]} />
-        <Animated.View
+      <View style={styles.timelineContainer}>
+        <Animated.View 
           style={[
-            styles.thumbContainer,
-            {
-              transform: [{
-                translateX: panX.interpolate({
-                  inputRange: [0, sliderWidth.current],
-                  outputRange: [0, sliderWidth.current],
-                  extrapolate: 'clamp'
-                })
-              }]
-            }
+            styles.timeline,
+            { height: sliderHeight } // Use animated height
           ]}
-          {...panResponder.panHandlers}
+          onLayout={(event) => {
+            sliderWidth.current = event.nativeEvent.layout.width;
+          }}
         >
-          <View style={styles.thumb} />
+          <Animated.View style={[
+            styles.progress, 
+            { 
+              width: progressWidth, 
+              backgroundColor: theme,
+              height: sliderHeight // Use animated height
+            }
+          ]} />
+          <Animated.View
+            style={[
+              styles.thumbContainer,
+              {
+                transform: [{
+                  translateX: panX.interpolate({
+                    inputRange: [0, sliderWidth.current],
+                    outputRange: [0, sliderWidth.current],
+                    extrapolate: 'clamp'
+                  })
+                }]
+              }
+            ]}
+            {...panResponder.panHandlers}
+          >
+            <View style={styles.thumb} />
+          </Animated.View>
         </Animated.View>
-      </Animated.View>
+      </View>
       <View style={styles.timeContainer}>
         <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
         <Text style={styles.timeText}>{formatTime(remainingTime)}</Text>
@@ -152,13 +154,17 @@ const styles = StyleSheet.create({
     marginTop: 20,
     height: 40,
   },
-  timeline: {
+  timelineContainer: {
     width: '85%',
-    backgroundColor: '#e0e0e0',
+    overflow: 'hidden',
     borderRadius: 5,
   },
+  timeline: {
+    width: '100%',
+    backgroundColor: '#e0e0e0',
+  },
   progress: {
-    borderRadius: 5,
+    borderRadius: 0,
   },
   thumbContainer: {
     width: 44,

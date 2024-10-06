@@ -98,6 +98,8 @@ const Time = () => {
 
   const progressWidth = (currentTime / duration) * sliderWidth.current;
 
+  const remainingTime = duration - currentTime;
+
   return (
     <View style={styles.container}>
       <Animated.View 
@@ -137,7 +139,7 @@ const Time = () => {
       </Animated.View>
       <View style={styles.timeContainer}>
         <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
-        <Text style={styles.timeText}>{formatTime(duration)}</Text>
+        <Text style={styles.timeText}>{formatTime(remainingTime)}</Text>
       </View>
     </View>
   );

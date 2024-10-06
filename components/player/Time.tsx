@@ -124,19 +124,21 @@ const styles = StyleSheet.create({
     height: 40,
   },
   timeline: {
-    width: 300,
-    height: 4,
+    width: '85%',
+    height: 7,
     backgroundColor: '#e0e0e0',
-    borderRadius: 2,
+    borderRadius: 5,
   },
   progress: {
     height: '100%',
-    borderRadius: 2,
+    borderRadius: 5,
   },
   thumbContainer: {
     width: 44,
     height: 44,
     position: 'absolute',
+    backgroundColor: 'white',
+    opacity: 0,
     top: -20,
     left: -22,
     justifyContent: 'center',
@@ -156,7 +158,7 @@ const styles = StyleSheet.create({
   timeContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: 300,
+    width: '85%',
     marginTop: 10,
   },
   timeText: {

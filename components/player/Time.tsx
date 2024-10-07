@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, PanResponder, Animated, Text, Easing } from 'react-native';
+import { View, StyleSheet, PanResponder, Animated, Text, Easing, Dimensions } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import { msToSec } from '@/lib/Util';
@@ -18,7 +18,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
   const [scrubbing, setScrubbing] = useState(false);
   const [elapsedSec, setElapsedSec] = useState(msToSec(currentTime));
   const [remainingSec, setRemainingSec] = useState(msToSec(duration) - msToSec(currentTime));
-
+  const preScrubCompletion = useRef(0);
   const progressScale = useRef(new Animated.Value(msToSec(currentTime) / msToSec(duration))).current;
   const sliderHeight = useRef(new Animated.Value(1)).current;
 
@@ -30,11 +30,12 @@ const Time = ({ progressColor }: { progressColor: string }) => {
       height: 40,
     },
     timelineContainer: {
-      width: '85%',
+      width: Dimensions.get('window').width * 0.85,
       // backgroundColor: 'red',
-      paddingTop: 5,
-      paddingBottom: 5,
-      marginBottom: 5,
+      paddingTop: 10,
+      paddingBottom: 10,
+      marginBottom: 10,
+      borderRadius: 20,
     },
     timeline: {
       width: '100%',
@@ -44,7 +45,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     },
     progress: {
       borderRadius: 0,
-      width: '100%',
+      width: Dimensions.get('window').width * 0.85,
       position: 'absolute',
       left: 0,
       top: 0,
@@ -92,8 +93,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (evt) => {
         setScrubbing(true);
-        // setStartX(evt.nativeEvent.locationX);
-        // setStartProgress(currentTime / duration);
+        preScrubCompletion.current = progressScale._value;
         // // Animate slider height to 1.5x
         Animated.timing(sliderHeight, {
           toValue: 1.5, 
@@ -102,6 +102,18 @@ const Time = ({ progressColor }: { progressColor: string }) => {
         }).start();
       },
       onPanResponderMove: (evt, gestureState) => {
+        // console.log(gestureState.dx);
+        // const newProgress = Math.max(0, Math.min((gestureState.moveX - evt.nativeEvent.locationX) / Dimensions.get('window').width * 0.85, 1));
+        console.log('preScrubCompletion', preScrubCompletion.current);
+        progressScale.setValue(preScrubCompletion.current + (gestureState.dx / Dimensions.get('window').width * 0.85));
+        // progressScale.setValue(Number(preScrubCompletion) + 0.25);
+        // Animated.timing(progressScale, {
+        //   toValue: 0.5,
+        //   duration: 1,
+        //   useNativeDriver: true,
+        //   easing: Easing.linear,
+        // }).start();
+
         // const newProgress = startProgress + (gestureState.dx / sliderWidth.current);
         // const clampedProgress = Math.max(0, Math.min(newProgress, 1));
         // const newTime = clampedProgress * duration;

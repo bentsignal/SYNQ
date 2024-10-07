@@ -88,6 +88,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     setRemainingSec(msToSec(duration));
   }, [duration]);
   
+  // handle scrubbing timeline
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
@@ -103,7 +104,6 @@ const Time = ({ progressColor }: { progressColor: string }) => {
         }).start();
       },
       onPanResponderMove: (evt, gestureState) => {
-        console.log('preScrubCompletion', preScrubCompletion.current);
         const newCompletion = preScrubCompletion.current + (gestureState.dx / Dimensions.get('window').width * 0.85);
         progressScale.setValue(newCompletion);
         const newElapsed = Math.max(0, Math.min(Math.floor(newCompletion * msToSec(duration)), msToSec(duration)));;

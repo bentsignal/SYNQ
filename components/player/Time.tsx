@@ -104,7 +104,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
         }).start();
       },
       onPanResponderMove: (evt, gestureState) => {
-        const newCompletion = preScrubCompletion.current + (gestureState.dx / Dimensions.get('window').width * 0.85);
+        const newCompletion = preScrubCompletion.current + (gestureState.dx / Dimensions.get('window').width * 1.1);
         progressScale.setValue(newCompletion);
         const newElapsed = Math.max(0, Math.min(Math.floor(newCompletion * msToSec(duration)), msToSec(duration)));;
         const newRemaining = msToSec(duration) - newElapsed;

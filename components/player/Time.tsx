@@ -105,7 +105,13 @@ const Time = ({ progressColor }: { progressColor: string }) => {
         // console.log(gestureState.dx);
         // const newProgress = Math.max(0, Math.min((gestureState.moveX - evt.nativeEvent.locationX) / Dimensions.get('window').width * 0.85, 1));
         console.log('preScrubCompletion', preScrubCompletion.current);
-        progressScale.setValue(preScrubCompletion.current + (gestureState.dx / Dimensions.get('window').width * 0.85));
+        const newCompletion = preScrubCompletion.current + (gestureState.dx / Dimensions.get('window').width * 0.85);
+        progressScale.setValue(newCompletion);
+        const newRaw = Math.floor(newCompletion * msToSec(duration));
+        const newElapsed = Math.max(0, Math.min(Math.floor(newCompletion * msToSec(duration)), msToSec(duration)));
+        const newRemaining = msToSec(duration) - newElapsed;
+        setElapsedSec(newElapsed);
+        setRemainingSec(newRemaining);
         // progressScale.setValue(Number(preScrubCompletion) + 0.25);
         // Animated.timing(progressScale, {
         //   toValue: 0.5,

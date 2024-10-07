@@ -10,18 +10,20 @@ import PauseButton from "./PauseButton";
 import SongInfo from '@/components/song/SongInfo';
 import { ListCover } from "../song/Cover";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";
+import { togglePlayPause } from "@/components/player/Util";
 
 const MiniPlayer = () => {
+
   const { 
 
-    theme, songPlaying, paused, fullPause,
-    newJump,
+    theme, songPlaying, paused,
+    newJump, sound,
     
-    setPaused, setDuration, setCurrentTime,
+    setPaused, setDuration, 
+    setCurrentTime, setSound,
 
   } = useGlobalContext();
 
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [currentId, setCurrentId] = useState<string | null>(null);
 
   const Local = StyleSheet.create({
@@ -108,10 +110,6 @@ const MiniPlayer = () => {
   }, [songPlaying]);
 
   useEffect(() => {
-    togglePlayPause();
-  }, [fullPause]);
-
-  useEffect(() => {
     const jump = async () => {
       try {
         if (newJump && sound) {
@@ -128,21 +126,6 @@ const MiniPlayer = () => {
     }
     jump();
   }, [newJump]);
-
-  const togglePlayPause = async () => {
-    if (sound) {
-      const status = await sound.getStatusAsync();
-      if (status.isLoaded) {
-        if (status.isPlaying) {
-          setPaused(true);
-          await sound.pauseAsync();
-        } else {
-          setPaused(false);
-          await sound.playAsync();
-        }
-      }
-    }
-  }
 
   const getInfo = () => {
     if (songPlaying !== null && songPlaying.info) {
@@ -173,7 +156,15 @@ const MiniPlayer = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={Local.playPauseButtonWrapper}
-          onPress={togglePlayPause}
+          onPress={async () => {
+            try {
+              setPaused(!paused);
+              await togglePlayPause(sound);
+            }
+            catch (error) {
+              console.error('Error toggling play/pause:', error);
+            }
+          }}
           activeOpacity={0.5}
         >
           {paused ? <PlayButton size={25}/> : <PauseButton height={25} width={7}/>}

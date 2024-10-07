@@ -14,12 +14,14 @@ import { Colors } from "@/constants/Colors";
 import { getCoverImageData } from "@/lib/SongManager";
 import { getColors } from "react-native-image-colors";
 import { IOSImageColors } from "react-native-image-colors/build/types";
+import { togglePlayPause } from "@/components/player/Util";
 
 const Player = () => {
 
   const { 
     
-    theme, songPlaying, paused, fullPause, 
+    theme, songPlaying, paused, 
+    fullPause, sound,
     
     setPaused, setFullPause,
   
@@ -99,7 +101,16 @@ const Player = () => {
           <SkipLeft size={20}/>
         </TouchableOpacity>
         <TouchableOpacity 
-          onPress={() => setFullPause(!fullPause)}
+          onPress={async () => {
+            try {
+              setPaused(!paused);
+              const result = await togglePlayPause(sound);
+            }
+            catch (error) {
+              setPaused(paused);
+              console.error('Error toggling play/pause:', error);
+            }
+          }}
           style={Local.pausePlay}
           activeOpacity={0.5}
         >

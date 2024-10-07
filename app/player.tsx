@@ -6,24 +6,19 @@ import Bar from "@/components/modals/Bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PlayerCover } from "@/components/song/Cover";
 import More from "@/components/More";
-import PauseButton from "@/components/player/PauseButton";
-import PlayButton from "@/components/player/PlayButton";
 import Time from "@/components/player/Time";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";
 import { Colors } from "@/constants/Colors";
 import { getCoverImageData } from "@/lib/SongManager";
 import { getColors } from "react-native-image-colors";
 import { IOSImageColors } from "react-native-image-colors/build/types";
-import { togglePlayPause } from "@/components/player/Util";
+import PausePlayButtons from "@/components/player/PausePlayButtons";
 
 const Player = () => {
 
   const { 
     
-    theme, songPlaying, paused, 
-    fullPause, sound,
-    
-    setPaused, setFullPause,
+    theme, songPlaying
   
   } = useGlobalContext();
 
@@ -100,22 +95,12 @@ const Player = () => {
         <TouchableOpacity onPress={() => {}}>
           <SkipLeft size={20}/>
         </TouchableOpacity>
-        <TouchableOpacity 
-          onPress={async () => {
-            try {
-              setPaused(!paused);
-              const result = await togglePlayPause(sound);
-            }
-            catch (error) {
-              setPaused(paused);
-              console.error('Error toggling play/pause:', error);
-            }
-          }}
+        <PausePlayButtons 
+          playSize={30}
+          pauseHeight={30}
+          pauseWidth={9}
           style={Local.pausePlay}
-          activeOpacity={0.5}
-        >
-          {paused ? <PlayButton size={30}/> : <PauseButton height={30} width={9}/>}
-        </TouchableOpacity>
+        />
         <TouchableOpacity onPress={() => {}}>
           <SkipRight size={20}/>
         </TouchableOpacity>

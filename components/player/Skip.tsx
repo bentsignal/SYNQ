@@ -1,4 +1,4 @@
-import PlayButton from './PlayButton';
+import { PlayButton } from './PausePlayButtons';
 import { View, StyleSheet } from 'react-native';
 
 export const SkipRight = ({size}: {size: number}) => {
@@ -6,7 +6,6 @@ export const SkipRight = ({size}: {size: number}) => {
   const Local = StyleSheet.create({
     container: {
       flexDirection: 'row',
-      // backgroundColor: 'red',
     },
     second: {
       transform: [{translateX: -5}]

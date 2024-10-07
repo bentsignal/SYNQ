@@ -5,12 +5,11 @@ import { router } from "expo-router";
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import { useEffect, useState } from "react";
-import PlayButton from "./PlayButton";
-import PauseButton from "./PauseButton";
 import SongInfo from '@/components/song/SongInfo';
 import { ListCover } from "../song/Cover";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";
 import { togglePlayPause } from "@/components/player/Util";
+import PausePlayButtons from "./PausePlayButtons";
 
 const MiniPlayer = () => {
 
@@ -154,21 +153,12 @@ const MiniPlayer = () => {
         >
           <SkipLeft size={18}/>
         </TouchableOpacity>
-        <TouchableOpacity
+        <PausePlayButtons 
+          playSize={25}
+          pauseHeight={25}
+          pauseWidth={7}
           style={Local.playPauseButtonWrapper}
-          onPress={async () => {
-            try {
-              setPaused(!paused);
-              await togglePlayPause(sound);
-            }
-            catch (error) {
-              console.error('Error toggling play/pause:', error);
-            }
-          }}
-          activeOpacity={0.5}
-        >
-          {paused ? <PlayButton size={25}/> : <PauseButton height={25} width={7}/>}
-        </TouchableOpacity>
+        />
         <TouchableOpacity 
           style={Local.buttonWrapper}
           onPress={() => {}}

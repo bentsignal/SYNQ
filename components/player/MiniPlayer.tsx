@@ -15,6 +15,7 @@ const MiniPlayer = () => {
   const { 
 
     theme, songPlaying, paused, fullPause,
+    newJump,
     
     setPaused, setDuration, setCurrentTime,
 
@@ -109,6 +110,24 @@ const MiniPlayer = () => {
   useEffect(() => {
     togglePlayPause();
   }, [fullPause]);
+
+  useEffect(() => {
+    const jump = async () => {
+      try {
+        if (newJump && sound) {
+          const status = await sound.getStatusAsync();
+          if (status.isLoaded) {
+            const newPosition: number = Number(newJump);
+            await sound.setPositionAsync(newPosition);
+          }
+        }
+      }
+      catch (error) {
+        console.error('Error setting new audio position:', error);
+      }
+    }
+    jump();
+  }, [newJump]);
 
   const togglePlayPause = async () => {
     if (sound) {

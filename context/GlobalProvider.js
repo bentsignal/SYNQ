@@ -74,6 +74,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [fullPause, setFullPause] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [newJump, setNewJump] = useState(0);
 
   return (
     <GlobalContext.Provider
@@ -124,6 +125,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         fullPause, setFullPause,
         duration, setDuration,
         currentTime, setCurrentTime,
+        newJump, setNewJump,
       }}
     >
       {children}

@@ -11,7 +11,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     theme, sound,
     duration, currentTime,
 
-    setCurrentTime,
+    setCurrentTime, setNewJump,
 
   } = useGlobalContext();
   
@@ -19,6 +19,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
   const [elapsedSec, setElapsedSec] = useState(msToSec(currentTime));
   const [remainingSec, setRemainingSec] = useState(msToSec(duration) - msToSec(currentTime));
   const preScrubCompletion = useRef(0);
+  const postScrubCompletion = useRef(0);
   const progressScale = useRef(new Animated.Value(msToSec(currentTime) / msToSec(duration))).current;
   const sliderHeight = useRef(new Animated.Value(1)).current;
 
@@ -93,7 +94,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (evt) => {
         setScrubbing(true);
-        preScrubCompletion.current = progressScale._value;
+        preScrubCompletion.current = (progressScale as any)._value;
         // // Animate slider height to 1.5x
         Animated.timing(sliderHeight, {
           toValue: 1.5, 
@@ -102,61 +103,27 @@ const Time = ({ progressColor }: { progressColor: string }) => {
         }).start();
       },
       onPanResponderMove: (evt, gestureState) => {
-        // console.log(gestureState.dx);
-        // const newProgress = Math.max(0, Math.min((gestureState.moveX - evt.nativeEvent.locationX) / Dimensions.get('window').width * 0.85, 1));
         console.log('preScrubCompletion', preScrubCompletion.current);
         const newCompletion = preScrubCompletion.current + (gestureState.dx / Dimensions.get('window').width * 0.85);
         progressScale.setValue(newCompletion);
-        const newRaw = Math.floor(newCompletion * msToSec(duration));
-        const newElapsed = Math.max(0, Math.min(Math.floor(newCompletion * msToSec(duration)), msToSec(duration)));
+        const newElapsed = Math.max(0, Math.min(Math.floor(newCompletion * msToSec(duration)), msToSec(duration)));;
         const newRemaining = msToSec(duration) - newElapsed;
         setElapsedSec(newElapsed);
         setRemainingSec(newRemaining);
-        // progressScale.setValue(Number(preScrubCompletion) + 0.25);
-        // Animated.timing(progressScale, {
-        //   toValue: 0.5,
-        //   duration: 1,
-        //   useNativeDriver: true,
-        //   easing: Easing.linear,
-        // }).start();
-
-        // const newProgress = startProgress + (gestureState.dx / sliderWidth.current);
-        // const clampedProgress = Math.max(0, Math.min(newProgress, 1));
-        // const newTime = clampedProgress * duration;
-        // setCurrentTime(newTime);
+        postScrubCompletion.current = newCompletion;
       },
       onPanResponderRelease: (evt, gestureState) => {
         setScrubbing(false);
+        setNewJump(postScrubCompletion.current * duration);
         // Animate slider height back to original
         Animated.timing(sliderHeight, {
           toValue: 1,
           duration: 200,
           useNativeDriver: true,
         }).start();
-        // if (sound) {
-        //   const newProgress = startProgress + (gestureState.dx / sliderWidth.current);
-        //   const clampedProgress = Math.max(0, Math.min(newProgress, 1));
-        //   const newTime = clampedProgress * duration;
-        //   sound.setPositionAsync(newTime);
-        //   setCurrentTime(newTime);
-        // }
       },
     })
   ).current;
-
-  // useEffect(() => {
-  //   const listener = panX.addListener(({ value }) => {
-  //     const newPosition = Math.max(0, Math.min(value, sliderWidth.current));
-  //     const newTime = (newPosition / sliderWidth.current) * duration;
-  //     setCurrentTime(newTime);
-  //   });
-
-  //   return () => {
-  //     panX.removeListener(listener);
-  //   };
-  // }, [panX, duration, setCurrentTime]);
-
-  // const progressWidth = (currentTime / duration) * sliderWidth.current;
 
   const formatTime = (totalSeconds: number) => {
     const minutes = Math.floor(totalSeconds / 60);

@@ -90,6 +90,25 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     setRemainingSec(msToSec(durationMS));
   };
 
+  // jump to a new position in song
+  const jump = (newPositionMS: number) => {
+    const execJump = async () => {
+      try {
+        if (newPositionMS && sound) {
+          const status = await sound.getStatusAsync();
+          if (status.isLoaded) {
+            const newPosition: number = Number(newPositionMS);
+            await sound.setPositionAsync(newPosition);
+          }
+        }
+      }
+      catch (error) {
+        console.error('Error setting new audio position:', error);
+      }
+    }
+    execJump();
+  }
+
   useEffect(() => {
 
     const handleSoundUpdate = async () => {
@@ -143,7 +162,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
       },
       onPanResponderRelease: (evt, gestureState) => {
         setScrubbing(false);
-        setNewJump(postScrubCompletion.current * duration);
+        jump(postScrubCompletion.current * duration);
         // Animate slider height back to original
         Animated.timing(sliderHeight, {
           toValue: 1,

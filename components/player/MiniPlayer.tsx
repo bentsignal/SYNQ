@@ -16,7 +16,7 @@ const MiniPlayer = () => {
   const { 
 
     theme, songPlaying, paused,
-    newJump, sound,
+    sound,
     
     setPaused, setDuration, 
     setCurrentTime, setSound,
@@ -107,24 +107,6 @@ const MiniPlayer = () => {
     playSong();
 
   }, [songPlaying]);
-
-  useEffect(() => {
-    const jump = async () => {
-      try {
-        if (newJump && sound) {
-          const status = await sound.getStatusAsync();
-          if (status.isLoaded) {
-            const newPosition: number = Number(newJump);
-            await sound.setPositionAsync(newPosition);
-          }
-        }
-      }
-      catch (error) {
-        console.error('Error setting new audio position:', error);
-      }
-    }
-    jump();
-  }, [newJump]);
 
   const getInfo = () => {
     if (songPlaying !== null && songPlaying.info) {

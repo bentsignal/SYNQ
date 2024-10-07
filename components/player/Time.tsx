@@ -28,7 +28,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
       width: '100%',
       alignItems: 'center',
       marginTop: 20,
-      height: 40,
+      height: 50,
     },
     timelineContainer: {
       width: Dimensions.get('window').width * 0.85,
@@ -36,7 +36,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
       paddingTop: 10,
       paddingBottom: 10,
       marginBottom: 10,
-      borderRadius: 20,
+      // borderRadius: 20,
     },
     timeline: {
       width: '100%',
@@ -45,7 +45,9 @@ const Time = ({ progressColor }: { progressColor: string }) => {
       overflow: 'hidden',
     },
     progress: {
-      borderRadius: 0,
+      // borderRadius: 0,
+      borderTopLeftRadius: 20,
+      borderBottomLeftRadius: 20,
       width: Dimensions.get('window').width * 0.85,
       position: 'absolute',
       left: 0,
@@ -54,7 +56,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     timeContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      width: '85%',
+      width: '100%',
       marginTop: 10,
     },
     timeText: {
@@ -104,7 +106,8 @@ const Time = ({ progressColor }: { progressColor: string }) => {
         }).start();
       },
       onPanResponderMove: (evt, gestureState) => {
-        const newCompletion = preScrubCompletion.current + (gestureState.dx / Dimensions.get('window').width * 1.1);
+        const multiplier = 1.2;
+        const newCompletion = preScrubCompletion.current + (gestureState.dx / Dimensions.get('window').width * multiplier);
         progressScale.setValue(newCompletion);
         const newElapsed = Math.max(0, Math.min(Math.floor(newCompletion * msToSec(duration)), msToSec(duration)));;
         const newRemaining = msToSec(duration) - newElapsed;
@@ -158,11 +161,12 @@ const Time = ({ progressColor }: { progressColor: string }) => {
             ]}
           />
         </Animated.View>
+        <View style={styles.timeContainer}>
+          <Text style={styles.timeText}>{formatTime(elapsedSec)}</Text>
+          <Text style={styles.timeText}>{formatTime(remainingSec)}</Text>
+        </View>
       </View>
-      <View style={styles.timeContainer}>
-        <Text style={styles.timeText}>{formatTime(elapsedSec)}</Text>
-        <Text style={styles.timeText}>{formatTime(remainingSec)}</Text>
-      </View>
+      
     </View>
   );
 };

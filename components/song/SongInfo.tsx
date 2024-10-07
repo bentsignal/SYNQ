@@ -21,7 +21,7 @@ const SongInfo = ({info, name, showAlbum}: {info: InfoType, name: string, showAl
     }
   });
 
-  if (info.metadata?.artist && info.metadata?.name) {
+  if (info && info.metadata?.artist && info.metadata?.name) {
     return (
       <View style={ Local.infoContainer }>
         <Text

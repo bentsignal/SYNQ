@@ -106,6 +106,7 @@ const Theme = () => {
         horizontal
         onScroll={handleScroll}
         style={Local.scrollView}
+        showsHorizontalScrollIndicator={false}
       >
         {Object.entries(Themes).map(([key, color], index) => (
           <ThemeOption

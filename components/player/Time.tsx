@@ -11,7 +11,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     theme, sound,
     duration, currentTime,
 
-    setCurrentTime, setNewJump,
+    setNewJump,
 
   } = useGlobalContext();
   
@@ -69,8 +69,8 @@ const Time = ({ progressColor }: { progressColor: string }) => {
   });
 
   // Update elapsed/remaining time, as well as progress bar AS LONG AS USER ISN'T SCRUBBING
-  useEffect(() => {
-    const elapsed = msToSec(currentTime);
+  const updateTime = (currentTimeMS: number) => {
+    const elapsed = msToSec(currentTimeMS);
     if (elapsed !== elapsedSec && !scrubbing) {
       const total = msToSec(duration);
       setElapsedSec(elapsed);
@@ -82,13 +82,39 @@ const Time = ({ progressColor }: { progressColor: string }) => {
         easing: Easing.linear,
       }).start();
     }
-  }, [currentTime]);
+  };
 
-  // set elapsed to 0 and remaining time to duration on call from miniplayer
-  useEffect(() => {
+  // update duration
+  const updateDuration = (durationMS: number) => {
     setElapsedSec(0);
-    setRemainingSec(msToSec(duration));
-  }, [duration]);
+    setRemainingSec(msToSec(durationMS));
+  };
+
+  useEffect(() => {
+
+    const handleSoundUpdate = async () => {
+      if (sound) {
+        const status = await sound.getStatusAsync();
+        if (status.isLoaded) {
+          // set duration to the total duration of the song
+          updateDuration(status.playableDurationMillis);
+          // function to update the current time of the song
+          sound.setOnPlaybackStatusUpdate((status: any) => {
+            if (status.isLoaded && !scrubbing) {
+              updateTime(status.positionMillis);
+            }
+          });
+        }
+      }
+    }
+
+    try {
+      handleSoundUpdate();
+    } catch (error) {
+      console.error('Error in handleSoundUpdate:', error);
+    }
+
+  }, [sound]);
   
   // handle scrubbing timeline
   const panResponder = useRef(

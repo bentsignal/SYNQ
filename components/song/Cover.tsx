@@ -154,6 +154,7 @@ export const EditCover = ({image, handlePress}: {
 export const PlayerCover = ({id}: {id: string}) => {
 
   const [src, setSrc] = useState('');
+  const [aspectRatio, setAspectRatio] = useState(1);
 
   useEffect(() => {
     
@@ -162,6 +163,9 @@ export const PlayerCover = ({id}: {id: string}) => {
         const data = await getCoverImageData(id);
         if (data) {
           setSrc(`data:image/jpeg;base64,${data}`);
+          Image.getSize(`data:image/jpeg;base64,${data}`, (width, height) => {
+            setAspectRatio(width / height);
+          });
         }
       }
       catch (error) {
@@ -179,7 +183,7 @@ export const PlayerCover = ({id}: {id: string}) => {
     container: {
       backgroundColor: '#D2D2D2',
       width: Dimensions.get('screen').width * coverPercent, 
-      height: Dimensions.get('screen').width * coverPercent,
+      aspectRatio: aspectRatio,
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 12,
@@ -192,8 +196,9 @@ export const PlayerCover = ({id}: {id: string}) => {
       shadowRadius: 20,
     },
     artwork: {
+      aspectRatio: aspectRatio,
       width: Dimensions.get('screen').width * coverPercent, 
-      height: Dimensions.get('screen').width * coverPercent,
+      resizeMode: 'stretch',
       borderRadius: 10,
     },
     empty: {

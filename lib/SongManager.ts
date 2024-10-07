@@ -360,7 +360,8 @@ export const saveToLibrary = async (
               // convert image to jpeg, save full size
               const fullConvert = await ImageManipulator.manipulateAsync(
                 `${dir}/cover_temp.${extension}`,
-                [{ resize: { width: 1000, height: 1000 } }],
+                [],
+                // [{ resize: { width: 1000, height: 1000 } }],
                 { compress: 1, format: SaveFormat.JPEG, base64: true }
               );
               if (fullConvert.base64) {

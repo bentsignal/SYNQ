@@ -10,8 +10,9 @@ const Time = ({ progressColor }: { progressColor: string }) => {
 
     theme, sound,
     duration, currentTime,
+    songPlaying,
 
-    setNewJump,
+    setSound,
 
   } = useGlobalContext();
   
@@ -22,6 +23,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
   const postScrubCompletion = useRef(0);
   const progressScale = useRef(new Animated.Value(msToSec(currentTime) / msToSec(duration))).current;
   const sliderHeight = useRef(new Animated.Value(1)).current;
+  const [localTime, setLocalTime] = useState(currentTime);
 
   const styles = StyleSheet.create({
     container: {
@@ -68,10 +70,14 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     },
   });
 
+  useEffect(() => {
+    
+  })
+
   // Update elapsed/remaining time, as well as progress bar AS LONG AS USER ISN'T SCRUBBING
   const updateTime = (currentTimeMS: number) => {
     const elapsed = msToSec(currentTimeMS);
-    if (elapsed !== elapsedSec && !scrubbing) {
+    if (!scrubbing && elapsed !== elapsedSec) {
       const total = msToSec(duration);
       setElapsedSec(elapsed);
       setRemainingSec(total - elapsed);
@@ -110,6 +116,10 @@ const Time = ({ progressColor }: { progressColor: string }) => {
   }
 
   useEffect(() => {
+    updateTime(localTime);
+  }, [localTime])
+
+  useEffect(() => {
 
     const handleSoundUpdate = async () => {
       if (sound) {
@@ -119,8 +129,9 @@ const Time = ({ progressColor }: { progressColor: string }) => {
           updateDuration(status.playableDurationMillis);
           // function to update the current time of the song
           sound.setOnPlaybackStatusUpdate((status: any) => {
-            if (status.isLoaded && !scrubbing) {
-              updateTime(status.positionMillis);
+            if (status.isLoaded) {
+              // updateTime(status.positionMillis);
+              setLocalTime(status.positionMillis);
             }
           });
         }
@@ -133,7 +144,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
       console.error('Error in handleSoundUpdate:', error);
     }
 
-  }, [sound]);
+  }, [songPlaying]);
   
   // handle scrubbing timeline
   const panResponder = useRef(
@@ -143,7 +154,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
       onPanResponderGrant: (evt) => {
         setScrubbing(true);
         preScrubCompletion.current = (progressScale as any)._value;
-        // // Animate slider height to 1.5x
+        // Animate slider height to 1.5x
         Animated.timing(sliderHeight, {
           toValue: 1.5, 
           duration: 200,

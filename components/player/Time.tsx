@@ -71,8 +71,19 @@ const Time = ({ progressColor }: { progressColor: string }) => {
   });
 
   useEffect(() => {
-    
-  })
+    const checkTime = async () => {
+      if (sound) {
+        const status = await sound.getStatusAsync();
+        if (status.isLoaded) {
+          const time = status.positionMillis;
+          setElapsedSec(msToSec(time));
+          setRemainingSec(msToSec(duration) - msToSec(time));
+          progressScale.setValue(msToSec(time) / msToSec(duration));
+        }
+      }
+    }
+    checkTime();
+  }, []);
 
   // Update elapsed/remaining time, as well as progress bar AS LONG AS USER ISN'T SCRUBBING
   const updateTime = (currentTimeMS: number) => {
@@ -130,7 +141,6 @@ const Time = ({ progressColor }: { progressColor: string }) => {
           // function to update the current time of the song
           sound.setOnPlaybackStatusUpdate((status: any) => {
             if (status.isLoaded) {
-              // updateTime(status.positionMillis);
               setLocalTime(status.positionMillis);
             }
           });

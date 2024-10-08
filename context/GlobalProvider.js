@@ -71,10 +71,8 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [globalProgress, setGlobalProgress] = useState(0);
   const [songPlaying, setSongPlaying] = useState(null);
   const [paused, setPaused] = useState(false);
-  const [fullPause, setFullPause] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [newJump, setNewJump] = useState(0);
   const [sound, setSound] = useState(null);
 
   return (
@@ -123,10 +121,8 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         globalProgress, setGlobalProgress,
         songPlaying, setSongPlaying,
         paused, setPaused,
-        fullPause, setFullPause,
         duration, setDuration,
         currentTime, setCurrentTime,
-        newJump, setNewJump,
         sound, setSound,
       }}
     >

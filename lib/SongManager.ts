@@ -10,6 +10,7 @@ import { SaveFormat } from 'expo-image-manipulator';
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 import DataManager from './DataManager';
 import { isValidNumString, idgen } from './Util';
+import { Image } from 'react-native';
 
 export const getCompletion = (size: number, progress: number) => {
   try {
@@ -357,11 +358,15 @@ export const saveToLibrary = async (
             if (extension !== '') {
               // write image as is
               await FileSystem.writeAsStringAsync(`${dir}/cover_temp.${extension}`, buffer, { encoding: 'base64' });
+              // Get full size image dimensions
+              const { width: imageWidth, height: imageHeight } = await new Promise<{ width: number, height: number }>((resolve, reject) => {
+                Image.getSize(`${dir}/cover_temp.${extension}`, (width, height) => resolve({ width, height }), reject);
+              });
+              console.log(`Original image dimensions: ${imageWidth}x${imageHeight}`);
               // convert image to jpeg, save full size
               const fullConvert = await ImageManipulator.manipulateAsync(
                 `${dir}/cover_temp.${extension}`,
-                [],
-                // [{ resize: { width: 1000, height: 1000 } }],
+                [...(imageWidth > 1000 ? [{ resize: { width: 1000, height: 1000*(imageHeight/imageWidth) } }] : [])],
                 { compress: 1, format: SaveFormat.JPEG, base64: true }
               );
               if (fullConvert.base64) {

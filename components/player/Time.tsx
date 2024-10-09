@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { View, StyleSheet, PanResponder, Animated, Text, Easing, Dimensions } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
@@ -70,21 +70,22 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     },
   });
 
-  useEffect(() => {
-
+  useLayoutEffect(() => {
     const checkTime = async () => {
       if (sound) {
         const status = await sound.getStatusAsync();
         if (status.isLoaded) {
-          updateTime(status.positionMillis, false);
           duration.current = status.durationMillis;
+          const newElapsedSec = msToSec(status.positionMillis);
+          const newRemainingSec = msToSec(duration.current) - newElapsedSec;
+          setElapsedSec(newElapsedSec);
+          setRemainingSec(newRemainingSec);
           progressScale.setValue(status.positionMillis / duration.current);
         }
       }
     }
     
     checkTime();
-
   }, []);
 
   // Update elapsed/remaining time, as well as progress bar AS LONG AS USER ISN'T SCRUBBING
@@ -121,7 +122,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
         }
       }
       catch (error) {
-        console.error('Error setting new audio position:', error);
+        console.log('Error setting new audio position:', error);
       }
     }
     execJump();
@@ -142,7 +143,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
         const status = await sound.getStatusAsync();
         if (status.isLoaded) {
           // set duration to the total duration of the song
-          setElapsedSec(0);
+          // setElapsedSec(0);
           duration.current = status.durationMillis;
           // function to update the current time of the song
           sound.setOnPlaybackStatusUpdate((status: any) => {

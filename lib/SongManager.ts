@@ -362,7 +362,6 @@ export const saveToLibrary = async (
               const { width: imageWidth, height: imageHeight } = await new Promise<{ width: number, height: number }>((resolve, reject) => {
                 Image.getSize(`${dir}/cover_temp.${extension}`, (width, height) => resolve({ width, height }), reject);
               });
-              console.log(`Original image dimensions: ${imageWidth}x${imageHeight}`);
               // convert image to jpeg, save full size
               const fullConvert = await ImageManipulator.manipulateAsync(
                 `${dir}/cover_temp.${extension}`,

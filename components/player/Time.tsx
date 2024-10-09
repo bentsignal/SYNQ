@@ -70,22 +70,24 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     },
   });
 
+
+  // gets initial elapsed and remaining time, and sets the progress slider to appropriate position
   useLayoutEffect(() => {
+
     const checkTime = async () => {
       if (sound) {
         const status = await sound.getStatusAsync();
         if (status.isLoaded) {
           duration.current = status.durationMillis;
-          const newElapsedSec = msToSec(status.positionMillis);
-          const newRemainingSec = msToSec(duration.current) - newElapsedSec;
-          setElapsedSec(newElapsedSec);
-          setRemainingSec(newRemainingSec);
+          setElapsedSec(msToSec(status.positionMillis));
+          setRemainingSec(msToSec(duration.current) - msToSec(status.positionMillis));
           progressScale.setValue(status.positionMillis / duration.current);
         }
       }
     }
     
     checkTime();
+
   }, []);
 
   // Update elapsed/remaining time, as well as progress bar AS LONG AS USER ISN'T SCRUBBING
@@ -128,14 +130,12 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     execJump();
   }
 
+  // called by songPlaying triggered effect, makes actual call to updateTime 
   useEffect(() => {
     updateTime(localTime);
   }, [localTime]);
 
-  // useEffect(() => {
-  //   setDuration(localDuration);
-  // }, [localDuration]);
-
+  // handle song change, updates times as song plays
   useEffect(() => {
 
     const handleSoundUpdate = async () => {
@@ -143,7 +143,6 @@ const Time = ({ progressColor }: { progressColor: string }) => {
         const status = await sound.getStatusAsync();
         if (status.isLoaded) {
           // set duration to the total duration of the song
-          // setElapsedSec(0);
           duration.current = status.durationMillis;
           // function to update the current time of the song
           sound.setOnPlaybackStatusUpdate((status: any) => {

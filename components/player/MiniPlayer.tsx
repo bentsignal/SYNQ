@@ -8,22 +8,17 @@ import { useEffect, useState } from "react";
 import SongInfo from '@/components/song/SongInfo';
 import { ListCover } from "../song/Cover";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";
-import { togglePlayPause } from "@/components/player/Util";
 import PausePlayButtons from "./PausePlayButtons";
 
 const MiniPlayer = () => {
 
   const { 
 
-    theme, songPlaying, paused,
-    sound,
+    theme, songPlaying, sound,
     
-    setPaused, setDuration, 
-    setCurrentTime, setSound,
+    setPaused, setSound,
 
   } = useGlobalContext();
-
-  const [currentId, setCurrentId] = useState<string | null>(null);
 
   const Local = StyleSheet.create({
     container: {
@@ -61,8 +56,6 @@ const MiniPlayer = () => {
 
   useEffect(() => {
 
-    setCurrentId(songPlaying?.id);
-
     const playSong = async () => {
       if (songPlaying !== null) {
         if (sound) {
@@ -79,16 +72,8 @@ const MiniPlayer = () => {
             const { sound } = await Audio.Sound.createAsync({ uri: path }, { shouldPlay: true });
             setSound(sound);
             setPaused(false);
-            const status = await sound.getStatusAsync();
-            if (status.isLoaded) {
-              setDuration(status.playableDurationMillis);
-            }
-            sound.setOnPlaybackStatusUpdate((status) => {
-              if (status.isLoaded) {
-                setCurrentTime(status.positionMillis);
-              }
-            });
-          } else {
+          } 
+          else {
             if (sound) {
               await sound.stopAsync();
               await sound.unloadAsync();
@@ -98,9 +83,6 @@ const MiniPlayer = () => {
         } catch (error) {
           console.error('Error in audio playback:', error);
         }
-      }
-      else {
-        console.log(2);
       }
     }
 

@@ -120,10 +120,12 @@ const Time = ({ progressColor }: { progressColor: string }) => {
           if (status.isLoaded) {
             const newPosition: number = Number(newPositionMS);
             await sound.setPositionAsync(newPosition);
+            setScrubbing(false);
           }
         }
       }
       catch (error) {
+        setScrubbing(false);
         console.log('Error setting new audio position:', error);
       }
     }
@@ -188,7 +190,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
         postScrubCompletion.current = newCompletion;
       },
       onPanResponderRelease: (evt, gestureState) => {
-        setScrubbing(false);
+        // setScrubbing(false);
         jump(postScrubCompletion.current * duration.current);
         // Animate slider height back to original
         Animated.timing(sliderHeight, {

@@ -60,7 +60,7 @@ const Library = () => {
     <View style={[Styles.body, {paddingTop: insets.top}]}>
       <Top />
       <PageTitle title='Library'/>
-      <SongList songs={songs} />
+      <SongList songs={songs}/>
       <MiniPlayer />
       <Notifications  
         customStyles={{

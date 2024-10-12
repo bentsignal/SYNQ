@@ -18,7 +18,7 @@ const renderItem = ({item} : {item: SongType}) => {
   );
 }
 
-const SongList = (data: any) => {
+const SongList = ({songs, bottomPadding = false}: {songs: any, bottomPadding?: boolean}) => {
 
   const { selectedId } = useGlobalContext();
   const [atTop, setAtTop] = useState(true);
@@ -59,14 +59,14 @@ const SongList = (data: any) => {
   const Local = StyleSheet.create({
     container: {
       ...Styles.main,
-      paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50,
+      paddingBottom: bottomPadding ? (Dimensions.get('screen').height < 700 ? 70 : 50) : 0,
       opacity: globalOpacityRef,
     },
     list: {
       width: '100%'
     },
     listContent: {
-      paddingBottom: 40,
+      paddingBottom: 100,
       display: 'flex',
       alignItems: 'center'
     },
@@ -79,7 +79,7 @@ const SongList = (data: any) => {
     },
     bottomGradient: {
       position: 'absolute', 
-      bottom: Dimensions.get('screen').height < 700 ? 70 : 50, 
+      bottom: bottomPadding ? (Dimensions.get('screen').height < 700 ? 70 : 50) : 0, 
       width: '100%', 
       height: 50,
     }
@@ -91,7 +91,7 @@ const SongList = (data: any) => {
         <EditModal />
         <DeleteModal />
         <FlatList 
-          data={data.songs}
+          data={songs}
           renderItem={renderItem}
           keyExtractor={song => song.id}
           extraData={selectedId}

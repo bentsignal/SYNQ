@@ -51,7 +51,7 @@ const Files = () => {
     }
     else if (results.length > 0) {
       return (
-        <SongList songs={results} />
+        <SongList songs={results} bottomPadding={true} />
       );
     }
     else {

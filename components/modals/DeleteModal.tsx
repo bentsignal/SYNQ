@@ -11,7 +11,7 @@ const DeleteModal = () => {
 
   const {
 
-    selectedSongs, deleteSong, results,
+    selectedSongs, results,
     showDelete, theme, homeState,
     editSong,
 
@@ -68,6 +68,7 @@ const DeleteModal = () => {
         <View style={[Local.infoContainer, Styles.roundedContainer]}>
           <ListCover 
             image={editSong.info?.metadata?.artwork}
+            id={editSong.id}
             propOnLoad={() => {}}
           />
           <SongInfo 
@@ -107,7 +108,7 @@ const DeleteModal = () => {
                 handlePress={() => {
                   setShowOverlay(false);
                   setShowDelete(false);
-                  const ids = selectedSongs.length > 0 ? selectedSongs : [deleteSong.id]
+                  const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id]
                   const newResults = removeSongs(results, ids);
                   if (newResults.length <= 0) {
                     setExportDisabled(true);

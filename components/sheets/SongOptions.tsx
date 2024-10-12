@@ -16,8 +16,8 @@ const SongOptions = () => {
     showSongOptions, editSong, 
 
     setShowSongOptions, setShowEdit,
-    setShowDelete, setDeleteSong,
-    setShowOverlay, setShowGlobalLoading,
+    setShowDelete, setShowOverlay, 
+    setShowGlobalLoading,
   
   } = useGlobalContext();
 
@@ -140,7 +140,6 @@ const SongOptions = () => {
                 setTimeout(() => {
                   setShowOverlay(true);
                   setShowDelete(true);
-                  setDeleteSong({name: editSong.name, id: editSong.id});
                 }, actionDelay);
               }}
             />

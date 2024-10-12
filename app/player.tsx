@@ -24,7 +24,7 @@ const Player = () => {
   
   } = useGlobalContext();
 
-  const [bg, setBg] = useState(Colors.song);
+  const [bg, setBg] = useState(Colors.popup);
   const [progressColor, setProgressColor] = useState(theme);
 
   const insets = useSafeAreaInsets();

@@ -35,7 +35,6 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [results, setResults] = useState([]);
   const [exportDisabled, setExportDisabled] = useState(true);
   const [showDelete, setShowDelete] = useState(false);
-  const [deleteSong, setDeleteSong] = useState({});
   const [showEdit, setShowEdit] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
   const [showSaveInst, setShowSaveInst] = useState(false);
@@ -85,7 +84,6 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         wifiResults, setWifiResults,
         exportDisabled, setExportDisabled,
         showDelete, setShowDelete,
-        deleteSong, setDeleteSong,
         showEdit, setShowEdit,
         editSong, setEditSong,
         showWelcome, setShowWelcome,

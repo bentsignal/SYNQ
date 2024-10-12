@@ -14,7 +14,7 @@ const ShuffleButton = () => {
   const styles = StyleSheet.create({
     container: {
       paddingVertical: 5,
-      paddingRight: 10,
+      // paddingRight: 10,
       // backgroundColor: 'green',
     },
     image: {

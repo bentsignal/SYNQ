@@ -71,7 +71,13 @@ const Player = () => {
       justifyContent: 'space-between',
     },
     controlsContainer: {
-      width: Dimensions.get('screen').width * 0.9,
+      width: Dimensions.get('screen').width * 0.85,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      gap: 15,
+    },
+    centerControlsContainer: {
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
@@ -96,14 +102,16 @@ const Player = () => {
       <Time progressColor={progressColor}/>
       <View style={Local.controlsContainer}>
         <ShuffleButton/>
-        <SkipLeft size={20}/>
-        <PausePlayButtons 
-          playSize={30}
-          pauseHeight={30}
-          pauseWidth={9}
-          style={Local.pausePlay}
-        />
-        <SkipRight size={20}/>
+        <View style={Local.centerControlsContainer}>
+          <SkipLeft size={20}/>
+          <PausePlayButtons 
+            playSize={30}
+            pauseHeight={30}
+            pauseWidth={9}
+            style={Local.pausePlay}
+          />
+          <SkipRight size={20}/>
+        </View>
         <QueueButton />
       </View>
     </View>

@@ -6,8 +6,8 @@ const CloseButton = ({action}: {action: () => void}) => {
   const Local = StyleSheet.create({
     container: {
       paddingVertical: 20,
-      paddingLeft: 20,
-      width: 40,
+      // paddingLeft: 20,
+      width: 20,
       justifyContent: 'center',
       // alignItems: 'flex-end',
       // transform: [{rotate: '45deg'}],

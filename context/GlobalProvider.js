@@ -74,6 +74,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [sound, setSound] = useState(null);
+  const [shuffle, setShuffle] = useState(false);
 
   return (
     <GlobalContext.Provider
@@ -124,6 +125,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         duration, setDuration,
         currentTime, setCurrentTime,
         sound, setSound,
+        shuffle, setShuffle,
       }}
     >
       {children}

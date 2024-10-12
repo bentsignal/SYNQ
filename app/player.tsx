@@ -14,6 +14,8 @@ import { getColors } from "react-native-image-colors";
 import { IOSImageColors } from "react-native-image-colors/build/types";
 import PausePlayButtons from "@/components/player/PausePlayButtons";
 import QueueButton from "@/components/player/QueueButton";
+import ShuffleButton from "@/components/player/ShuffleButton";
+
 const Player = () => {
 
   const { 
@@ -67,7 +69,6 @@ const Player = () => {
       width: Dimensions.get('screen').width * 0.9,
       flexDirection: 'row',
       justifyContent: 'space-between',
-      // backgroundColor: 'red'
     },
     controlsContainer: {
       width: Dimensions.get('screen').width * 0.9,
@@ -75,7 +76,6 @@ const Player = () => {
       justifyContent: 'center',
       alignItems: 'center',
       gap: 15,
-      // backgroundColor: 'blue'
     },
     pausePlay: {
       width: 50,
@@ -95,6 +95,7 @@ const Player = () => {
       </View>
       <Time progressColor={progressColor}/>
       <View style={Local.controlsContainer}>
+        <ShuffleButton/>
         <SkipLeft size={20}/>
         <PausePlayButtons 
           playSize={30}

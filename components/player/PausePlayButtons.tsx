@@ -36,7 +36,7 @@ const PausePlayButtons = ({
         }
       }}
       style={{...style}}
-      activeOpacity={0.5}
+      activeOpacity={0.8}
     >
       {paused ? <PlayButton size={playSize}/> : <PauseButton height={pauseHeight} width={pauseWidth}/>}
     </TouchableOpacity>

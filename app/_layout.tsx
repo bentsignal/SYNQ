@@ -141,7 +141,9 @@ const RootLayout = () => {
           <Stack.Screen 
             name="queue"
             options={{
-              presentation: "modal",
+              presentation: "card",
+              animation: 'fade_from_bottom',
+              gestureEnabled: false,
               headerShown: false,
               contentStyle: { backgroundColor: 'transparent' },
             }}

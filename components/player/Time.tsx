@@ -4,7 +4,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import { msToSec } from '@/lib/Util';
 
-const Time = ({ progressColor }: { progressColor: string }) => {
+const Time = ({ progressColor }: { progressColor?: string }) => {
 
   const { 
 
@@ -223,7 +223,7 @@ const Time = ({ progressColor }: { progressColor: string }) => {
             style={[
               styles.progress, 
               { 
-                backgroundColor: progressColor,
+                backgroundColor: progressColor ? progressColor : theme,
                 height: 7,
                 transform: [{ scaleX: progressScale }],
                 transformOrigin: 'left',

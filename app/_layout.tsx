@@ -116,6 +116,7 @@ const RootLayout = () => {
             options={{
               presentation: "modal",
               headerShown: false,
+              contentStyle: {backgroundColor: 'transparent'}
             }}
           />
           <Stack.Screen 
@@ -130,11 +131,19 @@ const RootLayout = () => {
             options={{
               presentation: "card",
               animation: 'slide_from_bottom',
-              contentStyle: { backgroundColor: Colors.popup },
+              contentStyle: { backgroundColor: 'transparent' },
               gestureEnabled: true,
               gestureDirection: "vertical",
               fullScreenGestureEnabled: true,
               headerShown: false,
+            }}
+          />
+          <Stack.Screen 
+            name="queue"
+            options={{
+              presentation: "modal",
+              headerShown: false,
+              contentStyle: { backgroundColor: 'transparent' },
             }}
           />
         </Stack>

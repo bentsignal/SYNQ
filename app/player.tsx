@@ -13,7 +13,7 @@ import { getCoverImageData } from "@/lib/SongManager";
 import { getColors } from "react-native-image-colors";
 import { IOSImageColors } from "react-native-image-colors/build/types";
 import PausePlayButtons from "@/components/player/PausePlayButtons";
-
+import QueueButton from "@/components/player/QueueButton";
 const Player = () => {
 
   const { 
@@ -59,6 +59,8 @@ const Player = () => {
       paddingTop: insets.top,
       alignItems: 'center',
       backgroundColor: bg,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
     },
     infoContainer: {
       marginTop: 20,
@@ -93,18 +95,15 @@ const Player = () => {
       </View>
       <Time progressColor={progressColor}/>
       <View style={Local.controlsContainer}>
-        <TouchableOpacity onPress={() => {}}>
-          <SkipLeft size={20}/>
-        </TouchableOpacity>
+        <SkipLeft size={20}/>
         <PausePlayButtons 
           playSize={30}
           pauseHeight={30}
           pauseWidth={9}
           style={Local.pausePlay}
         />
-        <TouchableOpacity onPress={() => {}}>
-          <SkipRight size={20}/>
-        </TouchableOpacity>
+        <SkipRight size={20}/>
+        <QueueButton />
       </View>
     </View>
   );

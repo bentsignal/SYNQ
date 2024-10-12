@@ -1,5 +1,5 @@
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { PlayButton } from './PausePlayButtons';
-import { View, StyleSheet } from 'react-native';
 
 export const SkipRight = ({size}: {size: number}) => {
 
@@ -13,19 +13,19 @@ export const SkipRight = ({size}: {size: number}) => {
   });
 
   return (
-    <View style={Local.container}>
+    <TouchableOpacity style={Local.container}>
       <PlayButton size={size} />
       <View style={Local.second}>
         <PlayButton size={size} />
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
 export const SkipLeft = ({size}: {size: number}) => {
   return (
-    <View style={{transform: [{rotate: '180deg'}]}}>
+    <TouchableOpacity style={{transform: [{rotate: '180deg'}]}}>
       <SkipRight size={size} />
-    </View>
+    </TouchableOpacity>
   );
 }

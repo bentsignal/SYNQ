@@ -23,6 +23,8 @@ const Settings = () => {
   const Local = StyleSheet.create({
     container: {
       backgroundColor: Colors.background,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
     },
     settingsCategoryContainer: {
       width: '90%',

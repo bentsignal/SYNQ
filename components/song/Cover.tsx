@@ -1,5 +1,5 @@
 import { View, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import * as FileSystem from 'expo-file-system';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
@@ -81,17 +81,46 @@ export const ListCover = ({image, id, propOnLoad}: {
 
 }
 
-export const EditCover = ({image, handlePress}: {
+export const EditCover = ({image, id, handlePress, propOnLoad}: {
   image?: string; 
-  handlePress?: () => void;
+  id: string;
+  handlePress: () => void;
+  propOnLoad: () => void;
 }) => {
 
   const [src, setSrc] = useState(image ? image : '');
+  const [loaded, setLoaded] = useState(false);
   const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5+hPwABAAEAAFPAfXAAAAAElFTkSuQmCC';
 
-  useEffect(() => {
-    setSrc(image ? image : '')
-  }, [image]);
+  useLayoutEffect(() => {
+
+    const getImage = async () => {
+      try {
+        const data = await getCoverImageData(id);
+        if (data) {
+          console.log(data.substring(0, 20));
+          setSrc(`data:image/jpeg;base64,${data}`);
+        }
+        else if (image) {
+          console.log('2');
+          setSrc(image);
+        }
+        else {
+          console.log('3');
+          setSrc(transparent);
+        }
+      }
+      catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (!message.includes('folder')) {
+          console.log('error: ', message);
+        }
+      }
+    }
+
+    getImage();
+    
+  }, []);
 
   const Local = StyleSheet.create({
     container: {
@@ -101,6 +130,7 @@ export const EditCover = ({image, handlePress}: {
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 12,
+      opacity: loaded ? 1 : 0
     },
     artwork: {
       width: 120, 
@@ -134,9 +164,19 @@ export const EditCover = ({image, handlePress}: {
     >
       <View style={Local.container}>
         <Image 
+          key={src}
           source={src ? {uri: src} : {uri: transparent}}
           style={Local.artwork}
-          onError={() => setSrc('')}
+          onLoad={() => {
+            console.log('loaded');
+            setLoaded(true);
+            propOnLoad();
+          }}
+          onError={() => {
+            setSrc('');
+            setLoaded(true);
+            propOnLoad();
+          }}
         />
         <View style={Local.tintOverlay}/>
         <View style={Local.iconWrapper}>
@@ -160,7 +200,7 @@ export const PlayerCover = ({id}: {id: string}) => {
     
     const getImage = async () => {
       try {
-        const data = await getCoverImageData(id);
+        const data = await getCoverImageData(id, true);
         if (data) {
           setSrc(`data:image/jpeg;base64,${data}`);
           Image.getSize(`data:image/jpeg;base64,${data}`, (width, height) => {

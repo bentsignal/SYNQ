@@ -148,6 +148,10 @@ const EditModal = () => {
                 <View style={Local.coverContainer}>
                   <EditCover 
                     image={cover}
+                    id={editSong.id}
+                    propOnLoad={() => {
+                      setLoading(false);
+                    }}
                     handlePress={async () => {
                       setLoading(true);
                       const cover = await newCover();

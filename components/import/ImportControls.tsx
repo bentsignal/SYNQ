@@ -62,12 +62,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
         <TouchableOpacity
           style={[Styles.roundedContainer, Styles.backgroundBlendShadow, Local.batchButtonWrapper]}
           onPress={() => {
-            setEditSong({
-              "name": "",
-              "id": "",
-              "data": "",
-              "info": ""
-            });
+            setEditSong({});
             setShowOverlay(true);
             setShowEdit(true);
           }}

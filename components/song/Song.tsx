@@ -172,12 +172,7 @@ const Song = ({song}: {song: SongType}) => {
               if (haptic) {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }
-              setEditSong({
-                "name": song.name, 
-                "id": song.id, 
-                "data": song.data, 
-                "info": song.info
-              });
+              setEditSong(song);
               setShowSongOptions(!showSongOptions);
             }}
           />

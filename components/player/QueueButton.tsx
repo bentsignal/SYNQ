@@ -8,19 +8,20 @@ const QueueButton = () => {
     container: {
       width: 25,
       height: 25,
+      // backgroundColor: 'red',
     },
     top: {
       borderColor: Colors.text,
-      borderWidth: 2,
+      borderWidth: 3,
       borderStyle: 'solid',
       borderRadius: 10,
-      height: 8,
+      height: 9,
     },
     line: {
       backgroundColor: Colors.text,
-      height: 2,
+      height: 3,
       borderRadius: 10,
-      marginTop: 5,
+      marginTop: 4,
     }
   });
 

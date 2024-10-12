@@ -96,18 +96,17 @@ export const EditCover = ({image, id, handlePress, propOnLoad}: {
 
     const getImage = async () => {
       try {
-        const data = await getCoverImageData(id);
-        if (data) {
-          console.log(data.substring(0, 20));
-          setSrc(`data:image/jpeg;base64,${data}`);
-        }
-        else if (image) {
-          console.log('2');
+        if (image) {
           setSrc(image);
         }
         else {
-          console.log('3');
-          setSrc(transparent);
+          const data = await getCoverImageData(id);
+          if (data) {
+            setSrc(`data:image/jpeg;base64,${data}`);
+          }
+          else {
+            setSrc(transparent);
+          }
         }
       }
       catch (error) {
@@ -120,7 +119,7 @@ export const EditCover = ({image, id, handlePress, propOnLoad}: {
 
     getImage();
     
-  }, []);
+  }, [image, id]);
 
   const Local = StyleSheet.create({
     container: {

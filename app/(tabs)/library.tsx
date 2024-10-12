@@ -19,7 +19,7 @@ const Library = () => {
 
   const insets = useSafeAreaInsets();
 
-  const { addNotification, homeState } = useGlobalContext();
+  const { homeState } = useGlobalContext();
   const [songs, setSongs] = useState<SongType[]>([]);
 
   useEffect(() => {

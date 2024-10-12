@@ -9,7 +9,8 @@ const SongInfo = ({info, name, showAlbum}: {info: InfoType, name: string, showAl
     infoContainer: {
       flex: 1,
       paddingLeft: 10,
-      flexGrow: 1
+      flexGrow: 1,
+      justifyContent: 'center'
     },
     title: {
       ...Styles.h5,

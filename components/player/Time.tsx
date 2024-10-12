@@ -29,16 +29,14 @@ const Time = ({ progressColor }: { progressColor: string }) => {
     container: {
       width: '100%',
       alignItems: 'center',
-      marginTop: 20,
+      marginTop: 10,
       height: 50,
     },
     timelineContainer: {
       width: Dimensions.get('window').width * 0.85,
-      // backgroundColor: 'red',
       paddingTop: 10,
       paddingBottom: 10,
       marginBottom: 10,
-      // borderRadius: 20,
     },
     timeline: {
       width: '100%',
@@ -47,7 +45,6 @@ const Time = ({ progressColor }: { progressColor: string }) => {
       overflow: 'hidden',
     },
     progress: {
-      // borderRadius: 0,
       borderTopLeftRadius: 20,
       borderBottomLeftRadius: 20,
       width: Dimensions.get('window').width * 0.85,
@@ -69,7 +66,6 @@ const Time = ({ progressColor }: { progressColor: string }) => {
       fontVariant: ['tabular-nums'],
     },
   });
-
 
   // gets initial elapsed and remaining time, and sets the progress slider to appropriate position
   useLayoutEffect(() => {

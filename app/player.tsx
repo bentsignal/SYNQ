@@ -65,14 +65,15 @@ const Player = () => {
       width: Dimensions.get('screen').width * 0.9,
       flexDirection: 'row',
       justifyContent: 'space-between',
+      // backgroundColor: 'red'
     },
     controlsContainer: {
-      marginTop: 20,
       width: Dimensions.get('screen').width * 0.9,
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
       gap: 15,
+      // backgroundColor: 'blue'
     },
     pausePlay: {
       width: 50,

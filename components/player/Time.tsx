@@ -3,6 +3,7 @@ import { View, StyleSheet, PanResponder, Animated, Text, Easing, Dimensions } fr
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import { msToSec } from '@/lib/Util';
+import { jump } from '@/lib/SoundManager';
 
 const Time = ({ progressColor }: { progressColor?: string }) => {
 
@@ -108,21 +109,15 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   };
 
   // jump to a new position in song
-  const jump = (newPositionMS: number) => {
+  const jumpToPosition = (newPositionMS: number) => {
     const execJump = async () => {
       try {
-        if (newPositionMS && sound) {
-          const status = await sound.getStatusAsync();
-          if (status.isLoaded) {
-            const newPosition: number = Number(newPositionMS);
-            await sound.setPositionAsync(newPosition);
-            setScrubbing(false);
-          }
-        }
+        await jump(sound, newPositionMS);
+        setScrubbing(false);
       }
       catch (error) {
+        console.log('Error jumping to position:', error);
         setScrubbing(false);
-        console.log('Error setting new audio position:', error);
       }
     }
     execJump();
@@ -187,7 +182,8 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
       },
       onPanResponderRelease: (evt, gestureState) => {
         // setScrubbing(false);
-        jump(postScrubCompletion.current * duration.current);
+        const newPosition = postScrubCompletion.current * duration.current;
+        jumpToPosition(newPosition);
         // Animate slider height back to original
         Animated.timing(sliderHeight, {
           toValue: 1,

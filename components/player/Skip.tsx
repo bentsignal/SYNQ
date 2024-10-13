@@ -1,31 +1,87 @@
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { PlayButton } from './PausePlayButtons';
+import { useGlobalContext } from '@/context/GlobalProvider';
+import { jump } from '@/lib/SoundManager';
 
-export const SkipRight = ({size}: {size: number}) => {
-
-  const Local = StyleSheet.create({
-    container: {
-      flexDirection: 'row',
-    },
-    second: {
-      transform: [{translateX: -5}]
-    }
-  });
-
+const Shape = ({size}: {size: number}) => {
   return (
-    <TouchableOpacity style={Local.container}>
+    <>
       <PlayButton size={size} />
       <View style={Local.second}>
         <PlayButton size={size} />
       </View>
+    </>
+  );
+}
+
+export const SkipRight = ({size}: {size: number}) => {
+
+  const {
+
+    queue, nextUp, sound,
+
+  } = useGlobalContext();
+
+  const handlePress = async () => {
+    if (queue.length > 0) {
+      console.log('skiping to first song up in queue');
+    }
+    else if (nextUp.length > 0) {
+      console.log('skiping to first song up in next up');
+    }
+    else {
+      console.log('no songs to skip to');
+    }
+  }
+
+  return (
+    <TouchableOpacity 
+      activeOpacity={0.7}
+      style={Local.container}
+      onPress={handlePress}
+    >
+      <Shape size={size} />
     </TouchableOpacity>
   );
 }
 
 export const SkipLeft = ({size}: {size: number}) => {
+
+  const {
+
+    history, sound
+
+  } = useGlobalContext();
+
+  const handlePress = async () => {
+    if (history.length > 0) {
+      console.log('skiping to previous song');
+    }
+    else {
+      console.log('resetting time');
+      await jump(sound, 0);
+    }
+  }
+
   return (
-    <TouchableOpacity style={{transform: [{rotate: '180deg'}]}}>
-      <SkipRight size={size} />
+    <TouchableOpacity 
+      activeOpacity={0.7}
+      style={[Local.flipped, Local.container]}
+      onPress={handlePress}
+    >
+      <Shape size={size} />
     </TouchableOpacity>
   );
 }
+
+const Local = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+  },
+  flipped: {
+    transform: [{rotate: '180deg'}]
+  },
+  second: {
+    transform: [{translateX: -5}]
+  }
+});

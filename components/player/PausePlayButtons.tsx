@@ -1,7 +1,7 @@
 import { TouchableOpacity, StyleSheet, View } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import { togglePlayPause } from "./Util";
+import { togglePlayback } from "@/lib/SoundManager";
 import Svg, { Path } from 'react-native-svg';
 
 const PausePlayButtons = ({
@@ -24,7 +24,7 @@ const PausePlayButtons = ({
         try {
           // update state instantly for improved perceived performance
           setPaused(!paused);
-          const result = await togglePlayPause(sound);
+          const result = await togglePlayback(sound);
           // paused state is flip flopped, switch it to correct state
           if (result === paused) {
             setPaused(result);

@@ -220,8 +220,9 @@ export const PlayerCover = ({id}: {id: string}) => {
 
   const Local = StyleSheet.create({
     container: {
-      backgroundColor: '#D2D2D2',
+      backgroundColor: src ? 'transparent' : '#D2D2D2',
       width: Dimensions.get('screen').width * coverPercent, 
+      minHeight: Dimensions.get('screen').width * coverPercent,
       aspectRatio: aspectRatio,
       justifyContent: 'center',
       alignItems: 'center',

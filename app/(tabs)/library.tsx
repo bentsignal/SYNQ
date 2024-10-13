@@ -14,6 +14,7 @@ import SongList from "@/components/song/SongList";
 import { SongType } from "@/constants/Types";
 import * as FileSystem from 'expo-file-system';
 import MiniPlayer from '@/components/player/MiniPlayer';
+import { getSongByResult } from "@/lib/SongManager";
 
 const Library = () => {
 
@@ -30,22 +31,7 @@ const Library = () => {
         let dir;
         for (let i = 0; i < results.length; i++) {
           dir = `${FileSystem.documentDirectory}library/${results[i].id}`;
-          const song = {
-            name: results[i].fileName,
-            id: results[i].id,
-            data: '',
-            info: {
-              fileType: 'mp3',
-              format: 'id3v2.4',
-              name: results[i].name,
-              metadata: {
-                album: results[i].album,
-                artist: results[i].artists,
-                artwork: '',
-                name: results[i].title,
-              }
-            }
-          }
+          const song = getSongByResult(results[i]);
           songs.push(song);
         }
         setSongs(songs);

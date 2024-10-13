@@ -424,3 +424,44 @@ export const getCoverImageData = async (id: string, full: boolean = false) => {
     console.log('error: ', error);
   }
 }
+
+export const getSongById = async (id: number) => {
+  try {
+    const db = DataManager.getInstance();
+    await db.initConnection();
+    const result = await db.getSongById(id);
+    return getSongByResult(result);
+  }
+  catch (error) {
+    throw new Error('Error getting song by id: ' + error);
+  }
+}
+
+export const getSongByResult = (result: any): SongType => {
+  try {
+    return {
+      name: result.fileName,
+      id: result.id,
+      data: '',
+      info: {
+        fileType: 'mp3',
+        format: 'id3v2.4',
+        name: result.name,
+        metadata: {
+          album: result.album,
+          artist: result.artists,
+          artwork: '',
+          name: result.title,
+        }
+      }
+    };
+  }
+  catch (error) {
+    return {
+      name: '',
+      id: '-1',
+      data: '',
+      info: {}
+    };
+  }
+}

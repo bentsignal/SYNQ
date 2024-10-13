@@ -34,4 +34,5 @@ export const jump = async (sound: Audio.Sound | null, newPositionMS: number) => 
   catch (error) {
     console.log('Error setting new audio position:', error);
   }
+
 }

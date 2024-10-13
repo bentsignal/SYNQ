@@ -114,6 +114,18 @@ class DataManager {
     }
   }
 
+  async getSongById(id: number): Promise<any> {
+    try {
+      if (!this.db) {
+        await this.initConnection();
+      }
+      const result = await this.db?.getFirstAsync(`SELECT * FROM songs WHERE id = ?;`, [id]);
+      return result ? result : null;
+    } catch (error) {
+      console.error('Error getting song by id:', error);
+    }
+  }
+  
 }
 
 export default DataManager;

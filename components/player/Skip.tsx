@@ -2,6 +2,8 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { PlayButton } from './PausePlayButtons';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { jump } from '@/lib/SoundManager';
+import { getSongById } from '@/lib/SongManager';
+
 
 const Shape = ({size}: {size: number}) => {
   return (
@@ -20,18 +22,33 @@ export const SkipRight = ({size}: {size: number}) => {
 
     queue, nextUp, sound,
 
+    setSongPlaying,
+
   } = useGlobalContext();
 
   const handlePress = async () => {
-    if (queue.length > 0) {
-      console.log('skiping to first song up in queue');
+    try {
+      const id = Math.floor(Math.random() * 40) + 1;
+      const song = await getSongById(id);
+      if (song) {
+        // console.log(song);
+        setSongPlaying(song);
+      }
     }
-    else if (nextUp.length > 0) {
-      console.log('skiping to first song up in next up');
+    catch (error) {
+      console.log('error: ', error);
     }
-    else {
-      console.log('no songs to skip to');
-    }
+        
+
+    // if (queue.length > 0) {
+    //   console.log('skiping to first song up in queue');
+    // }
+    // else if (nextUp.length > 0) {
+    //   console.log('skiping to first song up in next up');
+    // }
+    // else {
+    //   console.log('no songs to skip to');
+    // }
   }
 
   return (

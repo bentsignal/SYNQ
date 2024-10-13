@@ -16,20 +16,24 @@ import * as Haptics from 'expo-haptics';
 import More from '@/components/More';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
+import DataManager from '@/lib/DataManager';
+import { getNextUp } from '@/lib/SongManager';
 
 const Song = ({song}: {song: SongType}) => {
 
   const [selected, setSelected] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
+
   const { 
 
     selectEnabled, selectedSongs, results,
     premium, showSongOptions, theme, 
-    haptic, songPlaying,
+    haptic, songPlaying, nextUp,
+    shuffle,
 
     setSelectedSongs, setShowSongOptions,
-    setEditSong, setSongPlaying,
+    setEditSong, setSongPlaying, setNextUp,
 
   } = useGlobalContext(); 
 
@@ -113,14 +117,23 @@ const Song = ({song}: {song: SongType}) => {
     }
   });
 
+  const handlePlay = async () => {
+    const id = songPlaying ? songPlaying.id : -1;
+    if (id !== song.id) {
+      setSongPlaying(song);
+      if (haptic) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+      setNextUp(await getNextUp(song.id, 30, shuffle));
+    }
+  }
+
   return (
     <>
       <TouchableOpacity 
         style={Local.mainContainer}
         activeOpacity={0.8}
-        onPress={async () => {
-          setSongPlaying(song);
-        }}
+        onPress={handlePlay}
       >
         <ListCover 
           image={song.info?.metadata?.artwork ? song.info.metadata.artwork : ''}

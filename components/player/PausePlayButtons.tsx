@@ -3,6 +3,7 @@ import { Colors } from "@/constants/Colors";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { togglePlayback } from "@/lib/SoundManager";
 import Svg, { Path } from 'react-native-svg';
+import * as Haptics from 'expo-haptics';
 
 const PausePlayButtons = ({
   playSize,
@@ -16,7 +17,13 @@ const PausePlayButtons = ({
   style: {};
 }) => {
 
-  const { paused, setPaused, sound } = useGlobalContext();
+  const { 
+    
+    paused, sound, haptic,
+    
+    setPaused,
+  
+  } = useGlobalContext();
 
   return (
     <TouchableOpacity 
@@ -24,6 +31,9 @@ const PausePlayButtons = ({
         try {
           // update state instantly for improved perceived performance
           setPaused(!paused);
+          if (haptic) {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+          }
           const result = await togglePlayback(sound);
           // paused state is flip flopped, switch it to correct state
           if (result === paused) {

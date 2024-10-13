@@ -465,3 +465,33 @@ export const getSongByResult = (result: any): SongType => {
     };
   }
 }
+
+export const getNextUp = async (currentId: string, pagination: number = 30, shuffle: boolean = false) => {
+  const next = [];
+  const db = DataManager.getInstance();
+  const songs = await db.getSongs();
+
+  try {
+    if (shuffle) {
+      const cap = pagination > songs.length ? songs.length : pagination;
+      for (let i = 0; i < cap; i++) {
+        const randomIndex = Math.floor(Math.random() * songs.length);
+        next.push(songs[randomIndex].id);
+        songs.splice(randomIndex, 1);
+      }
+    }
+    else {
+      const validSongs = songs.filter((song: SongType) => Number(song.id) > Number(currentId));
+      const cap = pagination > validSongs.length ? validSongs.length : pagination;
+      for (let i = 0; i < cap; i++) {
+        next.push(validSongs[i].id);
+      }
+    }
+  }
+  catch (error) {
+    console.log(error);
+  }
+
+  return next;
+
+}

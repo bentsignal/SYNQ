@@ -50,21 +50,21 @@ const Settings = () => {
       <View style={Local.settingsCategoryContainer}>
         <Haptic />
       </View>
-      <CategoryTitle title="Reset Library" requiresPremium={false}/>
-        <View style={Local.settingsCategoryContainer}>
-          <CustomButton
-            title="Reset"
-            background={Colors.altButton}
-            customStyles={{
-              marginTop: 10,
-            }}
-            handlePress={async () => {
-              const db = DataManager.getInstance();
-              await db.initConnection();
-              await db.clearSongsTable();
-            }}
-          />
-        </View>
+      {/* <CategoryTitle title="Reset Library" requiresPremium={false}/>
+      <View style={Local.settingsCategoryContainer}>
+        <CustomButton
+          title="Reset"
+          background={Colors.altButton}
+          customStyles={{
+            marginTop: 10,
+          }}
+          handlePress={async () => {
+            const db = DataManager.getInstance();
+            await db.initConnection();
+            await db.clearSongsTable();
+          }}
+        />
+      </View> */}
     </View>
   );
   

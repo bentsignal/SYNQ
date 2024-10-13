@@ -54,12 +54,14 @@ export const SkipLeft = ({size}: {size: number}) => {
   } = useGlobalContext();
 
   const handlePress = async () => {
-    if (history.length > 0) {
+    const status = await sound?.getStatusAsync();
+    console.log(status.positionMillis);
+    if (status.positionMillis < 3000 && history.length > 0) {
       console.log('skiping to previous song');
     }
     else {
       console.log('resetting time');
-      await jump(sound, 0);
+      await jump(sound, 100);
     }
   }
 

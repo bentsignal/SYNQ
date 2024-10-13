@@ -237,7 +237,7 @@ export const PlayerCover = ({id}: {id: string}) => {
     artwork: {
       aspectRatio: aspectRatio,
       width: Dimensions.get('screen').width * coverPercent, 
-      resizeMode: 'stretch',
+      // resizeMode: 'stretch',
       borderRadius: 10,
     },
     empty: {

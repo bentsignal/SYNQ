@@ -29,6 +29,19 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
     setNotifications((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
+  const popHistory = useCallback(() => {
+    if (history.length > 0) {
+      const id = history[history.length - 1].id;
+      setHistory((prev) => prev.slice(0, -1));
+      return id;
+    }
+    return -1;
+  }, []);
+
+  const pushHistory = useCallback((id) => {
+    setHistory((prev) => [...prev, { id }]);
+  }, []);
+
   const [homeState, setHomeState] = useState(0);
   const [premium, setPremium] = useState(initPremium ? initPremium : false);
   const [wifiResults, setWifiResults] = useState([]);
@@ -74,6 +87,9 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [sound, setSound] = useState(null);
   const [shuffle, setShuffle] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [queue, setQueue] = useState([]);
+  const [nextUp, setNextUp] = useState([]);
 
   return (
     <GlobalContext.Provider
@@ -124,6 +140,10 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         currentTime, setCurrentTime,
         sound, setSound,
         shuffle, setShuffle,
+        history, setHistory,
+        queue, setQueue,
+        nextUp, setNextUp,
+        popHistory, pushHistory,
       }}
     >
       {children}

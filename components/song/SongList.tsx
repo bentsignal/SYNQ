@@ -1,5 +1,5 @@
 import { View, FlatList, Dimensions, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent, StyleSheet } from 'react-native';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, memo, useCallback } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Styles } from '@/constants/Styles';
 import { SongType } from '@/constants/Types';
@@ -9,16 +9,17 @@ import EditModal from '@/components/modals/EditModal';
 import DeleteModal from '@/components/modals/DeleteModal';
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
+const MemoSong = memo(Song);
 
 const renderItem = ({item} : {item: SongType}) => {
   return (
-    <Song 
+    <MemoSong 
       song={item}
     />
   );
-}
+};
 
-const SongList = ({songs, bottomPadding = false}: {songs: any, bottomPadding?: boolean}) => {
+const SongList = memo(({songs, bottomPadding = false}: {songs: SongType[], bottomPadding?: boolean}) => {
 
   const { selectedId } = useGlobalContext();
   const [atTop, setAtTop] = useState(true);
@@ -98,6 +99,11 @@ const SongList = ({songs, bottomPadding = false}: {songs: any, bottomPadding?: b
           onScroll={handleScroll}
           style={Local.list}
           contentContainerStyle={ Local.listContent }
+          maxToRenderPerBatch={10}
+          initialNumToRender={10}
+          removeClippedSubviews={true}
+          updateCellsBatchingPeriod={50}
+          windowSize={10}
         />
         <AnimatedGradient
           style={ Local.topGradient }
@@ -113,6 +119,6 @@ const SongList = ({songs, bottomPadding = false}: {songs: any, bottomPadding?: b
     </>
   );
 
-}
+});
 
 export default SongList;

@@ -467,6 +467,7 @@ export const getSongByResult = (result: any): SongType => {
 }
 
 export const getNextUp = async (currentId: string, pagination: number = 30, shuffle: boolean = false) => {
+  
   const next = [];
   const db = DataManager.getInstance();
   const songs = await db.getSongs();

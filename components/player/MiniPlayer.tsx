@@ -105,7 +105,7 @@ const MiniPlayer = () => {
   return (
     <TouchableOpacity 
       style={Local.container}
-      activeOpacity={0.95}
+      activeOpacity={1}
       onPress={() => router.push('/player')}
     >
       <ListCover id={songPlaying?.id} propOnLoad={() => {}}/>

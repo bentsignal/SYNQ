@@ -1,13 +1,15 @@
 import { View, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Colors } from "@/constants/Colors";
+import { getNextUp } from "@/lib/SongManager";
+
 const ShuffleButton = () => {
 
   const { 
 
-    shuffle, theme,
+    shuffle, theme, songPlaying,
     
-    setShuffle 
+    setShuffle, setNextUp,
   
   } = useGlobalContext();
 
@@ -24,11 +26,18 @@ const ShuffleButton = () => {
     },
   });
 
+  const handlePress = async () => {
+    const newValue = !shuffle;
+    setShuffle(newValue);
+    const id = songPlaying ? songPlaying.id : -1;
+    setNextUp(await getNextUp(id, 30, newValue));
+  }
+
   return (
     <TouchableOpacity
       style={styles.container}
       activeOpacity={0.7}
-      onPress={() => setShuffle(!shuffle)}
+      onPress={handlePress}
     >
       <Image 
         source={require('@/assets/icons/shuffle.png')}

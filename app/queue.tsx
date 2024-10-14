@@ -11,10 +11,25 @@ import CloseButton from "@/components/CloseButton";
 import { router } from "expo-router";
 import Time from "@/components/player/Time";
 import ShuffleButton from "@/components/player/ShuffleButton";
+import { useGlobalContext } from "@/context/GlobalProvider";
+import SongList from "@/components/song/SongList";
+import { useEffect, useState } from "react";
+import { SongType } from "@/constants/Types";
+import { getSongById } from "@/lib/SongManager";
+import { ListCover } from "@/components/song/Cover";
+import SongInfo from "@/components/song/SongInfo";
+
 
 const Queue = () => {
 
+  const { 
+    
+    nextUp, songPlaying,
+  
+  } = useGlobalContext();
+
   const insets = useSafeAreaInsets();
+  const [songs, setSongs] = useState<SongType[]>([]);
 
   const Local = StyleSheet.create({
     container: {
@@ -22,6 +37,13 @@ const Queue = () => {
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
       paddingTop: insets.top + 20,
+    },
+    currentlyPlayingContainer: {
+      maxWidth: Dimensions.get('window').width * 0.9,
+      flexDirection: 'row',
+      paddingBottom: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     footer: {
       backgroundColor: Colors.footer,
@@ -53,29 +75,45 @@ const Queue = () => {
       justifyContent: 'center',
       alignItems: 'center',
     },
+    categoryHeader: {
+      ...Styles.h3,
+      color: Colors.text,
+      marginBottom: 10,
+      width: Dimensions.get('window').width * 0.9,
+    }
   });
 
-  const getItems = () => {
-    let items = [];
-    for (let i = 0; i < 10; i++) {
-      items.push(
-        <Text key={i} style={{color: Colors.text}}>{i}</Text>
-      );
+  useEffect(() => {
+    const results: SongType[] = [];
+    try {
+      for (let i = 0; i < nextUp.length; i++) {
+        const song = getSongById(nextUp[i]).then((result) => {
+          results.push(result);
+        });
+      }
     }
-    return items;
-  }
+    catch (error) {
+      console.log(error);
+    }
+    setSongs(results);
+  }, [nextUp]);
 
   return (
     <View style={[Styles.body, Local.container]}>
-      {/* <Bar /> */}
       <PageTitle title="Now Playing"/>
-      <ScrollView
-        style={{
-          width: '100%',
-        }}
-      >
-        {getItems()}
-      </ScrollView>
+      <View style={Local.currentlyPlayingContainer}>
+        <ListCover 
+          id={songPlaying.id}
+          image={songPlaying.info?.metadata?.artwork}
+          propOnLoad={() => {}}
+        />
+        <SongInfo 
+          info={songPlaying.info ? songPlaying.info : {metadata: {}}} 
+          name={songPlaying.name ? songPlaying.name : ''}
+        />
+      </View>
+      <Text style={Local.categoryHeader}>Up Next</Text>
+      <SongList songs={songs}/>
       <View style={Local.footer}>
         <Time/>
         <View style={Local.controlsContainer}>

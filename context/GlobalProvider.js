@@ -29,6 +29,19 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
     setNotifications((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
+  const addToQueue = useCallback((id) => {
+    setQueue((prev) => [...prev, id]);
+  }, []);
+
+  const popFromQueue = useCallback(() => {
+    if (queue.length > 0) {
+      const id = queue[queue.length - 1];
+      setQueue((prev) => prev.slice(0, -1));
+      return id;
+    }
+    return -1;
+  }, []);
+
   const popHistory = useCallback(() => {
     if (history.length > 0) {
       const id = history[history.length - 1].id;
@@ -144,6 +157,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         queue, setQueue,
         nextUp, setNextUp,
         popHistory, pushHistory,
+        addToQueue, popFromQueue,
       }}
     >
       {children}

@@ -18,6 +18,8 @@ const SongOptions = () => {
     setShowSongOptions, setShowEdit,
     setShowDelete, setShowOverlay, 
     setShowGlobalLoading,
+
+    addToQueue,
   
   } = useGlobalContext();
 
@@ -107,6 +109,16 @@ const SongOptions = () => {
             />
           </View>
           <View>
+            <SongOption 
+              icon={require('@/assets/icons/add.png')}
+              text={'Add to Queue'}
+              handler={() => {
+                bottomSheetRef.current?.close();
+                setTimeout(() => {
+                  addToQueue(editSong.id);
+                }, actionDelay);
+              }}
+            />
             <SongOption 
               icon={require('@/assets/icons/edit.png')}
               text={'Edit'}

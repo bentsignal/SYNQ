@@ -24,7 +24,7 @@ const Queue = () => {
 
   const { 
     
-    nextUp, songPlaying,
+    nextUp, queue, songPlaying,
   
   } = useGlobalContext();
 
@@ -86,8 +86,13 @@ const Queue = () => {
   useEffect(() => {
     const results: SongType[] = [];
     try {
+      for (let i = 0; i < queue.length; i++) {
+        getSongById(queue[i]).then((result) => {
+          results.push(result);
+        });
+      }
       for (let i = 0; i < nextUp.length; i++) {
-        const song = getSongById(nextUp[i]).then((result) => {
+        getSongById(nextUp[i]).then((result) => {
           results.push(result);
         });
       }
@@ -96,7 +101,7 @@ const Queue = () => {
       console.log(error);
     }
     setSongs(results);
-  }, [nextUp]);
+  }, [nextUp, queue]);
 
   return (
     <View style={[Styles.body, Local.container]}>

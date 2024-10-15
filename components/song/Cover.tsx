@@ -1,7 +1,7 @@
 import { View, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import * as FileSystem from 'expo-file-system';
 import { Styles } from '@/constants/Styles';
+import FastImage from 'react-native-fast-image';
 import { Colors } from '@/constants/Colors';
 import { getCoverImageData } from '@/lib/SongManager';
 
@@ -62,15 +62,15 @@ export const ListCover = ({image, id, propOnLoad}: {
 
   return (
     <View style={Local.container}>
-      <Image 
+      <FastImage 
         source={src ? {uri: src} : require('@/assets/icons/music.png')}
         style={Local.artwork}
         onLoad={() => {
           setLoaded(true);
           propOnLoad()
         }}
-        onError={(error) => {
-          console.log('error loading list cover: ', error);
+        onError={() => {
+          console.log('error loading list cover');
           setSrc('');
           setLoaded(true);
           propOnLoad();
@@ -162,7 +162,7 @@ export const EditCover = ({image, id, handlePress, propOnLoad}: {
       onPress={handlePress}
     >
       <View style={Local.container}>
-        <Image 
+        <FastImage 
           key={src}
           source={src ? {uri: src} : {uri: transparent}}
           style={Local.artwork}
@@ -249,7 +249,7 @@ export const PlayerCover = ({id}: {id: string}) => {
 
   return (
     <View style={Local.container}>
-      <Image 
+      <FastImage 
         source={src ? {uri: src} : require('@/assets/icons/music.png')}
         style={src ? Local.artwork : Local.empty}
       />  

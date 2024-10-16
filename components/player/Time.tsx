@@ -152,8 +152,10 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
 
     const handleSoundUpdate = async () => {
       if (sound) {
+        console.log('sound is not null');
         const status = await sound.getStatusAsync();
         if (status.isLoaded) {
+          console.log('songLoaded?: ', status.isLoaded);
           // set duration to the total duration of the song
           duration.current = status.durationMillis;
           // function to update the current time of the song
@@ -164,6 +166,9 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
           });
         }
       }
+      else {
+        console.log('sound is null');
+      }
     }
 
     try {
@@ -172,7 +177,7 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
       console.error('Error in handleSoundUpdate:', error);
     }
 
-  }, [songPlaying]);
+  }, [sound]);
   
   // handle scrubbing timeline
   const panResponder = useRef(

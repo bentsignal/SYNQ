@@ -65,7 +65,6 @@ const MiniPlayer = () => {
         const song = songPlaying;
         const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;          
         try {
-          setSound(null);
           const contents = await FileSystem.readDirectoryAsync(libraryPath);  
           if (contents.includes(song.name)) {
             const path = `${libraryPath}/${song.name}`;

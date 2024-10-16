@@ -14,16 +14,12 @@ import Skeleton from '../Skeleton';
 import { darkenColor } from '@/lib/ColorManager';
 import * as Haptics from 'expo-haptics';
 import More from '@/components/More';
-import { Audio } from 'expo-av';
-import * as FileSystem from 'expo-file-system';
-import DataManager from '@/lib/DataManager';
 import { getNextUp } from '@/lib/SongManager';
 
 const Song = ({song}: {song: SongType}) => {
 
   const [selected, setSelected] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
 
   const { 
 

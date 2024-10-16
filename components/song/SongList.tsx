@@ -94,7 +94,7 @@ const SongList = memo(({songs, bottomPadding = false}: {songs: SongType[], botto
         <FlatList 
           data={songs}
           renderItem={renderItem}
-          keyExtractor={song => song.id}
+          keyExtractor={(song, index) => `${song.id}-${index}`}
           extraData={selectedId}
           onScroll={handleScroll}
           style={Local.list}

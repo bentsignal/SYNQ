@@ -29,9 +29,24 @@ export const SkipRight = ({size}: {size: number}) => {
 
   } = useGlobalContext();
 
+  const fetchMoreSongs = async () => {
+    try {
+      let newSongs = await getNextUp(songPlaying.id, 30, shuffle);
+      if (newSongs.length < 1) {
+        newSongs = await getNextUp(songPlaying.id, 30, true);
+      }
+      return newSongs;
+    }
+    catch (error) {
+      console.log('error fetching more songs: ', error);
+      return [];
+    }
+  }
+
   const handlePress = async () => {
 
     try {
+      // pull from queue if available
       if (queue.length > 0) {
         const newQueue = queue;
         const newHistory = history;
@@ -46,6 +61,7 @@ export const SkipRight = ({size}: {size: number}) => {
           setQueue(newQueue);
         }
       }
+      // queue is empty, pull from next up
       else if (nextUp.length > 0) {
         console.log('skiping to first song up in next up');
         const current = songPlaying.id;
@@ -60,19 +76,29 @@ export const SkipRight = ({size}: {size: number}) => {
           setNextUp(newNextUp);
         }
       }
+      // queue and next up are empty, fetch more songs
+      else {
+        try {
+          const newNextUp = await fetchMoreSongs();
+          const newId = newNextUp.shift();
+          const newSong = await getSongById(newId);
+          setSongPlaying(newSong);
+          setNextUp(newNextUp);
+        }
+        catch (error) {
+          console.log('ran out of songs and failed to fetch more: ', error);
+        }
+      }
     }
     catch (error) {
       console.log('error skipping right: ', error);
     }
 
-    // TODO: check if next up is getting close to empty, if so fetch more songs
-    // if (nextUp.length < 10) {
-    //   let newSongs = await getNextUp(songPlaying.id, 30, shuffle);
-    //   if (newSongs.length < 1) {
-    //     newSongs = await getNextUp(songPlaying.id, 30, true);
-    //   }
-    //   setNextUp([...nextUp, ...newSongs]);
-    // }
+    // next up is getting low, fetch more songs
+    if (nextUp.length < 10) {
+      const newSongs = await fetchMoreSongs();
+      setNextUp([...nextUp, ...newSongs]);
+    }
 
   }
 
@@ -122,7 +148,6 @@ export const SkipLeft = ({size}: {size: number}) => {
           setRewind(false);
         }
         catch (error) {
-          console.log('error rewinding: ', error);
           setRewind(false);
         }
       }

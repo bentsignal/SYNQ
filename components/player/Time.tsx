@@ -11,8 +11,10 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
 
     theme, sound,
     songPlaying,
+    rewind,
 
-    setSound,
+    setSound, setHistory,
+    setRewind,
 
   } = useGlobalContext();
   
@@ -69,28 +71,45 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   });
 
   // gets initial elapsed and remaining time, and sets the progress slider to appropriate position
-  useLayoutEffect(() => {
 
-    const checkTime = async () => {
-      if (sound) {
-        const status = await sound.getStatusAsync();
-        if (status.isLoaded) {
-          duration.current = status.durationMillis;
-          setElapsedSec(msToSec(status.positionMillis));
-          setRemainingSec(msToSec(duration.current) - msToSec(status.positionMillis));
-          progressScale.setValue(status.positionMillis / duration.current);
-        }
+  const checkTime = async () => {
+    if (sound) {
+      const status = await sound.getStatusAsync();
+      if (status.isLoaded) {
+        duration.current = status.durationMillis;
+        setElapsedSec(msToSec(status.positionMillis));
+        setRemainingSec(msToSec(duration.current) - msToSec(status.positionMillis));
+        progressScale.setValue(status.positionMillis / duration.current);
       }
     }
+  }
+
+  // reset progress scale instantly to 0 when restarting song
+  useEffect(() => {
+    const rewindToBeginning= async () => {
+    if (rewind) {
+      setElapsedSec(0);
+      setRemainingSec(msToSec(duration.current));
+      progressScale.setValue(0);
+    }
+  }
+    rewindToBeginning();
+  }, [rewind])
+
+  useLayoutEffect(() => {
     
     checkTime();
 
   }, []);
 
+  useEffect(() => {
+    checkTime();
+  }, [songPlaying, setHistory]);
+
   // Update elapsed/remaining time, as well as progress bar AS LONG AS USER ISN'T SCRUBBING
   const updateTime = (currentTimeMS: number, animate: boolean = true) => {
     const elapsed = msToSec(currentTimeMS);
-    if (!scrubbing && elapsed !== elapsedSec) {
+    if (!scrubbing && !rewind && elapsed !== elapsedSec) {
       const total = msToSec(duration.current);
       setElapsedSec(elapsed);
       setRemainingSec(total - elapsed > 0 ? total - elapsed : 0);

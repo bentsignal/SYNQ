@@ -77,6 +77,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [history, setHistory] = useState([]);
   const [queue, setQueue] = useState([]);
   const [nextUp, setNextUp] = useState([]);
+  const [rewind, setRewind] = useState(false);
 
   return (
     <GlobalContext.Provider
@@ -130,6 +131,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         history, setHistory,
         queue, setQueue,
         nextUp, setNextUp,
+        rewind, setRewind,
       }}
     >
       {children}

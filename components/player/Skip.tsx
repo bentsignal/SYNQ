@@ -2,7 +2,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { PlayButton } from './PausePlayButtons';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { jump } from '@/lib/SoundManager';
-import { getSongById } from '@/lib/SongManager';
+import { getSongById, getNextUp } from '@/lib/SongManager';
 
 
 const Shape = ({size}: {size: number}) => {
@@ -22,6 +22,7 @@ export const SkipRight = ({size}: {size: number}) => {
 
     queue, nextUp, sound,
     songPlaying, history,
+    shuffle,
 
     setSongPlaying, setNextUp, setHistory,
     setQueue,
@@ -59,15 +60,20 @@ export const SkipRight = ({size}: {size: number}) => {
           setNextUp(newNextUp);
         }
       }
-      else {
-        console.log('no songs to skip to');
-      }
     }
     catch (error) {
       console.log('error skipping right: ', error);
     }
 
     // TODO: check if next up is getting close to empty, if so fetch more songs
+    // if (nextUp.length < 10) {
+    //   let newSongs = await getNextUp(songPlaying.id, 30, shuffle);
+    //   if (newSongs.length < 1) {
+    //     newSongs = await getNextUp(songPlaying.id, 30, true);
+    //   }
+    //   setNextUp([...nextUp, ...newSongs]);
+    // }
+
   }
 
   return (
@@ -89,6 +95,7 @@ export const SkipLeft = ({size}: {size: number}) => {
     nextUp,
 
     setSongPlaying, setNextUp, setHistory,
+    setRewind,
 
   } = useGlobalContext();
 
@@ -109,8 +116,15 @@ export const SkipLeft = ({size}: {size: number}) => {
         }
       }
       else {
-        console.log('resetting time');
-        await jump(sound, 100);
+        try {
+          setRewind(true);
+          await jump(sound, 100);
+          setRewind(false);
+        }
+        catch (error) {
+          console.log('error rewinding: ', error);
+          setRewind(false);
+        }
       }
     }
     catch (error) {

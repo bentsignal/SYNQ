@@ -22,10 +22,10 @@ export const SkipRight = ({size}: {size: number}) => {
 
     queue, nextUp, sound,
     songPlaying, history,
-    shuffle,
+    shuffle, 
 
     setSongPlaying, setNextUp, setHistory,
-    setQueue,
+    setQueue, setPaused,
 
   } = useGlobalContext();
 
@@ -55,6 +55,7 @@ export const SkipRight = ({size}: {size: number}) => {
         const newId = newQueue.shift();
         if (newId !== -1) {
           const newSong = await getSongById(newId);
+          setPaused(false);
           setSongPlaying(newSong);
           newHistory.push(current);
           setHistory(newHistory);
@@ -70,6 +71,7 @@ export const SkipRight = ({size}: {size: number}) => {
         const newId = newNextUp.shift();
         if (newId !== -1) {
           const newSong = await getSongById(newId);
+          setPaused(false);
           setSongPlaying(newSong);
           newHistory.push(current);
           setHistory(newHistory);
@@ -82,6 +84,7 @@ export const SkipRight = ({size}: {size: number}) => {
           const newNextUp = await fetchMoreSongs();
           const newId = newNextUp.shift();
           const newSong = await getSongById(newId);
+          setPaused(false);
           setSongPlaying(newSong);
           setNextUp(newNextUp);
         }
@@ -121,7 +124,7 @@ export const SkipLeft = ({size}: {size: number}) => {
     nextUp,
 
     setSongPlaying, setNextUp, setHistory,
-    setRewind,
+    setRewind, setPaused,
 
   } = useGlobalContext();
 
@@ -136,6 +139,7 @@ export const SkipLeft = ({size}: {size: number}) => {
         if (id !== -1) {
           newNextUp.unshift(current);
           const newSong = await getSongById(id);
+          setPaused(false);
           setSongPlaying(newSong);
           setNextUp(newNextUp);
           setHistory(newHistory);

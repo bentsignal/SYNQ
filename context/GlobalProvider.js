@@ -29,32 +29,6 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
     setNotifications((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
-  const addToQueue = useCallback((id) => {
-    setQueue((prev) => [...prev, id]);
-  }, []);
-
-  const popFromQueue = useCallback(() => {
-    if (queue.length > 0) {
-      const id = queue[queue.length - 1];
-      setQueue((prev) => prev.slice(0, -1));
-      return id;
-    }
-    return -1;
-  }, []);
-
-  const popHistory = useCallback(() => {
-    if (history.length > 0) {
-      const id = history[history.length - 1].id;
-      setHistory((prev) => prev.slice(0, -1));
-      return id;
-    }
-    return -1;
-  }, []);
-
-  const pushHistory = useCallback((id) => {
-    setHistory((prev) => [...prev, { id }]);
-  }, []);
-
   const [homeState, setHomeState] = useState(0);
   const [premium, setPremium] = useState(initPremium ? initPremium : false);
   const [wifiResults, setWifiResults] = useState([]);
@@ -156,8 +130,6 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         history, setHistory,
         queue, setQueue,
         nextUp, setNextUp,
-        popHistory, pushHistory,
-        addToQueue, popFromQueue,
       }}
     >
       {children}

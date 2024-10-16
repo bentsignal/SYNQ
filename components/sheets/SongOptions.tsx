@@ -14,12 +14,11 @@ const SongOptions = () => {
   const { 
     
     showSongOptions, editSong, 
+    queue, setQueue,
 
     setShowSongOptions, setShowEdit,
     setShowDelete, setShowOverlay, 
     setShowGlobalLoading,
-
-    addToQueue,
   
   } = useGlobalContext();
 
@@ -115,7 +114,9 @@ const SongOptions = () => {
               handler={() => {
                 bottomSheetRef.current?.close();
                 setTimeout(() => {
-                  addToQueue(editSong.id);
+                  const newQueue = queue;
+                  newQueue.push(editSong.id);
+                  setQueue(newQueue);
                 }, actionDelay);
               }}
             />

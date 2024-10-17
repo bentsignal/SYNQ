@@ -28,50 +28,7 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   const sliderHeight = useRef(new Animated.Value(1)).current;
   const [localTime, setLocalTime] = useState(0);
 
-  const styles = StyleSheet.create({
-    container: {
-      width: '100%',
-      alignItems: 'center',
-      marginTop: 10,
-      height: 50,
-    },
-    timelineContainer: {
-      width: Dimensions.get('window').width * 0.85,
-      paddingTop: 10,
-      paddingBottom: 10,
-      marginBottom: 10,
-    },
-    timeline: {
-      width: '100%',
-      backgroundColor: '#e0e0e0',
-      borderRadius: 20,
-      overflow: 'hidden',
-    },
-    progress: {
-      borderTopLeftRadius: 20,
-      borderBottomLeftRadius: 20,
-      width: Dimensions.get('window').width * 0.85,
-      position: 'absolute',
-      left: 0,
-      top: 0,
-    },
-    timeContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      width: '100%',
-      marginTop: 10,
-    },
-    timeText: {
-      fontSize: 12,
-      // color: '#888',
-      color: Colors.text,
-      fontWeight: '700',
-      fontVariant: ['tabular-nums'],
-    },
-  });
-
   // gets initial elapsed and remaining time, and sets the progress slider to appropriate position
-
   const checkTime = async () => {
     if (sound) {
       const status = await sound.getStatusAsync();
@@ -84,27 +41,25 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
     }
   }
 
-  // reset progress scale instantly to 0 when restarting song
-  useEffect(() => {
-    const rewindToBeginning= async () => {
-    if (rewind) {
-      setElapsedSec(0);
-      setRemainingSec(msToSec(duration.current));
-      progressScale.setValue(0);
+  // called when sound is updated
+  const handleSoundUpdate = async () => {
+    if (sound) {
+      const status = await sound.getStatusAsync();
+      if (status.isLoaded) {
+        // set duration to the total duration of the song
+        duration.current = status.durationMillis;
+        // function to update the current time of the song
+        sound.setOnPlaybackStatusUpdate((status: any) => {
+          if (status.isLoaded) {
+            setLocalTime(status.positionMillis);
+          }
+        });
+      }
+    }
+    else {
+      console.log('sound is null');
     }
   }
-    rewindToBeginning();
-  }, [rewind])
-
-  useLayoutEffect(() => {
-    
-    checkTime();
-
-  }, []);
-
-  useEffect(() => {
-    checkTime();
-  }, [songPlaying, setHistory]);
 
   // Update elapsed/remaining time, as well as progress bar AS LONG AS USER ISN'T SCRUBBING
   const updateTime = (currentTimeMS: number, animate: boolean = true) => {
@@ -142,6 +97,34 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
     execJump();
   }
 
+  const formatTime = (totalSeconds: number) => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
+  useEffect(() => {
+    const rewindToBeginning= async () => {
+    if (rewind) {
+      setElapsedSec(0);
+      setRemainingSec(msToSec(duration.current));
+      progressScale.setValue(0);
+    }
+  }
+    rewindToBeginning();
+  }, [rewind])
+
+  useLayoutEffect(() => {
+    
+    checkTime();
+    handleSoundUpdate();
+
+  }, []);
+
+  useEffect(() => {
+    checkTime();
+  }, [songPlaying, setHistory]);
+
   // called by songPlaying triggered effect, makes actual call to updateTime 
   useEffect(() => {
     updateTime(localTime);
@@ -149,25 +132,6 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
 
   // handle song change, updates times as song plays
   useEffect(() => {
-
-    const handleSoundUpdate = async () => {
-      if (sound) {
-        const status = await sound.getStatusAsync();
-        if (status.isLoaded) {
-          // set duration to the total duration of the song
-          duration.current = status.durationMillis;
-          // function to update the current time of the song
-          sound.setOnPlaybackStatusUpdate((status: any) => {
-            if (status.isLoaded) {
-              setLocalTime(status.positionMillis);
-            }
-          });
-        }
-      }
-      else {
-        console.log('sound is null');
-      }
-    }
 
     try {
       handleSoundUpdate();
@@ -215,12 +179,6 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
     })
   ).current;
 
-  const formatTime = (totalSeconds: number) => {
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-  };
-
   return (
     <View style={styles.container}>
       <View 
@@ -257,5 +215,47 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 10,
+    height: 50,
+  },
+  timelineContainer: {
+    width: Dimensions.get('window').width * 0.85,
+    paddingTop: 10,
+    paddingBottom: 10,
+    marginBottom: 10,
+  },
+  timeline: {
+    width: '100%',
+    backgroundColor: '#e0e0e0',
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  progress: {
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
+    width: Dimensions.get('window').width * 0.85,
+    position: 'absolute',
+    left: 0,
+    top: 0,
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+  },
+  timeText: {
+    fontSize: 12,
+    // color: '#888',
+    color: Colors.text,
+    fontWeight: '700',
+    fontVariant: ['tabular-nums'],
+  },
+});
 
 export default Time;

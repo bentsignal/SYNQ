@@ -2,6 +2,7 @@ import { View, ScrollView, Animated, NativeSyntheticEvent, NativeScrollEvent, Ea
 import LinearGradient from 'react-native-linear-gradient';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
+import { Colors } from '@/constants/Colors';
 import { useRef, useState } from 'react';
 import { hexToRGB } from '@/lib/ColorManager';
 
@@ -10,7 +11,7 @@ const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
 type VerticalScrollViewProps = {
   children: React.ReactNode;
-  backgroundColor: string;
+  backgroundColor?: string;
   maxHeight?: any;
   minHeight?: any;
 }
@@ -21,7 +22,7 @@ const VerticalScrollView = ({ children, backgroundColor, maxHeight, minHeight }:
   
   const [atTop, setAtTop] = useState(true);
 
-  const RGB = hexToRGB(backgroundColor);
+  const RGB = hexToRGB(backgroundColor ? backgroundColor : Colors.background);
   const R = RGB ? RGB.r : 16;
   const G = RGB ? RGB.g : 16;
   const B = RGB ? RGB.b : 16;

@@ -4,7 +4,6 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
 import { importFiles } from "@/lib/SongManager";
 import PageTitle from '@/components/PageTitle';
-import Top from "@/components/Top";
 import Option from "@/components/Option";
 import WiFi from "@/components/import/wifi/WiFi";
 import Files from "@/components/import/files/Files";
@@ -93,14 +92,14 @@ const Home = () => {
     return (
       <View style={Styles.body}>
         <InfoModal />
-        <PageTitle 
-          title='Import Music'
-          infoHandler={() => setShowInfoModal(true)}
-          />
         <ScrollView
           style={Local.scrollView}
           contentContainerStyle={Local.scrollViewContent}
         >
+          <PageTitle 
+            title='Import Music'
+            infoHandler={() => setShowInfoModal(true)}
+          />
           <Option 
             title='Files'
             desc='Import from your files'

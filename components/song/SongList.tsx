@@ -1,5 +1,5 @@
 import { View, FlatList, Dimensions, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent, StyleSheet } from 'react-native';
-import { useRef, useEffect, useState, memo, useCallback } from 'react';
+import React, { useRef, useEffect, useState, memo, useCallback } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Styles } from '@/constants/Styles';
 import { SongType } from '@/constants/Types';
@@ -19,7 +19,11 @@ const renderItem = ({item} : {item: SongType}) => {
   );
 };
 
-const SongList = memo(({songs, bottomPadding = false}: {songs: SongType[], bottomPadding?: boolean}) => {
+const SongList = memo(({songs, headerComponent, bottomPadding = false}: {
+  songs: SongType[], 
+  headerComponent?: React.ReactNode,
+  bottomPadding?: boolean
+}) => {
 
   const { selectedId } = useGlobalContext();
   const [atTop, setAtTop] = useState(true);
@@ -98,6 +102,8 @@ const SongList = memo(({songs, bottomPadding = false}: {songs: SongType[], botto
           extraData={selectedId}
           onScroll={handleScroll}
           style={Local.list}
+          ListHeaderComponent={headerComponent ? <>{headerComponent}</> : null}
+          ListHeaderComponentStyle={{width: '90%'}}
           contentContainerStyle={ Local.listContent }
           maxToRenderPerBatch={10}
           initialNumToRender={10}

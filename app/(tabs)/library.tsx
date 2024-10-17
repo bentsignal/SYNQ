@@ -44,9 +44,10 @@ const Library = () => {
 
   return (
     <View style={[Styles.body]}>
-      {/* <Top /> */}
-      <PageTitle title='Library'/>
-      <SongList songs={songs}/>
+      <SongList 
+        songs={songs}
+        headerComponent={<PageTitle title="Library"/>}
+      />
       <MiniPlayer />
       <Notifications  
         customStyles={{

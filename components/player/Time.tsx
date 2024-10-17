@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
 import { View, StyleSheet, PanResponder, Animated, Text, Easing, Dimensions } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
@@ -103,6 +104,7 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
+  // called when left skip is pressed
   useEffect(() => {
     const rewindToBeginning= async () => {
     if (rewind) {
@@ -114,6 +116,15 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
     rewindToBeginning();
   }, [rewind])
 
+  // called when going from queue and then navigating back to player
+  useFocusEffect(
+    useCallback(() => {
+      checkTime();
+      handleSoundUpdate();
+    }, [])
+  );
+
+  // called before first render
   useLayoutEffect(() => {
     
     checkTime();
@@ -121,11 +132,12 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
 
   }, []);
 
-  useEffect(() => {
-    checkTime();
-  }, [songPlaying, setHistory]);
+  // useEffect(() => {
+  //   checkTime();
+  // }, [songPlaying, setHistory]);
 
-  // called by songPlaying triggered effect, makes actual call to updateTime 
+  // called by handleSoundUpdate, makes actual call to updateTime. 
+  // Fixed stale state issue awhile back 
   useEffect(() => {
     updateTime(localTime);
   }, [localTime]);

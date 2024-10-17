@@ -29,6 +29,9 @@ export const jump = async (sound: Audio.Sound | null, newPositionMS: number) => 
         const newPosition: number = Number(newPositionMS > 0 ? newPositionMS : 0);
         await sound.setPositionAsync(newPosition);
       }
+      else {
+        throw new Error('Sound is not loaded');
+      }
     }
   }
   catch (error) {

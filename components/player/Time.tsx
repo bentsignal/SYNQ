@@ -152,10 +152,8 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
 
     const handleSoundUpdate = async () => {
       if (sound) {
-        console.log('sound is not null');
         const status = await sound.getStatusAsync();
         if (status.isLoaded) {
-          console.log('songLoaded?: ', status.isLoaded);
           // set duration to the total duration of the song
           duration.current = status.durationMillis;
           // function to update the current time of the song
@@ -202,11 +200,10 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
         const newRemaining = msToSec(duration.current) - newElapsed;
         setElapsedSec(newElapsed);
         setRemainingSec(newRemaining);
-        postScrubCompletion.current = newCompletion;
+        postScrubCompletion.current = Math.max(0, Math.min(newCompletion, 1));
       },
       onPanResponderRelease: (evt, gestureState) => {
-        // setScrubbing(false);
-        const newPosition = postScrubCompletion.current * duration.current;
+        const newPosition = Math.max(100, postScrubCompletion.current * duration.current);
         jumpToPosition(newPosition);
         // Animate slider height back to original
         Animated.timing(sliderHeight, {

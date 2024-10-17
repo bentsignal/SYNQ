@@ -12,7 +12,7 @@ import Overlay from '@/components/Overlay';
 import NotificationModal from '@/components/modals/NotificationModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GlobalProgress from '@/components/GlobalProgress';
-
+import Top from '@/components/Top';
 const TabLayout = () => {
 
   const { 
@@ -97,7 +97,11 @@ const TabLayout = () => {
       <Server />
       <Tabs
         screenOptions={{
-          headerShown: false,
+          headerShown: true,
+          headerStyle: Styles.header,
+          header: () => <Top />,
+          headerShadowVisible: false,
+          headerTitleStyle: Styles.infoText,
           tabBarActiveTintColor: Colors.tabActive,
           tabBarInactiveTintColor: Colors.tabInactive,
           tabBarStyle: Local.tabBar,
@@ -114,7 +118,6 @@ const TabLayout = () => {
               tabBarIcon: ({ color, focused }) => (
                 <HomeIcon focused={focused}/>
               ),
-              headerShown: false,
             }}
           />
           <Tabs.Screen 
@@ -124,7 +127,7 @@ const TabLayout = () => {
               tabBarIcon: ({ color, focused }) => (
                 <LibraryIcon focused={focused}/>
               ),
-              headerShown: false,
+              // header: () => <Header />
             }}
           />
       </Tabs>

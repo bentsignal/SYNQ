@@ -24,15 +24,11 @@ const Home = () => {
   } = useGlobalContext();
 
   const { homeState, setHomeState } = useGlobalContext();
-  const insets = useSafeAreaInsets();
 
   const Local = StyleSheet.create({
     notifications: {
       position: 'absolute',
       bottom: 0,
-    },
-    container: {
-      paddingTop: insets.top,
     },
     scrollView: {
       width: '100%',
@@ -95,9 +91,8 @@ const Home = () => {
   }
   else {
     return (
-      <View style={[Styles.body, Local.container]}>
+      <View style={Styles.body}>
         <InfoModal />
-        <Top />
         <PageTitle 
           title='Import Music'
           infoHandler={() => setShowInfoModal(true)}

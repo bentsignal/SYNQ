@@ -52,6 +52,14 @@ export const Styles = StyleSheet.create({
   },
 
   // Container styles
+  header: {
+    borderBottomWidth: 3,
+    borderBottomColor: 'transparent',
+  },
+  headerContent: {
+    backgroundColor: Colors.background,
+    height: 300,
+  },
   body: {
     flex: 1,
     alignItems: 'center',

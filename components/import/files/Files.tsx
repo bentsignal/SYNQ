@@ -62,9 +62,8 @@ const Files = () => {
   }
 
   return (
-    <View style={[Styles.body, {paddingTop: insets.top}]}>
+    <View style={Styles.body}>
       <InfoModal />
-      <Top />
       <PageTitle 
         title='Import Music'
         infoHandler={() => setShowInfoModal(true)}

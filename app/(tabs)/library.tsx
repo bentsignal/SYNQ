@@ -43,8 +43,8 @@ const Library = () => {
   }, [homeState]);
 
   return (
-    <View style={[Styles.body, {paddingTop: insets.top}]}>
-      <Top />
+    <View style={[Styles.body]}>
+      {/* <Top /> */}
       <PageTitle title='Library'/>
       <SongList songs={songs}/>
       <MiniPlayer />

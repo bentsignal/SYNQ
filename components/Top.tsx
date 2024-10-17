@@ -1,10 +1,13 @@
 import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { useGlobalContext } from '@/context/GlobalProvider';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Top = () => {
 
   const { logo } = useGlobalContext();
+  
+  const insets = useSafeAreaInsets();
 
   const Local = StyleSheet.create({
     container: {
@@ -13,7 +16,7 @@ const Top = () => {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginTop: 10,
+      marginTop: 10 + insets.top,
       marginBottom: 30
     },
     icon: {

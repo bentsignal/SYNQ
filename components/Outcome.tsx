@@ -1,11 +1,9 @@
 import { Text, View, StyleSheet } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import LottieView from 'lottie-react-native';
 import * as Haptics from 'expo-haptics';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as StoreReview from 'expo-store-review';
 import { useGlobalContext } from "@/context/GlobalProvider";
-import Top from "@/components/Top";
 import CustomButton from '@/components/CustomButton';
 import { replaceColor } from 'lottie-colorify';
 import { Styles } from "@/constants/Styles";
@@ -23,8 +21,6 @@ export const Success = () => {
     setHomeState,
   
   } = useGlobalContext();
-
-  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (haptic) {
@@ -67,16 +63,8 @@ export const Success = () => {
     }, 1500);
   }
 
-  const Local = StyleSheet.create({
-    container: {
-      ...Styles.body,
-      paddingTop: insets.top
-    }
-  });
-
   return (
-    <View style={Local.container}>
-      <Top />
+    <View style={Styles.body}>
       <View style={Styles.main}>
         <LottieView 
           source={source}
@@ -102,8 +90,6 @@ export const Failure = () => {
   
   } = useGlobalContext();
 
-  const insets = useSafeAreaInsets();
-
   useEffect(() => {
     if (haptic) {
       Haptics.notificationAsync(
@@ -113,10 +99,6 @@ export const Failure = () => {
   }, [haptic]);
 
   const Local = StyleSheet.create({
-    wrapper: {
-      ...Styles.body,
-      paddingTop: insets.top
-    },
     container: {
       ...Styles.main,
       flexGrow: 1
@@ -144,8 +126,7 @@ export const Failure = () => {
   });
 
   return (
-    <View style={Local.wrapper}>
-      <Top />
+    <View style={Styles.body}>
       <View style={Local.container}>
         <Text style={Local.header}>
           ERROR

@@ -125,9 +125,8 @@ const WiFi = () => {
   }
 
   return (
-    <View style={[Styles.body, {paddingTop: insets.top}]}>
+    <View style={Styles.body}>
       <InfoModal />
-      <Top />
       <PageTitle 
         title='Import Music'
         showList={results.length > 1 && premium && !loadAnimInProgress}

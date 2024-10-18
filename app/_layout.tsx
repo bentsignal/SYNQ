@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import GlobalProvider from "@/context/GlobalProvider";
 import { router } from "expo-router";
+import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { connect, restorePurchases } from "@/lib/PurchaseManager";
@@ -112,10 +113,12 @@ const RootLayout = () => {
             }}
           />
           <Stack.Screen 
-            name="settings"
+            name="Settings"
             options={{
-              presentation: "modal",
-              headerShown: false,
+              headerShown: true,
+              headerStyle: {backgroundColor: Colors.background},
+              headerBackTitleVisible: false,
+              headerTitleStyle: {color: Colors.text},
               contentStyle: {backgroundColor: 'transparent'}
             }}
           />

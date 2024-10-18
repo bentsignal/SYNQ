@@ -496,3 +496,17 @@ export const getNextUp = async (currentId: string, pagination: number = 30, shuf
   return next;
 
 }
+
+export const fetchMoreSongs = async (id: string, shuffle: boolean) => {
+  try {
+    let newSongs = await getNextUp(id, 30, shuffle);
+    if (newSongs.length < 1) {
+      newSongs = await getNextUp(id, 30, true);
+    }
+    return newSongs;
+  }
+  catch (error) {
+    console.log('error fetching more songs: ', error);
+    return [];
+  }
+}

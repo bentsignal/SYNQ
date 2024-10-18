@@ -11,11 +11,9 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   const { 
 
     theme, sound,
-    songPlaying,
     rewind,
 
-    setSound, setHistory,
-    setRewind,
+    playNextSong,
 
   } = useGlobalContext();
   
@@ -53,6 +51,9 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
         sound.setOnPlaybackStatusUpdate((status: any) => {
           if (status.isLoaded) {
             setLocalTime(status.positionMillis);
+            if (status.didJustFinish) {
+              playNextSong();
+            }
           }
         });
       }
@@ -132,6 +133,7 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
 
   }, []);
 
+  // this doesn't seem to be making any difference, but if things break, try uncommenting
   // useEffect(() => {
   //   checkTime();
   // }, [songPlaying, setHistory]);

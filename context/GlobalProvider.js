@@ -2,32 +2,13 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { Colors } from '@/constants/Colors';
 import { getLogo } from '@/constants/Logos';
 import { NotificationType, SongType } from '@/constants/Types';
+import { fetchMoreSongs, getSongById } from '@/lib/SongManager';
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
 
 
 const GlobalProvider = ({ children, initTheme, initPremium }) => {
-
-  useEffect(() => {
-    if (initTheme !== '') {
-      setTheme(initTheme);
-      setLogo(getLogo(initTheme));
-    }
-  }, [initTheme]);
-
-  useEffect(() => {
-    setPremium(initPremium);
-  }, [initPremium]);
-
-  const addNotification = useCallback((type, title, brief, message, trace, onClick ) => {
-    const id = Date.now().toString();
-    setNotifications((prev) => [...prev, { id, type, title, brief, message, trace, onClick }]);
-  }, []);
-
-  const removeNotification = useCallback((id) => {
-    setNotifications((prev) => prev.filter((item) => item.id !== id));
-  }, []);
 
   const [homeState, setHomeState] = useState(0);
   const [premium, setPremium] = useState(initPremium ? initPremium : false);
@@ -78,6 +59,87 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [queue, setQueue] = useState([]);
   const [nextUp, setNextUp] = useState([]);
   const [rewind, setRewind] = useState(false);
+
+  useEffect(() => {
+    if (initTheme !== '') {
+      setTheme(initTheme);
+      setLogo(getLogo(initTheme));
+    }
+  }, [initTheme]);
+
+  useEffect(() => {
+    setPremium(initPremium);
+  }, [initPremium]);
+
+  const addNotification = useCallback((type, title, brief, message, trace, onClick ) => {
+    const id = Date.now().toString();
+    setNotifications((prev) => [...prev, { id, type, title, brief, message, trace, onClick }]);
+  }, []);
+
+  const removeNotification = useCallback((id) => {
+    setNotifications((prev) => prev.filter((item) => item.id !== id));
+  }, []);
+
+  const playNextSong = async () => {
+
+    try {
+      // pull from queue if available
+      if (queue.length > 0) {
+        const newQueue = queue;
+        const newHistory = history;
+        const current = songPlaying.id;
+        
+        const newId = newQueue.shift();
+        if (newId !== -1) {
+          const newSong = await getSongById(newId);
+          setPaused(false);
+          setSongPlaying(newSong);
+          newHistory.push(current);
+          setHistory(newHistory);
+          setQueue(newQueue);
+        }
+      }
+      // queue is empty, pull from next up
+      else if (nextUp.length > 0) {
+        const current = songPlaying.id;
+        const newNextUp = nextUp;
+        const newHistory = history;
+        const newId = newNextUp.shift();
+        if (newId !== -1) {
+          const newSong = await getSongById(newId);
+          setPaused(false);
+          setSongPlaying(newSong);
+          newHistory.push(current);
+          setHistory(newHistory);
+          setNextUp(newNextUp);
+        }
+      }
+      // queue and next up are empty, fetch more songs
+      else {
+        try {
+          const newNextUp = await fetchMoreSongs(songPlaying.id, shuffle);
+          const newId = newNextUp.shift();
+          const newSong = await getSongById(newId);
+          setPaused(false);
+          setSongPlaying(newSong);
+          setNextUp(newNextUp);
+        }
+        catch (error) {
+          console.log('ran out of songs and failed to fetch more: ', error);
+        }
+      }
+    }
+    catch (error) {
+      console.log('error skipping right: ', error);
+    }
+
+    // next up is getting low, fetch more songs
+    if (nextUp.length < 10) {
+      const newSongs = await fetchMoreSongs(songPlaying.id, shuffle);
+      setNextUp([...nextUp, ...newSongs]);
+    }
+
+  }
 
   return (
     <GlobalContext.Provider
@@ -132,6 +194,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         queue, setQueue,
         nextUp, setNextUp,
         rewind, setRewind,
+        playNextSong,
       }}
     >
       {children}

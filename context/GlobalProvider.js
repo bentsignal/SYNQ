@@ -139,6 +139,8 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
       setNextUp([...nextUp, ...newSongs]);
     }
 
+    setRewind(true);
+
   }
 
   return (

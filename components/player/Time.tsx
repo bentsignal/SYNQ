@@ -13,6 +13,8 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
     theme, sound,
     rewind,
 
+    setRewind,
+
     playNextSong,
 
   } = useGlobalContext();
@@ -120,6 +122,7 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
       setElapsedSec(0);
       setRemainingSec(msToSec(duration.current));
       progressScale.setValue(0);
+      setRewind(false);
     }
   }
     rewindToBeginning();

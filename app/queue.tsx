@@ -101,7 +101,7 @@ const Queue = () => {
       console.log(error);
     }
     setSongs(results);
-  }, [nextUp, queue]);
+  }, [nextUp, queue, songPlaying]);
 
   return (
     <View style={[Styles.body, Local.container]}>

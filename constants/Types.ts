@@ -15,6 +15,7 @@ export type SongType = {
   "id": string;
   "data": string;
   "info": InfoType;
+  "pageType"?: PageType;
 };
 
 export type InstructionsModalProps = {
@@ -24,4 +25,11 @@ export type InstructionsModalProps = {
 export enum NotificationType {
   GENERAL = 1,
   ERROR = 2,
+}
+
+export enum PageType {
+  IMPORT = 1,
+  LIBRARY = 2,
+  PLAYER = 3,
+  QUEUE = 4,
 }

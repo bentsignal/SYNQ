@@ -2,7 +2,7 @@ import { View, FlatList, Dimensions, Animated, Easing, NativeSyntheticEvent, Nat
 import React, { useRef, useEffect, useState, memo, useCallback } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Styles } from '@/constants/Styles';
-import { SongType } from '@/constants/Types';
+import { SongType, PageType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import Song from '@/components/song/Song';
 import EditModal from '@/components/modals/EditModal';
@@ -11,18 +11,11 @@ import DeleteModal from '@/components/modals/DeleteModal';
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 const MemoSong = memo(Song);
 
-const renderItem = ({item} : {item: SongType}) => {
-  return (
-    <MemoSong 
-      song={item}
-    />
-  );
-};
-
-const SongList = memo(({songs, headerComponent, bottomPadding = false}: {
+const SongList = memo(({songs, headerComponent, bottomPadding = false, pageType}: {
   songs: SongType[], 
   headerComponent?: React.ReactNode,
-  bottomPadding?: boolean
+  bottomPadding?: boolean,
+  pageType: PageType
 }) => {
 
   const { selectedId } = useGlobalContext();
@@ -89,6 +82,15 @@ const SongList = memo(({songs, headerComponent, bottomPadding = false}: {
       height: 50,
     }
   });
+
+  const renderItem = ({item} : {item: SongType}) => {
+    item.pageType = pageType;
+    return (
+      <MemoSong 
+        song={item}
+      />
+    );
+  };
 
   return (
     <>

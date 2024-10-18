@@ -10,6 +10,7 @@ import SongList from '@/components/song/SongList';
 import ImportControls from '../ImportControls';
 import Progress from '@/components/Progress';
 import InfoModal from '@/components/modals/InfoModal';
+import { PageType } from '@/constants/Types';
 
 const Files = () => {
 
@@ -51,7 +52,11 @@ const Files = () => {
     }
     else if (results.length > 0) {
       return (
-        <SongList songs={results} bottomPadding={true} />
+        <SongList
+          songs={results}
+          bottomPadding={true}
+          pageType={PageType.IMPORT}
+        />
       );
     }
     else {

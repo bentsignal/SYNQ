@@ -15,6 +15,7 @@ import { darkenColor } from '@/lib/ColorManager';
 import * as Haptics from 'expo-haptics';
 import More from '@/components/More';
 import { getNextUp } from '@/lib/SongManager';
+import { PageType } from '@/constants/Types';
 
 const Song = ({song}: {song: SongType}) => {
 
@@ -60,6 +61,8 @@ const Song = ({song}: {song: SongType}) => {
   if (blur) {
     bg = Colors.background;
   }
+
+  const disablePlay = song.pageType === PageType.IMPORT;
 
   const Local = StyleSheet.create({
     mainContainer: {
@@ -128,7 +131,8 @@ const Song = ({song}: {song: SongType}) => {
     <>
       <TouchableOpacity 
         style={Local.mainContainer}
-        activeOpacity={0.8}
+        activeOpacity={disablePlay ? 1 : 0.8}
+        disabled={disablePlay}
         onPress={handlePlay}
       >
         <ListCover 

@@ -14,11 +14,10 @@ import ShuffleButton from "@/components/player/ShuffleButton";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import SongList from "@/components/song/SongList";
 import { useEffect, useState } from "react";
-import { SongType } from "@/constants/Types";
+import { PageType, SongType } from "@/constants/Types";
 import { getSongById } from "@/lib/SongManager";
 import { ListCover } from "@/components/song/Cover";
 import SongInfo from "@/components/song/SongInfo";
-
 
 const Queue = () => {
 
@@ -118,7 +117,10 @@ const Queue = () => {
         />
       </View>
       <Text style={Local.categoryHeader}>Up Next</Text>
-      <SongList songs={songs}/>
+      <SongList 
+        songs={songs}
+        pageType={PageType.QUEUE}
+      />
       <View style={Local.footer}>
         <Time/>
         <View style={Local.controlsContainer}>

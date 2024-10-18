@@ -11,7 +11,7 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import DataManager from "@/lib/DataManager";
 import { useEffect, useState } from "react";
 import SongList from "@/components/song/SongList";
-import { SongType } from "@/constants/Types";
+import { SongType, PageType } from "@/constants/Types";
 import * as FileSystem from 'expo-file-system';
 import MiniPlayer from '@/components/player/MiniPlayer';
 import { getSongByResult } from "@/lib/SongManager";
@@ -47,6 +47,7 @@ const Library = () => {
       <SongList 
         songs={songs}
         headerComponent={<PageTitle title="Library"/>}
+        pageType={PageType.LIBRARY}
       />
       <MiniPlayer />
       <Notifications  

@@ -13,6 +13,7 @@ import InfoModal from '@/components/modals/InfoModal';
 import { getCompletion } from '@/lib/SongManager';
 import { Colors } from '@/constants/Colors';
 import Progress from '@/components/Progress';
+import { PageType } from '@/constants/Types';
 
 const WiFi = () => {
 
@@ -100,7 +101,11 @@ const WiFi = () => {
     }
     else if (results.length > 0) {
       return (
-        <SongList songs={results} bottomPadding={true} />
+        <SongList
+          songs={results}
+          bottomPadding={true}
+          pageType={PageType.IMPORT}
+        />
       );
     }
     else {

@@ -26,6 +26,7 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   const progressScale = useRef(new Animated.Value(0)).current;
   const sliderHeight = useRef(new Animated.Value(1)).current;
   const [localTime, setLocalTime] = useState(0);
+  const [jumpPos, setJumpPos] = useState(-1);
 
   // gets initial elapsed and remaining time, and sets the progress slider to appropriate position
   const checkTime = async () => {
@@ -105,6 +106,13 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
+  // called when timeline is dragged and then dropped
+  useEffect(() => {
+    if (jumpPos > 0) {
+      jumpToPosition(jumpPos);
+    }
+  }, [jumpPos])
+
   // called when left skip is pressed
   useEffect(() => {
     const rewindToBeginning= async () => {
@@ -182,7 +190,7 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
       },
       onPanResponderRelease: (evt, gestureState) => {
         const newPosition = Math.max(100, postScrubCompletion.current * duration.current);
-        jumpToPosition(newPosition);
+        setJumpPos(newPosition);
         // Animate slider height back to original
         Animated.timing(sliderHeight, {
           toValue: 1,

@@ -11,7 +11,7 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   const { 
 
     theme, sound,
-    rewind,
+    rewind, songPlaying,
 
     setRewind,
 
@@ -143,6 +143,10 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
     handleSoundUpdate();
 
   }, []);
+
+  useEffect(() => {
+    progressScale.setValue(0);
+  }, [songPlaying]);
 
   // this doesn't seem to be making any difference, but if things break, try uncommenting
   // useEffect(() => {

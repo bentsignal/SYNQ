@@ -5,13 +5,15 @@ import { Colors } from "@/constants/Colors";
 type SongOptionProps = {
   icon: ImageURISource;
   text: string;
+  show?: boolean;
   handler: () => void;
 }
 
-const SongOption = ({ icon, text, handler }: SongOptionProps) => {
+const SongOption = ({ icon, text, show=true, handler }: SongOptionProps) => {
 
   const Local = StyleSheet.create({
     songOptionActionContainer: {
+      display: show ? 'flex' : 'none',
       flexDirection: 'row',
       alignItems: 'center',
       paddingTop: 5,

@@ -8,15 +8,16 @@ import { ListCover } from '@/components/song/Cover';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import SongOption from './SongOption';
 import { exportSongs } from '@/lib/SongManager';
+import { PageType } from '@/constants/Types';
 
-const SongOptions = () => {
+const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) => void}) => {
 
   const { 
     
-    showSongOptions, editSong, 
+    editSong, 
     queue, setQueue,
 
-    setShowSongOptions, setShowEdit,
+    setShowEdit,
     setShowDelete, setShowOverlay, 
     setShowGlobalLoading,
   
@@ -24,52 +25,22 @@ const SongOptions = () => {
 
   const actionDelay = 10;
 
-  const Local = StyleSheet.create({
-    handle: {
-      backgroundColor: Colors.altDisabled,
-      width: 80,
-      marginTop: 5,
-    },
-    background: {
-      backgroundColor: Colors.popup,
-    },
-    sheetStyle: {
-      flexGrow: 1,
-    },
-    bottomSheet: {
-      width: '100%',
-      height: '100%',
-      position: 'absolute',
-      backgroundColor: Colors.popup,
-      paddingLeft: 20,
-      paddingRight: 20,
-      paddingTop: 10,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      flex: 1,
-      flexGrow: 1,
-      zIndex: 100,
-    },
-    container: {
-      flexDirection: 'row',
-      marginBottom: 20,
-      paddingBottom: 20,
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderBottomColor: '#222222',
-      borderBottomWidth: 1,
-    }
-  });
-
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [sheetIndex, setSheetIndex] = useState(-1);
+  const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
 
   useEffect(() => {
-    if (showSongOptions) {
+    if (editSong.pageType) {
+      setPageType(editSong.pageType);
+    }
+  }, [editSong]);
+
+  useEffect(() => {
+    if (show) {
       bottomSheetRef.current?.expand();
       setSheetIndex(0);
     }
-  }, [showSongOptions]);
+  }, [show]);
 
   return (
     <>
@@ -91,7 +62,7 @@ const SongOptions = () => {
         backgroundStyle={Local.background}
         style={Local.sheetStyle}
         onClose={() => {
-          setShowSongOptions(false);
+          setShow(false);
           setSheetIndex(-1);
         }}
       >
@@ -111,6 +82,7 @@ const SongOptions = () => {
             <SongOption 
               icon={require('@/assets/icons/add.png')}
               text={'Add to Queue'}
+              show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER].includes(pageType)}
               handler={() => {
                 bottomSheetRef.current?.close();
                 setTimeout(() => {
@@ -120,9 +92,23 @@ const SongOptions = () => {
                 }, actionDelay);
               }}
             />
+            {/* <SongOption 
+              icon={require('@/assets/icons/add.png')}
+              text={'Remove from Queue'}
+              show={queue.includes(editSong.id) && pageType === PageType.QUEUE}
+              handler={() => {
+                bottomSheetRef.current?.close();
+                setTimeout(() => {
+                  const newQueue = queue;
+                  newQueue.splice(newQueue.indexOf(editSong.id), 1);
+                  setQueue(newQueue);
+                }, actionDelay);
+              }}
+            /> */}
             <SongOption 
               icon={require('@/assets/icons/edit.png')}
               text={'Edit'}
+              show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
               handler={() => {
                 bottomSheetRef.current?.close();
                 setTimeout(() => {
@@ -134,6 +120,7 @@ const SongOptions = () => {
             <SongOption 
               icon={require('@/assets/icons/share.png')}
               text={'Export'}
+              show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
               handler={async () => {
                 try {
                   setShowGlobalLoading(true);
@@ -148,6 +135,7 @@ const SongOptions = () => {
             <SongOption
               icon={require('@/assets/icons/delete.png')}
               text={'Delete'}
+              show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
               handler={() => {
                 bottomSheetRef.current?.close();
                 setTimeout(() => {
@@ -162,5 +150,42 @@ const SongOptions = () => {
     </>
   );
 }
+
+const Local = StyleSheet.create({
+  handle: {
+    backgroundColor: Colors.altDisabled,
+    width: 80,
+    marginTop: 5,
+  },
+  background: {
+    backgroundColor: Colors.popup,
+  },
+  sheetStyle: {
+    flexGrow: 1,
+  },
+  bottomSheet: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    backgroundColor: Colors.popup,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 10,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    flex: 1,
+    flexGrow: 1,
+    zIndex: 100,
+  },
+  container: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    paddingBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomColor: '#222222',
+    borderBottomWidth: 1,
+  }
+});
 
 export default SongOptions;

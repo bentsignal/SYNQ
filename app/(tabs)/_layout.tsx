@@ -13,13 +13,14 @@ import NotificationModal from '@/components/modals/NotificationModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GlobalProgress from '@/components/GlobalProgress';
 import Top from '@/components/Top';
+
 const TabLayout = () => {
 
   const { 
     
     premium, showSongOptions, showOverlay,
   
-    setPremium, setHaptic,
+    setPremium, setHaptic, setShowSongOptions
   
   } = useGlobalContext();
 
@@ -90,7 +91,10 @@ const TabLayout = () => {
     <>
       <GlobalProgress />
       <View style={Local.bottomSheetWrapper}>
-        <SongOptions />
+        <SongOptions 
+          show={showSongOptions} 
+          setShow={setShowSongOptions}
+        />
       </View>
       <NotificationModal />
       <Overlay show={showOverlay} activeOpacity={0.95}/>

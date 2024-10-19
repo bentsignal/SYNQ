@@ -125,6 +125,19 @@ class DataManager {
       console.error('Error getting song by id:', error);
     }
   }
+
+  async removeSong(id: number): Promise<boolean> {
+    try {
+      if (!this.db) {
+        await this.initConnection();
+      }
+      await this.db?.runAsync(`DELETE FROM songs WHERE id = ?;`, [id]);
+      return true;
+    } catch (error) {
+      console.error('Error removing song:', error);
+      return false;
+    }
+  }
   
 }
 

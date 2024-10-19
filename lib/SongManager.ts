@@ -302,6 +302,20 @@ const createLibraryDir = async () => {
   }
 }
 
+export const deleteFromLibrary = async (id: number) => {
+  try {
+    const db = DataManager.getInstance();
+    const removed = await db.removeSong(id);
+    if (removed) {
+      await FileSystem.deleteAsync(`${FileSystem.documentDirectory}library/${id}`);
+    }
+    return removed;
+  }
+  catch (error) {
+    console.log('error deleting from library: ', error);
+  }
+}
+
 export const saveToLibrary = async (
   songs: SongType[],
   progress: (value: number) => void,

@@ -69,6 +69,9 @@ const Player = () => {
       width: Dimensions.get('screen').width * 0.9,
       flexDirection: 'row',
       justifyContent: 'space-between',
+      alignItems: 'center',
+      // backgroundColor: 'red',
+      height: 40,
     },
     controlsContainer: {
       width: Dimensions.get('screen').width * 0.85,

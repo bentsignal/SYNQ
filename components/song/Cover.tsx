@@ -202,10 +202,14 @@ export const PlayerCover = ({id}: {id: string}) => {
       try {
         const data = await getCoverImageData(id, true);
         if (data) {
-          setSrc(`data:image/jpeg;base64,${data}`);
           Image.getSize(`data:image/jpeg;base64,${data}`, (width, height) => {
             setAspectRatio(width / height);
           });
+          setSrc(`data:image/jpeg;base64,${data}`);
+        }
+        else {
+          setAspectRatio(1);
+          setSrc('');
         }
       }
       catch (error) {

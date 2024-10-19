@@ -148,11 +148,6 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
     progressScale.setValue(0);
   }, [songPlaying]);
 
-  // this doesn't seem to be making any difference, but if things break, try uncommenting
-  // useEffect(() => {
-  //   checkTime();
-  // }, [songPlaying, setHistory]);
-
   // called by handleSoundUpdate, makes actual call to updateTime. 
   // Fixed stale state issue awhile back 
   useEffect(() => {

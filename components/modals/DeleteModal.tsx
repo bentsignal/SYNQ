@@ -6,7 +6,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { removeSongs, deleteFromLibrary } from '@/lib/SongManager';
 import { ListCover } from '@/components/song/Cover';
 import SongInfo from '@/components/song/SongInfo';
-import { PageType } from '@/constants/Types';
+import { PageType, SongType } from '@/constants/Types';
 
 const DeleteModal = () => {
 
@@ -15,11 +15,12 @@ const DeleteModal = () => {
     selectedSongs, results,
     showDelete, theme, homeState,
     editSong, numModified,
+    queue, nextUp,
 
     setShowDelete, setResults, setExportDisabled,
     setSelectEnabled, setShowOverlay, setHomeState,
-    setNumModified,
-    
+    setNumModified, setQueue, setNextUp,
+
   } = useGlobalContext();
 
   const getBody = () => {
@@ -76,10 +77,15 @@ const DeleteModal = () => {
                   setShowOverlay(false);
                   setShowDelete(false);
                   setSelectEnabled(false);
+                  // remove from library
                   if (editSong.pageType === PageType.LIBRARY) {
                     deleteFromLibrary(editSong.id);
+                    // remove from queue and next up if applicable
+                    setQueue(queue.filter((song: SongType) => song.id !== editSong.id));
+                    setNextUp(nextUp.filter((song: SongType) => song.id !== editSong.id));
                     setNumModified(numModified + 1);
                   }
+                  // remove from import
                   else if (editSong.pageType === PageType.IMPORT) {
                     const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id]
                     const newResults = removeSongs(results, ids);

@@ -525,3 +525,24 @@ export const fetchMoreSongs = async (id: string, shuffle: boolean) => {
     return [];
   }
 }
+
+export const getNextValidSong = async (songs: number[]): Promise<SongType | null > => {
+  let foundSong = false;
+  let newSong = null;
+  let attempts = 0;
+  const MAX_ATTEMPTS = 50;
+  while (!foundSong && attempts < MAX_ATTEMPTS) {
+    if (songs.length === 0) {
+      throw new Error('No valid songs found in next up');
+    }
+    const newId = songs.shift();
+    if (newId && newId !== -1) {
+      newSong = await getSongById(newId);
+      if (![null, undefined, -1, '-1'].includes(newSong.id)) {
+        foundSong = true;
+      }
+    }
+    attempts++;
+  }
+  return newSong;
+}

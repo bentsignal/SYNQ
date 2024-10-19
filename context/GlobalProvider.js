@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { Colors } from '@/constants/Colors';
 import { getLogo } from '@/constants/Logos';
 import { NotificationType, SongType } from '@/constants/Types';
-import { fetchMoreSongs, getSongById } from '@/lib/SongManager';
+import { fetchMoreSongs, getSongById, getNextValidSong } from '@/lib/SongManager';
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -86,34 +86,27 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
     try {
       // pull from queue if available
       if (queue.length > 0) {
+        const current = songPlaying.id;
         const newQueue = queue;
         const newHistory = history;
-        const current = songPlaying.id;
-        
-        const newId = newQueue.shift();
-        if (newId !== -1) {
-          const newSong = await getSongById(newId);
-          setPaused(false);
-          setSongPlaying(newSong);
-          newHistory.push(current);
-          setHistory(newHistory);
-          setQueue(newQueue);
-        }
+        const newSong = await getNextValidSong(newQueue);
+        setPaused(false);
+        setSongPlaying(newSong);
+        newHistory.push(current);
+        setHistory(newHistory);
+        setQueue(newQueue);
       }
       // queue is empty, pull from next up
       else if (nextUp.length > 0) {
         const current = songPlaying.id;
         const newNextUp = nextUp;
         const newHistory = history;
-        const newId = newNextUp.shift();
-        if (newId !== -1) {
-          const newSong = await getSongById(newId);
-          setPaused(false);
-          setSongPlaying(newSong);
-          newHistory.push(current);
-          setHistory(newHistory);
-          setNextUp(newNextUp);
-        }
+        const newSong = await getNextValidSong(newNextUp);
+        setPaused(false);
+        setSongPlaying(newSong);
+        newHistory.push(current);
+        setHistory(newHistory);
+        setNextUp(newNextUp);
       }
       // queue and next up are empty, fetch more songs
       else {

@@ -59,12 +59,22 @@ const MiniPlayer = () => {
     const playSong = async () => {
       if (songPlaying !== null) {
         if (sound) {
-          await sound.stopAsync();
-          await sound.unloadAsync();
+          try {
+            await sound.stopAsync();
+            await sound.unloadAsync();
+          }
+          catch (error) {
+            console.log('error stopping & unloading sound:', error);
+          }
         }
         const song = songPlaying;
         const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;          
         try {
+          const libraryPathExists = await FileSystem.getInfoAsync(libraryPath);
+          if (!libraryPathExists.exists) {
+            console.log('Library path does not exist:', libraryPath);
+            return;
+          }
           const contents = await FileSystem.readDirectoryAsync(libraryPath);  
           if (contents.includes(song.name)) {
             const path = `${libraryPath}/${song.name}`;

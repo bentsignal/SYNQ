@@ -5,18 +5,18 @@ import { jump } from '@/lib/SoundManager';
 import { getSongById, getNextUp } from '@/lib/SongManager';
 
 
-const Shape = ({size}: {size: number}) => {
+const Shape = ({size, color}: {size: number, color?: string}) => {
   return (
     <>
-      <PlayButton size={size} />
+      <PlayButton size={size} color={color} />
       <View style={Local.second}>
-        <PlayButton size={size} />
+        <PlayButton size={size} color={color} />
       </View>
     </>
   );
 }
 
-export const SkipRight = ({size}: {size: number}) => {
+export const SkipRight = ({size, color}: {size: number, color?: string}) => {
 
   const { playNextSong } = useGlobalContext();
 
@@ -26,12 +26,12 @@ export const SkipRight = ({size}: {size: number}) => {
       style={Local.container}
       onPress={playNextSong}
     >
-      <Shape size={size} />
+      <Shape size={size} color={color} />
     </TouchableOpacity>
   );
 }
 
-export const SkipLeft = ({size}: {size: number}) => {
+export const SkipLeft = ({size, color}: {size: number, color?: string}) => {
 
   const {
 
@@ -82,7 +82,7 @@ export const SkipLeft = ({size}: {size: number}) => {
       style={[Local.flipped, Local.container]}
       onPress={handlePress}
     >
-      <Shape size={size} />
+      <Shape size={size} color={color} />
     </TouchableOpacity>
   );
 }

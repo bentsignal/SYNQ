@@ -3,7 +3,12 @@ import { Colors } from '@/constants/Colors';
 import { InfoType } from '@/constants/Types';
 import { Styles } from '@/constants/Styles';
 
-const SongInfo = ({info, name, showAlbum}: {info: InfoType, name: string, showAlbum?: boolean}) => {
+const SongInfo = ({info, name, showAlbum, color}: {
+  info: InfoType, 
+  name: string, 
+  showAlbum?: boolean,
+  color?: string,
+}) => {
 
   const Local = StyleSheet.create({
     infoContainer: {
@@ -14,11 +19,11 @@ const SongInfo = ({info, name, showAlbum}: {info: InfoType, name: string, showAl
     },
     title: {
       ...Styles.h5,
-      color: Colors.text
+      color: color ? color : Colors.text
     },
     artistAlbum: {
       ...Styles.sub,
-      color: Colors.text
+      color: color ? color : Colors.text
     }
   });
 

@@ -10,11 +10,13 @@ const PausePlayButtons = ({
   pauseHeight,
   pauseWidth,
   style,
+  color,
 }: {
   playSize: number;
   pauseHeight: number;
   pauseWidth: number;
   style: {};
+  color?: string;
 }) => {
 
   const { 
@@ -48,12 +50,12 @@ const PausePlayButtons = ({
       style={{...style}}
       activeOpacity={0.8}
     >
-      {paused ? <PlayButton size={playSize}/> : <PauseButton height={pauseHeight} width={pauseWidth}/>}
+      {paused ? <PlayButton size={playSize} color={color}/> : <PauseButton height={pauseHeight} width={pauseWidth} color={color}/>}
     </TouchableOpacity>
   );
 }
 
-export const PauseButton = ({width, height}: {width: number, height: number}) => {
+export const PauseButton = ({width, height, color}: {width: number, height: number, color?: string}) => {
 
   const Local = StyleSheet.create({
     container: {
@@ -66,7 +68,7 @@ export const PauseButton = ({width, height}: {width: number, height: number}) =>
       borderRadius: 10,
       height: height,
       width: width,
-      backgroundColor: Colors.text ,
+      backgroundColor: color ? color : Colors.text,
     },
   });
 
@@ -79,10 +81,10 @@ export const PauseButton = ({width, height}: {width: number, height: number}) =>
 
 }
 
-export const PlayButton = ({size}: {size: number}) => {
+export const PlayButton = ({size, color}: {size: number, color?: string}) => {
   return (
     <Svg 
-      fill="#FFFFFF" 
+      fill={color ? color : "#FFFFFF"} 
       viewBox="0 0 163.861 163.861" 
       width={size} 
       height={size} 

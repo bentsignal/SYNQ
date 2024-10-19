@@ -9,6 +9,8 @@ import SongInfo from '@/components/song/SongInfo';
 import { ListCover } from "../song/Cover";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";
 import PausePlayButtons from "./PausePlayButtons";
+import { Themes, Colors } from "@/constants/Colors";
+
 
 const MiniPlayer = () => {
 
@@ -106,6 +108,7 @@ const MiniPlayer = () => {
           info={songPlaying.info} 
           name={songPlaying.name}
           showAlbum={false}
+          color={[Themes.yellow, Themes.mint].includes(theme) ? 'black' : Colors.text}
         />
       );
     }
@@ -124,19 +127,20 @@ const MiniPlayer = () => {
           style={Local.buttonWrapper}
           onPress={() => {}}
         >
-          <SkipLeft size={18}/>
+          <SkipLeft size={18} color={[Themes.yellow, Themes.mint].includes(theme) ? 'black' : Colors.text}/>
         </TouchableOpacity>
         <PausePlayButtons 
           playSize={25}
           pauseHeight={25}
           pauseWidth={7}
           style={Local.playPauseButtonWrapper}
+          color={[Themes.yellow, Themes.mint].includes(theme) ? 'black' : Colors.text}
         />
         <TouchableOpacity 
           style={Local.buttonWrapper}
           onPress={() => {}}
         >
-          <SkipRight size={18}/>
+          <SkipRight size={18} color={[Themes.yellow, Themes.mint].includes(theme) ? 'black' : Colors.text}/>
         </TouchableOpacity>
       </View>
       

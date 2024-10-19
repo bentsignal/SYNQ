@@ -228,19 +228,19 @@ export const PlayerCover = ({id}: {id: string}) => {
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 12,
-      shadowColor: Colors.background,
-      shadowOffset: {
-        width: 0,
-        height: 0
-      },
-      shadowOpacity: 0.9,
-      shadowRadius: 20,
     },
     artwork: {
       aspectRatio: aspectRatio,
       width: Dimensions.get('screen').width * coverPercent, 
       // resizeMode: 'stretch',
       borderRadius: 10,
+      // shadowColor: Colors.background,
+      // shadowOffset: {
+      //   width: 0,
+      //   height: 0
+      // },
+      // shadowOpacity: 0.9,
+      // shadowRadius: 20,
     },
     empty: {
       width: 100,

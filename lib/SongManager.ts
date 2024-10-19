@@ -422,6 +422,7 @@ export const saveToLibrary = async (
 
 export const getCoverImageData = async (id: string, full: boolean = false) => {
   try {
+    
     const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}library/${id}`);
     const fileName = full ? 'cover_full.jpg' : 'cover_small.jpg';
     if (contents.includes(fileName)) {
@@ -430,12 +431,12 @@ export const getCoverImageData = async (id: string, full: boolean = false) => {
         return data;
       }
       catch (error) {
-        console.log(error);
+        console.log('error reading cover image: ', error);
       }
     }
   }
   catch (error) {
-    console.log('error: ', error);
+    console.log('error getting cover image: ', error);
   }
 }
 

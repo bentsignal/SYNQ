@@ -19,22 +19,24 @@ export const ListCover = ({image, id, propOnLoad}: {
 
     const getImage = async () => {
       try {
-        const data = await getCoverImageData(id);
-        if (data) {
-          setSrc(`data:image/jpeg;base64,${data}`);
-        }
-        else if (image) {
+        if (image) {
           setSrc(image);
         }
         else {
-          setSrc('');
+          const data = await getCoverImageData(id);
+          if (data) {
+            setSrc(`data:image/jpeg;base64,${data}`);
+          }
+          else {
+            setSrc('');
+          }
         }
         dim = src ? 60 : 20;
       }
       catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         if (!message.includes('folder')) {
-          console.log('error: ', message);
+          console.log('error getting cover image for list cover:', message);
         }
       }
     }
@@ -112,7 +114,7 @@ export const EditCover = ({image, id, handlePress, propOnLoad}: {
       catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         if (!message.includes('folder')) {
-          console.log('error: ', message);
+          console.log('error:  getting cover image for edit modal', message);
         }
       }
     }
@@ -167,7 +169,6 @@ export const EditCover = ({image, id, handlePress, propOnLoad}: {
           source={src ? {uri: src} : {uri: transparent}}
           style={Local.artwork}
           onLoad={() => {
-            console.log('loaded');
             setLoaded(true);
             propOnLoad();
           }}
@@ -208,7 +209,7 @@ export const PlayerCover = ({id}: {id: string}) => {
         }
       }
       catch (error) {
-        console.log('error: ', error);
+        console.log('error getting cover image for player: ', error);
       }
     }
     

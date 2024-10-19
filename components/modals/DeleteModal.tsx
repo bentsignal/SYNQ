@@ -3,9 +3,10 @@ import CustomButton from '@/components/CustomButton';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
-import { removeSongs } from '@/lib/SongManager';
+import { removeSongs, deleteFromLibrary } from '@/lib/SongManager';
 import { ListCover } from '@/components/song/Cover';
 import SongInfo from '@/components/song/SongInfo';
+import { PageType } from '@/constants/Types';
 
 const DeleteModal = () => {
 
@@ -13,47 +14,12 @@ const DeleteModal = () => {
 
     selectedSongs, results,
     showDelete, theme, homeState,
-    editSong,
+    editSong, numDeleted,
 
     setShowDelete, setResults, setExportDisabled,
     setSelectEnabled, setShowOverlay, setHomeState,
-
+    setNumDeleted,
   } = useGlobalContext();
-
-  const Local = StyleSheet.create({
-    container: {
-      justifyContent: 'center',
-      alignItems: 'center'
-    },
-    contentContainer: {
-      padding: 20,
-      width: '80%',
-    },
-    textColor: {
-      color: Colors.text
-    },
-    infoContainer: {
-      flexDirection: 'row',
-      marginTop: 15,
-      marginBottom: 20,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: Colors.song,
-      padding: 15,
-    },
-    bulkMessage: {
-      color: Colors.text,
-      margin: 30,
-      textAlign: 'center'
-    },
-    buttonContainer: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: 10,
-      marginBottom: 5
-    }
-  });
 
   const getBody = () => {
     if (selectedSongs.length > 0) {
@@ -108,16 +74,22 @@ const DeleteModal = () => {
                 handlePress={() => {
                   setShowOverlay(false);
                   setShowDelete(false);
-                  const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id]
-                  const newResults = removeSongs(results, ids);
-                  if (newResults.length <= 0) {
-                    setExportDisabled(true);
-                  }
-                  if (newResults.length === 0) {
-                    setHomeState(0);
-                  }
-                  setResults(newResults);
                   setSelectEnabled(false);
+                  if (editSong.pageType === PageType.LIBRARY) {
+                    deleteFromLibrary(editSong.id);
+                    setNumDeleted(numDeleted + 1);
+                  }
+                  else if (editSong.pageType === PageType.IMPORT) {
+                    const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id]
+                    const newResults = removeSongs(results, ids);
+                    if (newResults.length <= 0) {
+                      setExportDisabled(true);
+                    }
+                    if (newResults.length === 0) {
+                      setHomeState(0);
+                    }
+                    setResults(newResults);
+                  }
                 }}
               />
             </View>
@@ -128,5 +100,40 @@ const DeleteModal = () => {
   );
   
 }
+
+const Local = StyleSheet.create({
+  container: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  contentContainer: {
+    padding: 20,
+    width: '80%',
+  },
+  textColor: {
+    color: Colors.text
+  },
+  infoContainer: {
+    flexDirection: 'row',
+    marginTop: 15,
+    marginBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.song,
+    padding: 15,
+  },
+  bulkMessage: {
+    color: Colors.text,
+    margin: 30,
+    textAlign: 'center'
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 5
+  }
+});
 
 export default DeleteModal;

@@ -59,7 +59,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [queue, setQueue] = useState([]);
   const [nextUp, setNextUp] = useState([]);
   const [rewind, setRewind] = useState(false);
-  const [numDeleted, setNumDeleted] = useState(0);
+  const [numModified, setNumModified] = useState(0);
 
   useEffect(() => {
     if (initTheme !== '') {
@@ -198,7 +198,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         nextUp, setNextUp,
         rewind, setRewind,
         playNextSong,
-        numDeleted, setNumDeleted,
+        numModified, setNumModified,
       }}
     >
       {children}

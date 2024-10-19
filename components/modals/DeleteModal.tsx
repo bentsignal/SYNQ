@@ -14,11 +14,12 @@ const DeleteModal = () => {
 
     selectedSongs, results,
     showDelete, theme, homeState,
-    editSong, numDeleted,
+    editSong, numModified,
 
     setShowDelete, setResults, setExportDisabled,
     setSelectEnabled, setShowOverlay, setHomeState,
-    setNumDeleted,
+    setNumModified,
+    
   } = useGlobalContext();
 
   const getBody = () => {
@@ -77,7 +78,7 @@ const DeleteModal = () => {
                   setSelectEnabled(false);
                   if (editSong.pageType === PageType.LIBRARY) {
                     deleteFromLibrary(editSong.id);
-                    setNumDeleted(numDeleted + 1);
+                    setNumModified(numModified + 1);
                   }
                   else if (editSong.pageType === PageType.IMPORT) {
                     const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id]

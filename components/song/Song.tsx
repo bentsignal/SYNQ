@@ -27,10 +27,11 @@ const Song = ({song}: {song: SongType}) => {
     selectEnabled, selectedSongs, results,
     premium, showSongOptions, theme, 
     haptic, songPlaying, nextUp,
-    shuffle,
+    shuffle, history,
 
     setSelectedSongs, setShowSongOptions,
     setEditSong, setSongPlaying, setNextUp,
+    setHistory,
 
   } = useGlobalContext(); 
 
@@ -120,10 +121,13 @@ const Song = ({song}: {song: SongType}) => {
     const id = songPlaying ? songPlaying.id : -1;
     if (id !== song.id) {
       setSongPlaying(song);
+      setHistory([...history, id]);
       if (haptic) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
-      setNextUp(await getNextUp(song.id, 30, shuffle));
+      if (!shuffle || nextUp.length === 0) {
+        setNextUp(await getNextUp(song.id, 30, shuffle));
+      }
     }
   }
 

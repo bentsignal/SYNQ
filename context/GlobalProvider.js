@@ -88,24 +88,20 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
       if (queue.length > 0) {
         const current = songPlaying.id;
         const newQueue = queue;
-        const newHistory = history;
         const newSong = await getNextValidSong(newQueue);
         setPaused(false);
         setSongPlaying(newSong);
-        newHistory.push(current);
-        setHistory(newHistory);
+        setHistory([...history, current]);
         setQueue(newQueue);
       }
       // queue is empty, pull from next up
       else if (nextUp.length > 0) {
         const current = songPlaying.id;
         const newNextUp = nextUp;
-        const newHistory = history;
         const newSong = await getNextValidSong(newNextUp);
         setPaused(false);
         setSongPlaying(newSong);
-        newHistory.push(current);
-        setHistory(newHistory);
+        setHistory([...history, current]);
         setNextUp(newNextUp);
       }
       // queue and next up are empty, fetch more songs

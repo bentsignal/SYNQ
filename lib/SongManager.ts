@@ -2,7 +2,7 @@ import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
-import { SongType } from '@/constants/Types'
+import { SongType, InfoType } from '@/constants/Types'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -91,7 +91,7 @@ export const getWifiInfo = async (name: string, id: string, type: string, data: 
   catch (error) {
     return {
       "fileType": type,
-      "format": 'mp3',
+      "format": 'id3v2.4',
       "metadata": {
         "album": '',
         "artist": '',
@@ -107,11 +107,11 @@ export const importFiles = async (
   updateSize: (value: number) => void,
 ) => {
   const results = await DocumentPicker.getDocumentAsync({
-    type: "audio/mpeg",
+    type: ["audio/mpeg", "audio/wav", "audio/mp4", "audio/flac", "audio/aac"],
     multiple: true,
     copyToCacheDirectory: true
   });
-  const songs: {}[] = [];
+  const songs: SongType[] = [];
   const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
   let data;
   if (results.canceled == false) {
@@ -119,14 +119,14 @@ export const importFiles = async (
     for (let i = 0; i < results.assets.length; i++) {
       countdown(results.assets.length - i);
       data = await FileSystem.readAsStringAsync(results.assets[i].uri, {encoding: 'base64'});
-      let info = {};
+      let info: InfoType = {};
       await getAudioMetadata(results.assets[i].uri, wantedTags)
         .then((meta) => {
           info = meta;
-        })
-        .catch((error) => {
+        }).catch((error) => {
           console.log(error);
-        })
+        });
+      info.fileType = results.assets[i].mimeType;
       songs.push({
         'name': results.assets[i].name,
         'id': idgen(10),
@@ -338,7 +338,7 @@ export const saveToLibrary = async (
         const genre = 'Music';
         const duration = 0;
         // insert song into database
-        const id = await db.insertSong(title, artists, album, genre, duration, fileName);
+        const id = await db.insertSong(title, artists, album, genre, duration, fileType, fileName);
         if (id !== -1) {
           // create directory and write song data if successfully inserted into DB
           await createLibraryDir();
@@ -459,7 +459,7 @@ export const getSongByResult = (result: any): SongType => {
       id: result.id,
       data: '',
       info: {
-        fileType: 'mp3',
+        fileType: result.fileType,
         format: 'id3v2.4',
         name: result.name,
         metadata: {

@@ -20,7 +20,7 @@ const Library = () => {
 
   const insets = useSafeAreaInsets();
 
-  const { numModified } = useGlobalContext();
+  const { numModified, homeState } = useGlobalContext();
   const [songs, setSongs] = useState<SongType[]>([]);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const Library = () => {
     catch (error) {
       console.log(error);
     }
-  }, [numModified]);
+  }, [numModified, homeState]);
 
   return (
     <View style={[Styles.body]}>

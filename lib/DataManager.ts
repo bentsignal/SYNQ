@@ -55,6 +55,7 @@ class DataManager {
           album TEXT,
           genre TEXT,
           duration INTEGER,
+          fileType TEXT,
           fileName TEXT
         );
       `);
@@ -84,16 +85,17 @@ class DataManager {
     album: string,
     genre: string,
     duration: number,
+    fileType: string,
     fileName: string
   ): Promise<number> {
-    try {
+    try {   
       if (!this.db) {
         await this.initConnection();
       } 
       const result = await this.db?.runAsync(
-        `INSERT INTO songs (title, artists, album, genre, duration, fileName)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [title, artists, album, genre, duration, fileName] 
+        `INSERT INTO songs (title, artists, album, genre, duration, fileType, fileName)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [title, artists, album, genre, duration, fileType, fileName] 
       );
       return result?.lastInsertRowId ? result.lastInsertRowId : -1;
     } catch (error) {
@@ -138,7 +140,20 @@ class DataManager {
       return false;
     }
   }
-  
+
+  async editSong(id: number, title: string, artists: string, album: string, genre: string): Promise<boolean> {
+    try {
+      await this.db?.runAsync(
+        `UPDATE songs SET title = ?, artists = ?, album = ?, genre = ?, edited = TRUE WHERE id = ?;`, 
+        [title, artists, album, genre, id]
+      );
+      return true;
+    } catch (error) {
+      console.error('Error editing song:', error);
+      return false;
+    }
+  }
+
 }
 
 export default DataManager;

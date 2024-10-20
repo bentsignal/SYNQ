@@ -3,22 +3,23 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useState, useEffect } from 'react';
 import CustomButton from '@/components/CustomButton';
 import Loading from '@/components/Loading';
-import { newCover, saveEdits } from '@/lib/SongManager';
+import { newCover, saveEdits, updateSongsInLibrary } from '@/lib/SongManager';
 import { EditCover } from '@/components/song/Cover';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { maybe } from '@/lib/Util';
+import { PageType, SongType } from '@/constants/Types';
 
 const EditModal = () => {
 
   const {
 
     results, showEdit, editSong,
-    selectedSongs, theme, 
+    selectedSongs, theme, numModified,
 
     setResults, setShowEdit, setSelectEnabled,
-    setShowOverlay, 
+    setShowOverlay, setNumModified,
 
   } = useGlobalContext();
 
@@ -279,19 +280,27 @@ const EditModal = () => {
                 <CustomButton 
                   title='Save'
                   background={theme}
-                  handlePress={() => {
+                  handlePress={async () => {
                     setLoading(true);
-                    setTimeout(() => {
+                    setTimeout(async () => {
                       const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id];
-                      const newResults = saveEdits(
-                        results,
-                        ids,
-                        title,
-                        artist,
-                        album,
-                        cover
-                      );
-                      setResults(newResults);
+                      if (editSong.pageType === PageType.LIBRARY) {
+                        await updateSongsInLibrary(ids, title, artist, album, cover);
+                        setNumModified(numModified + 1);
+                        // TODO: This is working but the cover doesn't re render
+                        // Until the app is closed and reopened
+                      }
+                      if (editSong.pageType === PageType.IMPORT) {
+                        const newResults = saveEdits(
+                          results,
+                          ids,
+                          title,
+                          artist,
+                          album,
+                          cover
+                        );
+                        setResults(newResults);
+                      }
                       setLoading(false);
                       setShowOverlay(false);
                       setShowEdit(false);

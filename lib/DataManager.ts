@@ -141,11 +141,11 @@ class DataManager {
     }
   }
 
-  async editSong(id: number, title: string, artists: string, album: string, genre: string): Promise<boolean> {
+  async editSong(id: number, title: string, artists: string, album: string): Promise<boolean> {
     try {
       await this.db?.runAsync(
-        `UPDATE songs SET title = ?, artists = ?, album = ?, genre = ?, edited = TRUE WHERE id = ?;`, 
-        [title, artists, album, genre, id]
+        `UPDATE songs SET title = ?, artists = ?, album = ?, edited = TRUE WHERE id = ?;`, 
+        [title, artists, album, id]
       );
       return true;
     } catch (error) {

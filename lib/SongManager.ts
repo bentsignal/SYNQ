@@ -270,8 +270,15 @@ export const saveEdits = (
       }
 
       if (results[i].data) {
-        const newData = fromByteArray(NodeID3.writeExpo(toByteArray(results[i].data), tags));
-        results[i].data = newData;
+        try {
+          if (['audio/mpeg', 'audio/flac'].includes(results[i].info.fileType ?? '')) {
+            const newData = fromByteArray(NodeID3.writeExpo(toByteArray(results[i].data), tags));
+            results[i].data = newData;
+          }
+        }
+        catch (error) {
+          console.log('error modiying audio file data', error); 
+        }
       }
 
       if (results[i].info) {
@@ -352,59 +359,7 @@ export const saveToLibrary = async (
             // TODO: delete song from DB
             continue;
           }
-          // get image file type
-          if (artwork !== null && artwork !== undefined && artwork !== '') {
-            const infoString = artwork.split(/,(.*)/s)[0];
-            const mimeTypeFull = infoString.split(/;(.*)/s)[0];
-            const mimeType = mimeTypeFull.split(/:(.*)/s)[1];
-            const buffer = artwork.split(',')[1];
-            let extension = '';
-            let format = SaveFormat.JPEG;
-            if (mimeType === 'image/jpeg') {
-              extension = 'jpg';
-              format = SaveFormat.JPEG;
-            }
-            else if (mimeType === 'image/png') {
-              extension = 'png';
-              format = SaveFormat.PNG;
-            }
-            // write images if valid format
-            if (extension !== '') {
-              // write image as is
-              await FileSystem.writeAsStringAsync(`${dir}/cover_temp.${extension}`, buffer, { encoding: 'base64' });
-              // Get full size image dimensions
-              const { width: imageWidth, height: imageHeight } = await new Promise<{ width: number, height: number }>((resolve, reject) => {
-                Image.getSize(`${dir}/cover_temp.${extension}`, (width, height) => resolve({ width, height }), reject);
-              });
-              // convert image to jpeg, save full size
-              const fullConvert = await ImageManipulator.manipulateAsync(
-                `${dir}/cover_temp.${extension}`,
-                [...(imageWidth > 1000 ? [{ resize: { width: 1000, height: 1000*(imageHeight/imageWidth) } }] : [])],
-                { compress: 1, format: SaveFormat.JPEG, base64: true }
-              );
-              if (fullConvert.base64) {
-                await FileSystem.writeAsStringAsync(`${dir}/cover_full.jpg`, fullConvert.base64, {encoding: 'base64'});
-              }
-              // convert image to jpeg, save small size
-              const smallConvert = await ImageManipulator.manipulateAsync(
-                `${dir}/cover_temp.${extension}`,
-                [{ resize: { width: 200, height: 200 } }],
-                { compress: 0.5, format: SaveFormat.JPEG, base64: true }
-              );
-              if (smallConvert.base64) {
-                await FileSystem.writeAsStringAsync(`${dir}/cover_small.jpg`, smallConvert.base64, {encoding: 'base64'});
-              }
-              // await Sharing.shareAsync(`${dir}`);
-              // delete temp image
-              await FileSystem.deleteAsync(`${dir}/cover_temp.${extension}`);
-            }
-            else {
-              console.log('invalid image format: ', mimeType);
-            }
-          }
-          else {
-            console.log('no artwork');
-          }
+          await writeImageToLibrary(artwork, dir);
         }
         progress(i+1);
       }
@@ -545,4 +500,97 @@ export const getNextValidSong = async (songs: number[]): Promise<SongType | null
     attempts++;
   }
   return newSong;
+}
+
+export const writeImageToLibrary = async (artwork: string, dir: string) => {
+  // get image file type
+  if (artwork !== null && artwork !== undefined && artwork !== '') {
+    const infoString = artwork.split(/,(.*)/s)[0];
+    const mimeTypeFull = infoString.split(/;(.*)/s)[0];
+    const mimeType = mimeTypeFull.split(/:(.*)/s)[1];
+    const buffer = artwork.split(',')[1];
+    let extension = '';
+    let format = SaveFormat.JPEG;
+    if (mimeType === 'image/jpeg') {
+      extension = 'jpg';
+      format = SaveFormat.JPEG;
+    }
+    else if (mimeType === 'image/png') {
+      extension = 'png';
+      format = SaveFormat.PNG;
+    }
+    // write images if valid format
+    if (extension !== '') {
+      // write image as is
+      await FileSystem.writeAsStringAsync(`${dir}/cover_temp.${extension}`, buffer, { encoding: 'base64' });
+      // Get full size image dimensions
+      const { width: imageWidth, height: imageHeight } = await new Promise<{ width: number, height: number }>((resolve, reject) => {
+        Image.getSize(`${dir}/cover_temp.${extension}`, (width, height) => resolve({ width, height }), reject);
+      });
+      // convert image to jpeg, save full size
+      const fullConvert = await ImageManipulator.manipulateAsync(
+        `${dir}/cover_temp.${extension}`,
+        [...(imageWidth > 1000 ? [{ resize: { width: 1000, height: 1000*(imageHeight/imageWidth) } }] : [])],
+        { compress: 1, format: SaveFormat.JPEG, base64: true }
+      );
+      if (fullConvert.base64) {
+        await FileSystem.writeAsStringAsync(`${dir}/cover_full.jpg`, fullConvert.base64, {encoding: 'base64'});
+      }
+      // convert image to jpeg, save small size
+      const smallConvert = await ImageManipulator.manipulateAsync(
+        `${dir}/cover_temp.${extension}`,
+        [{ resize: { width: 200, height: 200 } }],
+        { compress: 0.5, format: SaveFormat.JPEG, base64: true }
+      );
+      if (smallConvert.base64) {
+        await FileSystem.writeAsStringAsync(`${dir}/cover_small.jpg`, smallConvert.base64, {encoding: 'base64'});
+      }
+      // await Sharing.shareAsync(`${dir}`);
+      // delete temp image
+      await FileSystem.deleteAsync(`${dir}/cover_temp.${extension}`);
+    }
+    else {
+      console.log('invalid image format: ', mimeType);
+    }
+  }
+  else {
+    console.log('no artwork');
+  }
+}
+
+
+export const deleteImagesFromDirectory = async (dir: string) => {
+  try {
+    const contents = await FileSystem.readDirectoryAsync(dir);
+    if (contents.includes('cover_full.jpg')) {
+      await FileSystem.deleteAsync(`${dir}/cover_full.jpg`);
+    }
+    if (contents.includes('cover_small.jpg')) {
+      await FileSystem.deleteAsync(`${dir}/cover_small.jpg`);
+    }
+  }
+  catch (error) {
+    console.log('error deleting images from directory: ', error);
+  }
+}
+
+export const updateSongsInLibrary = async (
+  ids: string[],
+  title: string, 
+  artist: string,
+  album: string,
+  cover: string,
+) => {
+  const db = DataManager.getInstance();
+  await db.initConnection();
+  for (let i = 0; i < ids.length; i++) { 
+    const dir = `${FileSystem.documentDirectory}library/${ids[i]}`;
+    if (cover) {
+      await deleteImagesFromDirectory(dir);
+      await writeImageToLibrary(cover, dir);
+    } 
+    if (title || artist || album) {
+      await db.editSong(Number(ids[i]), title, artist, album);
+    }
+  }
 }

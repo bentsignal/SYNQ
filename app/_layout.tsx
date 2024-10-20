@@ -98,7 +98,8 @@ const RootLayout = () => {
             name="(tabs)" 
             options={{ 
               headerShown: false,
-              animation: 'fade'
+              animation: 'fade',
+              gestureEnabled: false,
             }} 
           />
           <Stack.Screen

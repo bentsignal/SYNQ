@@ -4,8 +4,9 @@ export const Themes = {
   pink: '#ff96e7',
   red: '#ff6b6b',
   orange: '#f78f6f',
-  yellow: '#f7e16f',
-  mint: '#6ff7a6',
+  // yellow: '#f5da4e',
+  yellow: '#f6de6c',
+  mint: '#48db84',
 }
 
 export const Colors = {

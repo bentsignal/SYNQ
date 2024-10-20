@@ -108,7 +108,7 @@ const MiniPlayer = () => {
           info={songPlaying.info} 
           name={songPlaying.name}
           showAlbum={false}
-          color={[Themes.yellow, Themes.mint].includes(theme) ? 'black' : Colors.text}
+          color={[''].includes(theme) ? 'black' : Colors.text}
         />
       );
     }
@@ -127,20 +127,20 @@ const MiniPlayer = () => {
           style={Local.buttonWrapper}
           onPress={() => {}}
         >
-          <SkipLeft size={18} color={[Themes.yellow, Themes.mint].includes(theme) ? 'black' : Colors.text}/>
+          <SkipLeft size={18} color={[''].includes(theme) ? 'black' : Colors.text}/>
         </TouchableOpacity>
         <PausePlayButtons 
           playSize={25}
           pauseHeight={25}
           pauseWidth={7}
           style={Local.playPauseButtonWrapper}
-          color={[Themes.yellow, Themes.mint].includes(theme) ? 'black' : Colors.text}
+          color={[''].includes(theme) ? 'black' : Colors.text}
         />
         <TouchableOpacity 
           style={Local.buttonWrapper}
           onPress={() => {}}
         >
-          <SkipRight size={18} color={[Themes.yellow, Themes.mint].includes(theme) ? 'black' : Colors.text}/>
+          <SkipRight size={18} color={[''].includes(theme) ? 'black' : Colors.text}/>
         </TouchableOpacity>
       </View>
       

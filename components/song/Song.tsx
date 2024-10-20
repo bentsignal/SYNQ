@@ -67,7 +67,10 @@ const Song = ({song, fadeCover, fadeSong}: {
     bg = Colors.background;
   }
 
-  const disablePlay = song.pageType === PageType.IMPORT;
+  let disablePlay = false;
+  if (song.pageType && [PageType.IMPORT, PageType.QUEUE].includes(song.pageType)) { 
+    disablePlay = true;
+  }
 
   const Local = StyleSheet.create({
     mainContainer: {
@@ -154,9 +157,7 @@ const Song = ({song, fadeCover, fadeSong}: {
         <SongInfo info={song.info} name={song.name}/>
         {
 
-          selectEnabled 
-
-          ? 
+          selectEnabled &&
           
           <Select 
             active={selected} 
@@ -187,7 +188,11 @@ const Song = ({song, fadeCover, fadeSong}: {
             }}
           />
 
-          : 
+        }
+
+        {
+
+          !selectEnabled && song.pageType !== PageType.QUEUE &&
 
           <More 
             handlePress={() => {

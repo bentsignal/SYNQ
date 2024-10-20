@@ -17,7 +17,11 @@ import More from '@/components/More';
 import { getNextUp } from '@/lib/SongManager';
 import { PageType } from '@/constants/Types';
 
-const Song = ({song}: {song: SongType}) => {
+const Song = ({song, fadeCover, fadeSong}: {
+  song: SongType, 
+  fadeCover: boolean, 
+  fadeSong: boolean
+}) => {
 
   const [selected, setSelected] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -142,6 +146,7 @@ const Song = ({song}: {song: SongType}) => {
         <ListCover 
           image={song.info?.metadata?.artwork ? song.info.metadata.artwork : ''}
           id={song.id}
+          fade={fadeCover}
           propOnLoad={() => {
             setLoaded(true);
           }}
@@ -196,10 +201,13 @@ const Song = ({song}: {song: SongType}) => {
 
         }
       </TouchableOpacity>
-      <Skeleton
-        show={!loaded}
-        styles={Local.skeleton}
-      />
+      {
+        fadeSong &&
+        <Skeleton
+          show={!loaded}
+          styles={Local.skeleton}
+        />
+      }
       <BlurView
         style={Local.blur}
         intensity={20}

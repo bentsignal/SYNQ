@@ -56,6 +56,8 @@ const Files = () => {
           songs={results}
           bottomPadding={true}
           pageType={PageType.IMPORT}
+          fadeCover={false}
+          fadeSong={true}
         />
       );
     }

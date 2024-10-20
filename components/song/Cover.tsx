@@ -1,18 +1,21 @@
-import { View, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { View, Image, TouchableOpacity, StyleSheet, Dimensions, Animated } from 'react-native';
+import { useEffect, useLayoutEffect, useState, useRef } from 'react';
 import { Styles } from '@/constants/Styles';
 import FastImage from 'react-native-fast-image';
 import { Colors } from '@/constants/Colors';
 import { getCoverImageData } from '@/lib/SongManager';
 import { useGlobalContext } from '@/context/GlobalProvider';
 
-export const ListCover = ({image, id, propOnLoad}: {
+export const ListCover = ({image, id, fade, propOnLoad}: {
   image?: string;
   id: string;
+  fade?: boolean;
   propOnLoad: () => void;
 }) => {
 
   const { numModified, editSong } = useGlobalContext();
+
+  const opacityRef = useRef(new Animated.Value(fade ? 0 : 1)).current;
 
   const [src, setSrc] = useState(image ? image : '');
   const [loaded, setLoaded] = useState(false);
@@ -72,12 +75,19 @@ export const ListCover = ({image, id, propOnLoad}: {
   });
 
   return (
-    <View style={Local.container}>
+    <Animated.View style={[Local.container, {opacity: opacityRef}]}>
       <FastImage 
         source={src ? {uri: src} : require('@/assets/icons/music.png')}
         style={Local.artwork}
         onLoad={() => {
           setLoaded(true);
+          if (fade && src) {
+            Animated.timing(opacityRef, {
+              toValue: 1,
+              duration: 300,
+              useNativeDriver: false,
+            }).start();
+          }
           propOnLoad()
         }}
         onError={() => {
@@ -87,7 +97,7 @@ export const ListCover = ({image, id, propOnLoad}: {
           propOnLoad();
         }}
       />
-    </View>
+    </Animated.View>
   );
 
 }

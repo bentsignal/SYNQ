@@ -11,12 +11,24 @@ import DeleteModal from '@/components/modals/DeleteModal';
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 const MemoSong = memo(Song);
 
-const SongList = memo(({songs, headerComponent, bottomPadding = false, pageType}: {
-  songs: SongType[], 
-  headerComponent?: React.ReactNode,
-  bottomPadding?: boolean,
-  pageType: PageType
-}) => {
+const SongList = memo((
+  {
+    songs, 
+    headerComponent, 
+    bottomPadding = false,
+    pageType, 
+    fadeCover = true, 
+    fadeSong = false
+  }: 
+  {
+    songs: SongType[], 
+    headerComponent?: React.ReactNode,
+    bottomPadding?: boolean,
+    pageType: PageType,
+    fadeCover?: boolean,
+    fadeSong?: boolean
+  }
+) => {
 
   const { selectedId } = useGlobalContext();
   const [atTop, setAtTop] = useState(true);
@@ -88,6 +100,8 @@ const SongList = memo(({songs, headerComponent, bottomPadding = false, pageType}
     return (
       <MemoSong 
         song={item}
+        fadeCover={fadeCover}
+        fadeSong={fadeSong}
       />
     );
   };

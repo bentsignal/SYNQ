@@ -12,6 +12,9 @@ import { connect, restorePurchases } from "@/lib/PurchaseManager";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import DataManager from "@/lib/DataManager";
 import { Audio } from 'expo-av';
+import { LogBox } from "react-native";
+
+LogBox.ignoreLogs(['Require cycle:']);
 
 const RootLayout = () => {
 

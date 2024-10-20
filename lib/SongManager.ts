@@ -269,17 +269,19 @@ export const saveEdits = (
         };
       }
 
-      if (results[i].data) {
-        try {
-          if (['audio/mpeg', 'audio/flac'].includes(results[i].info.fileType ?? '')) {
-            const newData = fromByteArray(NodeID3.writeExpo(toByteArray(results[i].data), tags));
-            results[i].data = newData;
-          }
-        }
-        catch (error) {
-          console.log('error modiying audio file data', error); 
-        }
-      }
+      // TODO: Move this to export, only save edits if song is being exported
+      // and the changed flag in the table is set
+      // if (results[i].data) {
+      //   try {
+      //     if (['audio/mpeg', 'audio/flac'].includes(results[i].info.fileType ?? '')) {
+      //       const newData = fromByteArray(NodeID3.writeExpo(toByteArray(results[i].data), tags));
+      //       results[i].data = newData;
+      //     }
+      //   }
+      //   catch (error) {
+      //     console.log('error modiying audio file data', error); 
+      //   }
+      // }
 
       if (results[i].info) {
         results[i].info.metadata = {
@@ -377,21 +379,27 @@ export const saveToLibrary = async (
 
 export const getCoverImageData = async (id: string, full: boolean = false) => {
   try {
-    
-    const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}library/${id}`);
-    const fileName = full ? 'cover_full.jpg' : 'cover_small.jpg';
-    if (contents.includes(fileName)) {
-      try {
-        const data = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}library/${id}/${fileName}`, { encoding: 'base64' });
-        return data;
-      }
-      catch (error) {
-        console.log('error reading cover image: ', error);
+    const dir = `${FileSystem.documentDirectory}library/${id}`;
+    const info = await FileSystem.getInfoAsync(dir);
+    if (info.exists) {
+      const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}library/${id}`);
+      const fileName = full ? 'cover_full.jpg' : 'cover_small.jpg';
+      if (contents.includes(fileName)) {
+        try {
+          const data = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}library/${id}/${fileName}`, { encoding: 'base64' });
+          return data;
+        }
+        catch (error) {
+          console.log('error reading cover image: ', error);
+        }
       }
     }
   }
   catch (error) {
-    console.log('error getting cover image: ', error);
+    const trace = error instanceof Error ? error.message : String(error);
+    if (!(trace.includes('folder') && trace.includes("doesn't exist"))) {
+      console.log('error getting cover image: ', error);
+    }
   }
 }
 

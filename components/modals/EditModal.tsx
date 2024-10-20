@@ -287,8 +287,6 @@ const EditModal = () => {
                       if (editSong.pageType === PageType.LIBRARY) {
                         await updateSongsInLibrary(ids, title, artist, album, cover);
                         setNumModified(numModified + 1);
-                        // TODO: This is working but the cover doesn't re render
-                        // Until the app is closed and reopened
                       }
                       if (editSong.pageType === PageType.IMPORT) {
                         const newResults = saveEdits(

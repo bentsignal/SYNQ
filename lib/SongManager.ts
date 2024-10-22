@@ -2,7 +2,7 @@ import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
-import { SongType, InfoType } from '@/constants/Types'
+import { SongType, InfoType, PageType } from '@/constants/Types'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -53,7 +53,7 @@ const getExportNumber = async () => {
   }
 }
 
-export const exportSongs = async (songs: any) => {
+export const exportSongs = async (songs: SongType[]) => {
 
   const date = new Date();
   const exportNumber = await getExportNumber();
@@ -61,11 +61,24 @@ export const exportSongs = async (songs: any) => {
   let destination;
   
   await FileSystem.makeDirectoryAsync(dir);
+
+  // TODO: Save edits if changes have been made but not saved to file data
   
   if (songs.length === 1) {
-    destination = `${dir}/${songs[0].name}`;
-    await FileSystem.writeAsStringAsync(destination, songs[0].data, {encoding: 'base64'});
-    await Sharing.shareAsync(destination);
+    if (songs[0].pageType === PageType.IMPORT) {
+      destination = `${dir}/${songs[0].name}`;
+      await FileSystem.writeAsStringAsync(destination, songs[0].data, {encoding: 'base64'});
+      await Sharing.shareAsync(destination);
+    }
+    else {
+      try {
+        const audioPath = `${FileSystem.documentDirectory}library/${songs[0].id}/${songs[0].name}`;
+        await Sharing.shareAsync(audioPath);
+      }
+      catch (error) {
+        throw new Error('Error sharing song from library: ' + error);
+      }
+    }
   }
   else if (songs.length > 1) {
     for (let i = 0; i < songs.length; i++) {

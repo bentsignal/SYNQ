@@ -128,6 +128,7 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
                   setShowGlobalLoading(false);
                 }
                 catch (error) {
+                  console.log('error exporting song: ', error);
                   setShowGlobalLoading(false);
                 }
               }}

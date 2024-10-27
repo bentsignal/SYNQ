@@ -1,8 +1,6 @@
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { router } from "expo-router";
-import PageTitle from '@/components/PageTitle';
 import Option from "@/components/Option";
-import Bar from "@/components/modals/Bar";
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 import Theme from "@/components/settings/Theme";
@@ -17,22 +15,6 @@ const Settings = () => {
     premium, 
   
   } = useGlobalContext();
-
-  const Local = StyleSheet.create({
-    container: {
-      backgroundColor: Colors.background,
-    },
-    settingsCategoryContainer: {
-      width: '90%',
-    },
-    scrollView: {
-      width: '100%',
-      paddingTop: 20,
-    },
-    scrollViewContent: {
-      alignItems: 'center',
-    },
-  });
 
   return (
     <View style={[Styles.body, Local.container]}>
@@ -60,5 +42,21 @@ const Settings = () => {
   );
   
 }
+
+const Local = StyleSheet.create({
+  container: {
+    backgroundColor: Colors.background,
+  },
+  settingsCategoryContainer: {
+    width: '90%',
+  },
+  scrollView: {
+    width: '100%',
+    paddingTop: 20,
+  },
+  scrollViewContent: {
+    alignItems: 'center',
+  },
+});
 
 export default Settings;

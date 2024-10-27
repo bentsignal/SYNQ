@@ -31,7 +31,7 @@ const Top = () => {
         source={logo}
         style={Local.icon}
       />
-      <TouchableOpacity onPress={() => router.push('/Settings')}>
+      <TouchableOpacity onPress={() => router.push('/settings')}>
         <Image 
           source={require('@/assets/icons/gear.png')}
           style={Local.icon}

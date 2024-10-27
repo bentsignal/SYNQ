@@ -117,13 +117,9 @@ const RootLayout = () => {
             }}
           />
           <Stack.Screen 
-            name="Settings"
+            name="settings"
             options={{
-              headerShown: true,
-              headerStyle: {backgroundColor: Colors.background},
-              headerBackTitleVisible: false,
-              headerTitleStyle: {color: Colors.text},
-              contentStyle: {backgroundColor: 'transparent'}
+              headerShown: false,
             }}
           />
           <Stack.Screen 

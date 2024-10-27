@@ -1,11 +1,11 @@
 import { View, StyleSheet } from 'react-native';
 import { Styles } from '@/constants/Styles';
 
-const Arrow = ({style}: {style: {}}) => {
+const Arrow = ({containerStyle, arrowStyle}: {containerStyle?: {}, arrowStyle?: {}}) => {
   return (
-    <View style={{...Local.arrowContainer, ...style}}>
-      <View style={[Local.arrow, Local.topArrow]}/>
-      <View style={[Local.arrow, Local.bottomArrow]}/>
+    <View style={{...Local.arrowContainer, ...containerStyle}}>
+      <View style={[Local.arrow, Local.topArrow, arrowStyle]}/>
+      <View style={[Local.arrow, Local.bottomArrow, arrowStyle]}/>
     </View>
   );
 }
@@ -22,7 +22,6 @@ const Local = StyleSheet.create({
     top: 0,
     left: 0,
     borderRadius: 100,
-    backgroundColor: 'black',
   },
   topArrow: {
     width: 3,

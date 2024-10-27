@@ -6,6 +6,7 @@ import CustomButton from '@/components/CustomButton';
 import { exportSongs, saveToLibrary } from '@/lib/SongManager';
 import { darkenColor } from '@/lib/ColorManager';
 import Notifications from '@/components/notifications/Notifications';
+import Dropdown from '@/components/Dropdown';
 
 const ImportControls = ({reset}: {reset?: () => void}) => {
 
@@ -51,9 +52,82 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
       justifyContent: 'center',
       alignItems: 'center',
       gap: 10,
-      padding: 5,
+      // padding: 5,
+      width: '90%',
+    },
+    dropdownContainer: {
+      width: '90%',
+      marginBottom: 10,
     }
   });
+
+  const handleEdit = () => {
+    setEditSong({});
+    setShowOverlay(true);
+    setShowEdit(true);
+  }
+
+  const handleExport = async () => {
+    try {
+      setShowGlobalLoading(true);
+      let songs = results.filter((result: any) => selectedSongs.includes(result.id));
+      await exportSongs(songs);
+      setShowGlobalLoading(false);
+    }
+    catch (error) {
+      setShowGlobalLoading(false);
+    }
+  }
+
+  const handleDelete = () => {
+    setShowOverlay(true);
+    setShowDelete(true);
+  }
+
+  const handleCancel = () => {
+    setLoading(false);
+    setZipping(false);
+    setImporting(false);
+    setTransferSize(0);
+    setHomeState(0);
+    setResults([]);
+    setExportDisabled(true);
+    if (reset) {
+      reset();
+    }
+  }
+
+  const handleImport = () => {
+    setExportDisabled(true);
+    setLoading(true);
+    setZipping(true);
+    const songs = premium ? results : [results[0]]
+    const progress = (value: number) => {
+      // TODO: Implement progress
+    }
+    setTimeout(() => {
+      saveToLibrary(songs, progress).then(() => {
+        setLoading(false);
+        setZipping(false);
+        setHomeState(3);
+        setTransferSize(0);
+        setResults([]);
+        if (reset) {
+          reset();
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        setZipping(false);
+        setHomeState(4);
+        setTransferSize(0);
+        setResults([]);
+        if (reset) {
+          reset();
+        }
+      })
+    }, 10)
+  }
 
   return (
     <View style={Local.container}>
@@ -61,11 +135,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
       <View style={Local.batchButtonContainer}>
         <TouchableOpacity
           style={[Styles.roundedContainer, Styles.backgroundBlendShadow, Local.batchButtonWrapper]}
-          onPress={() => {
-            setEditSong({});
-            setShowOverlay(true);
-            setShowEdit(true);
-          }}
+          onPress={handleEdit}
         >
           <Image 
             source={require('@/assets/icons/edit.png')}
@@ -74,17 +144,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[Styles.roundedContainer, Styles.backgroundBlendShadow, Local.batchButtonWrapper]}
-          onPress={async () => {
-            try {
-              setShowGlobalLoading(true);
-              let songs = results.filter((result: any) => selectedSongs.includes(result.id));
-              await exportSongs(songs);
-              setShowGlobalLoading(false);
-            }
-            catch (error) {
-              setShowGlobalLoading(false);
-            }
-          }}
+          onPress={handleExport}
         >
           <Image
             source={require('@/assets/icons/share.png')}
@@ -93,10 +153,7 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[Styles.roundedContainer, Styles.backgroundBlendShadow, Local.batchButtonWrapper]}
-          onPress={() => {
-            setShowOverlay(true);
-            setShowDelete(true);
-          }}
+          onPress={handleDelete}
         >
           <Image 
             source={require('@/assets/icons/delete.png')}
@@ -104,61 +161,30 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
           />
         </TouchableOpacity>
       </View>
+      {/* <Dropdown
+          data={[]}
+          down={false}
+          setSelected={() => {}}
+          disabled={exportDisabled}
+          placeholder='Save options'
+          containerStyles={Local.dropdownContainer}
+        /> */}
       <View style={Local.mainButtonContainer}>
         <CustomButton 
           title='Cancel'
           background={Colors.altButton}
-          handlePress={() => {
-            setLoading(false);
-            setZipping(false);
-            setImporting(false);
-            setTransferSize(0);
-            setHomeState(0);
-            setResults([]);
-            setExportDisabled(true);
-            if (reset) {
-              reset();
-            }
-          }}
+          handlePress={handleCancel}
           disabled={(homeState == 1 && transferSize > 0) || (homeState == 2 && loading)}
           disabledColor={Colors.altDisabled}
+          customStyles={{flex: 1}}
         />
         <CustomButton 
-          title='Import'
+          title='Next'
           background={theme}
-          handlePress={() => {
-            setExportDisabled(true);
-            setLoading(true);
-            setZipping(true);
-            const songs = premium ? results : [results[0]]
-            const progress = (value: number) => {
-              // TODO: Implement progress
-            }
-            setTimeout(() => {
-              saveToLibrary(songs, progress).then(() => {
-                setLoading(false);
-                setZipping(false);
-                setHomeState(3);
-                setTransferSize(0);
-                setResults([]);
-                if (reset) {
-                  reset();
-                }
-              })
-              .catch((error) => {
-                setLoading(false);
-                setZipping(false);
-                setHomeState(4);
-                setTransferSize(0);
-                setResults([]);
-                if (reset) {
-                  reset();
-                }
-              })
-            }, 10)
-          }}
+          handlePress={handleImport}
           disabled={exportDisabled}
           disabledColor={darkenColor(theme, 40, 50)}
+          customStyles={{flex: 1}}
         />
       </View>
     </View>

@@ -37,8 +37,7 @@ const CustomButton = ({
       width: buttonWidth ? buttonWidth: 100,
     },
     buttonText: {
-      fontSize: 16,
-      fontWeight: 'bold',
+      ...Styles.h5,
       textAlign: 'center',
       color: textColor ? textColor: 'black',
     },

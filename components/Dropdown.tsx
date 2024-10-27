@@ -1,0 +1,70 @@
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
+import { Colors } from '@/constants/Colors';
+import { Styles } from '@/constants/Styles';
+import { useGlobalContext } from '@/context/GlobalProvider';
+import CloseButton from '@/components/CloseButton';
+import Arrow from '@/components/Arrow';
+
+type DropdownProps = {
+  data?: any[];
+  placeholder?: string;
+  down?: boolean;
+  disabled?: boolean;
+  containerStyles?: {};
+  setSelected?: (selected: string) => void;
+}
+
+const Dropdown = ({data, placeholder, down, disabled, containerStyles, setSelected}: DropdownProps) => {
+  
+  const { theme } = useGlobalContext();
+
+  const [open, setOpen] = useState(false);
+
+  const toggleOpen = () => {
+    setOpen(!open);
+  }
+
+  return (
+    <TouchableOpacity 
+      style={{
+        ...Local.container,
+        ...containerStyles,
+        backgroundColor: disabled ? Colors.altDisabled : Colors.altButton,
+      }}
+      onPress={toggleOpen}
+      activeOpacity={0.8}
+      disabled={disabled}
+    >
+      <Text style={Local.placeholder}>
+        {placeholder ? placeholder : 'Select'}
+      </Text>
+      <Arrow style={Local.arrow}/>
+    </TouchableOpacity>
+  )
+}
+
+const Local = StyleSheet.create({
+  container: {
+    ...Styles.roundedContainer,
+    height: 42,
+    minWidth: 100,
+    paddingHorizontal: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  placeholder: {
+    ...Styles.h5,
+  },
+  arrow: {
+    transform: [{translateY: -3}, {rotate: '-135deg'}, {scaleX: 0.8}, {scaleY: 0.8}],
+    position: 'absolute',
+    right: 20,
+    top: 13,
+  },
+})
+
+
+
+export default Dropdown;

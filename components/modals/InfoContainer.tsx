@@ -70,7 +70,7 @@ const InfoContainer = ({ title, contentHeight, children }: InfoContainerProps) =
     });
     rotate.value = withTiming(open ? -135 : -45, {
       duration: 300,
-      easing: Easing.ease,
+      easing: Easing.out(Easing.ease),
     });
   }, [open, contentHeight]);
 

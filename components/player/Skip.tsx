@@ -46,6 +46,7 @@ export const SkipLeft = ({size, color}: {size: number, color?: string}) => {
   const handlePress = async () => {
     try {
       const status = await sound?.getStatusAsync();
+      // skip to previous song in history
       if (status.positionMillis < 3000 && history.length > 0) {
         const current = songPlaying.id;
         const newHistory = history
@@ -60,6 +61,7 @@ export const SkipLeft = ({size, color}: {size: number, color?: string}) => {
           setHistory(newHistory);
         }
       }
+      // rewind to beginning of song
       else {
         try {
           setRewind(true);

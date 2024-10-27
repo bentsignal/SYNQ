@@ -118,7 +118,7 @@ const WiFi = () => {
   }
 
   const getInstructions = () => {
-    if (!wifiDisabled) {
+    if (!wifiDisabled && results.length === 0 && transferSize === 0) {
       return (
         <ImportInstructions
           title='In your web browser, enter:'

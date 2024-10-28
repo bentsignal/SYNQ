@@ -84,8 +84,6 @@ const Server = () => {
         setRoutesInitialized(true);
       }
 
-      console.log('here');
-
       server.setup(PORT, (event: server.StatusEvent) => {
         if (event.status == 'ERROR') {
           setWifiDisabled(true);
@@ -212,8 +210,6 @@ const Server = () => {
           };
         }
       });
-
-      console.log('there');
 
     }
     

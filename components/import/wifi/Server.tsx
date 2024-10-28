@@ -84,6 +84,21 @@ const Server = () => {
         setRoutesInitialized(true);
       }
 
+      console.log('here');
+
+      server.setup(PORT, (event: server.StatusEvent) => {
+        if (event.status == 'ERROR') {
+          setWifiDisabled(true);
+          setServerStarted(false);
+          if (event.message !== 'Address already in use') {
+            sendErrorNotification(event.message);
+          }
+        }
+        else {
+          setWifiDisabled(false);
+        }
+      });
+
       server.route("/", "GET", async (request: server.RequestEvent) => {
         return {
           statusCode: 200,
@@ -198,54 +213,11 @@ const Server = () => {
         }
       });
 
+      console.log('there');
+
     }
     
     initRoutes();
-
-  }, []);
-
-  useEffect(() => {
-
-    const startServer = async () => {
-
-      if (serverStarted) {
-        return;
-      }
-      else {
-        setServerStarted(true);
-      }
-
-      try {
-
-        server.setup(PORT, (event: server.StatusEvent) => {
-          if (event.status == 'ERROR') {
-            setWifiDisabled(true);
-            setServerStarted(false);
-            if (event.message !== 'Address already in use') {
-              sendErrorNotification(event.message);
-            }
-          }
-          else {
-            setWifiDisabled(false);
-          }
-        });
-
-        server.start();
-
-        return () => {
-          console.log('stop')
-          server.stop();
-        };
-
-      }
-      catch (error) {
-        const trace = error instanceof Error ? error.message : String(error);
-        sendErrorNotification(trace);
-        setWifiDisabled(true);
-      }
-    }
-
-    startServer();
 
   }, []);
   

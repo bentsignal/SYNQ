@@ -10,12 +10,15 @@ import Files from "@/components/import/files/Files";
 import { Success, Failure } from "@/components/Outcome";
 import InfoModal from "@/components/modals/InfoModal";
 import Notifications from "@/components/notifications/Notifications";
+import * as server from "expo-http-server";
 
 const Home = () => {
 
   const { 
+
+    serverStarted,
     
-    setShowWelcome, setShowInfoModal,
+    setServerStarted, setShowWelcome, setShowInfoModal,
     setLoading, setImporting, setTransferProgress, 
     setTransferSize, setLoadAnimInProgress, 
     setExportDisabled, setResults,
@@ -118,7 +121,13 @@ const Home = () => {
             desc='Import from your computer'
             icon={require('@/assets/icons/wifi.png')}
             disabled={false}
-            handlePress={() => {setHomeState(1)}}
+            handlePress={() => {
+              if (!serverStarted) {
+                setServerStarted(true);
+                server.start();
+              }
+              setHomeState(1);
+            }}
           />
         </ScrollView>
         <Notifications customStyles={Local.notifications}/>

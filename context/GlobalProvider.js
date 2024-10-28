@@ -28,6 +28,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [transferSize, setTransferSize] = useState(0);
   const [transferProgress, setTransferProgress] = useState(0);
   const [serverStarted, setServerStarted] = useState(false);
+  const [routesInitialized, setRoutesInitialized] = useState(false);
   const [wifiDisabled, setWifiDisabled] = useState(false);
   const [selectEnabled, setSelectEnabled] = useState(false);
   const [selectedSongs, setSelectedSongs] = useState([]);
@@ -153,6 +154,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         selectedId, setSelectedId,
         transferSize, setTransferSize,
         serverStarted, setServerStarted,
+        routesInitialized, setRoutesInitialized,
         ip, setIP,
         wifiDisabled, setWifiDisabled,
         selectEnabled, setSelectEnabled,

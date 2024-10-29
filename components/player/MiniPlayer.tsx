@@ -10,7 +10,7 @@ import { ListCover } from "../song/Cover";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";
 import PausePlayButtons from "./PausePlayButtons";
 import { Themes, Colors } from "@/constants/Colors";
-
+import TrackPlayer from "react-native-track-player";
 
 const MiniPlayer = () => {
 
@@ -77,10 +77,20 @@ const MiniPlayer = () => {
             console.log('Library path does not exist:', libraryPath);
             return;
           }
+          await TrackPlayer.reset();
           const contents = await FileSystem.readDirectoryAsync(libraryPath);  
           if (contents.includes(song.name)) {
-            const path = `${libraryPath}/${song.name}`;
-            const { sound } = await Audio.Sound.createAsync({ uri: path }, { shouldPlay: true });
+            const audioPath = `${libraryPath}/${song.name}`;
+            const coverPath = `${libraryPath}/cover_full.jpg`;
+            await TrackPlayer.add({
+              id: song.id,
+              url: audioPath,
+              title: song.info.metadata.name,
+              artist: song.info.metadata.artist,
+              artwork: coverPath,
+            });
+            await TrackPlayer.play();
+            
             setSound(sound);
             setPaused(false);
           } 

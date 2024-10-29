@@ -2,11 +2,7 @@ import { View, Text, } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Styles } from "@/constants/Styles";
 import PageTitle from '@/components/PageTitle';
-import Top from "@/components/Top";
-import CustomButton from "@/components/CustomButton";
-import { Colors } from "@/constants/Colors";
 import Notifications from "@/components/notifications/Notifications";
-import { NotificationType } from "@/constants/Types";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import DataManager from "@/lib/DataManager";
 import { useEffect, useState } from "react";
@@ -15,6 +11,7 @@ import { SongType, PageType } from "@/constants/Types";
 import * as FileSystem from 'expo-file-system';
 import MiniPlayer from '@/components/player/MiniPlayer';
 import { getSongByResult } from "@/lib/SongManager";
+import { setupPlayer, useControlCenterEvents } from "@/lib/SoundManager";
 
 const Library = () => {
 
@@ -22,6 +19,12 @@ const Library = () => {
 
   const { numModified, homeState } = useGlobalContext();
   const [songs, setSongs] = useState<SongType[]>([]);
+
+  useEffect(() => {
+    setupPlayer();
+  }, []);
+
+  useControlCenterEvents();
 
   useEffect(() => {
     try {

@@ -22,6 +22,7 @@ commands.md
 *.app
 credentials
 repos
+package-lock.json
 
 # macOS
 .DS_Store

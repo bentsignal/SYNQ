@@ -11,20 +11,51 @@ import { SongType, PageType } from "@/constants/Types";
 import * as FileSystem from 'expo-file-system';
 import MiniPlayer from '@/components/player/MiniPlayer';
 import { getSongByResult } from "@/lib/SongManager";
-import { setupPlayer, useControlCenterEvents } from "@/lib/SoundManager";
+import { setupPlayer } from "@/lib/SoundManager";
+import TrackPlayer, { Event, useTrackPlayerEvents } from "react-native-track-player";
 
 const Library = () => {
 
-  const insets = useSafeAreaInsets();
+  const { 
+    
+    numModified, homeState,
 
-  const { numModified, homeState } = useGlobalContext();
+    setPaused,
+  
+  } = useGlobalContext();
+
   const [songs, setSongs] = useState<SongType[]>([]);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     setupPlayer();
   }, []);
 
-  useControlCenterEvents();
+  // link to control center
+  useTrackPlayerEvents(
+    [Event.RemotePlay, Event.RemotePause, Event.RemoteNext, Event.RemotePrevious, Event.RemoteSeek],
+    (event) => {
+      switch (event.type) {
+        case Event.RemotePlay:
+          TrackPlayer.play();
+          setPaused(false);
+          break;
+        case Event.RemotePause:
+          TrackPlayer.pause();
+          setPaused(true);
+          break;
+        case Event.RemoteNext:
+          TrackPlayer.skipToNext();
+          break;
+        case Event.RemotePrevious:
+          TrackPlayer.skipToPrevious();
+          break;
+        case Event.RemoteSeek:
+          TrackPlayer.seekTo(event.position);
+          break;
+      }
+    }
+  );
 
   useEffect(() => {
     try {

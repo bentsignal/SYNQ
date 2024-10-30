@@ -1,4 +1,5 @@
 import { TouchableOpacity, StyleSheet, View } from "react-native";
+import { useEffect } from "react";
 import { Colors } from "@/constants/Colors";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { togglePlayback } from "@/lib/SoundManager";

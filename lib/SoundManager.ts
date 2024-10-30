@@ -55,29 +55,3 @@ export const setupPlayer = async () => {
     ],
   })
 }
-
-// link to device control center
-export const useControlCenterEvents = async () => {
-  useTrackPlayerEvents(
-    [Event.RemotePlay, Event.RemotePause, Event.RemoteNext, Event.RemotePrevious, Event.RemoteSeek],
-    (event) => {
-      switch (event.type) {
-        case Event.RemotePlay:
-          TrackPlayer.play();
-          break;
-        case Event.RemotePause:
-          TrackPlayer.pause();
-          break;
-        case Event.RemoteNext:
-          TrackPlayer.skipToNext();
-          break;
-        case Event.RemotePrevious:
-          TrackPlayer.skipToPrevious();
-          break;
-        case Event.RemoteSeek:
-          TrackPlayer.seekTo(event.position);
-          break;
-      }
-    }
-  );
-}

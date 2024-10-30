@@ -4,6 +4,7 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import { togglePlayback } from "@/lib/SoundManager";
 import Svg, { Path } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
+import TrackPlayer, { State } from "react-native-track-player";
 
 const PausePlayButtons = ({
   playSize,
@@ -31,15 +32,20 @@ const PausePlayButtons = ({
     <TouchableOpacity 
       onPress={async () => {
         try {
-          // update state instantly for improved perceived performance
-          setPaused(!paused);
-          if (haptic) {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+          const playback = await TrackPlayer.getPlaybackState();
+          if (playback.state === State.Playing) {
+            if (haptic) {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+            }
+            setPaused(true);
+            await TrackPlayer.pause();
           }
-          const result = await togglePlayback(sound);
-          // paused state is flip flopped, switch it to correct state
-          if (result === paused) {
-            setPaused(result);
+          else {
+            if (haptic) {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+            }
+            setPaused(false);
+            await TrackPlayer.play(); 
           }
         }
         catch (error) {

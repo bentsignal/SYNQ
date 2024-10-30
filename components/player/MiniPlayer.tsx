@@ -60,15 +60,6 @@ const MiniPlayer = () => {
 
     const playSong = async () => {
       if (songPlaying !== null) {
-        if (sound) {
-          try {
-            await sound.stopAsync();
-            await sound.unloadAsync();
-          }
-          catch (error) {
-            console.log('error stopping & unloading sound:', error);
-          }
-        }
         const song = songPlaying;
         const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;          
         try {
@@ -90,17 +81,7 @@ const MiniPlayer = () => {
               artwork: coverPath,
             });
             await TrackPlayer.play();
-            
-            setSound(sound);
-            setPaused(false);
           } 
-          else {
-            if (sound) {
-              await sound.stopAsync();
-              await sound.unloadAsync();
-              setSound(null);
-            }
-          }
         } catch (error) {
           console.error('Error in audio playback:', error);
         }

@@ -9,13 +9,14 @@ import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/botto
 import SongOption from './SongOption';
 import { exportSongs } from '@/lib/SongManager';
 import { PageType } from '@/constants/Types';
+import TrackPlayer from 'react-native-track-player';
+import { getTrackFromSong } from '@/lib/PlayerManager';
 
 const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) => void}) => {
 
   const { 
     
-    editSong, 
-    queue, setQueue,
+    editSong, theme,
 
     setShowEdit,
     setShowDelete, setShowOverlay, 
@@ -85,26 +86,14 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
               show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER].includes(pageType)}
               handler={() => {
                 bottomSheetRef.current?.close();
-                setTimeout(() => {
-                  const newQueue = queue;
-                  newQueue.push(editSong.id);
-                  setQueue(newQueue);
+                setTimeout(async () => {
+                  const newTrack = await getTrackFromSong(editSong, theme);
+                  if (newTrack) {
+                    await TrackPlayer.add(newTrack);
+                  }
                 }, actionDelay);
               }}
             />
-            {/* <SongOption 
-              icon={require('@/assets/icons/add.png')}
-              text={'Remove from Queue'}
-              show={queue.includes(editSong.id) && pageType === PageType.QUEUE}
-              handler={() => {
-                bottomSheetRef.current?.close();
-                setTimeout(() => {
-                  const newQueue = queue;
-                  newQueue.splice(newQueue.indexOf(editSong.id), 1);
-                  setQueue(newQueue);
-                }, actionDelay);
-              }}
-            /> */}
             <SongOption 
               icon={require('@/assets/icons/edit.png')}
               text={'Edit'}

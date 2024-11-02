@@ -17,9 +17,7 @@ import More from '@/components/More';
 import { getNextUp } from '@/lib/SongManager';
 import { PageType } from '@/constants/Types';
 import TrackPlayer, { useActiveTrack, Track } from "react-native-track-player";
-import * as FileSystem from 'expo-file-system';
-import { getFileName } from '@/lib/Util';
-import { getAppIcon } from '@/constants/Logos';
+import { getTrackFromSong } from '@/lib/PlayerManager';
 
 const Song = ({song, fadeCover, fadeSong}: {
   song: SongType, 
@@ -136,41 +134,19 @@ const Song = ({song, fadeCover, fadeSong}: {
       if (haptic) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
-      const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;          
       try {
-        const libraryPathExists = await FileSystem.getInfoAsync(libraryPath);
-        if (!libraryPathExists.exists) {
-          console.log('Library path does not exist:', libraryPath);
-          return;
-        }
-        const contents = await FileSystem.readDirectoryAsync(libraryPath);  
-        if (contents.includes(song.name)) {
-          let coverExists = false;
-          if (contents.includes('cover_full.jpg')) {
-            coverExists = true;
-          }
-          const audioPath = `${libraryPath}/${song.name}`;
-          const coverPath = `${libraryPath}/cover_full.jpg`;
-          const newTrack = {
-            id: song.id,
-            url: audioPath,
-            title: song.info?.metadata?.name ? song.info.metadata.name : getFileName(audioPath),
-            artist: song.info?.metadata?.artist,
-            artwork: coverExists ? coverPath : getAppIcon(theme),
-          };
+        const newTrack = await getTrackFromSong(song, theme);
+        if (newTrack) {
           await TrackPlayer.add(newTrack, 0);
           const queue = await TrackPlayer.getQueue();
           if (queue.length > 0) {
             await TrackPlayer.skip(0);
           }
           await TrackPlayer.play();
-        } 
-      } catch (error) {
-        console.error('Error in audio playback:', error);
+        }
       }
-      setHistory([...history, id]);
-      if (!shuffle || nextUp.length === 0) {
-        setNextUp(await getNextUp(song.id, 30, shuffle));
+      catch (error) {
+        console.log('error playing song: ', error);
       }
     }
   }

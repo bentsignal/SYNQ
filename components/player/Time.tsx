@@ -5,7 +5,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import { idgen, msToSec } from '@/lib/Util';
 import { jump } from '@/lib/SoundManager';
-import TrackPlayer, { useProgress } from 'react-native-track-player';
+import TrackPlayer, { useProgress, useTrackPlayerEvents, Event, State } from 'react-native-track-player';
 import { formatTime } from '@/lib/Util';
 
 const Time = ({ progressColor }: { progressColor?: string }) => {
@@ -33,7 +33,10 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   }, [position]);
 
   useEffect(() => {
-    durationRef.current = duration;
+    if (duration !== 0) {
+      progressScale.setValue(position / duration);
+      durationRef.current = duration;
+    }
   }, [duration]);
 
   const updateTimeline = () => {
@@ -43,6 +46,10 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
       useNativeDriver: true,
       easing: Easing.linear,
     }).start();
+  }
+
+  const jump = async (newPosition: number) => {
+    await TrackPlayer.seekTo(newPosition);
   }
   
   // handle scrubbing timeline
@@ -72,8 +79,11 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
       },
       onPanResponderRelease: (evt, gestureState) => {
         const newPosition = Math.min(Math.max(0, postScrubCompletion.current * durationRef.current), durationRef.current);
-        TrackPlayer.seekTo(newPosition);
-        scrubbing.current = false;
+        jump(newPosition).then(() => {
+          setTimeout(() => {
+            scrubbing.current = false;
+          }, interval);
+        });
         // Animate slider height back to original
         Animated.timing(sliderHeight, {
           toValue: 1,

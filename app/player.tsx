@@ -15,26 +15,27 @@ import { IOSImageColors } from "react-native-image-colors/build/types";
 import PausePlayButtons from "@/components/player/PausePlayButtons";
 import QueueButton from "@/components/player/QueueButton";
 import ShuffleButton from "@/components/player/ShuffleButton";
+import { useActiveTrack } from "react-native-track-player";
+import { getFileName } from "@/lib/Util"; 
 
 const Player = () => {
 
-  const { 
-    
-    theme, songPlaying
-  
-  } = useGlobalContext();
+  const { theme } = useGlobalContext();
+
+  const track = useActiveTrack();
 
   const [bg, setBg] = useState(Colors.popup);
   const [progressColor, setProgressColor] = useState(theme);
 
   const insets = useSafeAreaInsets();
 
+  // get cover image colors
   useEffect(() => {
 
     const callGetColors = async () => {
-      if (songPlaying) {
+      if (track) {
         try {
-          const data = await getCoverImageData(songPlaying.id);
+          const data = await getCoverImageData(track?.id);
           const uri = `data:image/jpeg;base64,${data}`;
           const colors = await getColors(uri, {
             fallback: Colors.song,
@@ -53,7 +54,7 @@ const Player = () => {
 
     // callGetColors();
 
-  }, [songPlaying])
+  }, [track])
 
   const Local = StyleSheet.create({
     container: {
@@ -94,12 +95,29 @@ const Player = () => {
     }
   });
 
+  const getInfo = () => {
+    if (track !== null && track !== undefined) {
+      const info = {
+        name: getFileName(track.url),
+        metadata: {
+          name: track.title,
+          artist: track.artist,
+          album: '',
+          artwork: track.artwork,
+        }
+      }
+      return (
+        <SongInfo info={info} name={getFileName(track.url)}/>
+      )
+    }
+  }
+
   return (
     <View style={Local.container}>
       <Bar />
-      <PlayerCover id={songPlaying?.id}/>
+      <PlayerCover id={track?.id}/>
       <View style={Local.infoContainer}>
-        <SongInfo info={songPlaying?.info} name={songPlaying?.name}/>
+        {getInfo()}
         <More handlePress={() => {}}/>
       </View>
       <Time progressColor={progressColor}/>

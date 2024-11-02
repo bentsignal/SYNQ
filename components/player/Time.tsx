@@ -1,11 +1,8 @@
-import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
-import { useFocusEffect } from 'expo-router';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, PanResponder, Animated, Text, Easing, Dimensions } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
-import { idgen, msToSec } from '@/lib/Util';
-import { jump } from '@/lib/SoundManager';
-import TrackPlayer, { useProgress, useTrackPlayerEvents, Event, State } from 'react-native-track-player';
+import TrackPlayer, { useProgress } from 'react-native-track-player';
 import { formatTime } from '@/lib/Util';
 
 const Time = ({ progressColor }: { progressColor?: string }) => {

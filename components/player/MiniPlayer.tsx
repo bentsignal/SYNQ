@@ -1,25 +1,18 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Styles } from "@/constants/Styles";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { router } from "expo-router";
-import { Audio } from 'expo-av';
-import * as FileSystem from 'expo-file-system';
-import { useEffect, useState } from "react";
 import SongInfo from '@/components/song/SongInfo';
 import { ListCover } from "../song/Cover";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";
 import PausePlayButtons from "./PausePlayButtons";
-import { Themes, Colors } from "@/constants/Colors";
-import TrackPlayer, { useActiveTrack } from "react-native-track-player";
+import { Colors } from "@/constants/Colors";
+import { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util";
 
 const MiniPlayer = () => {
 
-  const { 
-
-    theme, songPlaying,
-
-  } = useGlobalContext();
+  const { theme } = useGlobalContext();
 
   const track = useActiveTrack();
 

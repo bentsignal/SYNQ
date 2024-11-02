@@ -3,7 +3,7 @@ import { PlayButton } from './PausePlayButtons';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { jump } from '@/lib/SoundManager';
 import { getSongById, getNextUp } from '@/lib/SongManager';
-
+import TrackPlayer from 'react-native-track-player';
 
 const Shape = ({size, color}: {size: number, color?: string}) => {
   return (
@@ -18,13 +18,11 @@ const Shape = ({size, color}: {size: number, color?: string}) => {
 
 export const SkipRight = ({size, color}: {size: number, color?: string}) => {
 
-  const { playNextSong } = useGlobalContext();
-
   return (
     <TouchableOpacity 
       activeOpacity={0.7}
       style={Local.container}
-      onPress={playNextSong}
+      onPress={async () => await TrackPlayer.skipToNext()}
     >
       <Shape size={size} color={color} />
     </TouchableOpacity>
@@ -33,44 +31,15 @@ export const SkipRight = ({size, color}: {size: number, color?: string}) => {
 
 export const SkipLeft = ({size, color}: {size: number, color?: string}) => {
 
-  const {
-
-    history, sound, songPlaying,
-    nextUp,
-
-    setSongPlaying, setNextUp, setHistory,
-    setRewind, setPaused,
-
-  } = useGlobalContext();
-
   const handlePress = async () => {
     try {
-      const status = await sound?.getStatusAsync();
-      // skip to previous song in history
-      if (status.positionMillis < 3000 && history.length > 0) {
-        const current = songPlaying.id;
-        const newHistory = history
-        const newNextUp = nextUp;
-        const id = newHistory.pop();
-        if (id !== -1) {
-          newNextUp.unshift(current);
-          const newSong = await getSongById(id);
-          setPaused(false);
-          setSongPlaying(newSong);
-          setNextUp(newNextUp);
-          setHistory(newHistory);
-        }
+      const progress = await TrackPlayer.getProgress();
+      console.log(progress);
+      if (progress.position < 3) {
+        await TrackPlayer.skipToPrevious();
       }
-      // rewind to beginning of song
       else {
-        try {
-          setRewind(true);
-          await jump(sound, 100);
-          setRewind(false);
-        }
-        catch (error) {
-          setRewind(false);
-        }
+        await TrackPlayer.seekTo(0);
       }
     }
     catch (error) {

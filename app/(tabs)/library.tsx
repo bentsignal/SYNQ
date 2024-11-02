@@ -11,7 +11,7 @@ import { SongType, PageType } from "@/constants/Types";
 import * as FileSystem from 'expo-file-system';
 import MiniPlayer from '@/components/player/MiniPlayer';
 import { getSongByResult } from "@/lib/SongManager";
-import { setupPlayer } from "@/lib/SoundManager";
+import { setupPlayer } from "@/lib/PlayerManager";
 import TrackPlayer, { Event, useTrackPlayerEvents } from "react-native-track-player";
 
 const Library = () => {

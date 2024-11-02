@@ -16,7 +16,7 @@ import * as Haptics from 'expo-haptics';
 import More from '@/components/More';
 import { getNextUp } from '@/lib/SongManager';
 import { PageType } from '@/constants/Types';
-import TrackPlayer, { useActiveTrack } from "react-native-track-player";
+import TrackPlayer, { useActiveTrack, Track } from "react-native-track-player";
 import * as FileSystem from 'expo-file-system';
 import { getFileName } from '@/lib/Util';
 import { getAppIcon } from '@/constants/Logos';
@@ -36,11 +36,11 @@ const Song = ({song, fadeCover, fadeSong}: {
 
     selectEnabled, selectedSongs, results,
     premium, showSongOptions, theme, 
-    haptic, songPlaying, nextUp,
+    haptic, nextUp,
     shuffle, history,
 
     setSelectedSongs, setShowSongOptions,
-    setEditSong, setSongPlaying, setNextUp,
+    setEditSong, setNextUp,
     setHistory,
 
   } = useGlobalContext(); 
@@ -137,33 +137,37 @@ const Song = ({song, fadeCover, fadeSong}: {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
       const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;          
-        try {
-          const libraryPathExists = await FileSystem.getInfoAsync(libraryPath);
-          if (!libraryPathExists.exists) {
-            console.log('Library path does not exist:', libraryPath);
-            return;
-          }
-          await TrackPlayer.reset();
-          const contents = await FileSystem.readDirectoryAsync(libraryPath);  
-          if (contents.includes(song.name)) {
-            let coverExists = false;
-            if (contents.includes('cover_full.jpg')) {
-              coverExists = true;
-            }
-            const audioPath = `${libraryPath}/${song.name}`;
-            const coverPath = `${libraryPath}/cover_full.jpg`;
-            await TrackPlayer.add({
-              id: song.id,
-              url: audioPath,
-              title: song.info?.metadata?.name ? song.info.metadata.name : getFileName(audioPath),
-              artist: song.info?.metadata?.artist,
-              artwork: coverExists ? coverPath : getAppIcon(theme),
-            });
-            await TrackPlayer.play();
-          } 
-        } catch (error) {
-          console.error('Error in audio playback:', error);
+      try {
+        const libraryPathExists = await FileSystem.getInfoAsync(libraryPath);
+        if (!libraryPathExists.exists) {
+          console.log('Library path does not exist:', libraryPath);
+          return;
         }
+        const contents = await FileSystem.readDirectoryAsync(libraryPath);  
+        if (contents.includes(song.name)) {
+          let coverExists = false;
+          if (contents.includes('cover_full.jpg')) {
+            coverExists = true;
+          }
+          const audioPath = `${libraryPath}/${song.name}`;
+          const coverPath = `${libraryPath}/cover_full.jpg`;
+          const newTrack = {
+            id: song.id,
+            url: audioPath,
+            title: song.info?.metadata?.name ? song.info.metadata.name : getFileName(audioPath),
+            artist: song.info?.metadata?.artist,
+            artwork: coverExists ? coverPath : getAppIcon(theme),
+          };
+          await TrackPlayer.add(newTrack, 0);
+          const queue = await TrackPlayer.getQueue();
+          if (queue.length > 0) {
+            await TrackPlayer.skip(0);
+          }
+          await TrackPlayer.play();
+        } 
+      } catch (error) {
+        console.error('Error in audio playback:', error);
+      }
       setHistory([...history, id]);
       if (!shuffle || nextUp.length === 0) {
         setNextUp(await getNextUp(song.id, 30, shuffle));

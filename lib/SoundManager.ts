@@ -1,5 +1,4 @@
 import { Audio } from 'expo-av';
-import TrackPlayer, { useTrackPlayerEvents, Event, Capability } from "react-native-track-player";
 
 export const togglePlayback = async (sound: Audio.Sound | null): Promise<boolean> => {
   if (sound) {
@@ -39,20 +38,4 @@ export const jump = async (sound: Audio.Sound | null, newPositionMS: number) => 
     console.log('Error setting new audio position:', error);
   }
 
-}
-
-// initialize the player
-export const setupPlayer = async () => {
-  await TrackPlayer.setupPlayer();
-  TrackPlayer.updateOptions({
-    capabilities: [
-      Capability.Play,
-      Capability.Pause,
-      Capability.SkipToNext,
-      Capability.SkipToPrevious,
-      Capability.Skip,
-      Capability.Stop,
-      Capability.SeekTo,
-    ],
-  })
 }

@@ -82,58 +82,6 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
     setNotifications((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
-  const playNextSong = async () => {
-
-    try {
-      // pull from queue if available
-      if (queue.length > 0) {
-        const current = songPlaying.id;
-        const newQueue = queue;
-        const newSong = await getNextValidSong(newQueue);
-        setPaused(false);
-        setSongPlaying(newSong);
-        setHistory([...history, current]);
-        setQueue(newQueue);
-      }
-      // queue is empty, pull from next up
-      else if (nextUp.length > 0) {
-        const current = songPlaying.id;
-        const newNextUp = nextUp;
-        const newSong = await getNextValidSong(newNextUp);
-        setPaused(false);
-        setSongPlaying(newSong);
-        setHistory([...history, current]);
-        setNextUp(newNextUp);
-      }
-      // queue and next up are empty, fetch more songs
-      else {
-        try {
-          const newNextUp = await fetchMoreSongs(songPlaying.id, shuffle);
-          const newId = newNextUp.shift();
-          const newSong = await getSongById(newId);
-          setPaused(false);
-          setSongPlaying(newSong);
-          setNextUp(newNextUp);
-        }
-        catch (error) {
-          console.log('ran out of songs and failed to fetch more: ', error);
-        }
-      }
-    }
-    catch (error) {
-      console.log('error skipping right: ', error);
-    }
-
-    // next up is getting low, fetch more songs
-    if (nextUp.length < 10) {
-      const newSongs = await fetchMoreSongs(songPlaying.id, shuffle);
-      setNextUp([...nextUp, ...newSongs]);
-    }
-
-    setRewind(true);
-
-  }
-
   return (
     <GlobalContext.Provider
       value={{
@@ -188,7 +136,6 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         queue, setQueue,
         nextUp, setNextUp,
         rewind, setRewind,
-        playNextSong,
         numModified, setNumModified,
       }}
     >

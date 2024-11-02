@@ -22,21 +22,21 @@ const PausePlayButtons = ({
   const { haptic } = useGlobalContext();
 
   const playbackState = usePlaybackState();
-  const playing = playbackState.state === State.Playing;
+  const paused = playbackState.state === State.Paused;
 
   const togglePlayback = async () => {
     try {
-      if (playing) {
+      if (paused) {
         if (haptic) {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
         }
-        await TrackPlayer.pause();
+        await TrackPlayer.play(); 
       }
       else {
         if (haptic) {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
         }
-        await TrackPlayer.play(); 
+        await TrackPlayer.pause();
       }
     }
     catch (error) {
@@ -50,7 +50,7 @@ const PausePlayButtons = ({
       style={{...style}}
       activeOpacity={0.8}
     >
-      {playing ? <PauseButton height={pauseHeight} width={pauseWidth} color={color}/> : <PlayButton size={playSize} color={color}/>}
+      {paused ? <PlayButton size={playSize} color={color}/> : <PauseButton height={pauseHeight} width={pauseWidth} color={color}/>}
     </TouchableOpacity>
   );
 }

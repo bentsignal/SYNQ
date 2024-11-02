@@ -7,6 +7,7 @@ import { removeSongs, deleteFromLibrary } from '@/lib/SongManager';
 import { ListCover } from '@/components/song/Cover';
 import SongInfo from '@/components/song/SongInfo';
 import { PageType, SongType } from '@/constants/Types';
+import TrackPlayer, { Track } from 'react-native-track-player';
 
 const DeleteModal = () => {
 
@@ -15,11 +16,10 @@ const DeleteModal = () => {
     selectedSongs, results,
     showDelete, theme, homeState,
     editSong, numModified,
-    queue, nextUp,
 
     setShowDelete, setResults, setExportDisabled,
     setSelectEnabled, setShowOverlay, setHomeState,
-    setNumModified, setQueue, setNextUp,
+    setNumModified, 
 
   } = useGlobalContext();
 
@@ -73,7 +73,7 @@ const DeleteModal = () => {
               <CustomButton 
                 title='Delete'
                 background={theme}
-                handlePress={() => {
+                handlePress={async () => {
                   setShowOverlay(false);
                   setShowDelete(false);
                   setSelectEnabled(false);
@@ -81,8 +81,11 @@ const DeleteModal = () => {
                   if (editSong.pageType === PageType.LIBRARY) {
                     deleteFromLibrary(editSong.id);
                     // remove from queue and next up if applicable
-                    setQueue(queue.filter((song: SongType) => song.id !== editSong.id));
-                    setNextUp(nextUp.filter((song: SongType) => song.id !== editSong.id));
+                    const queue = await TrackPlayer.getQueue();
+                    const indiciesToRemove = queue
+                      .map((track: Track, index: number) => track.id === editSong.id ? index : -1)
+                      .filter(index => index !== -1);
+                    await TrackPlayer.remove(indiciesToRemove);
                     setNumModified(numModified + 1);
                   }
                   // remove from import

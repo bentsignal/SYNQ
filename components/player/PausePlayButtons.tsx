@@ -3,7 +3,7 @@ import { Colors } from "@/constants/Colors";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import Svg, { Path } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
-import TrackPlayer, { State } from "react-native-track-player";
+import TrackPlayer, { State, usePlaybackState } from "react-native-track-player";
 
 const PausePlayButtons = ({
   playSize,
@@ -19,43 +19,38 @@ const PausePlayButtons = ({
   color?: string;
 }) => {
 
-  const { 
-    
-    paused, sound, haptic,
-    
-    setPaused,
-  
-  } = useGlobalContext();
+  const { haptic } = useGlobalContext();
+
+  const playbackState = usePlaybackState();
+  const playing = playbackState.state === State.Playing;
+
+  const togglePlayback = async () => {
+    try {
+      if (playing) {
+        if (haptic) {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+        }
+        await TrackPlayer.pause();
+      }
+      else {
+        if (haptic) {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+        }
+        await TrackPlayer.play(); 
+      }
+    }
+    catch (error) {
+      console.error('Error toggling play/pause:', error);
+    }
+  }
 
   return (
     <TouchableOpacity 
-      onPress={async () => {
-        try {
-          const playback = await TrackPlayer.getPlaybackState();
-          if (playback.state === State.Playing) {
-            if (haptic) {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
-            }
-            setPaused(true);
-            await TrackPlayer.pause();
-          }
-          else {
-            if (haptic) {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
-            }
-            setPaused(false);
-            await TrackPlayer.play(); 
-          }
-        }
-        catch (error) {
-          setPaused(paused);
-          console.error('Error toggling play/pause:', error);
-        }
-      }}
+      onPress={togglePlayback}
       style={{...style}}
       activeOpacity={0.8}
     >
-      {paused ? <PlayButton size={playSize} color={color}/> : <PauseButton height={pauseHeight} width={pauseWidth} color={color}/>}
+      {playing ? <PauseButton height={pauseHeight} width={pauseWidth} color={color}/> : <PlayButton size={playSize} color={color}/>}
     </TouchableOpacity>
   );
 }

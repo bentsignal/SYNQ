@@ -3,7 +3,7 @@ import { useFocusEffect } from 'expo-router';
 import { View, StyleSheet, PanResponder, Animated, Text, Easing, Dimensions } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
-import { msToSec } from '@/lib/Util';
+import { idgen, msToSec } from '@/lib/Util';
 import { jump } from '@/lib/SoundManager';
 import TrackPlayer, { useProgress } from 'react-native-track-player';
 import { formatTime } from '@/lib/Util';
@@ -18,19 +18,23 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   const scrubbing = useRef(false);
   const [elapsedSec, setElapsedSec] = useState(0);
   const [remainingSec, setRemainingSec] = useState(0);
+  const durationRef = useRef(duration);
   const preScrubCompletion = useRef(0);
   const postScrubCompletion = useRef(0);
   const progressScale = useRef(new Animated.Value(0)).current;
   const sliderHeight = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    console.log(scrubbing.current);
     if (!scrubbing.current) {
       setElapsedSec(Math.floor(position));
       setRemainingSec(Math.floor(duration) - Math.floor(position));
       updateTimeline();
     }
   }, [position]);
+
+  useEffect(() => {
+    durationRef.current = duration;
+  }, [duration]);
 
   const updateTimeline = () => {
     Animated.timing(progressScale, {
@@ -60,16 +64,16 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
         const multiplier = 1.2;
         const newCompletion = preScrubCompletion.current + (gestureState.dx / Dimensions.get('window').width * multiplier);
         progressScale.setValue(newCompletion);
-        const newElapsed = Math.max(0, Math.min(Math.floor(newCompletion * duration), duration));
-        const newRemaining = duration - newElapsed;
+        const newElapsed = Math.max(0, Math.min(Math.floor(newCompletion * durationRef.current), durationRef.current));
+        const newRemaining = Math.floor(durationRef.current) - newElapsed;
         setElapsedSec(newElapsed);
         setRemainingSec(newRemaining);
         postScrubCompletion.current = Math.max(0, Math.min(newCompletion, 1));
       },
       onPanResponderRelease: (evt, gestureState) => {
-        scrubbing.current = false;
-        const newPosition = Math.min(Math.max(0, postScrubCompletion.current * duration), duration);
+        const newPosition = Math.min(Math.max(0, postScrubCompletion.current * durationRef.current), durationRef.current);
         TrackPlayer.seekTo(newPosition);
+        scrubbing.current = false;
         // Animate slider height back to original
         Animated.timing(sliderHeight, {
           toValue: 1,

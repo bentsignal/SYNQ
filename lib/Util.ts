@@ -22,3 +22,9 @@ export const maybe = (value: any) => {
 export const getFileName = (path: string) => {
   return path.split('/').pop() || '';
 }
+
+export const formatTime = (totalSeconds: number) => {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+};

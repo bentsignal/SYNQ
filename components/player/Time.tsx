@@ -5,6 +5,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import { msToSec } from '@/lib/Util';
 import { jump } from '@/lib/SoundManager';
+import TrackPlayer, { useProgress } from 'react-native-track-player';
 
 const Time = ({ progressColor }: { progressColor?: string }) => {
 
@@ -18,11 +19,12 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
     playNextSong,
 
   } = useGlobalContext();
+
+  const { position, duration } = useProgress(50);
   
   const [scrubbing, setScrubbing] = useState(false);
   const [elapsedSec, setElapsedSec] = useState(0);
   const [remainingSec, setRemainingSec] = useState(0);
-  const duration = useRef(0);
   const preScrubCompletion = useRef(0);
   const postScrubCompletion = useRef(0);
   const progressScale = useRef(new Animated.Value(0)).current;
@@ -30,15 +32,19 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   const [localTime, setLocalTime] = useState(0);
   const [jumpPos, setJumpPos] = useState(-1);
 
+  useEffect(() => {
+    setElapsedSec(Math.floor(position));
+    setRemainingSec(Math.floor(duration) - Math.floor(position));
+  }, [position]);
+
   // gets initial elapsed and remaining time, and sets the progress slider to appropriate position
   const checkTime = async () => {
     if (sound) {
       const status = await sound.getStatusAsync();
       if (status.isLoaded) {
-        duration.current = status.durationMillis;
         setElapsedSec(msToSec(status.positionMillis));
-        setRemainingSec(msToSec(duration.current) - msToSec(status.positionMillis));
-        progressScale.setValue(status.positionMillis / duration.current);
+        setRemainingSec(duration - msToSec(status.positionMillis));
+        progressScale.setValue(status.positionMillis / duration);
       }
     }
   }
@@ -48,8 +54,6 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
     if (sound) {
       const status = await sound.getStatusAsync();
       if (status.isLoaded) {
-        // set duration to the total duration of the song
-        duration.current = status.durationMillis;
         // function to update the current time of the song
         sound.setOnPlaybackStatusUpdate((status: any) => {
           if (status.isLoaded) {
@@ -70,19 +74,18 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   const updateTime = (currentTimeMS: number, animate: boolean = true) => {
     const elapsed = msToSec(currentTimeMS);
     if (!scrubbing && !rewind && elapsed !== elapsedSec) {
-      const total = msToSec(duration.current);
       setElapsedSec(elapsed);
-      setRemainingSec(total - elapsed > 0 ? total - elapsed : 0);
+      setRemainingSec(duration - elapsed > 0 ? duration - elapsed : 0);
       if (animate) {
         Animated.timing(progressScale, {
-          toValue:  total === 0 ? 0 : elapsed / total,
+          toValue:  duration === 0 ? 0 : elapsed / duration,
           duration: 1000,
           useNativeDriver: true,
           easing: Easing.linear,
         }).start();
       }
       else {
-        progressScale.setValue(total === 0 ? 0 : elapsed / total);
+        progressScale.setValue(duration === 0 ? 0 : elapsed / duration);
       }
     }
   };
@@ -120,7 +123,7 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
     const rewindToBeginning= async () => {
     if (rewind) {
       setElapsedSec(0);
-      setRemainingSec(msToSec(duration.current));
+      setRemainingSec(duration);
       progressScale.setValue(0);
       setRewind(false);
     }
@@ -184,14 +187,14 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
         const multiplier = 1.2;
         const newCompletion = preScrubCompletion.current + (gestureState.dx / Dimensions.get('window').width * multiplier);
         progressScale.setValue(newCompletion);
-        const newElapsed = Math.max(0, Math.min(Math.floor(newCompletion * msToSec(duration.current)), msToSec(duration.current)));;
-        const newRemaining = msToSec(duration.current) - newElapsed;
+        const newElapsed = Math.max(0, Math.min(Math.floor(newCompletion * duration), duration));
+        const newRemaining = duration - newElapsed;
         setElapsedSec(newElapsed);
         setRemainingSec(newRemaining);
         postScrubCompletion.current = Math.max(0, Math.min(newCompletion, 1));
       },
       onPanResponderRelease: (evt, gestureState) => {
-        const newPosition = Math.max(100, postScrubCompletion.current * duration.current);
+        const newPosition = Math.max(100, postScrubCompletion.current * duration);
         setJumpPos(newPosition);
         // Animate slider height back to original
         Animated.timing(sliderHeight, {

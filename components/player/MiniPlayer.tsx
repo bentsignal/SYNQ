@@ -18,8 +18,6 @@ const MiniPlayer = () => {
 
     theme, songPlaying,
 
-    setPaused,
-
   } = useGlobalContext();
 
   const Local = StyleSheet.create({
@@ -81,7 +79,6 @@ const MiniPlayer = () => {
               artwork: coverPath,
             });
             await TrackPlayer.play();
-            setPaused(false);
           } 
         } catch (error) {
           console.error('Error in audio playback:', error);

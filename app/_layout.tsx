@@ -11,7 +11,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { connect, restorePurchases } from "@/lib/PurchaseManager";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import DataManager from "@/lib/DataManager";
-import { Audio } from 'expo-av';
 import { LogBox } from "react-native";
 
 LogBox.ignoreLogs(['Require cycle:']);
@@ -59,18 +58,9 @@ const RootLayout = () => {
       }
     }
 
-    const setupAudio = async () => {
-      await Audio.setAudioModeAsync({
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: true,
-        shouldDuckAndroid: true,
-      });
-    }
-
     checkDB();
     checkPurchases();
     loadTheme();
-    setupAudio();
 
   }, []);
 

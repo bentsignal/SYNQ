@@ -25,7 +25,6 @@ const Library = () => {
   } = useGlobalContext();
 
   const [songs, setSongs] = useState<SongType[]>([]);
-  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     setupPlayer();

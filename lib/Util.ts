@@ -17,3 +17,8 @@ export const isValidNumString = (str: string) => {
 export const maybe = (value: any) => {
   return value ? value : '';
 }
+
+// get file name from global path
+export const getFileName = (path: string) => {
+  return path.split('/').pop() || '';
+}

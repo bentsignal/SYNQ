@@ -10,6 +10,43 @@ export const Logos = {
   mint: require('@/assets/logo/logo-mint.png'),
 }
 
+export const AppIcons = {
+  blue: require('@/assets/appIcons/icon-blue.png'),
+  purple: require('@/assets/appIcons/icon-purple.png'),
+  pink: require('@/assets/appIcons/icon-pink.png'),
+  red: require('@/assets/appIcons/icon-red.png'),
+  orange: require('@/assets/appIcons/icon-orange.png'),
+  yellow: require('@/assets/appIcons/icon-yellow.png'),
+  mint: require('@/assets/appIcons/icon-mint.png'),
+}
+
+export const getAppIcon = (id: string) => {
+  if (id === Themes.blue || id === 'blue') {
+    return AppIcons.blue;
+  }
+  else if (id === Themes.purple || id === 'purple') {
+    return AppIcons.purple;
+  }
+  else if (id === Themes.pink || id === 'pink') {
+    return AppIcons.pink;
+  }
+  else if (id === Themes.red || id === 'red') {
+    return AppIcons.red;
+  }
+  else if (id === Themes.orange || id === 'orange') {
+    return AppIcons.orange;
+  }
+  else if (id === Themes.yellow || id === 'yellow') {
+    return AppIcons.yellow;
+  }
+  else if (id === Themes.mint || id === 'mint') {
+    return AppIcons.mint;
+  }
+  else {
+    return AppIcons.blue;
+  }
+}
+
 export const getLogo = (id: string) => {
   if (id === Themes.blue || id === 'blue') {
     return Logos.blue;

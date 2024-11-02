@@ -16,6 +16,10 @@ import * as Haptics from 'expo-haptics';
 import More from '@/components/More';
 import { getNextUp } from '@/lib/SongManager';
 import { PageType } from '@/constants/Types';
+import TrackPlayer, { useActiveTrack } from "react-native-track-player";
+import * as FileSystem from 'expo-file-system';
+import { getFileName } from '@/lib/Util';
+import { getAppIcon } from '@/constants/Logos';
 
 const Song = ({song, fadeCover, fadeSong}: {
   song: SongType, 
@@ -25,6 +29,8 @@ const Song = ({song, fadeCover, fadeSong}: {
 
   const [selected, setSelected] = useState(false);
   const [loaded, setLoaded] = useState(false);
+
+  const track = useActiveTrack();
 
   const { 
 
@@ -125,13 +131,40 @@ const Song = ({song, fadeCover, fadeSong}: {
   });
 
   const handlePlay = async () => {
-    const id = songPlaying ? songPlaying.id : -1;
+    const id = track?.id ? track.id : -1;
     if (id !== song.id) {
-      setSongPlaying(song);
-      setHistory([...history, id]);
       if (haptic) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
+      const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;          
+        try {
+          const libraryPathExists = await FileSystem.getInfoAsync(libraryPath);
+          if (!libraryPathExists.exists) {
+            console.log('Library path does not exist:', libraryPath);
+            return;
+          }
+          await TrackPlayer.reset();
+          const contents = await FileSystem.readDirectoryAsync(libraryPath);  
+          if (contents.includes(song.name)) {
+            let coverExists = false;
+            if (contents.includes('cover_full.jpg')) {
+              coverExists = true;
+            }
+            const audioPath = `${libraryPath}/${song.name}`;
+            const coverPath = `${libraryPath}/cover_full.jpg`;
+            await TrackPlayer.add({
+              id: song.id,
+              url: audioPath,
+              title: song.info?.metadata?.name ? song.info.metadata.name : getFileName(audioPath),
+              artist: song.info?.metadata?.artist,
+              artwork: coverExists ? coverPath : getAppIcon(theme),
+            });
+            await TrackPlayer.play();
+          } 
+        } catch (error) {
+          console.error('Error in audio playback:', error);
+        }
+      setHistory([...history, id]);
       if (!shuffle || nextUp.length === 0) {
         setNextUp(await getNextUp(song.id, 30, shuffle));
       }

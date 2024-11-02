@@ -10,7 +10,8 @@ import { ListCover } from "../song/Cover";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";
 import PausePlayButtons from "./PausePlayButtons";
 import { Themes, Colors } from "@/constants/Colors";
-import TrackPlayer from "react-native-track-player";
+import TrackPlayer, { useActiveTrack } from "react-native-track-player";
+import { getFileName } from "@/lib/Util";
 
 const MiniPlayer = () => {
 
@@ -19,6 +20,8 @@ const MiniPlayer = () => {
     theme, songPlaying,
 
   } = useGlobalContext();
+
+  const track = useActiveTrack();
 
   const Local = StyleSheet.create({
     container: {
@@ -34,7 +37,7 @@ const MiniPlayer = () => {
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
-      display: songPlaying ? 'flex' : 'none'
+      display: track ? 'flex' : 'none'
     },
     buttonContainer: {
       flexDirection: 'row',
@@ -54,48 +57,22 @@ const MiniPlayer = () => {
     },
   });
 
-  useEffect(() => {
-
-    const playSong = async () => {
-      if (songPlaying !== null) {
-        const song = songPlaying;
-        const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;          
-        try {
-          const libraryPathExists = await FileSystem.getInfoAsync(libraryPath);
-          if (!libraryPathExists.exists) {
-            console.log('Library path does not exist:', libraryPath);
-            return;
-          }
-          await TrackPlayer.reset();
-          const contents = await FileSystem.readDirectoryAsync(libraryPath);  
-          if (contents.includes(song.name)) {
-            const audioPath = `${libraryPath}/${song.name}`;
-            const coverPath = `${libraryPath}/cover_full.jpg`;
-            await TrackPlayer.add({
-              id: song.id,
-              url: audioPath,
-              title: song.info.metadata.name,
-              artist: song.info.metadata.artist,
-              artwork: coverPath,
-            });
-            await TrackPlayer.play();
-          } 
-        } catch (error) {
-          console.error('Error in audio playback:', error);
+  const getInfo = () => {
+    if (track !== null && track !== undefined) {
+      
+      const info = {
+        name: getFileName(track.url),
+        metadata: {
+          name: track.title,
+          artist: track.artist,
+          album: '',
+          artwork: track.artwork,
         }
       }
-    }
-
-    playSong();
-
-  }, [songPlaying]);
-
-  const getInfo = () => {
-    if (songPlaying !== null && songPlaying.info) {
       return (
         <SongInfo 
-          info={songPlaying.info} 
-          name={songPlaying.name}
+          info={info} 
+          name={getFileName(track.url)}
           showAlbum={false}
           color={[''].includes(theme) ? 'black' : Colors.text}
         />
@@ -109,7 +86,7 @@ const MiniPlayer = () => {
       activeOpacity={1}
       onPress={() => router.push('/player')}
     >
-      <ListCover id={songPlaying?.id} propOnLoad={() => {}}/>
+      <ListCover id={track?.id} propOnLoad={() => {}}/>
       {getInfo()}
       <View style={Local.buttonContainer}>
         <TouchableOpacity 

@@ -34,12 +34,10 @@ const Song = ({song, fadeCover, fadeSong}: {
 
     selectEnabled, selectedSongs, results,
     premium, showSongOptions, theme, 
-    haptic, nextUp,
-    shuffle, history,
+    haptic, shuffle, 
 
     setSelectedSongs, setShowSongOptions,
-    setEditSong, setNextUp,
-    setHistory,
+    setEditSong, 
 
   } = useGlobalContext(); 
 
@@ -64,7 +62,7 @@ const Song = ({song, fadeCover, fadeSong}: {
   }, [selectEnabled]);
 
   let bg = Colors.song;
-  // if (songPlaying !== null && song.id == songPlaying.id) {
+  // if (track !== null && song.id == track.id) {
   //   bg = theme;
   // }
   if (blur) {

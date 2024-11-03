@@ -34,7 +34,8 @@ export const SkipLeft = ({size, color}: {size: number, color?: string}) => {
   const handlePress = async () => {
     try {
       const progress = await TrackPlayer.getProgress();
-      if (progress.position < 3) {
+      const index = await TrackPlayer.getActiveTrackIndex();
+      if (progress.position < 3 && index !== 0) {
         await TrackPlayer.skipToPrevious();
       }
       else {

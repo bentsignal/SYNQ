@@ -1,10 +1,8 @@
 import { View, StyleSheet, Text, Dimensions } from "react-native";
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
-import Bar from "@/components/modals/Bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PageTitle from "@/components/PageTitle";
-import { ScrollView } from "react-native";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";
 import PausePlayButtons from "@/components/player/PausePlayButtons";
 import CloseButton from "@/components/CloseButton";
@@ -18,14 +16,14 @@ import { PageType, SongType } from "@/constants/Types";
 import { getSongById } from "@/lib/SongManager";
 import { ListCover } from "@/components/song/Cover";
 import SongInfo from "@/components/song/SongInfo";
+import TrackPlayer, { useActiveTrack } from "react-native-track-player";
+import { getFileName } from "@/lib/Util";
 
 const Queue = () => {
 
-  const { 
-    
-    nextUp, queue, songPlaying,
-  
-  } = useGlobalContext();
+  const { theme } = useGlobalContext();
+
+  const track = useActiveTrack();
 
   const insets = useSafeAreaInsets();
   const [songs, setSongs] = useState<SongType[]>([]);
@@ -83,38 +81,64 @@ const Queue = () => {
   });
 
   useEffect(() => {
-    const results: SongType[] = [];
-    try {
-      for (let i = 0; i < queue.length; i++) {
-        getSongById(queue[i]).then((result) => {
-          results.push(result);
-        });
+
+    const loadSongs = async () => {
+      const results: SongType[] = [];
+      const queue = await TrackPlayer.getQueue();
+      const current = await TrackPlayer.getActiveTrackIndex();
+      let start = 0;
+      if (current) {
+        start = current + 1;
       }
-      for (let i = 0; i < nextUp.length; i++) {
-        getSongById(nextUp[i]).then((result) => {
-          results.push(result);
-        });
+      try {
+        for (let i = start; i < queue.length; i++) {
+          getSongById(queue[i].id).then((result) => {
+            results.push(result);
+          });
+        }
       }
+      catch (error) {
+        console.log(error);
+      }
+      setSongs(results);
     }
-    catch (error) {
-      console.log(error);
+
+    loadSongs();
+
+  }, [track]);
+
+  const getInfo = () => {
+    if (track !== null && track !== undefined) {
+      
+      const info = {
+        name: getFileName(track.url),
+        metadata: {
+          name: track.title,
+          artist: track.artist,
+          album: '',
+          artwork: track.artwork,
+        }
+      }
+      return (
+        <SongInfo 
+          info={info} 
+          name={getFileName(track.url)}
+          showAlbum={false}
+        />
+      );
     }
-    setSongs(results);
-  }, [nextUp, queue, songPlaying]);
+  }
 
   return (
     <View style={[Styles.body, Local.container]}>
       <PageTitle title="Now Playing"/>
       <View style={Local.currentlyPlayingContainer}>
         <ListCover 
-          id={songPlaying.id}
-          image={songPlaying.info?.metadata?.artwork}
+          id={track?.id}
+          image={track?.artwork}
           propOnLoad={() => {}}
         />
-        <SongInfo 
-          info={songPlaying.info ? songPlaying.info : {metadata: {}}} 
-          name={songPlaying.name ? songPlaying.name : ''}
-        />
+        {getInfo()}
       </View>
       <Text style={Local.categoryHeader}>Up Next</Text>
       <SongList 

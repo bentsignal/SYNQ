@@ -58,7 +58,7 @@ export const playTrack = async (track: Track): Promise<void> => {
     await TrackPlayer.skipToNext();
   }
   // no song is playing
-  else if (currentIndex === null || currentIndex === undefined) {
+  else if (currentIndex === undefined) {
     await TrackPlayer.add(track);
   }
   // somewhere in the middle of the queue
@@ -71,12 +71,10 @@ export const playTrack = async (track: Track): Promise<void> => {
 
 export const updateQueue = async (currentId: string, shuffle: boolean, theme: string): Promise<void> => {
   await TrackPlayer.removeUpcomingTracks();
-  const upcoming = await getNextUp(currentId, 30, shuffle);
-  console.log(upcoming[0]);
+  const upcoming = await getNextUp(currentId, 1000, shuffle);
   let upcomingTracks: Track[] = [];
   for (let i = 0; i < upcoming.length; i++) {
     const newTrack = await getTrackFromSong(upcoming[i], theme);
-    console.log(newTrack);
     if (newTrack) {
       upcomingTracks.push(newTrack);
     }

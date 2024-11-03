@@ -88,8 +88,15 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
                 bottomSheetRef.current?.close();
                 setTimeout(async () => {
                   const newTrack = await getTrackFromSong(editSong, theme);
+                  const currentIndex = await TrackPlayer.getActiveTrackIndex();
                   if (newTrack) {
-                    await TrackPlayer.add(newTrack);
+                    if (currentIndex !== undefined) {
+                      await TrackPlayer.add(newTrack, currentIndex+1);
+                    }
+                    // TODO: Figure out how to queue songs when no song is playing
+                    // else {
+                    //   await TrackPlayer.add(newTrack);
+                    // }
                   }
                 }, actionDelay);
               }}

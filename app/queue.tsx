@@ -21,7 +21,7 @@ import { getFileName } from "@/lib/Util";
 
 const Queue = () => {
 
-  const { theme } = useGlobalContext();
+  const { theme, shuffle } = useGlobalContext();
 
   const track = useActiveTrack();
 
@@ -105,7 +105,7 @@ const Queue = () => {
 
     loadSongs();
 
-  }, [track]);
+  }, [track, shuffle]);
 
   const getInfo = () => {
     if (track !== null && track !== undefined) {

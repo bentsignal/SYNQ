@@ -17,7 +17,7 @@ import More from '@/components/More';
 import { getNextUp } from '@/lib/SongManager';
 import { PageType } from '@/constants/Types';
 import TrackPlayer, { useActiveTrack, Track, RepeatMode } from "react-native-track-player";
-import { getTrackFromSong } from '@/lib/PlayerManager';
+import { getTrackFromSong, playTrack, updateQueue } from '@/lib/PlayerManager';
 
 const Song = ({song, fadeCover, fadeSong}: {
   song: SongType, 
@@ -135,36 +135,9 @@ const Song = ({song, fadeCover, fadeSong}: {
       try {
         const newTrack = await getTrackFromSong(song, theme);
         if (newTrack) {
-          const currentIndex = await TrackPlayer.getActiveTrackIndex();
-          const queue = await TrackPlayer.getQueue();
-          // current song is last in queue, add to end and skip to it
-          if (currentIndex === queue.length-1) {
-            await TrackPlayer.add(newTrack);
-            await TrackPlayer.skipToNext();
-          }
-          // no song is playing
-          else if (currentIndex === null || currentIndex === undefined) {
-            await TrackPlayer.add(newTrack);
-          }
-          // somewhere in the middle of the queue
-          else {
-            await TrackPlayer.add(newTrack, currentIndex+1);
-            await TrackPlayer.skipToNext();
-          }
-          await TrackPlayer.play();
+          await playTrack(newTrack);
           if (!shuffle) {
-            await TrackPlayer.removeUpcomingTracks();
-            const upcoming = await getNextUp(song.id, 30, false);
-            console.log(upcoming[0]);
-            let upcomingTracks: Track[] = [];
-            for (let i = 0; i < upcoming.length; i++) {
-              const newTrack = await getTrackFromSong(upcoming[i], theme);
-              console.log(newTrack);
-              if (newTrack) {
-                upcomingTracks.push(newTrack);
-              }
-            }
-            await TrackPlayer.add(upcomingTracks);
+            await updateQueue(song.id, shuffle, theme);
           }
         }
       }

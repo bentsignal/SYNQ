@@ -18,11 +18,16 @@ const Shape = ({size, color}: {size: number, color?: string}) => {
 
 export const SkipRight = ({size, color}: {size: number, color?: string}) => {
 
+  const handlePress = async () => {
+    await TrackPlayer.skipToNext();
+    await TrackPlayer.play();
+  }
+
   return (
     <TouchableOpacity 
       activeOpacity={0.7}
       style={Local.container}
-      onPress={async () => await TrackPlayer.skipToNext()}
+      onPress={handlePress}
     >
       <Shape size={size} color={color} />
     </TouchableOpacity>
@@ -37,6 +42,7 @@ export const SkipLeft = ({size, color}: {size: number, color?: string}) => {
       const index = await TrackPlayer.getActiveTrackIndex();
       if (progress.position < 3 && index !== 0) {
         await TrackPlayer.skipToPrevious();
+        await TrackPlayer.play();
       }
       else {
         await TrackPlayer.seekTo(0);

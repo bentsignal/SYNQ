@@ -87,7 +87,7 @@ const Queue = () => {
       const queue = await TrackPlayer.getQueue();
       const current = await TrackPlayer.getActiveTrackIndex();
       let start = 0;
-      if (current) {
+      if (current !== null && current !== undefined) {
         start = current + 1;
       }
       try {

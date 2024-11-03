@@ -7,7 +7,7 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import DataManager from "@/lib/DataManager";
 import { useEffect, useState } from "react";
 import SongList from "@/components/song/SongList";
-import { SongType, PageType } from "@/constants/Types";
+import { SongType, PageType, NotificationType } from "@/constants/Types";
 import * as FileSystem from 'expo-file-system';
 import MiniPlayer from '@/components/player/MiniPlayer';
 import { getSongByResult } from "@/lib/SongManager";
@@ -21,7 +21,10 @@ const Library = () => {
     numModified, homeState,
     shuffle, theme,
 
-    setPaused,
+    setPaused, setShowOverlay, 
+    setShowNotificationModal,
+
+    addNotification,
   
   } = useGlobalContext();
 
@@ -38,7 +41,8 @@ const Library = () => {
     [
       Event.RemotePlay, Event.RemotePause, 
       Event.RemoteNext, Event.RemotePrevious, 
-      Event.RemoteSeek, Event.PlaybackQueueEnded
+      Event.RemoteSeek, 
+      Event.PlaybackQueueEnded, Event.PlaybackError,
     ],
     (event) => {
       switch (event.type) {
@@ -64,6 +68,22 @@ const Library = () => {
             updateQueue(track.id, shuffle, theme);
             skipRight(shuffle, theme);
           }
+          break;
+        case Event.PlaybackError:
+          console.log('playback error: ', event);
+          TrackPlayer.reset();
+          const name = track?.title || 'Unknown Song';
+          addNotification(
+            NotificationType.ERROR,
+            'Playback Error',
+            'Unable to play ' + name,
+            'We ran into an issue while trying to play ' + name + '.',
+            event.message,
+            () => {
+              setShowOverlay(true);
+              setShowNotificationModal(true);
+            }
+          )
           break;
       }
     }

@@ -69,7 +69,7 @@ const NotificationModal = () => {
             </Text>
             {
 
-              notificationTrace !== null && notificationTrace.length > 0 ? 
+              notificationTrace !== null && notificationTrace !== undefined && notificationTrace.length > 0 ? 
 
               <View style={Local.traceWrapper}>
                 <InfoContainer

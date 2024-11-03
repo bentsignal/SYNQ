@@ -42,7 +42,7 @@ export const getTrackFromSong = async (song: SongType, theme: string): Promise<T
         artist: song.info?.metadata?.artist,
         artwork: coverExists ? coverPath : getAppIcon(theme),
       };
-    } 
+    }
   } catch (error) {
     console.error('Error in audio playback:', error);
   }

@@ -457,10 +457,15 @@ export const getSongByResult = (result: any): SongType => {
   }
 }
 
-export const getNextUp = async (currentId: string, pagination: number = 30, shuffle: boolean = false) => {
+export const getNextUp = async (
+  currentId: string, 
+  pagination: number = 30, 
+  shuffle: boolean = false
+): Promise<SongType[]> => {
   
-  const next = [];
+  const next: SongType[] = [];
   const db = DataManager.getInstance();
+  // TODO: only query songs after currentId
   const songs = await db.getSongs();
 
   try {
@@ -468,7 +473,8 @@ export const getNextUp = async (currentId: string, pagination: number = 30, shuf
       const cap = pagination > songs.length ? songs.length : pagination;
       for (let i = 0; i < cap; i++) {
         const randomIndex = Math.floor(Math.random() * songs.length);
-        next.push(songs[randomIndex].id);
+        const newSong = getSongByResult(songs[randomIndex]);
+        next.push(newSong);
         songs.splice(randomIndex, 1);
       }
     }
@@ -476,7 +482,8 @@ export const getNextUp = async (currentId: string, pagination: number = 30, shuf
       const validSongs = songs.filter((song: SongType) => Number(song.id) > Number(currentId));
       const cap = pagination > validSongs.length ? validSongs.length : pagination;
       for (let i = 0; i < cap; i++) {
-        next.push(validSongs[i].id);
+        const newSong = getSongByResult(validSongs[i]);
+        next.push(newSong);
       }
     }
   }

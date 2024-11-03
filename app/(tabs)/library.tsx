@@ -51,7 +51,7 @@ const Library = () => {
           setPaused(true);
           break;
         case Event.RemoteNext:
-          skipRight();
+          skipRight(shuffle, theme);
           break;
         case Event.RemotePrevious:
           skipLeft();
@@ -62,7 +62,7 @@ const Library = () => {
         case Event.PlaybackQueueEnded:
           if (shuffle && track) {
             updateQueue(track.id, shuffle, theme);
-            skipRight();
+            skipRight(shuffle, theme);
           }
           break;
       }

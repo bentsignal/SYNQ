@@ -99,8 +99,13 @@ export const skipLeft = async () => {
   }
 }
 
-export const skipRight = async () => {
-  try {   
+export const skipRight = async (shuffle: boolean, theme: string) => {
+  try {
+    const queue = await TrackPlayer.getQueue();
+    const currentIndex = await TrackPlayer.getActiveTrackIndex();
+    if (shuffle && currentIndex === queue.length-1) {
+      await updateQueue(queue[currentIndex].id, shuffle, theme);
+    }
     await TrackPlayer.skipToNext();
     await TrackPlayer.play();
   }

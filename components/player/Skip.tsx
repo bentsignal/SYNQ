@@ -1,6 +1,7 @@
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { PlayButton } from './PausePlayButtons';
 import { skipLeft, skipRight } from '@/lib/PlayerManager';
+import { useGlobalContext } from '@/context/GlobalProvider';
 
 const Shape = ({size, color}: {size: number, color?: string}) => {
   return (
@@ -15,11 +16,13 @@ const Shape = ({size, color}: {size: number, color?: string}) => {
 
 export const SkipRight = ({size, color}: {size: number, color?: string}) => {
 
+  const { shuffle, theme } = useGlobalContext();
+
   return (
     <TouchableOpacity 
       activeOpacity={0.7}
       style={Local.container}
-      onPress={skipRight}
+      onPress={() => skipRight(shuffle, theme)}
     >
       <Shape size={size} color={color} />
     </TouchableOpacity>

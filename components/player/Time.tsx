@@ -32,7 +32,7 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   useEffect(() => {
     if (duration !== 0) {
       progressScale.setValue(position / duration);
-      durationRef.current = duration;
+      durationRef.current = Math.floor(duration);
     }
   }, [duration]);
 

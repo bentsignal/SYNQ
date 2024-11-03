@@ -11,18 +11,21 @@ import { SongType, PageType } from "@/constants/Types";
 import * as FileSystem from 'expo-file-system';
 import MiniPlayer from '@/components/player/MiniPlayer';
 import { getSongByResult } from "@/lib/SongManager";
-import { setupPlayer, skipLeft, skipRight } from "@/lib/PlayerManager";
-import TrackPlayer, { Event, useTrackPlayerEvents } from "react-native-track-player";
+import { setupPlayer, skipLeft, skipRight, updateQueue } from "@/lib/PlayerManager";
+import TrackPlayer, { Event, useTrackPlayerEvents, useActiveTrack } from "react-native-track-player";
 
 const Library = () => {
 
   const { 
     
     numModified, homeState,
+    shuffle, theme,
 
-    setPaused, shuffle
+    setPaused,
   
   } = useGlobalContext();
+
+  const track = useActiveTrack();
 
   const [songs, setSongs] = useState<SongType[]>([]);
 
@@ -32,7 +35,11 @@ const Library = () => {
 
   // link to control center
   useTrackPlayerEvents(
-    [Event.RemotePlay, Event.RemotePause, Event.RemoteNext, Event.RemotePrevious, Event.RemoteSeek],
+    [
+      Event.RemotePlay, Event.RemotePause, 
+      Event.RemoteNext, Event.RemotePrevious, 
+      Event.RemoteSeek, Event.PlaybackQueueEnded
+    ],
     (event) => {
       switch (event.type) {
         case Event.RemotePlay:
@@ -51,6 +58,12 @@ const Library = () => {
           break;
         case Event.RemoteSeek:
           TrackPlayer.seekTo(event.position);
+          break;
+        case Event.PlaybackQueueEnded:
+          if (shuffle && track) {
+            updateQueue(track.id, shuffle, theme);
+            skipRight();
+          }
           break;
       }
     }

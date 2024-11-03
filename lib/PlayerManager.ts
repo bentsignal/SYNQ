@@ -81,3 +81,30 @@ export const updateQueue = async (currentId: string, shuffle: boolean, theme: st
   }
   await TrackPlayer.add(upcomingTracks);
 }
+
+export const skipLeft = async () => {
+  try {
+    const progress = await TrackPlayer.getProgress();
+    const index = await TrackPlayer.getActiveTrackIndex();
+    if (progress.position < 3 && index !== 0) {
+      await TrackPlayer.skipToPrevious();
+      await TrackPlayer.play();
+    }
+    else {
+      await TrackPlayer.seekTo(0);
+    }
+  }
+  catch (error) {
+    console.log('error skipping left: ', error);
+  }
+}
+
+export const skipRight = async () => {
+  try {   
+    await TrackPlayer.skipToNext();
+    await TrackPlayer.play();
+  }
+  catch (error) {
+    console.log('error skipping right: ', error);
+  }
+}

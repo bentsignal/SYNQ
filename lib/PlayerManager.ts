@@ -1,6 +1,7 @@
 import TrackPlayer, { useTrackPlayerEvents, Event, Capability, Track } from "react-native-track-player";
 import { SongType } from "@/constants/Types";
 import * as FileSystem from "expo-file-system";
+import * as Haptics from 'expo-haptics';
 import { getFileName } from '@/lib/Util';
 import { getAppIcon } from '@/constants/Logos';
 import { getNextUp } from '@/lib/SongManager';
@@ -99,12 +100,22 @@ export const skipLeft = async () => {
   }
 }
 
-export const skipRight = async (shuffle: boolean, theme: string) => {
+export const skipRight = async (shuffle: boolean, theme: string, haptic: boolean) => {
   try {
     const queue = await TrackPlayer.getQueue();
     const currentIndex = await TrackPlayer.getActiveTrackIndex();
-    if (shuffle && currentIndex === queue.length-1) {
-      await updateQueue(queue[currentIndex].id, shuffle, theme);
+    if (currentIndex === queue.length-1) {
+      if (shuffle) {
+        await updateQueue(queue[currentIndex].id, shuffle, theme);
+      }
+      else {
+        console.log('no song next');
+        console.log(haptic);
+        // no song next, play error haptic feedback
+        if (haptic) {
+          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
+      }
     }
     await TrackPlayer.skipToNext();
     await TrackPlayer.play();

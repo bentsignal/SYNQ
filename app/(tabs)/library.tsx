@@ -19,7 +19,7 @@ const Library = () => {
   const { 
     
     numModified, homeState,
-    shuffle, theme,
+    shuffle, theme, haptic,
 
     setPaused, setShowOverlay, 
     setShowNotificationModal,
@@ -55,7 +55,7 @@ const Library = () => {
           setPaused(true);
           break;
         case Event.RemoteNext:
-          skipRight(shuffle, theme);
+          skipRight(shuffle, theme, haptic);
           break;
         case Event.RemotePrevious:
           skipLeft();
@@ -66,7 +66,7 @@ const Library = () => {
         case Event.PlaybackQueueEnded:
           if (shuffle && track) {
             updateQueue(track.id, shuffle, theme);
-            skipRight(shuffle, theme);
+            skipRight(shuffle, theme, haptic);
           }
           break;
         case Event.PlaybackError:

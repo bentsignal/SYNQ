@@ -16,13 +16,13 @@ const Shape = ({size, color}: {size: number, color?: string}) => {
 
 export const SkipRight = ({size, color}: {size: number, color?: string}) => {
 
-  const { shuffle, theme } = useGlobalContext();
+  const { shuffle, theme, haptic } = useGlobalContext();
 
   return (
     <TouchableOpacity 
       activeOpacity={0.7}
       style={Local.container}
-      onPress={() => skipRight(shuffle, theme)}
+      onPress={() => skipRight(shuffle, theme, haptic)}
     >
       <Shape size={size} color={color} />
     </TouchableOpacity>

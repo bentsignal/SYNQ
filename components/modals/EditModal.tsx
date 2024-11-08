@@ -137,15 +137,25 @@ const EditModal = () => {
   const handleSave = async () => {
     setLoading(true);
     setTimeout(async () => {
-      const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id];
       if (editSong.pageType === PageType.LIBRARY) {
-        await updateSongsInLibrary(ids, title, artist, album, cover);
+        await updateSongsInLibrary([editSong.id], title, artist, album, cover);
         setNumModified(numModified + 1);
       }
-      if (editSong.pageType === PageType.IMPORT) {
+      else if (editSong.pageType === PageType.IMPORT) {
         const newResults = saveEdits(
           results,
-          ids,
+          [editSong.id],
+          title,
+          artist,
+          album,
+          cover
+        );
+        setResults(newResults);
+      }
+      else if (selectedSongs.length > 0) {
+        const newResults = saveEdits(
+          results,
+          selectedSongs,
           title,
           artist,
           album,

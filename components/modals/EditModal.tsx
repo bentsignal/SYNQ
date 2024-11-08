@@ -129,6 +129,37 @@ const EditModal = () => {
     }
   }, [showEdit]);
 
+  const handleCancel = () => {
+    setShowOverlay(false);
+    setShowEdit(false);
+  }
+
+  const handleSave = async () => {
+    setLoading(true);
+    setTimeout(async () => {
+      const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id];
+      if (editSong.pageType === PageType.LIBRARY) {
+        await updateSongsInLibrary(ids, title, artist, album, cover);
+        setNumModified(numModified + 1);
+      }
+      if (editSong.pageType === PageType.IMPORT) {
+        const newResults = saveEdits(
+          results,
+          ids,
+          title,
+          artist,
+          album,
+          cover
+        );
+        setResults(newResults);
+      }
+      setLoading(false);
+      setShowOverlay(false);
+      setShowEdit(false);
+      setSelectEnabled(false);
+    }, 1000);
+  }
+
   return (
     <Modal
       transparent={true}
@@ -272,39 +303,12 @@ const EditModal = () => {
                 <CustomButton 
                   title='Cancel'
                   background={Colors.altButton}
-                  handlePress={() => {
-                    setShowOverlay(false);
-                    setShowEdit(false);
-                  }}
+                  handlePress={handleCancel}
                 />
                 <CustomButton 
                   title='Save'
                   background={theme}
-                  handlePress={async () => {
-                    setLoading(true);
-                    setTimeout(async () => {
-                      const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id];
-                      if (editSong.pageType === PageType.LIBRARY) {
-                        await updateSongsInLibrary(ids, title, artist, album, cover);
-                        setNumModified(numModified + 1);
-                      }
-                      if (editSong.pageType === PageType.IMPORT) {
-                        const newResults = saveEdits(
-                          results,
-                          ids,
-                          title,
-                          artist,
-                          album,
-                          cover
-                        );
-                        setResults(newResults);
-                      }
-                      setLoading(false);
-                      setShowOverlay(false);
-                      setShowEdit(false);
-                      setSelectEnabled(false);
-                    }, 1000)
-                  }}
+                  handlePress={handleSave}
                 />
               </View>
             </View>

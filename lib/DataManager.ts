@@ -86,16 +86,17 @@ class DataManager {
     genre: string,
     duration: number,
     fileType: string,
-    fileName: string
+    fileName: string,
+    edited: boolean,
   ): Promise<number> {
     try {   
       if (!this.db) {
         await this.initConnection();
       } 
       const result = await this.db?.runAsync(
-        `INSERT INTO songs (title, artists, album, genre, duration, fileType, fileName)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [title, artists, album, genre, duration, fileType, fileName] 
+        `INSERT INTO songs (title, artists, album, genre, duration, fileType, fileName, edited)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [title, artists, album, genre, duration, fileType, fileName, edited] 
       );
       return result?.lastInsertRowId ? result.lastInsertRowId : -1;
     } catch (error) {
@@ -137,6 +138,17 @@ class DataManager {
       return true;
     } catch (error) {
       console.error('Error removing song:', error);
+      return false;
+    }
+  }
+
+  async songExported(id: number): Promise<boolean> {
+    try {
+      await this.db?.runAsync(`UPDATE songs SET edited = FALSE WHERE id = ?;`, [id]);
+      return true;
+    } 
+    catch (error) {
+      console.error('Error marking song as exported:', error);
       return false;
     }
   }

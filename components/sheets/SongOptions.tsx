@@ -17,10 +17,12 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
   const { 
     
     editSong, theme,
+    numModified,
 
     setShowEdit,
     setShowDelete, setShowOverlay, 
     setShowGlobalLoading,
+    setNumModified,
   
   } = useGlobalContext();
 
@@ -42,6 +44,52 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
       setSheetIndex(0);
     }
   }, [show]);
+
+  const handleAddToQueue = () => {
+    bottomSheetRef.current?.close();
+    setTimeout(async () => {
+      const newTrack = await getTrackFromSong(editSong, theme);
+      const currentIndex = await TrackPlayer.getActiveTrackIndex();
+      if (newTrack) {
+        if (currentIndex !== undefined) {
+          await TrackPlayer.add(newTrack, currentIndex+1);
+        }
+        // TODO: Figure out how to queue songs when no song is playing
+        // else {
+        //   await TrackPlayer.add(newTrack);
+        // }
+      }
+    }, actionDelay);
+  }
+
+  const handleEditSong = () => {
+    bottomSheetRef.current?.close();
+    setTimeout(() => {
+      setShowOverlay(true);
+      setShowEdit(true);
+    }, actionDelay);
+  }
+
+  const handleExport = async () => {
+    try {
+      setShowGlobalLoading(true);
+      await exportSongs([editSong]);
+      setNumModified(numModified + 1);
+      setShowGlobalLoading(false);
+    }
+    catch (error) {
+      console.log('error exporting song: ', error);
+      setShowGlobalLoading(false);
+    }
+  }
+
+  const handleDeleteSong = () => {
+    bottomSheetRef.current?.close();
+    setTimeout(() => {
+      setShowOverlay(true);
+      setShowDelete(true);
+    }, actionDelay);
+  }
 
   return (
     <>
@@ -84,62 +132,25 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
               icon={require('@/assets/icons/add.png')}
               text={'Add to Queue'}
               show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER].includes(pageType)}
-              handler={() => {
-                bottomSheetRef.current?.close();
-                setTimeout(async () => {
-                  const newTrack = await getTrackFromSong(editSong, theme);
-                  const currentIndex = await TrackPlayer.getActiveTrackIndex();
-                  if (newTrack) {
-                    if (currentIndex !== undefined) {
-                      await TrackPlayer.add(newTrack, currentIndex+1);
-                    }
-                    // TODO: Figure out how to queue songs when no song is playing
-                    // else {
-                    //   await TrackPlayer.add(newTrack);
-                    // }
-                  }
-                }, actionDelay);
-              }}
+              handler={handleAddToQueue}
             />
             <SongOption 
               icon={require('@/assets/icons/edit.png')}
               text={'Edit'}
               show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
-              handler={() => {
-                bottomSheetRef.current?.close();
-                setTimeout(() => {
-                  setShowOverlay(true);
-                  setShowEdit(true);
-                }, actionDelay);
-              }}
+              handler={handleEditSong}
             />
             <SongOption 
               icon={require('@/assets/icons/share.png')}
               text={'Export'}
               show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
-              handler={async () => {
-                try {
-                  setShowGlobalLoading(true);
-                  await exportSongs([editSong]);
-                  setShowGlobalLoading(false);
-                }
-                catch (error) {
-                  console.log('error exporting song: ', error);
-                  setShowGlobalLoading(false);
-                }
-              }}
+              handler={handleExport}
             />
             <SongOption
               icon={require('@/assets/icons/delete.png')}
               text={'Delete'}
               show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
-              handler={() => {
-                bottomSheetRef.current?.close();
-                setTimeout(() => {
-                  setShowOverlay(true);
-                  setShowDelete(true);
-                }, actionDelay);
-              }}
+              handler={handleDeleteSong}
             />
           </View>
         </BottomSheetView>

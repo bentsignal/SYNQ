@@ -2,7 +2,7 @@ import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
-import { SongType, InfoType, PageType } from '@/constants/Types'
+import { SongType, InfoType, PageType, TagsType } from '@/constants/Types'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -11,6 +11,7 @@ import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 import DataManager from './DataManager';
 import { isValidNumString, idgen } from './Util';
 import { Image } from 'react-native';
+import SongList from '@/components/song/SongList';
 
 export const getCompletion = (size: number, progress: number) => {
   try {
@@ -53,6 +54,99 @@ const getExportNumber = async () => {
   }
 }
 
+const splitImageMimeAndBuffer = (image: string) => {
+  // extract mime from start of string
+  const infoString = image.split(/,(.*)/s)[0];
+  const mimeTypeFull = infoString.split(/;(.*)/s)[0];
+  const mimeType = mimeTypeFull.split(/:(.*)/s)[1];
+  // buffer after mimetype and encoding scheme
+  const bufferString = image.split(/,(.*)/s)[1];
+  return {
+    mime: mimeType,
+    buffer: bufferString
+  };
+}
+
+const updateMetadata = async (song: SongType) => {
+  
+  if (song.pageType === PageType.LIBRARY) {
+    // retrieve data if song is from library
+    try {
+      const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.name}`;
+      const data = await FileSystem.readAsStringAsync(audioPath, {encoding: 'base64'});
+      if (data) {
+        song.data = data;
+      }
+    }
+    catch (error) {
+      console.log('error reading audio file data: ', error);
+    }
+    try {
+      // retrieve image if it exists
+      const image = await getCoverImageData(song.id, true);
+      if (image && song.info && song.info.metadata) {
+        song.info.metadata.artwork = image;
+      }
+    }
+    catch (error) {
+      console.log('error reading image file data: ', error);
+    }
+  }
+
+  // validate data
+  if (!song.data) {
+    console.log('Import song with no data, return');
+    return;
+  }
+
+  const NodeID3 = require('@/lib/node-id3');
+
+  let tags: TagsType = {};
+
+  tags.title = song.info.metadata?.name ?? '';
+  tags.artist = song.info.metadata?.artist ?? '';
+  tags.album = song.info.metadata?.album ?? '';
+  const image = song.info.metadata?.artwork ?? '';
+  if (image) {
+    if (song.pageType === PageType.LIBRARY) {
+      tags.APIC = {
+        description: 'Album Cover',
+        imageBuffer: image,
+        mime: 'image/jpeg',
+      };
+    }
+    else if (song.pageType === PageType.IMPORT) {
+      const { mime, buffer } = splitImageMimeAndBuffer(image);
+      if (mime && buffer) {
+        tags.APIC = {
+          description: 'Album Cover',
+          imageBuffer: buffer,
+          mime: mime,
+        };
+      }
+    }
+  }
+  else {
+    console.log('no image for library song export');
+  }
+
+  try {
+    if (['audio/mpeg', 'audio/flac'].includes(song.info.fileType ?? '')) {
+      song.data = fromByteArray(NodeID3.writeExpo(toByteArray(song.data), tags));
+    }
+  }
+  catch (error) {
+    console.log('error modiying audio file data', error); 
+  }
+
+  if (song.pageType === PageType.LIBRARY) {
+    if (song.info.metadata && song.info.metadata.artwork) {
+      song.info.metadata.artwork = '';
+    }
+  }
+
+}
+
 export const exportSongs = async (songs: SongType[]) => {
 
   const date = new Date();
@@ -61,29 +155,66 @@ export const exportSongs = async (songs: SongType[]) => {
   let destination;
   
   await FileSystem.makeDirectoryAsync(dir);
-
-  // TODO: Save edits if changes have been made but not saved to file data
   
+  // export single song
   if (songs.length === 1) {
-    if (songs[0].pageType === PageType.IMPORT) {
-      destination = `${dir}/${songs[0].name}`;
-      await FileSystem.writeAsStringAsync(destination, songs[0].data, {encoding: 'base64'});
+    const song = songs[0];
+    if (song.pageType === PageType.IMPORT) {
+      if (song.edited) {
+        await updateMetadata(song);
+        song.edited = false;
+      }
+      destination = `${dir}/${song.name}`;
+      await FileSystem.writeAsStringAsync(destination, song.data, {encoding: 'base64'});
       await Sharing.shareAsync(destination);
     }
     else {
       try {
-        const audioPath = `${FileSystem.documentDirectory}library/${songs[0].id}/${songs[0].name}`;
+        const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.name}`;
+        if (song.edited) {
+          await updateMetadata(song);
+          song.edited = false;
+          const db = DataManager.getInstance();
+          await db.initConnection();
+          await db.songExported(Number(song.id));
+          await FileSystem.writeAsStringAsync(audioPath, song.data, {encoding: 'base64'});
+        }
         await Sharing.shareAsync(audioPath);
       }
       catch (error) {
+        console.log('error sharing song from library: ', error);
         throw new Error('Error sharing song from library: ' + error);
       }
     }
   }
+  // export multiple songs
   else if (songs.length > 1) {
+    const db = DataManager.getInstance();
+    await db.initConnection();
     for (let i = 0; i < songs.length; i++) {
-      destination = `${dir}/${songs[i].name}`;
-      await FileSystem.writeAsStringAsync(destination, songs[i].data, {encoding: 'base64'});
+      if (songs[i].pageType === PageType.IMPORT) {
+        if (songs[i].edited) {
+          await updateMetadata(songs[i]);
+          songs[i].edited = false;
+        } 
+        destination = `${dir}/${songs[i].name}`;
+        await FileSystem.writeAsStringAsync(destination, songs[i].data, {encoding: 'base64'});
+      }
+      else if (songs[i].pageType === PageType.LIBRARY) {
+        try {
+          const audioPath = `${FileSystem.documentDirectory}library/${songs[i].id}/${songs[i].name}`;
+          if (songs[i].edited) {
+            await updateMetadata(songs[i]);
+            songs[i].edited = false;
+            await db.songExported(Number(songs[i].id));
+            await FileSystem.writeAsStringAsync(audioPath, songs[i].data, {encoding: 'base64'});
+          }
+          await FileSystem.copyAsync({from: audioPath, to: dir});
+        }
+        catch (error) {
+          console.log('error copying song from library: ', error);
+        }
+      }
     }
     await Sharing.shareAsync(dir);
   }
@@ -204,107 +335,18 @@ export const saveEdits = (
 
 ) => {
 
-  const NodeID3 = require('@/lib/node-id3')
-
-  type tagsType = {
-    title?: string;
-    artist?: string;
-    album?: string;
-    APIC?: {
-      description: string;
-      imageBuffer: string;
-      mime: string;
-    }
-  }
-
-  let tags: tagsType = {}
-
-  let meta;
+  // update each song in results 
   for (let i = 0; i < results.length; i++) {
     if (results[i].id && ids.includes(results[i].id)) {
-
-      let newTitle = '';
-      let newArtist = '';
-      let newAlbum = '';
-      let newArtwork = '';
-
-      if (results[i].info.metadata) {
-        meta = results[i].info.metadata;
-      }
-
-      if (title) {
-        newTitle = title;
-        tags.title = newTitle;
-      }
-      else if (meta && meta.name) {
-        newTitle = meta.name;
-        tags.title = newTitle;
-      }
-
-      if (artist) {
-        newArtist = artist;
-        tags.artist = newArtist;
-      }
-      else if (meta && meta.artist) {
-        newArtist = meta.artist;
-        tags.artist = newArtist;
-      }
-
-      if (album) {
-        newAlbum = album;
-        tags.album = newAlbum;
-      }
-      else if (meta && meta.album) {
-        newAlbum = meta.album;
-        tags.album = newAlbum;
-      }
-
-      if (artwork) {
-        newArtwork = artwork;
-      }
-      else if (meta && meta.artwork) {
-        newArtwork = meta.artwork;
-      }
-
-      if (newArtwork) {
-        // extract mime from start of string
-        const infoString = newArtwork.split(/,(.*)/s)[0];
-        const mimeTypeFull = infoString.split(/;(.*)/s)[0];
-        const mimeType = mimeTypeFull.split(/:(.*)/s)[1];
-        // buffer after mimetype and encoding scheme
-        const bufferString = newArtwork.split(/,(.*)/s)[1];
-        // is this possiblly why the image is corrupting? Maybe try to pass the full
-        // artwork string instead of the buffer string?
-        tags.APIC = {
-          description: 'Album Cover',
-          imageBuffer: bufferString,
-          mime: mimeType
-        };
-      }
-
-      // TODO: Move this to export, only save edits if song is being exported
-      // and the changed flag in the table is set
-      // if (results[i].data) {
-      //   try {
-      //     if (['audio/mpeg', 'audio/flac'].includes(results[i].info.fileType ?? '')) {
-      //       const newData = fromByteArray(NodeID3.writeExpo(toByteArray(results[i].data), tags));
-      //       results[i].data = newData;
-      //     }
-      //   }
-      //   catch (error) {
-      //     console.log('error modiying audio file data', error); 
-      //   }
-      // }
-
+      results[i].edited = true;
       if (results[i].info) {
         results[i].info.metadata = {
-          name: newTitle,
-          artist: newArtist,
-          album: newAlbum,
-          artwork: newArtwork
+          name: title,
+          artist: artist,
+          album: album,
+          artwork: artwork
         };
       }
-
     }
   }
   
@@ -353,6 +395,7 @@ export const saveToLibrary = async (
         const album = song.info.metadata?.album ? song.info.metadata.album : '';
         const artwork = song.info.metadata?.artwork ? song.info.metadata.artwork : '';
         const fileType = song.info.fileType ? song.info.fileType : '';
+        const edited = song.edited ? true : false;
         let fileName = song.name ? song.name : '';
         if (fileName === '' && fileType !== '') {
           fileName = `song.${fileType}`;
@@ -360,7 +403,7 @@ export const saveToLibrary = async (
         const genre = 'Music';
         const duration = 0;
         // insert song into database
-        const id = await db.insertSong(title, artists, album, genre, duration, fileType, fileName);
+        const id = await db.insertSong(title, artists, album, genre, duration, fileType, fileName, edited);
         if (id !== -1) {
           // create directory and write song data if successfully inserted into DB
           await createLibraryDir();
@@ -434,6 +477,7 @@ export const getSongByResult = (result: any): SongType => {
       name: result.fileName,
       id: result.id,
       data: '',
+      edited: result.edited ? true : false,
       info: {
         fileType: result.fileType,
         format: 'id3v2.4',
@@ -452,6 +496,7 @@ export const getSongByResult = (result: any): SongType => {
       name: '',
       id: '-1',
       data: '',
+      edited: false,
       info: {}
     };
   }
@@ -585,7 +630,6 @@ export const writeImageToLibrary = async (artwork: string, dir: string) => {
     console.log('no artwork');
   }
 }
-
 
 export const deleteImagesFromDirectory = async (dir: string) => {
   try {

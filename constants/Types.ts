@@ -16,6 +16,18 @@ export type SongType = {
   "data": string;
   "info": InfoType;
   "pageType"?: PageType;
+  "edited"?: boolean;
+};
+
+export type TagsType = {
+  title?: string;
+  artist?: string;
+  album?: string;
+  APIC?: {
+    description: string;
+    imageBuffer: string;
+    mime: string;
+  }
 };
 
 export type InstructionsModalProps = {

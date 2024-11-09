@@ -339,13 +339,20 @@ export const saveEdits = (
   for (let i = 0; i < results.length; i++) {
     if (results[i].id && ids.includes(results[i].id)) {
       results[i].edited = true;
-      if (results[i].info) {
-        results[i].info.metadata = {
-          name: title,
-          artist: artist,
-          album: album,
-          artwork: artwork
-        };
+      const metadata = results[i].info?.metadata;
+      if (metadata) {
+        if (title !== '') {
+          metadata.name = title;
+        }
+        if (artist !== '') {
+          metadata.artist = artist;
+        }
+        if (album !== '') {
+          metadata.album = album;
+        }
+        if (artwork !== '') {
+          metadata.artwork = artwork;
+        }
       }
     }
   }

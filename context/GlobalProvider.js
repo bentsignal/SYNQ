@@ -11,6 +11,7 @@ export const useGlobalContext = () => useContext(GlobalContext);
 const GlobalProvider = ({ children, initTheme, initPremium }) => {
 
   const [homeState, setHomeState] = useState(0);
+  const [importState, setImportState] = useState(0);
   const [premium, setPremium] = useState(initPremium ? initPremium : false);
   const [wifiResults, setWifiResults] = useState([]);
   const [results, setResults] = useState([]);
@@ -61,6 +62,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [nextUp, setNextUp] = useState([]);
   const [rewind, setRewind] = useState(false);
   const [numModified, setNumModified] = useState(0);
+  const [shouldSaveToLibrary, setShouldSaveToLibrary] = useState(true);
 
   useEffect(() => {
     if (initTheme !== '') {
@@ -86,6 +88,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
     <GlobalContext.Provider
       value={{
         homeState, setHomeState,
+        importState, setImportState,
         premium, setPremium,
         results, setResults,
         wifiResults, setWifiResults,
@@ -137,6 +140,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         nextUp, setNextUp,
         rewind, setRewind,
         numModified, setNumModified,
+        shouldSaveToLibrary, setShouldSaveToLibrary,
       }}
     >
       {children}

@@ -7,7 +7,15 @@ import { exportSongs, saveToLibrary } from '@/lib/SongManager';
 import { darkenColor } from '@/lib/ColorManager';
 import Notifications from '@/components/notifications/Notifications';
 
-const ImportControls = ({reset}: {reset?: () => void}) => {
+const ImportControls = (
+  {altTitle, mainTitle, altHandle, mainHandle, altDisabled, mainDisabled}: {
+  altTitle?: string,
+  mainTitle?: string,
+  altHandle?: () => void,
+  mainHandle?: () => void,
+  altDisabled?: boolean,
+  mainDisabled?: boolean,
+}) => {
 
   const {
 
@@ -15,11 +23,8 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
     exportDisabled, homeState, selectEnabled,
     selectedSongs, premium, theme,
 
-    setHomeState, setResults, setExportDisabled,
-    setLoading, setZipping, setImporting, 
     setShowDelete, setEditSong, setShowEdit, 
-    setTransferSize, setShowOverlay,
-    setShowGlobalLoading,
+    setShowOverlay, setShowGlobalLoading,
 
   } = useGlobalContext();
 
@@ -83,51 +88,6 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
     setShowDelete(true);
   }
 
-  const handleCancel = () => {
-    setLoading(false);
-    setZipping(false);
-    setImporting(false);
-    setTransferSize(0);
-    setHomeState(0);
-    setResults([]);
-    setExportDisabled(true);
-    if (reset) {
-      reset();
-    }
-  }
-
-  const handleImport = () => {
-    setExportDisabled(true);
-    setLoading(true);
-    setZipping(true);
-    const songs = premium ? results : [results[0]]
-    const progress = (value: number) => {
-      // TODO: Implement progress
-    }
-    setTimeout(() => {
-      saveToLibrary(songs, progress).then(() => {
-        setLoading(false);
-        setZipping(false);
-        setHomeState(3);
-        setTransferSize(0);
-        setResults([]);
-        if (reset) {
-          reset();
-        }
-      })
-      .catch((error) => {
-        setLoading(false);
-        setZipping(false);
-        setHomeState(4);
-        setTransferSize(0);
-        setResults([]);
-        if (reset) {
-          reset();
-        }
-      })
-    }, 10)
-  }
-
   return (
     <View style={Local.container}>
       <Notifications />
@@ -160,28 +120,20 @@ const ImportControls = ({reset}: {reset?: () => void}) => {
           />
         </TouchableOpacity>
       </View>
-      {/* <Dropdown
-          data={[]}
-          down={false}
-          setSelected={() => {}}
-          disabled={exportDisabled}
-          placeholder='Save options'
-          containerStyles={Local.dropdownContainer}
-        /> */}
       <View style={Local.mainButtonContainer}>
         <CustomButton 
-          title='Cancel'
+          title={altTitle ?? 'Cancel'}
           background={Colors.altButton}
-          handlePress={handleCancel}
-          disabled={(homeState == 1 && transferSize > 0) || (homeState == 2 && loading)}
+          handlePress={altHandle}
+          disabled={altDisabled}
           disabledColor={Colors.altDisabled}
           customStyles={{flex: 1}}
         />
         <CustomButton 
-          title='Next'
+          title={mainTitle ?? 'Next'}
           background={theme}
-          handlePress={handleImport}
-          disabled={exportDisabled}
+          handlePress={mainHandle}
+          disabled={mainDisabled}
           disabledColor={darkenColor(theme, 40, 50)}
           customStyles={{flex: 1}}
         />

@@ -1,11 +1,9 @@
-import { Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { useEffect, useState } from 'react';
 import PageTitle from '@/components/PageTitle';
 import { getCompletion } from '@/lib/SongManager';
-import Top from '@/components/Top';
 import SongList from '@/components/song/SongList';
 import ImportControls from '../ImportControls';
 import Progress from '@/components/Progress';
@@ -19,20 +17,36 @@ const Files = () => {
     results, loading, zipping, 
     importing, premium, transferSize,
     transferProgress, loadAnimInProgress,
+    homeState, exportDisabled,
 
-    setShowInfoModal,
+    setShowInfoModal, setHomeState,
+    setImportState, setLoading, setZipping, setImporting,
+    setTransferSize, setResults, setExportDisabled,
 
   } = useGlobalContext();
 
   const [completion, setCompletion] = useState(0);
-
-  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (transferSize >= 0 && transferProgress >= 0) {
       setCompletion(getCompletion(transferSize, transferProgress));
     }
   }, [transferProgress]);
+
+  const handleCancel = () => {
+    setLoading(false);
+    setZipping(false);
+    setImporting(false);
+    setTransferSize(0);
+    setHomeState(0);
+    setResults([]);
+    setExportDisabled(true);
+  }
+
+  const handleNext = () => {
+    setImportState(homeState);
+    setHomeState(5);
+  }
 
   const getBody = () => {
     if (loading || loadAnimInProgress) {
@@ -77,7 +91,14 @@ const Files = () => {
         showList={results.length > 1 && premium}
       />
       {getBody()}
-      <ImportControls />
+      <ImportControls 
+        altTitle='Cancel'
+        mainTitle='Next'
+        altHandle={handleCancel}
+        mainHandle={handleNext}
+        altDisabled={loading}
+        mainDisabled={exportDisabled}
+      />
     </View>
   );
   

@@ -1,0 +1,152 @@
+import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { useState } from "react";
+import { Styles } from "@/constants/Styles";
+import PageTitle from "@/components/PageTitle";
+import InfoModal from "@/components/modals/InfoModal";
+import ImportControls from "@/components/import/ImportControls";
+import { useGlobalContext } from "@/context/GlobalProvider";
+import CustomButton from "@/components/CustomButton";
+import { Colors } from "@/constants/Colors";
+import Checkbox from "expo-checkbox";
+import { saveToLibrary } from "@/lib/SongManager";
+import axios from "axios";
+import Progress from "@/components/Progress";
+
+const SavePrompt = () => {
+
+  const { 
+
+    theme, premium, results,
+    importState, loading,
+    shouldSaveToLibrary, exportDisabled,
+
+    setExportDisabled, setLoading, setZipping,
+    setHomeState, setShowInfoModal,
+    setTransferSize, setResults,
+    setShouldSaveToLibrary,
+  
+  } = useGlobalContext();
+
+  const callReset = async () => {
+    return await axios.get(`${URL}/reset`);
+  }
+  
+  const resetResults = () => {
+    callReset().then((response) => {
+      return null;
+    })
+    .catch((error) => {
+      console.log(error);
+      return null;
+    })
+  }
+
+  const handleImport = () => {
+    if (shouldSaveToLibrary) {
+      setExportDisabled(true);
+      setLoading(true);
+      setZipping(true);
+      const songs = premium ? results : [results[0]]
+      const progress = (value: number) => {
+        // TODO: Implement progress
+      } 
+      setTimeout(() => {
+        saveToLibrary(songs, progress).then(() => {
+          setLoading(false);
+          setZipping(false);
+          setHomeState(3);
+          setTransferSize(0);
+          setResults([]);
+          if (importState === 1) {
+            resetResults();
+          }
+        })
+        .catch((error) => {
+          setLoading(false);
+          setZipping(false);
+          setHomeState(4);
+          setTransferSize(0);
+          setResults([]);
+          if (importState === 1) {
+            resetResults();
+          }
+        })
+      }, 10);
+    }
+    else {
+      setHomeState(3);
+      setResults([]);
+      setTransferSize(0);
+      setLoading(false);
+      setZipping(false);
+    }
+  }
+
+  return (
+    <View style={Styles.body}>
+      <InfoModal />
+      <PageTitle 
+        title='Save Music'
+        infoHandler={() => setShowInfoModal(true)}
+        showList={false}
+      />
+      <View style={[Local.body, {display: loading ? 'none' : 'flex'}]}>
+        <Text style={Local.prompt}>
+          Save to SYNQ library?
+        </Text>
+        <Text style={Local.info}>
+          If you want to listen to your music here, check the box below.
+        </Text>
+        <View style={Local.checkboxContainer}>
+          <Text style={Local.info}>Save to library</Text>
+          <Checkbox
+            value={shouldSaveToLibrary}
+            onValueChange={setShouldSaveToLibrary}
+            color={theme}
+          />
+        </View>
+      </View>
+      <View style={[Local.body, {display: loading ? 'flex' : 'none'}]}>
+        <Progress 
+          completion={0}
+          loading={loading}
+          showCircle={false}
+        />
+      </View>
+      <ImportControls 
+        altTitle='Back'
+        mainTitle='Finish'
+        altHandle={() => setHomeState(5)}
+        mainHandle={handleImport}
+        altDisabled={exportDisabled}
+        mainDisabled={exportDisabled}
+      />
+    </View>
+  );
+}
+
+const Local = StyleSheet.create({
+  body: {
+    ...Styles.main,
+    width: '90%',
+    marginBottom: Dimensions.get('screen').height < 700 ? 70 : 50,
+  },
+  prompt: {
+    ...Styles.h3,
+    color: Colors.text,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  info: {
+    ...Styles.p,
+    color: Colors.text,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    gap: 10,
+  }
+});
+
+export default SavePrompt;

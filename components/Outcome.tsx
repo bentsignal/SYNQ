@@ -16,7 +16,7 @@ export const Success = () => {
 
   const { 
     
-    theme, haptic,
+    theme, haptic, shouldSaveToLibrary,
 
     setHomeState,
   
@@ -35,7 +35,9 @@ export const Success = () => {
 
   const handleAnimFinish = () => {
     setTimeout(async () => {
+      if (shouldSaveToLibrary) {
       router.replace('/(tabs)/library')
+      }
       setHomeState(0);
       let countStr = await AsyncStorage.getItem('importCount');
       if (countStr) {

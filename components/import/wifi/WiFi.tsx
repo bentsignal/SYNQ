@@ -1,16 +1,13 @@
 import { Text, View, Dimensions, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import SongList from '@/components/song/SongList';
 import PageTitle from '@/components/PageTitle';
-import Top from '@/components/Top';
 import ImportInstructions from '@/components/import/wifi/ImportInstructions';
 import ImportControls from '../ImportControls';
 import InfoModal from '@/components/modals/InfoModal';
-import { getCompletion } from '@/lib/SongManager';
 import { Colors } from '@/constants/Colors';
 import Progress from '@/components/Progress';
 import { PageType } from '@/constants/Types';
@@ -22,9 +19,12 @@ const WiFi = () => {
     results, transferSize, loading,
     ip, wifiDisabled, premium,
     transferProgress, loadAnimInProgress,
+    homeState, exportDisabled,
 
     setResults, setExportDisabled, setLoading,
     setShowSaveInst, setShowInfoModal,
+    setImportState, setHomeState,
+    setZipping, setImporting, setTransferSize,
 
   } = useGlobalContext();
 
@@ -39,12 +39,8 @@ const WiFi = () => {
     }
   });
 
-  const insets = useSafeAreaInsets();
-
-  const [exporting, setExporting] = useState(false);
   const [completion, setCompletion] = useState(0);
   const [URL, setURL] = useState('');
-  const PORT = 80;
 
   useEffect(() => {
 
@@ -73,6 +69,22 @@ const WiFi = () => {
       console.log(error);
       return null;
     })
+  }
+
+  const handleCancel = () => {
+    setLoading(false);
+    setZipping(false);
+    setImporting(false);
+    setTransferSize(0);
+    setHomeState(0);
+    setResults([]);
+    setExportDisabled(true);
+    resetResults();
+  }
+
+  const handleNext = () => {
+    setImportState(homeState);
+    setHomeState(5);
   }
 
   const getBody = () => {
@@ -141,7 +153,14 @@ const WiFi = () => {
       />
       {getInstructions()}
       {getBody()}
-      <ImportControls reset={resetResults}/>
+      <ImportControls
+        altTitle='Cancel'
+        mainTitle='Next'
+        altHandle={handleCancel}
+        mainHandle={handleNext}
+        altDisabled={transferSize > 0}
+        mainDisabled={exportDisabled}
+      />
     </View>
   )
 }

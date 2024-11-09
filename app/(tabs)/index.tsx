@@ -11,6 +11,8 @@ import { Success, Failure } from "@/components/Outcome";
 import InfoModal from "@/components/modals/InfoModal";
 import Notifications from "@/components/notifications/Notifications";
 import * as server from "expo-http-server";
+import ExportPrompt from "@/components/import/ExportPrompt";
+import SavePrompt from "@/components/import/SavePrompt";  
 
 const Home = () => {
 
@@ -26,19 +28,6 @@ const Home = () => {
   } = useGlobalContext();
 
   const { homeState, setHomeState } = useGlobalContext();
-
-  const Local = StyleSheet.create({
-    notifications: {
-      position: 'absolute',
-      bottom: 0,
-    },
-    scrollView: {
-      width: '100%',
-    },
-    scrollViewContent: {
-      alignItems: 'center',
-    }
-  });
 
   const browseFiles = () => {
     setLoading(true);
@@ -91,6 +80,16 @@ const Home = () => {
       <Failure />
     );
   }
+  else if (homeState === 5) {
+    return (
+      <ExportPrompt />
+    );
+  }
+  else if (homeState === 6) {
+    return (
+      <SavePrompt />
+    );
+  }
   else {
     return (
       <View style={Styles.body}>
@@ -136,5 +135,18 @@ const Home = () => {
   }
   
 }
+
+const Local = StyleSheet.create({
+  notifications: {
+    position: 'absolute',
+    bottom: 0,
+  },
+  scrollView: {
+    width: '100%',
+  },
+  scrollViewContent: {
+    alignItems: 'center',
+  }
+});
 
 export default Home;

@@ -95,7 +95,8 @@ const Library = () => {
       db.getSongs().then((results) => {
         let songs: SongType[] = [];
         let dir;
-        for (let i = results.length - 1; i >= 0; i--) {
+        // for (let i = results.length - 1; i >= 0; i--) {
+        for (let i = 0; i < results.length; i++) {
           dir = `${FileSystem.documentDirectory}library/${results[i].id}`;
           const song = getSongByResult(results[i]);
           songs.push(song);

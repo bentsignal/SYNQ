@@ -26,6 +26,8 @@ const CustomButton = ({
   customStyles,
 }: MainButtonProps) => {
 
+  const bgColor = background ? background : Colors.altButton;
+
   const Local = StyleSheet.create({
     buttonWrapper: {
       ...Styles.roundedContainer,
@@ -33,7 +35,7 @@ const CustomButton = ({
       minWidth: 100,
       height: 42,
       justifyContent: 'center',
-      backgroundColor: disabled ? disabledColor : background,
+      backgroundColor: disabled ? disabledColor : bgColor,
       width: buttonWidth ? buttonWidth: 100,
     },
     buttonText: {

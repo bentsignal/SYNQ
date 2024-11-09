@@ -48,6 +48,49 @@ const DeleteModal = () => {
     }
   }
 
+  const handleCancel = () => {
+    setShowOverlay(false);
+    setShowDelete(false)
+  }
+
+  const handleDelete = async () => {
+    setShowOverlay(false);
+    setShowDelete(false);
+    setSelectEnabled(false);
+    // handle bulk delete
+    if (selectedSongs.length > 0) {
+      const newResults = removeSongs(results, selectedSongs);
+      if (newResults.length <= 0) {
+        setExportDisabled(true);
+        setHomeState(0);
+      }
+      setResults(newResults);
+    }
+    // remove from library
+    else if (editSong.pageType === PageType.LIBRARY) {
+      deleteFromLibrary(editSong.id);
+      // remove from queue and next up if applicable
+      const queue = await TrackPlayer.getQueue();
+      const indiciesToRemove = queue
+        .map((track: Track, index: number) => track.id === editSong.id ? index : -1)
+        .filter(index => index !== -1);
+      await TrackPlayer.remove(indiciesToRemove);
+      setNumModified(numModified + 1);
+    }
+    // remove from import
+    else if (editSong.pageType === PageType.IMPORT) {
+      const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id]
+      const newResults = removeSongs(results, ids);
+      if (newResults.length <= 0) {
+        setExportDisabled(true);
+      }
+      if (newResults.length === 0) {
+        setHomeState(0);
+      }
+      setResults(newResults);
+    }
+  }
+
   return (
     <View style={Local.container}>
       <Modal
@@ -65,42 +108,12 @@ const DeleteModal = () => {
               <CustomButton 
                 title='Cancel'
                 background={Colors.altButton}
-                handlePress={() => {
-                  setShowOverlay(false);
-                  setShowDelete(false)
-                }}
+                handlePress={handleCancel}
               />
               <CustomButton 
                 title='Delete'
                 background={theme}
-                handlePress={async () => {
-                  setShowOverlay(false);
-                  setShowDelete(false);
-                  setSelectEnabled(false);
-                  // remove from library
-                  if (editSong.pageType === PageType.LIBRARY) {
-                    deleteFromLibrary(editSong.id);
-                    // remove from queue and next up if applicable
-                    const queue = await TrackPlayer.getQueue();
-                    const indiciesToRemove = queue
-                      .map((track: Track, index: number) => track.id === editSong.id ? index : -1)
-                      .filter(index => index !== -1);
-                    await TrackPlayer.remove(indiciesToRemove);
-                    setNumModified(numModified + 1);
-                  }
-                  // remove from import
-                  else if (editSong.pageType === PageType.IMPORT) {
-                    const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id]
-                    const newResults = removeSongs(results, ids);
-                    if (newResults.length <= 0) {
-                      setExportDisabled(true);
-                    }
-                    if (newResults.length === 0) {
-                      setHomeState(0);
-                    }
-                    setResults(newResults);
-                  }
-                }}
+                handlePress={handleDelete}
               />
             </View>
           </View> 

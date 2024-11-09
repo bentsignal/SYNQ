@@ -1,8 +1,6 @@
 import { View, Image, TouchableOpacity, StyleSheet, Dimensions, Animated } from 'react-native';
 import { useEffect, useLayoutEffect, useState, useRef } from 'react';
-import { Styles } from '@/constants/Styles';
 import FastImage from 'react-native-fast-image';
-import { Colors } from '@/constants/Colors';
 import { getCoverImageData } from '@/lib/SongManager';
 import { useGlobalContext } from '@/context/GlobalProvider';
 
@@ -76,12 +74,12 @@ export const ListCover = ({image, id, fade, propOnLoad}: {
 
   return (
     <Animated.View style={[Local.container, {opacity: opacityRef}]}>
-      <FastImage 
+      <FastImage
         source={src ? {uri: src} : require('@/assets/icons/music.png')}
         style={Local.artwork}
         onLoad={() => {
           setLoaded(true);
-          if (fade && src) {
+          if (fade) {
             Animated.timing(opacityRef, {
               toValue: 1,
               duration: 300,

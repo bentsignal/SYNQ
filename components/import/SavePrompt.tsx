@@ -1,11 +1,9 @@
 import { View, Text, StyleSheet, Dimensions } from "react-native";
-import { useState } from "react";
 import { Styles } from "@/constants/Styles";
 import PageTitle from "@/components/PageTitle";
 import InfoModal from "@/components/modals/InfoModal";
 import ImportControls from "@/components/import/ImportControls";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import CustomButton from "@/components/CustomButton";
 import { Colors } from "@/constants/Colors";
 import Checkbox from "expo-checkbox";
 import { saveToLibrary } from "@/lib/SongManager";

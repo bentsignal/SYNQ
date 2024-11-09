@@ -17,7 +17,8 @@ const ExportPrompt = () => {
     premium,
   
     setHomeState, setShowInfoModal,
-    setShowGlobalLoading, setShowGlobalProgress
+    setShowGlobalLoading, 
+    setShowGlobalProgress,
   
   } = useGlobalContext();
 

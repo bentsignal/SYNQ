@@ -3,7 +3,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import CustomButton from '@/components/CustomButton';
-import { exportSongs, saveToLibrary } from '@/lib/SongManager';
+import { exportSongs } from '@/lib/SongManager';
 import { darkenColor } from '@/lib/ColorManager';
 import Notifications from '@/components/notifications/Notifications';
 
@@ -19,9 +19,8 @@ const ImportControls = (
 
   const {
 
-    results, loading, transferSize,
-    exportDisabled, homeState, selectEnabled,
-    selectedSongs, premium, theme,
+    results, selectEnabled,
+    selectedSongs, theme,
 
     setShowDelete, setEditSong, setShowEdit, 
     setShowOverlay, setShowGlobalLoading,

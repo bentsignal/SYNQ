@@ -340,20 +340,16 @@ export const saveEdits = (
     if (results[i].id && ids.includes(results[i].id)) {
       results[i].edited = true;
       const metadata = results[i].info?.metadata;
-      if (metadata) {
-        if (title !== '') {
-          metadata.name = title;
-        }
-        if (artist !== '') {
-          metadata.artist = artist;
-        }
-        if (album !== '') {
-          metadata.album = album;
-        }
-        if (artwork !== '') {
-          metadata.artwork = artwork;
-        }
-      }
+      let newTitle = title ? title : results[i].info.metadata?.name;
+      let newArtist = artist ? artist : results[i].info.metadata?.artist;
+      let newAlbum = album ? album : results[i].info.metadata?.album;
+      let newArtwork = artwork ? artwork : results[i].info.metadata?.artwork;
+      results[i].info.metadata = {
+        name: newTitle,
+        artist: newArtist,
+        album: newAlbum,
+        artwork: newArtwork
+      };
     }
   }
   

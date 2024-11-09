@@ -9,6 +9,9 @@ import Checkbox from "expo-checkbox";
 import { saveToLibrary } from "@/lib/SongManager";
 import axios from "axios";
 import Progress from "@/components/Progress";
+import * as StoreReview from 'expo-store-review';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import CFG from "@/constants/Config";
 
 const SavePrompt = () => {
 
@@ -36,7 +39,35 @@ const SavePrompt = () => {
     .catch((error) => {
       console.log(error);
       return null;
-    })
+    });
+  }
+
+  const callReview = async () => {
+    await StoreReview.isAvailableAsync();
+    await StoreReview.requestReview();
+  }
+
+  const checkForReview = async () => {
+    try {
+      let countStr = await AsyncStorage.getItem('importCount');
+      if (countStr) {
+        let count = parseInt(countStr);
+        count++;
+        await AsyncStorage.setItem('importCount', count.toString());
+        if (count === CFG.showReviewAfter) {
+          let available = await StoreReview.isAvailableAsync();
+          if (available) {
+            await callReview();
+          }
+        }
+      }
+      else {
+        await AsyncStorage.setItem('importCount', '1');
+      }
+    }
+    catch (error) {
+      console.log('Error requesting app store review:', error);
+    }
   }
 
   const handleImport = () => {
@@ -78,6 +109,9 @@ const SavePrompt = () => {
       setLoading(false);
       setZipping(false);
     }
+    setTimeout(() => {
+      checkForReview();
+    }, 1500);
   }
 
   return (

@@ -1,8 +1,6 @@
 import { Text, View, StyleSheet } from "react-native";
 import LottieView from 'lottie-react-native';
 import * as Haptics from 'expo-haptics';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as StoreReview from 'expo-store-review';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import CustomButton from '@/components/CustomButton';
 import { replaceColor } from 'lottie-colorify';
@@ -39,29 +37,6 @@ export const Success = () => {
       router.replace('/(tabs)/library')
       }
       setHomeState(0);
-      let countStr = await AsyncStorage.getItem('importCount');
-      if (countStr) {
-        try {
-          let count = parseInt(countStr);
-          count++;
-          if (count === 10) {
-            try {
-              await StoreReview.isAvailableAsync();
-              await StoreReview.requestReview();
-            }
-            catch (error) {
-              console.log('failed to request app store review');
-            }
-          }
-          await AsyncStorage.setItem('importCount', `${count}`);
-        }
-        catch(error) {
-          console.log(error);
-        }
-      }
-      else {
-        await AsyncStorage.setItem('importCount', '1');
-      }
     }, 1500);
   }
 

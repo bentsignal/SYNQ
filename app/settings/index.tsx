@@ -7,6 +7,7 @@ import Theme from "@/components/settings/Theme";
 import CategoryTitle from "@/components/settings/CategoryTitle";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import Haptic from "@/components/settings/Haptic";
+import PremiumToggle from "@/components/settings/PremiumToggle";
 
 const Settings = () => {
 
@@ -36,6 +37,10 @@ const Settings = () => {
         <CategoryTitle title="Haptic Feedback" />
         <View style={Local.settingsCategoryContainer}>
           <Haptic />
+        </View>
+        <CategoryTitle title="Premium Toggle" />
+        <View style={Local.settingsCategoryContainer}>
+          <PremiumToggle />
         </View>
       </ScrollView>
     </View>

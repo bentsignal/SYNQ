@@ -14,13 +14,13 @@ const Files = () => {
 
   const { 
     
-    results, loading, zipping, 
-    importing, premium, transferSize,
+    results, loading,
+    premium, transferSize,
     transferProgress, loadAnimInProgress,
     homeState, exportDisabled,
 
     setShowInfoModal, setHomeState,
-    setImportState, setLoading, setZipping, setImporting,
+    setImportState, setLoading,
     setTransferSize, setResults, setExportDisabled,
 
   } = useGlobalContext();
@@ -35,8 +35,6 @@ const Files = () => {
 
   const handleCancel = () => {
     setLoading(false);
-    setZipping(false);
-    setImporting(false);
     setTransferSize(0);
     setHomeState(0);
     setResults([]);

@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { Colors } from '@/constants/Colors';
 import { getLogo } from '@/constants/Logos';
 import { NotificationType, SongType } from '@/constants/Types';
-import { fetchMoreSongs, getSongById, getNextValidSong } from '@/lib/SongManager';
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -23,8 +22,6 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [selectedId, setSelectedId] = useState('');
   const [editSong, setEditSong] = useState({});
   const [loading, setLoading] = useState(false);
-  const [zipping, setZipping] = useState(false);
-  const [importing, setImporting] = useState(false);
   const [ip, setIP] = useState('0.0.0.0');
   const [transferSize, setTransferSize] = useState(0);
   const [transferProgress, setTransferProgress] = useState(0);
@@ -100,8 +97,6 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         showSaveInst, setShowSaveInst,
         transferPage, setTransferPage,
         loading, setLoading,
-        zipping, setZipping,
-        importing, setImporting,
         selectedId, setSelectedId,
         transferSize, setTransferSize,
         serverStarted, setServerStarted,

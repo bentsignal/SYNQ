@@ -21,7 +21,7 @@ const Home = () => {
     serverStarted,
     
     setServerStarted, setShowWelcome, setShowInfoModal,
-    setLoading, setImporting, setTransferProgress, 
+    setLoading, setTransferProgress, 
     setTransferSize, setLoadAnimInProgress, 
     setExportDisabled, setResults,
   
@@ -31,7 +31,6 @@ const Home = () => {
 
   const browseFiles = () => {
     setLoading(true);
-    setImporting(true);
     const updateCountdown = (value: number) => setTransferProgress(value);
     const updateSize = (value: number) => {
       setTransferSize(value)
@@ -42,7 +41,6 @@ const Home = () => {
     importFiles(updateCountdown, updateSize).then((results) => {
       setTransferSize(-1);
       setTransferProgress(-1);
-      setImporting(false);
       setLoading(false);
       if (results.length > 0) {
         setExportDisabled(false);
@@ -55,7 +53,6 @@ const Home = () => {
     .catch((error) => {
       console.log(error);
       setLoading(false);
-      setImporting(false);
       setHomeState(4);
     })
   }

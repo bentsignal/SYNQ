@@ -21,7 +21,7 @@ const SavePrompt = () => {
     importState, loading,
     shouldSaveToLibrary, exportDisabled,
 
-    setExportDisabled, setLoading, setZipping,
+    setExportDisabled, setLoading,
     setHomeState, setShowInfoModal,
     setTransferSize, setResults,
     setShouldSaveToLibrary,
@@ -74,7 +74,6 @@ const SavePrompt = () => {
     if (shouldSaveToLibrary) {
       setExportDisabled(true);
       setLoading(true);
-      setZipping(true);
       const songs = premium ? results : [results[0]]
       const progress = (value: number) => {
         // TODO: Implement progress
@@ -82,7 +81,6 @@ const SavePrompt = () => {
       setTimeout(() => {
         saveToLibrary(songs, progress).then(() => {
           setLoading(false);
-          setZipping(false);
           setHomeState(3);
           setTransferSize(0);
           setResults([]);
@@ -92,7 +90,6 @@ const SavePrompt = () => {
         })
         .catch((error) => {
           setLoading(false);
-          setZipping(false);
           setHomeState(4);
           setTransferSize(0);
           setResults([]);
@@ -107,7 +104,6 @@ const SavePrompt = () => {
       setResults([]);
       setTransferSize(0);
       setLoading(false);
-      setZipping(false);
     }
     setTimeout(() => {
       checkForReview();

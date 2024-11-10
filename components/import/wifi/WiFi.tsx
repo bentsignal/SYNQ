@@ -24,7 +24,7 @@ const WiFi = () => {
     setResults, setExportDisabled, setLoading,
     setShowSaveInst, setShowInfoModal,
     setImportState, setHomeState,
-    setZipping, setImporting, setTransferSize,
+    setTransferSize,
 
   } = useGlobalContext();
 
@@ -73,8 +73,6 @@ const WiFi = () => {
 
   const handleCancel = () => {
     setLoading(false);
-    setZipping(false);
-    setImporting(false);
     setTransferSize(0);
     setHomeState(0);
     setResults([]);

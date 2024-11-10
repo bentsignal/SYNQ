@@ -12,13 +12,10 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [homeState, setHomeState] = useState(0);
   const [importState, setImportState] = useState(0);
   const [premium, setPremium] = useState(initPremium ? initPremium : false);
-  const [wifiResults, setWifiResults] = useState([]);
   const [results, setResults] = useState([]);
   const [exportDisabled, setExportDisabled] = useState(true);
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(false);
-  const [showSaveInst, setShowSaveInst] = useState(false);
   const [selectedId, setSelectedId] = useState('');
   const [editSong, setEditSong] = useState({});
   const [loading, setLoading] = useState(false);
@@ -31,8 +28,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [selectEnabled, setSelectEnabled] = useState(false);
   const [selectedSongs, setSelectedSongs] = useState([]);
   const [loadAnimInProgress, setLoadAnimInProgress] = useState(false);
-  const [showSongOptions, setShowSongOptions] = useState(false);
-  const [transferPage, setTransferPage] = useState('<html><body><p>ERROR: Could not load page</p></body></html>');
+  const [showSongOptions, setShowSongOptions] = useState(false);;
   const [showOverlay, setShowOverlay] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [theme, setTheme] = useState(initTheme ? initTheme : Colors.main);
@@ -48,16 +44,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [showGlobalLoading, setShowGlobalLoading] = useState(false);
   const [showGlobalProgress, setShowGlobalProgress] = useState(false);
   const [globalProgress, setGlobalProgress] = useState(0);
-  const [songPlaying, setSongPlaying] = useState(null);
-  const [paused, setPaused] = useState(false);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [sound, setSound] = useState(null);
   const [shuffle, setShuffle] = useState(false);
-  const [history, setHistory] = useState([]);
-  const [queue, setQueue] = useState([]);
-  const [nextUp, setNextUp] = useState([]);
-  const [rewind, setRewind] = useState(false);
   const [numModified, setNumModified] = useState(0);
   const [shouldSaveToLibrary, setShouldSaveToLibrary] = useState(true);
 
@@ -88,14 +75,10 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         importState, setImportState,
         premium, setPremium,
         results, setResults,
-        wifiResults, setWifiResults,
         exportDisabled, setExportDisabled,
         showDelete, setShowDelete,
         showEdit, setShowEdit,
         editSong, setEditSong,
-        showWelcome, setShowWelcome,
-        showSaveInst, setShowSaveInst,
-        transferPage, setTransferPage,
         loading, setLoading,
         selectedId, setSelectedId,
         transferSize, setTransferSize,
@@ -124,16 +107,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         showGlobalLoading, setShowGlobalLoading,
         showGlobalProgress, setShowGlobalProgress,
         globalProgress, setGlobalProgress,
-        songPlaying, setSongPlaying,
-        paused, setPaused,
-        duration, setDuration,
-        currentTime, setCurrentTime,
-        sound, setSound,
         shuffle, setShuffle,
-        history, setHistory,
-        queue, setQueue,
-        nextUp, setNextUp,
-        rewind, setRewind,
         numModified, setNumModified,
         shouldSaveToLibrary, setShouldSaveToLibrary,
       }}

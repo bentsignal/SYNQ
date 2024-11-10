@@ -9,9 +9,9 @@ const ShuffleButton = () => {
 
   const { 
 
-    shuffle, theme, songPlaying,
+    shuffle, theme,
     
-    setShuffle, setNextUp,
+    setShuffle,
   
   } = useGlobalContext();
   

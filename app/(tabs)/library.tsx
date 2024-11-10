@@ -21,7 +21,7 @@ const Library = () => {
     numModified, homeState,
     shuffle, theme, haptic,
 
-    setPaused, setShowOverlay, 
+    setShowOverlay, 
     setShowNotificationModal,
 
     addNotification,
@@ -48,11 +48,9 @@ const Library = () => {
       switch (event.type) {
         case Event.RemotePlay:
           TrackPlayer.play();
-          setPaused(false);
           break;
         case Event.RemotePause:
           TrackPlayer.pause();
-          setPaused(true);
           break;
         case Event.RemoteNext:
           skipRight(shuffle, theme, haptic);

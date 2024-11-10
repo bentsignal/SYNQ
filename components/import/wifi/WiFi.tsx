@@ -22,7 +22,7 @@ const WiFi = () => {
     homeState, exportDisabled,
 
     setResults, setExportDisabled, setLoading,
-    setShowSaveInst, setShowInfoModal,
+    setShowInfoModal,
     setImportState, setHomeState,
     setTransferSize,
 

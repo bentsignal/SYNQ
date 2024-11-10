@@ -20,7 +20,7 @@ const Home = () => {
 
     serverStarted,
     
-    setServerStarted, setShowWelcome, setShowInfoModal,
+    setServerStarted, setShowInfoModal,
     setLoading, setTransferProgress, 
     setTransferSize, setLoadAnimInProgress, 
     setExportDisabled, setResults,

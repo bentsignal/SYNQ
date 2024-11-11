@@ -100,7 +100,7 @@ const ImportControls = (
             style={Local.batchButtonIcon}
           />
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={[Styles.roundedContainer, Styles.backgroundBlendShadow, Local.batchButtonWrapper]}
           onPress={handleExport}
         >
@@ -108,7 +108,7 @@ const ImportControls = (
             source={require('@/assets/icons/share.png')}
             style={Local.batchButtonIcon}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity
           style={[Styles.roundedContainer, Styles.backgroundBlendShadow, Local.batchButtonWrapper]}
           onPress={handleDelete}

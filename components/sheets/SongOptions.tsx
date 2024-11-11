@@ -143,7 +143,7 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
             <SongOption 
               icon={require('@/assets/icons/share.png')}
               text={'Export'}
-              show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
+              show={[PageType.LIBRARY].includes(pageType)}
               handler={handleExport}
             />
             <SongOption

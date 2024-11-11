@@ -10,7 +10,7 @@ const GlobalProgress = () => {
     globalProgress, showGlobalLoading,
     
     showGlobalProgress 
-  
+
   } = useGlobalContext();
 
   const Local = StyleSheet.create({

@@ -91,7 +91,7 @@ const Local = StyleSheet.create({
   },
   info: {
     ...Styles.p,
-    color: Colors.text,
+    color: Colors.infoText,
     textAlign: 'center',
     marginBottom: 10,
   },

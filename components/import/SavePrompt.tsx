@@ -123,10 +123,11 @@ const SavePrompt = () => {
           Save to SYNQ library?
         </Text>
         <Text style={Local.info}>
-          If you want to listen to your music here, check the box below.
+          If you want to listen to your music in SYNQ, check the box below. Your music
+          will then be saved to your SYNQ library.
         </Text>
         <View style={Local.checkboxContainer}>
-          <Text style={Local.info}>Save to library</Text>
+          <Text style={Local.checkboxText}>Save to library</Text>
           <Checkbox
             value={shouldSaveToLibrary}
             onValueChange={setShouldSaveToLibrary}
@@ -167,9 +168,13 @@ const Local = StyleSheet.create({
   },
   info: {
     ...Styles.p,
-    color: Colors.text,
+    color: Colors.infoText,
     textAlign: 'center',
     marginBottom: 10,
+  },
+  checkboxText: {
+    ...Styles.h5,
+    color: Colors.text,
   },
   checkboxContainer: {
     flexDirection: 'row',

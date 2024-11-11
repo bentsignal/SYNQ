@@ -118,7 +118,7 @@ const InfoModal = () => {
               contentHeight={950}
             >
               <View style={Local.infoContentContainer}>
-                <View style={Local.infoStepContainer}>
+                {/* <View style={Local.infoStepContainer}>
                   <Text style={[Local.infoStepTitle, {marginBottom: 20}]}>
                     1. Hit the blue "Export" button
                   </Text>
@@ -127,10 +127,10 @@ const InfoModal = () => {
                     style={{ width: '100%', height: 200 }}
                     resizeMode='contain'
                   />
-                </View>
+                </View> */}
                 <View style={Local.infoStepContainer}>
                   <Text style={[Local.infoStepTitle, {marginBottom: 20}]}>
-                    2. Hit "Save to Files" in the popup
+                    1. Hit "Save to Files" in the popup
                   </Text>
                   <Image 
                     source={require('@/assets/images/save-instructions.jpg')}
@@ -140,7 +140,7 @@ const InfoModal = () => {
                 </View>
                 <View style={Local.infoStepContainer}>
                   <Text style={Local.infoStepTitle}>
-                    3. Find Spotify folder and hit Save:
+                    2. Find Spotify folder and hit Save:
                   </Text>
                   <Text style={Local.infoStepDescription}>
                     On My iPhone → Spotify

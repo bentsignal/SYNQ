@@ -119,7 +119,7 @@ const Song = ({song, fadeCover, fadeSong}: {
     },
     premiumMessageText: {
       ...Styles.infoText,
-      paddingBottom: 5,
+      paddingBottom: 10,
       textShadowColor: Colors.background,
       textShadowOffset: { width: 2, height: 2 },
       textShadowRadius: 10
@@ -231,7 +231,8 @@ const Song = ({song, fadeCover, fadeSong}: {
             Import multiple files with <Text style={{color: theme}}>Premium</Text>
           </Text>
           <CustomButton 
-            title={'Sign Up'}
+            title={'Learn More'}
+            buttonWidth={150}
             background={theme}
             disabledColor={darkenColor(theme, 40, 50)}
             opacity={.90}

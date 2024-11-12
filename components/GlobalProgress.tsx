@@ -29,8 +29,13 @@ const GlobalProgress = () => {
 
   return (
     <View style={Local.container}>
-      <Progress completion={globalProgress} loading={showGlobalLoading} showCircle={showGlobalProgress}/>
-      <Overlay show={showGlobalLoading} activeOpacity={0.7}/>
+      <Progress 
+        completion={globalProgress} 
+        loading={showGlobalLoading} 
+        showCircle={showGlobalProgress}
+        linear={true}
+      />
+      <Overlay show={showGlobalLoading} activeOpacity={0.9}/>
     </View>
   );
 }

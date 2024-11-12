@@ -11,9 +11,10 @@ type ProgressProps = {
   completion: number;
   loading: boolean;
   showCircle: boolean;
+  linear?: boolean;
 }
 
-const Progress = ({ completion, loading, showCircle }: ProgressProps) => {
+const Progress = ({ completion, loading, showCircle, linear }: ProgressProps) => {
 
   let completionRef = useRef(new Animated.Value(283)).current;
   let circleOpacityRef = useRef(new Animated.Value(0)).current;
@@ -68,17 +69,31 @@ const Progress = ({ completion, loading, showCircle }: ProgressProps) => {
     else if (progressValue >= 283) {
       progressValue = 283;
     }
-
-    Animated.timing(completionRef, {
-      toValue: progressValue,
-      duration: 500,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start(() => {
-      if (progressValue <= 0) {
-        setLoadAnimInProgress(false);
-      }
-    });
+    
+    if (linear) {
+      Animated.timing(completionRef, {
+        toValue: progressValue,
+        duration: 1000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }).start(() => {
+        if (progressValue <= 0) {
+          setLoadAnimInProgress(false);
+        }
+      });
+    }
+    else {
+      Animated.timing(completionRef, {
+        toValue: progressValue,
+        duration: 500,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }).start(() => {
+        if (progressValue <= 0) {
+          setLoadAnimInProgress(false);
+        }
+      });
+    }
 
   }, [completion]);
 

@@ -47,6 +47,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [shuffle, setShuffle] = useState(false);
   const [numModified, setNumModified] = useState(0);
   const [shouldSaveToLibrary, setShouldSaveToLibrary] = useState(true);
+  const [showImportAd, setShowImportAd] = useState(false);
 
   useEffect(() => {
     if (initTheme !== '') {
@@ -110,6 +111,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         shuffle, setShuffle,
         numModified, setNumModified,
         shouldSaveToLibrary, setShouldSaveToLibrary,
+        showImportAd, setShowImportAd,
       }}
     >
       {children}

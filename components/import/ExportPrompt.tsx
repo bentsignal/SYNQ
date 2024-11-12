@@ -14,25 +14,55 @@ const ExportPrompt = () => {
   const { 
     
     importState, theme, results,
-    premium,
+    premium, showImportAd, showGlobalProgress,
   
     setHomeState, setShowInfoModal,
     setShowGlobalLoading, 
     setShowGlobalProgress,
+    setGlobalProgress,
+    setShowImportAd,
   
   } = useGlobalContext();
 
   const [disabled, setDisabled] = useState(false);
+
+  const checkForAd = async () => {
+    if (!premium && showImportAd) {
+      setShowImportAd(false);
+      await new Promise(resolve => {
+        let progress = 0;
+        const interval = setInterval(() => {
+          if (progress < 100) {
+            if (progress >= 5 && !showGlobalProgress) {
+              setShowGlobalProgress(true);
+            }
+            progress += 5;
+            setGlobalProgress(progress);
+          }
+          if (progress >= 100) {
+            clearInterval(interval);
+            setShowGlobalProgress(false);
+            setTimeout(() => {
+              resolve(void 0);
+            }, 1000);
+          }
+        }, 1000);
+      });
+    }
+  }
 
   const handleExport = async () => {
     try {
       setDisabled(true);
       setShowGlobalLoading(true);
       setShowGlobalProgress(false);
+      setGlobalProgress(0);
       const songs = premium ? results : [results[0]];
+      await checkForAd();
       await exportSongs(songs);
       setShowGlobalLoading(false);
       setDisabled(false);
+      
     }
     catch (error) {
       setShowGlobalLoading(false);

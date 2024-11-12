@@ -20,11 +20,14 @@ const SavePrompt = () => {
     theme, premium, results,
     importState, loading,
     shouldSaveToLibrary, exportDisabled,
+    showImportAd, showGlobalProgress, globalProgress,
 
     setExportDisabled, setLoading,
     setHomeState, setShowInfoModal,
     setTransferSize, setResults,
-    setShouldSaveToLibrary,
+    setShouldSaveToLibrary, 
+    setShowGlobalProgress, setGlobalProgress,
+    setShowImportAd, setShowGlobalLoading,
   
   } = useGlobalContext();
 
@@ -70,10 +73,40 @@ const SavePrompt = () => {
     }
   }
 
-  const handleImport = () => {
+  const checkForAd = async () => {
+    if (!premium && showImportAd) {
+      setShowImportAd(false);
+      setShowGlobalProgress(false);
+      setShowGlobalLoading(true);
+      setGlobalProgress(0);
+      await new Promise(resolve => {
+        let progress = 0;
+        const interval = setInterval(() => {
+          if (progress < 100) {
+            if (progress >= 5 && !showGlobalProgress) {
+              setShowGlobalProgress(true);
+            }
+            progress += 5;
+            setGlobalProgress(progress);
+          }
+          if (progress >= 100) {
+            clearInterval(interval);
+            setShowGlobalProgress(false);
+            setTimeout(() => {
+              setShowGlobalLoading(false);
+              resolve(void 0);
+            }, 1000);
+          }
+        }, 1000);
+      });
+    }
+  }
+
+  const handleImport = async () => {
     if (shouldSaveToLibrary) {
       setExportDisabled(true);
       setLoading(true);
+      await checkForAd();
       const songs = premium ? results : [results[0]]
       const progress = (value: number) => {
         // TODO: Implement progress
@@ -87,6 +120,9 @@ const SavePrompt = () => {
           if (importState === 1) {
             resetResults();
           }
+          setTimeout(() => {
+            checkForReview();
+          }, 1500);
         })
         .catch((error) => {
           setLoading(false);
@@ -105,9 +141,6 @@ const SavePrompt = () => {
       setTransferSize(0);
       setLoading(false);
     }
-    setTimeout(() => {
-      checkForReview();
-    }, 1500);
   }
 
   return (

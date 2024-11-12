@@ -24,6 +24,7 @@ const Home = () => {
     setLoading, setTransferProgress, 
     setTransferSize, setLoadAnimInProgress, 
     setExportDisabled, setResults,
+    setShowImportAd,
   
   } = useGlobalContext();
 
@@ -107,6 +108,7 @@ const Home = () => {
             handlePress={() => {
               setLoading(true);
               setHomeState(2);
+              setShowImportAd(true);
               setTimeout(() => {
                 browseFiles();
               }, 10);
@@ -118,6 +120,7 @@ const Home = () => {
             icon={require('@/assets/icons/wifi.png')}
             disabled={false}
             handlePress={() => {
+              setShowImportAd(true);
               if (!serverStarted) {
                 setServerStarted(true);
                 server.start();

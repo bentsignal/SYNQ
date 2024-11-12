@@ -108,6 +108,7 @@ const Home = () => {
             handlePress={() => {
               setLoading(true);
               setHomeState(2);
+              setResults([]);
               setShowImportAd(true);
               setTimeout(() => {
                 browseFiles();
@@ -121,6 +122,8 @@ const Home = () => {
             disabled={false}
             handlePress={() => {
               setShowImportAd(true);
+              setLoading(true);
+              setResults([]);
               if (!serverStarted) {
                 setServerStarted(true);
                 server.start();

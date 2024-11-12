@@ -45,8 +45,6 @@ const WiFi = () => {
   useEffect(() => {
 
     setExportDisabled(results.length > 0 ? false : true);
-    setLoading(true);
-    setResults([]);
     setURL(!wifiDisabled ? `${ip}` : '');
 
   }, []);

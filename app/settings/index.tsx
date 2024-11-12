@@ -38,10 +38,10 @@ const Settings = () => {
         <View style={Local.settingsCategoryContainer}>
           <Haptic />
         </View>
-        {/* <CategoryTitle title="Premium Toggle" />
+        <CategoryTitle title="Premium Toggle" />
         <View style={Local.settingsCategoryContainer}>
           <PremiumToggle />
-        </View> */}
+        </View>
       </ScrollView>
     </View>
   );

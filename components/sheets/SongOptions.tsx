@@ -17,9 +17,9 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
   const { 
     
     editSong, theme,
-    numModified,
+    numModified, premium,
 
-    setShowEdit,
+    setShowEdit, setShowImportAd,
     setShowDelete, setShowOverlay, 
     setShowGlobalLoading,
     setNumModified,
@@ -85,6 +85,9 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
 
   const handleDeleteSong = () => {
     bottomSheetRef.current?.close();
+    if (pageType === PageType.IMPORT && !premium) {
+      setShowImportAd(true);
+    }
     setTimeout(() => {
       setShowOverlay(true);
       setShowDelete(true);

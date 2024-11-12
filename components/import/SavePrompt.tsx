@@ -75,7 +75,6 @@ const SavePrompt = () => {
 
   const checkForAd = async () => {
     if (!premium && showImportAd) {
-      setShowImportAd(false);
       setShowGlobalProgress(false);
       setShowGlobalLoading(true);
       setGlobalProgress(0);
@@ -116,6 +115,7 @@ const SavePrompt = () => {
           setLoading(false);
           setHomeState(3);
           setTransferSize(0);
+          setShowImportAd(false);
           setResults([]);
           if (importState === 1) {
             resetResults();
@@ -128,6 +128,7 @@ const SavePrompt = () => {
           setLoading(false);
           setHomeState(4);
           setTransferSize(0);
+          setShowImportAd(false);
           setResults([]);
           if (importState === 1) {
             resetResults();
@@ -139,6 +140,7 @@ const SavePrompt = () => {
       setHomeState(3);
       setResults([]);
       setTransferSize(0);
+      setShowImportAd(false);
       setLoading(false);
     }
   }

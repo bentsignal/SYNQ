@@ -21,14 +21,13 @@ const ExportPrompt = () => {
     setShowGlobalProgress,
     setGlobalProgress,
     setShowImportAd,
-  
+    setLoading,
   } = useGlobalContext();
 
   const [disabled, setDisabled] = useState(false);
 
   const checkForAd = async () => {
     if (!premium && showImportAd) {
-      setShowImportAd(false);
       await new Promise(resolve => {
         let progress = 0;
         const interval = setInterval(() => {
@@ -62,13 +61,22 @@ const ExportPrompt = () => {
       await exportSongs(songs);
       setShowGlobalLoading(false);
       setDisabled(false);
-      
+      setShowImportAd(false);
     }
     catch (error) {
       setShowGlobalLoading(false);
       setDisabled(false);
       console.log('Error exporting songs: ', error);
     }
+  }
+
+  const handleBack = () => {
+    setHomeState(importState);
+    setLoading(false);
+  }
+
+  const handleNext = () => {
+    setHomeState(6);
   }
 
   return (
@@ -98,8 +106,8 @@ const ExportPrompt = () => {
       <ImportControls 
         altTitle='Back'
         mainTitle='Next'
-        altHandle={() => setHomeState(importState)}
-        mainHandle={() => setHomeState(6)}
+        altHandle={handleBack}
+        mainHandle={handleNext}
         altDisabled={disabled}
         mainDisabled={disabled}
       />

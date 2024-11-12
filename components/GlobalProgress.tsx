@@ -2,12 +2,14 @@ import { View, StyleSheet } from "react-native";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import Overlay from "./Overlay";
 import Progress from "./Progress";
+import Ad from "./Ad";
 
 const GlobalProgress = () => {
 
   const { 
     
     globalProgress, showGlobalLoading,
+    showImportAd,
     
     showGlobalProgress 
 
@@ -29,13 +31,18 @@ const GlobalProgress = () => {
 
   return (
     <View style={Local.container}>
+      
       <Progress 
         completion={globalProgress} 
         loading={showGlobalLoading} 
         showCircle={showGlobalProgress}
         linear={true}
       />
-      <Overlay show={showGlobalLoading} activeOpacity={0.9}/>
+      {showImportAd && <Ad />}
+      <Overlay 
+        show={showGlobalLoading} 
+        activeOpacity={0.9}
+      />
     </View>
   );
 }

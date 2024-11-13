@@ -68,7 +68,7 @@ const RootLayout = () => {
     if (fontLoaded && theme !== '') {
       if (startup) {
         setStartup(false);
-        router.push('bucket');
+        router.push('/bucket');
       }
       setTimeout(() => {
         SplashScreen.hideAsync();

@@ -669,3 +669,20 @@ export const updateSongsInLibrary = async (
     }
   }
 }
+
+export const generateSongKey = (song: SongType) => {
+  if (song) {
+    const name = song.info.metadata?.name ?? 'no-name';
+    const artist = song.info.metadata?.artist ?? 'no-artist';
+    const album = song.info.metadata?.album ?? 'no-album';
+    let cover = 'no-cover';
+    try {
+      cover = song.info.metadata?.artwork ? song.info.metadata.artwork.substring(0, 300) : 'no-cover';
+    }
+    catch (error) {
+      cover = 'no-cover';
+    }
+    return `${song.id}-${name}-${artist}-${album}-${cover}`;
+  }
+  return '-1';
+}

@@ -13,7 +13,7 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import SongList from "@/components/song/SongList";
 import { useEffect, useState } from "react";
 import { PageType, SongType } from "@/constants/Types";
-import { getSongById } from "@/lib/SongManager";
+import { getSongById, generateSongKey } from "@/lib/SongManager";
 import { ListCover } from "@/components/song/Cover";
 import SongInfo from "@/components/song/SongInfo";
 import TrackPlayer, { useActiveTrack } from "react-native-track-player";
@@ -91,14 +91,14 @@ const Queue = () => {
         start = current + 1;
       }
       try {
+        let result;
         for (let i = start; i < queue.length; i++) {
-          getSongById(queue[i].id).then((result) => {
-            results.push(result);
-          });
+          result = await getSongById(queue[i].id);
+          results.push(result);
         }
       }
       catch (error) {
-        console.log(error);
+        console.log('error loading queue songs to display in list:', error);
       }
       setSongs(results);
     }

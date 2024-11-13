@@ -7,6 +7,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import Song from '@/components/song/Song';
 import EditModal from '@/components/modals/EditModal';
 import DeleteModal from '@/components/modals/DeleteModal';
+import { generateSongKey } from '@/lib/SongManager';
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 const MemoSong = memo(Song);
@@ -114,7 +115,7 @@ const SongList = memo((
         <FlatList 
           data={songs}
           renderItem={renderItem}
-          keyExtractor={(song, index) => `${song.id}-${index}`}
+          keyExtractor={(song, index) => generateSongKey(song)}
           extraData={selectedId}
           onScroll={handleScroll}
           style={Local.list}

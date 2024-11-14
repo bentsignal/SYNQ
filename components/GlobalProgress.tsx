@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import Overlay from "./Overlay";
 import Progress from "./Progress";
@@ -9,7 +9,7 @@ const GlobalProgress = () => {
   const { 
     
     globalProgress, showGlobalLoading,
-    showImportAd,
+    showImportAd, theme,
     
     showGlobalProgress 
 
@@ -29,6 +29,12 @@ const GlobalProgress = () => {
     }
   });
 
+  const getAdMessage = () => {
+    return (
+      <Text>Import multiple files at once, and remove all ads with <Text style={{color: theme}}>Premium</Text></Text>
+    )
+  }
+
   return (
     <View style={Local.container}>
       
@@ -38,7 +44,7 @@ const GlobalProgress = () => {
         showCircle={showGlobalProgress}
         linear={true}
       />
-      {showImportAd && <Ad />}
+      {showImportAd && <Ad message={getAdMessage()}/>}
       <Overlay 
         show={showGlobalLoading} 
         activeOpacity={0.9}

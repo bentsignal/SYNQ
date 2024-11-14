@@ -50,6 +50,17 @@ export const getTrackFromSong = async (song: SongType, theme: string): Promise<T
   }
 }
 
+export const playAd = async (theme: string, adURL: string) => {
+  const adTrack = {
+    id: 'ad',
+    url: adURL,
+    title: 'Premium Ad',
+    artist: 'SYNQ',
+    artwork: getAppIcon(theme),
+  }
+  await playTrack(adTrack);
+}
+
 export const playTrack = async (track: Track): Promise<void> => {
   const currentIndex = await TrackPlayer.getActiveTrackIndex();
   const queue = await TrackPlayer.getQueue();
@@ -87,8 +98,14 @@ export const skipLeft = async () => {
   try {
     const progress = await TrackPlayer.getProgress();
     const index = await TrackPlayer.getActiveTrackIndex();
-    if (progress.position < 3 && index !== 0) {
-      await TrackPlayer.skipToPrevious();
+    if (progress.position < 3 && index !== 0 && index !== undefined) {
+      let nextIndex = index - 1;
+      let nextTrack = await TrackPlayer.getTrack(nextIndex);
+      while (nextTrack?.id === 'ad' && nextIndex >= 0) {
+        nextIndex--;
+        nextTrack = await TrackPlayer.getTrack(nextIndex);
+      }
+      await TrackPlayer.skip(nextIndex);
       await TrackPlayer.play();
     }
     else {
@@ -116,8 +133,16 @@ export const skipRight = async (shuffle: boolean, theme: string, haptic: boolean
         }
       }
     }
-    await TrackPlayer.skipToNext();
-    await TrackPlayer.play();
+    else if (currentIndex !== undefined) {
+      let nextIndex = currentIndex + 1;
+      let nextTrack = await TrackPlayer.getTrack(nextIndex);
+      while (nextTrack?.id === 'ad' && nextIndex < queue.length) {
+        nextIndex++;
+        nextTrack = await TrackPlayer.getTrack(nextIndex);
+      }
+      await TrackPlayer.skip(nextIndex);
+      await TrackPlayer.play();
+    }
   }
   catch (error) {
     console.log('error skipping right: ', error);

@@ -68,7 +68,9 @@
     "react-native-track-player": "^4.1.1",
     "react-native-tracking-transparency": "^0.1.2",
     "react-native-web": "^0.19.13",
-    "tinycolor2": "^1.6.0"
+    "tinycolor2": "^1.6.0",
+    "expo-linking": "~6.3.1",
+    "expo-asset": "~10.0.10"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

@@ -9,13 +9,14 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
 
   const interval = 50;
 
-  const { theme } = useGlobalContext();
+  const { theme, adPlaying } = useGlobalContext();
   const { position, duration } = useProgress(interval);
   
   const scrubbing = useRef(false);
   const [elapsedSec, setElapsedSec] = useState(0);
   const [remainingSec, setRemainingSec] = useState(0);
   const durationRef = useRef(duration);
+  const allowScrub = useRef(true);
   const preScrubCompletion = useRef(0);
   const postScrubCompletion = useRef(0);
   const progressScale = useRef(new Animated.Value(0)).current;
@@ -28,6 +29,10 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
       updateTimeline();
     }
   }, [position]);
+
+  useEffect(() => {
+    allowScrub.current = !adPlaying;
+  }, [adPlaying]);
 
   useEffect(() => {
     if (duration !== 0) {
@@ -52,9 +57,10 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   // handle scrubbing timeline
   const panResponder = useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponder: () => allowScrub.current,
+      onMoveShouldSetPanResponder: () => allowScrub.current,
       onPanResponderGrant: (evt) => {
+        if (!allowScrub.current) return;
         scrubbing.current = true;
         preScrubCompletion.current = (progressScale as any)._value;
         // Animate slider height to 1.5x
@@ -65,6 +71,7 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
         }).start();
       },
       onPanResponderMove: (evt, gestureState) => {
+        if (!allowScrub.current) return;
         const multiplier = 1.2;
         const newCompletion = preScrubCompletion.current + (gestureState.dx / Dimensions.get('window').width * multiplier);
         progressScale.setValue(newCompletion);
@@ -75,6 +82,7 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
         postScrubCompletion.current = Math.max(0, Math.min(newCompletion, 1));
       },
       onPanResponderRelease: (evt, gestureState) => {
+        if (!allowScrub.current) return;
         const newPosition = Math.min(Math.max(0, postScrubCompletion.current * durationRef.current), durationRef.current);
         jump(newPosition).then(() => {
           setTimeout(() => {

@@ -17,7 +17,7 @@ import More from '@/components/More';
 import { getNextUp } from '@/lib/SongManager';
 import { PageType } from '@/constants/Types';
 import TrackPlayer, { useActiveTrack, Track, RepeatMode } from "react-native-track-player";
-import { getTrackFromSong, playTrack, updateQueue } from '@/lib/PlayerManager';
+import { getTrackFromSong, playTrack, updateQueue, playAd } from '@/lib/PlayerManager';
 
 const Song = ({song, fadeCover, fadeSong}: {
   song: SongType, 
@@ -34,10 +34,10 @@ const Song = ({song, fadeCover, fadeSong}: {
 
     selectEnabled, selectedSongs, results,
     premium, showSongOptions, theme, 
-    haptic, shuffle, 
+    haptic, shuffle, adPlaying, adURL,
 
     setSelectedSongs, setShowSongOptions,
-    setEditSong, 
+    setEditSong, setAdPlaying,
 
   } = useGlobalContext(); 
 
@@ -54,13 +54,6 @@ const Song = ({song, fadeCover, fadeSong}: {
     }
   }
 
-  useEffect(() => {
-    setSelected(false);
-    if (!selectEnabled) {
-      setSelectedSongs([]);
-    }
-  }, [selectEnabled]);
-
   let bg = Colors.song;
   // if (track !== null && song.id == track.id) {
   //   bg = theme;
@@ -68,6 +61,13 @@ const Song = ({song, fadeCover, fadeSong}: {
   if (blur) {
     bg = Colors.background;
   }
+
+  useEffect(() => {
+    setSelected(false);
+    if (!selectEnabled) {
+      setSelectedSongs([]);
+    }
+  }, [selectEnabled]);
 
   let disablePlay = false;
   if (song.pageType && [PageType.IMPORT, PageType.QUEUE].includes(song.pageType)) { 
@@ -128,7 +128,8 @@ const Song = ({song, fadeCover, fadeSong}: {
 
   const handlePlay = async () => {
     const id = track?.id ? track.id : -1;
-    if (id !== song.id) {
+    if (id !== song.id && !adPlaying) {
+      setAdPlaying(false);
       if (haptic) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }

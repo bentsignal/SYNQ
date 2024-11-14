@@ -16,13 +16,17 @@ const Shape = ({size, color}: {size: number, color?: string}) => {
 
 export const SkipRight = ({size, color}: {size: number, color?: string}) => {
 
-  const { shuffle, theme, haptic } = useGlobalContext();
+  const { shuffle, theme, haptic, adPlaying } = useGlobalContext();
 
   return (
     <TouchableOpacity 
       activeOpacity={0.7}
       style={Local.container}
-      onPress={() => skipRight(shuffle, theme, haptic)}
+      onPress={() => {
+        if (!adPlaying) {
+          skipRight(shuffle, theme, haptic);
+        }
+      }}
     >
       <Shape size={size} color={color} />
     </TouchableOpacity>
@@ -31,11 +35,15 @@ export const SkipRight = ({size, color}: {size: number, color?: string}) => {
 
 export const SkipLeft = ({size, color}: {size: number, color?: string}) => {
 
+  const { adPlaying } = useGlobalContext();
+
   return (
     <TouchableOpacity 
       activeOpacity={0.7}
       style={[Local.flipped, Local.container]}
-      onPress={skipLeft}
+      onPress={() => {
+        if (!adPlaying) skipLeft();
+      }}
     >
       <Shape size={size} color={color} />
     </TouchableOpacity>

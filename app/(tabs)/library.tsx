@@ -1,5 +1,4 @@
-import { View, Text, } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { View } from "react-native";
 import { Styles } from "@/constants/Styles";
 import PageTitle from '@/components/PageTitle';
 import Notifications from "@/components/notifications/Notifications";
@@ -20,9 +19,11 @@ const Library = () => {
     
     numModified, homeState,
     shuffle, theme, haptic,
+    adPlaying,
 
     setShowOverlay, 
     setShowNotificationModal,
+    setAdPlaying,
 
     addNotification,
   
@@ -35,6 +36,15 @@ const Library = () => {
   useEffect(() => {
     setupPlayer();
   }, []);
+
+  useEffect(() => {
+    if (track?.id === 'ad') {
+      setAdPlaying(true);
+    }
+    else {
+      setAdPlaying(false);
+    }
+  }, [track]);
 
   // link to control center
   useTrackPlayerEvents(
@@ -53,13 +63,13 @@ const Library = () => {
           TrackPlayer.pause();
           break;
         case Event.RemoteNext:
-          skipRight(shuffle, theme, haptic);
+          if (!adPlaying) skipRight(shuffle, theme, haptic);
           break;
         case Event.RemotePrevious:
-          skipLeft();
+          if (!adPlaying) skipLeft();
           break;
         case Event.RemoteSeek:
-          TrackPlayer.seekTo(event.position);
+          if (!adPlaying) TrackPlayer.seekTo(event.position);
           break;
         case Event.PlaybackQueueEnded:
           if (shuffle && track) {

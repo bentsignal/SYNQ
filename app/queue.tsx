@@ -93,8 +93,10 @@ const Queue = () => {
       try {
         let result;
         for (let i = start; i < queue.length; i++) {
-          result = await getSongById(queue[i].id);
-          results.push(result);
+          if (queue[i].id !== 'ad') {
+            result = await getSongById(queue[i].id);
+            results.push(result);
+          }
         }
       }
       catch (error) {

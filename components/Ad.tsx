@@ -1,11 +1,13 @@
 import { View, Text, StyleSheet } from "react-native";
+import React from "react";
 import CustomButton from "./CustomButton";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { Styles } from "@/constants/Styles";
 import { useGlobalContext } from "@/context/GlobalProvider";
 
-const Ad = () => {
+
+const Ad = ({message}: {message: React.ReactNode}) => {
 
   const { theme } = useGlobalContext();
 
@@ -13,7 +15,7 @@ const Ad = () => {
     <View style={Local.container}>
       <Text style={Local.header}>Ad</Text>
       <Text style={Local.infoText}>
-        Import multiple files at once, and remove all ads with <Text style={{color: theme}}>Premium</Text>
+        {message}
       </Text>
       <CustomButton 
         title="Learn More"

@@ -1,8 +1,14 @@
-import { View, Image, TouchableOpacity, StyleSheet, Dimensions, Animated } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet, Dimensions, Animated, Text } from 'react-native';
 import { useEffect, useLayoutEffect, useState, useRef } from 'react';
 import FastImage from 'react-native-fast-image';
 import { getCoverImageData } from '@/lib/SongManager';
 import { useGlobalContext } from '@/context/GlobalProvider';
+import { Colors } from '@/constants/Colors';
+import Ad from '@/components/Ad';
+import { getAppIcon } from '@/constants/Logos';
+
+const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5+hPwABAAEAAFPAfXAAAAAElFTkSuQmCC';
+
 
 export const ListCover = ({image, id, fade, propOnLoad}: {
   image?: string;
@@ -11,13 +17,13 @@ export const ListCover = ({image, id, fade, propOnLoad}: {
   propOnLoad: () => void;
 }) => {
 
-  const { numModified, editSong } = useGlobalContext();
+  const { numModified, editSong, adPlaying, theme } = useGlobalContext();
 
   const opacityRef = useRef(new Animated.Value(fade ? 0 : 1)).current;
 
   const [src, setSrc] = useState(image ? image : '');
   const [loaded, setLoaded] = useState(false);
-  let dim = src ? 60 : 20;
+  let dim = src || id === 'ad' ? 60 : 20;
 
   const getImage = async () => {
     try {
@@ -68,14 +74,26 @@ export const ListCover = ({image, id, fade, propOnLoad}: {
     artwork: {
       width: dim, 
       height: dim,
-      borderRadius: src ? 9 : 0,
+      borderRadius: src || id === 'ad' ? 9 : 0,
     }
   });
+
+  const getSource = () => {
+    if (id === 'ad') {
+      return (getAppIcon(theme));
+    }
+    else if (src) {
+      return {uri: src};
+    }
+    else {
+      return require('@/assets/icons/music.png');
+    }
+  }
 
   return (
     <Animated.View style={[Local.container, {opacity: opacityRef}]}>
       <FastImage
-        source={src ? {uri: src} : require('@/assets/icons/music.png')}
+        source={getSource()}
         style={Local.artwork}
         onLoad={() => {
           setLoaded(true);
@@ -109,7 +127,6 @@ export const EditCover = ({image, id, handlePress, propOnLoad}: {
 
   const [src, setSrc] = useState(image ? image : '');
   const [loaded, setLoaded] = useState(false);
-  const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5+hPwABAAEAAFPAfXAAAAAElFTkSuQmCC';
 
   useLayoutEffect(() => {
 
@@ -182,7 +199,7 @@ export const EditCover = ({image, id, handlePress, propOnLoad}: {
     >
       <View style={Local.container}>
         <FastImage 
-          key={src}
+          // key={src}
           source={src ? {uri: src} : {uri: transparent}}
           style={Local.artwork}
           onLoad={() => {
@@ -212,6 +229,8 @@ export const PlayerCover = ({id}: {id: string}) => {
 
   const [src, setSrc] = useState('');
   const [aspectRatio, setAspectRatio] = useState(1);
+  const { adPlaying, theme } = useGlobalContext();
+  const coverPercent = 0.85;
 
   useEffect(() => {
     
@@ -238,8 +257,6 @@ export const PlayerCover = ({id}: {id: string}) => {
 
   }, [id]);
 
-  const coverPercent = 0.85;
-
   const Local = StyleSheet.create({
     container: {
       backgroundColor: src ? 'transparent' : '#D2D2D2',
@@ -253,27 +270,65 @@ export const PlayerCover = ({id}: {id: string}) => {
     artwork: {
       aspectRatio: aspectRatio,
       width: Dimensions.get('screen').width * coverPercent, 
-      // resizeMode: 'stretch',
       borderRadius: 10,
-      // shadowColor: Colors.background,
-      // shadowOffset: {
-      //   width: 0,
-      //   height: 0
-      // },
-      // shadowOpacity: 0.9,
-      // shadowRadius: 20,
+      display: adPlaying ? 'none' : 'flex',
     },
     empty: {
       width: 100,
       height: 100,
+      display: adPlaying ? 'none' : 'flex',
+    },
+    adContainer: {
+      width: '100%',
+      height: '100%',
+      backgroundColor: Colors.background,
+      display: adPlaying ? 'flex' : 'none',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 8,
     }
   });
 
+  const getSource = () => {
+    if (adPlaying) {
+      return {uri: transparent}
+    }
+    if (src) {
+      return {uri: src};
+    }
+    else {
+      return require('@/assets/icons/music.png');
+    }
+  }
+
+  const getStyle = () => {
+    if (src) {
+      return Local.artwork;
+    }
+    else {
+      return Local.empty;
+    }
+  }
+
+  const getAdMessage = () => {
+    return (
+      <Text>
+        Listen to your music ad-free with 
+        <Text style={{color: theme}}>
+          {' '}Premium
+        </Text>
+      </Text>
+    );
+  }
+
   return (
     <View style={Local.container}>
+      <View style={Local.adContainer}>
+        <Ad message={getAdMessage()}/>
+      </View>
       <FastImage 
-        source={src ? {uri: src} : require('@/assets/icons/music.png')}
-        style={src ? Local.artwork : Local.empty}
+        source={getSource()}
+        style={getStyle()}
       />  
     </View>
   );

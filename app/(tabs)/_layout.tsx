@@ -13,6 +13,7 @@ import NotificationModal from '@/components/modals/NotificationModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GlobalProgress from '@/components/GlobalProgress';
 import Top from '@/components/Top';
+import { useAssets } from 'expo-asset';
 
 const TabLayout = () => {
 
@@ -20,9 +21,21 @@ const TabLayout = () => {
     
     premium, showSongOptions, showOverlay,
   
-    setPremium, setHaptic, setShowSongOptions
+    setPremium, setHaptic, setShowSongOptions,
+    setAdURL
   
   } = useGlobalContext();
+
+  const [assets, error] = useAssets([require('@/assets/audio/ad.mp3')]);
+
+  useEffect(() => {
+    if (error) {
+      return;
+    }
+    if (assets) {
+      setAdURL(assets[0].uri);
+    }
+  }, [assets]);
 
   const Local = StyleSheet.create({
     tabBar: {

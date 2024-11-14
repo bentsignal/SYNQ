@@ -23,7 +23,9 @@
         "UIStatusBarStyle": "UIStatusBarStyleLightContent",
         "UIFileSharingEnabled": true,
         "LSSupportsOpeningDocumentsInPlace": true,
-        "UIBackgroundModes": ["audio"]
+        "UIBackgroundModes": [
+          "audio"
+        ]
       }
     },
     "android": {
@@ -86,6 +88,14 @@
               "name": "icon-pink",
               "path": "./assets/appIcons/icon-pink.png"
             }
+          ]
+        }
+      ],
+      [
+        "expo-asset",
+        {
+          "assets": [
+            "assets/audio/ad.mp3"
           ]
         }
       ]

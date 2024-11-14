@@ -48,6 +48,8 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [numModified, setNumModified] = useState(0);
   const [shouldSaveToLibrary, setShouldSaveToLibrary] = useState(true);
   const [showImportAd, setShowImportAd] = useState(false);
+  const [adPlaying, setAdPlaying] = useState(false);
+  const [adURL, setAdURL] = useState('');
 
   useEffect(() => {
     if (initTheme !== '') {
@@ -112,6 +114,8 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         numModified, setNumModified,
         shouldSaveToLibrary, setShouldSaveToLibrary,
         showImportAd, setShowImportAd,
+        adPlaying, setAdPlaying,
+        adURL, setAdURL,
       }}
     >
       {children}

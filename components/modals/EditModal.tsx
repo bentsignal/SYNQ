@@ -247,13 +247,13 @@ const EditModal = () => {
                     placeholder={'Add artist...'}
                     placeholderTextColor={Colors.altDisabled}
                   />
-                  <TouchableOpacity 
+                  {/* <TouchableOpacity 
                     style={[Styles.roundedContainer, Local.addButton]}
                     activeOpacity={0.6}
                   >
                     <View style={[Local.addButtonLine, { width: 15, height: 3.5 }]} />
                     <View style={[Local.addButtonLine, { width: 3.5, height: 15 }]} />
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                 </View>
                 {
                   selectedSongs.length > 0 || !single ?
@@ -279,7 +279,7 @@ const EditModal = () => {
                 }
                 { selectedSongs.length === 0 ?
                   <>
-                    <View style={[Styles.roundedContainer, Local.albumSingleContainer]}>
+                    {/* <View style={[Styles.roundedContainer, Local.albumSingleContainer]}>
                       <TouchableOpacity
                         style={[Local.albumSingleButton, Local.singleButton]}
                         activeOpacity={0.9}
@@ -302,7 +302,7 @@ const EditModal = () => {
                           Album
                         </Text>
                       </TouchableOpacity>
-                    </View>
+                    </View> */}
                   </>
                   :
                   <></>

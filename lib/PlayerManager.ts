@@ -148,3 +148,14 @@ export const skipRight = async (shuffle: boolean, theme: string, haptic: boolean
     console.log('error skipping right: ', error);
   }
 }
+
+export const addToQueue = async (track: Track) => {
+  const currentIndex = await TrackPlayer.getActiveTrackIndex();
+  if (currentIndex !== undefined) {
+    await TrackPlayer.add(track, currentIndex+1);
+  }
+  // TODO: Figure out how to queue songs when no song is playing
+  // else {
+  //   await TrackPlayer.add(newTrack);
+  // }
+}

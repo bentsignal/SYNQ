@@ -20,6 +20,7 @@ const RootLayout = () => {
   const [theme, setTheme] = useState('');
   const [premium, setPremium] = useState(false);
   const [startup, setStartup] = useState(true);
+  const [shouldPlayAd, setShouldPlayAd] = useState(false);
 
   const [fontLoaded] = useFonts({
     JakartaSans: require('../assets/fonts/PlusJakartaSans-VariableFont_wght.ttf')
@@ -32,6 +33,16 @@ const RootLayout = () => {
     }
     catch {
       setTheme(Colors.main);
+    }
+  }
+
+  const loadShouldPlayAd = async () => {
+    try {
+      const playAd = await AsyncStorage.getItem('playAd');
+      setShouldPlayAd(playAd === 'true' ? true : false);
+    }
+    catch {
+      setShouldPlayAd(false);
     }
   }
 
@@ -61,7 +72,8 @@ const RootLayout = () => {
     checkDB();
     checkPurchases();
     loadTheme();
-
+    loadShouldPlayAd();
+    
   }, []);
 
   useEffect(() => {
@@ -82,6 +94,7 @@ const RootLayout = () => {
       <GlobalProvider 
         initTheme={theme}
         initPremium={premium}
+        initShouldPlayAd={shouldPlayAd}
       >
         <Stack>
           <Stack.Screen 

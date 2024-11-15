@@ -1,6 +1,6 @@
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { PlayButton } from './PausePlayButtons';
-import { skipLeft, skipRight } from '@/lib/PlayerManager';
+import { skipLeft, skipRight, playAd } from '@/lib/PlayerManager';
 import { useGlobalContext } from '@/context/GlobalProvider';
 
 const Shape = ({size, color}: {size: number, color?: string}) => {
@@ -16,15 +16,20 @@ const Shape = ({size, color}: {size: number, color?: string}) => {
 
 export const SkipRight = ({size, color}: {size: number, color?: string}) => {
 
-  const { shuffle, theme, haptic, adPlaying } = useGlobalContext();
+  const { premium, shuffle, theme, haptic, 
+    adPlaying, adURL, setAdPlaying, shouldPlayAd } = useGlobalContext();
 
   return (
     <TouchableOpacity 
       activeOpacity={0.7}
       style={Local.container}
-      onPress={() => {
-        if (!adPlaying) {
-          skipRight(shuffle, theme, haptic);
+      onPress={async () => {
+        if (!premium && shouldPlayAd && !adPlaying) {
+          setAdPlaying(true);
+          await playAd(theme, adURL);
+        }
+        else if (!adPlaying) {
+          await skipRight(shuffle, theme, haptic);
         }
       }}
     >
@@ -35,14 +40,20 @@ export const SkipRight = ({size, color}: {size: number, color?: string}) => {
 
 export const SkipLeft = ({size, color}: {size: number, color?: string}) => {
 
-  const { adPlaying } = useGlobalContext();
+  const { premium, adPlaying, theme, adURL, setAdPlaying, shouldPlayAd } = useGlobalContext();
 
   return (
     <TouchableOpacity 
       activeOpacity={0.7}
       style={[Local.flipped, Local.container]}
-      onPress={() => {
-        if (!adPlaying) skipLeft();
+      onPress={async () => {
+        if (!premium && shouldPlayAd && !adPlaying) {
+          setAdPlaying(true);
+          await playAd(theme, adURL);
+        }
+        else if (!adPlaying) {
+          await skipLeft();
+        }
       }}
     >
       <Shape size={size} color={color} />

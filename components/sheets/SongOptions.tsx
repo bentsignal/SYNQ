@@ -10,7 +10,7 @@ import SongOption from './SongOption';
 import { exportSongs } from '@/lib/SongManager';
 import { PageType } from '@/constants/Types';
 import TrackPlayer from 'react-native-track-player';
-import { getTrackFromSong } from '@/lib/PlayerManager';
+import { getTrackFromSong, addToQueue } from '@/lib/PlayerManager';
 
 const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) => void}) => {
 
@@ -49,15 +49,8 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
     bottomSheetRef.current?.close();
     setTimeout(async () => {
       const newTrack = await getTrackFromSong(editSong, theme);
-      const currentIndex = await TrackPlayer.getActiveTrackIndex();
       if (newTrack) {
-        if (currentIndex !== undefined) {
-          await TrackPlayer.add(newTrack, currentIndex+1);
-        }
-        // TODO: Figure out how to queue songs when no song is playing
-        // else {
-        //   await TrackPlayer.add(newTrack);
-        // }
+        await addToQueue(newTrack);
       }
     }, actionDelay);
   }

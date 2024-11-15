@@ -7,7 +7,7 @@ const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
 
 
-const GlobalProvider = ({ children, initTheme, initPremium }) => {
+const GlobalProvider = ({ children, initTheme, initPremium, initShouldPlayAd }) => {
 
   const [homeState, setHomeState] = useState(0);
   const [importState, setImportState] = useState(0);
@@ -50,6 +50,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
   const [showImportAd, setShowImportAd] = useState(false);
   const [adPlaying, setAdPlaying] = useState(false);
   const [adURL, setAdURL] = useState('');
+  const [shouldPlayAd, setShouldPlayAd] = useState(initShouldPlayAd && !initPremium ? initShouldPlayAd : false);
 
   useEffect(() => {
     if (initTheme !== '') {
@@ -116,6 +117,7 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         showImportAd, setShowImportAd,
         adPlaying, setAdPlaying,
         adURL, setAdURL,
+        shouldPlayAd, setShouldPlayAd,
       }}
     >
       {children}

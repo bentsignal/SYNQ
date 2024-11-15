@@ -17,7 +17,7 @@ import More from '@/components/More';
 import { getNextUp } from '@/lib/SongManager';
 import { PageType } from '@/constants/Types';
 import TrackPlayer, { useActiveTrack, Track, RepeatMode } from "react-native-track-player";
-import { getTrackFromSong, playTrack, updateQueue, playAd } from '@/lib/PlayerManager';
+import { getTrackFromSong, playTrack, updateQueue, playAd, addToQueue } from '@/lib/PlayerManager';
 
 const Song = ({song, fadeCover, fadeSong}: {
   song: SongType, 
@@ -34,7 +34,7 @@ const Song = ({song, fadeCover, fadeSong}: {
 
     selectEnabled, selectedSongs, results,
     premium, showSongOptions, theme, 
-    haptic, shuffle, adPlaying, adURL,
+    haptic, shuffle, adPlaying, adURL, shouldPlayAd,
 
     setSelectedSongs, setShowSongOptions,
     setEditSong, setAdPlaying,
@@ -128,7 +128,20 @@ const Song = ({song, fadeCover, fadeSong}: {
 
   const handlePlay = async () => {
     const id = track?.id ? track.id : -1;
-    if (id !== song.id && !adPlaying) {
+    // play ad if user is non premium and has passed ad threshold
+    if (!premium && shouldPlayAd && !adPlaying) {
+      setAdPlaying(true);
+      await playAd(theme, adURL);
+      const newTrack = await getTrackFromSong(song, theme);
+      if (newTrack) {
+        await addToQueue(newTrack);
+      }
+      if (!shuffle) {
+        await updateQueue(song.id, shuffle, theme);
+      }
+    }
+    // if ad is not played, play song
+    else if (id !== song.id && !adPlaying) {
       setAdPlaying(false);
       if (haptic) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

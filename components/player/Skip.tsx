@@ -2,6 +2,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { PlayButton } from './PausePlayButtons';
 import { skipLeft, skipRight, playAd } from '@/lib/PlayerManager';
 import { useGlobalContext } from '@/context/GlobalProvider';
+import * as Haptics from 'expo-haptics';
 
 const Shape = ({size, color}: {size: number, color?: string}) => {
   return (
@@ -29,6 +30,9 @@ export const SkipRight = ({size, color}: {size: number, color?: string}) => {
           await playAd(theme, adURL);
         }
         else if (!adPlaying) {
+          if (haptic) {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          }
           await skipRight(shuffle, theme, haptic);
         }
       }}
@@ -40,7 +44,7 @@ export const SkipRight = ({size, color}: {size: number, color?: string}) => {
 
 export const SkipLeft = ({size, color}: {size: number, color?: string}) => {
 
-  const { premium, adPlaying, theme, adURL, setAdPlaying, shouldPlayAd } = useGlobalContext();
+  const { premium, adPlaying, theme, adURL, setAdPlaying, shouldPlayAd, haptic } = useGlobalContext();
 
   return (
     <TouchableOpacity 
@@ -52,6 +56,9 @@ export const SkipLeft = ({size, color}: {size: number, color?: string}) => {
           await playAd(theme, adURL);
         }
         else if (!adPlaying) {
+          if (haptic) {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          }
           await skipLeft();
         }
       }}

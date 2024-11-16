@@ -6,7 +6,6 @@ import { NotificationType, SongType } from '@/constants/Types';
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
 
-
 const GlobalProvider = ({ children, initTheme, initPremium, initShouldPlayAd }) => {
 
   const [homeState, setHomeState] = useState(0);
@@ -50,7 +49,7 @@ const GlobalProvider = ({ children, initTheme, initPremium, initShouldPlayAd }) 
   const [showImportAd, setShowImportAd] = useState(false);
   const [adPlaying, setAdPlaying] = useState(false);
   const [adURL, setAdURL] = useState('');
-  const [shouldPlayAd, setShouldPlayAd] = useState(initShouldPlayAd ? initShouldPlayAd : false);
+  const [shouldPlayAd, setShouldPlayAd] = useState(initShouldPlayAd ? true : false);
 
   useEffect(() => {
     if (initTheme !== '') {
@@ -62,6 +61,10 @@ const GlobalProvider = ({ children, initTheme, initPremium, initShouldPlayAd }) 
   useEffect(() => {
     setPremium(initPremium);
   }, [initPremium]);
+
+  useEffect(() => {
+    setShouldPlayAd(initShouldPlayAd ? true : false);
+  }, [initShouldPlayAd]);
 
   const addNotification = useCallback((type, title, brief, message, trace, onClick ) => {
     const id = Date.now().toString();

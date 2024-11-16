@@ -36,6 +36,8 @@ const Library = () => {
   const previousPosition = useRef(0);
   const timePlayed = useRef(0);
 
+  const checkForAdInterval = 5;
+
   const [songs, setSongs] = useState<SongType[]>([]);
 
   // used to update storage variable that counts 
@@ -44,7 +46,7 @@ const Library = () => {
     const previouslyPlayed = await AsyncStorage.getItem('timePlayed');
     if (previouslyPlayed !== null) {
       const previouslyPlayedInt = parseInt(previouslyPlayed);
-      const newTimePlayed = previouslyPlayedInt + 20;
+      const newTimePlayed = previouslyPlayedInt + checkForAdInterval;
       if (newTimePlayed >= CFG.playAdAfter) {
         await AsyncStorage.setItem('playAd', 'true');
         setShouldPlayAd(true);
@@ -52,7 +54,7 @@ const Library = () => {
       await AsyncStorage.setItem('timePlayed', newTimePlayed.toString());
     }
     else {
-      await AsyncStorage.setItem('timePlayed', '20');
+      await AsyncStorage.setItem('timePlayed', checkForAdInterval.toString());
     }
   }
 
@@ -71,14 +73,13 @@ const Library = () => {
 
     // song is almost over. check if ad should be played
     const timeToEnd = Math.floor(duration) - Math.floor(position);
-    if (timeToEnd <= 1) {
+    if (timeToEnd !== 0 && timeToEnd <= 1) {
       // user has 1 second left in their song and has an ad coming up. skip to ad early
       if (!premium && !adPlaying && shouldPlayAd) {
         playAd(theme, adURL);
       }
       // user has listened to the ad. set should play ad to false
       else if (adPlaying) {
-        console.log('resetting ad');
         AsyncStorage.setItem('playAd', 'false');
         AsyncStorage.setItem('timePlayed', '0');
         timePlayed.current = 0;
@@ -95,7 +96,7 @@ const Library = () => {
     if (difference === 1) {
       timePlayed.current += 1;
     }
-    if (timePlayed.current !== 0 && timePlayed.current % 20 === 0) {
+    if (timePlayed.current !== 0 && timePlayed.current % checkForAdInterval === 0) {
       updateTimePlayed();
     }
     previousPosition.current = current;
@@ -111,6 +112,11 @@ const Library = () => {
   useEffect(() => {
     if (track?.id === 'ad') {
       setAdPlaying(true);
+      if (premium) {
+        setAdPlaying(false);
+        setShouldPlayAd(false);
+        TrackPlayer.skipToNext();
+      }
     }
     else {
       setAdPlaying(false);

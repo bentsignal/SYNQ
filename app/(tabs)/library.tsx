@@ -35,6 +35,7 @@ const Library = () => {
   const { position, duration } = useProgress();
   const previousPosition = useRef(0);
   const timePlayed = useRef(0);
+  const playerInitialized = useRef(false);
 
   const checkForAdInterval = 5;
 
@@ -105,7 +106,9 @@ const Library = () => {
 
   // sets up player
   useEffect(() => {
+    if (playerInitialized.current) return;
     setupPlayer();
+    playerInitialized.current = true;
   }, []);
 
   // sets ad playing when ad is active

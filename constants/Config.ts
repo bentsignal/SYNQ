@@ -4,11 +4,11 @@ const CFG = {
   // show review prompt after importing 5 times
   showReviewAfter: 5,
   // disable checks for premium subscriptoin
-  devTestFreeVersion: true,
+  devTestFreeVersion: false,
   // show premium toggle in settings
   devShowPremiumToggle: true,
-  // Play an ad after 900 seconds of listening (15 minutes)
-  playAdAfter: 30,
+  // Play an ad after x seconds of listening
+  playAdAfter: 600,
 }
 
 export default CFG;

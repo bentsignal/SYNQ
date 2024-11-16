@@ -16,6 +16,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CFG from "@/constants/Config";
 import CategorySelector from "@/components/CategorySelector";
 import { Colors } from "@/constants/Colors";
+import Playlists from "@/components/library/Playlists";
+import Albums from "@/components/library/Albums";
+import Artists from "@/components/library/Artists";
 
 const Library = () => {
 
@@ -38,6 +41,8 @@ const Library = () => {
   const previousPosition = useRef(0);
   const timePlayed = useRef(0);
   const playerInitialized = useRef(false);
+
+  const [selected, setSelected] = useState(0);
 
   const checkForAdInterval = 5;
 
@@ -218,6 +223,15 @@ const Library = () => {
     }
   }, [numModified, homeState]);
 
+
+  const getBody = () => {
+    switch (selected) {
+      case 0: return <Playlists />
+      case 1: return <Albums />
+      case 2: return <Artists />
+    }
+  }
+
   return (
     <View style={[Styles.body]}>
       <PageTitle title="Library"/>
@@ -225,12 +239,14 @@ const Library = () => {
         containerStyle={{
           width: '90%',
         }}
+        callback={setSelected}
       />
       <View style={Local.divider} />
-      <SongList 
+      {getBody()}
+      {/* <SongList 
         songs={songs}
         pageType={PageType.LIBRARY}
-      />
+      /> */}
       <MiniPlayer />
       <Notifications  
         customStyles={{

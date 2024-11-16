@@ -61,7 +61,8 @@ const MiniPlayer = () => {
           album: '',
           artwork: track.artwork,
         }
-      }
+      };
+
       return (
         <SongInfo 
           info={info} 
@@ -70,6 +71,7 @@ const MiniPlayer = () => {
           color={[''].includes(theme) ? 'black' : Colors.text}
         />
       );
+      
     }
   }
 

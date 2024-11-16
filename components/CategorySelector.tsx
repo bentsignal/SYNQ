@@ -5,7 +5,13 @@ import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
 
-const CategorySelector = ({ containerStyle }: { containerStyle: ViewStyle }) => {
+type CategorySelectorProps = {
+  containerStyle: ViewStyle;
+  callback: (selected: number) => void;
+}
+
+
+const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) => {
 
   const [contentWidth, setContentWidth] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -34,21 +40,30 @@ const CategorySelector = ({ containerStyle }: { containerStyle: ViewStyle }) => 
         >
           <TouchableOpacity 
             style={[Local.itemContainer, { backgroundColor: selected === 0 ? theme : Colors.song }]}
-            onPress={() => setSelected(0)}
+            onPress={() => {
+              setSelected(0);
+              callback(0);
+            }}
             activeOpacity={0.8}
           >
             <Text style={Local.item}>Playlists</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[Local.itemContainer, { backgroundColor: selected === 1 ? theme : Colors.song }]}
-            onPress={() => setSelected(1)}
+            onPress={() => {
+              setSelected(1);
+              callback(1);
+            }}
             activeOpacity={0.8}
           >
             <Text style={Local.item}>Albums</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[Local.itemContainer, { backgroundColor: selected === 2 ? theme : Colors.song }]}
-            onPress={() => setSelected(2)}
+            onPress={() => {
+              setSelected(2);
+              callback(2);
+            }}
             activeOpacity={0.8}
           >
             <Text style={Local.item}>Artists</Text>

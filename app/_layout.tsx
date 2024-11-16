@@ -71,10 +71,10 @@ const RootLayout = () => {
       }
     }
 
+    loadShouldPlayAd();
     checkDB();
     checkPurchases();
     loadTheme();
-    loadShouldPlayAd();
 
   }, []);
 
@@ -89,6 +89,13 @@ const RootLayout = () => {
       }, 500);
     }
   }, [fontLoaded, theme]);
+
+  // force hide splash screen after 7 seconds
+  useEffect(() => {
+    setTimeout(() => {
+      SplashScreen.hideAsync();
+    }, 7000);
+  }, []);
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>

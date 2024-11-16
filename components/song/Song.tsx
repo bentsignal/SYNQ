@@ -127,25 +127,25 @@ const Song = ({song, fadeCover, fadeSong}: {
   });
 
   const handlePlay = async () => {
+    if (haptic) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
     const id = track?.id ? track.id : -1;
     // play ad if user is non premium and has passed ad threshold
     if (!premium && shouldPlayAd && !adPlaying) {
       setAdPlaying(true);
       await playAd(theme, adURL);
       const newTrack = await getTrackFromSong(song, theme);
-      if (newTrack) {
-        await addToQueue(newTrack);
-      }
       if (!shuffle) {
         await updateQueue(song.id, shuffle, theme);
+      }
+      if (newTrack) {
+        await addToQueue(newTrack);
       }
     }
     // if ad is not played, play song
     else if (id !== song.id && !adPlaying) {
       setAdPlaying(false);
-      if (haptic) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
       try {
         const newTrack = await getTrackFromSong(song, theme);
         if (newTrack) {

@@ -1,6 +1,6 @@
 import TrackPlayer, { Event, useTrackPlayerEvents, useActiveTrack, useProgress } from "react-native-track-player";
 import { setupPlayer, skipLeft, skipRight, updateQueue, playAd } from "@/lib/PlayerManager";
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Styles } from "@/constants/Styles";
 import PageTitle from '@/components/PageTitle';
 import Notifications from "@/components/notifications/Notifications";
@@ -14,6 +14,8 @@ import MiniPlayer from '@/components/player/MiniPlayer';
 import { getSongByResult } from "@/lib/SongManager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CFG from "@/constants/Config";
+import CategorySelector from "@/components/CategorySelector";
+import { Colors } from "@/constants/Colors";
 
 const Library = () => {
 
@@ -218,9 +220,15 @@ const Library = () => {
 
   return (
     <View style={[Styles.body]}>
+      <PageTitle title="Library"/>
+      <CategorySelector 
+        containerStyle={{
+          width: '90%',
+        }}
+      />
+      <View style={Local.divider} />
       <SongList 
         songs={songs}
-        headerComponent={<PageTitle title="Library"/>}
         pageType={PageType.LIBRARY}
       />
       <MiniPlayer />
@@ -233,5 +241,15 @@ const Library = () => {
     </View>
   );
 }
+
+const Local = StyleSheet.create({
+  divider: {
+    width: '100%',
+    height: 5,
+    borderBottomColor: Colors.popup,
+    borderBottomWidth: 1,
+    marginBottom: 10,
+  }
+})
 
 export default Library;

@@ -1,5 +1,5 @@
 import { View, StyleSheet, ScrollView, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent} from "react-native";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Colors } from "@/constants/Colors";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useGlobalContext } from "@/context/GlobalProvider";
@@ -8,9 +8,11 @@ const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 
 type HorizontalScrollViewProps = {
   children: React.ReactNode;
+  contentWidth: number;
+  containerWidth: number;
 }
 
-const HorizontalScrollView = ({ children }: HorizontalScrollViewProps) => {
+const HorizontalScrollView = ({ children, contentWidth, containerWidth }: HorizontalScrollViewProps) => {
 
   const { premium } = useGlobalContext();
 
@@ -19,6 +21,11 @@ const HorizontalScrollView = ({ children }: HorizontalScrollViewProps) => {
 
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
+  const [end, setEnd] = useState(contentWidth - containerWidth - 10);
+
+  useEffect(() => {
+    setEnd(contentWidth - containerWidth - 10);
+  }, [contentWidth, containerWidth]);
   
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
 
@@ -26,7 +33,7 @@ const HorizontalScrollView = ({ children }: HorizontalScrollViewProps) => {
     const xOffset = contentOffset.x;
 
     // start
-    if (xOffset <= 5 && !atStart) {
+    if (xOffset <= 0 && !atStart) {
       setAtStart(true);
       Animated.timing(leftGradientOpacityRef, {
         toValue: 0,
@@ -35,7 +42,7 @@ const HorizontalScrollView = ({ children }: HorizontalScrollViewProps) => {
         useNativeDriver: true,
       }).start();
     }
-    else if (xOffset > 5 && atStart) {
+    else if (xOffset > 0 && atStart) {
       setAtStart(false);
       Animated.timing(leftGradientOpacityRef, {
         toValue: 1,
@@ -46,7 +53,7 @@ const HorizontalScrollView = ({ children }: HorizontalScrollViewProps) => {
     }
 
     // end
-    if (xOffset >= 200 && !atEnd) {
+    if (xOffset >= end && !atEnd) {
       setAtEnd(true);
       Animated.timing(rightGradientOpacityRef, {
         toValue: 0,
@@ -55,7 +62,7 @@ const HorizontalScrollView = ({ children }: HorizontalScrollViewProps) => {
         useNativeDriver: true,
       }).start();
     }
-    else if (xOffset < 200 && atEnd) {
+    else if (xOffset < end && atEnd) {
       setAtEnd(false);
       Animated.timing(rightGradientOpacityRef, {
         toValue: 1,
@@ -67,6 +74,11 @@ const HorizontalScrollView = ({ children }: HorizontalScrollViewProps) => {
   }
 
   const Local = StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      width: '100%',
+    },
     gradient: {
       position: 'absolute', 
       top: 0,
@@ -83,9 +95,6 @@ const HorizontalScrollView = ({ children }: HorizontalScrollViewProps) => {
       opacity: rightGradientOpacityRef,
     },
     contentWrapper: {
-      paddingTop: 15,
-      paddingBottom: 15,
-      maxHeight: 100,
       position: 'relative',
     },
     tintOverlay: {
@@ -101,7 +110,7 @@ const HorizontalScrollView = ({ children }: HorizontalScrollViewProps) => {
   });
 
   return (
-    <View>
+    <View style={Local.container}>
       <AnimatedGradient
           style={[Local.gradient, Local.leftGradient]}
           start={{ x: 0, y: 0 }}
@@ -113,6 +122,7 @@ const HorizontalScrollView = ({ children }: HorizontalScrollViewProps) => {
         horizontal
         onScroll={handleScroll}
         style={Local.contentWrapper}
+        showsHorizontalScrollIndicator={false}
       >
         {children}
       </ScrollView>

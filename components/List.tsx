@@ -1,37 +1,29 @@
-import { View, FlatList, Dimensions, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent, StyleSheet } from 'react-native';
-import React, { useRef, useEffect, useState, memo, useCallback } from 'react';
+import { FlatList, Dimensions, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent, StyleSheet, ListRenderItem } from 'react-native';
+import React, { useRef, useEffect, useState, memo } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Styles } from '@/constants/Styles';
-import { SongType, PageType } from '@/constants/Types';
-import { useGlobalContext } from '@/context/GlobalProvider';
-import Song from '@/components/song/Song';
-import EditModal from '@/components/modals/EditModal';
-import DeleteModal from '@/components/modals/DeleteModal';
-import { generateSongKey } from '@/lib/SongManager';
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
-const MemoSong = memo(Song);
 
-const SongList = memo((
+const List = memo((
   {
-    songs, 
+    data, 
     headerComponent, 
     bottomPadding = false,
-    pageType, 
-    fadeCover = true, 
-    fadeSong = false
+    item,
+    keyExtractor,
+    extra,
   }: 
   {
-    songs: SongType[], 
+    data: any[], 
     headerComponent?: React.ReactNode,
     bottomPadding?: boolean,
-    pageType: PageType,
-    fadeCover?: boolean,
-    fadeSong?: boolean
+    item: ListRenderItem<any>,
+    keyExtractor: (item: any, index: number) => string,
+    extra?: any,
   }
 ) => {
 
-  const { selectedId } = useGlobalContext();
   const [atTop, setAtTop] = useState(true);
   const globalOpacityRef = useRef(new Animated.Value(0)).current;
   const topGradientOpacityRef = useRef(new Animated.Value(0)).current;
@@ -96,27 +88,14 @@ const SongList = memo((
     }
   });
 
-  const renderItem = ({item} : {item: SongType}) => {
-    item.pageType = pageType;
-    return (
-      <MemoSong 
-        song={item}
-        fadeCover={fadeCover}
-        fadeSong={fadeSong}
-      />
-    );
-  };
-
   return (
     <>
       <Animated.View style={ Local.container}>
-        <EditModal />
-        <DeleteModal />
         <FlatList 
-          data={songs}
-          renderItem={renderItem}
-          keyExtractor={(song, index) => generateSongKey(song)}
-          extraData={selectedId}
+          data={data}
+          renderItem={item}
+          keyExtractor={keyExtractor}
+          extraData={extra}
           onScroll={handleScroll}
           style={Local.list}
           ListHeaderComponent={headerComponent ? <>{headerComponent}</> : null}
@@ -144,4 +123,4 @@ const SongList = memo((
 
 });
 
-export default SongList;
+export default List;

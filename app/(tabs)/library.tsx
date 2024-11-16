@@ -7,7 +7,7 @@ import Notifications from "@/components/notifications/Notifications";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import DataManager from "@/lib/DataManager";
 import { useEffect, useState, useRef } from "react";
-import SongList from "@/components/song/SongList";
+import SongList from "@/components/lists/SongList";
 import { SongType, PageType, NotificationType } from "@/constants/Types";
 import * as FileSystem from 'expo-file-system';
 import MiniPlayer from '@/components/player/MiniPlayer';
@@ -242,11 +242,11 @@ const Library = () => {
         callback={setSelected}
       />
       <View style={Local.divider} />
-      {getBody()}
-      {/* <SongList 
+      {/* {getBody()} */}
+      <SongList 
         songs={songs}
         pageType={PageType.LIBRARY}
-      /> */}
+      />
       <MiniPlayer />
       <Notifications  
         customStyles={{

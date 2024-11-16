@@ -10,7 +10,7 @@ import { router } from "expo-router";
 import Time from "@/components/player/Time";
 import ShuffleButton from "@/components/player/ShuffleButton";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import SongList from "@/components/song/SongList";
+import SongList from "@/components/lists/SongList";
 import { useEffect, useState } from "react";
 import { PageType, SongType } from "@/constants/Types";
 import { getSongById, generateSongKey } from "@/lib/SongManager";

@@ -12,6 +12,7 @@ import { connect, restorePurchases } from "@/lib/PurchaseManager";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import DataManager from "@/lib/DataManager";
 import { LogBox } from "react-native";
+import CFG from "@/constants/Config";
 
 LogBox.ignoreLogs(['Require cycle:']);
 
@@ -51,6 +52,7 @@ const RootLayout = () => {
     SplashScreen.preventAutoHideAsync();
 
     const checkPurchases = async () => {
+      if (CFG.devTestFreeVersion) return;
       await connect();
       const restored = await restorePurchases();
       if (restored !== '') {
@@ -73,7 +75,7 @@ const RootLayout = () => {
     checkPurchases();
     loadTheme();
     loadShouldPlayAd();
-    
+
   }, []);
 
   useEffect(() => {

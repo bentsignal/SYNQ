@@ -50,7 +50,7 @@ const GlobalProvider = ({ children, initTheme, initPremium, initShouldPlayAd }) 
   const [showImportAd, setShowImportAd] = useState(false);
   const [adPlaying, setAdPlaying] = useState(false);
   const [adURL, setAdURL] = useState('');
-  const [shouldPlayAd, setShouldPlayAd] = useState(initShouldPlayAd && !initPremium ? initShouldPlayAd : false);
+  const [shouldPlayAd, setShouldPlayAd] = useState(initShouldPlayAd ? initShouldPlayAd : false);
 
   useEffect(() => {
     if (initTheme !== '') {

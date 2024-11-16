@@ -14,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import GlobalProgress from '@/components/GlobalProgress';
 import Top from '@/components/Top';
 import { useAssets } from 'expo-asset';
+import CFG from '@/constants/Config';
 
 const TabLayout = () => {
 
@@ -62,6 +63,7 @@ const TabLayout = () => {
   useEffect(() => {
 
     const checkPremium = async () => {
+      if (CFG.devTestFreeVersion) return;
       try {
         Purchases.configure({
           apiKey: 'appl_qzTfhRrmSegqQhRUukTmiUsVMIq',

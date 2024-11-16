@@ -8,6 +8,7 @@ import CategoryTitle from "@/components/settings/CategoryTitle";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import Haptic from "@/components/settings/Haptic";
 import PremiumToggle from "@/components/settings/PremiumToggle";
+import CFG from "@/constants/Config";
 
 const Settings = () => {
 
@@ -38,10 +39,14 @@ const Settings = () => {
         <View style={Local.settingsCategoryContainer}>
           <Haptic />
         </View>
-        <CategoryTitle title="Premium Toggle" />
-        <View style={Local.settingsCategoryContainer}>
-          <PremiumToggle />
-        </View>
+        {CFG.devShowPremiumToggle && 
+          <>
+            <CategoryTitle title="Premium Toggle" />
+            <View style={Local.settingsCategoryContainer}>
+              <PremiumToggle />
+            </View>
+          </>
+        }
       </ScrollView>
     </View>
   );

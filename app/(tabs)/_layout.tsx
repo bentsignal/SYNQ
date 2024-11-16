@@ -15,15 +15,18 @@ import GlobalProgress from '@/components/GlobalProgress';
 import Top from '@/components/Top';
 import { useAssets } from 'expo-asset';
 import CFG from '@/constants/Config';
+import { setAppIcon } from "expo-icon-handler";
+import { getIcon, getLogo } from "@/constants/Logos";
 
 const TabLayout = () => {
 
   const { 
     
     premium, showSongOptions, showOverlay,
+    theme, 
   
     setPremium, setHaptic, setShowSongOptions,
-    setAdURL
+    setAdURL, setTheme, setLogo,
   
   } = useGlobalContext();
 
@@ -60,10 +63,27 @@ const TabLayout = () => {
     },
   });
 
+  const forceResetTheme = async () => {
+    try { 
+      if (theme !== Colors.main) {  
+        setTheme(Colors.main);
+        setLogo(getLogo('blue'));
+        const success = setAppIcon(getIcon('blue'));
+        await AsyncStorage.setItem('theme', Colors.main);
+      }
+    }
+    catch (error) {
+      console.log('error forcing reset theme:', error);
+    }
+  }
+
   useEffect(() => {
 
     const checkPremium = async () => {
-      if (CFG.devTestFreeVersion) return;
+      if (CFG.devTestFreeVersion) {
+        await forceResetTheme();
+        return;
+      };
       try {
         Purchases.configure({
           apiKey: 'appl_qzTfhRrmSegqQhRUukTmiUsVMIq',
@@ -80,6 +100,7 @@ const TabLayout = () => {
         }
         else {
           setPremium(false);
+          await forceResetTheme();
         }
       }
       catch (error) {

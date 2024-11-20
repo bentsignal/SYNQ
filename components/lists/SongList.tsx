@@ -1,4 +1,3 @@
-import { StyleSheet } from 'react-native';
 import React, { memo } from 'react';
 import { SongType, PageType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
@@ -30,17 +29,6 @@ const SongList = memo((
 ) => {
 
   const { selectedId } = useGlobalContext();
-
-  const Local = StyleSheet.create({
-    list: {
-      width: '100%'
-    },
-    listContent: {
-      paddingBottom: 100,
-      display: 'flex',
-      alignItems: 'center'
-    },
-  });
 
   const renderItem = ({item} : {item: SongType}) => {
     item.pageType = pageType;

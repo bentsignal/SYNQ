@@ -1,0 +1,60 @@
+import DataManager from './DataManager';
+import { PlaylistType, SongType } from '@/constants/Types';
+
+class PlaylistDataManager extends DataManager {
+
+  private static instance: PlaylistDataManager;
+
+  constructor() {
+    super();  
+  }
+
+  public static getInstance(): PlaylistDataManager {
+    if (!PlaylistDataManager.instance) {
+      PlaylistDataManager.instance = new PlaylistDataManager();
+    }
+    return PlaylistDataManager.instance;
+  }
+
+  public async getPlaylists(): Promise<any[]> {
+    try {
+      const result = await PlaylistDataManager.db?.getAllAsync(`SELECT * FROM playlists;`);
+      return result ? result : [];
+    }
+    catch (error) {
+      throw new Error('Error getting playlists: ' + error);
+    }
+  }
+
+  public async getSongsFromPlaylist(playlistId: number): Promise<any[]> {
+    try {
+      if (!PlaylistDataManager.db) {
+        await PlaylistDataManager.initConnection();
+      }
+      const result = await PlaylistDataManager.db?.getAllAsync(`
+        SELECT songs.* 
+        FROM songs
+        INNER JOIN playlistSongs ON songs.id = playlistSongs.songId
+        WHERE playlistSongs.playlistId = ?;
+      `, [playlistId]);
+      return result ? result : [];
+    }
+    catch (error) {
+      throw new Error('Error getting songs from playlist: ' + error);
+    }
+  }
+
+  public async addToPlaylist(playlistId: number, songId: number): Promise<boolean> {
+    try {
+      await PlaylistDataManager.db?.runAsync(`INSERT INTO playlistSongs (playlistId, songId) VALUES (?, ?);`, [playlistId, songId]);
+      return true;
+    }
+    catch (error) {
+      throw new Error('Error adding to playlist: ' + error);
+    }
+  }
+
+}
+
+export default PlaylistDataManager;
+

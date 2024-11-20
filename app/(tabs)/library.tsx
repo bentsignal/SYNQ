@@ -5,7 +5,7 @@ import { Styles } from "@/constants/Styles";
 import PageTitle from '@/components/PageTitle';
 import Notifications from "@/components/notifications/Notifications";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import DataManager from "@/lib/DataManager";
+import SongDataManager from "@/lib/data/SongDataManager";
 import { useEffect, useState, useRef } from "react";
 import SongList from "@/components/lists/SongList";
 import { SongType, PageType, NotificationType } from "@/constants/Types";
@@ -205,7 +205,7 @@ const Library = () => {
   // updates song list when changes are detected
   useEffect(() => {
     try {
-      const db = DataManager.getInstance();
+      const db = SongDataManager.getInstance();
       db.getSongs().then((results) => {
         let songs: SongType[] = [];
         let dir;
@@ -242,11 +242,11 @@ const Library = () => {
         callback={setSelected}
       />
       <View style={Local.divider} />
-      {/* {getBody()} */}
-      <SongList 
+      {getBody()}
+      {/* <SongList 
         songs={songs}
         pageType={PageType.LIBRARY}
-      />
+      /> */}
       <MiniPlayer />
       <Notifications  
         customStyles={{

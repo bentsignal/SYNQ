@@ -8,11 +8,10 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { SaveFormat } from 'expo-image-manipulator';
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
-import DataManager from './DataManager';
+import SongDataManager from './data/SongDataManager';
 import { isValidNumString, idgen } from './Util';
 import { Image } from 'react-native';
-import SongList from '@/components/song/SongList';
-
+import PlaylistDataManager from './data/PlaylistDataManager';
 export const getCompletion = (size: number, progress: number) => {
   try {
     if (size === 0) {
@@ -68,12 +67,12 @@ const splitImageMimeAndBuffer = (image: string) => {
 }
 
 const updateMetadata = async (song: SongType) => {
-  
+
   if (song.pageType === PageType.LIBRARY) {
     // retrieve data if song is from library
     try {
       const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.name}`;
-      const data = await FileSystem.readAsStringAsync(audioPath, {encoding: 'base64'});
+      const data = await FileSystem.readAsStringAsync(audioPath, { encoding: 'base64' });
       if (data) {
         song.data = data;
       }
@@ -136,7 +135,7 @@ const updateMetadata = async (song: SongType) => {
     }
   }
   catch (error) {
-    console.log('error modiying audio file data', error); 
+    console.log('error modiying audio file data', error);
   }
 
   if (song.pageType === PageType.LIBRARY) {
@@ -153,9 +152,9 @@ export const exportSongs = async (songs: SongType[]) => {
   const exportNumber = await getExportNumber();
   const dir = `${FileSystem.documentDirectory}batch ${exportNumber}  -  ${date.getMonth()}.${date.getDate()}.${date.getFullYear()}`;
   let destination;
-  
+
   await FileSystem.makeDirectoryAsync(dir);
-  
+
   // export single song
   if (songs.length === 1) {
     const song = songs[0];
@@ -165,7 +164,7 @@ export const exportSongs = async (songs: SongType[]) => {
         song.edited = false;
       }
       destination = `${dir}/${song.name}`;
-      await FileSystem.writeAsStringAsync(destination, song.data, {encoding: 'base64'});
+      await FileSystem.writeAsStringAsync(destination, song.data, { encoding: 'base64' });
       await Sharing.shareAsync(destination);
     }
     else {
@@ -174,10 +173,9 @@ export const exportSongs = async (songs: SongType[]) => {
         if (song.edited) {
           await updateMetadata(song);
           song.edited = false;
-          const db = DataManager.getInstance();
-          await db.initConnection();
+          const db = SongDataManager.getInstance();
           await db.songExported(Number(song.id));
-          await FileSystem.writeAsStringAsync(audioPath, song.data, {encoding: 'base64'});
+          await FileSystem.writeAsStringAsync(audioPath, song.data, { encoding: 'base64' });
         }
         await Sharing.shareAsync(audioPath);
       }
@@ -189,16 +187,15 @@ export const exportSongs = async (songs: SongType[]) => {
   }
   // export multiple songs
   else if (songs.length > 1) {
-    const db = DataManager.getInstance();
-    await db.initConnection();
+    const db = SongDataManager.getInstance();
     for (let i = 0; i < songs.length; i++) {
       if (songs[i].pageType === PageType.IMPORT) {
         if (songs[i].edited) {
           await updateMetadata(songs[i]);
           songs[i].edited = false;
-        } 
+        }
         destination = `${dir}/${songs[i].name}`;
-        await FileSystem.writeAsStringAsync(destination, songs[i].data, {encoding: 'base64'});
+        await FileSystem.writeAsStringAsync(destination, songs[i].data, { encoding: 'base64' });
       }
       else if (songs[i].pageType === PageType.LIBRARY) {
         try {
@@ -207,9 +204,9 @@ export const exportSongs = async (songs: SongType[]) => {
             await updateMetadata(songs[i]);
             songs[i].edited = false;
             await db.songExported(Number(songs[i].id));
-            await FileSystem.writeAsStringAsync(audioPath, songs[i].data, {encoding: 'base64'});
+            await FileSystem.writeAsStringAsync(audioPath, songs[i].data, { encoding: 'base64' });
           }
-          await FileSystem.copyAsync({from: audioPath, to: dir});
+          await FileSystem.copyAsync({ from: audioPath, to: dir });
         }
         catch (error) {
           console.log('error copying song from library: ', error);
@@ -218,7 +215,7 @@ export const exportSongs = async (songs: SongType[]) => {
     }
     await Sharing.shareAsync(dir);
   }
-  
+
   await FileSystem.deleteAsync(dir);
 
 }
@@ -226,7 +223,7 @@ export const exportSongs = async (songs: SongType[]) => {
 export const getWifiInfo = async (name: string, id: string, type: string, data: string) => {
   try {
     const destination = `${FileSystem.documentDirectory}${id}${name}`;
-    await FileSystem.writeAsStringAsync(destination, data, {encoding: 'base64'});
+    await FileSystem.writeAsStringAsync(destination, data, { encoding: 'base64' });
     const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
     const info = await getAudioMetadata(destination, wantedTags);
     await FileSystem.deleteAsync(destination);
@@ -262,7 +259,7 @@ export const importFiles = async (
     updateSize(results.assets.length);
     for (let i = 0; i < results.assets.length; i++) {
       countdown(results.assets.length - i);
-      data = await FileSystem.readAsStringAsync(results.assets[i].uri, {encoding: 'base64'});
+      data = await FileSystem.readAsStringAsync(results.assets[i].uri, { encoding: 'base64' });
       let info: InfoType = {};
       await getAudioMetadata(results.assets[i].uri, wantedTags)
         .then((meta) => {
@@ -310,12 +307,12 @@ export const newCover = async () => {
     quality: 0.3,
   });
   if (
-    result.assets && 
-    result.assets.length > 0 && 
-    result.assets[0].base64 && 
+    result.assets &&
+    result.assets.length > 0 &&
+    result.assets[0].base64 &&
     result.assets[0].mimeType &&
     (result.assets[0].mimeType == 'image/jpeg' || result.assets[0].mimeType == 'image/png') &&
-    !result.canceled 
+    !result.canceled
   ) {
     return `data:${result.assets[0].mimeType};base64,${result.assets[0].base64}`;
   }
@@ -325,7 +322,7 @@ export const newCover = async () => {
 }
 
 export const saveEdits = (
-  
+
   results: SongType[],
   ids: string[],
   title: string,
@@ -352,9 +349,9 @@ export const saveEdits = (
       };
     }
   }
-  
+
   return results;
-  
+
 }
 
 const createLibraryDir = async () => {
@@ -371,7 +368,7 @@ const createLibraryDir = async () => {
 
 export const deleteFromLibrary = async (id: number) => {
   try {
-    const db = DataManager.getInstance();
+    const db = SongDataManager.getInstance();
     const removed = await db.removeSong(id);
     if (removed) {
       await FileSystem.deleteAsync(`${FileSystem.documentDirectory}library/${id}`);
@@ -388,8 +385,8 @@ export const saveToLibrary = async (
   progress: (value: number) => void,
 ) => {
   try {
-    const db = DataManager.getInstance();
-    await db.initConnection();
+    const db = SongDataManager.getInstance();
+    const playlistDb = PlaylistDataManager.getInstance();
     for (let i = 0; i < songs.length; i++) {
       try {
         const song = songs[i];
@@ -413,7 +410,7 @@ export const saveToLibrary = async (
           const dir = `${FileSystem.documentDirectory}library/${id}`;
           try {
             await FileSystem.makeDirectoryAsync(dir);
-            await FileSystem.writeAsStringAsync(`${dir}/${fileName}`, song.data, {encoding: 'base64'});
+            await FileSystem.writeAsStringAsync(`${dir}/${fileName}`, song.data, { encoding: 'base64' });
           }
           catch (error) {
             console.log('error writing audio: ', error);
@@ -421,12 +418,14 @@ export const saveToLibrary = async (
             continue;
           }
           await writeImageToLibrary(artwork, dir);
+          // add song to library playlist
+          await playlistDb.addToPlaylist(1, id);
         }
-        progress(i+1);
+        progress(i + 1);
       }
       catch (error) {
         console.error('Error inserting song: ', error);
-        progress(i+1);
+        progress(i + 1);
       }
     }
   }
@@ -464,8 +463,7 @@ export const getCoverImageData = async (id: string, full: boolean = false) => {
 
 export const getSongById = async (id: number) => {
   try {
-    const db = DataManager.getInstance();
-    await db.initConnection();
+    const db = SongDataManager.getInstance();
     const result = await db.getSongById(id);
     return getSongByResult(result);
   }
@@ -506,13 +504,13 @@ export const getSongByResult = (result: any): SongType => {
 }
 
 export const getNextUp = async (
-  currentId: string, 
-  pagination: number = 30, 
+  currentId: string,
+  pagination: number = 30,
   shuffle: boolean = false
 ): Promise<SongType[]> => {
-  
+
   const next: SongType[] = [];
-  const db = DataManager.getInstance();
+  const db = SongDataManager.getInstance();
   // TODO: only query songs after currentId
   const songs = await db.getSongs();
 
@@ -557,7 +555,7 @@ export const fetchMoreSongs = async (id: string, shuffle: boolean) => {
   }
 }
 
-export const getNextValidSong = async (songs: number[]): Promise<SongType | null > => {
+export const getNextValidSong = async (songs: number[]): Promise<SongType | null> => {
   let foundSong = false;
   let newSong = null;
   let attempts = 0;
@@ -606,11 +604,11 @@ export const writeImageToLibrary = async (artwork: string, dir: string) => {
       // convert image to jpeg, save full size
       const fullConvert = await ImageManipulator.manipulateAsync(
         `${dir}/cover_temp.${extension}`,
-        [...(imageWidth > 1000 ? [{ resize: { width: 1000, height: 1000*(imageHeight/imageWidth) } }] : [])],
+        [...(imageWidth > 1000 ? [{ resize: { width: 1000, height: 1000 * (imageHeight / imageWidth) } }] : [])],
         { compress: 1, format: SaveFormat.JPEG, base64: true }
       );
       if (fullConvert.base64) {
-        await FileSystem.writeAsStringAsync(`${dir}/cover_full.jpg`, fullConvert.base64, {encoding: 'base64'});
+        await FileSystem.writeAsStringAsync(`${dir}/cover_full.jpg`, fullConvert.base64, { encoding: 'base64' });
       }
       // convert image to jpeg, save small size
       const smallConvert = await ImageManipulator.manipulateAsync(
@@ -619,7 +617,7 @@ export const writeImageToLibrary = async (artwork: string, dir: string) => {
         { compress: 0.5, format: SaveFormat.JPEG, base64: true }
       );
       if (smallConvert.base64) {
-        await FileSystem.writeAsStringAsync(`${dir}/cover_small.jpg`, smallConvert.base64, {encoding: 'base64'});
+        await FileSystem.writeAsStringAsync(`${dir}/cover_small.jpg`, smallConvert.base64, { encoding: 'base64' });
       }
       // await Sharing.shareAsync(`${dir}`);
       // delete temp image
@@ -651,19 +649,18 @@ export const deleteImagesFromDirectory = async (dir: string) => {
 
 export const updateSongsInLibrary = async (
   ids: string[],
-  title: string, 
+  title: string,
   artist: string,
   album: string,
   cover: string,
 ) => {
-  const db = DataManager.getInstance();
-  await db.initConnection();
-  for (let i = 0; i < ids.length; i++) { 
+  const db = SongDataManager.getInstance();
+  for (let i = 0; i < ids.length; i++) {
     const dir = `${FileSystem.documentDirectory}library/${ids[i]}`;
     if (cover) {
       await deleteImagesFromDirectory(dir);
       await writeImageToLibrary(cover, dir);
-    } 
+    }
     if (title || artist || album) {
       await db.editSong(Number(ids[i]), title, artist, album);
     }

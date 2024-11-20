@@ -45,3 +45,8 @@ export enum PageType {
   PLAYER = 3,
   QUEUE = 4,
 }
+
+export type PlaylistType = {
+  id: number;
+  name: string;
+};

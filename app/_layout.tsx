@@ -10,7 +10,7 @@ import { Colors } from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { connect, restorePurchases } from "@/lib/PurchaseManager";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import DataManager from "@/lib/DataManager";
+import DataManager from "@/lib/data/DataManager";
 import { LogBox } from "react-native";
 import CFG from "@/constants/Config";
 
@@ -62,9 +62,8 @@ const RootLayout = () => {
 
     const checkDB = async () => {
       try {
-        const db = DataManager.getInstance();
-        await db.initConnection();
-        await db.createTables();
+        await DataManager.initConnection();
+        await DataManager.createTables();
       }
       catch (error) {
         console.error('Error creatingdatabase:', error);

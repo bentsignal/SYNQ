@@ -34,7 +34,8 @@ const Local = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 5,
+    gap: 7,
+    marginTop: 5,
   },
 });
 

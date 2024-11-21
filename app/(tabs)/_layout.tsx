@@ -42,18 +42,7 @@ const TabLayout = () => {
   }, [assets]);
 
   const Local = StyleSheet.create({
-    tabBar: {
-      borderTopWidth: 1,
-      borderTopColor: Colors.popup,
-      backgroundColor: Colors.footer,
-      height: '11%',
-      paddingTop: 10,
-      paddingBottom: Dimensions.get('screen').height < 700 ? 15 : 30
-    },
-    tabBarLabel: {
-      fontSize: 12,
-      fontWeight: 'bold',
-    },
+    
     bottomSheetWrapper: {
       position: 'absolute', 
       height: '100%', 
@@ -144,7 +133,7 @@ const TabLayout = () => {
           headerTitleStyle: Styles.infoText,
           tabBarActiveTintColor: Colors.tabActive,
           tabBarInactiveTintColor: Colors.tabInactive,
-          tabBarStyle: Local.tabBar,
+          tabBarStyle: Styles.tabBar,
           tabBarLabelStyle: Styles.h6
         }}
         sceneContainerStyle={{

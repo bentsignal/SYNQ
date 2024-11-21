@@ -11,6 +11,7 @@ import * as FileSystem from "expo-file-system";
 import { getSongByResult } from "@/lib/SongManager";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import MiniPlayer from "@/components/player/MiniPlayer";
+import TabBar from "@/components/TabBar";
 
 const PlaylistView = () => {
 
@@ -41,10 +42,12 @@ const PlaylistView = () => {
   }, [numModified, homeState]);
 
   return (
-    <View style={[Local.container, { paddingTop: insets.top }]}>
-      <Text>Playlist {id}</Text>
+    <View style={Local.container}>
       <SongList songs={songs} pageType={PageType.LIBRARY}/>
-      <MiniPlayer />
+      <View style={Local.miniPlayerContainer}>
+        <MiniPlayer />
+      </View>
+      <TabBar />
     </View>
   );
 }
@@ -54,6 +57,12 @@ const Local = StyleSheet.create({
     ...Styles.body,
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  miniPlayerContainer: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 0,
   },
 });
 

@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
 export const Styles = StyleSheet.create({
@@ -49,6 +49,21 @@ export const Styles = StyleSheet.create({
     color: Colors.infoText,
     marginBottom: 20,
     width: '100%',
+  },
+
+  // tab bar styles
+  tabBar: {
+    borderTopWidth: 1,
+    borderTopColor: Colors.popup,
+    backgroundColor: Colors.footer,
+    height: '11%',
+    paddingTop: 10,
+    paddingBottom: Dimensions.get('screen').height < 700 ? 15 : 30
+  },
+  tabBarLabel: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: Colors.tabInactive,
   },
 
   // Container styles

@@ -5,13 +5,9 @@ import { Styles } from "@/constants/Styles";
 import PageTitle from '@/components/PageTitle';
 import Notifications from "@/components/notifications/Notifications";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import SongDataManager from "@/lib/data/SongDataManager";
 import { useEffect, useState, useRef } from "react";
-import SongList from "@/components/lists/SongList";
-import { SongType, PageType, NotificationType } from "@/constants/Types";
-import * as FileSystem from 'expo-file-system';
+import { NotificationType } from "@/constants/Types";
 import MiniPlayer from '@/components/player/MiniPlayer';
-import { getSongByResult } from "@/lib/SongManager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CFG from "@/constants/Config";
 import CategorySelector from "@/components/CategorySelector";
@@ -24,7 +20,6 @@ const Library = () => {
 
   const { 
     
-    numModified, homeState,
     shuffle, theme, haptic,
     adPlaying, premium, adURL, shouldPlayAd,
 
@@ -45,8 +40,6 @@ const Library = () => {
   const [selected, setSelected] = useState(0);
 
   const checkForAdInterval = 5;
-
-  const [songs, setSongs] = useState<SongType[]>([]);
 
   // used to update storage variable that counts 
   // play time. Used to determine if an ad should be played
@@ -201,28 +194,6 @@ const Library = () => {
       }
     }
   );
-
-  // updates song list when changes are detected
-  useEffect(() => {
-    try {
-      const db = SongDataManager.getInstance();
-      db.getSongs().then((results) => {
-        let songs: SongType[] = [];
-        let dir;
-        // for (let i = results.length - 1; i >= 0; i--) {
-        for (let i = 0; i < results.length; i++) {
-          dir = `${FileSystem.documentDirectory}library/${results[i].id}`;
-          const song = getSongByResult(results[i]);
-          songs.push(song);
-        }
-        setSongs(songs);
-      });
-    }
-    catch (error) {
-      console.log(error);
-    }
-  }, [numModified, homeState]);
-
 
   const getBody = () => {
     switch (selected) {

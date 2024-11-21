@@ -22,11 +22,14 @@ const Library = () => {
     
     shuffle, theme, haptic,
     adPlaying, premium, adURL, shouldPlayAd,
+    playerInitialized,
 
     setShowOverlay, 
     setShowNotificationModal,
     setAdPlaying,
     setShouldPlayAd,
+    setPlayerInitialized,
+
     addNotification,
   
   } = useGlobalContext();
@@ -35,7 +38,6 @@ const Library = () => {
   const { position, duration } = useProgress();
   const previousPosition = useRef(0);
   const timePlayed = useRef(0);
-  const playerInitialized = useRef(false);
 
   const [selected, setSelected] = useState(0);
 
@@ -106,9 +108,16 @@ const Library = () => {
 
   // sets up player
   useEffect(() => {
-    if (playerInitialized.current) return;
-    setupPlayer();
-    playerInitialized.current = true;
+    
+    try {
+      if (!playerInitialized) {
+        setupPlayer();
+        setPlayerInitialized(true);
+      }
+    }
+    catch (error) {
+      console.log('error setting up player: ', error);
+    }
   }, []);
 
   // sets ad playing when ad is active

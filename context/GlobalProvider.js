@@ -50,6 +50,7 @@ const GlobalProvider = ({ children, initTheme, initPremium, initShouldPlayAd }) 
   const [adPlaying, setAdPlaying] = useState(false);
   const [adURL, setAdURL] = useState('');
   const [shouldPlayAd, setShouldPlayAd] = useState(initShouldPlayAd ? true : false);
+  const [playerInitialized, setPlayerInitialized] = useState(false);
 
   useEffect(() => {
     if (initTheme !== '') {
@@ -121,6 +122,7 @@ const GlobalProvider = ({ children, initTheme, initPremium, initShouldPlayAd }) 
         adPlaying, setAdPlaying,
         adURL, setAdURL,
         shouldPlayAd, setShouldPlayAd,
+        playerInitialized, setPlayerInitialized,
       }}
     >
       {children}

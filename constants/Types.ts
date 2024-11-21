@@ -44,6 +44,9 @@ export enum PageType {
   LIBRARY = 2,
   PLAYER = 3,
   QUEUE = 4,
+  PLAYLIST = 5,
+  ALBUM = 6,
+  ARTIST = 7,
 }
 
 export type PlaylistType = {

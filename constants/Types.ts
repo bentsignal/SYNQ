@@ -49,4 +49,5 @@ export enum PageType {
 export type PlaylistType = {
   id: number;
   name: string;
+  songCount: number;
 };

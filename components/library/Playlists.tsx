@@ -5,8 +5,11 @@ import { Colors } from "@/constants/Colors";
 import { Styles } from "@/constants/Styles";
 import PlaylistDataManager from "@/lib/data/PlaylistDataManager";
 import { PlaylistType } from "@/constants/Types";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 const Playlists = () => {
+
+  const { numModified, homeState } = useGlobalContext();
 
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
 
@@ -16,11 +19,10 @@ const Playlists = () => {
       console.log(results);
       setPlaylists(results);
     });
-  }, []);
+  }, [numModified, homeState]);
 
   return (
     <View style={Local.container}>
-      <Text style={Local.placeholderText}>Playlists</Text>
       <PlaylistList playlists={playlists} />
     </View>
   );
@@ -29,12 +31,8 @@ const Playlists = () => {
 const Local = StyleSheet.create({
   container: {
     flex: 1,
-    width: '90%',
+    width: '100%',
   },
-  placeholderText: {
-    ...Styles.h3,
-    color: Colors.text,
-  }
 });
 
 export default Playlists;

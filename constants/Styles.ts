@@ -103,5 +103,17 @@ export const Styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 5,
   },
-
+  listItem: {
+    alignSelf: 'stretch',
+    width: '90%',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    height: 90,
+    marginBottom: 10,
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingTop: 15,
+    paddingBottom: 15,
+  }
 });

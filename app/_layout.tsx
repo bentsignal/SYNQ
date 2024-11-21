@@ -162,6 +162,12 @@ const RootLayout = () => {
               contentStyle: { backgroundColor: 'transparent' },
             }}
           />
+          <Stack.Screen
+            name="playlist/[id]"
+            options={{
+              headerShown: false,
+            }}
+          />
         </Stack>
       </GlobalProvider>
     </GestureHandlerRootView>

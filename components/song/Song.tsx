@@ -77,18 +77,8 @@ const Song = ({song, fadeCover, fadeSong}: {
   const Local = StyleSheet.create({
     mainContainer: {
       ...Styles.roundedContainer,
-      alignSelf: 'stretch',
-      width: '90%',
-      flexDirection: 'row',
-      justifyContent: 'flex-start',
-      alignItems: 'center',
-      height: 90,
-      marginBottom: 10,
+      ...Styles.listItem,
       backgroundColor: bg,
-      paddingLeft: 15,
-      paddingRight: 15,
-      paddingTop: 15,
-      paddingBottom: 15,
       opacity: !selectEnabled || (selectEnabled && selected) ? 1 : 0.6
     },
     skeleton: {

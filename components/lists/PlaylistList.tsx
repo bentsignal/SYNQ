@@ -16,18 +16,21 @@ const PlaylistList = memo(({
 }) => {
 
   const renderItem = ({item}: {item: PlaylistType}) => {
-    console.log(item);
     return (
       <MemoPlaylist playlist={item} />
     );
   };
+
+  const getKey = (item: PlaylistType) => {
+    return `${item.id}-${item.name}-${item.songCount}`;
+  }
 
   return (
     <List 
       data={playlists}
       headerComponent={headerComponent}
       item={renderItem}
-      keyExtractor={(item, index) => item.id.toString()}
+      keyExtractor={getKey}
       bottomPadding={bottomPadding}
     />
   );

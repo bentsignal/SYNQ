@@ -243,10 +243,6 @@ const Library = () => {
       />
       <View style={Local.divider} />
       {getBody()}
-      {/* <SongList 
-        songs={songs}
-        pageType={PageType.LIBRARY}
-      /> */}
       <MiniPlayer />
       <Notifications  
         customStyles={{

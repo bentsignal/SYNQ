@@ -16,10 +16,15 @@ class PlaylistDataManager extends DataManager {
     return PlaylistDataManager.instance;
   }
 
-  public async getPlaylists(): Promise<any[]> {
+  public async getPlaylists(): Promise<PlaylistType[]> {
     try {
-      const result = await PlaylistDataManager.db?.getAllAsync(`SELECT * FROM playlists;`);
-      return result ? result : [];
+      const result = await PlaylistDataManager.db?.getAllAsync(`
+        SELECT playlists.*, COUNT(playlistSongs.songId) as songCount 
+        FROM playlists
+        LEFT JOIN playlistSongs ON playlists.id = playlistSongs.playlistId
+        GROUP BY playlists.id;
+      `);
+      return result as PlaylistType[];
     }
     catch (error) {
       throw new Error('Error getting playlists: ' + error);

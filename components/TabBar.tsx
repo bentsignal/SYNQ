@@ -8,6 +8,7 @@ const TabBar = () => {
     <View style={Local.container}>
       <TouchableOpacity 
         style={Local.icon}
+        activeOpacity={1}
         onPress={() => router.replace('/')}
       >
         <HomeIcon focused={false} />
@@ -15,6 +16,7 @@ const TabBar = () => {
       </TouchableOpacity>
       <TouchableOpacity 
         style={Local.icon}
+        activeOpacity={1}
         onPress={() => router.replace('/library')}
       >
         <LibraryIcon focused={false} />
@@ -35,7 +37,7 @@ const Local = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 7,
-    marginTop: 5,
+    marginTop: 7,
   },
 });
 

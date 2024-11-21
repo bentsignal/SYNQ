@@ -42,14 +42,10 @@ const TabLayout = () => {
   }, [assets]);
 
   const Local = StyleSheet.create({
-    
     bottomSheetWrapper: {
-      position: 'absolute', 
-      height: '100%', 
-      zIndex: 100,
-      width: '100%',
+      ...Styles.bottomSheetWrapper,
       pointerEvents: showSongOptions ? 'auto' : 'none',
-    },
+    }
   });
 
   const forceResetTheme = async () => {

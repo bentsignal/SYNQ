@@ -130,5 +130,11 @@ export const Styles = StyleSheet.create({
     paddingRight: 15,
     paddingTop: 15,
     paddingBottom: 15,
-  }
+  },
+  bottomSheetWrapper: {
+    position: 'absolute', 
+    height: '100%', 
+    zIndex: 100,
+    width: '100%',
+  },
 });

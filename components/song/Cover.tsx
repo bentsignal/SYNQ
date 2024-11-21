@@ -6,6 +6,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import Ad from '@/components/Ad';
 import { getAppIcon } from '@/constants/Logos';
+import { PageType } from '@/constants/Types';
 
 const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5+hPwABAAEAAFPAfXAAAAAElFTkSuQmCC';
 
@@ -221,6 +222,97 @@ export const EditCover = ({image, id, handlePress, propOnLoad}: {
         </View>
       </View>
     </TouchableOpacity>
+  );
+
+}
+
+export const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
+
+  const [src, setSrc] = useState('');
+  const [aspectRatio, setAspectRatio] = useState(1);
+  const { theme } = useGlobalContext();
+  const coverPercent = 0.65;
+
+  useEffect(() => {
+    
+    const getImage = async () => {
+      try {
+        const data = await getCoverImageData(id, true);
+        if (data) {
+          Image.getSize(`data:image/jpeg;base64,${data}`, (width, height) => {
+            setAspectRatio(width / height);
+          });
+          setSrc(`data:image/jpeg;base64,${data}`);
+        }
+        else {
+          setAspectRatio(1);
+          setSrc('');
+        }
+      }
+      catch (error) {
+        console.log('error getting cover image for player: ', error);
+      }
+    }
+    
+    // getImage();
+
+  }, [id]);
+
+  const Local = StyleSheet.create({
+    container: {
+      backgroundColor: src ? 'transparent' : '#D2D2D2',
+      width: Dimensions.get('screen').width * coverPercent, 
+      minHeight: Dimensions.get('screen').width * coverPercent,
+      aspectRatio: aspectRatio,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 12,
+    },
+    artwork: {
+      aspectRatio: aspectRatio,
+      width: Dimensions.get('screen').width * coverPercent, 
+      borderRadius: 10,
+    },
+    empty: {
+      width: 60,
+      height: 60,
+    },
+  });
+
+  const getSource = () => {
+    if (src) {
+      return {uri: src};
+    }
+    else if (type === PageType.PLAYLIST && id === '1') {
+      return require('@/assets/icons/library.png');
+    }
+    else if (type === PageType.PLAYLIST) {
+      return require('@/assets/icons/cassette-tape.png');
+    }
+    else if (type === PageType.ALBUM) {
+      return require('@/assets/icons/cd-drive.png');
+    }
+    else {
+      return require('@/assets/icons/music.png');
+    }
+  }
+
+  const getStyle = () => {
+    if (src) {
+      return Local.artwork;
+    }
+    else {
+      return Local.empty;
+    }
+  }
+
+  return (
+    <View style={Local.container}>
+      <FastImage 
+        source={getSource()}
+        style={getStyle()}
+      />  
+    </View>
   );
 
 }

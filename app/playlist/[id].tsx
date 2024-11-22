@@ -12,10 +12,11 @@ import { getSongByResult } from "@/lib/SongManager";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import MiniPlayer from "@/components/player/MiniPlayer";
 import TabBar from "@/components/TabBar";
-import SongListPageHeader from "@/components/SongListPageHeader";
+import SongListHeaderComponent from "@/components/SongListHeaderComponent";
 import PlaylistDataManager from "@/lib/data/PlaylistDataManager";
 import Overlay from "@/components/Overlay";
 import SongOptions from "@/components/sheets/SongOptions";
+import Header from "@/components/Header";
 
 const PlaylistView = () => {
 
@@ -33,6 +34,7 @@ const PlaylistView = () => {
   const [songs, setSongs] = useState<SongType[]>([]);
   const [title, setTitle] = useState('');
   const [songCount, setSongCount] = useState(0);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   useEffect(() => {
     if (id) {
@@ -67,6 +69,10 @@ const PlaylistView = () => {
 
   return (
     <View style={Local.container}>
+      <Header 
+        scrollPosition={scrollPosition}
+        title={title}
+      />
       <View style={[Local.bottomSheetWrapper, {pointerEvents: showSongOptions ? 'auto' : 'none'}]}>
         <SongOptions show={showSongOptions} setShow={setShowSongOptions} />
       </View>
@@ -75,13 +81,14 @@ const PlaylistView = () => {
         songs={songs} 
         pageType={PageType.LIBRARY}
         headerComponent={
-          <SongListPageHeader 
+          <SongListHeaderComponent 
             id={id as string}
             title={title} 
             songCount={songCount} 
             pageType={PageType.PLAYLIST}
           />
         }
+        setScrollPosition={setScrollPosition}
       />
       <View style={Local.miniPlayerContainer}>
         <MiniPlayer />

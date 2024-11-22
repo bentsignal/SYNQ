@@ -12,7 +12,7 @@ type SongListPageHeaderProps = {
   pageType: PageType; 
 }
 
-const SongListPageHeader = ({id, title, songCount, pageType}: SongListPageHeaderProps) => {
+const SongListHeaderComponent = ({id, title, songCount, pageType}: SongListPageHeaderProps) => {
   const insets = useSafeAreaInsets();
   return (
     <View style={[Local.container, {paddingTop: insets.top}]}>
@@ -31,6 +31,7 @@ const Local = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
+    marginTop: 0,
   },
   title: {
     ...Styles.h3,
@@ -52,4 +53,4 @@ const Local = StyleSheet.create({
   }
 });
 
-export default SongListPageHeader;
+export default SongListHeaderComponent;

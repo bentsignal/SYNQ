@@ -16,7 +16,8 @@ const SongList = memo((
     bottomPadding = false,
     pageType, 
     fadeCover = true, 
-    fadeSong = false
+    fadeSong = false,
+    setScrollPosition
   }: 
   {
     songs: SongType[], 
@@ -24,7 +25,8 @@ const SongList = memo((
     bottomPadding?: boolean,
     pageType: PageType,
     fadeCover?: boolean,
-    fadeSong?: boolean
+    fadeSong?: boolean,
+    setScrollPosition?: (position: number) => void
   }
 ) => {
 
@@ -51,6 +53,7 @@ const SongList = memo((
         item={renderItem}
         keyExtractor={(song, index) => generateSongKey(song)}
         extra={selectedId}
+        setScrollPosition={setScrollPosition}
       />
     </>
   );

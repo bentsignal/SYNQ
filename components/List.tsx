@@ -13,6 +13,7 @@ const List = memo((
     item,
     keyExtractor,
     extra,
+    setScrollPosition
   }: 
   {
     data: any[], 
@@ -21,6 +22,7 @@ const List = memo((
     item: ListRenderItem<any>,
     keyExtractor: (item: any, index: number) => string,
     extra?: any,
+    setScrollPosition?: (position: number) => void
   }
 ) => {
 
@@ -39,6 +41,9 @@ const List = memo((
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const yOffset = event.nativeEvent.contentOffset.y;
+    if (setScrollPosition) {
+      setScrollPosition(yOffset);
+    }
     if (yOffset <= 0 && !atTop) {
       setAtTop(true);
       Animated.timing(topGradientOpacityRef, {

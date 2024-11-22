@@ -1,8 +1,10 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
-import { PlaylistType } from "@/constants/Types";
+import { PlaylistType, CoverType } from "@/constants/Types";
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 import { router } from "expo-router";
+import { ListCover } from "@/components/song/Cover";
+
 const Playlist = ({playlist}: {playlist: PlaylistType}) => {
 
   return (
@@ -12,6 +14,11 @@ const Playlist = ({playlist}: {playlist: PlaylistType}) => {
         router.push(`/playlist/${playlist.id}`);
       }}
     >
+      <ListCover 
+        id={playlist.id.toString()}
+        type={CoverType.PLAYLIST}
+        propOnLoad={() => {}}
+      />
       <View style={Local.textWrapper}>
         <Text style={Local.name}>{playlist.name}</Text>
         <Text style={Local.count}>{playlist.songCount} {playlist.songCount === 1 ? 'song' : 'songs'}</Text>
@@ -27,6 +34,7 @@ const Local = StyleSheet.create({
     backgroundColor: Colors.song,
   },
   textWrapper: {
+    paddingLeft: 10,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-start',

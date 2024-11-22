@@ -49,6 +49,12 @@ export enum PageType {
   ARTIST = 7,
 }
 
+export enum CoverType {
+  SONG = 1,
+  PLAYLIST = 2,
+  ALBUM = 3,
+}
+
 export type PlaylistType = {
   id: number;
   name: string;

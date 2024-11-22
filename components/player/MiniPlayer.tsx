@@ -9,6 +9,7 @@ import PausePlayButtons from "./PausePlayButtons";
 import { Colors } from "@/constants/Colors";
 import { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util";
+import { CoverType } from "@/constants/Types";
 
 const MiniPlayer = () => {
 
@@ -81,7 +82,11 @@ const MiniPlayer = () => {
       activeOpacity={1}
       onPress={() => router.push('/player')}
     >
-      <ListCover id={track?.id} propOnLoad={() => {}}/>
+      <ListCover 
+        id={track?.id} 
+        type={CoverType.SONG}
+        propOnLoad={() => {}} 
+      />
       {getInfo()}
       <View style={Local.buttonContainer}>
         <TouchableOpacity 

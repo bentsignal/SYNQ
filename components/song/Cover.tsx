@@ -6,13 +6,14 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import Ad from '@/components/Ad';
 import { getAppIcon } from '@/constants/Logos';
-import { PageType } from '@/constants/Types';
+import { PageType, CoverType } from '@/constants/Types';
 
 const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5+hPwABAAEAAFPAfXAAAAAElFTkSuQmCC';
 
 
-export const ListCover = ({image, id, fade, propOnLoad}: {
+export const ListCover = ({image, type, id, fade, propOnLoad}: {
   image?: string;
+  type: CoverType;
   id: string;
   fade?: boolean;
   propOnLoad: () => void;
@@ -28,17 +29,22 @@ export const ListCover = ({image, id, fade, propOnLoad}: {
 
   const getImage = async () => {
     try {
-      if (image) {
-        setSrc(image);
-      }
-      else {
-        const data = await getCoverImageData(id);
-        if (data) {
-          setSrc(`data:image/jpeg;base64,${data}`);
+      if (type === CoverType.SONG) {
+        if (image) {
+          setSrc(image);
         }
         else {
-          setSrc('');
+          const data = await getCoverImageData(id);
+          if (data) {
+            setSrc(`data:image/jpeg;base64,${data}`);
+          }
+          else {
+            setSrc('');
+          }
         }
+      }
+      else if (type === CoverType.PLAYLIST) {
+
       }
       dim = src ? 60 : 20;
     }
@@ -51,7 +57,7 @@ export const ListCover = ({image, id, fade, propOnLoad}: {
   }
 
   useEffect(() => {
-    if (id && editSong.id &&editSong.id === id) {
+    if (id && editSong.id && editSong.id === id) {
       getImage();
     }
   }, [numModified])
@@ -85,6 +91,17 @@ export const ListCover = ({image, id, fade, propOnLoad}: {
     }
     else if (src) {
       return {uri: src};
+    }
+    else if (type === CoverType.PLAYLIST) {
+      if (id === '1') {
+        return require('@/assets/icons/library.png');
+      }
+      else {
+        return require('@/assets/icons/cassette-tape.png');
+      }
+    }
+    else if (type === CoverType.ALBUM) {
+      return require('@/assets/icons/cd-drive.png');
     }
     else {
       return require('@/assets/icons/music.png');

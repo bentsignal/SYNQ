@@ -1,15 +1,13 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import React, { useRef, useEffect, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
-import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import SongInfo from '@/components/song/SongInfo';
 import { ListCover } from '@/components/song/Cover';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import SongOption from './SongOption';
 import { exportSongs } from '@/lib/SongManager';
-import { PageType } from '@/constants/Types';
-import TrackPlayer from 'react-native-track-player';
+import { CoverType, PageType } from '@/constants/Types';
 import { getTrackFromSong, addToQueue } from '@/lib/PlayerManager';
 
 const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) => void}) => {
@@ -115,6 +113,7 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
           <View style={Local.container}>
             <ListCover 
               id={editSong.id}
+              type={CoverType.SONG}
               image={editSong.info?.metadata?.artwork}
               propOnLoad={() => {}}
             />

@@ -14,9 +14,8 @@ import Skeleton from '../Skeleton';
 import { darkenColor } from '@/lib/ColorManager';
 import * as Haptics from 'expo-haptics';
 import More from '@/components/More';
-import { getNextUp } from '@/lib/SongManager';
-import { PageType } from '@/constants/Types';
-import TrackPlayer, { useActiveTrack, Track, RepeatMode } from "react-native-track-player";
+import { PageType, CoverType } from '@/constants/Types';
+import { useActiveTrack } from "react-native-track-player";
 import { getTrackFromSong, playTrack, updateQueue, playAd, addToQueue } from '@/lib/PlayerManager';
 
 const Song = ({song, fadeCover, fadeSong}: {
@@ -161,6 +160,7 @@ const Song = ({song, fadeCover, fadeSong}: {
       >
         <ListCover 
           image={song.info?.metadata?.artwork ? song.info.metadata.artwork : ''}
+          type={CoverType.SONG}
           id={song.id}
           fade={fadeCover}
           propOnLoad={() => {

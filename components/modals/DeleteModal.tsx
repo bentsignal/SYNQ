@@ -6,7 +6,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { removeSongs, deleteFromLibrary } from '@/lib/SongManager';
 import { ListCover } from '@/components/song/Cover';
 import SongInfo from '@/components/song/SongInfo';
-import { PageType, SongType } from '@/constants/Types';
+import { PageType, CoverType } from '@/constants/Types';
 import TrackPlayer, { Track } from 'react-native-track-player';
 
 const DeleteModal = () => {
@@ -36,6 +36,7 @@ const DeleteModal = () => {
         <View style={[Local.infoContainer, Styles.roundedContainer]}>
           <ListCover 
             image={editSong.info?.metadata?.artwork}
+            type={CoverType.SONG}
             id={editSong.id}
             propOnLoad={() => {}}
           />

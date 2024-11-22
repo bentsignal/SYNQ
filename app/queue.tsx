@@ -12,7 +12,7 @@ import ShuffleButton from "@/components/player/ShuffleButton";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import SongList from "@/components/lists/SongList";
 import { useEffect, useState } from "react";
-import { PageType, SongType } from "@/constants/Types";
+import { CoverType, PageType, SongType } from "@/constants/Types";
 import { getSongById, generateSongKey } from "@/lib/SongManager";
 import { ListCover } from "@/components/song/Cover";
 import SongInfo from "@/components/song/SongInfo";
@@ -137,6 +137,7 @@ const Queue = () => {
       <View style={Local.currentlyPlayingContainer}>
         <ListCover 
           id={track?.id}
+          type={CoverType.SONG}
           image={track?.artwork}
           propOnLoad={() => {}}
         />

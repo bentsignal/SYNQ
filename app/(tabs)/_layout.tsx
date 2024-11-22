@@ -1,6 +1,4 @@
 import { Tabs } from 'expo-router';
-import { View, StyleSheet, Dimensions } from 'react-native';
-import SongOptions from '@/components/sheets/SongOptions';
 import { useEffect, useRef } from 'react';
 import Server from '@/components/import/wifi/Server';
 import { HomeIcon, LibraryIcon } from '@/components/TabBarIcons';
@@ -40,13 +38,6 @@ const TabLayout = () => {
       setAdURL(assets[0].uri);
     }
   }, [assets]);
-
-  const Local = StyleSheet.create({
-    bottomSheetWrapper: {
-      ...Styles.bottomSheetWrapper,
-      pointerEvents: showSongOptions ? 'auto' : 'none',
-    }
-  });
 
   const forceResetTheme = async () => {
     try { 
@@ -111,12 +102,6 @@ const TabLayout = () => {
   return (
     <>
       <GlobalProgress />
-      <View style={Local.bottomSheetWrapper}>
-        <SongOptions 
-          show={showSongOptions} 
-          setShow={setShowSongOptions}
-        />
-      </View>
       <NotificationModal />
       <Overlay show={showOverlay} activeOpacity={0.95}/>
       <Server />

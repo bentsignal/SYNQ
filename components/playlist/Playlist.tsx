@@ -4,6 +4,7 @@ import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 import { router } from "expo-router";
 import { ListCover } from "@/components/song/Cover";
+import More from "@/components/More";
 
 const Playlist = ({playlist}: {playlist: PlaylistType}) => {
 
@@ -23,6 +24,7 @@ const Playlist = ({playlist}: {playlist: PlaylistType}) => {
         <Text style={Local.name}>{playlist.name}</Text>
         <Text style={Local.count}>{playlist.songCount} {playlist.songCount === 1 ? 'song' : 'songs'}</Text>
       </View>
+      <More handlePress={() => {}} />
     </TouchableOpacity>
   )
 }

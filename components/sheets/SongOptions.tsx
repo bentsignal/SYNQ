@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import SongInfo from '@/components/song/SongInfo';
@@ -9,6 +9,7 @@ import SongOption from './SongOption';
 import { exportSongs } from '@/lib/SongManager';
 import { CoverType, PageType } from '@/constants/Types';
 import { getTrackFromSong, addToQueue } from '@/lib/PlayerManager';
+import * as Haptics from 'expo-haptics';
 
 type SongOptionsProps = {
   bottomSheetRef: React.RefObject<BottomSheet>,
@@ -21,6 +22,7 @@ const SongOptions = ({bottomSheetRef, setIsOpen}: SongOptionsProps) => {
     
     editSong, theme,
     numModified, premium,
+    haptic,
 
     setShowEdit, setShowImportAd,
     setShowDelete, setShowOverlay, 
@@ -33,6 +35,7 @@ const SongOptions = ({bottomSheetRef, setIsOpen}: SongOptionsProps) => {
 
   const [sheetIndex, setSheetIndex] = useState(-1);
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
+  const [scrollEnabled, setScrollEnabled] = useState(false);
 
   useEffect(() => {
     if (editSong.pageType) {
@@ -85,6 +88,7 @@ const SongOptions = ({bottomSheetRef, setIsOpen}: SongOptionsProps) => {
   const handleSheetChanges = useCallback((index: number) => {
     setSheetIndex(index);
     setIsOpen(index !== -1);
+    setScrollEnabled(index === 1);
   }, []);
 
   return (
@@ -116,43 +120,53 @@ const SongOptions = ({bottomSheetRef, setIsOpen}: SongOptionsProps) => {
             children={
               <>
                 <View style={Local.container}>
-                <ListCover 
-                  id={editSong.id}
-                  type={CoverType.SONG}
-                  image={editSong.info?.metadata?.artwork}
-                  propOnLoad={() => {}}
-                />
-                <SongInfo 
-                  info={editSong.info ? editSong.info : {metadata: {}}} 
-                  name={editSong.name ? editSong.name : ''}
-                />
-              </View>
-              <View>
-                <SongOption 
-                  icon={require('@/assets/icons/add.png')}
-                  text={'Add to Queue'}
-                  show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER].includes(pageType)}
-                  handler={handleAddToQueue}
-                />
-                <SongOption 
-                  icon={require('@/assets/icons/edit.png')}
-                  text={'Edit'}
-                  show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
-                  handler={handleEditSong}
-                />
-                <SongOption 
-                  icon={require('@/assets/icons/share.png')}
-                  text={'Export'}
-                  show={[PageType.LIBRARY].includes(pageType)}
-                  handler={handleExport}
-                />
-                <SongOption
-                  icon={require('@/assets/icons/delete.png')}
-                  text={'Delete'}
-                  show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
-                  handler={handleDeleteSong}
-                />
-              </View>
+                  <ListCover 
+                    id={editSong.id}
+                    type={CoverType.SONG}
+                    image={editSong.info?.metadata?.artwork}
+                    propOnLoad={() => {}}
+                  />
+                  <SongInfo 
+                    info={editSong.info ? editSong.info : {metadata: {}}} 
+                    name={editSong.name ? editSong.name : ''}
+                  />
+                </View>
+                <ScrollView
+                  scrollEnabled={scrollEnabled}
+                  onMomentumScrollBegin={(event) => {
+                    if (event.nativeEvent.contentOffset.y < 0) {
+                      bottomSheetRef.current?.snapToIndex(0);
+                      if (haptic) {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      }
+                    }
+                  }}
+                >
+                  <SongOption 
+                    icon={require('@/assets/icons/add.png')}
+                    text={'Add to Queue'}
+                    show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER].includes(pageType)}
+                    handler={handleAddToQueue}
+                  />
+                  <SongOption 
+                    icon={require('@/assets/icons/edit.png')}
+                    text={'Edit'}
+                    show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
+                    handler={handleEditSong}
+                  />
+                  <SongOption 
+                    icon={require('@/assets/icons/share.png')}
+                    text={'Export'}
+                    show={[PageType.LIBRARY].includes(pageType)}
+                    handler={handleExport}
+                  />
+                  <SongOption
+                    icon={require('@/assets/icons/delete.png')}
+                    text={'Delete'}
+                    show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
+                    handler={handleDeleteSong}
+                  />
+                </ScrollView>
               </>
             }
           />

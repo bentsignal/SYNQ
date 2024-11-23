@@ -74,6 +74,20 @@ class PlaylistDataManager extends DataManager {
     }
   }
 
+  public async createPlaylist(name: string): Promise<boolean> {
+    try {
+      const result = await PlaylistDataManager.db?.getFirstAsync(`SELECT * FROM playlists WHERE name = ?;`, [name]);
+      if (result) {
+        throw new Error('Playlist already exists');
+      }
+      await PlaylistDataManager.db?.runAsync(`INSERT INTO playlists (name) VALUES (?);`, [name]);
+      return true;
+    }
+    catch (error) {
+      throw new Error(error instanceof Error ? error.message : String(error));
+    }
+  }
+
 }
 
 export default PlaylistDataManager;

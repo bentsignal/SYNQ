@@ -8,16 +8,18 @@ const MemoPlaylist = memo(Playlist);
 const PlaylistList = memo(({
   playlists,
   headerComponent,
+  pageType,
   bottomPadding = false,
 }: {
   playlists: PlaylistType[],
   headerComponent?: React.ReactNode,
   bottomPadding?: boolean,
+  pageType: PageType,
 }) => {
 
   const renderItem = ({item}: {item: PlaylistType}) => {
     return (
-      <MemoPlaylist playlist={item} />
+      <MemoPlaylist playlist={item} pageType={pageType} />
     );
   };
 

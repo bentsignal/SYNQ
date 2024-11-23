@@ -5,12 +5,14 @@ import { Colors } from "@/constants/Colors";
 import { router } from "expo-router";
 import { ListCover } from "@/components/song/Cover";
 import More from "@/components/More";
+import { PageType } from "@/constants/Types";
 
-const Playlist = ({playlist}: {playlist: PlaylistType}) => {
+const Playlist = ({playlist, pageType}: {playlist: PlaylistType, pageType: PageType}) => {
 
   return (
     <TouchableOpacity 
       style={Local.container}
+      disabled={pageType === PageType.CREATE}
       onPress={() => {
         router.push(`/playlist/${playlist.id}`);
       }}
@@ -26,7 +28,7 @@ const Playlist = ({playlist}: {playlist: PlaylistType}) => {
       </View>
       <More handlePress={() => {}} />
     </TouchableOpacity>
-  )
+  );
 }
 
 const Local = StyleSheet.create({

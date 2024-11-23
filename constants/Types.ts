@@ -47,6 +47,7 @@ export enum PageType {
   PLAYLIST = 5,
   ALBUM = 6,
   ARTIST = 7,
+  CREATE = 8,
 }
 
 export enum CoverType {

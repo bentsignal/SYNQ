@@ -8,8 +8,10 @@ import { router } from "expo-router"
 import { useGlobalContext } from "@/context/GlobalProvider"
 import { PlaylistType } from "@/constants/Types"
 import PlaylistDataManager from "@/lib/data/PlaylistDataManager"
-import PlaylistList from "@/components/lists/PlaylistList"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
+import { NotificationType } from "@/constants/Types"
+import Notifications from "@/components/notifications/Notifications"
+import * as Haptics from 'expo-haptics'
 
 const MemoTextInput = memo(TextInput);
 
@@ -17,13 +19,14 @@ const CreatePlaylist = () => {
 
   const {
 
-    theme, numModified,
+    theme, numModified, haptic,
 
-    addNotification
+    addNotification, setNumModified,
 
   } = useGlobalContext();
 
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
+  const [name, setName] = useState('');
 
   useEffect(() => {
     const db = PlaylistDataManager.getInstance();
@@ -31,6 +34,32 @@ const CreatePlaylist = () => {
       setPlaylists(results);
     });
   }, [numModified]);
+
+  const handleCreate = async () => {
+    try {
+      if (name === '') {
+        throw new Error('Name is required');
+      }
+      const db = PlaylistDataManager.getInstance();
+      await db.createPlaylist(name);
+      if (haptic) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+      setNumModified(numModified + 1);
+      router.back();
+    }
+    catch (error) {
+      const trace = error instanceof Error ? error.message : String(error);
+      addNotification(
+        NotificationType.ERROR,
+        'Error',
+        trace,
+        'Unable to create playlist',
+        trace,
+        () => {}
+      );
+    }
+  }
 
   return (
     <View style={Local.wrapper}>
@@ -45,27 +74,26 @@ const CreatePlaylist = () => {
         contentContainerStyle={Local.inputContainer}
         extraScrollHeight={80}
       >
-        <Text style={Local.label}>Name</Text>
         <MemoTextInput
           style={Local.textBox}
           placeholder='Playlist name...'
           placeholderTextColor={Colors.altDisabled}
+          value={name}
+          onChangeText={(text) => setName(text)}
         />
         <View style={Local.buttonContainer}>
           <CustomButton
             title='Cancel'
-            handlePress={() => {
-              router.back();
-            }}
+            handlePress={() => router.back()}
           />
           <CustomButton
             title='Create'
+            disabled={name === ''}
             background={theme}
-            handlePress={() => {
-              console.log('create');
-            }}
+            handlePress={handleCreate}
           />
         </View>
+        <Notifications customStyles={Local.notifications} />
       </KeyboardAwareScrollView>
     </View>
   );
@@ -106,6 +134,10 @@ const Local = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 10,
+  },
+  notifications: {
+    position: 'absolute',
+    bottom: 30,
   }
 })
 

@@ -6,7 +6,7 @@ import Bar from "@/components/modals/Bar"
 import CustomButton from "@/components/CustomButton"
 import { router } from "expo-router"
 import { useGlobalContext } from "@/context/GlobalProvider"
-import { PlaylistType } from "@/constants/Types"
+import { PageType, PlaylistType } from "@/constants/Types"
 import PlaylistDataManager from "@/lib/data/PlaylistDataManager"
 import PlaylistList from "@/components/lists/PlaylistList"
 
@@ -43,7 +43,10 @@ const AddToPlaylist = () => {
         }}  
       />
       <View style={Styles.divider} />
-      <PlaylistList playlists={playlists} />
+      <PlaylistList 
+        playlists={playlists}
+        pageType={PageType.CREATE}
+      />
     </View>
   );
 }

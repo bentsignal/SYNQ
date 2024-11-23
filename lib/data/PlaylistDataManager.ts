@@ -31,13 +31,13 @@ class PlaylistDataManager extends DataManager {
     }
   }
 
-  public async getPlaylistById(id: number): Promise<PlaylistType | null> {
+  public async getPlaylistInfoById(id: number): Promise<PlaylistType | null> {
     try {
       const result = await PlaylistDataManager.db?.getFirstAsync(`
         SELECT playlists.*, COUNT(playlistSongs.songId) as songCount 
         FROM playlists
         LEFT JOIN playlistSongs ON playlists.id = playlistSongs.playlistId
-        GROUP BY playlists.id;
+        WHERE playlists.id = ?;
       `, [id]);
       return result ? result as PlaylistType : null;
     }

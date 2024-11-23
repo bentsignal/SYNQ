@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Colors } from "@/constants/Colors";
 import { Styles } from "@/constants/Styles";
 import PlaylistDataManager from "@/lib/data/PlaylistDataManager";
-import { PlaylistType } from "@/constants/Types";
+import { PageType, PlaylistType } from "@/constants/Types";
 import { useGlobalContext } from "@/context/GlobalProvider";
 
 const Playlists = () => {
@@ -16,14 +16,16 @@ const Playlists = () => {
   useEffect(() => {
     const db = PlaylistDataManager.getInstance();
     db.getPlaylists().then((results) => {
-      console.log(results);
       setPlaylists(results);
     });
   }, [numModified, homeState]);
 
   return (
     <View style={Local.container}>
-      <PlaylistList playlists={playlists} />
+      <PlaylistList 
+        playlists={playlists}
+        pageType={PageType.PLAYLIST}
+      />
     </View>
   );
 }

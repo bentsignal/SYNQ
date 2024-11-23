@@ -40,9 +40,10 @@ const PlaylistView = () => {
   const [sheetOpen, setSheetOpen] = useState(false);
 
   useEffect(() => {
+    console.log(id);
     if (id) {
       const db = PlaylistDataManager.getInstance();
-      db.getPlaylistById(parseInt(id as string)).then((result) => {
+      db.getPlaylistInfoById(parseInt(id as string)).then((result) => {
         setTitle(result?.name || '');
         setSongCount(result?.songCount || 0);
       });
@@ -52,8 +53,8 @@ const PlaylistView = () => {
   // updates song list when changes are detected
   useEffect(() => {
     try {
-      const db = SongDataManager.getInstance();
-      db.getSongs().then((results) => {
+      const db = PlaylistDataManager.getInstance();
+      db.getSongsFromPlaylist(parseInt(id as string)).then((results) => {
         let songs: SongType[] = [];
         let dir;
         // for (let i = results.length - 1; i >= 0; i--) {

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
@@ -10,7 +10,12 @@ import { exportSongs } from '@/lib/SongManager';
 import { CoverType, PageType } from '@/constants/Types';
 import { getTrackFromSong, addToQueue } from '@/lib/PlayerManager';
 
-const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) => void}) => {
+type SongOptionsProps = {
+  bottomSheetRef: React.RefObject<BottomSheet>,
+  setIsOpen: (isOpen: boolean) => void
+}
+
+const SongOptions = ({bottomSheetRef, setIsOpen}: SongOptionsProps) => {
 
   const { 
     
@@ -26,7 +31,6 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
 
   const actionDelay = 10;
 
-  const bottomSheetRef = useRef<BottomSheet>(null);
   const [sheetIndex, setSheetIndex] = useState(-1);
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
 
@@ -35,13 +39,6 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
       setPageType(editSong.pageType);
     }
   }, [editSong]);
-
-  useEffect(() => {
-    if (show) {
-      bottomSheetRef.current?.expand();
-      setSheetIndex(0);
-    }
-  }, [show]);
 
   const handleAddToQueue = () => {
     bottomSheetRef.current?.close();
@@ -85,18 +82,23 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
     }, actionDelay);
   }
 
+  const handleSheetChanges = useCallback((index: number) => {
+    setSheetIndex(index);
+    setIsOpen(index !== -1);
+  }, []);
+
   return (
     <>
       <BottomSheet
         ref={bottomSheetRef}
         index={sheetIndex}
-        snapPoints={['50%']}
+        snapPoints={['40%', '80%']}
         enablePanDownToClose={true}
-        enableOverDrag={false}
+        enableOverDrag={true}
         backdropComponent={props => (
           <BottomSheetBackdrop
             {...props}
-            opacity={0.5}
+            opacity={0.7}
             disappearsOnIndex={-1}
             appearsOnIndex={0}
           />
@@ -104,8 +106,8 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
         handleIndicatorStyle={Local.handle}
         backgroundStyle={Local.background}
         style={Local.sheetStyle}
+        onChange={handleSheetChanges}
         onClose={() => {
-          setShow(false);
           setSheetIndex(-1);
         }}
         children={

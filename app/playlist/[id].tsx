@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from "react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { Styles } from "@/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -17,6 +17,7 @@ import PlaylistDataManager from "@/lib/data/PlaylistDataManager";
 import Overlay from "@/components/Overlay";
 import SongOptions from "@/components/sheets/SongOptions";
 import Header from "@/components/Header";
+import BottomSheet from "@gorhom/bottom-sheet";
 
 const PlaylistView = () => {
 
@@ -35,6 +36,8 @@ const PlaylistView = () => {
   const [title, setTitle] = useState('');
   const [songCount, setSongCount] = useState(0);
   const [scrollPosition, setScrollPosition] = useState(0);
+  const songOptionsSheetRef = useRef<BottomSheet>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -68,44 +71,48 @@ const PlaylistView = () => {
   }, [numModified, homeState]);
 
   return (
-    <View style={Local.container}>
-      <Header 
-        scrollPosition={scrollPosition}
-        title={title}
-      />
-      <View style={[Local.bottomSheetWrapper, {pointerEvents: showSongOptions ? 'auto' : 'none'}]}>
-        <SongOptions show={showSongOptions} setShow={setShowSongOptions} />
+    <View style={Local.wrapper}>
+      <View style={Local.container}>
+        <Header 
+          scrollPosition={scrollPosition}
+          title={title}
+        />
+        <View style={[Styles.bottomSheetWrapper, {pointerEvents: sheetOpen ? 'auto' : 'none'}]}>
+          <SongOptions bottomSheetRef={songOptionsSheetRef} setIsOpen={setSheetOpen}/>
+        </View>
+        <Overlay show={showOverlay} activeOpacity={0.95}/>
+        <SongList 
+          songs={songs} 
+          pageType={PageType.LIBRARY}
+          sheetRef={songOptionsSheetRef}
+          headerComponent={
+            <SongListHeaderComponent 
+              id={id as string}
+              title={title} 
+              songCount={songCount} 
+              pageType={PageType.PLAYLIST}
+            />
+          }
+          setScrollPosition={setScrollPosition}
+        />
+        <View style={Local.miniPlayerContainer}>
+          <MiniPlayer />
+        </View>
+        <TabBar />
       </View>
-      <Overlay show={showOverlay} activeOpacity={0.95}/>
-      <SongList 
-        songs={songs} 
-        pageType={PageType.LIBRARY}
-        headerComponent={
-          <SongListHeaderComponent 
-            id={id as string}
-            title={title} 
-            songCount={songCount} 
-            pageType={PageType.PLAYLIST}
-          />
-        }
-        setScrollPosition={setScrollPosition}
-      />
-      <View style={Local.miniPlayerContainer}>
-        <MiniPlayer />
-      </View>
-      <TabBar />
     </View>
   );
 }
 
 const Local = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
   container: {
     ...Styles.body,
     flex: 1,
     backgroundColor: Colors.background,
-  },
-  bottomSheetWrapper: {
-    ...Styles.bottomSheetWrapper,
   },
   miniPlayerContainer: {
     width: '100%',

@@ -17,12 +17,16 @@ import More from '@/components/More';
 import { PageType, CoverType } from '@/constants/Types';
 import { useActiveTrack } from "react-native-track-player";
 import { getTrackFromSong, playTrack, updateQueue, playAd, addToQueue } from '@/lib/PlayerManager';
+import BottomSheet from '@gorhom/bottom-sheet';
 
-const Song = ({song, fadeCover, fadeSong}: {
+type SongProps = {
   song: SongType, 
   fadeCover: boolean, 
-  fadeSong: boolean
-}) => {
+  fadeSong: boolean,
+  sheetRef?: React.RefObject<BottomSheet>,
+}
+
+const Song = ({song, fadeCover, fadeSong, sheetRef }: SongProps) => {
 
   const [selected, setSelected] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -213,7 +217,8 @@ const Song = ({song, fadeCover, fadeSong}: {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }
               setEditSong(song);
-              setShowSongOptions(!showSongOptions);
+              // sheetRef?.current?.expand();
+              sheetRef?.current?.snapToIndex(0);
             }}
           />
 

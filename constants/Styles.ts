@@ -137,4 +137,14 @@ export const Styles = StyleSheet.create({
     zIndex: 100,
     width: '100%',
   },
+
+  // general styles
+  divider: {
+    width: '100%',
+    height: 5,
+    borderBottomColor: Colors.popup,
+    borderBottomWidth: 1,
+    marginBottom: 10,
+  }
+
 });

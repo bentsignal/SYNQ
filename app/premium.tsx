@@ -42,82 +42,6 @@ const Premium = () => {
   const [lifetimeCost, setLifetimeCost] = useState('$∞');
   const [error, setError] = useState(false);
 
-  const Local = StyleSheet.create({
-    wrapper: {
-      backgroundColor: Colors.background
-    },
-    container: {
-      height: '100%',
-      width: '100%',
-      position: 'absolute',
-      top: 0,
-      zIndex: -1,
-    },
-    imageContainer: {
-      height: '40%',
-      width: '100%',
-    },
-    coverImage: {
-      height: '100%',
-      width: '100%',
-    },
-    coverGradient: {
-      position: 'absolute', 
-      top: 0,
-      width: '100%', 
-      height: '100%',
-    },
-    contentContainer: {
-      marginTop: 10,
-      flexGrow: 1,
-      width: '100%',
-      justifyContent: 'flex-start',
-      alignItems: 'center',
-      position: 'relative',
-    },
-    logo: {
-      width: 50,
-      height: 50,
-      position: 'absolute',
-      top: -80
-    },
-    premiumText: {
-      color: Colors.text,
-      marginBottom: 15,
-    },
-    text: {
-      color: Colors.text,
-    },
-    bottomContainer: {
-      alignItems: 'center',
-    },
-    optionsContainer: {
-      flexDirection: 'row',
-      width: '90%',
-      justifyContent: 'center',
-      gap: 10,
-      marginTop: 20,
-      marginBottom: 20,
-    },
-    notifications: {
-      position: 'absolute',
-      bottom: 30,
-    },
-    messageText: {
-      color: Colors.text,
-      fontWeight: 'bold',
-      marginBottom: 10,
-    },
-    linkContainer: {
-      flexDirection: 'row',
-      paddingBottom: 10
-    },
-    restore: {
-      marginTop: 10, 
-      color: theme
-    }
-  });
-
   const sendErrorNotification = (
     title: string,
     message: string, 
@@ -393,7 +317,7 @@ const Premium = () => {
             activeOpacity={.9}
             onPress={handleRestore}
           >
-            <Text style={[Styles.p, Local.restore]}>
+            <Text style={[Styles.p, Local.restore, {color: theme}]}>
               Restore
             </Text>
           </TouchableOpacity>
@@ -461,5 +385,80 @@ const Premium = () => {
   );
 
 }
+
+const Local = StyleSheet.create({
+  wrapper: {
+    backgroundColor: Colors.background
+  },
+  container: {
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
+    top: 0,
+    zIndex: -1,
+  },
+  imageContainer: {
+    height: '40%',
+    width: '100%',
+  },
+  coverImage: {
+    height: '100%',
+    width: '100%',
+  },
+  coverGradient: {
+    position: 'absolute', 
+    top: 0,
+    width: '100%', 
+    height: '100%',
+  },
+  contentContainer: {
+    marginTop: 10,
+    flexGrow: 1,
+    width: '100%',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  logo: {
+    width: 50,
+    height: 50,
+    position: 'absolute',
+    top: -80
+  },
+  premiumText: {
+    color: Colors.text,
+    marginBottom: 15,
+  },
+  text: {
+    color: Colors.text,
+  },
+  bottomContainer: {
+    alignItems: 'center',
+  },
+  optionsContainer: {
+    flexDirection: 'row',
+    width: '90%',
+    justifyContent: 'center',
+    gap: 10,
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  notifications: {
+    position: 'absolute',
+    bottom: 30,
+  },
+  messageText: {
+    color: Colors.text,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  linkContainer: {
+    flexDirection: 'row',
+    paddingBottom: 10
+  },
+  restore: {
+    marginTop: 10,
+  }
+});
 
 export default Premium;

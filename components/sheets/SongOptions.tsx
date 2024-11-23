@@ -10,6 +10,7 @@ import { exportSongs } from '@/lib/SongManager';
 import { CoverType, PageType } from '@/constants/Types';
 import { getTrackFromSong, addToQueue } from '@/lib/PlayerManager';
 import * as Haptics from 'expo-haptics';
+import { router } from 'expo-router';
 
 type SongOptionsProps = {
   bottomSheetRef: React.RefObject<BottomSheet>,
@@ -45,6 +46,9 @@ const SongOptions = ({bottomSheetRef, setIsOpen}: SongOptionsProps) => {
 
   const handleAddToQueue = () => {
     bottomSheetRef.current?.close();
+    if (haptic) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
     setTimeout(async () => {
       const newTrack = await getTrackFromSong(editSong, theme);
       if (newTrack) {
@@ -85,6 +89,13 @@ const SongOptions = ({bottomSheetRef, setIsOpen}: SongOptionsProps) => {
     }, actionDelay);
   }
 
+  const handleAddToPlaylist = () => {
+    bottomSheetRef.current?.close();
+    setTimeout(() => {
+      router.push('/playlist/add');
+    }, 200);
+  }
+
   const handleSheetChanges = useCallback((index: number) => {
     setSheetIndex(index);
     setIsOpen(index !== -1);
@@ -96,7 +107,7 @@ const SongOptions = ({bottomSheetRef, setIsOpen}: SongOptionsProps) => {
       <BottomSheet
         ref={bottomSheetRef}
         index={sheetIndex}
-        snapPoints={['40%', '80%']}
+        snapPoints={['45%', '80%']}
         enablePanDownToClose={true}
         enableOverDrag={true}
         backdropComponent={props => (
@@ -135,15 +146,21 @@ const SongOptions = ({bottomSheetRef, setIsOpen}: SongOptionsProps) => {
                   scrollEnabled={scrollEnabled}
                   onMomentumScrollBegin={(event) => {
                     if (event.nativeEvent.contentOffset.y < 0) {
-                      bottomSheetRef.current?.snapToIndex(0);
+                      bottomSheetRef.current?.close();
                       if (haptic) {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                       }
                     }
                   }}
                 >
                   <SongOption 
                     icon={require('@/assets/icons/add.png')}
+                    text={'Add to Playlist'}
+                    show={[PageType.LIBRARY, PageType.PLAYER].includes(pageType)}
+                    handler={handleAddToPlaylist}
+                  />
+                  <SongOption 
+                    icon={require('@/assets/icons/add-to-queue.png')}
                     text={'Add to Queue'}
                     show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER].includes(pageType)}
                     handler={handleAddToQueue}

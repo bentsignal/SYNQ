@@ -221,7 +221,7 @@ const Library = () => {
         }}
         callback={setSelected}
       />
-      <View style={Local.divider} />
+      <View style={Styles.divider} />
       {getBody()}
       <MiniPlayer />
       <Notifications  
@@ -233,15 +233,5 @@ const Library = () => {
     </View>
   );
 }
-
-const Local = StyleSheet.create({
-  divider: {
-    width: '100%',
-    height: 5,
-    borderBottomColor: Colors.popup,
-    borderBottomWidth: 1,
-    marginBottom: 10,
-  }
-})
 
 export default Library;

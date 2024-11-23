@@ -168,6 +168,20 @@ const RootLayout = () => {
                 headerShown: false,
               }}
             />
+            <Stack.Screen
+              name="playlist/add"
+              options={{
+                headerShown: false,
+                presentation: 'modal',
+              }}
+            />
+            <Stack.Screen
+              name="playlist/create"
+              options={{
+                headerShown: false,
+                presentation: 'modal',
+              }}
+            />
           </Stack>
         }/>
     </GestureHandlerRootView>

@@ -9,15 +9,18 @@ import { useGlobalContext } from "@/context/GlobalProvider"
 import { PageType, PlaylistType } from "@/constants/Types"
 import PlaylistDataManager from "@/lib/data/PlaylistDataManager"
 import PlaylistList from "@/components/lists/PlaylistList"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
+import playlistBus from "@/station/playlistBus"
 
 const AddToPlaylist = () => {
 
-
   const {
 
-    theme, numModified
+    theme, numModified,
 
   } = useGlobalContext();
+
+  const insets = useSafeAreaInsets();
 
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
 
@@ -47,6 +50,22 @@ const AddToPlaylist = () => {
         playlists={playlists}
         pageType={PageType.CREATE}
       />
+      <View style={[Local.bottomButtonsWrapper, {paddingBottom: insets.bottom}]}>
+        <CustomButton
+          title={'Cancel'}
+          handlePress={() => {
+            router.back();
+          }}
+        />
+        <CustomButton
+          title={'Save'}
+          background={theme}
+          handlePress={() => {
+            playlistBus.emit('savePlaylistChanges');
+            router.back();
+          }}
+        />
+      </View>
     </View>
   );
 }
@@ -60,6 +79,12 @@ const Local = StyleSheet.create({
     ...Styles.h2,
     color: Colors.text,
     marginBottom: 10,
+  },
+  bottomButtonsWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'center', 
+    gap: 10,
+    width: '100%',
   }
 })
 

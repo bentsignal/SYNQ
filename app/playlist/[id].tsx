@@ -18,6 +18,7 @@ import Overlay from "@/components/Overlay";
 import SongOptions from "@/components/sheets/SongOptions";
 import Header from "@/components/Header";
 import BottomSheet from "@gorhom/bottom-sheet";
+import playlistBus from "@/station/playlistBus";
 
 const PlaylistView = () => {
 
@@ -39,8 +40,7 @@ const PlaylistView = () => {
   const songOptionsSheetRef = useRef<BottomSheet>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  useEffect(() => {
-    console.log(id);
+  const refreshInfo = () => {
     if (id) {
       const db = PlaylistDataManager.getInstance();
       db.getPlaylistInfoById(parseInt(id as string)).then((result) => {
@@ -48,10 +48,9 @@ const PlaylistView = () => {
         setSongCount(result?.songCount || 0);
       });
     }
-  }, [id]);
+  }
 
-  // updates song list when changes are detected
-  useEffect(() => {
+  const refreshSongs = () => {
     try {
       const db = PlaylistDataManager.getInstance();
       db.getSongsFromPlaylist(parseInt(id as string)).then((results) => {
@@ -69,6 +68,29 @@ const PlaylistView = () => {
     catch (error) {
       console.log(error);
     }
+  }
+
+  // refresh song list and info when changes are are sent from emitter;
+  useEffect(() => {
+    const triggerRefresh = () => {
+      setTimeout(() => {
+        refreshSongs();
+        refreshInfo();
+      }, 100);
+    }
+    playlistBus.on('savePlaylistChanges', triggerRefresh);
+    return () => {
+      playlistBus.off('savePlaylistChanges', triggerRefresh);
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshInfo();
+  }, [id]);
+
+  // updates song list when changes are detected
+  useEffect(() => {
+    refreshSongs();
   }, [numModified, homeState]);
 
   return (

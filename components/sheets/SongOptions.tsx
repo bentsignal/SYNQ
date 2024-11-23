@@ -29,7 +29,7 @@ const SongOptions = ({bottomSheetRef, setIsOpen}: SongOptionsProps) => {
     setShowDelete, setShowOverlay, 
     setShowGlobalLoading,
     setNumModified,
-  
+
   } = useGlobalContext();
 
   const actionDelay = 10;

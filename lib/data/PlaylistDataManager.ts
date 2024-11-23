@@ -74,6 +74,19 @@ class PlaylistDataManager extends DataManager {
     }
   }
 
+  public async removeFromPlaylist(playlistId: number, songId: number): Promise<boolean> {
+    try {
+      await PlaylistDataManager.db?.runAsync(
+        `DELETE FROM playlistSongs WHERE playlistId = ? AND songId = ?;`, 
+        [playlistId, songId]
+      );
+      return true;
+    }
+    catch (error) {
+      throw new Error('Error removing from playlist: ' + error);
+    }
+  }
+
   public async createPlaylist(name: string): Promise<boolean> {
     try {
       const result = await PlaylistDataManager.db?.getFirstAsync(`SELECT * FROM playlists WHERE name = ?;`, [name]);
@@ -86,6 +99,14 @@ class PlaylistDataManager extends DataManager {
     catch (error) {
       throw new Error(error instanceof Error ? error.message : String(error));
     }
+  }
+
+  public async isSongInPlaylist(playlistId: number, songId: number): Promise<boolean> {
+    const result = await PlaylistDataManager.db?.getFirstAsync(
+      `SELECT * FROM playlistSongs WHERE playlistId = ? AND songId = ?;`, 
+      [playlistId, songId]
+    );
+    return result ? true : false;
   }
 
 }

@@ -6,7 +6,7 @@ import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import { SongType } from '@/constants/Types';
 import SongInfo from '@/components/song/SongInfo';
-import Select from '@/components/song/Select';
+import Select from '@/components/Select';
 import { ListCover } from '@/components/song/Cover';
 import { BlurView } from 'expo-blur';
 import CustomButton from '../CustomButton';

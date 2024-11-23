@@ -6,6 +6,7 @@ import { Styles } from "@/constants/Styles";
 import PlaylistDataManager from "@/lib/data/PlaylistDataManager";
 import { PageType, PlaylistType } from "@/constants/Types";
 import { useGlobalContext } from "@/context/GlobalProvider";
+import playlistBus from "@/station/playlistBus";
 
 const Playlists = () => {
 
@@ -13,18 +14,35 @@ const Playlists = () => {
 
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
 
-  useEffect(() => {
+  const refreshPlaylists = () => {
     const db = PlaylistDataManager.getInstance();
     db.getPlaylists().then((results) => {
       setPlaylists(results);
     });
+  }
+
+  // refresh playlist after changes are made
+  useEffect(() => {
+    const triggerRefresh = () => {
+      setTimeout(() => {
+        refreshPlaylists();
+      }, 100);
+    }
+    playlistBus.on('savePlaylistChanges', triggerRefresh);
+    return () => {
+      playlistBus.off('savePlaylistChanges', triggerRefresh);
+    };
+  }, []);
+
+  useEffect(() => {
+    refreshPlaylists();
   }, [numModified, homeState]);
 
   return (
     <View style={Local.container}>
       <PlaylistList 
         playlists={playlists}
-        pageType={PageType.PLAYLIST}
+        pageType={PageType.LIBRARY}
       />
     </View>
   );

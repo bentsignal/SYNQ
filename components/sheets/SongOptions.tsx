@@ -108,48 +108,54 @@ const SongOptions = ({show, setShow}: {show: boolean, setShow: (show: boolean) =
           setShow(false);
           setSheetIndex(-1);
         }}
-      >
-        <BottomSheetView style={Local.bottomSheet}>
-          <View style={Local.container}>
-            <ListCover 
-              id={editSong.id}
-              type={CoverType.SONG}
-              image={editSong.info?.metadata?.artwork}
-              propOnLoad={() => {}}
-            />
-            <SongInfo 
-              info={editSong.info ? editSong.info : {metadata: {}}} 
-              name={editSong.name ? editSong.name : ''}
-            />
-          </View>
-          <View>
-            <SongOption 
-              icon={require('@/assets/icons/add.png')}
-              text={'Add to Queue'}
-              show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER].includes(pageType)}
-              handler={handleAddToQueue}
-            />
-            <SongOption 
-              icon={require('@/assets/icons/edit.png')}
-              text={'Edit'}
-              show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
-              handler={handleEditSong}
-            />
-            <SongOption 
-              icon={require('@/assets/icons/share.png')}
-              text={'Export'}
-              show={[PageType.LIBRARY].includes(pageType)}
-              handler={handleExport}
-            />
-            <SongOption
-              icon={require('@/assets/icons/delete.png')}
-              text={'Delete'}
-              show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
-              handler={handleDeleteSong}
-            />
-          </View>
-        </BottomSheetView>
-      </BottomSheet>
+        children={
+          <BottomSheetView 
+            style={Local.bottomSheet}
+            children={
+              <>
+                <View style={Local.container}>
+                <ListCover 
+                  id={editSong.id}
+                  type={CoverType.SONG}
+                  image={editSong.info?.metadata?.artwork}
+                  propOnLoad={() => {}}
+                />
+                <SongInfo 
+                  info={editSong.info ? editSong.info : {metadata: {}}} 
+                  name={editSong.name ? editSong.name : ''}
+                />
+              </View>
+              <View>
+                <SongOption 
+                  icon={require('@/assets/icons/add.png')}
+                  text={'Add to Queue'}
+                  show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER].includes(pageType)}
+                  handler={handleAddToQueue}
+                />
+                <SongOption 
+                  icon={require('@/assets/icons/edit.png')}
+                  text={'Edit'}
+                  show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
+                  handler={handleEditSong}
+                />
+                <SongOption 
+                  icon={require('@/assets/icons/share.png')}
+                  text={'Export'}
+                  show={[PageType.LIBRARY].includes(pageType)}
+                  handler={handleExport}
+                />
+                <SongOption
+                  icon={require('@/assets/icons/delete.png')}
+                  text={'Delete'}
+                  show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
+                  handler={handleDeleteSong}
+                />
+              </View>
+              </>
+            }
+          />
+        }
+      />
     </>
   );
 }

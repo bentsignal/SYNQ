@@ -7,12 +7,14 @@ type PageTitleProps = {
   title: string;
   infoHandler?: () => void;
   showList?: boolean;
+  rightHandComponent?: React.ReactNode;
 }
 
 const PageTitle = ({
   title,
   infoHandler,
-  showList
+  showList,
+  rightHandComponent
 }: PageTitleProps) => {
 
   const { 
@@ -107,6 +109,7 @@ const PageTitle = ({
       </Text>
       {info()}
       {list()}
+      {rightHandComponent}
     </View>
   );
   

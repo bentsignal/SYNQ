@@ -1,6 +1,6 @@
 import TrackPlayer, { Event, useTrackPlayerEvents, useActiveTrack, useProgress } from "react-native-track-player";
 import { setupPlayer, skipLeft, skipRight, updateQueue, playAd } from "@/lib/PlayerManager";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Styles } from "@/constants/Styles";
 import PageTitle from '@/components/PageTitle';
 import Notifications from "@/components/notifications/Notifications";
@@ -15,7 +15,8 @@ import { Colors } from "@/constants/Colors";
 import Playlists from "@/components/library/Playlists";
 import Albums from "@/components/library/Albums";
 import Artists from "@/components/library/Artists";
-
+import Plus from "@/components/Plus";
+import { router } from "expo-router";
 const Library = () => {
 
   const { 
@@ -104,7 +105,7 @@ const Library = () => {
     }
     previousPosition.current = current;
 
-  }, [position])
+  }, [position]);
 
   // sets up player
   useEffect(() => {
@@ -214,7 +215,17 @@ const Library = () => {
 
   return (
     <View style={[Styles.body]}>
-      <PageTitle title="Library"/>
+      <PageTitle 
+        title="Library"
+        rightHandComponent={
+            <TouchableOpacity 
+              onPress={() => router.push('/playlist/create')}
+              style={Local.addWrapper}
+            >
+              <Plus />
+            </TouchableOpacity>
+        }
+      />
       <CategorySelector 
         containerStyle={{
           width: '90%',
@@ -233,5 +244,13 @@ const Library = () => {
     </View>
   );
 }
+
+const Local = StyleSheet.create({
+  addWrapper: {
+    flex: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'flex-start',
+  },
+});
 
 export default Library;

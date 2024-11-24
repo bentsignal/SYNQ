@@ -24,11 +24,22 @@ const AddToPlaylist = () => {
 
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
 
-  useEffect(() => {
+  const refreshPlaylists = () => {
     const db = PlaylistDataManager.getInstance();
     db.getPlaylists().then((results) => {
       setPlaylists(results);
     });
+  }
+
+  useEffect(() => {
+    playlistBus.on('playlistChangesMade', refreshPlaylists);
+    return () => {
+      playlistBus.off('playlistChangesMade', refreshPlaylists);
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshPlaylists();
   }, [numModified]);
 
   return (
@@ -52,19 +63,9 @@ const AddToPlaylist = () => {
       />
       <View style={[Local.bottomButtonsWrapper, {paddingBottom: insets.bottom}]}>
         <CustomButton
-          title={'Cancel'}
+          title={'Close'}
           handlePress={() => {
             router.back();
-          }}
-        />
-        <CustomButton
-          title={'Save'}
-          background={theme}
-          handlePress={() => {
-            router.back();
-            setTimeout(() => {
-              playlistBus.emit('savePlaylistChanges');
-            }, 200);
           }}
         />
       </View>

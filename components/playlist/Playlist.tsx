@@ -21,43 +21,28 @@ const Playlist = ({playlist, pageType}: {playlist: PlaylistType, pageType: PageT
   } = useGlobalContext();
   
   const [selected, setSelected] = useState(false);
-  const [initial, setInitial] = useState(false);
-  const initialRef = useRef(false);
-  const selectedRef = useRef(false);
 
-  const savePlaylistChanges = async () => {
-    console.log(playlist.id, editSong.id);
-    if (selectedRef.current !== initialRef.current) {
-      try {
-        const db = PlaylistDataManager.getInstance();
-        if (selectedRef.current) {
-          await db.addToPlaylist(playlist.id, editSong.id);
-        }
-        else {
-          await db.removeFromPlaylist(playlist.id, editSong.id);
-        }
+  const playlistChangesMade = async (add: boolean) => {
+    try {
+      const db = PlaylistDataManager.getInstance();
+      if (add) {
+        await db.addToPlaylist(playlist.id, editSong.id);
       }
-      catch (error) {
-        console.log('error saving playlist changes: ', error);
+      else {
+        await db.removeFromPlaylist(playlist.id, editSong.id);
       }
+      playlistBus.emit('playlistChangesMade');
+    }
+    catch (error) {
+      console.log('error saving playlist changes: ', error);
     }
   }
 
   useEffect(() => {
-    playlistBus.on('savePlaylistChanges', savePlaylistChanges);
-    return () => {
-      playlistBus.off('savePlaylistChanges', savePlaylistChanges);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (editSong.id) {
+    if (editSong.id && pageType === PageType.CREATE) {
       const db = PlaylistDataManager.getInstance();
       db.isSongInPlaylist(playlist.id, editSong.id).then((result) => {
-        setInitial(result);
         setSelected(result);
-        initialRef.current = result;
-        selectedRef.current = result;
       });
     }
   }, [editSong]);
@@ -86,9 +71,9 @@ const Playlist = ({playlist, pageType}: {playlist: PlaylistType, pageType: PageT
       {pageType === PageType.CREATE &&
         <Select 
           active={selected}
-          handlePress={() => {
+          handlePress={async () => {
             setSelected(!selected);
-            selectedRef.current = !selectedRef.current;
+            await playlistChangesMade(!selected);
           }}
         />
       }

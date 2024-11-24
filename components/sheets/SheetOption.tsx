@@ -9,7 +9,7 @@ type SongOptionProps = {
   handler: () => void;
 }
 
-const SongOption = ({ icon, text, show=true, handler }: SongOptionProps) => {
+const SheetOption = ({ icon, text, show=true, handler }: SongOptionProps) => {
 
   const Local = StyleSheet.create({
     songOptionActionContainer: {
@@ -50,4 +50,4 @@ const SongOption = ({ icon, text, show=true, handler }: SongOptionProps) => {
 
 };
 
-export default SongOption;
+export default SheetOption;

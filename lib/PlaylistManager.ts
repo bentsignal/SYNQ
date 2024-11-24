@@ -9,7 +9,7 @@ export const removeFromAllPlaylists = async (songId: number) => {
       await db.removeFromPlaylist(playlist.id, songId);
     }
     setTimeout(() => {
-      playlistBus.emit('savePlaylistChanges');
+      playlistBus.emit('playlistChangesMade');
     }, 200);
   }
   catch (error) {

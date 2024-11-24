@@ -76,9 +76,9 @@ const PlaylistView = () => {
       refreshSongs();
       refreshInfo();
     }
-    playlistBus.on('savePlaylistChanges', triggerRefresh);
+    playlistBus.on('playlistChangesMade', triggerRefresh);
     return () => {
-      playlistBus.off('savePlaylistChanges', triggerRefresh);
+      playlistBus.off('playlistChangesMade', triggerRefresh);
     }
   }, []);
 

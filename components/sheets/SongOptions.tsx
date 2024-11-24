@@ -5,7 +5,7 @@ import { Colors } from '@/constants/Colors';
 import SongInfo from '@/components/song/SongInfo';
 import { ListCover } from '@/components/song/Cover';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
-import SongOption from './SongOption';
+import SheetOption from '@/components/sheets/SheetOption';
 import { exportSongs } from '@/lib/SongManager';
 import { CoverType, PageType } from '@/constants/Types';
 import { getTrackFromSong, addToQueue } from '@/lib/PlayerManager';
@@ -104,7 +104,7 @@ const SongOptions = ({bottomSheetRef, setIsOpen}: SongOptionsProps) => {
       const db = PlaylistDataManager.getInstance();
       await db.removeFromPlaylist(editSong.playlistId, editSong.id);
       setTimeout(() => {
-        playlistBus.emit('savePlaylistChanges');
+        playlistBus.emit('playlistChangesMade');
       }, 200);
     }
     catch (error) {
@@ -169,37 +169,37 @@ const SongOptions = ({bottomSheetRef, setIsOpen}: SongOptionsProps) => {
                     }
                   }}
                 >
-                  <SongOption 
+                  <SheetOption 
                     icon={require('@/assets/icons/add.png')}
                     text={'Add to Playlist'}
                     show={[PageType.LIBRARY, PageType.PLAYER].includes(pageType)}
                     handler={handleAddToPlaylist}
                   />
-                  <SongOption 
+                  <SheetOption 
                     icon={require('@/assets/icons/remove.png')}
                     text={'Remove from Playlist'}
                     show={[PageType.LIBRARY].includes(pageType) && editSong.playlistId !== undefined}
                     handler={handleRemoveFromPlaylist}
                   />
-                  <SongOption 
+                  <SheetOption 
                     icon={require('@/assets/icons/add-to-queue.png')}
                     text={'Add to Queue'}
                     show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER].includes(pageType)}
                     handler={handleAddToQueue}
                   />
-                  <SongOption 
+                  <SheetOption 
                     icon={require('@/assets/icons/edit.png')}
                     text={'Edit'}
                     show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
                     handler={handleEditSong}
                   />
-                  <SongOption 
+                  <SheetOption 
                     icon={require('@/assets/icons/share.png')}
                     text={'Export'}
                     show={[PageType.LIBRARY].includes(pageType)}
                     handler={handleExport}
                   />
-                  <SongOption
+                  <SheetOption
                     icon={require('@/assets/icons/delete.png')}
                     text={'Delete'}
                     show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}

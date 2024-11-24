@@ -18,6 +18,7 @@ const SongList = memo((
     fadeCover = true, 
     fadeSong = false,
     sheetRef,
+    playlistId,
     setScrollPosition,
   }: 
   {
@@ -28,6 +29,7 @@ const SongList = memo((
     fadeCover?: boolean,
     fadeSong?: boolean,
     sheetRef?: React.RefObject<BottomSheet>,
+    playlistId?: string,
     setScrollPosition?: (position: number) => void,
   }
 ) => {
@@ -36,6 +38,7 @@ const SongList = memo((
 
   const renderItem = ({item} : {item: SongType}) => {
     item.pageType = pageType;
+    item.playlistId = playlistId;
     return (
       <MemoSong 
         song={item}

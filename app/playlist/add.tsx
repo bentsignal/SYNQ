@@ -61,8 +61,10 @@ const AddToPlaylist = () => {
           title={'Save'}
           background={theme}
           handlePress={() => {
-            playlistBus.emit('savePlaylistChanges');
             router.back();
+            setTimeout(() => {
+              playlistBus.emit('savePlaylistChanges');
+            }, 200);
           }}
         />
       </View>

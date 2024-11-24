@@ -26,7 +26,7 @@ type SongProps = {
   sheetRef?: React.RefObject<BottomSheet>,
 }
 
-const Song = ({song, fadeCover, fadeSong, sheetRef }: SongProps) => {
+const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
 
   const [selected, setSelected] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -217,7 +217,6 @@ const Song = ({song, fadeCover, fadeSong, sheetRef }: SongProps) => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }
               setEditSong(song);
-              // sheetRef?.current?.expand();
               sheetRef?.current?.snapToIndex(0);
             }}
           />

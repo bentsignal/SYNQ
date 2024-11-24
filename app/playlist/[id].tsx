@@ -73,10 +73,8 @@ const PlaylistView = () => {
   // refresh song list and info when changes are are sent from emitter;
   useEffect(() => {
     const triggerRefresh = () => {
-      setTimeout(() => {
-        refreshSongs();
-        refreshInfo();
-      }, 100);
+      refreshSongs();
+      refreshInfo();
     }
     playlistBus.on('savePlaylistChanges', triggerRefresh);
     return () => {
@@ -108,6 +106,7 @@ const PlaylistView = () => {
           songs={songs} 
           pageType={PageType.LIBRARY}
           sheetRef={songOptionsSheetRef}
+          playlistId={id as string}
           headerComponent={
             <SongListHeaderComponent 
               id={id as string}

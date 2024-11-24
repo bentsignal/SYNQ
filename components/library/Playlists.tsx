@@ -24,9 +24,7 @@ const Playlists = () => {
   // refresh playlist after changes are made
   useEffect(() => {
     const triggerRefresh = () => {
-      setTimeout(() => {
-        refreshPlaylists();
-      }, 100);
+      refreshPlaylists();
     }
     playlistBus.on('savePlaylistChanges', triggerRefresh);
     return () => {

@@ -11,6 +11,8 @@ import { CoverType, PageType } from '@/constants/Types';
 import { getTrackFromSong, addToQueue } from '@/lib/PlayerManager';
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
+import PlaylistDataManager from '@/lib/data/PlaylistDataManager';
+import playlistBus from '@/station/playlistBus';
 
 type SongOptionsProps = {
   bottomSheetRef: React.RefObject<BottomSheet>,
@@ -96,6 +98,20 @@ const SongOptions = ({bottomSheetRef, setIsOpen}: SongOptionsProps) => {
     }, 200);
   }
 
+  const handleRemoveFromPlaylist = async () => {
+    bottomSheetRef.current?.close();
+    try {
+      const db = PlaylistDataManager.getInstance();
+      await db.removeFromPlaylist(editSong.playlistId, editSong.id);
+      setTimeout(() => {
+        playlistBus.emit('savePlaylistChanges');
+      }, 200);
+    }
+    catch (error) {
+      console.log('error removing from playlist: ', error);
+    }
+  }
+
   const handleSheetChanges = useCallback((index: number) => {
     setSheetIndex(index);
     setIsOpen(index !== -1);
@@ -158,6 +174,12 @@ const SongOptions = ({bottomSheetRef, setIsOpen}: SongOptionsProps) => {
                     text={'Add to Playlist'}
                     show={[PageType.LIBRARY, PageType.PLAYER].includes(pageType)}
                     handler={handleAddToPlaylist}
+                  />
+                  <SongOption 
+                    icon={require('@/assets/icons/remove.png')}
+                    text={'Remove from Playlist'}
+                    show={[PageType.LIBRARY].includes(pageType) && editSong.playlistId !== undefined}
+                    handler={handleRemoveFromPlaylist}
                   />
                   <SongOption 
                     icon={require('@/assets/icons/add-to-queue.png')}

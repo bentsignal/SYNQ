@@ -16,6 +16,7 @@ export type SongType = {
   "data": string;
   "info": InfoType;
   "pageType"?: PageType;
+  "playlistId"?: string;
   "edited"?: boolean;
 };
 

@@ -65,6 +65,7 @@ const Playlist = ({playlist, pageType}: {playlist: PlaylistType, pageType: PageT
   return (
     <TouchableOpacity 
       style={Local.container}
+      activeOpacity={pageType === PageType.CREATE ? 1 : 0.8}
       disabled={pageType === PageType.CREATE}
       onPress={() => {
         router.push(`/playlist/${playlist.id}`);

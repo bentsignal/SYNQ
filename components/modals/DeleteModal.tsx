@@ -8,6 +8,7 @@ import { ListCover } from '@/components/song/Cover';
 import SongInfo from '@/components/song/SongInfo';
 import { PageType, CoverType } from '@/constants/Types';
 import TrackPlayer, { Track } from 'react-native-track-player';
+import { removeFromAllPlaylists } from '@/lib/PlaylistManager';
 
 const DeleteModal = () => {
 
@@ -70,6 +71,7 @@ const DeleteModal = () => {
     // remove from library
     else if (editSong.pageType === PageType.LIBRARY) {
       deleteFromLibrary(editSong.id);
+      removeFromAllPlaylists(editSong.id);
       // remove from queue and next up if applicable
       const queue = await TrackPlayer.getQueue();
       const indiciesToRemove = queue

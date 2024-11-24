@@ -6,7 +6,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import SongList from "@/components/lists/SongList";
 import { PageType, SongType } from "@/constants/Types";
-import SongDataManager from "@/lib/data/SongDataManager";
 import * as FileSystem from "expo-file-system";
 import { getSongByResult } from "@/lib/SongManager";
 import { useGlobalContext } from "@/context/GlobalProvider";
@@ -15,10 +14,10 @@ import TabBar from "@/components/TabBar";
 import SongListHeaderComponent from "@/components/SongListHeaderComponent";
 import PlaylistDataManager from "@/lib/data/PlaylistDataManager";
 import Overlay from "@/components/Overlay";
-import SongOptions from "@/components/sheets/SongOptions";
 import Header from "@/components/Header";
 import BottomSheet from "@gorhom/bottom-sheet";
 import playlistBus from "@/station/playlistBus";
+import SongSheet from '@/components/sheets/song';
 
 const PlaylistView = () => {
 
@@ -99,7 +98,7 @@ const PlaylistView = () => {
           title={title}
         />
         <View style={[Styles.bottomSheetWrapper, {pointerEvents: sheetOpen ? 'auto' : 'none'}]}>
-          <SongOptions bottomSheetRef={songOptionsSheetRef} setIsOpen={setSheetOpen}/>
+          <SongSheet bottomSheetRef={songOptionsSheetRef} setIsOpen={setSheetOpen}/>
         </View>
         <Overlay show={showOverlay} activeOpacity={0.95}/>
         <SongList 

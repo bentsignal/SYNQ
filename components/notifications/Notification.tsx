@@ -18,8 +18,6 @@ type NotificationProps = {
   onClick: () => void;
 }
 
-const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
-
 const Notification = ({ id, type, title, brief, message, trace, onClick, }: NotificationProps) => {
 
   const translateX = useRef(new Animated.Value(600)).current;

@@ -1,6 +1,8 @@
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Animated, 
+  PanResponder, Easing,
+} from 'react-native';
 import { router } from 'expo-router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
@@ -16,7 +18,8 @@ import * as Haptics from 'expo-haptics';
 import More from '@/components/More';
 import { PageType, CoverType } from '@/constants/Types';
 import { useActiveTrack } from "react-native-track-player";
-import { getTrackFromSong, playTrack, updateQueue, playAd, addToQueue } from '@/lib/PlayerManager';
+import { getTrackFromSong, playTrack, 
+  updateQueue, playAd, addToQueue } from '@/lib/PlayerManager';
 import BottomSheet from '@gorhom/bottom-sheet';
 
 type SongProps = {
@@ -30,6 +33,7 @@ const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
 
   const [selected, setSelected] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const translateX = useRef(new Animated.Value(0)).current;
 
   const track = useActiveTrack();
 
@@ -78,7 +82,10 @@ const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
   }
 
   const Local = StyleSheet.create({
-    mainContainer: {
+    container: {
+      width: '100%',
+    },
+    contentContainer: {
       ...Styles.roundedContainer,
       ...Styles.listItem,
       backgroundColor: bg,
@@ -154,10 +161,21 @@ const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
     }
   }
 
+  const panResponder = PanResponder.create({
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderMove: (e, gestureState) => {
+      translateX.setValue(gestureState.dx);
+    },
+  });
+
   return (
-    <>
+    <Animated.View 
+      // {...panResponder.panHandlers}
+      style={[Local.container, {
+        transform: [{ translateX }]
+      }]}>
       <TouchableOpacity 
-        style={Local.mainContainer}
+        style={Local.contentContainer}
         activeOpacity={disablePlay ? 1 : 0.8}
         disabled={disablePlay}
         onPress={handlePlay}
@@ -248,7 +266,7 @@ const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
           />
         </View>
       </BlurView>
-    </>
+    </Animated.View>
   );
 
 }

@@ -27,7 +27,7 @@ const AddToPlaylist = () => {
   const refreshPlaylists = () => {
     const db = PlaylistDataManager.getInstance();
     db.getPlaylists().then((results) => {
-      setPlaylists(results);
+      setPlaylists(results.filter((playlist) => playlist.id !== 1));
     });
   }
 

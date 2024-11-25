@@ -117,7 +117,10 @@ const SongOptions = ({ bottomSheetRef }: SongOptionsProps) => {
       <SheetOption 
         icon={require('@/assets/icons/remove.png')}
         text={'Remove from Playlist'}
-        show={[PageType.LIBRARY].includes(pageType) && editSong.playlistId !== undefined}
+        show={[PageType.LIBRARY].includes(pageType) 
+          && editSong.playlistId !== undefined
+          && editSong.playlistId !== '1'
+        }
         handler={handleRemoveFromPlaylist}
       />
       <SheetOption 

@@ -17,10 +17,11 @@ import QueueButton from "@/components/player/QueueButton";
 import ShuffleButton from "@/components/player/ShuffleButton";
 import { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util"; 
+import { useThemeContext } from "@/context/ThemeProvider";
 
 const Player = () => {
 
-  const { theme } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   const track = useActiveTrack();
 

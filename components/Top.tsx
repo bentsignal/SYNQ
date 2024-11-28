@@ -1,32 +1,16 @@
 import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useThemeContext } from '@/context/ThemeProvider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Top = () => {
 
-  const { logo } = useGlobalContext();
+  const { logo } = useThemeContext();
   
   const insets = useSafeAreaInsets();
 
-  const Local = StyleSheet.create({
-    container: {
-      width: '90%',
-      alignSelf: 'center',
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      marginTop: 10 + insets.top,
-      marginBottom: 30
-    },
-    icon: {
-      height: 25,
-      width: 25,
-    }
-  });
-
   return (
-    <View style={Local.container}>
+    <View style={[Local.container, { marginTop: insets.top + 10 }]}>
       <Image 
         source={logo}
         style={Local.icon}
@@ -41,5 +25,20 @@ const Top = () => {
   );
 
 }
+
+const Local = StyleSheet.create({
+  container: {
+    width: '90%',
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 30
+  },
+  icon: {
+    height: 25,
+    width: 25,
+  }
+});
 
 export default Top;

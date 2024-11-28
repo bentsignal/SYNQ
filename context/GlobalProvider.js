@@ -6,7 +6,7 @@ import { NotificationType, SongType } from '@/constants/Types';
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
 
-const GlobalProvider = ({ children, initTheme, initPremium, initShouldPlayAd }) => {
+const GlobalProvider = ({ children, initPremium, initShouldPlayAd }) => {
 
   const [homeState, setHomeState] = useState(0);
   const [importState, setImportState] = useState(0);
@@ -30,7 +30,7 @@ const GlobalProvider = ({ children, initTheme, initPremium, initShouldPlayAd }) 
   const [showSongOptions, setShowSongOptions] = useState(false);;
   const [showOverlay, setShowOverlay] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [theme, setTheme] = useState(initTheme ? initTheme : Colors.main);
+  const [theme, setTheme] = useState(Colors.main);
   const [logo, setLogo] = useState(require('@/assets/logo/logo-blue.png'));
   const [haptic, setHaptic] = useState(true);
   const [showInfoModal, setShowInfoModal] = useState(false);
@@ -51,13 +51,6 @@ const GlobalProvider = ({ children, initTheme, initPremium, initShouldPlayAd }) 
   const [adURL, setAdURL] = useState('');
   const [shouldPlayAd, setShouldPlayAd] = useState(initShouldPlayAd ? true : false);
   const [playerInitialized, setPlayerInitialized] = useState(false);
-
-  useEffect(() => {
-    if (initTheme !== '') {
-      setTheme(initTheme);
-      setLogo(getLogo(initTheme));
-    }
-  }, [initTheme]);
 
   useEffect(() => {
     setPremium(initPremium);

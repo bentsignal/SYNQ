@@ -20,8 +20,7 @@ const Premium = () => {
 
   const { 
     
-    premium,
-    logo, haptic,
+    premium, haptic,
     
     addNotification,
     
@@ -30,7 +29,7 @@ const Premium = () => {
   
   } = useGlobalContext();
 
-  const { theme } = useThemeContext();
+  const { theme, logo } = useThemeContext();
   
   const [selected, setSelected] = useState(0);
   const [renew, setRenew] = useState(true);

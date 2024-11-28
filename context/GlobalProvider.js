@@ -6,11 +6,11 @@ import { NotificationType, SongType } from '@/constants/Types';
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
 
-const GlobalProvider = ({ children, initPremium, initShouldPlayAd }) => {
+const GlobalProvider = ({ children, initShouldPlayAd }) => {
 
   const [homeState, setHomeState] = useState(0);
   const [importState, setImportState] = useState(0);
-  const [premium, setPremium] = useState(initPremium ? initPremium : false);
+  const [premium, setPremium] = useState(false);
   const [results, setResults] = useState([]);
   const [exportDisabled, setExportDisabled] = useState(true);
   const [showDelete, setShowDelete] = useState(false);
@@ -49,10 +49,6 @@ const GlobalProvider = ({ children, initPremium, initShouldPlayAd }) => {
   const [adURL, setAdURL] = useState('');
   const [shouldPlayAd, setShouldPlayAd] = useState(initShouldPlayAd ? true : false);
   const [playerInitialized, setPlayerInitialized] = useState(false);
-
-  useEffect(() => {
-    setPremium(initPremium);
-  }, [initPremium]);
 
   useEffect(() => {
     setShouldPlayAd(initShouldPlayAd ? true : false);

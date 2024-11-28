@@ -24,26 +24,22 @@ const RootLayout = () => {
     JakartaSans: require('../assets/fonts/PlusJakartaSans-VariableFont_wght.ttf')
   });
 
-  const loadShouldPlayAd = async () => {
-    try {
-      const playAd = await AsyncStorage.getItem('playAd');
-      setShouldPlayAd(playAd === 'true' ? true : false);
-    }
-    catch {
-      setShouldPlayAd(false);
-    }
-  }
-
   useEffect(() => {
 
     SplashScreen.preventAutoHideAsync();
 
-    const checkPurchases = async () => {
-      if (CFG.devTestFreeVersion) return;
-      await connect();
-      const restored = await restorePurchases();
-      if (restored !== '') {
-        setPremium(true);
+    // automatically hide splash screen after 7 seconds
+    setTimeout(() => {
+      SplashScreen.hideAsync();
+    }, 7000);
+
+    const loadShouldPlayAd = async () => {
+      try {
+        const playAd = await AsyncStorage.getItem('playAd');
+        setShouldPlayAd(playAd === 'true' ? true : false);
+      }
+      catch {
+        setShouldPlayAd(false);
       }
     }
 
@@ -59,7 +55,6 @@ const RootLayout = () => {
 
     loadShouldPlayAd();
     checkDB();
-    checkPurchases();
 
   }, []);
 
@@ -71,17 +66,12 @@ const RootLayout = () => {
         SplashScreen.hideAsync();
       }, 500);
     }
-    // hide splash screen after 7 seconds if fonts are not loaded
-    setTimeout(() => {
-      SplashScreen.hideAsync();
-    }, 7000);
   }, [fontLoaded]);
 
   return (
     <ThemeProvider>
       <PremiumProvider>
         <GlobalProvider
-          initPremium={premium}
           initShouldPlayAd={shouldPlayAd}
           children={
             <GestureHandlerRootView style={{flex: 1}}>

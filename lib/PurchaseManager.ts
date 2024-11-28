@@ -1,9 +1,10 @@
 import Purchases from 'react-native-purchases';
+import { revenueCatKey } from '@/credentials/env/keys';
 
 export const connect = async () => {
   try {
     Purchases.configure({
-      apiKey: 'appl_qzTfhRrmSegqQhRUukTmiUsVMIq',
+      apiKey: revenueCatKey,
       appUserID: null,
     });
     return true;

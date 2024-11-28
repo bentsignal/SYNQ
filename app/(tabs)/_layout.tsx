@@ -19,14 +19,7 @@ import { useThemeContext } from '@/context/ThemeProvider';
 
 const TabLayout = () => {
 
-  const { 
-    
-    premium, showSongOptions, showOverlay,
-  
-    setPremium, setHaptic, setShowSongOptions,
-    setAdURL, setTheme, setLogo,
-  
-  } = useGlobalContext();
+  const { showOverlay, setHaptic, setAdURL } = useGlobalContext();
 
   const { theme } = useThemeContext();
 
@@ -41,50 +34,7 @@ const TabLayout = () => {
     }
   }, [assets]);
 
-  const forceResetTheme = async () => {
-    try { 
-      if (theme !== Colors.main) {  
-        setTheme(Colors.main);
-        setLogo(getLogo('blue'));
-        const success = setAppIcon(getIcon('blue'));
-        await AsyncStorage.setItem('theme', Colors.main);
-      }
-    }
-    catch (error) {
-      console.log('error forcing reset theme:', error);
-    }
-  }
-
   useEffect(() => {
-
-    const checkPremium = async () => {
-      if (CFG.devTestFreeVersion) {
-        await forceResetTheme();
-        return;
-      };
-      try {
-        Purchases.configure({
-          apiKey: 'appl_qzTfhRrmSegqQhRUukTmiUsVMIq',
-          appUserID: null,
-        });
-        const customerInfo = await Purchases.getCustomerInfo();
-        const active = customerInfo.activeSubscriptions;
-        const purchases = customerInfo.nonSubscriptionTransactions;
-        if (active.length > 0) {
-          setPremium(true);
-        }
-        else if (purchases.length > 0 && purchases[0].productIdentifier === 'SYNQPremiumLifetime') {
-          setPremium(true);
-        }
-        else {
-          setPremium(false);
-          await forceResetTheme();
-        }
-      }
-      catch (error) {
-        console.log('error checking premium');
-      }
-    }
 
     const loadHapticSetting = async () => {
       try {
@@ -97,7 +47,6 @@ const TabLayout = () => {
     }
 
     loadHapticSetting();
-    checkPremium();
 
   }, []);
 
@@ -139,7 +88,6 @@ const TabLayout = () => {
               tabBarIcon: ({ color, focused }) => (
                 <LibraryIcon focused={focused}/>
               ),
-              // header: () => <Header />
             }}
           />
       </Tabs>

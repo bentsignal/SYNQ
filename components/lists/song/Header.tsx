@@ -5,14 +5,14 @@ import { Colors } from "@/constants/Colors";
 import { SongListPageCover } from "@/components/song/Cover";
 import { PageType } from "@/constants/Types";
 
-type SongListPageHeaderProps = {
+type SongListHeaderProps = {
   id: string;
   title: string;
   songCount: number;
   pageType: PageType; 
 }
 
-const SongListHeaderComponent = ({id, title, songCount, pageType}: SongListPageHeaderProps) => {
+const SongListHeader = ({id, title, songCount, pageType}: SongListHeaderProps) => {
   const insets = useSafeAreaInsets();
   return (
     <View style={[Local.container, {paddingTop: insets.top}]}>
@@ -53,4 +53,4 @@ const Local = StyleSheet.create({
   }
 });
 
-export default SongListHeaderComponent;
+export default SongListHeader;

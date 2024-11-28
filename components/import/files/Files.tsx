@@ -4,7 +4,7 @@ import { Styles } from '@/constants/Styles';
 import { useEffect, useState } from 'react';
 import PageTitle from '@/components/PageTitle';
 import { getCompletion } from '@/lib/SongManager';
-import SongList from '@/components/lists/SongList';
+import SongList from '@/components/lists/song';
 import ImportControls from '../ImportControls';
 import Progress from '@/components/Progress';
 import InfoModal from '@/components/modals/InfoModal';

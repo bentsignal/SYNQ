@@ -8,7 +8,7 @@ import { router } from "expo-router"
 import { useGlobalContext } from "@/context/GlobalProvider"
 import { PageType, PlaylistType } from "@/constants/Types"
 import PlaylistDataManager from "@/lib/data/PlaylistDataManager"
-import PlaylistList from "@/components/lists/PlaylistList"
+import PlaylistList from "@/components/lists/playlist"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import playlistBus from "@/station/playlistBus"
 

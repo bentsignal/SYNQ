@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
-import SongList from '@/components/lists/SongList';
+import SongList from '@/components/lists/song';
 import PageTitle from '@/components/PageTitle';
 import ImportInstructions from '@/components/import/wifi/ImportInstructions';
 import ImportControls from '../ImportControls';

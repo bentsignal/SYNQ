@@ -1,1 +1,1 @@
-export {default} from './SongSheet';
+export { default } from './SongSheet';

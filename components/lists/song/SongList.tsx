@@ -7,6 +7,7 @@ import DeleteModal from '@/components/modals/DeleteModal';
 import { generateSongKey } from '@/lib/SongManager';
 import List from '@/components/List';
 import BottomSheet from '@gorhom/bottom-sheet';
+
 const MemoSong = memo(Song);
 
 const SongList = memo((

@@ -1,12 +1,8 @@
-import { Stack } from "expo-router";
 import { useFonts } from 'expo-font';
-import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import GlobalProvider from "@/context/GlobalProvider";
 import { router } from "expo-router";
-import { Styles } from "@/constants/Styles";
-import { Colors } from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { connect, restorePurchases } from "@/lib/PurchaseManager";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -67,20 +63,20 @@ const RootLayout = () => {
 
   }, []);
 
+
+  // hide splash screen after fonts are loaded
   useEffect(() => {
     if (fontLoaded) {
       router.push('/bucket');
+      setTimeout(() => {
+        SplashScreen.hideAsync();
+      }, 500);
     }
-    setTimeout(() => {
-      SplashScreen.hideAsync();
-    }, 500);
-  }, [fontLoaded]);
-
-  useEffect(() => {
+    // hide splash screen after 7 seconds if fonts are not loaded
     setTimeout(() => {
       SplashScreen.hideAsync();
     }, 7000);
-  }, []);
+  }, [fontLoaded]);
 
   return (
     <PremiumProvider>

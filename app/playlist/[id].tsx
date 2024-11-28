@@ -4,14 +4,14 @@ import { useLocalSearchParams } from "expo-router";
 import { Styles } from "@/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
-import SongList from "@/components/lists/SongList";
+import SongList from "@/components/lists/song";
 import { PageType, SongType } from "@/constants/Types";
 import * as FileSystem from "expo-file-system";
 import { getSongByResult } from "@/lib/SongManager";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import MiniPlayer from "@/components/player/MiniPlayer";
 import TabBar from "@/components/TabBar";
-import SongListHeaderComponent from "@/components/SongListHeaderComponent";
+import SongListHeader from "@/components/lists/song/Header";
 import PlaylistDataManager from "@/lib/data/PlaylistDataManager";
 import Overlay from "@/components/Overlay";
 import Header from "@/components/Header";
@@ -107,7 +107,7 @@ const PlaylistView = () => {
           sheetRef={songOptionsSheetRef}
           playlistId={id as string}
           headerComponent={
-            <SongListHeaderComponent 
+            <SongListHeader 
               id={id as string}
               title={title} 
               songCount={songCount} 

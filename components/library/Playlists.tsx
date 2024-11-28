@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet } from "react-native";
-import PlaylistList from "@/components/lists/PlaylistList"; 
+import { View, StyleSheet } from "react-native";
+import PlaylistList from "@/components/lists/playlist"; 
 import { useEffect, useState } from "react";
 import { Colors } from "@/constants/Colors";
 import { Styles } from "@/constants/Styles";

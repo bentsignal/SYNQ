@@ -1,10 +1,12 @@
 import { TouchableOpacity, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import Arrow from "@/components/Arrow";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useThemeContext } from "@/context/ThemeProvider";
 
-const BackArrow = () => {
-  const { theme } = useGlobalContext();
+const BackArrow = () => { 
+  
+  const { theme } = useThemeContext();
+
   return (
     <TouchableOpacity 
       onPress={() => router.back()}
@@ -16,6 +18,7 @@ const BackArrow = () => {
       />
     </TouchableOpacity>
   );
+
 }
 
 const Local = StyleSheet.create({

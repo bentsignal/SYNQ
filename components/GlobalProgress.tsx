@@ -3,17 +3,20 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import Overlay from "./Overlay";
 import Progress from "./Progress";
 import Ad from "./Ad";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 const GlobalProgress = () => {
 
   const { 
     
     globalProgress, showGlobalLoading,
-    showImportAd, theme,
+    showImportAd,
     
     showGlobalProgress 
 
   } = useGlobalContext();
+
+  const { theme } = useThemeContext();
 
   const Local = StyleSheet.create({
     container: {

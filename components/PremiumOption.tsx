@@ -1,8 +1,8 @@
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
-import { useGlobalContext } from "@/context/GlobalProvider";
 import Skeleton from "./Skeleton";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 type OptionProps = {
   handler: () => void;
@@ -14,7 +14,7 @@ type OptionProps = {
 
 const PremiumOption = ({handler, tier, price, loading, selected}: OptionProps) => {
   
-  const { theme } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   const Local = StyleSheet.create({
     optionContainer: {

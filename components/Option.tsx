@@ -2,7 +2,7 @@ import { Text, View, Image, TouchableOpacity, ImageSourcePropType, StyleSheet } 
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { darkenColor } from '@/lib/ColorManager';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 type ImportOptionProps = {
   title: string;
@@ -22,7 +22,7 @@ const Option = ({
   handlePress
 } : ImportOptionProps) => {
 
-  const { theme } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   const color = bg ? bg : theme;
 

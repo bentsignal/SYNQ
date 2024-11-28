@@ -5,12 +5,11 @@ import { usePremiumContext } from "@/context/PremiumProvider";
 import { useThemeContext } from "@/context/ThemeProvider";
 
 type ThemeOptionProps = {
-  name: string;
   color: string;
-  index: number;
+  key?: any;
 }
 
-const ThemeOption = ({ name, color, index }: ThemeOptionProps) => {
+const ThemeOption = ({ color }: ThemeOptionProps) => {
 
   const { premium } = usePremiumContext();
   const { theme, changeTheme } = useThemeContext();

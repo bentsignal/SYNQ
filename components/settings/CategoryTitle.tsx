@@ -2,6 +2,7 @@ import { Text, View, StyleSheet } from 'react-native';
 import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 type CategoryTitleProps = {
   title: string;
@@ -10,7 +11,8 @@ type CategoryTitleProps = {
 
 const CategoryTitle = ({ title, requiresPremium }: CategoryTitleProps) => {
 
-  const { theme, premium } = useGlobalContext();
+  const { premium } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   const Local = StyleSheet.create({
     container: {

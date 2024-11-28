@@ -12,12 +12,13 @@ import Progress from "@/components/Progress";
 import * as StoreReview from 'expo-store-review';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CFG from "@/constants/Config";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 const SavePrompt = () => {
 
   const { 
 
-    theme, premium, results,
+    premium, results,
     importState, loading,
     shouldSaveToLibrary, exportDisabled,
     showImportAd, showGlobalProgress, globalProgress,
@@ -30,6 +31,8 @@ const SavePrompt = () => {
     setShowImportAd, setShowGlobalLoading,
   
   } = useGlobalContext();
+
+  const { theme } = useThemeContext();
 
   const callReset = async () => {
     return await axios.get(`${URL}/reset`);

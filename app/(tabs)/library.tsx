@@ -17,11 +17,13 @@ import Albums from "@/components/library/Albums";
 import Artists from "@/components/library/Artists";
 import Plus from "@/components/Plus";
 import { router } from "expo-router";
+import { useThemeContext } from "@/context/ThemeProvider";
+
 const Library = () => {
 
   const { 
     
-    shuffle, theme, haptic,
+    shuffle, haptic,
     adPlaying, premium, adURL, shouldPlayAd,
     playerInitialized,
 
@@ -34,6 +36,8 @@ const Library = () => {
     addNotification,
   
   } = useGlobalContext();
+
+  const { theme } = useThemeContext();
 
   const track = useActiveTrack();
   const { position, duration } = useProgress();

@@ -3,6 +3,7 @@ import { PlayButton } from './PausePlayButtons';
 import { skipLeft, skipRight, playAd } from '@/lib/PlayerManager';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import * as Haptics from 'expo-haptics';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 const Shape = ({size, color}: {size: number, color?: string}) => {
   return (
@@ -17,8 +18,9 @@ const Shape = ({size, color}: {size: number, color?: string}) => {
 
 export const SkipRight = ({size, color}: {size: number, color?: string}) => {
 
-  const { premium, shuffle, theme, haptic, 
+  const { premium, shuffle, haptic, 
     adPlaying, adURL, setAdPlaying, shouldPlayAd } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   return (
     <TouchableOpacity 

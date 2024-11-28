@@ -14,12 +14,13 @@ import Loading from '@/components/Loading';
 import { darkenColor } from '@/lib/ColorManager';
 import * as Haptics from 'expo-haptics';
 import * as PurchaseManager from '@/lib/PurchaseManager';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 const Premium = () => {
 
   const { 
     
-    premium, theme,
+    premium,
     logo, haptic,
     
     addNotification,
@@ -28,6 +29,8 @@ const Premium = () => {
     setShowNotificationModal,
   
   } = useGlobalContext();
+
+  const { theme } = useThemeContext();
   
   const [selected, setSelected] = useState(0);
   const [renew, setRenew] = useState(true);

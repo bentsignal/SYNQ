@@ -12,6 +12,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { NotificationType } from "@/constants/Types"
 import Notifications from "@/components/notifications/Notifications"
 import * as Haptics from 'expo-haptics'
+import { useThemeContext } from "@/context/ThemeProvider"
 
 const MemoTextInput = memo(TextInput);
 
@@ -19,11 +20,13 @@ const CreatePlaylist = () => {
 
   const {
 
-    theme, numModified, haptic,
+    numModified, haptic,
 
     addNotification, setNumModified,
 
   } = useGlobalContext();
+
+  const { theme } = useThemeContext();
 
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
   const [name, setName] = useState('');

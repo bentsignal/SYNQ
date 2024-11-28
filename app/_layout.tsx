@@ -63,7 +63,6 @@ const RootLayout = () => {
 
   }, []);
 
-
   // hide splash screen after fonts are loaded
   useEffect(() => {
     if (fontLoaded) {
@@ -79,8 +78,8 @@ const RootLayout = () => {
   }, [fontLoaded]);
 
   return (
-    <PremiumProvider>
-      <ThemeProvider>
+    <ThemeProvider>
+      <PremiumProvider>
         <GlobalProvider
           initPremium={premium}
           initShouldPlayAd={shouldPlayAd}
@@ -90,8 +89,8 @@ const RootLayout = () => {
             </GestureHandlerRootView>
           }
         />
-      </ThemeProvider>
-    </PremiumProvider>
+      </PremiumProvider>
+    </ThemeProvider>
   );
   
 }

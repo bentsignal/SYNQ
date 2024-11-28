@@ -10,6 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { useEffect, useState } from 'react';  
 import BottomSheet from '@gorhom/bottom-sheet';
 import { exportSongs } from '@/lib/SongManager';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 type SongOptionsProps = {
   bottomSheetRef: React.RefObject<BottomSheet>;
@@ -19,7 +20,7 @@ const SongOptions = ({ bottomSheetRef }: SongOptionsProps) => {
 
   const { 
     
-    editSong, theme,
+    editSong,
     numModified, premium,
     haptic,
 
@@ -29,6 +30,8 @@ const SongOptions = ({ bottomSheetRef }: SongOptionsProps) => {
     setNumModified,
 
   } = useGlobalContext();
+  
+  const { theme } = useThemeContext();
 
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
 

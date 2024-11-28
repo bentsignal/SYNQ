@@ -3,10 +3,12 @@ import { Colors } from "@/constants/Colors";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { getDisabledColor } from "@/lib/ColorManager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 const Haptic = () => {
 
-  const { haptic, theme, setHaptic} = useGlobalContext();
+  const { haptic, setHaptic} = useGlobalContext();
+  const { theme } = useThemeContext();
 
   const toggleHaptic = async () => {
     await AsyncStorage.setItem('haptic', haptic ? 'false' : 'true');

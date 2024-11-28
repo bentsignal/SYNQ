@@ -1,8 +1,7 @@
 import { Text, View, Image, TouchableOpacity, ImageSourcePropType, StyleSheet } from 'react-native';
-import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { darkenColor } from '@/lib/ColorManager';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 type ImportInstructionsProps = {
   title: string;
@@ -20,7 +19,7 @@ const ImportInstructions = ({
     handlePress
   } : ImportInstructionsProps) => {
 
-  const { theme } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   const Local = StyleSheet.create({
     container: {

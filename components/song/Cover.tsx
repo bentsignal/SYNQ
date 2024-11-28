@@ -7,6 +7,7 @@ import { Colors } from '@/constants/Colors';
 import Ad from '@/components/Ad';
 import { getAppIcon } from '@/constants/Logos';
 import { PageType, CoverType } from '@/constants/Types';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5+hPwABAAEAAFPAfXAAAAAElFTkSuQmCC';
 
@@ -19,7 +20,8 @@ export const ListCover = ({image, type, id, fade, propOnLoad}: {
   propOnLoad: () => void;
 }) => {
 
-  const { numModified, editSong, adPlaying, theme } = useGlobalContext();
+  const { numModified, editSong, adPlaying } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   const opacityRef = useRef(new Animated.Value(fade ? 0 : 1)).current;
 
@@ -247,7 +249,7 @@ export const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
 
   const [src, setSrc] = useState('');
   const [aspectRatio, setAspectRatio] = useState(1);
-  const { theme } = useGlobalContext();
+  const { theme } = useThemeContext();
   const coverPercent = 0.65;
 
   useEffect(() => {
@@ -338,7 +340,8 @@ export const PlayerCover = ({id}: {id: string}) => {
 
   const [src, setSrc] = useState('');
   const [aspectRatio, setAspectRatio] = useState(1);
-  const { adPlaying, theme } = useGlobalContext();
+  const { adPlaying } = useGlobalContext();
+  const { theme } = useThemeContext();
   const coverPercent = 0.85;
 
   useEffect(() => {

@@ -110,9 +110,7 @@ const Theme = () => {
       >
         {Object.entries(Themes).map(([key, color], index) => (
           <ThemeOption
-            name={key}
             color={color}
-            index={index}
             key={key}
           />
         ))}

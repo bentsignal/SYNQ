@@ -9,13 +9,14 @@ import SongInfo from '@/components/song/SongInfo';
 import { PageType, CoverType } from '@/constants/Types';
 import TrackPlayer, { Track } from 'react-native-track-player';
 import { removeFromAllPlaylists } from '@/lib/PlaylistManager';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 const DeleteModal = () => {
 
   const {
 
     selectedSongs, results,
-    showDelete, theme, homeState,
+    showDelete, homeState,
     editSong, numModified,
 
     setShowDelete, setResults, setExportDisabled,
@@ -23,6 +24,8 @@ const DeleteModal = () => {
     setNumModified, 
 
   } = useGlobalContext();
+
+  const { theme } = useThemeContext();
 
   const getBody = () => {
     if (selectedSongs.length > 0) {

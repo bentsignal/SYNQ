@@ -4,6 +4,7 @@ import { useRef, useEffect } from 'react';
 import Svg, { Circle } from 'react-native-svg';
 import Loading from './Loading';
 import { useGlobalContext } from '@/context/GlobalProvider';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -20,13 +21,9 @@ const Progress = ({ completion, loading, showCircle, linear }: ProgressProps) =>
   let circleOpacityRef = useRef(new Animated.Value(0)).current;
   let globalOpacityRef = useRef(new Animated.Value(0)).current;
 
-  const { 
-    
-    loadAnimInProgress, theme,
-    
-    setLoadAnimInProgress 
-  
-  } = useGlobalContext();
+  const { loadAnimInProgress, setLoadAnimInProgress } = useGlobalContext();
+
+  const { theme } = useThemeContext();
 
   useEffect(() => {
     let to;

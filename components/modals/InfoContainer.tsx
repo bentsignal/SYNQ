@@ -2,8 +2,8 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
-import { useGlobalContext } from '@/context/GlobalProvider';
 import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 type InfoContainerProps = {
   title: string;
@@ -16,7 +16,7 @@ const InfoContainer = ({ title, contentHeight, children }: InfoContainerProps) =
   const [open, setOpen] = useState(false);
   const height = useSharedValue(0);
   const rotate = useSharedValue(-45);
-  const { theme } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   const Local = StyleSheet.create({
     container: {

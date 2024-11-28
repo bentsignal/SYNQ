@@ -10,10 +10,11 @@ import { Colors } from "@/constants/Colors";
 import { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util";
 import { CoverType } from "@/constants/Types";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 const MiniPlayer = () => {
 
-  const { theme } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   const track = useActiveTrack();
 

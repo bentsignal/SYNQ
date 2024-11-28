@@ -30,8 +30,6 @@ const GlobalProvider = ({ children, initPremium, initShouldPlayAd }) => {
   const [showSongOptions, setShowSongOptions] = useState(false);;
   const [showOverlay, setShowOverlay] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [theme, setTheme] = useState(Colors.main);
-  const [logo, setLogo] = useState(require('@/assets/logo/logo-blue.png'));
   const [haptic, setHaptic] = useState(true);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -94,8 +92,6 @@ const GlobalProvider = ({ children, initPremium, initShouldPlayAd }) => {
         showSongOptions, setShowSongOptions,
         showOverlay, setShowOverlay,
         errorMessage, setErrorMessage,
-        theme, setTheme,
-        logo, setLogo,
         haptic, setHaptic,
         showInfoModal, setShowInfoModal,
         notifications, setNotifications,

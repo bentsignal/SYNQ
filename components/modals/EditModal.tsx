@@ -10,18 +10,21 @@ import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { maybe } from '@/lib/Util';
 import { PageType, SongType } from '@/constants/Types';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 const EditModal = () => {
 
   const {
 
     results, showEdit, editSong,
-    selectedSongs, theme, numModified,
+    selectedSongs, numModified,
 
     setResults, setShowEdit, setSelectEnabled,
     setShowOverlay, setNumModified,
 
   } = useGlobalContext();
+
+  const { theme } = useThemeContext();
 
   const [title, setTitle] = useState(maybe(editSong.info?.metadata?.name));
   const [artist, setArtist] = useState(maybe(editSong.info?.metadata?.artist));

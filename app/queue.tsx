@@ -18,10 +18,11 @@ import { ListCover } from "@/components/song/Cover";
 import SongInfo from "@/components/song/SongInfo";
 import TrackPlayer, { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util";
-
+import { useThemeContext } from '@/context/ThemeProvider';
 const Queue = () => {
 
-  const { theme, shuffle } = useGlobalContext();
+  const { shuffle } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   const track = useActiveTrack();
 
@@ -149,7 +150,7 @@ const Queue = () => {
         pageType={PageType.QUEUE}
       />
       <View style={Local.footer}>
-        <Time/>
+        <Time progressColor={theme}/>
         <View style={Local.controlsContainer}>
           <ShuffleButton/>
           <View style={Local.centerControlsContainer}>

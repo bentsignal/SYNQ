@@ -2,7 +2,7 @@ import { View, Modal, StyleSheet } from 'react-native';
 import { Styles } from '@/constants/Styles';
 
 type CustomModalProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   show: boolean;
   width: any;
   maxHeight?: any;

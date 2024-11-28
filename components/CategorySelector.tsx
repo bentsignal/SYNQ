@@ -3,7 +3,7 @@ import { useState } from 'react';
 import HorizontalScrollView from '@/components/HorizontalScrollView';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 type CategorySelectorProps = {
   containerStyle: ViewStyle;
@@ -17,7 +17,7 @@ const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) =
   const [containerWidth, setContainerWidth] = useState(0);
   const [selected, setSelected] = useState(0);
 
-  const { theme } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   return (
     <View 

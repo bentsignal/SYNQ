@@ -4,12 +4,14 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import TrackPlayer, { useProgress } from 'react-native-track-player';
 import { formatTime } from '@/lib/Util';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 const Time = ({ progressColor }: { progressColor?: string }) => {
 
   const interval = 50;
 
-  const { theme, adPlaying } = useGlobalContext();
+  const { adPlaying } = useGlobalContext();
+  const { theme } = useThemeContext();
   const { position, duration } = useProgress(interval);
   
   const scrubbing = useRef(false);

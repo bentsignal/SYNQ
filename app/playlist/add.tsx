@@ -11,14 +11,12 @@ import PlaylistDataManager from "@/lib/data/PlaylistDataManager"
 import PlaylistList from "@/components/lists/playlist"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import playlistBus from "@/station/playlistBus"
+import { useThemeContext } from "@/context/ThemeProvider"
 
 const AddToPlaylist = () => {
 
-  const {
-
-    theme, numModified,
-
-  } = useGlobalContext();
+  const { numModified } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   const insets = useSafeAreaInsets();
 

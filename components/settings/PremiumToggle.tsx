@@ -3,9 +3,13 @@ import { Colors } from "@/constants/Colors";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { getDisabledColor } from "@/lib/ColorManager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 const PremiumToggle = () => {
-  const { theme, premium, setPremium } = useGlobalContext();
+
+  const { premium, setPremium } = useGlobalContext();
+  const { theme } = useThemeContext();
+
   return (
     <Switch 
       trackColor={{ false: getDisabledColor(theme), true: theme }}

@@ -7,16 +7,19 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import { Colors } from "@/constants/Colors";
 import { Styles } from "@/constants/Styles";
 import InfoContainer from "./InfoContainer";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 const InfoModal = () => {
 
   const { 
 
-    showInfoModal, theme, 
+    showInfoModal,
     
     setShowInfoModal, setShowOverlay,
   
   } = useGlobalContext();
+
+  const { theme } = useThemeContext();
 
   const Local = StyleSheet.create({
     wrapper: {

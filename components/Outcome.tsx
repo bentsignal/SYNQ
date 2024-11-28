@@ -9,16 +9,19 @@ import { Colors } from "@/constants/Colors";
 import { darkenColor } from "@/lib/ColorManager";
 import { useEffect } from "react";
 import { router } from "expo-router";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 export const Success = () => {
 
   const { 
     
-    theme, haptic, shouldSaveToLibrary,
+    haptic, shouldSaveToLibrary,
 
     setHomeState,
   
   } = useGlobalContext();
+
+  const { theme } = useThemeContext();
 
   useEffect(() => {
     if (haptic) {

@@ -10,7 +10,7 @@ const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
 type VerticalScrollViewProps = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   backgroundColor?: string;
   maxHeight?: any;
   minHeight?: any;

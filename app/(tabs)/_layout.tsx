@@ -15,18 +15,20 @@ import { useAssets } from 'expo-asset';
 import CFG from '@/constants/Config';
 import { setAppIcon } from "expo-icon-handler";
 import { getIcon, getLogo } from "@/constants/Logos";
+import { useThemeContext } from '@/context/ThemeProvider';
 
 const TabLayout = () => {
 
   const { 
     
     premium, showSongOptions, showOverlay,
-    theme, 
   
     setPremium, setHaptic, setShowSongOptions,
     setAdURL, setTheme, setLogo,
   
   } = useGlobalContext();
+
+  const { theme } = useThemeContext();
 
   const [assets, error] = useAssets([require('@/assets/audio/ad.mp3')]);
 

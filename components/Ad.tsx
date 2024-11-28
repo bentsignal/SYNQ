@@ -4,12 +4,12 @@ import CustomButton from "./CustomButton";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { Styles } from "@/constants/Styles";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 
 const Ad = ({message}: {message: React.ReactNode}) => {
 
-  const { theme } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   return (
     <View style={Local.container}>

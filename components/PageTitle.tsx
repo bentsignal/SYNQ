@@ -2,6 +2,7 @@ import { Text, Image, TouchableOpacity, View, StyleSheet } from "react-native";
 import { Styles } from "@/constants/Styles";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Colors } from "@/constants/Colors";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 type PageTitleProps = {
   title: string;
@@ -19,11 +20,13 @@ const PageTitle = ({
 
   const { 
 
-    selectEnabled, theme,
+    selectEnabled,
     
     setSelectEnabled, setShowOverlay,
   
   } = useGlobalContext();
+
+  const { theme } = useThemeContext();
 
   const Local = StyleSheet.create({
     pageTitle: {

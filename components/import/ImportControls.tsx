@@ -6,6 +6,7 @@ import CustomButton from '@/components/CustomButton';
 import { exportSongs } from '@/lib/SongManager';
 import { darkenColor } from '@/lib/ColorManager';
 import Notifications from '@/components/notifications/Notifications';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 const ImportControls = (
   {altTitle, mainTitle, altHandle, mainHandle, altDisabled, mainDisabled}: {
@@ -20,12 +21,14 @@ const ImportControls = (
   const {
 
     results, selectEnabled,
-    selectedSongs, theme,
+    selectedSongs,
 
     setShowDelete, setEditSong, setShowEdit, 
     setShowOverlay, setShowGlobalLoading,
 
   } = useGlobalContext();
+
+  const { theme } = useThemeContext();
 
   const Local = StyleSheet.create({
     container: {

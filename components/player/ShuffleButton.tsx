@@ -4,16 +4,12 @@ import { Colors } from "@/constants/Colors";
 import { getNextUp } from "@/lib/SongManager";
 import { useActiveTrack } from "react-native-track-player";
 import { updateQueue } from "@/lib/PlayerManager";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 const ShuffleButton = () => {
 
-  const { 
-
-    shuffle, theme,
-    
-    setShuffle,
-  
-  } = useGlobalContext();
+  const { shuffle, setShuffle } = useGlobalContext();
+  const { theme } = useThemeContext();
   
   const track = useActiveTrack();
 

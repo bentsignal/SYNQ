@@ -2,9 +2,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
-import { useGlobalContext } from '@/context/GlobalProvider';
-import CloseButton from '@/components/CloseButton';
 import Arrow from '@/components/Arrow';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 type DropdownProps = {
   data?: any[];
@@ -17,7 +16,7 @@ type DropdownProps = {
 
 const Dropdown = ({data, placeholder, down, disabled, containerStyles, setSelected}: DropdownProps) => {
   
-  const { theme } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   const [open, setOpen] = useState(false);
 
@@ -39,7 +38,7 @@ const Dropdown = ({data, placeholder, down, disabled, containerStyles, setSelect
       <Text style={Local.placeholder}>
         {placeholder ? placeholder : 'Select'}
       </Text>
-      <Arrow style={Local.arrow}/>
+      <Arrow containerStyle={Local.arrow}/>
     </TouchableOpacity>
   )
 }

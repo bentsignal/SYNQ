@@ -7,18 +7,21 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import { Colors } from "@/constants/Colors";
 import { Styles } from "@/constants/Styles";
 import InfoContainer from "./InfoContainer";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 const NotificationModal = () => {
 
   const {
       
-      showNotificationModal, theme,
+      showNotificationModal,
       notificationType, notificationMessage,
       notificationTitle, notificationTrace,
       
       setShowNotificationModal, setShowOverlay,
     
   } = useGlobalContext();
+
+  const { theme } = useThemeContext();
 
   const Local = StyleSheet.create({
     container: {

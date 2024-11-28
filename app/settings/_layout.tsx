@@ -1,11 +1,11 @@
 import { Stack, router } from "expo-router";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useThemeContext } from "@/context/ThemeProvider";
 import { Colors } from "@/constants/Colors";
 import BackArrow from "@/components/BackArrow";
 
 const SettingsLayout = () => {
 
-  const { theme } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   return (
     <Stack

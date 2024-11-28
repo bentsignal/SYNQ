@@ -21,6 +21,7 @@ import { useActiveTrack } from "react-native-track-player";
 import { getTrackFromSong, playTrack, 
   updateQueue, playAd, addToQueue } from '@/lib/PlayerManager';
 import BottomSheet from '@gorhom/bottom-sheet';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 type SongProps = {
   song: SongType, 
@@ -40,13 +41,15 @@ const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
   const { 
 
     selectEnabled, selectedSongs, results,
-    premium, showSongOptions, theme, 
+    premium, showSongOptions,
     haptic, shuffle, adPlaying, adURL, shouldPlayAd,
 
     setSelectedSongs, setShowSongOptions,
     setEditSong, setAdPlaying,
 
   } = useGlobalContext(); 
+
+  const { theme } = useThemeContext();
 
   let blur = false;
   let message = false

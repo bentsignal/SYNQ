@@ -1,6 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
-import { Colors } from '@/constants/Colors';
-import { getLogo } from '@/constants/Logos';
 import { NotificationType, SongType } from '@/constants/Types';
 
 const GlobalContext = createContext();
@@ -10,7 +8,6 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
 
   const [homeState, setHomeState] = useState(0);
   const [importState, setImportState] = useState(0);
-  const [premium, setPremium] = useState(false);
   const [results, setResults] = useState([]);
   const [exportDisabled, setExportDisabled] = useState(true);
   const [showDelete, setShowDelete] = useState(false);
@@ -68,7 +65,6 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
       value={{
         homeState, setHomeState,
         importState, setImportState,
-        premium, setPremium,
         results, setResults,
         exportDisabled, setExportDisabled,
         showDelete, setShowDelete,

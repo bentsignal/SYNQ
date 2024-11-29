@@ -17,7 +17,6 @@ LogBox.ignoreLogs(['Require cycle:']);
 
 const RootLayout = () => {
 
-  const [premium, setPremium] = useState(false);
   const [shouldPlayAd, setShouldPlayAd] = useState(false);
 
   const [fontLoaded] = useFonts({

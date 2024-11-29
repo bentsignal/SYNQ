@@ -5,18 +5,14 @@ import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 import Theme from "@/components/settings/Theme";
 import CategoryTitle from "@/components/settings/CategoryTitle";
-import { useGlobalContext } from "@/context/GlobalProvider";
 import Haptic from "@/components/settings/Haptic";
 import PremiumToggle from "@/components/settings/PremiumToggle";
 import CFG from "@/constants/Config";
+import { usePremiumContext } from "@/context/PremiumProvider";
 
 const Settings = () => {
 
-  const { 
-    
-    premium, 
-  
-  } = useGlobalContext();
+  const { premium }  = usePremiumContext();
 
   return (
     <View style={[Styles.body, Local.container]}>

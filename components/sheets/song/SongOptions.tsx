@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { exportSongs } from '@/lib/SongManager';
 import { useThemeContext } from '@/context/ThemeProvider';
+import { usePremiumContext } from '@/context/PremiumProvider';
 
 type SongOptionsProps = {
   bottomSheetRef: React.RefObject<BottomSheet>;
@@ -21,7 +22,7 @@ const SongOptions = ({ bottomSheetRef }: SongOptionsProps) => {
   const { 
     
     editSong,
-    numModified, premium,
+    numModified,
     haptic,
 
     setShowEdit, setShowImportAd,
@@ -30,6 +31,8 @@ const SongOptions = ({ bottomSheetRef }: SongOptionsProps) => {
     setNumModified,
 
   } = useGlobalContext();
+
+  const { premium } = usePremiumContext();
   
   const { theme } = useThemeContext();
 

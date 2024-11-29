@@ -4,6 +4,7 @@ import { skipLeft, skipRight, playAd } from '@/lib/PlayerManager';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import * as Haptics from 'expo-haptics';
 import { useThemeContext } from '@/context/ThemeProvider';
+import { usePremiumContext } from '@/context/PremiumProvider';
 
 const Shape = ({size, color}: {size: number, color?: string}) => {
   return (
@@ -18,8 +19,9 @@ const Shape = ({size, color}: {size: number, color?: string}) => {
 
 export const SkipRight = ({size, color}: {size: number, color?: string}) => {
 
-  const { premium, shuffle, haptic, 
+  const { shuffle, haptic, 
     adPlaying, adURL, setAdPlaying, shouldPlayAd } = useGlobalContext();
+  const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
 
   return (

@@ -18,13 +18,14 @@ import Artists from "@/components/library/Artists";
 import Plus from "@/components/Plus";
 import { router } from "expo-router";
 import { useThemeContext } from "@/context/ThemeProvider";
+import { usePremiumContext } from "@/context/PremiumProvider";
 
 const Library = () => {
 
   const { 
     
     shuffle, haptic,
-    adPlaying, premium, adURL, shouldPlayAd,
+    adPlaying, adURL, shouldPlayAd,
     playerInitialized,
 
     setShowOverlay, 
@@ -37,6 +38,7 @@ const Library = () => {
   
   } = useGlobalContext();
 
+  const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
 
   const track = useActiveTrack();

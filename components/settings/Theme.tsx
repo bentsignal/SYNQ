@@ -4,39 +4,13 @@ import { Styles } from "@/constants/Styles";
 import { Themes, Colors } from "@/constants/Colors";
 import ThemeOption from "@/components/settings/ThemeOption";
 import { LinearGradient } from 'expo-linear-gradient';
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { usePremiumContext } from "@/context/PremiumProvider";
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 
 const Theme = () => {
 
-  const { premium } = useGlobalContext();
-
-  const Local = StyleSheet.create({
-    gradient: {
-      position: 'absolute', 
-      top: 0,
-      width: 30,
-      height: 130, 
-      zIndex: 2,
-    },
-    scrollView: {
-      paddingTop: 15,
-      paddingBottom: 15,
-      maxHeight: 100,
-      position: 'relative',
-    },
-    premiumOverlayLock: {
-      height: 100,
-      width: '100%',
-      backgroundColor: Colors.background,
-      position: 'absolute',
-      top: 0,
-      zIndex: 5,
-      opacity: 0.5,
-      display: premium ? 'none' : 'flex',
-    }
-  });
+  const { premium } = usePremiumContext();
 
   const leftGradientOpacityRef = useRef(new Animated.Value(0)).current;
   const rightGradientOpacityRef = useRef(new Animated.Value(1)).current;
@@ -125,10 +99,37 @@ const Theme = () => {
         colors={['rgba(16, 16, 16, 1)', 'rgba(16, 16, 16, 0)']}
         pointerEvents={'none'}
       />
-      <View style={Local.premiumOverlayLock} />
+      <View style={[Local.premiumOverlayLock, {
+        display: premium ? 'none' : 'flex',
+      }]} />
     </View>
   );
 
 }
+
+const Local = StyleSheet.create({
+  gradient: {
+    position: 'absolute', 
+    top: 0,
+    width: 30,
+    height: 130, 
+    zIndex: 2,
+  },
+  scrollView: {
+    paddingTop: 15,
+    paddingBottom: 15,
+    maxHeight: 100,
+    position: 'relative',
+  },
+  premiumOverlayLock: {
+    height: 100,
+    width: '100%',
+    backgroundColor: Colors.background,
+    position: 'absolute',
+    top: 0,
+    zIndex: 5,
+    opacity: 0.5,
+  }
+});
 
 export default Theme;

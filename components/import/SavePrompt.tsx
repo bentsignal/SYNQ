@@ -13,12 +13,13 @@ import * as StoreReview from 'expo-store-review';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CFG from "@/constants/Config";
 import { useThemeContext } from "@/context/ThemeProvider";
+import { usePremiumContext } from "@/context/PremiumProvider";
 
 const SavePrompt = () => {
 
   const { 
 
-    premium, results,
+    results,
     importState, loading,
     shouldSaveToLibrary, exportDisabled,
     showImportAd, showGlobalProgress, globalProgress,
@@ -33,6 +34,7 @@ const SavePrompt = () => {
   } = useGlobalContext();
 
   const { theme } = useThemeContext();
+  const { premium } = usePremiumContext();
 
   const callReset = async () => {
     return await axios.get(`${URL}/reset`);

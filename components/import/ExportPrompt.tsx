@@ -9,13 +9,14 @@ import CustomButton from "@/components/CustomButton";
 import { Colors } from "@/constants/Colors";
 import { exportSongs } from '@/lib/SongManager';
 import { useThemeContext } from "@/context/ThemeProvider";
+import { usePremiumContext } from "@/context/PremiumProvider";
 
 const ExportPrompt = () => {
 
   const { 
     
     importState, results,
-    premium, showImportAd, showGlobalProgress,
+    showImportAd, showGlobalProgress,
   
     setHomeState, setShowInfoModal,
     setShowGlobalLoading, 
@@ -26,6 +27,7 @@ const ExportPrompt = () => {
 
   } = useGlobalContext();
 
+  const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
 
   const [disabled, setDisabled] = useState(false);

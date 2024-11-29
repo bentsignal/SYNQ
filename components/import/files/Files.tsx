@@ -9,13 +9,14 @@ import ImportControls from '../ImportControls';
 import Progress from '@/components/Progress';
 import InfoModal from '@/components/modals/InfoModal';
 import { PageType } from '@/constants/Types';
+import { usePremiumContext } from '@/context/PremiumProvider';
 
 const Files = () => {
 
   const { 
     
     results, loading,
-    premium, transferSize,
+    transferSize,
     transferProgress, loadAnimInProgress,
     homeState, exportDisabled,
 
@@ -24,6 +25,8 @@ const Files = () => {
     setTransferSize, setResults, setExportDisabled,
 
   } = useGlobalContext();
+
+  const { premium } = usePremiumContext();
 
   const [completion, setCompletion] = useState(0);
 

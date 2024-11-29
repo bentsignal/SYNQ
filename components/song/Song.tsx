@@ -22,6 +22,7 @@ import { getTrackFromSong, playTrack,
   updateQueue, playAd, addToQueue } from '@/lib/PlayerManager';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useThemeContext } from '@/context/ThemeProvider';
+import { usePremiumContext } from '@/context/PremiumProvider';
 
 type SongProps = {
   song: SongType, 
@@ -41,13 +42,15 @@ const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
   const { 
 
     selectEnabled, selectedSongs, results,
-    premium, showSongOptions,
+    showSongOptions,
     haptic, shuffle, adPlaying, adURL, shouldPlayAd,
 
     setSelectedSongs, setShowSongOptions,
     setEditSong, setAdPlaying,
 
   } = useGlobalContext(); 
+
+  const { premium } = usePremiumContext();
 
   const { theme } = useThemeContext();
 

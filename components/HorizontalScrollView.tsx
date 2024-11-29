@@ -2,7 +2,7 @@ import { View, StyleSheet, ScrollView, Animated, Easing, NativeSyntheticEvent, N
 import { useRef, useState, useEffect } from "react";
 import { Colors } from "@/constants/Colors";
 import { LinearGradient } from 'expo-linear-gradient';
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { usePremiumContext } from "@/context/PremiumProvider";
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -14,7 +14,7 @@ type HorizontalScrollViewProps = {
 
 const HorizontalScrollView = ({ children, contentWidth, containerWidth }: HorizontalScrollViewProps) => {
 
-  const { premium } = useGlobalContext();
+  const { premium } = usePremiumContext();
 
   const leftGradientOpacityRef = useRef(new Animated.Value(0)).current;
   const rightGradientOpacityRef = useRef(new Animated.Value(1)).current;

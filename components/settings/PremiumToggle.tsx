@@ -1,13 +1,12 @@
 import { Switch } from "react-native-gesture-handler";
 import { Colors } from "@/constants/Colors";
-import { useGlobalContext } from "@/context/GlobalProvider";
 import { getDisabledColor } from "@/lib/ColorManager";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useThemeContext } from "@/context/ThemeProvider";
+import { usePremiumContext } from "@/context/PremiumProvider";
 
 const PremiumToggle = () => {
 
-  const { premium, setPremium } = useGlobalContext();
+  const { premium, setPremium } = usePremiumContext();
   const { theme } = useThemeContext();
 
   return (

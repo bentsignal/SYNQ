@@ -43,6 +43,7 @@ const Navigation = () => {
         options={{
           presentation: "card",
           animation: 'slide_from_bottom',
+          animationDuration: 500,
           contentStyle: { backgroundColor: 'transparent' },
           gestureEnabled: true,
           gestureDirection: "vertical",
@@ -55,6 +56,7 @@ const Navigation = () => {
         options={{
           presentation: "card",
           animation: 'fade_from_bottom',
+          animationDuration: 500,
           gestureEnabled: false,
           headerShown: false,
           contentStyle: { backgroundColor: 'transparent' },

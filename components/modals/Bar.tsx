@@ -14,7 +14,7 @@ const Bar = ({color}: {color?: string;}) => {
       height: 5,
       borderRadius: 100,
       marginTop: 15,
-      marginBottom: 30,
+      marginBottom: 20,
     }
   });
   return (

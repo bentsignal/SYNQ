@@ -10,7 +10,7 @@ const SettingsLayout = () => {
   return (
     <Stack
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
         headerLeft: () => <BackArrow />,
         headerStyle: {backgroundColor: Colors.background},
         headerBackVisible: false,

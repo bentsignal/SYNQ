@@ -29,6 +29,7 @@ const Navigation = () => {
         name="settings"
         options={{
           headerShown: false,
+          presentation: 'modal',
         }}
       />
       <Stack.Screen 
@@ -43,7 +44,7 @@ const Navigation = () => {
         options={{
           presentation: "card",
           animation: 'slide_from_bottom',
-          animationDuration: 500,
+          animationDuration: 400,
           contentStyle: { backgroundColor: 'transparent' },
           gestureEnabled: true,
           gestureDirection: "vertical",
@@ -56,7 +57,7 @@ const Navigation = () => {
         options={{
           presentation: "card",
           animation: 'fade_from_bottom',
-          animationDuration: 500,
+          animationDuration: 300,
           gestureEnabled: false,
           headerShown: false,
           contentStyle: { backgroundColor: 'transparent' },

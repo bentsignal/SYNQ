@@ -9,6 +9,7 @@ import Haptic from "@/components/settings/Haptic";
 import PremiumToggle from "@/components/settings/PremiumToggle";
 import CFG from "@/constants/Config";
 import { usePremiumContext } from "@/context/PremiumProvider";
+import Bar from "@/components/modals/Bar";
 
 const Settings = () => {
 
@@ -16,10 +17,13 @@ const Settings = () => {
 
   return (
     <View style={[Styles.body, Local.container]}>
+      <Bar />
+      
       <ScrollView
         style={Local.scrollView}
         contentContainerStyle={Local.scrollViewContent}
       >
+        <Text style={Local.title}>Settings</Text>
         <Option 
           title="Premium"
           desc={premium ? "Manage your subcription" : 'Unlock all features'}
@@ -50,6 +54,13 @@ const Settings = () => {
 }
 
 const Local = StyleSheet.create({
+  title: {
+    ...Styles.h1,
+    color: Colors.text,
+    textAlign: 'left',
+    width: '90%',
+    marginBottom: 20,
+  },
   container: {
     backgroundColor: Colors.background,
   },

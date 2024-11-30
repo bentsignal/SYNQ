@@ -7,6 +7,7 @@
     "icon": "./assets/appIcons/icon-blue.png",
     "scheme": "synq",
     "userInterfaceStyle": "automatic",
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
@@ -16,7 +17,6 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.directedbyshawn.synq",
-      "buildNumber": "1",
       "infoPlist": {
         "CFBundleDisplayName": "SYNQ",
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
@@ -26,7 +26,8 @@
         "UIBackgroundModes": [
           "audio"
         ]
-      }
+      },
+      "buildNumber": "11"
     },
     "android": {
       "adaptiveIcon": {
@@ -98,7 +99,8 @@
             "assets/audio/ad.mp3"
           ]
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

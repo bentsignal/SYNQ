@@ -13,7 +13,7 @@ const SettingsLayout = () => {
         headerShown: true,
         headerLeft: () => <BackArrow />,
         headerStyle: {backgroundColor: Colors.background},
-        headerBackTitleVisible: false,
+        headerBackVisible: false,
         headerTitleStyle: {color: Colors.text},
         contentStyle: {backgroundColor: 'transparent'},
         headerTintColor: 'white',

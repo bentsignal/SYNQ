@@ -3,7 +3,7 @@ import { Styles } from '@/constants/Styles';
 
 const Arrow = ({containerStyle, arrowStyle}: {containerStyle?: {}, arrowStyle?: {}}) => {
   return (
-    <View style={{...Local.arrowContainer, ...containerStyle}}>
+    <View style={[Local.arrowContainer, containerStyle]}>
       <View style={[Local.arrow, Local.topArrow, arrowStyle]}/>
       <View style={[Local.arrow, Local.bottomArrow, arrowStyle]}/>
     </View>

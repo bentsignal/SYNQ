@@ -68,9 +68,6 @@ const TabLayout = () => {
           tabBarStyle: Styles.tabBar,
           tabBarLabelStyle: Styles.h6
         }}
-        sceneContainerStyle={{
-          backgroundColor: Colors.background,
-        }}
       >
           <Tabs.Screen
             name='index'

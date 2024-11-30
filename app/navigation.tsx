@@ -11,13 +11,6 @@ const Navigation = () => {
           gestureEnabled: false,
         }} 
       />
-      <Stack.Screen
-        name="bucket"
-        options={{
-          headerShown: false,
-          animation: 'fade',
-        }}
-      />
       <Stack.Screen 
         name="tracking"
         options={{

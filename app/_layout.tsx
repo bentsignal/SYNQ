@@ -15,6 +15,11 @@ import Navigation from "@/app/navigation";
 
 LogBox.ignoreLogs(['Require cycle:']);
 
+SplashScreen.setOptions({
+  fade: true,
+  duration: 500,
+})
+
 const RootLayout = () => {
 
   const [shouldPlayAd, setShouldPlayAd] = useState(false);
@@ -60,7 +65,6 @@ const RootLayout = () => {
   // hide splash screen after fonts are loaded
   useEffect(() => {
     if (fontLoaded) {
-      router.push('/bucket');
       setTimeout(() => {
         SplashScreen.hideAsync();
       }, 500);

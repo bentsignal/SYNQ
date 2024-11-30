@@ -66,7 +66,11 @@ const TabLayout = () => {
           tabBarActiveTintColor: Colors.tabActive,
           tabBarInactiveTintColor: Colors.tabInactive,
           tabBarStyle: Styles.tabBar,
-          tabBarLabelStyle: Styles.h6
+          tabBarLabelStyle: Styles.h6,
+          tabBarIconStyle: {
+            marginBottom: 6,
+          },
+          animation: 'shift',
         }}
       >
           <Tabs.Screen

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import { useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
@@ -10,7 +10,7 @@ type DropdownProps = {
   placeholder?: string;
   down?: boolean;
   disabled?: boolean;
-  containerStyles?: {};
+  containerStyles?: ViewStyle;
   setSelected?: (selected: string) => void;
 }
 
@@ -26,16 +26,14 @@ const Dropdown = ({data, placeholder, down, disabled, containerStyles, setSelect
 
   return (
     <TouchableOpacity 
-      style={{
-        ...Local.container,
-        ...containerStyles,
+      style={[Styles.roundedContainer, Local.container as ViewStyle, containerStyles, {
         backgroundColor: disabled ? Colors.altDisabled : Colors.altButton,
-      }}
+      }]}
       onPress={toggleOpen}
       activeOpacity={0.8}
       disabled={disabled}
     >
-      <Text style={Local.placeholder}>
+      <Text style={Styles.h5}>
         {placeholder ? placeholder : 'Select'}
       </Text>
       <Arrow containerStyle={Local.arrow}/>
@@ -45,16 +43,12 @@ const Dropdown = ({data, placeholder, down, disabled, containerStyles, setSelect
 
 const Local = StyleSheet.create({
   container: {
-    ...Styles.roundedContainer,
     height: 42,
     minWidth: 100,
     paddingHorizontal: 20,
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-  },
-  placeholder: {
-    ...Styles.h5,
   },
   arrow: {
     transform: [{translateY: -3}, {rotate: '-135deg'}, {scaleX: 0.8}, {scaleY: 0.8}],

@@ -77,7 +77,7 @@ const TabLayout = () => {
           transitionSpec: {
             animation: 'timing',
             config: {
-              duration: 50,
+              duration: 300,
               easing: Easing.out(Easing.ease),
             },
           },

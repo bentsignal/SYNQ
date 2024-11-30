@@ -1,7 +1,7 @@
 import List from '@/components/List';
 import { memo } from 'react';
 import { PlaylistType, PageType } from '@/constants/Types';
-import Playlist from '@/components/playlist/Playlist';
+import Playlist from '@/components/playlist';
 
 const MemoPlaylist = memo(Playlist);
 

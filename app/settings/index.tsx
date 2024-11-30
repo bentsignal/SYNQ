@@ -18,7 +18,6 @@ const Settings = () => {
   return (
     <View style={[Styles.body, Local.container]}>
       <Bar />
-      
       <ScrollView
         style={Local.scrollView}
         contentContainerStyle={Local.scrollViewContent}
@@ -50,7 +49,7 @@ const Settings = () => {
       </ScrollView>
     </View>
   );
-  
+
 }
 
 const Local = StyleSheet.create({

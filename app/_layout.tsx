@@ -17,7 +17,7 @@ LogBox.ignoreLogs(['Require cycle:']);
 
 SplashScreen.setOptions({
   fade: true,
-  duration: 500,
+  duration: 300,
 })
 
 const RootLayout = () => {

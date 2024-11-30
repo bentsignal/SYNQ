@@ -15,6 +15,7 @@ const Navigation = () => {
         options={{ 
           headerShown: false,
           animation: 'fade',
+          animationDuration: 300,
           gestureEnabled: false,
         }} 
       />

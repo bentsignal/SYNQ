@@ -13,7 +13,6 @@ import Notifications from "@/components/notifications/Notifications";
 import * as server from "expo-http-server";
 import ExportPrompt from "@/components/import/ExportPrompt";
 import SavePrompt from "@/components/import/SavePrompt";  
-import { Colors } from "@/constants/Colors";
 
 const Home = () => {
 
@@ -91,7 +90,6 @@ const Home = () => {
   }
   else {
     return (
-      // <View style={[Styles.body, { backgroundColor: Colors.background }]}>
       <View style={Styles.body}>
         <InfoModal />
         <ScrollView

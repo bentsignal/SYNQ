@@ -1,8 +1,15 @@
 import { Stack } from "expo-router"
+import { Colors } from "@/constants/Colors";
 
 const Navigation = () => {
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        contentStyle: {
+          backgroundColor: Colors.background,
+        },
+      }}
+    >
       <Stack.Screen 
         name="(tabs)" 
         options={{ 

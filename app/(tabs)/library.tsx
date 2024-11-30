@@ -220,7 +220,7 @@ const Library = () => {
   }
 
   return (
-    <View style={[Styles.body]}>
+    <View style={Styles.body}>
       <PageTitle 
         title="Library"
         rightHandComponent={

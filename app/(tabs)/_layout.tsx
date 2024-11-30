@@ -1,23 +1,23 @@
 import { Tabs } from 'expo-router';
 import { useEffect, useRef } from 'react';
+import { Easing, View } from 'react-native';
 import Server from '@/components/import/wifi/Server';
 import { HomeIcon, LibraryIcon } from '@/components/TabBarIcons';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
-import Purchases from 'react-native-purchases';
 import Overlay from '@/components/Overlay';
 import NotificationModal from '@/components/modals/NotificationModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GlobalProgress from '@/components/GlobalProgress';
 import Top from '@/components/Top';
 import { useAssets } from 'expo-asset';
-import CFG from '@/constants/Config';
-import { setAppIcon } from "expo-icon-handler";
-import { getIcon, getLogo } from "@/constants/Logos";
 import { useThemeContext } from '@/context/ThemeProvider';
+import MiniPlayer from '@/components/player/MiniPlayer';
 
 const TabLayout = () => {
+
+  const tabRef = useRef<any>(null);
 
   const { showOverlay, setHaptic, setAdURL } = useGlobalContext();
 
@@ -70,7 +70,17 @@ const TabLayout = () => {
           tabBarIconStyle: {
             marginBottom: 6,
           },
+          sceneStyle: {
+            backgroundColor: Colors.background,
+          },
           animation: 'shift',
+          transitionSpec: {
+            animation: 'timing',
+            config: {
+              duration: 50,
+              easing: Easing.out(Easing.ease),
+            },
+          },
         }}
       >
           <Tabs.Screen
@@ -80,6 +90,7 @@ const TabLayout = () => {
               tabBarIcon: ({ color, focused }) => (
                 <HomeIcon focused={focused}/>
               ),
+              animation: 'none',
             }}
           />
           <Tabs.Screen 
@@ -89,6 +100,7 @@ const TabLayout = () => {
               tabBarIcon: ({ color, focused }) => (
                 <LibraryIcon focused={focused}/>
               ),
+              animation: 'none',
             }}
           />
       </Tabs>

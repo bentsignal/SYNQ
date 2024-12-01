@@ -8,6 +8,7 @@ import SheetStyles from '@/components/sheet/Styles';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import { CoverType } from '@/constants/Types';
+import PlaylistOptions from '@/components/sheet/playlist/PlaylistOptions';
 
 type PlaylistSheetProps = {
   bottomSheetRef: React.RefObject<BottomSheet>,
@@ -33,7 +34,8 @@ const PlaylistSheet = ({bottomSheetRef, setIsOpen}: PlaylistSheetProps) => {
           <Text style={Local.name}>{editPlaylist?.name}</Text>
           <Text style={Local.count}>{editPlaylist?.songCount} {editPlaylist?.songCount === 1 ? 'song' : 'songs'}</Text>
         </View>
-      </View>
+      </View> 
+      <PlaylistOptions bottomSheetRef={bottomSheetRef} />
     </Sheet>
   );
 }

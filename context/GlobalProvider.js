@@ -109,6 +109,7 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
         playerInitialized, setPlayerInitialized,
         importSongSheet,
         libraryPlaylistSheet,
+        editPlaylist, setEditPlaylist,
       }}
     >
       {children}

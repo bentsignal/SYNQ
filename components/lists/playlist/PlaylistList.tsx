@@ -21,8 +21,9 @@ const PlaylistList = memo(({
 }) => {
 
   const renderItem = ({item}: {item: PlaylistType}) => {
+    item.pageType = pageType;
     return (
-      <MemoPlaylist playlist={item} pageType={pageType} sheetRef={sheetRef} />
+      <MemoPlaylist playlist={item} sheetRef={sheetRef} />
     );
   };
 

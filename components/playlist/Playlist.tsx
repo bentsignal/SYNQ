@@ -16,11 +16,10 @@ import * as Haptics from 'expo-haptics';
 
 type PlaylistProps = {
   playlist: PlaylistType,
-  pageType: PageType,
   sheetRef?: React.RefObject<BottomSheet>,
 }
 
-const Playlist = ({playlist, pageType, sheetRef}: PlaylistProps) => {
+const Playlist = ({playlist, sheetRef}: PlaylistProps) => {
 
   const { 
     
@@ -47,7 +46,7 @@ const Playlist = ({playlist, pageType, sheetRef}: PlaylistProps) => {
   }
 
   useEffect(() => {
-    if (editSong.id && pageType === PageType.CREATE) {
+    if (editSong.id && playlist.pageType === PageType.CREATE) {
       const db = PlaylistDataManager.getInstance();
       db.isSongInPlaylist(playlist.id, editSong.id).then((result) => {
         setSelected(result);
@@ -71,8 +70,8 @@ const Playlist = ({playlist, pageType, sheetRef}: PlaylistProps) => {
   return (
     <TouchableOpacity 
       style={Local.container}
-      activeOpacity={pageType === PageType.CREATE ? 1 : 0.8}
-      disabled={pageType === PageType.CREATE}
+      activeOpacity={playlist.pageType === PageType.CREATE ? 1 : 0.8}
+      disabled={playlist.pageType === PageType.CREATE}
       onPress={() => {
         router.push(`/playlist/${playlist.id}`);
       }}
@@ -86,10 +85,10 @@ const Playlist = ({playlist, pageType, sheetRef}: PlaylistProps) => {
         <Text style={Local.name}>{playlist.name}</Text>
         <Text style={Local.count}>{playlist.songCount} {playlist.songCount === 1 ? 'song' : 'songs'}</Text>
       </View>
-      {pageType === PageType.LIBRARY &&
+      {playlist.pageType === PageType.LIBRARY &&
         <More handlePress={handleMore} />
       }
-      {pageType === PageType.CREATE &&
+      {playlist.pageType === PageType.CREATE &&
         <Select 
           active={selected}
           handlePress={handleSelect}

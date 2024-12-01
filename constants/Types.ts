@@ -61,4 +61,5 @@ export type PlaylistType = {
   id: number;
   name: string;
   songCount: number;
+  pageType?: PageType;
 };

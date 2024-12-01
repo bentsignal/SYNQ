@@ -124,10 +124,6 @@ const Home = () => {
               setShowImportAd(true);
               setLoading(true);
               setResults([]);
-              if (!serverStarted) {
-                setServerStarted(true);
-                server.start();
-              }
               setHomeState(1);
             }}
           />

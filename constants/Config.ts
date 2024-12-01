@@ -9,6 +9,8 @@ const CFG = {
   devShowPremiumToggle: true,
   // Play an ad after x seconds of listening
   playAdAfter: 600,
+  // port for wifi transfer server
+  PORT: 3000,
 }
 
 export default CFG;

@@ -12,6 +12,7 @@ import { Colors } from '@/constants/Colors';
 import Progress from '@/components/Progress';
 import { PageType } from '@/constants/Types';
 import { usePremiumContext } from '@/context/PremiumProvider';
+import CFG from '@/constants/Config';
 
 const WiFi = () => {
 
@@ -59,7 +60,8 @@ const WiFi = () => {
   }, [transferProgress]);
 
   const callReset = async () => {
-    return await axios.get(`${URL}/reset`);
+    const resetEndpoint = `http://${URL}${CFG.PORT === 80 ? '' : `:${CFG.PORT}`}`;
+    return await axios.get(`${resetEndpoint}/reset`);
   }
   
   const resetResults = () => {
@@ -133,7 +135,7 @@ const WiFi = () => {
       return (
         <ImportInstructions
           title='In your web browser, enter:'
-          desc={URL}
+          desc={`${URL}${CFG.PORT === 80 ? '' : `:${CFG.PORT}`}`}
           icon={require('@/assets/icons/wifi.png')}
           disabled={wifiDisabled}
           handlePress={() => {}}

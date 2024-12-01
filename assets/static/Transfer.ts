@@ -256,9 +256,9 @@ const Transfer = () => {
                         "size": event.target.files.length
                       })
                     })
-                    
-                    console.log('Server: ' + startResponse.statusText)
-                    if (startResponse.status === 200) {
+                    const startResponseJson = await startResponse.json();
+                    console.log('Server: ' + startResponseJson.message);
+                    if (startResponseJson.status === 200) {
                       transferPopup.style.display = "none";
                       overlay.style.display = "flex";
                       transferPopup.style.display = "flex";
@@ -293,7 +293,8 @@ const Transfer = () => {
                               "data": b64
                             })
                           })
-                          console.log('Server: ' + sendResponse.statusText)
+                          const sendResponseJson = await sendResponse.json();
+                          console.log('Server: ' + sendResponseJson.message);
                         }
                         catch (error) {
                           console.log('Error: Could not send file. More info: ' + error)
@@ -313,8 +314,9 @@ const Transfer = () => {
                           body: JSON.stringify({
                             "size": event.target.files.length
                           })
-                        })
-                        console.log('Server: ' + finishResponse.statusText)
+                        });
+                        const finishResponseJson = await finishResponse.json();
+                        console.log('Server: ' + finishResponseJson.message);
                       }
                       catch (error) {
                         console.log('Server: ' + error)
@@ -324,10 +326,11 @@ const Transfer = () => {
                       transferPopup.style.display = "none";
                       overlay.style.display = "flex";
                       errorPopup.style.display = "flex";
-                      errorMessage.innerText = startResponse.statusText;
+                      errorMessage.innerText = startResponseJson.message;
                     }
                   }
                   catch (error) {
+                    console.log('error requesting transfer:', error);
                     transferPopup.style.display = "none";
                     overlay.style.display = "flex";
                     errorPopup.style.display = "flex";
@@ -344,8 +347,8 @@ const Transfer = () => {
               }
 
               const setConnected = async (response) => {
-                let body = await response.text()
-                let device = body ? body : 'server'
+                let body = await response.text();
+                let device = body ? body.replace(/"/g, '') : 'server'
                 connectionStatus.innerHTML = '<span class="connected">Connected to <span id="server-name">' + device + '</span></span>'
               }
 

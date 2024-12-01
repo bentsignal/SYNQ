@@ -6677,6 +6677,13 @@ react-native-helmet-async@2.0.4:
     react-fast-compare "^3.2.2"
     shallowequal "^1.1.0"
 
+react-native-http-bridge-refurbished@^1.2.9:
+  version "1.2.9"
+  resolved "https://registry.yarnpkg.com/react-native-http-bridge-refurbished/-/react-native-http-bridge-refurbished-1.2.9.tgz#8e005ad2afb53a30463769c9b2dd205173d11fb3"
+  integrity sha512-OjXjnXCGeSU85n/KQeJpHtHrUS16yw2poyykODruF/RNkV+lbKNvloNaUGpkIoDnlsJ54kj7bNrGVQl0M69TzA==
+  dependencies:
+    react "18.2.0"
+
 react-native-image-colors@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/react-native-image-colors/-/react-native-image-colors-2.4.0.tgz#6af1d5fe0e994331de789c1fa33788971f755aec"
@@ -6849,6 +6856,13 @@ react-test-renderer@18.3.1:
     react-is "^18.3.1"
     react-shallow-renderer "^16.15.0"
     scheduler "^0.23.2"
+
+react@18.2.0:
+  version "18.2.0"
+  resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"
+  integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
+  dependencies:
+    loose-envify "^1.1.0"
 
 react@18.3.1:
   version "18.3.1"

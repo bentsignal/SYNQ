@@ -17,7 +17,7 @@ import Overlay from "@/components/Overlay";
 import Header from "@/components/Header";
 import BottomSheet from "@gorhom/bottom-sheet";
 import playlistBus from "@/station/playlistBus";
-import SongSheet from '@/components/sheets/song';
+import SongSheet from '@/components/sheet/song';
 
 const PlaylistView = () => {
 

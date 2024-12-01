@@ -1,4 +1,4 @@
-import SheetOption from '@/components/sheets/SheetOption';
+import SheetOption from '@/components/sheet/SheetOption';
 import { PageType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import PlaylistDataManager from '@/lib/data/PlaylistDataManager';

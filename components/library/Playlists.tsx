@@ -10,7 +10,7 @@ import playlistBus from "@/station/playlistBus";
 
 const Playlists = () => {
 
-  const { numModified, homeState } = useGlobalContext();
+  const { numModified, homeState, libraryPlaylistSheet } = useGlobalContext();
 
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
 
@@ -41,6 +41,7 @@ const Playlists = () => {
       <PlaylistList 
         playlists={playlists}
         pageType={PageType.LIBRARY}
+        sheetRef={libraryPlaylistSheet}
       />
     </View>
   );

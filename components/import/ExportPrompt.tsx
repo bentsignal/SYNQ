@@ -33,6 +33,7 @@ const ExportPrompt = () => {
   const [disabled, setDisabled] = useState(false);
 
   const checkForAd = async () => {
+    console.log(!premium, showImportAd);
     if (!premium && showImportAd) {
       await new Promise(resolve => {
         let progress = 0;

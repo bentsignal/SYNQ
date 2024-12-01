@@ -7,7 +7,7 @@ type SheetProps = {
   bottomSheetRef: React.RefObject<BottomSheet>,
   setIsOpen: (isOpen: boolean) => void,
   setScrollEnabled: (scrollEnabled: boolean) => void,
-  children: React.ReactNode,
+  children?: React.ReactNode,
 }
 
 const Sheet = ({bottomSheetRef, setIsOpen, setScrollEnabled, children}: SheetProps) => {

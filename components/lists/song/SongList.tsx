@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { SongType, PageType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
-import Song from '@/components/song/Song';
+import Song from '@/components/song';
 import EditModal from '@/components/modals/EditModal';
 import DeleteModal from '@/components/modals/DeleteModal';
 import { generateSongKey } from '@/lib/SongManager';

@@ -11,12 +11,20 @@ import Select from "@/components/Select";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import PlaylistDataManager from "@/lib/data/PlaylistDataManager";
 import playlistBus from "@/station/playlistBus";
+import BottomSheet from "@gorhom/bottom-sheet";
+import * as Haptics from 'expo-haptics';
 
-const Playlist = ({playlist, pageType}: {playlist: PlaylistType, pageType: PageType}) => {
+type PlaylistProps = {
+  playlist: PlaylistType,
+  pageType: PageType,
+  sheetRef?: React.RefObject<BottomSheet>,
+}
+
+const Playlist = ({playlist, pageType, sheetRef}: PlaylistProps) => {
 
   const { 
     
-    editSong,
+    editSong, haptic, setEditPlaylist
 
   } = useGlobalContext();
   
@@ -47,6 +55,19 @@ const Playlist = ({playlist, pageType}: {playlist: PlaylistType, pageType: PageT
     }
   }, [editSong]);
 
+  const handleMore = async () => {
+    if (haptic) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    setEditPlaylist(playlist);
+    sheetRef?.current?.snapToIndex(0);
+  }
+
+  const handleSelect = async () => {
+    setSelected(!selected);
+    await playlistChangesMade(!selected);
+  }
+
   return (
     <TouchableOpacity 
       style={Local.container}
@@ -66,15 +87,12 @@ const Playlist = ({playlist, pageType}: {playlist: PlaylistType, pageType: PageT
         <Text style={Local.count}>{playlist.songCount} {playlist.songCount === 1 ? 'song' : 'songs'}</Text>
       </View>
       {pageType === PageType.LIBRARY &&
-        <More handlePress={() => {}} />
+        <More handlePress={handleMore} />
       }
       {pageType === PageType.CREATE &&
         <Select 
           active={selected}
-          handlePress={async () => {
-            setSelected(!selected);
-            await playlistChangesMade(!selected);
-          }}
+          handlePress={handleSelect}
         />
       }
     </TouchableOpacity>

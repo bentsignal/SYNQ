@@ -46,7 +46,9 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
   const [adURL, setAdURL] = useState('');
   const [shouldPlayAd, setShouldPlayAd] = useState(initShouldPlayAd ? true : false);
   const [playerInitialized, setPlayerInitialized] = useState(false);
+  const [editPlaylist, setEditPlaylist] = useState({});
   const importSongSheet = useRef(null);
+  const libraryPlaylistSheet = useRef(null);
 
   useEffect(() => {
     setShouldPlayAd(initShouldPlayAd ? true : false);
@@ -106,6 +108,7 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
         shouldPlayAd, setShouldPlayAd,
         playerInitialized, setPlayerInitialized,
         importSongSheet,
+        libraryPlaylistSheet,
       }}
     >
       {children}

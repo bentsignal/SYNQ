@@ -6,6 +6,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import { exportSongs } from '@/lib/SongManager';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
+import { deletePlaylist } from '@/lib/PlaylistManager';
 
 type PlaylistOptionsProps = {
   bottomSheetRef: React.RefObject<BottomSheet>;
@@ -65,13 +66,8 @@ const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
 
   const handleDeleteSong = () => {
     bottomSheetRef.current?.close();
-    if (pageType === PageType.IMPORT && !premium) {
-      setShowImportAd(true);
-    }
-    setTimeout(() => {
-      setShowOverlay(true);
-      setShowDelete(true);
-    }, actionDelay);
+    deletePlaylist(editPlaylist.id);
+    setNumModified(numModified + 1);
   }
 
   return (

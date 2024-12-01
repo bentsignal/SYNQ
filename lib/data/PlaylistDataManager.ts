@@ -101,6 +101,11 @@ class PlaylistDataManager extends DataManager {
     }
   }
 
+  public async deletePlaylist(playlistId: number): Promise<boolean> {
+    await PlaylistDataManager.db?.runAsync(`DELETE FROM playlists WHERE id = ?;`, [playlistId]);
+    return true;
+  }
+
   public async isSongInPlaylist(playlistId: number, songId: number): Promise<boolean> {
     const result = await PlaylistDataManager.db?.getFirstAsync(
       `SELECT * FROM playlistSongs WHERE playlistId = ? AND songId = ?;`, 

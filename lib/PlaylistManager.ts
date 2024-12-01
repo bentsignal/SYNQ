@@ -16,3 +16,8 @@ export const removeFromAllPlaylists = async (songId: number) => {
     console.log('error removing from all playlists: ', error);
   }
 }
+
+export const deletePlaylist = async (playlistId: number) => {
+  const db = PlaylistDataManager.getInstance();
+  await db.deletePlaylist(playlistId);
+}

@@ -1,4 +1,3 @@
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
@@ -10,7 +9,6 @@ import Files from "@/components/import/files/Files";
 import { Success, Failure } from "@/components/Outcome";
 import InfoModal from "@/components/modals/InfoModal";
 import Notifications from "@/components/notifications/Notifications";
-import * as server from "expo-http-server";
 import ExportPrompt from "@/components/import/ExportPrompt";
 import SavePrompt from "@/components/import/SavePrompt";  
 

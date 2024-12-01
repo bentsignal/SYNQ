@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Easing, View } from 'react-native';
 import Server from '@/components/import/wifi/Server';
 import { HomeIcon, LibraryIcon } from '@/components/TabBarIcons';
@@ -14,14 +14,18 @@ import Top from '@/components/Top';
 import { useAssets } from 'expo-asset';
 import { useThemeContext } from '@/context/ThemeProvider';
 import MiniPlayer from '@/components/player/MiniPlayer';
+import SongSheet from '@/components/sheets/song/SongSheet';
+import BottomSheet from '@gorhom/bottom-sheet';
 
 const TabLayout = () => {
 
-  const tabRef = useRef<any>(null);
-
-  const { showOverlay, setHaptic, setAdURL } = useGlobalContext();
+  
+  const { showOverlay, setHaptic, setAdURL, 
+    importSongSheet } = useGlobalContext();
 
   const { theme } = useThemeContext();
+
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const [assets, error] = useAssets([require('@/assets/audio/ad.mp3')]);
 
@@ -56,6 +60,9 @@ const TabLayout = () => {
       <NotificationModal />
       <Overlay show={showOverlay} activeOpacity={0.95}/>
       <Server />
+      <View style={[Styles.bottomSheetWrapper, {pointerEvents: sheetOpen ? 'auto' : 'none'}]}>
+        <SongSheet bottomSheetRef={importSongSheet} setIsOpen={setSheetOpen}/>
+      </View>
       <Tabs
         screenOptions={{
           headerShown: true,

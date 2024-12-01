@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 import { NotificationType, SongType } from '@/constants/Types';
 
 const GlobalContext = createContext();
@@ -46,6 +46,7 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
   const [adURL, setAdURL] = useState('');
   const [shouldPlayAd, setShouldPlayAd] = useState(initShouldPlayAd ? true : false);
   const [playerInitialized, setPlayerInitialized] = useState(false);
+  const importSongSheet = useRef(null);
 
   useEffect(() => {
     setShouldPlayAd(initShouldPlayAd ? true : false);
@@ -104,6 +105,7 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
         adURL, setAdURL,
         shouldPlayAd, setShouldPlayAd,
         playerInitialized, setPlayerInitialized,
+        importSongSheet,
       }}
     >
       {children}

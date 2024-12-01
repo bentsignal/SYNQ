@@ -24,6 +24,8 @@ const Files = () => {
     setImportState, setLoading,
     setTransferSize, setResults, setExportDisabled,
 
+    importSongSheet,
+
   } = useGlobalContext();
 
   const { premium } = usePremiumContext();
@@ -73,6 +75,7 @@ const Files = () => {
           pageType={PageType.IMPORT}
           fadeCover={false}
           fadeSong={true}
+          sheetRef={importSongSheet}
         />
       );
     }

@@ -30,47 +30,46 @@ const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) =
       <HorizontalScrollView
         contentWidth={contentWidth}
         containerWidth={containerWidth}
-        children={
-          <View
-            style={Local.contentContainer}
-            onLayout={(event) => {
-              const { width } = event.nativeEvent.layout;
-              setContentWidth(width);
+      >
+        <View
+          style={Local.contentContainer}
+          onLayout={(event) => {
+            const { width } = event.nativeEvent.layout;
+            setContentWidth(width);
+          }}
+        >
+          <TouchableOpacity 
+            style={[Local.itemContainer, { backgroundColor: selected === 0 ? theme : Colors.song }]}
+            onPress={() => {
+              setSelected(0);
+              callback(0);
             }}
+            activeOpacity={0.8}
           >
-            <TouchableOpacity 
-              style={[Local.itemContainer, { backgroundColor: selected === 0 ? theme : Colors.song }]}
-              onPress={() => {
-                setSelected(0);
-                callback(0);
-              }}
-              activeOpacity={0.8}
-            >
-              <Text style={Local.item}>Playlists</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[Local.itemContainer, { backgroundColor: selected === 1 ? theme : Colors.song }]}
-              onPress={() => {
-                setSelected(1);
-                callback(1);
-              }}
-              activeOpacity={0.8}
-            >
-              <Text style={Local.item}>Albums</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[Local.itemContainer, { backgroundColor: selected === 2 ? theme : Colors.song }]}
-              onPress={() => {
-                setSelected(2);
-                callback(2);
-              }}
-              activeOpacity={0.8}
-            >
-              <Text style={Local.item}>Artists</Text>
-            </TouchableOpacity>
-          </View>
-        }
-      />
+            <Text style={Local.item}>Playlists</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[Local.itemContainer, { backgroundColor: selected === 1 ? theme : Colors.song }]}
+            onPress={() => {
+              setSelected(1);
+              callback(1);
+            }}
+            activeOpacity={0.8}
+          >
+            <Text style={Local.item}>Albums</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[Local.itemContainer, { backgroundColor: selected === 2 ? theme : Colors.song }]}
+            onPress={() => {
+              setSelected(2);
+              callback(2);
+            }}
+            activeOpacity={0.8}
+          >
+            <Text style={Local.item}>Artists</Text>
+          </TouchableOpacity>
+        </View>
+      </HorizontalScrollView>
     </View>
   );
 }

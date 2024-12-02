@@ -7,6 +7,7 @@ import { exportSongs } from '@/lib/SongManager';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
 import { deletePlaylist } from '@/lib/PlaylistManager';
+import { Alert } from 'react-native';
 
 type PlaylistOptionsProps = {
   bottomSheetRef: React.RefObject<BottomSheet>;
@@ -36,14 +37,13 @@ const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
 
   useEffect(() => {
     if (editPlaylist.pageType) {
-      console.log('editPlaylist.pageType: ', editPlaylist.pageType);
       setPageType(editPlaylist.pageType);
     }
   }, [editPlaylist]);
 
   const actionDelay = 10;
 
-  const handleEditSong = () => {
+  const handleEdit = () => {
     bottomSheetRef.current?.close();
     setTimeout(() => {
       setShowOverlay(true);
@@ -64,10 +64,21 @@ const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
     }
   }
 
-  const handleDeleteSong = () => {
+  const handleDelete = () => {
     bottomSheetRef.current?.close();
-    deletePlaylist(editPlaylist.id);
-    setNumModified(numModified + 1);
+    setTimeout(() => {
+      Alert.alert(
+        'Delete Playlist',
+        `Are you sure you want to delete ${editPlaylist.name ?? 'this playlist'}?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Delete', style: 'destructive', onPress: () => {
+            deletePlaylist(editPlaylist.id);
+            setNumModified(numModified + 1);
+          }}
+        ]
+      )
+    }, actionDelay);
   }
 
   return (
@@ -76,19 +87,19 @@ const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
         icon={require('@/assets/icons/edit.png')}
         text={'Edit'}
         show={[PageType.LIBRARY].includes(pageType)}
-        handler={handleEditSong}
+        handler={handleEdit}
       />
       <SheetOption 
         icon={require('@/assets/icons/share.png')}
         text={'Export'}
-        show={[PageType.LIBRARY].includes(pageType)}
+        show={[PageType.LIBRARY].includes(pageType) && premium}
         handler={handleExport}
       />
       <SheetOption
         icon={require('@/assets/icons/delete.png')}
         text={'Delete'}
-        show={[PageType.LIBRARY].includes(pageType)}
-        handler={handleDeleteSong}
+        show={[PageType.LIBRARY].includes(pageType) && editPlaylist.id !== 1}
+        handler={handleDelete}
       />
     </>
   )

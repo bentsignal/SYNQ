@@ -1,12 +1,10 @@
 import { View, StyleSheet } from "react-native";
 import PlaylistList from "@/components/lists/playlist"; 
 import { useEffect, useState } from "react";
-import { Colors } from "@/constants/Colors";
-import { Styles } from "@/constants/Styles";
-import PlaylistDataManager from "@/lib/data/PlaylistDataManager";
 import { PageType, PlaylistType } from "@/constants/Types";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import playlistBus from "@/station/playlistBus";
+import { getPlaylists } from "@/lib/PlaylistManager";
 
 const Playlists = () => {
 
@@ -14,11 +12,14 @@ const Playlists = () => {
 
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
 
-  const refreshPlaylists = () => {
-    const db = PlaylistDataManager.getInstance();
-    db.getPlaylists().then((results) => {
+  const refreshPlaylists = async () => {
+    try {
+      const results = await getPlaylists();
       setPlaylists(results);
-    });
+    }
+    catch (error) {
+      console.log('error refreshing playlists:', error);
+    }
   }
 
   // refresh playlist after changes are made

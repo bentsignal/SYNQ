@@ -12,6 +12,7 @@ import SongDataManager from './data/SongDataManager';
 import { isValidNumString, idgen } from './Util';
 import { Image } from 'react-native';
 import PlaylistDataManager from './data/PlaylistDataManager';
+
 export const getCompletion = (size: number, progress: number) => {
   try {
     if (size === 0) {

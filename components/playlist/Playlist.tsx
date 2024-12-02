@@ -9,10 +9,10 @@ import More from "@/components/More";
 import { PageType } from "@/constants/Types";
 import Select from "@/components/Select";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import PlaylistDataManager from "@/lib/data/PlaylistDataManager";
 import playlistBus from "@/station/playlistBus";
 import BottomSheet from "@gorhom/bottom-sheet";
 import * as Haptics from 'expo-haptics';
+import { addToPlaylist, removeFromPlaylist, isSongInPlaylist } from "@/lib/PlaylistManager";
 
 type PlaylistProps = {
   playlist: PlaylistType,
@@ -31,12 +31,11 @@ const Playlist = ({playlist, sheetRef}: PlaylistProps) => {
 
   const playlistChangesMade = async (add: boolean) => {
     try {
-      const db = PlaylistDataManager.getInstance();
       if (add) {
-        await db.addToPlaylist(playlist.id, editSong.id);
+        await addToPlaylist(playlist.id, editSong.id);
       }
       else {
-        await db.removeFromPlaylist(playlist.id, editSong.id);
+        await removeFromPlaylist(playlist.id, editSong.id);
       }
       playlistBus.emit('playlistChangesMade');
     }
@@ -47,10 +46,13 @@ const Playlist = ({playlist, sheetRef}: PlaylistProps) => {
 
   useEffect(() => {
     if (editSong.id && playlist.pageType === PageType.CREATE) {
-      const db = PlaylistDataManager.getInstance();
-      db.isSongInPlaylist(playlist.id, editSong.id).then((result) => {
-        setSelected(result);
-      });
+      isSongInPlaylist(playlist.id, editSong.id)
+        .then((result) => {
+          setSelected(result);
+        })
+        .catch((error) => {
+          console.log('error checking if song is in playlist:', error);
+        });
     }
   }, [editSong]);
 

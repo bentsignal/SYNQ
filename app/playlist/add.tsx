@@ -7,11 +7,11 @@ import CustomButton from "@/components/CustomButton"
 import { router } from "expo-router"
 import { useGlobalContext } from "@/context/GlobalProvider"
 import { PageType, PlaylistType } from "@/constants/Types"
-import PlaylistDataManager from "@/lib/data/PlaylistDataManager"
 import PlaylistList from "@/components/lists/playlist"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import playlistBus from "@/station/playlistBus"
 import { useThemeContext } from "@/context/ThemeProvider"
+import { getPlaylists } from "@/lib/PlaylistManager"
 
 const AddToPlaylist = () => {
 
@@ -22,11 +22,14 @@ const AddToPlaylist = () => {
 
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
 
-  const refreshPlaylists = () => {
-    const db = PlaylistDataManager.getInstance();
-    db.getPlaylists().then((results) => {
+  const refreshPlaylists = async () => {
+    try {
+      const results = await getPlaylists();
       setPlaylists(results.filter((playlist) => playlist.id !== 1));
-    });
+    }
+    catch (error) {
+      console.log('error refreshing playlists:', error);
+    }
   }
 
   useEffect(() => {

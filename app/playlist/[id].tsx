@@ -12,12 +12,12 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import MiniPlayer from "@/components/player/MiniPlayer";
 import TabBar from "@/components/TabBar";
 import SongListHeader from "@/components/lists/song/Header";
-import PlaylistDataManager from "@/lib/data/PlaylistDataManager";
 import Overlay from "@/components/Overlay";
 import Header from "@/components/Header";
 import BottomSheet from "@gorhom/bottom-sheet";
 import playlistBus from "@/station/playlistBus";
 import SongSheet from '@/components/sheet/song';
+import { getPlaylistInfo, getPlaylistSongs } from "@/lib/PlaylistManager";
 
 const PlaylistView = () => {
 
@@ -39,33 +39,34 @@ const PlaylistView = () => {
   const songOptionsSheetRef = useRef<BottomSheet>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  const refreshInfo = () => {
+  const refreshInfo = async () => {
     if (id) {
-      const db = PlaylistDataManager.getInstance();
-      db.getPlaylistInfoById(parseInt(id as string)).then((result) => {
+      try {
+        const result = await getPlaylistInfo(parseInt(id as string));
         setTitle(result?.name || '');
         setSongCount(result?.songCount || 0);
-      });
+      }
+      catch (error) {
+        console.log('error refreshing playlist info:', error);
+      }
     }
   }
 
-  const refreshSongs = () => {
+  const refreshSongs = async () => {
     try {
-      const db = PlaylistDataManager.getInstance();
-      db.getSongsFromPlaylist(parseInt(id as string)).then((results) => {
-        let songs: SongType[] = [];
-        let dir;
-        // for (let i = results.length - 1; i >= 0; i--) {
-        for (let i = 0; i < results.length; i++) {
-          dir = `${FileSystem.documentDirectory}library/${results[i].id}`;
-          const song = getSongByResult(results[i]);
-          songs.push(song);
-        }
-        setSongs(songs);
-      });
+      const results = await getPlaylistSongs(parseInt(id as string));
+      let songs: SongType[] = [];
+      let dir;
+      // for (let i = results.length - 1; i >= 0; i--) {
+      for (let i = 0; i < results.length; i++) {
+        dir = `${FileSystem.documentDirectory}library/${results[i].id}`;
+        const song = getSongByResult(results[i]);
+        songs.push(song);
+      }
+      setSongs(songs);
     }
     catch (error) {
-      console.log(error);
+      console.log('error refreshing playlist songs:', error);
     }
   }
 

@@ -1,6 +1,21 @@
 import PlaylistDataManager from "./data/PlaylistDataManager";
 import playlistBus from "@/station/playlistBus";
 
+export const createPlaylist = async (name: string) => {
+  const db = PlaylistDataManager.getInstance();
+  await db.createPlaylist(name);
+}
+
+export const deletePlaylist = async (playlistId: number) => {
+  const db = PlaylistDataManager.getInstance();
+  await db.deletePlaylist(playlistId);
+}
+
+export const getPlaylists = async () => {
+  const db = PlaylistDataManager.getInstance();
+  return await db.getPlaylists();
+}
+
 export const removeFromAllPlaylists = async (songId: number) => {
   try {
     const db = PlaylistDataManager.getInstance();
@@ -17,7 +32,27 @@ export const removeFromAllPlaylists = async (songId: number) => {
   }
 }
 
-export const deletePlaylist = async (playlistId: number) => {
+export const addToPlaylist = async (playlistId: number, songId: number) => {
   const db = PlaylistDataManager.getInstance();
-  await db.deletePlaylist(playlistId);
+  await db.addToPlaylist(playlistId, songId);
+}
+
+export const removeFromPlaylist = async (playlistId: number, songId: number) => {
+  const db = PlaylistDataManager.getInstance();
+  await db.removeFromPlaylist(playlistId, songId);
+}
+
+export const isSongInPlaylist = async (playlistId: number, songId: number) => {
+  const db = PlaylistDataManager.getInstance();
+  return await db.isSongInPlaylist(playlistId, songId);
+}
+
+export const getPlaylistInfo = async (playlistId: number) => {
+  const db = PlaylistDataManager.getInstance();
+  return await db.getPlaylistInfoById(playlistId);
+}
+
+export const getPlaylistSongs = async (playlistId: number) => {
+  const db = PlaylistDataManager.getInstance();
+  return await db.getSongsFromPlaylist(playlistId);
 }

@@ -1,7 +1,6 @@
 import SheetOption from '@/components/sheet/SheetOption';
 import { PageType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
-import PlaylistDataManager from '@/lib/data/PlaylistDataManager';
 import { addToQueue } from '@/lib/PlayerManager';
 import { getTrackFromSong } from '@/lib/PlayerManager';
 import playlistBus from '@/station/playlistBus';
@@ -12,6 +11,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import { exportSongs } from '@/lib/SongManager';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
+import { removeFromPlaylist } from '@/lib/PlaylistManager';
 
 type SongOptionsProps = {
   bottomSheetRef: React.RefObject<BottomSheet>;
@@ -101,8 +101,7 @@ const SongOptions = ({ bottomSheetRef }: SongOptionsProps) => {
   const handleRemoveFromPlaylist = async () => {
     bottomSheetRef.current?.close();
     try {
-      const db = PlaylistDataManager.getInstance();
-      await db.removeFromPlaylist(editSong.playlistId, editSong.id);
+      await removeFromPlaylist(editSong.playlistId, editSong.id);
       setTimeout(() => {
         playlistBus.emit('playlistChangesMade');
       }, 200);

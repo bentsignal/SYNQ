@@ -6,13 +6,12 @@ import Bar from "@/components/modals/Bar"
 import CustomButton from "@/components/CustomButton"
 import { router } from "expo-router"
 import { useGlobalContext } from "@/context/GlobalProvider"
-import { PlaylistType } from "@/constants/Types"
-import PlaylistDataManager from "@/lib/data/PlaylistDataManager"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import { NotificationType } from "@/constants/Types"
 import Notifications from "@/components/notifications/Notifications"
 import * as Haptics from 'expo-haptics'
 import { useThemeContext } from "@/context/ThemeProvider"
+import { createPlaylist } from "@/lib/PlaylistManager"
 
 const MemoTextInput = memo(TextInput);
 
@@ -28,23 +27,14 @@ const CreatePlaylist = () => {
 
   const { theme } = useThemeContext();
 
-  const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
   const [name, setName] = useState('');
-
-  useEffect(() => {
-    const db = PlaylistDataManager.getInstance();
-    db.getPlaylists().then((results) => {
-      setPlaylists(results);
-    });
-  }, [numModified]);
 
   const handleCreate = async () => {
     try {
       if (name === '') {
         throw new Error('Name is required');
       }
-      const db = PlaylistDataManager.getInstance();
-      await db.createPlaylist(name);
+      await createPlaylist(name);
       if (haptic) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }

@@ -9,6 +9,7 @@ import { usePremiumContext } from '@/context/PremiumProvider';
 import { deletePlaylist, getPlaylistSongs } from '@/lib/PlaylistManager';
 import { getSongByResult } from '@/lib/SongManager';
 import { Alert } from 'react-native';
+import { router } from 'expo-router';
 
 type PlaylistOptionsProps = {
   bottomSheetRef: React.RefObject<BottomSheet>;
@@ -47,8 +48,7 @@ const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
   const handleEdit = () => {
     bottomSheetRef.current?.close();
     setTimeout(() => {
-      setShowOverlay(true);
-      setShowEdit(true);
+      router.push(`/playlist/edit/${editPlaylist.id}`);
     }, actionDelay);
   }
 

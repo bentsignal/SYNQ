@@ -84,6 +84,13 @@ const Navigation = () => {
           presentation: 'modal',
         }}
       />
+      <Stack.Screen
+        name="playlist/edit/[id]"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+        }}
+      />
     </Stack>
   );
   

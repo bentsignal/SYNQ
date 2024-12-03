@@ -19,7 +19,7 @@ type PlaylistProps = {
   sheetRef?: React.RefObject<BottomSheet>,
 }
 
-const Playlist = ({playlist, sheetRef}: PlaylistProps) => {
+const PlaylistItem = ({playlist, sheetRef}: PlaylistProps) => {
 
   const { 
     
@@ -123,4 +123,4 @@ const Local = StyleSheet.create({
   },
 }); 
 
-export default Playlist;
+export default PlaylistItem;

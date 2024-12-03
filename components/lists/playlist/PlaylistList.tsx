@@ -1,10 +1,10 @@
 import List from '@/components/List';
 import { memo } from 'react';
 import { PlaylistType, PageType } from '@/constants/Types';
-import Playlist from '@/components/playlist';
+import PlaylistItem from '@/components/lists/playlist/PlaylistItem';
 import BottomSheet from '@gorhom/bottom-sheet';
 
-const MemoPlaylist = memo(Playlist);
+const MemoPlaylist = memo(PlaylistItem);
 
 const PlaylistList = memo(({
   playlists,

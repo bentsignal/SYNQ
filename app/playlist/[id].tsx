@@ -6,8 +6,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import SongList from "@/components/lists/song";
 import { PageType, SongType } from "@/constants/Types";
-import * as FileSystem from "expo-file-system";
-import { getSongByResult } from "@/lib/SongManager";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import MiniPlayer from "@/components/player/MiniPlayer";
 import TabBar from "@/components/TabBar";
@@ -54,15 +52,7 @@ const PlaylistView = () => {
 
   const refreshSongs = async () => {
     try {
-      const results = await getPlaylistSongs(parseInt(id as string));
-      let songs: SongType[] = [];
-      let dir;
-      // for (let i = results.length - 1; i >= 0; i--) {
-      for (let i = 0; i < results.length; i++) {
-        dir = `${FileSystem.documentDirectory}library/${results[i].id}`;
-        const song = getSongByResult(results[i]);
-        songs.push(song);
-      }
+      const songs = await getPlaylistSongs(parseInt(id as string), PageType.LIBRARY);
       setSongs(songs);
     }
     catch (error) {

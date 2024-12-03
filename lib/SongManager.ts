@@ -199,6 +199,7 @@ export const exportSongs = async (songs: SongType[]) => {
         await FileSystem.writeAsStringAsync(destination, songs[i].data, { encoding: 'base64' });
       }
       else if (songs[i].pageType === PageType.LIBRARY) {
+        console.log(songs[i].id);
         try {
           const audioPath = `${FileSystem.documentDirectory}library/${songs[i].id}/${songs[i].name}`;
           if (songs[i].edited) {
@@ -207,7 +208,7 @@ export const exportSongs = async (songs: SongType[]) => {
             await db.songExported(Number(songs[i].id));
             await FileSystem.writeAsStringAsync(audioPath, songs[i].data, { encoding: 'base64' });
           }
-          await FileSystem.copyAsync({ from: audioPath, to: dir });
+          await FileSystem.copyAsync({ from: audioPath, to: `${dir}/${songs[i].name}` });
         }
         catch (error) {
           console.log('error copying song from library: ', error);

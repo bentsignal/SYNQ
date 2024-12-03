@@ -1,5 +1,7 @@
 import PlaylistDataManager from "./data/PlaylistDataManager";
 import playlistBus from "@/station/playlistBus";
+import { getSongByResult } from "./SongManager";
+import { PageType } from "@/constants/Types";
 
 export const createPlaylist = async (name: string) => {
   const db = PlaylistDataManager.getInstance();
@@ -52,7 +54,13 @@ export const getPlaylistInfo = async (playlistId: number) => {
   return await db.getPlaylistInfoById(playlistId);
 }
 
-export const getPlaylistSongs = async (playlistId: number) => {
+export const getPlaylistSongs = async (playlistId: number, pageType?: PageType) => {
   const db = PlaylistDataManager.getInstance();
-  return await db.getSongsFromPlaylist(playlistId);
+  const results = await db.getSongsFromPlaylist(playlistId);
+  const songs = results.map(song => {
+    const result = getSongByResult(song);
+    result.pageType = pageType ?? PageType.LIBRARY;
+    return result;
+  });
+  return songs;
 }

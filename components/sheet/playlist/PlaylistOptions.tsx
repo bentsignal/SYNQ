@@ -6,7 +6,8 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import { exportSongs } from '@/lib/SongManager';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
-import { deletePlaylist } from '@/lib/PlaylistManager';
+import { deletePlaylist, getPlaylistSongs } from '@/lib/PlaylistManager';
+import { getSongByResult } from '@/lib/SongManager';
 import { Alert } from 'react-native';
 
 type PlaylistOptionsProps = {
@@ -54,8 +55,8 @@ const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
   const handleExport = async () => {
     try {
       setShowGlobalLoading(true);
-      await exportSongs([editSong]);
-      setNumModified(numModified + 1);
+      let songs = await getPlaylistSongs(editPlaylist.id);
+      await exportSongs(songs);
       setShowGlobalLoading(false);
     }
     catch (error) {

@@ -80,7 +80,7 @@ class DataManager {
         INSERT INTO playlists (name)
         SELECT 'Library'
         WHERE NOT EXISTS (
-          SELECT 1 FROM playlists WHERE name = 'Library'
+          SELECT 1 FROM playlists WHERE id = 1
         );
       `);
       return true;

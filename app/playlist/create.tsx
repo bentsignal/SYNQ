@@ -7,11 +7,14 @@ import CustomButton from "@/components/CustomButton"
 import { router } from "expo-router"
 import { useGlobalContext } from "@/context/GlobalProvider"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
-import { NotificationType } from "@/constants/Types"
+import { CoverType, NotificationType } from "@/constants/Types"
 import Notifications from "@/components/notifications/Notifications"
 import * as Haptics from 'expo-haptics'
 import { useThemeContext } from "@/context/ThemeProvider"
 import { createPlaylist } from "@/lib/PlaylistManager"
+import { EditCover } from "@/components/song/Cover"
+import { newCover } from "@/lib/SongManager"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 const MemoTextInput = memo(TextInput);
 
@@ -28,18 +31,29 @@ const CreatePlaylist = () => {
   const { theme } = useThemeContext();
 
   const [name, setName] = useState('');
+  const [image, setImage] = useState<string | null>(null);
+  const insets = useSafeAreaInsets();
+
+  const handleUpdateImage = async () => {
+    const cover = await newCover();
+    if (cover) {
+      setImage(cover);
+    }
+  }
 
   const handleCreate = async () => {
     try {
       if (name === '') {
         throw new Error('Name is required');
       }
-      await createPlaylist(name);
+      await createPlaylist(name, image);
       if (haptic) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
       setNumModified(numModified + 1);
-      router.back();
+      setTimeout(() => {
+        router.back();
+      }, 100);
     }
     catch (error) {
       const trace = error instanceof Error ? error.message : String(error);
@@ -60,34 +74,44 @@ const CreatePlaylist = () => {
       <Text style={Local.header}>Create Playlist</Text>
       <View style={Styles.divider} />
       <KeyboardAwareScrollView
-        style={{ 
-          flex: 1,
-          width: '100%',
-        }}
-        contentContainerStyle={Local.inputContainer}
-        extraScrollHeight={80}
+        style={Local.scrollView}
+        contentContainerStyle={Local.scrollViewContent}
       >
-        <MemoTextInput
-          style={Local.textBox}
-          placeholder='Playlist name...'
-          placeholderTextColor={Colors.altDisabled}
-          value={name}
-          onChangeText={(text) => setName(text)}
-        />
-        <View style={Local.buttonContainer}>
-          <CustomButton
-            title='Cancel'
-            handlePress={() => router.back()}
-          />
-          <CustomButton
-            title='Create'
-            disabled={name === ''}
-            background={theme}
-            handlePress={handleCreate}
+        <Text style={Styles.textboxLabel}>Cover Image</Text>
+        <View style={Local.coverWrapper}>
+          <EditCover
+            image={image}
+            type={CoverType.PLAYLIST}
+            handlePress={() => handleUpdateImage()}
+            propOnLoad={() => {}}
           />
         </View>
-        <Notifications customStyles={Local.notifications} />
+        <Text style={Styles.textboxLabel}>Name</Text>
+        <MemoTextInput
+          style={Local.textBox}
+          autoCorrect={true}
+          editable
+          numberOfLines={1}
+          placeholder={'Enter playlist name...'}
+          placeholderTextColor={Colors.altDisabled}
+          value={name}
+          onChangeText={text => setName(text)}
+        />
+        
       </KeyboardAwareScrollView>
+      <Notifications customStyles={Local.notifications} />
+      <View style={[Local.buttonContainer, {paddingBottom: insets.bottom}]}>
+        <CustomButton
+          title='Cancel'
+          handlePress={() => router.back()}
+        />
+        <CustomButton
+          title='Create'
+          disabled={name === ''}
+          background={theme}
+          handlePress={handleCreate}
+        />
+      </View>
     </View>
   );
 }
@@ -95,26 +119,33 @@ const CreatePlaylist = () => {
 const Local = StyleSheet.create({
   wrapper: {
     ...Styles.body,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.popup,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
   },
   textBox: {
+    fontSize: 16,
+    marginBottom: 20,
     ...Styles.textbox,
     ...Styles.roundedContainer,
-    width: '60%',
-    marginBottom: 15,
-    fontSize: 18,
-    textAlign: 'center',
+    width: '90%',
   },
-  inputContainer: {
+  scrollView: {
     width: '100%',
-    flex: 1,
-    justifyContent: 'center',
+    paddingTop: 20,
+  },
+  scrollViewContent: {
+    width: '100%',
     alignItems: 'center',
-    paddingBottom: 200,
+    justifyContent: 'center',
   },
   header: {
     ...Styles.h2,
     color: Colors.text,
+    marginBottom: 20,
+  },
+  coverWrapper: {
+    width: '90%',
     marginBottom: 20,
   },
   label: {
@@ -123,14 +154,14 @@ const Local = StyleSheet.create({
     marginBottom: 10,
   },
   buttonContainer: {
-    width: '100%',
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'center', 
     gap: 10,
+    width: '100%',
   },
   notifications: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 100,
   }
 })
 

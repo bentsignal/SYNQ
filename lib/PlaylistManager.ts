@@ -5,9 +5,15 @@ import { getSongByResult } from "./SongManager";
 import { PageType } from "@/constants/Types";
 import { writeImageToLibrary } from "./SongManager";
 
-export const createPlaylist = async (name: string) => {
+export const createPlaylist = async (name: string, image?: string) => {
   const db = PlaylistDataManager.getInstance();
-  await db.createPlaylist(name);
+  const id = await db.createPlaylist(name);
+  if (image) {
+    const dir = `${FileSystem.documentDirectory}playlists/${id}`;
+    await makePlaylistsDir();
+    await FileSystem.makeDirectoryAsync(dir);
+    await writeImageToLibrary(image, dir);
+  }
 }
 
 export const deletePlaylist = async (playlistId: number) => {

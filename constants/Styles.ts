@@ -35,9 +35,11 @@ export const Styles = StyleSheet.create({
     fontSize: 14,
   },
   textboxLabel: {
-    fontSize: 14,
+    fontSize: 16,
     color: Colors.text,
-    marginBottom: 5
+    fontWeight: 'bold',
+    width: '90%',
+    marginBottom: 5,
   },
   infoText: {
     fontSize: 16,
@@ -142,7 +144,7 @@ export const Styles = StyleSheet.create({
   divider: {
     width: '100%',
     height: 5,
-    borderBottomColor: Colors.popup,
+    borderBottomColor: Colors.song,
     borderBottomWidth: 1,
     marginBottom: 10,
   }

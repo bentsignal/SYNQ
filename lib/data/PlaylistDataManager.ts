@@ -87,14 +87,18 @@ class PlaylistDataManager extends DataManager {
     }
   }
 
-  public async createPlaylist(name: string): Promise<boolean> {
+  public async checkForDuplicateName(name: string): Promise<boolean> {
+    const result = await PlaylistDataManager.db?.getFirstAsync(`SELECT * FROM playlists WHERE name = ?;`, [name]);
+    return result ? true : false;
+  }
+
+  public async createPlaylist(name: string): Promise<number> {
     try {
-      const result = await PlaylistDataManager.db?.getFirstAsync(`SELECT * FROM playlists WHERE name = ?;`, [name]);
-      if (result) {
+      if (await this.checkForDuplicateName(name)) {
         throw new Error('Playlist already exists');
       }
-      await PlaylistDataManager.db?.runAsync(`INSERT INTO playlists (name) VALUES (?);`, [name]);
-      return true;
+      const result = await PlaylistDataManager.db?.runAsync(`INSERT INTO playlists (name) VALUES (?);`, [name]);
+      return result?.lastInsertRowId ? result.lastInsertRowId : -1;
     }
     catch (error) {
       throw new Error(error instanceof Error ? error.message : String(error));
@@ -107,6 +111,9 @@ class PlaylistDataManager extends DataManager {
   }
 
   public async updatePlaylist(playlistId: number, name: string): Promise<boolean> {
+    if (await this.checkForDuplicateName(name)) {
+      throw new Error('Playlist already exists');
+    }
     await PlaylistDataManager.db?.runAsync(`UPDATE playlists SET name = ? WHERE id = ?;`, [name, playlistId]);
     return true;
   }

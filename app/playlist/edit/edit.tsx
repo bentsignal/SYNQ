@@ -10,26 +10,30 @@ import CustomButton from "@/components/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeContext } from "@/context/ThemeProvider";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { CoverType, PlaylistType } from "@/constants/Types";
+import { CoverType, NotificationType, PlaylistType } from "@/constants/Types";
 import { EditCover } from "@/components/song/Cover";
 import { newCover } from "@/lib/SongManager";
 import { useGlobalContext } from "@/context/GlobalProvider";
+import * as Haptics from 'expo-haptics';
+import Notifications from "@/components/notifications";
 
-const MemoizedTextInput = memo(TextInput);
+const MemoTextInput = memo(TextInput);
 
 const EditPlaylist = ({id}: {id: string}) => {
 
   
   const insets = useSafeAreaInsets();
   const { theme } = useThemeContext();
-  const { numModified, setNumModified } = useGlobalContext();
+  const { numModified, setNumModified, addNotification, haptic } = useGlobalContext();
   const [image, setImage] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
+  const [originalName, setOriginalName] = useState<string | null>(null);
 
   const refreshInfo = async () => {
     try {
       const result = await getPlaylistInfo(parseInt(id));
       setName(result.name);
+      setOriginalName(result.name);
     } catch (error) {
       console.error('error getting playlist info:', error);
     }
@@ -43,11 +47,34 @@ const EditPlaylist = ({id}: {id: string}) => {
   }
 
   const handleSave = async () => {
-    await updatePlaylist(parseInt(id), name, image);
-    setNumModified(numModified + 1);
-    setTimeout(() => {  
-      router.back();
-    }, 100);
+    try {
+      if (name === '') {
+        throw new Error('Name is required');
+      }
+      let newName = name;
+      if (name === originalName) {
+        newName = null;
+      }
+      await updatePlaylist(parseInt(id), newName, image);
+      if (haptic) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+      setNumModified(numModified + 1);
+      setTimeout(() => {  
+        router.back();
+      }, 100);
+    }
+    catch (error) {
+      const trace = error instanceof Error ? error.message : String(error);
+      addNotification(
+        NotificationType.ERROR,
+        'Error',
+        trace,
+        'Unable to update playlist',
+        trace,
+        () => {}
+      );    
+    }
   }
 
   useEffect(() => {
@@ -57,12 +84,13 @@ const EditPlaylist = ({id}: {id: string}) => {
   return (
     <View style={Local.wrapper}>
       <Bar />
+      <Text style={Local.header}>Edit Playlist</Text>
+      <View style={Styles.divider} />
       <KeyboardAwareScrollView 
         style={Local.scrollView}
         contentContainerStyle={Local.scrollViewContent}
       >
-        <Text style={Local.header}>Edit Playlist</Text>
-        <Text style={Local.label}>Cover Image</Text>
+        <Text style={Styles.textboxLabel}>Cover Image</Text>
         <View style={Local.coverWrapper}>
           <EditCover
             id={id}
@@ -72,8 +100,8 @@ const EditPlaylist = ({id}: {id: string}) => {
             propOnLoad={() => {}}
           />
         </View>
-        <Text style={Local.label}>Name</Text>
-        <MemoizedTextInput
+        <Text style={Styles.textboxLabel}>Name</Text>
+        <MemoTextInput
           style={Local.textBox}
           autoCorrect={true}
           editable
@@ -84,6 +112,7 @@ const EditPlaylist = ({id}: {id: string}) => {
           onChangeText={text => setName(text)}
         />
       </KeyboardAwareScrollView>
+      <Notifications customStyles={Local.notifications} />
       <View style={[Local.bottomButtonsWrapper, { paddingBottom: insets.bottom }]}>
         <CustomButton title="Close" handlePress={() => router.back()} />
         <CustomButton 
@@ -113,9 +142,8 @@ const Local = StyleSheet.create({
     justifyContent: 'center',
   },
   header: {
-    ...Styles.h1,
+    ...Styles.h2,
     color: Colors.text,
-    width: '90%',
     marginBottom: 20,
   },
   coverWrapper: {
@@ -134,13 +162,6 @@ const Local = StyleSheet.create({
     gap: 10,
     width: '100%',
   },
-  label: {
-    fontSize: 16,
-    color: Colors.text,
-    fontWeight: 'bold',
-    width: '90%',
-    marginBottom: 5,
-  },
   textBox: {
     fontSize: 16,
     marginBottom: 20,
@@ -148,6 +169,10 @@ const Local = StyleSheet.create({
     ...Styles.roundedContainer,
     width: '90%',
   },
+  notifications: {
+    position: 'absolute',
+    bottom: 100,
+  }
 })
 
 export default EditPlaylist;

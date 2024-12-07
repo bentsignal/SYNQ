@@ -144,7 +144,7 @@ export const ListCover = ({image, type, id, fade, propOnLoad}: {
 
 export const EditCover = ({image, id, type, handlePress, propOnLoad}: {
   image?: string; 
-  id: string;
+  id?: string;
   type: CoverType;
   handlePress: () => void;
   propOnLoad: () => void;
@@ -198,32 +198,34 @@ export const EditCover = ({image, id, type, handlePress, propOnLoad}: {
     
   }, [image, id]);
 
+  const editCoverSize = 140;
+
   const Local = StyleSheet.create({
     container: {
       backgroundColor: '#D2D2D2',
-      width: 120, 
-      height: 120,
+      width: editCoverSize, 
+      height: editCoverSize,
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 12,
       opacity: loaded ? 1 : 0
     },
     artwork: {
-      width: 120, 
-      height: 120,
+      width: editCoverSize, 
+      height: editCoverSize,
       position: 'absolute',
       borderRadius: 10,
     },
     tintOverlay: {
-      width: 120,
-      height: 120,
+      width: editCoverSize,
+      height: editCoverSize,
       position: 'absolute',
       backgroundColor: `rgba(0, 0, 0, ${src === transparent ? 0 : 0.6})`,
       borderRadius: 10,
     },
     iconWrapper: {
-      width: 120, 
-      height: 120,
+      width: editCoverSize, 
+      height: editCoverSize,
       position: 'absolute',
       justifyContent: 'center',
       alignItems: 'center'

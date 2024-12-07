@@ -8,6 +8,7 @@ import Ad from '@/components/Ad';
 import { getAppIcon } from '@/constants/Logos';
 import { PageType, CoverType } from '@/constants/Types';
 import { useThemeContext } from '@/context/ThemeProvider';
+import { getPlaylistCover } from '@/lib/PlaylistManager';
 
 const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5+hPwABAAEAAFPAfXAAAAAElFTkSuQmCC';
 
@@ -46,7 +47,10 @@ export const ListCover = ({image, type, id, fade, propOnLoad}: {
         }
       }
       else if (type === CoverType.PLAYLIST) {
-
+        const data = await getPlaylistCover(parseInt(id), true);
+        if (data) {
+          setSrc(`data:image/jpeg;base64,${data}`);
+        }
       }
       dim = src ? 60 : 20;
     }
@@ -138,37 +142,54 @@ export const ListCover = ({image, type, id, fade, propOnLoad}: {
 
 }
 
-export const EditCover = ({image, id, handlePress, propOnLoad}: {
+export const EditCover = ({image, id, type, handlePress, propOnLoad}: {
   image?: string; 
   id: string;
+  type: CoverType;
   handlePress: () => void;
   propOnLoad: () => void;
 }) => {
 
-  const [src, setSrc] = useState(image ? image : '');
+  const [src, setSrc] = useState(image ? image : transparent);
   const [loaded, setLoaded] = useState(false);
 
   useLayoutEffect(() => {
 
     const getImage = async () => {
       try {
-        if (image) {
-          setSrc(image);
-        }
-        else {
-          const data = await getCoverImageData(id);
-          if (data) {
-            setSrc(`data:image/jpeg;base64,${data}`);
+        if (type === CoverType.SONG) {
+          if (image) {
+            setSrc(image);
           }
           else {
-            setSrc(transparent);
+            const data = await getCoverImageData(id);
+            if (data) {
+              setSrc(`data:image/jpeg;base64,${data}`);
+            }
+            else {
+              setSrc(transparent);
+            }
+          }
+        }
+        else if (type === CoverType.PLAYLIST) {
+          if (image) {
+            setSrc(image);
+          }
+          else {
+            const data = await getPlaylistCover(parseInt(id));
+            if (data) {
+              setSrc(`data:image/jpeg;base64,${data}`);
+            }
+            else {
+              setSrc(transparent);
+            }
           }
         }
       }
       catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         if (!message.includes('folder')) {
-          console.log('error:  getting cover image for edit modal', message);
+          console.log('error getting cover image for edit cover:', message);
         }
       }
     }
@@ -197,7 +218,7 @@ export const EditCover = ({image, id, handlePress, propOnLoad}: {
       width: 120,
       height: 120,
       position: 'absolute',
-      backgroundColor: `rgba(0, 0, 0, ${src ? 0.6 : 0})`,
+      backgroundColor: `rgba(0, 0, 0, ${src === transparent ? 0 : 0.6})`,
       borderRadius: 10,
     },
     iconWrapper: {
@@ -219,7 +240,6 @@ export const EditCover = ({image, id, handlePress, propOnLoad}: {
     >
       <View style={Local.container}>
         <FastImage 
-          // key={src}
           source={src ? {uri: src} : {uri: transparent}}
           style={Local.artwork}
           onLoad={() => {
@@ -235,7 +255,7 @@ export const EditCover = ({image, id, handlePress, propOnLoad}: {
         <View style={Local.tintOverlay}/>
         <View style={Local.iconWrapper}>
           <Image 
-            source={src ? require('@/assets/icons/edit.png') : require('@/assets/icons/edit-black.png')}
+            source={src === transparent ? require('@/assets/icons/edit-black.png') : require('@/assets/icons/edit.png')}
             style={Local.icon}
           />
         </View>
@@ -256,16 +276,12 @@ export const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
     
     const getImage = async () => {
       try {
-        const data = await getCoverImageData(id, true);
-        if (data) {
-          Image.getSize(`data:image/jpeg;base64,${data}`, (width, height) => {
-            setAspectRatio(width / height);
-          });
-          setSrc(`data:image/jpeg;base64,${data}`);
-        }
-        else {
-          setAspectRatio(1);
-          setSrc('');
+        if (type === PageType.PLAYLIST) {
+          const data = await getPlaylistCover(parseInt(id), true);
+          if (data) {
+            console.log('here');
+            setSrc(`data:image/jpeg;base64,${data}`);
+          }
         }
       }
       catch (error) {
@@ -273,7 +289,7 @@ export const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
       }
     }
     
-    // getImage();
+    getImage();
 
   }, [id]);
 

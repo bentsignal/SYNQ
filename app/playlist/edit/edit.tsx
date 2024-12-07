@@ -4,13 +4,16 @@ import Bar from "@/components/modals/Bar";
 import { Colors } from "@/constants/Colors";
 import { Styles } from "@/constants/Styles";
 import { useEffect, useState } from "react";
-import { getPlaylistInfo } from "@/lib/PlaylistManager";
+import { getPlaylistInfo, updatePlaylist } from "@/lib/PlaylistManager";
 import { router } from "expo-router";
 import CustomButton from "@/components/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeContext } from "@/context/ThemeProvider";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { PlaylistType } from "@/constants/Types";
+import { CoverType, PlaylistType } from "@/constants/Types";
+import { EditCover } from "@/components/song/Cover";
+import { newCover } from "@/lib/SongManager";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 const MemoizedTextInput = memo(TextInput);
 
@@ -19,18 +22,32 @@ const EditPlaylist = ({id}: {id: string}) => {
   
   const insets = useSafeAreaInsets();
   const { theme } = useThemeContext();
-  const [previous, setPrevious] = useState<PlaylistType | null>(null);
+  const { setNumModified } = useGlobalContext();
   const [image, setImage] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
 
   const refreshInfo = async () => {
     try {
       const result = await getPlaylistInfo(parseInt(id));
-      setPrevious(result);
       setName(result.name);
     } catch (error) {
       console.error('error getting playlist info:', error);
     }
+  }
+
+  const handleUpdateImage = async () => {
+    const cover = await newCover();
+    if (cover) {
+      setImage(cover);
+    }
+  }
+
+  const handleSave = async () => {
+    await updatePlaylist(parseInt(id), name, image);
+    setNumModified(prev => prev + 1);
+    setTimeout(() => {  
+      router.back();
+    }, 100);
   }
 
   useEffect(() => {
@@ -45,7 +62,16 @@ const EditPlaylist = ({id}: {id: string}) => {
         contentContainerStyle={Local.scrollViewContent}
       >
         <Text style={Local.header}>Edit Playlist</Text>
-        <Text style={Local.name}>{previous?.name}</Text>
+        <Text style={Local.label}>Cover Image</Text>
+        <View style={Local.coverWrapper}>
+          <EditCover
+            id={id}
+            image={image}
+            type={CoverType.PLAYLIST}
+            handlePress={() => handleUpdateImage()}
+            propOnLoad={() => {}}
+          />
+        </View>
         <Text style={Local.label}>Name</Text>
         <MemoizedTextInput
           style={Local.textBox}
@@ -62,7 +88,7 @@ const EditPlaylist = ({id}: {id: string}) => {
         <CustomButton title="Close" handlePress={() => router.back()} />
         <CustomButton 
           title="Save" 
-          handlePress={() => {}} 
+          handlePress={handleSave} 
           background={theme}
         />
       </View>
@@ -73,7 +99,9 @@ const EditPlaylist = ({id}: {id: string}) => {
 const Local = StyleSheet.create({
   wrapper: {
     ...Styles.body,
-    backgroundColor: Colors.background,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    backgroundColor: Colors.popup,
   },
   scrollView: {
     width: '100%',
@@ -87,14 +115,16 @@ const Local = StyleSheet.create({
   header: {
     ...Styles.h1,
     color: Colors.text,
-    textAlign: 'left',
     width: '90%',
-    marginBottom: 5,
+    marginBottom: 20,
+  },
+  coverWrapper: {
+    width: '90%',
+    marginBottom: 20,
   },
   name: {
     ...Styles.h3,
     color: Colors.infoText,
-    textAlign: 'left',
     width: '90%',
     marginBottom: 20,
   },
@@ -104,18 +134,20 @@ const Local = StyleSheet.create({
     gap: 10,
     width: '100%',
   },
+  label: {
+    fontSize: 16,
+    color: Colors.text,
+    fontWeight: 'bold',
+    width: '90%',
+    marginBottom: 5,
+  },
   textBox: {
+    fontSize: 16,
+    marginBottom: 20,
     ...Styles.textbox,
     ...Styles.roundedContainer,
     width: '90%',
   },
-  label: {
-    ...Styles.h4,
-    color: Colors.text,
-    width: '90%',
-    textAlign: 'left',
-    marginBottom: 10,
-  }
 })
 
 export default EditPlaylist;

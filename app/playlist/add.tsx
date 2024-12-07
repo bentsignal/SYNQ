@@ -77,6 +77,8 @@ const AddToPlaylist = () => {
 const Local = StyleSheet.create({
   wrapper: {
     ...Styles.body,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
     backgroundColor: Colors.background,
   },
   header: {

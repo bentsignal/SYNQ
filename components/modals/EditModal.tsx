@@ -9,7 +9,7 @@ import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { maybe } from '@/lib/Util';
-import { PageType, SongType } from '@/constants/Types';
+import { CoverType, PageType, SongType } from '@/constants/Types';
 import { useThemeContext } from '@/context/ThemeProvider';
 
 const EditModal = () => {
@@ -194,6 +194,7 @@ const EditModal = () => {
                   <EditCover 
                     image={cover}
                     id={editSong.id}
+                    type={CoverType.SONG}
                     propOnLoad={() => {
                       setLoading(false);
                     }}

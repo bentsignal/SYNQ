@@ -1,7 +1,9 @@
 import PlaylistDataManager from "./data/PlaylistDataManager";
 import playlistBus from "@/station/playlistBus";
+import * as FileSystem from 'expo-file-system';
 import { getSongByResult } from "./SongManager";
 import { PageType } from "@/constants/Types";
+import { writeImageToLibrary } from "./SongManager";
 
 export const createPlaylist = async (name: string) => {
   const db = PlaylistDataManager.getInstance();
@@ -63,4 +65,49 @@ export const getPlaylistSongs = async (playlistId: number, pageType?: PageType) 
     return result;
   });
   return songs;
+}
+
+const makePlaylistsDir = async () => {
+  try {
+    await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}playlists`);
+  }
+  catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (!(message.includes('folder') && message.includes("already exists"))) {
+      console.log('error making playlists directory:', error);
+    }
+  }
+}
+
+export const updatePlaylist = async (playlistId: number, name: string, image: string) => {
+  const db = PlaylistDataManager.getInstance();
+  if (name) {
+    await db.updatePlaylist(playlistId, name);
+  }
+  if (image) {
+    await writeImageToLibrary(image, `${FileSystem.documentDirectory}playlists/${playlistId}`);
+  }
+}
+
+export const getPlaylistCover = async (playlistId: number, full: boolean = false) => {
+  await makePlaylistsDir();
+  const dir = `${FileSystem.documentDirectory}playlists/${playlistId}`;
+  const info = await FileSystem.getInfoAsync(dir);
+  if (!info.exists) {
+    await FileSystem.makeDirectoryAsync(dir);
+    return null;
+  }
+  else {
+    const contents = await FileSystem.readDirectoryAsync(dir);
+    const name = full ? 'cover_full.jpg' : 'cover_small.jpg';
+    if (contents.find(content => content === name)) {
+      const path = `${dir}/${name}`;
+      const artwork = await FileSystem.readAsStringAsync(path, { encoding: 'base64' });
+      return artwork ? `${artwork}` : null;
+    }
+    else {
+      console.log('no cover image found');
+      return null;
+    }
+  }
 }

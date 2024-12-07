@@ -106,6 +106,11 @@ class PlaylistDataManager extends DataManager {
     return true;
   }
 
+  public async updatePlaylist(playlistId: number, name: string): Promise<boolean> {
+    await PlaylistDataManager.db?.runAsync(`UPDATE playlists SET name = ? WHERE id = ?;`, [name, playlistId]);
+    return true;
+  }
+
   public async isSongInPlaylist(playlistId: number, songId: number): Promise<boolean> {
     const result = await PlaylistDataManager.db?.getFirstAsync(
       `SELECT * FROM playlistSongs WHERE playlistId = ? AND songId = ?;`, 

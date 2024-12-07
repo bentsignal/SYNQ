@@ -75,6 +75,7 @@ const Navigation = () => {
         options={{
           headerShown: false,
           presentation: 'modal',
+          contentStyle: { backgroundColor: 'transparent'}
         }}
       />
       <Stack.Screen
@@ -82,6 +83,7 @@ const Navigation = () => {
         options={{
           headerShown: false,
           presentation: 'modal',
+          contentStyle: { backgroundColor: 'transparent'},
         }}
       />
       <Stack.Screen
@@ -89,6 +91,7 @@ const Navigation = () => {
         options={{
           headerShown: false,
           presentation: 'modal',
+          contentStyle: { backgroundColor: 'transparent'},
         }}
       />
     </Stack>

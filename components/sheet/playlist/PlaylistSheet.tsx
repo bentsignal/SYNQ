@@ -16,7 +16,7 @@ type PlaylistSheetProps = {
 }
 
 const PlaylistSheet = ({bottomSheetRef, setIsOpen}: PlaylistSheetProps) => {
-  const { editPlaylist } = useGlobalContext();
+  const { editPlaylist, numModified } = useGlobalContext();
   const [scrollEnabled, setScrollEnabled] = useState(false);
   return (
     <Sheet
@@ -29,6 +29,7 @@ const PlaylistSheet = ({bottomSheetRef, setIsOpen}: PlaylistSheetProps) => {
           id={editPlaylist?.id}
           type={CoverType.PLAYLIST}
           propOnLoad={() => {}}
+          key={numModified.toString()}
         />
         <View style={Local.textWrapper}>
           <Text style={Local.name}>{editPlaylist?.name}</Text>

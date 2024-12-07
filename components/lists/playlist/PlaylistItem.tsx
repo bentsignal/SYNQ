@@ -23,7 +23,7 @@ const PlaylistItem = ({playlist, sheetRef}: PlaylistProps) => {
 
   const { 
     
-    editSong, haptic, setEditPlaylist
+    editSong, haptic, setEditPlaylist, numModified
 
   } = useGlobalContext();
   
@@ -82,6 +82,7 @@ const PlaylistItem = ({playlist, sheetRef}: PlaylistProps) => {
         id={playlist.id.toString()}
         type={CoverType.PLAYLIST}
         propOnLoad={() => {}}
+        key={numModified.toString()}
       />
       <View style={Local.textWrapper}>
         <Text style={Local.name}>{playlist.name}</Text>

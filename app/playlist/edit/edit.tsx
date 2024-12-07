@@ -22,7 +22,7 @@ const EditPlaylist = ({id}: {id: string}) => {
   
   const insets = useSafeAreaInsets();
   const { theme } = useThemeContext();
-  const { setNumModified } = useGlobalContext();
+  const { numModified, setNumModified } = useGlobalContext();
   const [image, setImage] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
 
@@ -44,7 +44,7 @@ const EditPlaylist = ({id}: {id: string}) => {
 
   const handleSave = async () => {
     await updatePlaylist(parseInt(id), name, image);
-    setNumModified(prev => prev + 1);
+    setNumModified(numModified + 1);
     setTimeout(() => {  
       router.back();
     }, 100);

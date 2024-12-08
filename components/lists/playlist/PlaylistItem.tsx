@@ -13,6 +13,7 @@ import playlistBus from "@/station/playlist";
 import BottomSheet from "@gorhom/bottom-sheet";
 import * as Haptics from 'expo-haptics';
 import { addToPlaylist, removeFromPlaylist, isSongInPlaylist } from "@/lib/PlaylistManager";
+import { PlaylistBusEvent, PlaylistNameModifiedEvent, PlaylistSongCountModifiedEvent } from "@/station/playlist/Events";
 
 type PlaylistProps = {
   playlist: PlaylistType,
@@ -28,21 +29,53 @@ const PlaylistItem = ({playlist, sheetRef}: PlaylistProps) => {
   } = useGlobalContext();
   
   const [selected, setSelected] = useState(false);
+  const [songCount, setSongCount] = useState(playlist.songCount);
+  const [name, setName] = useState(playlist.name);
 
   const playlistChangesMade = async (add: boolean) => {
     try {
       if (add) {
         await addToPlaylist(playlist.id, editSong.id);
+        playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, {
+          id: playlist.id,
+          songCount: songCount + 1,
+        });
+        playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
       }
       else {
         await removeFromPlaylist(playlist.id, editSong.id);
+        playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, {
+          id: playlist.id,
+          songCount: songCount - 1,
+        });
+        playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
       }
-      playlistBus.emit('playlistChangesMade');
     }
     catch (error) {
       console.log('error saving playlist changes: ', error);
     }
   }
+
+  const updateSongCount = (data: PlaylistSongCountModifiedEvent) => {
+    if (playlist.id === data.id) {
+      setSongCount(data.songCount);
+    }
+  }
+
+  const updateName = (data: PlaylistNameModifiedEvent) => {
+    if (playlist.id === data.id) {
+      setName(data.name);
+    }
+  }
+
+  useEffect(() => {
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, updateSongCount);
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, updateName);
+    return () => {
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, updateSongCount);
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, updateName);
+    }
+  }, []);
 
   useEffect(() => {
     if (editSong.id && playlist.pageType === PageType.CREATE) {
@@ -84,8 +117,8 @@ const PlaylistItem = ({playlist, sheetRef}: PlaylistProps) => {
         propOnLoad={() => {}}
       />
       <View style={Local.textWrapper}>
-        <Text style={Local.name}>{playlist.name}</Text>
-        <Text style={Local.count}>{playlist.songCount} {playlist.songCount === 1 ? 'song' : 'songs'}</Text>
+        <Text style={Local.name}>{name}</Text>
+        <Text style={Local.count}>{songCount} {songCount === 1 ? 'song' : 'songs'}</Text>
       </View>
       {playlist.pageType === PageType.LIBRARY &&
         <More handlePress={handleMore} />

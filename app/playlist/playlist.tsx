@@ -16,6 +16,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import playlistBus from "@/station/playlist";
 import SongSheet from '@/components/sheet/song';
 import { getPlaylistInfo, getPlaylistSongs } from "@/lib/PlaylistManager";
+import { PlaylistBusEvent } from "@/station/playlist/Events";
 
 
 const PlaylistView = ({id}: {id: string}) => {
@@ -66,9 +67,13 @@ const PlaylistView = ({id}: {id: string}) => {
       refreshSongs();
       refreshInfo();
     }
-    playlistBus.on('playlistChangesMade', triggerRefresh);
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED, triggerRefresh);
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, refreshInfo);
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, refreshInfo);
     return () => {
-      playlistBus.off('playlistChangesMade', triggerRefresh);
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED, triggerRefresh);
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, refreshInfo);
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, refreshInfo);
     }
   }, []);
 

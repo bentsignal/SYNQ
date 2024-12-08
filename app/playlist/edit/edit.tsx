@@ -16,8 +16,6 @@ import { newCover } from "@/lib/SongManager";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';
 import Notifications from "@/components/notifications";
-import playlistBus from "@/station/playlist";
-import { PlaylistBusEvent, PlaylistModifiedEvent } from "@/station/playlist/Events";
 
 const MemoTextInput = memo(TextInput);
 
@@ -41,6 +39,12 @@ const EditPlaylist = ({id}: {id: string}) => {
     }
   }
 
+  const nameInputValidation = () => {
+    if (name === '') {
+      throw new Error('Name is required');
+    }
+  }
+
   const handleUpdateImage = async () => {
     const cover = await newCover();
     if (cover) {
@@ -50,20 +54,11 @@ const EditPlaylist = ({id}: {id: string}) => {
 
   const handleSave = async () => {
     try {
-      if (name === '') {
-        throw new Error('Name is required');
-      }
-      let newName = name;
-      if (name === originalName) {
-        newName = null;
-      }
-      await updatePlaylist(parseInt(id), newName, image);
+      nameInputValidation();
+      await updatePlaylist(parseInt(id), name === originalName ? null : name, image);
       if (haptic) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      playlistBus.emit(PlaylistBusEvent.PLAYLIST_MODIFIED, {
-        id: parseInt(id),
-      });
       setTimeout(() => {  
         router.back();
       }, 100);

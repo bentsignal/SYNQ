@@ -4,6 +4,7 @@ import * as FileSystem from 'expo-file-system';
 import { getSongByResult } from "./SongManager";
 import { PageType } from "@/constants/Types";
 import { writeImageToLibrary } from "./SongManager";
+import { PlaylistBusEvent } from "@/station/playlist/Events";
 
 export const createPlaylist = async (name: string, image?: string) => {
   const db = PlaylistDataManager.getInstance();
@@ -34,8 +35,8 @@ export const removeFromAllPlaylists = async (songId: number) => {
       await db.removeFromPlaylist(playlist.id, songId);
     }
     setTimeout(() => {
-      playlistBus.emit('playlistChangesMade');
-    }, 200);
+      playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
+    }, 50);
   }
   catch (error) {
     console.log('error removing from all playlists: ', error);
@@ -89,9 +90,16 @@ export const updatePlaylist = async (playlistId: number, name: string, image: st
   const db = PlaylistDataManager.getInstance();
   if (name) {
     await db.updatePlaylist(playlistId, name);
+    playlistBus.emit(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, {
+      id: playlistId,
+      name: name,
+    });
   }
   if (image) {
     await writeImageToLibrary(image, `${FileSystem.documentDirectory}playlists/${playlistId}`);
+    playlistBus.emit(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, {
+      id: playlistId,
+    });
   }
 }
 

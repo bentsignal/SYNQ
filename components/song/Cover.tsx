@@ -9,7 +9,7 @@ import { getAppIcon } from '@/constants/Logos';
 import { PageType, CoverType } from '@/constants/Types';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { getPlaylistCover } from '@/lib/PlaylistManager';
-import { PlaylistBusEvent } from '@/station/playlist/Events';
+import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/station/playlist/Events';
 import playlistBus from '@/station/playlist';
 
 const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5+hPwABAAEAAFPAfXAAAAAElFTkSuQmCC';
@@ -63,18 +63,16 @@ export const ListCover = ({image, type, id, fade, propOnLoad}: {
     }
   }
 
-  const handlePlaylistModified = (data: {id: number}) => {
-    console.log('playlist modified:', data.id);
+  const handlePlaylistModified = (data: PlaylistImageModifiedEvent) => {
     if (type === CoverType.PLAYLIST && id === data.id.toString()) {
-      console.log('me!');
       getImage();
     }
   }
 
   useEffect(() => {
-    playlistBus.on(PlaylistBusEvent.PLAYLIST_MODIFIED, handlePlaylistModified);
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
     return () => {
-      playlistBus.off(PlaylistBusEvent.PLAYLIST_MODIFIED, handlePlaylistModified);
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
     }
   }, []);
 

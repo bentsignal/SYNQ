@@ -22,17 +22,6 @@ const Playlists = () => {
     }
   }
 
-  // refresh playlist after changes are made
-  useEffect(() => {
-    const triggerRefresh = () => {
-      refreshPlaylists();
-    }
-    playlistBus.on('playlistChangesMade', triggerRefresh);
-    return () => {
-      playlistBus.off('playlistChangesMade', triggerRefresh);
-    };
-  }, []);
-
   useEffect(() => {
     refreshPlaylists();
   }, [numModified, homeState]);

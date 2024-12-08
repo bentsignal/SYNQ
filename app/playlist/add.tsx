@@ -5,17 +5,14 @@ import { Styles } from "@/constants/Styles"
 import Bar from "@/components/modals/Bar"
 import CustomButton from "@/components/CustomButton"
 import { router } from "expo-router"
-import { useGlobalContext } from "@/context/GlobalProvider"
 import { PageType, PlaylistType } from "@/constants/Types"
 import PlaylistList from "@/components/lists/playlist"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import playlistBus from "@/station/playlist"
 import { useThemeContext } from "@/context/ThemeProvider"
 import { getPlaylists } from "@/lib/PlaylistManager"
 
 const AddToPlaylist = () => {
 
-  const { numModified } = useGlobalContext();
   const { theme } = useThemeContext();
 
   const insets = useSafeAreaInsets();
@@ -33,15 +30,8 @@ const AddToPlaylist = () => {
   }
 
   useEffect(() => {
-    playlistBus.on('playlistChangesMade', refreshPlaylists);
-    return () => {
-      playlistBus.off('playlistChangesMade', refreshPlaylists);
-    }
-  }, []);
-
-  useEffect(() => {
     refreshPlaylists();
-  }, [numModified]);
+  }, []);
 
   return (
     <View style={Local.wrapper}>

@@ -12,6 +12,7 @@ import { exportSongs } from '@/lib/SongManager';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
 import { removeFromPlaylist } from '@/lib/PlaylistManager';
+import { PlaylistBusEvent } from '@/station/playlist/Events';
 
 type SongOptionsProps = {
   bottomSheetRef: React.RefObject<BottomSheet>;
@@ -103,8 +104,8 @@ const SongOptions = ({ bottomSheetRef }: SongOptionsProps) => {
     try {
       await removeFromPlaylist(editSong.playlistId, editSong.id);
       setTimeout(() => {
-        playlistBus.emit('playlistChangesMade');
-      }, 200);
+        playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
+      }, 50);
     }
     catch (error) {
       console.log('error removing from playlist: ', error);

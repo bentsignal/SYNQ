@@ -5,15 +5,20 @@ import BackArrow from "@/components/BackArrow";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { useEffect, useState } from "react";
+import More from "@/components/More";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 type HeaderProps = {
   scrollPosition: number;
   title: string;
+  showMore?: boolean;
+  handleMore?: () => void;
 }
 
-const Header = ({scrollPosition, title}: HeaderProps) => {
+const Header = ({scrollPosition, title, showMore, handleMore}: HeaderProps) => {
 
   const insets = useSafeAreaInsets();
+  const { theme } = useThemeContext();
   const [showHeader, setShowHeader] = useState(false);
   const [height, setHeight] = useState(0);
   const threshold = 300;
@@ -38,19 +43,28 @@ const Header = ({scrollPosition, title}: HeaderProps) => {
         intensity={70}
         tint="dark"
       />
-      <View style={[Local.container, Local.arrowContainer, {paddingTop: insets.top + 2}]}>
-        <BackArrow />
-      </View>
-      <View style={[Local.container, Local.nameContainer, {
+      <View style={[Local.container, {
           paddingTop: insets.top + 2,
-          opacity: showHeader ? 1 : 0,
         }]}
         onLayout={(event) => {
           const { height } = event.nativeEvent.layout;
           setHeight(height);
         }}
       >
-        <Text style={Local.title}>{title}</Text>
+        <View style={[Local.arrowWrapper, Local.centered]}>
+          <BackArrow />
+        </View>
+        <View style={[Local.titleWrapper, {
+          opacity: showHeader ? 1 : 0,
+        }]}>
+          <Text style={Local.title}>{title}</Text>
+        </View>
+        <View style={[Local.moreWrapper, Local.centered]}>
+          <More 
+            color={theme}
+            handlePress={handleMore} 
+          />
+        </View>
       </View>
     </>
   );
@@ -63,26 +77,38 @@ const Local = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+    zIndex: 102,
   },
   blurContainer: {
     zIndex: 100,
     backgroundColor: "rgba(0, 0, 0, 0.8)",
     opacity: 0,
   },
-  arrowContainer: {
-    zIndex: 102,
-    paddingLeft: 15,
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  arrowWrapper: {
+    minWidth: 50,
+    paddingLeft: 0,
+    marginBottom: 10,
+  },
+  moreWrapper: {
+    minWidth: 50,
+    paddingBottom: 12,
+    maxHeight: 30,
+  },
+  titleWrapper: {
+    // backgroundColor: 'red',
   },
   title: {
     ...Styles.h4,
     color: Colors.text,
     paddingBottom: 10,
   },
-  nameContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 101,
-  }
 });
 
 export default Header;

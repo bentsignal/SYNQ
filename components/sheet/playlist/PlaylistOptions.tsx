@@ -55,6 +55,11 @@ const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
     }
   }
 
+  const executeDelete = async () => {
+    await deletePlaylist(editPlaylist.id);
+    playlistBus.emit(PlaylistBusEvent.PLAYLIST_DELETED);
+  }
+
   const handleDelete = () => {
     bottomSheetRef.current?.close();
     setTimeout(() => {
@@ -64,8 +69,15 @@ const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
         [
           { text: 'Cancel', style: 'cancel' },
           { text: 'Delete', style: 'destructive', onPress: () => {
-            deletePlaylist(editPlaylist.id);
-            playlistBus.emit(PlaylistBusEvent.PLAYLIST_DELETED);  
+            if (pageType === PageType.PLAYLIST) {
+              router.back();
+              setTimeout(() => {
+                executeDelete();
+              }, 300);
+            }
+            else {
+              executeDelete();
+            }
           }}
         ]
       )
@@ -77,19 +89,19 @@ const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
       <SheetOption 
         icon={require('@/assets/icons/edit.png')}
         text={'Edit'}
-        show={[PageType.LIBRARY].includes(pageType)}
+        show={[PageType.LIBRARY, PageType.PLAYLIST].includes(pageType)}
         handler={handleEdit}
       />
       <SheetOption 
         icon={require('@/assets/icons/share.png')}
         text={'Export'}
-        show={[PageType.LIBRARY].includes(pageType) && premium}
+        show={[PageType.LIBRARY, PageType.PLAYLIST].includes(pageType) && premium}
         handler={handleExport}
       />
       <SheetOption
         icon={require('@/assets/icons/delete.png')}
         text={'Delete'}
-        show={[PageType.LIBRARY].includes(pageType) && editPlaylist.id !== 1}
+        show={[PageType.LIBRARY, PageType.PLAYLIST].includes(pageType) && editPlaylist.id !== 1}
         handler={handleDelete}
       />
     </>

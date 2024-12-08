@@ -4,7 +4,7 @@ import { Styles } from "@/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import SongList from "@/components/lists/song";
-import { PageType, SongType } from "@/constants/Types";
+import { PageType, PlaylistType, SongType } from "@/constants/Types";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import MiniPlayer from "@/components/player/MiniPlayer";
 import TabBar from "@/components/TabBar";
@@ -16,18 +16,12 @@ import playlistBus from "@/station/playlist";
 import SongSheet from '@/components/sheet/song';
 import { getPlaylistInfo, getPlaylistSongs } from "@/lib/PlaylistManager";
 import { PlaylistBusEvent } from "@/station/playlist/Events";
-
+import PlaylistSheet from "@/components/sheet/playlist/PlaylistSheet";
+import * as Haptics from 'expo-haptics';
 
 const PlaylistView = ({id}: {id: string}) => {
 
-  const { 
-    
-    numModified, homeState, showSongOptions,
-    showOverlay,
-
-    setShowSongOptions,
-  
-  } = useGlobalContext();
+  const { showOverlay, haptic, setEditPlaylist } = useGlobalContext();
 
   const insets = useSafeAreaInsets();
   const [songs, setSongs] = useState<SongType[]>([]);
@@ -35,7 +29,10 @@ const PlaylistView = ({id}: {id: string}) => {
   const [songCount, setSongCount] = useState(0);
   const [scrollPosition, setScrollPosition] = useState(0);
   const songOptionsSheetRef = useRef<BottomSheet>(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const playlistSheetRef = useRef<BottomSheet>(null);
+  const [songSheetOpen, setSongSheetOpen] = useState(false);
+  const [playlist, setPlaylist] = useState<PlaylistType | null>(null);
+  const [playlistSheetOpen, setPlaylistSheetOpen] = useState(false);
 
   const refreshInfo = async () => {
     if (id) {
@@ -67,24 +64,39 @@ const PlaylistView = ({id}: {id: string}) => {
 
   // refresh song list and info when changes are are sent from emitter;
   useEffect(() => {
-    
-    triggerRefresh();
-
     playlistBus.on(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED, triggerRefresh);
     playlistBus.on(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, refreshInfo);
     playlistBus.on(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, refreshInfo);
-
     return () => {
       playlistBus.off(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED, triggerRefresh);
       playlistBus.off(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, refreshInfo);
       playlistBus.off(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, refreshInfo);
     }
-
   }, []);
 
+  const loadPlaylist = async () => {
+    const playlist = await getPlaylistInfo(parseInt(id));
+    playlist.pageType = PageType.PLAYLIST;
+    setPlaylist(playlist);
+  }
+
   useEffect(() => {
-    refreshInfo();
+    loadPlaylist();
+    triggerRefresh();
   }, [id]);
+
+  const handleMore = () => {
+    if (haptic) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    setEditPlaylist(playlist);
+    try {
+      playlistSheetRef?.current?.snapToIndex(0);
+    }
+    catch (error) {
+      console.log('error snapping to playlist sheet:', error);
+    }
+  }
 
   return (
     <View style={Local.wrapper}>
@@ -92,9 +104,14 @@ const PlaylistView = ({id}: {id: string}) => {
         <Header 
           scrollPosition={scrollPosition}
           title={title}
+          showMore={true}
+          handleMore={handleMore}
         />
-        <View style={[Styles.bottomSheetWrapper, {pointerEvents: sheetOpen ? 'auto' : 'none'}]}>
-          <SongSheet bottomSheetRef={songOptionsSheetRef} setIsOpen={setSheetOpen}/>
+        <View style={[Styles.bottomSheetWrapper, {pointerEvents: songSheetOpen ? 'auto' : 'none'}]}>
+          <SongSheet bottomSheetRef={songOptionsSheetRef} setIsOpen={setSongSheetOpen}/>
+        </View>
+        <View style={[Styles.bottomSheetWrapper, {pointerEvents: playlistSheetOpen ? 'auto' : 'none'}]}>
+          <PlaylistSheet bottomSheetRef={playlistSheetRef} setIsOpen={setPlaylistSheetOpen}/>
         </View>
         <Overlay show={showOverlay} activeOpacity={0.95}/>
         <SongList 

@@ -1,14 +1,19 @@
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
-const More = ({handlePress}: {handlePress: () => void}) => {
+type MoreProps = {
+  color?: string;
+  handlePress: () => void;
+}
+
+const More = ({handlePress, color}: MoreProps) => {
 
   const Local = StyleSheet.create({
     dot: {
       width: 4,
       height: 4,
       borderRadius: 15,
-      backgroundColor: Colors.text,
+      backgroundColor: color ?? Colors.text,
       justifyContent: 'center',
       alignItems: 'center',
     },

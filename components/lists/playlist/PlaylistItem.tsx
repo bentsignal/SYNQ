@@ -59,12 +59,14 @@ const PlaylistItem = ({playlist, sheetRef}: PlaylistProps) => {
   const updateSongCount = (data: PlaylistSongCountModifiedEvent) => {
     if (playlist.id === data.id) {
       setSongCount(data.songCount);
+      playlist.songCount = data.songCount;
     }
   }
 
   const updateName = (data: PlaylistNameModifiedEvent) => {
     if (playlist.id === data.id) {
       setName(data.name);
+      playlist.name = data.name;
     }
   }
 

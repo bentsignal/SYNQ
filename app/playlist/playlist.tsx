@@ -13,7 +13,7 @@ import SongListHeader from "@/components/lists/song/Header";
 import Overlay from "@/components/Overlay";
 import Header from "@/components/Header";
 import BottomSheet from "@gorhom/bottom-sheet";
-import playlistBus from "@/station/playlistBus";
+import playlistBus from "@/station/playlist";
 import SongSheet from '@/components/sheet/song';
 import { getPlaylistInfo, getPlaylistSongs } from "@/lib/PlaylistManager";
 

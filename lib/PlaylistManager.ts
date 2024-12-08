@@ -1,5 +1,5 @@
 import PlaylistDataManager from "./data/PlaylistDataManager";
-import playlistBus from "@/station/playlistBus";
+import playlistBus from "@/station/playlist";
 import * as FileSystem from 'expo-file-system';
 import { getSongByResult } from "./SongManager";
 import { PageType } from "@/constants/Types";
@@ -112,7 +112,6 @@ export const getPlaylistCover = async (playlistId: number, full: boolean = false
       return artwork ? `${artwork}` : null;
     }
     else {
-      console.log('no cover image found');
       return null;
     }
   }

@@ -16,6 +16,8 @@ import { newCover } from "@/lib/SongManager";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';
 import Notifications from "@/components/notifications";
+import playlistBus from "@/station/playlist";
+import { PlaylistBusEvent, PlaylistModifiedEvent } from "@/station/playlist/Events";
 
 const MemoTextInput = memo(TextInput);
 
@@ -59,7 +61,9 @@ const EditPlaylist = ({id}: {id: string}) => {
       if (haptic) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      setNumModified(numModified + 1);
+      playlistBus.emit(PlaylistBusEvent.PLAYLIST_MODIFIED, {
+        id: parseInt(id),
+      });
       setTimeout(() => {  
         router.back();
       }, 100);

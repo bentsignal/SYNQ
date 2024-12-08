@@ -9,9 +9,10 @@ import { getAppIcon } from '@/constants/Logos';
 import { PageType, CoverType } from '@/constants/Types';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { getPlaylistCover } from '@/lib/PlaylistManager';
+import { PlaylistBusEvent } from '@/station/playlist/Events';
+import playlistBus from '@/station/playlist';
 
 const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5+hPwABAAEAAFPAfXAAAAAElFTkSuQmCC';
-
 
 export const ListCover = ({image, type, id, fade, propOnLoad}: {
   image?: string;
@@ -62,8 +63,23 @@ export const ListCover = ({image, type, id, fade, propOnLoad}: {
     }
   }
 
+  const handlePlaylistModified = (data: {id: number}) => {
+    console.log('playlist modified:', data.id);
+    if (type === CoverType.PLAYLIST && id === data.id.toString()) {
+      console.log('me!');
+      getImage();
+    }
+  }
+
   useEffect(() => {
-    if (id && editSong.id && editSong.id === id) {
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_MODIFIED, handlePlaylistModified);
+    return () => {
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_MODIFIED, handlePlaylistModified);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (type === CoverType.SONG && id && editSong.id && editSong.id === id) {
       getImage();
     }
   }, [numModified])
@@ -281,7 +297,6 @@ export const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
         if (type === PageType.PLAYLIST) {
           const data = await getPlaylistCover(parseInt(id), true);
           if (data) {
-            console.log('here');
             setSrc(`data:image/jpeg;base64,${data}`);
           }
         }

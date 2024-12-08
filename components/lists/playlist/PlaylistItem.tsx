@@ -9,7 +9,7 @@ import More from "@/components/More";
 import { PageType } from "@/constants/Types";
 import Select from "@/components/Select";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import playlistBus from "@/station/playlistBus";
+import playlistBus from "@/station/playlist";
 import BottomSheet from "@gorhom/bottom-sheet";
 import * as Haptics from 'expo-haptics';
 import { addToPlaylist, removeFromPlaylist, isSongInPlaylist } from "@/lib/PlaylistManager";
@@ -82,7 +82,6 @@ const PlaylistItem = ({playlist, sheetRef}: PlaylistProps) => {
         id={playlist.id.toString()}
         type={CoverType.PLAYLIST}
         propOnLoad={() => {}}
-        key={numModified.toString()}
       />
       <View style={Local.textWrapper}>
         <Text style={Local.name}>{playlist.name}</Text>

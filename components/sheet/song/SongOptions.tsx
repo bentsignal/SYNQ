@@ -3,7 +3,7 @@ import { PageType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { addToQueue } from '@/lib/PlayerManager';
 import { getTrackFromSong } from '@/lib/PlayerManager';
-import playlistBus from '@/station/playlistBus';
+import playlistBus from '@/station/playlist';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useEffect, useState } from 'react';  

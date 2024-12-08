@@ -288,21 +288,34 @@ export const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
   const { theme } = useThemeContext();
   const coverPercent = 0.65;
 
-  useEffect(() => {
-    
-    const getImage = async () => {
-      try {
-        if (type === PageType.PLAYLIST) {
-          const data = await getPlaylistCover(parseInt(id), true);
-          if (data) {
-            setSrc(`data:image/jpeg;base64,${data}`);
-          }
+  const getImage = async () => {
+    try {
+      if (type === PageType.PLAYLIST) {
+        const data = await getPlaylistCover(parseInt(id), true);
+        if (data) {
+          setSrc(`data:image/jpeg;base64,${data}`);
         }
       }
-      catch (error) {
-        console.log('error getting cover image for player: ', error);
-      }
     }
+    catch (error) {
+      console.log('error getting cover image for player: ', error);
+    }
+  }
+
+  const handlePlaylistModified = (data: PlaylistImageModifiedEvent) => {
+    if (type === PageType.PLAYLIST && id === data.id.toString()) {
+      getImage();
+    }
+  }
+
+  useEffect(() => {
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified); 
+    return () => {
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
+    }
+  }, []);
+
+  useEffect(() => {
     
     getImage();
 

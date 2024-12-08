@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet } from "react-native";
 import { useEffect, useState, useRef } from "react";
-import { useLocalSearchParams } from "expo-router";
 import { Styles } from "@/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
@@ -61,30 +60,31 @@ const PlaylistView = ({id}: {id: string}) => {
     }
   }
 
+  const triggerRefresh = () => {
+    refreshSongs();
+    refreshInfo();
+  }
+
   // refresh song list and info when changes are are sent from emitter;
   useEffect(() => {
-    const triggerRefresh = () => {
-      refreshSongs();
-      refreshInfo();
-    }
+    
+    triggerRefresh();
+
     playlistBus.on(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED, triggerRefresh);
     playlistBus.on(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, refreshInfo);
     playlistBus.on(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, refreshInfo);
+
     return () => {
       playlistBus.off(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED, triggerRefresh);
       playlistBus.off(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, refreshInfo);
       playlistBus.off(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, refreshInfo);
     }
+
   }, []);
 
   useEffect(() => {
     refreshInfo();
   }, [id]);
-
-  // updates song list when changes are detected
-  useEffect(() => {
-    refreshSongs();
-  }, [numModified, homeState]);
 
   return (
     <View style={Local.wrapper}>

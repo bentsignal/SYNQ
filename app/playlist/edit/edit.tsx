@@ -24,7 +24,7 @@ const EditPlaylist = ({id}: {id: string}) => {
   
   const insets = useSafeAreaInsets();
   const { theme } = useThemeContext();
-  const { numModified, setNumModified, addNotification, haptic } = useGlobalContext();
+  const { addNotification, haptic } = useGlobalContext();
   const [image, setImage] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [originalName, setOriginalName] = useState<string | null>(null);

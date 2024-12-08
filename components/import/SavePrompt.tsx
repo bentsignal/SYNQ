@@ -14,6 +14,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CFG from "@/constants/Config";
 import { useThemeContext } from "@/context/ThemeProvider";
 import { usePremiumContext } from "@/context/PremiumProvider";
+import { PlaylistBusEvent } from "@/station/playlist/Events";
+import playlistBus from "@/station/playlist";
 
 const SavePrompt = () => {
 
@@ -117,6 +119,7 @@ const SavePrompt = () => {
       } 
       setTimeout(() => {
         saveToLibrary(songs, progress).then(() => {
+          playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
           setLoading(false);
           setHomeState(3);
           setTransferSize(0);

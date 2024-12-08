@@ -5,10 +5,11 @@ import { PageType, PlaylistType } from "@/constants/Types";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import playlistBus from "@/station/playlist";
 import { getPlaylists } from "@/lib/PlaylistManager";
+import { PlaylistBusEvent } from "@/station/playlist/Events";
 
 const Playlists = () => {
 
-  const { numModified, homeState, libraryPlaylistSheet } = useGlobalContext();
+  const { libraryPlaylistSheet } = useGlobalContext();
 
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
 
@@ -24,7 +25,18 @@ const Playlists = () => {
 
   useEffect(() => {
     refreshPlaylists();
-  }, [numModified, homeState]);
+  }, []);
+
+  useEffect(() => {
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_CREATED, refreshPlaylists);
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_DELETED, refreshPlaylists);
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshPlaylists);
+    return () => {
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_CREATED, refreshPlaylists);
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_DELETED, refreshPlaylists);
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshPlaylists);
+    }
+  }, []);
 
   return (
     <View style={Local.container}>

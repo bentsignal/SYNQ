@@ -10,6 +10,8 @@ import { deletePlaylist, getPlaylistSongs } from '@/lib/PlaylistManager';
 import { getSongByResult } from '@/lib/SongManager';
 import { Alert } from 'react-native';
 import { router } from 'expo-router';
+import { PlaylistBusEvent } from '@/station/playlist/Events';
+import playlistBus from '@/station/playlist';
 
 type PlaylistOptionsProps = {
   bottomSheetRef: React.RefObject<BottomSheet>;
@@ -17,19 +19,7 @@ type PlaylistOptionsProps = {
 
 const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
 
-  const { 
-    
-    editSong,
-    numModified,
-    editPlaylist,
-    haptic,
-
-    setShowEdit, setShowImportAd,
-    setShowDelete, setShowOverlay, 
-    setShowGlobalLoading,
-    setNumModified,
-
-  } = useGlobalContext();
+  const { editPlaylist, setShowGlobalLoading } = useGlobalContext();
 
   const { premium } = usePremiumContext();
   
@@ -75,7 +65,7 @@ const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
           { text: 'Cancel', style: 'cancel' },
           { text: 'Delete', style: 'destructive', onPress: () => {
             deletePlaylist(editPlaylist.id);
-            setNumModified(numModified + 1);
+            playlistBus.emit(PlaylistBusEvent.PLAYLIST_DELETED);  
           }}
         ]
       )

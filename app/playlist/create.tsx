@@ -15,18 +15,14 @@ import { createPlaylist } from "@/lib/PlaylistManager"
 import { EditCover } from "@/components/song/Cover"
 import { newCover } from "@/lib/SongManager"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { PlaylistBusEvent } from "@/station/playlist/Events"
+import playlistBus from "@/station/playlist"
 
 const MemoTextInput = memo(TextInput);
 
 const CreatePlaylist = () => {
 
-  const {
-
-    numModified, haptic,
-
-    addNotification, setNumModified,
-
-  } = useGlobalContext();
+  const { haptic, addNotification } = useGlobalContext();
 
   const { theme } = useThemeContext();
 
@@ -50,7 +46,7 @@ const CreatePlaylist = () => {
       if (haptic) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      setNumModified(numModified + 1);
+      playlistBus.emit(PlaylistBusEvent.PLAYLIST_CREATED);
       setTimeout(() => {
         router.back();
       }, 100);

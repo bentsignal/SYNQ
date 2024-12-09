@@ -20,7 +20,6 @@ import Notifications from "@/components/notifications";
 const MemoTextInput = memo(TextInput);
 
 const EditPlaylist = ({id}: {id: string}) => {
-
   
   const insets = useSafeAreaInsets();
   const { theme } = useThemeContext();

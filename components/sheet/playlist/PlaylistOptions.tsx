@@ -80,7 +80,7 @@ const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
             }
           }}
         ]
-      )
+      );
     }, actionDelay);
   }
 

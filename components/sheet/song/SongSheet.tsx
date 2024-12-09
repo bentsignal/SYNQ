@@ -10,6 +10,7 @@ import * as Haptics from 'expo-haptics';
 import SongOptions from './SongOptions';
 import Sheet from '@/components/sheet';
 import SheetStyles from '@/components/sheet/Styles';
+
 type SongSheetProps = {
   bottomSheetRef: React.RefObject<BottomSheet>,
   setIsOpen: (isOpen: boolean) => void

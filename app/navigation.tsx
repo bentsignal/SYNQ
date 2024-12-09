@@ -94,6 +94,14 @@ const Navigation = () => {
           contentStyle: { backgroundColor: 'transparent'},
         }}
       />
+      <Stack.Screen
+        name="song/edit/[id]"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+          contentStyle: { backgroundColor: 'transparent'},
+        }}
+      />
     </Stack>
   );
   

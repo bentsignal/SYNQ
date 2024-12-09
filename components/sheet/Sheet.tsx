@@ -15,6 +15,7 @@ const Sheet = ({bottomSheetRef, setIsOpen, setScrollEnabled, children}: SheetPro
   const [sheetIndex, setSheetIndex] = useState(-1);
 
   const handleSheetChanges = useCallback((index: number) => {
+    console.log(index);
     setSheetIndex(index);
     setIsOpen(index !== -1);
     setScrollEnabled(index === 1);
@@ -23,6 +24,7 @@ const Sheet = ({bottomSheetRef, setIsOpen, setScrollEnabled, children}: SheetPro
   return (
     <>
       <BottomSheet
+        animateOnMount={false}
         ref={bottomSheetRef}
         index={sheetIndex}
         snapPoints={['45%', '80%']}

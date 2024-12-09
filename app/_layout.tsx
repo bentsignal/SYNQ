@@ -53,7 +53,7 @@ const RootLayout = () => {
         await DataManager.createTables();
       }
       catch (error) {
-        console.error('Error creatingdatabase:', error);
+        console.error('Error creating database:', error);
       }
     }
 

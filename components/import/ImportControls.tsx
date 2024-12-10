@@ -1,12 +1,17 @@
-import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import CustomButton from '@/components/CustomButton';
-import { exportSongs } from '@/lib/SongManager';
+import { deleteFromLibrary, exportSongs, removeSongs } from '@/lib/SongManager';
 import { darkenColor } from '@/lib/ColorManager';
 import Notifications from '@/components/notifications/Notifications';
 import { useThemeContext } from '@/context/ThemeProvider';
+import { Track } from 'react-native-track-player';
+import { PageType } from '@/constants/Types';
+import TrackPlayer from 'react-native-track-player';
+import { removeFromAllPlaylists } from '@/lib/PlaylistManager';
+import { router } from 'expo-router';
 
 const ImportControls = (
   {altTitle, mainTitle, altHandle, mainHandle, altDisabled, mainDisabled}: {
@@ -21,10 +26,13 @@ const ImportControls = (
   const {
 
     results, selectEnabled,
-    selectedSongs,
+    selectedSongs, editSong,
+    numModified,
 
-    setShowDelete, setEditSong, setShowEdit, 
-    setShowOverlay, setShowGlobalLoading,
+    setEditSong, 
+    setResults, setNumModified,
+    setExportDisabled, setHomeState,
+    setSelectEnabled,
 
   } = useGlobalContext();
 
@@ -69,25 +77,62 @@ const ImportControls = (
 
   const handleEdit = () => {
     setEditSong({});
-    setShowOverlay(true);
-    setShowEdit(true);
+    router.push(`/song/edit/${editSong.id}`);
   }
 
-  const handleExport = async () => {
+  const executeDelete = async () => {
     try {
-      setShowGlobalLoading(true);
-      let songs = results.filter((result: any) => selectedSongs.includes(result.id));
-      await exportSongs(songs);
-      setShowGlobalLoading(false);
+      // handle bulk delete
+      if (selectedSongs.length > 0) {
+        const newResults = removeSongs(results, selectedSongs);
+        if (newResults.length <= 0) {
+          setExportDisabled(true);
+          setHomeState(0);
+        }
+        setResults(newResults);
+      }
+      // remove from library
+      else if (editSong.pageType === PageType.LIBRARY) {
+        deleteFromLibrary(editSong.id);
+        removeFromAllPlaylists(editSong.id);
+        // remove from queue and next up if applicable
+        const queue = await TrackPlayer.getQueue();
+        const indiciesToRemove = queue
+          .map((track: Track, index: number) => track.id === editSong.id ? index : -1)
+          .filter(index => index !== -1);
+        await TrackPlayer.remove(indiciesToRemove);
+        setNumModified(numModified + 1);
+      }
+      // remove from import
+      else if (editSong.pageType === PageType.IMPORT) {
+        const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id]
+        const newResults = removeSongs(results, ids);
+        if (newResults.length <= 0) {
+          setExportDisabled(true);
+        }
+        if (newResults.length === 0) {
+          setHomeState(0);
+        }
+        setResults(newResults);
+      }
     }
     catch (error) {
-      setShowGlobalLoading(false);
+      console.log('error deleting song: ', error);
     }
+    setSelectEnabled(false);
   }
 
   const handleDelete = () => {
-    setShowOverlay(true);
-    setShowDelete(true);
+    Alert.alert(
+      `${selectedSongs.length > 1 ? 'Delete songs' : 'Delete song'}`,
+      `Are you sure you want to delete ${selectedSongs.length > 1 ? 'these songs' : 'this song'}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => {
+          executeDelete();
+        }}
+      ]
+    );
   }
 
   return (
@@ -103,15 +148,6 @@ const ImportControls = (
             style={Local.batchButtonIcon}
           />
         </TouchableOpacity>
-        {/* <TouchableOpacity
-          style={[Styles.roundedContainer, Styles.backgroundBlendShadow, Local.batchButtonWrapper]}
-          onPress={handleExport}
-        >
-          <Image
-            source={require('@/assets/icons/share.png')}
-            style={Local.batchButtonIcon}
-          />
-        </TouchableOpacity> */}
         <TouchableOpacity
           style={[Styles.roundedContainer, Styles.backgroundBlendShadow, Local.batchButtonWrapper]}
           onPress={handleDelete}

@@ -56,8 +56,13 @@ const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
   }
 
   const executeDelete = async () => {
-    await deletePlaylist(editPlaylist.id);
-    playlistBus.emit(PlaylistBusEvent.PLAYLIST_DELETED);
+    try {
+      await deletePlaylist(editPlaylist.id);
+      playlistBus.emit(PlaylistBusEvent.PLAYLIST_DELETED);
+    }
+    catch (error) {
+      console.log('error deleting playlist: ', error);
+    }
   }
 
   const handleDelete = () => {

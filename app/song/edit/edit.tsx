@@ -45,8 +45,8 @@ const EditSong = ({id}: {id: string}) => {
   const handleSave = async () => {
     try {
       if (editSong.pageType === PageType.LIBRARY) {
+        console.log(editSong.id, title, artist, album, image);
         await updateSongsInLibrary([editSong.id], title, artist, album, image);
-        setNumModified(numModified + 1);
       }
       else if (editSong.pageType === PageType.IMPORT) {
         const newResults = saveEdits(

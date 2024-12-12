@@ -12,6 +12,8 @@ import SongDataManager from './data/SongDataManager';
 import { isValidNumString, idgen } from './Util';
 import { Image } from 'react-native';
 import PlaylistDataManager from './data/PlaylistDataManager';
+import songBus from "@/station/song/Bus";
+import { SongBusEvent } from "@/station/song/Events";
 
 export const getCompletion = (size: number, progress: number) => {
   try {
@@ -662,9 +664,20 @@ export const updateSongsInLibrary = async (
     if (cover) {
       await deleteImagesFromDirectory(dir);
       await writeImageToLibrary(cover, dir);
+      songBus.emit(SongBusEvent.SONG_COVER_MODIFIED, {
+        id: ids[i],
+        type: PageType.LIBRARY,
+      });
     }
     if (title || artist || album) {
       await db.editSong(Number(ids[i]), title, artist, album);
+      songBus.emit(SongBusEvent.SONG_INFO_MODIFIED, {
+        id: ids[i],
+        type: PageType.LIBRARY,
+        title: title,
+        artist: artist,
+        album: album,
+      });
     }
   }
 }

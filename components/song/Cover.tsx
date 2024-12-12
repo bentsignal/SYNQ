@@ -11,6 +11,8 @@ import { useThemeContext } from '@/context/ThemeProvider';
 import { getPlaylistCover } from '@/lib/PlaylistManager';
 import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/station/playlist/Events';
 import playlistBus from '@/station/playlist';
+import { SongBusEvent, SongCoverModifiedEvent, SongInfoModifiedEvent } from '@/station/song/Events';
+import songBus from '@/station/song';
 
 const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5+hPwABAAEAAFPAfXAAAAAElFTkSuQmCC';
 
@@ -69,10 +71,18 @@ export const ListCover = ({image, type, id, fade, propOnLoad}: {
     }
   }
 
+  const handleSongModified = (data: SongCoverModifiedEvent) => {
+    if (data.type === PageType.LIBRARY && Number(id) === data.id) {
+      getImage();
+    }
+  }
+
   useEffect(() => {
     playlistBus.on(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
+    songBus.on(SongBusEvent.SONG_COVER_MODIFIED, handleSongModified);
     return () => {
       playlistBus.off(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
+      songBus.off(SongBusEvent.SONG_COVER_MODIFIED, handleSongModified);
     }
   }, []);
 

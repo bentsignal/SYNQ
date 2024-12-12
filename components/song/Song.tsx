@@ -23,6 +23,8 @@ import { getTrackFromSong, playTrack,
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
+import songBus from '@/station/song';
+import { SongBusEvent, SongInfoModifiedEvent, SongCoverModifiedEvent } from '@/station/song/Events';
 
 type SongProps = {
   song: SongType, 
@@ -36,6 +38,7 @@ const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
   const [selected, setSelected] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const translateX = useRef(new Animated.Value(0)).current;
+  const [_, forceUpdate] = useState(0);
 
   const track = useActiveTrack();
 
@@ -81,6 +84,15 @@ const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
       setSelectedSongs([]);
     }
   }, [selectEnabled]);
+
+  useEffect(() => {
+    songBus.on(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
+    songBus.on(SongBusEvent.SONG_COVER_MODIFIED, updateSongCover);
+    return () => {
+      songBus.off(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
+      songBus.off(SongBusEvent.SONG_COVER_MODIFIED, updateSongCover);
+    }
+  }, []);
 
   let disablePlay = false;
   if (song.pageType && [PageType.IMPORT, PageType.QUEUE].includes(song.pageType)) { 
@@ -131,6 +143,24 @@ const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
       textShadowRadius: 10
     }
   });
+
+  const updateSongInfo = async (data: SongInfoModifiedEvent) => {
+    if (Number(song.id) === data.id) {
+      song.info.metadata.name = data.title;
+      song.info.metadata.artist = data.artist;
+      song.info.metadata.album = data.album;
+      forceUpdate(prev => prev + 1);
+    }
+  }
+
+  const updateSongCover = async (data: SongCoverModifiedEvent) => {
+    if (Number(song.id) === data.id) {
+      if (data.type === PageType.IMPORT && data.cover) {
+        song.info.metadata.artwork = data.cover;
+      }
+      forceUpdate(prev => prev + 1);
+    }
+  }
 
   const handlePlay = async () => {
     if (haptic) {

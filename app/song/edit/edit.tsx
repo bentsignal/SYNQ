@@ -45,7 +45,6 @@ const EditSong = ({id}: {id: string}) => {
   const handleSave = async () => {
     try {
       if (editSong.pageType === PageType.LIBRARY) {
-        console.log(editSong.id, title, artist, album, image);
         await updateSongsInLibrary([editSong.id], title, artist, album, image);
       }
       else if (editSong.pageType === PageType.IMPORT) {
@@ -92,7 +91,6 @@ const EditSong = ({id}: {id: string}) => {
   }
 
   useEffect(() => {
-    console.log(selectedSongs.length)
     if (editSong) {
       setTitle(editSong.info?.metadata?.name ?? '');
       setArtist(editSong.info?.metadata?.artist ?? '');

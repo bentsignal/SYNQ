@@ -174,8 +174,17 @@ export const EditCover = ({image, id, type, handlePress, propOnLoad}: {
   propOnLoad: () => void;
 }) => {
 
+  const opacityRef = useRef(new Animated.Value(0)).current;
   const [src, setSrc] = useState(image ? image : transparent);
   const [loaded, setLoaded] = useState(false);
+
+  const revealImage = () => {
+    Animated.timing(opacityRef, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  }
 
   useLayoutEffect(() => {
 
@@ -183,38 +192,48 @@ export const EditCover = ({image, id, type, handlePress, propOnLoad}: {
       try {
         if (type === CoverType.SONG) {
           if (image) {
-            setSrc(image);
+            setTimeout(() => {
+              setSrc(image);
+              revealImage();
+            }, 20);
           }
           else {
             const data = await getCoverImageData(id);
             if (data) {
               setSrc(`data:image/jpeg;base64,${data}`);
+              revealImage();
             }
             else {
               setSrc(transparent);
+              revealImage();
             }
           }
         }
         else if (type === CoverType.PLAYLIST) {
           if (image) {
             setSrc(image);
+            revealImage();
           }
           else {
             const data = await getPlaylistCover(parseInt(id));
             if (data) {
               setSrc(`data:image/jpeg;base64,${data}`);
+              revealImage();
             }
             else {
               setSrc(transparent);
+              revealImage();
             }
           }
         }
+        revealImage();
       }
       catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         if (!message.includes('folder')) {
           console.log('error getting cover image for edit cover:', message);
         }
+        revealImage();
       }
     }
 
@@ -264,7 +283,7 @@ export const EditCover = ({image, id, type, handlePress, propOnLoad}: {
     <TouchableOpacity
       onPress={handlePress}
     >
-      <View style={Local.container}>
+      <Animated.View style={[Local.container, {opacity: opacityRef}]}>
         <FastImage 
           source={src ? {uri: src} : {uri: transparent}}
           style={Local.artwork}
@@ -285,7 +304,7 @@ export const EditCover = ({image, id, type, handlePress, propOnLoad}: {
             style={Local.icon}
           />
         </View>
-      </View>
+      </Animated.View>
     </TouchableOpacity>
   );
 

@@ -194,35 +194,29 @@ export const EditCover = ({image, id, type, handlePress, propOnLoad}: {
           if (image) {
             setTimeout(() => {
               setSrc(image);
-              revealImage();
             }, 20);
           }
           else {
             const data = await getCoverImageData(id);
             if (data) {
               setSrc(`data:image/jpeg;base64,${data}`);
-              revealImage();
             }
             else {
               setSrc(transparent);
-              revealImage();
             }
           }
         }
         else if (type === CoverType.PLAYLIST) {
           if (image) {
             setSrc(image);
-            revealImage();
           }
           else {
             const data = await getPlaylistCover(parseInt(id));
             if (data) {
               setSrc(`data:image/jpeg;base64,${data}`);
-              revealImage();
             }
             else {
               setSrc(transparent);
-              revealImage();
             }
           }
         }

@@ -186,7 +186,7 @@ const SongOptions = ({ bottomSheetRef }: SongOptionsProps) => {
       <SheetOption 
         icon={require('@/assets/icons/edit.png')}
         text={'Edit'}
-        show={[PageType.LIBRARY, PageType.IMPORT, PageType.PLAYER].includes(pageType)}
+        show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
         handler={handleEditSong}
       />
       <SheetOption 

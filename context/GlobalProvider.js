@@ -38,7 +38,6 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
   const [showGlobalLoading, setShowGlobalLoading] = useState(false);
   const [showGlobalProgress, setShowGlobalProgress] = useState(false);
   const [globalProgress, setGlobalProgress] = useState(0);
-  const [shuffle, setShuffle] = useState(false);
   const [numModified, setNumModified] = useState(0);
   const [shouldSaveToLibrary, setShouldSaveToLibrary] = useState(true);
   const [showImportAd, setShowImportAd] = useState(false);
@@ -99,7 +98,6 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
         showGlobalLoading, setShowGlobalLoading,
         showGlobalProgress, setShowGlobalProgress,
         globalProgress, setGlobalProgress,
-        shuffle, setShuffle,
         numModified, setNumModified,
         shouldSaveToLibrary, setShouldSaveToLibrary,
         showImportAd, setShowImportAd,

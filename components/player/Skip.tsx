@@ -5,6 +5,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import * as Haptics from 'expo-haptics';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
+import { usePlaybackContext } from '@/context/PlaybackProvider';
 
 const Shape = ({size, color}: {size: number, color?: string}) => {
   return (
@@ -19,11 +20,13 @@ const Shape = ({size, color}: {size: number, color?: string}) => {
 
 export const SkipRight = ({size, color}: {size: number, color?: string}) => {
 
-  const { shuffle, haptic, 
+  const { haptic, 
     adPlaying, adURL, setAdPlaying, shouldPlayAd } = useGlobalContext();
+
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
-
+  const { shuffle } = usePlaybackContext();
+  
   return (
     <TouchableOpacity 
       activeOpacity={0.7}

@@ -19,9 +19,11 @@ import SongInfo from "@/components/song/SongInfo";
 import TrackPlayer, { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util";
 import { useThemeContext } from '@/context/ThemeProvider';
+import { usePlaybackContext } from "@/context/PlaybackProvider";  
+
 const Queue = () => {
 
-  const { shuffle } = useGlobalContext();
+  const { shuffle } = usePlaybackContext();
   const { theme } = useThemeContext();
 
   const track = useActiveTrack();

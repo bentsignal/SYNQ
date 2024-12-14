@@ -51,6 +51,12 @@ export enum PageType {
   CREATE = 8,
 }
 
+export enum SourceType {
+  PLAYLIST = 1,
+  ALBUM = 2,
+  ARTIST = 3,
+}
+
 export enum CoverType {
   SONG = 1,
   PLAYLIST = 2,

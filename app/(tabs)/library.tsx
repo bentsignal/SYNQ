@@ -19,12 +19,13 @@ import Plus from "@/components/Plus";
 import { router } from "expo-router";
 import { useThemeContext } from "@/context/ThemeProvider";
 import { usePremiumContext } from "@/context/PremiumProvider";
+import { usePlaybackContext } from "@/context/PlaybackProvider";
 
 const Library = () => {
 
   const { 
     
-    shuffle, haptic,
+    haptic,
     adPlaying, adURL, shouldPlayAd,
     playerInitialized,
 
@@ -40,6 +41,7 @@ const Library = () => {
 
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
+  const { shuffle } = usePlaybackContext();
 
   const track = useActiveTrack();
   const { position, duration } = useProgress();

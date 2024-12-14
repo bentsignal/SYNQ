@@ -25,6 +25,7 @@ import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
 import songBus from '@/station/song';
 import { SongBusEvent, SongInfoModifiedEvent, SongCoverModifiedEvent } from '@/station/song/Events';
+import { usePlaybackContext } from '@/context/PlaybackProvider';
 
 type SongProps = {
   song: SongType, 
@@ -46,15 +47,15 @@ const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
 
     selectEnabled, selectedSongs, results,
     showSongOptions,
-    haptic, shuffle, adPlaying, adURL, shouldPlayAd,
+    haptic, adPlaying, adURL, shouldPlayAd,
 
     setSelectedSongs, setShowSongOptions,
     setEditSong, setAdPlaying,
 
   } = useGlobalContext(); 
 
+  const { shuffle } = usePlaybackContext();
   const { premium } = usePremiumContext();
-
   const { theme } = useThemeContext();
 
   let blur = false;

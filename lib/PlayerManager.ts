@@ -127,19 +127,17 @@ export const skipRight = async (shuffle: boolean, theme: string, haptic: boolean
   try {
     const queue = await TrackPlayer.getQueue();
     const currentIndex = await TrackPlayer.getActiveTrackIndex();
-    if (currentIndex === queue.length-1) {
-      // if shuffle is on, keep queue going infinitely
-      if (shuffle) {
-        await updateQueue(queue[currentIndex].id, shuffle, theme, sourceType, sourceId);
-      }
+    if (currentIndex >= queue.length-1 && !shuffle) {
       // no next song, play error haptic feedback
-      else {
-        if (haptic) {
-          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-        }
+      if (haptic) {
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       }
     }
     else if (currentIndex !== undefined) {
+      // if shuffle is on, keep queue going infinitely
+      if (currentIndex >= queue.length-1 && shuffle) {
+        await updateQueue(queue[currentIndex].id, shuffle, theme, sourceType, sourceId);
+      }
       let nextIndex = currentIndex + 1;
       let nextTrack = await TrackPlayer.getTrack(nextIndex);
       while (nextTrack?.id === 'ad' && nextIndex < queue.length) {

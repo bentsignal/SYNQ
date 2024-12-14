@@ -14,6 +14,8 @@ import { Image } from 'react-native';
 import PlaylistDataManager from './data/PlaylistDataManager';
 import songBus from "@/station/song/Bus";
 import { SongBusEvent } from "@/station/song/Events";
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 
 export const getCompletion = (size: number, progress: number) => {
   try {
@@ -521,6 +523,12 @@ export const getNextUp = async (
   if (sourceType === SourceType.PLAYLIST) {
     songs = await PlaylistDataManager.getInstance().getSongsFromPlaylist(sourceId);
   }
+  else if (sourceType === SourceType.ARTIST) {
+    //  TODO: get songs from artist
+  }
+  else if (sourceType === SourceType.ALBUM) {
+    //  TODO: get songs from album
+  }
   else {
     songs = await SongDataManager.getInstance().getSongs();
   }
@@ -695,6 +703,7 @@ export const generateSongKey = (song: SongType) => {
     const name = song.info.metadata?.name ?? 'no-name';
     const artist = song.info.metadata?.artist ?? 'no-artist';
     const album = song.info.metadata?.album ?? 'no-album';
+    const uuid = song.uuid ?? 'no-uuid';
     let cover = 'no-cover';
     try {
       cover = song.info.metadata?.artwork ? song.info.metadata.artwork.substring(0, 300) : 'no-cover';
@@ -702,7 +711,7 @@ export const generateSongKey = (song: SongType) => {
     catch (error) {
       cover = 'no-cover';
     }
-    return `${song.id}-${name}-${artist}-${album}-${cover}`;
+    return `${song.id}-${uuid}-${name}-${artist}-${album}-${cover}`;
   }
   return '-1';
 }

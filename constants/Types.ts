@@ -13,6 +13,7 @@ export type InfoType = {
 export type SongType = {
   "name": string;
   "id": string;
+  "uuid"?: string;
   "data": string;
   "info": InfoType;
   "pageType"?: PageType;

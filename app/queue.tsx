@@ -19,7 +19,9 @@ import SongInfo from "@/components/song/SongInfo";
 import TrackPlayer, { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util";
 import { useThemeContext } from '@/context/ThemeProvider';
-import { usePlaybackContext } from "@/context/PlaybackProvider";  
+import { usePlaybackContext } from "@/context/PlaybackProvider";
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 
 const Queue = () => {
 
@@ -94,10 +96,11 @@ const Queue = () => {
         start = current + 1;
       }
       try {
-        let result;
+        let result: SongType;
         for (let i = start; i < queue.length; i++) {
           if (queue[i].id !== 'ad') {
             result = await getSongById(queue[i].id);
+            result.uuid = uuidv4();
             results.push(result);
           }
         }

@@ -1,5 +1,5 @@
 import TrackPlayer, { useTrackPlayerEvents, Event, Capability, Track } from "react-native-track-player";
-import { SongType } from "@/constants/Types";
+import { SongType, SourceType } from "@/constants/Types";
 import * as FileSystem from "expo-file-system";
 import * as Haptics from 'expo-haptics';
 import { getFileName } from '@/lib/Util';
@@ -81,9 +81,15 @@ export const playTrack = async (track: Track): Promise<void> => {
   await TrackPlayer.play();
 }
 
-export const updateQueue = async (currentId: string, shuffle: boolean, theme: string): Promise<void> => {
+export const updateQueue = async (
+  currentId: string,
+  shuffle: boolean,
+  theme: string,
+  sourceType: SourceType,
+  sourceId: number,
+): Promise<void> => {
   await TrackPlayer.removeUpcomingTracks();
-  const upcoming = await getNextUp(currentId, 1000, shuffle);
+  const upcoming = await getNextUp(currentId, 1000, shuffle, sourceType, sourceId);
   let upcomingTracks: Track[] = [];
   for (let i = 0; i < upcoming.length; i++) {
     const newTrack = await getTrackFromSong(upcoming[i], theme);
@@ -117,14 +123,14 @@ export const skipLeft = async () => {
   }
 }
 
-export const skipRight = async (shuffle: boolean, theme: string, haptic: boolean) => {
+export const skipRight = async (shuffle: boolean, theme: string, haptic: boolean, sourceType: SourceType, sourceId: number) => {
   try {
     const queue = await TrackPlayer.getQueue();
     const currentIndex = await TrackPlayer.getActiveTrackIndex();
     if (currentIndex === queue.length-1) {
       // if shuffle is on, keep queue going infinitely
       if (shuffle) {
-        await updateQueue(queue[currentIndex].id, shuffle, theme);
+        await updateQueue(queue[currentIndex].id, shuffle, theme, sourceType, sourceId);
       }
       // no next song, play error haptic feedback
       else {

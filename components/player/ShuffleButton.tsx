@@ -9,10 +9,10 @@ import { usePlaybackContext } from "@/context/PlaybackProvider";
 const ShuffleButton = () => {
 
   const { theme } = useThemeContext();
-  const { shuffle, setShuffle } = usePlaybackContext();
-  const [localState, setLocalState] = useState(shuffle);
-  
+  const { shuffle, setShuffle, sourceType, sourceId } = usePlaybackContext();
   const track = useActiveTrack();
+
+  const [localState, setLocalState] = useState(shuffle);
 
   const handlePress = async () => {
     const previous = shuffle;
@@ -20,7 +20,7 @@ const ShuffleButton = () => {
       const newValue = !previous;
       setLocalState(newValue);
       const id = track ? track.id : -1;
-      await updateQueue(id, newValue, theme);
+      await updateQueue(id, newValue, theme, sourceType, sourceId);
       setShuffle(newValue);
     } catch (error) {
       setShuffle(previous);

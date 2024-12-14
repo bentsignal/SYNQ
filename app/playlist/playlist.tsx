@@ -4,7 +4,7 @@ import { Styles } from "@/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import SongList from "@/components/lists/song";
-import { PageType, PlaylistType, SongType } from "@/constants/Types";
+import { PageType, PlaylistType, SongType, SourceType } from "@/constants/Types";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import MiniPlayer from "@/components/player/MiniPlayer";
 import TabBar from "@/components/TabBar";
@@ -118,7 +118,8 @@ const PlaylistView = ({id}: {id: string}) => {
           songs={songs} 
           pageType={PageType.LIBRARY}
           sheetRef={songOptionsSheetRef}
-          playlistId={id as string}
+          sourceId={Number(id)}
+          sourceType={SourceType.PLAYLIST}
           headerComponent={
             <SongListHeader 
               id={id as string}

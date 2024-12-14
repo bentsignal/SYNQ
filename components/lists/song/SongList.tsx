@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { SongType, PageType } from '@/constants/Types';
+import { SongType, PageType, SourceType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import Song from '@/components/song';
 import EditModal from '@/components/modals/EditModal';
@@ -19,7 +19,8 @@ const SongList = memo((
     fadeCover = true, 
     fadeSong = false,
     sheetRef,
-    playlistId,
+    sourceId,
+    sourceType,
     setScrollPosition,
   }: 
   {
@@ -30,7 +31,8 @@ const SongList = memo((
     fadeCover?: boolean,
     fadeSong?: boolean,
     sheetRef?: React.RefObject<BottomSheet>,
-    playlistId?: string,
+    sourceId?: number,
+    sourceType?: SourceType,
     setScrollPosition?: (position: number) => void,
   }
 ) => {
@@ -39,7 +41,8 @@ const SongList = memo((
 
   const renderItem = ({item} : {item: SongType}) => {
     item.pageType = pageType;
-    item.playlistId = playlistId;
+    item.sourceId = sourceId;
+    item.sourceType = sourceType;
     return (
       <MemoSong 
         song={item}

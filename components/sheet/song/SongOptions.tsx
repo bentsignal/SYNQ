@@ -150,7 +150,7 @@ const SongOptions = ({ bottomSheetRef }: SongOptionsProps) => {
   const handleRemoveFromPlaylist = async () => {
     bottomSheetRef.current?.close();
     try {
-      await removeFromPlaylist(editSong.playlistId, editSong.id);
+      await removeFromPlaylist(editSong.sourceId, editSong.id);
       setTimeout(() => {
         playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
       }, 50);
@@ -172,8 +172,8 @@ const SongOptions = ({ bottomSheetRef }: SongOptionsProps) => {
         icon={require('@/assets/icons/remove.png')}
         text={'Remove from Playlist'}
         show={[PageType.LIBRARY, PageType.PLAYER].includes(pageType) 
-          && editSong.playlistId !== undefined
-          && editSong.playlistId !== '1'
+          && editSong.sourceId !== undefined
+          && editSong.sourceId !== 1
         }
         handler={handleRemoveFromPlaylist}
       />

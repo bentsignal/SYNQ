@@ -54,7 +54,7 @@ const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
 
   } = useGlobalContext(); 
 
-  const { shuffle } = usePlaybackContext();
+  const { shuffle, sourceType, sourceId, setSourceType, setSourceId } = usePlaybackContext();
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
 
@@ -173,9 +173,9 @@ const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
       setAdPlaying(true);
       await playAd(theme, adURL);
       const newTrack = await getTrackFromSong(song, theme);
-      if (!shuffle) {
-        await updateQueue(song.id, shuffle, theme);
-      }
+      await updateQueue(song.id, shuffle, theme, song.sourceType, song.sourceId);
+      setSourceType(song.sourceType);
+      setSourceId(song.sourceId);
       if (newTrack) {
         await addToQueue(newTrack);
       }
@@ -187,9 +187,9 @@ const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
         const newTrack = await getTrackFromSong(song, theme);
         if (newTrack) {
           await playTrack(newTrack);
-          if (!shuffle) {
-            await updateQueue(song.id, shuffle, theme);
-          }
+          await updateQueue(song.id, shuffle, theme, song.sourceType, song.sourceId);
+          setSourceType(song.sourceType);
+          setSourceId(song.sourceId);
         }
       }
       catch (error) {

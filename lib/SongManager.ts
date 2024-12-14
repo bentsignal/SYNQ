@@ -2,7 +2,7 @@ import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
-import { SongType, InfoType, PageType, TagsType } from '@/constants/Types'
+import { SongType, InfoType, PageType, TagsType, SourceType } from '@/constants/Types'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -509,14 +509,21 @@ export const getSongByResult = (result: any): SongType => {
 
 export const getNextUp = async (
   currentId: string,
-  pagination: number = 30,
-  shuffle: boolean = false
+  pagination: number = 100,
+  shuffle: boolean = false,
+  sourceType: SourceType,
+  sourceId: number,
 ): Promise<SongType[]> => {
 
   const next: SongType[] = [];
-  const db = SongDataManager.getInstance();
+  let songs: SongType[] = [];
   // TODO: only query songs after currentId
-  const songs = await db.getSongs();
+  if (sourceType === SourceType.PLAYLIST) {
+    songs = await PlaylistDataManager.getInstance().getSongsFromPlaylist(sourceId);
+  }
+  else {
+    songs = await SongDataManager.getInstance().getSongs();
+  }
 
   try {
     if (shuffle) {
@@ -529,7 +536,7 @@ export const getNextUp = async (
       }
     }
     else {
-      const validSongs = songs.filter((song: SongType) => Number(song.id) > Number(currentId));
+      const validSongs = songs.filter((song: SongType, index: Number) => Number(song.id) > Number(currentId));
       const cap = pagination > validSongs.length ? validSongs.length : pagination;
       for (let i = 0; i < cap; i++) {
         const newSong = getSongByResult(validSongs[i]);
@@ -545,11 +552,11 @@ export const getNextUp = async (
 
 }
 
-export const fetchMoreSongs = async (id: string, shuffle: boolean) => {
+export const fetchMoreSongs = async (id: string, shuffle: boolean, sourceType: SourceType, sourceId: number) => {
   try {
-    let newSongs = await getNextUp(id, 30, shuffle);
+    let newSongs = await getNextUp(id, 100, shuffle, sourceType, sourceId);
     if (newSongs.length < 1) {
-      newSongs = await getNextUp(id, 30, true);
+      newSongs = await getNextUp(id, 100, true, sourceType, sourceId);
     }
     return newSongs;
   }

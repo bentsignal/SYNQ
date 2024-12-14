@@ -22,7 +22,7 @@ commands.md
 *.app
 credentials
 repos
-package-lock.json
+*.swp
 
 # macOS
 .DS_Store

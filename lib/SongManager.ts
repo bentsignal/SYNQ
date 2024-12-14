@@ -536,7 +536,8 @@ export const getNextUp = async (
       }
     }
     else {
-      const validSongs = songs.filter((song: SongType, index: Number) => Number(song.id) > Number(currentId));
+      const currentIndex = songs.findIndex((song: SongType) => song.id === currentId);
+      const validSongs = songs.filter((song: SongType, index: number) => index > currentIndex);
       const cap = pagination > validSongs.length ? validSongs.length : pagination;
       for (let i = 0; i < cap; i++) {
         const newSong = getSongByResult(validSongs[i]);

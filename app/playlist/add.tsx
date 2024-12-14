@@ -10,6 +10,8 @@ import PlaylistList from "@/components/lists/playlist"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useThemeContext } from "@/context/ThemeProvider"
 import { getPlaylists } from "@/lib/PlaylistManager"
+import { PlaylistBusEvent } from "@/station/playlist/Events"
+import playlistBus from "@/station/playlist/Bus"
 
 const AddToPlaylist = () => {
 
@@ -31,6 +33,10 @@ const AddToPlaylist = () => {
 
   useEffect(() => {
     refreshPlaylists();
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_CREATED, refreshPlaylists);
+    return () => {
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_CREATED, refreshPlaylists);
+    }
   }, []);
 
   return (

@@ -45,7 +45,7 @@ const Navigation = () => {
         options={{
           presentation: "card",
           animation: 'slide_from_bottom',
-          animationDuration: 400,
+          animationDuration: 300,
           contentStyle: { backgroundColor: 'transparent' },
           gestureEnabled: true,
           gestureDirection: "vertical",

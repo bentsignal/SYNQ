@@ -8,7 +8,6 @@ import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 import { darkenColor } from "@/lib/ColorManager";
 import { useEffect } from "react";
-import { router } from "expo-router";
 import { useThemeContext } from "@/context/ThemeProvider";
 
 export const Success = () => {
@@ -34,15 +33,6 @@ export const Success = () => {
   let source = replaceColor('#4173b9', darkenColor(theme, 10, 20), require('@/assets/anim/success.json')); // accent
   source = replaceColor('#63a3ff', theme, source); // main
 
-  const handleAnimFinish = () => {
-    setTimeout(async () => {
-      if (shouldSaveToLibrary) {
-      router.replace('/(tabs)/library')
-      }
-      setHomeState(0);
-    }, 1500);
-  }
-
   return (
     <View style={Styles.body}>
       <View style={Styles.main}>
@@ -52,7 +42,6 @@ export const Success = () => {
           loop={false}
           style={{flexGrow: 1, width: 100}}
           renderMode={'SOFTWARE'}
-          onAnimationFinish={handleAnimFinish}
         />
       </View>
     </View>
@@ -129,7 +118,6 @@ export const Failure = () => {
           title='Back'
           background={Colors.text}
           handlePress={() => {
-            router.replace('/(tabs)/library')
             setHomeState(0);
           }}
         />

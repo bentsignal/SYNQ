@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { router } from "expo-router";
 import { Styles } from "@/constants/Styles";
 import PageTitle from "@/components/PageTitle";
 import InfoModal from "@/components/modals/InfoModal";
@@ -130,6 +131,10 @@ const SavePrompt = () => {
           }
           setTimeout(() => {
             checkForReview();
+          }, 500);
+          setTimeout(() => {
+            router.replace('/(tabs)/library')
+            setHomeState(0);
           }, 1500);
         })
         .catch((error) => {
@@ -150,6 +155,12 @@ const SavePrompt = () => {
       setTransferSize(0);
       setShowImportAd(false);
       setLoading(false);
+      setTimeout(() => {
+        checkForReview();
+      }, 500);
+      setTimeout(() => {
+        setHomeState(0);
+      }, 1500);
     }
   }
 

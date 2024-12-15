@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, PanResponder, Text, Dimensions } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
-import TrackPlayer, { useProgress } from 'react-native-track-player';
+import TrackPlayer, { useProgress, usePlaybackState, State } from 'react-native-track-player';
 import { formatTime } from '@/lib/Util';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { GestureDetector, GestureType, Gesture } from "react-native-gesture-handler";
@@ -16,7 +16,8 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   const { adPlaying } = useGlobalContext();
   const { theme } = useThemeContext();
   const { position, duration } = useProgress(interval);
-  
+  const playbackState = usePlaybackState();
+
   const [elapsedSec, setElapsedSec] = useState(0);
   const [remainingSec, setRemainingSec] = useState(0);
 
@@ -30,11 +31,15 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   const windowWidth = useSharedValue(Dimensions.get('window').width);
 
   useEffect(() => {
-    if (!scrubbing.value) {
-      setElapsedSec(Math.floor(position));
-      setRemainingSec(Math.floor(duration) - Math.floor(position));
-      updateTimeline();
-    }
+    console.log(playbackState.state);
+  }, [playbackState.state]);
+
+  useEffect(() => {
+    if (scrubbing.value) return;
+    if (!(playbackState.state === State.Playing || playbackState.state === State.Paused)) return;
+    setElapsedSec(Math.floor(position));
+    setRemainingSec(Math.floor(duration) - Math.floor(position));
+    updateTimeline();
   }, [position]);
 
   useEffect(() => {
@@ -42,10 +47,9 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   }, [adPlaying]);
 
   useEffect(() => {
-    if (duration !== 0) {
-      progressScale.value = position / duration;
-      sharedDuration.value = Math.floor(duration);
-    }
+    if (duration === 0) return;
+    progressScale.value = position / duration;
+    sharedDuration.value = Math.floor(duration);
   }, [duration]);
 
   const updateTimeline = () => {

@@ -20,6 +20,8 @@ const SongList = memo((
     sourceId,
     sourceType,
     setScrollPosition,
+    gradientStart,
+    gradientEnd,
   }: 
   {
     songs: SongType[], 
@@ -31,6 +33,8 @@ const SongList = memo((
     sourceId?: number,
     sourceType?: SourceType,
     setScrollPosition?: (position: number) => void,
+    gradientStart?: string,
+    gradientEnd?: string,
   }
 ) => {
 
@@ -60,6 +64,8 @@ const SongList = memo((
         keyExtractor={(song, index) => generateSongKey(song)}
         extra={selectedId}
         setScrollPosition={setScrollPosition}
+        gradientStart={gradientStart}
+        gradientEnd={gradientEnd}
       />
     </>
   );

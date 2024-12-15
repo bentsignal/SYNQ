@@ -13,7 +13,9 @@ const List = memo((
     item,
     keyExtractor,
     extra,
-    setScrollPosition
+    setScrollPosition,
+    gradientStart,
+    gradientEnd,
   }: 
   {
     data: any[], 
@@ -22,7 +24,9 @@ const List = memo((
     item: ListRenderItem<any>,
     keyExtractor: (item: any, index: number) => string,
     extra?: any,
-    setScrollPosition?: (position: number) => void
+    setScrollPosition?: (position: number) => void,
+    gradientStart?: string,
+    gradientEnd?: string,
   }
 ) => {
 
@@ -114,12 +118,12 @@ const List = memo((
         />
         <AnimatedGradient
           style={ Local.topGradient }
-          colors={[ 'rgba(16, 16, 16, 1)', 'rgba(16, 16, 16, 0)']}
+          colors={[ gradientStart || 'rgba(16, 16, 16, 1)', gradientEnd || 'rgba(16, 16, 16, 0)']}
           pointerEvents={'none'}
         />
         <LinearGradient
           style={ Local.bottomGradient }
-          colors={['rgba(16, 16, 16, 0)', 'rgba(16, 16, 16, 1)']}
+          colors={[ gradientEnd || 'rgba(16, 16, 16, 0)', gradientStart || 'rgba(16, 16, 16, 1)']}
           pointerEvents={'none'}
         />
       </Animated.View>

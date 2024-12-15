@@ -49,7 +49,7 @@ const Queue = () => {
       alignItems: 'center',
     },
     footer: {
-      backgroundColor: Colors.footer,
+      backgroundColor: Colors.popup,
       borderTopWidth: 1,
       borderTopColor: Colors.popup,
       height: 150,
@@ -159,6 +159,8 @@ const Queue = () => {
       <SongList 
         songs={songs}
         pageType={PageType.QUEUE}
+        gradientStart={'rgba(24, 24, 24, 1)'}
+        gradientEnd={'rgba(24, 24, 24, 0)'}
       />
       <View style={Local.footer}>
         <Time progressColor={theme}/>

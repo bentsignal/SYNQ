@@ -10,17 +10,16 @@ import { PageType } from "@/constants/Types";
 import Select from "@/components/Select";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import playlistBus from "@/station/playlist";
-import BottomSheet from "@gorhom/bottom-sheet";
 import * as Haptics from 'expo-haptics';
 import { addToPlaylist, removeFromPlaylist, isSongInPlaylist } from "@/lib/PlaylistManager";
 import { PlaylistBusEvent, PlaylistNameModifiedEvent, PlaylistSongCountModifiedEvent } from "@/station/playlist/Events";
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
 type PlaylistProps = {
   playlist: PlaylistType,
-  sheetRef?: React.RefObject<BottomSheet>,
 }
 
-const PlaylistItem = ({playlist, sheetRef}: PlaylistProps) => {
+const PlaylistItem = ({playlist}: PlaylistProps) => {
 
   const { 
     
@@ -96,7 +95,7 @@ const PlaylistItem = ({playlist, sheetRef}: PlaylistProps) => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     setEditPlaylist(playlist);
-    sheetRef?.current?.snapToIndex(0);
+    TrueSheet.present('playlist-sheet');
   }
 
   const handleSelect = async () => {

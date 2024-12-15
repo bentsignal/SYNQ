@@ -133,12 +133,6 @@ export const Styles = StyleSheet.create({
     paddingTop: 15,
     paddingBottom: 15,
   },
-  bottomSheetWrapper: {
-    position: 'absolute', 
-    height: '100%', 
-    zIndex: 100,
-    width: '100%',
-  },
 
   // general styles
   divider: {

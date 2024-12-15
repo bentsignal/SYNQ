@@ -6,7 +6,6 @@ import EditModal from '@/components/modals/EditModal';
 import DeleteModal from '@/components/modals/DeleteModal';
 import { generateSongKey } from '@/lib/SongManager';
 import List from '@/components/List';
-import BottomSheet from '@gorhom/bottom-sheet';
 
 const MemoSong = memo(Song);
 
@@ -18,7 +17,6 @@ const SongList = memo((
     pageType, 
     fadeCover = true, 
     fadeSong = false,
-    sheetRef,
     sourceId,
     sourceType,
     setScrollPosition,
@@ -30,7 +28,6 @@ const SongList = memo((
     pageType: PageType,
     fadeCover?: boolean,
     fadeSong?: boolean,
-    sheetRef?: React.RefObject<BottomSheet>,
     sourceId?: number,
     sourceType?: SourceType,
     setScrollPosition?: (position: number) => void,
@@ -48,7 +45,6 @@ const SongList = memo((
         song={item}
         fadeCover={fadeCover}
         fadeSong={fadeSong}
-        sheetRef={sheetRef}
       />
     );
   };

@@ -1,87 +1,42 @@
 import React, { useState, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
+import Bar from '../modals/Bar';
 
 type SheetProps = {
-  bottomSheetRef: React.RefObject<BottomSheet>,
-  setIsOpen: (isOpen: boolean) => void,
-  setScrollEnabled: (scrollEnabled: boolean) => void,
+  name: string,
   children?: React.ReactNode,
 }
 
-const Sheet = ({bottomSheetRef, setIsOpen, setScrollEnabled, children}: SheetProps) => {
-
-  const [sheetIndex, setSheetIndex] = useState(-1);
-
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log(index);
-    setSheetIndex(index);
-    setIsOpen(index !== -1);
-    setScrollEnabled(index === 1);
-  }, []);
+const Sheet = ({ name, children}: SheetProps) => {
 
   return (
-    <>
-      <BottomSheet
-        animateOnMount={false}
-        ref={bottomSheetRef}
-        index={sheetIndex}
-        snapPoints={['45%', '80%']}
-        enablePanDownToClose={true}
-        enableOverDrag={true}
-        backdropComponent={props => (
-          <BottomSheetBackdrop
-            {...props}
-            opacity={0.7}
-            disappearsOnIndex={-1}
-            appearsOnIndex={0}
-          />
-        )}
-        handleIndicatorStyle={Local.handle}
-        backgroundStyle={Local.background}
-        style={Local.sheetStyle}
-        onChange={handleSheetChanges}
-        onClose={() => {
-          setSheetIndex(-1);
-        }}
-        children={
-          <BottomSheetView 
-            style={Local.bottomSheet}
-            children={children}
-          />
-        }
-      />
-    </>
+    <TrueSheet
+      name={name}
+      sizes={['auto', 'large']}
+      backgroundColor={Colors.popup}
+      style={Local.sheetStyle}
+      grabber={false}
+      contentContainerStyle={Local.contentContainer}
+    >
+      <Bar />
+      {children}
+    </TrueSheet>
   );
+
 }
 
 const Local = StyleSheet.create({
-  handle: {
-    backgroundColor: Colors.altDisabled,
-    width: 80,
-    marginTop: 5,
-  },
-  background: {
-    backgroundColor: Colors.popup,
-  },
   sheetStyle: {
-    flexGrow: 1,
-  },
-  bottomSheet: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    backgroundColor: Colors.popup,
-    paddingLeft: 20,
-    paddingRight: 20,
-    paddingTop: 10,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    flex: 1,
-    flexGrow: 1,
-    zIndex: 100,
   },
+  contentContainer: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 40,
+  }
 });
 
 export default Sheet;

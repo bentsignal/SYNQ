@@ -12,22 +12,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import GlobalProgress from '@/components/GlobalProgress';
 import Top from '@/components/Top';
 import { useAssets } from 'expo-asset';
-import { useThemeContext } from '@/context/ThemeProvider';
-import MiniPlayer from '@/components/player/MiniPlayer';
-import SongSheet from '@/components/sheet/song/SongSheet';
-import BottomSheet from '@gorhom/bottom-sheet';
-import PlaylistSheet from '@/components/sheet/playlist';
 
 const TabLayout = () => {
 
   
-  const { showOverlay, setHaptic, setAdURL, 
-    importSongSheet, libraryPlaylistSheet } = useGlobalContext();
-
-  const { theme } = useThemeContext();
-
-  const [songSheetOpen, setSongSheetOpen] = useState(false);
-  const [playlistSheetOpen, setPlaylistSheetOpen] = useState(false);
+  const { showOverlay, setHaptic, setAdURL } = useGlobalContext();
 
   const [assets, error] = useAssets([require('@/assets/audio/ad.mp3')]);
 
@@ -62,12 +51,6 @@ const TabLayout = () => {
       <NotificationModal />
       <Overlay show={showOverlay} activeOpacity={0.95}/>
       <Server />
-      <View style={[Styles.bottomSheetWrapper, {pointerEvents: songSheetOpen ? 'auto' : 'none'}]}>
-        <SongSheet bottomSheetRef={importSongSheet} setIsOpen={setSongSheetOpen}/>
-      </View>
-      <View style={[Styles.bottomSheetWrapper, {pointerEvents: playlistSheetOpen ? 'auto' : 'none'}]}>
-        <PlaylistSheet bottomSheetRef={libraryPlaylistSheet} setIsOpen={setPlaylistSheetOpen}/>
-      </View>
       <Tabs
         screenOptions={{
           headerShown: true,

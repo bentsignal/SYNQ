@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import * as expoServer from "expo-http-server";
 import * as Network from 'expo-network';
 import * as Device from 'expo-device';
 import { useGlobalContext } from '@/context/GlobalProvider';

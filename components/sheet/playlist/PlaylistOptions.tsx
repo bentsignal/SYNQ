@@ -1,8 +1,7 @@
 import SheetOption from '@/components/sheet/SheetOption';
 import { PageType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
-import { useEffect, useState } from 'react';  
-import BottomSheet from '@gorhom/bottom-sheet';
+import { useEffect, useState } from 'react';
 import { exportSongs } from '@/lib/SongManager';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
@@ -12,12 +11,10 @@ import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import { PlaylistBusEvent } from '@/station/playlist/Events';
 import playlistBus from '@/station/playlist';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
-type PlaylistOptionsProps = {
-  bottomSheetRef: React.RefObject<BottomSheet>;
-}
 
-const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
+const PlaylistOptions = ({name}: {name: string}) => {
 
   const { editPlaylist, setShowGlobalLoading } = useGlobalContext();
 
@@ -36,7 +33,7 @@ const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
   const actionDelay = 10;
 
   const handleEdit = () => {
-    bottomSheetRef.current?.close();
+    TrueSheet.dismiss(name);
     setTimeout(() => {
       router.push(`/playlist/edit/${editPlaylist.id}`);
     }, actionDelay);
@@ -66,7 +63,7 @@ const PlaylistOptions = ({ bottomSheetRef }: PlaylistOptionsProps) => {
   }
 
   const handleDelete = () => {
-    bottomSheetRef.current?.close();
+    TrueSheet.dismiss(name);
     setTimeout(() => {
       Alert.alert(
         'Delete Playlist',

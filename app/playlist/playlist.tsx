@@ -11,13 +11,11 @@ import TabBar from "@/components/TabBar";
 import SongListHeader from "@/components/lists/song/Header";
 import Overlay from "@/components/Overlay";
 import Header from "@/components/Header";
-import BottomSheet from "@gorhom/bottom-sheet";
 import playlistBus from "@/station/playlist";
-import SongSheet from '@/components/sheet/song';
 import { getPlaylistInfo, getPlaylistSongs } from "@/lib/PlaylistManager";
 import { PlaylistBusEvent } from "@/station/playlist/Events";
-import PlaylistSheet from "@/components/sheet/playlist/PlaylistSheet";
 import * as Haptics from 'expo-haptics';
+import { TrueSheet } from "@lodev09/react-native-true-sheet";
 
 const PlaylistView = ({id}: {id: string}) => {
 
@@ -28,11 +26,7 @@ const PlaylistView = ({id}: {id: string}) => {
   const [title, setTitle] = useState('');
   const [songCount, setSongCount] = useState(0);
   const [scrollPosition, setScrollPosition] = useState(0);
-  const songOptionsSheetRef = useRef<BottomSheet>(null);
-  const playlistSheetRef = useRef<BottomSheet>(null);
-  const [songSheetOpen, setSongSheetOpen] = useState(false);
   const [playlist, setPlaylist] = useState<PlaylistType | null>(null);
-  const [playlistSheetOpen, setPlaylistSheetOpen] = useState(false);
 
   const refreshInfo = async () => {
     if (id) {
@@ -91,7 +85,7 @@ const PlaylistView = ({id}: {id: string}) => {
     }
     setEditPlaylist(playlist);
     try {
-      playlistSheetRef?.current?.snapToIndex(0);
+      TrueSheet.present('playlist-sheet');
     }
     catch (error) {
       console.log('error snapping to playlist sheet:', error);
@@ -107,17 +101,10 @@ const PlaylistView = ({id}: {id: string}) => {
           showMore={true}
           handleMore={handleMore}
         />
-        <View style={[Styles.bottomSheetWrapper, {pointerEvents: songSheetOpen ? 'auto' : 'none'}]}>
-          <SongSheet bottomSheetRef={songOptionsSheetRef} setIsOpen={setSongSheetOpen}/>
-        </View>
-        <View style={[Styles.bottomSheetWrapper, {pointerEvents: playlistSheetOpen ? 'auto' : 'none'}]}>
-          <PlaylistSheet bottomSheetRef={playlistSheetRef} setIsOpen={setPlaylistSheetOpen}/>
-        </View>
         <Overlay show={showOverlay} activeOpacity={0.95}/>
         <SongList 
           songs={songs} 
           pageType={PageType.LIBRARY}
-          sheetRef={songOptionsSheetRef}
           sourceId={Number(id)}
           sourceType={SourceType.PLAYLIST}
           headerComponent={

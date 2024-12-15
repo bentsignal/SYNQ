@@ -31,10 +31,6 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   const windowWidth = useSharedValue(Dimensions.get('window').width);
 
   useEffect(() => {
-    console.log(playbackState.state);
-  }, [playbackState.state]);
-
-  useEffect(() => {
     if (scrubbing.value) return;
     if (!(playbackState.state === State.Playing || playbackState.state === State.Paused)) return;
     setElapsedSec(Math.floor(position));
@@ -117,7 +113,7 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
             <Animated.View 
               style={[styles.progress, progressStyle, { 
                 backgroundColor: progressColor ? progressColor : theme,
-                height: 7,
+                height: 8,
                 transformOrigin: 'left',
               }]}
             />

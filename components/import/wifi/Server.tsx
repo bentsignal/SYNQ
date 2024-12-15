@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import * as Network from 'expo-network';
 import * as Device from 'expo-device';
 import { useGlobalContext } from '@/context/GlobalProvider';
-import { getWifiInfo } from '@/lib/SongManager';
+import { getWifiInfo } from '@/lib/controllers/SongController';
 import Transfer from '@/assets/static/Transfer';
 import { NotificationType } from '@/constants/Types';
 import { idgen } from '@/lib/Util';

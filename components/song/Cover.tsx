@@ -1,14 +1,14 @@
 import { View, Image, TouchableOpacity, StyleSheet, Dimensions, Animated, Text } from 'react-native';
 import { useEffect, useLayoutEffect, useState, useRef } from 'react';
 import FastImage from 'react-native-fast-image';
-import { getCoverImageData } from '@/lib/SongManager';
+import { getCoverImageData } from '@/lib/controllers/SongController';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import Ad from '@/components/Ad';
 import { getAppIcon } from '@/constants/Logos';
 import { PageType, CoverType } from '@/constants/Types';
 import { useThemeContext } from '@/context/ThemeProvider';
-import { getPlaylistCover } from '@/lib/PlaylistManager';
+import { getPlaylistCover } from '@/lib/controllers/PlaylistController';
 import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/station/playlist/Events';
 import playlistBus from '@/station/playlist';
 import { SongBusEvent, SongCoverModifiedEvent, SongInfoModifiedEvent } from '@/station/song/Events';

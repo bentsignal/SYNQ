@@ -4,7 +4,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import { useRef, useState } from 'react';
-import { hexToRGB } from '@/lib/ColorManager';
+import { hexToRGB } from '@/lib/controllers/ColorController';
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);

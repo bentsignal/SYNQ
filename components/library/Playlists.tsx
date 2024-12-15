@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { PageType, PlaylistType } from "@/constants/Types";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import playlistBus from "@/station/playlist";
-import { getPlaylists } from "@/lib/PlaylistManager";
+import { getPlaylists } from "@/lib/controllers/PlaylistController";
 import { PlaylistBusEvent } from "@/station/playlist/Events";
 
 const Playlists = () => {

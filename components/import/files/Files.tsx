@@ -3,7 +3,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { useEffect, useState } from 'react';
 import PageTitle from '@/components/PageTitle';
-import { getCompletion } from '@/lib/SongManager';
+import { getCompletion } from '@/lib/controllers/SongController';
 import SongList from '@/components/lists/song';
 import ImportControls from '../ImportControls';
 import Progress from '@/components/Progress';

@@ -1,9 +1,9 @@
-import PlaylistDataManager from "./data/PlaylistDataManager";
+import PlaylistDataManager from "@/lib/data/PlaylistDataManager";
 import playlistBus from "@/station/playlist";
 import * as FileSystem from 'expo-file-system';
-import { getSongByResult } from "./SongManager";
+import { getSongByResult } from "@/lib/controllers/SongController";
 import { PageType } from "@/constants/Types";
-import { writeImageToLibrary } from "./SongManager";
+import { writeImageToLibrary } from "@/lib/controllers/SongController";
 import { PlaylistBusEvent } from "@/station/playlist/Events";
 
 export const createPlaylist = async (name: string, image?: string) => {

@@ -3,12 +3,12 @@ import CustomButton from '@/components/CustomButton';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
-import { removeSongs, deleteFromLibrary } from '@/lib/SongManager';
+import { removeSongs, deleteFromLibrary } from '@/lib/controllers/SongController';
 import { ListCover } from '@/components/song/Cover';
 import SongInfo from '@/components/song/SongInfo';
 import { PageType, CoverType } from '@/constants/Types';
 import TrackPlayer, { Track } from 'react-native-track-player';
-import { removeFromAllPlaylists } from '@/lib/PlaylistManager';
+import { removeFromAllPlaylists } from '@/lib/controllers/PlaylistController';
 import { useThemeContext } from '@/context/ThemeProvider';
 
 const DeleteModal = () => {

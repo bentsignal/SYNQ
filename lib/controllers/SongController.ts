@@ -8,10 +8,10 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { SaveFormat } from 'expo-image-manipulator';
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
-import SongDataManager from './data/SongDataManager';
-import { isValidNumString, idgen } from './Util';
+import SongDataManager from '@/lib/data/SongDataManager';
+import { isValidNumString, idgen } from '@/lib/Util';
 import { Image } from 'react-native';
-import PlaylistDataManager from './data/PlaylistDataManager';
+import PlaylistDataManager from '@/lib/data/PlaylistDataManager';
 import songBus from "@/station/song/Bus";
 import { SongBusEvent } from "@/station/song/Events";
 import 'react-native-get-random-values';

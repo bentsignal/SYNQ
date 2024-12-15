@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useThemeContext } from '@/context/ThemeProvider';
 import CFG from '@/constants/Config';
-import { connect } from '@/lib/PurchaseManager';
-import { restorePurchases } from '@/lib/PurchaseManager';
+import { connect } from '@/lib/controllers/PurchaseController';
+import { restorePurchases } from '@/lib/controllers/PurchaseController';
 import { Colors } from '@/constants/Colors';
 
 type Props = {

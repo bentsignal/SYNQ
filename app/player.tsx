@@ -9,7 +9,7 @@ import More from "@/components/More";
 import Time from "@/components/player/Time";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";
 import { Colors } from "@/constants/Colors";
-import { getCoverImageData, getSongById } from "@/lib/SongManager";
+import { getCoverImageData, getSongById } from "@/lib/controllers/SongController";
 import { getColors } from "react-native-image-colors";
 import { IOSImageColors } from "react-native-image-colors/build/types";
 import PausePlayButtons from "@/components/player/PausePlayButtons";

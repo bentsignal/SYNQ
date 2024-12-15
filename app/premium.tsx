@@ -11,9 +11,9 @@ import { NotificationType } from '@/constants/Types';
 import Notifications from '@/components/notifications/Notifications';
 import PremiumOption from '@/components/PremiumOption';
 import Loading from '@/components/Loading';
-import { darkenColor } from '@/lib/ColorManager';
+import { darkenColor } from '@/lib/controllers/ColorController';
 import * as Haptics from 'expo-haptics';
-import * as PurchaseManager from '@/lib/PurchaseManager';
+import * as PurchaseManager from '@/lib/controllers/PurchaseController';
 import { usePremiumContext } from '@/context/PremiumProvider';
 import { useThemeContext } from '@/context/ThemeProvider';
 

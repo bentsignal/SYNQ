@@ -1,7 +1,7 @@
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
-import { darkenColor } from '@/lib/ColorManager';
+import { darkenColor } from '@/lib/controllers/ColorController';
 
 type MainButtonProps = {
   title?: string;

@@ -3,7 +3,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useState, useEffect } from 'react';
 import CustomButton from '@/components/CustomButton';
 import Loading from '@/components/Loading';
-import { newCover, saveEdits, updateSongsInLibrary } from '@/lib/SongManager';
+import { newCover, saveEdits, updateSongsInLibrary } from '@/lib/controllers/SongController';
 import { EditCover } from '@/components/song/Cover';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';

@@ -4,7 +4,7 @@ import * as FileSystem from "expo-file-system";
 import * as Haptics from 'expo-haptics';
 import { getFileName } from '@/lib/Util';
 import { getAppIcon } from '@/constants/Logos';
-import { getNextUp } from '@/lib/SongManager';
+import { getNextUp } from '@/lib/controllers/SongController';
 
 export const setupPlayer = async () => {
   await TrackPlayer.setupPlayer();

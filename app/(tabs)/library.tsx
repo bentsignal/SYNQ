@@ -1,5 +1,5 @@
 import TrackPlayer, { Event, useTrackPlayerEvents, useActiveTrack, useProgress } from "react-native-track-player";
-import { setupPlayer, skipLeft, skipRight, updateQueue, playAd } from "@/lib/PlayerManager";
+import { setupPlayer, skipLeft, skipRight, updateQueue, playAd } from "@/lib/controllers/PlayerController";
 import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Styles } from "@/constants/Styles";
 import PageTitle from '@/components/PageTitle';

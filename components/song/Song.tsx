@@ -13,13 +13,13 @@ import { ListCover } from '@/components/song/Cover';
 import { BlurView } from 'expo-blur';
 import CustomButton from '../CustomButton';
 import Skeleton from '../Skeleton';
-import { darkenColor } from '@/lib/ColorManager';
+import { darkenColor } from '@/lib/controllers/ColorController';
 import * as Haptics from 'expo-haptics';
 import More from '@/components/More';
 import { PageType, CoverType } from '@/constants/Types';
 import { useActiveTrack } from "react-native-track-player";
 import { getTrackFromSong, playTrack, 
-  updateQueue, playAd, addToQueue } from '@/lib/PlayerManager';
+  updateQueue, playAd, addToQueue } from '@/lib/controllers/PlayerController';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
 import songBus from '@/station/song';

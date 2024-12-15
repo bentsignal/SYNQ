@@ -4,7 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import GlobalProvider from "@/context/GlobalProvider";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { connect, restorePurchases } from "@/lib/PurchaseManager";
+import { connect, restorePurchases } from "@/lib/controllers/PurchaseController";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import DataManager from "@/lib/data/DataManager";
 import { LogBox } from "react-native";

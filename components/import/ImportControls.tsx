@@ -3,14 +3,14 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import CustomButton from '@/components/CustomButton';
-import { deleteFromLibrary, exportSongs, removeSongs } from '@/lib/SongManager';
-import { darkenColor } from '@/lib/ColorManager';
+import { deleteFromLibrary, exportSongs, removeSongs } from '@/lib/controllers/SongController';
+import { darkenColor } from '@/lib/controllers/ColorController';
 import Notifications from '@/components/notifications/Notifications';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { Track } from 'react-native-track-player';
 import { PageType } from '@/constants/Types';
 import TrackPlayer from 'react-native-track-player';
-import { removeFromAllPlaylists } from '@/lib/PlaylistManager';
+import { removeFromAllPlaylists } from '@/lib/controllers/PlaylistController';
 import { router } from 'expo-router';
 
 const ImportControls = (

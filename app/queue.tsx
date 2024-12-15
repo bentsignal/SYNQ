@@ -13,7 +13,7 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import SongList from "@/components/lists/song";
 import { useEffect, useState } from "react";
 import { CoverType, PageType, SongType } from "@/constants/Types";
-import { getSongById, generateSongKey } from "@/lib/SongManager";
+import { getSongById, generateSongKey } from "@/lib/controllers/SongController";
 import { ListCover } from "@/components/song/Cover";
 import SongInfo from "@/components/song/SongInfo";
 import TrackPlayer, { useActiveTrack } from "react-native-track-player";

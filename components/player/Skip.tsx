@@ -1,6 +1,6 @@
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { PlayButton } from './PausePlayButtons';
-import { skipLeft, skipRight, playAd } from '@/lib/PlayerManager';
+import { skipLeft, skipRight, playAd } from '@/lib/controllers/PlayerController';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import * as Haptics from 'expo-haptics';
 import { useThemeContext } from '@/context/ThemeProvider';

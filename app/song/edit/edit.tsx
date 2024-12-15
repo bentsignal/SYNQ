@@ -11,9 +11,9 @@ import CustomButton from "@/components/CustomButton";
 import Notifications from "@/components/notifications/Notifications";
 import { router } from "expo-router";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import { saveEdits, updateSongsInLibrary } from "@/lib/SongManager";
+import { saveEdits, updateSongsInLibrary } from "@/lib/controllers/SongController";
 import { useThemeContext } from "@/context/ThemeProvider";
-import { newCover } from "@/lib/SongManager";
+import { newCover } from "@/lib/controllers/SongController";
 import * as Haptics from 'expo-haptics';
 
 const MemoTextInput = memo(TextInput);

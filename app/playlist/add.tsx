@@ -9,7 +9,7 @@ import { PageType, PlaylistType } from "@/constants/Types"
 import PlaylistList from "@/components/lists/playlist"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useThemeContext } from "@/context/ThemeProvider"
-import { getPlaylists } from "@/lib/PlaylistManager"
+import { getPlaylists } from "@/lib/controllers/PlaylistController"
 import { PlaylistBusEvent } from "@/station/playlist/Events"
 import playlistBus from "@/station/playlist/Bus"
 

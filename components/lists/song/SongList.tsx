@@ -4,7 +4,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import Song from '@/components/song';
 import EditModal from '@/components/modals/EditModal';
 import DeleteModal from '@/components/modals/DeleteModal';
-import { generateSongKey } from '@/lib/SongManager';
+import { generateSongKey } from '@/lib/controllers/SongController';
 import List from '@/components/List';
 
 const MemoSong = memo(Song);

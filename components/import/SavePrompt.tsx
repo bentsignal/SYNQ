@@ -7,7 +7,7 @@ import ImportControls from "@/components/import/ImportControls";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Colors } from "@/constants/Colors";
 import Checkbox from "expo-checkbox";
-import { saveToLibrary } from "@/lib/SongManager";
+import { saveToLibrary } from "@/lib/controllers/SongController";
 import axios from "axios";
 import Progress from "@/components/Progress";
 import * as StoreReview from 'expo-store-review';

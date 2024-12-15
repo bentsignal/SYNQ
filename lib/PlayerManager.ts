@@ -8,6 +8,7 @@ import { getNextUp } from '@/lib/SongManager';
 
 export const setupPlayer = async () => {
   await TrackPlayer.setupPlayer();
+  // await TrackPlayer.setRate(1.5);
   TrackPlayer.updateOptions({
     capabilities: [
       Capability.Play,

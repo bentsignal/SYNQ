@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import BottomSheet from '@gorhom/bottom-sheet';
 import Sheet from '@/components/sheet';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { View, Text, StyleSheet } from 'react-native';

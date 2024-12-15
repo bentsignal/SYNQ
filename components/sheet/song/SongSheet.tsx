@@ -4,7 +4,6 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import SongInfo from '@/components/song/SongInfo';
 import { ListCover } from '@/components/song/Cover';
-import BottomSheet from '@gorhom/bottom-sheet';
 import { CoverType } from '@/constants/Types';
 import * as Haptics from 'expo-haptics';
 import SongOptions from './SongOptions';

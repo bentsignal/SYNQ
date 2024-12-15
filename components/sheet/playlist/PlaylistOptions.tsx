@@ -1,8 +1,7 @@
 import SheetOption from '@/components/sheet/SheetOption';
 import { PageType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
-import { useEffect, useState } from 'react';  
-import BottomSheet from '@gorhom/bottom-sheet';
+import { useEffect, useState } from 'react';
 import { exportSongs } from '@/lib/SongManager';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';

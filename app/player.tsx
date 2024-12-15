@@ -18,10 +18,6 @@ import ShuffleButton from "@/components/player/ShuffleButton";
 import { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util"; 
 import { useThemeContext } from "@/context/ThemeProvider";
-import { router } from "expo-router";
-import SongSheet from "@/components/sheet/song";
-import { Styles } from "@/constants/Styles";
-import BottomSheet from "@gorhom/bottom-sheet";
 import * as Haptics from 'expo-haptics';
 import { PageType, SongType } from "@/constants/Types";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
@@ -35,8 +31,6 @@ const Player = () => {
 
   const [bg, setBg] = useState(Colors.popup);
   const [progressColor, setProgressColor] = useState(theme);
-  const [songSheetOpen, setSongSheetOpen] = useState(false);
-  const importSongSheet = useRef<BottomSheet>(null);
   const [song, setSong] = useState<SongType | null>(null);
 
   const insets = useSafeAreaInsets();

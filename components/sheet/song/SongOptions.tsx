@@ -8,7 +8,6 @@ import { getTrackFromSong } from '@/lib/PlayerManager';
 import playlistBus from '@/station/playlist';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import BottomSheet from '@gorhom/bottom-sheet';
 import { deleteFromLibrary, exportSongs, removeSongs } from '@/lib/SongManager';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
@@ -16,7 +15,6 @@ import { removeFromAllPlaylists, removeFromPlaylist } from '@/lib/PlaylistManage
 import { PlaylistBusEvent } from '@/station/playlist/Events';
 import { Track } from 'react-native-track-player';
 import TrackPlayer from 'react-native-track-player';
-import { SongType } from '@/constants/Types';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
 type SongOptionsProps = {

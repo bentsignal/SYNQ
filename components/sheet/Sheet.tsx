@@ -23,7 +23,7 @@ const Sheet = ({ name, children}: SheetProps) => {
       <Bar />
       {children}
     </TrueSheet>
-  )  
+  );
 
 }
 

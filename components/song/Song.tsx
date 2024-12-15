@@ -20,7 +20,6 @@ import { PageType, CoverType } from '@/constants/Types';
 import { useActiveTrack } from "react-native-track-player";
 import { getTrackFromSong, playTrack, 
   updateQueue, playAd, addToQueue } from '@/lib/PlayerManager';
-import BottomSheet from '@gorhom/bottom-sheet';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
 import songBus from '@/station/song';
@@ -32,10 +31,9 @@ type SongProps = {
   song: SongType, 
   fadeCover: boolean, 
   fadeSong: boolean,
-  sheetRef?: React.RefObject<BottomSheet>,
 }
 
-const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
+const Song = ({ song, fadeCover, fadeSong }: SongProps) => {
 
   const [selected, setSelected] = useState(false);
   const [loaded, setLoaded] = useState(false);

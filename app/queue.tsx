@@ -22,6 +22,7 @@ import { useThemeContext } from '@/context/ThemeProvider';
 import { usePlaybackContext } from "@/context/PlaybackProvider";
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
+import Bar from "@/components/modals/Bar";
 
 const Queue = () => {
 
@@ -35,10 +36,10 @@ const Queue = () => {
 
   const Local = StyleSheet.create({
     container: {
-      backgroundColor: Colors.background,
+      backgroundColor: Colors.popup,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
-      paddingTop: insets.top + 20,
+      // paddingTop: insets.top + 20,
     },
     currentlyPlayingContainer: {
       maxWidth: Dimensions.get('window').width * 0.9,
@@ -82,6 +83,9 @@ const Queue = () => {
       color: Colors.text,
       marginBottom: 10,
       width: Dimensions.get('window').width * 0.9,
+    },
+    divider: {
+      height: 10,
     }
   });
 
@@ -139,6 +143,8 @@ const Queue = () => {
 
   return (
     <View style={[Styles.body, Local.container]}>
+      <Bar />
+      <View style={Local.divider}/>
       <PageTitle title="Now Playing"/>
       <View style={Local.currentlyPlayingContainer}>
         <ListCover 

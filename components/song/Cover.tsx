@@ -445,6 +445,7 @@ export const PlayerCover = ({id}: {id: string}) => {
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 12,
+      marginTop: 10,
     },
     artwork: {
       aspectRatio: aspectRatio,

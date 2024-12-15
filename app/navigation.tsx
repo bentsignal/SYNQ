@@ -43,8 +43,8 @@ const Navigation = () => {
       <Stack.Screen 
         name="player"
         options={{
-          presentation: "card",
-          animation: 'slide_from_bottom',
+          presentation: "modal",
+          // animation: 'slide_from_bottom',
           animationDuration: 300,
           contentStyle: { backgroundColor: 'transparent' },
           gestureEnabled: true,
@@ -56,10 +56,12 @@ const Navigation = () => {
       <Stack.Screen 
         name="queue"
         options={{
-          presentation: "card",
-          animation: 'fade_from_bottom',
+          presentation: "modal",
+          // animation: 'fade_from_bottom',
           animationDuration: 300,
-          gestureEnabled: false,
+          gestureEnabled: true,
+          gestureDirection: 'vertical',
+          fullScreenGestureEnabled: true,
           headerShown: false,
           contentStyle: { backgroundColor: 'transparent' },
         }}

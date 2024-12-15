@@ -73,7 +73,7 @@ const Player = () => {
   const Local = StyleSheet.create({
     container: {
       flex: 1,
-      paddingTop: insets.top,
+      // paddingTop: insets.top,
       alignItems: 'center',
       backgroundColor: bg,
       borderTopLeftRadius: 20,

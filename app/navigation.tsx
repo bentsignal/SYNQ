@@ -44,13 +44,22 @@ const Navigation = () => {
         name="player"
         options={{
           presentation: "modal",
-          // animation: 'slide_from_bottom',
-          animationDuration: 300,
           contentStyle: { backgroundColor: 'transparent' },
           gestureEnabled: true,
           gestureDirection: "vertical",
           fullScreenGestureEnabled: true,
           headerShown: false,
+        }}
+      />
+      <Stack.Screen 
+        name="player/edit"
+        options={{
+          presentation: "modal",
+          headerShown: false,
+          gestureEnabled: true,
+          gestureDirection: "vertical",
+          fullScreenGestureEnabled: true,
+          contentStyle: { backgroundColor: 'transparent' },
         }}
       />
       <Stack.Screen 

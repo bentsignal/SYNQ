@@ -21,6 +21,7 @@ import { useThemeContext } from "@/context/ThemeProvider";
 import * as Haptics from 'expo-haptics';
 import { PageType, SongType } from "@/constants/Types";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
+import { router } from "expo-router";
 
 const Player = () => {
 
@@ -131,7 +132,7 @@ const Player = () => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     setEditSong(song);
-    TrueSheet.present('song-sheet');
+    router.push('/player/edit');
   }
 
   return (

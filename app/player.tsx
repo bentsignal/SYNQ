@@ -24,6 +24,7 @@ import { Styles } from "@/constants/Styles";
 import BottomSheet from "@gorhom/bottom-sheet";
 import * as Haptics from 'expo-haptics';
 import { PageType, SongType } from "@/constants/Types";
+import { TrueSheet } from "@lodev09/react-native-true-sheet";
 
 const Player = () => {
 
@@ -136,7 +137,7 @@ const Player = () => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     setEditSong(song);
-    importSongSheet.current?.snapToIndex(0);
+    TrueSheet.present('song-sheet');
   }
 
   return (
@@ -163,9 +164,6 @@ const Player = () => {
           </View>
           <QueueButton />
         </View>
-      </View>
-      <View style={[Styles.bottomSheetWrapper, {pointerEvents: songSheetOpen ? 'auto' : 'none'}]}>
-        <SongSheet bottomSheetRef={importSongSheet} setIsOpen={setSongSheetOpen}/>
       </View>
     </>
   );

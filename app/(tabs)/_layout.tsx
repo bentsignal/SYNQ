@@ -62,12 +62,6 @@ const TabLayout = () => {
       <NotificationModal />
       <Overlay show={showOverlay} activeOpacity={0.95}/>
       <Server />
-      <View style={[Styles.bottomSheetWrapper, {pointerEvents: songSheetOpen ? 'auto' : 'none'}]}>
-        <SongSheet bottomSheetRef={importSongSheet} setIsOpen={setSongSheetOpen}/>
-      </View>
-      <View style={[Styles.bottomSheetWrapper, {pointerEvents: playlistSheetOpen ? 'auto' : 'none'}]}>
-        <PlaylistSheet bottomSheetRef={libraryPlaylistSheet} setIsOpen={setPlaylistSheetOpen}/>
-      </View>
       <Tabs
         screenOptions={{
           headerShown: true,

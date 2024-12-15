@@ -1805,6 +1805,11 @@
   dependencies:
     hex-rgb "^4.1.0"
 
+"@lodev09/react-native-true-sheet@^0.13.0":
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/@lodev09/react-native-true-sheet/-/react-native-true-sheet-0.13.0.tgz#f54fbe961b5803e55a09713943425f8be71b0f53"
+  integrity sha512-swssvhHONpg6Hb7d7V0ojY96/ERj7lgn/JXSb9jScB01+Fizv7WPhjb7EZ+PSP+FpR9z4/3J7hzvBywDUqncJQ==
+
 "@missingcore/audio-metadata@^1.3.0":
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@missingcore/audio-metadata/-/audio-metadata-1.3.0.tgz#d85afe8c1a504e871af32ba0445a552fe5f0d5ce"

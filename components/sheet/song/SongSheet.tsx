@@ -10,23 +10,19 @@ import * as Haptics from 'expo-haptics';
 import SongOptions from './SongOptions';
 import Sheet from '@/components/sheet';
 import SheetStyles from '@/components/sheet/Styles';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
 type SongSheetProps = {
-  bottomSheetRef: React.RefObject<BottomSheet>,
-  setIsOpen: (isOpen: boolean) => void
+  name: string,
 }
 
-const SongSheet = ({bottomSheetRef, setIsOpen}: SongSheetProps) => {
+const SongSheet = ({name}: SongSheetProps) => {
 
   const { editSong, haptic } = useGlobalContext();
   const [scrollEnabled, setScrollEnabled] = useState(false);
 
   return (
-    <Sheet
-      bottomSheetRef={bottomSheetRef}
-      setIsOpen={setIsOpen}
-      setScrollEnabled={setScrollEnabled}
-    >
+    <Sheet name={name}>
       <View style={SheetStyles.infoContainer}>
         <ListCover 
           id={editSong.id}
@@ -43,14 +39,14 @@ const SongSheet = ({bottomSheetRef, setIsOpen}: SongSheetProps) => {
         scrollEnabled={scrollEnabled}
         onMomentumScrollBegin={(event) => {
           if (event.nativeEvent.contentOffset.y < 0) {
-            bottomSheetRef.current?.close();
+            TrueSheet.dismiss(name);
             if (haptic) {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             }
           }
         }}
       >
-        <SongOptions bottomSheetRef={bottomSheetRef} />
+        <SongOptions name={name}/>
       </ScrollView>
     </Sheet>
   );

@@ -13,6 +13,7 @@ import ThemeProvider from "@/context/ThemeProvider";
 import PremiumProvider from "@/context/PremiumProvider";
 import Navigation from "@/app/navigation";
 import PlaybackProvider from "@/context/PlaybackProvider";
+import Sheets from "@/components/sheet/Sheets";
 
 LogBox.ignoreLogs(['Require cycle:']);
 
@@ -79,9 +80,12 @@ const RootLayout = () => {
           <GlobalProvider
             initShouldPlayAd={shouldPlayAd}
             children={
-              <GestureHandlerRootView style={{flex: 1}}>
-                <Navigation />
-              </GestureHandlerRootView>
+              <>
+                <Sheets />
+                <GestureHandlerRootView style={{flex: 1}}>
+                  <Navigation />
+                </GestureHandlerRootView>
+              </>
             }
           />
         </PlaybackProvider>

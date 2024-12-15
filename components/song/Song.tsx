@@ -26,6 +26,7 @@ import { usePremiumContext } from '@/context/PremiumProvider';
 import songBus from '@/station/song';
 import { SongBusEvent, SongInfoModifiedEvent, SongCoverModifiedEvent } from '@/station/song/Events';
 import { usePlaybackContext } from '@/context/PlaybackProvider';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
 type SongProps = {
   song: SongType, 
@@ -272,7 +273,7 @@ const Song = ({ song, fadeCover, fadeSong, sheetRef }: SongProps) => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }
               setEditSong(song);
-              sheetRef?.current?.snapToIndex(0);
+              TrueSheet.present('song-sheet');
             }}
           />
 

@@ -14,6 +14,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import * as Haptics from 'expo-haptics';
 import { addToPlaylist, removeFromPlaylist, isSongInPlaylist } from "@/lib/PlaylistManager";
 import { PlaylistBusEvent, PlaylistNameModifiedEvent, PlaylistSongCountModifiedEvent } from "@/station/playlist/Events";
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
 type PlaylistProps = {
   playlist: PlaylistType,
@@ -96,7 +97,7 @@ const PlaylistItem = ({playlist, sheetRef}: PlaylistProps) => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     setEditPlaylist(playlist);
-    sheetRef?.current?.snapToIndex(0);
+    TrueSheet.present('playlist-sheet');
   }
 
   const handleSelect = async () => {

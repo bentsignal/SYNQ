@@ -17,12 +17,13 @@ import { PlaylistBusEvent } from '@/station/playlist/Events';
 import { Track } from 'react-native-track-player';
 import TrackPlayer from 'react-native-track-player';
 import { SongType } from '@/constants/Types';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
 type SongOptionsProps = {
-  bottomSheetRef: React.RefObject<BottomSheet>;
+  name: string;
 }
 
-const SongOptions = ({ bottomSheetRef }: SongOptionsProps) => {
+const SongOptions = ({ name }: SongOptionsProps) => {
 
   const { 
     
@@ -53,7 +54,7 @@ const SongOptions = ({ bottomSheetRef }: SongOptionsProps) => {
   const actionDelay = 10;
 
   const handleAddToQueue = () => {
-    bottomSheetRef.current?.close();
+    TrueSheet.dismiss(name);
     if (haptic) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
@@ -66,7 +67,7 @@ const SongOptions = ({ bottomSheetRef }: SongOptionsProps) => {
   }
 
   const handleEditSong = () => {
-    bottomSheetRef.current?.close();
+    TrueSheet.dismiss(name);
     setTimeout(() => {
       router.push(`/song/edit/${editSong.id}`);
     }, actionDelay);
@@ -125,7 +126,7 @@ const SongOptions = ({ bottomSheetRef }: SongOptionsProps) => {
   }
 
   const handleDeleteSong = () => {
-    bottomSheetRef.current?.close();
+    TrueSheet.dismiss(name);
     setTimeout(() => {
       Alert.alert(
         `${selectedSongs.length > 1 ? 'Delete songs' : 'Delete song'}`,
@@ -141,14 +142,14 @@ const SongOptions = ({ bottomSheetRef }: SongOptionsProps) => {
   }
 
   const handleAddToPlaylist = () => {
-    bottomSheetRef.current?.close();
+    TrueSheet.dismiss(name);
     setTimeout(() => {
       router.push('/playlist/add');
     }, 200);
   }
 
   const handleRemoveFromPlaylist = async () => {
-    bottomSheetRef.current?.close();
+    TrueSheet.dismiss(name);
     try {
       await removeFromPlaylist(editSong.sourceId, editSong.id);
       setTimeout(() => {

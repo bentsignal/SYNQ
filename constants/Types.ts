@@ -51,6 +51,7 @@ export enum PageType {
   ALBUM = 6,
   ARTIST = 7,
   CREATE = 8,
+  ADD = 9,
 }
 
 export enum SourceType {

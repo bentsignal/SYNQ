@@ -161,6 +161,7 @@ const Queue = () => {
         pageType={PageType.QUEUE}
         gradientStart={'rgba(24, 24, 24, 1)'}
         gradientEnd={'rgba(24, 24, 24, 0)'}
+        fadeCover={false}
       />
       <View style={Local.footer}>
         <Time progressColor={theme}/>

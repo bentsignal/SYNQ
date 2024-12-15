@@ -79,7 +79,7 @@ const PlaylistItem = ({playlist}: PlaylistProps) => {
   }, []);
 
   useEffect(() => {
-    if (editSong.id && playlist.pageType === PageType.CREATE) {
+    if (editSong.id && playlist.pageType === PageType.ADD) {
       isSongInPlaylist(playlist.id, editSong.id)
         .then((result) => {
           setSelected(result);
@@ -101,15 +101,20 @@ const PlaylistItem = ({playlist}: PlaylistProps) => {
   const handleSelect = async () => {
     setSelected(!selected);
     await playlistChangesMade(!selected);
+    console.log('selected', selected);
   }
 
   return (
     <TouchableOpacity 
       style={Local.container}
-      activeOpacity={playlist.pageType === PageType.CREATE ? 1 : 0.8}
-      disabled={playlist.pageType === PageType.CREATE}
-      onPress={() => {
-        router.push(`/playlist/${playlist.id}`);
+      activeOpacity={0.8}
+      onPress={async () => {
+        if (playlist.pageType === PageType.ADD) {
+          await handleSelect();
+        }
+        else {
+          router.push(`/playlist/${playlist.id}`);
+        }
       }}
     >
       <ListCover 
@@ -124,7 +129,7 @@ const PlaylistItem = ({playlist}: PlaylistProps) => {
       {playlist.pageType === PageType.LIBRARY &&
         <More handlePress={handleMore} />
       }
-      {playlist.pageType === PageType.CREATE &&
+      {playlist.pageType === PageType.ADD &&
         <Select 
           active={selected}
           handlePress={handleSelect}

@@ -56,7 +56,7 @@ const AddToPlaylist = () => {
       <View style={Styles.divider} />
       <PlaylistList 
         playlists={playlists}
-        pageType={PageType.CREATE}
+        pageType={PageType.ADD}
       />
       <View style={[Local.bottomButtonsWrapper, {paddingBottom: insets.bottom}]}>
         <CustomButton

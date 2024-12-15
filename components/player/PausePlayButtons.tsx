@@ -4,6 +4,7 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import Svg, { Path } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import TrackPlayer, { State, usePlaybackState } from "react-native-track-player";
+import { useEffect, useState } from "react";
 
 const PausePlayButtons = ({
   playSize,
@@ -22,11 +23,17 @@ const PausePlayButtons = ({
   const { haptic } = useGlobalContext();
 
   const playbackState = usePlaybackState();
-  const paused = playbackState.state === State.Paused;
+  const [currentState, setCurrentState] = useState(playbackState.state);
+  const [previousState, setPreviousState] = useState(State.Playing);
+
+  useEffect(() => {
+    setPreviousState(currentState);
+    setCurrentState(playbackState.state);
+  }, [playbackState.state]);
 
   const togglePlayback = async () => {
     try {
-      if (paused) {
+      if ([State.Paused, State.Ready].includes(currentState)) {
         if (haptic) {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
         }
@@ -44,13 +51,22 @@ const PausePlayButtons = ({
     }
   }
 
+  const getButton = () => {
+    if ([State.Paused, State.Ready].includes(currentState) && ![State.Loading, State.Buffering].includes(previousState)) {
+      return <PlayButton size={playSize} color={color}/>
+    }
+    else {
+      return <PauseButton height={pauseHeight} width={pauseWidth} color={color}/>
+    }
+  }
+
   return (
     <TouchableOpacity 
       onPress={togglePlayback}
       style={{...style}}
       activeOpacity={0.8}
     >
-      {paused ? <PlayButton size={playSize} color={color}/> : <PauseButton height={pauseHeight} width={pauseWidth} color={color}/>}
+      {getButton()}
     </TouchableOpacity>
   );
 }

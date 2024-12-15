@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, PanResponder, Animated, Text, Easing, Dimensions } from 'react-native';
+import { View, StyleSheet, PanResponder, Text, Dimensions } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import TrackPlayer, { useProgress } from 'react-native-track-player';
 import { formatTime } from '@/lib/Util';
 import { useThemeContext } from '@/context/ThemeProvider';
+import { GestureDetector, GestureType, Gesture } from "react-native-gesture-handler";
+import Animated, { runOnJS, useSharedValue, withTiming, 
+  useAnimatedStyle, Easing } from 'react-native-reanimated';
 
 const Time = ({ progressColor }: { progressColor?: string }) => {
 
@@ -14,18 +17,20 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   const { theme } = useThemeContext();
   const { position, duration } = useProgress(interval);
   
-  const scrubbing = useRef(false);
   const [elapsedSec, setElapsedSec] = useState(0);
   const [remainingSec, setRemainingSec] = useState(0);
-  const durationRef = useRef(duration);
-  const allowScrub = useRef(true);
-  const preScrubCompletion = useRef(0);
-  const postScrubCompletion = useRef(0);
-  const progressScale = useRef(new Animated.Value(0)).current;
-  const sliderHeight = useRef(new Animated.Value(1)).current;
+
+  const preScrubCompletion = useSharedValue(0);
+  const postScrubCompletion = useSharedValue(0);
+  const allowScrub = useSharedValue(true);
+  const scrubbing = useSharedValue(false);
+  const sharedDuration = useSharedValue(duration);
+  const progressScale = useSharedValue(0);
+  const sliderHeight = useSharedValue(1);
+  const windowWidth = useSharedValue(Dimensions.get('window').width);
 
   useEffect(() => {
-    if (!scrubbing.current) {
+    if (!scrubbing.value) {
       setElapsedSec(Math.floor(position));
       setRemainingSec(Math.floor(duration) - Math.floor(position));
       updateTimeline();
@@ -33,107 +38,92 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
   }, [position]);
 
   useEffect(() => {
-    allowScrub.current = !adPlaying;
+    allowScrub.value = !adPlaying;
   }, [adPlaying]);
 
   useEffect(() => {
     if (duration !== 0) {
-      progressScale.setValue(position / duration);
-      durationRef.current = Math.floor(duration);
+      progressScale.value = position / duration;
+      sharedDuration.value = Math.floor(duration);
     }
   }, [duration]);
 
   const updateTimeline = () => {
-    Animated.timing(progressScale, {
-      toValue:  duration === 0 ? 0 : position / duration,
+    progressScale.value = withTiming(duration === 0 ? 0 : position / duration, {
       duration: interval,
-      useNativeDriver: true,
       easing: Easing.linear,
-    }).start();
+    });
   }
 
   const jump = async (newPosition: number) => {
     await TrackPlayer.seekTo(newPosition);
+    setTimeout(() => {
+      scrubbing.value = false;
+    }, interval);
   }
-  
-  // handle scrubbing timeline
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => allowScrub.current,
-      onMoveShouldSetPanResponder: () => allowScrub.current,
-      onPanResponderGrant: (evt) => {
-        if (!allowScrub.current) return;
-        scrubbing.current = true;
-        preScrubCompletion.current = (progressScale as any)._value;
-        // Animate slider height to 1.5x
-        Animated.timing(sliderHeight, {
-          toValue: 1.5, 
-          duration: 200,
-          useNativeDriver: true,
-        }).start();
-      },
-      onPanResponderMove: (evt, gestureState) => {
-        if (!allowScrub.current) return;
-        const multiplier = 1.2;
-        const newCompletion = preScrubCompletion.current + (gestureState.dx / Dimensions.get('window').width * multiplier);
-        progressScale.setValue(newCompletion);
-        const newElapsed = Math.max(0, Math.min(Math.floor(newCompletion * durationRef.current), durationRef.current));
-        const newRemaining = Math.floor(durationRef.current) - newElapsed;
-        setElapsedSec(newElapsed);
-        setRemainingSec(newRemaining);
-        postScrubCompletion.current = Math.max(0, Math.min(newCompletion, 1));
-      },
-      onPanResponderRelease: (evt, gestureState) => {
-        if (!allowScrub.current) return;
-        const newPosition = Math.min(Math.max(0, postScrubCompletion.current * durationRef.current), durationRef.current);
-        jump(newPosition).then(() => {
-          setTimeout(() => {
-            scrubbing.current = false;
-          }, interval);
-        });
-        // Animate slider height back to original
-        Animated.timing(sliderHeight, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }).start();
-      },
+
+  const updateTimes = (newElapsed: number, newRemaining: number) => {
+    setElapsedSec(newElapsed);
+    setRemainingSec(newRemaining);
+  }
+
+  const handleGesture = Gesture.Pan()
+    .onStart((e) => {
+      if (!allowScrub.value) return;
+      scrubbing.value = true;
+      sliderHeight.value = withTiming(1.5, {
+        duration: 200,
+      });
     })
-  ).current;
+    .onTouchesMove((e) => {
+      if (!allowScrub.value) return;
+      const dx = e.allTouches[0].x;
+      const multiplier = 1.2;
+      const newCompletionRaw = preScrubCompletion.value + (dx / windowWidth.value * multiplier);
+      const newCompletion = Math.max(0, Math.min(newCompletionRaw, 1));
+      progressScale.value = newCompletion;
+      const newElapsed = Math.max(0, Math.min(Math.floor(newCompletion * sharedDuration.value), sharedDuration.value));
+      const newRemaining = Math.floor(sharedDuration.value) - newElapsed;
+      runOnJS(updateTimes)(newElapsed, newRemaining);
+      postScrubCompletion.value = Math.max(0, Math.min(newCompletion, 1));
+    })
+    .onEnd((e) => {
+      if (!allowScrub.value) return;
+      const newPosition = Math.min(Math.max(0, postScrubCompletion.value * sharedDuration.value), sharedDuration.value);
+      runOnJS(jump)(newPosition);
+      sliderHeight.value = withTiming(1, {
+        duration: 200,
+      });
+    });
+
+  const timelineStyle = useAnimatedStyle(() => ({
+    height: 7,
+    transform: [{ scaleY: sliderHeight.value }],
+  }));
+
+  const progressStyle = useAnimatedStyle(() => ({
+    transform: [{ scaleX: progressScale.value }],
+  }));
 
   return (
     <View style={styles.container}>
-      <View 
-        style={styles.timelineContainer}
-        {...panResponder.panHandlers}
-      >
-        <Animated.View 
-          style={[
-            styles.timeline,
-            { 
-              height: 7,
-              transform: [{ scaleY: sliderHeight }],
-            }
-          ]}
-        >
-          <Animated.View 
-            style={[
-              styles.progress, 
-              { 
+      <GestureDetector gesture={handleGesture}>
+        <View style={styles.timelineContainer}>
+          <Animated.View style={[styles.timeline, timelineStyle]}>
+            <Animated.View 
+              style={[styles.progress, progressStyle, { 
                 backgroundColor: progressColor ? progressColor : theme,
                 height: 7,
-                transform: [{ scaleX: progressScale }],
                 transformOrigin: 'left',
-              }
-            ]}
-          />
-        </Animated.View>
-        <View style={styles.timeContainer}>
-          <Text style={styles.timeText}>{formatTime(elapsedSec)}</Text>
-          <Text style={styles.timeText}>{formatTime(remainingSec)}</Text>
+              }]}
+            />
+          </Animated.View>
+          <View style={styles.timeContainer}>
+            <Text style={styles.timeText}>{formatTime(elapsedSec)}</Text>
+            <Text style={styles.timeText}>{formatTime(remainingSec)}</Text>
+          </View>
         </View>
-      </View>
-      
+      </GestureDetector>
     </View>
   );
 };

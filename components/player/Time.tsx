@@ -110,6 +110,7 @@ const Time = () => {
       <GestureDetector gesture={handleGesture}>
         <View style={styles.timelineContainer}>
           <Animated.View style={[styles.timeline, timelineStyle]}>
+            <Animated.View style={styles.progressBackground}/>
             <Animated.View 
               style={[styles.progress, progressStyle, { 
                 backgroundColor: Colors.progress,
@@ -143,9 +144,16 @@ const styles = StyleSheet.create({
   },
   timeline: {
     width: '100%',
-    backgroundColor: 'rgba(176, 176, 176, 0.7)',
     borderRadius: 20,
     overflow: 'hidden',
+  },
+  progressBackground: {
+    backgroundColor: 'rgba(232, 232, 232, 0.3)',
+    width: Dimensions.get('window').width * 0.85,
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    height: 8,
   },
   progress: {
     borderTopLeftRadius: 20,

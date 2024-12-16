@@ -6,13 +6,15 @@ import { updateQueue } from "@/lib/controllers/PlayerController";
 import { useThemeContext } from "@/context/ThemeProvider";
 import { usePlaybackContext } from "@/context/PlaybackProvider";
 
-const ShuffleButton = () => {
+const ShuffleButton = ({ primary }: { primary: string }) => {
 
   const { theme } = useThemeContext();
   const { shuffle, setShuffle, sourceType, sourceId } = usePlaybackContext();
   const track = useActiveTrack();
 
   const [localState, setLocalState] = useState(shuffle);
+
+  const tint = primary ? primary : theme;
 
   const handlePress = async () => {
     const previous = shuffle;
@@ -41,8 +43,10 @@ const ShuffleButton = () => {
       <Image 
         source={require('@/assets/icons/shuffle.png')}
         style={[Local.image, {
-          tintColor: localState ? theme : Colors.text,
+          tintColor: localState ? tint : Colors.text,
+          
         }]}
+        resizeMode='contain'
       />
     </TouchableOpacity>
   )

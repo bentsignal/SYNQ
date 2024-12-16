@@ -32,6 +32,7 @@ const Player = () => {
   const [bg, setBg] = useState(Colors.popup);
   const [progressColor, setProgressColor] = useState(Colors.progress);
   const [song, setSong] = useState<SongType | null>(null);
+  const [primary, setPrimary] = useState(theme);
 
   const insets = useSafeAreaInsets();
 
@@ -49,8 +50,9 @@ const Player = () => {
             key: uri,
           });
           const cast = colors as IOSImageColors;
-          setBg(cast.background);
-          setProgressColor(cast.secondary);
+          // setBg(cast.background);
+          // setProgressColor(cast.secondary);
+          setPrimary(cast.primary);
         }
         catch (error) {
           console.log(error);
@@ -66,7 +68,7 @@ const Player = () => {
 
     getSong();
 
-    // callGetColors();
+    callGetColors();
 
   }, [track])
 
@@ -170,7 +172,7 @@ const Player = () => {
         </View>
         <Time />
         <View style={Local.controlsContainer}>
-          <ShuffleButton/>
+          <ShuffleButton primary={primary}/>
           <View style={Local.centerControlsContainer}>
             <SkipLeft size={20}/>
             <PausePlayButtons 

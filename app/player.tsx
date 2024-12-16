@@ -21,6 +21,7 @@ import { useThemeContext } from "@/context/ThemeProvider";
 import * as Haptics from 'expo-haptics';
 import { PageType, SongType } from "@/constants/Types";
 import { router } from "expo-router";
+import LoopButton from "@/components/player/LoopButton";
 
 const Player = () => {
 
@@ -122,10 +123,16 @@ const Player = () => {
       gap: 30,
     },
     bottomControlsContainer: {
-      width: Dimensions.get('screen').width * 0.85,
+      width: Dimensions.get('screen').width * 0.70,
       gap: 30,
-      marginTop: 10,
-      justifyContent: 'space-between'
+      marginTop: 15,
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    bottomControl: {
+      minWidth: 50,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     pausePlay: {
       width: 50,
@@ -191,8 +198,16 @@ const Player = () => {
           </View>
         </View>
         <View style={[Local.controlsContainer, Local.bottomControlsContainer]}>
-          <ShuffleButton useBG={true}/>
-          <QueueButton />
+          <View style={Local.bottomControl}>
+            <ShuffleButton useBG={true}/>
+          </View>
+          <View style={Local.bottomControl}>
+            <QueueButton />
+          </View>
+          <View style={Local.bottomControl}>
+            <LoopButton useBG={true}/>
+          </View>
+          
         </View>
       </View>
     </>

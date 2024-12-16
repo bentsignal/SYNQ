@@ -8,7 +8,6 @@ const QueueButton = () => {
     container: {
       width: 25,
       height: 25,
-      // backgroundColor: 'red',
     },
     top: {
       borderColor: Colors.text,

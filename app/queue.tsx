@@ -150,6 +150,7 @@ const Queue = () => {
           type={CoverType.SONG}
           image={track?.artwork}
           propOnLoad={() => {}}
+          fade={true}
         />
         {getInfo()}
       </View>

@@ -21,6 +21,7 @@ import { getFileName } from "@/lib/Util";
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePlaybackContext } from "@/context/PlaybackProvider";
 import Bar from "@/components/modals/Bar";
+import LoopButton from "@/components/player/LoopButton";
 
 const Queue = () => {
 
@@ -175,7 +176,7 @@ const Queue = () => {
             />
             <SkipRight size={20}/>
           </View>
-          <CloseButton action={() => router.back()}/>
+          <LoopButton primary={theme} useBG={false}/>
         </View>
       </View>
     </View>

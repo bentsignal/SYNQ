@@ -125,7 +125,7 @@ const Player = () => {
     bottomControlsContainer: {
       width: Dimensions.get('screen').width * 0.70,
       gap: 30,
-      marginTop: 15,
+      marginTop: 20,
       justifyContent: 'space-between',
       alignItems: 'center',
     },
@@ -207,7 +207,6 @@ const Player = () => {
           <View style={Local.bottomControl}>
             <LoopButton useBG={true}/>
           </View>
-          
         </View>
       </View>
     </>

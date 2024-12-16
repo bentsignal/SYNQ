@@ -41,10 +41,11 @@ const ShuffleButton = ({ primary, useBG }: ShuffleButtonProps) => {
 
   return (
     <TouchableOpacity
-      style={[Local.container, {
-       backgroundColor: localState && useBG ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-       borderRadius: 5,
-      }]}
+      style={{
+        padding: useBG ? 5 : 0,
+        backgroundColor: localState && useBG ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+        borderRadius: 5,
+      }}
       activeOpacity={0.7}
       onPress={handlePress}
     >
@@ -60,9 +61,6 @@ const ShuffleButton = ({ primary, useBG }: ShuffleButtonProps) => {
 }
 
 const Local = StyleSheet.create({
-  container: {
-    padding: 5,
-  },
   image: {
     width: 30,
     height: 30,

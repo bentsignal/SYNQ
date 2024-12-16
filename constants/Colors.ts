@@ -26,6 +26,7 @@ export const Colors = {
   tabActive: '#ffffff',
   bone: '#2e2c2c',
   error: '#FA5858',
+  progress: '#e3e3e3',
 };
 
 

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image } from "react-native";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { useEffect, useState, useRef } from "react";
 import SongInfo from "@/components/song/SongInfo";
@@ -20,7 +20,6 @@ import { getFileName } from "@/lib/Util";
 import { useThemeContext } from "@/context/ThemeProvider";
 import * as Haptics from 'expo-haptics';
 import { PageType, SongType } from "@/constants/Types";
-import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
 
 const Player = () => {
@@ -31,7 +30,7 @@ const Player = () => {
   const track = useActiveTrack();
 
   const [bg, setBg] = useState(Colors.popup);
-  const [progressColor, setProgressColor] = useState(theme);
+  const [progressColor, setProgressColor] = useState(Colors.progress);
   const [song, setSong] = useState<SongType | null>(null);
 
   const insets = useSafeAreaInsets();
@@ -72,11 +71,28 @@ const Player = () => {
   }, [track])
 
   const Local = StyleSheet.create({
+    bg: {
+      position: 'absolute',
+      height: Dimensions.get('screen').height,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+    },
+    bgOverlay: {
+      position: 'absolute',
+      height: Dimensions.get('screen').height,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    },
     container: {
       flex: 1,
       // paddingTop: insets.top,
       alignItems: 'center',
-      backgroundColor: bg,
+      // backgroundColor: bg,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
     },
@@ -137,6 +153,14 @@ const Player = () => {
 
   return (
     <>
+      <Image 
+        source={{ uri: track?.artwork }}
+        blurRadius={100}
+        style={Local.bg}
+      />
+      <View 
+        style={Local.bgOverlay}
+      />
       <View style={Local.container}>
         <Bar />
         <PlayerCover id={track?.id}/>
@@ -144,7 +168,7 @@ const Player = () => {
           {getInfo()}
           <More handlePress={handleMore}/>
         </View>
-        <Time progressColor={progressColor}/>
+        <Time />
         <View style={Local.controlsContainer}>
           <ShuffleButton/>
           <View style={Local.centerControlsContainer}>

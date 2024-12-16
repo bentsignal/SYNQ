@@ -9,7 +9,7 @@ import { GestureDetector, GestureType, Gesture } from "react-native-gesture-hand
 import Animated, { runOnJS, useSharedValue, withTiming, 
   useAnimatedStyle, Easing } from 'react-native-reanimated';
 
-const Time = ({ progressColor }: { progressColor?: string }) => {
+const Time = () => {
 
   const interval = 50;
 
@@ -97,7 +97,7 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
     });
 
   const timelineStyle = useAnimatedStyle(() => ({
-    height: 7,
+    height: 8,
     transform: [{ scaleY: sliderHeight.value }],
   }));
 
@@ -112,7 +112,7 @@ const Time = ({ progressColor }: { progressColor?: string }) => {
           <Animated.View style={[styles.timeline, timelineStyle]}>
             <Animated.View 
               style={[styles.progress, progressStyle, { 
-                backgroundColor: progressColor ? progressColor : theme,
+                backgroundColor: Colors.progress,
                 height: 8,
                 transformOrigin: 'left',
               }]}
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   },
   timeline: {
     width: '100%',
-    backgroundColor: '#e0e0e0',
+    backgroundColor: 'rgba(176, 176, 176, 0.7)',
     borderRadius: 20,
     overflow: 'hidden',
   },

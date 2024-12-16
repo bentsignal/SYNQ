@@ -161,7 +161,7 @@ const Queue = () => {
         gradientEnd={'rgba(24, 24, 24, 0)'}
       />
       <View style={Local.footer}>
-        <Time progressColor={theme}/>
+        <Time />
         <View style={Local.controlsContainer}>
           <ShuffleButton/>
           <View style={Local.centerControlsContainer}>

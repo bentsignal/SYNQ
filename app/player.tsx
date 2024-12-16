@@ -110,15 +110,22 @@ const Player = () => {
     controlsContainer: {
       width: Dimensions.get('screen').width * 0.85,
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'center',
       alignItems: 'center',
       gap: 15,
     },
     centerControlsContainer: {
+      width: '100%',
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
-      gap: 15,
+      gap: 30,
+    },
+    bottomControlsContainer: {
+      width: Dimensions.get('screen').width * 0.85,
+      gap: 30,
+      marginTop: 20,
+      justifyContent: 'space-between'
     },
     pausePlay: {
       width: 50,
@@ -172,17 +179,19 @@ const Player = () => {
         </View>
         <Time />
         <View style={Local.controlsContainer}>
-          <ShuffleButton primary={primary}/>
           <View style={Local.centerControlsContainer}>
-            <SkipLeft size={20}/>
+            <SkipLeft size={25}/>
             <PausePlayButtons 
-              playSize={30}
-              pauseHeight={30}
-              pauseWidth={9}
+              playSize={40}
+              pauseHeight={40}
+              pauseWidth={12}
               style={Local.pausePlay}
             />
-            <SkipRight size={20}/>
+            <SkipRight size={25}/>
           </View>
+        </View>
+        <View style={[Local.controlsContainer, Local.bottomControlsContainer]}>
+          <ShuffleButton useBG={true}/>
           <QueueButton />
         </View>
       </View>

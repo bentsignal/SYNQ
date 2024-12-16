@@ -163,7 +163,7 @@ const Queue = () => {
       <View style={Local.footer}>
         <Time />
         <View style={Local.controlsContainer}>
-          <ShuffleButton/>
+          <ShuffleButton primary={theme}/>
           <View style={Local.centerControlsContainer}>
             <SkipLeft size={20}/>
             <PausePlayButtons 

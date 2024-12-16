@@ -6,7 +6,12 @@ import { updateQueue } from "@/lib/controllers/PlayerController";
 import { useThemeContext } from "@/context/ThemeProvider";
 import { usePlaybackContext } from "@/context/PlaybackProvider";
 
-const ShuffleButton = ({ primary }: { primary?: string }) => {
+interface ShuffleButtonProps {
+  primary?: string;
+  useBG?: boolean;
+}
+
+const ShuffleButton = ({ primary, useBG }: ShuffleButtonProps) => {
 
   const { theme } = useThemeContext();
   const { shuffle, setShuffle, sourceType, sourceId } = usePlaybackContext();
@@ -14,7 +19,7 @@ const ShuffleButton = ({ primary }: { primary?: string }) => {
 
   const [localState, setLocalState] = useState(shuffle);
 
-  const tint = primary ? primary : theme;
+  const tint = primary ? primary : 'rgba(20, 20, 20, 0.7)';
 
   const handlePress = async () => {
     const previous = shuffle;
@@ -36,7 +41,10 @@ const ShuffleButton = ({ primary }: { primary?: string }) => {
 
   return (
     <TouchableOpacity
-      style={Local.container}
+      style={[Local.container, {
+       backgroundColor: localState && useBG ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+       borderRadius: 5,
+      }]}
       activeOpacity={0.7}
       onPress={handlePress}
     >
@@ -53,7 +61,7 @@ const ShuffleButton = ({ primary }: { primary?: string }) => {
 
 const Local = StyleSheet.create({
   container: {
-    paddingVertical: 5,
+    padding: 5,
   },
   image: {
     width: 30,

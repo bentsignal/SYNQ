@@ -19,7 +19,7 @@ const ShuffleButton = ({ primary, useBG }: ShuffleButtonProps) => {
 
   const [localState, setLocalState] = useState(shuffle);
 
-  const tint = primary ? primary : 'rgba(20, 20, 20, 0.7)';
+  const tint = primary ? primary : 'rgba(20, 20, 20, 0.5)';
 
   const handlePress = async () => {
     const previous = shuffle;

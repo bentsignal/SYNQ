@@ -124,7 +124,7 @@ const Player = () => {
     bottomControlsContainer: {
       width: Dimensions.get('screen').width * 0.85,
       gap: 30,
-      marginTop: 20,
+      marginTop: 10,
       justifyContent: 'space-between'
     },
     pausePlay: {

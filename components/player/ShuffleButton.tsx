@@ -6,7 +6,7 @@ import { updateQueue } from "@/lib/controllers/PlayerController";
 import { useThemeContext } from "@/context/ThemeProvider";
 import { usePlaybackContext } from "@/context/PlaybackProvider";
 
-const ShuffleButton = ({ primary }: { primary: string }) => {
+const ShuffleButton = ({ primary }: { primary?: string }) => {
 
   const { theme } = useThemeContext();
   const { shuffle, setShuffle, sourceType, sourceId } = usePlaybackContext();
@@ -44,7 +44,6 @@ const ShuffleButton = ({ primary }: { primary: string }) => {
         source={require('@/assets/icons/shuffle.png')}
         style={[Local.image, {
           tintColor: localState ? tint : Colors.text,
-          
         }]}
         resizeMode='contain'
       />

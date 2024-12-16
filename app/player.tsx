@@ -52,7 +52,7 @@ const Player = () => {
           const cast = colors as IOSImageColors;
           // setBg(cast.background);
           // setProgressColor(cast.secondary);
-          setPrimary(cast.primary);
+          setPrimary(cast.detail);
         }
         catch (error) {
           console.log(error);

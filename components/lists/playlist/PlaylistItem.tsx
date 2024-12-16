@@ -101,7 +101,6 @@ const PlaylistItem = ({playlist}: PlaylistProps) => {
   const handleSelect = async () => {
     setSelected(!selected);
     await playlistChangesMade(!selected);
-    console.log('selected', selected);
   }
 
   return (

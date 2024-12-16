@@ -20,8 +20,6 @@ import TrackPlayer, { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util";
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePlaybackContext } from "@/context/PlaybackProvider";
-import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
 import Bar from "@/components/modals/Bar";
 
 const Queue = () => {
@@ -104,7 +102,7 @@ const Queue = () => {
         for (let i = start; i < queue.length; i++) {
           if (queue[i].id !== 'ad') {
             result = await getSongById(queue[i].id);
-            result.uuid = uuidv4();
+            result.uuid = queue[i].description;
             results.push(result);
           }
         }
@@ -161,7 +159,6 @@ const Queue = () => {
         pageType={PageType.QUEUE}
         gradientStart={'rgba(24, 24, 24, 1)'}
         gradientEnd={'rgba(24, 24, 24, 0)'}
-        fadeCover={false}
       />
       <View style={Local.footer}>
         <Time progressColor={theme}/>

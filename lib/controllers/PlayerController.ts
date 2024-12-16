@@ -5,6 +5,8 @@ import * as Haptics from 'expo-haptics';
 import { getFileName } from '@/lib/Util';
 import { getAppIcon } from '@/constants/Logos';
 import { getNextUp } from '@/lib/controllers/SongController';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 
 export const setupPlayer = async () => {
   await TrackPlayer.setupPlayer();
@@ -41,6 +43,7 @@ export const getTrackFromSong = async (song: SongType, theme: string): Promise<T
       return {
         id: song.id,
         url: audioPath,
+        description: song.uuid,
         title: song.info?.metadata?.name ? song.info.metadata.name : getFileName(audioPath),
         artist: song.info?.metadata?.artist,
         artwork: coverExists ? coverPath : getAppIcon(theme),

@@ -402,12 +402,12 @@ export const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
   );
 
 }
+
 type PlayerCoverProps = {
-  id: string;
-  onLoad: () => void;
+  uri?: string;
 }
 
-export const PlayerCover = ({id, onLoad}: PlayerCoverProps) => {
+export const PlayerCover = ({uri}: PlayerCoverProps) => {
 
   const [src, setSrc] = useState('');
   const [aspectRatio, setAspectRatio] = useState(1);
@@ -419,29 +419,25 @@ export const PlayerCover = ({id, onLoad}: PlayerCoverProps) => {
     
     const getImage = async () => {
       try {
-        const data = await getCoverImageData(id, true);
-        if (data) {
-          Image.getSize(`data:image/jpeg;base64,${data}`, (width, height) => {
+        if (uri) {
+          Image.getSize(uri, (width, height) => {
+            setSrc(uri);
             setAspectRatio(width / height);
           });
-          setSrc(`data:image/jpeg;base64,${data}`);
-          onLoad();
         }
         else {
           setAspectRatio(1);
           setSrc('');
-          onLoad();
         }
       }
       catch (error) {
         console.log('error getting cover image for player: ', error);
-        onLoad();
       }
     }
     
     getImage();
 
-  }, [id]);
+  }, [uri]);
 
   const Local = StyleSheet.create({
     container: {
@@ -522,9 +518,9 @@ export const PlayerCover = ({id, onLoad}: PlayerCoverProps) => {
         <Ad message={getAdMessage()}/>
       </View>
       <FastImage 
-        source={getSource()}
+        source={src ? {uri: src} : getSource()}
         style={getStyle()}
-      />  
+      />
     </View>
   );
 

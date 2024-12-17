@@ -31,7 +31,6 @@ const Player = () => {
   const [song, setSong] = useState<SongType | null>(null);
   const [opacity, setOpacity] = useState(0.4);
   const containerOpacity = useSharedValue(0);
-  const playerCoverOpacity = useSharedValue(0);
   const value = 0;
 
   useEffect(() => {
@@ -166,11 +165,7 @@ const Player = () => {
       <View style={[Local.bg, Local.overlay]}/>
       <View style={Local.container}>
         <Bar />
-        <Animated.View style={{opacity: playerCoverOpacity}}>
-          <PlayerCover id={track?.id} onLoad={() => {
-            playerCoverOpacity.value = withTiming(1, {duration: 2000, easing: Easing.inOut(Easing.quad)});
-          }}/>
-        </Animated.View>
+        <PlayerCover uri={typeof track?.artwork === 'string' ? track?.artwork : undefined}/>
         <View style={Local.infoContainer}>
           {getInfo()}
           <More handlePress={handleMore}/>

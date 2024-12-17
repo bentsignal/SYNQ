@@ -20,6 +20,7 @@ import LoopButton from "@/components/player/LoopButton";
 import LinearGradient from "react-native-linear-gradient";
 import { getLuminanceFromImage, getPlayerGradientOpacity } from "@/lib/controllers/ColorController";
 import Animated, {useSharedValue, withTiming, Easing} from "react-native-reanimated";
+import { Colors } from "@/constants/Colors";
 
 const Player = () => {
 
@@ -75,14 +76,10 @@ const Player = () => {
       bottom: 0,
       borderTopLeftRadius: 30,
       borderTopRightRadius: 30,
+      
     },
-    bgOverlay: {
-      position: 'absolute',
-      height: Dimensions.get('screen').height,
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
+    overlay: {
+      backgroundColor: typeof track?.artwork === 'string' ? 'transparent' : Colors.popup,
     },
     container: {
       flex: 1,
@@ -162,16 +159,15 @@ const Player = () => {
         blurRadius={100}
         style={Local.bg}
       />
-      {/* <View style={Local.bgOverlay}/> */}
       <LinearGradient 
         colors={['rgba(0, 0, 0, 0)',`rgba(${value}, ${value}, ${value}, ${opacity})`]}
-        style={Local.bgOverlay}
+        style={Local.bg}
       />
+      <View style={[Local.bg, Local.overlay]}/>
       <View style={Local.container}>
         <Bar />
         <Animated.View style={{opacity: playerCoverOpacity}}>
           <PlayerCover id={track?.id} onLoad={() => {
-            console.log('here');
             playerCoverOpacity.value = withTiming(1, {duration: 2000, easing: Easing.inOut(Easing.quad)});
           }}/>
         </Animated.View>

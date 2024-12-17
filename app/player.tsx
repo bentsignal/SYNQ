@@ -1,41 +1,41 @@
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Image } from "react-native";
+import { View, StyleSheet, Dimensions, Image } from "react-native";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import SongInfo from "@/components/song/SongInfo";
 import Bar from "@/components/modals/Bar";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PlayerCover } from "@/components/song/Cover";
 import More from "@/components/More";
 import Time from "@/components/player/Time";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";
-import { Colors } from "@/constants/Colors";
-import { getCoverImageData, getSongById } from "@/lib/controllers/SongController";
-import { getColors } from "react-native-image-colors";
-import { IOSImageColors } from "react-native-image-colors/build/types";
+import { getSongById } from "@/lib/controllers/SongController";
 import PausePlayButtons from "@/components/player/PausePlayButtons";
 import QueueButton from "@/components/player/QueueButton";
 import ShuffleButton from "@/components/player/ShuffleButton";
 import { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util"; 
-import { useThemeContext } from "@/context/ThemeProvider";
 import * as Haptics from 'expo-haptics';
 import { PageType, SongType } from "@/constants/Types";
 import { router } from "expo-router";
 import LoopButton from "@/components/player/LoopButton";
+import LinearGradient from "react-native-linear-gradient";
+import { getLuminanceFromImage, getPlayerGradientOpacity } from "@/lib/controllers/ColorController";
+import Animated, {useSharedValue, withTiming, Easing} from "react-native-reanimated";
 
 const Player = () => {
 
   const { haptic, setEditSong } = useGlobalContext();
-  const { theme } = useThemeContext();
 
   const track = useActiveTrack();
 
-  const [bg, setBg] = useState(Colors.popup);
-  const [progressColor, setProgressColor] = useState(Colors.progress);
   const [song, setSong] = useState<SongType | null>(null);
-  const [primary, setPrimary] = useState(theme);
+  const [opacity, setOpacity] = useState(0.4);
+  const containerOpacity = useSharedValue(0);
+  const playerCoverOpacity = useSharedValue(0);
+  const value = 0;
 
-  const insets = useSafeAreaInsets();
+  useEffect(() => {
+    containerOpacity.value = withTiming(1, {duration: 200, easing: Easing.inOut(Easing.quad)});
+  }, []);
 
   // get cover image colors
   useEffect(() => {
@@ -43,17 +43,9 @@ const Player = () => {
     const callGetColors = async () => {
       if (track) {
         try {
-          const data = await getCoverImageData(track?.id);
-          const uri = `data:image/jpeg;base64,${data}`;
-          const colors = await getColors(uri, {
-            fallback: Colors.song,
-            cache: true,
-            key: uri,
-          });
-          const cast = colors as IOSImageColors;
-          // setBg(cast.background);
-          // setProgressColor(cast.secondary);
-          setPrimary(cast.detail);
+          const luminance = await getLuminanceFromImage(track.artwork);
+          const newOpacity = getPlayerGradientOpacity(luminance);
+          setOpacity(newOpacity);
         }
         catch (error) {
           console.log(error);
@@ -81,6 +73,8 @@ const Player = () => {
       left: 0,
       right: 0,
       bottom: 0,
+      borderTopLeftRadius: 30,
+      borderTopRightRadius: 30,
     },
     bgOverlay: {
       position: 'absolute',
@@ -89,15 +83,10 @@ const Player = () => {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.1)',
     },
     container: {
       flex: 1,
-      // paddingTop: insets.top,
       alignItems: 'center',
-      // backgroundColor: bg,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
     },
     infoContainer: {
       marginTop: 20,
@@ -105,7 +94,6 @@ const Player = () => {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      // backgroundColor: 'red',
       height: 40,
     },
     controlsContainer: {
@@ -168,18 +156,25 @@ const Player = () => {
   }
 
   return (
-    <>
+    <Animated.View style={[{opacity: containerOpacity}, Local.container]}>
       <Image 
         source={{ uri: track?.artwork }}
         blurRadius={100}
         style={Local.bg}
       />
-      <View 
+      {/* <View style={Local.bgOverlay}/> */}
+      <LinearGradient 
+        colors={['rgba(0, 0, 0, 0)',`rgba(${value}, ${value}, ${value}, ${opacity})`]}
         style={Local.bgOverlay}
       />
       <View style={Local.container}>
         <Bar />
-        <PlayerCover id={track?.id}/>
+        <Animated.View style={{opacity: playerCoverOpacity}}>
+          <PlayerCover id={track?.id} onLoad={() => {
+            console.log('here');
+            playerCoverOpacity.value = withTiming(1, {duration: 2000, easing: Easing.inOut(Easing.quad)});
+          }}/>
+        </Animated.View>
         <View style={Local.infoContainer}>
           {getInfo()}
           <More handlePress={handleMore}/>
@@ -209,7 +204,7 @@ const Player = () => {
           </View>
         </View>
       </View>
-    </>
+    </Animated.View>
   );
 
 }

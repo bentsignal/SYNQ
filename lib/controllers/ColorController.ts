@@ -1,3 +1,6 @@
+import { Colors } from '@/constants/Colors';
+import { getColors } from 'react-native-image-colors';
+import { IOSImageColors } from 'react-native-image-colors/build/types';
 import tinycolor from 'tinycolor2';
 
 export const darkenColor = (color: string, lightness: number, saturation: number) => {
@@ -33,4 +36,41 @@ export const hexToRGB = (hex: string) => {
 
   return { r, g, b };
   
+}
+
+const getColorsFromImage = async (uri: string) => {
+  const colors = await getColors(uri, {
+    fallback: '#000',
+    cache: true,
+    key: uri,
+  });
+  const cast = colors as IOSImageColors;
+  return cast;
+}
+
+export const getLuminance = ({r, g, b}: {r: number, g: number, b: number}) => {
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+}
+
+export const getLuminanceFromImage = async (uri: string) => {
+
+  const colors = await getColorsFromImage(uri);
+
+
+  const luminances = [
+    getLuminance(hexToRGB(colors.background)),
+    getLuminance(hexToRGB(colors.primary)), 
+    getLuminance(hexToRGB(colors.secondary)),
+    getLuminance(hexToRGB(colors.detail))
+  ].filter(l => l > 0);
+
+  const averageLuminance = luminances.length > 0 ? 
+    luminances.reduce((a, b) => a + b) / luminances.length : 
+    0;
+
+  return averageLuminance;
+}
+
+export const getPlayerGradientOpacity = (luminance: number) => {
+  return Math.pow(luminance / 0.7 - 0.7, 2) + 0.2;
 }

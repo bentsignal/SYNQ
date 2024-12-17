@@ -402,8 +402,12 @@ export const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
   );
 
 }
+type PlayerCoverProps = {
+  id: string;
+  onLoad: () => void;
+}
 
-export const PlayerCover = ({id}: {id: string}) => {
+export const PlayerCover = ({id, onLoad}: PlayerCoverProps) => {
 
   const [src, setSrc] = useState('');
   const [aspectRatio, setAspectRatio] = useState(1);
@@ -421,14 +425,17 @@ export const PlayerCover = ({id}: {id: string}) => {
             setAspectRatio(width / height);
           });
           setSrc(`data:image/jpeg;base64,${data}`);
+          onLoad();
         }
         else {
           setAspectRatio(1);
           setSrc('');
+          onLoad();
         }
       }
       catch (error) {
         console.log('error getting cover image for player: ', error);
+        onLoad();
       }
     }
     

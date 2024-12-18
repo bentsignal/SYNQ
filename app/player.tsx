@@ -21,6 +21,7 @@ import LinearGradient from "react-native-linear-gradient";
 import { getLuminanceFromImage, getPlayerGradientOpacity } from "@/lib/controllers/ColorController";
 import Animated, {useSharedValue, withTiming, Easing} from "react-native-reanimated";
 import { Colors } from "@/constants/Colors";
+import { Styles } from "@/constants/Styles";
 
 const Player = () => {
 
@@ -123,6 +124,17 @@ const Player = () => {
       height: 50,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: Colors.text,
+    },
+    artist: {
+      color: Colors.text,
+      fontWeight: '500',
+      fontSize: 16,
+      opacity: 0.5,
     }
   });
 
@@ -138,7 +150,12 @@ const Player = () => {
         }
       }
       return (
-        <SongInfo info={info} name={getFileName(track.url)}/>
+        <SongInfo 
+          info={info} 
+          name={getFileName(track.url)}
+          titleStyles={Local.title}
+          artistStyles={Local.artist}
+        />
       )
     }
   }

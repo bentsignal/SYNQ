@@ -157,7 +157,7 @@ const Local = StyleSheet.create({
   count: {
     ...Styles.p,
     color: Colors.infoText,
-
+    fontWeight: '500',
   },
 }); 
 

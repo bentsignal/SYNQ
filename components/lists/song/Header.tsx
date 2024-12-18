@@ -44,6 +44,7 @@ const Local = StyleSheet.create({
   songCount: {
     ...Styles.description,
     textAlign: 'center',
+    fontWeight: '500',
   },
   coverWrapper: {
     justifyContent: 'center',

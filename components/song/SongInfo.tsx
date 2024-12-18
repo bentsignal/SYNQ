@@ -1,13 +1,15 @@
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, StyleProp, TextStyle } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { InfoType } from '@/constants/Types';
 import { Styles } from '@/constants/Styles';
 
-const SongInfo = ({info, name, showAlbum, color}: {
+const SongInfo = ({info, name, showAlbum, color, titleStyles, artistStyles}: {
   info: InfoType, 
   name: string, 
   showAlbum?: boolean,
   color?: string,
+  titleStyles?: StyleProp<TextStyle>,
+  artistStyles?: StyleProp<TextStyle>,
 }) => {
 
   const Local = StyleSheet.create({
@@ -19,11 +21,12 @@ const SongInfo = ({info, name, showAlbum, color}: {
     },
     title: {
       ...Styles.h5,
-      color: color ? color : Colors.text
+      color: color ? color : Colors.text,
     },
     artistAlbum: {
       ...Styles.sub,
-      color: color ? color : Colors.text
+      color: color ? color : Colors.infoText,
+      fontWeight: '500',
     }
   });
 
@@ -31,13 +34,13 @@ const SongInfo = ({info, name, showAlbum, color}: {
     return (
       <View style={ Local.infoContainer }>
         <Text
-          style={ Local.title }
+          style={ titleStyles ? titleStyles : Local.title }
           numberOfLines={1}
         >
           {info.metadata.name}
         </Text>
         <Text
-          style={ Local.artistAlbum }
+          style={ artistStyles ? artistStyles : Local.artistAlbum }
           numberOfLines={1}
         >
           {info.metadata.artist} {showAlbum && info.metadata.album ? `· ${info.metadata.album}` : ''}
@@ -49,7 +52,7 @@ const SongInfo = ({info, name, showAlbum, color}: {
     return (
       <View style={ Local.infoContainer }>
         <Text
-          style={ Local.title }
+          style={ titleStyles ? titleStyles : Local.title }
           numberOfLines={1}
         >
           {name}

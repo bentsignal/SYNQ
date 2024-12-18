@@ -33,6 +33,7 @@ export const Styles = StyleSheet.create({
   },
   sub: {
     fontSize: 14,
+    color: Colors.infoText,
   },
   textboxLabel: {
     fontSize: 16,

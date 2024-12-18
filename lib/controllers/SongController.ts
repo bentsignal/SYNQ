@@ -624,7 +624,7 @@ export const writeImageToLibrary = async (artwork: string, dir: string) => {
       // convert image to jpeg, save full size
       const fullConvert = await ImageManipulator.manipulateAsync(
         `${dir}/cover_temp.${extension}`,
-        [...(imageWidth > 1000 ? [{ resize: { width: 1000, height: 1000 * (imageHeight / imageWidth) } }] : [])],
+        [...(imageWidth > 1000 ? [{ resize: { width: 1000, height: Math.floor(1000 * (imageHeight / imageWidth)) } }] : [])],
         { compress: 1, format: SaveFormat.JPEG, base64: true }
       );
       if (fullConvert.base64) {

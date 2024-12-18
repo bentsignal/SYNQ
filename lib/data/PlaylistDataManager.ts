@@ -57,7 +57,7 @@ class PlaylistDataManager extends DataManager {
         INNER JOIN playlistSongs ON songs.id = playlistSongs.songId
         WHERE playlistSongs.playlistId = ?;
       `, [playlistId]);
-      return result ? result : [];
+      return result ? result.reverse() : [];
     }
     catch (error) {
       throw new Error('Error getting songs from playlist: ' + error);

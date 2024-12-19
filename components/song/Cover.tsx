@@ -419,6 +419,7 @@ export const PlayerCover = ({uri}: PlayerCoverProps) => {
     
     const getImage = async () => {
       try {
+        console.log(uri);
         if (uri) {
           Image.getSize(uri, (width, height) => {
             setSrc(uri);

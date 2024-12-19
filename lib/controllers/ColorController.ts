@@ -44,8 +44,7 @@ const getColorsFromImage = async (uri: string) => {
     cache: true,
     key: uri,
   });
-  const cast = colors as IOSImageColors;
-  return cast;
+  return colors as IOSImageColors;
 }
 
 export const getLuminance = ({r, g, b}: {r: number, g: number, b: number}) => {
@@ -55,7 +54,6 @@ export const getLuminance = ({r, g, b}: {r: number, g: number, b: number}) => {
 export const getLuminanceFromImage = async (uri: string) => {
 
   const colors = await getColorsFromImage(uri);
-
 
   const luminances = [
     getLuminance(hexToRGB(colors.background)),

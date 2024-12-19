@@ -421,7 +421,7 @@ const Transfer = () => {
                         Browse
                     </label>
                 </button>
-                <input type="file" id="browseFiles" style="display:none;" accept="audio/mpeg, audio/flac, audio/wav, audio/mp4, audio/aac" multiple>
+                <input type="file" id="browseFiles" style="display:none;" accept="audio/mpeg, audio/flac, audio/wav, audio/mp4, audio/aac, audio/x-m4a" multiple>
             </div>
         </main>
         <div id="overlay">

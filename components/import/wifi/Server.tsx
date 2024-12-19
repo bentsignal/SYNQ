@@ -151,7 +151,7 @@ const Server = () => {
       const b64 = body.data ? body.data : '';
       const id = body.id ? body.id : '';
 
-      const acceptedTypes = ['audio/mpeg', 'audio/flac', 'audio/wav', 'audio/mp4', 'audio/aac'];
+      const acceptedTypes = ['audio/mpeg', 'audio/flac', 'audio/wav', 'audio/mp4', 'audio/aac', 'audio/x-m4a'];
 
       if (name && acceptedTypes.includes(type) && b64 && !receivedRequests.has(id)) {
         const info = await getWifiInfo(name, id, type, b64);

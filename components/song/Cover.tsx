@@ -443,7 +443,8 @@ export const PlayerCover = ({uri}: PlayerCoverProps) => {
   const Local = StyleSheet.create({
     container: {
       backgroundColor: src ? 'transparent' : '#D2D2D2',
-      width: Dimensions.get('screen').width * coverPercent, 
+      width: aspectRatio > 1 ? Dimensions.get('screen').width * coverPercent : 'auto',
+      height: aspectRatio > 1 ? 'auto' : Dimensions.get('screen').width * coverPercent,
       minHeight: Dimensions.get('screen').width * coverPercent,
       aspectRatio: aspectRatio,
       justifyContent: 'center',
@@ -461,7 +462,8 @@ export const PlayerCover = ({uri}: PlayerCoverProps) => {
     },
     artwork: {
       aspectRatio: aspectRatio,
-      width: Dimensions.get('screen').width * coverPercent, 
+      width: aspectRatio > 1 ? Dimensions.get('screen').width * coverPercent : 'auto',
+      height: aspectRatio > 1 ? 'auto' : Dimensions.get('screen').width * coverPercent,
       borderRadius: 10,
       display: adPlaying ? 'none' : 'flex',
     },

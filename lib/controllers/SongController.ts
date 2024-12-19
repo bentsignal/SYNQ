@@ -621,10 +621,26 @@ export const writeImageToLibrary = async (artwork: string, dir: string) => {
       const { width: imageWidth, height: imageHeight } = await new Promise<{ width: number, height: number }>((resolve, reject) => {
         Image.getSize(`${dir}/cover_temp.${extension}`, (width, height) => resolve({ width, height }), reject);
       });
+      let fullWidth = imageWidth;
+      let fullHeight = imageHeight;
+      let smallWidth = imageWidth;
+      let smallHeight = imageHeight;
+      if (imageWidth !== imageHeight) {
+        fullWidth = imageWidth > imageHeight ? Math.min(1000, imageWidth) : Math.floor(1000 * (imageWidth / imageHeight));
+        fullHeight = imageHeight > imageWidth ? Math.min(1000, imageHeight) : Math.floor(1000 * (imageHeight / imageWidth));
+        smallWidth = imageWidth > imageHeight ? Math.min(200, imageWidth) : Math.floor(200 * (imageWidth / imageHeight));
+        smallHeight = imageHeight > imageWidth ? Math.min(200, imageHeight) : Math.floor(200 * (imageHeight / imageWidth));
+      }
+      else {
+        fullWidth = Math.min(1000, imageWidth);
+        fullHeight = Math.min(1000, imageHeight);
+        smallWidth = Math.min(200, imageWidth);
+        smallHeight = Math.min(200, imageHeight);
+      }
       // convert image to jpeg, save full size
       const fullConvert = await ImageManipulator.manipulateAsync(
         `${dir}/cover_temp.${extension}`,
-        [...(imageWidth > 1000 ? [{ resize: { width: 1000, height: Math.floor(1000 * (imageHeight / imageWidth)) } }] : [])],
+        [...[{ resize: { width: fullWidth, height: fullHeight } }]],
         { compress: 1, format: SaveFormat.JPEG, base64: true }
       );
       if (fullConvert.base64) {
@@ -633,7 +649,7 @@ export const writeImageToLibrary = async (artwork: string, dir: string) => {
       // convert image to jpeg, save small size
       const smallConvert = await ImageManipulator.manipulateAsync(
         `${dir}/cover_temp.${extension}`,
-        [{ resize: { width: 200, height: 200 } }],
+        [{ resize: { width: smallWidth, height: smallHeight } }],
         { compress: 0.5, format: SaveFormat.JPEG, base64: true }
       );
       if (smallConvert.base64) {

@@ -14,10 +14,6 @@ export const isValidNumString = (str: string) => {
   return !isNaN(Number(str));
 }
 
-export const maybe = (value: any) => {
-  return value ? value : '';
-}
-
 // get file name from global path
 export const getFileName = (path: string) => {
   return path.split('/').pop() || '';

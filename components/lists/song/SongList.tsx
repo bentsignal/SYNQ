@@ -2,7 +2,6 @@ import React, { memo } from 'react';
 import { SongType, PageType, SourceType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import Song from '@/components/song';
-import EditModal from '@/components/modals/EditModal';
 import DeleteModal from '@/components/modals/DeleteModal';
 import { generateSongKey } from '@/lib/controllers/SongController';
 import List from '@/components/List';
@@ -55,7 +54,6 @@ const SongList = memo((
 
   return (
     <>
-      <EditModal />
       <DeleteModal />
       <List 
         data={songs}

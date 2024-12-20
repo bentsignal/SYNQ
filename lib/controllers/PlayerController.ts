@@ -43,7 +43,7 @@ export const getTrackFromSong = async (song: SongType, theme: string): Promise<T
       return {
         id: song.id,
         url: audioPath,
-        description: song.uuid,
+        description: uuidv4(),
         title: song.info?.metadata?.name ? song.info.metadata.name : getFileName(audioPath),
         artist: song.info?.metadata?.artist,
         artwork: coverExists ? coverPath : getAppIcon(theme),

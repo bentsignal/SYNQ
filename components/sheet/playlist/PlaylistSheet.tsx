@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import Sheet from '@/components/sheet';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
-import { ListCover } from '@/components/song/Cover';
+import ListCover from '@/components/cover/ListCover';
 import SheetStyles from '@/components/sheet/Styles';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';

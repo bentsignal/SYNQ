@@ -4,7 +4,7 @@ import { PlaylistType, CoverType } from "@/constants/Types";
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 import { router } from "expo-router";
-import { ListCover } from "@/components/song/Cover";
+import ListCover from "@/components/cover/ListCover";
 import More from "@/components/More";
 import { PageType } from "@/constants/Types";
 import Select from "@/components/Select";

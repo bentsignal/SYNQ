@@ -12,7 +12,7 @@ import Notifications from "@/components/notifications/Notifications"
 import * as Haptics from 'expo-haptics'
 import { useThemeContext } from "@/context/ThemeProvider"
 import { createPlaylist } from "@/lib/controllers/PlaylistController"
-import { EditCover } from "@/components/song/Cover"
+import EditCover from "@/components/cover/EditCover"
 import { newCover } from "@/lib/controllers/SongController"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { PlaylistBusEvent } from "@/station/playlist/Events"

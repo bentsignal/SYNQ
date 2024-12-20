@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { Styles } from "@/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
-import { SongListPageCover } from "@/components/song/Cover";
+import SongListPageCover from "@/components/cover/SongListPageCover";
 import { PageType } from "@/constants/Types";
 
 type SongListHeaderProps = {

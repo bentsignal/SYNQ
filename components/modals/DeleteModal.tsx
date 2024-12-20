@@ -4,7 +4,7 @@ import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { removeSongs, deleteFromLibrary } from '@/lib/controllers/SongController';
-import { ListCover } from '@/components/song/Cover';
+import ListCover from '@/components/cover/ListCover';
 import SongInfo from '@/components/song/SongInfo';
 import { PageType, CoverType } from '@/constants/Types';
 import TrackPlayer, { Track } from 'react-native-track-player';

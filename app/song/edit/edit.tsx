@@ -5,7 +5,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { Colors } from "@/constants/Colors";
 import { Styles } from "@/constants/Styles";
 import Bar from "@/components/modals/Bar";
-import { EditCover } from "@/components/song/Cover";
+import EditCover from "@/components/cover/EditCover";
 import { CoverType, PageType } from "@/constants/Types";
 import CustomButton from "@/components/CustomButton";
 import Notifications from "@/components/notifications/Notifications";

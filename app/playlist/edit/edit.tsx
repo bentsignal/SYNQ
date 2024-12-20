@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeContext } from "@/context/ThemeProvider";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { CoverType, NotificationType, PlaylistType } from "@/constants/Types";
-import { EditCover } from "@/components/song/Cover";
+import EditCover from "@/components/cover/EditCover";
 import { newCover } from "@/lib/controllers/SongController";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';

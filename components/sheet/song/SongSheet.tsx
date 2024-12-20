@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import SongInfo from '@/components/song/SongInfo';
-import { ListCover } from '@/components/song/Cover';
+import ListCover from '@/components/cover/ListCover';
 import { CoverType } from '@/constants/Types';
 import * as Haptics from 'expo-haptics';
 import SongOptions from './SongOptions';

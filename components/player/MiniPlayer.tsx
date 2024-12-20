@@ -3,7 +3,7 @@ import { Styles } from "@/constants/Styles";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { router } from "expo-router";
 import SongInfo from '@/components/song/SongInfo';
-import { ListCover } from "../song/Cover";
+import ListCover from "@/components/cover/ListCover";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";
 import PausePlayButtons from "./PausePlayButtons";
 import { Colors } from "@/constants/Colors";

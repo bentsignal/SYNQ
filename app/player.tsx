@@ -3,7 +3,7 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import { useEffect, useState } from "react";
 import SongInfo from "@/components/song/SongInfo";
 import Bar from "@/components/modals/Bar";
-import { PlayerCover } from "@/components/song/Cover";
+import PlayerCover from "@/components/cover/PlayerCover";
 import More from "@/components/More";
 import Time from "@/components/player/Time";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";

@@ -167,3 +167,12 @@ export const addToQueue = async (track: Track) => {
   //   await TrackPlayer.add(newTrack);
   // }
 }
+
+export const getTrackArtwork = (track: Track) => {
+  if (typeof track?.artwork === 'string') {
+    return track?.artwork;
+  }
+  else {
+    return 'transparent';
+  }
+}

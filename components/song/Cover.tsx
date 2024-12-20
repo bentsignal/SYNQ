@@ -405,44 +405,18 @@ export const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
 
 type PlayerCoverProps = {
   uri?: string;
+  aspectRatio: number;
 }
 
-export const PlayerCover = ({uri}: PlayerCoverProps) => {
+export const PlayerCover = ({uri, aspectRatio}: PlayerCoverProps) => {
 
-  const [src, setSrc] = useState('');
-  const [aspectRatio, setAspectRatio] = useState(1);
   const { adPlaying } = useGlobalContext();
   const { theme } = useThemeContext();
   const coverPercent = 0.85;
 
-  useEffect(() => {
-    
-    const getImage = async () => {
-      try {
-        console.log(uri);
-        if (uri) {
-          Image.getSize(uri, (width, height) => {
-            setSrc(uri);
-            setAspectRatio(width / height);
-          });
-        }
-        else {
-          setAspectRatio(1);
-          setSrc('');
-        }
-      }
-      catch (error) {
-        console.log('error getting cover image for player: ', error);
-      }
-    }
-    
-    getImage();
-
-  }, [uri]);
-
   const Local = StyleSheet.create({
     container: {
-      backgroundColor: src ? 'transparent' : '#D2D2D2',
+      backgroundColor: uri ? 'transparent' : '#D2D2D2',
       width: aspectRatio > 1 ? Dimensions.get('screen').width * coverPercent : 'auto',
       height: aspectRatio > 1 ? 'auto' : Dimensions.get('screen').width * coverPercent,
       minHeight: Dimensions.get('screen').width * coverPercent,
@@ -487,8 +461,8 @@ export const PlayerCover = ({uri}: PlayerCoverProps) => {
     if (adPlaying) {
       return {uri: transparent}
     }
-    if (src) {
-      return {uri: src};
+    if (uri) {
+      return {uri: uri};
     }
     else {
       return require('@/assets/icons/music.png');
@@ -496,7 +470,7 @@ export const PlayerCover = ({uri}: PlayerCoverProps) => {
   }
 
   const getStyle = () => {
-    if (src) {
+    if (uri) {
       return Local.artwork;
     }
     else {
@@ -520,8 +494,8 @@ export const PlayerCover = ({uri}: PlayerCoverProps) => {
       <View style={Local.adContainer}>
         <Ad message={getAdMessage()}/>
       </View>
-      <FastImage 
-        source={src ? {uri: src} : getSource()}
+      <Image
+        source={{uri: uri ? uri : 'transparent'}}
         style={getStyle()}
       />
     </View>

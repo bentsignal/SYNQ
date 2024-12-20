@@ -19,12 +19,17 @@ import { router } from "expo-router";
 import LoopButton from "@/components/player/LoopButton";
 import LinearGradient from "react-native-linear-gradient";
 import { getLuminanceFromImage, getPlayerGradientOpacity } from "@/lib/controllers/ColorController";
-import Animated, {useSharedValue, withTiming, Easing} from "react-native-reanimated";
+import Animated, {useSharedValue, withTiming, Easing, useAnimatedStyle, runOnJS} from "react-native-reanimated";
 import { Colors } from "@/constants/Colors";
+import { getTrackArtwork } from "@/lib/controllers/PlayerController";
+import { ClipPath } from "react-native-svg";
+
+const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 type PlayerStateType = {
   gradientOpacity: number;
   info: InfoType;
+  aspectRatio: number;
 }
 
 const Player = () => {
@@ -34,40 +39,52 @@ const Player = () => {
   const track = useActiveTrack();
 
   const containerOpacity = useSharedValue(0);
-  const gradientPixelValue = 0;
+  const gradientOpacity = useSharedValue(0.2);
+  const infoOpacity = useSharedValue(1);
+  const gradientStyle = useAnimatedStyle(() => ({
+    opacity: gradientOpacity.value,
+  }));
+  const infoStyle = useAnimatedStyle(() => ({
+    opacity: infoOpacity.value,
+  }));
 
   const [song, setSong] = useState<SongType | null>(null);
-  const [playerState, setPlayerState] = useState<PlayerStateType>({
-    gradientOpacity: 0.2,
-    info: {
-      name: getFileName(track?.url),
-      metadata: {
-        name: track?.title,
-        artist: track?.artist,
-        artwork: typeof track?.artwork === 'string' ? track?.artwork : '',
-      }
-    }
-  });
+  const [name, setName] = useState<string>(getFileName(track?.url));
+  const [artist, setArtist] = useState<string>(track?.artist || '');
+  const [title, setTitle] = useState<string>(track?.title || '');
 
   useEffect(() => {
     containerOpacity.value = withTiming(1, {duration: 200, easing: Easing.inOut(Easing.quad)});
   }, []);
 
   useEffect(() => {
+    infoOpacity.value = withTiming(0, {duration: 200, easing: Easing.inOut(Easing.quad)}, () => {
+      runOnJS(callUpdateInfo)();
+    });
+  }, [track]);
+  
+  const callUpdateInfo = async () => {
+    await updateInfo();
+    infoOpacity.value = withTiming(1, {duration: 200, easing: Easing.inOut(Easing.quad)});
+  }
+
+  const updateInfo = async () => {
+    return new Promise((resolve, reject) => {
+      setName(getFileName(track?.url));
+      setArtist(track?.artist || '');
+      setTitle(track?.title || '');
+      resolve(true);
+    });
+  }
+
+  useEffect(() => {
 
     const getPlayerState = async () => {
       try {
-        const opacity = await getOpacity();
-        setPlayerState({
-          gradientOpacity: opacity,
-          info: {
-            name: getFileName(track?.url),
-            metadata: {
-              name: track?.title,
-              artist: track?.artist,
-              artwork: typeof track?.artwork === 'string' ? track?.artwork : '',
-            }
-          }
+        const newGradientOpacity = await getOpacity();
+        gradientOpacity.value = withTiming(newGradientOpacity, {
+          duration: 1000, 
+          easing: Easing.inOut(Easing.quad)
         });
       }
       catch (error) {
@@ -75,9 +92,26 @@ const Player = () => {
       }
     }
 
+    const getAspectRatio = async (imageUri: string): Promise<number> => {
+      
+      if (!imageUri || typeof imageUri !== 'string') {
+        return 1;
+      }
+      return new Promise((resolve, reject) => {
+        Image.getSize(
+          imageUri,
+          (width, height) => resolve(width / height),
+          (error) => reject(error)
+        );
+      });
+    };
+
     const getOpacity= async () => {
       if (!track) {
         return 0.2;
+      }
+      if (typeof track?.artwork !== 'string') {
+        return 0;
       }
       try {
         const luminance = await getLuminanceFromImage(track.artwork);
@@ -112,27 +146,37 @@ const Player = () => {
   return (
     <Animated.View style={[{opacity: containerOpacity}, Local.container]}>
       <Image 
-        source={{ uri: playerState.info.metadata?.artwork }}
+        source={{ uri: getTrackArtwork(track) }}
         blurRadius={100}
-        style={Local.bg}
+        style={[Local.bg, {
+          zIndex: 0,
+          backgroundColor: Colors.popup
+        }]}
       />
-      <LinearGradient 
-        colors={['rgba(0, 0, 0, 0)',`rgba(${gradientPixelValue}, ${gradientPixelValue}, ${gradientPixelValue}, ${playerState.gradientOpacity})`]}
-        style={Local.bg}
+      <AnimatedLinearGradient 
+        colors={['rgba(0, 0, 0, 0)',`rgb(0, 0, 0)`]}
+        style={[Local.bg, gradientStyle, {
+          zIndex: 1,
+        }]}
       />
-      <View style={[Local.bg, {
-        backgroundColor: playerState.info.metadata.artwork === '' ? Colors.popup :'transparent',
-      }]}/>
       <View style={Local.container}>
         <Bar />
-        <PlayerCover uri={playerState.info.metadata?.artwork}/>
+        <PlayerCover uri={getTrackArtwork(track)} aspectRatio={1}/>
         <View style={Local.infoContainer}>
-          <SongInfo 
-            info={playerState.info}
-            name={playerState.info.name}
-            titleStyles={Local.title}
-            artistStyles={Local.artist}
-          />
+          <Animated.View style={infoStyle}>
+            <SongInfo 
+              info={{
+                name: getFileName(track?.url),
+                metadata: {
+                  name: title,
+                  artist: artist,
+                }
+              }}
+              name={name}
+              titleStyles={Local.title}
+              artistStyles={Local.artist}
+            />
+          </Animated.View>
           <More handlePress={handleMore}/>
         </View>
         <Time />
@@ -179,6 +223,7 @@ const Local = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    zIndex: 2,
   },
   infoContainer: {
     marginTop: 20,

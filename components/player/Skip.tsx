@@ -25,7 +25,7 @@ export const SkipRight = ({size, color}: {size: number, color?: string}) => {
 
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
-  const { shuffle, sourceType, sourceId } = usePlaybackContext();
+  const { shuffle, loop, sourceType, sourceId } = usePlaybackContext();
   
   return (
     <TouchableOpacity 
@@ -40,7 +40,7 @@ export const SkipRight = ({size, color}: {size: number, color?: string}) => {
           if (haptic) {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           }
-          await skipRight(shuffle, theme, haptic, sourceType, sourceId);
+          await skipRight(shuffle, theme, haptic, sourceType, sourceId, loop);
         }
       }}
     >

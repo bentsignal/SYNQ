@@ -41,7 +41,7 @@ const Library = () => {
 
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
-  const { shuffle, sourceType, sourceId } = usePlaybackContext();
+  const { shuffle, loop, sourceType, sourceId } = usePlaybackContext();
 
   const track = useActiveTrack();
   const { position, duration } = useProgress();
@@ -167,7 +167,7 @@ const Library = () => {
               playAd(theme, adURL);
             }
             else {
-              skipRight(shuffle, theme, haptic, sourceType, sourceId);
+              skipRight(shuffle, theme, haptic, sourceType, sourceId, loop);
             }
           }
           break;
@@ -188,9 +188,9 @@ const Library = () => {
           }
           break;
         case Event.PlaybackQueueEnded:
-          if (shuffle && track) {
+          if (loop && track) {
             updateQueue(track.id, shuffle, theme, sourceType, sourceId);
-            skipRight(shuffle, theme, haptic, sourceType, sourceId);
+            skipRight(shuffle, theme, haptic, sourceType, sourceId, loop);
           }
           break;
         case Event.PlaybackError:

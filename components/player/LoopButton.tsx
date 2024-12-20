@@ -13,9 +13,7 @@ interface LoopButtonProps {
 
 const LoopButton = ({ primary, useBG }: LoopButtonProps) => {
 
-  const { theme } = useThemeContext();
-  const { loop, setLoop, sourceType, sourceId } = usePlaybackContext();
-  const track = useActiveTrack();
+  const { loop, setLoop } = usePlaybackContext();
 
   const [localState, setLocalState] = useState(loop);
 
@@ -26,8 +24,6 @@ const LoopButton = ({ primary, useBG }: LoopButtonProps) => {
     try {
       const newValue = !previous;
       setLocalState(newValue);
-      const id = track ? track.id : -1;
-      await updateQueue(id, newValue, theme, sourceType, sourceId);
       setLoop(newValue);
     } catch (error) {
       setLoop(previous);

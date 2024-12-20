@@ -13,6 +13,7 @@ import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/station/playlist
 import playlistBus from '@/station/playlist';
 import { SongBusEvent, SongCoverModifiedEvent, SongInfoModifiedEvent } from '@/station/song/Events';
 import songBus from '@/station/song';
+import { CrossfadeImage } from 'react-native-crossfade-image';
 
 const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5+hPwABAAEAAFPAfXAAAAAElFTkSuQmCC';
 
@@ -429,6 +430,8 @@ export const PlayerCover = ({uri}: {uri: string}) => {
       <View style={PlayerStyles.container}>
         <FastImage
           source={{uri: uri}}
+          // duration={500}
+          resizeMode='cover'
           style={PlayerStyles.artwork}
         />
       </View>

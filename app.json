@@ -27,7 +27,7 @@
           "audio"
         ]
       },
-      "buildNumber": "23"
+      "buildNumber": "24"
     },
     "android": {
       "adaptiveIcon": {
@@ -96,7 +96,8 @@
         "expo-asset",
         {
           "assets": [
-            "assets/audio/ad.mp3"
+            "assets/audio/ad.mp3",
+            "assets/images/popup.jpg"
           ]
         }
       ],

@@ -22,6 +22,8 @@ import { getLuminanceFromImage, getPlayerGradientOpacity } from "@/lib/controlle
 import Animated, {useSharedValue, withTiming, Easing, useAnimatedStyle, runOnJS} from "react-native-reanimated";
 import { Colors } from "@/constants/Colors";
 import { getTrackArtwork } from "@/lib/controllers/PlayerController";
+import { CrossfadeImage } from "react-native-crossfade-image";
+import { useAssets } from "expo-asset";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -36,6 +38,9 @@ const Player = () => {
   const { haptic, setEditSong } = useGlobalContext();
 
   const track = useActiveTrack();
+
+  const [assets, error] = useAssets([require('@/assets/images/popup.jpg')]);
+  const [emptyImage, setEmptyImage] = useState<string>('transparent');
 
   const [song, setSong] = useState<SongType | null>(null);
   const [name, setName] = useState<string>(getFileName(track?.url));
@@ -55,18 +60,27 @@ const Player = () => {
   }));
 
   useEffect(() => {
+    if (error) {
+      return;
+    }
+    if (assets) {
+      setEmptyImage(assets[0].uri);
+    }
+  }, [assets]);
+
+  useEffect(() => {
     containerOpacity.value = withTiming(1, {duration: 200, easing: Easing.inOut(Easing.quad)});
   }, []);
 
   useEffect(() => {
-    infoOpacity.value = withTiming(0, {duration: 200, easing: Easing.inOut(Easing.quad)}, () => {
+    infoOpacity.value = withTiming(0, {duration: 250, easing: Easing.inOut(Easing.quad)}, () => {
       runOnJS(callUpdateInfo)();
     });
   }, [track]);
   
   const callUpdateInfo = async () => {
     await updateInfo();
-    infoOpacity.value = withTiming(1, {duration: 200, easing: Easing.inOut(Easing.quad)});
+    infoOpacity.value = withTiming(1, {duration: 250, easing: Easing.inOut(Easing.quad)});
   }
 
   const updateInfo = async () => {
@@ -84,7 +98,7 @@ const Player = () => {
       try {
         const newGradientOpacity = await getOpacity();
         gradientOpacity.value = withTiming(newGradientOpacity, {
-          duration: 1000, 
+          duration: 500, 
           easing: Easing.inOut(Easing.quad)
         });
       }
@@ -130,11 +144,21 @@ const Player = () => {
     router.push('/player/edit');
   }
 
+  const getBackgroundImage = () => {
+    const artwork = getTrackArtwork(track);
+    if (artwork !== 'transparent') {  
+      return artwork;
+    }
+    return emptyImage;
+  }
+
   return (
     <Animated.View style={[{opacity: containerOpacity}, Local.container]}>
-      <Image 
-        source={{ uri: getTrackArtwork(track) }}
+      <CrossfadeImage 
+        source={{ uri: getBackgroundImage() }}
+        
         blurRadius={100}
+        duration={500}
         style={[Local.bg, {
           zIndex: 0,
           backgroundColor: Colors.popup

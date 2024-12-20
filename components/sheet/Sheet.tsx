@@ -7,18 +7,20 @@ import Bar from '../modals/Bar';
 type SheetProps = {
   name: string,
   children?: React.ReactNode,
+  onChange: (index: number) => void,
 }
 
-const Sheet = ({ name, children}: SheetProps) => {
+const Sheet = ({ name, children, onChange}: SheetProps) => {
 
   return (
     <TrueSheet
       name={name}
-      sizes={['auto', 'large']}
+      sizes={['50%', 'large']}
       backgroundColor={Colors.popup}
       style={Local.sheetStyle}
       grabber={false}
       contentContainerStyle={Local.contentContainer}
+      onSizeChange={(state) => onChange(state.index)}
     >
       <Bar />
       {children}

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import SongInfo from '@/components/song/SongInfo';
@@ -19,9 +19,20 @@ const SongSheet = ({name}: SongSheetProps) => {
 
   const { editSong, haptic } = useGlobalContext();
   const [scrollEnabled, setScrollEnabled] = useState(false);
+  const scrollRef = useRef<ScrollView>(null);
+
+  const onChange = (index: number) => {
+    if (index === 0) {
+      setScrollEnabled(false);
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
+    }
+    else if (index === 1) {
+      setScrollEnabled(true);
+    }
+  }
 
   return (
-    <Sheet name={name}>
+    <Sheet name={name} onChange={onChange}>
       <View style={SheetStyles.infoContainer}>
         <ListCover 
           id={editSong.id}
@@ -35,14 +46,13 @@ const SongSheet = ({name}: SongSheetProps) => {
         />
       </View>
       <ScrollView
+        ref={scrollRef}
         scrollEnabled={scrollEnabled}
-        onMomentumScrollBegin={(event) => {
-          if (event.nativeEvent.contentOffset.y < 0) {
-            TrueSheet.dismiss(name);
-            if (haptic) {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            }
-          }
+        style={{
+          height: Dimensions.get('window').height
+        }}
+        contentContainerStyle={{
+          paddingBottom: 300,
         }}
       >
         <SongOptions name={name}/>

@@ -27,12 +27,6 @@ import { useAssets } from "expo-asset";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
-type PlayerStateType = {
-  gradientOpacity: number;
-  info: InfoType;
-  aspectRatio: number;
-}
-
 const Player = () => {
 
   const { haptic, setEditSong } = useGlobalContext();
@@ -94,7 +88,7 @@ const Player = () => {
 
   useEffect(() => {
 
-    const getPlayerState = async () => {
+    const setGradientOpacity = async () => {
       try {
         const newGradientOpacity = await getOpacity();
         gradientOpacity.value = withTiming(newGradientOpacity, {
@@ -132,7 +126,7 @@ const Player = () => {
     }
 
     getSong();
-    getPlayerState();
+    setGradientOpacity();
 
   }, [track]);
 

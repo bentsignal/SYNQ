@@ -22,7 +22,6 @@ import { getLuminanceFromImage, getPlayerGradientOpacity } from "@/lib/controlle
 import Animated, {useSharedValue, withTiming, Easing, useAnimatedStyle, runOnJS} from "react-native-reanimated";
 import { Colors } from "@/constants/Colors";
 import { getTrackArtwork } from "@/lib/controllers/PlayerController";
-import { ClipPath } from "react-native-svg";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -38,20 +37,22 @@ const Player = () => {
 
   const track = useActiveTrack();
 
+  const [song, setSong] = useState<SongType | null>(null);
+  const [name, setName] = useState<string>(getFileName(track?.url));
+  const [artist, setArtist] = useState<string>(track?.artist || '');
+  const [title, setTitle] = useState<string>(track?.title || '');
+
   const containerOpacity = useSharedValue(0);
   const gradientOpacity = useSharedValue(0.2);
   const infoOpacity = useSharedValue(1);
+
   const gradientStyle = useAnimatedStyle(() => ({
     opacity: gradientOpacity.value,
   }));
   const infoStyle = useAnimatedStyle(() => ({
     opacity: infoOpacity.value,
+    flex: 1,
   }));
-
-  const [song, setSong] = useState<SongType | null>(null);
-  const [name, setName] = useState<string>(getFileName(track?.url));
-  const [artist, setArtist] = useState<string>(track?.artist || '');
-  const [title, setTitle] = useState<string>(track?.title || '');
 
   useEffect(() => {
     containerOpacity.value = withTiming(1, {duration: 200, easing: Easing.inOut(Easing.quad)});
@@ -91,20 +92,6 @@ const Player = () => {
         console.log(error);
       }
     }
-
-    const getAspectRatio = async (imageUri: string): Promise<number> => {
-      
-      if (!imageUri || typeof imageUri !== 'string') {
-        return 1;
-      }
-      return new Promise((resolve, reject) => {
-        Image.getSize(
-          imageUri,
-          (width, height) => resolve(width / height),
-          (error) => reject(error)
-        );
-      });
-    };
 
     const getOpacity= async () => {
       if (!track) {
@@ -161,10 +148,10 @@ const Player = () => {
       />
       <View style={Local.container}>
         <Bar />
-        <PlayerCover uri={getTrackArtwork(track)} aspectRatio={1}/>
+        <PlayerCover uri={getTrackArtwork(track)}/>
         <View style={Local.infoContainer}>
           <Animated.View style={infoStyle}>
-            <SongInfo 
+            <SongInfo
               info={{
                 name: getFileName(track?.url),
                 metadata: {

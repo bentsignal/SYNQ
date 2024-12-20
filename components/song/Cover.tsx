@@ -403,102 +403,88 @@ export const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
 
 }
 
-type PlayerCoverProps = {
-  uri?: string;
-  aspectRatio: number;
-}
-
-export const PlayerCover = ({uri, aspectRatio}: PlayerCoverProps) => {
+export const PlayerCover = ({uri}: {uri: string}) => {
 
   const { adPlaying } = useGlobalContext();
   const { theme } = useThemeContext();
-  const coverPercent = 0.85;
 
-  const Local = StyleSheet.create({
-    container: {
-      backgroundColor: uri ? 'transparent' : '#D2D2D2',
-      width: aspectRatio > 1 ? Dimensions.get('screen').width * coverPercent : 'auto',
-      height: aspectRatio > 1 ? 'auto' : Dimensions.get('screen').width * coverPercent,
-      minHeight: Dimensions.get('screen').width * coverPercent,
-      aspectRatio: aspectRatio,
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: 12,
-      marginTop: 20,
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 4,
-      },
-      shadowOpacity: 0.2,
-      shadowRadius: 4.65,
-      elevation: 8,
-    },
-    artwork: {
-      aspectRatio: aspectRatio,
-      width: aspectRatio > 1 ? Dimensions.get('screen').width * coverPercent : 'auto',
-      height: aspectRatio > 1 ? 'auto' : Dimensions.get('screen').width * coverPercent,
-      borderRadius: 10,
-      display: adPlaying ? 'none' : 'flex',
-    },
-    empty: {
-      width: 100,
-      height: 100,
-      display: adPlaying ? 'none' : 'flex',
-    },
-    adContainer: {
-      width: '100%',
-      height: '100%',
-      backgroundColor: Colors.background,
-      display: adPlaying ? 'flex' : 'none',
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: 8,
-    }
-  });
-
-  const getSource = () => {
-    if (adPlaying) {
-      return {uri: transparent}
-    }
-    if (uri) {
-      return {uri: uri};
-    }
-    else {
-      return require('@/assets/icons/music.png');
-    }
-  }
-
-  const getStyle = () => {
-    if (uri) {
-      return Local.artwork;
-    }
-    else {
-      return Local.empty;
-    }
-  }
-
-  const getAdMessage = () => {
+  if (adPlaying) {
     return (
-      <Text>
-        Listen to your music ad-free with 
-        <Text style={{color: theme}}>
-          {' '}Premium
-        </Text>
-      </Text>
+      <View style={PlayerStyles.container}>
+        <View style={PlayerStyles.adContainer}>
+          <Ad message={
+            <Text>
+              Listen to your music ad-free with 
+              <Text style={{color: theme}}>
+                {' '}Premium
+              </Text>
+            </Text>
+          }/>
+        </View>
+      </View>
+    );
+  }
+  else if (uri && typeof uri === 'string' && uri !== 'transparent') {
+    return (
+      <View style={PlayerStyles.container}>
+        <FastImage
+          source={{uri: uri}}
+          style={PlayerStyles.artwork}
+        />
+      </View>
+    );
+  }
+  else {
+    return (
+      <View style={[PlayerStyles.container, PlayerStyles.emptyContainer]}>
+        <FastImage
+          source={require('@/assets/icons/music.png')}
+          style={PlayerStyles.empty}
+        />
+      </View>
     );
   }
 
-  return (
-    <View style={Local.container}>
-      <View style={Local.adContainer}>
-        <Ad message={getAdMessage()}/>
-      </View>
-      <Image
-        source={{uri: uri ? uri : 'transparent'}}
-        style={getStyle()}
-      />
-    </View>
-  );
-
 }
+
+const PlayerStyles = StyleSheet.create({
+  container: {
+    width: Dimensions.get('screen').width * 0.85,
+    height: Dimensions.get('screen').width * 0.85,
+    aspectRatio: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 12,
+    marginTop: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4.65,
+    elevation: 8,
+  },
+  emptyContainer: {
+    backgroundColor: '#D2D2D2',
+  },
+  artwork: {
+    aspectRatio: 1,
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    borderRadius: 10,
+  },
+  empty: {
+    width: 100,
+    height: 100,
+  },
+  adContainer: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: Colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+  }
+});

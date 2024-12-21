@@ -5,11 +5,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PageTitle from "@/components/PageTitle";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";
 import PausePlayButtons from "@/components/player/PausePlayButtons";
-import CloseButton from "@/components/CloseButton";
-import { router } from "expo-router";
 import Time from "@/components/player/Time";
 import ShuffleButton from "@/components/player/ShuffleButton";
-import { useGlobalContext } from "@/context/GlobalProvider";
 import SongList from "@/components/lists/song";
 import { useEffect, useState } from "react";
 import { CoverType, PageType, SongType } from "@/constants/Types";
@@ -32,61 +29,6 @@ const Queue = () => {
 
   const insets = useSafeAreaInsets();
   const [songs, setSongs] = useState<SongType[]>([]);
-
-  const Local = StyleSheet.create({
-    container: {
-      backgroundColor: Colors.popup,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      // paddingTop: insets.top + 20,
-    },
-    currentlyPlayingContainer: {
-      maxWidth: Dimensions.get('window').width * 0.9,
-      flexDirection: 'row',
-      paddingBottom: 20,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    footer: {
-      backgroundColor: Colors.popup,
-      borderTopWidth: 1,
-      borderTopColor: Colors.popup,
-      height: 150,
-      width: '100%',
-      justifyContent: 'center',
-      paddingBottom: insets.bottom,
-      alignItems: 'center',
-    },
-    controlsContainer: {
-      flexDirection: 'row',
-      width: Dimensions.get('window').width * 0.85,
-      gap: 15,
-      // backgroundColor: 'red',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-    centerControlsContainer: {
-      flexDirection: 'row',
-      gap: 15,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    pausePlay: {
-      width: 50,
-      height: 50,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    categoryHeader: {
-      ...Styles.h3,
-      color: Colors.text,
-      marginBottom: 10,
-      width: Dimensions.get('window').width * 0.9,
-    },
-    divider: {
-      height: 10,
-    }
-  });
 
   useEffect(() => {
 
@@ -162,7 +104,9 @@ const Queue = () => {
         gradientStart={'rgba(24, 24, 24, 1)'}
         gradientEnd={'rgba(24, 24, 24, 0)'}
       />
-      <View style={Local.footer}>
+      <View style={[Local.footer, {
+        paddingBottom: insets.bottom,
+      }]}>
         <Time />
         <View style={Local.controlsContainer}>
           <ShuffleButton primary={theme}/>
@@ -183,5 +127,57 @@ const Queue = () => {
   );
 
 }
+
+const Local = StyleSheet.create({
+  container: {
+    backgroundColor: Colors.popup,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+  },
+  currentlyPlayingContainer: {
+    maxWidth: Dimensions.get('window').width * 0.9,
+    flexDirection: 'row',
+    paddingBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  footer: {
+    backgroundColor: Colors.popup,
+    borderTopWidth: 1,
+    borderTopColor: Colors.popup,
+    height: 150,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  controlsContainer: {
+    flexDirection: 'row',
+    width: Dimensions.get('window').width * 0.85,
+    gap: 15,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  centerControlsContainer: {
+    flexDirection: 'row',
+    gap: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pausePlay: {
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  categoryHeader: {
+    ...Styles.h3,
+    color: Colors.text,
+    marginBottom: 10,
+    width: Dimensions.get('window').width * 0.9,
+  },
+  divider: {
+    height: 10,
+  }
+});
 
 export default Queue;

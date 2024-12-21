@@ -39,6 +39,7 @@ const Navigation = () => {
         options={{
           presentation: "modal",
           headerShown: false,
+          contentStyle: { backgroundColor: 'transparent' },
         }}
       />
       <Stack.Screen 

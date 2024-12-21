@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Linking } from "react-native";
 import { router } from "expo-router";
 import Option from "@/components/Option";
 import { Styles } from "@/constants/Styles";
@@ -10,6 +10,8 @@ import PremiumToggle from "@/components/settings/PremiumToggle";
 import CFG from "@/constants/Config";
 import { usePremiumContext } from "@/context/PremiumProvider";
 import Bar from "@/components/modals/Bar";
+import CustomButton from "@/components/CustomButton";
+import { SOCIAL_LINKS } from "@/constants/Config";
 
 const Settings = () => {
 
@@ -38,7 +40,7 @@ const Settings = () => {
         <View style={Local.settingsCategoryContainer}>
           <Haptic />
         </View>
-        {CFG.devShowPremiumToggle && 
+        {__DEV__ && CFG.devShowPremiumToggle && 
           <>
             <CategoryTitle title="Premium Toggle" />
             <View style={Local.settingsCategoryContainer}>
@@ -46,6 +48,27 @@ const Settings = () => {
             </View>
           </>
         }
+        <View style={Local.supportContainer}>
+          <CustomButton 
+            title="Contact Support"
+            buttonWidth={200}
+            handlePress={() => Linking.openURL('https://directedbyshawn.com/synq-support')}
+          />
+        </View>
+        <View style={Local.socialContainer}>
+          <TouchableOpacity onPress={() => Linking.openURL(SOCIAL_LINKS.x)} style={[Local.socialLink]}>
+            <Image source={require('@/assets/icons/x.png')} style={[Local.socialIcon, {
+              width: 25, 
+              height: 25,
+            }]} />
+          </TouchableOpacity>
+          <TouchableOpacity style={Local.socialLink} onPress={() => Linking.openURL(SOCIAL_LINKS.instagram)}>
+            <Image style={Local.socialIcon} source={require('@/assets/icons/instagram.png')} />
+          </TouchableOpacity>
+          <TouchableOpacity style={Local.socialLink} onPress={() => Linking.openURL(SOCIAL_LINKS.discord)}>
+            <Image style={Local.socialIcon} source={require('@/assets/icons/discord.png')} />
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </View>
   );
@@ -61,7 +84,9 @@ const Local = StyleSheet.create({
     marginBottom: 20,
   },
   container: {
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.popup,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
   },
   settingsCategoryContainer: {
     width: '90%',
@@ -73,6 +98,30 @@ const Local = StyleSheet.create({
   scrollViewContent: {
     alignItems: 'center',
   },
+  supportContainer: {
+    width: '90%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 30,
+    marginBottom: 5,
+  },
+  socialContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 10,
+    width: '90%',
+    marginVertical: 10,
+  },
+  socialIcon: {
+    width: 30,
+    height: 30,
+    tintColor: Colors.text,
+  },
+  socialLink: {
+    padding: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
 export default Settings;

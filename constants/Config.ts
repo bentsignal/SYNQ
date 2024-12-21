@@ -13,4 +13,10 @@ const CFG = {
   PORT: 3000,
 }
 
+export const SOCIAL_LINKS = {
+  x: 'https://x.com/SYNQ_app',
+  instagram: 'https://instagram.com/SYNQ_app',
+  discord: 'https://discord.gg/zaSkUrDvpz',
+}
+
 export default CFG;

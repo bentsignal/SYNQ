@@ -73,7 +73,7 @@ const Theme = () => {
           }]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          colors={[ 'rgba(16, 16, 16, 1)', 'rgba(16, 16, 16, 0)']}
+          colors={[ 'rgba(24, 24, 24, 1)', 'rgba(24, 24, 24, 0)']}
           pointerEvents={'none'}
         />
       <ScrollView 
@@ -96,7 +96,7 @@ const Theme = () => {
         }]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 0 }}
-        colors={['rgba(16, 16, 16, 1)', 'rgba(16, 16, 16, 0)']}
+        colors={['rgba(24, 24, 24, 1)', 'rgba(24, 24, 24, 0)']}
         pointerEvents={'none'}
       />
       <View style={[Local.premiumOverlayLock, {

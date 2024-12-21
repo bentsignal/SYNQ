@@ -23,6 +23,7 @@ const SettingsLayout = () => {
         name="index"
         options={{
           headerTitle: 'Settings',
+          contentStyle: {backgroundColor: 'transparent'},
         }}
       />
     </Stack>

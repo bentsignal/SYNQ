@@ -72,6 +72,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
 
   const handleExport = async () => {
     try {
+      TrueSheet.dismiss(name);
       if (pageType === PageType.IMPORT && !premium) {
         setShowImportAd(true);
       }

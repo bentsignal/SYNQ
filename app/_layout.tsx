@@ -14,6 +14,7 @@ import PremiumProvider from "@/context/PremiumProvider";
 import Navigation from "@/app/navigation";
 import PlaybackProvider from "@/context/PlaybackProvider";
 import Sheets from "@/components/sheet/Sheets";
+import GlobalProgress from '@/components/GlobalProgress';
 
 LogBox.ignoreLogs(['Require cycle:']);
 
@@ -81,6 +82,7 @@ const RootLayout = () => {
             initShouldPlayAd={shouldPlayAd}
             children={
               <>
+                <GlobalProgress />
                 <Sheets />
                 <GestureHandlerRootView style={{flex: 1}}>
                   <Navigation />

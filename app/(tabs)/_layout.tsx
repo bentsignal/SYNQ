@@ -47,7 +47,6 @@ const TabLayout = () => {
 
   return (
     <>
-      <GlobalProgress />
       <NotificationModal />
       <Overlay show={showOverlay} activeOpacity={0.95}/>
       <Server />

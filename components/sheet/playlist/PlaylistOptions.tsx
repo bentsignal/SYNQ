@@ -41,6 +41,7 @@ const PlaylistOptions = ({name}: {name: string}) => {
 
   const handleExport = async () => {
     try {
+      TrueSheet.dismiss(name);
       setShowGlobalLoading(true);
       let songs = await getPlaylistSongs(editPlaylist.id);
       await exportSongs(songs);

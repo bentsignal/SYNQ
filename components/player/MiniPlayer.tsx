@@ -11,6 +11,7 @@ import { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util";
 import { CoverType } from "@/constants/Types";
 import { useThemeContext } from "@/context/ThemeProvider";
+import { getDisabledColor } from "@/lib/controllers/ColorController";
 
 const MiniPlayer = () => {
 
@@ -28,7 +29,7 @@ const MiniPlayer = () => {
       paddingLeft: 10,
       marginBottom: 10,
       width: '90%',
-      backgroundColor: theme,
+      backgroundColor: getDisabledColor(theme),
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',

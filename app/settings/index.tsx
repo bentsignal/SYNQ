@@ -85,8 +85,7 @@ const Local = StyleSheet.create({
   },
   container: {
     backgroundColor: Colors.popup,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    ...Styles.roundedModal,
   },
   settingsCategoryContainer: {
     width: '90%',

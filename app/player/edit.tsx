@@ -11,6 +11,7 @@ import SheetStyles from '@/components/sheet/Styles';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import SongOptions from '@/components/sheet/song/SongOptions';
 import Bar from '@/components/modals/Bar';
+import { Styles } from '@/constants/Styles';
 
 const PlayerSongEdit = () => {
   const name = 'player-song-sheet';
@@ -53,8 +54,7 @@ const local = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.popup,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    ...Styles.roundedModal,
     paddingLeft: 20,
     paddingRight: 20,
   }

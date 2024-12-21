@@ -24,6 +24,7 @@ import { Colors } from "@/constants/Colors";
 import { getTrackArtwork } from "@/lib/controllers/PlayerController";
 import { CrossfadeImage } from "react-native-crossfade-image";
 import { useAssets } from "expo-asset";
+import { Styles } from "@/constants/Styles";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -216,14 +217,13 @@ const Player = () => {
 
 const Local = StyleSheet.create({
   bg: {
+    ...Styles.roundedModal,
     position: 'absolute',
     height: Dimensions.get('screen').height,
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
   },
   container: {
     flex: 1,

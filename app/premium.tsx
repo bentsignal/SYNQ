@@ -393,8 +393,7 @@ const Premium = () => {
 const Local = StyleSheet.create({
   wrapper: {
     backgroundColor: Colors.background,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    ...Styles.roundedModal,
   },
   container: {
     height: '100%',
@@ -406,14 +405,12 @@ const Local = StyleSheet.create({
   imageContainer: {
     height: '40%',
     width: '100%',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    ...Styles.roundedModal,
   },
   coverImage: {
     height: '100%',
     width: '100%',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    ...Styles.roundedModal,
   },
   coverGradient: {
     position: 'absolute', 

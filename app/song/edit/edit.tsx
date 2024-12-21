@@ -184,8 +184,7 @@ const EditSong = ({id}: {id: string}) => {
 const Local = StyleSheet.create({
   wrapper: {
     ...Styles.body,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    ...Styles.roundedModal,
     backgroundColor: Colors.popup,
   },
   scrollView: {

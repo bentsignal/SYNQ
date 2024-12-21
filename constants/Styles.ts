@@ -93,6 +93,10 @@ export const Styles = StyleSheet.create({
   roundedContainer: {
     borderRadius: 15
   },
+  roundedModal: {
+    borderTopLeftRadius: 38,
+    borderTopRightRadius: 38,
+  },
   popupBackdrop: {
     justifyContent: 'center',
     alignItems: 'center',

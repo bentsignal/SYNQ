@@ -131,8 +131,7 @@ const Queue = () => {
 const Local = StyleSheet.create({
   container: {
     backgroundColor: Colors.popup,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    ...Styles.roundedModal,
   },
   currentlyPlayingContainer: {
     maxWidth: Dimensions.get('window').width * 0.9,

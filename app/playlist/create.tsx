@@ -116,8 +116,7 @@ const Local = StyleSheet.create({
   wrapper: {
     ...Styles.body,
     backgroundColor: Colors.popup,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    ...Styles.roundedModal,
   },
   textBox: {
     fontSize: 16,

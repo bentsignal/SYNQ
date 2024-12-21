@@ -1,4 +1,5 @@
 import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { useEffect } from "react";
 import { Styles } from "@/constants/Styles";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { router } from "expo-router";
@@ -12,6 +13,7 @@ import { getFileName } from "@/lib/Util";
 import { CoverType } from "@/constants/Types";
 import { useThemeContext } from "@/context/ThemeProvider";
 import { getDisabledColor } from "@/lib/controllers/ColorController";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 const MiniPlayer = () => {
 
@@ -19,77 +21,47 @@ const MiniPlayer = () => {
 
   const track = useActiveTrack();
 
-  const Local = StyleSheet.create({
-    container: {
-      ...Styles.roundedContainer,
-      position: 'absolute',
-      bottom: 0,
-      height: 80,
-      paddingRight: 10,
-      paddingLeft: 10,
-      marginBottom: 10,
-      width: '90%',
-      backgroundColor: getDisabledColor(theme),
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      display: track ? 'flex' : 'none'
-    },
-    buttonContainer: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: 10,
-    },
-    playPauseButtonWrapper: {
-      width: 35,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 5,
-    },
-    buttonWrapper: {
-      paddingTop: 5,
-      paddingBottom: 5,
-    },
-  });
+  const opacity = useSharedValue(0);
+  const coverStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
 
-  const getInfo = () => {
-    if (track !== null && track !== undefined) {
-      
-      const info = {
-        name: getFileName(track.url),
-        metadata: {
-          name: track.title,
-          artist: track.artist,
-          album: '',
-          artwork: track.artwork,
-        }
-      };
-
-      return (
-        <SongInfo 
-          info={info} 
-          name={getFileName(track.url)}
-          showAlbum={false}
-          color={[''].includes(theme) ? 'black' : Colors.text}
-        />
-      );
-      
-    }
-  }
+  useEffect(() => {
+    setTimeout(() => {
+      opacity.value = withTiming(track ? 1 : 0, { duration: 200 });
+    }, 200);
+  }, [track]);
 
   return (
     <TouchableOpacity 
-      style={Local.container}
+      style={[Local.container, { 
+        backgroundColor: getDisabledColor(theme), 
+        display: track ? 'flex' : 'none'
+      }]}
       activeOpacity={1}
       onPress={() => router.push('/player')}
     >
-      <ListCover 
-        id={track?.id} 
-        type={CoverType.SONG}
-        propOnLoad={() => {}} 
+      <Animated.View style={coverStyle}>
+        <ListCover 
+          id={track?.id} 
+          type={CoverType.SONG}
+          propOnLoad={() => {}}
+        />
+      </Animated.View>
+      <SongInfo 
+        info={{
+          name: getFileName(track?.url),
+          metadata: {
+            name: track?.title,
+            artist: track?.artist,
+            album: '',
+            artwork: track?.artwork,
+          }
+        }}
+        name={getFileName(track?.url)}
+        showAlbum={false}
+        color={[''].includes(theme) ? 'black' : Colors.text}
       />
-      {getInfo()}
       <View style={Local.buttonContainer}>
         <TouchableOpacity 
           style={Local.buttonWrapper}
@@ -113,7 +85,40 @@ const MiniPlayer = () => {
       </View>
       
     </TouchableOpacity>
-  )
+  );
+
 }
+
+const Local = StyleSheet.create({
+  container: {
+    ...Styles.roundedContainer,
+    position: 'absolute',
+    bottom: 0,
+    height: 80,
+    paddingRight: 10,
+    paddingLeft: 10,
+    marginBottom: 10,
+    width: '90%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+  },
+  playPauseButtonWrapper: {
+    width: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 5,
+  },
+  buttonWrapper: {
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+});
 
 export default MiniPlayer;

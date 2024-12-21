@@ -203,7 +203,6 @@ export const exportSongs = async (songs: SongType[]) => {
         await FileSystem.writeAsStringAsync(destination, songs[i].data, { encoding: 'base64' });
       }
       else if (songs[i].pageType === PageType.LIBRARY) {
-        console.log(songs[i].id);
         try {
           const audioPath = `${FileSystem.documentDirectory}library/${songs[i].id}/${songs[i].name}`;
           if (songs[i].edited) {

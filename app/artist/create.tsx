@@ -91,8 +91,8 @@ const CreateArtist = () => {
           numberOfLines={1}
           placeholder={'Enter playlist name...'}
           placeholderTextColor={Colors.altDisabled}
-          value={name}
-          onChangeText={text => setName(text)}
+          defaultValue={name}
+          onEndEditing={(evt) => setName(evt.nativeEvent.text)}
         />
         
       </KeyboardAwareScrollView>

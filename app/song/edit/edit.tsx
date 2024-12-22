@@ -105,7 +105,7 @@ const EditSong = ({id}: {id: string}) => {
   return (
     <View style={Local.wrapper}>
       <Bar />
-      <Text style={Local.header}>Edit Song</Text>
+      <Text style={ModalStyles.header}>Edit Song</Text>
       <View style={Styles.divider} />
       <KeyboardAwareScrollView 
         style={Local.scrollView}
@@ -136,10 +136,10 @@ const EditSong = ({id}: {id: string}) => {
               autoCorrect={true}
               editable
               numberOfLines={1}
+              defaultValue={title}
               placeholder={'Enter song name...'}
               placeholderTextColor={Colors.altDisabled}
-              value={title}
-              onChangeText={text => setTitle(text)}
+              onEndEditing={(evt) => setTitle(evt.nativeEvent.text)}
             />
           </>
         }
@@ -196,11 +196,6 @@ const Local = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  header: {
-    ...Styles.h2,
-    color: Colors.text,
-    marginBottom: 20,
   },
   coverWrapper: {
     width: '90%',

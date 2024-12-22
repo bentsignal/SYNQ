@@ -93,7 +93,6 @@ const CreatePlaylist = () => {
           value={name}
           onChangeText={text => setName(text)}
         />
-        
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />
       <View style={[Local.buttonContainer, {paddingBottom: insets.bottom}]}>

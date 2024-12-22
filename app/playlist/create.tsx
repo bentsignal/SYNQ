@@ -68,7 +68,7 @@ const CreatePlaylist = () => {
   return (
     <View style={Local.wrapper}>
       <Bar />
-      <Text style={Local.header}>Create Playlist</Text>
+      <Text style={ModalStyles.header}>Create Playlist</Text>
       <View style={Styles.divider} />
       <KeyboardAwareScrollView
         style={Local.scrollView}
@@ -133,11 +133,6 @@ const Local = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  header: {
-    ...Styles.h2,
-    color: Colors.text,
-    marginBottom: 20,
   },
   coverWrapper: {
     width: '90%',

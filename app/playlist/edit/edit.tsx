@@ -83,7 +83,7 @@ const EditPlaylist = ({id}: {id: string}) => {
   return (
     <View style={Local.wrapper}>
       <Bar />
-      <Text style={Local.header}>Edit Playlist</Text>
+      <Text style={ModalStyles.header}>Edit Playlist</Text>
       <View style={Styles.divider} />
       <KeyboardAwareScrollView 
         style={Local.scrollView}

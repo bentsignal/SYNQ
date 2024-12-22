@@ -68,7 +68,7 @@ const CreateAlbum = () => {
   return (
     <View style={Local.wrapper}>
       <Bar />
-      <Text style={Local.header}>Create Album</Text>
+      <Text style={ModalStyles.header}>Create Album</Text>
       <View style={Styles.divider} />
       <KeyboardAwareScrollView
         style={Local.scrollView}
@@ -134,11 +134,6 @@ const Local = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  header: {
-    ...Styles.h2,
-    color: Colors.text,
-    marginBottom: 20,
   },
   coverWrapper: {
     width: '90%',

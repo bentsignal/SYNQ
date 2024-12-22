@@ -43,7 +43,7 @@ const AddToPlaylist = () => {
   return (
     <View style={Local.wrapper}>
       <Bar />
-      <Text style={Local.header}>Add to Playlist</Text>
+      <Text style={ModalStyles.header}>Add to Playlist</Text>
       <CustomButton
         title={'New'}
         background={theme}
@@ -78,11 +78,6 @@ const Local = StyleSheet.create({
     ...Styles.body,
     backgroundColor: Colors.popup,
     ...ModalStyles.roundedTop,
-  },
-  header: {
-    ...Styles.h2,
-    color: Colors.text,
-    marginBottom: 10,
   },
   bottomButtonsWrapper: {
     flexDirection: 'row',

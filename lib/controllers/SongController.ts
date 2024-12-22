@@ -2,7 +2,7 @@ import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
-import { SongType, InfoType, PageType, TagsType, SourceType } from '@/constants/Types'
+import { SongType, InfoType, PageType, TagsType, SourceType, SongResultType, SortType } from '@/constants/Types'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -12,6 +12,7 @@ import SongDataManager from '@/lib/data/SongDataManager';
 import { isValidNumString, idgen } from '@/lib/Util';
 import { Image } from 'react-native';
 import PlaylistDataManager from '@/lib/data/PlaylistDataManager';
+import { getPlaylistSongs } from '@/lib/controllers/PlaylistController';
 import songBus from "@/station/song/Bus";
 import { SongBusEvent } from "@/station/song/Events";
 import 'react-native-get-random-values';
@@ -520,7 +521,7 @@ export const getNextUp = async (
   let songs: SongType[] = [];
   // TODO: only query songs after currentId
   if (sourceType === SourceType.PLAYLIST) {
-    songs = await PlaylistDataManager.getInstance().getSongsFromPlaylist(sourceId);
+    songs = await getPlaylistSongs(sourceId, PageType.LIBRARY, SortType.NEWEST);
   }
   else if (sourceType === SourceType.ARTIST) {
     //  TODO: get songs from artist
@@ -529,7 +530,7 @@ export const getNextUp = async (
     //  TODO: get songs from album
   }
   else {
-    songs = await SongDataManager.getInstance().getSongs();
+    return songs;
   }
 
   try {
@@ -537,7 +538,7 @@ export const getNextUp = async (
       const cap = pagination > songs.length ? songs.length : pagination;
       for (let i = 0; i < cap; i++) {
         const randomIndex = Math.floor(Math.random() * songs.length);
-        const newSong = getSongByResult(songs[randomIndex]);
+        const newSong = songs[randomIndex];
         next.push(newSong);
         songs.splice(randomIndex, 1);
       }
@@ -548,14 +549,14 @@ export const getNextUp = async (
       if (validSongs.length === 0) {
         const cap = pagination > songs.length ? songs.length : pagination;
         for (let i = 0; i < cap; i++) {
-          const newSong = getSongByResult(songs[i]);
+          const newSong = songs[i];
           next.push(newSong);
         }
       }
       else {
         const cap = pagination > validSongs.length ? validSongs.length : pagination;
         for (let i = 0; i < cap; i++) {
-          const newSong = getSongByResult(validSongs[i]);
+          const newSong = validSongs[i];
           next.push(newSong);
         }
       }

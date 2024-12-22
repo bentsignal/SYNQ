@@ -4,7 +4,7 @@ import { Styles } from "@/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import SongList from "@/components/lists/song";
-import { PageType, PlaylistType, SongType, SourceType } from "@/constants/Types";
+import { PageType, PlaylistType, SongType, SortType, SourceType } from "@/constants/Types";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import MiniPlayer from "@/components/player/MiniPlayer";
 import TabBar from "@/components/TabBar";
@@ -43,7 +43,7 @@ const PlaylistView = ({id}: {id: string}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getPlaylistSongs(parseInt(id), PageType.LIBRARY);
+      const songs = await getPlaylistSongs(parseInt(id), PageType.LIBRARY, SortType.NEWEST);
       setSongs(songs);
     }
     catch (error) {

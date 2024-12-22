@@ -33,6 +33,18 @@ export type TagsType = {
   }
 };
 
+export type SongResultType = {
+  id?: number;
+  title?: string;
+  artists?: string;
+  album?: string;
+  genre?: string;
+  duration?: number;
+  fileType?: string;
+  fileName?: string;
+  edited?: boolean;
+}
+
 export type InstructionsModalProps = {
   dontShowOption?: boolean;
 };
@@ -40,6 +52,14 @@ export type InstructionsModalProps = {
 export enum NotificationType {
   GENERAL = 1,
   ERROR = 2,
+}
+
+export enum SortType {
+  TITLE = 1,
+  ARTIST = 2,
+  ALBUM = 3,
+  OLDEST = 4,
+  NEWEST = 5,
 }
 
 export enum PageType {

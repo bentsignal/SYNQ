@@ -2,7 +2,7 @@ import PlaylistDataManager from "@/lib/data/PlaylistDataManager";
 import playlistBus from "@/station/playlist";
 import * as FileSystem from 'expo-file-system';
 import { getSongByResult } from "@/lib/controllers/SongController";
-import { PageType } from "@/constants/Types";
+import { PageType, SortType } from "@/constants/Types";
 import { writeImageToLibrary } from "@/lib/controllers/SongController";
 import { PlaylistBusEvent } from "@/station/playlist/Events";
 
@@ -69,9 +69,9 @@ export const getPlaylistInfo = async (playlistId: number) => {
   return await db.getPlaylistInfoById(playlistId);
 }
 
-export const getPlaylistSongs = async (playlistId: number, pageType?: PageType) => {
+export const getPlaylistSongs = async (playlistId: number, pageType?: PageType, sort: SortType = SortType.NEWEST) => {
   const db = PlaylistDataManager.getInstance();
-  const results = await db.getSongsFromPlaylist(playlistId);
+  const results = await db.getSongsFromPlaylist(playlistId, sort);
   const songs = results.map(song => {
     const result = getSongByResult(song);
     result.pageType = pageType ?? PageType.LIBRARY;

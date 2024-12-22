@@ -1,5 +1,5 @@
 import DataManager from './DataManager';
-import { PlaylistType, SongType } from '@/constants/Types';
+import { PlaylistType, SongResultType, SortType } from '@/constants/Types';
 
 class PlaylistDataManager extends DataManager {
 
@@ -46,18 +46,38 @@ class PlaylistDataManager extends DataManager {
     }
   }
 
-  public async getSongsFromPlaylist(playlistId: number): Promise<any[]> {
+  public async getSongsFromPlaylist(playlistId: number, sort: SortType = SortType.NEWEST): Promise<SongResultType[]> {
     try {
       if (!PlaylistDataManager.db) {
         await PlaylistDataManager.initConnection();
       }
-      const result = await PlaylistDataManager.db?.getAllAsync(`
+      const result = await PlaylistDataManager.db?.getAllAsync<SongResultType>(`
         SELECT songs.* 
         FROM songs
         INNER JOIN playlistSongs ON songs.id = playlistSongs.songId
         WHERE playlistSongs.playlistId = ?;
       `, [playlistId]);
-      return result ? result.reverse() : [];
+
+      if (!result) {
+        return [];
+      }
+      if (sort === SortType.NEWEST) {
+        return result.reverse();
+      }
+      else if (sort === SortType.OLDEST) {
+        return result;
+      }
+      else if (sort === SortType.TITLE) {
+        return result.sort((a, b) => a?.title.localeCompare(b?.title));
+      }
+      else if (sort === SortType.ARTIST) {
+        return result.sort((a, b) => a?.artists.localeCompare(b?.artists));
+      }
+      else if (sort === SortType.ALBUM) {
+        return result.sort((a, b) => a?.album.localeCompare(b?.album));
+      }
+      
+      return result;
     }
     catch (error) {
       throw new Error('Error getting songs from playlist: ' + error);

@@ -115,6 +115,22 @@ const Navigation = () => {
           contentStyle: { backgroundColor: 'transparent'},
         }}
       />
+      <Stack.Screen
+        name="artist/create"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+          contentStyle: { backgroundColor: 'transparent'},
+        }}
+      />
+      <Stack.Screen
+        name="album/create"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+          contentStyle: { backgroundColor: 'transparent'},
+        }}
+      />
     </Stack>
   );
   

@@ -124,7 +124,7 @@ const Local = StyleSheet.create({
   premiumOverlayLock: {
     height: 100,
     width: '100%',
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.popup,
     position: 'absolute',
     top: 0,
     zIndex: 5,

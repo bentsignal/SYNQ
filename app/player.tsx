@@ -24,7 +24,7 @@ import { Colors } from "@/constants/Colors";
 import { getTrackArtwork } from "@/lib/controllers/PlayerController";
 import { CrossfadeImage } from "react-native-crossfade-image";
 import { useAssets } from "expo-asset";
-import { Styles } from "@/constants/Styles";
+import ModalStyles from "@/components/modals/Styles";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -217,7 +217,7 @@ const Player = () => {
 
 const Local = StyleSheet.create({
   bg: {
-    ...Styles.roundedModal,
+    ...ModalStyles.roundedTop,
     position: 'absolute',
     height: Dimensions.get('screen').height,
     top: 0,

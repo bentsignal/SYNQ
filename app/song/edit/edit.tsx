@@ -15,6 +15,7 @@ import { saveEdits, updateSongsInLibrary } from "@/lib/controllers/SongControlle
 import { useThemeContext } from "@/context/ThemeProvider";
 import { newCover } from "@/lib/controllers/SongController";
 import * as Haptics from 'expo-haptics';
+import ModalStyles from "@/components/modals/Styles";
 
 const MemoTextInput = memo(TextInput);
 
@@ -184,8 +185,8 @@ const EditSong = ({id}: {id: string}) => {
 const Local = StyleSheet.create({
   wrapper: {
     ...Styles.body,
-    ...Styles.roundedModal,
     backgroundColor: Colors.popup,
+    ...ModalStyles.roundedTop,
   },
   scrollView: {
     width: '100%',

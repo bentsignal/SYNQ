@@ -4,6 +4,7 @@ import { Colors } from '@/constants/Colors';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import Bar from '../modals/Bar';
 import { Styles } from '@/constants/Styles';
+import ModalStyles from '@/components/modals/Styles';
 
 type SheetProps = {
   name: string,
@@ -32,7 +33,7 @@ const Sheet = ({ name, children, onChange}: SheetProps) => {
 
 const Local = StyleSheet.create({
   sheetStyle: {
-    ...Styles.roundedModal,
+    ...ModalStyles.roundedTop,
   },
   contentContainer: {
     paddingLeft: 20,

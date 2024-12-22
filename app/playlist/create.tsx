@@ -17,6 +17,7 @@ import { newCover } from "@/lib/controllers/SongController"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { PlaylistBusEvent } from "@/station/playlist/Events"
 import playlistBus from "@/station/playlist"
+import ModalStyles from "@/components/modals/Styles"
 
 const MemoTextInput = memo(TextInput);
 
@@ -115,7 +116,7 @@ const Local = StyleSheet.create({
   wrapper: {
     ...Styles.body,
     backgroundColor: Colors.popup,
-    ...Styles.roundedModal,
+    ...ModalStyles.roundedTop,
   },
   textBox: {
     fontSize: 16,

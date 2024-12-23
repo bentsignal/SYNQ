@@ -164,7 +164,7 @@ class DataManager {
         CREATE TABLE IF NOT EXISTS artistSongs (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           artistId INTEGER,
-          songId INTEGER
+          songId INTEGER 
         );
       `);
       return true;

@@ -101,7 +101,7 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
       height: 60,
       justifyContent: 'center',
       alignItems: 'center',
-      borderRadius: 10,
+      borderRadius: type === CoverType.ARTIST ? 100 : 10,
       opacity: loaded ? 1 : 0
     },
     artwork: {
@@ -128,6 +128,9 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
     }
     else if (type === CoverType.ALBUM) {
       return require('@/assets/icons/cd-drive.png');
+    }
+    else if (type === CoverType.ARTIST) {
+      return require('@/assets/icons/user.png');
     }
     else {
       return require('@/assets/icons/music.png');

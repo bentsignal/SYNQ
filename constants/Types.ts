@@ -84,6 +84,7 @@ export enum CoverType {
   SONG = 1,
   PLAYLIST = 2,
   ALBUM = 3,
+  ARTIST = 4,
 }
 
 export type PlaylistType = {
@@ -96,4 +97,5 @@ export type PlaylistType = {
 export type ArtistType = {
   id: number;
   name: string;
+  pageType?: PageType;
 };

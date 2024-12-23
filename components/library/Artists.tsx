@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { Styles } from "@/constants/Styles";
-import { ArtistType } from "@/constants/Types";
+import { ArtistType, PageType } from "@/constants/Types";
 import { useState, useEffect } from "react";
 import ArtistList from "@/components/lists/artist";
 import { getArtists } from "@/lib/controllers/ArtistController";
@@ -31,12 +31,10 @@ const Artists = () => {
 
   return (
     <View style={Local.container}>
-      <Text style={Local.placeholderText}>Artists</Text>
-      {artists.map((artist) => {
-        return (
-          <Text key={artist.id}>{artist.name}</Text>
-        );
-      })}
+      <ArtistList 
+        artists={artists}
+        pageType={PageType.LIBRARY}
+      />
     </View>
   );
 }

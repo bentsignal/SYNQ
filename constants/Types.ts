@@ -92,3 +92,8 @@ export type PlaylistType = {
   songCount: number;
   pageType?: PageType;
 };
+
+export type ArtistType = {
+  id: number;
+  name: string;
+};

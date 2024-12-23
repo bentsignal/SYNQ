@@ -31,11 +31,11 @@ class DataManager {
       await this.createSongsTable();
       await this.createPlaylistsTable();
       await this.createPlaylistSongsTable();
-      // await this.createAlbumsTable();
-      // await this.createAlbumSongsTable();
-      // await this.createArtistsTable();
-      // await this.createArtistSongsTable();
-      // await this.createArtistsAlbumsTable();
+      await this.createAlbumsTable();
+      await this.createAlbumSongsTable();
+      await this.createArtistsTable();
+      await this.createArtistSongsTable();
+      await this.createArtistsAlbumsTable();
       return true;
     }
     catch (error) {
@@ -114,6 +114,7 @@ class DataManager {
         CREATE TABLE IF NOT EXISTS albums (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT,
+          year INTEGER
         );
       `);
       return true;
@@ -130,7 +131,7 @@ class DataManager {
         CREATE TABLE IF NOT EXISTS albumSongs (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           albumId INTEGER,
-          songId INTEGER,
+          songId INTEGER
         );
       `);
       return true;
@@ -146,7 +147,7 @@ class DataManager {
       await this.db?.execAsync(`
         CREATE TABLE IF NOT EXISTS artists (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT,
+          name TEXT
         );
       `);
       return true;
@@ -163,7 +164,7 @@ class DataManager {
         CREATE TABLE IF NOT EXISTS artistSongs (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           artistId INTEGER,
-          songId INTEGER,
+          songId INTEGER
         );
       `);
       return true;
@@ -180,7 +181,7 @@ class DataManager {
         CREATE TABLE IF NOT EXISTS artistsAlbums (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           artistId INTEGER,
-          albumId INTEGER,
+          albumId INTEGER
         );
       `);
       return true;

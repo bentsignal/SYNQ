@@ -28,6 +28,7 @@ const CreateAlbum = () => {
   const { theme } = useThemeContext();
 
   const [name, setName] = useState('');
+  const [year, setYear] = useState('');
   const [image, setImage] = useState<string | null>(null);
   const insets = useSafeAreaInsets();
 
@@ -43,11 +44,14 @@ const CreateAlbum = () => {
       if (name === '') {
         throw new Error('Name is required');
       }
-      await createPlaylist(name, image);
+      if (year === '') {
+        throw new Error('Year is required');
+      }
+      // await createPlaylist(name, image);
       if (haptic) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      playlistBus.emit(PlaylistBusEvent.PLAYLIST_CREATED);
+      // playlistBus.emit(PlaylistBusEvent.PLAYLIST_CREATED);
       setTimeout(() => {
         router.back();
       }, 100);
@@ -58,7 +62,7 @@ const CreateAlbum = () => {
         NotificationType.ERROR,
         'Error',
         trace,
-        'Unable to create playlist',
+        'Unable to create album',
         trace,
         () => {}
       );
@@ -89,12 +93,24 @@ const CreateAlbum = () => {
           autoCorrect={true}
           editable
           numberOfLines={1}
-          placeholder={'Enter playlist name...'}
+          placeholder={'Enter album name...'}
           placeholderTextColor={Colors.altDisabled}
           defaultValue={name}
           onEndEditing={(evt) => setName(evt.nativeEvent.text)}
         />
-        
+        <Text style={Styles.textboxLabel}>Year</Text>
+        <MemoTextInput
+          style={Local.textBox}
+          autoCorrect={true}
+          editable
+          numberOfLines={1}
+          keyboardType='numeric'
+          maxLength={4}
+          placeholder={'Enter year...'}
+          placeholderTextColor={Colors.altDisabled}
+          defaultValue={year}
+          onEndEditing={(evt) => setYear(evt.nativeEvent.text)}
+        />
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />
       <View style={[Local.buttonContainer, {paddingBottom: insets.bottom}]}>

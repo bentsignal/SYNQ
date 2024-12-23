@@ -18,6 +18,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { PlaylistBusEvent } from "@/station/playlist/Events"
 import playlistBus from "@/station/playlist"
 import ModalStyles from "@/components/modals/Styles";
+import { createArtist } from "@/lib/controllers/ArtistController";
+import artistBus from "@/station/artist";
+import { ArtistBusEvent } from "@/station/artist/Events";
 
 const MemoTextInput = memo(TextInput);
 
@@ -43,11 +46,11 @@ const CreateArtist = () => {
       if (name === '') {
         throw new Error('Name is required');
       }
-      await createPlaylist(name, image);
+      await createArtist(name);
       if (haptic) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      playlistBus.emit(PlaylistBusEvent.PLAYLIST_CREATED);
+      artistBus.emit(ArtistBusEvent.ARTIST_CREATED);
       setTimeout(() => {
         router.back();
       }, 100);
@@ -58,7 +61,7 @@ const CreateArtist = () => {
         NotificationType.ERROR,
         'Error',
         trace,
-        'Unable to create playlist',
+        'Unable to create artist',
         trace,
         () => {}
       );
@@ -74,7 +77,7 @@ const CreateArtist = () => {
         style={Local.scrollView}
         contentContainerStyle={Local.scrollViewContent}
       >
-        <Text style={Styles.textboxLabel}>Cover Image</Text>
+        <Text style={Styles.textboxLabel}>Artist Image</Text>
         <View style={Local.coverWrapper}>
           <EditCover
             image={image}
@@ -89,12 +92,11 @@ const CreateArtist = () => {
           autoCorrect={true}
           editable
           numberOfLines={1}
-          placeholder={'Enter playlist name...'}
+          placeholder={'Enter artist name...'}
           placeholderTextColor={Colors.altDisabled}
           defaultValue={name}
           onEndEditing={(evt) => setName(evt.nativeEvent.text)}
         />
-        
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />
       <View style={[Local.buttonContainer, {paddingBottom: insets.bottom}]}>

@@ -150,8 +150,7 @@ const Player = () => {
   return (
     <Animated.View style={[{opacity: containerOpacity}, Local.container]}>
       <CrossfadeImage 
-        source={{ uri: getBackgroundImage() }}
-        
+        source={{ uri: getBackgroundImage() }}  
         blurRadius={100}
         duration={500}
         style={[Local.bg, {

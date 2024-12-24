@@ -162,7 +162,7 @@ const Local = StyleSheet.create({
     ...Styles.roundedContainer,
     ...Styles.listItem,
     backgroundColor: Colors.song,
-    width: '100%',
+    width: '90%',
   },
   textWrapper: {
     paddingLeft: 10,

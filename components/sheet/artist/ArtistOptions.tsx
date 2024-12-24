@@ -12,6 +12,9 @@ import { router } from 'expo-router';
 import { PlaylistBusEvent } from '@/station/playlist/Events';
 import playlistBus from '@/station/playlist';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
+import { ArtistBusEvent } from '@/station/artist/Events';
+import artistBus from '@/station/artist';
+import { deleteArtist } from '@/lib/controllers/ArtistController';
 
 
 const ArtistOptions = ({name}: {name: string}) => {
@@ -55,11 +58,11 @@ const ArtistOptions = ({name}: {name: string}) => {
 
   const executeDelete = async () => {
     try {
-      // await deletePlaylist(editPlaylist.id);
-      // playlistBus.emit(PlaylistBusEvent.PLAYLIST_DELETED);
+      await deleteArtist(editArtist.id);
+      artistBus.emit(ArtistBusEvent.ARTIST_DELETED);
     }
     catch (error) {
-      console.log('error deleting playlist: ', error);
+      console.log('error deleting artist: ', error);
     }
   }
 

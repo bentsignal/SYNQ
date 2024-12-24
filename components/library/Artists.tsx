@@ -24,8 +24,10 @@ const Artists = () => {
 
   useEffect(() => {
     artistBus.on(ArtistBusEvent.ARTIST_CREATED, refreshArtists);
+    artistBus.on(ArtistBusEvent.ARTIST_DELETED, refreshArtists);
     return () => {
       artistBus.off(ArtistBusEvent.ARTIST_CREATED, refreshArtists);
+      artistBus.off(ArtistBusEvent.ARTIST_DELETED, refreshArtists);
     }
   }, []);
 
@@ -42,7 +44,7 @@ const Artists = () => {
 const Local = StyleSheet.create({
   container: {
     flex: 1,
-    width: '90%',
+    width: '100%',
   },
   placeholderText: {
     ...Styles.h3,

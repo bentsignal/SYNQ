@@ -21,11 +21,12 @@ export const deletePlaylist = async (playlistId: number) => {
   const db = PlaylistDataManager.getInstance();
   try {
     await FileSystem.deleteAsync(`${FileSystem.documentDirectory}playlists/${playlistId}`);
+    await db.deletePlaylist(playlistId);
   }
   catch (error) {
-    console.log('error deleting playlist from files:', error);
+    console.log('error deleting playlist:', error);
   }
-  await db.deletePlaylist(playlistId);
+  
 }
 
 export const getPlaylists = async () => {

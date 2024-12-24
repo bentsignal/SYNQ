@@ -14,6 +14,17 @@ export const createArtist = async (name: string, image?: string): Promise<Artist
   return { id: artistId, name: name };
 }
 
+export const deleteArtist = async (artistId: number) => {
+  const db = ArtistDataManager.getInstance();
+  try {
+    await FileSystem.deleteAsync(`${FileSystem.documentDirectory}artists/${artistId}`);
+    await db.deleteArtist(artistId);
+  }
+  catch (error) {
+    console.log('error deleting artist:', error);
+  }
+}
+
 export const getArtists = async (): Promise<ArtistType[]> => {
   return await ArtistDataManager.getInstance().getArtists();
 }

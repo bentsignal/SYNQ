@@ -1,5 +1,5 @@
 import DataManager from "./DataManager";
-import { ArtistType } from "@/constants/Types";
+import { ArtistType, SortType } from "@/constants/Types";
 
 class ArtistDataManager extends DataManager {
 
@@ -16,9 +16,15 @@ class ArtistDataManager extends DataManager {
     return ArtistDataManager.instance;
   }
 
-  public async getArtists(): Promise<ArtistType[]> {
-    const result = await ArtistDataManager.db?.getAllAsync(`SELECT * FROM artists;`);
-    return result ? result as ArtistType[] : [];
+  public async getArtists(sort: SortType = SortType.ARTIST): Promise<ArtistType[]> {
+    const result = await ArtistDataManager.db?.getAllAsync<ArtistType>(`SELECT * FROM artists;`);
+    if (!result) {
+      return [];
+    }
+    if (sort === SortType.ARTIST) {
+      return result.sort((a, b) => a?.name.localeCompare(b?.name));
+    }
+    return result;
   }
 
   public async checkForDuplicateName(name: string): Promise<boolean> {

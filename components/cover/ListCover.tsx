@@ -11,7 +11,7 @@ import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/station/playlist
 import playlistBus from '@/station/playlist';
 import { SongBusEvent, SongCoverModifiedEvent } from '@/station/song/Events';
 import songBus from '@/station/song';
-
+import { getArtistCover } from '@/lib/controllers/ArtistController';
 const ListCover = ({image, type, id, fade, propOnLoad}: {
   image?: string;
   type: CoverType;
@@ -47,6 +47,12 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
       }
       else if (type === CoverType.PLAYLIST) {
         const data = await getPlaylistCover(parseInt(id), true);
+        if (data) {
+          setSrc(`data:image/jpeg;base64,${data}`);
+        }
+      }
+      else if (type === CoverType.ARTIST) {
+        const data = await getArtistCover(parseInt(id), true);
         if (data) {
           setSrc(`data:image/jpeg;base64,${data}`);
         }
@@ -96,13 +102,14 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
 
   const Local = StyleSheet.create({
     container: {
-      backgroundColor: '#D2D2D2',
+      backgroundColor: src ? 'transparent' : '#D2D2D2',
       width: 60,
       height: 60,
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: type === CoverType.ARTIST ? 100 : 10,
-      opacity: loaded ? 1 : 0
+      opacity: loaded ? 1 : 0,
+      overflow: 'hidden',
     },
     artwork: {
       width: dim, 

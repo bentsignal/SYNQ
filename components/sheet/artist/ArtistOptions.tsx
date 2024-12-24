@@ -68,7 +68,7 @@ const ArtistOptions = ({name}: {name: string}) => {
     setTimeout(() => {
       Alert.alert(
         'Delete Artist',
-        `Are you sure you want to delete ${editArtist.name ?? 'this artist'}?`,
+        `Are you sure you want to delete ${editArtist.name ?? 'this artist'}? (Deleting an artist will not remove their songs & albums)`,
         [
           { text: 'Cancel', style: 'cancel' },
           { text: 'Delete', style: 'destructive', onPress: () => {
@@ -86,8 +86,6 @@ const ArtistOptions = ({name}: {name: string}) => {
       );
     }, actionDelay);
   }
-
-  console.log(editArtist)
 
   return (
     <>

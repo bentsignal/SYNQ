@@ -15,6 +15,8 @@ import { addToPlaylist, removeFromPlaylist, isSongInPlaylist } from "@/lib/contr
 import { PlaylistBusEvent, PlaylistNameModifiedEvent, PlaylistSongCountModifiedEvent } from "@/station/playlist/Events";
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistType } from "@/constants/Types";
+import { ArtistBusEvent, ArtistNameModifiedEvent } from "@/station/artist/Events";
+import artistBus from "@/station/artist";
 
 type ArtistProps = {
   artist: ArtistType,
@@ -70,29 +72,21 @@ const ArtistItem = ({artist}: ArtistProps) => {
 
   */
 
-  /*
-
-  const updateName = (data: PlaylistNameModifiedEvent) => {
-    if (playlist.id === data.id) {
+  const updateName = (data: ArtistNameModifiedEvent) => {
+    if (artist.id === data.id) {
       setName(data.name);
-      playlist.name = data.name;
+      artist.name = data.name;
     }
   }
 
-  */
-
-  /*
 
   useEffect(() => {
-    playlistBus.on(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, updateSongCount);
-    playlistBus.on(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, updateName);
+    artistBus.on(ArtistBusEvent.ARTIST_NAME_MODIFIED, updateName);
     return () => {
-      playlistBus.off(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, updateSongCount);
-      playlistBus.off(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, updateName);
+      artistBus.off(ArtistBusEvent.ARTIST_NAME_MODIFIED, updateName);
     }
   }, []);
 
-  */
 
   /*
 

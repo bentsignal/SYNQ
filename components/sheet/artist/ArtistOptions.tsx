@@ -101,7 +101,7 @@ const ArtistOptions = ({name}: {name: string}) => {
       <SheetOption 
         icon={require('@/assets/icons/share.png')}
         text={'Export'}
-        show={[PageType.LIBRARY, PageType.ARTIST].includes(pageType) && premium}
+        show={[PageType.LIBRARY, PageType.ARTIST].includes(pageType) && premium && false}
         handler={handleExport}
       />
       <SheetOption

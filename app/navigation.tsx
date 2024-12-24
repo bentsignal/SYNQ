@@ -124,6 +124,14 @@ const Navigation = () => {
         }}
       />
       <Stack.Screen
+        name="artist/edit/[id]"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+          contentStyle: { backgroundColor: 'transparent'},
+        }}
+      />
+      <Stack.Screen
         name="album/create"
         options={{
           headerShown: false,

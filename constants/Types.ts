@@ -97,5 +97,6 @@ export type PlaylistType = {
 export type ArtistType = {
   id: number;
   name: string;
+  image?: string;
   pageType?: PageType;
 };

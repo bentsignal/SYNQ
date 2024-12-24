@@ -51,6 +51,15 @@ class ArtistDataManager extends DataManager {
     await ArtistDataManager.db?.runAsync(`DELETE FROM artistsAlbums WHERE artistId = ?;`, [artistId]);
   }
 
+  public async getArtistInfo(artistId: number): Promise<ArtistType | null> {
+    const result = await ArtistDataManager.db?.getFirstAsync(`SELECT * FROM artists WHERE id = ?;`, [artistId]);
+    return result ? result as ArtistType : null;
+  }
+
+  public async updateArtist(artistId: number, name: string): Promise<void> {
+    await ArtistDataManager.db?.runAsync(`UPDATE artists SET name = ? WHERE id = ?;`, [name, artistId]);
+  }
+
 }
 
 export default ArtistDataManager;

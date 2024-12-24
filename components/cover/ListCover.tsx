@@ -12,6 +12,9 @@ import playlistBus from '@/station/playlist';
 import { SongBusEvent, SongCoverModifiedEvent } from '@/station/song/Events';
 import songBus from '@/station/song';
 import { getArtistCover } from '@/lib/controllers/ArtistController';
+import artistBus from '@/station/artist';
+import { ArtistImageModifiedEvent } from '@/station/artist/Events';
+import { ArtistBusEvent } from '@/station/artist/Events';
 const ListCover = ({image, type, id, fade, propOnLoad}: {
   image?: string;
   type: CoverType;
@@ -79,12 +82,20 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
     }
   }
 
+  const handleArtistModified = (data: ArtistImageModifiedEvent) => {
+    if (type === CoverType.ARTIST && id === data.id.toString()) {
+      getImage();
+    }
+  }
+
   useEffect(() => {
     playlistBus.on(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
     songBus.on(SongBusEvent.SONG_COVER_MODIFIED, handleSongModified);
+    artistBus.on(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistModified);
     return () => {
       playlistBus.off(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
       songBus.off(SongBusEvent.SONG_COVER_MODIFIED, handleSongModified);
+      artistBus.off(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistModified);
     }
   }, []);
 

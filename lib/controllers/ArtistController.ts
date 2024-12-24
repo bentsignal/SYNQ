@@ -2,6 +2,8 @@ import { ArtistType } from "@/constants/Types";
 import ArtistDataManager from "@/lib/data/ArtistDataManager";
 import { writeImageToLibrary } from "./SongController";
 import * as FileSystem from 'expo-file-system';
+import { ArtistBusEvent } from "@/station/artist/Events";
+import artistBus from "@/station/artist";
 
 export const createArtist = async (name: string, image?: string): Promise<ArtistType> => {
   const artistId = await ArtistDataManager.getInstance().createArtist(name);
@@ -23,6 +25,10 @@ export const deleteArtist = async (artistId: number) => {
   catch (error) {
     console.log('error deleting artist:', error);
   }
+}
+
+export const getArtistInfo = async (artistId: number): Promise<ArtistType | null> => {
+  return await ArtistDataManager.getInstance().getArtistInfo(artistId);
 }
 
 export const getArtists = async (): Promise<ArtistType[]> => {
@@ -60,5 +66,22 @@ export const getArtistCover = async (artistId: number, full: boolean = false) =>
     else {
       return null;
     }
+  }
+}
+
+export const updateArtist = async (artistId: number, name: string, image: string) => {
+  const db = ArtistDataManager.getInstance();
+  if (name) {
+    await db.updateArtist(artistId, name);
+    artistBus.emit(ArtistBusEvent.ARTIST_NAME_MODIFIED, {
+      id: artistId,
+      name: name,
+    });
+  }
+  if (image) {
+    await writeImageToLibrary(image, `${FileSystem.documentDirectory}artists/${artistId}`);
+    artistBus.emit(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, {
+      id: artistId,
+    });
   }
 }

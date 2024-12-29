@@ -1,115 +1,98 @@
-import { Stack } from "expo-router";
 import { useFonts } from 'expo-font';
-import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
-import * as Network from 'expo-network';
 import GlobalProvider from "@/context/GlobalProvider";
 import { router } from "expo-router";
-import { Colors } from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { connect, restorePurchases } from "@/lib/PurchaseManager";
+import { connect, restorePurchases } from "@/lib/controllers/PurchaseController";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import DataManager from "@/lib/data/DataManager";
+import { LogBox } from "react-native";
+import CFG from "@/constants/Config";
+import ThemeProvider from "@/context/ThemeProvider";
+import PremiumProvider from "@/context/PremiumProvider";
+import Navigation from "@/app/navigation";
+import PlaybackProvider from "@/context/PlaybackProvider";
+import Sheets from "@/components/sheet/Sheets";
+import GlobalProgress from '@/components/GlobalProgress';
+
+LogBox.ignoreLogs(['Require cycle:']);
+
+SplashScreen.setOptions({
+  fade: true,
+  duration: 300,
+})
 
 const RootLayout = () => {
 
-  const [theme, setTheme] = useState('');
-  const [premium, setPremium] = useState(false);
-  const [startup, setStartup] = useState(true);
+  const [shouldPlayAd, setShouldPlayAd] = useState(false);
 
   const [fontLoaded] = useFonts({
     JakartaSans: require('../assets/fonts/PlusJakartaSans-VariableFont_wght.ttf')
   });
 
-  const loadTheme = async () => {
-    try {
-      const theme = await AsyncStorage.getItem('theme');
-      setTheme(theme ? theme : Colors.main);
-    }
-    catch {
-      setTheme(Colors.main);
-    }
-  }
-
   useEffect(() => {
 
     SplashScreen.preventAutoHideAsync();
 
-    const checkPurchases = async () => {
-      const first = await AsyncStorage.getItem('first');
-      if (first !== 'false') {
-        await AsyncStorage.setItem('first', 'false');
-        await connect();
-        const restored = await restorePurchases();
-        if (restored.success) {
-          setPremium(true);
-        }
+    // automatically hide splash screen after 7 seconds
+    setTimeout(() => {
+      SplashScreen.hideAsync();
+    }, 7000);
+
+    const loadShouldPlayAd = async () => {
+      try {
+        const playAd = await AsyncStorage.getItem('playAd');
+        setShouldPlayAd(playAd === 'true' ? true : false);
+      }
+      catch {
+        setShouldPlayAd(false);
       }
     }
 
-    checkPurchases();
-    loadTheme();
+    const checkDB = async () => {
+      try {
+        await DataManager.initConnection();
+        await DataManager.createTables();
+      }
+      catch (error) {
+        console.error('Error creating database:', error);
+      }
+    }
+
+    loadShouldPlayAd();
+    checkDB();
 
   }, []);
 
+  // hide splash screen after fonts are loaded
   useEffect(() => {
-    if (fontLoaded && theme !== '') {
-      if (startup) {
-        setStartup(false);
-        router.push('bucket');
-      }
+    if (fontLoaded) {
       setTimeout(() => {
         SplashScreen.hideAsync();
       }, 500);
     }
-  }, [fontLoaded, theme]);
+  }, [fontLoaded]);
 
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
-      <StatusBar style="light" />
-      <GlobalProvider 
-        initTheme={theme}
-        initPremium={premium}
-      >
-        <Stack>
-          <Stack.Screen 
-            name="(tabs)" 
-            options={{ 
-              headerShown: false,
-              animation: 'fade'
-            }} 
+    <ThemeProvider>
+      <PremiumProvider>
+        <PlaybackProvider>
+          <GlobalProvider
+            initShouldPlayAd={shouldPlayAd}
+            children={
+              <>
+                <GlobalProgress />
+                <Sheets />
+                <GestureHandlerRootView style={{flex: 1}}>
+                  <Navigation />
+                </GestureHandlerRootView>
+              </>
+            }
           />
-          <Stack.Screen
-            name="bucket"
-            options={{
-              headerShown: false,
-              animation: 'fade',
-            }}
-          />
-          <Stack.Screen 
-            name="tracking"
-            options={{
-              headerShown: false,
-              animation: 'fade',
-            }}
-          />
-          <Stack.Screen 
-            name="settings"
-            options={{
-              presentation: "modal",
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen 
-            name="premium"
-            options={{
-              presentation: "modal",
-              headerShown: false,
-            }}
-          />
-        </Stack>
-      </GlobalProvider>
-    </GestureHandlerRootView>
+        </PlaybackProvider>
+      </PremiumProvider>
+    </ThemeProvider>
   );
   
 }

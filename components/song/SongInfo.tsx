@@ -1,56 +1,58 @@
-import { Text, View } from 'react-native';
+import { Text, View, StyleSheet, StyleProp, TextStyle } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { InfoType } from '@/constants/Types';
+import { Styles } from '@/constants/Styles';
 
-const SongInfo = ({info, name}: {info: InfoType, name: string}) => {
+const SongInfo = ({info, name, showAlbum, color, titleStyles, artistStyles}: {
+  info: InfoType, 
+  name: string, 
+  showAlbum?: boolean,
+  color?: string,
+  titleStyles?: StyleProp<TextStyle>,
+  artistStyles?: StyleProp<TextStyle>,
+}) => {
 
-  if (info.metadata?.artist && info.metadata?.name && info.metadata?.album) {
+  const Local = StyleSheet.create({
+    infoContainer: {
+      flex: 1,
+      paddingLeft: 10,
+      flexGrow: 1,
+      justifyContent: 'center'
+    },
+    title: {
+      ...Styles.h5,
+      color: color ? color : Colors.text,
+    },
+    artistAlbum: {
+      ...Styles.sub,
+      color: color ? color : Colors.infoText,
+      fontWeight: '500',
+    }
+  });
+
+  if (info && info.metadata?.artist && info.metadata?.name) {
     return (
-      <View
-        style={{
-          flex: 1,
-          paddingLeft: 10,
-          flexGrow: 1
-        }}
-      >
+      <View style={ Local.infoContainer }>
         <Text
-          style={{
-            color: Colors.text,
-            fontWeight: 'bold',
-            fontSize: 16,
-          }}
+          style={ titleStyles ? titleStyles : Local.title }
           numberOfLines={1}
         >
           {info.metadata.name}
         </Text>
         <Text
-          style={{
-            color: Colors.text,
-            fontWeight: 'medium',
-            fontSize: 14,
-          }}
+          style={ artistStyles ? artistStyles : Local.artistAlbum }
           numberOfLines={1}
         >
-          {info.metadata.artist} · {info.metadata.album}
+          {info.metadata.artist} {showAlbum && info.metadata.album ? `· ${info.metadata.album}` : ''}
         </Text>
       </View>
     );
   }
   else {
     return (
-      <View
-        style={{
-          flex: 1,
-          paddingLeft: 10,
-          flexGrow: 1
-        }}
-      >
+      <View style={ Local.infoContainer }>
         <Text
-          style={{
-            color: Colors.text,
-            fontWeight: 'bold',
-            fontSize: 16,
-          }}
+          style={ titleStyles ? titleStyles : Local.title }
           numberOfLines={1}
         >
           {name}

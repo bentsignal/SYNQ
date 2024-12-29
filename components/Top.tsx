@@ -1,37 +1,44 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
-import { Styles } from '@/constants/Styles';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useThemeContext } from '@/context/ThemeProvider';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Top = () => {
 
-  const { logo } = useGlobalContext();
+  const { logo } = useThemeContext();
+  
+  const insets = useSafeAreaInsets();
 
   return (
-    <View style={Styles.top}>
+    <View style={[Local.container, { marginTop: insets.top + 10 }]}>
       <Image 
         source={logo}
-        style={{
-          height: 25,
-          width: 25,
-        }}
+        style={Local.icon}
       />
-      <TouchableOpacity
-        onPress={() => {
-          router.push('/settings')
-        }}
-      >
+      <TouchableOpacity onPress={() => router.push('/settings')}>
         <Image 
           source={require('@/assets/icons/gear.png')}
-          style={{
-            height: 25,
-            width: 25,
-          }}
+          style={Local.icon}
         />
       </TouchableOpacity>
     </View>
   );
 
 }
+
+const Local = StyleSheet.create({
+  container: {
+    width: '90%',
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 30
+  },
+  icon: {
+    height: 25,
+    width: 25,
+  }
+});
 
 export default Top;

@@ -1,21 +1,25 @@
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Colors } from "@/constants/Colors";
 
 const Bar = ({color}: {color?: string;}) => {
-  return (
-    <View style={{
+  const Local = StyleSheet.create({
+    container: {
       width: '100%',
       justifyContent: 'center',
       alignItems: 'center',
-    }}>
-      <View style={{
-        backgroundColor: color ? color : Colors.altDisabled,
-        width: 80,
-        height: 5,
-        borderRadius: 100,
-        marginTop: 15,
-        marginBottom: 30,
-      }}/>
+    },
+    bar: {
+      backgroundColor: color ? color : Colors.altDisabled,
+      width: 80,
+      height: 5,
+      borderRadius: 100,
+      marginTop: 15,
+      marginBottom: 10,
+    }
+  });
+  return (
+    <View style={Local.container}>
+      <View style={Local.bar}/>
     </View>
   );
 }

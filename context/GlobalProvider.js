@@ -1,26 +1,57 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
-import { Colors } from '@/constants/Colors';
-import { getLogo } from '@/constants/Logos';
-import { NotificationType } from '@/constants/Types';
-import CFG from '@/constants/Config';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
+import { NotificationType, SongType } from '@/constants/Types';
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
 
+const GlobalProvider = ({ children, initShouldPlayAd }) => {
 
-const GlobalProvider = ({ children, initTheme, initPremium }) => {
+  const [homeState, setHomeState] = useState(0);
+  const [importState, setImportState] = useState(0);
+  const [results, setResults] = useState([]);
+  const [exportDisabled, setExportDisabled] = useState(true);
+  const [showDelete, setShowDelete] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const [selectedId, setSelectedId] = useState('');
+  const [editSong, setEditSong] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [ip, setIP] = useState('0.0.0.0');
+  const [transferSize, setTransferSize] = useState(0);
+  const [transferProgress, setTransferProgress] = useState(0);
+  const [serverStarted, setServerStarted] = useState(false);
+  const [routesInitialized, setRoutesInitialized] = useState(false);
+  const [wifiDisabled, setWifiDisabled] = useState(false);
+  const [selectEnabled, setSelectEnabled] = useState(false);
+  const [selectedSongs, setSelectedSongs] = useState([]);
+  const [loadAnimInProgress, setLoadAnimInProgress] = useState(false);
+  const [showSongOptions, setShowSongOptions] = useState(false);;
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [haptic, setHaptic] = useState(true);
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [notificationType, setNotificationType] = useState(NotificationType.GENERAL);
+  const [notificationTitle, setNotificationTitle] = useState('');
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [notificationTrace, setNotificationTrace] = useState('');
+  const [showGlobalLoading, setShowGlobalLoading] = useState(false);
+  const [showGlobalProgress, setShowGlobalProgress] = useState(false);
+  const [globalProgress, setGlobalProgress] = useState(0);
+  const [numModified, setNumModified] = useState(0);
+  const [shouldSaveToLibrary, setShouldSaveToLibrary] = useState(true);
+  const [showImportAd, setShowImportAd] = useState(false);
+  const [adPlaying, setAdPlaying] = useState(false);
+  const [adURL, setAdURL] = useState('');
+  const [shouldPlayAd, setShouldPlayAd] = useState(initShouldPlayAd ? true : false);
+  const [playerInitialized, setPlayerInitialized] = useState(false);
+  const [editPlaylist, setEditPlaylist] = useState({});
+  const importSongSheet = useRef(null);
+  const libraryPlaylistSheet = useRef(null);
 
   useEffect(() => {
-    if (initTheme !== '') {
-      setTheme(initTheme);
-      setLogo(getLogo(initTheme));
-    }
-  }, [initTheme]);
-
-  useEffect(() => {
-    setPremium(initPremium);
-  }, [initPremium]);
+    setShouldPlayAd(initShouldPlayAd ? true : false);
+  }, [initShouldPlayAd]);
 
   const addNotification = useCallback((type, title, brief, message, trace, onClick ) => {
     const id = Date.now().toString();
@@ -31,65 +62,21 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
     setNotifications((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
-  const [homeState, setHomeState] = useState(0);
-  const [premium, setPremium] = useState(initPremium ? initPremium : false);
-  const [wifiResults, setWifiResults] = useState([]);
-  const [results, setResults] = useState([]);
-  const [exportDisabled, setExportDisabled] = useState(true);
-  const [showDelete, setShowDelete] = useState(false);
-  const [deleteSong, setDeleteSong] = useState({});
-  const [showEdit, setShowEdit] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(false);
-  const [showSaveInst, setShowSaveInst] = useState(false);
-  const [selectedId, setSelectedId] = useState('');
-  const [editSong, setEditSong] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [zipping, setZipping] = useState(false);
-  const [importing, setImporting] = useState(false);
-  const [ip, setIP] = useState('0.0.0.0');
-  const [transferSize, setTransferSize] = useState(0);
-  const [transferProgress, setTransferProgress] = useState(0);
-  const [serverStarted, setServerStarted] = useState(false);
-  const [wifiDisabled, setWifiDisabled] = useState(false);
-  const [selectEnabled, setSelectEnabled] = useState(false);
-  const [selectedSongs, setSelectedSongs] = useState([]);
-  const [loadAnimInProgress, setLoadAnimInProgress] = useState(false);
-  const [showSongOptions, setShowSongOptions] = useState(false);
-  const [transferPage, setTransferPage] = useState('<html><body><p>ERROR: Could not load page</p></body></html>');
-  const [showOverlay, setShowOverlay] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [theme, setTheme] = useState(initTheme ? initTheme : Colors.main);
-  const [logo, setLogo] = useState(require('@/assets/logo/logo-blue.png'));
-  const [haptic, setHaptic] = useState(true);
-  const [showInfoModal, setShowInfoModal] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-  const [notificationType, setNotificationType] = useState(NotificationType.GENERAL);
-  const [notificationTitle, setNotificationTitle] = useState('');
-  const [notificationMessage, setNotificationMessage] = useState('');
-  const [showNotificationModal, setShowNotificationModal] = useState(false);
-  const [notificationTrace, setNotificationTrace] = useState('');
-
   return (
     <GlobalContext.Provider
       value={{
         homeState, setHomeState,
-        premium, setPremium,
+        importState, setImportState,
         results, setResults,
-        wifiResults, setWifiResults,
         exportDisabled, setExportDisabled,
         showDelete, setShowDelete,
-        deleteSong, setDeleteSong,
         showEdit, setShowEdit,
         editSong, setEditSong,
-        showWelcome, setShowWelcome,
-        showSaveInst, setShowSaveInst,
-        transferPage, setTransferPage,
         loading, setLoading,
-        zipping, setZipping,
-        importing, setImporting,
         selectedId, setSelectedId,
         transferSize, setTransferSize,
         serverStarted, setServerStarted,
+        routesInitialized, setRoutesInitialized,
         ip, setIP,
         wifiDisabled, setWifiDisabled,
         selectEnabled, setSelectEnabled,
@@ -99,8 +86,6 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         showSongOptions, setShowSongOptions,
         showOverlay, setShowOverlay,
         errorMessage, setErrorMessage,
-        theme, setTheme,
-        logo, setLogo,
         haptic, setHaptic,
         showInfoModal, setShowInfoModal,
         notifications, setNotifications,
@@ -110,6 +95,19 @@ const GlobalProvider = ({ children, initTheme, initPremium }) => {
         showNotificationModal, setShowNotificationModal,
         notificationTrace, setNotificationTrace,
         addNotification, removeNotification,
+        showGlobalLoading, setShowGlobalLoading,
+        showGlobalProgress, setShowGlobalProgress,
+        globalProgress, setGlobalProgress,
+        numModified, setNumModified,
+        shouldSaveToLibrary, setShouldSaveToLibrary,
+        showImportAd, setShowImportAd,
+        adPlaying, setAdPlaying,
+        adURL, setAdURL,
+        shouldPlayAd, setShouldPlayAd,
+        playerInitialized, setPlayerInitialized,
+        importSongSheet,
+        libraryPlaylistSheet,
+        editPlaylist, setEditPlaylist,
       }}
     >
       {children}

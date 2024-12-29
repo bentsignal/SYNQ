@@ -1,8 +1,8 @@
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 import LottieView from 'lottie-react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { Colors } from "@/constants/Colors";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 type LoadingProps = {
   width: number;
@@ -11,44 +11,45 @@ type LoadingProps = {
 
 const Loading = ({width, height}: LoadingProps) => {
 
-  const { theme } = useGlobalContext();
+  const { theme } = useThemeContext();
+
+  const Local = StyleSheet.create({
+    container: {
+      height: height,
+    },
+    mask: {
+      height: height,
+      width: width,
+    },
+    anim: {
+      flexGrow: 1, 
+      width: width,
+      backgroundColor: 'transparent',
+    },
+    overlay: {
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      backgroundColor: theme,
+      opacity: 1,
+    }
+  });
 
   return (
-    <View 
-      style={{
-        height: height,
-      }}
-    >
-      <MaskedView
-        style={{
-          height: height,
-          width: width,
-        }}
+    <View style={Local.container}>
+      <MaskedView style={Local.mask}
         maskElement= {
           <LottieView 
             source={require('@/assets/anim/loading.json')}
             autoPlay
             loop={true}
-            style={{
-              flexGrow: 1, 
-              width: width,
-              backgroundColor: 'transparent',
-            }}
+            style={Local.anim}
             renderMode={'SOFTWARE'}
           />
         }
       >
-        <View 
-          style={{
-            position: 'absolute',
-            width: '100%',
-            height: '100%',
-            backgroundColor: theme,
-            opacity: 1,
-          }}
-        />
+        <View style={Local.overlay}/>
       </MaskedView>
-      
     </View>
   );
   

@@ -1,5 +1,7 @@
 node_modules/
 ios
+android
+hide
 .ruby-version
 .expo/
 dist/
@@ -20,6 +22,7 @@ commands.md
 *.app
 credentials
 repos
+*.swp
 
 # macOS
 .DS_Store

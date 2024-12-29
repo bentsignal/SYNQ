@@ -1,8 +1,8 @@
-import { TouchableOpacity, View, Text } from "react-native";
+import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
-import { useGlobalContext } from "@/context/GlobalProvider";
 import Skeleton from "./Skeleton";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 type OptionProps = {
   handler: () => void;
@@ -14,34 +14,46 @@ type OptionProps = {
 
 const PremiumOption = ({handler, tier, price, loading, selected}: OptionProps) => {
   
-  const { theme } = useGlobalContext();
+  const { theme } = useThemeContext();
+
+  const Local = StyleSheet.create({
+    optionContainer: {
+      width: '30%',
+      position: 'relative',
+    },
+    subOption: {
+      paddingTop: 20,
+      paddingBottom: 20,
+      paddingLeft: 10,
+      paddingRight: 10,
+      borderRadius: 10,
+      backgroundColor: selected ? theme : Colors.song,
+    },
+    skeleton: {
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      zIndex: 1,
+      borderRadius: 10,
+    },
+    textColor: {
+      color: selected ? 'black' : Colors.text,
+    }
+  });
 
   return (
-    <View
-      style={{
-        width: '30%',
-        position: 'relative',
-      }}
-    >
+    <View style={Local.optionContainer}>
       <Skeleton 
         show={loading}
-        styles={{
-          position: 'absolute',
-          width: '100%',
-          height: '100%',
-          zIndex: 1,
-          borderRadius: 10,
-        }}
+        styles={Local.skeleton}
       />
       <TouchableOpacity 
-        style={[Styles.subOption, {
-          backgroundColor: selected ? theme : Colors.song,
-        }]}
+        style={Local.subOption}
         activeOpacity={1}
         onPress={handler}
       >
-        <Text style={[Styles.subCost, {color: selected ? 'black' : Colors.text}]}>{price}</Text>
-        <Text style={[Styles.subTier, {color: selected ? 'black' : Colors.text}]}>{tier}</Text>
+        <Text style={[Styles.h4, Local.textColor]}>{price}</Text>
+        <Text style={[Styles.p, Local.textColor]}>{tier}</Text>
       </TouchableOpacity>
     </View>
   );

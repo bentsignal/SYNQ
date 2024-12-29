@@ -1,41 +1,60 @@
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useEffect } from 'react';
-import { View, ScrollView } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, ScrollView, StyleSheet } from 'react-native';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
+import { importFiles } from "@/lib/controllers/SongController";
 import PageTitle from '@/components/PageTitle';
-import Top from "@/components/Top";
 import Option from "@/components/Option";
 import WiFi from "@/components/import/wifi/WiFi";
 import Files from "@/components/import/files/Files";
 import { Success, Failure } from "@/components/Outcome";
 import InfoModal from "@/components/modals/InfoModal";
 import Notifications from "@/components/notifications/Notifications";
-
-const getShowWelcome = async () => {
-  return await AsyncStorage.getItem('showWelcome')
-}
+import ExportPrompt from "@/components/import/ExportPrompt";
+import SavePrompt from "@/components/import/SavePrompt";  
 
 const Home = () => {
 
   const { 
+
+    serverStarted,
     
-    setShowWelcome, setShowInfoModal,
+    setServerStarted, setShowInfoModal,
+    setLoading, setTransferProgress, 
+    setTransferSize, setLoadAnimInProgress, 
+    setExportDisabled, setResults,
+    setShowImportAd,
   
   } = useGlobalContext();
 
-  // useEffect(() => {
-  //   getShowWelcome().then((value) => {
-  //     value === 'false' ? setShowWelcome(false) : setShowWelcome(true)
-  //   })
-  //   .catch((error) => {
-  //     setShowWelcome(false)
-  //   })
-  // }, []);
-
   const { homeState, setHomeState } = useGlobalContext();
-  const insets = useSafeAreaInsets();
+
+  const browseFiles = () => {
+    setLoading(true);
+    const updateCountdown = (value: number) => setTransferProgress(value);
+    const updateSize = (value: number) => {
+      setTransferSize(value)
+      if (value > 2) {
+        setLoadAnimInProgress(true);
+      }
+    };
+    importFiles(updateCountdown, updateSize).then((results) => {
+      setTransferSize(-1);
+      setTransferProgress(-1);
+      setLoading(false);
+      if (results.length > 0) {
+        setExportDisabled(false);
+        setResults(results);
+      }
+      else {
+        setHomeState(0);
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      setLoading(false);
+      setHomeState(4);
+    })
+  }
 
   if (homeState === 1) {
     return (
@@ -57,55 +76,74 @@ const Home = () => {
       <Failure />
     );
   }
+  else if (homeState === 5) {
+    return (
+      <ExportPrompt />
+    );
+  }
+  else if (homeState === 6) {
+    return (
+      <SavePrompt />
+    );
+  }
   else {
     return (
-      <View style={[Styles.body, {paddingTop: insets.top}]}>
+      <View style={Styles.body}>
         <InfoModal />
-        <Top />
-        <PageTitle 
-          title='Import Music'
-          infoHandler={() => setShowInfoModal(true)}
-          />
         <ScrollView
-          style={{
-            width: '100%'
-          }}
-          contentContainerStyle={{
-            alignItems: 'center',
-          }}
+          style={Local.scrollView}
+          contentContainerStyle={Local.scrollViewContent}
         >
+          <PageTitle 
+            title='Import Music'
+            infoHandler={() => setShowInfoModal(true)}
+          />
           <Option 
             title='Files'
             desc='Import from your files'
             icon={require('@/assets/icons/folder.png')}
             disabled={false}
-            handlePress={() => setHomeState(2)}
+            handlePress={() => {
+              setLoading(true);
+              setHomeState(2);
+              setResults([]);
+              setShowImportAd(true);
+              setTimeout(() => {
+                browseFiles();
+              }, 10);
+            }}
           />
           <Option 
             title='Network'
             desc='Import from your computer'
             icon={require('@/assets/icons/wifi.png')}
             disabled={false}
-            handlePress={() => {setHomeState(1)}}
+            handlePress={() => {
+              setShowImportAd(true);
+              setLoading(true);
+              setResults([]);
+              setHomeState(1);
+            }}
           />
-          {/* <Option 
-            title='Download'
-            desc='Import from the web'
-            icon={require('@/assets/icons/download.png')}
-            disabled={true}
-            handlePress={() => {setHomeState(3)}}
-          /> */}
         </ScrollView>
-        <Notifications 
-          customStyles={{
-            position: 'absolute',
-            bottom: 0,
-          }}
-        />
+        <Notifications customStyles={Local.notifications}/>
       </View>
     );
   }
   
 }
+
+const Local = StyleSheet.create({
+  notifications: {
+    position: 'absolute',
+    bottom: 0,
+  },
+  scrollView: {
+    width: '100%',
+  },
+  scrollViewContent: {
+    alignItems: 'center',
+  }
+});
 
 export default Home;

@@ -1,0 +1,1 @@
+export const revenueCatKey = 'appl_qzTfhRrmSegqQhRUukTmiUsVMIq';

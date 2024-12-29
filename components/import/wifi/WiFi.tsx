@@ -1,44 +1,56 @@
-import { Text, View, Dimensions } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Text, View, Dimensions, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
-import SongList from '@/components/song/SongList';
-import Loading from '@/components/Loading';
+import SongList from '@/components/lists/song';
 import PageTitle from '@/components/PageTitle';
-import Top from '@/components/Top';
 import ImportInstructions from '@/components/import/wifi/ImportInstructions';
 import ImportControls from '../ImportControls';
 import InfoModal from '@/components/modals/InfoModal';
-import { getCompletion } from '@/lib/SongManager';
+import { Colors } from '@/constants/Colors';
 import Progress from '@/components/Progress';
+import { PageType } from '@/constants/Types';
+import { usePremiumContext } from '@/context/PremiumProvider';
+import CFG from '@/constants/Config';
 
 const WiFi = () => {
 
   const {
 
     results, transferSize, loading,
-    ip, wifiDisabled, premium,
+    ip, wifiDisabled,
     transferProgress, loadAnimInProgress,
+    homeState, exportDisabled,
 
     setResults, setExportDisabled, setLoading,
-    setShowSaveInst, setShowInfoModal,
+    setShowInfoModal,
+    setImportState, setHomeState,
+    setTransferSize,
+    
+    importSongSheet,
 
   } = useGlobalContext();
 
-  const insets = useSafeAreaInsets();
+  const { premium } = usePremiumContext();
 
-  const [exporting, setExporting] = useState(false);
+  const Local = StyleSheet.create({
+    container: {
+      flexGrow: 1,
+      paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
+    },
+    message: {
+      marginTop: 10,
+      color: Colors.text
+    }
+  });
+
   const [completion, setCompletion] = useState(0);
   const [URL, setURL] = useState('');
-  const PORT = 80;
 
   useEffect(() => {
 
     setExportDisabled(results.length > 0 ? false : true);
-    setLoading(true);
-    setResults([]);
     setURL(!wifiDisabled ? `${ip}` : '');
 
   }, []);
@@ -50,7 +62,8 @@ const WiFi = () => {
   }, [transferProgress]);
 
   const callReset = async () => {
-    return await axios.get(`${URL}/reset`);
+    const resetEndpoint = `http://${URL}${CFG.PORT === 80 ? '' : `:${CFG.PORT}`}`;
+    return await axios.get(`${resetEndpoint}/reset`);
   }
   
   const resetResults = () => {
@@ -63,58 +76,54 @@ const WiFi = () => {
     })
   }
 
+  const handleCancel = () => {
+    setLoading(false);
+    setTransferSize(0);
+    setHomeState(0);
+    setResults([]);
+    setExportDisabled(true);
+    resetResults();
+  }
+
+  const handleNext = () => {
+    setImportState(homeState);
+    setHomeState(5);
+  }
+
   const getBody = () => {
     if (wifiDisabled) {
       return (
-        <View
-          style={[Styles.main, {
-            flexGrow: 1,
-            paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
-          }]}
-        >
-          <Text style={Styles.infoText}>Failed to start server</Text>
-          <Text style={[Styles.infoText, {
-            marginTop: 10,
-            fontWeight: 'normal',
-            }]}>
-              Try restarting the app
-              </Text>
+        <View style={[Styles.main, Local.container]}>
+          <Text style={Styles.infoText}>
+            Failed to start server
+          </Text>
+          <Text style={[Styles.sub, Local.message]}>
+            Try restarting the app
+          </Text>
         </View>
       );
     }
-    else if (loading || loadAnimInProgress) {
+    else if (loading || loadAnimInProgress || results.length === 0) {
       return (
-        <View
-          style={[Styles.main, {
-            flexGrow: 1,
-            paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
-          }]}
-        >
+        <View style={[Styles.main, Local.container]}>
           <Progress 
             completion={completion} 
+            loading={loading}
             showCircle={loadAnimInProgress}
-          />
-        </View>
-      );
-    }
-    else if (results.length === 0) {
-      return (
-        <View
-          style={[Styles.main, {
-            flexGrow: 1,
-            paddingBottom: Dimensions.get('screen').height < 700 ? 70 : 50
-          }]}
-        >
-          <Progress 
-            completion={completion} 
-            showCircle={false}
           />
         </View>
       );
     }
     else if (results.length > 0) {
       return (
-        <SongList songs={results} />
+        <SongList
+          songs={results}
+          bottomPadding={true}
+          pageType={PageType.IMPORT}
+          fadeCover={false}
+          fadeSong={true}
+          sheetRef={importSongSheet}
+        />
       );
     }
     else {
@@ -125,11 +134,11 @@ const WiFi = () => {
   }
 
   const getInstructions = () => {
-    if (!wifiDisabled) {
+    if (!wifiDisabled && results.length === 0 && transferSize <= 0) {
       return (
         <ImportInstructions
           title='In your web browser, enter:'
-          desc={URL}
+          desc={`${URL}${CFG.PORT === 80 ? '' : `:${CFG.PORT}`}`}
           icon={require('@/assets/icons/wifi.png')}
           disabled={wifiDisabled}
           handlePress={() => {}}
@@ -139,9 +148,8 @@ const WiFi = () => {
   }
 
   return (
-    <View style={[Styles.body, {paddingTop: insets.top}]}>
+    <View style={Styles.body}>
       <InfoModal />
-      <Top />
       <PageTitle 
         title='Import Music'
         showList={results.length > 1 && premium && !loadAnimInProgress}
@@ -149,7 +157,14 @@ const WiFi = () => {
       />
       {getInstructions()}
       {getBody()}
-      <ImportControls reset={resetResults}/>
+      <ImportControls
+        altTitle='Cancel'
+        mainTitle='Next'
+        altHandle={handleCancel}
+        mainHandle={handleNext}
+        altDisabled={transferSize > 0}
+        mainDisabled={exportDisabled}
+      />
     </View>
   )
 }

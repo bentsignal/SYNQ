@@ -1,8 +1,15 @@
-import { Image } from "react-native";
+import { Image, StyleSheet } from "react-native";
 
 type TabIconProps = {
   focused: boolean
 }
+
+const Local = StyleSheet.create({
+  icon: {
+    width: 25,
+    height: 25
+  }
+});
 
 export const HomeIcon = ({
   focused
@@ -14,10 +21,7 @@ export const HomeIcon = ({
   return (
     <Image 
       source={focused ? require(active) : require(inactive)}
-      style={{
-        width: 25,
-        height: 25
-      }}
+      style={Local.icon}
     />
   );
 
@@ -31,10 +35,7 @@ export const LibraryIcon = ({
   return (
     <Image 
       source={focused ? require(active) : require(inactive)}
-      style={{
-        width: 25,
-        height: 25
-      }}
+      style={Local.icon}
     />
   )
 };
@@ -49,10 +50,7 @@ export const SettingsIcon = ({
   return (
     <Image 
       source={focused ? require(active) : require(inactive)}
-      style={{
-        width: 25,
-        height: 25
-      }}
+      style={Local.icon}
     />
   );
 

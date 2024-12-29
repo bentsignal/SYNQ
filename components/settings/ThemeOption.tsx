@@ -1,49 +1,40 @@
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, StyleSheet } from "react-native";
+import { memo } from "react";
 import { Colors } from "@/constants/Colors";
-import { useGlobalContext } from "@/context/GlobalProvider";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getLogo, getIcon } from "@/constants/Logos";
-import { setAppIcon } from "expo-icon-handler";
+import { usePremiumContext } from "@/context/PremiumProvider";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 type ThemeOptionProps = {
-  name: string;
   color: string;
-  index: number;
+  key?: any;
 }
 
-const ThemeOption = ({ name, color, index }: ThemeOptionProps) => {
+const ThemeOption = ({ color }: ThemeOptionProps) => {
 
-  const { 
-
-    theme, premium, 
-
-    setTheme, setLogo,
-  
-  } = useGlobalContext();
+  const { premium } = usePremiumContext();
+  const { theme, changeTheme } = useThemeContext();
 
   return (
     <TouchableOpacity 
-      style={{
-        width: 70,
-        height: 70,
-        borderRadius: 100,
-        marginRight: 10,
+      style={[Local.option, { 
         backgroundColor: color,
-        padding: 10,
-        borderWidth: 2,
         borderColor: color === theme ? Colors.text : 'transparent',
-      }}
-      activeOpacity={.9}
-      onPress={() => {
-        if (premium) {
-          setTheme(color);
-          setLogo(getLogo(name));
-          const success = setAppIcon(getIcon(name));
-          AsyncStorage.setItem('theme', color);
-        }
-      }}
+      }]}
+      activeOpacity={1}
+      onPress={() => { if (premium) changeTheme(color); }}
     />
   );
 }
+
+const Local = StyleSheet.create({
+  option: {
+    width: 70,
+    height: 70,
+    borderRadius: 100,
+    marginRight: 10,
+    padding: 10,
+    borderWidth: 2,
+  }
+});
 
 export default ThemeOption;

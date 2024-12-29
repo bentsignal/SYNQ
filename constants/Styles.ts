@@ -1,7 +1,83 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 
 export const Styles = StyleSheet.create({
+
+  // Text styles
+  h1: {
+    fontSize: 36,
+    fontWeight: 'bold',
+  },
+  h2: {
+    fontSize: 28,
+    fontWeight: 'bold',
+  },
+  h3: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  h4: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  h5: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  h6: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  p: {
+    fontSize: 16,
+  },
+  sub: {
+    fontSize: 14,
+    color: Colors.infoText,
+  },
+  textboxLabel: {
+    fontSize: 16,
+    color: Colors.text,
+    fontWeight: 'bold',
+    width: '90%',
+    marginBottom: 5,
+  },
+  infoText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.text
+  },
+  description: {
+    fontSize: 16,
+    color: Colors.infoText,
+    marginBottom: 20,
+    width: '100%',
+  },
+
+  // tab bar styles
+  tabBar: {
+    borderTopWidth: 1,
+    borderTopColor: Colors.popup,
+    backgroundColor: Colors.footer,
+    height: '11%',
+    paddingTop: 10,
+    paddingBottom: Dimensions.get('screen').height < 700 ? 15 : 30
+  },
+  tabBarLabel: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: Colors.tabInactive,
+  },
+
+  // Container styles
+  header: {
+    borderBottomWidth: 3,
+    borderBottomColor: 'transparent',
+  },
+  headerContent: {
+    backgroundColor: Colors.background,
+    height: 300,
+  },
   body: {
     flex: 1,
     alignItems: 'center',
@@ -14,67 +90,22 @@ export const Styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
   },
-  tabBar: {
-    borderTopWidth: 1,
-    borderTopColor: Colors.popup,
-    backgroundColor: Colors.footer,
-    height: '11%',
-    paddingTop: 10,
-    paddingBottom: Dimensions.get('screen').height < 700 ? 15 : 30
-  },
-  tabBarLabel: {
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  appName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.main,
-  },
-  top: {
-    width: '90%',
-    alignSelf: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 10,
-    marginBottom: 30
-  },
-  pageTitle: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    textAlign: 'left',
-    alignSelf: 'stretch',
-    color: Colors.text,
-  },
   roundedContainer: {
     borderRadius: 15
+  },
+  roundedModal: {
+    borderTopLeftRadius: 38,
+    borderTopRightRadius: 38,
   },
   popupBackdrop: {
     justifyContent: 'center',
     alignItems: 'center',
     height: '100%',
-    // backgroundColor: 'rgba(0, 0, 0, 0.95)'
   },
   popupBody: {
     backgroundColor: Colors.popup,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  buttonContainer: {
-    minWidth: 100,
-    height: 42,
-    justifyContent: 'center',
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  infoText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.text
   },
   textbox: {
     backgroundColor: Colors.textbox,
@@ -85,11 +116,6 @@ export const Styles = StyleSheet.create({
     paddingRight: 20,
     marginBottom: 10,
   },
-  textboxLabel: {
-    fontSize: 14,
-    color: Colors.text,
-    marginBottom: 5
-  },
   backgroundBlendShadow: {
     shadowColor: Colors.background,
     shadowOffset: {
@@ -99,71 +125,27 @@ export const Styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 5,
   },
-  subOption: {
-    paddingTop: 20,
-    paddingBottom: 20,
-    paddingLeft: 10,
-    paddingRight: 10,
-    borderRadius: 10,
-  },
-  subTier: {
-    color: 'white',
-    fontSize: 16,
-    // fontWeight: 'bold',
-  },
-  subCost: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  subInfo: {
-    color: 'white',
-    fontSize: 12,
-  },
-  songOptionActionContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: 5,
-    paddingBottom: 5,
-    marginBottom: 10,
-  },
-  songOptionActionText: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: 'bold'
-  },
-  songOptionIcon: {
-    marginRight: 15,
-    width: 20,
-    height: 20,
-    tintColor: Colors.tabInactive,
-  },
-  settingsCategoryHeader: {
-    color: Colors.text,
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'left',
-  },
-  settingsCategoryContainer: {
+  listItem: {
+    alignSelf: 'stretch',
     width: '90%',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    height: 90,
+    marginBottom: 10,
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingTop: 15,
+    paddingBottom: 15,
   },
-  infoContentContainer: {
+
+  // general styles
+  divider: {
     width: '100%',
-    marginTop: 20,
-  },
-  infoStepContainer: {
-    width: '100%',
-    marginBottom: 20,
-  },
-  infoStepTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.text,
-    marginBottom: 5,
-  },
-  infoStepDescription: {
-    fontSize: 16,
-    color: Colors.infoText,
-    marginBottom: 20,
+    height: 5,
+    borderBottomColor: Colors.song,
+    borderBottomWidth: 1,
+    marginBottom: 10,
   }
+
 });

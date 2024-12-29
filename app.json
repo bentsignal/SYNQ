@@ -2,11 +2,12 @@
   "expo": {
     "name": "synq",
     "slug": "synq",
-    "version": "1.2.7",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/appIcons/icon-blue.png",
     "scheme": "synq",
     "userInterfaceStyle": "automatic",
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
@@ -16,12 +17,16 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.directedbyshawn.synq",
-      "buildNumber": "1",
       "infoPlist": {
         "CFBundleDisplayName": "SYNQ",
-        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
-        "UIStatusBarStyle": "UIStatusBarStyleLightContent"
-      }
+        "UIStatusBarStyle": "UIStatusBarStyleLightContent",
+        "UIFileSharingEnabled": true,
+        "LSSupportsOpeningDocumentsInPlace": true,
+        "UIBackgroundModes": [
+          "audio"
+        ]
+      },
+      "buildNumber": "25"
     },
     "android": {
       "adaptiveIcon": {
@@ -85,7 +90,17 @@
             }
           ]
         }
-      ]
+      ],
+      [
+        "expo-asset",
+        {
+          "assets": [
+            "assets/audio/ad.mp3",
+            "assets/images/popup.jpg"
+          ]
+        }
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true

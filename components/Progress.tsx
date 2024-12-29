@@ -1,25 +1,29 @@
-import { View, Animated, Easing } from 'react-native';
+import { View, Animated, Easing, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useRef, useEffect } from 'react';
 import Svg, { Circle } from 'react-native-svg';
 import Loading from './Loading';
 import { useGlobalContext } from '@/context/GlobalProvider';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
-const Progress = ({ completion, showCircle }: {completion: number; showCircle: boolean;}) => {
+type ProgressProps = {
+  completion: number;
+  loading: boolean;
+  showCircle: boolean;
+  linear?: boolean;
+}
+
+const Progress = ({ completion, loading, showCircle, linear }: ProgressProps) => {
 
   let completionRef = useRef(new Animated.Value(283)).current;
   let circleOpacityRef = useRef(new Animated.Value(0)).current;
   let globalOpacityRef = useRef(new Animated.Value(0)).current;
 
-  const { 
-    
-    loadAnimInProgress, loading, theme,
-    
-    setLoadAnimInProgress 
-  
-  } = useGlobalContext();
+  const { loadAnimInProgress, setLoadAnimInProgress } = useGlobalContext();
+
+  const { theme } = useThemeContext();
 
   useEffect(() => {
     let to;
@@ -62,37 +66,57 @@ const Progress = ({ completion, showCircle }: {completion: number; showCircle: b
     else if (progressValue >= 283) {
       progressValue = 283;
     }
-
-    Animated.timing(completionRef, {
-      toValue: progressValue,
-      duration: 500,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start(() => {
-      if (progressValue <= 0) {
-        setLoadAnimInProgress(false);
-      }
-    });
+    
+    if (linear) {
+      Animated.timing(completionRef, {
+        toValue: progressValue,
+        duration: 1000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }).start(() => {
+        if (progressValue <= 0) {
+          setLoadAnimInProgress(false);
+        }
+      });
+    }
+    else {
+      Animated.timing(completionRef, {
+        toValue: progressValue,
+        duration: 500,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }).start(() => {
+        if (progressValue <= 0) {
+          setLoadAnimInProgress(false);
+        }
+      });
+    }
 
   }, [completion]);
 
+  const Local = StyleSheet.create({
+    container: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      opacity: globalOpacityRef,
+      zIndex: 50,
+    },
+    svg: {
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+    },
+  });
+
   return (
-    <Animated.View
-      style={{
-        justifyContent: 'center',
-        alignItems: 'center',
-        opacity: globalOpacityRef,
-      }}
-    >
+    <Animated.View style={Local.container}>
       <Svg 
         height="100" 
         width="100" 
         viewBox="0 0 100 100" 
         style={{
-          position: 'absolute',
+          ...Local.svg,
           zIndex: 2,
-          width: '100%',
-          height: '100%',
         }}
       >
         <AnimatedCircle 
@@ -112,10 +136,8 @@ const Progress = ({ completion, showCircle }: {completion: number; showCircle: b
         width="100" 
         viewBox="0 0 100 100" 
         style={{
-          position: 'absolute',
+          ...Local.svg,
           zIndex: 1,
-          width: '100%',
-          height: '100%',
         }}
       >
         <AnimatedCircle 

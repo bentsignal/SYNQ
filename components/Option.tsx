@@ -1,8 +1,8 @@
-import { Text, View, Image, TouchableOpacity, ImageSourcePropType } from 'react-native';
+import { Text, View, Image, TouchableOpacity, ImageSourcePropType, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
-import { darkenColor } from '@/lib/Color';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { darkenColor } from '@/lib/controllers/ColorController';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 type ImportOptionProps = {
   title: string;
@@ -22,45 +22,42 @@ const Option = ({
   handlePress
 } : ImportOptionProps) => {
 
-  const { theme } = useGlobalContext();
+  const { theme } = useThemeContext();
 
   const color = bg ? bg : theme;
+
+  const Local = StyleSheet.create({
+    container: {
+      ...Styles.roundedContainer,
+      flexDirection: 'row',
+      alignItems: 'center',
+      width: '90%',
+      backgroundColor: disabled ? darkenColor(color, 40, 50) : color,
+      padding: 20,
+      marginBottom: 10
+    },
+    icon: {
+      width: 36,
+      height: 36,
+      marginRight: 16
+    }
+  });
 
   return (
     <TouchableOpacity
       onPress={disabled ? () => {} : handlePress}
       activeOpacity={disabled ? 1 : 0.9}
-      style={[Styles.roundedContainer, {
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: '90%',
-        backgroundColor: disabled ? darkenColor(color, 40, 50) : color,
-        padding: 20,
-        marginBottom: 10
-      }]}
+      style={Local.container}
     >
       <Image 
         source={icon} 
-        style={{
-          width: 36,
-          height: 36,
-          marginRight: 16
-        }}
+        style={Local.icon}
       />
       <View>
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: 'bold'
-          }}
-        >
+        <Text style={Styles.h4}>
           {title}
         </Text>
-        <Text
-          style={{
-            fontSize: 16
-          }}
-        >
+        <Text style={Styles.p}>
           {desc}
         </Text>
       </View>

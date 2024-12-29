@@ -1,52 +1,35 @@
 import { Tabs } from 'expo-router';
-import { View } from 'react-native';
-import SongOptions from '@/components/sheets/SongOptions';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Easing, View } from 'react-native';
 import Server from '@/components/import/wifi/Server';
 import { HomeIcon, LibraryIcon } from '@/components/TabBarIcons';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/context/GlobalProvider';
-import Purchases from 'react-native-purchases';
 import Overlay from '@/components/Overlay';
 import NotificationModal from '@/components/modals/NotificationModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import GlobalProgress from '@/components/GlobalProgress';
+import Top from '@/components/Top';
+import { useAssets } from 'expo-asset';
 
 const TabLayout = () => {
 
-  const { 
-    
-    premium, showSongOptions,
-    
-    setPremium, setHaptic,
   
-  } = useGlobalContext();
+  const { showOverlay, setHaptic, setAdURL } = useGlobalContext();
+
+  const [assets, error] = useAssets([require('@/assets/audio/ad.mp3')]);
 
   useEffect(() => {
-
-    const checkPremium = async () => {
-      try {
-        Purchases.configure({
-          apiKey: 'appl_qzTfhRrmSegqQhRUukTmiUsVMIq',
-          appUserID: null,
-        });
-        const customerInfo = await Purchases.getCustomerInfo();
-        const active = customerInfo.activeSubscriptions;
-        const purchases = customerInfo.nonSubscriptionTransactions;
-        if (active.length > 0) {
-          setPremium(true);
-        }
-        else if (purchases.length > 0 && purchases[0].productIdentifier === 'SYNQPremiumLifetime') {
-          setPremium(true);
-        }
-        else {
-          setPremium(false);
-        }
-      }
-      catch (error) {
-        console.log('error checking premium');
-      }
+    if (error) {
+      return;
     }
+    if (assets) {
+      setAdURL(assets[0].uri);
+    }
+  }, [assets]);
+
+  useEffect(() => {
 
     const loadHapticSetting = async () => {
       try {
@@ -59,35 +42,39 @@ const TabLayout = () => {
     }
 
     loadHapticSetting();
-    checkPremium();
 
   }, []);
 
   return (
     <>
-      <View style={{
-          position: 'absolute', 
-          height: '100%', 
-          zIndex: 100,
-          width: '100%',
-          pointerEvents: showSongOptions ? 'auto' : 'none',
-        }}
-      >
-        <SongOptions />
-      </View>
       <NotificationModal />
-      <Overlay />
+      <Overlay show={showOverlay} activeOpacity={0.95}/>
       <Server />
       <Tabs
         screenOptions={{
-          headerShown: false,
+          headerShown: true,
+          headerStyle: Styles.header,
+          header: () => <Top />,
+          headerShadowVisible: false,
+          headerTitleStyle: Styles.infoText,
           tabBarActiveTintColor: Colors.tabActive,
           tabBarInactiveTintColor: Colors.tabInactive,
           tabBarStyle: Styles.tabBar,
-          tabBarLabelStyle: Styles.tabBarLabel
-        }}
-        sceneContainerStyle={{
-          backgroundColor: Colors.background,
+          tabBarLabelStyle: Styles.h6,
+          tabBarIconStyle: {
+            marginBottom: 6,
+          },
+          sceneStyle: {
+            backgroundColor: Colors.background,
+          },
+          animation: 'shift',
+          transitionSpec: {
+            animation: 'timing',
+            config: {
+              duration: 300,
+              easing: Easing.out(Easing.ease),
+            },
+          },
         }}
       >
           <Tabs.Screen
@@ -97,7 +84,7 @@ const TabLayout = () => {
               tabBarIcon: ({ color, focused }) => (
                 <HomeIcon focused={focused}/>
               ),
-              headerShown: false,
+              animation: 'none',
             }}
           />
           <Tabs.Screen 
@@ -107,7 +94,7 @@ const TabLayout = () => {
               tabBarIcon: ({ color, focused }) => (
                 <LibraryIcon focused={focused}/>
               ),
-              headerShown: false,
+              animation: 'none',
             }}
           />
       </Tabs>

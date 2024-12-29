@@ -1,5 +1,7 @@
-import { Text, TouchableOpacity } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
+import { darkenColor } from '@/lib/controllers/ColorController';
 
 type MainButtonProps = {
   title?: string;
@@ -24,24 +26,39 @@ const CustomButton = ({
   buttonWidth,
   customStyles,
 }: MainButtonProps) => {
+
+  const bgColor = background ? background : Colors.altButton;
+
+  const Local = StyleSheet.create({
+    buttonWrapper: {
+      ...Styles.roundedContainer,
+      ...customStyles,
+      minWidth: 100,
+      height: 42,
+      justifyContent: 'center',
+      backgroundColor: disabled ? darkenColor(bgColor, 40, 50) : bgColor,
+      width: buttonWidth ? buttonWidth: 100,
+    },
+    buttonText: {
+      ...Styles.h5,
+      textAlign: 'center',
+      color: textColor ? textColor: 'black',
+    },
+  });
+
   return (
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={opacity ? opacity : 0.8}
-      style={[customStyles ? customStyles : {}, Styles.buttonContainer, Styles.roundedContainer, {
-          backgroundColor: disabled ? disabledColor : background, 
-          width: buttonWidth ? buttonWidth: 100,
-        }
-      ]}
+      style={Local.buttonWrapper}
       disabled={disabled}
     >
-      <Text style={[Styles.buttonText, {
-        color: textColor ? textColor: 'black',
-      }]}>
+      <Text style={Local.buttonText}>
         {title}
       </Text>
     </TouchableOpacity>
-  )
+  );
+
 }
 
 export default CustomButton;

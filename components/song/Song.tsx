@@ -1,60 +1,81 @@
-import { View, TouchableOpacity, Text } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, Animated, 
+  PanResponder, Easing,
+} from 'react-native';
 import { router } from 'expo-router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import { SongType } from '@/constants/Types';
 import SongInfo from '@/components/song/SongInfo';
-import Select from '@/components/song/Select';
-import { ListCover } from '@/components/song/Cover';
+import Select from '@/components/Select';
+import ListCover from '@/components/cover/ListCover';
 import { BlurView } from 'expo-blur';
 import CustomButton from '../CustomButton';
 import Skeleton from '../Skeleton';
-import { darkenColor } from '@/lib/Color';
+import { darkenColor } from '@/lib/controllers/ColorController';
 import * as Haptics from 'expo-haptics';
+import More from '@/components/More';
+import { PageType, CoverType } from '@/constants/Types';
+import { useActiveTrack } from "react-native-track-player";
+import { getTrackFromSong, playTrack, 
+  updateQueue, playAd, addToQueue } from '@/lib/controllers/PlayerController';
+import { useThemeContext } from '@/context/ThemeProvider';
+import { usePremiumContext } from '@/context/PremiumProvider';
+import songBus from '@/station/song';
+import { SongBusEvent, SongInfoModifiedEvent, SongCoverModifiedEvent } from '@/station/song/Events';
+import { usePlaybackContext } from '@/context/PlaybackProvider';
+import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
-const Dot = () => {
-  return (
-    <View 
-      style={{
-        width: 4,
-        height: 4,
-        borderRadius: 15,
-        backgroundColor: Colors.text,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    />
-  );
+type SongProps = {
+  song: SongType, 
+  fadeCover: boolean, 
+  fadeSong: boolean,
 }
 
-const Song = ({name, id, data, info}: SongType) => {
+const Song = ({ song, fadeCover, fadeSong }: SongProps) => {
 
   const [selected, setSelected] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const translateX = useRef(new Animated.Value(0)).current;
+  const [_, forceUpdate] = useState(0);
+
+  const track = useActiveTrack();
+
   const { 
 
     selectEnabled, selectedSongs, results,
-    premium, showSongOptions, theme, 
-    haptic,
+    showSongOptions,
+    haptic, adPlaying, adURL, shouldPlayAd,
 
     setSelectedSongs, setShowSongOptions,
-    setEditSong,
+    setEditSong, setAdPlaying,
 
   } = useGlobalContext(); 
+
+  const { shuffle, sourceType, sourceId, setSourceType, setSourceId } = usePlaybackContext();
+  const { premium } = usePremiumContext();
+  const { theme } = useThemeContext();
 
   let blur = false;
   let message = false
   if (results && results[0] && results[1] && results[0].id && results[1].id) {
     if (!premium) {
-      if (results[0].id != id) {
+      if (results[0].id != song.id) {
         blur = true;
       }
-      if (results[1].id == id) {
+      if (results[1].id == song.id) {
         message = true;
       }
     }
+  }
+
+  let bg = Colors.song;
+  // if (track !== null && song.id == track.id) {
+  //   bg = theme;
+  // }
+  if (blur) {
+    bg = Colors.background;
   }
 
   useEffect(() => {
@@ -64,158 +85,224 @@ const Song = ({name, id, data, info}: SongType) => {
     }
   }, [selectEnabled]);
 
+  useEffect(() => {
+    songBus.on(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
+    songBus.on(SongBusEvent.SONG_COVER_MODIFIED, updateSongCover);
+    return () => {
+      songBus.off(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
+      songBus.off(SongBusEvent.SONG_COVER_MODIFIED, updateSongCover);
+    }
+  }, []);
+
+  let disablePlay = false;
+  if (song.pageType && [PageType.IMPORT, PageType.QUEUE].includes(song.pageType)) { 
+    disablePlay = true;
+  }
+
+  const Local = StyleSheet.create({
+    container: {
+      width: '100%',
+    },
+    contentContainer: {
+      ...Styles.roundedContainer,
+      ...Styles.listItem,
+      backgroundColor: bg,
+      opacity: !selectEnabled || (selectEnabled && selected) ? 1 : 0.6
+    },
+    skeleton: {
+      ...Styles.roundedContainer,
+      position: 'absolute',
+      width: '90%',
+      height: 90,
+      zIndex: 1,
+    },
+    blur: {
+      ...Styles.roundedContainer,
+      display: blur ? 'flex' : 'none',
+      overflow: 'hidden',
+      position: 'absolute',
+      justifyContent: 'center',
+      alignItems: 'center',
+      top: 0,
+      left: 0,
+      width: '90%',
+      height: 90,
+      padding: 15,
+      zIndex: 2
+    },
+    premiumMessageContainer: {
+      display: message ? 'flex' : 'none',
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    premiumMessageText: {
+      ...Styles.infoText,
+      paddingBottom: 10,
+      textShadowColor: Colors.background,
+      textShadowOffset: { width: 2, height: 2 },
+      textShadowRadius: 10
+    }
+  });
+
+  const updateSongInfo = async (data: SongInfoModifiedEvent) => {
+    if (Number(song.id) === data.id) {
+      song.info.metadata.name = data.title;
+      song.info.metadata.artist = data.artist;
+      song.info.metadata.album = data.album;
+      forceUpdate(prev => prev + 1);
+    }
+  }
+
+  const updateSongCover = async (data: SongCoverModifiedEvent) => {
+    if (Number(song.id) === data.id) {
+      if (data.type === PageType.IMPORT && data.cover) {
+        song.info.metadata.artwork = data.cover;
+      }
+      forceUpdate(prev => prev + 1);
+    }
+  }
+
+  const handlePlay = async () => {
+    if (haptic) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    const id = track?.id ? track.id : -1;
+    // play ad if user is non premium and has passed ad threshold
+    if (!premium && shouldPlayAd && !adPlaying) {
+      setAdPlaying(true);
+      await playAd(theme, adURL);
+      const newTrack = await getTrackFromSong(song, theme);
+      await updateQueue(song.id, shuffle, theme, song.sourceType, song.sourceId);
+      setSourceType(song.sourceType);
+      setSourceId(song.sourceId);
+      if (newTrack) {
+        await addToQueue(newTrack);
+      }
+    }
+    // if ad is not played, play song
+    else if (id !== song.id && !adPlaying) {
+      setAdPlaying(false);
+      try {
+        const newTrack = await getTrackFromSong(song, theme);
+        if (newTrack) {
+          await playTrack(newTrack);
+          await updateQueue(song.id, shuffle, theme, song.sourceType, song.sourceId);
+          setSourceType(song.sourceType);
+          setSourceId(song.sourceId);
+        }
+      }
+      catch (error) {
+        console.log('error playing song: ', error);
+      }
+    }
+  }
+
+  const panResponder = PanResponder.create({
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderMove: (e, gestureState) => {
+      translateX.setValue(gestureState.dx);
+    },
+  });
+
   return (
-    <>
-      <View
-        style={[Styles.roundedContainer, {
-          alignSelf: 'stretch',
-          width: '90%',
-          flexDirection: 'row',
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-          height: 90,
-          marginBottom: 10,
-          backgroundColor: blur ? Colors.background : Colors.song,
-          paddingLeft: 15,
-          paddingRight: 15,
-          paddingTop: 15,
-          paddingBottom: 15,
-          opacity: !selectEnabled || (selectEnabled && selected) ? 1 : 0.6
-        }]}
+    <Animated.View 
+      // {...panResponder.panHandlers}
+      style={[Local.container, {
+        transform: [{ translateX }]
+      }]}>
+      <TouchableOpacity 
+        style={Local.contentContainer}
+        activeOpacity={disablePlay ? 1 : 0.8}
+        disabled={disablePlay}
+        onPress={handlePlay}
       >
         <ListCover 
-          image={info.metadata?.artwork ? info.metadata.artwork : ''}
+          image={song.info?.metadata?.artwork ? song.info.metadata.artwork : ''}
+          type={CoverType.SONG}
+          id={song.id}
+          fade={fadeCover}
           propOnLoad={() => {
             setLoaded(true);
           }}
         />
-        <SongInfo info={info} name={name}/>
+        <SongInfo info={song.info} name={song.name}/>
         {
 
-          selectEnabled 
-
-          ? 
-
-          <>
-            <TouchableOpacity
-              onPress={() => {
-                setSelected(!selected);
-                let newSongs = [];
-                let i = 0;
-                if (!selected && !selectedSongs.includes(id)) {
-                  if (selectedSongs.length == 0) {
-                    newSongs[0] = id;
-                  }
-                  else {
-                    for (i = 0; i < selectedSongs.length; i++) {
-                      newSongs[i] = selectedSongs[i];
-                    }
-                    newSongs[i] = id;
-                  }
-                  setSelectedSongs(newSongs);
+          selectEnabled &&
+          
+          <Select 
+            active={selected} 
+            handlePress={() => {
+              setSelected(!selected);
+              let newSongs = [];
+              let i = 0;
+              if (!selected && !selectedSongs.includes(song.id)) {
+                if (selectedSongs.length == 0) {
+                  newSongs[0] = song.id;
                 }
-                else if (selected) {
+                else {
                   for (i = 0; i < selectedSongs.length; i++) {
-                    if (selectedSongs[i] != id) {
-                      newSongs.push(selectedSongs[i]);
-                    }
+                    newSongs[i] = selectedSongs[i];
                   }
-                  setSelectedSongs(newSongs);
+                  newSongs[i] = song.id;
                 }
-              }}
-            >
-              <Select active={selected} />
-            </TouchableOpacity>
-          </> 
-
-          : 
-
-          <>
-            <TouchableOpacity
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: 15,
-                gap: 3,
-              }}
-              activeOpacity={.8}
-              onPress={() => {
-                if (haptic) {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setSelectedSongs(newSongs);
+              }
+              else if (selected) {
+                for (i = 0; i < selectedSongs.length; i++) {
+                  if (selectedSongs[i] != song.id) {
+                    newSongs.push(selectedSongs[i]);
+                  }
                 }
-                setEditSong({
-                  "name": name, 
-                  "id": id, 
-                  "data": data, 
-                  "info": info
-                });
-                setShowSongOptions(!showSongOptions);
-              }}
-            >
-              <Dot />
-              <Dot />
-              <Dot />
-            </TouchableOpacity>
-          </>
+                setSelectedSongs(newSongs);
+              }
+            }}
+          />
 
         }
-      </View>
-      <Skeleton
-        show={!loaded}
-        styles={[Styles.roundedContainer, {
-          position: 'absolute',
-          width: '90%',
-          height: 90,
-          zIndex: 1,
-        }]}
-      />
+
+        {
+
+          !selectEnabled && song.pageType !== PageType.QUEUE &&
+
+          <More 
+            handlePress={() => {
+              if (haptic) {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }
+              setEditSong(song);
+              TrueSheet.present('song-sheet');
+            }}
+          />
+
+        }
+      </TouchableOpacity>
+      {
+        fadeSong &&
+        <Skeleton
+          show={!loaded}
+          styles={Local.skeleton}
+        />
+      }
       <BlurView
-        style={[Styles.roundedContainer, {
-          display: blur ? 'flex' : 'none',
-          overflow: 'hidden',
-          position: 'absolute',
-          justifyContent: 'center',
-          alignItems: 'center',
-          top: 0,
-          left: 0,
-          width: '90%',
-          height: 90,
-          padding: 15,
-          zIndex: 2
-        }]}
+        style={Local.blur}
         intensity={20}
       >
-        <View
-          style={{
-            display: message ? 'flex' : 'none',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-        <Text
-          style={{
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: 16,
-            paddingBottom: 5,
-            textShadowColor: Colors.background,
-            textShadowOffset: { width: 2, height: 2 },
-            textShadowRadius: 10
-          }}
-        >
-          Import multiple files with <Text style={{color: theme}}>Premium</Text>
-        </Text>
-        <CustomButton 
-          title={'Sign Up'}
-          background={theme}
-          disabledColor={darkenColor(theme, 40, 50)}
-          opacity={.90}
-          handlePress={() => router.push('/premium')}
-        />
+        <View style={Local.premiumMessageContainer}>
+          <Text style={Local.premiumMessageText}>
+            Import multiple files with <Text style={{color: theme}}>Premium</Text>
+          </Text>
+          <CustomButton 
+            title={'Learn More'}
+            buttonWidth={150}
+            background={theme}
+            disabledColor={darkenColor(theme, 40, 50)}
+            opacity={.90}
+            handlePress={() => router.push('/premium')}
+          />
         </View>
       </BlurView>
-    </>
+    </Animated.View>
   );
 
 }

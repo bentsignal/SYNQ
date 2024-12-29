@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 9.1.0"
+    "version": ">= 9.1.0",
+    "appVersionSource": "local"
   },
   "build": {
     "development-client-simulator": {
@@ -13,14 +14,18 @@
     "development-client": {
       "developmentClient": true,
       "distribution": "internal",
+      "autoIncrement": true,
       "ios": {
         "simulator": false
       }
     },
     "development": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "autoIncrement": true
     },
-    "production": {}
+    "production": {
+      "autoIncrement": true
+    }
   },
   "submit": {
     "production": {}

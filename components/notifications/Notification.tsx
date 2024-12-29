@@ -7,6 +7,7 @@ import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import { NotificationType } from '@/constants/Types';
 import CFG from '@/constants/Config';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 type NotificationProps = {
   id: string;
@@ -18,8 +19,6 @@ type NotificationProps = {
   onClick: () => void;
 }
 
-const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
-
 const Notification = ({ id, type, title, brief, message, trace, onClick, }: NotificationProps) => {
 
   const translateX = useRef(new Animated.Value(600)).current;
@@ -28,7 +27,7 @@ const Notification = ({ id, type, title, brief, message, trace, onClick, }: Noti
 
   const {
 
-    theme, haptic,
+    haptic,
 
     setShowOverlay, setNotificationType,
     setNotificationMessage, setNotificationTitle,
@@ -36,6 +35,8 @@ const Notification = ({ id, type, title, brief, message, trace, onClick, }: Noti
     notifications, removeNotification
 
   } = useGlobalContext();
+
+  const { theme } = useThemeContext();
 
   useEffect(() => {
     if (haptic) {

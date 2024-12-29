@@ -1,8 +1,8 @@
-import { View, Text, Image, TouchableOpacity, Linking, Alert } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Linking, Alert, StyleSheet } from 'react-native';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { Styles } from '@/constants/Styles';
-import { Colors } from '@/constants/Colors';
+import { Colors, Themes } from '@/constants/Colors';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { LinearGradient } from 'expo-linear-gradient';
 import Bar from '@/components/modals/Bar';
@@ -10,25 +10,28 @@ import CustomButton from '@/components/CustomButton';
 import { NotificationType } from '@/constants/Types';
 import Notifications from '@/components/notifications/Notifications';
 import PremiumOption from '@/components/PremiumOption';
-import Purchases from 'react-native-purchases';
 import Loading from '@/components/Loading';
-import { darkenColor } from '@/lib/Color';
-import { errorHasMessage } from '@/lib/Errors';
+import { darkenColor } from '@/lib/controllers/ColorController';
 import * as Haptics from 'expo-haptics';
+import * as PurchaseManager from '@/lib/controllers/PurchaseController';
+import { usePremiumContext } from '@/context/PremiumProvider';
+import { useThemeContext } from '@/context/ThemeProvider';
 
 const Premium = () => {
 
   const { 
     
-    premium, errorMessage, theme,
-    logo, haptic,
+    haptic,
     
     addNotification,
     
-    setPremium, setErrorMessage, 
-    setShowOverlay, setShowNotificationModal,
+    setShowOverlay, 
+    setShowNotificationModal,
   
   } = useGlobalContext();
+
+  const { premium, setPremium } = usePremiumContext();
+  const { theme, logo } = useThemeContext();
   
   const [selected, setSelected] = useState(0);
   const [renew, setRenew] = useState(true);
@@ -70,13 +73,13 @@ const Premium = () => {
 
     const run = async () => {
       try {
-        await connect();
-        await getPrices();
-        await checkStatus();
+        await PurchaseManager.connect();
+        setPrices(await PurchaseManager.getPrices());
+        updateStatus(await PurchaseManager.checkStatus());
         setLoading(false);
       }
       catch (error) {
-        const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
+        const trace = error instanceof Error ? error.message : String(error);
         sendErrorNotification(
           'Premium Error',
           'We ran into an issue trying to load premium options, please try again later', 
@@ -84,7 +87,6 @@ const Premium = () => {
           trace
         );
         setError(true);
-        setErrorMessage('1: ' + error);
         setLoading(false);
       }
     }
@@ -97,30 +99,31 @@ const Premium = () => {
     Linking.openURL(url).catch((err) => console.error("Failed to open URL:", err));
   };
 
-  const connect = async () => {
-    try {
-      Purchases.configure({
-        apiKey: 'appl_qzTfhRrmSegqQhRUukTmiUsVMIq',
-        appUserID: null,
-      });
-      return true;
+  const getHeart = () => {
+    if (theme === Themes.blue) {
+      return '💙';
     }
-    catch (error) {
-      const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
-      sendErrorNotification(
-        'Connection Error',
-        'We ran into an issue connecting to our financial services, so we are unable to load premium info at the moment. Please try again later', 
-        'Unable to connect', 
-        trace
-      );
-      setError(true);
-      setErrorMessage('2: ' + error);
-      return false;
+    else if (theme === Themes.purple) {
+      return '💜';
     }
-  }
-  
-  const getMonthName = (monthNumber: number) => {
-    return new Date(2024, monthNumber - 1, 1).toLocaleString('en-US', { month: 'long' });
+    else if (theme === Themes.pink) {
+      return '💕';
+    }
+    else if (theme === Themes.red) {
+      return '❤️';
+    }
+    else if (theme === Themes.orange) {
+      return '🧡';
+    }
+    else if (theme === Themes.yellow) {
+      return '💛';
+    }
+    else if (theme === Themes.mint) {
+      return '💚';
+    }
+    else {
+      return '💙';
+    }
   }
 
   const setOption = (option: number, purchaseText: string) => {
@@ -128,234 +131,112 @@ const Premium = () => {
       setSelected(option);
       setPurchaseText(purchaseText);
     }
-  
   }
 
-  const getPrices = async () => {
-    try {
-      const offerings = await Purchases.getOfferings();
-      if (offerings) {
-        try {
-          const lifetimePrice = offerings.all['Premium Lifetime'].availablePackages[0].product.priceString;
-          setLifetimeCost(lifetimePrice);
-          const monthlyPrice = offerings.all['Premium Monthly'].availablePackages[0].product.priceString;
-          setMonthlyCost(monthlyPrice);
-          const yearlyPrice = offerings.all['Premium Yearly'].availablePackages[0].product.priceString;
-          setYearlyCost(yearlyPrice);
-        }
-        catch (error) {
-          const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
-          sendErrorNotification(
-            'Premium Error',
-            'We were unable to get a list of all premium offerings unfortunately, please try again later', 
-            'Unable to pull offerings', 
-            trace
-          );
-          setError(true);
-          setErrorMessage('3: ' + error);
-          return false;
-        }
-      }
-    }
-    catch (error) {
-      console.log('error pulling offerings');
-      setError(true);
-      setErrorMessage('4: ' + error);
-      return false;
-    }
+  const setPrices = ({lifetime, monthly, yearly}: {lifetime: string, monthly: string, yearly: string}) => {
+    setLifetimeCost(lifetime);
+    setMonthlyCost(monthly);
+    setYearlyCost(yearly);
   }
 
-  const checkStatus = async () => {
-    try {
-
-      const customerInfo = await Purchases.getCustomerInfo();
-      const activeSubscriptions = customerInfo.activeSubscriptions;
-      const purchases = customerInfo.nonSubscriptionTransactions;
-      const all = customerInfo.allPurchaseDates;
-      // check for lifetime
-      if (purchases.length > 0 && purchases[0].productIdentifier === 'SYNQPremiumLifetime') {
-        setActive(true);
-        setSelected(2);
-      }
-      // check for active recurring sub
-      else if (activeSubscriptions.length > 0) {
-        setActive(true);
-        if (activeSubscriptions[0] === 'SYNQPremiumMonthly') {
-          setSelected(0);
-        }
-        else if (activeSubscriptions[0] === 'SYNQPremiumYearly') {
-          setSelected(1);
-        }
-        else if (activeSubscriptions[0] === 'SYNQPremiumLifetime') {
-          setSelected(2);
-        }
-        try {
-          if (customerInfo && customerInfo.entitlements && customerInfo.entitlements.active) {
-            const entitlement = customerInfo.entitlements.active.Premium;
-            setRenew(entitlement.willRenew);
-            const periodEnd = entitlement.expirationDate; 
-            if (periodEnd) {
-              const periodEndDate = new Date(periodEnd);
-              let dateString = '';
-              const month = getMonthName(periodEndDate.getMonth()+1);
-              const day = periodEndDate.getDate();
-              const year = periodEndDate.getFullYear();
-              dateString = `${month} ${day}, ${year}`;
-              setEnd(dateString);
-            }
-          }
-        }
-        catch (error) {
-          const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
-          sendErrorNotification(
-            'Premium Error',
-            'We ran into an issue trying to get the renewal status of your subscription, please try again later', 
-            'Unable to get renewal status', 
-            trace
-          );
-        }
-      }
-      // check to see if intro offer is available
-      else if (Object.keys(all).length === 0) {
-        setSelected(1);
+  const updateStatus = ({id, renewal, end, trialAvailable}: {id: string, renewal: boolean, end: string, trialAvailable: boolean}) => {
+    if (id === '') {
+      setActive(false);
+      setSelected(1);
+      if (trialAvailable) {
         setMonthlyText("Start 1 month free trial");
         setYearlyText("Start 3 month free trial");
         setPurchaseText("Start 3 month free trial");
       }
-      return true;
     }
-    catch (error) {
-      const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
-      sendErrorNotification(
-        'Premium Error',
-        'We ran into an issue trying to get the renewal status of your subscription, please try again later', 
-        'Unable to get renewal status', 
-        trace
-      );
-      setError(true);
-      setErrorMessage('5: ' + error);
-      return false;
-    }
-  }
-
-  const purchase = async () => {
-    setLoading(true);
-    const offerings = await Purchases.getOfferings();
-    let name = '';
-    if (selected === 0) {
-      name = 'Premium Monthly';
-    }
-    else if (selected === 1) {
-      name = 'Premium Yearly';
-    }
-    else if (selected === 2) {
-      name = 'Premium Lifetime';
-    }
-    if (name) {
-      try {
-        if (offerings.all 
-            && offerings.all[name] 
-            && offerings.all[name].availablePackages
-          ) {
-            try {
-              await Purchases.purchasePackage(offerings.all[name].availablePackages[0]);
-              if (haptic) {
-                Haptics.notificationAsync(
-                  Haptics.NotificationFeedbackType.Success
-                );
-              }
-              setPremium(true);
-              setLoading(false);
-              checkStatus();
-              return true;
-            }
-            catch (error) {
-              const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
-              if (!trace.includes('cancelled')) {
-                sendErrorNotification(
-                  'Premium Error',
-                  'We ran into an issue trying to complete your purchase, please try again later', 
-                  'Unable to complete purchase', 
-                  trace
-                );
-              }
-              setLoading(false);
-              return false;
-            }
-        }
-        else {
-          sendErrorNotification(
-            'Premium Error',
-            'We were unable to locate any premium offerings, please check back later', 
-            'No offerings found', 
-            ''
-          );
-          setLoading(false);
-          setError(true);
-          setErrorMessage('6: ' + 'No offerings available');
-          return false;
-        }
-      }
-      catch (error) {
-        const trace = errorHasMessage(error as Error) ? (error as Error).message : '';
-          sendErrorNotification(
-            'Premium Error',
-            'We ran into an unknown issue when loading the page, please try again later', 
-            'Unknown error', 
-            trace
-          );
-        setLoading(false);
-        setError(true);
-        setErrorMessage('7: ' + error);
-        return false;
+    else {
+      setActive(true);
+      setPremium(true);
+      setRenew(renewal);
+      setEnd(end);
+      switch (id) {
+        case 'SYNQPremiumMonthly':
+          setSelected(0);
+          break;
+        case 'SYNQPremiumYearly':
+          setSelected(1);
+          break;
+        case 'SYNQPremiumLifetime':
+          setSelected(2);
+          break;
       }
     }
   }
 
-  const restorePurchases = async () => {
+  const handlePurchase = async () => {
     setLoading(true);
     try {
-      const restoredData = await Purchases.restorePurchases();
-      const { allPurchasedProductIdentifiers, allExpirationDates } = restoredData;
-
-      const premiumSubscriptions = ['SYNQPremiumLifetime', 'SYNQPremiumMonthly', 'SYNQPremiumYearly'];
-
-      for (const productId of premiumSubscriptions) {
-        if (allPurchasedProductIdentifiers.includes(productId)) {
-          const expirationDateString = allExpirationDates[productId];
-          const expirationDate = expirationDateString ? new Date(expirationDateString) : null;
-          const currentDate = new Date();
-
-          if (!expirationDate || expirationDate > currentDate) {
-            setPremium(true);
-            setActive(true);
-            
-            let message = 'Successfully restored ';
-            if (productId === 'SYNQPremiumMonthly') {
-              setSelected(0);
-              message += 'your monthly subscription.';
-            }
-            else if (productId === 'SYNQPremiumYearly') {
-              setSelected(1);
-              message += 'your yearly subscription.';
-            }
-            else if (productId === 'SYNQPremiumLifetime') {
-              setSelected(2);
-              message += 'your lifetime subscription.';
-            }
-            else {
-              message += 'your purchase.';
-            }
-            if (haptic) {
-              Haptics.notificationAsync(
-                Haptics.NotificationFeedbackType.Success
-              );
-            }
-            Alert.alert('Success', message, [{text: 'Ok'}]);
-            break;
-          }
-        }
+      let id = '';
+      switch (selected) {
+        case 0:
+          id = 'Premium Monthly';
+          break;
+        case 1:
+          id = 'Premium Yearly';
+          break;
+        case 2:
+          id = 'Premium Lifetime';
+          break;
+        default:
+          throw new Error('Invalid purchase option');
       }
+      await PurchaseManager.purchase(id);
+      if (haptic) {
+        Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Success
+        );
+      }
+      setPremium(true);
+      updateStatus(await PurchaseManager.checkStatus());
+      setLoading(false);
+    }
+    catch (error) {
+      const trace = error instanceof Error ? error.message : String(error);
+      if (!trace.includes('cancelled')) {
+        sendErrorNotification(
+          'Premium Error',
+          'We ran into an issue trying to complete your purchase, please try again later', 
+          'Unable to complete purchase', 
+          trace
+        );
+      }
+      setLoading(false);
+    }
+  }
+
+  const handleRestore = async () => {
+    setLoading(true);
+    try {
+      const result = await PurchaseManager.restorePurchases();
+      setPremium(true);
+      setActive(true);
+      let message = 'Successfully restored ';
+      if (result === 'SYNQPremiumMonthly') {
+        setSelected(0);
+        message += 'your monthly subscription.';
+      }
+      else if (result === 'SYNQPremiumYearly') {
+        setSelected(1);
+        message += 'your yearly subscription.';
+      }
+      else if (result === 'SYNQPremiumLifetime') {
+        setSelected(2);
+        message += 'your lifetime subscription.';
+      }
+      else {
+        message += 'your purchase.';
+      }
+      if (haptic) {
+        Haptics.notificationAsync(
+          Haptics.NotificationFeedbackType.Success
+        );
+      }
+      Alert.alert('Success', message, [{text: 'Ok'}]);
       setLoading(false);
     }
     catch (error) {
@@ -384,25 +265,17 @@ const Premium = () => {
     }
     else if (error) {
       return (
-        <>
-          <Text 
-            style={{
-              color: Colors.text,
-              fontWeight: 'bold',
-              marginBottom: 10,
-            }}
-          >
-            An error occured, please try again later
-          </Text>
-        </>
-      )
+        <Text style={Local.messageText}>
+          An error occured, please try again later
+        </Text>
+      );
     }
     else if (active) {
       let first = '';
       let second = '';
       if (selected === 2) {
         first = 'Your subscription will never expire';
-        second = 'Thank you for your support 💙';
+        second = `Thank you for your support ${getHeart()}`;
       }
       else {
         first = `Your subscription will ${renew ? 'renew' : 'expire'} ${end}`;
@@ -410,20 +283,10 @@ const Premium = () => {
       }
       return (
         <>
-          <Text
-            style={{
-              color: Colors.text,
-              fontWeight: 'bold',
-              marginBottom: 10,
-            }}
-          >
+          <Text style={Local.messageText}>
             {first}
           </Text>
-          <Text 
-            style={{
-              color: Colors.text,
-            }}
-          >
+          <Text style={Local.text}>
             {second}
           </Text>
         </>
@@ -432,23 +295,18 @@ const Premium = () => {
     else {
       return (
         <>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingBottom: 10
-            }}
-          >
+          <View style={Local.linkContainer}>
             <TouchableOpacity
               activeOpacity={.9}
               onPress={() => openURL('https://directedbyshawn.com/synq-terms-conditions')}
             >
-              <Text style={{color: 'white'}}>Terms of Service · </Text>
+              <Text style={Local.text}>Terms of Service · </Text>
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={.9}
               onPress={() => openURL('https://directedbyshawn.com/synq-privacy-policy')}
             >
-              <Text style={{color: 'white'}}>Privacy Policy</Text>
+              <Text style={Local.text}>Privacy Policy</Text>
             </TouchableOpacity>
           </View>
           <CustomButton 
@@ -457,19 +315,13 @@ const Premium = () => {
             disabledColor={darkenColor(theme, 40, 50)}
             textColor={'black'}
             buttonWidth={240}
-            handlePress={async () => await purchase()}
+            handlePress={handlePurchase}
           />
           <TouchableOpacity 
             activeOpacity={.9}
-            onPress={restorePurchases}
+            onPress={handleRestore}
           >
-            <Text 
-              style={{
-                marginTop: 10,
-                color: theme,
-                fontSize: 16,
-              }}
-            >
+            <Text style={[Styles.p, Local.restore, {color: theme}]}>
               Restore
             </Text>
           </TouchableOpacity>
@@ -479,98 +331,33 @@ const Premium = () => {
   }
 
   return (
-    <View style={[Styles.body, {
-      backgroundColor: Colors.background,
-      }]}>
+    <View style={[Styles.body, Local.wrapper]}>
       <Bar />
-      <View
-        style={{
-          height: '100%',
-          width: '100%',
-          position: 'absolute',
-          top: 0,
-          zIndex: -1,
-        }}
-      >
-        <View
-          style={{
-            height: '40%',
-            width: '100%',
-          }}
-        >
+      <View style={Local.container}>
+        <View style={Local.imageContainer}>
           <Image 
             source={require('@/assets/images/premium-bg-downscaled.jpg')}
-            style={{
-              height: '100%',
-              width: '100%'
-            }}
-            />
+            style={Local.coverImage}
+          />
           <LinearGradient
-            style={{
-              position: 'absolute', 
-              top: 0,
-              width: '100%', 
-              height: '100%',
-            }}
+            style={Local.coverGradient}
             colors={['rgba(16, 16, 16, 0)', 'rgba(16, 16, 16, 1)']}
             pointerEvents={'none'}
           />
         </View>
-        <View
-          style={{
-            marginTop: 10,
-            flexGrow: 1,
-            width: '100%',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-            position: 'relative',
-          }}
-        >
+        <View style={Local.contentContainer}>
           <Image 
             source={logo}
-            style={{
-              width: 50,
-              height: 50,
-              position: 'absolute',
-              top: -80
-            }}
+            style={Local.logo}
           />
-          <Text
-            style={{
-              color: 'white',
-              fontSize: 28,
-              fontWeight: 'bold',
-              marginBottom: 20,
-            }}
-          >
+          <Text style={[Styles.h2, Local.premiumText]}>
             Premium
           </Text>
-          <Text
-            style={{
-              color: 'white',
-              fontSize: 20,
-              fontWeight: 'bold',
-              width: '80%',
-              textAlign: 'center',
-            }}
-          >
+          <Text style={[Styles.h4, Local.text]}>
             Ad free. No limits.
           </Text>
-          <View
-            style={{
-              alignItems: 'center',
-            }}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                width: '90%',
-                justifyContent: 'center',
-                gap: 10,
-                marginTop: 20,
-                marginBottom: 20,
-              }}
-            >
+          <View style={Local.bottomContainer}>
+            <View style={Local.optionsContainer}>
               <PremiumOption 
                 tier={'Monthly'}
                 price={monthlyCost}
@@ -596,16 +383,89 @@ const Premium = () => {
             {getBottom()}
           </View>
         </View>
-        <Notifications 
-          customStyles={{
-            position: 'absolute',
-            bottom: 30,
-          }}
-        />
+        <Notifications customStyles={Local.notifications} />
       </View> 
     </View>
   );
 
 }
+
+const Local = StyleSheet.create({
+  wrapper: {
+    backgroundColor: Colors.background,
+    ...Styles.roundedModal,
+  },
+  container: {
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
+    top: 0,
+    zIndex: -1,
+  },
+  imageContainer: {
+    height: '40%',
+    width: '100%',
+    ...Styles.roundedModal,
+  },
+  coverImage: {
+    height: '100%',
+    width: '100%',
+    ...Styles.roundedModal,
+  },
+  coverGradient: {
+    position: 'absolute', 
+    top: 0,
+    width: '100%', 
+    height: '100%',
+  },
+  contentContainer: {
+    marginTop: 10,
+    flexGrow: 1,
+    width: '100%',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  logo: {
+    width: 50,
+    height: 50,
+    position: 'absolute',
+    top: -80
+  },
+  premiumText: {
+    color: Colors.text,
+    marginBottom: 15,
+  },
+  text: {
+    color: Colors.text,
+  },
+  bottomContainer: {
+    alignItems: 'center',
+  },
+  optionsContainer: {
+    flexDirection: 'row',
+    width: '90%',
+    justifyContent: 'center',
+    gap: 10,
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  notifications: {
+    position: 'absolute',
+    bottom: 30,
+  },
+  messageText: {
+    color: Colors.text,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  linkContainer: {
+    flexDirection: 'row',
+    paddingBottom: 10
+  },
+  restore: {
+    marginTop: 10,
+  }
+});
 
 export default Premium;

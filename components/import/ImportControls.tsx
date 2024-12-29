@@ -1,149 +1,179 @@
-import { View, Image, TouchableOpacity } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import CustomButton from '@/components/CustomButton';
-import { exportSongs} from '@/lib/SongManager';
-import { darkenColor } from '@/lib/Color';
+import { deleteFromLibrary, exportSongs, removeSongs } from '@/lib/controllers/SongController';
+import { darkenColor } from '@/lib/controllers/ColorController';
 import Notifications from '@/components/notifications/Notifications';
+import { useThemeContext } from '@/context/ThemeProvider';
+import { Track } from 'react-native-track-player';
+import { PageType } from '@/constants/Types';
+import TrackPlayer from 'react-native-track-player';
+import { removeFromAllPlaylists } from '@/lib/controllers/PlaylistController';
+import { router } from 'expo-router';
 
-const ImportControls = ({reset}: {reset?: () => void}) => {
+const ImportControls = (
+  {altTitle, mainTitle, altHandle, mainHandle, altDisabled, mainDisabled}: {
+  altTitle?: string,
+  mainTitle?: string,
+  altHandle?: () => void,
+  mainHandle?: () => void,
+  altDisabled?: boolean,
+  mainDisabled?: boolean,
+}) => {
 
   const {
 
-    results, loading, transferSize,
-    exportDisabled, homeState, selectEnabled,
-    selectedSongs, premium, theme,
+    results, selectEnabled,
+    selectedSongs, editSong,
+    numModified,
 
-    setHomeState, setResults, setExportDisabled,
-    setLoading, setZipping, setImporting, 
-    setShowDelete, setEditSong, setShowEdit, 
-    setTransferSize, setShowOverlay
+    setEditSong, 
+    setResults, setNumModified,
+    setExportDisabled, setHomeState,
+    setSelectEnabled,
 
   } = useGlobalContext();
 
-  return (
-    <View
-      style={{
-        position: 'absolute',
-        bottom: 10,
-        width: '100%',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-      }}
-    >
-      <Notifications />
-      <View
-        style={{
-          display: selectEnabled && selectedSongs.length > 0 ? 'flex' : 'none',
-          flexDirection: 'row',
-          gap: 10
+  const { theme } = useThemeContext();
+
+  const Local = StyleSheet.create({
+    container: {
+      position: 'absolute',
+      bottom: 10,
+      width: '100%',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+    },
+    batchButtonContainer: {
+      display: selectEnabled && selectedSongs.length > 0 ? 'flex' : 'none',
+      flexDirection: 'row',
+      gap: 10
+    },
+    batchButtonWrapper: {
+      backgroundColor: Colors.song,
+      padding: 15
+    },
+    batchButtonIcon: {
+      width: 20,
+      height: 20,
+      tintColor: Colors.text
+    },
+    mainButtonContainer: {
+      display: selectEnabled ? 'none' : 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 10,
+      // padding: 5,
+      width: '90%',
+    },
+    dropdownContainer: {
+      width: '90%',
+      marginBottom: 10,
+    }
+  });
+
+  const handleEdit = () => {
+    setEditSong({});
+    router.push(`/song/edit/${editSong.id}`);
+  }
+
+  const executeDelete = async () => {
+    try {
+      // handle bulk delete
+      if (selectedSongs.length > 0) {
+        const newResults = removeSongs(results, selectedSongs);
+        if (newResults.length <= 0) {
+          setExportDisabled(true);
+          setHomeState(0);
+        }
+        setResults(newResults);
+      }
+      // remove from library
+      else if (editSong.pageType === PageType.LIBRARY) {
+        deleteFromLibrary(editSong.id);
+        removeFromAllPlaylists(editSong.id);
+        // remove from queue and next up if applicable
+        const queue = await TrackPlayer.getQueue();
+        const indiciesToRemove = queue
+          .map((track: Track, index: number) => track.id === editSong.id ? index : -1)
+          .filter(index => index !== -1);
+        await TrackPlayer.remove(indiciesToRemove);
+        setNumModified(numModified + 1);
+      }
+      // remove from import
+      else if (editSong.pageType === PageType.IMPORT) {
+        const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id]
+        const newResults = removeSongs(results, ids);
+        if (newResults.length <= 0) {
+          setExportDisabled(true);
+        }
+        if (newResults.length === 0) {
+          setHomeState(0);
+        }
+        setResults(newResults);
+      }
+    }
+    catch (error) {
+      console.log('error deleting song: ', error);
+    }
+    setSelectEnabled(false);
+  }
+
+  const handleDelete = () => {
+    Alert.alert(
+      `${selectedSongs.length > 1 ? 'Delete songs' : 'Delete song'}`,
+      `Are you sure you want to delete ${selectedSongs.length > 1 ? 'these songs' : 'this song'}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => {
+          executeDelete();
         }}
-      >
+      ]
+    );
+  }
+
+  return (
+    <View style={Local.container}>
+      <Notifications />
+      <View style={Local.batchButtonContainer}>
         <TouchableOpacity
-          style={[Styles.roundedContainer, Styles.backgroundBlendShadow, {
-            backgroundColor: Colors.song,
-            padding: 15
-          }]}
-          onPress={() => {
-            setEditSong({
-              "name": "",
-              "id": "",
-              "data": "",
-              "info": ""
-            });
-            setShowOverlay(true);
-            setShowEdit(true);
-          }}
+          style={[Styles.roundedContainer, Styles.backgroundBlendShadow, Local.batchButtonWrapper]}
+          onPress={handleEdit}
         >
           <Image 
             source={require('@/assets/icons/edit.png')}
-            style={{
-              width: 20,
-              height: 20,
-            }}
+            style={Local.batchButtonIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity
-          style={[Styles.roundedContainer, Styles.backgroundBlendShadow, {
-            backgroundColor: Colors.song,
-            padding: 15
-          }]}
-          onPress={() => {
-            setShowOverlay(true);
-            setShowDelete(true);
-          }}
+          style={[Styles.roundedContainer, Styles.backgroundBlendShadow, Local.batchButtonWrapper]}
+          onPress={handleDelete}
         >
           <Image 
             source={require('@/assets/icons/delete.png')}
-            style={{
-              width: 20,
-              height: 20,
-            }}
+            style={Local.batchButtonIcon}
           />
         </TouchableOpacity>
       </View>
-      <View
-        style={{
-          display: selectEnabled ? 'none' : 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: 10,
-          padding: 5,
-        }}
-      >
+      <View style={Local.mainButtonContainer}>
         <CustomButton 
-          title='Cancel'
+          title={altTitle ?? 'Cancel'}
           background={Colors.altButton}
-          handlePress={() => {
-            setLoading(false);
-            setZipping(false);
-            setImporting(false);
-            setTransferSize(0);
-            setHomeState(0);
-            setResults([]);
-            setExportDisabled(true);
-            if (reset) {
-              reset();
-            }
-          }}
-          disabled={(homeState == 1 && transferSize > 0) || (homeState == 2 && loading)}
+          handlePress={altHandle}
+          disabled={altDisabled}
           disabledColor={Colors.altDisabled}
+          customStyles={{flex: 1}}
         />
         <CustomButton 
-          title='Export'
+          title={mainTitle ?? 'Next'}
           background={theme}
-          handlePress={() => {
-            setExportDisabled(true);
-            setLoading(true);
-            setZipping(true);
-            const songs = premium ? results : [results[0]]
-            setTimeout(() => {
-              exportSongs(songs).then(() => {
-                setLoading(false);
-                setZipping(false);
-                setHomeState(3);
-                setTransferSize(0);
-                setResults([]);
-                if (reset) {
-                  reset();
-                }
-              })
-              .catch((error) => {
-                setLoading(false);
-                setZipping(false);
-                setHomeState(4);
-                setTransferSize(0);
-                setResults([]);
-                if (reset) {
-                  reset();
-                }
-              })
-            }, 1000)
-          }}
-          disabled={exportDisabled}
+          handlePress={mainHandle}
+          disabled={mainDisabled}
           disabledColor={darkenColor(theme, 40, 50)}
+          customStyles={{flex: 1}}
         />
       </View>
     </View>

@@ -1,4 +1,4 @@
-import { Text, View, Dimensions, Image, Modal, } from "react-native";
+import { Text, View, Dimensions, Image, Modal, StyleSheet } from "react-native";
 import CustomModal from "./CustomModal";
 import VerticalScrollView from "../VerticalScrollView";
 import CustomButton from "../CustomButton";
@@ -7,12 +7,13 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import { Colors } from "@/constants/Colors";
 import { Styles } from "@/constants/Styles";
 import InfoContainer from "./InfoContainer";
+import { useThemeContext } from "@/context/ThemeProvider";
 
 const NotificationModal = () => {
 
   const {
       
-      showNotificationModal, theme,
+      showNotificationModal,
       notificationType, notificationMessage,
       notificationTitle, notificationTrace,
       
@@ -20,61 +21,65 @@ const NotificationModal = () => {
     
   } = useGlobalContext();
 
+  const { theme } = useThemeContext();
+
+  const Local = StyleSheet.create({
+    container: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '95%',
+      marginTop: 20,
+      marginBottom: 20,
+    },
+    contentContainer: {
+      ...Styles.roundedContainer,
+      width: '95%',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      marginTop: 20,
+      marginBottom: 20,
+    },
+    message: {
+      color: Colors.text,
+      fontSize: 18,
+      textAlign: 'center',
+      marginBottom: 20,
+      width: '90%',
+    },
+    traceWrapper: {
+      width: '90%',
+    },
+    button: {
+      marginTop: 10,
+    }
+  });
+
   return (
     <CustomModal
       show={showNotificationModal}
       width={'95%'}
     >
-      <View
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '95%',
-          marginTop: 20,
-          marginBottom: 20,
-        }}
-      >
+      <View style={Local.container}>
         <ModalTitle title={notificationTitle}/>
         <VerticalScrollView
           backgroundColor={Colors.popup}
           maxHeight={Dimensions.get('screen').height * 0.3}
           minHeight={Dimensions.get('screen').height * 0.5}
         >
-          <View 
-            style={[Styles.roundedContainer, {
-              width: '95%',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              marginTop: 20,
-              marginBottom: 20,
-              // backgroundColor: Colors.background,
-            }]}
-          >
-            <Text
-              style={{
-                color: Colors.text,
-                fontSize: 18,
-                textAlign: 'center',
-                marginBottom: 20,
-                width: '90%',
-              }}
-            >
+          <View style={Local.contentContainer}>
+            <Text style={Local.message}>
               {notificationMessage}
             </Text>
             {
 
-              notificationTrace !== null && notificationTrace.length > 0 ? 
+              notificationTrace !== null && notificationTrace !== undefined && notificationTrace.length > 0 ? 
 
-              <View
-                style={{
-                  width: '90%',
-                }}
-              >
+              <View style={Local.traceWrapper}>
                 <InfoContainer
                   title={'More Info'}
                   contentHeight={3000}
                 >
-                  <Text style={Styles.infoStepDescription}>{notificationTrace}</Text>
+                  <Text style={Styles.description}>{notificationTrace}</Text>
                 </InfoContainer>
               </View>
 
@@ -91,9 +96,7 @@ const NotificationModal = () => {
             setShowOverlay(false);
             setShowNotificationModal(false);
           }}
-          customStyles={{
-            marginTop: 10
-          }}
+          customStyles={Local.button}
         />
       </View>
     </CustomModal>

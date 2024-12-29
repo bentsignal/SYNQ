@@ -1,4 +1,4 @@
-import { View, Text, Image, Linking } from 'react-native';
+import { View, Text, Image, Linking, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import LinearGradient from 'react-native-linear-gradient';
@@ -31,102 +31,94 @@ const Tracking = () => {
       router.replace("/(tabs)");
     }
   }
+
+  const Local = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      backgroundColor: Colors.background
+    },
+    description: {
+      fontSize: 16,
+      color: Colors.infoText,
+      marginBottom: 20,
+      width: '100%',
+    },
+    imageContainer: {
+      width: '100%',
+      height: '30%',
+      position: 'relative',
+    },
+    coverImage: {
+      width: '100%',
+      height: '100%',
+    },
+    gradient: {
+      position: 'absolute', 
+      bottom: 0,
+      width: '100%', 
+      height: '40%',
+    },
+    infoContainer: {
+      width: '90%',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      flex: 1,
+      marginTop: 10,
+    },
+    title: {
+      color: Colors.text,
+      width: '100%',
+      marginBottom: 10,
+    },
+    buttonWrapper: {
+      gap: 10,
+      flex: 1,
+      width: '100%',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      marginBottom: insets.bottom + 10,
+    }
+  });
   
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        backgroundColor: Colors.background
-      }}
-    >
-      <View
-        style={{
-          width: '100%',
-          height: '30%',
-          position: 'relative',
-        }}
-      >
+    <View style={Local.container}>
+      <View style={Local.imageContainer}>
         <Image 
           source={require('../assets/images/tracking-bg-downscaled.jpg')}
-          style={{
-            width: '100%',
-            height: '100%',
-          }}
+          style={Local.coverImage}
+          resizeMode='cover'
         />
         <LinearGradient
-          style={{
-            position: 'absolute', 
-            top: 0,
-            width: '100%', 
-            height: '100%',
-          }}
+          style={Local.gradient}
           colors={['rgba(16, 16, 16, 0)', 'rgba(16, 16, 16, 1)']}
           pointerEvents={'none'}
         />
       </View>
-      <View
-        style={{
-          width: '90%',
-          alignItems: 'center',
-          justifyContent: 'flex-start',
-          flex: 1,
-          marginTop: 10,
-        }}
-      >
+      <View style={Local.infoContainer}>
         <Text
-          style={{
-            color: 'white',
-            fontSize: 24,
-            fontWeight: 'bold',
-            width: '100%',
-            marginBottom: 10,
-          }}
+          style={[Styles.h3, Local.title]}
         >
           Allow <Text style={{color: Colors.main}}>SYNQ</Text> to 
           use your app and website activity?
         </Text>
-        <Text 
-          style={[Styles.infoStepDescription, {
-            width: '100%'
-          }]}
-        >
-          While we do have to serve ads, we don't want to be too annoying. To 
+        <Text style={Local.description}>
+          While we do have to serve ads, we don't want to be annoying. To 
           provide a better experience, we can use activity provided by other 
           apps and websites on your device to provide a more personalized experience.
         </Text>
-        <Text 
-          style={[Styles.infoStepDescription, {
-            width: '100%'
-          }]}
-        >
+        <Text style={Local.description}>
           <Text style={{color: Colors.main}} onPress={learn}>Learn more</Text> about how
            we limit our use of your activity if you choose to decline this setting. 
         </Text>
-        <View
-          style={{
-            gap: 10,
-            flex: 1,
-            width: '100%',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            marginBottom: insets.bottom + 10,
-          }}
-        >
+        <View style={Local.buttonWrapper}>
           <CustomButton
-            title={'Allow'}
+            title={'Continue'}
             background={Colors.main}
             handlePress={handleRequest}
             buttonWidth={'100%'}
           />
-          <CustomButton
-            title={"Don't Allow"}
-            background={Colors.altButton}
-            handlePress={handleRequest}
-            buttonWidth={'100%'}
-          />
-          
         </View>
       </View>
     </View>

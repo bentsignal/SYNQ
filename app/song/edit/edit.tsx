@@ -16,6 +16,7 @@ import { useThemeContext } from "@/context/ThemeProvider";
 import { newCover } from "@/lib/controllers/SongController";
 import * as Haptics from 'expo-haptics';
 import ModalStyles from "@/components/modals/Styles";
+import ArtistItem from "@/components/lists/artist/ArtistItem";
 
 const MemoTextInput = memo(TextInput);
 
@@ -143,8 +144,24 @@ const EditSong = ({id}: {id: string}) => {
             />
           </>
         }
-        <Text style={Styles.textboxLabel}>Artist</Text>
-        <MemoTextInput
+        <Text style={Styles.textboxLabel}>Artists</Text>
+        <CustomButton 
+          title={'Manage Artists'}
+          handlePress={() => router.push('/artist/add')}
+          buttonWidth={'90%'}
+          customStyles={{
+            marginVertical: 10,
+          }}
+        />
+        <View style={Local.artistWrapper}>
+          {[{id: 1, name: 'Artist 1'}, {id: 2, name: 'Artist 2'}, {id: 3, name: 'Artist 3'}].map((artist, index) => (
+            <ArtistItem 
+              artist={artist}
+              key={index}
+            />
+          ))}
+        </View>
+        {/* <MemoTextInput
           style={Local.textBox}
           autoCorrect={true}
           editable
@@ -153,7 +170,7 @@ const EditSong = ({id}: {id: string}) => {
           placeholderTextColor={Colors.altDisabled}
           value={artist}
           onChangeText={text => setArtist(text)}
-        />
+        /> */}
         <Text style={Styles.textboxLabel}>Album</Text>
         <MemoTextInput
           style={Local.textBox}
@@ -223,7 +240,15 @@ const Local = StyleSheet.create({
   notifications: {
     position: 'absolute',
     bottom: 100,
-  }
+  },
+  artistWrapper: {
+    width: '100%',
+    marginVertical: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
 });
 
 export default EditSong;

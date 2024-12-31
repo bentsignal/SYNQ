@@ -121,6 +121,7 @@ const ArtistItem = ({artist}: ArtistProps) => {
     <TouchableOpacity 
       style={Local.container}
       activeOpacity={0.8}
+      disabled={![PageType.LIBRARY].includes(artist.pageType)}
       onPress={async () => {
         if (artist.pageType === PageType.ADD) {
           await handleSelect();

@@ -6,6 +6,7 @@ import { useThemeContext } from '@/context/ThemeProvider';
 import { getPlaylistCover } from '@/lib/controllers/PlaylistController';
 import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/station/playlist/Events';
 import playlistBus from '@/station/playlist';
+import { getArtistCover } from '@/lib/controllers/ArtistController';
 
 const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
 
@@ -18,6 +19,12 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
     try {
       if (type === PageType.PLAYLIST) {
         const data = await getPlaylistCover(parseInt(id), true);
+        if (data) {
+          setSrc(`data:image/jpeg;base64,${data}`);
+        }
+      }
+      else if (type === PageType.ARTIST) {
+        const data = await getArtistCover(parseInt(id), true);
         if (data) {
           setSrc(`data:image/jpeg;base64,${data}`);
         }
@@ -55,12 +62,12 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
       aspectRatio: aspectRatio,
       justifyContent: 'center',
       alignItems: 'center',
-      borderRadius: 12,
+      borderRadius: type === PageType.ARTIST ? 1000 : 12,
     },
     artwork: {
       aspectRatio: aspectRatio,
       width: Dimensions.get('screen').width * coverPercent, 
-      borderRadius: 10,
+      borderRadius: type === PageType.ARTIST ? 1000 : 12,
     },
     empty: {
       width: 60,
@@ -80,6 +87,9 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
     }
     else if (type === PageType.ALBUM) {
       return require('@/assets/icons/cd-drive.png');
+    }
+    else if (type === PageType.ARTIST) {
+      return require('@/assets/icons/user.png');
     }
     else {
       return require('@/assets/icons/music.png');

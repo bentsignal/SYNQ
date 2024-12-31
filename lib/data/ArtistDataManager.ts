@@ -60,6 +60,19 @@ class ArtistDataManager extends DataManager {
     await ArtistDataManager.db?.runAsync(`UPDATE artists SET name = ? WHERE id = ?;`, [name, artistId]);
   }
 
+  public async addArtistToSong(artistId: number, songId: number): Promise<void> {
+    await ArtistDataManager.db?.runAsync(`INSERT INTO artistSongs (artistId, songId) VALUES (?, ?);`, [artistId, songId]);
+  }
+
+  public async removeArtistFromSong(artistId: number, songId: number): Promise<void> {
+    await ArtistDataManager.db?.runAsync(`DELETE FROM artistSongs WHERE artistId = ? AND songId = ?;`, [artistId, songId]);
+  }
+
+  public async isArtistOnSong(artistId: number, songId: number): Promise<boolean> {
+    const result = await ArtistDataManager.db?.getFirstAsync(`SELECT * FROM artistSongs WHERE artistId = ? AND songId = ?;`, [artistId, songId]);
+    return result ? true : false;
+  }
+
 }
 
 export default ArtistDataManager;

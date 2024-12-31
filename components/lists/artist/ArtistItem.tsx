@@ -17,6 +17,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistType } from "@/constants/Types";
 import { ArtistBusEvent, ArtistNameModifiedEvent } from "@/station/artist/Events";
 import artistBus from "@/station/artist";
+import { addArtistToSong, removeArtistFromSong, isArtistOnSong } from "@/lib/controllers/ArtistController";
 
 type ArtistProps = {
   artist: ArtistType,
@@ -33,25 +34,24 @@ const ArtistItem = ({artist}: ArtistProps) => {
   const [selected, setSelected] = useState(false);
   const [name, setName] = useState(artist.name);
 
-  /*
-
-  const playlistChangesMade = async (add: boolean) => {
+  const selectionChanged = async (add: boolean) => {
     try {
       if (add) {
-        await addToPlaylist(playlist.id, editSong.id);
-        playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, {
-          id: playlist.id,
-          songCount: songCount + 1,
-        });
-        playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
+        await addArtistToSong(artist.id, editSong.id);
+        // await addToPlaylist(playlist.id, editSong.id);
+        // playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, {
+        //   id: playlist.id,
+        //   songCount: songCount + 1,
+        // });
+        // playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
       }
       else {
-        await removeFromPlaylist(playlist.id, editSong.id);
-        playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, {
-          id: playlist.id,
-          songCount: songCount - 1,
-        });
-        playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
+        await removeArtistFromSong(artist.id, editSong.id);
+        // playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, {
+        //   id: playlist.id,
+        //   songCount: songCount - 1,
+        // });
+        // playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
       }
     }
     catch (error) {
@@ -59,18 +59,10 @@ const ArtistItem = ({artist}: ArtistProps) => {
     }
   }
 
-  */
-
-  /*
-
-  const updateSongCount = (data: PlaylistSongCountModifiedEvent) => {
-    if (playlist.id === data.id) {
-      setSongCount(data.songCount);
-      playlist.songCount = data.songCount;
-    }
+  const checkArtistOnSong = async () => {
+    const result = await isArtistOnSong(artist.id, editSong.id);
+    setSelected(result);
   }
-
-  */
 
   const updateName = (data: ArtistNameModifiedEvent) => {
     if (artist.id === data.id) {
@@ -79,7 +71,6 @@ const ArtistItem = ({artist}: ArtistProps) => {
     }
   }
 
-
   useEffect(() => {
     artistBus.on(ArtistBusEvent.ARTIST_NAME_MODIFIED, updateName);
     return () => {
@@ -87,22 +78,11 @@ const ArtistItem = ({artist}: ArtistProps) => {
     }
   }, []);
 
-
-  /*
-
   useEffect(() => {
-    if (editSong.id && playlist.pageType === PageType.ADD) {
-      isSongInPlaylist(playlist.id, editSong.id)
-        .then((result) => {
-          setSelected(result);
-        })
-        .catch((error) => {
-          console.log('error checking if song is in playlist:', error);
-        });
+    if (editSong.id && artist.pageType === PageType.ADD) {
+      checkArtistOnSong();
     }
   }, [editSong]);
-
-  */
 
   const handleMore = async () => {
     if (haptic) {
@@ -114,7 +94,7 @@ const ArtistItem = ({artist}: ArtistProps) => {
 
   const handleSelect = async () => {
     setSelected(!selected);
-    // await playlistChangesMade(!selected);
+    await selectionChanged(!selected);
   }
 
   return (

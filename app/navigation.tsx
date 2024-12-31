@@ -116,6 +116,12 @@ const Navigation = () => {
         }}
       />
       <Stack.Screen
+        name="artist/[id]"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="artist/create"
         options={{
           headerShown: false,

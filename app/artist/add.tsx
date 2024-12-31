@@ -5,13 +5,13 @@ import { Styles } from "@/constants/Styles"
 import Bar from "@/components/modals/Bar"
 import CustomButton from "@/components/CustomButton"
 import { router } from "expo-router"
-import { PageType, PlaylistType } from "@/constants/Types"
-import PlaylistList from "@/components/lists/playlist"
+import { PageType, ArtistType } from "@/constants/Types"
+import ArtistList from "@/components/lists/artist"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useThemeContext } from "@/context/ThemeProvider"
-import { getPlaylists } from "@/lib/controllers/PlaylistController"
-import { PlaylistBusEvent } from "@/station/playlist/Events"
-import playlistBus from "@/station/playlist/Bus"
+import { getArtists } from "@/lib/controllers/ArtistController"
+import { ArtistBusEvent } from "@/station/artist/Events"
+import artistBus from "@/station/artist/Bus"
 import ModalStyles from "@/components/modals/Styles"
 
 const AddArtist = () => {
@@ -20,12 +20,12 @@ const AddArtist = () => {
 
   const insets = useSafeAreaInsets();
 
-  const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
+  const [artists, setArtists] = useState<ArtistType[]>([]);
 
-  const refreshPlaylists = async () => {
+  const refreshArtists = async () => {
     try {
-      const results = await getPlaylists();
-      setPlaylists(results.filter((playlist) => playlist.id !== 1));
+      const results = await getArtists();
+      setArtists(results);
     }
     catch (error) {
       console.log('error refreshing playlists:', error);
@@ -33,30 +33,30 @@ const AddArtist = () => {
   }
 
   useEffect(() => {
-    refreshPlaylists();
-    playlistBus.on(PlaylistBusEvent.PLAYLIST_CREATED, refreshPlaylists);
+    refreshArtists();
+    artistBus.on(ArtistBusEvent.ARTIST_CREATED, refreshArtists);
     return () => {
-      playlistBus.off(PlaylistBusEvent.PLAYLIST_CREATED, refreshPlaylists);
+      artistBus.off(ArtistBusEvent.ARTIST_CREATED, refreshArtists);
     }
   }, []);
 
   return (
     <View style={Local.wrapper}>
       <Bar />
-      <Text style={ModalStyles.header}>Add to Playlist</Text>
+      <Text style={ModalStyles.header}>Manage Artists</Text>
       <CustomButton
         title={'New'}
         background={theme}
         handlePress={() => {
-          router.push('/playlist/create');
+          router.push('/artist/create');
         }}
         customStyles={{
           marginBottom: 20,
         }}  
       />
       <View style={Styles.divider} />
-      <PlaylistList 
-        playlists={playlists}
+      <ArtistList 
+        artists={artists}
         pageType={PageType.ADD}
         gradientStart={'rgba(24, 24, 24, 1)'}
         gradientEnd={'rgba(24, 24, 24, 0)'}

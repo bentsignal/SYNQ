@@ -144,7 +144,6 @@ const EditSong = ({id}: {id: string}) => {
             />
           </>
         }
-        <Text style={Styles.textboxLabel}>Artists</Text>
         <CustomButton 
           title={'Manage Artists'}
           handlePress={() => router.push('/artist/add')}
@@ -153,34 +152,21 @@ const EditSong = ({id}: {id: string}) => {
             marginVertical: 10,
           }}
         />
-        <View style={Local.artistWrapper}>
-          {[{id: 1, name: 'Artist 1'}, {id: 2, name: 'Artist 2'}, {id: 3, name: 'Artist 3'}].map((artist, index) => (
-            <ArtistItem 
-              artist={artist}
-              key={index}
-            />
-          ))}
-        </View>
-        {/* <MemoTextInput
-          style={Local.textBox}
-          autoCorrect={true}
-          editable
-          numberOfLines={1}
-          placeholder={'Enter song artist...'}
-          placeholderTextColor={Colors.altDisabled}
-          value={artist}
-          onChangeText={text => setArtist(text)}
-        /> */}
-        <Text style={Styles.textboxLabel}>Album</Text>
-        <MemoTextInput
-          style={Local.textBox}
-          autoCorrect={true}
-          editable
-          numberOfLines={1}
-          placeholder={'Enter song album...'}
-          placeholderTextColor={Colors.altDisabled}
-          value={album}
-          onChangeText={text => setAlbum(text)}
+        <CustomButton 
+          title={'Manage Albums'}
+          handlePress={() => router.push('/album/add')}
+          buttonWidth={'90%'}
+          customStyles={{
+            marginVertical: 10,
+          }}
+        />
+        <CustomButton 
+          title={'Manage Playlists'}
+          handlePress={() => router.push('/playlist/add')}
+          buttonWidth={'90%'}
+          customStyles={{
+            marginVertical: 10,
+          }}
         />
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />
@@ -213,6 +199,7 @@ const Local = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingBottom: 80,
   },
   coverWrapper: {
     width: '90%',

@@ -85,3 +85,15 @@ export const updateArtist = async (artistId: number, name: string, image: string
     });
   }
 }
+
+export const addArtistToSong = async (artistId: number, songId: number) => {
+  await ArtistDataManager.getInstance().addArtistToSong(artistId, songId);
+}
+
+export const removeArtistFromSong = async (artistId: number, songId: number) => {
+  await ArtistDataManager.getInstance().removeArtistFromSong(artistId, songId);
+}
+
+export const isArtistOnSong = async (artistId: number, songId: number): Promise<boolean> => {
+  return await ArtistDataManager.getInstance().isArtistOnSong(artistId, songId);
+}

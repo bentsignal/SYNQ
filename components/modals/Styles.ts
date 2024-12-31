@@ -12,7 +12,30 @@ const ModalStyles = StyleSheet.create({
     color: Colors.text,
     marginTop: 10,
     marginBottom: 15,
-  }
+  },
+  fieldWrapper: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 20,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  emptyListFiller: {
+    ...Styles.h5,
+    color: Colors.infoText,
+    width: '90%',
+    textAlign: 'left',
+  },
+  fieldLabel: {
+    ...Styles.textboxLabel,
+    fontSize: 18,
+    color: Colors.text,
+  },
+  fieldValue: {
+    ...Styles.h5,
+    color: Colors.infoText,
+  },
 });
 
 export default ModalStyles;

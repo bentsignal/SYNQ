@@ -97,3 +97,7 @@ export const removeArtistFromSong = async (artistId: number, songId: number) => 
 export const isArtistOnSong = async (artistId: number, songId: number): Promise<boolean> => {
   return await ArtistDataManager.getInstance().isArtistOnSong(artistId, songId);
 }
+
+export const getArtistsFromSong = async (songId: number): Promise<ArtistType[]> => {
+  return await ArtistDataManager.getInstance().getArtistsFromSong(songId);
+}

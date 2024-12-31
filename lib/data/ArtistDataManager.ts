@@ -73,6 +73,11 @@ class ArtistDataManager extends DataManager {
     return result ? true : false;
   }
 
+  public async getArtistsFromSong(songId: number): Promise<ArtistType[]> {
+    const result = await ArtistDataManager.db?.getAllAsync(`SELECT * FROM artists WHERE id IN (SELECT artistId FROM artistSongs WHERE songId = ?);`, [songId]);
+    return result ? result as ArtistType[] : [];
+  }
+
 }
 
 export default ArtistDataManager;

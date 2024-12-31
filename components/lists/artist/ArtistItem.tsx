@@ -15,7 +15,7 @@ import { addToPlaylist, removeFromPlaylist, isSongInPlaylist } from "@/lib/contr
 import { PlaylistBusEvent, PlaylistNameModifiedEvent, PlaylistSongCountModifiedEvent } from "@/station/playlist/Events";
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistType } from "@/constants/Types";
-import { ArtistBusEvent, ArtistNameModifiedEvent } from "@/station/artist/Events";
+import { ArtistBusEvent, ArtistNameModifiedEvent, ArtistToggledOnSongEvent } from "@/station/artist/Events";
 import artistBus from "@/station/artist";
 import { addArtistToSong, removeArtistFromSong, isArtistOnSong } from "@/lib/controllers/ArtistController";
 
@@ -38,20 +38,19 @@ const ArtistItem = ({artist}: ArtistProps) => {
     try {
       if (add) {
         await addArtistToSong(artist.id, editSong.id);
-        // await addToPlaylist(playlist.id, editSong.id);
-        // playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, {
-        //   id: playlist.id,
-        //   songCount: songCount + 1,
-        // });
-        // playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
+        artistBus.emit(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, {
+          artistId: artist.id,
+          songId: editSong.id,
+          add: true,
+        });
       }
       else {
         await removeArtistFromSong(artist.id, editSong.id);
-        // playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, {
-        //   id: playlist.id,
-        //   songCount: songCount - 1,
-        // });
-        // playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
+        artistBus.emit(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, {
+          artistId: artist.id,
+          songId: editSong.id,
+          add: false,
+        });
       }
     }
     catch (error) {

@@ -25,9 +25,11 @@ const Artists = () => {
   useEffect(() => {
     artistBus.on(ArtistBusEvent.ARTIST_CREATED, refreshArtists);
     artistBus.on(ArtistBusEvent.ARTIST_DELETED, refreshArtists);
+    artistBus.on(ArtistBusEvent.ARTIST_NAME_MODIFIED, refreshArtists);
     return () => {
       artistBus.off(ArtistBusEvent.ARTIST_CREATED, refreshArtists);
       artistBus.off(ArtistBusEvent.ARTIST_DELETED, refreshArtists);
+      artistBus.off(ArtistBusEvent.ARTIST_NAME_MODIFIED, refreshArtists);      
     }
   }, []);
 

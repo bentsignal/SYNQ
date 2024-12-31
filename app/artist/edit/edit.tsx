@@ -40,29 +40,15 @@ const EditArtist = ({id}: {id: string}) => {
     }
   }
 
-  const nameInputValidation = () => {
-    if (name === '') {
-      throw new Error('Name is required');
-    }
-  }
-
-  const handleUpdateImage = async () => {
-    const cover = await newCover();
-    if (cover) {
-      setImage(cover);
-    }
-  }
-
-  const handleSave = async () => {
+  const nameInputValidation = async (text: string) => {
     try {
-      nameInputValidation();
-      await updateArtist(parseInt(id), name === originalName ? null : name, image);
-      if (haptic) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      if (text === '') {
+        throw new Error('Name is required');
       }
-      setTimeout(() => {  
-        router.back();
-      }, 100);
+      else {
+        setName(text);
+        await updateArtist(parseInt(id), text === originalName ? null : text, image);
+      }
     }
     catch (error) {
       const trace = error instanceof Error ? error.message : String(error);
@@ -73,7 +59,15 @@ const EditArtist = ({id}: {id: string}) => {
         'Unable to update playlist',
         trace,
         () => {}
-      );    
+      );  
+    }
+  }
+
+  const handleUpdateImage = async () => {
+    const cover = await newCover();
+    if (cover) {
+      setImage(cover);
+      await updateArtist(parseInt(id), name === originalName ? null : name, cover);
     }
   }
 
@@ -109,17 +103,12 @@ const EditArtist = ({id}: {id: string}) => {
           placeholder={'Enter artist name...'}
           placeholderTextColor={Colors.altDisabled}
           defaultValue={name}
-          onEndEditing={(evt) => setName(evt.nativeEvent.text)}
+          onEndEditing={(evt) => nameInputValidation(evt.nativeEvent.text)}
         />
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />
       <View style={[Local.bottomButtonsWrapper, { paddingBottom: insets.bottom }]}>
         <CustomButton title="Close" handlePress={() => router.back()} />
-        <CustomButton 
-          title="Save" 
-          handlePress={handleSave} 
-          background={theme}
-        />
       </View>
     </View>
   )

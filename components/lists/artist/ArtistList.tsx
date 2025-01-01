@@ -25,7 +25,7 @@ const ArtistList = ({
   const renderItem = ({item}: {item: ArtistType}) => {
     item.pageType = pageType;
     return (
-      <MemoArtist artist={item} />
+      <MemoArtist artist={item} allowInteraction={true}/>
     );
   };
 

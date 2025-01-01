@@ -75,7 +75,7 @@ class ArtistDataManager extends DataManager {
 
   public async getArtistsFromSong(songId: number): Promise<ArtistType[]> {
     const result = await ArtistDataManager.db?.getAllAsync(`
-      SELECT artists.* 
+      SELECT artists.*
       FROM artists 
       INNER JOIN artistSongs ON artists.id = artistSongs.artistId 
       WHERE artistSongs.songId = ? 

@@ -20,6 +20,7 @@ export type SongType = {
   "sourceType"?: SourceType;
   "sourceId"?: number;
   "edited"?: boolean;
+  "importArtists"?: ArtistType[];
 };
 
 export type TagsType = {

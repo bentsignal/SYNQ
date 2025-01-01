@@ -108,3 +108,8 @@ export const getSongsFromArtist = async (artistId: number, sort: SortType = Sort
   const songs = results.map(result => getSongByResult(result));
   return songs;
 }
+
+export const getArtistsFromMetadata = async (value: string): Promise<ArtistType[]> => {
+  const artists = await ArtistDataManager.getInstance().getArtists();
+  return artists.filter(artist => value.includes(artist.name));
+}

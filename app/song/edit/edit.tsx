@@ -79,8 +79,13 @@ const EditSong = ({id}: {id: string}) => {
   // }
 
   const loadArtists = async () => {
-    const artists = await getArtistsFromSong(parseInt(id));
-    setArtists(artists);
+    if (editSong.pageType === PageType.IMPORT) {
+      setArtists(editSong.importArtists ?? []);
+    }
+    else {
+      const artists = await getArtistsFromSong(parseInt(id));
+      setArtists(artists);
+    }
   }
 
   const handleUpdateImage = async () => {
@@ -190,6 +195,7 @@ const EditSong = ({id}: {id: string}) => {
                 <ArtistItem
                   key={artist.id}
                   artist={artist}
+                  allowInteraction={false}
                 />
               )
             })}

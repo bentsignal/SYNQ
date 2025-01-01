@@ -16,7 +16,7 @@ import Skeleton from '../Skeleton';
 import { darkenColor } from '@/lib/controllers/ColorController';
 import * as Haptics from 'expo-haptics';
 import More from '@/components/More';
-import { PageType, CoverType } from '@/constants/Types';
+import { PageType, CoverType, ArtistType } from '@/constants/Types';
 import { useActiveTrack } from "react-native-track-player";
 import { getTrackFromSong, playTrack, 
   updateQueue, playAd, addToQueue } from '@/lib/controllers/PlayerController';
@@ -151,7 +151,13 @@ const Song = ({ song, fadeCover, fadeSong }: SongProps) => {
 
   const updateArtistInfo = async (data: ArtistToggledOnSongEvent) => {
     if (data.songId === Number(song.id)) {
-      const artists = await getArtistsFromSong(Number(song.id));
+      let artists: ArtistType[] = [];
+      if (song.pageType === PageType.IMPORT) {
+        artists = song.importArtists ?? [];
+      }
+      else {
+        const artists = await getArtistsFromSong(Number(song.id));
+      }
       song.info.metadata.artist = artists.map(artist => artist.name).join(', ');
       forceUpdate(prev => prev + 1);
     }

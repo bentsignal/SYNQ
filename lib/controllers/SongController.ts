@@ -2,7 +2,7 @@ import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
-import { SongType, InfoType, PageType, TagsType, SourceType, SongResultType, SortType } from '@/constants/Types'
+import { SongType, InfoType, PageType, TagsType, SourceType, SongResultType, SortType, ArtistType } from '@/constants/Types'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -16,7 +16,7 @@ import { getPlaylistSongs } from '@/lib/controllers/PlaylistController';
 import songBus from "@/station/song/Bus";
 import { SongBusEvent } from "@/station/song/Events";
 import 'react-native-get-random-values';
-import { getSongsFromArtist } from '@/lib/controllers/ArtistController';
+import { getArtistsFromMetadata, getSongsFromArtist, addArtistToSong } from '@/lib/controllers/ArtistController';
 
 export const getCompletion = (size: number, progress: number) => {
   try {
@@ -259,6 +259,7 @@ export const importFiles = async (
     copyToCacheDirectory: true
   });
   const songs: SongType[] = [];
+  let song: SongType;
   const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
   let data;
   if (results.canceled == false) {
@@ -274,12 +275,18 @@ export const importFiles = async (
           console.log(error);
         });
       info.fileType = results.assets[i].mimeType;
-      songs.push({
+      const importArtists: ArtistType[] = await getArtistsFromMetadata(info.metadata?.artist);
+      if (importArtists.length > 0) {
+        info.metadata.artist = importArtists.map(artist => artist.name).join(', ');
+      }
+      song = {
         'name': results.assets[i].name,
         'id': idgen(10),
         'data': data,
-        'info': info
-      });
+        'info': info,
+        'importArtists': importArtists
+      };
+      songs.push(song);
       await FileSystem.deleteAsync(results.assets[i].uri);
     }
     return songs;
@@ -426,6 +433,12 @@ export const saveToLibrary = async (
           await writeImageToLibrary(artwork, dir);
           // add song to library playlist
           await playlistDb.addToPlaylist(1, id);
+          // add song to artist
+          if (song.importArtists && song.importArtists.length > 0) {
+            for (let j = 0; j < song.importArtists.length; j++) {
+              await addArtistToSong(song.importArtists[j].id, id);
+            }
+          }
         }
         progress(i + 1);
       }

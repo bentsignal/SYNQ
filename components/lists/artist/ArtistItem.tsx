@@ -1,26 +1,26 @@
-import { View, Text, StyleSheet, TouchableOpacity, DeviceEventEmitter } from "react-native"
-import { useState, useEffect, useRef } from "react";
-import { PlaylistType, CoverType } from "@/constants/Types";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
+import { useState, useEffect } from "react";
+import { CoverType, PageType } from "@/constants/Types";
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 import { router } from "expo-router";
 import ListCover from "@/components/cover/ListCover";
 import More from "@/components/More";
-import { PageType } from "@/constants/Types";
 import Select from "@/components/Select";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistType } from "@/constants/Types";
-import { ArtistBusEvent, ArtistNameModifiedEvent, ArtistToggledOnSongEvent } from "@/station/artist/Events";
+import { ArtistBusEvent, ArtistNameModifiedEvent } from "@/station/artist/Events";
 import artistBus from "@/station/artist";
 import { addArtistToSong, removeArtistFromSong, isArtistOnSong } from "@/lib/controllers/ArtistController";
 
 type ArtistProps = {
   artist: ArtistType,
+  allowInteraction?: boolean,
 }
 
-const ArtistItem = ({artist}: ArtistProps) => {
+const ArtistItem = ({artist, allowInteraction}: ArtistProps) => {
 
   const { 
     
@@ -33,7 +33,11 @@ const ArtistItem = ({artist}: ArtistProps) => {
 
   const selectionChanged = async (add: boolean) => {
     try {
-      if (add) {
+      if (editSong.pageType === PageType.IMPORT) {
+        editSong.importArtists = editSong.importArtists ?? [];
+        editSong.importArtists = add ? [...editSong.importArtists, artist] : editSong.importArtists.filter(a => a.id !== artist.id);
+      }
+      else if (add) {
         await addArtistToSong(artist.id, editSong.id);
       }
       else {
@@ -41,17 +45,23 @@ const ArtistItem = ({artist}: ArtistProps) => {
       }
       artistBus.emit(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, {
         artistId: artist.id,
-        songId: editSong.id,
+        songId: typeof editSong.id === 'number' ? editSong.id : parseInt(editSong.id),
         add: add,
       });
     }
     catch (error) {
-      console.log('error saving playlist changes: ', error);
+      console.log('error saving artist list changes: ', error);
     }
   }
 
   const checkArtistOnSong = async () => {
-    const result = await isArtistOnSong(artist.id, editSong.id);
+    let result = false;
+    if (editSong.pageType === PageType.IMPORT) {
+      result = editSong.importArtists?.some(a => a.id === artist.id);
+    }
+    else {
+      result = await isArtistOnSong(artist.id, editSong.id);
+    }
     setSelected(result);
   }
 
@@ -92,7 +102,7 @@ const ArtistItem = ({artist}: ArtistProps) => {
     <TouchableOpacity 
       style={Local.container}
       activeOpacity={0.8}
-      disabled={![PageType.LIBRARY].includes(artist.pageType)}
+      disabled={!allowInteraction || ![PageType.LIBRARY].includes(artist.pageType)}
       onPress={async () => {
         if (artist.pageType === PageType.ADD) {
           await handleSelect();
@@ -110,11 +120,11 @@ const ArtistItem = ({artist}: ArtistProps) => {
       <View style={Local.textWrapper}>
         <Text style={Local.name}>{name}</Text>
       </View>
-      {artist.pageType === PageType.LIBRARY &&
+      {allowInteraction && artist.pageType === PageType.LIBRARY &&
         <More handlePress={handleMore} />
       }
-      {artist.pageType === PageType.ADD &&
-        <Select 
+      {allowInteraction && artist.pageType === PageType.ADD &&
+        <Select
           active={selected}
           handlePress={handleSelect}
         />

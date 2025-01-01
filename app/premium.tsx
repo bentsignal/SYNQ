@@ -16,6 +16,7 @@ import * as Haptics from 'expo-haptics';
 import * as PurchaseManager from '@/lib/controllers/PurchaseController';
 import { usePremiumContext } from '@/context/PremiumProvider';
 import { useThemeContext } from '@/context/ThemeProvider';
+import ModalStyles from '@/components/modals/Styles';
 
 const Premium = () => {
 
@@ -393,7 +394,7 @@ const Premium = () => {
 const Local = StyleSheet.create({
   wrapper: {
     backgroundColor: Colors.background,
-    ...Styles.roundedModal,
+    ...ModalStyles.roundedTop,
   },
   container: {
     height: '100%',
@@ -405,12 +406,12 @@ const Local = StyleSheet.create({
   imageContainer: {
     height: '40%',
     width: '100%',
-    ...Styles.roundedModal,
+    ...ModalStyles.roundedTop,
   },
   coverImage: {
     height: '100%',
     width: '100%',
-    ...Styles.roundedModal,
+    ...ModalStyles.roundedTop,
   },
   coverGradient: {
     position: 'absolute', 

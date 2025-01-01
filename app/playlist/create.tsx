@@ -17,6 +17,7 @@ import { newCover } from "@/lib/controllers/SongController"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { PlaylistBusEvent } from "@/station/playlist/Events"
 import playlistBus from "@/station/playlist"
+import ModalStyles from "@/components/modals/Styles"
 
 const MemoTextInput = memo(TextInput);
 
@@ -67,7 +68,7 @@ const CreatePlaylist = () => {
   return (
     <View style={Local.wrapper}>
       <Bar />
-      <Text style={Local.header}>Create Playlist</Text>
+      <Text style={ModalStyles.header}>Create Playlist</Text>
       <View style={Styles.divider} />
       <KeyboardAwareScrollView
         style={Local.scrollView}
@@ -90,8 +91,8 @@ const CreatePlaylist = () => {
           numberOfLines={1}
           placeholder={'Enter playlist name...'}
           placeholderTextColor={Colors.altDisabled}
-          value={name}
-          onChangeText={text => setName(text)}
+          defaultValue={name}
+          onEndEditing={(evt) => setName(evt.nativeEvent.text)}
         />
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />
@@ -115,7 +116,7 @@ const Local = StyleSheet.create({
   wrapper: {
     ...Styles.body,
     backgroundColor: Colors.popup,
-    ...Styles.roundedModal,
+    ...ModalStyles.roundedTop,
   },
   textBox: {
     fontSize: 16,
@@ -132,11 +133,6 @@ const Local = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  header: {
-    ...Styles.h2,
-    color: Colors.text,
-    marginBottom: 20,
   },
   coverWrapper: {
     width: '90%',

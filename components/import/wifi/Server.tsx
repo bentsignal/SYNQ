@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import * as Network from 'expo-network';
 import * as Device from 'expo-device';
 import { useGlobalContext } from '@/context/GlobalProvider';
-import { getWifiInfo } from '@/lib/controllers/SongController';
+import { getWifiTransferSong } from '@/lib/controllers/SongController';
 import Transfer from '@/assets/static/Transfer';
 import { NotificationType } from '@/constants/Types';
 import { idgen } from '@/lib/Util';
@@ -145,33 +145,36 @@ const Server = () => {
     });
 
     server.post('/fileUpload', async (req: any, res: any) => {
-      const body = req.postData
-      const name = body.name ? body.name : '';
-      const type = body.type ? body.type : '';
-      const b64 = body.data ? body.data : '';
-      const id = body.id ? body.id : '';
+      try {
+        const body = req.postData
+        const name = body.name ? body.name : '';
+        const type = body.type ? body.type : '';
+        const b64 = body.data ? body.data : '';
+        const id = body.id ? body.id : '';
 
-      const acceptedTypes = ['audio/mpeg', 'audio/flac', 'audio/wav', 'audio/mp4', 'audio/aac', 'audio/x-m4a'];
+        const acceptedTypes = ['audio/mpeg', 'audio/flac', 'audio/wav', 'audio/mp4', 'audio/aac', 'audio/x-m4a'];
 
-      if (name && acceptedTypes.includes(type) && b64 && !receivedRequests.has(id)) {
-        const info = await getWifiInfo(name, id, type, b64);
-        if (info) {
-          receivedRequests.add(id);
-          const newResults = resultsRef.current;
-          newResults.push({
-            'name': name,
-            'id': id,
-            'data': b64,
-            'info': info
-          });
-          setResults(newResults);
-          resultsRef.current = newResults;
-          setTransferProgress(newResults.length);
-          setSelectedId(id);
-          return res.json({
-            status: 200,
-            message: `OK - ${name} RECEIVED`,
-          });
+        if (name && acceptedTypes.includes(type) && b64 && !receivedRequests.has(id)) {
+          const song = await getWifiTransferSong(name, id, type, b64);
+          if (song) {
+            receivedRequests.add(id);
+            const newResults = resultsRef.current;
+            newResults.push(song);
+            setResults(newResults);
+            resultsRef.current = newResults;
+            setTransferProgress(newResults.length);
+            setSelectedId(id);
+            return res.json({
+              status: 200,
+              message: `OK - ${name} RECEIVED`,
+            });
+          }
+          else {
+            return res.json({
+              status: 409,
+              message: `ERROR - Bad data from ${name}`
+            });
+          }
         }
         else {
           return res.json({
@@ -180,10 +183,10 @@ const Server = () => {
           });
         }
       }
-      else {
+      catch (error) {
         return res.json({
-          status: 409,
-          message: `ERROR - Bad data from ${name}`
+          status: 500,
+          message: `ERROR - Failed to upload song: ${error}`
         });
       }
 

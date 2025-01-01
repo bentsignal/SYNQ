@@ -10,11 +10,15 @@ const PlaylistList = memo(({
   headerComponent,
   pageType,
   bottomPadding = false,
+  gradientStart,
+  gradientEnd,
 }: {
   playlists: PlaylistType[],
   headerComponent?: React.ReactNode,
   bottomPadding?: boolean,
   pageType: PageType,
+  gradientStart?: string,
+  gradientEnd?: string,
 }) => {
 
   const renderItem = ({item}: {item: PlaylistType}) => {
@@ -35,6 +39,8 @@ const PlaylistList = memo(({
       item={renderItem}
       keyExtractor={getKey}
       bottomPadding={bottomPadding}
+      gradientStart={gradientStart}
+      gradientEnd={gradientEnd}
     />
   );
 

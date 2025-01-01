@@ -18,6 +18,7 @@ import { getFileName } from "@/lib/Util";
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePlaybackContext } from "@/context/PlaybackProvider";
 import Bar from "@/components/modals/Bar";
+import ModalStyles from "@/components/modals/Styles";
 import LoopButton from "@/components/player/LoopButton";
 
 const Queue = () => {
@@ -131,7 +132,7 @@ const Queue = () => {
 const Local = StyleSheet.create({
   container: {
     backgroundColor: Colors.popup,
-    ...Styles.roundedModal,
+    ...ModalStyles.roundedTop,
   },
   currentlyPlayingContainer: {
     maxWidth: Dimensions.get('window').width * 0.9,

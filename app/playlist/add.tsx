@@ -12,6 +12,7 @@ import { useThemeContext } from "@/context/ThemeProvider"
 import { getPlaylists } from "@/lib/controllers/PlaylistController"
 import { PlaylistBusEvent } from "@/station/playlist/Events"
 import playlistBus from "@/station/playlist/Bus"
+import ModalStyles from "@/components/modals/Styles"
 
 const AddToPlaylist = () => {
 
@@ -42,7 +43,7 @@ const AddToPlaylist = () => {
   return (
     <View style={Local.wrapper}>
       <Bar />
-      <Text style={Local.header}>Add to Playlist</Text>
+      <Text style={ModalStyles.header}>Manage Playlists</Text>
       <CustomButton
         title={'New'}
         background={theme}
@@ -57,6 +58,8 @@ const AddToPlaylist = () => {
       <PlaylistList 
         playlists={playlists}
         pageType={PageType.ADD}
+        gradientStart={'rgba(24, 24, 24, 1)'}
+        gradientEnd={'rgba(24, 24, 24, 0)'}
       />
       <View style={[Local.bottomButtonsWrapper, {paddingBottom: insets.bottom}]}>
         <CustomButton
@@ -73,13 +76,8 @@ const AddToPlaylist = () => {
 const Local = StyleSheet.create({
   wrapper: {
     ...Styles.body,
-    ...Styles.roundedModal,
-    backgroundColor: Colors.background,
-  },
-  header: {
-    ...Styles.h2,
-    color: Colors.text,
-    marginBottom: 10,
+    backgroundColor: Colors.popup,
+    ...ModalStyles.roundedTop,
   },
   bottomButtonsWrapper: {
     flexDirection: 'row',

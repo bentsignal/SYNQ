@@ -1,4 +1,6 @@
 import DataManager from './DataManager';
+import { SongResultType } from '@/constants/Types';
+import { getArtistsFromSong } from '../controllers/ArtistController';
 
 class SongDataManager extends DataManager {
 
@@ -58,7 +60,11 @@ class SongDataManager extends DataManager {
       if (!SongDataManager.db) {
         await SongDataManager.initConnection();
       }
-      const result = await SongDataManager.db?.getFirstAsync(`SELECT * FROM songs WHERE id = ?;`, [id]);
+      const result = await SongDataManager.db?.getFirstAsync<SongResultType>(`SELECT * FROM songs WHERE id = ?;`, [id]);
+      const artists = await getArtistsFromSong(id);
+      if (result !== null){
+        result.artists = artists.map(artist => artist.name).join(', ');
+      }
       return result ? result : null;
     } catch (error) {
       console.error('Error getting song by id:', error);

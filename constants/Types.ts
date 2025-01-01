@@ -20,6 +20,7 @@ export type SongType = {
   "sourceType"?: SourceType;
   "sourceId"?: number;
   "edited"?: boolean;
+  "importArtists"?: ArtistType[];
 };
 
 export type TagsType = {
@@ -72,6 +73,7 @@ export enum PageType {
   ARTIST = 7,
   CREATE = 8,
   ADD = 9,
+  EDIT = 10,
 }
 
 export enum SourceType {
@@ -84,11 +86,19 @@ export enum CoverType {
   SONG = 1,
   PLAYLIST = 2,
   ALBUM = 3,
+  ARTIST = 4,
 }
 
 export type PlaylistType = {
   id: number;
   name: string;
   songCount: number;
+  pageType?: PageType;
+};
+
+export type ArtistType = {
+  id: number;
+  name: string;
+  image?: string;
   pageType?: PageType;
 };

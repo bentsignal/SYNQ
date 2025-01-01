@@ -2,7 +2,7 @@ import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
-import { SongType, InfoType, PageType, TagsType, SourceType, SongResultType, SortType } from '@/constants/Types'
+import { SongType, InfoType, PageType, TagsType, SourceType, SongResultType, SortType, ArtistType } from '@/constants/Types'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -16,7 +16,7 @@ import { getPlaylistSongs } from '@/lib/controllers/PlaylistController';
 import songBus from "@/station/song/Bus";
 import { SongBusEvent } from "@/station/song/Events";
 import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
+import { getArtistsFromMetadata, getSongsFromArtist, addArtistToSong } from '@/lib/controllers/ArtistController';
 
 export const getCompletion = (size: number, progress: number) => {
   try {
@@ -226,27 +226,26 @@ export const exportSongs = async (songs: SongType[]) => {
 
 }
 
-export const getWifiInfo = async (name: string, id: string, type: string, data: string) => {
-  try {
-    const destination = `${FileSystem.documentDirectory}${id}${name}`;
-    await FileSystem.writeAsStringAsync(destination, data, { encoding: 'base64' });
-    const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
-    const info = await getAudioMetadata(destination, wantedTags);
-    await FileSystem.deleteAsync(destination);
-    return info;
+export const getWifiTransferSong = async (name: string, id: string, type: string, data: string): Promise<SongType> => {
+  const destination = `${FileSystem.documentDirectory}${id}${name}`;
+  await FileSystem.writeAsStringAsync(destination, data, { encoding: 'base64' });
+  const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
+  const info = await getAudioMetadata(destination, wantedTags);
+  const importArtists: ArtistType[] = await getArtistsFromMetadata(info.metadata?.artist);
+  if (importArtists.length > 0) {
+    info.metadata.artist = importArtists.map(artist => artist.name).join(', ');
   }
-  catch (error) {
-    return {
-      "fileType": type,
-      "format": 'id3v2.4',
-      "metadata": {
-        "album": '',
-        "artist": '',
-        "artwork": '',
-        "name": ''
-      }
-    };
+  else {
+    info.metadata.artist = '';
   }
+  await FileSystem.deleteAsync(destination);
+  return {
+    'name': name,
+    'id': id,
+    'data': data,
+    'info': info,
+    'importArtists': importArtists
+  };
 }
 
 export const importFiles = async (
@@ -259,6 +258,7 @@ export const importFiles = async (
     copyToCacheDirectory: true
   });
   const songs: SongType[] = [];
+  let song: SongType;
   const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
   let data;
   if (results.canceled == false) {
@@ -274,12 +274,21 @@ export const importFiles = async (
           console.log(error);
         });
       info.fileType = results.assets[i].mimeType;
-      songs.push({
+      const importArtists: ArtistType[] = await getArtistsFromMetadata(info.metadata?.artist);
+      if (importArtists.length > 0) {
+        info.metadata.artist = importArtists.map(artist => artist.name).join(', ');
+      }
+      else {
+        info.metadata.artist = '';
+      }
+      song = {
         'name': results.assets[i].name,
         'id': idgen(10),
         'data': data,
-        'info': info
-      });
+        'info': info,
+        'importArtists': importArtists
+      };
+      songs.push(song);
       await FileSystem.deleteAsync(results.assets[i].uri);
     }
     return songs;
@@ -426,6 +435,12 @@ export const saveToLibrary = async (
           await writeImageToLibrary(artwork, dir);
           // add song to library playlist
           await playlistDb.addToPlaylist(1, id);
+          // add song to artist
+          if (song.importArtists && song.importArtists.length > 0) {
+            for (let j = 0; j < song.importArtists.length; j++) {
+              await addArtistToSong(song.importArtists[j].id, id);
+            }
+          }
         }
         progress(i + 1);
       }
@@ -525,6 +540,7 @@ export const getNextUp = async (
   }
   else if (sourceType === SourceType.ARTIST) {
     //  TODO: get songs from artist
+    songs = await getSongsFromArtist(sourceId, SortType.NEWEST);
   }
   else if (sourceType === SourceType.ALBUM) {
     //  TODO: get songs from album
@@ -630,26 +646,24 @@ export const writeImageToLibrary = async (artwork: string, dir: string) => {
       const { width: imageWidth, height: imageHeight } = await new Promise<{ width: number, height: number }>((resolve, reject) => {
         Image.getSize(`${dir}/cover_temp.${extension}`, (width, height) => resolve({ width, height }), reject);
       });
-      let fullWidth = imageWidth;
-      let fullHeight = imageHeight;
-      let smallWidth = imageWidth;
-      let smallHeight = imageHeight;
-      if (imageWidth !== imageHeight) {
-        fullWidth = imageWidth > imageHeight ? Math.min(1000, imageWidth) : Math.floor(1000 * (imageWidth / imageHeight));
-        fullHeight = imageHeight > imageWidth ? Math.min(1000, imageHeight) : Math.floor(1000 * (imageHeight / imageWidth));
-        smallWidth = imageWidth > imageHeight ? Math.min(200, imageWidth) : Math.floor(200 * (imageWidth / imageHeight));
-        smallHeight = imageHeight > imageWidth ? Math.min(200, imageHeight) : Math.floor(200 * (imageHeight / imageWidth));
+      const fullResizeOptions: ImageManipulator.ActionResize = {resize: {}};
+      const smallResizeOptions: ImageManipulator.ActionResize = {resize: {}};
+      if (imageWidth === imageHeight) {
+        fullResizeOptions.resize.width = Math.min(1000, imageWidth);
+        smallResizeOptions.resize.width = Math.min(200, imageWidth);
+      }
+      else if (imageWidth > imageHeight) {
+        fullResizeOptions.resize.width = Math.min(1000, imageWidth);
+        smallResizeOptions.resize.width = Math.min(200, imageWidth);
       }
       else {
-        fullWidth = Math.min(1000, imageWidth);
-        fullHeight = Math.min(1000, imageHeight);
-        smallWidth = Math.min(200, imageWidth);
-        smallHeight = Math.min(200, imageHeight);
+        fullResizeOptions.resize.height = Math.min(1000, imageHeight);
+        smallResizeOptions.resize.height = Math.min(200, imageHeight);
       }
       // convert image to jpeg, save full size
       const fullConvert = await ImageManipulator.manipulateAsync(
         `${dir}/cover_temp.${extension}`,
-        [...[{ resize: { width: fullWidth, height: fullHeight } }]],
+        [...[fullResizeOptions]],
         { compress: 1, format: SaveFormat.JPEG, base64: true }
       );
       if (fullConvert.base64) {
@@ -658,7 +672,7 @@ export const writeImageToLibrary = async (artwork: string, dir: string) => {
       // convert image to jpeg, save small size
       const smallConvert = await ImageManipulator.manipulateAsync(
         `${dir}/cover_temp.${extension}`,
-        [{ resize: { width: smallWidth, height: smallHeight } }],
+        [...[smallResizeOptions]],
         { compress: 0.5, format: SaveFormat.JPEG, base64: true }
       );
       if (smallConvert.base64) {

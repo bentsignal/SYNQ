@@ -16,6 +16,7 @@ import { newCover } from "@/lib/controllers/SongController";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';
 import Notifications from "@/components/notifications";
+import ModalStyles from "@/components/modals/Styles";
 
 const MemoTextInput = memo(TextInput);
 
@@ -38,29 +39,15 @@ const EditPlaylist = ({id}: {id: string}) => {
     }
   }
 
-  const nameInputValidation = () => {
-    if (name === '') {
-      throw new Error('Name is required');
-    }
-  }
-
-  const handleUpdateImage = async () => {
-    const cover = await newCover();
-    if (cover) {
-      setImage(cover);
-    }
-  }
-
-  const handleSave = async () => {
+  const nameInputValidation = async (text: string) => {
     try {
-      nameInputValidation();
-      await updatePlaylist(parseInt(id), name === originalName ? null : name, image);
-      if (haptic) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      if (text === '') {
+        throw new Error('Name is required');
       }
-      setTimeout(() => {  
-        router.back();
-      }, 100);
+      else {
+        setName(text);
+        await updatePlaylist(parseInt(id), text === originalName ? null : text, image);
+      }
     }
     catch (error) {
       const trace = error instanceof Error ? error.message : String(error);
@@ -71,7 +58,15 @@ const EditPlaylist = ({id}: {id: string}) => {
         'Unable to update playlist',
         trace,
         () => {}
-      );    
+      );  
+    }
+  }
+
+  const handleUpdateImage = async () => {
+    const cover = await newCover();
+    if (cover) {
+      setImage(cover);
+      await updatePlaylist(parseInt(id), name === originalName ? null : name, cover);
     }
   }
 
@@ -82,7 +77,7 @@ const EditPlaylist = ({id}: {id: string}) => {
   return (
     <View style={Local.wrapper}>
       <Bar />
-      <Text style={Local.header}>Edit Playlist</Text>
+      <Text style={ModalStyles.header}>Edit Playlist</Text>
       <View style={Styles.divider} />
       <KeyboardAwareScrollView 
         style={Local.scrollView}
@@ -106,18 +101,13 @@ const EditPlaylist = ({id}: {id: string}) => {
           numberOfLines={1}
           placeholder={'Enter playlist name...'}
           placeholderTextColor={Colors.altDisabled}
-          value={name}
-          onChangeText={text => setName(text)}
+          defaultValue={name}
+          onEndEditing={(evt) => nameInputValidation(evt.nativeEvent.text)}
         />
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />
       <View style={[Local.bottomButtonsWrapper, { paddingBottom: insets.bottom }]}>
         <CustomButton title="Close" handlePress={() => router.back()} />
-        <CustomButton 
-          title="Save" 
-          handlePress={handleSave} 
-          background={theme}
-        />
       </View>
     </View>
   )
@@ -126,8 +116,8 @@ const EditPlaylist = ({id}: {id: string}) => {
 const Local = StyleSheet.create({
   wrapper: {
     ...Styles.body,
-    ...Styles.roundedModal,
     backgroundColor: Colors.popup,
+    ...ModalStyles.roundedTop,
   },
   scrollView: {
     width: '100%',

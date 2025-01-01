@@ -1,4 +1,4 @@
-import { View, StyleSheet, Dimensions, Text } from 'react-native';
+import { View, StyleSheet, Dimensions, Text, Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
@@ -29,7 +29,7 @@ const PlayerCover = ({uri}: {uri: string}) => {
   else if (uri && typeof uri === 'string' && uri !== 'transparent') {
     return (
       <View style={Local.container}>
-        <FastImage
+        <Image
           source={{uri: uri}}
           resizeMode='cover'
           style={Local.artwork}

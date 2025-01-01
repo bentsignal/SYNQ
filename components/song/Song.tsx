@@ -16,7 +16,7 @@ import Skeleton from '../Skeleton';
 import { darkenColor } from '@/lib/controllers/ColorController';
 import * as Haptics from 'expo-haptics';
 import More from '@/components/More';
-import { PageType, CoverType } from '@/constants/Types';
+import { PageType, CoverType, ArtistType } from '@/constants/Types';
 import { useActiveTrack } from "react-native-track-player";
 import { getTrackFromSong, playTrack, 
   updateQueue, playAd, addToQueue } from '@/lib/controllers/PlayerController';
@@ -26,6 +26,9 @@ import songBus from '@/station/song';
 import { SongBusEvent, SongInfoModifiedEvent, SongCoverModifiedEvent } from '@/station/song/Events';
 import { usePlaybackContext } from '@/context/PlaybackProvider';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
+import { ArtistToggledOnSongEvent, ArtistBusEvent } from '@/station/artist/Events';
+import { getArtistsFromSong } from '@/lib/controllers/ArtistController';
+import artistBus from '@/station/artist';
 
 type SongProps = {
   song: SongType, 
@@ -88,9 +91,11 @@ const Song = ({ song, fadeCover, fadeSong }: SongProps) => {
   useEffect(() => {
     songBus.on(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
     songBus.on(SongBusEvent.SONG_COVER_MODIFIED, updateSongCover);
+    artistBus.on(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
     return () => {
       songBus.off(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
       songBus.off(SongBusEvent.SONG_COVER_MODIFIED, updateSongCover);
+      artistBus.off(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
     }
   }, []);
 
@@ -143,6 +148,20 @@ const Song = ({ song, fadeCover, fadeSong }: SongProps) => {
       textShadowRadius: 10
     }
   });
+
+  const updateArtistInfo = async (data: ArtistToggledOnSongEvent) => {
+    if (data.songId === Number(song.id)) {
+      let artists: ArtistType[] = [];
+      if (song.pageType === PageType.IMPORT) {
+        artists = song.importArtists ?? [];
+      }
+      else {
+        artists = await getArtistsFromSong(Number(song.id));
+      }
+      song.info.metadata.artist = artists.map(artist => artist.name).join(', ');
+      forceUpdate(prev => prev + 1);
+    }
+  }
 
   const updateSongInfo = async (data: SongInfoModifiedEvent) => {
     if (Number(song.id) === data.id) {

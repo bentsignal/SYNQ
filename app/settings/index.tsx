@@ -12,6 +12,7 @@ import { usePremiumContext } from "@/context/PremiumProvider";
 import Bar from "@/components/modals/Bar";
 import CustomButton from "@/components/CustomButton";
 import { SOCIAL_LINKS } from "@/constants/Config";
+import ModalStyles from "@/components/modals/Styles";
 
 const Settings = () => {
 
@@ -85,7 +86,7 @@ const Local = StyleSheet.create({
   },
   container: {
     backgroundColor: Colors.popup,
-    ...Styles.roundedModal,
+    ...ModalStyles.roundedTop,
   },
   settingsCategoryContainer: {
     width: '90%',

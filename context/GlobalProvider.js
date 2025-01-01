@@ -48,7 +48,7 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
   const [editPlaylist, setEditPlaylist] = useState({});
   const importSongSheet = useRef(null);
   const libraryPlaylistSheet = useRef(null);
-
+  const [editArtist, setEditArtist] = useState({});
   useEffect(() => {
     setShouldPlayAd(initShouldPlayAd ? true : false);
   }, [initShouldPlayAd]);
@@ -108,6 +108,7 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
         importSongSheet,
         libraryPlaylistSheet,
         editPlaylist, setEditPlaylist,
+        editArtist, setEditArtist,
       }}
     >
       {children}

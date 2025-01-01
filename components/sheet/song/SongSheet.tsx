@@ -36,6 +36,7 @@ const SongSheet = ({name}: SongSheetProps) => {
       <View style={SheetStyles.infoContainer}>
         <ListCover 
           id={editSong.id}
+          key={editSong.id}
           type={CoverType.SONG}
           image={editSong.info?.metadata?.artwork}
           propOnLoad={() => {}}

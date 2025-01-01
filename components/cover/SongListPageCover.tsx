@@ -6,6 +6,9 @@ import { useThemeContext } from '@/context/ThemeProvider';
 import { getPlaylistCover } from '@/lib/controllers/PlaylistController';
 import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/station/playlist/Events';
 import playlistBus from '@/station/playlist';
+import { getArtistCover } from '@/lib/controllers/ArtistController';
+import { ArtistBusEvent, ArtistImageModifiedEvent } from '@/station/artist/Events';
+import artistBus from '@/station/artist';
 
 const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
 
@@ -22,6 +25,12 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
           setSrc(`data:image/jpeg;base64,${data}`);
         }
       }
+      else if (type === PageType.ARTIST) {
+        const data = await getArtistCover(parseInt(id), true);
+        if (data) {
+          setSrc(`data:image/jpeg;base64,${data}`);
+        }
+      }
     }
     catch (error) {
       console.log('error getting cover image for player: ', error);
@@ -34,10 +43,18 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
     }
   }
 
+  const handleArtistModified = (data: ArtistImageModifiedEvent) => {
+    if (type === PageType.ARTIST && id === data.id.toString()) {
+      getImage();
+    }
+  }
+
   useEffect(() => {
     playlistBus.on(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified); 
+    artistBus.on(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistModified);
     return () => {
       playlistBus.off(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
+      artistBus.off(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistModified);
     }
   }, []);
 
@@ -55,12 +72,12 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
       aspectRatio: aspectRatio,
       justifyContent: 'center',
       alignItems: 'center',
-      borderRadius: 12,
+      borderRadius: type === PageType.ARTIST ? 1000 : 12,
     },
     artwork: {
       aspectRatio: aspectRatio,
       width: Dimensions.get('screen').width * coverPercent, 
-      borderRadius: 10,
+      borderRadius: type === PageType.ARTIST ? 1000 : 12,
     },
     empty: {
       width: 60,
@@ -80,6 +97,9 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
     }
     else if (type === PageType.ALBUM) {
       return require('@/assets/icons/cd-drive.png');
+    }
+    else if (type === PageType.ARTIST) {
+      return require('@/assets/icons/user.png');
     }
     else {
       return require('@/assets/icons/music.png');

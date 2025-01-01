@@ -4,6 +4,7 @@ import FastImage from 'react-native-fast-image';
 import { getCoverImageData } from '@/lib/controllers/SongController';
 import { PageType, CoverType } from '@/constants/Types';
 import { getPlaylistCover } from '@/lib/controllers/PlaylistController';
+import { getArtistCover } from '@/lib/controllers/ArtistController';
 
 const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5+hPwABAAEAAFPAfXAAAAAElFTkSuQmCC';
 
@@ -53,6 +54,20 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
           }
           else {
             const data = await getPlaylistCover(parseInt(id));
+            if (data) {
+              setSrc(`data:image/jpeg;base64,${data}`);
+            }
+            else {
+              setSrc(transparent);
+            }
+          }
+        }
+        else if (type === CoverType.ARTIST) {
+          if (image) {
+            setSrc(image);
+          }
+          else {
+            const data = await getArtistCover(parseInt(id), true);
             if (data) {
               setSrc(`data:image/jpeg;base64,${data}`);
             }

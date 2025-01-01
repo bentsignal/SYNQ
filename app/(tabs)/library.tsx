@@ -221,17 +221,25 @@ const Library = () => {
     }
   }
 
+  const handleCreate = () => {
+    switch (selected) {
+      case 0: router.push('/playlist/create'); break;
+      case 1: router.push('/album/create'); break;
+      case 2: router.push('/artist/create'); break;
+    }
+  }
+
   return (
     <View style={Styles.body}>
       <PageTitle 
         title="Library"
         rightHandComponent={
-            <TouchableOpacity 
-              onPress={() => router.push('/playlist/create')}
-              style={Local.addWrapper}
-            >
-              <Plus />
-            </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={handleCreate}
+            style={Local.addWrapper}
+          >
+            <Plus />
+          </TouchableOpacity>
         }
       />
       <CategorySelector 

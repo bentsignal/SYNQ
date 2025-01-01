@@ -16,7 +16,7 @@ import { getPlaylistSongs } from '@/lib/controllers/PlaylistController';
 import songBus from "@/station/song/Bus";
 import { SongBusEvent } from "@/station/song/Events";
 import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
+import { getSongsFromArtist } from '@/lib/controllers/ArtistController';
 
 export const getCompletion = (size: number, progress: number) => {
   try {
@@ -525,6 +525,7 @@ export const getNextUp = async (
   }
   else if (sourceType === SourceType.ARTIST) {
     //  TODO: get songs from artist
+    songs = await getSongsFromArtist(sourceId, SortType.NEWEST);
   }
   else if (sourceType === SourceType.ALBUM) {
     //  TODO: get songs from album

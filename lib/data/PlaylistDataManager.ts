@@ -1,5 +1,6 @@
 import DataManager from './DataManager';
 import { PlaylistType, SongResultType, SortType } from '@/constants/Types';
+import { getArtistsFromSong } from '../controllers/ArtistController';
 
 class PlaylistDataManager extends DataManager {
 
@@ -51,12 +52,22 @@ class PlaylistDataManager extends DataManager {
       if (!PlaylistDataManager.db) {
         await PlaylistDataManager.initConnection();
       }
-      const result = await PlaylistDataManager.db?.getAllAsync<SongResultType>(`
+      let result = await PlaylistDataManager.db?.getAllAsync<SongResultType>(`
         SELECT songs.* 
         FROM songs
         INNER JOIN playlistSongs ON songs.id = playlistSongs.songId
         WHERE playlistSongs.playlistId = ?;
       `, [playlistId]);
+
+      if (!result) {
+        return [];
+      }
+
+      result = await Promise.all( result.map(async (song) => {
+        const artists = await getArtistsFromSong(song.id);
+        song.artists = artists.map(artist => artist.name).join(', ');
+        return song;
+      }));
 
       if (!result) {
         return [];

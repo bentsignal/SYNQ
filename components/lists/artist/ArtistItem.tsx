@@ -9,10 +9,7 @@ import More from "@/components/More";
 import { PageType } from "@/constants/Types";
 import Select from "@/components/Select";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import playlistBus from "@/station/playlist";
 import * as Haptics from 'expo-haptics';
-import { addToPlaylist, removeFromPlaylist, isSongInPlaylist } from "@/lib/controllers/PlaylistController";
-import { PlaylistBusEvent, PlaylistNameModifiedEvent, PlaylistSongCountModifiedEvent } from "@/station/playlist/Events";
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistType } from "@/constants/Types";
 import { ArtistBusEvent, ArtistNameModifiedEvent, ArtistToggledOnSongEvent } from "@/station/artist/Events";
@@ -38,20 +35,15 @@ const ArtistItem = ({artist}: ArtistProps) => {
     try {
       if (add) {
         await addArtistToSong(artist.id, editSong.id);
-        artistBus.emit(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, {
-          artistId: artist.id,
-          songId: editSong.id,
-          add: true,
-        });
       }
       else {
         await removeArtistFromSong(artist.id, editSong.id);
-        artistBus.emit(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, {
-          artistId: artist.id,
-          songId: editSong.id,
-          add: false,
-        });
       }
+      artistBus.emit(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, {
+        artistId: artist.id,
+        songId: editSong.id,
+        add: add,
+      });
     }
     catch (error) {
       console.log('error saving playlist changes: ', error);

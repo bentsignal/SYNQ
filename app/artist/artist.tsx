@@ -16,6 +16,8 @@ import playlistBus from "@/station/playlist";
 import { getPlaylistInfo, getPlaylistSongs } from "@/lib/controllers/PlaylistController";
 import { getArtistInfo } from "@/lib/controllers/ArtistController";
 import { PlaylistBusEvent } from "@/station/playlist/Events";
+import artistBus from "@/station/artist";
+import { ArtistBusEvent } from "@/station/artist/Events";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { getSongsFromArtist } from "@/lib/controllers/ArtistController";
@@ -63,24 +65,13 @@ const ArtistView = ({id}: {id: string}) => {
 
   // refresh song list and info when changes are are sent from emitter;
   useEffect(() => {
-    playlistBus.on(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED, triggerRefresh);
-    playlistBus.on(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, refreshInfo);
-    playlistBus.on(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, refreshInfo);
+    artistBus.on(ArtistBusEvent.ARTIST_NAME_MODIFIED, refreshInfo);
     return () => {
-      playlistBus.off(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED, triggerRefresh);
-      playlistBus.off(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, refreshInfo);
-      playlistBus.off(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, refreshInfo);
+      artistBus.off(ArtistBusEvent.ARTIST_NAME_MODIFIED, refreshInfo);
     }
   }, []);
 
-  const loadPlaylist = async () => {
-    const playlist = await getPlaylistInfo(parseInt(id));
-    playlist.pageType = PageType.PLAYLIST;
-    setPlaylist(playlist);
-  }
-
   useEffect(() => {
-    loadPlaylist();
     triggerRefresh();
   }, [id]);
 

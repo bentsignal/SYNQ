@@ -59,8 +59,10 @@ const ArtistView = ({id}: {id: string}) => {
   // refresh song list and info when changes are are sent from emitter;
   useEffect(() => {
     artistBus.on(ArtistBusEvent.ARTIST_NAME_MODIFIED, refreshInfo);
+    artistBus.on(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, refreshSongs);
     return () => {
       artistBus.off(ArtistBusEvent.ARTIST_NAME_MODIFIED, refreshInfo);
+      artistBus.off(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, refreshSongs);
     }
   }, []);
 

@@ -79,11 +79,20 @@ class ArtistDataManager extends DataManager {
   }
 
   public async getSongsFromArtist(artistId: number, sort: SortType = SortType.NEWEST): Promise<SongResultType[]> {
-    const result = await ArtistDataManager.db?.getAllAsync(`SELECT * FROM songs WHERE id IN (SELECT songId FROM artistSongs WHERE artistId = ?);`, [artistId]);
+    let result = await ArtistDataManager.db?.getAllAsync<SongResultType>(`SELECT * FROM songs WHERE id IN (SELECT songId FROM artistSongs WHERE artistId = ?);`, [artistId]);
+    if (result) {
+      result = await Promise.all( result.map(async (song) => {
+        const artists = await this.getArtistsFromSong(song.id);
+        song.artists = artists.map(artist => artist.name).join(', ');
+        return song;
+      }));
+    }
     if (sort === SortType.NEWEST) {
       return result.reverse();
     }
-    return result ? result as SongResultType[] : [];
+    else {
+      return result;
+    }
   }
 
 }

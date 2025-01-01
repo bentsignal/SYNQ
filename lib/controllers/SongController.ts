@@ -279,6 +279,9 @@ export const importFiles = async (
       if (importArtists.length > 0) {
         info.metadata.artist = importArtists.map(artist => artist.name).join(', ');
       }
+      else {
+        info.metadata.artist = '';
+      }
       song = {
         'name': results.assets[i].name,
         'id': idgen(10),

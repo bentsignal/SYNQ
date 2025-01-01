@@ -43,9 +43,6 @@ const CreateArtist = () => {
 
   const handleCreate = async () => {
     try {
-      if (name === '') {
-        throw new Error('Name is required');
-      }
       await createArtist(name, image);
       if (haptic) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

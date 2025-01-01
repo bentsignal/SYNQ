@@ -110,6 +110,38 @@ export const getSongsFromArtist = async (artistId: number, sort: SortType = Sort
 }
 
 export const getArtistsFromMetadata = async (value: string): Promise<ArtistType[]> => {
-  const artists = await ArtistDataManager.getInstance().getArtists();
-  return artists.filter(artist => value.includes(artist.name));
+  
+ let artists: ArtistType[] = [];
+
+  let allNames = value.split(',');
+  allNames = allNames.map(name => name.trim());
+  allNames = allNames.filter(name => name !== '');
+
+  const allArtists = await ArtistDataManager.getInstance().getArtists();
+  const existingArtists = allArtists.filter(artist => {
+    if (value.toLowerCase().includes(artist.name.toLowerCase())) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  });
+
+  for (let i = 0; i < allNames.length; i++) {
+    const existingArtist = existingArtists.find(artist => artist.name === allNames[i]);
+    if (existingArtist) {
+      console.log('existing artist found');
+      artists.push(existingArtist);
+    }
+    else {
+      console.log('no existing artist, creating new artist');
+      const newArtist = await createArtist(allNames[i]);
+      artists.push(newArtist);
+    }
+  }
+
+  console.log(allNames);
+  console.log(existingArtists);
+  
+  return artists;
 }

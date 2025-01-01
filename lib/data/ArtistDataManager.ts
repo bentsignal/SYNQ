@@ -33,16 +33,15 @@ class ArtistDataManager extends DataManager {
   }
 
   public async createArtist(name: string): Promise<number> {
-    try {
-      if (await this.checkForDuplicateName(name)) {
-        throw new Error('Artist already exists');
-      }
-      const result = await ArtistDataManager.db?.runAsync(`INSERT INTO artists (name) VALUES (?);`, [name]);
-      return result?.lastInsertRowId ? result.lastInsertRowId : -1;
+    const cleanName = name.trim();
+    if (await this.checkForDuplicateName(cleanName)) {
+      throw new Error('Artist already exists');
     }
-    catch (error) {
-      throw new Error(error instanceof Error ? error.message : String(error));
+    if (cleanName === '') {
+      throw new Error('Artist name is required');
     }
+    const result = await ArtistDataManager.db?.runAsync(`INSERT INTO artists (name) VALUES (?);`, [cleanName]);
+    return result?.lastInsertRowId ? result.lastInsertRowId : -1;
   }
 
   public async deleteArtist(artistId: number): Promise<void> {

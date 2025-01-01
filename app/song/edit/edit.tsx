@@ -92,22 +92,28 @@ const EditSong = ({id}: {id: string}) => {
     const cover = await newCover();
     if (cover) {
       setImage(cover);
+      await handleSave({newTitle: title, newImage: cover});
     }
   }
 
-  const handleSave = async () => {
+  const handleTitleUpdate = async (text: string) => {
+    setTitle(text);
+    await handleSave({newTitle: text, newImage: image});
+  }
+
+  const handleSave = async ({newTitle, newImage}: {newTitle: string, newImage: string}) => {
     try {
       if (editSong.pageType === PageType.LIBRARY) {
-        await updateSongsInLibrary([editSong.id], title, artist, album, image);
+        await updateSongsInLibrary([editSong.id], newTitle, artist, album, newImage);
       }
       else if (editSong.pageType === PageType.IMPORT) {
         const newResults = saveEdits(
           results,
           [editSong.id],
-          title,
+          newTitle,
           artist,
           album,
-          image
+          newImage
         );
         setResults(newResults);
         setNumModified(numModified + 1);
@@ -116,21 +122,15 @@ const EditSong = ({id}: {id: string}) => {
         const newResults = saveEdits(
           results,
           selectedSongs,
-          title,
+          newTitle,
           artist,
           album,
-          image
+          newImage
         );
         setResults(newResults);
         setNumModified(numModified + 1);
       }
       setSelectEnabled(false);
-      if (haptic) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
-      setTimeout(() => {
-        router.back();
-      }, 100);
     }
     catch (error) {
       console.log('error saving edits: ', error);
@@ -180,7 +180,7 @@ const EditSong = ({id}: {id: string}) => {
               defaultValue={title}
               placeholder={'Enter song name...'}
               placeholderTextColor={Colors.altDisabled}
-              onEndEditing={(evt) => setTitle(evt.nativeEvent.text)}
+              onEndEditing={(evt) => handleTitleUpdate(evt.nativeEvent.text)}
             />
           </>
         }
@@ -234,11 +234,6 @@ const EditSong = ({id}: {id: string}) => {
         <CustomButton 
           title="Close" 
           handlePress={handleClose} 
-        />
-        <CustomButton 
-          title="Save" 
-          handlePress={handleSave} 
-          background={theme}
         />
       </View>
     </View>

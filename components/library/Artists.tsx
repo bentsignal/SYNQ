@@ -7,6 +7,8 @@ import ArtistList from "@/components/lists/artist";
 import { getArtists } from "@/lib/controllers/ArtistController";
 import artistBus from "@/station/artist";
 import { ArtistBusEvent } from "@/station/artist/Events";
+import playlistBus from "@/station/playlist";
+import { PlaylistBusEvent } from "@/station/playlist/Events";
 
 const Artists = () => {
 
@@ -26,10 +28,12 @@ const Artists = () => {
     artistBus.on(ArtistBusEvent.ARTIST_CREATED, refreshArtists);
     artistBus.on(ArtistBusEvent.ARTIST_DELETED, refreshArtists);
     artistBus.on(ArtistBusEvent.ARTIST_NAME_MODIFIED, refreshArtists);
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshArtists);
     return () => {
       artistBus.off(ArtistBusEvent.ARTIST_CREATED, refreshArtists);
       artistBus.off(ArtistBusEvent.ARTIST_DELETED, refreshArtists);
       artistBus.off(ArtistBusEvent.ARTIST_NAME_MODIFIED, refreshArtists);      
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshArtists);
     }
   }, []);
 

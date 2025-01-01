@@ -156,7 +156,7 @@ const Song = ({ song, fadeCover, fadeSong }: SongProps) => {
         artists = song.importArtists ?? [];
       }
       else {
-        const artists = await getArtistsFromSong(Number(song.id));
+        artists = await getArtistsFromSong(Number(song.id));
       }
       song.info.metadata.artist = artists.map(artist => artist.name).join(', ');
       forceUpdate(prev => prev + 1);

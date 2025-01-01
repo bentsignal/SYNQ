@@ -74,8 +74,13 @@ class ArtistDataManager extends DataManager {
   }
 
   public async getArtistsFromSong(songId: number): Promise<ArtistType[]> {
-    const result = await ArtistDataManager.db?.getAllAsync(`SELECT * FROM artists WHERE id IN (SELECT artistId FROM artistSongs WHERE songId = ?);`, [songId]);
-    return result ? result.reverse() as ArtistType[] : [];
+    const result = await ArtistDataManager.db?.getAllAsync(`
+      SELECT artists.* 
+      FROM artists 
+      INNER JOIN artistSongs ON artists.id = artistSongs.artistId 
+      WHERE artistSongs.songId = ? 
+      ORDER BY artistSongs.rowid;`, [songId]);
+    return result ? result as ArtistType[] : [];
   }
 
   public async getSongsFromArtist(artistId: number, sort: SortType = SortType.NEWEST): Promise<SongResultType[]> {

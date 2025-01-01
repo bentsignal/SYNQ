@@ -8,14 +8,10 @@ import { PageType, PlaylistType, SongType, SortType, SourceType, ArtistType } fr
 import { useGlobalContext } from "@/context/GlobalProvider";
 import MiniPlayer from "@/components/player/MiniPlayer";
 import TabBar from "@/components/TabBar";
-import SongListHeader from "@/components/lists/song/Header";
 import ArtistHeader from "@/components/lists/artist/Header";
 import Overlay from "@/components/Overlay";
 import Header from "@/components/Header";
-import playlistBus from "@/station/playlist";
-import { getPlaylistInfo, getPlaylistSongs } from "@/lib/controllers/PlaylistController";
 import { getArtistInfo } from "@/lib/controllers/ArtistController";
-import { PlaylistBusEvent } from "@/station/playlist/Events";
 import artistBus from "@/station/artist";
 import { ArtistBusEvent } from "@/station/artist/Events";
 import * as Haptics from 'expo-haptics';
@@ -26,12 +22,9 @@ const ArtistView = ({id}: {id: string}) => {
 
   const { showOverlay, haptic, setEditArtist } = useGlobalContext();
 
-  const insets = useSafeAreaInsets();
   const [songs, setSongs] = useState<SongType[]>([]);
   const [title, setTitle] = useState('');
-  const [songCount, setSongCount] = useState(0);
   const [scrollPosition, setScrollPosition] = useState(0);
-  const [playlist, setPlaylist] = useState<PlaylistType | null>(null);
   const [artist, setArtist] = useState<ArtistType | null>(null);
 
   const refreshInfo = async () => {

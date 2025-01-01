@@ -198,12 +198,9 @@ const EditSong = ({id}: {id: string}) => {
             title={'Manage Artists'}
             handlePress={() => router.push('/artist/add')}
             buttonWidth={'90%'}
-            customStyles={{
-              // marginVertical: 10,
-            }}
           />
         </View>
-        <View style={ModalStyles.fieldWrapper}>
+        {/* <View style={ModalStyles.fieldWrapper}>
           <Text style={ModalStyles.fieldLabel}>Albums</Text>
           <CustomButton 
             title={'Manage Albums'}
@@ -224,7 +221,7 @@ const EditSong = ({id}: {id: string}) => {
               marginVertical: 10,
             }}
           />
-        </View>
+        </View> */}
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />
       <View style={[Local.bottomButtonsWrapper, { paddingBottom: insets.bottom }]}>

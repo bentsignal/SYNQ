@@ -1,5 +1,5 @@
 import DataManager from "./DataManager";
-import { ArtistType, SortType } from "@/constants/Types";
+import { ArtistType, SortType, SongResultType } from "@/constants/Types";
 
 class ArtistDataManager extends DataManager {
 
@@ -76,6 +76,14 @@ class ArtistDataManager extends DataManager {
   public async getArtistsFromSong(songId: number): Promise<ArtistType[]> {
     const result = await ArtistDataManager.db?.getAllAsync(`SELECT * FROM artists WHERE id IN (SELECT artistId FROM artistSongs WHERE songId = ?);`, [songId]);
     return result ? result as ArtistType[] : [];
+  }
+
+  public async getSongsFromArtist(artistId: number, sort: SortType = SortType.NEWEST): Promise<SongResultType[]> {
+    const result = await ArtistDataManager.db?.getAllAsync(`SELECT * FROM songs WHERE id IN (SELECT songId FROM artistSongs WHERE artistId = ?);`, [artistId]);
+    if (sort === SortType.NEWEST) {
+      return result.reverse();
+    }
+    return result ? result as SongResultType[] : [];
   }
 
 }

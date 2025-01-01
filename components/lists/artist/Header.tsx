@@ -28,7 +28,7 @@ const Local = StyleSheet.create({
     textAlign: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
     marginTop: 0,
   },
   title: {

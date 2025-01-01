@@ -1,9 +1,10 @@
-import { ArtistType } from "@/constants/Types";
+import { ArtistType, SongType, SortType } from "@/constants/Types";
 import ArtistDataManager from "@/lib/data/ArtistDataManager";
 import { writeImageToLibrary } from "./SongController";
 import * as FileSystem from 'expo-file-system';
 import { ArtistBusEvent } from "@/station/artist/Events";
 import artistBus from "@/station/artist";
+import { getSongByResult } from "./SongController";
 
 export const createArtist = async (name: string, image?: string): Promise<ArtistType> => {
   const artistId = await ArtistDataManager.getInstance().createArtist(name);
@@ -100,4 +101,10 @@ export const isArtistOnSong = async (artistId: number, songId: number): Promise<
 
 export const getArtistsFromSong = async (songId: number): Promise<ArtistType[]> => {
   return await ArtistDataManager.getInstance().getArtistsFromSong(songId);
+}
+
+export const getSongsFromArtist = async (artistId: number, sort: SortType = SortType.NEWEST): Promise<SongType[]> => {
+  const results = await ArtistDataManager.getInstance().getSongsFromArtist(artistId, sort);
+  const songs = results.map(result => getSongByResult(result));
+  return songs;
 }

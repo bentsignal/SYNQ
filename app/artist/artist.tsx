@@ -18,6 +18,7 @@ import { getArtistInfo } from "@/lib/controllers/ArtistController";
 import { PlaylistBusEvent } from "@/station/playlist/Events";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
+import { getSongsFromArtist } from "@/lib/controllers/ArtistController";
 
 const ArtistView = ({id}: {id: string}) => {
 
@@ -47,7 +48,7 @@ const ArtistView = ({id}: {id: string}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getPlaylistSongs(parseInt(id), PageType.LIBRARY, SortType.NEWEST);
+      const songs = await getSongsFromArtist(parseInt(id), SortType.NEWEST);
       setSongs(songs);
     }
     catch (error) {
@@ -108,9 +109,9 @@ const ArtistView = ({id}: {id: string}) => {
         <Overlay show={showOverlay} activeOpacity={0.95}/>
         <SongList 
           songs={songs} 
-          pageType={PageType.LIBRARY}
+          pageType={PageType.ARTIST}
           sourceId={Number(id)}
-          sourceType={SourceType.PLAYLIST}
+          sourceType={SourceType.ARTIST}
           headerComponent={
             <ArtistHeader 
               id={id as string}

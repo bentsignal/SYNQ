@@ -226,27 +226,26 @@ export const exportSongs = async (songs: SongType[]) => {
 
 }
 
-export const getWifiInfo = async (name: string, id: string, type: string, data: string) => {
-  try {
-    const destination = `${FileSystem.documentDirectory}${id}${name}`;
-    await FileSystem.writeAsStringAsync(destination, data, { encoding: 'base64' });
-    const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
-    const info = await getAudioMetadata(destination, wantedTags);
-    await FileSystem.deleteAsync(destination);
-    return info;
+export const getWifiTransferSong = async (name: string, id: string, type: string, data: string): Promise<SongType> => {
+  const destination = `${FileSystem.documentDirectory}${id}${name}`;
+  await FileSystem.writeAsStringAsync(destination, data, { encoding: 'base64' });
+  const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
+  const info = await getAudioMetadata(destination, wantedTags);
+  const importArtists: ArtistType[] = await getArtistsFromMetadata(info.metadata?.artist);
+  if (importArtists.length > 0) {
+    info.metadata.artist = importArtists.map(artist => artist.name).join(', ');
   }
-  catch (error) {
-    return {
-      "fileType": type,
-      "format": 'id3v2.4',
-      "metadata": {
-        "album": '',
-        "artist": '',
-        "artwork": '',
-        "name": ''
-      }
-    };
+  else {
+    info.metadata.artist = '';
   }
+  await FileSystem.deleteAsync(destination);
+  return {
+    'name': name,
+    'id': id,
+    'data': data,
+    'info': info,
+    'importArtists': importArtists
+  };
 }
 
 export const importFiles = async (

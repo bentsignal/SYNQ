@@ -130,18 +130,13 @@ export const getArtistsFromMetadata = async (value: string): Promise<ArtistType[
   for (let i = 0; i < allNames.length; i++) {
     const existingArtist = existingArtists.find(artist => artist.name === allNames[i]);
     if (existingArtist) {
-      console.log('existing artist found');
       artists.push(existingArtist);
     }
     else {
-      console.log('no existing artist, creating new artist');
       const newArtist = await createArtist(allNames[i]);
       artists.push(newArtist);
     }
   }
-
-  console.log(allNames);
-  console.log(existingArtists);
   
   return artists;
 }

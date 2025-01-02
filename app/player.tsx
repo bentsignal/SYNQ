@@ -250,6 +250,8 @@ const Local = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 30,
+    marginTop: 10,
+    marginBottom: 15
   },
   bottomControlsContainer: {
     width: Dimensions.get('screen').width * 0.70,

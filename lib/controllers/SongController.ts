@@ -74,7 +74,7 @@ const splitImageMimeAndBuffer = (image: string) => {
 
 const updateMetadata = async (song: SongType) => {
 
-  if (song.pageType === PageType.LIBRARY) {
+  if ([PageType.LIBRARY, PageType.ARTIST, PageType.ALBUM].includes(song.pageType)) {
     // retrieve data if song is from library
     try {
       const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.name}`;
@@ -113,7 +113,7 @@ const updateMetadata = async (song: SongType) => {
   tags.album = song.info.metadata?.album ?? '';
   const image = song.info.metadata?.artwork ?? '';
   if (image) {
-    if (song.pageType === PageType.LIBRARY) {
+    if ([PageType.LIBRARY, PageType.ARTIST, PageType.ALBUM].includes(song.pageType)) {
       tags.APIC = {
         description: 'Album Cover',
         imageBuffer: image,
@@ -231,12 +231,15 @@ export const getWifiTransferSong = async (name: string, id: string, type: string
   await FileSystem.writeAsStringAsync(destination, data, { encoding: 'base64' });
   const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
   const info = await getAudioMetadata(destination, wantedTags);
-  const importArtists: ArtistType[] = await getArtistsFromMetadata(info.metadata?.artist);
-  if (importArtists.length > 0) {
-    info.metadata.artist = importArtists.map(artist => artist.name).join(', ');
-  }
-  else {
-    info.metadata.artist = '';
+  let importArtists: ArtistType[] = [];
+  if (info.metadata?.artist) {
+    const importArtists: ArtistType[] = await getArtistsFromMetadata(info.metadata?.artist);
+    if (importArtists.length > 0) {
+      info.metadata.artist = importArtists.map(artist => artist.name).join(', ');
+    }
+    else {
+      info.metadata.artist = '';
+    }
   }
   await FileSystem.deleteAsync(destination);
   return {
@@ -274,12 +277,15 @@ export const importFiles = async (
           console.log(error);
         });
       info.fileType = results.assets[i].mimeType;
-      const importArtists: ArtistType[] = await getArtistsFromMetadata(info.metadata?.artist);
-      if (importArtists.length > 0) {
-        info.metadata.artist = importArtists.map(artist => artist.name).join(', ');
-      }
-      else {
-        info.metadata.artist = '';
+      let importArtists: ArtistType[] = [];
+      if (info.metadata?.artist) {
+        importArtists = await getArtistsFromMetadata(info.metadata.artist);
+        if (importArtists.length > 0) {
+          info.metadata.artist = importArtists.map(artist => artist.name).join(', ');
+        }
+        else {
+          info.metadata.artist = '';
+        }
       }
       song = {
         'name': results.assets[i].name,
@@ -648,9 +654,12 @@ export const writeImageToLibrary = async (artwork: string, dir: string) => {
       });
       const fullResizeOptions: ImageManipulator.ActionResize = {resize: {}};
       const smallResizeOptions: ImageManipulator.ActionResize = {resize: {}};
-      if (imageWidth === imageHeight) {
+      const difference = Math.abs(imageWidth - imageHeight);
+      if (imageWidth === imageHeight || difference < 10) {
         fullResizeOptions.resize.width = Math.min(1000, imageWidth);
+        fullResizeOptions.resize.height = Math.min(1000, imageWidth);
         smallResizeOptions.resize.width = Math.min(200, imageWidth);
+        smallResizeOptions.resize.height = Math.min(200, imageWidth);
       }
       else if (imageWidth > imageHeight) {
         fullResizeOptions.resize.width = Math.min(1000, imageWidth);

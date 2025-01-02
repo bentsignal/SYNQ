@@ -103,7 +103,7 @@ const EditSong = ({id}: {id: string}) => {
 
   const handleSave = async ({newTitle, newImage}: {newTitle: string, newImage: string}) => {
     try {
-      if (editSong.pageType === PageType.LIBRARY) {
+      if ([PageType.LIBRARY, PageType.ARTIST, PageType.ALBUM].includes(editSong.pageType)) {
         await updateSongsInLibrary([editSong.id], newTitle, artist, album, newImage);
       }
       else if (editSong.pageType === PageType.IMPORT) {

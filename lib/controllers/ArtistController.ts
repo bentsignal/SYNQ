@@ -111,7 +111,11 @@ export const getSongsFromArtist = async (artistId: number, sort: SortType = Sort
 
 export const getArtistsFromMetadata = async (value: string): Promise<ArtistType[]> => {
   
- let artists: ArtistType[] = [];
+  if (value === '' || value === null || value === undefined) {
+    return [];
+  }
+
+  let artists: ArtistType[] = [];
 
   let allNames = value.split(',');
   allNames = allNames.map(name => name.trim());

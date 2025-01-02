@@ -3,7 +3,7 @@ import { useGlobalContext } from '@/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { useEffect, useState } from 'react';
 import PageTitle from '@/components/PageTitle';
-import { getCompletion } from '@/lib/controllers/SongController';
+import { getCompletion } from '@/lib/Util';
 import SongList from '@/components/lists/song';
 import ImportControls from '../ImportControls';
 import Progress from '@/components/Progress';
@@ -23,8 +23,6 @@ const Files = () => {
     setShowInfoModal, setHomeState,
     setImportState, setLoading,
     setTransferSize, setResults, setExportDisabled,
-
-    importSongSheet,
 
   } = useGlobalContext();
 
@@ -75,7 +73,6 @@ const Files = () => {
           pageType={PageType.IMPORT}
           fadeCover={false}
           fadeSong={true}
-          sheetRef={importSongSheet}
         />
       );
     }

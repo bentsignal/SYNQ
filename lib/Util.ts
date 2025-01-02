@@ -1,3 +1,5 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export const msToSec = (milliseconds: number) => {
   return Math.floor(milliseconds / 1000);
 };
@@ -24,3 +26,44 @@ export const formatTime = (totalSeconds: number) => {
   const seconds = totalSeconds % 60;
   return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 };
+
+export const getCompletion = (size: number, progress: number) => {
+  try {
+    if (size === 0) {
+      return 0;
+    }
+    let result = ((1 - ((progress - 1) / size)) * 100);
+    if (result < 0) {
+      return 0;
+    }
+    else if (result > 100) {
+      return 100;
+    }
+    else {
+      return result;
+    }
+  }
+  catch (error) {
+    console.error('Error getting completion percentage:', error);
+    return 0;
+  }
+}
+
+export const getExportNumber = async () => {
+  try {
+    const numberString = await AsyncStorage.getItem('exportNumber');
+    if (numberString && isValidNumString(numberString)) {
+      let number = Number(numberString);
+      number++;
+      await AsyncStorage.setItem('exportNumber', number.toString());
+      return number;
+    }
+    else {
+      throw new Error('Bad data');
+    }
+  }
+  catch (error) {
+    await AsyncStorage.setItem('exportNumber', '1');
+    return 1;
+  }
+}

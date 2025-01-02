@@ -9,7 +9,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { SaveFormat } from 'expo-image-manipulator';
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 import SongDataManager from '@/lib/data/SongDataManager';
-import { isValidNumString, idgen } from '@/lib/Util';
+import { isValidNumString, idgen, getExportNumber } from '@/lib/Util';
 import { Image } from 'react-native';
 import PlaylistDataManager from '@/lib/data/PlaylistDataManager';
 import { getPlaylistSongs } from '@/lib/controllers/PlaylistController';
@@ -17,47 +17,6 @@ import songBus from "@/station/song/Bus";
 import { SongBusEvent } from "@/station/song/Events";
 import 'react-native-get-random-values';
 import { getArtistsFromMetadata, getSongsFromArtist, addArtistToSong } from '@/lib/controllers/ArtistController';
-
-export const getCompletion = (size: number, progress: number) => {
-  try {
-    if (size === 0) {
-      return 0;
-    }
-    let result = ((1 - ((progress - 1) / size)) * 100);
-    if (result < 0) {
-      return 0;
-    }
-    else if (result > 100) {
-      return 100;
-    }
-    else {
-      return result;
-    }
-  }
-  catch (error) {
-    console.error('Error getting completion percentage:', error);
-    return 0;
-  }
-}
-
-const getExportNumber = async () => {
-  try {
-    const numberString = await AsyncStorage.getItem('exportNumber');
-    if (numberString && isValidNumString(numberString)) {
-      let number = Number(numberString);
-      number++;
-      await AsyncStorage.setItem('exportNumber', number.toString());
-      return number;
-    }
-    else {
-      throw new Error('Bad data');
-    }
-  }
-  catch (error) {
-    await AsyncStorage.setItem('exportNumber', '1');
-    return 1;
-  }
-}
 
 const splitImageMimeAndBuffer = (image: string) => {
   // extract mime from start of string

@@ -233,7 +233,7 @@ export const getWifiTransferSong = async (name: string, id: string, type: string
   const info = await getAudioMetadata(destination, wantedTags);
   let importArtists: ArtistType[] = [];
   if (info.metadata?.artist) {
-    const importArtists: ArtistType[] = await getArtistsFromMetadata(info.metadata?.artist);
+    importArtists = await getArtistsFromMetadata(info.metadata.artist);
     if (importArtists.length > 0) {
       info.metadata.artist = importArtists.map(artist => artist.name).join(', ');
     }

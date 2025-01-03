@@ -1,6 +1,7 @@
 import { TouchableOpacity, Text, Image, ImageURISource, StyleSheet } from "react-native";
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
+import { getDisabledColor } from "@/lib/controllers/ColorController";
 
 type SongOptionProps = {
   icon: ImageURISource;
@@ -13,7 +14,6 @@ const SheetOption = ({ icon, text, show=true, handler }: SongOptionProps) => {
 
   const Local = StyleSheet.create({
     songOptionActionContainer: {
-      display: show ? 'flex' : 'none',
       flexDirection: 'row',
       alignItems: 'center',
       paddingTop: 5,
@@ -21,13 +21,13 @@ const SheetOption = ({ icon, text, show=true, handler }: SongOptionProps) => {
       marginBottom: 10,
     },
     textColor: {
-      color: Colors.text,
+      color: show ? Colors.text : getDisabledColor(Colors.tabInactive),
     },
     songOptionIcon: {
       marginRight: 15,
       width: 22,
       height: 22,
-      tintColor: Colors.tabInactive,
+      tintColor: show ? Colors.tabInactive : getDisabledColor(Colors.tabInactive),
     },
   });
 
@@ -36,6 +36,7 @@ const SheetOption = ({ icon, text, show=true, handler }: SongOptionProps) => {
       style={Local.songOptionActionContainer}
       activeOpacity={0.9}
       onPress={handler}
+      disabled={!show}
     >
       <Image
         source={icon}

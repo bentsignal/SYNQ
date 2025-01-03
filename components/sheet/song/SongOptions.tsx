@@ -7,7 +7,9 @@ import { getTrackFromSong, addToQueue } from '@/lib/controllers/PlayerController
 import playlistBus from '@/station/playlist';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { deleteFromLibrary, exportSongs, removeSongs } from '@/lib/controllers/SongController';
+import { removeSongs } from '@/lib/controllers/SongController';
+import { exportSongs } from '@/lib/controllers/ImportExportController';
+import { deleteFromLibrary } from '@/lib/controllers/LibraryController';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
 import { removeFromAllPlaylists, removeFromPlaylist } from '@/lib/controllers/PlaylistController';

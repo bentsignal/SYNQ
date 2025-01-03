@@ -4,9 +4,12 @@ import * as FileSystem from "expo-file-system";
 import * as Haptics from 'expo-haptics';
 import { getFileName } from '@/lib/Util';
 import { getAppIcon } from '@/constants/Logos';
-import { getNextUp } from '@/lib/controllers/SongController';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
+import { getPlaylistSongs } from '@/lib/controllers/PlaylistController';
+import { getSongsFromArtist } from '@/lib/controllers/ArtistController';
+import { getSongById } from '@/lib/controllers/SongController';
+import { PageType, SortType } from '@/constants/Types';
 
 export const setupPlayer = async () => {
   await TrackPlayer.setupPlayer();
@@ -182,4 +185,101 @@ export const getTrackArtwork = (track: Track) => {
   else {
     return 'transparent';
   }
+}
+
+export const getNextUp = async (
+  currentId: string,
+  pagination: number = 100,
+  shuffle: boolean = false,
+  sourceType: SourceType,
+  sourceId: number,
+): Promise<SongType[]> => {
+
+  const next: SongType[] = [];
+  let songs: SongType[] = [];
+  // TODO: only query songs after currentId
+  if (sourceType === SourceType.PLAYLIST) {
+    songs = await getPlaylistSongs(sourceId, PageType.LIBRARY, SortType.NEWEST);
+  }
+  else if (sourceType === SourceType.ARTIST) {
+    //  TODO: get songs from artist
+    songs = await getSongsFromArtist(sourceId, SortType.NEWEST);
+  }
+  else if (sourceType === SourceType.ALBUM) {
+    //  TODO: get songs from album
+  }
+  else {
+    return songs;
+  }
+
+  try {
+    if (shuffle) {
+      const cap = pagination > songs.length ? songs.length : pagination;
+      for (let i = 0; i < cap; i++) {
+        const randomIndex = Math.floor(Math.random() * songs.length);
+        const newSong = songs[randomIndex];
+        next.push(newSong);
+        songs.splice(randomIndex, 1);
+      }
+    }
+    else {
+      const currentIndex = songs.findIndex((song: SongType) => song.id === currentId);
+      const validSongs = songs.filter((song: SongType, index: number) => index > currentIndex);
+      if (validSongs.length === 0) {
+        const cap = pagination > songs.length ? songs.length : pagination;
+        for (let i = 0; i < cap; i++) {
+          const newSong = songs[i];
+          next.push(newSong);
+        }
+      }
+      else {
+        const cap = pagination > validSongs.length ? validSongs.length : pagination;
+        for (let i = 0; i < cap; i++) {
+          const newSong = validSongs[i];
+          next.push(newSong);
+        }
+      }
+    }
+  }
+  catch (error) {
+    console.log(error);
+  }
+
+  return next;
+
+}
+
+export const fetchMoreSongs = async (id: string, shuffle: boolean, sourceType: SourceType, sourceId: number) => {
+  try {
+    let newSongs = await getNextUp(id, 100, shuffle, sourceType, sourceId);
+    if (newSongs.length < 1) {
+      newSongs = await getNextUp(id, 100, true, sourceType, sourceId);
+    }
+    return newSongs;
+  }
+  catch (error) {
+    console.log('error fetching more songs: ', error);
+    return [];
+  }
+}
+
+export const getNextValidSong = async (songs: number[]): Promise<SongType | null> => {
+  let foundSong = false;
+  let newSong = null;
+  let attempts = 0;
+  const MAX_ATTEMPTS = 50;
+  while (!foundSong && attempts < MAX_ATTEMPTS) {
+    if (songs.length === 0) {
+      throw new Error('No valid songs found in next up');
+    }
+    const newId = songs.shift();
+    if (newId && newId !== -1) {
+      newSong = await getSongById(newId);
+      if (![null, undefined, -1, '-1'].includes(newSong.id)) {
+        foundSong = true;
+      }
+    }
+    attempts++;
+  }
+  return newSong;
 }

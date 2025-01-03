@@ -1,6 +1,6 @@
 import { ArtistType, SongType, SortType } from "@/constants/Types";
 import ArtistDataManager from "@/lib/data/ArtistDataManager";
-import { writeImageToLibrary } from "./SongController";
+import { writeImageToLibrary } from "./ImageController";
 import * as FileSystem from 'expo-file-system';
 import { ArtistBusEvent } from "@/station/artist/Events";
 import artistBus from "@/station/artist";

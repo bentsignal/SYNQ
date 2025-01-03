@@ -1,7 +1,7 @@
 import { StyleSheet, Animated } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import FastImage from 'react-native-fast-image';
-import { getCoverImageData } from '@/lib/controllers/SongController';
+import { getCoverImageData } from '@/lib/controllers/ImageController';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { getAppIcon } from '@/constants/Logos';
 import { PageType, CoverType } from '@/constants/Types';

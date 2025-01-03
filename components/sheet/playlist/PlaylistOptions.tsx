@@ -2,7 +2,7 @@ import SheetOption from '@/components/sheet/SheetOption';
 import { PageType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { useEffect, useState } from 'react';
-import { exportSongs } from '@/lib/controllers/SongController';
+import { exportSongs } from '@/lib/controllers/ImportExportController';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
 import { deletePlaylist, getPlaylistSongs } from '@/lib/controllers/PlaylistController';

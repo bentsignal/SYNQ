@@ -7,7 +7,7 @@ import ImportControls from "@/components/import/ImportControls";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import CustomButton from "@/components/CustomButton";
 import { Colors } from "@/constants/Colors";
-import { exportSongs } from '@/lib/controllers/SongController';
+import { exportSongs } from '@/lib/controllers/ImportExportController';
 import { useThemeContext } from "@/context/ThemeProvider";
 import { usePremiumContext } from "@/context/PremiumProvider";
 

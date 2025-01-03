@@ -1,7 +1,7 @@
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
-import { importFiles } from "@/lib/controllers/SongController";
+import { importFiles } from "@/lib/controllers/ImportExportController";
 import PageTitle from '@/components/PageTitle';
 import Option from "@/components/Option";
 import WiFi from "@/components/import/wifi/WiFi";

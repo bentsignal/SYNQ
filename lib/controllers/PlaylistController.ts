@@ -3,7 +3,7 @@ import playlistBus from "@/station/playlist";
 import * as FileSystem from 'expo-file-system';
 import { getSongByResult } from "@/lib/controllers/SongController";
 import { PageType, SortType } from "@/constants/Types";
-import { writeImageToLibrary } from "@/lib/controllers/SongController";
+import { writeImageToLibrary } from "@/lib/controllers/ImageController";
 import { PlaylistBusEvent } from "@/station/playlist/Events";
 
 export const createPlaylist = async (name: string, image?: string) => {

@@ -2,20 +2,14 @@ import SheetOption from '@/components/sheet/SheetOption';
 import { PageType } from '@/constants/Types';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { useEffect, useState } from 'react';
-import { exportSongs } from '@/lib/controllers/SongController';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
-import { deletePlaylist, getPlaylistSongs } from '@/lib/controllers/PlaylistController';
-import { getSongByResult } from '@/lib/controllers/SongController';
 import { Alert } from 'react-native';
 import { router } from 'expo-router';
-import { PlaylistBusEvent } from '@/station/playlist/Events';
-import playlistBus from '@/station/playlist';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistBusEvent } from '@/station/artist/Events';
 import artistBus from '@/station/artist';
 import { deleteArtist } from '@/lib/controllers/ArtistController';
-
 
 const ArtistOptions = ({name}: {name: string}) => {
 

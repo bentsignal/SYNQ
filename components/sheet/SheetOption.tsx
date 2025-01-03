@@ -12,43 +12,42 @@ type SongOptionProps = {
 
 const SheetOption = ({ icon, text, show=true, handler }: SongOptionProps) => {
 
-  const Local = StyleSheet.create({
-    songOptionActionContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingTop: 5,
-      paddingBottom: 5,
-      marginBottom: 10,
-    },
-    textColor: {
-      color: show ? Colors.text : getDisabledColor(Colors.tabInactive),
-    },
-    songOptionIcon: {
-      marginRight: 15,
-      width: 22,
-      height: 22,
-      tintColor: show ? Colors.tabInactive : getDisabledColor(Colors.tabInactive),
-    },
-  });
-
   return (
     <TouchableOpacity
-      style={Local.songOptionActionContainer}
+      style={Local.container}
       activeOpacity={0.9}
       onPress={handler}
       disabled={!show}
     >
       <Image
         source={icon}
-        style={Local.songOptionIcon}
+        style={[Local.icon, {
+          tintColor: show ? Colors.tabInactive : getDisabledColor(Colors.tabInactive),
+        }]}
       />
-      <Text style={[Styles.h5, Local.textColor]}>
+      <Text style={[Styles.h5, {
+        color: show ? Colors.text : getDisabledColor(Colors.tabInactive),
+      }]}>
         {text}
       </Text>
     </TouchableOpacity>
   );
 
-
 };
+
+const Local = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 5,
+    paddingBottom: 5,
+    marginBottom: 15,
+  },
+  icon: {
+    marginRight: 15,
+    width: 22,
+    height: 22,
+  },
+});
 
 export default SheetOption;

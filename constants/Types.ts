@@ -14,13 +14,14 @@ export type SongType = {
   "name": string;
   "id": string;
   "uuid"?: string;
-  "data": string;
+  "data"?: string;
   "info": InfoType;
   "pageType"?: PageType;
   "sourceType"?: SourceType;
   "sourceId"?: number;
   "edited"?: boolean;
   "importArtists"?: ArtistType[];
+  "cacheUri"?: string;
 };
 
 export type TagsType = {

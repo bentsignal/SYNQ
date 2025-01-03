@@ -33,6 +33,9 @@ export const updateMetadata = async (song: SongType) => {
       console.log('error reading image file data: ', error);
     }
   }
+  else if (song.pageType === PageType.IMPORT) {
+    song.data = await FileSystem.readAsStringAsync(song.cacheUri, { encoding: 'base64' });
+  }
 
   // validate data
   if (!song.data) {
@@ -88,14 +91,24 @@ export const updateMetadata = async (song: SongType) => {
 
 }
 
-export const removeSongs = (
+export const removeSongs = async (
   results: [SongType],
   ids: string[]
 ) => {
   let newResults = [];
   for (let i = 0; i < results.length; i++) {
-    if (results[i].id && !ids.includes(results[i].id)) {
-      newResults.push(results[i]);
+    if (results[i].id) {
+      if (!ids.includes(results[i].id)) {
+        newResults.push(results[i]);
+      }
+      else if (results[i].cacheUri) {
+        try {
+          await FileSystem.deleteAsync(results[i].cacheUri);
+        }
+        catch (error) {
+          console.log('error deleting cached song file: ', error);
+        }
+      }
     }
   }
   return newResults;

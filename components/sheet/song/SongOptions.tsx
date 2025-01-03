@@ -92,7 +92,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
   const executeDelete = async () => {
     // handle bulk delete
     if (selectedSongs.length > 0) {
-      const newResults = removeSongs(results, selectedSongs);
+      const newResults = await removeSongs(results, selectedSongs);
       if (newResults.length <= 0) {
         setExportDisabled(true);
         setHomeState(0);
@@ -114,7 +114,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
     // remove from import
     else if (editSong.pageType === PageType.IMPORT) {
       const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id]
-      const newResults = removeSongs(results, ids);
+      const newResults = await removeSongs(results, ids);
       if (newResults.length <= 0) {
         setExportDisabled(true);
       }

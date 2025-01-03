@@ -17,6 +17,7 @@ import { useThemeContext } from "@/context/ThemeProvider";
 import { usePremiumContext } from "@/context/PremiumProvider";
 import { PlaylistBusEvent } from "@/station/playlist/Events";
 import playlistBus from "@/station/playlist";
+import { deleteImportSongs } from "@/lib/controllers/ImportExportController";
 
 const SavePrompt = () => {
 
@@ -151,6 +152,7 @@ const SavePrompt = () => {
     }
     else {
       setHomeState(3);
+      await deleteImportSongs(results);
       setResults([]);
       setTransferSize(0);
       setShowImportAd(false);

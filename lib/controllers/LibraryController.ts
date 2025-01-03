@@ -69,7 +69,8 @@ export const saveToLibrary = async (
           const dir = `${FileSystem.documentDirectory}library/${id}`;
           try {
             await FileSystem.makeDirectoryAsync(dir);
-            await FileSystem.writeAsStringAsync(`${dir}/${fileName}`, song.data, { encoding: 'base64' });
+            await FileSystem.copyAsync({ from: song.cacheUri, to: `${dir}/${song.name}` });
+            await FileSystem.deleteAsync(song.cacheUri);
           }
           catch (error) {
             console.log('error writing audio: ', error);

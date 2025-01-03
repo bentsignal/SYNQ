@@ -94,23 +94,14 @@ export const writeImageToLibrary = async (artwork: string, dir: string) => {
       const { width: imageWidth, height: imageHeight } = await new Promise<{ width: number, height: number }>((resolve, reject) => {
         Image.getSize(`${dir}/cover_temp.${extension}`, (width, height) => resolve({ width, height }), reject);
       });
-      const fullResizeOptions: ImageManipulator.ActionResize = {resize: {}};
-      const smallResizeOptions: ImageManipulator.ActionResize = {resize: {}};
-      const difference = Math.abs(imageWidth - imageHeight);
-      if (imageWidth === imageHeight || difference < 10) {
-        fullResizeOptions.resize.width = Math.min(1000, imageWidth);
-        fullResizeOptions.resize.height = Math.min(1000, imageWidth);
-        smallResizeOptions.resize.width = Math.min(200, imageWidth);
-        smallResizeOptions.resize.height = Math.min(200, imageWidth);
-      }
-      else if (imageWidth > imageHeight) {
-        fullResizeOptions.resize.width = Math.min(1000, imageWidth);
-        smallResizeOptions.resize.width = Math.min(200, imageWidth);
-      }
-      else {
-        fullResizeOptions.resize.height = Math.min(1000, imageHeight);
-        smallResizeOptions.resize.height = Math.min(200, imageHeight);
-      }
+      const fullResizeOptions: ImageManipulator.ActionResize = {resize: {
+        width: Math.min(1000, imageWidth),
+        height: Math.min(1000, imageWidth),
+      }};
+      const smallResizeOptions: ImageManipulator.ActionResize = {resize: {
+        width: Math.min(200, imageWidth),
+        height: Math.min(200, imageWidth),
+      }};
       // convert image to jpeg, save full size
       const fullConvert = await ImageManipulator.manipulateAsync(
         `${dir}/cover_temp.${extension}`,

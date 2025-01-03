@@ -4,7 +4,7 @@ import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
 import { SongType, InfoType, PageType, TagsType, SourceType, SongResultType, SortType, ArtistType } from '@/constants/Types'
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
-import SongDataManager from '@/lib/data/SongDataManager';
+import SongModel from '@/lib/models/SongModel';
 import 'react-native-get-random-values';
 import { splitImageMimeAndBuffer, getCoverImageData } from '@/lib/controllers/ImageController';
 
@@ -136,7 +136,7 @@ export const saveEdits = (
 
 export const getSongById = async (id: number) => {
   try {
-    const db = SongDataManager.getInstance();
+    const db = SongModel.getInstance();
     const result = await db.getSongById(id);
     return getSongByResult(result);
   }

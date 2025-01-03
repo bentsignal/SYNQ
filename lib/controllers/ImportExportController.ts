@@ -3,7 +3,7 @@ import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
 import { SongType, InfoType, PageType, ArtistType } from '@/constants/Types'
-import SongDataManager from '@/lib/data/SongDataManager';
+import SongModel from '@/lib/models/SongModel';
 import { idgen, getExportNumber } from '@/lib/Util';
 import 'react-native-get-random-values';
 import { getArtistsFromMetadata } from '@/lib/controllers/ArtistController';
@@ -36,7 +36,7 @@ export const exportSongs = async (songs: SongType[]) => {
         if (song.edited) {
           await updateMetadata(song);
           song.edited = false;
-          const db = SongDataManager.getInstance();
+          const db = SongModel.getInstance();
           await db.songExported(Number(song.id));
           await FileSystem.writeAsStringAsync(audioPath, song.data, { encoding: 'base64' });
         }
@@ -50,7 +50,7 @@ export const exportSongs = async (songs: SongType[]) => {
   }
   // export multiple songs
   else if (songs.length > 1) {
-    const db = SongDataManager.getInstance();
+    const db = SongModel.getInstance();
     for (let i = 0; i < songs.length; i++) {
       if (songs[i].pageType === PageType.IMPORT) {
         if (songs[i].edited) {

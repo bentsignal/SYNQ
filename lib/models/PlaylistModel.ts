@@ -1,25 +1,25 @@
-import DataManager from './DataManager';
+import Model from './Model';
 import { PlaylistType, SongResultType, SortType } from '@/constants/Types';
 import { getArtistsFromSong } from '../controllers/ArtistController';
 
-class PlaylistDataManager extends DataManager {
+export default class PlaylistModel extends Model {
 
-  private static instance: PlaylistDataManager;
+  private static instance: PlaylistModel;
 
   constructor() {
     super();  
   }
 
-  public static getInstance(): PlaylistDataManager {
-    if (!PlaylistDataManager.instance) {
-      PlaylistDataManager.instance = new PlaylistDataManager();
+  public static getInstance(): PlaylistModel {
+    if (!PlaylistModel.instance) {
+      PlaylistModel.instance = new PlaylistModel();
     }
-    return PlaylistDataManager.instance;
+    return PlaylistModel.instance;
   }
 
   public async getPlaylists(): Promise<PlaylistType[]> {
     try {
-      const result = await PlaylistDataManager.db?.getAllAsync(`
+      const result = await PlaylistModel.db?.getAllAsync(`
         SELECT playlists.*, COUNT(playlistSongs.songId) as songCount 
         FROM playlists
         LEFT JOIN playlistSongs ON playlists.id = playlistSongs.playlistId
@@ -34,7 +34,7 @@ class PlaylistDataManager extends DataManager {
 
   public async getPlaylistInfoById(id: number): Promise<PlaylistType | null> {
     try {
-      const result = await PlaylistDataManager.db?.getFirstAsync(`
+      const result = await PlaylistModel.db?.getFirstAsync(`
         SELECT playlists.*, COUNT(playlistSongs.songId) as songCount 
         FROM playlists
         LEFT JOIN playlistSongs ON playlists.id = playlistSongs.playlistId
@@ -49,10 +49,10 @@ class PlaylistDataManager extends DataManager {
 
   public async getSongsFromPlaylist(playlistId: number, sort: SortType = SortType.NEWEST): Promise<SongResultType[]> {
     try {
-      if (!PlaylistDataManager.db) {
-        await PlaylistDataManager.initConnection();
+      if (!PlaylistModel.db) {
+        await PlaylistModel.initConnection();
       }
-      let result = await PlaylistDataManager.db?.getAllAsync<SongResultType>(`
+      let result = await PlaylistModel.db?.getAllAsync<SongResultType>(`
         SELECT songs.* 
         FROM songs
         INNER JOIN playlistSongs ON songs.id = playlistSongs.songId
@@ -97,7 +97,7 @@ class PlaylistDataManager extends DataManager {
 
   public async addToPlaylist(playlistId: number, songId: number): Promise<boolean> {
     try {
-      await PlaylistDataManager.db?.runAsync(`INSERT INTO playlistSongs (playlistId, songId) VALUES (?, ?);`, [playlistId, songId]);
+      await PlaylistModel.db?.runAsync(`INSERT INTO playlistSongs (playlistId, songId) VALUES (?, ?);`, [playlistId, songId]);
       return true;
     }
     catch (error) {
@@ -107,7 +107,7 @@ class PlaylistDataManager extends DataManager {
 
   public async removeFromPlaylist(playlistId: number, songId: number): Promise<boolean> {
     try {
-      await PlaylistDataManager.db?.runAsync(
+      await PlaylistModel.db?.runAsync(
         `DELETE FROM playlistSongs WHERE playlistId = ? AND songId = ?;`, 
         [playlistId, songId]
       );
@@ -119,7 +119,7 @@ class PlaylistDataManager extends DataManager {
   }
 
   public async checkForDuplicateName(name: string): Promise<boolean> {
-    const result = await PlaylistDataManager.db?.getFirstAsync(`SELECT * FROM playlists WHERE name = ?;`, [name]);
+    const result = await PlaylistModel.db?.getFirstAsync(`SELECT * FROM playlists WHERE name = ?;`, [name]);
     return result ? true : false;
   }
 
@@ -128,7 +128,7 @@ class PlaylistDataManager extends DataManager {
       if (await this.checkForDuplicateName(name)) {
         throw new Error('Playlist already exists');
       }
-      const result = await PlaylistDataManager.db?.runAsync(`INSERT INTO playlists (name) VALUES (?);`, [name]);
+      const result = await PlaylistModel.db?.runAsync(`INSERT INTO playlists (name) VALUES (?);`, [name]);
       return result?.lastInsertRowId ? result.lastInsertRowId : -1;
     }
     catch (error) {
@@ -137,7 +137,7 @@ class PlaylistDataManager extends DataManager {
   }
 
   public async deletePlaylist(playlistId: number): Promise<boolean> {
-    await PlaylistDataManager.db?.runAsync(`DELETE FROM playlists WHERE id = ?;`, [playlistId]);
+    await PlaylistModel.db?.runAsync(`DELETE FROM playlists WHERE id = ?;`, [playlistId]);
     return true;
   }
 
@@ -145,12 +145,12 @@ class PlaylistDataManager extends DataManager {
     if (await this.checkForDuplicateName(name)) {
       throw new Error('Playlist already exists');
     }
-    await PlaylistDataManager.db?.runAsync(`UPDATE playlists SET name = ? WHERE id = ?;`, [name, playlistId]);
+    await PlaylistModel.db?.runAsync(`UPDATE playlists SET name = ? WHERE id = ?;`, [name, playlistId]);
     return true;
   }
 
   public async isSongInPlaylist(playlistId: number, songId: number): Promise<boolean> {
-    const result = await PlaylistDataManager.db?.getFirstAsync(
+    const result = await PlaylistModel.db?.getFirstAsync(
       `SELECT * FROM playlistSongs WHERE playlistId = ? AND songId = ?;`, 
       [playlistId, songId]
     );
@@ -158,6 +158,4 @@ class PlaylistDataManager extends DataManager {
   }
 
 }
-
-export default PlaylistDataManager;
 

@@ -1,5 +1,5 @@
 import { ArtistType, SongType, SortType } from "@/constants/Types";
-import ArtistDataManager from "@/lib/data/ArtistDataManager";
+import ArtistModel from "@/lib/models/ArtistModel";
 import { writeImageToLibrary } from "./ImageController";
 import * as FileSystem from 'expo-file-system';
 import { ArtistBusEvent } from "@/station/artist/Events";
@@ -7,7 +7,7 @@ import artistBus from "@/station/artist";
 import { getSongByResult } from "./SongController";
 
 export const createArtist = async (name: string, image?: string): Promise<ArtistType> => {
-  const artistId = await ArtistDataManager.getInstance().createArtist(name);
+  const artistId = await ArtistModel.getInstance().createArtist(name);
   if (image) {
     const dir = `${FileSystem.documentDirectory}artists/${artistId}`;
     await makeArtistsDir();
@@ -18,7 +18,7 @@ export const createArtist = async (name: string, image?: string): Promise<Artist
 }
 
 export const deleteArtist = async (artistId: number) => {
-  const db = ArtistDataManager.getInstance();
+  const db = ArtistModel.getInstance();
   try {
     await FileSystem.deleteAsync(`${FileSystem.documentDirectory}artists/${artistId}`);
     await db.deleteArtist(artistId);
@@ -29,11 +29,11 @@ export const deleteArtist = async (artistId: number) => {
 }
 
 export const getArtistInfo = async (artistId: number): Promise<ArtistType | null> => {
-  return await ArtistDataManager.getInstance().getArtistInfo(artistId);
+  return await ArtistModel.getInstance().getArtistInfo(artistId);
 }
 
 export const getArtists = async (): Promise<ArtistType[]> => {
-  return await ArtistDataManager.getInstance().getArtists();
+  return await ArtistModel.getInstance().getArtists();
 }
 
 const makeArtistsDir = async () => {
@@ -71,7 +71,7 @@ export const getArtistCover = async (artistId: number, full: boolean = false) =>
 }
 
 export const updateArtist = async (artistId: number, name: string, image: string) => {
-  const db = ArtistDataManager.getInstance();
+  const db = ArtistModel.getInstance();
   if (name) {
     await db.updateArtist(artistId, name);
     artistBus.emit(ArtistBusEvent.ARTIST_NAME_MODIFIED, {
@@ -88,23 +88,23 @@ export const updateArtist = async (artistId: number, name: string, image: string
 }
 
 export const addArtistToSong = async (artistId: number, songId: number) => {
-  await ArtistDataManager.getInstance().addArtistToSong(artistId, songId);
+  await ArtistModel.getInstance().addArtistToSong(artistId, songId);
 }
 
 export const removeArtistFromSong = async (artistId: number, songId: number) => {
-  await ArtistDataManager.getInstance().removeArtistFromSong(artistId, songId);
+  await ArtistModel.getInstance().removeArtistFromSong(artistId, songId);
 }
 
 export const isArtistOnSong = async (artistId: number, songId: number): Promise<boolean> => {
-  return await ArtistDataManager.getInstance().isArtistOnSong(artistId, songId);
+  return await ArtistModel.getInstance().isArtistOnSong(artistId, songId);
 }
 
 export const getArtistsFromSong = async (songId: number): Promise<ArtistType[]> => {
-  return await ArtistDataManager.getInstance().getArtistsFromSong(songId);
+  return await ArtistModel.getInstance().getArtistsFromSong(songId);
 }
 
 export const getSongsFromArtist = async (artistId: number, sort: SortType = SortType.NEWEST): Promise<SongType[]> => {
-  const results = await ArtistDataManager.getInstance().getSongsFromArtist(artistId, sort);
+  const results = await ArtistModel.getInstance().getSongsFromArtist(artistId, sort);
   const songs = results.map(result => getSongByResult(result));
   return songs;
 }
@@ -121,7 +121,7 @@ export const getArtistsFromMetadata = async (value: string): Promise<ArtistType[
   allNames = allNames.map(name => name.trim());
   allNames = allNames.filter(name => name !== '');
 
-  const allArtists = await ArtistDataManager.getInstance().getArtists();
+  const allArtists = await ArtistModel.getInstance().getArtists();
   const existingArtists = allArtists.filter(artist => {
     if (value.toLowerCase().includes(artist.name.toLowerCase())) {
       return true;

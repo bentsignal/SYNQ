@@ -6,7 +6,7 @@ import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { connect, restorePurchases } from "@/lib/controllers/PurchaseController";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import DataManager from "@/lib/data/DataManager";
+import Model from "@/lib/models/Model";
 import { LogBox } from "react-native";
 import CFG from "@/constants/Config";
 import ThemeProvider from "@/context/ThemeProvider";
@@ -52,8 +52,8 @@ const RootLayout = () => {
 
     const checkDB = async () => {
       try {
-        await DataManager.initConnection();
-        await DataManager.createTables();
+        await Model.initConnection();
+        await Model.createTables();
       }
       catch (error) {
         console.error('Error creating database:', error);

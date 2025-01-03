@@ -1,7 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 import { SongType } from '@/constants/Types';
 
-class DataManager {
+export default class Model {
 
   protected static db: SQLite.SQLiteDatabase | null = null;
 
@@ -193,5 +193,3 @@ class DataManager {
   } 
 
 }
-
-export default DataManager;

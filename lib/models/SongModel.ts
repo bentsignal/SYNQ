@@ -1,20 +1,20 @@
-import DataManager from './DataManager';
+import Model from './Model';
 import { SongResultType } from '@/constants/Types';
 import { getArtistsFromSong } from '../controllers/ArtistController';
 
-class SongDataManager extends DataManager {
+export default class SongModel extends Model {
 
-  private static instance: SongDataManager;
+  private static instance: SongModel;
 
   constructor() {
     super();
   }
 
-  public static getInstance(): SongDataManager {
-    if (!SongDataManager.instance) {
-      SongDataManager.instance = new SongDataManager();
+  public static getInstance(): SongModel {
+    if (!SongModel.instance) {
+      SongModel.instance = new SongModel();
     }
-    return SongDataManager.instance;
+    return SongModel.instance;
   }
 
   public async insertSong(
@@ -28,10 +28,10 @@ class SongDataManager extends DataManager {
     edited: boolean,
   ): Promise<number> {
     try {   
-      if (!SongDataManager.db) {
-        await SongDataManager.initConnection();
+      if (!SongModel.db) {
+        await SongModel.initConnection();
       } 
-      const result = await SongDataManager.db?.runAsync(
+      const result = await SongModel.db?.runAsync(
         `INSERT INTO songs (title, artists, album, genre, duration, fileType, fileName, edited)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [title, artists, album, genre, duration, fileType, fileName, edited] 
@@ -45,10 +45,10 @@ class SongDataManager extends DataManager {
 
   public async getSongs(): Promise<any> {
     try {
-      if (!SongDataManager.db) {
-        await SongDataManager.initConnection();
+      if (!SongModel.db) {
+        await SongModel.initConnection();
       }
-      const result = await SongDataManager.db?.getAllAsync(`SELECT * FROM songs;`);
+      const result = await SongModel.db?.getAllAsync(`SELECT * FROM songs;`);
       return result ? result : [];
     } catch (error) {
       console.error('Error getting songs:', error);
@@ -57,10 +57,10 @@ class SongDataManager extends DataManager {
 
   public async getSongById(id: number): Promise<any> {
     try {
-      if (!SongDataManager.db) {
-        await SongDataManager.initConnection();
+      if (!SongModel.db) {
+        await SongModel.initConnection();
       }
-      const result = await SongDataManager.db?.getFirstAsync<SongResultType>(`SELECT * FROM songs WHERE id = ?;`, [id]);
+      const result = await SongModel.db?.getFirstAsync<SongResultType>(`SELECT * FROM songs WHERE id = ?;`, [id]);
       const artists = await getArtistsFromSong(id);
       if (result !== null){
         result.artists = artists.map(artist => artist.name).join(', ');
@@ -73,10 +73,10 @@ class SongDataManager extends DataManager {
 
   public async removeSong(id: number): Promise<boolean> {
     try {
-      if (!SongDataManager.db) {
-        await SongDataManager.initConnection();
+      if (!SongModel.db) {
+        await SongModel.initConnection();
       }
-      await SongDataManager.db?.runAsync(`DELETE FROM songs WHERE id = ?;`, [id]);
+      await SongModel.db?.runAsync(`DELETE FROM songs WHERE id = ?;`, [id]);
       return true;
     } catch (error) {
       console.error('Error removing song:', error);
@@ -86,7 +86,7 @@ class SongDataManager extends DataManager {
 
   public async songExported(id: number): Promise<boolean> {
     try {
-      await SongDataManager.db?.runAsync(`UPDATE songs SET edited = FALSE WHERE id = ?;`, [id]);
+      await SongModel.db?.runAsync(`UPDATE songs SET edited = FALSE WHERE id = ?;`, [id]);
       return true;
     } 
     catch (error) {
@@ -97,7 +97,7 @@ class SongDataManager extends DataManager {
 
   public async editSong(id: number, title: string, artists: string, album: string): Promise<boolean> {
     try {
-      await SongDataManager.db?.runAsync(
+      await SongModel.db?.runAsync(
         `UPDATE songs SET title = ?, artists = ?, album = ?, edited = TRUE WHERE id = ?;`, 
         [title, artists, album, id]
       );
@@ -109,5 +109,3 @@ class SongDataManager extends DataManager {
   }
 
 }
-
-export default SongDataManager;

@@ -1,7 +1,7 @@
 import * as FileSystem from 'expo-file-system'
 import { SongType, PageType } from '@/constants/Types'
-import SongDataManager from '@/lib/data/SongDataManager';
-import PlaylistDataManager from '@/lib/data/PlaylistDataManager';
+import SongModel from '@/lib/models/SongModel';
+import PlaylistModel from '@/lib/models/PlaylistModel';
 import songBus from "@/station/song/Bus";
 import { SongBusEvent } from "@/station/song/Events";
 import 'react-native-get-random-values';
@@ -15,7 +15,7 @@ export const updateSongsInLibrary = async (
   album: string,
   cover: string,
 ) => {
-  const db = SongDataManager.getInstance();
+  const db = SongModel.getInstance();
   for (let i = 0; i < ids.length; i++) {
     const dir = `${FileSystem.documentDirectory}library/${ids[i]}`;
     if (cover) {
@@ -44,8 +44,8 @@ export const saveToLibrary = async (
   progress: (value: number) => void,
 ) => {
   try {
-    const db = SongDataManager.getInstance();
-    const playlistDb = PlaylistDataManager.getInstance();
+    const db = SongModel.getInstance();
+    const playlistDb = PlaylistModel.getInstance();
     for (let i = 0; i < songs.length; i++) {
       try {
         const song = songs[i];
@@ -102,7 +102,7 @@ export const saveToLibrary = async (
 
 export const deleteFromLibrary = async (id: number) => {
   try {
-    const db = SongDataManager.getInstance();
+    const db = SongModel.getInstance();
     const removed = await db.removeSong(id);
     if (removed) {
       await FileSystem.deleteAsync(`${FileSystem.documentDirectory}library/${id}`);

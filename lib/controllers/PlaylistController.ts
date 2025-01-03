@@ -1,4 +1,4 @@
-import PlaylistDataManager from "@/lib/data/PlaylistDataManager";
+import PlaylistModel from "@/lib/models/PlaylistModel";
 import playlistBus from "@/station/playlist";
 import * as FileSystem from 'expo-file-system';
 import { getSongByResult } from "@/lib/controllers/SongController";
@@ -7,7 +7,7 @@ import { writeImageToLibrary } from "@/lib/controllers/ImageController";
 import { PlaylistBusEvent } from "@/station/playlist/Events";
 
 export const createPlaylist = async (name: string, image?: string) => {
-  const db = PlaylistDataManager.getInstance();
+  const db = PlaylistModel.getInstance();
   const id = await db.createPlaylist(name);
   if (image) {
     const dir = `${FileSystem.documentDirectory}playlists/${id}`;
@@ -18,7 +18,7 @@ export const createPlaylist = async (name: string, image?: string) => {
 }
 
 export const deletePlaylist = async (playlistId: number) => {
-  const db = PlaylistDataManager.getInstance();
+  const db = PlaylistModel.getInstance();
   try {
     await FileSystem.deleteAsync(`${FileSystem.documentDirectory}playlists/${playlistId}`);
     await db.deletePlaylist(playlistId);
@@ -30,13 +30,13 @@ export const deletePlaylist = async (playlistId: number) => {
 }
 
 export const getPlaylists = async () => {
-  const db = PlaylistDataManager.getInstance();
+  const db = PlaylistModel.getInstance();
   return await db.getPlaylists();
 }
 
 export const removeFromAllPlaylists = async (songId: number) => {
   try {
-    const db = PlaylistDataManager.getInstance();
+    const db = PlaylistModel.getInstance();
     const playlists = await db.getPlaylists();
     for (const playlist of playlists) {
       await db.removeFromPlaylist(playlist.id, songId);
@@ -51,27 +51,27 @@ export const removeFromAllPlaylists = async (songId: number) => {
 }
 
 export const addToPlaylist = async (playlistId: number, songId: number) => {
-  const db = PlaylistDataManager.getInstance();
+  const db = PlaylistModel.getInstance();
   await db.addToPlaylist(playlistId, songId);
 }
 
 export const removeFromPlaylist = async (playlistId: number, songId: number) => {
-  const db = PlaylistDataManager.getInstance();
+  const db = PlaylistModel.getInstance();
   await db.removeFromPlaylist(playlistId, songId);
 }
 
 export const isSongInPlaylist = async (playlistId: number, songId: number) => {
-  const db = PlaylistDataManager.getInstance();
+  const db = PlaylistModel.getInstance();
   return await db.isSongInPlaylist(playlistId, songId);
 }
 
 export const getPlaylistInfo = async (playlistId: number) => {
-  const db = PlaylistDataManager.getInstance();
+  const db = PlaylistModel.getInstance();
   return await db.getPlaylistInfoById(playlistId);
 }
 
 export const getPlaylistSongs = async (playlistId: number, pageType?: PageType, sort: SortType = SortType.NEWEST) => {
-  const db = PlaylistDataManager.getInstance();
+  const db = PlaylistModel.getInstance();
   const results = await db.getSongsFromPlaylist(playlistId, sort);
   const songs = results.map(song => {
     const result = getSongByResult(song);
@@ -94,7 +94,7 @@ const makePlaylistsDir = async () => {
 }
 
 export const updatePlaylist = async (playlistId: number, name: string, image: string) => {
-  const db = PlaylistDataManager.getInstance();
+  const db = PlaylistModel.getInstance();
   if (name) {
     await db.updatePlaylist(playlistId, name);
     playlistBus.emit(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, {

@@ -1,23 +1,23 @@
-import DataManager from "./DataManager";
+import Model from "./Model";
 import { ArtistType, SortType, SongResultType } from "@/constants/Types";
 
-class ArtistDataManager extends DataManager {
+export default class ArtistModel extends Model {
 
-  private static instance: ArtistDataManager;
+  private static instance: ArtistModel;
 
   constructor() {
     super();
   }
 
-  public static getInstance(): ArtistDataManager {
-    if (!ArtistDataManager.instance) {
-      ArtistDataManager.instance = new ArtistDataManager();
+  public static getInstance(): ArtistModel {
+    if (!ArtistModel.instance) {
+      ArtistModel.instance = new ArtistModel();
     }
-    return ArtistDataManager.instance;
+    return ArtistModel.instance;
   }
 
   public async getArtists(sort: SortType = SortType.ARTIST): Promise<ArtistType[]> {
-    const result = await ArtistDataManager.db?.getAllAsync<ArtistType>(`SELECT * FROM artists;`);
+    const result = await ArtistModel.db?.getAllAsync<ArtistType>(`SELECT * FROM artists;`);
     if (!result) {
       return [];
     }
@@ -28,7 +28,7 @@ class ArtistDataManager extends DataManager {
   }
 
   public async checkForDuplicateName(name: string): Promise<boolean> {
-    const result = await ArtistDataManager.db?.getFirstAsync(`SELECT * FROM artists WHERE name = ?;`, [name]);
+    const result = await ArtistModel.db?.getFirstAsync(`SELECT * FROM artists WHERE name = ?;`, [name]);
     return result ? true : false;
   }
 
@@ -40,40 +40,40 @@ class ArtistDataManager extends DataManager {
     if (cleanName === '') {
       throw new Error('Artist name is required');
     }
-    const result = await ArtistDataManager.db?.runAsync(`INSERT INTO artists (name) VALUES (?);`, [cleanName]);
+    const result = await ArtistModel.db?.runAsync(`INSERT INTO artists (name) VALUES (?);`, [cleanName]);
     return result?.lastInsertRowId ? result.lastInsertRowId : -1;
   }
 
   public async deleteArtist(artistId: number): Promise<void> {
-    await ArtistDataManager.db?.runAsync(`DELETE FROM artists WHERE id = ?;`, [artistId]);
-    await ArtistDataManager.db?.runAsync(`DELETE FROM artistSongs WHERE artistId = ?;`, [artistId]);
-    await ArtistDataManager.db?.runAsync(`DELETE FROM artistsAlbums WHERE artistId = ?;`, [artistId]);
+    await ArtistModel.db?.runAsync(`DELETE FROM artists WHERE id = ?;`, [artistId]);
+    await ArtistModel.db?.runAsync(`DELETE FROM artistSongs WHERE artistId = ?;`, [artistId]);
+    await ArtistModel.db?.runAsync(`DELETE FROM artistsAlbums WHERE artistId = ?;`, [artistId]);
   }
 
   public async getArtistInfo(artistId: number): Promise<ArtistType | null> {
-    const result = await ArtistDataManager.db?.getFirstAsync(`SELECT * FROM artists WHERE id = ?;`, [artistId]);
+    const result = await ArtistModel.db?.getFirstAsync(`SELECT * FROM artists WHERE id = ?;`, [artistId]);
     return result ? result as ArtistType : null;
   }
 
   public async updateArtist(artistId: number, name: string): Promise<void> {
-    await ArtistDataManager.db?.runAsync(`UPDATE artists SET name = ? WHERE id = ?;`, [name, artistId]);
+    await ArtistModel.db?.runAsync(`UPDATE artists SET name = ? WHERE id = ?;`, [name, artistId]);
   }
 
   public async addArtistToSong(artistId: number, songId: number): Promise<void> {
-    await ArtistDataManager.db?.runAsync(`INSERT INTO artistSongs (artistId, songId) VALUES (?, ?);`, [artistId, songId]);
+    await ArtistModel.db?.runAsync(`INSERT INTO artistSongs (artistId, songId) VALUES (?, ?);`, [artistId, songId]);
   }
 
   public async removeArtistFromSong(artistId: number, songId: number): Promise<void> {
-    await ArtistDataManager.db?.runAsync(`DELETE FROM artistSongs WHERE artistId = ? AND songId = ?;`, [artistId, songId]);
+    await ArtistModel.db?.runAsync(`DELETE FROM artistSongs WHERE artistId = ? AND songId = ?;`, [artistId, songId]);
   }
 
   public async isArtistOnSong(artistId: number, songId: number): Promise<boolean> {
-    const result = await ArtistDataManager.db?.getFirstAsync(`SELECT * FROM artistSongs WHERE artistId = ? AND songId = ?;`, [artistId, songId]);
+    const result = await ArtistModel.db?.getFirstAsync(`SELECT * FROM artistSongs WHERE artistId = ? AND songId = ?;`, [artistId, songId]);
     return result ? true : false;
   }
 
   public async getArtistsFromSong(songId: number): Promise<ArtistType[]> {
-    const result = await ArtistDataManager.db?.getAllAsync(`
+    const result = await ArtistModel.db?.getAllAsync(`
       SELECT artists.*
       FROM artists 
       INNER JOIN artistSongs ON artists.id = artistSongs.artistId 
@@ -83,7 +83,7 @@ class ArtistDataManager extends DataManager {
   }
 
   public async getSongsFromArtist(artistId: number, sort: SortType = SortType.NEWEST): Promise<SongResultType[]> {
-    let result = await ArtistDataManager.db?.getAllAsync<SongResultType>(`SELECT * FROM songs WHERE id IN (SELECT songId FROM artistSongs WHERE artistId = ?);`, [artistId]);
+    let result = await ArtistModel.db?.getAllAsync<SongResultType>(`SELECT * FROM songs WHERE id IN (SELECT songId FROM artistSongs WHERE artistId = ?);`, [artistId]);
     if (result) {
       result = await Promise.all( result.map(async (song) => {
         const artists = await this.getArtistsFromSong(song.id);
@@ -100,5 +100,3 @@ class ArtistDataManager extends DataManager {
   }
 
 }
-
-export default ArtistDataManager;

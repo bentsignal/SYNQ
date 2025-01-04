@@ -21,12 +21,13 @@ export const importFiles = async (
   const songs: SongType[] = [];
   let song: SongType;
   const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
-  if (results.canceled == false) {
+  if (results.canceled === false) {
+    await createImportDir();
     updateSize(results.assets.length);
     for (let i = 0; i < results.assets.length; i++) {
       countdown(results.assets.length - i);
       // Rename file
-      const newUri = `${FileSystem.cacheDirectory}${results.assets[i].name}`;
+      const newUri = `${FileSystem.cacheDirectory}import/${results.assets[i].name}`;
       await FileSystem.moveAsync({
         from: results.assets[i].uri,
         to: newUri
@@ -67,7 +68,7 @@ export const importFiles = async (
 }
 
 export const getWifiTransferSong = async (name: string, id: string, type: string, data: string): Promise<SongType> => {
-  const destination = `${FileSystem.cacheDirectory}${id}${name}`;
+  const destination = `${FileSystem.cacheDirectory}import/${id}${name}`;
   await FileSystem.writeAsStringAsync(destination, data, { encoding: 'base64' });
   const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
   const info = await getAudioMetadata(destination, wantedTags);
@@ -168,6 +169,23 @@ export const deleteImportSongs = async (songs: SongType[]) => {
   for (let i = 0; i < songs.length; i++) {
     if (songs[i].cacheUri) {
       await FileSystem.deleteAsync(songs[i].cacheUri);
+    }
+  }
+}
+
+export const createImportDir = async () => {
+  try {
+    const importDir = `${FileSystem.cacheDirectory}import`;
+    const info = await FileSystem.getInfoAsync(importDir);
+    if (info.exists) {
+      await FileSystem.deleteAsync(importDir);
+    }
+    await FileSystem.makeDirectoryAsync(importDir);
+  }
+  catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (!message.includes('already exists')) {
+      console.log('error creating import directory: ', error);
     }
   }
 }

@@ -92,7 +92,7 @@ export default function Backup() {
           <View style={Local.contentContainer}>
             <Text style={Local.headerText}>Backup your library</Text>
             <Text style={Local.description}>
-              Backup your library to a zip file. You will be able to restore it later. 
+              Backup your library to a zip file. You can then use this file to restore to at a later time. 
               This will only backup your library, not your settings or premium status.
             </Text>
             <CustomButton 

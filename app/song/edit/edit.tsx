@@ -6,7 +6,7 @@ import { Colors } from "@/constants/Colors";
 import { Styles } from "@/constants/Styles";
 import Bar from "@/components/modals/Bar";
 import EditCover from "@/components/cover/EditCover";
-import { CoverType, PageType, ArtistType } from "@/constants/Types";
+import { CoverType, PageType, ArtistType, AlbumType } from "@/constants/Types";
 import CustomButton from "@/components/CustomButton";
 import Notifications from "@/components/notifications/Notifications";
 import { router } from "expo-router";
@@ -18,9 +18,13 @@ import { newCover } from "@/lib/controllers/ImageController";
 import * as Haptics from 'expo-haptics';
 import ModalStyles from "@/components/modals/Styles";
 import ArtistItem from "@/components/lists/artist/ArtistItem";
+import AlbumItem from "@/components/lists/album/AlbumItem";
 import { getArtistsFromSong } from "@/lib/controllers/ArtistController";
+import { getAlbumsFromSong } from "@/lib/controllers/AlbumController";
 import artistBus from "@/station/artist/Bus";
+import albumBus from "@/station/album/Bus";
 import { ArtistBusEvent, ArtistToggledOnSongEvent } from "@/station/artist/Events";
+import { AlbumBusEvent, AlbumToggledOnSongEvent } from "@/station/album/Events";
 
 const MemoTextInput = memo(TextInput);
 
@@ -41,11 +45,14 @@ const EditSong = ({id}: {id: string}) => {
   const [album, setAlbum] = useState('');
   const [image, setImage] = useState('');
   const [artists, setArtists] = useState<ArtistType[]>([]);
+  const [albums, setAlbums] = useState<AlbumType[]>([]);
 
   useEffect(() => {
     artistBus.on(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, handleArtistToggled);
+    albumBus.on(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, handleAlbumToggled);
     return () => {
       artistBus.off(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, handleArtistToggled);
+      albumBus.off(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, handleAlbumToggled);
     }
   }, []);
 
@@ -55,11 +62,16 @@ const EditSong = ({id}: {id: string}) => {
     }
   }
 
+  const handleAlbumToggled = (event: AlbumToggledOnSongEvent) => {
+    if (event.songId === parseInt(id)) {
+      loadAlbums();
+    }
+  }
+
   useEffect(() => {
     if (editSong) {
       loadArtists();
-      // loadAlbums();
-      // loadPlaylists();
+      loadAlbums();
       setTitle(editSong.info?.metadata?.name ?? '');
       setArtist(editSong.info?.metadata?.artist ?? '');
       setAlbum(editSong.info?.metadata?.album ?? '');
@@ -69,16 +81,6 @@ const EditSong = ({id}: {id: string}) => {
     }
   }, [editSong]);
 
-  // const loadPlaylists = async () => {
-  //   const playlists = await getPlaylistsFromSong(parseInt(id));
-  //   setPlaylists(playlists);
-  // }
-
-  // const loadAlbums = async () => {
-  //   const albums = await getAlbumsFromSong(parseInt(id));
-  //   setAlbums(albums);
-  // }
-
   const loadArtists = async () => {
     if (editSong.pageType === PageType.IMPORT) {
       setArtists(editSong.importArtists ?? []);
@@ -86,6 +88,16 @@ const EditSong = ({id}: {id: string}) => {
     else {
       const artists = await getArtistsFromSong(parseInt(id));
       setArtists(artists);
+    }
+  }
+
+  const loadAlbums = async () => {
+    if (editSong.pageType === PageType.IMPORT) {
+      setAlbums(editSong.importAlbums ?? []);
+    }
+    else {
+      const albums = await getAlbumsFromSong(parseInt(id));
+      setAlbums(albums);
     }
   }
 
@@ -207,8 +219,22 @@ const EditSong = ({id}: {id: string}) => {
             buttonWidth={'90%'}
           />
         </View>
-        {/* <View style={ModalStyles.fieldWrapper}>
+        <View style={ModalStyles.fieldWrapper}>
           <Text style={ModalStyles.fieldLabel}>Albums</Text>
+          <View style={Local.albumWrapper}>
+            {albums.length === 0 &&
+              <Text style={ModalStyles.emptyListFiller}>No albums</Text>
+            }
+            {albums.length > 0 && albums.map((album) => {
+              return (
+                <AlbumItem
+                  key={album.id}
+                  album={album}
+                  allowInteraction={false}
+                />
+              )
+            })}
+          </View>
           <CustomButton 
             title={'Manage Albums'}
             handlePress={() => router.push('/album/add')}
@@ -218,17 +244,6 @@ const EditSong = ({id}: {id: string}) => {
             }}
           />
         </View>
-        <View style={ModalStyles.fieldWrapper}>
-          <Text style={ModalStyles.fieldLabel}>Playlists</Text>
-          <CustomButton 
-            title={'Manage Playlists'}
-            handlePress={() => router.push('/playlist/add')}
-            buttonWidth={'90%'}
-            customStyles={{
-              marginVertical: 10,
-            }}
-          />
-        </View> */}
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />
       <View style={[Local.bottomButtonsWrapper, { paddingBottom: insets.bottom }]}>
@@ -289,6 +304,15 @@ const Local = StyleSheet.create({
     bottom: 100,
   },
   artistWrapper: {
+    width: '100%',
+    marginTop: 20,
+    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  albumWrapper: {
     width: '100%',
     marginTop: 20,
     marginBottom: 10,

@@ -21,6 +21,7 @@ export type SongType = {
   "sourceId"?: number;
   "edited"?: boolean;
   "importArtists"?: ArtistType[];
+  "importAlbums"?: AlbumType[];
   "cacheUri"?: string;
 };
 
@@ -100,6 +101,14 @@ export type PlaylistType = {
 export type ArtistType = {
   id: number;
   name: string;
+  image?: string;
+  pageType?: PageType;
+};
+
+export type AlbumType = {
+  id: number;
+  name: string;
+  year?: number;
   image?: string;
   pageType?: PageType;
 };

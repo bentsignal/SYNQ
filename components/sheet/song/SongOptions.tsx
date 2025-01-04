@@ -101,8 +101,8 @@ const SongOptions = ({ name }: SongOptionsProps) => {
     }
     // remove from library
     else if (editSong.pageType === PageType.LIBRARY) {
-      deleteFromLibrary(editSong.id);
       removeFromAllPlaylists(editSong.id);
+      deleteFromLibrary(editSong.id);
       // remove from queue and next up if applicable
       const queue = await TrackPlayer.getQueue();
       const indiciesToRemove = queue

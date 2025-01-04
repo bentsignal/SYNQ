@@ -13,6 +13,8 @@ import Bar from "@/components/modals/Bar";
 import CustomButton from "@/components/CustomButton";
 import { SOCIAL_LINKS } from "@/constants/Config";
 import ModalStyles from "@/components/modals/Styles";
+import * as FileSystem from 'expo-file-system';
+import { zip, unzip } from 'react-native-zip-archive';
 
 const Settings = () => {
 
@@ -32,7 +34,15 @@ const Settings = () => {
           icon={require('@/assets/icons/premium.png')}
           disabled={false}
           handlePress={() => router.push("/premium")}
-        /> 
+        />
+        <Option 
+          title="Backup & Restore"
+          desc="Backup and restore your library"
+          icon={require('@/assets/icons/backup.png')}
+          disabled={false}
+          handlePress={() => router.push("/settings/backup")}
+          bg={Colors.text}
+        />
         <CategoryTitle title="Theme" requiresPremium={true}/>
         <View style={Local.settingsCategoryContainer}>
           <Theme />

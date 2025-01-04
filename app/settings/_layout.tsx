@@ -26,6 +26,14 @@ const SettingsLayout = () => {
           contentStyle: {backgroundColor: 'transparent'},
         }}
       />
+      <Stack.Screen 
+        name="backup"
+        options={{
+          headerShown: false,
+          contentStyle: {backgroundColor: 'transparent'},
+          presentation: 'modal',
+        }}
+      />
     </Stack>
   )
 }

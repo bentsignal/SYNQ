@@ -31,7 +31,7 @@ const Local = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
-    marginTop: 0,
+    marginTop: 40,
   },
   title: {
     ...Styles.h3,

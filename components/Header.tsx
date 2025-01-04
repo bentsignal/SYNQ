@@ -21,7 +21,7 @@ const Header = ({scrollPosition, title, showMore, handleMore}: HeaderProps) => {
   const { theme } = useThemeContext();
   const [showHeader, setShowHeader] = useState(false);
   const [height, setHeight] = useState(0);
-  const threshold = 300;
+  const threshold = 500;
 
   useEffect(() => {
     if (scrollPosition > threshold && !showHeader) {

@@ -34,6 +34,14 @@ const SettingsLayout = () => {
           presentation: 'modal',
         }}
       />
+      <Stack.Screen 
+        name="customization"
+        options={{
+          headerShown: false,
+          contentStyle: {backgroundColor: 'transparent'},
+          presentation: 'modal',
+        }}
+      />
     </Stack>
   )
 }

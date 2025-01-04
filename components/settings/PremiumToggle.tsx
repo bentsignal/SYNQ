@@ -16,6 +16,7 @@ const PremiumToggle = () => {
       ios_backgroundColor={getDisabledColor(theme)}
       onValueChange={() => setPremium(!premium)}
       value={premium}
+      style={{marginTop: 10}}
     />
   );
 }

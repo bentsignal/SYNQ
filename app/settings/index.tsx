@@ -34,6 +34,14 @@ const Settings = () => {
           handlePress={() => router.push("/premium")}
         />
         <Option 
+          title="Customization"
+          desc="Tailor your experience"
+          icon={require('@/assets/icons/customize.png')}
+          disabled={false}
+          handlePress={() => router.push("/settings/customization")}
+          bg={Colors.text}
+        />
+        <Option 
           title="Backup & Restore"
           desc="Backup or restore your library"
           icon={require('@/assets/icons/backup.png')}
@@ -41,22 +49,6 @@ const Settings = () => {
           handlePress={() => router.push("/settings/backup")}
           bg={Colors.text}
         />
-        <CategoryTitle title="Theme" requiresPremium={true}/>
-        <View style={Local.settingsCategoryContainer}>
-          <Theme />
-        </View>
-        <CategoryTitle title="Haptic Feedback" />
-        <View style={Local.settingsCategoryContainer}>
-          <Haptic />
-        </View>
-        {__DEV__ && CFG.devShowPremiumToggle && 
-          <>
-            <CategoryTitle title="Premium Toggle" />
-            <View style={Local.settingsCategoryContainer}>
-              <PremiumToggle />
-            </View>
-          </>
-        }
         <View style={Local.supportContainer}>
           <CustomButton 
             title="Contact Support"
@@ -78,6 +70,14 @@ const Settings = () => {
             <Image style={Local.socialIcon} source={require('@/assets/icons/discord.png')} />
           </TouchableOpacity>
         </View>
+        {__DEV__ && CFG.devShowPremiumToggle && 
+          <>
+            <CategoryTitle title="Premium Toggle" />
+            <View style={Local.settingsCategoryContainer}>
+              <PremiumToggle />
+            </View>
+          </>
+        }
       </ScrollView>
     </View>
   );
@@ -110,7 +110,7 @@ const Local = StyleSheet.create({
     width: '90%',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 30,
+    marginTop: 20,
     marginBottom: 5,
   },
   socialContainer: {

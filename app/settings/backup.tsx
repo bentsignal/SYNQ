@@ -101,9 +101,10 @@ export default function Backup() {
               customStyles={{marginBottom: 30}}
               buttonWidth={'100%'}
             />
-            <Text style={Local.headerText}>Restore</Text>
+            <Text style={Local.headerText}>Restore your library</Text>
             <Text style={Local.description}>
-              Restore your library from a zip file. This will overwrite your current library.
+              Restore your library from a zip file. This will overwrite your current library, removing 
+              any existing songs, albums, artists, playlists, etc.
             </Text>
             <CustomButton 
               title="Restore"

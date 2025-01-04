@@ -23,6 +23,7 @@ commands.md
 credentials
 repos
 *.swp
+assets/appIcons/icon.psd
 
 # macOS
 .DS_Store

@@ -9,7 +9,7 @@ import CustomButton from "@/components/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeContext } from "@/context/ThemeProvider";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { CoverType, NotificationType } from "@/constants/Types";
+import { CoverType, NotificationType, ArtistType } from "@/constants/Types";
 import EditCover from "@/components/cover/EditCover";
 import { newCover } from "@/lib/controllers/ImageController";
 import { useGlobalContext } from "@/context/GlobalProvider";
@@ -17,6 +17,10 @@ import * as Haptics from 'expo-haptics';
 import Notifications from "@/components/notifications";
 import ModalStyles from "@/components/modals/Styles";
 import { getAlbumInfo, updateAlbum } from "@/lib/controllers/AlbumController";
+import { getArtistsFromAlbum } from "@/lib/controllers/AlbumController";
+import ArtistItem from "@/components/lists/artist/ArtistItem";
+import artistBus from "@/station/artist";
+import { ArtistBusEvent } from "@/station/artist/Events";
 
 const MemoTextInput = memo(TextInput);
 
@@ -30,6 +34,7 @@ const EditAlbum = ({id}: {id: string}) => {
   const [year, setYear] = useState<number | null>(null);
   const [originalName, setOriginalName] = useState<string | null>(null);
   const [originalYear, setOriginalYear] = useState<number | null>(null);
+  const [artists, setArtists] = useState<ArtistType[]>([]);
 
   const refreshInfo = async () => {
     try {
@@ -42,6 +47,22 @@ const EditAlbum = ({id}: {id: string}) => {
       console.error('error getting album info:', error);
     }
   }
+
+  const loadArtists = async () => {
+    const artists = await getArtistsFromAlbum(parseInt(id));
+    setArtists(artists);
+  }
+
+  const handleArtistToggled = () => {
+    loadArtists();
+  }
+
+  useEffect(() => {
+    artistBus.on(ArtistBusEvent.ARTIST_TOGGLED_ON_ALBUM, handleArtistToggled);
+    return () => {
+      artistBus.off(ArtistBusEvent.ARTIST_TOGGLED_ON_ALBUM, handleArtistToggled);
+    }
+  }, []);
 
   const nameInputValidation = async (text: string) => {
     try {
@@ -110,6 +131,7 @@ const EditAlbum = ({id}: {id: string}) => {
 
   useEffect(() => {
     refreshInfo();
+    loadArtists();
   }, [id]);
 
   return (
@@ -154,6 +176,28 @@ const EditAlbum = ({id}: {id: string}) => {
           defaultValue={year?.toString()}
           onEndEditing={(evt) => yearInputValidation(evt.nativeEvent.text)}
         />
+        <View style={ModalStyles.fieldWrapper}>
+          <Text style={ModalStyles.fieldLabel}>Artists</Text>
+          <View style={Local.artistWrapper}>
+            {artists.length === 0 &&
+              <Text style={ModalStyles.emptyListFiller}>No artists</Text>
+            }
+            {artists.length > 0 && artists.map((artist) => {
+              return (
+                <ArtistItem
+                  key={artist.id}
+                  artist={artist}
+                  allowInteraction={false}
+                />
+              )
+            })}
+          </View>
+          <CustomButton 
+            title={'Manage Artists'}
+            handlePress={() => router.push('/artist/add?sourceType=album')}
+            buttonWidth={'90%'}
+          />
+        </View>
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />
       <View style={[Local.bottomButtonsWrapper, { paddingBottom: insets.bottom }]}>
@@ -209,6 +253,15 @@ const Local = StyleSheet.create({
   notifications: {
     position: 'absolute',
     bottom: 100,
+  },
+  artistWrapper: {
+    width: '100%',
+    marginTop: 20,
+    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   }
 })
 

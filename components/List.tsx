@@ -9,6 +9,7 @@ const List = memo((
   {
     data, 
     headerComponent, 
+    footerComponent,
     bottomPadding = false,
     item,
     keyExtractor,
@@ -20,6 +21,7 @@ const List = memo((
   {
     data: any[], 
     headerComponent?: React.ReactNode,
+    footerComponent?: React.ReactNode,
     bottomPadding?: boolean,
     item: ListRenderItem<any>,
     keyExtractor: (item: any, index: number) => string,
@@ -115,6 +117,7 @@ const List = memo((
           removeClippedSubviews={true}
           updateCellsBatchingPeriod={50}
           windowSize={10}
+          ListFooterComponent={footerComponent ? <>{footerComponent}</> : null}
         />
         <AnimatedGradient
           style={ Local.topGradient }

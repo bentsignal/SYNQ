@@ -4,7 +4,7 @@ import { Styles } from "@/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import SongList from "@/components/lists/song";
-import { PageType, AlbumType, SongType, SortType, SourceType } from "@/constants/Types";
+import { PageType, AlbumType, SongType, SortType, SourceType, ArtistType } from "@/constants/Types";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import MiniPlayer from "@/components/player/MiniPlayer";
 import TabBar from "@/components/TabBar";
@@ -17,6 +17,8 @@ import { AlbumBusEvent } from "@/station/album/Events";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { getSongsFromAlbum } from "@/lib/controllers/AlbumController";
+import ArtistItem from "@/components/lists/artist/ArtistItem";
+import { getArtistsFromAlbum } from "@/lib/controllers/AlbumController";
 
 const AlbumView = ({id}: {id: string}) => {
 
@@ -27,6 +29,7 @@ const AlbumView = ({id}: {id: string}) => {
   const [year, setYear] = useState<number>();
   const [scrollPosition, setScrollPosition] = useState(0);
   const [album, setAlbum] = useState<AlbumType | null>(null);
+  const [artists, setArtists] = useState<ArtistType[]>([]);
 
   const refreshInfo = async () => {
     if (id) {
@@ -36,6 +39,8 @@ const AlbumView = ({id}: {id: string}) => {
         setAlbum(result);
         setTitle(result?.name || '');
         setYear(result?.year);
+        const artists = await getArtistsFromAlbum(parseInt(id));
+        setArtists(artists);
       }
       catch (error) {
         console.log('error refreshing album info:', error);
@@ -109,6 +114,18 @@ const AlbumView = ({id}: {id: string}) => {
             />
           }
           setScrollPosition={setScrollPosition}
+          footerComponent={
+            <View style={Local.artistList}>
+              {artists.length > 0 && <Text style={Local.artistListTitle}>Artists</Text>}
+              {artists.map((artist) => (
+                <ArtistItem 
+                  key={artist.id}
+                  artist={artist}
+                  allowInteraction={true}
+                />
+              ))}
+            </View>
+          }
         />
         <View style={Local.miniPlayerContainer}>
           <MiniPlayer />
@@ -134,6 +151,15 @@ const Local = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 0,
+  },
+  artistList: {
+    width: '100%',
+  },
+  artistListTitle: {
+    ...Styles.h4,
+    color: Colors.text,
+    marginTop: 20,
+    marginBottom: 10,
   },
 });
 

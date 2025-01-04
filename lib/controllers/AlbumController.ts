@@ -36,6 +36,18 @@ export const getAlbums = async (): Promise<AlbumType[]> => {
   return await AlbumModel.getInstance().getAlbums();
 }
 
+export const getArtistsFromAlbum = async (albumId: number): Promise<AlbumType[]> => {
+  return await AlbumModel.getInstance().getArtistsFromAlbum(albumId);
+}
+
+export const addArtistToAlbum = async (artistId: number, albumId: number): Promise<void> => {
+  await AlbumModel.getInstance().addArtistToAlbum(artistId, albumId);
+}
+
+export const removeArtistFromAlbum = async (artistId: number, albumId: number): Promise<void> => {
+  await AlbumModel.getInstance().removeArtistFromAlbum(artistId, albumId);
+}
+
 const makeAlbumsDir = async () => {
   try {
     await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}albums`);

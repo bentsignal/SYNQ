@@ -12,6 +12,7 @@ const SongList = memo((
   {
     songs, 
     headerComponent, 
+    footerComponent,
     bottomPadding = false,
     pageType, 
     fadeCover = true, 
@@ -25,6 +26,7 @@ const SongList = memo((
   {
     songs: SongType[], 
     headerComponent?: React.ReactNode,
+    footerComponent?: React.ReactNode,
     bottomPadding?: boolean,
     pageType: PageType,
     fadeCover?: boolean,
@@ -58,6 +60,7 @@ const SongList = memo((
       <List 
         data={songs}
         headerComponent={headerComponent}
+        footerComponent={footerComponent}
         item={renderItem}
         keyExtractor={(song, index) => generateSongKey(song)}
         extra={selectedId}

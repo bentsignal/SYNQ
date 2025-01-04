@@ -1,5 +1,5 @@
 import Model from "./Model";
-import { AlbumType, SortType, SongResultType } from "@/constants/Types";
+import { AlbumType, SortType, SongResultType, ArtistType, PageType } from "@/constants/Types";
 import { getArtistsFromSong } from "@/lib/controllers/ArtistController";
 
 export default class AlbumModel extends Model {
@@ -123,7 +123,7 @@ export default class AlbumModel extends Model {
     return result;
   }
 
-  public async getArtistsFromAlbum(albumId: number): Promise<AlbumType[]> {
+  public async getArtistsFromAlbum(albumId: number): Promise<ArtistType[]> {
     const result = await AlbumModel.db?.getAllAsync(`
       SELECT artists.* 
       FROM artists
@@ -131,7 +131,11 @@ export default class AlbumModel extends Model {
       WHERE artistsAlbums.albumId = ?;`, 
       [albumId]
     );
-    return result ? result as AlbumType[] : [];
+    const artists = result ? result as ArtistType[] : [];
+    artists.forEach(artist => {
+      artist.pageType = PageType.ALBUM;
+    });
+    return artists;
   }
 
   public async addArtistToAlbum(artistId: number, albumId: number): Promise<void> {

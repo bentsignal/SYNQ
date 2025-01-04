@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { CoverType, PageType } from "@/constants/Types";
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import ListCover from "@/components/cover/ListCover";
 import More from "@/components/More";
 import Select from "@/components/Select";
@@ -11,9 +11,10 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistType } from "@/constants/Types";
-import { ArtistBusEvent, ArtistNameModifiedEvent } from "@/station/artist/Events";
+import { ArtistBusEvent, ArtistModifiedEvent } from "@/station/artist/Events";
 import artistBus from "@/station/artist";
 import { addArtistToSong, removeArtistFromSong, isArtistOnSong } from "@/lib/controllers/ArtistController";
+import { addArtistToAlbum, removeArtistFromAlbum } from "@/lib/controllers/AlbumController";
 
 type ArtistProps = {
   artist: ArtistType,
@@ -22,32 +23,42 @@ type ArtistProps = {
 
 const ArtistItem = ({artist, allowInteraction}: ArtistProps) => {
 
-  const { 
-    
-    editSong, haptic, setEditArtist, numModified
-
-  } = useGlobalContext();
+  const { editSong, haptic, setEditArtist, editAlbum } = useGlobalContext();
+  const { sourceType } = useLocalSearchParams();
   
   const [selected, setSelected] = useState(false);
   const [name, setName] = useState(artist.name);
 
   const selectionChanged = async (add: boolean) => {
     try {
-      if (editSong.pageType === PageType.IMPORT) {
-        editSong.importArtists = editSong.importArtists ?? [];
-        editSong.importArtists = add ? [...editSong.importArtists, artist] : editSong.importArtists.filter(a => a.id !== artist.id);
+      if (sourceType === 'album' && editAlbum) {
+        if (add) {
+          await addArtistToAlbum(artist.id, editAlbum.id);
+        } else {
+          await removeArtistFromAlbum(artist.id, editAlbum.id);
+        }
+        artistBus.emit(ArtistBusEvent.ARTIST_TOGGLED_ON_ALBUM, {
+          artistId: artist.id,
+          albumId: editAlbum.id,
+          add: add,
+        });
+      } else if (editSong) {
+        if (editSong.pageType === PageType.IMPORT) {
+          editSong.importArtists = editSong.importArtists ?? [];
+          editSong.importArtists = add ? [...editSong.importArtists, artist] : editSong.importArtists.filter(a => a.id !== artist.id);
+        }
+        else if (add) {
+          await addArtistToSong(artist.id, editSong.id);
+        }
+        else {
+          await removeArtistFromSong(artist.id, editSong.id);
+        }
+        artistBus.emit(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, {
+          artistId: artist.id,
+          songId: typeof editSong.id === 'number' ? editSong.id : parseInt(editSong.id),
+          add: add,
+        });
       }
-      else if (add) {
-        await addArtistToSong(artist.id, editSong.id);
-      }
-      else {
-        await removeArtistFromSong(artist.id, editSong.id);
-      }
-      artistBus.emit(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, {
-        artistId: artist.id,
-        songId: typeof editSong.id === 'number' ? editSong.id : parseInt(editSong.id),
-        add: add,
-      });
     }
     catch (error) {
       console.log('error saving artist list changes: ', error);
@@ -65,7 +76,7 @@ const ArtistItem = ({artist, allowInteraction}: ArtistProps) => {
     setSelected(result);
   }
 
-  const updateName = (data: ArtistNameModifiedEvent) => {
+  const updateInfo = (data: ArtistModifiedEvent) => {
     if (artist.id === data.id) {
       setName(data.name);
       artist.name = data.name;
@@ -73,9 +84,9 @@ const ArtistItem = ({artist, allowInteraction}: ArtistProps) => {
   }
 
   useEffect(() => {
-    artistBus.on(ArtistBusEvent.ARTIST_NAME_MODIFIED, updateName);
+    artistBus.on(ArtistBusEvent.ARTIST_MODIFIED, updateInfo);
     return () => {
-      artistBus.off(ArtistBusEvent.ARTIST_NAME_MODIFIED, updateName);
+      artistBus.off(ArtistBusEvent.ARTIST_MODIFIED, updateInfo);
     }
   }, []);
 
@@ -102,7 +113,7 @@ const ArtistItem = ({artist, allowInteraction}: ArtistProps) => {
     <TouchableOpacity 
       style={Local.container}
       activeOpacity={0.8}
-      disabled={!allowInteraction || ![PageType.LIBRARY].includes(artist.pageType)}
+      disabled={!allowInteraction || ![PageType.LIBRARY, PageType.ALBUM].includes(artist.pageType)}
       onPress={async () => {
         if (artist.pageType === PageType.ADD) {
           await handleSelect();
@@ -149,11 +160,6 @@ const Local = StyleSheet.create({
   name: {
     ...Styles.h4,
     color: Colors.text,
-  },
-  count: {
-    ...Styles.p,
-    color: Colors.infoText,
-    fontWeight: '500',
   },
 }); 
 

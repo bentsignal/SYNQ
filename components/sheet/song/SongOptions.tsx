@@ -191,17 +191,17 @@ const SongOptions = ({ name }: SongOptionsProps) => {
         show={[PageType.LIBRARY, PageType.IMPORT, PageType.ARTIST].includes(pageType)}
         handler={handleEditSong}
       />
-      <SheetOption 
-        icon={require('@/assets/icons/share.png')}
-        text={'Export'}
-        show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST].includes(pageType)}
-        handler={handleExport}
-      />
       <SheetOption
         icon={require('@/assets/icons/delete.png')}
         text={'Delete'}
         show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
         handler={handleDeleteSong}
+      />
+      <SheetOption 
+        icon={require('@/assets/icons/share.png')}
+        text={'Export'}
+        show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST].includes(pageType)}
+        handler={handleExport}
       />
     </>
   )

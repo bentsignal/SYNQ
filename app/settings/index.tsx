@@ -13,8 +13,6 @@ import Bar from "@/components/modals/Bar";
 import CustomButton from "@/components/CustomButton";
 import { SOCIAL_LINKS } from "@/constants/Config";
 import ModalStyles from "@/components/modals/Styles";
-import * as FileSystem from 'expo-file-system';
-import { zip, unzip } from 'react-native-zip-archive';
 
 const Settings = () => {
 
@@ -37,7 +35,7 @@ const Settings = () => {
         />
         <Option 
           title="Backup & Restore"
-          desc="Backup and restore your library"
+          desc="Backup or restore your library"
           icon={require('@/assets/icons/backup.png')}
           disabled={false}
           handlePress={() => router.push("/settings/backup")}

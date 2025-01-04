@@ -7,12 +7,12 @@ import SongInfo from '@/components/song/SongInfo';
 import ListCover from "@/components/cover/ListCover";
 import { SkipLeft, SkipRight } from "@/components/player/Skip";
 import PausePlayButtons from "./PausePlayButtons";
-import { Colors } from "@/constants/Colors";
+import { Colors, Themes } from "@/constants/Colors";
 import { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util";
 import { CoverType } from "@/constants/Types";
 import { useThemeContext } from "@/context/ThemeProvider";
-import { getDisabledColor } from "@/lib/controllers/ColorController";
+import { getDisabledColor, adjustLightness, darkenColor } from "@/lib/controllers/ColorController";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 const MiniPlayer = () => {
@@ -32,10 +32,13 @@ const MiniPlayer = () => {
     }, 200);
   }, [track]);
 
+  const useDark = [Themes.yellow].includes(theme);
+  const darkColor = useDark ? darkenColor(theme, 50, 50) : Colors.text;
+
   return (
     <TouchableOpacity 
       style={[Local.container, { 
-        backgroundColor: getDisabledColor(theme), 
+        backgroundColor: theme, 
         display: track ? 'flex' : 'none'
       }]}
       activeOpacity={1}
@@ -60,27 +63,27 @@ const MiniPlayer = () => {
         }}
         name={getFileName(track?.url)}
         showAlbum={false}
-        color={[''].includes(theme) ? 'black' : Colors.text}
+        color={useDark ? darkColor : Colors.text}
       />
       <View style={Local.buttonContainer}>
         <TouchableOpacity 
           style={Local.buttonWrapper}
           onPress={() => {}}
         >
-          <SkipLeft size={18} color={[''].includes(theme) ? 'black' : Colors.text}/>
+          <SkipLeft size={18} color={useDark ? darkColor : Colors.text}/>
         </TouchableOpacity>
         <PausePlayButtons 
           playSize={25}
           pauseHeight={25}
           pauseWidth={7}
           style={Local.playPauseButtonWrapper}
-          color={[''].includes(theme) ? 'black' : Colors.text}
+          color={useDark ? darkColor : Colors.text}
         />
         <TouchableOpacity 
           style={Local.buttonWrapper}
           onPress={() => {}}
         >
-          <SkipRight size={18} color={[''].includes(theme) ? 'black' : Colors.text}/>
+          <SkipRight size={18} color={useDark ? darkColor : Colors.text}/>
         </TouchableOpacity>
       </View>
       

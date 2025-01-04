@@ -1,12 +1,13 @@
+import { darkenColor } from "@/lib/controllers/ColorController";
+
 export const Themes = {
-  blue: '#63a3ff',
-  purple: '#8f5ef7',
-  pink: '#ff96e7',
-  red: '#ff6b6b',
-  orange: '#f78f6f',
-  // yellow: '#f5da4e',
-  yellow: '#f6de6c',
-  mint: '#48db84',
+  blue: '#77adf8',
+  purple: '#a888ec',
+  pink: '#f6ace5',
+  red: '#ff8585',
+  orange: '#efa28a',
+  yellow: '#eddd92',
+  mint: '#61ae7f'
 }
 
 export const Colors = {

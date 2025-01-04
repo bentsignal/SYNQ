@@ -1,7 +1,7 @@
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
-import { darkenColor } from '@/lib/controllers/ColorController';
+import { getDisabledColor } from '@/lib/controllers/ColorController';
 
 type MainButtonProps = {
   title?: string;
@@ -36,7 +36,7 @@ const CustomButton = ({
       minWidth: 100,
       height: 42,
       justifyContent: 'center',
-      backgroundColor: disabled ? darkenColor(bgColor, 40, 50) : bgColor,
+      backgroundColor: disabled ? getDisabledColor(bgColor) : bgColor,
       width: buttonWidth ? buttonWidth: 100,
     },
     buttonText: {

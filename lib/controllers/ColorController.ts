@@ -10,6 +10,12 @@ export const darkenColor = (color: string, lightness: number, saturation: number
   return tinycolor(hsl).toHexString();
 };
 
+export const adjustLightness = (color: string, amount: number) => {
+  const hsl = tinycolor(color).toHsl();
+  hsl.l = Math.max(0, hsl.l - amount / 100);
+  return tinycolor(hsl).toHexString();
+}
+
 export const calculateDarkeningAmount = (mainColor: string, disabledColor: string) => {
   const mainLuminance = tinycolor(mainColor).getLuminance();
   const disabledLuminance = tinycolor(disabledColor).getLuminance();
@@ -17,7 +23,7 @@ export const calculateDarkeningAmount = (mainColor: string, disabledColor: strin
 };
 
 export const getDisabledColor = (mainColor: string) => {
-  return darkenColor(mainColor, 40, 50);
+  return darkenColor(mainColor, 30, 20);
 }
 
 export const hexToRGB = (hex: string) => {

@@ -239,9 +239,6 @@ const EditSong = ({id}: {id: string}) => {
             title={'Manage Albums'}
             handlePress={() => router.push('/album/add')}
             buttonWidth={'90%'}
-            customStyles={{
-              marginVertical: 10,
-            }}
           />
         </View>
       </KeyboardAwareScrollView>

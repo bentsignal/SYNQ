@@ -10,7 +10,7 @@ import { getPlaylistSongs } from '@/lib/controllers/PlaylistController';
 import { getSongsFromArtist } from '@/lib/controllers/ArtistController';
 import { getSongById } from '@/lib/controllers/SongController';
 import { PageType, SortType } from '@/constants/Types';
-
+import { getSongsFromAlbum } from '@/lib/controllers/AlbumController';
 export const setupPlayer = async () => {
   await TrackPlayer.setupPlayer();
   // await TrackPlayer.setRate(1.5);
@@ -207,6 +207,7 @@ export const getNextUp = async (
   }
   else if (sourceType === SourceType.ALBUM) {
     //  TODO: get songs from album
+    songs = await getSongsFromAlbum(sourceId, SortType.NEWEST);
   }
   else {
     return songs;

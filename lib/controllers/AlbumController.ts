@@ -125,23 +125,18 @@ export const getSongsFromAlbum = async (albumId: number, sort: SortType = SortTy
   return results.map(result => getSongByResult(result));
 }
 
-export const getAlbumsFromMetadata = async (value: string): Promise<AlbumType[]> => {
+export const getAlbumFromMetadata = async (value: string): Promise<AlbumType> => {
   if (value === '' || value === null || value === undefined) {
-    return [];
+    return null;
   }
-
-  let albums: AlbumType[] = [];
-  const cleanName = value.trim();
 
   const allAlbums = await AlbumModel.getInstance().getAlbums();
-  const existingAlbum = allAlbums.find(album => album.name.toLowerCase() === cleanName.toLowerCase());
+  const existingAlbum = allAlbums.find(album => album.name.toLowerCase() === value.toLowerCase());
 
   if (existingAlbum) {
-    albums.push(existingAlbum);
+    return existingAlbum;
   } else {
-    const newAlbum = await createAlbum(cleanName);
-    albums.push(newAlbum);
+    const newAlbum = await createAlbum(value);
+    return newAlbum;
   }
-  
-  return albums;
 }

@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import { useState, useEffect } from "react";
-import { CoverType, PageType } from "@/constants/Types";
+import { CoverType, PageType, SourceType } from "@/constants/Types";
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 import { router, useLocalSearchParams } from "expo-router";
@@ -14,7 +14,7 @@ import { ArtistType } from "@/constants/Types";
 import { ArtistBusEvent, ArtistModifiedEvent } from "@/station/artist/Events";
 import artistBus from "@/station/artist";
 import { addArtistToSong, removeArtistFromSong, isArtistOnSong } from "@/lib/controllers/ArtistController";
-import { addArtistToAlbum, removeArtistFromAlbum } from "@/lib/controllers/AlbumController";
+import { addArtistToAlbum, removeArtistFromAlbum, isArtistOnAlbum } from "@/lib/controllers/AlbumController";
 
 type ArtistProps = {
   artist: ArtistType,
@@ -24,14 +24,13 @@ type ArtistProps = {
 const ArtistItem = ({artist, allowInteraction}: ArtistProps) => {
 
   const { editSong, haptic, setEditArtist, editAlbum } = useGlobalContext();
-  const { sourceType } = useLocalSearchParams();
   
   const [selected, setSelected] = useState(false);
   const [name, setName] = useState(artist.name);
 
   const selectionChanged = async (add: boolean) => {
     try {
-      if (sourceType === 'album' && editAlbum) {
+      if (artist.sourceType === SourceType.ALBUM && editAlbum) {
         if (add) {
           await addArtistToAlbum(artist.id, editAlbum.id);
         } else {
@@ -42,7 +41,8 @@ const ArtistItem = ({artist, allowInteraction}: ArtistProps) => {
           albumId: editAlbum.id,
           add: add,
         });
-      } else if (editSong) {
+      } 
+      else if (artist.sourceType === SourceType.SONG && editSong) {
         if (editSong.pageType === PageType.IMPORT) {
           editSong.importArtists = editSong.importArtists ?? [];
           editSong.importArtists = add ? [...editSong.importArtists, artist] : editSong.importArtists.filter(a => a.id !== artist.id);
@@ -76,6 +76,13 @@ const ArtistItem = ({artist, allowInteraction}: ArtistProps) => {
     setSelected(result);
   }
 
+  const checkArtistOnAlbum = async () => {
+    console.log(artist.id, editAlbum.id);
+    const result = await isArtistOnAlbum(artist.id, editAlbum.id);
+    console.log(artist.name, result);
+    setSelected(result);
+  }
+
   const updateInfo = (data: ArtistModifiedEvent) => {
     if (artist.id === data.id) {
       setName(data.name);
@@ -91,10 +98,13 @@ const ArtistItem = ({artist, allowInteraction}: ArtistProps) => {
   }, []);
 
   useEffect(() => {
-    if (editSong.id && artist.pageType === PageType.ADD) {
+    if (editSong.id && artist.sourceType === SourceType.SONG) {
       checkArtistOnSong();
     }
-  }, [editSong]);
+    else if (editAlbum.id && artist.sourceType === SourceType.ALBUM) {
+      checkArtistOnAlbum();
+    }
+  }, [editSong, editAlbum]);
 
   const handleMore = async () => {
     if (haptic) {

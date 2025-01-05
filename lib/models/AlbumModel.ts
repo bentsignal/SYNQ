@@ -151,4 +151,12 @@ export default class AlbumModel extends Model {
       [artistId, albumId]
     );
   }
+
+  public async isArtistOnAlbum(albumId: number, artistId: number): Promise<boolean> {
+    const result = await AlbumModel.db?.getFirstAsync(
+      `SELECT * FROM artistsAlbums WHERE artistId = ? AND albumId = ?;`, 
+      [artistId, albumId]
+    );
+    return result ? true : false;
+  }
 }

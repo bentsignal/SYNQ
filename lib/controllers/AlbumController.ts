@@ -112,6 +112,10 @@ export const isAlbumOnSong = async (albumId: number, songId: number): Promise<bo
   return await AlbumModel.getInstance().isAlbumOnSong(albumId, songId);
 }
 
+export const isArtistOnAlbum = async (albumId: number, artistId: number): Promise<boolean> => {
+  return await AlbumModel.getInstance().isArtistOnAlbum(artistId, albumId);
+}
+
 export const getAlbumsFromSong = async (songId: number): Promise<AlbumType[]> => {
   return await AlbumModel.getInstance().getAlbumsFromSong(songId);
 }

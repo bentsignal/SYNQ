@@ -215,7 +215,7 @@ const EditSong = ({id}: {id: string}) => {
           </View>
           <CustomButton 
             title={'Manage Artists'}
-            handlePress={() => router.push('/artist/add')}
+            handlePress={() => router.push('/artist/add?sourceType=song')}
             buttonWidth={'90%'}
           />
         </View>

@@ -82,6 +82,7 @@ export enum SourceType {
   PLAYLIST = 1,
   ALBUM = 2,
   ARTIST = 3,
+  SONG = 4,
 }
 
 export enum CoverType {
@@ -103,6 +104,7 @@ export type ArtistType = {
   name: string;
   image?: string;
   pageType?: PageType;
+  sourceType?: SourceType;
 };
 
 export type AlbumType = {

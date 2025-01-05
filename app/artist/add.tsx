@@ -5,7 +5,7 @@ import { Styles } from "@/constants/Styles"
 import Bar from "@/components/modals/Bar"
 import CustomButton from "@/components/CustomButton"
 import { router } from "expo-router"
-import { PageType, ArtistType } from "@/constants/Types"
+import { PageType, ArtistType, SourceType } from "@/constants/Types"
 import ArtistList from "@/components/lists/artist"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useThemeContext } from "@/context/ThemeProvider"
@@ -13,18 +13,22 @@ import { getArtists } from "@/lib/controllers/ArtistController"
 import { ArtistBusEvent } from "@/station/artist/Events"
 import artistBus from "@/station/artist/Bus"
 import ModalStyles from "@/components/modals/Styles"
+import { useLocalSearchParams } from "expo-router";
 
 const AddArtist = () => {
 
   const { theme } = useThemeContext();
 
   const insets = useSafeAreaInsets();
-
+  const { sourceType } = useLocalSearchParams();
   const [artists, setArtists] = useState<ArtistType[]>([]);
 
   const refreshArtists = async () => {
     try {
       const results = await getArtists();
+      results.forEach(artist => {
+        artist.sourceType = sourceType === 'song' ? SourceType.SONG : SourceType.ALBUM;
+      });
       setArtists(results);
     }
     catch (error) {

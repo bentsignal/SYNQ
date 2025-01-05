@@ -176,7 +176,7 @@ const EditAlbum = ({id}: {id: string}) => {
           defaultValue={year?.toString()}
           onEndEditing={(evt) => yearInputValidation(evt.nativeEvent.text)}
         />
-        <View style={ModalStyles.fieldWrapper}>
+        <View style={[ModalStyles.fieldWrapper, { paddingBottom: 20 }]}>
           <Text style={ModalStyles.fieldLabel}>Artists</Text>
           <View style={Local.artistWrapper}>
             {artists.length === 0 &&

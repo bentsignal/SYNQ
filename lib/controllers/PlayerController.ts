@@ -216,7 +216,7 @@ export const getNextUp = async (
   }
   else if (sourceType === SourceType.ALBUM) {
     //  TODO: get songs from album
-    songs = await getSongsFromAlbum(sourceId, SortType.NEWEST);
+    songs = await getSongsFromAlbum(sourceId, SortType.OLDEST);
   }
   else {
     return songs;

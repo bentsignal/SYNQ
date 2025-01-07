@@ -15,7 +15,7 @@ import { getArtistCover } from '@/lib/controllers/ArtistController';
 import artistBus from '@/station/artist';
 import { ArtistImageModifiedEvent } from '@/station/artist/Events';
 import { ArtistBusEvent } from '@/station/artist/Events';
-import { getAlbumCover } from '@/lib/controllers/AlbumController';
+import { getAlbumCover, getAlbumCoverFromSong } from '@/lib/controllers/AlbumController';
 import { AlbumBusEvent, AlbumImageModifiedEvent } from '@/station/album/Events';
 import albumBus from '@/station/album';
 
@@ -43,12 +43,18 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
           setSrc(image);
         }
         else {
-          const data = await getCoverImageData(id);
-          if (data) {
-            setSrc(`data:image/jpeg;base64,${data}`);
+          const albumCover = await getAlbumCoverFromSong(parseInt(id));
+          if (albumCover) {
+            setSrc(`data:image/jpeg;base64,${albumCover}`);
           }
           else {
-            setSrc('');
+            const data = await getCoverImageData(id);
+            if (data) {
+              setSrc(`data:image/jpeg;base64,${data}`);
+            }
+            else {
+              setSrc('');
+            }
           }
         }
       }

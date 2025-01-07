@@ -142,4 +142,16 @@ export const getAlbumFromMetadata = async (value: string): Promise<AlbumType> =>
     const newAlbum = await createAlbum(value);
     return newAlbum;
   }
+
+}
+
+export const getAlbumCoverFromSong = async (songId: number): Promise<string> => {
+  const albums = await getAlbumsFromSong(songId);
+  for (let i = 0; i < albums.length; i++) {
+    const cover = await getAlbumCover(albums[i].id, false);
+    if (cover) {
+      return cover;
+    }
+  }
+  return null;
 }

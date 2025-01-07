@@ -10,6 +10,8 @@ import { getPlaylistSongs } from '@/lib/controllers/PlaylistController';
 import { getSongsFromArtist } from '@/lib/controllers/ArtistController';
 import { getSongById } from '@/lib/controllers/SongController';
 import { PageType, SortType } from '@/constants/Types';
+import { getSongsFromAlbum } from '@/lib/controllers/AlbumController';
+import { getAlbumCoverPathFromSong } from '@/lib/controllers/ImageController';
 
 export const setupPlayer = async () => {
   await TrackPlayer.setupPlayer();
@@ -38,11 +40,18 @@ export const getTrackFromSong = async (song: SongType, theme: string): Promise<T
     const contents = await FileSystem.readDirectoryAsync(libraryPath);  
     if (contents.includes(song.name)) {
       let coverExists = false;
+      let coverPath = '';
       if (contents.includes('cover_full.jpg')) {
         coverExists = true;
+        coverPath = `${libraryPath}/cover_full.jpg`;
+      }
+      else {
+        coverPath = await getAlbumCoverPathFromSong(parseInt(song.id));
+        if (coverPath) {
+          coverExists = true;
+        }
       }
       const audioPath = `${libraryPath}/${song.name}`;
-      const coverPath = `${libraryPath}/cover_full.jpg`;
       return {
         id: song.id,
         url: audioPath,
@@ -197,16 +206,14 @@ export const getNextUp = async (
 
   const next: SongType[] = [];
   let songs: SongType[] = [];
-  // TODO: only query songs after currentId
   if (sourceType === SourceType.PLAYLIST) {
     songs = await getPlaylistSongs(sourceId, PageType.LIBRARY, SortType.NEWEST);
   }
   else if (sourceType === SourceType.ARTIST) {
-    //  TODO: get songs from artist
     songs = await getSongsFromArtist(sourceId, SortType.NEWEST);
   }
   else if (sourceType === SourceType.ALBUM) {
-    //  TODO: get songs from album
+    songs = await getSongsFromAlbum(sourceId, SortType.OLDEST);
   }
   else {
     return songs;

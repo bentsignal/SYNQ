@@ -15,6 +15,10 @@ import { getArtistCover } from '@/lib/controllers/ArtistController';
 import artistBus from '@/station/artist';
 import { ArtistImageModifiedEvent } from '@/station/artist/Events';
 import { ArtistBusEvent } from '@/station/artist/Events';
+import { getAlbumCover, getAlbumCoverFromSong } from '@/lib/controllers/AlbumController';
+import { AlbumBusEvent, AlbumImageModifiedEvent } from '@/station/album/Events';
+import albumBus from '@/station/album';
+
 const ListCover = ({image, type, id, fade, propOnLoad}: {
   image?: string;
   type: CoverType;
@@ -39,12 +43,18 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
           setSrc(image);
         }
         else {
-          const data = await getCoverImageData(id);
-          if (data) {
-            setSrc(`data:image/jpeg;base64,${data}`);
+          const songCover = await getCoverImageData(id);
+          if (songCover) {
+            setSrc(`data:image/jpeg;base64,${songCover}`);
           }
           else {
-            setSrc('');
+            const albumCover = await getAlbumCoverFromSong(parseInt(id));
+            if (albumCover) {
+              setSrc(`data:image/jpeg;base64,${albumCover}`);
+            }
+            else {
+              setSrc('');
+            }
           }
         }
       }
@@ -56,6 +66,12 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
       }
       else if (type === CoverType.ARTIST) {
         const data = await getArtistCover(parseInt(id), true);
+        if (data) {
+          setSrc(`data:image/jpeg;base64,${data}`);
+        }
+      }
+      else if (type === CoverType.ALBUM) {
+        const data = await getAlbumCover(parseInt(id), true);
         if (data) {
           setSrc(`data:image/jpeg;base64,${data}`);
         }
@@ -88,14 +104,22 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
     }
   }
 
+  const handleAlbumModified = (data: AlbumImageModifiedEvent) => {
+    if (type === CoverType.ALBUM && id === data.id.toString()) {
+      getImage();
+    }
+  }
+
   useEffect(() => {
     playlistBus.on(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
     songBus.on(SongBusEvent.SONG_COVER_MODIFIED, handleSongModified);
     artistBus.on(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistModified);
+    albumBus.on(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, handleAlbumModified);
     return () => {
       playlistBus.off(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
       songBus.off(SongBusEvent.SONG_COVER_MODIFIED, handleSongModified);
       artistBus.off(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistModified);
+      albumBus.off(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, handleAlbumModified);
     }
   }, []);
 

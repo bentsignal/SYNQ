@@ -7,6 +7,7 @@ export type InfoType = {
     "artist"?: string;
     "artwork"?: string;
     "name"?: string;
+    "year"?: number;
   };
 };
 
@@ -21,6 +22,7 @@ export type SongType = {
   "sourceId"?: number;
   "edited"?: boolean;
   "importArtists"?: ArtistType[];
+  "importAlbums"?: AlbumType[];
   "cacheUri"?: string;
 };
 
@@ -81,6 +83,7 @@ export enum SourceType {
   PLAYLIST = 1,
   ALBUM = 2,
   ARTIST = 3,
+  SONG = 4,
 }
 
 export enum CoverType {
@@ -100,6 +103,15 @@ export type PlaylistType = {
 export type ArtistType = {
   id: number;
   name: string;
+  image?: string;
+  pageType?: PageType;
+  sourceType?: SourceType;
+};
+
+export type AlbumType = {
+  id: number;
+  name: string;
+  year?: number;
   image?: string;
   pageType?: PageType;
 };

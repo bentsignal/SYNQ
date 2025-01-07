@@ -63,6 +63,40 @@ export default function Backup() {
     }
   }
 
+  const eraseLibrary = async () => {
+    try {
+      Alert.alert('Warning', 'Are you sure you want to erase your library? This action cannot be undone.', [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Erase',
+          style: 'destructive',
+          onPress: async () => {
+            setLoading(true);
+            // Clear document directory
+            const items = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
+            for (const item of items) {
+              await FileSystem.deleteAsync(`${FileSystem.documentDirectory}${item}`);
+            }
+            await Model.initConnection();
+            await Model.createTables();
+            Alert.alert('Success', 'Library erased successfully. Please restart the app.');
+            setLoading(false);
+          }
+        }
+      ]);
+    }
+    catch (error) {
+      console.log('Error erasing library:', error);
+      showErrorAlert(`Failed to erase library. If the error persists, please contact support.`);
+    }
+    finally {
+      setLoading(false);
+    }
+  }
+
   const showErrorAlert = (message: string) => {
     Alert.alert('Error', message, [
       {
@@ -110,6 +144,17 @@ export default function Backup() {
               title="Restore"
               handlePress={handleRestore}
               background={theme}
+              customStyles={{marginBottom: 30}}
+              buttonWidth={'100%'}
+            />
+            <Text style={Local.headerText}>Erase your library</Text>
+            <Text style={Local.description}>
+              Erase your library. This will remove all songs, albums, artists, playlists, etc.
+            </Text>
+            <CustomButton 
+              title="Erase"
+              handlePress={eraseLibrary}
+              background={Colors.error}
               buttonWidth={'100%'}
             />
           </View>

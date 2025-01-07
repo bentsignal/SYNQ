@@ -11,12 +11,12 @@ import { CoverType, NotificationType } from "@/constants/Types"
 import Notifications from "@/components/notifications/Notifications"
 import * as Haptics from 'expo-haptics'
 import { useThemeContext } from "@/context/ThemeProvider"
-import { createPlaylist } from "@/lib/controllers/PlaylistController"
+import { createAlbum } from "@/lib/controllers/AlbumController"
 import EditCover from "@/components/cover/EditCover"
 import { newCover } from "@/lib/controllers/ImageController"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { PlaylistBusEvent } from "@/station/playlist/Events"
-import playlistBus from "@/station/playlist"
+import { AlbumBusEvent } from "@/station/album/Events"
+import albumBus from "@/station/album"
 import ModalStyles from "@/components/modals/Styles";
 
 const MemoTextInput = memo(TextInput);
@@ -28,7 +28,7 @@ const CreateAlbum = () => {
   const { theme } = useThemeContext();
 
   const [name, setName] = useState('');
-  const [year, setYear] = useState('');
+  const [year, setYear] = useState<number | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const insets = useSafeAreaInsets();
 
@@ -41,17 +41,11 @@ const CreateAlbum = () => {
 
   const handleCreate = async () => {
     try {
-      if (name === '') {
-        throw new Error('Name is required');
-      }
-      if (year === '') {
-        throw new Error('Year is required');
-      }
-      // await createPlaylist(name, image);
+      await createAlbum(name, year, image);
       if (haptic) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
-      // playlistBus.emit(PlaylistBusEvent.PLAYLIST_CREATED);
+      albumBus.emit(AlbumBusEvent.ALBUM_CREATED);
       setTimeout(() => {
         router.back();
       }, 100);
@@ -78,11 +72,11 @@ const CreateAlbum = () => {
         style={Local.scrollView}
         contentContainerStyle={Local.scrollViewContent}
       >
-        <Text style={Styles.textboxLabel}>Cover Image</Text>
+        <Text style={Styles.textboxLabel}>Album Image</Text>
         <View style={Local.coverWrapper}>
           <EditCover
             image={image}
-            type={CoverType.PLAYLIST}
+            type={CoverType.ALBUM}
             handlePress={() => handleUpdateImage()}
             propOnLoad={() => {}}
           />
@@ -101,15 +95,14 @@ const CreateAlbum = () => {
         <Text style={Styles.textboxLabel}>Year</Text>
         <MemoTextInput
           style={Local.textBox}
-          autoCorrect={true}
+          autoCorrect={false}
           editable
           numberOfLines={1}
-          keyboardType='numeric'
-          maxLength={4}
-          placeholder={'Enter year...'}
+          keyboardType="numeric"
+          placeholder={'Enter album year...'}
           placeholderTextColor={Colors.altDisabled}
-          defaultValue={year}
-          onEndEditing={(evt) => setYear(evt.nativeEvent.text)}
+          defaultValue={year?.toString()}
+          onEndEditing={(evt) => setYear(evt.nativeEvent.text ? parseInt(evt.nativeEvent.text) : null)}
         />
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />

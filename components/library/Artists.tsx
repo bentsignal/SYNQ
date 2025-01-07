@@ -27,12 +27,12 @@ const Artists = () => {
   useEffect(() => {
     artistBus.on(ArtistBusEvent.ARTIST_CREATED, refreshArtists);
     artistBus.on(ArtistBusEvent.ARTIST_DELETED, refreshArtists);
-    artistBus.on(ArtistBusEvent.ARTIST_NAME_MODIFIED, refreshArtists);
+    artistBus.on(ArtistBusEvent.ARTIST_MODIFIED, refreshArtists);
     playlistBus.on(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshArtists);
     return () => {
       artistBus.off(ArtistBusEvent.ARTIST_CREATED, refreshArtists);
       artistBus.off(ArtistBusEvent.ARTIST_DELETED, refreshArtists);
-      artistBus.off(ArtistBusEvent.ARTIST_NAME_MODIFIED, refreshArtists);      
+      artistBus.off(ArtistBusEvent.ARTIST_MODIFIED, refreshArtists);      
       playlistBus.off(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshArtists);
     }
   }, []);

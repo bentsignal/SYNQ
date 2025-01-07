@@ -89,7 +89,7 @@ const Files = () => {
       <PageTitle 
         title='Import Music'
         infoHandler={() => setShowInfoModal(true)}
-        showList={results.length > 1 && premium}
+        showList={false && results.length > 1 && premium}
       />
       {getBody()}
       <ImportControls 

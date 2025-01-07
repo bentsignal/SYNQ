@@ -1,11 +1,47 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { Styles } from "@/constants/Styles";
+import { AlbumType, PageType } from "@/constants/Types";
+import { useState, useEffect } from "react";
+import AlbumList from "@/components/lists/album";
+import { getAlbums } from "@/lib/controllers/AlbumController";
+import albumBus from "@/station/album";
+import { AlbumBusEvent } from "@/station/album/Events";
+import playlistBus from "@/station/playlist";
+import { PlaylistBusEvent } from "@/station/playlist/Events";
 
 const Albums = () => {
+
+  const [albums, setAlbums] = useState<AlbumType[]>([]);
+
+  const refreshAlbums = async () => {
+    const results = await getAlbums();
+    setAlbums(results);
+  }
+
+  useEffect(() => {
+    refreshAlbums();
+  }, []);
+
+  useEffect(() => {
+    albumBus.on(AlbumBusEvent.ALBUM_CREATED, refreshAlbums);
+    albumBus.on(AlbumBusEvent.ALBUM_DELETED, refreshAlbums);
+    albumBus.on(AlbumBusEvent.ALBUM_MODIFIED, refreshAlbums);
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshAlbums);
+    return () => {
+      albumBus.off(AlbumBusEvent.ALBUM_CREATED, refreshAlbums);
+      albumBus.off(AlbumBusEvent.ALBUM_DELETED, refreshAlbums);
+      albumBus.off(AlbumBusEvent.ALBUM_MODIFIED, refreshAlbums);      
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshAlbums);
+    }
+  }, []);
+
   return (
     <View style={Local.container}>
-      <Text style={Local.placeholderText}>Albums</Text>
+      <AlbumList 
+        albums={albums}
+        pageType={PageType.LIBRARY}
+      />
     </View>
   );
 }
@@ -13,7 +49,7 @@ const Albums = () => {
 const Local = StyleSheet.create({
   container: {
     flex: 1,
-    width: '90%',
+    width: '100%',
   },
   placeholderText: {
     ...Styles.h3,

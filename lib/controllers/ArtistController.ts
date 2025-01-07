@@ -74,7 +74,7 @@ export const updateArtist = async (artistId: number, name: string, image: string
   const db = ArtistModel.getInstance();
   if (name) {
     await db.updateArtist(artistId, name);
-    artistBus.emit(ArtistBusEvent.ARTIST_NAME_MODIFIED, {
+    artistBus.emit(ArtistBusEvent.ARTIST_MODIFIED, {
       id: artistId,
       name: name,
     });

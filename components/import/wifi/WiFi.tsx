@@ -27,8 +27,6 @@ const WiFi = () => {
     setShowInfoModal,
     setImportState, setHomeState,
     setTransferSize,
-    
-    importSongSheet,
 
   } = useGlobalContext();
 
@@ -122,7 +120,6 @@ const WiFi = () => {
           pageType={PageType.IMPORT}
           fadeCover={false}
           fadeSong={true}
-          sheetRef={importSongSheet}
         />
       );
     }
@@ -152,7 +149,7 @@ const WiFi = () => {
       <InfoModal />
       <PageTitle 
         title='Import Music'
-        showList={results.length > 1 && premium && !loadAnimInProgress}
+        showList={false &&results.length > 1 && premium && !loadAnimInProgress}
         infoHandler={() => setShowInfoModal(true)}
       />
       {getInstructions()}

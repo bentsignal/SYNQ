@@ -9,6 +9,9 @@ import playlistBus from '@/station/playlist';
 import { getArtistCover } from '@/lib/controllers/ArtistController';
 import { ArtistBusEvent, ArtistImageModifiedEvent } from '@/station/artist/Events';
 import artistBus from '@/station/artist';
+import { getAlbumCover } from '@/lib/controllers/AlbumController';
+import { AlbumBusEvent, AlbumImageModifiedEvent } from '@/station/album/Events';
+import albumBus from '@/station/album';
 
 const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
 
@@ -31,6 +34,12 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
           setSrc(`data:image/jpeg;base64,${data}`);
         }
       }
+      else if (type === PageType.ALBUM) {
+        const data = await getAlbumCover(parseInt(id), true);
+        if (data) {
+          setSrc(`data:image/jpeg;base64,${data}`);
+        }
+      }
     }
     catch (error) {
       console.log('error getting cover image for player: ', error);
@@ -49,12 +58,20 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
     }
   }
 
+  const handleAlbumModified = (data: AlbumImageModifiedEvent) => {
+    if (type === PageType.ALBUM && id === data.id.toString()) {
+      getImage();
+    }
+  }
+
   useEffect(() => {
     playlistBus.on(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified); 
     artistBus.on(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistModified);
+    albumBus.on(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, handleAlbumModified);
     return () => {
       playlistBus.off(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
       artistBus.off(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistModified);
+      albumBus.off(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, handleAlbumModified);
     }
   }, []);
 
@@ -76,7 +93,7 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
     },
     artwork: {
       aspectRatio: aspectRatio,
-      width: Dimensions.get('screen').width * coverPercent, 
+      width: src ? Dimensions.get('screen').width * coverPercent : 60, 
       borderRadius: type === PageType.ARTIST ? 1000 : 12,
     },
     empty: {
@@ -106,24 +123,20 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
     }
   }
 
-  const getStyle = () => {
-    if (src) {
-      return Local.artwork;
-    }
-    else {
-      return Local.empty;
-    }
-  }
-
   return (
     <View style={Local.container}>
-      <FastImage 
+      <FastImage
         source={getSource()}
-        style={getStyle()}
-      />  
+        style={Local.artwork}
+        onLoad={(evt) => {
+          if (evt.nativeEvent) {
+            setAspectRatio(evt.nativeEvent.width / evt.nativeEvent.height);
+          }
+        }}
+      />
     </View>
   );
 
 }
 
-export default SongListPageCover
+export default SongListPageCover;

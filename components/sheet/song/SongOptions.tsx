@@ -166,7 +166,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
       <SheetOption 
         icon={require('@/assets/icons/add.png')}
         text={'Add to Playlist'}
-        show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST].includes(pageType)}
+        show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
         handler={handleAddToPlaylist}
       />
       <SheetOption 
@@ -182,13 +182,13 @@ const SongOptions = ({ name }: SongOptionsProps) => {
       <SheetOption 
         icon={require('@/assets/icons/add-to-queue.png')}
         text={'Add to Queue'}
-        show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER, PageType.ARTIST].includes(pageType)}
+        show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
         handler={handleAddToQueue}
       />
       <SheetOption 
         icon={require('@/assets/icons/edit.png')}
         text={'Edit'}
-        show={[PageType.LIBRARY, PageType.IMPORT, PageType.ARTIST].includes(pageType)}
+        show={[PageType.LIBRARY, PageType.IMPORT, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
         handler={handleEditSong}
       />
       <SheetOption
@@ -200,7 +200,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
       <SheetOption 
         icon={require('@/assets/icons/share.png')}
         text={'Export'}
-        show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST].includes(pageType)}
+        show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
         handler={handleExport}
       />
     </>

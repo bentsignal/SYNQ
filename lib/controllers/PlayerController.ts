@@ -206,16 +206,13 @@ export const getNextUp = async (
 
   const next: SongType[] = [];
   let songs: SongType[] = [];
-  // TODO: only query songs after currentId
   if (sourceType === SourceType.PLAYLIST) {
     songs = await getPlaylistSongs(sourceId, PageType.LIBRARY, SortType.NEWEST);
   }
   else if (sourceType === SourceType.ARTIST) {
-    //  TODO: get songs from artist
     songs = await getSongsFromArtist(sourceId, SortType.NEWEST);
   }
   else if (sourceType === SourceType.ALBUM) {
-    //  TODO: get songs from album
     songs = await getSongsFromAlbum(sourceId, SortType.OLDEST);
   }
   else {

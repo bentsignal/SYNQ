@@ -43,14 +43,14 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
           setSrc(image);
         }
         else {
-          const albumCover = await getAlbumCoverFromSong(parseInt(id));
-          if (albumCover) {
-            setSrc(`data:image/jpeg;base64,${albumCover}`);
+          const songCover = await getCoverImageData(id);
+          if (songCover) {
+            setSrc(`data:image/jpeg;base64,${songCover}`);
           }
           else {
-            const data = await getCoverImageData(id);
-            if (data) {
-              setSrc(`data:image/jpeg;base64,${data}`);
+            const albumCover = await getAlbumCoverFromSong(parseInt(id));
+            if (albumCover) {
+              setSrc(`data:image/jpeg;base64,${albumCover}`);
             }
             else {
               setSrc('');

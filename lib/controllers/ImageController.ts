@@ -4,6 +4,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { SaveFormat } from 'expo-image-manipulator';
 import { Image } from 'react-native';
 import 'react-native-get-random-values';
+import { getAlbumsFromSong } from '@/lib/controllers/AlbumController';
 
 export const splitImageMimeAndBuffer = (image: string) => {
   // extract mime from start of string
@@ -146,4 +147,18 @@ export const deleteImagesFromDirectory = async (dir: string) => {
   catch (error) {
     console.log('error deleting images from directory: ', error);
   }
+}
+
+export const getAlbumCoverPathFromSong = async (songId: number) => {
+  const albums = await getAlbumsFromSong(songId);
+  for (let i = 0; i < albums.length; i++) {
+    const folderExists = await FileSystem.getInfoAsync(`${FileSystem.documentDirectory}albums/${albums[i].id}`);
+    if (folderExists.exists) {
+      const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}albums/${albums[i].id}`);
+      if (contents.includes('cover_full.jpg')) {
+        return `${FileSystem.documentDirectory}albums/${albums[i].id}/cover_full.jpg`;
+      }
+    }
+  }
+  return null;
 }

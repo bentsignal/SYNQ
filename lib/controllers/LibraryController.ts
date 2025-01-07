@@ -7,7 +7,7 @@ import { SongBusEvent } from "@/station/song/Events";
 import 'react-native-get-random-values';
 import { addArtistToSong } from '@/lib/controllers/ArtistController';
 import { writeImageToLibrary, deleteImagesFromDirectory } from '@/lib/controllers/ImageController';
-import { addAlbumToSong, addArtistToAlbum } from '@/lib/controllers/AlbumController';
+import { addAlbumToSong, addArtistToAlbum, isArtistOnAlbum } from '@/lib/controllers/AlbumController';
 
 export const updateSongsInLibrary = async (
   ids: string[],

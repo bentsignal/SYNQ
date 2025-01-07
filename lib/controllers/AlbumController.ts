@@ -41,7 +41,10 @@ export const getArtistsFromAlbum = async (albumId: number): Promise<AlbumType[]>
 }
 
 export const addArtistToAlbum = async (artistId: number, albumId: number): Promise<void> => {
-  await AlbumModel.getInstance().addArtistToAlbum(artistId, albumId);
+  const alreadyExists = await AlbumModel.getInstance().isArtistOnAlbum(albumId, artistId);
+  if (!alreadyExists) {
+    await AlbumModel.getInstance().addArtistToAlbum(artistId, albumId);
+  }
 }
 
 export const removeArtistFromAlbum = async (artistId: number, albumId: number): Promise<void> => {

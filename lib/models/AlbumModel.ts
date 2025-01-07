@@ -144,7 +144,7 @@ export default class AlbumModel extends Model {
 
   public async addArtistToAlbum(artistId: number, albumId: number): Promise<void> {
     await AlbumModel.db?.runAsync(
-      `INSERT INTO artistsAlbums (artistId, albumId) VALUES (?, ?);`, 
+      `INSERT OR IGNORE INTO artistsAlbums (artistId, albumId) VALUES (?, ?);`,
       [artistId, albumId]
     );
   }

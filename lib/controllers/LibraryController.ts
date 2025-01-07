@@ -7,7 +7,7 @@ import { SongBusEvent } from "@/station/song/Events";
 import 'react-native-get-random-values';
 import { addArtistToSong } from '@/lib/controllers/ArtistController';
 import { writeImageToLibrary, deleteImagesFromDirectory } from '@/lib/controllers/ImageController';
-import { addAlbumToSong } from '@/lib/controllers/AlbumController';
+import { addAlbumToSong, addArtistToAlbum } from '@/lib/controllers/AlbumController';
 
 export const updateSongsInLibrary = async (
   ids: string[],
@@ -81,6 +81,12 @@ export const saveToLibrary = async (
           if (song.importAlbums && song.importAlbums.length > 0) {
             for (let j = 0; j < song.importAlbums.length; j++) {
               await addAlbumToSong(song.importAlbums[j].id, id);
+              // add artists to album if they aren't already on it
+              if (song.importArtists && song.importArtists.length > 0) {
+                for (let k = 0; k < song.importArtists.length; k++) {
+                  await addArtistToAlbum(song.importArtists[k].id, song.importAlbums[j].id);
+                }
+              }
               // create album directory if it doesn't exist
               const albumDir = `${FileSystem.documentDirectory}albums/${song.importAlbums[j].id}`;
               const info = await FileSystem.getInfoAsync(albumDir);

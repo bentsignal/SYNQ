@@ -21,7 +21,7 @@ export const importFiles = async (
   });
   const songs: SongType[] = [];
   let song: SongType;
-  const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
+  const wantedTags = ['artwork', 'artist', 'name', 'album', 'year'] as const;
   if (results.canceled === false) {
     await createImportDir();
     updateSize(results.assets.length);
@@ -54,7 +54,7 @@ export const importFiles = async (
       }
       let importAlbums: AlbumType[] = [];
       if (info.metadata?.album) {
-        const importAlbum = await getAlbumFromMetadata(info.metadata.album);
+        const importAlbum = await getAlbumFromMetadata(info.metadata.album, info.metadata?.year);
         if (importAlbum?.name) {
           info.metadata.album = importAlbum.name;
           importAlbum.image = info.metadata?.artwork;
@@ -84,7 +84,7 @@ export const importFiles = async (
 export const getWifiTransferSong = async (name: string, id: string, type: string, data: string): Promise<SongType> => {
   const destination = `${FileSystem.cacheDirectory}import/${id}${name}`;
   await FileSystem.writeAsStringAsync(destination, data, { encoding: 'base64' });
-  const wantedTags = ['artwork', 'artist', 'name', 'album'] as const;
+  const wantedTags = ['artwork', 'artist', 'name', 'album', 'year'] as const;
   const info = await getAudioMetadata(destination, wantedTags);
   let importArtists: ArtistType[] = [];
   if (info.metadata?.artist) {
@@ -98,7 +98,7 @@ export const getWifiTransferSong = async (name: string, id: string, type: string
   }
   let importAlbum: AlbumType = null;
   if (info.metadata?.album) {
-    importAlbum = await getAlbumFromMetadata(info.metadata.album);
+    importAlbum = await getAlbumFromMetadata(info.metadata.album, info.metadata?.year);
     if (importAlbum) {
       info.metadata.album = importAlbum?.name ?? '';
       importAlbum.image = info.metadata?.artwork;

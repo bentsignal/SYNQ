@@ -7,6 +7,7 @@ export type InfoType = {
     "artist"?: string;
     "artwork"?: string;
     "name"?: string;
+    "year"?: number;
   };
 };
 

@@ -23,7 +23,11 @@ export default class AlbumModel extends Model {
       return [];
     }
     if (sort === SortType.ALBUM) {
-      return result.sort((a, b) => a?.name.localeCompare(b?.name));
+      return result.sort((a, b) => {
+        if (!a?.name) return 1;
+        if (!b?.name) return -1;
+        return a.name.localeCompare(b.name);
+      });
     }
     return result;
   }

@@ -2,12 +2,13 @@ import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
-import { SongType, InfoType, PageType, ArtistType } from '@/constants/Types'
+import { SongType, InfoType, PageType, ArtistType, AlbumType } from '@/constants/Types'
 import SongModel from '@/lib/models/SongModel';
 import { idgen, getExportNumber } from '@/lib/Util';
 import 'react-native-get-random-values';
 import { getArtistsFromMetadata } from '@/lib/controllers/ArtistController';
 import { updateMetadata } from '@/lib/controllers/SongController';
+import { getAlbumFromMetadata } from '@/lib/controllers/AlbumController';
 
 export const importFiles = async (
   countdown: (value: number) => void,
@@ -51,11 +52,24 @@ export const importFiles = async (
           info.metadata.artist = '';
         }
       }
+      let importAlbums: AlbumType[] = [];
+      if (info.metadata?.album) {
+        const importAlbum = await getAlbumFromMetadata(info.metadata.album);
+        if (importAlbum?.name) {
+          info.metadata.album = importAlbum.name;
+          importAlbum.image = info.metadata?.artwork;
+          importAlbums.push(importAlbum);
+        }
+        else {
+          info.metadata.album = '';
+        }
+      }
       song = {
         'name': results.assets[i].name,
         'id': idgen(10),
         'info': info,
         'importArtists': importArtists,
+        'importAlbums': importAlbums,
         'cacheUri': results.assets[i].uri
       };
       songs.push(song);
@@ -82,13 +96,24 @@ export const getWifiTransferSong = async (name: string, id: string, type: string
       info.metadata.artist = '';
     }
   }
-  // await FileSystem.deleteAsync(destination);
+  let importAlbum: AlbumType = null;
+  if (info.metadata?.album) {
+    importAlbum = await getAlbumFromMetadata(info.metadata.album);
+    if (importAlbum) {
+      info.metadata.album = importAlbum?.name ?? '';
+      importAlbum.image = info.metadata?.artwork;
+    }
+    else {
+      info.metadata.album = '';
+    }
+  }
   return {
     'name': name,
     'id': id,
     'data': data,
     'info': info,
     'importArtists': importArtists,
+    'importAlbums': importAlbum ? [importAlbum] : [],
     'cacheUri': destination
   };
 }

@@ -131,7 +131,7 @@ export const getAlbumFromMetadata = async (value: string): Promise<AlbumType> =>
   }
 
   const allAlbums = await AlbumModel.getInstance().getAlbums();
-  const existingAlbum = allAlbums.find(album => album.name.toLowerCase() === value.toLowerCase());
+  const existingAlbum = allAlbums.find(album => album.name && album.name.toLowerCase() === value.toLowerCase());
 
   if (existingAlbum) {
     return existingAlbum;

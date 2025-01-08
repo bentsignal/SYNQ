@@ -117,8 +117,8 @@ const AlbumItem = ({album, allowInteraction}: AlbumProps) => {
         propOnLoad={() => {}}
       />
       <View style={Local.textWrapper}>
-        <Text style={Local.name}>{name}</Text>
-        {year && <Text style={Local.year}>{year}</Text>}
+        <Text style={Local.name} numberOfLines={1}>{name}</Text>
+        {year && <Text style={Local.year} numberOfLines={1}>{year}</Text>}
       </View>
       {allowInteraction && album.pageType === PageType.LIBRARY &&
         <More handlePress={handleMore} />

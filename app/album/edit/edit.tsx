@@ -73,8 +73,8 @@ const EditAlbum = ({id}: {id: string}) => {
         setName(text);
         await updateAlbum(
           parseInt(id), 
-          text === originalName ? null : text, 
-          year === originalYear ? undefined : year,
+          text, 
+          year,
           image
         );
       }
@@ -98,8 +98,8 @@ const EditAlbum = ({id}: {id: string}) => {
       setYear(yearNum);
       await updateAlbum(
         parseInt(id), 
-        name === originalName ? null : name,
-        yearNum === originalYear ? undefined : yearNum,
+        name,
+        yearNum,
         image
       );
     }

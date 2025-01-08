@@ -123,8 +123,7 @@ export const getPlaylistCover = async (playlistId: number, full: boolean = false
     const name = full ? 'cover_full.jpg' : 'cover_small.jpg';
     if (contents.find(content => content === name)) {
       const path = `${dir}/${name}`;
-      const artwork = await FileSystem.readAsStringAsync(path, { encoding: 'base64' });
-      return artwork ? `${artwork}` : null;
+      return path;
     }
     else {
       return null;

@@ -1,4 +1,4 @@
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions, Image } from 'react-native';
 import { useEffect, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import { PageType } from '@/constants/Types';
@@ -16,28 +16,28 @@ import albumBus from '@/station/album';
 const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
 
   const [src, setSrc] = useState('');
-  const [aspectRatio, setAspectRatio] = useState(1);
+  const [updates, setUpdates] = useState(0);
   const { theme } = useThemeContext();
   const coverPercent = 0.65;
 
   const getImage = async () => {
     try {
       if (type === PageType.PLAYLIST) {
-        const data = await getPlaylistCover(parseInt(id), true);
-        if (data) {
-          setSrc(`data:image/jpeg;base64,${data}`);
+        const path = await getPlaylistCover(parseInt(id), true);
+        if (path) {
+          setSrc(path);
         }
       }
       else if (type === PageType.ARTIST) {
-        const data = await getArtistCover(parseInt(id), true);
-        if (data) {
-          setSrc(`data:image/jpeg;base64,${data}`);
+        const path = await getArtistCover(parseInt(id), true);
+        if (path) {
+          setSrc(path);
         }
       }
       else if (type === PageType.ALBUM) {
-        const data = await getAlbumCover(parseInt(id), true);
-        if (data) {
-          setSrc(`data:image/jpeg;base64,${data}`);
+        const path = await getAlbumCover(parseInt(id), true);
+        if (path) {
+          setSrc(path);
         }
       }
     }
@@ -46,21 +46,24 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
     }
   }
 
-  const handlePlaylistModified = (data: PlaylistImageModifiedEvent) => {
+  const handlePlaylistModified = async (data: PlaylistImageModifiedEvent) => {
     if (type === PageType.PLAYLIST && id === data.id.toString()) {
-      getImage();
+      await getImage();
+      setUpdates(updates + 1);
     }
   }
 
-  const handleArtistModified = (data: ArtistImageModifiedEvent) => {
+  const handleArtistModified = async (data: ArtistImageModifiedEvent) => {
     if (type === PageType.ARTIST && id === data.id.toString()) {
-      getImage();
+      await getImage();
+      setUpdates(updates + 1);
     }
   }
 
-  const handleAlbumModified = (data: AlbumImageModifiedEvent) => {
+  const handleAlbumModified = async (data: AlbumImageModifiedEvent) => {
     if (type === PageType.ALBUM && id === data.id.toString()) {
-      getImage();
+      await getImage();
+      setUpdates(updates + 1);
     }
   }
 
@@ -86,25 +89,21 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
       backgroundColor: src ? 'transparent' : '#D2D2D2',
       width: Dimensions.get('screen').width * coverPercent, 
       minHeight: Dimensions.get('screen').width * coverPercent,
-      aspectRatio: aspectRatio,
+      aspectRatio: 1,
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: type === PageType.ARTIST ? 1000 : 12,
     },
     artwork: {
-      aspectRatio: aspectRatio,
+      aspectRatio: 1,
       width: src ? Dimensions.get('screen').width * coverPercent : 60, 
       borderRadius: type === PageType.ARTIST ? 1000 : 12,
-    },
-    empty: {
-      width: 60,
-      height: 60,
     },
   });
 
   const getSource = () => {
     if (src) {
-      return {uri: src};
+      return {uri: `${src}?${updates}`};
     }
     else if (type === PageType.PLAYLIST && id === '1') {
       return require('@/assets/icons/library.png');
@@ -128,11 +127,6 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
       <FastImage
         source={getSource()}
         style={Local.artwork}
-        onLoad={(evt) => {
-          if (evt.nativeEvent) {
-            setAspectRatio(evt.nativeEvent.width / evt.nativeEvent.height);
-          }
-        }}
       />
     </View>
   );

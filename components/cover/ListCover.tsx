@@ -1,7 +1,7 @@
-import { StyleSheet, Animated } from 'react-native';
+import { StyleSheet, Animated, Image } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import FastImage from 'react-native-fast-image';
-import { getCoverImageData } from '@/lib/controllers/ImageController';
+import { getSongCover } from '@/lib/controllers/ImageController';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { getAppIcon } from '@/constants/Logos';
 import { PageType, CoverType } from '@/constants/Types';
@@ -34,6 +34,7 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
 
   const [src, setSrc] = useState(image ? image : '');
   const [loaded, setLoaded] = useState(false);
+  const [updates, setUpdates] = useState(0);
   let dim = src || id === 'ad' ? 60 : 20;
 
   const getImage = async () => {
@@ -43,14 +44,14 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
           setSrc(image);
         }
         else {
-          const songCover = await getCoverImageData(id);
-          if (songCover) {
-            setSrc(`data:image/jpeg;base64,${songCover}`);
+          const path = await getSongCover(id);
+          if (path) {
+            setSrc(path);
           }
           else {
-            const albumCover = await getAlbumCoverFromSong(parseInt(id));
-            if (albumCover) {
-              setSrc(`data:image/jpeg;base64,${albumCover}`);
+            const path = await getAlbumCoverFromSong(parseInt(id));
+            if (path) {
+              setSrc(path);
             }
             else {
               setSrc('');
@@ -59,21 +60,21 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
         }
       }
       else if (type === CoverType.PLAYLIST) {
-        const data = await getPlaylistCover(parseInt(id), true);
-        if (data) {
-          setSrc(`data:image/jpeg;base64,${data}`);
+        const path = await getPlaylistCover(parseInt(id), true);
+        if (path) {
+          setSrc(path);
         }
       }
       else if (type === CoverType.ARTIST) {
-        const data = await getArtistCover(parseInt(id), true);
-        if (data) {
-          setSrc(`data:image/jpeg;base64,${data}`);
+        const path = await getArtistCover(parseInt(id), true);
+        if (path) {
+          setSrc(path);
         }
       }
       else if (type === CoverType.ALBUM) {
-        const data = await getAlbumCover(parseInt(id), true);
-        if (data) {
-          setSrc(`data:image/jpeg;base64,${data}`);
+        const path = await getAlbumCover(parseInt(id), true);
+        if (path) {
+          setSrc(path);
         }
       }
       dim = src ? 60 : 20;
@@ -86,27 +87,31 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
     }
   }
 
-  const handlePlaylistModified = (data: PlaylistImageModifiedEvent) => {
+  const handlePlaylistModified = async (data: PlaylistImageModifiedEvent) => {
     if (type === CoverType.PLAYLIST && id === data.id.toString()) {
-      getImage();
+      await getImage();
+      setUpdates(updates + 1);
     }
   }
 
-  const handleSongModified = (data: SongCoverModifiedEvent) => {
+  const handleSongModified = async (data: SongCoverModifiedEvent) => {
     if (data.type === PageType.LIBRARY && Number(id) === data.id) {
-      getImage();
+      await getImage();
+      setUpdates(updates + 1);
     }
   }
 
-  const handleArtistModified = (data: ArtistImageModifiedEvent) => {
+  const handleArtistModified = async (data: ArtistImageModifiedEvent) => {
     if (type === CoverType.ARTIST && id === data.id.toString()) {
-      getImage();
+      await getImage();
+      setUpdates(updates + 1);
     }
   }
 
-  const handleAlbumModified = (data: AlbumImageModifiedEvent) => {
+  const handleAlbumModified = async (data: AlbumImageModifiedEvent) => {
     if (type === CoverType.ALBUM && id === data.id.toString()) {
-      getImage();
+      await getImage();
+      setUpdates(updates + 1);
     }
   }
 
@@ -158,7 +163,7 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
       return (getAppIcon(theme));
     }
     else if (src) {
-      return {uri: src};
+      return {uri: `${src}?${updates}`};
     }
     else if (type === CoverType.PLAYLIST) {
       if (id === '1') {

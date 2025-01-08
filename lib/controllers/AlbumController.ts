@@ -76,8 +76,7 @@ export const getAlbumCover = async (albumId: number, full: boolean = false) => {
     const name = full ? 'cover_full.jpg' : 'cover_small.jpg';
     if (contents.find(content => content === name)) {
       const path = `${dir}/${name}`;
-      const artwork = await FileSystem.readAsStringAsync(path, { encoding: 'base64' });
-      return artwork ? `${artwork}` : null;
+      return path;
     }
     else {
       return null;
@@ -145,12 +144,12 @@ export const getAlbumFromMetadata = async (value: string, year?: number): Promis
 
 }
 
-export const getAlbumCoverFromSong = async (songId: number): Promise<string> => {
+export const getAlbumCoverFromSong = async (songId: number, full: boolean = false): Promise<string> => {
   const albums = await getAlbumsFromSong(songId);
   for (let i = 0; i < albums.length; i++) {
-    const cover = await getAlbumCover(albums[i].id, false);
-    if (cover) {
-      return cover;
+    const path = await getAlbumCover(albums[i].id, full);
+    if (path) {
+      return path;
     }
   }
   return null;

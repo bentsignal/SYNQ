@@ -44,7 +44,7 @@ export const newCover = async () => {
   }
 }
 
-export const getCoverImageData = async (id: string, full: boolean = false) => {
+export const getSongCover = async (id: string, full: boolean = false) => {
   try {
     const dir = `${FileSystem.documentDirectory}library/${id}`;
     const info = await FileSystem.getInfoAsync(dir);
@@ -53,8 +53,8 @@ export const getCoverImageData = async (id: string, full: boolean = false) => {
       const fileName = full ? 'cover_full.jpg' : 'cover_small.jpg';
       if (contents.includes(fileName)) {
         try {
-          const data = await FileSystem.readAsStringAsync(`${FileSystem.documentDirectory}library/${id}/${fileName}`, { encoding: 'base64' });
-          return data;
+          const path = `${FileSystem.documentDirectory}library/${id}/${fileName}`;
+          return path;
         }
         catch (error) {
           console.log('error reading cover image: ', error);

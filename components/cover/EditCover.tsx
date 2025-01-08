@@ -1,7 +1,7 @@
 import { View, Image, TouchableOpacity, StyleSheet, Dimensions, Animated, Text } from 'react-native';
 import { useEffect, useLayoutEffect, useState, useRef } from 'react';
 import FastImage from 'react-native-fast-image';
-import { getCoverImageData } from '@/lib/controllers/ImageController';
+import { getSongCover } from '@/lib/controllers/ImageController';
 import { PageType, CoverType } from '@/constants/Types';
 import { getPlaylistCover } from '@/lib/controllers/PlaylistController';
 import { getArtistCover } from '@/lib/controllers/ArtistController';
@@ -20,6 +20,7 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
   const opacityRef = useRef(new Animated.Value(0)).current;
   const [src, setSrc] = useState(image ? image : transparent);
   const [loaded, setLoaded] = useState(false);
+  const [updates, setUpdates] = useState(0);
 
   const revealImage = () => {
     Animated.timing(opacityRef, {
@@ -40,9 +41,9 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
             }, 20);
           }
           else {
-            const data = await getCoverImageData(id);
-            if (data) {
-              setSrc(`data:image/jpeg;base64,${data}`);
+            const path = await getSongCover(id);
+            if (path) {
+              setSrc(path);
             }
             else {
               setSrc(transparent);
@@ -54,9 +55,9 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
             setSrc(image);
           }
           else {
-            const data = await getPlaylistCover(parseInt(id));
-            if (data) {
-              setSrc(`data:image/jpeg;base64,${data}`);
+            const path = await getPlaylistCover(parseInt(id));
+            if (path) {
+              setSrc(path);
             }
             else {
               setSrc(transparent);
@@ -68,9 +69,9 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
             setSrc(image);
           }
           else {
-            const data = await getArtistCover(parseInt(id), true);
-            if (data) {
-              setSrc(`data:image/jpeg;base64,${data}`);
+            const path = await getArtistCover(parseInt(id), true);
+            if (path) {
+              setSrc(path);
             }
             else {
               setSrc(transparent);
@@ -82,9 +83,9 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
             setSrc(image);
           }
           else {
-            const data = await getAlbumCover(parseInt(id), true);
-            if (data) {
-              setSrc(`data:image/jpeg;base64,${data}`);
+            const path = await getAlbumCover(parseInt(id), true);
+            if (path) {
+              setSrc(path);
             }
             else {
               setSrc(transparent);
@@ -103,7 +104,8 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
     }
 
     getImage();
-    
+    setUpdates(updates + 1);
+
   }, [image, id]);
 
   const editCoverSize = 140;
@@ -150,7 +152,7 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
     >
       <Animated.View style={[Local.container, {opacity: opacityRef}]}>
         <FastImage 
-          source={src ? {uri: src} : {uri: transparent}}
+          source={src ? {uri: `${src}?${updates}`} : {uri: transparent}}
           style={Local.artwork}
           onLoad={() => {
             setLoaded(true);

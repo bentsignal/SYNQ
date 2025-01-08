@@ -6,7 +6,7 @@ import { SongType, InfoType, PageType, TagsType, SourceType, SongResultType, Sor
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 import SongModel from '@/lib/models/SongModel';
 import 'react-native-get-random-values';
-import { splitImageMimeAndBuffer, getCoverImageData } from '@/lib/controllers/ImageController';
+import { splitImageMimeAndBuffer, getSongCover } from '@/lib/controllers/ImageController';
 
 export const updateMetadata = async (song: SongType) => {
 
@@ -24,7 +24,8 @@ export const updateMetadata = async (song: SongType) => {
     }
     try {
       // retrieve image if it exists
-      const image = await getCoverImageData(song.id, true);
+      const path = await getSongCover(song.id, true);
+      const image = await FileSystem.readAsStringAsync(path, { encoding: 'base64' });
       if (image && song.info && song.info.metadata) {
         song.info.metadata.artwork = image;
       }

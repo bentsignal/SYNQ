@@ -92,7 +92,6 @@ const Queue = () => {
         <ListCover 
           id={track?.id}
           type={CoverType.SONG}
-          image={track?.artwork}
           propOnLoad={() => {}}
           fade={true}
         />

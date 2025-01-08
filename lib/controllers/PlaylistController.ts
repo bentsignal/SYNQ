@@ -122,7 +122,7 @@ export const getPlaylistCover = async (playlistId: number, full: boolean = false
     const contents = await FileSystem.readDirectoryAsync(dir);
     const name = full ? 'cover_full.jpg' : 'cover_small.jpg';
     if (contents.find(content => content === name)) {
-      const path = `${dir}/${name}`;
+      const path = `${dir}/${name}?${info.modificationTime}`;
       return path;
     }
     else {

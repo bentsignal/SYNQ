@@ -53,7 +53,7 @@ export const getSongCover = async (id: string, full: boolean = false) => {
       const fileName = full ? 'cover_full.jpg' : 'cover_small.jpg';
       if (contents.includes(fileName)) {
         try {
-          const path = `${FileSystem.documentDirectory}library/${id}/${fileName}`;
+          const path = `${FileSystem.documentDirectory}library/${id}/${fileName}?${info.modificationTime}`;
           return path;
         }
         catch (error) {
@@ -152,11 +152,11 @@ export const deleteImagesFromDirectory = async (dir: string) => {
 export const getAlbumCoverPathFromSong = async (songId: number) => {
   const albums = await getAlbumsFromSong(songId);
   for (let i = 0; i < albums.length; i++) {
-    const folderExists = await FileSystem.getInfoAsync(`${FileSystem.documentDirectory}albums/${albums[i].id}`);
-    if (folderExists.exists) {
+    const info = await FileSystem.getInfoAsync(`${FileSystem.documentDirectory}albums/${albums[i].id}`);
+    if (info.exists) {
       const contents = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}albums/${albums[i].id}`);
       if (contents.includes('cover_full.jpg')) {
-        return `${FileSystem.documentDirectory}albums/${albums[i].id}/cover_full.jpg`;
+        return `${FileSystem.documentDirectory}albums/${albums[i].id}/cover_full.jpg?${info.modificationTime}`;
       }
     }
   }

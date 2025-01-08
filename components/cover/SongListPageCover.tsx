@@ -16,7 +16,6 @@ import albumBus from '@/station/album';
 const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
 
   const [src, setSrc] = useState('');
-  const [updates, setUpdates] = useState(0);
   const { theme } = useThemeContext();
   const coverPercent = 0.65;
 
@@ -49,21 +48,18 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
   const handlePlaylistModified = async (data: PlaylistImageModifiedEvent) => {
     if (type === PageType.PLAYLIST && id === data.id.toString()) {
       await getImage();
-      setUpdates(updates + 1);
     }
   }
 
   const handleArtistModified = async (data: ArtistImageModifiedEvent) => {
     if (type === PageType.ARTIST && id === data.id.toString()) {
       await getImage();
-      setUpdates(updates + 1);
     }
   }
 
   const handleAlbumModified = async (data: AlbumImageModifiedEvent) => {
     if (type === PageType.ALBUM && id === data.id.toString()) {
       await getImage();
-      setUpdates(updates + 1);
     }
   }
 
@@ -103,7 +99,7 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
 
   const getSource = () => {
     if (src) {
-      return {uri: `${src}?${updates}`};
+      return {uri: `${src}`};
     }
     else if (type === PageType.PLAYLIST && id === '1') {
       return require('@/assets/icons/library.png');

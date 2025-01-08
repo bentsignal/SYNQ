@@ -32,8 +32,8 @@ export const setupPlayer = async () => {
 export const getTrackFromSong = async (song: SongType, theme: string): Promise<Track | undefined> => {
   const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;          
   try {
-    const libraryPathExists = await FileSystem.getInfoAsync(libraryPath);
-    if (!libraryPathExists.exists) {
+    const info = await FileSystem.getInfoAsync(libraryPath);
+    if (!info.exists) {
       console.log('Library path does not exist:', libraryPath);
       return;
     }
@@ -43,7 +43,7 @@ export const getTrackFromSong = async (song: SongType, theme: string): Promise<T
       let coverPath = '';
       if (contents.includes('cover_full.jpg')) {
         coverExists = true;
-        coverPath = `${libraryPath}/cover_full.jpg`;
+        coverPath = `${libraryPath}/cover_full.jpg?${info.modificationTime}`;
       }
       else {
         coverPath = await getAlbumCoverPathFromSong(parseInt(song.id));

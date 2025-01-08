@@ -34,7 +34,6 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
 
   const [src, setSrc] = useState(image ? image : '');
   const [loaded, setLoaded] = useState(false);
-  const [updates, setUpdates] = useState(0);
   let dim = src || id === 'ad' ? 60 : 20;
 
   const getImage = async () => {
@@ -90,28 +89,24 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
   const handlePlaylistModified = async (data: PlaylistImageModifiedEvent) => {
     if (type === CoverType.PLAYLIST && id === data.id.toString()) {
       await getImage();
-      setUpdates(updates + 1);
     }
   }
 
   const handleSongModified = async (data: SongCoverModifiedEvent) => {
     if (data.type === PageType.LIBRARY && Number(id) === data.id) {
       await getImage();
-      setUpdates(updates + 1);
     }
   }
 
   const handleArtistModified = async (data: ArtistImageModifiedEvent) => {
     if (type === CoverType.ARTIST && id === data.id.toString()) {
       await getImage();
-      setUpdates(updates + 1);
     }
   }
 
   const handleAlbumModified = async (data: AlbumImageModifiedEvent) => {
     if (type === CoverType.ALBUM && id === data.id.toString()) {
       await getImage();
-      setUpdates(updates + 1);
     }
   }
 
@@ -163,7 +158,7 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
       return (getAppIcon(theme));
     }
     else if (src) {
-      return {uri: `${src}?${updates}`};
+      return {uri: `${src}`};
     }
     else if (type === CoverType.PLAYLIST) {
       if (id === '1') {

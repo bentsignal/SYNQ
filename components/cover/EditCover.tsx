@@ -20,7 +20,6 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
   const opacityRef = useRef(new Animated.Value(0)).current;
   const [src, setSrc] = useState(image ? image : transparent);
   const [loaded, setLoaded] = useState(false);
-  const [updates, setUpdates] = useState(0);
 
   const revealImage = () => {
     Animated.timing(opacityRef, {
@@ -104,7 +103,6 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
     }
 
     getImage();
-    setUpdates(updates + 1);
 
   }, [image, id]);
 
@@ -152,7 +150,7 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
     >
       <Animated.View style={[Local.container, {opacity: opacityRef}]}>
         <FastImage 
-          source={src ? {uri: `${src}?${updates}`} : {uri: transparent}}
+          source={src ? {uri: `${src}`} : {uri: transparent}}
           style={Local.artwork}
           onLoad={() => {
             setLoaded(true);

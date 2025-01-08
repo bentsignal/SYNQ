@@ -108,6 +108,9 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
     if (type === CoverType.ALBUM && id === data.id.toString()) {
       await getImage();
     }
+    else if (type === CoverType.SONG) {
+      await getImage();
+    }
   }
 
   useEffect(() => {

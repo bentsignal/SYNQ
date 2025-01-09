@@ -32,8 +32,7 @@ const MiniPlayer = () => {
     }, 200);
   }, [track]);
 
-  const useDark = [Themes.yellow].includes(theme);
-  const darkColor = useDark ? darkenColor(theme, 50, 50) : Colors.text;
+  const textColor = darkenColor(theme, 50, 30);
 
   return (
     <TouchableOpacity 
@@ -63,27 +62,27 @@ const MiniPlayer = () => {
         }}
         name={getFileName(track?.url)}
         showAlbum={false}
-        color={useDark ? darkColor : Colors.text}
+        color={textColor}
       />
       <View style={Local.buttonContainer}>
         <TouchableOpacity 
           style={Local.buttonWrapper}
           onPress={() => {}}
         >
-          <SkipLeft size={18} color={useDark ? darkColor : Colors.text}/>
+          <SkipLeft size={18} color={textColor}/>
         </TouchableOpacity>
         <PausePlayButtons 
           playSize={25}
           pauseHeight={25}
           pauseWidth={7}
           style={Local.playPauseButtonWrapper}
-          color={useDark ? darkColor : Colors.text}
+          color={textColor}
         />
         <TouchableOpacity 
           style={Local.buttonWrapper}
           onPress={() => {}}
         >
-          <SkipRight size={18} color={useDark ? darkColor : Colors.text}/>
+          <SkipRight size={18} color={textColor}/>
         </TouchableOpacity>
       </View>
       

@@ -19,8 +19,10 @@ const AlbumHeader = ({id, title, year, pageType}: AlbumHeaderProps) => {
       <View style={Local.coverWrapper}>
         <SongListPageCover id={id} type={pageType}/>
       </View>
-      <Text style={Local.title}>{title}</Text>
-      {year && <Text style={Local.year}>{year}</Text>}
+      <View style={Local.infoWrapper}>
+        <Text style={Local.title}>{title}</Text>
+        {year && <Text style={Local.year}>{year}</Text>}
+      </View>
     </View>
   );
 }
@@ -30,7 +32,6 @@ const Local = StyleSheet.create({
     textAlign: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
     marginTop: 20,
   },
   title: {
@@ -38,21 +39,23 @@ const Local = StyleSheet.create({
     textAlign: 'center',
     color: Colors.text,
     width: '100%',
-    marginTop: 10,
-    marginBottom: 5,
+  },
+  infoWrapper: {
+    marginTop: 20,
+    marginBottom: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   year: {
     ...Styles.p,
     textAlign: 'center',
     color: Colors.infoText,
     width: '100%',
-    marginBottom: 5,
   },
   coverWrapper: {
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10,
-    marginBottom: 10,
   }
 });
 

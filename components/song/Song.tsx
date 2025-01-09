@@ -119,7 +119,12 @@ export default function Song({ song, fadeCover, fadeSong }: SongProps) {
             song.info.metadata.artwork = cover;
           }
           else {
-            song.info.metadata = {artwork: cover};
+            song.info.metadata = {
+              name: '',
+              artist: '',
+              album: '',
+              artwork: cover,
+            };
           }
           setUpdates(prev => prev + 1);
         }
@@ -128,7 +133,12 @@ export default function Song({ song, fadeCover, fadeSong }: SongProps) {
             song.info.metadata.artwork = '';
           }
           else {
-            song.info.metadata = {artwork: ''};
+            song.info.metadata = {
+              name: '',
+              artist: '',
+              album: '',
+              artwork: '',
+            };
           }
           setUpdates(prev => prev + 1);
         }

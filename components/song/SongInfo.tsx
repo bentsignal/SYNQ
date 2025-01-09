@@ -36,7 +36,7 @@ const SongInfo = ({info, name, showAlbum, color, titleStyles, artistStyles}: {
         style={ titleStyles ? titleStyles : Local.title }
         numberOfLines={1}
       >
-        {info.metadata?.name ?? name}
+        {info.metadata?.name ? info.metadata.name : name}
       </Text>
       <Text
         style={[artistStyles ? artistStyles : Local.artistAlbum, {

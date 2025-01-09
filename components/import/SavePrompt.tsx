@@ -61,6 +61,7 @@ const SavePrompt = () => {
 
   const checkForReview = async () => {
     try {
+      if (!premium) return;
       let countStr = await AsyncStorage.getItem('importCount');
       if (countStr) {
         let count = parseInt(countStr);

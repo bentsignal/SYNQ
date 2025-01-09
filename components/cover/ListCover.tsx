@@ -16,7 +16,7 @@ import artistBus from '@/station/artist';
 import { ArtistImageModifiedEvent } from '@/station/artist/Events';
 import { ArtistBusEvent } from '@/station/artist/Events';
 import { getAlbumCover, getAlbumCoverFromSong } from '@/lib/controllers/AlbumController';
-import { AlbumBusEvent, AlbumImageModifiedEvent, AlbumToggledOnSongEvent } from '@/station/album/Events';
+import { AlbumBusEvent, AlbumImageModifiedEvent } from '@/station/album/Events';
 import albumBus from '@/station/album';
 
 const ListCover = ({image, type, id, fade, propOnLoad}: {
@@ -113,30 +113,16 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
     }
   }
 
-  const handleAlbumToggledOnSong = async (data: AlbumToggledOnSongEvent) => {
-    if (type === CoverType.SONG && id === data.songId.toString()) {
-      const cover = await getAlbumCover(data.albumId, true);
-      if (data.add && cover) {
-        setSrc(cover);
-      }
-      else {
-        setSrc('');
-      }
-    }
-  }
-
   useEffect(() => {
     playlistBus.on(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
     songBus.on(SongBusEvent.SONG_COVER_MODIFIED, handleSongModified);
     artistBus.on(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistModified);
     albumBus.on(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, handleAlbumModified);
-    albumBus.on(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, handleAlbumToggledOnSong);
     return () => {
       playlistBus.off(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
       songBus.off(SongBusEvent.SONG_COVER_MODIFIED, handleSongModified);
       artistBus.off(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistModified);
       albumBus.off(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, handleAlbumModified);
-      albumBus.off(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, handleAlbumToggledOnSong);
     }
   }, []);
 

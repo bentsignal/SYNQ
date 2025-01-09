@@ -29,6 +29,9 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistToggledOnSongEvent, ArtistBusEvent } from '@/station/artist/Events';
 import { getArtistsFromSong } from '@/lib/controllers/ArtistController';
 import artistBus from '@/station/artist';
+import albumBus from '@/station/album';
+import { AlbumBusEvent, AlbumToggledOnSongEvent } from '@/station/album/Events';
+import { getAlbumCover } from '@/lib/controllers/AlbumController';
 
 type SongProps = {
   song: SongType, 
@@ -36,12 +39,13 @@ type SongProps = {
   fadeSong: boolean,
 }
 
-const Song = ({ song, fadeCover, fadeSong }: SongProps) => {
+export default function Song({ song, fadeCover, fadeSong }: SongProps) {
 
   const [selected, setSelected] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const translateX = useRef(new Animated.Value(0)).current;
   const [_, forceUpdate] = useState(0);
+  const [updates, setUpdates] = useState(0);
 
   const track = useActiveTrack();
 
@@ -92,10 +96,12 @@ const Song = ({ song, fadeCover, fadeSong }: SongProps) => {
     songBus.on(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
     songBus.on(SongBusEvent.SONG_COVER_MODIFIED, updateSongCover);
     artistBus.on(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
+    albumBus.on(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, updateAlbumInfo);
     return () => {
       songBus.off(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
       songBus.off(SongBusEvent.SONG_COVER_MODIFIED, updateSongCover);
       artistBus.off(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
+      albumBus.off(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, updateAlbumInfo);
     }
   }, []);
 
@@ -104,50 +110,34 @@ const Song = ({ song, fadeCover, fadeSong }: SongProps) => {
     disablePlay = true;
   }
 
-  const Local = StyleSheet.create({
-    container: {
-      width: '100%',
-    },
-    contentContainer: {
-      ...Styles.roundedContainer,
-      ...Styles.listItem,
-      backgroundColor: bg,
-      opacity: !selectEnabled || (selectEnabled && selected) ? 1 : 0.6
-    },
-    skeleton: {
-      ...Styles.roundedContainer,
-      position: 'absolute',
-      width: '90%',
-      height: 90,
-      zIndex: 1,
-    },
-    blur: {
-      ...Styles.roundedContainer,
-      display: blur ? 'flex' : 'none',
-      overflow: 'hidden',
-      position: 'absolute',
-      justifyContent: 'center',
-      alignItems: 'center',
-      top: 0,
-      left: 0,
-      width: '90%',
-      height: 90,
-      padding: 15,
-      zIndex: 2
-    },
-    premiumMessageContainer: {
-      display: message ? 'flex' : 'none',
-      justifyContent: 'center',
-      alignItems: 'center'
-    },
-    premiumMessageText: {
-      ...Styles.infoText,
-      paddingBottom: 10,
-      textShadowColor: Colors.background,
-      textShadowOffset: { width: 2, height: 2 },
-      textShadowRadius: 10
+  const updateAlbumInfo = async (data: AlbumToggledOnSongEvent) => {
+    if (data.songId === Number(song.id)) {
+      if (song.pageType === PageType.IMPORT) {
+        if (data.add) {
+          const cover = await getAlbumCover(data.albumId);
+          if (song.info.metadata?.artwork !== undefined) {
+            song.info.metadata.artwork = cover;
+          }
+          else {
+            song.info.metadata = {artwork: cover};
+          }
+          setUpdates(prev => prev + 1);
+        }
+        else {
+          if (song.info.metadata?.artwork !== undefined) {
+            song.info.metadata.artwork = '';
+          }
+          else {
+            song.info.metadata = {artwork: ''};
+          }
+          setUpdates(prev => prev + 1);
+        }
+      }
+      else {
+        setUpdates(prev => prev + 1);
+      }
     }
-  });
+  }
 
   const updateArtistInfo = async (data: ArtistToggledOnSongEvent) => {
     if (data.songId === Number(song.id)) {
@@ -165,9 +155,15 @@ const Song = ({ song, fadeCover, fadeSong }: SongProps) => {
 
   const updateSongInfo = async (data: SongInfoModifiedEvent) => {
     if (Number(song.id) === data.id) {
-      song.info.metadata.name = data.title;
-      song.info.metadata.artist = data.artist;
-      song.info.metadata.album = data.album;
+      if (data.title !== undefined && data.title !== null) {
+        song.info.metadata.name = data.title;
+      }
+      if (data.artist !== undefined && data.artist !== null) {
+        song.info.metadata.artist = data.artist;
+      }
+      if (data.album !== undefined && data.album !== null) {
+        song.info.metadata.album = data.album;
+      }
       forceUpdate(prev => prev + 1);
     }
   }
@@ -230,7 +226,10 @@ const Song = ({ song, fadeCover, fadeSong }: SongProps) => {
         transform: [{ translateX }]
       }]}>
       <TouchableOpacity 
-        style={Local.contentContainer}
+        style={[Local.contentContainer, {
+          backgroundColor: bg,
+          opacity: !selectEnabled || (selectEnabled && selected) ? 1 : 0.6,
+        }]}
         activeOpacity={disablePlay ? 1 : 0.8}
         disabled={disablePlay}
         onPress={handlePlay}
@@ -239,6 +238,7 @@ const Song = ({ song, fadeCover, fadeSong }: SongProps) => {
           image={song.info?.metadata?.artwork ? song.info.metadata.artwork : ''}
           type={CoverType.SONG}
           id={song.id}
+          key={updates}
           fade={fadeCover}
           propOnLoad={() => {
             setLoaded(true);
@@ -304,10 +304,10 @@ const Song = ({ song, fadeCover, fadeSong }: SongProps) => {
         />
       }
       <BlurView
-        style={Local.blur}
+        style={[Local.blur, {display: blur ? 'flex' : 'none'}]}
         intensity={20}
       >
-        <View style={Local.premiumMessageContainer}>
+        <View style={[Local.premiumMessageContainer, {display: message ? 'flex' : 'none'}]}>
           <Text style={Local.premiumMessageText}>
             Import multiple files with <Text style={{color: theme}}>Premium</Text>
           </Text>
@@ -326,4 +326,43 @@ const Song = ({ song, fadeCover, fadeSong }: SongProps) => {
 
 }
 
-export default Song;
+const Local = StyleSheet.create({
+  container: {
+    width: '100%',
+  },
+  contentContainer: {
+    ...Styles.roundedContainer,
+    ...Styles.listItem,
+  },
+  skeleton: {
+    ...Styles.roundedContainer,
+    position: 'absolute',
+    width: '90%',
+    height: 90,
+    zIndex: 1,
+  },
+  blur: {
+    ...Styles.roundedContainer,
+    overflow: 'hidden',
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    top: 0,
+    left: 0,
+    width: '90%',
+    height: 90,
+    padding: 15,
+    zIndex: 2
+  },
+  premiumMessageContainer: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  premiumMessageText: {
+    ...Styles.infoText,
+    paddingBottom: 10,
+    textShadowColor: Colors.background,
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 10
+  }
+});

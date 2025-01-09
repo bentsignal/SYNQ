@@ -30,36 +30,24 @@ const SongInfo = ({info, name, showAlbum, color, titleStyles, artistStyles}: {
     }
   });
 
-  if (info && info.metadata?.artist && info.metadata?.name) {
-    return (
-      <View style={ Local.infoContainer }>
-        <Text
-          style={ titleStyles ? titleStyles : Local.title }
-          numberOfLines={1}
-        >
-          {info.metadata?.name}
-        </Text>
-        <Text
-          style={ artistStyles ? artistStyles : Local.artistAlbum }
-          numberOfLines={1}
-        >
-          {info.metadata?.artist} {showAlbum && info.metadata.album ? `· ${info.metadata.album}` : ''}
-        </Text>
-      </View>
-    );
-  }
-  else {
-    return (
-      <View style={ Local.infoContainer }>
-        <Text
-          style={ titleStyles ? titleStyles : Local.title }
-          numberOfLines={1}
-        >
-          {info.metadata?.name ? info.metadata.name : name}
-        </Text>
-      </View>
-    );
-  }
+  return (
+    <View style={ Local.infoContainer }>
+      <Text
+        style={ titleStyles ? titleStyles : Local.title }
+        numberOfLines={1}
+      >
+        {info.metadata?.name ?? name}
+      </Text>
+      <Text
+        style={[artistStyles ? artistStyles : Local.artistAlbum, {
+          display: info.metadata?.artist ? 'flex' : 'none'
+        }]}
+        numberOfLines={1}
+      >
+        {info.metadata?.artist} {showAlbum && info.metadata.album ? `· ${info.metadata.album}` : ''}
+      </Text>
+    </View>
+  );
 
 }
 

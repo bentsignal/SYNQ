@@ -4,6 +4,7 @@ import HorizontalScrollView from '@/components/HorizontalScrollView';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { useThemeContext } from '@/context/ThemeProvider';
+import { darkenColor } from '@/lib/controllers/ColorController';
 
 type CategorySelectorProps = {
   containerStyle: ViewStyle;
@@ -18,6 +19,15 @@ const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) =
   const [selected, setSelected] = useState(0);
 
   const { theme } = useThemeContext();
+
+  const inline = StyleSheet.create({
+    darkText: {
+      color: darkenColor(theme, 50, 30),
+    },
+    lightText: {
+      color: Colors.text,
+    }
+  });
 
   return (
     <View 
@@ -46,7 +56,7 @@ const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) =
             }}
             activeOpacity={0.8}
           >
-            <Text style={Local.item}>Playlists</Text>
+            <Text style={[Local.item, selected === 0 ? inline.darkText : inline.lightText]}>Playlists</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[Local.itemContainer, { backgroundColor: selected === 1 ? theme : Colors.song }]}
@@ -56,7 +66,7 @@ const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) =
             }}
             activeOpacity={0.8}
           >
-            <Text style={Local.item}>Albums</Text>
+            <Text style={[Local.item, selected === 1 ? inline.darkText : inline.lightText]}>Albums</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[Local.itemContainer, { backgroundColor: selected === 2 ? theme : Colors.song }]}
@@ -66,7 +76,7 @@ const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) =
             }}
             activeOpacity={0.8}
           >
-            <Text style={Local.item}>Artists</Text>
+            <Text style={[Local.item, selected === 2 ? inline.darkText : inline.lightText]}>Artists</Text>
           </TouchableOpacity>
         </View>
       </HorizontalScrollView>
@@ -91,7 +101,6 @@ const Local = StyleSheet.create({
   },
   item: {
     ...Styles.h6,
-    color: Colors.text,
     paddingVertical: 10,
     paddingHorizontal: 20,
   }

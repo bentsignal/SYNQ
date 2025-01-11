@@ -96,8 +96,8 @@ export const writeImageToLibrary = async (artwork: string, dir: string) => {
         Image.getSize(`${dir}/cover_temp.${extension}`, (width, height) => resolve({ width, height }), reject);
       });
       const fullResizeOptions: ImageManipulator.ActionResize = {resize: {
-        width: Math.min(1000, imageWidth),
-        height: Math.min(1000, imageWidth),
+        width: Math.min(1500, imageWidth),
+        height: Math.min(1500, imageWidth),
       }};
       const smallResizeOptions: ImageManipulator.ActionResize = {resize: {
         width: Math.min(200, imageWidth),

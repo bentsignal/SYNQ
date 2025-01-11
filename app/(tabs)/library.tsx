@@ -15,11 +15,14 @@ import { Colors } from "@/constants/Colors";
 import Playlists from "@/components/library/Playlists";
 import Albums from "@/components/library/Albums";
 import Artists from "@/components/library/Artists";
+import Songs from "@/components/library/Songs";
 import Plus from "@/components/Plus";
 import { router } from "expo-router";
 import { useThemeContext } from "@/context/ThemeProvider";
 import { usePremiumContext } from "@/context/PremiumProvider";
 import { usePlaybackContext } from "@/context/PlaybackProvider";
+import playlistBus from "@/station/playlist/Bus";
+import { PlaylistBusEvent } from "@/station/playlist/Events";
 
 const Library = () => {
 
@@ -51,6 +54,16 @@ const Library = () => {
   const [selected, setSelected] = useState(0);
 
   const checkForAdInterval = 5;
+
+  useEffect(() => {
+    const resetTab = () => {
+      setSelected(0); 
+    }
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, resetTab);
+    return () => {
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, resetTab);
+    }
+  }, []);
 
   // used to update storage variable that counts 
   // play time. Used to determine if an ad should be played
@@ -215,17 +228,18 @@ const Library = () => {
 
   const getBody = () => {
     switch (selected) {
-      case 0: return <Playlists />
-      case 1: return <Albums />
-      case 2: return <Artists />
+      case 0: return <Songs />
+      case 1: return <Playlists />
+      case 2: return <Albums />
+      case 3: return <Artists />
     }
   }
 
   const handleCreate = () => {
     switch (selected) {
-      case 0: router.push('/playlist/create'); break;
-      case 1: router.push('/album/create'); break;
-      case 2: router.push('/artist/create'); break;
+      case 1: router.push('/playlist/create'); break;
+      case 2: router.push('/album/create'); break;
+      case 3: router.push('/artist/create'); break;
     }
   }
 

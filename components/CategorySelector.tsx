@@ -1,10 +1,12 @@
 import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import HorizontalScrollView from '@/components/HorizontalScrollView';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { darkenColor } from '@/lib/controllers/ColorController';
+import playlistBus from '@/station/playlist/Bus';
+import { PlaylistBusEvent } from '@/station/playlist/Events';
 
 type CategorySelectorProps = {
   containerStyle: ViewStyle;
@@ -17,6 +19,16 @@ const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) =
   const [contentWidth, setContentWidth] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
   const [selected, setSelected] = useState(0);
+
+  useEffect(() => {
+    const setTab = () => {
+      setSelected(0);
+    }
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, setTab);
+    return () => {
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, setTab);
+    }
+  }, []);
 
   const { theme } = useThemeContext();
 
@@ -56,7 +68,7 @@ const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) =
             }}
             activeOpacity={0.8}
           >
-            <Text style={[Local.item, selected === 0 ? inline.darkText : inline.lightText]}>Playlists</Text>
+            <Text style={[Local.item, selected === 0 ? inline.darkText : inline.lightText]}>Songs</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[Local.itemContainer, { backgroundColor: selected === 1 ? theme : Colors.song }]}
@@ -66,7 +78,7 @@ const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) =
             }}
             activeOpacity={0.8}
           >
-            <Text style={[Local.item, selected === 1 ? inline.darkText : inline.lightText]}>Albums</Text>
+            <Text style={[Local.item, selected === 1 ? inline.darkText : inline.lightText]}>Playlists</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[Local.itemContainer, { backgroundColor: selected === 2 ? theme : Colors.song }]}
@@ -76,7 +88,17 @@ const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) =
             }}
             activeOpacity={0.8}
           >
-            <Text style={[Local.item, selected === 2 ? inline.darkText : inline.lightText]}>Artists</Text>
+            <Text style={[Local.item, selected === 2 ? inline.darkText : inline.lightText]}>Albums</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[Local.itemContainer, { backgroundColor: selected === 3 ? theme : Colors.song }]}
+            onPress={() => {
+              setSelected(3);
+              callback(3);
+            }}
+            activeOpacity={0.8}
+          >
+            <Text style={[Local.item, selected === 3 ? inline.darkText : inline.lightText]}>Artists</Text>
           </TouchableOpacity>
         </View>
       </HorizontalScrollView>

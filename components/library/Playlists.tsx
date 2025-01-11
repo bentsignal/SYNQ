@@ -13,7 +13,7 @@ const Playlists = () => {
   const refreshPlaylists = async () => {
     try {
       const results = await getPlaylists();
-      setPlaylists(results);
+      setPlaylists(results.filter(p =>p.id !== 1));
     }
     catch (error) {
       console.log('error refreshing playlists:', error);

@@ -12,7 +12,7 @@ import { exportSongs } from '@/lib/controllers/ImportExportController';
 import { deleteFromLibrary } from '@/lib/controllers/LibraryController';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
-import { removeFromAllPlaylists, removeFromPlaylist } from '@/lib/controllers/PlaylistController';
+import { addToPlaylist, isSongInPlaylist, removeFromAllPlaylists, removeFromPlaylist } from '@/lib/controllers/PlaylistController';
 import { PlaylistBusEvent } from '@/station/playlist/Events';
 import { Track } from 'react-native-track-player';
 import TrackPlayer from 'react-native-track-player';
@@ -43,14 +43,26 @@ const SongOptions = ({ name }: SongOptionsProps) => {
   const { theme } = useThemeContext();
 
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
+  const [inLiked, setinLiked] = useState(false);
 
   useEffect(() => {
     if (editSong.pageType) {
-      setPageType(editSong.pageType);
+      try {
+        setPageType(editSong.pageType);
+        refreshinLiked(editSong.id);
+      }
+      catch (error) {
+        console.log('error getting options for new song: ', error);
+      }
     }
   }, [editSong]);
 
   const actionDelay = 10;
+
+  const refreshinLiked = async (songId: number) => {
+    const liked = await isSongInPlaylist(2, songId);
+    setinLiked(liked);
+  }
 
   const handleAddToQueue = () => {
     TrueSheet.dismiss(name);
@@ -161,8 +173,34 @@ const SongOptions = ({ name }: SongOptionsProps) => {
     }
   }
 
+  const handleToggleinLiked = async () => {
+    TrueSheet.dismiss(name);
+    try {
+      if (inLiked) {
+        await removeFromPlaylist(2, editSong.id);
+        setinLiked(false);
+      }
+      else {
+        await addToPlaylist(2, editSong.id);
+        setinLiked(true);
+      }
+      setTimeout(() => {
+        playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
+      }, 50);
+    }
+    catch (error) {
+      console.log('error toggling in favorites: ', error);
+    }
+  }
+
   return (
     <>
+      <SheetOption 
+        icon={inLiked ? require('@/assets/icons/unheart.png') : require('@/assets/icons/heart.png')}
+        text={inLiked ? 'Remove from Liked Songs' : 'Add to Liked Songs'}
+        show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
+        handler={handleToggleinLiked}
+      />
       <SheetOption 
         icon={require('@/assets/icons/add.png')}
         text={'Add to Playlist'}

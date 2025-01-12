@@ -101,8 +101,8 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
     if (src) {
       return {uri: `${src}`};
     }
-    else if (type === PageType.PLAYLIST && id === '1') {
-      return require('@/assets/icons/library.png');
+    else if (type === PageType.PLAYLIST && id === '2') {
+      return require('@/assets/icons/heart.png');
     }
     else if (type === PageType.PLAYLIST) {
       return require('@/assets/icons/cassette-tape.png');

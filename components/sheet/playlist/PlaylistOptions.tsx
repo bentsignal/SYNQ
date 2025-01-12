@@ -104,7 +104,7 @@ const PlaylistOptions = ({name}: {name: string}) => {
       <SheetOption
         icon={require('@/assets/icons/delete.png')}
         text={'Delete'}
-        show={[PageType.LIBRARY, PageType.PLAYLIST].includes(pageType) && editPlaylist.id !== 1}
+        show={[PageType.LIBRARY, PageType.PLAYLIST].includes(pageType) && editPlaylist.id !== 2}
         handler={handleDelete}
       />
     </>

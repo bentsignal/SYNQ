@@ -164,8 +164,8 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
       return {uri: `${src}`};
     }
     else if (type === CoverType.PLAYLIST) {
-      if (id === '1') {
-        return require('@/assets/icons/library.png');
+      if (id === '2') {
+        return require('@/assets/icons/heart.png');
       }
       else {
         return require('@/assets/icons/cassette-tape.png');

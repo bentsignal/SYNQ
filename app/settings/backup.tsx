@@ -13,6 +13,9 @@ import * as Sharing from 'expo-sharing';
 import { zip, unzip } from 'react-native-zip-archive';
 import Model from '@/lib/models/Model';
 import Loading from '@/components/Loading';
+import playlistBus from '@/station/playlist/Bus';
+import { PlaylistBusEvent } from '@/station/playlist/Events';
+import TrackPlayer from 'react-native-track-player';
 
 export default function Backup() {
 
@@ -50,9 +53,11 @@ export default function Backup() {
         // Unzip backup into document directory
         await unzip(result.assets[0].uri, FileSystem.documentDirectory);
         // reconnect to db
-        await Model.initConnection();
+        await Model.reconnect();
         await Model.createTables();
-        Alert.alert('Success', 'Library restored successfully. Please restart the app.');
+        playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
+        TrackPlayer.reset();
+        Alert.alert('Success', 'Library restored successfully.');
       }
     } catch (error) {
       console.log('Error restoring backup:', error);
@@ -80,9 +85,11 @@ export default function Backup() {
             for (const item of items) {
               await FileSystem.deleteAsync(`${FileSystem.documentDirectory}${item}`);
             }
-            await Model.initConnection();
+            await Model.reconnect();
             await Model.createTables();
-            Alert.alert('Success', 'Library erased successfully. Please restart the app.');
+            playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
+            TrackPlayer.reset();
+            Alert.alert('Success', 'Library erased successfully.');
             setLoading(false);
           }
         }

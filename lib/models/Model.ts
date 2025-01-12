@@ -13,6 +13,11 @@ export default class Model {
     }
   }
 
+  public static async reconnect() {
+    await this.db?.closeAsync();
+    this.db = await SQLite.openDatabaseAsync('synq.db');
+  }
+
   public static async checkConnection(): Promise<boolean> {
     try {
       if (!this.db) {
@@ -81,6 +86,14 @@ export default class Model {
         SELECT 'Library'
         WHERE NOT EXISTS (
           SELECT 1 FROM playlists WHERE id = 1
+        );
+      `);
+      // create playlist named favorites if it doesn't exist
+      await this.db?.execAsync(`
+        INSERT INTO playlists (name)
+        SELECT 'Liked Songs'
+        WHERE NOT EXISTS (
+          SELECT 1 FROM playlists WHERE id = 2
         );
       `);
       return true;

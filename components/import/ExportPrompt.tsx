@@ -10,6 +10,7 @@ import { Colors } from "@/constants/Colors";
 import { exportSongs } from '@/lib/controllers/ImportExportController';
 import { useThemeContext } from "@/context/ThemeProvider";
 import { usePremiumContext } from "@/context/PremiumProvider";
+import SettingsButton from "../SettingsButton";
 
 const ExportPrompt = () => {
 
@@ -93,6 +94,7 @@ const ExportPrompt = () => {
         title='Export Music'
         infoHandler={() => setShowInfoModal(true)}
         showList={false}
+        rightHandComponent={<SettingsButton />}
       />
       <View style={Local.body}>
         <Text style={Local.prompt}>

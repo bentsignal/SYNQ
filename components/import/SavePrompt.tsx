@@ -18,6 +18,7 @@ import { usePremiumContext } from "@/context/PremiumProvider";
 import { PlaylistBusEvent } from "@/station/playlist/Events";
 import playlistBus from "@/station/playlist";
 import { deleteImportSongs } from "@/lib/controllers/ImportExportController";
+import SettingsButton from "../SettingsButton";
 
 const SavePrompt = () => {
 
@@ -174,6 +175,7 @@ const SavePrompt = () => {
         title='Save Music'
         infoHandler={() => setShowInfoModal(true)}
         showList={false}
+        rightHandComponent={<SettingsButton />}
       />
       <View style={[Local.body, {display: loading ? 'none' : 'flex'}]}>
         <Text style={Local.prompt}>

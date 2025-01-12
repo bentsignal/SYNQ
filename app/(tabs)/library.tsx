@@ -23,6 +23,7 @@ import { usePremiumContext } from "@/context/PremiumProvider";
 import { usePlaybackContext } from "@/context/PlaybackProvider";
 import playlistBus from "@/station/playlist/Bus";
 import { PlaylistBusEvent } from "@/station/playlist/Events";
+import SettingsButton from "@/components/SettingsButton";
 
 const Library = () => {
 
@@ -248,12 +249,17 @@ const Library = () => {
       <PageTitle 
         title="Library"
         rightHandComponent={
-          <TouchableOpacity 
-            onPress={handleCreate}
-            style={Local.addWrapper}
-          >
-            <Plus />
-          </TouchableOpacity>
+          <View style={Local.buttonsContainer}>
+            <TouchableOpacity 
+              onPress={handleCreate}
+              style={{ display: selected === 0 ? 'none' : 'flex' }}
+            >
+              <Plus />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push('/settings')}>
+              <Image source={require('@/assets/icons/gear.png')} style={Local.icon} />
+            </TouchableOpacity>
+          </View>
         }
       />
       <CategorySelector 
@@ -276,11 +282,17 @@ const Library = () => {
 }
 
 const Local = StyleSheet.create({
-  addWrapper: {
+  buttonsContainer: {
     flex: 1,
-    alignItems: 'flex-end',
-    justifyContent: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
+    gap: 20,
   },
+  icon: {
+    height: 25,
+    width: 25,
+  }
 });
 
 export default Library;

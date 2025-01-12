@@ -10,6 +10,7 @@ import Progress from '@/components/Progress';
 import InfoModal from '@/components/modals/InfoModal';
 import { PageType } from '@/constants/Types';
 import { usePremiumContext } from '@/context/PremiumProvider';
+import SettingsButton from '@/components/SettingsButton';
 
 const Files = () => {
 
@@ -90,6 +91,7 @@ const Files = () => {
         title='Import Music'
         infoHandler={() => setShowInfoModal(true)}
         showList={false && results.length > 1 && premium}
+        rightHandComponent={<SettingsButton />}
       />
       {getBody()}
       <ImportControls 

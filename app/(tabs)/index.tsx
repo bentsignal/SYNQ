@@ -1,4 +1,4 @@
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { View, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
 import { importFiles } from "@/lib/controllers/ImportExportController";
@@ -11,6 +11,7 @@ import InfoModal from "@/components/modals/InfoModal";
 import Notifications from "@/components/notifications/Notifications";
 import ExportPrompt from "@/components/import/ExportPrompt";
 import SavePrompt from "@/components/import/SavePrompt";  
+import SettingsButton from "@/components/SettingsButton";
 
 const Home = () => {
 
@@ -97,6 +98,7 @@ const Home = () => {
           <PageTitle 
             title='Import Music'
             infoHandler={() => setShowInfoModal(true)}
+            rightHandComponent={<SettingsButton />} 
           />
           <Option 
             title='Files'
@@ -143,6 +145,10 @@ const Local = StyleSheet.create({
   },
   scrollViewContent: {
     alignItems: 'center',
+  },
+  icon: {
+    height: 25,
+    width: 25,
   }
 });
 

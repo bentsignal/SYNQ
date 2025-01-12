@@ -1,6 +1,6 @@
 import { View, StyleSheet } from "react-native";
 
-const Plus = () => {
+export default function Plus() {
   return (
     <View style={Local.container}>
       <View style={{
@@ -28,9 +28,8 @@ const Plus = () => {
 
 const Local = StyleSheet.create({
   container: {
-    // backgroundColor: 'blue',
-    width: 30,
-    height: 30,
+    width: 25,
+    height: 25,
   },
   lineWrapper: {
     width: 25,
@@ -44,11 +43,9 @@ const Local = StyleSheet.create({
     right: 0,
   },
   line: {
-    width: 3,
-    height: 25,
+    width: 2,
+    height: 20,
     borderRadius: 10,
     backgroundColor: 'white',
   }
 });
-
-export default Plus;

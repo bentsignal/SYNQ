@@ -107,7 +107,7 @@ const PageTitle = ({
 
   return (
     <View style={Local.pageTitleContainer}>
-      <Text style={[Styles.h1, Local.pageTitle]}>
+      <Text style={[Styles.h2, Local.pageTitle]}>
         {title}
       </Text>
       {info()}

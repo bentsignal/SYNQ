@@ -13,6 +13,7 @@ import Progress from '@/components/Progress';
 import { PageType } from '@/constants/Types';
 import { usePremiumContext } from '@/context/PremiumProvider';
 import CFG from '@/constants/Config';
+import SettingsButton from '@/components/SettingsButton';
 
 const WiFi = () => {
 
@@ -151,6 +152,7 @@ const WiFi = () => {
         title='Import Music'
         showList={false &&results.length > 1 && premium && !loadAnimInProgress}
         infoHandler={() => setShowInfoModal(true)}
+        rightHandComponent={<SettingsButton />}
       />
       {getInstructions()}
       {getBody()}

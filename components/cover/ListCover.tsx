@@ -52,9 +52,6 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
             if (path) {
               setSrc(path);
             }
-            else {
-              setSrc('');
-            }
           }
         }
       }

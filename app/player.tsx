@@ -250,7 +250,7 @@ const Local = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 30,
-    marginTop: 5,
+    marginTop: 10,
     marginBottom: 10
   },
   bottomControlsContainer: {

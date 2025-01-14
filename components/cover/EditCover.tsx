@@ -115,21 +115,21 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
       height: editCoverSize,
       justifyContent: 'center',
       alignItems: 'center',
-      borderRadius: 12,
+      borderRadius: type === CoverType.ARTIST ? 1000 : 12,
       opacity: loaded ? 1 : 0
     },
     artwork: {
       width: editCoverSize, 
       height: editCoverSize,
       position: 'absolute',
-      borderRadius: 10,
+      borderRadius: type === CoverType.ARTIST ? 1000 : 10,
     },
     tintOverlay: {
-      width: editCoverSize,
-      height: editCoverSize,
+      width: type === CoverType.ARTIST ? editCoverSize+1 : editCoverSize,
+      height: type === CoverType.ARTIST ? editCoverSize+1 : editCoverSize,
       position: 'absolute',
       backgroundColor: `rgba(0, 0, 0, ${src === transparent ? 0 : 0.6})`,
-      borderRadius: 10,
+      borderRadius: type === CoverType.ARTIST ? 1000 : 10,
     },
     iconWrapper: {
       width: editCoverSize, 

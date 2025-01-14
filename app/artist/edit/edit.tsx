@@ -84,7 +84,7 @@ const EditArtist = ({id}: {id: string}) => {
         style={Local.scrollView}
         contentContainerStyle={Local.scrollViewContent}
       >
-        <Text style={Styles.textboxLabel}>Cover Image</Text>
+        <Text style={Styles.textboxLabel}>Artist Image</Text>
         <View style={Local.coverWrapper}>
           <EditCover
             id={id}

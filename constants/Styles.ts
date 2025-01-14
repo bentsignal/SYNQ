@@ -40,7 +40,7 @@ export const Styles = StyleSheet.create({
     color: Colors.text,
     fontWeight: 'bold',
     width: '90%',
-    marginBottom: 5,
+    marginBottom: 10,
   },
   infoText: {
     fontSize: 16,

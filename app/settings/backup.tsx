@@ -16,11 +16,15 @@ import Loading from '@/components/Loading';
 import playlistBus from '@/station/playlist/Bus';
 import { PlaylistBusEvent } from '@/station/playlist/Events';
 import TrackPlayer from 'react-native-track-player';
+import { usePremiumContext } from '@/context/PremiumProvider';
+import { router } from 'expo-router';
+import Option from '@/components/Option';
 
 export default function Backup() {
 
   const { theme } = useThemeContext();
   const [loading, setLoading] = useState(false);
+  const { premium } = usePremiumContext();
 
   const handleBackup = async () => {
     try {
@@ -130,8 +134,22 @@ export default function Backup() {
         contentContainerStyle={Local.scrollViewContent}
       >
         <View style={Local.contentWrapper}>
+            {
+              !premium && <Option 
+                title="Premium"
+                desc={premium ? "Manage your subcription" : 'Unlock all features'}
+                icon={require('@/assets/icons/premium.png')}
+                disabled={false}
+                handlePress={() => router.push("/premium")}
+              />
+            }
           <View style={Local.contentContainer}>
-            <Text style={Local.headerText}>Backup your library</Text>
+            <View style={Local.titleWrapper}>
+              <Text style={Local.headerText}>
+                Backup your library 
+              </Text>
+              {!premium && <Text style={Local.premiumText}>Premium</Text>}
+            </View>
             <Text style={Local.description}>
               Backup your library to a zip file. You can then use this file to restore to at a later time. 
               This will only backup your library, not your settings or premium status.
@@ -141,8 +159,14 @@ export default function Backup() {
               handlePress={handleBackup}
               customStyles={{marginBottom: 30}}
               buttonWidth={'100%'}
+              disabled={!premium}
             />
-            <Text style={Local.headerText}>Restore your library</Text>
+            <View style={Local.titleWrapper}>
+              <Text style={Local.headerText}>
+                Restore your library 
+              </Text>
+              {!premium && <Text style={Local.premiumText}>Premium</Text>}
+            </View>
             <Text style={Local.description}>
               Restore your library from a zip file. This will overwrite your current library, removing 
               any existing songs, albums, artists, playlists, etc.
@@ -153,8 +177,14 @@ export default function Backup() {
               background={theme}
               customStyles={{marginBottom: 30}}
               buttonWidth={'100%'}
+              disabled={!premium}
             />
-            <Text style={Local.headerText}>Erase your library</Text>
+            <View style={Local.titleWrapper}>
+              <Text style={Local.headerText}>
+                Erase your library 
+              </Text>
+              {!premium && <Text style={Local.premiumText}>Premium</Text>}
+            </View>
             <Text style={Local.description}>
               Erase your library. This will remove all songs, albums, artists, playlists, etc.
             </Text>
@@ -163,6 +193,7 @@ export default function Backup() {
               handlePress={eraseLibrary}
               background={Colors.error}
               buttonWidth={'100%'}
+              disabled={!premium}
             />
           </View>
         </View>
@@ -186,7 +217,6 @@ const Local = StyleSheet.create({
   headerText: {
     color: Colors.text,
     ...Styles.h3,
-    marginBottom: 10,
   },
   description: {
     color: Colors.infoText,
@@ -210,5 +240,15 @@ const Local = StyleSheet.create({
     height: '80%',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  premiumText: {
+    color: Colors.main,
+    ...Styles.h5,
+  },
+  titleWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 10,
   }
 });

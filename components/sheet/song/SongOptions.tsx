@@ -186,6 +186,10 @@ const SongOptions = ({ name }: SongOptionsProps) => {
       }
       setTimeout(() => {
         playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
+        playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, {
+          id: 2,
+          songCount: -1
+        });
       }, 50);
     }
     catch (error) {

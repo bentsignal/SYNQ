@@ -130,3 +130,8 @@ export const getPlaylistCover = async (playlistId: number, full: boolean = false
     }
   }
 }
+
+export const getSongCount = async (playlistId: number) => {
+  const songs = await PlaylistModel.getInstance().getSongsFromPlaylist(playlistId);
+  return songs.length;
+}

@@ -88,7 +88,7 @@ const Files = () => {
     <View style={Styles.body}>
       <InfoModal />
       <PageTitle 
-        title='Import Music'
+        title='Import Files'
         infoHandler={() => setShowInfoModal(true)}
         showList={false && results.length > 1 && premium}
         rightHandComponent={<SettingsButton />}

@@ -149,7 +149,7 @@ const WiFi = () => {
     <View style={Styles.body}>
       <InfoModal />
       <PageTitle 
-        title='Import Music'
+        title='Transfer Files'
         showList={false &&results.length > 1 && premium && !loadAnimInProgress}
         infoHandler={() => setShowInfoModal(true)}
         rightHandComponent={<SettingsButton />}

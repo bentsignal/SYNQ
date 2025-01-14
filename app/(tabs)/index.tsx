@@ -1,4 +1,4 @@
-import { View, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, ScrollView, StyleSheet, Text, Image } from 'react-native';
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
 import { importFiles } from "@/lib/controllers/ImportExportController";
@@ -12,6 +12,10 @@ import Notifications from "@/components/notifications/Notifications";
 import ExportPrompt from "@/components/import/ExportPrompt";
 import SavePrompt from "@/components/import/SavePrompt";  
 import SettingsButton from "@/components/SettingsButton";
+import { Colors } from '@/constants/Colors';
+import { useThemeContext } from '@/context/ThemeProvider';
+import { router } from 'expo-router';
+import { usePremiumContext } from '@/context/PremiumProvider';
 
 const Home = () => {
 
@@ -28,6 +32,8 @@ const Home = () => {
   } = useGlobalContext();
 
   const { homeState, setHomeState } = useGlobalContext();
+  const { logo } = useThemeContext();
+  const { premium } = usePremiumContext();
 
   const browseFiles = () => {
     setLoading(true);
@@ -96,11 +102,34 @@ const Home = () => {
           contentContainerStyle={Local.scrollViewContent}
         >
           <PageTitle 
-            title='Import Music'
-            infoHandler={() => setShowInfoModal(true)}
+            title='Home'
             rightHandComponent={<SettingsButton />} 
           />
-          <Option 
+          <View style={[Local.content]}>
+            <View style={Local.welcomeTitleContainer}>
+              <Text style={Local.title}>Welcome to SYNQ</Text>
+              <Image source={logo} style={Local.logo} />
+            </View>
+            <Text style={[Styles.description]}>
+              The coolest place to listen to your music! Below, you can import files
+              from this device, or from another device on your network. You can then
+              modify the metadata of the music files, or listen to them here in the app!
+            </Text>
+          </View>
+          {!premium && (
+            <>
+              <Text style={[Local.title, Local.content]}>Premium</Text>
+              <Option
+                title="Premium"
+                desc={premium ? "Manage your subcription" : 'Unlock all features'}
+                icon={require('@/assets/icons/premium.png')}
+                disabled={false}
+                handlePress={() => router.push("/premium")}
+              />
+            </>
+          )}
+          <Text style={[Local.title, Local.content, { marginTop: 20 }]}>Import Music</Text>
+          <Option
             title='Files'
             desc='Import from your files'
             icon={require('@/assets/icons/folder.png')}
@@ -146,7 +175,24 @@ const Local = StyleSheet.create({
   scrollViewContent: {
     alignItems: 'center',
   },
+  content: {
+    width: '90%',
+  },
   icon: {
+    height: 25,
+    width: 25,
+  },
+  welcomeTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  title: {
+    ...Styles.h3,
+    marginVertical: 10,
+    color: Colors.text,
+  },
+  logo: {
     height: 25,
     width: 25,
   }

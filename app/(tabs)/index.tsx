@@ -32,7 +32,7 @@ const Home = () => {
   } = useGlobalContext();
 
   const { homeState, setHomeState } = useGlobalContext();
-  const { logo } = useThemeContext();
+  const { theme, logo } = useThemeContext();
   const { premium } = usePremiumContext();
 
   const browseFiles = () => {
@@ -103,9 +103,10 @@ const Home = () => {
         >
           <PageTitle 
             title='Home'
+            infoHandler={() => setShowInfoModal(true)}
             rightHandComponent={<SettingsButton />} 
           />
-          <View style={[Local.content]}>
+          {/* <View style={[Local.content]}>
             <View style={Local.welcomeTitleContainer}>
               <Text style={Local.title}>Welcome to SYNQ</Text>
               <Image source={logo} style={Local.logo} />
@@ -115,7 +116,7 @@ const Home = () => {
               from this device, or from another device on your network. You can then
               modify the metadata of the music files, or listen to them here in the app!
             </Text>
-          </View>
+          </View> */}
           {!premium && (
             <>
               <Text style={[Local.title, Local.content]}>Premium</Text>
@@ -134,6 +135,7 @@ const Home = () => {
             desc='Import from your files'
             icon={require('@/assets/icons/folder.png')}
             disabled={false}
+            bg={premium ? theme : Colors.text}
             handlePress={() => {
               setLoading(true);
               setHomeState(2);
@@ -149,6 +151,7 @@ const Home = () => {
             desc='Import from your computer'
             icon={require('@/assets/icons/wifi.png')}
             disabled={false}
+            bg={premium ? theme : Colors.text}
             handlePress={() => {
               setShowImportAd(true);
               setLoading(true);

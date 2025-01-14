@@ -61,7 +61,7 @@ export default function Backup() {
         await Model.createTables();
         playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
         TrackPlayer.reset();
-        Alert.alert('Success', 'Library restored successfully.');
+        Alert.alert('Success', 'Library restored successfully. Please restart the app.');
       }
     } catch (error) {
       console.log('Error restoring backup:', error);
@@ -93,7 +93,7 @@ export default function Backup() {
             await Model.createTables();
             playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
             TrackPlayer.reset();
-            Alert.alert('Success', 'Library erased successfully.');
+            Alert.alert('Success', 'Library erased successfully. Please restart the app.');
             setLoading(false);
           }
         }

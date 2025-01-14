@@ -17,6 +17,7 @@ const List = memo((
     setScrollPosition,
     gradientStart,
     gradientEnd,
+    emptyComponent,
   }: 
   {
     data: any[], 
@@ -29,6 +30,7 @@ const List = memo((
     setScrollPosition?: (position: number) => void,
     gradientStart?: string,
     gradientEnd?: string,
+    emptyComponent?: React.ReactNode,
   }
 ) => {
 
@@ -118,6 +120,7 @@ const List = memo((
           updateCellsBatchingPeriod={50}
           windowSize={10}
           ListFooterComponent={footerComponent ? <>{footerComponent}</> : null}
+          ListEmptyComponent={emptyComponent ? <>{emptyComponent}</> : null}
         />
         <AnimatedGradient
           style={ Local.topGradient }

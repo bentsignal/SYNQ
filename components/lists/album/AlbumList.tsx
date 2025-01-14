@@ -1,4 +1,3 @@
-import { View, Text } from "react-native";
 import { AlbumType, PageType } from "@/constants/Types";
 import List from "@/components/List";
 import AlbumItem from "@/components/lists/album/AlbumItem";
@@ -13,6 +12,7 @@ const AlbumList = ({
   bottomPadding = false,
   gradientStart,
   gradientEnd,
+  emptyComponent,
 }: {
   albums: AlbumType[],
   headerComponent?: React.ReactNode,
@@ -20,6 +20,7 @@ const AlbumList = ({
   pageType: PageType,
   gradientStart?: string,
   gradientEnd?: string,
+  emptyComponent?: React.ReactNode,
 }) => {
 
   const renderItem = ({item}: {item: AlbumType}) => {
@@ -42,6 +43,7 @@ const AlbumList = ({
       bottomPadding={bottomPadding}
       gradientStart={gradientStart}
       gradientEnd={gradientEnd}
+      emptyComponent={emptyComponent}
     />
   );
 }

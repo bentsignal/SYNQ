@@ -9,6 +9,7 @@ import albumBus from "@/station/album";
 import { AlbumBusEvent } from "@/station/album/Events";
 import playlistBus from "@/station/playlist";
 import { PlaylistBusEvent } from "@/station/playlist/Events";
+import { Styles as MainStyles } from "@/constants/Styles";
 
 const Albums = () => {
 
@@ -41,6 +42,7 @@ const Albums = () => {
       <AlbumList 
         albums={albums}
         pageType={PageType.LIBRARY}
+        emptyComponent={<Text style={Local.emptyText}>No albums in library</Text>}
       />
     </View>
   );
@@ -51,10 +53,12 @@ const Local = StyleSheet.create({
     flex: 1,
     width: '100%',
   },
-  placeholderText: {
-    ...Styles.h3,
+  emptyText: {
+    ...MainStyles.h5,
+    textAlign: 'center',
+    marginTop: 20,
     color: Colors.text,
-  }
+  },
 });
 
 export default Albums;

@@ -13,6 +13,7 @@ const ArtistList = ({
   bottomPadding = false,
   gradientStart,
   gradientEnd,
+  emptyComponent,
 }: {
   artists: ArtistType[],
   headerComponent?: React.ReactNode,
@@ -20,6 +21,7 @@ const ArtistList = ({
   pageType: PageType,
   gradientStart?: string,
   gradientEnd?: string,
+  emptyComponent?: React.ReactNode,
 }) => {
 
   const renderItem = ({item}: {item: ArtistType}) => {
@@ -42,6 +44,7 @@ const ArtistList = ({
       bottomPadding={bottomPadding}
       gradientStart={gradientStart}
       gradientEnd={gradientEnd}
+      emptyComponent={emptyComponent}
     />
   );
 }

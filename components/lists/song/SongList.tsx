@@ -22,6 +22,7 @@ const SongList = memo((
     setScrollPosition,
     gradientStart,
     gradientEnd,
+    emptyComponent,
   }: 
   {
     songs: SongType[], 
@@ -36,6 +37,7 @@ const SongList = memo((
     setScrollPosition?: (position: number) => void,
     gradientStart?: string,
     gradientEnd?: string,
+    emptyComponent?: React.ReactNode,
   }
 ) => {
 
@@ -67,6 +69,7 @@ const SongList = memo((
         setScrollPosition={setScrollPosition}
         gradientStart={gradientStart}
         gradientEnd={gradientEnd}
+        emptyComponent={emptyComponent}
       />
     </>
   );

@@ -128,7 +128,7 @@ const Home = () => {
               />
             </>
           )}
-          <Text style={[Local.title, Local.content, { marginTop: 20 }]}>Import Music</Text>
+          <Text style={[Local.title, Local.content, { marginTop: 20, marginBottom: 20 }]}>Import Music</Text>
           <Option
             title='Files'
             desc='Import from your files'

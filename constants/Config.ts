@@ -15,7 +15,7 @@ const CFG = {
 
 export const SOCIAL_LINKS = {
   x: 'https://x.com/SYNQ_app',
-  instagram: 'https://instagram.com/SYNQ_app',
+  instagram: 'https://instagram.com/SYNQMusic',
   discord: 'https://discord.gg/zaSkUrDvpz',
 }
 

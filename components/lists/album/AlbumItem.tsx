@@ -147,11 +147,11 @@ const Local = StyleSheet.create({
     alignItems: 'flex-start',
   },
   name: {
-    ...Styles.h4,
+    ...Styles.h5,
     color: Colors.text,
   },
   year: {
-    ...Styles.p,
+    ...Styles.sub,
     color: Colors.infoText,
     fontWeight: '500',
   },

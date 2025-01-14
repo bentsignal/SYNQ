@@ -110,7 +110,6 @@ export const getWifiTransferSong = async (name: string, id: string, type: string
   return {
     'name': name,
     'id': id,
-    'data': data,
     'info': info,
     'importArtists': importArtists,
     'importAlbums': importAlbum ? [importAlbum] : [],

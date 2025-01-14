@@ -117,7 +117,7 @@ const Server = () => {
         setLoading(true);
         setExportDisabled(true);
         midTransfer.current = true;
-        console.log('ready to transfer');
+        await createImportDir();
         return res.json({
           status: 200,
           message: "OK - READY TO TRANSFER"
@@ -184,6 +184,7 @@ const Server = () => {
         }
       }
       catch (error) {
+        console.log('error uploading song:', error);
         return res.json({
           status: 500,
           message: `ERROR - Failed to upload song: ${error}`

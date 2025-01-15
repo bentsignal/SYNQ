@@ -18,7 +18,7 @@ const TabLayout = () => {
   
   const { showOverlay, setHaptic, setAdURL } = useGlobalContext();
 
-  const [assets, error] = useAssets([require('@/assets/audio/ad.mp3')]);
+  const [assets, error] = useAssets([require('@/src/assets/audio/ad.mp3')]);
 
   useEffect(() => {
     if (error) {

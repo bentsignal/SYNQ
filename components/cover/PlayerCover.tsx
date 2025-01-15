@@ -41,7 +41,7 @@ const PlayerCover = ({uri}: {uri: string}) => {
     return (
       <View style={[Local.container, Local.emptyContainer]}>
         <FastImage
-          source={require('@/assets/icons/music.png')}
+          source={require('@/src/assets/icons/music.png')}
           style={Local.empty}
         />
       </View>

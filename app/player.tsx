@@ -34,7 +34,7 @@ const Player = () => {
 
   const track = useActiveTrack();
 
-  const [assets, error] = useAssets([require('@/assets/images/popup.jpg')]);
+  const [assets, error] = useAssets([require('@/src/assets/images/popup.jpg')]);
   const [emptyImage, setEmptyImage] = useState<string>('transparent');
 
   const [song, setSong] = useState<SongType | null>(null);

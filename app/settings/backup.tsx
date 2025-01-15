@@ -138,7 +138,7 @@ export default function Backup() {
               !premium && <Option 
                 title="Premium"
                 desc={premium ? "Manage your subcription" : 'Unlock all features'}
-                icon={require('@/assets/icons/premium.png')}
+                icon={require('@/src/assets/icons/premium.png')}
                 disabled={false}
                 handlePress={() => router.push("/premium")}
               />

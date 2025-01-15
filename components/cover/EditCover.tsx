@@ -165,7 +165,7 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
         <View style={Local.tintOverlay}/>
         <View style={Local.iconWrapper}>
           <Image 
-            source={src === transparent ? require('@/assets/icons/edit-black.png') : require('@/assets/icons/edit.png')}
+            source={src === transparent ? require('@/src/assets/icons/edit-black.png') : require('@/src/assets/icons/edit.png')}
             style={Local.icon}
           />
         </View>

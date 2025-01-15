@@ -15,8 +15,8 @@ export const HomeIcon = ({
   focused
 }: TabIconProps) => {
 
-  const active = '@/assets/icons/home-active.png';
-  const inactive = '@/assets/icons/home-inactive.png';
+  const active = '@/src/assets/icons/home-active.png';
+  const inactive = '@/src/assets/icons/home-inactive.png';
 
   return (
     <Image 
@@ -30,8 +30,8 @@ export const HomeIcon = ({
 export const LibraryIcon = ({
   focused
 }: TabIconProps) => {
-  const active = '@/assets/icons/library-active.png';
-  const inactive = '@/assets/icons/library-inactive.png'
+  const active = '@/src/assets/icons/library-active.png';
+  const inactive = '@/src/assets/icons/library-inactive.png'
   return (
     <Image 
       source={focused ? require(active) : require(inactive)}
@@ -44,8 +44,8 @@ export const SettingsIcon = ({
   focused
 }: TabIconProps) => {
 
-  const active = '@/assets/icons/gear.png';
-  const inactive = '@/assets/icons/gear-inactive.png';
+  const active = '@/src/assets/icons/gear.png';
+  const inactive = '@/src/assets/icons/gear-inactive.png';
 
   return (
     <Image 

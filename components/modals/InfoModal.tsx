@@ -83,7 +83,7 @@ const InfoModal = () => {
                     Spotify → Settings → Local Files
                   </Text>
                   <Image 
-                    source={require('@/assets/images/local-files-enable.jpg')}
+                    source={require('@/src/assets/images/local-files-enable.jpg')}
                     style={{width: '100%', height: 200}}
                     resizeMode='contain'
                   />
@@ -96,7 +96,7 @@ const InfoModal = () => {
                     On My iPhone → Spotify
                   </Text>
                   <Image 
-                    source={require('@/assets/images/destination-folder.jpg')}
+                    source={require('@/src/assets/images/destination-folder.jpg')}
                     style={{ width: '100%', height: 250 }}
                     resizeMode='contain'
                   />
@@ -109,7 +109,7 @@ const InfoModal = () => {
                     Playlists → Local Files
                   </Text>
                   <Image 
-                    source={require('@/assets/images/local-files-playlist.jpg')}
+                    source={require('@/src/assets/images/local-files-playlist.jpg')}
                     style={{ width: '100%', height: 250 }}
                     resizeMode='contain'
                   />
@@ -126,7 +126,7 @@ const InfoModal = () => {
                     1. Hit the blue "Export" button
                   </Text>
                   <Image 
-                    source={require('@/assets/images/save-instructions-3.jpg')}
+                    source={require('@/src/assets/images/save-instructions-3.jpg')}
                     style={{ width: '100%', height: 200 }}
                     resizeMode='contain'
                   />
@@ -136,7 +136,7 @@ const InfoModal = () => {
                     1. Hit "Save to Files" in the popup
                   </Text>
                   <Image 
-                    source={require('@/assets/images/save-instructions.jpg')}
+                    source={require('@/src/assets/images/save-instructions.jpg')}
                     style={{ width: '100%', height: 250 }}
                     resizeMode='contain'
                   />
@@ -149,7 +149,7 @@ const InfoModal = () => {
                     On My iPhone → Spotify
                   </Text>
                   <Image 
-                    source={require('@/assets/images/save-instructions-2.jpg')}
+                    source={require('@/src/assets/images/save-instructions-2.jpg')}
                     style={{ width: '100%', height: 250 }}
                     resizeMode='contain'
                   />

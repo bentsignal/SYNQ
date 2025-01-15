@@ -337,7 +337,7 @@ const Premium = () => {
       <View style={Local.container}>
         <View style={Local.imageContainer}>
           <Image 
-            source={require('@/assets/images/tracking-bg-downscaled.jpg')}
+            source={require('@/src/assets/images/premium-bg-downscaled.jpg')}
             style={Local.coverImage}
           />
           <LinearGradient

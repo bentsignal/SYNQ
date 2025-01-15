@@ -22,7 +22,7 @@ const Select = ({active, handlePress}: {active: boolean, handlePress: () => void
       style={Local.container}
     >
       <Image 
-        source={active ? require('@/assets/icons/selected.png') : require('@/assets/icons/empty-select.png')}
+        source={active ? require('@/src/assets/icons/selected.png') : require('@/src/assets/icons/empty-select.png')}
         style={Local.icon}
       />
     </TouchableOpacity>

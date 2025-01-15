@@ -1,23 +1,23 @@
 import { Themes } from './Colors';
 
 export const Logos = {
-  blue: require('@/assets/logo/logo-blue.png'),
-  purple: require('@/assets/logo/logo-purple.png'),
-  pink: require('@/assets/logo/logo-pink.png'),
-  red: require('@/assets/logo/logo-red.png'),
-  orange: require('@/assets/logo/logo-orange.png'),
-  yellow: require('@/assets/logo/logo-yellow.png'),
-  mint: require('@/assets/logo/logo-mint.png'),
+  blue: require('@/src/assets/logo/logo-blue.png'),
+  purple: require('@/src/assets/logo/logo-purple.png'),
+  pink: require('@/src/assets/logo/logo-pink.png'),
+  red: require('@/src/assets/logo/logo-red.png'),
+  orange: require('@/src/assets/logo/logo-orange.png'),
+  yellow: require('@/src/assets/logo/logo-yellow.png'),
+  mint: require('@/src/assets/logo/logo-mint.png'),
 }
 
 export const AppIcons = {
-  blue: require('@/assets/appIcons/icon-blue.png'),
-  purple: require('@/assets/appIcons/icon-purple.png'),
-  pink: require('@/assets/appIcons/icon-pink.png'),
-  red: require('@/assets/appIcons/icon-red.png'),
-  orange: require('@/assets/appIcons/icon-orange.png'),
-  yellow: require('@/assets/appIcons/icon-yellow.png'),
-  mint: require('@/assets/appIcons/icon-mint.png'),
+  blue: require('@/src/assets/appIcons/icon-blue.png'),
+  purple: require('@/src/assets/appIcons/icon-purple.png'),
+  pink: require('@/src/assets/appIcons/icon-pink.png'),
+  red: require('@/src/assets/appIcons/icon-red.png'),
+  orange: require('@/src/assets/appIcons/icon-orange.png'),
+  yellow: require('@/src/assets/appIcons/icon-yellow.png'),
+  mint: require('@/src/assets/appIcons/icon-mint.png'),
 }
 
 export const getAppIcon = (id: string) => {

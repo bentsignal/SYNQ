@@ -102,19 +102,19 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
       return {uri: `${src}`};
     }
     else if (type === PageType.PLAYLIST && id === '2') {
-      return require('@/assets/icons/heart.png');
+      return require('@/src/assets/icons/heart.png');
     }
     else if (type === PageType.PLAYLIST) {
-      return require('@/assets/icons/cassette-tape.png');
+      return require('@/src/assets/icons/cassette-tape.png');
     }
     else if (type === PageType.ALBUM) {
-      return require('@/assets/icons/cd-drive.png');
+      return require('@/src/assets/icons/cd-drive.png');
     }
     else if (type === PageType.ARTIST) {
-      return require('@/assets/icons/user.png');
+      return require('@/src/assets/icons/user.png');
     }
     else {
-      return require('@/assets/icons/music.png');
+      return require('@/src/assets/icons/music.png');
     }
   }
 

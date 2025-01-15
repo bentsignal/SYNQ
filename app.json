@@ -96,8 +96,8 @@
         "expo-asset",
         {
           "assets": [
-            "assets/audio/ad.mp3",
-            "assets/images/popup.jpg"
+            "src/assets/audio/ad.mp3",
+            "src/assets/images/popup.jpg"
           ]
         }
       ],

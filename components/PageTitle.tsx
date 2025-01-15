@@ -70,7 +70,7 @@ const PageTitle = ({
           }}
         >
           <Image 
-            source={require('@/assets/icons/info.png')}
+            source={require('@/src/assets/icons/info.png')}
             style={Local.infoIcon}
           />
         </TouchableOpacity>
@@ -94,8 +94,8 @@ const PageTitle = ({
           >
             <Image 
               source={selectEnabled 
-                        ? require('@/assets/icons/list-active.png') 
-                        : require('@/assets/icons/list.png')
+                        ? require('@/src/assets/icons/list-active.png') 
+                        : require('@/src/assets/icons/list.png')
                       }
               style={Local.listIcon}
             />

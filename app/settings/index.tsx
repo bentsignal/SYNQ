@@ -29,14 +29,14 @@ const Settings = () => {
         <Option 
           title="Premium"
           desc={premium ? "Manage your subcription" : 'Unlock all features'}
-          icon={require('@/assets/icons/premium.png')}
+          icon={require('@/src/assets/icons/premium.png')}
           disabled={false}
           handlePress={() => router.push("/premium")}
         />
         <Option 
           title="Customization"
           desc="Tailor your experience"
-          icon={require('@/assets/icons/customize.png')}
+          icon={require('@/src/assets/icons/customize.png')}
           disabled={false}
           handlePress={() => router.push("/settings/customization")}
           bg={Colors.text}
@@ -44,7 +44,7 @@ const Settings = () => {
         <Option 
           title="Backup & Restore"
           desc="Backup or restore your library"
-          icon={require('@/assets/icons/backup.png')}
+          icon={require('@/src/assets/icons/backup.png')}
           disabled={false}
           handlePress={() => router.push("/settings/backup")}
           bg={Colors.text}
@@ -58,16 +58,16 @@ const Settings = () => {
         </View>
         <View style={Local.socialContainer}>
           <TouchableOpacity onPress={() => Linking.openURL(SOCIAL_LINKS.x)} style={[Local.socialLink]}>
-            <Image source={require('@/assets/icons/x.png')} style={[Local.socialIcon, {
+            <Image source={require('@/src/assets/icons/x.png')} style={[Local.socialIcon, {
               width: 25, 
               height: 25,
             }]} />
           </TouchableOpacity>
           <TouchableOpacity style={Local.socialLink} onPress={() => Linking.openURL(SOCIAL_LINKS.instagram)}>
-            <Image style={Local.socialIcon} source={require('@/assets/icons/instagram.png')} />
+            <Image style={Local.socialIcon} source={require('@/src/assets/icons/instagram.png')} />
           </TouchableOpacity>
           <TouchableOpacity style={Local.socialLink} onPress={() => Linking.openURL(SOCIAL_LINKS.discord)}>
-            <Image style={Local.socialIcon} source={require('@/assets/icons/discord.png')} />
+            <Image style={Local.socialIcon} source={require('@/src/assets/icons/discord.png')} />
           </TouchableOpacity>
         </View>
         {__DEV__ && CFG.devShowPremiumToggle && 

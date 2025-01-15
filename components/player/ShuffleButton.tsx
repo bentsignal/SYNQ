@@ -50,7 +50,7 @@ const ShuffleButton = ({ primary, useBG }: ShuffleButtonProps) => {
       onPress={handlePress}
     >
       <Image 
-        source={require('@/assets/icons/shuffle.png')}
+        source={require('@/src/assets/icons/shuffle.png')}
         style={[Local.image, {
           tintColor: localState ? tint : Colors.text,
         }]}

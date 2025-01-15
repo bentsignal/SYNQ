@@ -200,19 +200,19 @@ const SongOptions = ({ name }: SongOptionsProps) => {
   return (
     <>
       <SheetOption 
-        icon={inLiked ? require('@/assets/icons/unheart.png') : require('@/assets/icons/heart.png')}
+        icon={inLiked ? require('@/src/assets/icons/unheart.png') : require('@/src/assets/icons/heart.png')}
         text={inLiked ? 'Remove from Liked Songs' : 'Add to Liked Songs'}
         show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
         handler={handleToggleinLiked}
       />
       <SheetOption 
-        icon={require('@/assets/icons/add.png')}
+        icon={require('@/src/assets/icons/add.png')}
         text={'Add to Playlist'}
         show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
         handler={handleAddToPlaylist}
       />
       <SheetOption 
-        icon={require('@/assets/icons/remove.png')}
+        icon={require('@/src/assets/icons/remove.png')}
         text={'Remove from Playlist'}
         show={[PageType.LIBRARY, PageType.PLAYER].includes(pageType) 
           && editSong.sourceId !== undefined
@@ -222,25 +222,25 @@ const SongOptions = ({ name }: SongOptionsProps) => {
         handler={handleRemoveFromPlaylist}
       />
       <SheetOption 
-        icon={require('@/assets/icons/add-to-queue.png')}
+        icon={require('@/src/assets/icons/add-to-queue.png')}
         text={'Add to Queue'}
         show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
         handler={handleAddToQueue}
       />
       <SheetOption 
-        icon={require('@/assets/icons/edit.png')}
+        icon={require('@/src/assets/icons/edit.png')}
         text={'Edit'}
         show={[PageType.LIBRARY, PageType.IMPORT, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
         handler={handleEditSong}
       />
       <SheetOption
-        icon={require('@/assets/icons/delete.png')}
+        icon={require('@/src/assets/icons/delete.png')}
         text={'Delete'}
         show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
         handler={handleDeleteSong}
       />
       <SheetOption 
-        icon={require('@/assets/icons/share.png')}
+        icon={require('@/src/assets/icons/share.png')}
         text={'Export'}
         show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
         handler={handleExport}

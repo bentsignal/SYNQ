@@ -16,7 +16,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType>({
   theme: Colors.main,
-  logo: require('@/assets/logo/logo-blue.png'),
+  logo: require('@/src/assets/logo/logo-blue.png'),
   changeTheme: () => {},
 });
 
@@ -25,7 +25,7 @@ export const useThemeContext = () => useContext(ThemeContext);
 const ThemeProvider: React.FC<Props> = ({ children }) => {
 
   const [theme, setTheme] = useState<string>(Colors.main);
-  const [logo, setLogo] = useState(require('@/assets/logo/logo-blue.png'));
+  const [logo, setLogo] = useState(require('@/src/assets/logo/logo-blue.png'));
 
   const loadTheme = async () => {
     try {

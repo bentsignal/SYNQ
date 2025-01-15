@@ -123,7 +123,7 @@ const Home = () => {
               <Option
                 title="Premium"
                 desc={premium ? "Manage your subcription" : 'Unlock all features'}
-                icon={require('@/assets/icons/premium.png')}
+                icon={require('@/src/assets/icons/premium.png')}
                 disabled={false}
                 handlePress={() => router.push("/premium")}
               />
@@ -133,7 +133,7 @@ const Home = () => {
           <Option
             title='Files'
             desc='Import from your files'
-            icon={require('@/assets/icons/folder.png')}
+            icon={require('@/src/assets/icons/folder.png')}
             disabled={false}
             bg={premium ? theme : Colors.text}
             handlePress={() => {
@@ -149,7 +149,7 @@ const Home = () => {
           <Option 
             title='Network'
             desc='Import from your computer'
-            icon={require('@/assets/icons/wifi.png')}
+            icon={require('@/src/assets/icons/wifi.png')}
             disabled={false}
             bg={premium ? theme : Colors.text}
             handlePress={() => {

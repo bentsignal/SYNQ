@@ -30,7 +30,7 @@ export const Success = () => {
     }
   }, [haptic]);
   
-  let source = replaceColor('#4173b9', darkenColor(theme, 10, 20), require('@/assets/anim/success.json')); // accent
+  let source = replaceColor('#4173b9', darkenColor(theme, 10, 20), require('@/src/assets/anim/success.json')); // accent
   source = replaceColor('#63a3ff', theme, source); // main
 
   return (
@@ -105,7 +105,7 @@ export const Failure = () => {
         </Text>
         <View style={Local.animWrapper}>
           <LottieView 
-            source={require('@/assets/anim/error.json')}
+            source={require('@/src/assets/anim/error.json')}
             autoPlay
             loop={false}
             style={Local.anim}

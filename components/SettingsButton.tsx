@@ -5,7 +5,7 @@ export default function SettingsButton() {
   return (
     <View style={Local.container}>
       <TouchableOpacity onPress={() => router.push('/settings')}>
-        <Image source={require('@/assets/icons/gear.png')} style={Local.icon} />
+        <Image source={require('@/src/assets/icons/gear.png')} style={Local.icon} />
       </TouchableOpacity>
     </View>
   );

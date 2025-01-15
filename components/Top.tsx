@@ -25,7 +25,7 @@ export default function Top() {
 //       />
 //       <TouchableOpacity onPress={() => router.push('/settings')}>
 //         <Image 
-//           source={require('@/assets/icons/gear.png')}
+//           source={require('@/src/assets/icons/gear.png')}
 //           style={Local.icon}
 //         />
 //       </TouchableOpacity>

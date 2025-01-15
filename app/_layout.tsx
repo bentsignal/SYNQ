@@ -28,7 +28,7 @@ const RootLayout = () => {
   const [shouldPlayAd, setShouldPlayAd] = useState(false);
 
   const [fontLoaded] = useFonts({
-    JakartaSans: require('../assets/fonts/PlusJakartaSans-VariableFont_wght.ttf')
+    JakartaSans: require('@/src/assets/fonts/PlusJakartaSans-VariableFont_wght.ttf')
   });
 
   useEffect(() => {

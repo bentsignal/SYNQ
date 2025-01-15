@@ -87,19 +87,19 @@ const AlbumOptions = ({name}: {name: string}) => {
   return (
     <>
       <SheetOption 
-        icon={require('@/assets/icons/edit.png')}
+        icon={require('@/src/assets/icons/edit.png')}
         text={'Edit'}
         show={[PageType.LIBRARY, PageType.ALBUM].includes(pageType)}
         handler={handleEdit}
       />
       <SheetOption 
-        icon={require('@/assets/icons/share.png')}
+        icon={require('@/src/assets/icons/share.png')}
         text={'Export'}
         show={[PageType.LIBRARY, PageType.ALBUM].includes(pageType) && premium && false}
         handler={handleExport}
       />
       <SheetOption
-        icon={require('@/assets/icons/delete.png')}
+        icon={require('@/src/assets/icons/delete.png')}
         text={'Delete'}
         show={[PageType.LIBRARY, PageType.ALBUM].includes(pageType)}
         handler={handleDelete}

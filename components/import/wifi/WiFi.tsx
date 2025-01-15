@@ -137,7 +137,7 @@ const WiFi = () => {
         <ImportInstructions
           title='In your web browser, enter:'
           desc={`${URL}${CFG.PORT === 80 ? '' : `:${CFG.PORT}`}`}
-          icon={require('@/assets/icons/wifi.png')}
+          icon={require('@/src/assets/icons/wifi.png')}
           disabled={wifiDisabled}
           handlePress={() => {}}
         />

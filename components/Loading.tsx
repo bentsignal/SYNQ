@@ -40,7 +40,7 @@ const Loading = ({width, height}: LoadingProps) => {
       <MaskedView style={Local.mask}
         maskElement= {
           <LottieView 
-            source={require('@/assets/anim/loading.json')}
+            source={require('@/src/assets/anim/loading.json')}
             autoPlay
             loop={true}
             style={Local.anim}

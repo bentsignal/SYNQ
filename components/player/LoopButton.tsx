@@ -48,7 +48,7 @@ const LoopButton = ({ primary, useBG }: LoopButtonProps) => {
       onPress={handlePress}
     >
       <Image 
-        source={require('@/assets/icons/loop.png')}
+        source={require('@/src/assets/icons/loop.png')}
         style={[Local.image, {
           tintColor: localState ? tint : Colors.text,
         }]}

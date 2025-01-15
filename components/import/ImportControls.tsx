@@ -145,7 +145,7 @@ const ImportControls = (
           onPress={handleEdit}
         >
           <Image 
-            source={require('@/assets/icons/edit.png')}
+            source={require('@/src/assets/icons/edit.png')}
             style={Local.batchButtonIcon}
           />
         </TouchableOpacity>
@@ -154,7 +154,7 @@ const ImportControls = (
           onPress={handleDelete}
         >
           <Image 
-            source={require('@/assets/icons/delete.png')}
+            source={require('@/src/assets/icons/delete.png')}
             style={Local.batchButtonIcon}
           />
         </TouchableOpacity>

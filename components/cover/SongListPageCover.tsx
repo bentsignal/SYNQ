@@ -4,14 +4,14 @@ import FastImage from 'react-native-fast-image';
 import { PageType } from '@/constants/Types';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { getPlaylistCover } from '@/lib/controllers/PlaylistController';
-import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/station/playlist/Events';
-import playlistBus from '@/station/playlist';
+import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/src/events/playlist/Events';
+import playlistBus from '@/src/events/playlist';
 import { getArtistCover } from '@/lib/controllers/ArtistController';
-import { ArtistBusEvent, ArtistImageModifiedEvent } from '@/station/artist/Events';
-import artistBus from '@/station/artist';
+import { ArtistBusEvent, ArtistImageModifiedEvent } from '@/src/events/artist/Events';
+import artistBus from '@/src/events/artist';
 import { getAlbumCover } from '@/lib/controllers/AlbumController';
-import { AlbumBusEvent, AlbumImageModifiedEvent } from '@/station/album/Events';
-import albumBus from '@/station/album';
+import { AlbumBusEvent, AlbumImageModifiedEvent } from '@/src/events/album/Events';
+import albumBus from '@/src/events/album';
 
 const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
 

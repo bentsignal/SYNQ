@@ -22,15 +22,15 @@ import { getTrackFromSong, playTrack,
   updateQueue, playAd, addToQueue } from '@/lib/controllers/PlayerController';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { usePremiumContext } from '@/context/PremiumProvider';
-import songBus from '@/station/song';
-import { SongBusEvent, SongInfoModifiedEvent, SongCoverModifiedEvent } from '@/station/song/Events';
+import songBus from '@/src/events/song';
+import { SongBusEvent, SongInfoModifiedEvent, SongCoverModifiedEvent } from '@/src/events/song/Events';
 import { usePlaybackContext } from '@/context/PlaybackProvider';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { ArtistToggledOnSongEvent, ArtistBusEvent } from '@/station/artist/Events';
+import { ArtistToggledOnSongEvent, ArtistBusEvent } from '@/src/events/artist/Events';
 import { getArtistsFromSong } from '@/lib/controllers/ArtistController';
-import artistBus from '@/station/artist';
-import albumBus from '@/station/album';
-import { AlbumBusEvent, AlbumToggledOnSongEvent } from '@/station/album/Events';
+import artistBus from '@/src/events/artist';
+import albumBus from '@/src/events/album';
+import { AlbumBusEvent, AlbumToggledOnSongEvent } from '@/src/events/album/Events';
 import { getAlbumCover } from '@/lib/controllers/AlbumController';
 
 type SongProps = {

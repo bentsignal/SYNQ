@@ -11,8 +11,8 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistType } from "@/constants/Types";
-import { ArtistBusEvent, ArtistModifiedEvent } from "@/station/artist/Events";
-import artistBus from "@/station/artist";
+import { ArtistBusEvent, ArtistModifiedEvent } from "@/src/events/artist/Events";
+import artistBus from "@/src/events/artist";
 import { addArtistToSong, removeArtistFromSong, isArtistOnSong } from "@/lib/controllers/ArtistController";
 import { addArtistToAlbum, removeArtistFromAlbum, isArtistOnAlbum } from "@/lib/controllers/AlbumController";
 

@@ -7,17 +7,17 @@ import { getAppIcon } from '@/constants/Logos';
 import { PageType, CoverType } from '@/constants/Types';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { getPlaylistCover } from '@/lib/controllers/PlaylistController';
-import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/station/playlist/Events';
-import playlistBus from '@/station/playlist';
-import { SongBusEvent, SongCoverModifiedEvent } from '@/station/song/Events';
-import songBus from '@/station/song';
+import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/src/events/playlist/Events';
+import playlistBus from '@/src/events/playlist';
+import { SongBusEvent, SongCoverModifiedEvent } from '@/src/events/song/Events';
+import songBus from '@/src/events/song';
 import { getArtistCover } from '@/lib/controllers/ArtistController';
-import artistBus from '@/station/artist';
-import { ArtistImageModifiedEvent } from '@/station/artist/Events';
-import { ArtistBusEvent } from '@/station/artist/Events';
+import artistBus from '@/src/events/artist';
+import { ArtistImageModifiedEvent } from '@/src/events/artist/Events';
+import { ArtistBusEvent } from '@/src/events/artist/Events';
 import { getAlbumCover, getAlbumCoverFromSong } from '@/lib/controllers/AlbumController';
-import { AlbumBusEvent, AlbumImageModifiedEvent } from '@/station/album/Events';
-import albumBus from '@/station/album';
+import { AlbumBusEvent, AlbumImageModifiedEvent } from '@/src/events/album/Events';
+import albumBus from '@/src/events/album';
 
 const ListCover = ({image, type, id, fade, propOnLoad}: {
   image?: string;

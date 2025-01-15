@@ -21,8 +21,8 @@ import { router } from "expo-router";
 import { useThemeContext } from "@/context/ThemeProvider";
 import { usePremiumContext } from "@/context/PremiumProvider";
 import { usePlaybackContext } from "@/context/PlaybackProvider";
-import playlistBus from "@/station/playlist/Bus";
-import { PlaylistBusEvent } from "@/station/playlist/Events";
+import playlistBus from "@/src/events/playlist/Bus";
+import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import SettingsButton from "@/components/SettingsButton";
 
 const Library = () => {

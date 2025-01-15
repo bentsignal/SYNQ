@@ -2,8 +2,8 @@ import * as FileSystem from 'expo-file-system'
 import { SongType, PageType } from '@/constants/Types'
 import SongModel from '@/lib/models/SongModel';
 import PlaylistModel from '@/lib/models/PlaylistModel';
-import songBus from "@/station/song/Bus";
-import { SongBusEvent } from "@/station/song/Events";
+import songBus from "@/src/events/song/Bus";
+import { SongBusEvent } from "@/src/events/song/Events";
 import 'react-native-get-random-values';
 import { addArtistToSong } from '@/lib/controllers/ArtistController';
 import { writeImageToLibrary, deleteImagesFromDirectory } from '@/lib/controllers/ImageController';

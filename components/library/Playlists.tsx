@@ -2,9 +2,9 @@ import { View, StyleSheet } from "react-native";
 import PlaylistList from "@/components/lists/playlist"; 
 import { useEffect, useState } from "react";
 import { PageType, PlaylistType } from "@/constants/Types";
-import playlistBus from "@/station/playlist";
+import playlistBus from "@/src/events/playlist";
 import { getPlaylists } from "@/lib/controllers/PlaylistController";
-import { PlaylistBusEvent } from "@/station/playlist/Events";
+import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 
 const Playlists = () => {
 

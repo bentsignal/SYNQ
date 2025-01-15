@@ -19,8 +19,8 @@ import ModalStyles from "@/components/modals/Styles";
 import { getAlbumInfo, updateAlbum } from "@/lib/controllers/AlbumController";
 import { getArtistsFromAlbum } from "@/lib/controllers/AlbumController";
 import ArtistItem from "@/components/lists/artist/ArtistItem";
-import artistBus from "@/station/artist";
-import { ArtistBusEvent } from "@/station/artist/Events";
+import artistBus from "@/src/events/artist";
+import { ArtistBusEvent } from "@/src/events/artist/Events";
 
 const MemoTextInput = memo(TextInput);
 

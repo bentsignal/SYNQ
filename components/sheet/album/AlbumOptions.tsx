@@ -7,8 +7,8 @@ import { usePremiumContext } from '@/context/PremiumProvider';
 import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { AlbumBusEvent } from '@/station/album/Events';
-import albumBus from '@/station/album';
+import { AlbumBusEvent } from '@/src/events/album/Events';
+import albumBus from '@/src/events/album';
 import { deleteAlbum } from '@/lib/controllers/AlbumController';
 
 const AlbumOptions = ({name}: {name: string}) => {

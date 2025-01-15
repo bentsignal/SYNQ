@@ -9,10 +9,10 @@ import More from "@/components/More";
 import { PageType } from "@/constants/Types";
 import Select from "@/components/Select";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import playlistBus from "@/station/playlist";
+import playlistBus from "@/src/events/playlist";
 import * as Haptics from 'expo-haptics';
 import { addToPlaylist, removeFromPlaylist, isSongInPlaylist, getSongCount } from "@/lib/controllers/PlaylistController";
-import { PlaylistBusEvent, PlaylistNameModifiedEvent, PlaylistSongCountModifiedEvent } from "@/station/playlist/Events";
+import { PlaylistBusEvent, PlaylistNameModifiedEvent, PlaylistSongCountModifiedEvent } from "@/src/events/playlist/Events";
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
 type PlaylistProps = {

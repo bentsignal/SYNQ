@@ -5,10 +5,10 @@ import { ArtistType, PageType } from "@/constants/Types";
 import { useState, useEffect } from "react";
 import ArtistList from "@/components/lists/artist";
 import { getArtists } from "@/lib/controllers/ArtistController";
-import artistBus from "@/station/artist";
-import { ArtistBusEvent } from "@/station/artist/Events";
-import playlistBus from "@/station/playlist";
-import { PlaylistBusEvent } from "@/station/playlist/Events";
+import artistBus from "@/src/events/artist";
+import { ArtistBusEvent } from "@/src/events/artist/Events";
+import playlistBus from "@/src/events/playlist";
+import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import { Styles as MainStyles } from "@/constants/Styles";
 
 const Artists = () => {

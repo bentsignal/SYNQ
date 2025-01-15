@@ -10,8 +10,8 @@ import PlaylistList from "@/components/lists/playlist"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useThemeContext } from "@/context/ThemeProvider"
 import { getPlaylists } from "@/lib/controllers/PlaylistController"
-import { PlaylistBusEvent } from "@/station/playlist/Events"
-import playlistBus from "@/station/playlist/Bus"
+import { PlaylistBusEvent } from "@/src/events/playlist/Events"
+import playlistBus from "@/src/events/playlist/Bus"
 import ModalStyles from "@/components/modals/Styles"
 
 const AddToPlaylist = () => {

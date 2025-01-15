@@ -5,8 +5,8 @@ import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { useThemeContext } from '@/context/ThemeProvider';
 import { darkenColor } from '@/lib/controllers/ColorController';
-import playlistBus from '@/station/playlist/Bus';
-import { PlaylistBusEvent } from '@/station/playlist/Events';
+import playlistBus from '@/src/events/playlist/Bus';
+import { PlaylistBusEvent } from '@/src/events/playlist/Events';
 
 type CategorySelectorProps = {
   containerStyle: ViewStyle;

@@ -15,12 +15,12 @@ import { createPlaylist } from "@/lib/controllers/PlaylistController"
 import EditCover from "@/components/cover/EditCover"
 import { newCover } from "@/lib/controllers/ImageController"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { PlaylistBusEvent } from "@/station/playlist/Events"
-import playlistBus from "@/station/playlist"
+import { PlaylistBusEvent } from "@/src/events/playlist/Events"
+import playlistBus from "@/src/events/playlist"
 import ModalStyles from "@/components/modals/Styles";
 import { createArtist } from "@/lib/controllers/ArtistController";
-import artistBus from "@/station/artist";
-import { ArtistBusEvent } from "@/station/artist/Events";
+import artistBus from "@/src/events/artist";
+import { ArtistBusEvent } from "@/src/events/artist/Events";
 
 const MemoTextInput = memo(TextInput);
 

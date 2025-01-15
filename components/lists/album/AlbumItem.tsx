@@ -11,8 +11,8 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { AlbumType } from "@/constants/Types";
-import { AlbumBusEvent, AlbumModifiedEvent } from "@/station/album/Events";
-import albumBus from "@/station/album";
+import { AlbumBusEvent, AlbumModifiedEvent } from "@/src/events/album/Events";
+import albumBus from "@/src/events/album";
 import { addAlbumToSong, removeAlbumFromSong, isAlbumOnSong } from "@/lib/controllers/AlbumController";
 
 type AlbumProps = {

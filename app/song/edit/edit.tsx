@@ -21,10 +21,10 @@ import ArtistItem from "@/components/lists/artist/ArtistItem";
 import AlbumItem from "@/components/lists/album/AlbumItem";
 import { getArtistsFromSong } from "@/lib/controllers/ArtistController";
 import { getAlbumsFromSong } from "@/lib/controllers/AlbumController";
-import artistBus from "@/station/artist/Bus";
-import albumBus from "@/station/album/Bus";
-import { ArtistBusEvent, ArtistToggledOnSongEvent } from "@/station/artist/Events";
-import { AlbumBusEvent, AlbumToggledOnSongEvent } from "@/station/album/Events";
+import artistBus from "@/src/events/artist/Bus";
+import albumBus from "@/src/events/album/Bus";
+import { ArtistBusEvent, ArtistToggledOnSongEvent } from "@/src/events/artist/Events";
+import { AlbumBusEvent, AlbumToggledOnSongEvent } from "@/src/events/album/Events";
 
 const MemoTextInput = memo(TextInput);
 

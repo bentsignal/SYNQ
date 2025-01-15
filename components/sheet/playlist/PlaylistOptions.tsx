@@ -9,8 +9,8 @@ import { deletePlaylist, getPlaylistSongs } from '@/lib/controllers/PlaylistCont
 import { getSongByResult } from '@/lib/controllers/SongController';
 import { Alert } from 'react-native';
 import { router } from 'expo-router';
-import { PlaylistBusEvent } from '@/station/playlist/Events';
-import playlistBus from '@/station/playlist';
+import { PlaylistBusEvent } from '@/src/events/playlist/Events';
+import playlistBus from '@/src/events/playlist';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
 

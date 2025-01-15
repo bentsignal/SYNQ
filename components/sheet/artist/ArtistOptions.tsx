@@ -7,8 +7,8 @@ import { usePremiumContext } from '@/context/PremiumProvider';
 import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { ArtistBusEvent } from '@/station/artist/Events';
-import artistBus from '@/station/artist';
+import { ArtistBusEvent } from '@/src/events/artist/Events';
+import artistBus from '@/src/events/artist';
 import { deleteArtist } from '@/lib/controllers/ArtistController';
 
 const ArtistOptions = ({name}: {name: string}) => {

@@ -15,8 +15,8 @@ import { createPlaylist } from "@/lib/controllers/PlaylistController"
 import EditCover from "@/components/cover/EditCover"
 import { newCover } from "@/lib/controllers/ImageController"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { PlaylistBusEvent } from "@/station/playlist/Events"
-import playlistBus from "@/station/playlist"
+import { PlaylistBusEvent } from "@/src/events/playlist/Events"
+import playlistBus from "@/src/events/playlist"
 import ModalStyles from "@/components/modals/Styles"
 
 const MemoTextInput = memo(TextInput);

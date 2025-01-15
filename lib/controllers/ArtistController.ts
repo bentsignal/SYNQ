@@ -2,8 +2,8 @@ import { ArtistType, SongType, SortType } from "@/constants/Types";
 import ArtistModel from "@/lib/models/ArtistModel";
 import { writeImageToLibrary } from "./ImageController";
 import * as FileSystem from 'expo-file-system';
-import { ArtistBusEvent } from "@/station/artist/Events";
-import artistBus from "@/station/artist";
+import { ArtistBusEvent } from "@/src/events/artist/Events";
+import artistBus from "@/src/events/artist";
 import { getSongByResult } from "./SongController";
 
 export const createArtist = async (name: string, image?: string): Promise<ArtistType> => {

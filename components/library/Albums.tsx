@@ -5,10 +5,10 @@ import { AlbumType, PageType } from "@/constants/Types";
 import { useState, useEffect } from "react";
 import AlbumList from "@/components/lists/album";
 import { getAlbums } from "@/lib/controllers/AlbumController";
-import albumBus from "@/station/album";
-import { AlbumBusEvent } from "@/station/album/Events";
-import playlistBus from "@/station/playlist";
-import { PlaylistBusEvent } from "@/station/playlist/Events";
+import albumBus from "@/src/events/album";
+import { AlbumBusEvent } from "@/src/events/album/Events";
+import playlistBus from "@/src/events/playlist";
+import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import { Styles as MainStyles } from "@/constants/Styles";
 
 const Albums = () => {

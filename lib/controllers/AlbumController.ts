@@ -2,8 +2,8 @@ import { AlbumType, SongType, SortType } from "@/constants/Types";
 import AlbumModel from "@/lib/models/AlbumModel";
 import { writeImageToLibrary } from "./ImageController";
 import * as FileSystem from 'expo-file-system';
-import { AlbumBusEvent } from "@/station/album/Events";
-import albumBus from "@/station/album";
+import { AlbumBusEvent } from "@/src/events/album/Events";
+import albumBus from "@/src/events/album";
 import { getSongByResult } from "./SongController";
 
 export const createAlbum = async (name: string, year?: number, image?: string): Promise<AlbumType> => {

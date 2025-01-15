@@ -15,8 +15,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CFG from "@/constants/Config";
 import { useThemeContext } from "@/context/ThemeProvider";
 import { usePremiumContext } from "@/context/PremiumProvider";
-import { PlaylistBusEvent } from "@/station/playlist/Events";
-import playlistBus from "@/station/playlist";
+import { PlaylistBusEvent } from "@/src/events/playlist/Events";
+import playlistBus from "@/src/events/playlist";
 import { deleteImportSongs } from "@/lib/controllers/ImportExportController";
 import SettingsButton from "../SettingsButton";
 

@@ -15,8 +15,8 @@ import { createAlbum } from "@/lib/controllers/AlbumController"
 import EditCover from "@/components/cover/EditCover"
 import { newCover } from "@/lib/controllers/ImageController"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { AlbumBusEvent } from "@/station/album/Events"
-import albumBus from "@/station/album"
+import { AlbumBusEvent } from "@/src/events/album/Events"
+import albumBus from "@/src/events/album"
 import ModalStyles from "@/components/modals/Styles";
 
 const MemoTextInput = memo(TextInput);

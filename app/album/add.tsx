@@ -10,8 +10,8 @@ import AlbumList from "@/components/lists/album"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useThemeContext } from "@/context/ThemeProvider"
 import { getAlbums } from "@/lib/controllers/AlbumController"
-import { AlbumBusEvent } from "@/station/album/Events"
-import albumBus from "@/station/album/Bus"
+import { AlbumBusEvent } from "@/src/events/album/Events"
+import albumBus from "@/src/events/album/Bus"
 import ModalStyles from "@/components/modals/Styles"
 
 const AddAlbum = () => {

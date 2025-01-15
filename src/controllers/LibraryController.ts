@@ -1,13 +1,13 @@
 import * as FileSystem from 'expo-file-system'
 import { SongType, PageType } from '@/src/constants/Types'
-import SongModel from '@/lib/models/SongModel';
-import PlaylistModel from '@/lib/models/PlaylistModel';
+import SongModel from '@/src/models/SongModel';
+import PlaylistModel from '@/src/models/PlaylistModel';
 import songBus from "@/src/events/song/Bus";
 import { SongBusEvent } from "@/src/events/song/Events";
 import 'react-native-get-random-values';
-import { addArtistToSong } from '@/lib/controllers/ArtistController';
-import { writeImageToLibrary, deleteImagesFromDirectory } from '@/lib/controllers/ImageController';
-import { addAlbumToSong, addArtistToAlbum, isArtistOnAlbum } from '@/lib/controllers/AlbumController';
+import { addArtistToSong } from '@/src/controllers/ArtistController';
+import { writeImageToLibrary, deleteImagesFromDirectory } from '@/src/controllers/ImageController';
+import { addAlbumToSong, addArtistToAlbum, isArtistOnAlbum } from '@/src/controllers/AlbumController';
 
 export const updateSongsInLibrary = async (
   ids: string[],

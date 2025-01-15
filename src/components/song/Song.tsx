@@ -13,13 +13,13 @@ import ListCover from '@/src/components/cover/ListCover';
 import { BlurView } from 'expo-blur';
 import CustomButton from '../CustomButton';
 import Skeleton from '../Skeleton';
-import { darkenColor } from '@/lib/controllers/ColorController';
+import { darkenColor } from '@/src/controllers/ColorController';
 import * as Haptics from 'expo-haptics';
 import More from '@/src/components/More';
 import { PageType, CoverType, ArtistType } from '@/src/constants/Types';
 import { useActiveTrack } from "react-native-track-player";
 import { getTrackFromSong, playTrack, 
-  updateQueue, playAd, addToQueue } from '@/lib/controllers/PlayerController';
+  updateQueue, playAd, addToQueue } from '@/src/controllers/PlayerController';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
 import songBus from '@/src/events/song';
@@ -27,11 +27,11 @@ import { SongBusEvent, SongInfoModifiedEvent, SongCoverModifiedEvent } from '@/s
 import { usePlaybackContext } from '@/src/context/PlaybackProvider';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistToggledOnSongEvent, ArtistBusEvent } from '@/src/events/artist/Events';
-import { getArtistsFromSong } from '@/lib/controllers/ArtistController';
+import { getArtistsFromSong } from '@/src/controllers/ArtistController';
 import artistBus from '@/src/events/artist';
 import albumBus from '@/src/events/album';
 import { AlbumBusEvent, AlbumToggledOnSongEvent } from '@/src/events/album/Events';
-import { getAlbumCover } from '@/lib/controllers/AlbumController';
+import { getAlbumCover } from '@/src/controllers/AlbumController';
 
 type SongProps = {
   song: SongType, 

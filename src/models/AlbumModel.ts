@@ -1,6 +1,6 @@
 import Model from "./Model";
 import { AlbumType, SortType, SongResultType, ArtistType, PageType } from "@/src/constants/Types";
-import { getArtistsFromSong } from "@/lib/controllers/ArtistController";
+import { getArtistsFromSong } from "@/src/controllers/ArtistController";
 
 export default class AlbumModel extends Model {
 

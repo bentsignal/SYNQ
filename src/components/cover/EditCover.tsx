@@ -1,11 +1,11 @@
 import { View, Image, TouchableOpacity, StyleSheet, Dimensions, Animated, Text } from 'react-native';
 import { useEffect, useLayoutEffect, useState, useRef } from 'react';
 import FastImage from 'react-native-fast-image';
-import { getSongCover } from '@/lib/controllers/ImageController';
+import { getSongCover } from '@/src/controllers/ImageController';
 import { PageType, CoverType } from '@/src/constants/Types';
-import { getPlaylistCover } from '@/lib/controllers/PlaylistController';
-import { getArtistCover } from '@/lib/controllers/ArtistController';
-import { getAlbumCover } from '@/lib/controllers/AlbumController';
+import { getPlaylistCover } from '@/src/controllers/PlaylistController';
+import { getArtistCover } from '@/src/controllers/ArtistController';
+import { getAlbumCover } from '@/src/controllers/AlbumController';
 
 const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5+hPwABAAEAAFPAfXAAAAAElFTkSuQmCC';
 

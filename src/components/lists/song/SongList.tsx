@@ -3,7 +3,7 @@ import { SongType, PageType, SourceType } from '@/src/constants/Types';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import Song from '@/src/components/song';
 import DeleteModal from '@/src/components/modals/DeleteModal';
-import { generateSongKey } from '@/lib/controllers/SongController';
+import { generateSongKey } from '@/src/controllers/SongController';
 import List from '@/src/components/List';
 
 const MemoSong = memo(Song);

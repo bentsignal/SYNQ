@@ -6,7 +6,7 @@ import CustomButton from '@/src/components/CustomButton';
 import { replaceColor } from 'lottie-colorify';
 import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
-import { darkenColor } from "@/lib/controllers/ColorController";
+import { darkenColor } from "@/src/controllers/ColorController";
 import { useEffect } from "react";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 

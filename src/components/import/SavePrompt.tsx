@@ -7,7 +7,7 @@ import ImportControls from "@/src/components/import/ImportControls";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { Colors } from "@/src/constants/Colors";
 import Checkbox from "expo-checkbox";
-import { saveToLibrary } from "@/lib/controllers/LibraryController";
+import { saveToLibrary } from "@/src/controllers/LibraryController";
 import axios from "axios";
 import Progress from "@/src/components/Progress";
 import * as StoreReview from 'expo-store-review';
@@ -17,7 +17,7 @@ import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import playlistBus from "@/src/events/playlist";
-import { deleteImportSongs } from "@/lib/controllers/ImportExportController";
+import { deleteImportSongs } from "@/src/controllers/ImportExportController";
 import SettingsButton from "../SettingsButton";
 
 const SavePrompt = () => {

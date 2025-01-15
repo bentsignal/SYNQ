@@ -1,9 +1,9 @@
-import PlaylistModel from "@/lib/models/PlaylistModel";
+import PlaylistModel from "@/src/models/PlaylistModel";
 import playlistBus from "@/src/events/playlist";
 import * as FileSystem from 'expo-file-system';
-import { getSongByResult } from "@/lib/controllers/SongController";
+import { getSongByResult } from "@/src/controllers/SongController";
 import { PageType, SortType } from "@/src/constants/Types";
-import { writeImageToLibrary } from "@/lib/controllers/ImageController";
+import { writeImageToLibrary } from "@/src/controllers/ImageController";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 
 export const createPlaylist = async (name: string, image?: string) => {

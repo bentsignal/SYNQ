@@ -12,7 +12,7 @@ import SongListHeader from "@/src/components/lists/song/Header";
 import Overlay from "@/src/components/Overlay";
 import Header from "@/src/components/Header";
 import playlistBus from "@/src/events/playlist";
-import { getPlaylistInfo, getPlaylistSongs } from "@/lib/controllers/PlaylistController";
+import { getPlaylistInfo, getPlaylistSongs } from "@/src/controllers/PlaylistController";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from "@lodev09/react-native-true-sheet";

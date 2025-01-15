@@ -10,7 +10,7 @@ import ShuffleButton from "@/src/components/player/ShuffleButton";
 import SongList from "@/src/components/lists/song";
 import { useEffect, useState } from "react";
 import { CoverType, PageType, SongType } from "@/src/constants/Types";
-import { getSongById, generateSongKey } from "@/lib/controllers/SongController";
+import { getSongById, generateSongKey } from "@/src/controllers/SongController";
 import ListCover from "@/src/components/cover/ListCover";
 import SongInfo from "@/src/components/song/SongInfo";
 import TrackPlayer, { useActiveTrack } from "react-native-track-player";

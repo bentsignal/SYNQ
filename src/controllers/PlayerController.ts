@@ -6,12 +6,12 @@ import { getFileName } from '@/lib/Util';
 import { getAppIcon } from '@/src/constants/Logos';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
-import { getPlaylistSongs } from '@/lib/controllers/PlaylistController';
-import { getSongsFromArtist } from '@/lib/controllers/ArtistController';
-import { getSongById } from '@/lib/controllers/SongController';
+import { getPlaylistSongs } from '@/src/controllers/PlaylistController';
+import { getSongsFromArtist } from '@/src/controllers/ArtistController';
+import { getSongById } from '@/src/controllers/SongController';
 import { PageType, SortType } from '@/src/constants/Types';
-import { getSongsFromAlbum } from '@/lib/controllers/AlbumController';
-import { getAlbumCoverPathFromSong } from '@/lib/controllers/ImageController';
+import { getSongsFromAlbum } from '@/src/controllers/AlbumController';
+import { getAlbumCoverPathFromSong } from '@/src/controllers/ImageController';
 
 export const setupPlayer = async () => {
   await TrackPlayer.setupPlayer();

@@ -11,7 +11,7 @@ import * as FileSystem from 'expo-file-system';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
 import { zip, unzip } from 'react-native-zip-archive';
-import Model from '@/lib/models/Model';
+import Model from '@/src/models/Model';
 import Loading from '@/src/components/Loading';
 import playlistBus from '@/src/events/playlist/Bus';
 import { PlaylistBusEvent } from '@/src/events/playlist/Events';

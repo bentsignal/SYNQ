@@ -3,15 +3,15 @@ import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { Styles } from '@/src/constants/Styles';
 import { Colors } from '@/src/constants/Colors';
 import CustomButton from '@/src/components/CustomButton';
-import { removeSongs } from '@/lib/controllers/SongController';
-import { deleteFromLibrary } from '@/lib/controllers/LibraryController';
-import { darkenColor } from '@/lib/controllers/ColorController';
+import { removeSongs } from '@/src/controllers/SongController';
+import { deleteFromLibrary } from '@/src/controllers/LibraryController';
+import { darkenColor } from '@/src/controllers/ColorController';
 import Notifications from '@/src/components/notifications/Notifications';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import { Track } from 'react-native-track-player';
 import { PageType } from '@/src/constants/Types';
 import TrackPlayer from 'react-native-track-player';
-import { removeFromAllPlaylists } from '@/lib/controllers/PlaylistController';
+import { removeFromAllPlaylists } from '@/src/controllers/PlaylistController';
 import { router } from 'expo-router';
 
 const ImportControls = (

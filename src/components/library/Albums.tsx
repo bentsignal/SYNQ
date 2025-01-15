@@ -4,7 +4,7 @@ import { Styles } from "@/src/constants/Styles";
 import { AlbumType, PageType } from "@/src/constants/Types";
 import { useState, useEffect } from "react";
 import AlbumList from "@/src/components/lists/album";
-import { getAlbums } from "@/lib/controllers/AlbumController";
+import { getAlbums } from "@/src/controllers/AlbumController";
 import albumBus from "@/src/events/album";
 import { AlbumBusEvent } from "@/src/events/album/Events";
 import playlistBus from "@/src/events/playlist";

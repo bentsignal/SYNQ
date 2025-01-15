@@ -11,12 +11,12 @@ import TabBar from "@/src/components/TabBar";
 import ArtistHeader from "@/src/components/lists/artist/Header";
 import Overlay from "@/src/components/Overlay";
 import Header from "@/src/components/Header";
-import { getArtistInfo } from "@/lib/controllers/ArtistController";
+import { getArtistInfo } from "@/src/controllers/ArtistController";
 import artistBus from "@/src/events/artist";
 import { ArtistBusEvent } from "@/src/events/artist/Events";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
-import { getSongsFromArtist } from "@/lib/controllers/ArtistController";
+import { getSongsFromArtist } from "@/src/controllers/ArtistController";
 
 const ArtistView = ({id}: {id: string}) => {
 

@@ -11,14 +11,14 @@ import TabBar from "@/src/components/TabBar";
 import AlbumHeader from "@/src/components/lists/album/Header";
 import Overlay from "@/src/components/Overlay";
 import Header from "@/src/components/Header";
-import { getAlbumInfo } from "@/lib/controllers/AlbumController";
+import { getAlbumInfo } from "@/src/controllers/AlbumController";
 import albumBus from "@/src/events/album";
 import { AlbumBusEvent } from "@/src/events/album/Events";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
-import { getSongsFromAlbum } from "@/lib/controllers/AlbumController";
+import { getSongsFromAlbum } from "@/src/controllers/AlbumController";
 import ArtistItem from "@/src/components/lists/artist/ArtistItem";
-import { getArtistsFromAlbum } from "@/lib/controllers/AlbumController";
+import { getArtistsFromAlbum } from "@/src/controllers/AlbumController";
 
 const AlbumView = ({id}: {id: string}) => {
 

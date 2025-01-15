@@ -11,7 +11,7 @@ import Select from "@/src/components/Select";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import playlistBus from "@/src/events/playlist";
 import * as Haptics from 'expo-haptics';
-import { addToPlaylist, removeFromPlaylist, isSongInPlaylist, getSongCount } from "@/lib/controllers/PlaylistController";
+import { addToPlaylist, removeFromPlaylist, isSongInPlaylist, getSongCount } from "@/src/controllers/PlaylistController";
 import { PlaylistBusEvent, PlaylistNameModifiedEvent, PlaylistSongCountModifiedEvent } from "@/src/events/playlist/Events";
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 

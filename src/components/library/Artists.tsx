@@ -4,7 +4,7 @@ import { Styles } from "@/src/constants/Styles";
 import { ArtistType, PageType } from "@/src/constants/Types";
 import { useState, useEffect } from "react";
 import ArtistList from "@/src/components/lists/artist";
-import { getArtists } from "@/lib/controllers/ArtistController";
+import { getArtists } from "@/src/controllers/ArtistController";
 import artistBus from "@/src/events/artist";
 import { ArtistBusEvent } from "@/src/events/artist/Events";
 import playlistBus from "@/src/events/playlist";

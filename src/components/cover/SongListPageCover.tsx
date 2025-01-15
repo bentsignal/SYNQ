@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import { PageType } from '@/src/constants/Types';
 import { useThemeContext } from '@/src/context/ThemeProvider';
-import { getPlaylistCover } from '@/lib/controllers/PlaylistController';
+import { getPlaylistCover } from '@/src/controllers/PlaylistController';
 import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/src/events/playlist/Events';
 import playlistBus from '@/src/events/playlist';
-import { getArtistCover } from '@/lib/controllers/ArtistController';
+import { getArtistCover } from '@/src/controllers/ArtistController';
 import { ArtistBusEvent, ArtistImageModifiedEvent } from '@/src/events/artist/Events';
 import artistBus from '@/src/events/artist';
-import { getAlbumCover } from '@/lib/controllers/AlbumController';
+import { getAlbumCover } from '@/src/controllers/AlbumController';
 import { AlbumBusEvent, AlbumImageModifiedEvent } from '@/src/events/album/Events';
 import albumBus from '@/src/events/album';
 

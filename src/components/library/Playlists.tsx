@@ -3,7 +3,7 @@ import PlaylistList from "@/src/components/lists/playlist";
 import { useEffect, useState } from "react";
 import { PageType, PlaylistType } from "@/src/constants/Types";
 import playlistBus from "@/src/events/playlist";
-import { getPlaylists } from "@/lib/controllers/PlaylistController";
+import { getPlaylists } from "@/src/controllers/PlaylistController";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 
 const Playlists = () => {

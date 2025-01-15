@@ -1,6 +1,6 @@
 import { Switch } from "react-native-gesture-handler";
 import { Colors } from "@/src/constants/Colors";
-import { getDisabledColor } from "@/lib/controllers/ColorController";
+import { getDisabledColor } from "@/src/controllers/ColorController";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 

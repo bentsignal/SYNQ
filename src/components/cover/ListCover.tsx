@@ -1,21 +1,21 @@
 import { StyleSheet, Animated, Image } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import FastImage from 'react-native-fast-image';
-import { getSongCover } from '@/lib/controllers/ImageController';
+import { getSongCover } from '@/src/controllers/ImageController';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { getAppIcon } from '@/src/constants/Logos';
 import { PageType, CoverType } from '@/src/constants/Types';
 import { useThemeContext } from '@/src/context/ThemeProvider';
-import { getPlaylistCover } from '@/lib/controllers/PlaylistController';
+import { getPlaylistCover } from '@/src/controllers/PlaylistController';
 import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/src/events/playlist/Events';
 import playlistBus from '@/src/events/playlist';
 import { SongBusEvent, SongCoverModifiedEvent } from '@/src/events/song/Events';
 import songBus from '@/src/events/song';
-import { getArtistCover } from '@/lib/controllers/ArtistController';
+import { getArtistCover } from '@/src/controllers/ArtistController';
 import artistBus from '@/src/events/artist';
 import { ArtistImageModifiedEvent } from '@/src/events/artist/Events';
 import { ArtistBusEvent } from '@/src/events/artist/Events';
-import { getAlbumCover, getAlbumCoverFromSong } from '@/lib/controllers/AlbumController';
+import { getAlbumCover, getAlbumCoverFromSong } from '@/src/controllers/AlbumController';
 import { AlbumBusEvent, AlbumImageModifiedEvent } from '@/src/events/album/Events';
 import albumBus from '@/src/events/album';
 

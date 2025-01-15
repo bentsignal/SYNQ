@@ -11,14 +11,14 @@ import { CoverType, NotificationType } from "@/src/constants/Types"
 import Notifications from "@/src/components/notifications/Notifications"
 import * as Haptics from 'expo-haptics'
 import { useThemeContext } from "@/src/context/ThemeProvider"
-import { createPlaylist } from "@/lib/controllers/PlaylistController"
+import { createPlaylist } from "@/src/controllers/PlaylistController"
 import EditCover from "@/src/components/cover/EditCover"
-import { newCover } from "@/lib/controllers/ImageController"
+import { newCover } from "@/src/controllers/ImageController"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { PlaylistBusEvent } from "@/src/events/playlist/Events"
 import playlistBus from "@/src/events/playlist"
 import ModalStyles from "@/src/components/modals/Styles";
-import { createArtist } from "@/lib/controllers/ArtistController";
+import { createArtist } from "@/src/controllers/ArtistController";
 import artistBus from "@/src/events/artist";
 import { ArtistBusEvent } from "@/src/events/artist/Events";
 

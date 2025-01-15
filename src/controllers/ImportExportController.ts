@@ -3,12 +3,12 @@ import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
 import { SongType, InfoType, PageType, ArtistType, AlbumType } from '@/src/constants/Types'
-import SongModel from '@/lib/models/SongModel';
+import SongModel from '@/src/models/SongModel';
 import { idgen, getExportNumber } from '@/lib/Util';
 import 'react-native-get-random-values';
-import { getArtistsFromMetadata } from '@/lib/controllers/ArtistController';
-import { updateMetadata } from '@/lib/controllers/SongController';
-import { getAlbumFromMetadata } from '@/lib/controllers/AlbumController';
+import { getArtistsFromMetadata } from '@/src/controllers/ArtistController';
+import { updateMetadata } from '@/src/controllers/SongController';
+import { getAlbumFromMetadata } from '@/src/controllers/AlbumController';
 
 export const importFiles = async (
   countdown: (value: number) => void,

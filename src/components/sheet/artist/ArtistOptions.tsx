@@ -9,7 +9,7 @@ import { router } from 'expo-router';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistBusEvent } from '@/src/events/artist/Events';
 import artistBus from '@/src/events/artist';
-import { deleteArtist } from '@/lib/controllers/ArtistController';
+import { deleteArtist } from '@/src/controllers/ArtistController';
 
 const ArtistOptions = ({name}: {name: string}) => {
 

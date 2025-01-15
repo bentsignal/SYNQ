@@ -13,8 +13,8 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistType } from "@/src/constants/Types";
 import { ArtistBusEvent, ArtistModifiedEvent } from "@/src/events/artist/Events";
 import artistBus from "@/src/events/artist";
-import { addArtistToSong, removeArtistFromSong, isArtistOnSong } from "@/lib/controllers/ArtistController";
-import { addArtistToAlbum, removeArtistFromAlbum, isArtistOnAlbum } from "@/lib/controllers/AlbumController";
+import { addArtistToSong, removeArtistFromSong, isArtistOnSong } from "@/src/controllers/ArtistController";
+import { addArtistToAlbum, removeArtistFromAlbum, isArtistOnAlbum } from "@/src/controllers/AlbumController";
 
 type ArtistProps = {
   artist: ArtistType,

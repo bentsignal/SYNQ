@@ -2,7 +2,7 @@ import { View, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useState, useEffect } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { useActiveTrack } from "react-native-track-player";
-import { updateQueue } from "@/lib/controllers/PlayerController";
+import { updateQueue } from "@/src/controllers/PlayerController";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePlaybackContext } from "@/src/context/PlaybackProvider";
 

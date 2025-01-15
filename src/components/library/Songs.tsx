@@ -3,7 +3,7 @@ import SongList from "../lists/song/SongList";
 import { PageType, SongType, SortType, SourceType } from "@/src/constants/Types";
 import { useEffect } from "react";
 import { useState } from "react";
-import { getPlaylistSongs } from "@/lib/controllers/PlaylistController";
+import { getPlaylistSongs } from "@/src/controllers/PlaylistController";
 import playlistBus from "@/src/events/playlist/Bus";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import Styles from "../modals/Styles";

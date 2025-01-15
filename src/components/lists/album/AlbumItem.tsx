@@ -13,7 +13,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { AlbumType } from "@/src/constants/Types";
 import { AlbumBusEvent, AlbumModifiedEvent } from "@/src/events/album/Events";
 import albumBus from "@/src/events/album";
-import { addAlbumToSong, removeAlbumFromSong, isAlbumOnSong } from "@/lib/controllers/AlbumController";
+import { addAlbumToSong, removeAlbumFromSong, isAlbumOnSong } from "@/src/controllers/AlbumController";
 
 type AlbumProps = {
   album: AlbumType,

@@ -12,7 +12,7 @@ import { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util";
 import { CoverType } from "@/src/constants/Types";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { getDisabledColor, adjustLightness, darkenColor } from "@/lib/controllers/ColorController";
+import { getDisabledColor, adjustLightness, darkenColor } from "@/src/controllers/ColorController";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 const MiniPlayer = () => {

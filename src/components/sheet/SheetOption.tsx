@@ -1,7 +1,7 @@
 import { TouchableOpacity, Text, Image, ImageURISource, StyleSheet } from "react-native";
 import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
-import { getDisabledColor } from "@/lib/controllers/ColorController";
+import { getDisabledColor } from "@/src/controllers/ColorController";
 
 type SongOptionProps = {
   icon: ImageURISource;

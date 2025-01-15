@@ -1,5 +1,5 @@
 import { AlbumType, SongType, SortType } from "@/src/constants/Types";
-import AlbumModel from "@/lib/models/AlbumModel";
+import AlbumModel from "@/src/models/AlbumModel";
 import { writeImageToLibrary } from "./ImageController";
 import * as FileSystem from 'expo-file-system';
 import { AlbumBusEvent } from "@/src/events/album/Events";

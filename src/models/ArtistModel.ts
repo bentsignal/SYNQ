@@ -60,7 +60,13 @@ export default class ArtistModel extends Model {
   }
 
   public async addArtistToSong(artistId: number, songId: number): Promise<void> {
-    await ArtistModel.db?.runAsync(`INSERT INTO artistSongs (artistId, songId) VALUES (?, ?);`, [artistId, songId]);
+    await ArtistModel.db?.runAsync(`
+      INSERT INTO artistSongs (artistId, songId) 
+      SELECT ?, ? 
+      WHERE NOT EXISTS (
+        SELECT 1 FROM artistSongs 
+        WHERE artistId = ? AND songId = ?
+      );`, [artistId, songId, artistId, songId]);
   }
 
   public async removeArtistFromSong(artistId: number, songId: number): Promise<void> {

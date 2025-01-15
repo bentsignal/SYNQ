@@ -13,7 +13,9 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { AlbumType } from "@/src/constants/Types";
 import { AlbumBusEvent, AlbumModifiedEvent } from "@/src/events/album/Events";
 import albumBus from "@/src/events/album";
-import { addAlbumToSong, removeAlbumFromSong, isAlbumOnSong } from "@/src/controllers/AlbumController";
+import { addAlbumToSong, removeAlbumFromSong, 
+  isAlbumOnSong, getArtistsFromAlbum } from "@/src/controllers/AlbumController";
+import { addArtistToSong, removeArtistFromSong } from "@/src/controllers/ArtistController";
 
 type AlbumProps = {
   album: AlbumType,
@@ -33,12 +35,18 @@ const AlbumItem = ({album, allowInteraction}: AlbumProps) => {
       if (editSong.pageType === PageType.IMPORT) {
         editSong.importAlbums = editSong.importAlbums ?? [];
         editSong.importAlbums = add ? [...editSong.importAlbums, album] : editSong.importAlbums.filter(a => a.id !== album.id);
+        const artists = await getArtistsFromAlbum(album.id);
+        editSong.importArtists = add ? [...editSong.importArtists, ...artists] : editSong.importArtists.filter(a => !artists.some(artist => artist.id === a.id));
       }
       else if (add) {
         await addAlbumToSong(album.id, editSong.id);
+        const artists = await getArtistsFromAlbum(album.id);
+        await Promise.all(artists.map(artist => addArtistToSong(artist.id, editSong.id)));
       }
       else {
         await removeAlbumFromSong(album.id, editSong.id);
+        const artists = await getArtistsFromAlbum(album.id);
+        await Promise.all(artists.map(artist => removeArtistFromSong(artist.id, editSong.id)));
       }
       albumBus.emit(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, {
         albumId: album.id,

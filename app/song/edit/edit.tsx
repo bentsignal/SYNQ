@@ -65,6 +65,7 @@ const EditSong = ({id}: {id: string}) => {
   const handleAlbumToggled = (event: AlbumToggledOnSongEvent) => {
     if (event.songId === parseInt(id)) {
       loadAlbums();
+      loadArtists();
     }
   }
 

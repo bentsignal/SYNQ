@@ -31,7 +31,7 @@ import { getArtistsFromSong } from '@/src/controllers/ArtistController';
 import artistBus from '@/src/events/artist';
 import albumBus from '@/src/events/album';
 import { AlbumBusEvent, AlbumToggledOnSongEvent } from '@/src/events/album/Events';
-import { getAlbumCover } from '@/src/controllers/AlbumController';
+import { getAlbumCover, getArtistsFromAlbum } from '@/src/controllers/AlbumController';
 
 type SongProps = {
   song: SongType, 
@@ -144,7 +144,9 @@ export default function Song({ song, fadeCover, fadeSong }: SongProps) {
         }
       }
       else {
-        setUpdates(prev => prev + 1);
+        const artists = await getArtistsFromAlbum(data.albumId);
+        song.info.metadata.artist = artists.map(artist => artist.name).join(', ');
+        forceUpdate(prev => prev + 1);
       }
     }
   }

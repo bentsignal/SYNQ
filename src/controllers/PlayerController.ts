@@ -10,8 +10,9 @@ import { getPlaylistSongs } from '@/src/controllers/PlaylistController';
 import { getSongsFromArtist } from '@/src/controllers/ArtistController';
 import { getSongById } from '@/src/controllers/SongController';
 import { PageType, SortType } from '@/src/constants/Types';
-import { getSongsFromAlbum } from '@/src/controllers/AlbumController';
-import { getAlbumCoverPathFromSong } from '@/src/controllers/ImageController';
+import { getAlbumCoverFromSong, getSongsFromAlbum } from '@/src/controllers/AlbumController';
+import { getAlbumCoverPathFromSong, getSongCover } from '@/src/controllers/ImageController';
+import { check } from "@/lib/Util";
 
 export const setupPlayer = async () => {
   await TrackPlayer.setupPlayer();
@@ -30,37 +31,21 @@ export const setupPlayer = async () => {
 };
 
 export const getTrackFromSong = async (song: SongType, theme: string): Promise<Track | undefined> => {
-  const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;          
   try {
-    const info = await FileSystem.getInfoAsync(libraryPath);
-    if (!info.exists) {
-      console.log('Library path does not exist:', libraryPath);
-      return;
+    const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;          
+    let coverPath = await getAlbumCoverFromSong(Number(song.id), true);
+    if (!check(coverPath)) {
+      coverPath = await getSongCover(song.id, true);
     }
-    const contents = await FileSystem.readDirectoryAsync(libraryPath);  
-    if (contents.includes(song.name)) {
-      let coverExists = false;
-      let coverPath = '';
-      if (contents.includes('cover_full.jpg')) {
-        coverExists = true;
-        coverPath = `${libraryPath}/cover_full.jpg?${info.modificationTime}`;
-      }
-      else {
-        coverPath = await getAlbumCoverPathFromSong(parseInt(song.id));
-        if (coverPath) {
-          coverExists = true;
-        }
-      }
-      const audioPath = `${libraryPath}/${song.name}`;
-      return {
-        id: song.id,
-        url: audioPath,
-        description: uuidv4(),
-        title: song.info?.metadata?.name ? song.info.metadata.name : getFileName(audioPath),
-        artist: song.info?.metadata?.artist,
-        artwork: coverExists ? coverPath : getAppIcon(theme),
-      };
-    }
+    const audioPath = `${libraryPath}/${song.name}`;
+    return {
+      id: song.id,
+      url: audioPath,
+      description: uuidv4(),
+      title: song.info?.metadata?.name ? song.info.metadata.name : getFileName(audioPath),
+      artist: song.info?.metadata?.artist,
+      artwork: coverPath ? coverPath : getAppIcon(theme),
+    };
   } catch (error) {
     console.error('Error in audio playback:', error);
   }

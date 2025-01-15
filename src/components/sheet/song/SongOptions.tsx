@@ -17,7 +17,8 @@ import { PlaylistBusEvent } from '@/src/events/playlist/Events';
 import { Track } from 'react-native-track-player';
 import TrackPlayer from 'react-native-track-player';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-
+import { SongBusEvent } from '@/src/events/song/Events';
+import songBus from '@/src/events/song/Bus';
 type SongOptionsProps = {
   name: string;
 }
@@ -122,6 +123,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
         .filter(index => index !== -1);
       await TrackPlayer.remove(indiciesToRemove);
       setNumModified(numModified + 1);
+      songBus.emit(SongBusEvent.SONG_DELETED)
     }
     // remove from import
     else if (editSong.pageType === PageType.IMPORT) {

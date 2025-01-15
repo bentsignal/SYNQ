@@ -6,9 +6,10 @@ import { useState } from "react";
 import { getPlaylistSongs } from "@/src/controllers/PlaylistController";
 import playlistBus from "@/src/events/playlist/Bus";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
-import Styles from "../modals/Styles";
 import { Styles as MainStyles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
+import songBus from "@/src/events/song/Bus";
+import { SongBusEvent } from "@/src/events/song/Events";
 
 export default function Songs () {
 
@@ -22,8 +23,10 @@ export default function Songs () {
   useEffect(() => {
     refreshSongs();
     playlistBus.on(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshSongs);
+    songBus.on(SongBusEvent.SONG_DELETED, refreshSongs);
     return () => {
       playlistBus.off(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshSongs);
+      songBus.off(SongBusEvent.SONG_DELETED, refreshSongs);
     }
   }, []);
 

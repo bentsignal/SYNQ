@@ -5,7 +5,7 @@ import { getSongCover } from '@/src/controllers/ImageController';
 import { PageType, CoverType } from '@/src/constants/Types';
 import { getPlaylistCover } from '@/src/controllers/PlaylistController';
 import { getArtistCover } from '@/src/controllers/ArtistController';
-import { getAlbumCover } from '@/src/controllers/AlbumController';
+import { getAlbumCover, getAlbumCoverFromSong } from '@/src/controllers/AlbumController';
 
 const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5+hPwABAAEAAFPAfXAAAAAElFTkSuQmCC';
 
@@ -40,12 +40,18 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
             }, 20);
           }
           else {
-            const path = await getSongCover(id);
+            const path = await getAlbumCoverFromSong(parseInt(id));
             if (path) {
               setSrc(path);
             }
             else {
-              setSrc(transparent);
+              const path = await getSongCover(id);
+              if (path) {
+                setSrc(path);
+              }
+              else {
+                setSrc(transparent);
+              }
             }
           }
         }

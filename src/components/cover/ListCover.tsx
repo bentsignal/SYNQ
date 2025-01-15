@@ -43,12 +43,12 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
           setSrc(image);
         }
         else {
-          const path = await getSongCover(id);
+          const path = await getAlbumCoverFromSong(parseInt(id));
           if (path) {
             setSrc(path);
           }
           else {
-            const path = await getAlbumCoverFromSong(parseInt(id));
+            const path = await getSongCover(id);
             if (path) {
               setSrc(path);
             }

@@ -85,9 +85,8 @@ export const getAlbumCover = async (albumId: number, full: boolean = false) => {
 }
 
 export const updateAlbum = async (albumId: number, name: string, year?: number, image?: string) => {
-  const db = AlbumModel.getInstance();
   if (name || year !== undefined) {
-    await db.updateAlbum(albumId, name, year);
+    await AlbumModel.getInstance().updateAlbum(albumId, name, year);
     albumBus.emit(AlbumBusEvent.ALBUM_MODIFIED, {
       id: albumId,
       name: name,

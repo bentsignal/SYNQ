@@ -7,7 +7,9 @@ import { SongBusEvent } from "@/src/events/song/Events";
 import 'react-native-get-random-values';
 import { addArtistToSong } from '@/src/controllers/ArtistController';
 import { writeImageToLibrary, deleteImagesFromDirectory } from '@/src/controllers/ImageController';
-import { addAlbumToSong, addArtistToAlbum, isArtistOnAlbum } from '@/src/controllers/AlbumController';
+import { addAlbumToSong, addArtistToAlbum, getAlbumsFromSong } from '@/src/controllers/AlbumController';
+import albumBus from '@/src/events/album/Bus';
+import { AlbumBusEvent } from '@/src/events/album/Events';
 
 export const updateSongsInLibrary = async (
   ids: string[],
@@ -20,12 +22,25 @@ export const updateSongsInLibrary = async (
   for (let i = 0; i < ids.length; i++) {
     const dir = `${FileSystem.documentDirectory}library/${ids[i]}`;
     if (cover) {
-      await deleteImagesFromDirectory(dir);
-      await writeImageToLibrary(cover, dir);
-      songBus.emit(SongBusEvent.SONG_COVER_MODIFIED, {
-        id: ids[i],
-        type: PageType.LIBRARY,
-      });
+      // if song has album, write to album dir
+      const albums = await getAlbumsFromSong(Number(ids[i]));
+      if (albums.length > 0) {
+        const album = albums[0];
+        const albumDir = `${FileSystem.documentDirectory}albums/${album.id}`;
+        await writeImageToLibrary(cover, albumDir);
+        albumBus.emit(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, {
+          id: album.id,
+        });
+      }
+      // if song doesn't have album, write to song dir
+      else {
+        await deleteImagesFromDirectory(dir);
+        await writeImageToLibrary(cover, dir);
+        songBus.emit(SongBusEvent.SONG_COVER_MODIFIED, {
+          id: ids[i],
+          type: PageType.LIBRARY,
+        });
+      }
     }
     if (title || artist || album) {
       await db.editSong(Number(ids[i]), title, artist, album);

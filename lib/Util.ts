@@ -1,5 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+export const check = (value: any) => {
+  if (value === undefined || value === null) {
+    return false;
+  }
+  else {
+    return true;
+  }
+}
+
 export const msToSec = (milliseconds: number) => {
   return Math.floor(milliseconds / 1000);
 };

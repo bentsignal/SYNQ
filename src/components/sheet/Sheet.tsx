@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
-import { Colors } from '@/constants/Colors';
+import { Colors } from '@/src/constants/Colors';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import Bar from '../modals/Bar';
-import { Styles } from '@/constants/Styles';
+import { Styles } from '@/src/constants/Styles';
 import ModalStyles from '@/src/components/modals/Styles';
 
 type SheetProps = {

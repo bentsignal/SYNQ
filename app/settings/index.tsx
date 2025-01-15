@@ -1,17 +1,17 @@
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Linking } from "react-native";
 import { router } from "expo-router";
 import Option from "@/src/components/Option";
-import { Styles } from "@/constants/Styles";
-import { Colors } from "@/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
+import { Colors } from "@/src/constants/Colors";
 import Theme from "@/src/components/settings/Theme";
 import CategoryTitle from "@/src/components/settings/CategoryTitle";
 import Haptic from "@/src/components/settings/Haptic";
 import PremiumToggle from "@/src/components/settings/PremiumToggle";
-import CFG from "@/constants/Config";
+import CFG from "@/src/constants/Config";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import Bar from "@/src/components/modals/Bar";
 import CustomButton from "@/src/components/CustomButton";
-import { SOCIAL_LINKS } from "@/constants/Config";
+import { SOCIAL_LINKS } from "@/src/constants/Config";
 import ModalStyles from "@/src/components/modals/Styles";
 
 const Settings = () => {

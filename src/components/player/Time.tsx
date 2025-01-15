@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, PanResponder, Text, Dimensions } from 'react-native';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
-import { Colors } from '@/constants/Colors';
+import { Colors } from '@/src/constants/Colors';
 import TrackPlayer, { useProgress, usePlaybackState, State } from 'react-native-track-player';
 import { formatTime } from '@/lib/Util';
 import { useThemeContext } from '@/src/context/ThemeProvider';

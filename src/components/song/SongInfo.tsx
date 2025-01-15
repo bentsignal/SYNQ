@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet, StyleProp, TextStyle } from 'react-native';
-import { Colors } from '@/constants/Colors';
-import { InfoType } from '@/constants/Types';
-import { Styles } from '@/constants/Styles';
+import { Colors } from '@/src/constants/Colors';
+import { InfoType } from '@/src/constants/Types';
+import { Styles } from '@/src/constants/Styles';
 
 const SongInfo = ({info, name, showAlbum, color, titleStyles, artistStyles}: {
   info: InfoType, 

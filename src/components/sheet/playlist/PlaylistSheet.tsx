@@ -4,9 +4,9 @@ import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import ListCover from '@/src/components/cover/ListCover';
 import SheetStyles from '@/src/components/sheet/Styles';
-import { Styles } from '@/constants/Styles';
-import { Colors } from '@/constants/Colors';
-import { CoverType } from '@/constants/Types';
+import { Styles } from '@/src/constants/Styles';
+import { Colors } from '@/src/constants/Colors';
+import { CoverType } from '@/src/constants/Types';
 import PlaylistOptions from '@/src/components/sheet/playlist/PlaylistOptions';
 
 const PlaylistSheet = ({name}: {name: string}) => {

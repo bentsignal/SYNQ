@@ -4,8 +4,8 @@ import VerticalScrollView from "../VerticalScrollView";
 import CustomButton from "../CustomButton";
 import ModalTitle from "./ModalTitle";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
-import { Colors } from "@/constants/Colors";
-import { Styles } from "@/constants/Styles";
+import { Colors } from "@/src/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
 import InfoContainer from "./InfoContainer";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 

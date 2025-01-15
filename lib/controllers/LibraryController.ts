@@ -1,5 +1,5 @@
 import * as FileSystem from 'expo-file-system'
-import { SongType, PageType } from '@/constants/Types'
+import { SongType, PageType } from '@/src/constants/Types'
 import SongModel from '@/lib/models/SongModel';
 import PlaylistModel from '@/lib/models/PlaylistModel';
 import songBus from "@/src/events/song/Bus";

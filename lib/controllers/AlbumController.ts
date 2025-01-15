@@ -1,4 +1,4 @@
-import { AlbumType, SongType, SortType } from "@/constants/Types";
+import { AlbumType, SongType, SortType } from "@/src/constants/Types";
 import AlbumModel from "@/lib/models/AlbumModel";
 import { writeImageToLibrary } from "./ImageController";
 import * as FileSystem from 'expo-file-system';

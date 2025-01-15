@@ -8,7 +8,7 @@ import { connect, restorePurchases } from "@/lib/controllers/PurchaseController"
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Model from "@/lib/models/Model";
 import { LogBox } from "react-native";
-import CFG from "@/constants/Config";
+import CFG from "@/src/constants/Config";
 import ThemeProvider from "@/src/context/ThemeProvider";
 import PremiumProvider from "@/src/context/PremiumProvider";
 import Navigation from "@/app/navigation";

@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
-import { Colors } from "@/constants/Colors";
-import { Styles } from "@/constants/Styles";
-import { ArtistType, PageType } from "@/constants/Types";
+import { Colors } from "@/src/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
+import { ArtistType, PageType } from "@/src/constants/Types";
 import { useState, useEffect } from "react";
 import ArtistList from "@/src/components/lists/artist";
 import { getArtists } from "@/lib/controllers/ArtistController";
@@ -9,7 +9,7 @@ import artistBus from "@/src/events/artist";
 import { ArtistBusEvent } from "@/src/events/artist/Events";
 import playlistBus from "@/src/events/playlist";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
-import { Styles as MainStyles } from "@/constants/Styles";
+import { Styles as MainStyles } from "@/src/constants/Styles";
 
 const Artists = () => {
 

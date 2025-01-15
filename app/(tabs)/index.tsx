@@ -1,6 +1,6 @@
 import { View, ScrollView, StyleSheet, Text, Image } from 'react-native';
 import { useGlobalContext } from "@/src/context/GlobalProvider";
-import { Styles } from "@/constants/Styles";
+import { Styles } from "@/src/constants/Styles";
 import { importFiles } from "@/lib/controllers/ImportExportController";
 import PageTitle from '@/src/components/PageTitle';
 import Option from "@/src/components/Option";
@@ -12,7 +12,7 @@ import Notifications from "@/src/components/notifications/Notifications";
 import ExportPrompt from "@/src/components/import/ExportPrompt";
 import SavePrompt from "@/src/components/import/SavePrompt";  
 import SettingsButton from "@/src/components/SettingsButton";
-import { Colors } from '@/constants/Colors';
+import { Colors } from '@/src/constants/Colors';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import { router } from 'expo-router';
 import { usePremiumContext } from '@/src/context/PremiumProvider';

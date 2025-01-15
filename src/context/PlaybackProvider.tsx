@@ -1,4 +1,4 @@
-import { SourceType } from '@/constants/Types';
+import { SourceType } from '@/src/constants/Types';
 import React, { createContext, useContext, useState } from 'react';
 
 type Props = {

@@ -1,4 +1,4 @@
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/src/constants/Colors";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 
 const CloseButton = ({action}: {action: () => void}) => {

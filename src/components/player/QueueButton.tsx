@@ -1,5 +1,5 @@
 import { TouchableOpacity, View, StyleSheet, Text } from "react-native";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/src/constants/Colors";
 import { router } from "expo-router";
 
 const QueueButton = () => {

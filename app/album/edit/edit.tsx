@@ -1,15 +1,15 @@
 import { View, Text, StyleSheet, ScrollView, TextInput } from "react-native";
 import { memo } from "react";
 import Bar from "@/src/components/modals/Bar";
-import { Colors } from "@/constants/Colors";
-import { Styles } from "@/constants/Styles";
+import { Colors } from "@/src/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
 import { useEffect, useState } from "react";
 import { router } from "expo-router";
 import CustomButton from "@/src/components/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { CoverType, NotificationType, ArtistType } from "@/constants/Types";
+import { CoverType, NotificationType, ArtistType } from "@/src/constants/Types";
 import EditCover from "@/src/components/cover/EditCover";
 import { newCover } from "@/lib/controllers/ImageController";
 import { useGlobalContext } from "@/src/context/GlobalProvider";

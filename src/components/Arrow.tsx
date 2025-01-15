@@ -1,5 +1,5 @@
 import { View, StyleSheet } from 'react-native';
-import { Styles } from '@/constants/Styles';
+import { Styles } from '@/src/constants/Styles';
 
 const Arrow = ({containerStyle, arrowStyle}: {containerStyle?: {}, arrowStyle?: {}}) => {
   return (

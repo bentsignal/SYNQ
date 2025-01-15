@@ -1,4 +1,4 @@
-import { PageType } from "@/constants/Types";
+import { PageType } from "@/src/constants/Types";
 
 export enum SongBusEvent {
   SONG_INFO_MODIFIED = 'song_info_modified',

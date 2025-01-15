@@ -1,7 +1,7 @@
 import { FlatList, Dimensions, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent, StyleSheet, ListRenderItem } from 'react-native';
 import React, { useRef, useEffect, useState, memo } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Styles } from '@/constants/Styles';
+import { Styles } from '@/src/constants/Styles';
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 

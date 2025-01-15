@@ -1,12 +1,12 @@
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { useState } from "react";
-import { Styles } from "@/constants/Styles";
+import { Styles } from "@/src/constants/Styles";
 import PageTitle from "@/src/components/PageTitle";
 import InfoModal from "@/src/components/modals/InfoModal";
 import ImportControls from "@/src/components/import/ImportControls";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import CustomButton from "@/src/components/CustomButton";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/src/constants/Colors";
 import { exportSongs } from '@/lib/controllers/ImportExportController';
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";

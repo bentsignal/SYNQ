@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
-import { NotificationType, SongType } from '@/constants/Types';
+import { NotificationType, SongType } from '@/src/constants/Types';
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);

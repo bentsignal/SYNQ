@@ -1,5 +1,5 @@
 import { View, Modal, StyleSheet } from 'react-native';
-import { Styles } from '@/constants/Styles';
+import { Styles } from '@/src/constants/Styles';
 
 type CustomModalProps = {
   children?: React.ReactNode;

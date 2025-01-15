@@ -1,15 +1,15 @@
 import TrackPlayer, { useTrackPlayerEvents, Event, Capability, Track } from "react-native-track-player";
-import { SongType, SourceType } from "@/constants/Types";
+import { SongType, SourceType } from "@/src/constants/Types";
 import * as FileSystem from "expo-file-system";
 import * as Haptics from 'expo-haptics';
 import { getFileName } from '@/lib/Util';
-import { getAppIcon } from '@/constants/Logos';
+import { getAppIcon } from '@/src/constants/Logos';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { getPlaylistSongs } from '@/lib/controllers/PlaylistController';
 import { getSongsFromArtist } from '@/lib/controllers/ArtistController';
 import { getSongById } from '@/lib/controllers/SongController';
-import { PageType, SortType } from '@/constants/Types';
+import { PageType, SortType } from '@/src/constants/Types';
 import { getSongsFromAlbum } from '@/lib/controllers/AlbumController';
 import { getAlbumCoverPathFromSong } from '@/lib/controllers/ImageController';
 

@@ -1,5 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-import { SongType } from '@/constants/Types';
+import { SongType } from '@/src/constants/Types';
 
 export default class Model {
 

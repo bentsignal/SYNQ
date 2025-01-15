@@ -1,7 +1,7 @@
 import { View, StyleSheet } from "react-native";
 import LottieView from 'lottie-react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/src/constants/Colors";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 
 type LoadingProps = {

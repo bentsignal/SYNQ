@@ -1,5 +1,5 @@
 import Model from "./Model";
-import { ArtistType, SortType, SongResultType } from "@/constants/Types";
+import { ArtistType, SortType, SongResultType } from "@/src/constants/Types";
 
 export default class ArtistModel extends Model {
 

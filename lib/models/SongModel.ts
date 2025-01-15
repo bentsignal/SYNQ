@@ -1,5 +1,5 @@
 import Model from './Model';
-import { SongResultType } from '@/constants/Types';
+import { SongResultType } from '@/src/constants/Types';
 import { getArtistsFromSong } from '../controllers/ArtistController';
 
 export default class SongModel extends Model {

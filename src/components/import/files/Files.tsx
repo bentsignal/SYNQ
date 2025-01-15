@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
-import { Styles } from '@/constants/Styles';
+import { Styles } from '@/src/constants/Styles';
 import { useEffect, useState } from 'react';
 import PageTitle from '@/src/components/PageTitle';
 import { getCompletion } from '@/lib/Util';
@@ -8,7 +8,7 @@ import SongList from '@/src/components/lists/song';
 import ImportControls from '../ImportControls';
 import Progress from '@/src/components/Progress';
 import InfoModal from '@/src/components/modals/InfoModal';
-import { PageType } from '@/constants/Types';
+import { PageType } from '@/src/constants/Types';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
 import SettingsButton from '@/src/components/SettingsButton';
 

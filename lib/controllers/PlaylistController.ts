@@ -2,7 +2,7 @@ import PlaylistModel from "@/lib/models/PlaylistModel";
 import playlistBus from "@/src/events/playlist";
 import * as FileSystem from 'expo-file-system';
 import { getSongByResult } from "@/lib/controllers/SongController";
-import { PageType, SortType } from "@/constants/Types";
+import { PageType, SortType } from "@/src/constants/Types";
 import { writeImageToLibrary } from "@/lib/controllers/ImageController";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 

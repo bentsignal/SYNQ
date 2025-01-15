@@ -1,5 +1,5 @@
 import { View, Animated, Easing, StyleSheet } from 'react-native';
-import { Colors } from '@/constants/Colors';
+import { Colors } from '@/src/constants/Colors';
 import { useRef, useEffect } from 'react';
 import Svg, { Circle } from 'react-native-svg';
 import Loading from './Loading';

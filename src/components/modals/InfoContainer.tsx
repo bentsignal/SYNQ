@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useState, useEffect } from 'react';
-import { Styles } from '@/constants/Styles';
-import { Colors } from '@/constants/Colors';
+import { Styles } from '@/src/constants/Styles';
+import { Colors } from '@/src/constants/Colors';
 import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 

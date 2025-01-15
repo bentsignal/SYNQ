@@ -1,8 +1,8 @@
 import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { useEffect, useState } from 'react';
 import HorizontalScrollView from '@/src/components/HorizontalScrollView';
-import { Colors } from '@/constants/Colors';
-import { Styles } from '@/constants/Styles';
+import { Colors } from '@/src/constants/Colors';
+import { Styles } from '@/src/constants/Styles';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import { darkenColor } from '@/lib/controllers/ColorController';
 import playlistBus from '@/src/events/playlist/Bus';

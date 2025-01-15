@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import { ArtistType, PageType } from "@/constants/Types";
+import { ArtistType, PageType } from "@/src/constants/Types";
 import List from "@/src/components/List";
 import ArtistItem from "@/src/components/lists/artist/ArtistItem";
 import { memo } from "react";

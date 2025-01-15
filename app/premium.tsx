@@ -1,13 +1,13 @@
 import { View, Text, Image, TouchableOpacity, Linking, Alert, StyleSheet } from 'react-native';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
-import { Styles } from '@/constants/Styles';
-import { Colors, Themes } from '@/constants/Colors';
+import { Styles } from '@/src/constants/Styles';
+import { Colors, Themes } from '@/src/constants/Colors';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { LinearGradient } from 'expo-linear-gradient';
 import Bar from '@/src/components/modals/Bar';
 import CustomButton from '@/src/components/CustomButton';
-import { NotificationType } from '@/constants/Types';
+import { NotificationType } from '@/src/constants/Types';
 import Notifications from '@/src/components/notifications/Notifications';
 import PremiumOption from '@/src/components/PremiumOption';
 import Loading from '@/src/components/Loading';

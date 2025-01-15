@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { SongType, PageType, SourceType } from '@/constants/Types';
+import { SongType, PageType, SourceType } from '@/src/constants/Types';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import Song from '@/src/components/song';
 import DeleteModal from '@/src/components/modals/DeleteModal';

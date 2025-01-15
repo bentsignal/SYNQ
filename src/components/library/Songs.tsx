@@ -1,14 +1,14 @@
 import { View, StyleSheet, Text } from "react-native";
 import SongList from "../lists/song/SongList";
-import { PageType, SongType, SortType, SourceType } from "@/constants/Types";
+import { PageType, SongType, SortType, SourceType } from "@/src/constants/Types";
 import { useEffect } from "react";
 import { useState } from "react";
 import { getPlaylistSongs } from "@/lib/controllers/PlaylistController";
 import playlistBus from "@/src/events/playlist/Bus";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import Styles from "../modals/Styles";
-import { Styles as MainStyles } from "@/constants/Styles";
-import { Colors } from "@/constants/Colors";
+import { Styles as MainStyles } from "@/src/constants/Styles";
+import { Colors } from "@/src/constants/Colors";
 
 export default function Songs () {
 

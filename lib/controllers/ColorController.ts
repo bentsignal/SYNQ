@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/Colors';
+import { Colors } from '@/src/constants/Colors';
 import { getColors } from 'react-native-image-colors';
 import { IOSImageColors } from 'react-native-image-colors/build/types';
 import tinycolor from 'tinycolor2';

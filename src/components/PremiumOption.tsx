@@ -1,6 +1,6 @@
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
-import { Styles } from "@/constants/Styles";
-import { Colors } from "@/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
+import { Colors } from "@/src/constants/Colors";
 import Skeleton from "./Skeleton";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 

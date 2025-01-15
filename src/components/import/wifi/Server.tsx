@@ -4,10 +4,10 @@ import * as Device from 'expo-device';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { getWifiTransferSong, createImportDir } from '@/lib/controllers/ImportExportController';
 import Transfer from '@/src/assets/static/Transfer';
-import { NotificationType } from '@/constants/Types';
+import { NotificationType } from '@/src/constants/Types';
 import { idgen } from '@/lib/Util';
 import { BridgeServer } from 'react-native-http-bridge-refurbished';
-import CFG from '@/constants/Config';
+import CFG from '@/src/constants/Config';
 
 const getIP = async () => {
   return await Network.getIpAddressAsync();

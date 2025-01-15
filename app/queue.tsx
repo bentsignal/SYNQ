@@ -1,6 +1,6 @@
 import { View, StyleSheet, Text, Dimensions } from "react-native";
-import { Styles } from "@/constants/Styles";
-import { Colors } from "@/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
+import { Colors } from "@/src/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import PageTitle from "@/src/components/PageTitle";
 import { SkipLeft, SkipRight } from "@/src/components/player/Skip";
@@ -9,7 +9,7 @@ import Time from "@/src/components/player/Time";
 import ShuffleButton from "@/src/components/player/ShuffleButton";
 import SongList from "@/src/components/lists/song";
 import { useEffect, useState } from "react";
-import { CoverType, PageType, SongType } from "@/constants/Types";
+import { CoverType, PageType, SongType } from "@/src/constants/Types";
 import { getSongById, generateSongKey } from "@/lib/controllers/SongController";
 import ListCover from "@/src/components/cover/ListCover";
 import SongInfo from "@/src/components/song/SongInfo";

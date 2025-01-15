@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
-import { Styles } from "@/constants/Styles";
-import { Colors } from "@/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
+import { Colors } from "@/src/constants/Colors";
 import BackArrow from "@/src/components/BackArrow";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";

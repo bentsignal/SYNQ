@@ -1,6 +1,6 @@
 import { TouchableOpacity, StyleSheet } from "react-native";
 import { memo } from "react";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/src/constants/Colors";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 

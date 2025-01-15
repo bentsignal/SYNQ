@@ -1,13 +1,13 @@
 import { Text, View, Modal, StyleSheet } from 'react-native';
 import CustomButton from '@/src/components/CustomButton';
-import { Colors } from '@/constants/Colors';
-import { Styles } from '@/constants/Styles';
+import { Colors } from '@/src/constants/Colors';
+import { Styles } from '@/src/constants/Styles';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { removeSongs } from '@/lib/controllers/SongController';
 import { deleteFromLibrary } from '@/lib/controllers/LibraryController';
 import ListCover from '@/src/components/cover/ListCover';
 import SongInfo from '@/src/components/song/SongInfo';
-import { PageType, CoverType } from '@/constants/Types';
+import { PageType, CoverType } from '@/src/constants/Types';
 import TrackPlayer, { Track } from 'react-native-track-player';
 import { removeFromAllPlaylists } from '@/lib/controllers/PlaylistController';
 import { useThemeContext } from '@/src/context/ThemeProvider';

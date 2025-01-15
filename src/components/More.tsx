@@ -1,5 +1,5 @@
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { Colors } from '@/constants/Colors';
+import { Colors } from '@/src/constants/Colors';
 
 type MoreProps = {
   color?: string;

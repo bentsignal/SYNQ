@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import { useState } from 'react';
-import { Colors } from '@/constants/Colors';
-import { Styles } from '@/constants/Styles';
+import { Colors } from '@/src/constants/Colors';
+import { Styles } from '@/src/constants/Styles';
 import Arrow from '@/src/components/Arrow';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 

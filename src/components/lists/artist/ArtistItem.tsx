@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import { useState, useEffect } from "react";
-import { CoverType, PageType, SourceType } from "@/constants/Types";
-import { Styles } from "@/constants/Styles";
-import { Colors } from "@/constants/Colors";
+import { CoverType, PageType, SourceType } from "@/src/constants/Types";
+import { Styles } from "@/src/constants/Styles";
+import { Colors } from "@/src/constants/Colors";
 import { router, useLocalSearchParams } from "expo-router";
 import ListCover from "@/src/components/cover/ListCover";
 import More from "@/src/components/More";
@@ -10,7 +10,7 @@ import Select from "@/src/components/Select";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { ArtistType } from "@/constants/Types";
+import { ArtistType } from "@/src/constants/Types";
 import { ArtistBusEvent, ArtistModifiedEvent } from "@/src/events/artist/Events";
 import artistBus from "@/src/events/artist";
 import { addArtistToSong, removeArtistFromSong, isArtistOnSong } from "@/lib/controllers/ArtistController";

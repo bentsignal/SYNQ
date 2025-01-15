@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Styles } from '@/constants/Styles';
-import { Colors } from '@/constants/Colors';
+import { Styles } from '@/src/constants/Styles';
+import { Colors } from '@/src/constants/Colors';
 import Bar from '@/src/components/modals/Bar';
 import ModalStyles from '@/src/components/modals/Styles';
 import PageTitle from '@/src/components/PageTitle';

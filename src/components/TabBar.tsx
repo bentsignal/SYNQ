@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Styles } from "@/constants/Styles";
+import { Styles } from "@/src/constants/Styles";
 import { router } from "expo-router";
 import { LibraryIcon, HomeIcon } from "./TabBarIcons";
 

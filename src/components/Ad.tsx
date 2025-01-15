@@ -2,8 +2,8 @@ import { View, Text, StyleSheet } from "react-native";
 import React from "react";
 import CustomButton from "./CustomButton";
 import { router } from "expo-router";
-import { Colors } from "@/constants/Colors";
-import { Styles } from "@/constants/Styles";
+import { Colors } from "@/src/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 
 

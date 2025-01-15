@@ -1,7 +1,7 @@
 import { Text, Image, TouchableOpacity, View, StyleSheet } from "react-native";
-import { Styles } from "@/constants/Styles";
+import { Styles } from "@/src/constants/Styles";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/src/constants/Colors";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 
 type PageTitleProps = {

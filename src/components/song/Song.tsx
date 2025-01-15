@@ -4,9 +4,9 @@ import { View, TouchableOpacity, Text, StyleSheet, Animated,
 import { router } from 'expo-router';
 import { useState, useEffect, useRef } from 'react';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
-import { Styles } from '@/constants/Styles';
-import { Colors } from '@/constants/Colors';
-import { SongType } from '@/constants/Types';
+import { Styles } from '@/src/constants/Styles';
+import { Colors } from '@/src/constants/Colors';
+import { SongType } from '@/src/constants/Types';
 import SongInfo from '@/src/components/song/SongInfo';
 import Select from '@/src/components/Select';
 import ListCover from '@/src/components/cover/ListCover';
@@ -16,7 +16,7 @@ import Skeleton from '../Skeleton';
 import { darkenColor } from '@/lib/controllers/ColorController';
 import * as Haptics from 'expo-haptics';
 import More from '@/src/components/More';
-import { PageType, CoverType, ArtistType } from '@/constants/Types';
+import { PageType, CoverType, ArtistType } from '@/src/constants/Types';
 import { useActiveTrack } from "react-native-track-player";
 import { getTrackFromSong, playTrack, 
   updateQueue, playAd, addToQueue } from '@/lib/controllers/PlayerController';

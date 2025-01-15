@@ -1,4 +1,4 @@
-import { AlbumType, PageType } from "@/constants/Types";
+import { AlbumType, PageType } from "@/src/constants/Types";
 import List from "@/src/components/List";
 import AlbumItem from "@/src/components/lists/album/AlbumItem";
 import { memo } from "react";

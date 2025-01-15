@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent, StyleSheet } from "react-native";
 import { useRef, useEffect, useState } from "react";
-import { Styles } from "@/constants/Styles";
-import { Themes, Colors } from "@/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
+import { Themes, Colors } from "@/src/constants/Colors";
 import ThemeOption from "@/src/components/settings/ThemeOption";
 import { LinearGradient } from 'expo-linear-gradient';
 import { usePremiumContext } from "@/src/context/PremiumProvider";

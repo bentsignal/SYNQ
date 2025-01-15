@@ -1,5 +1,5 @@
 import Purchases from 'react-native-purchases';
-import { revenueCatKey } from '@/constants/Keys';
+import { revenueCatKey } from '@/src/constants/Keys';
 
 export const connect = async () => {
   try {

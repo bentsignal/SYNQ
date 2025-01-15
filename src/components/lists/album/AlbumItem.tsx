@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import { useState, useEffect } from "react";
-import { CoverType, PageType } from "@/constants/Types";
-import { Styles } from "@/constants/Styles";
-import { Colors } from "@/constants/Colors";
+import { CoverType, PageType } from "@/src/constants/Types";
+import { Styles } from "@/src/constants/Styles";
+import { Colors } from "@/src/constants/Colors";
 import { router } from "expo-router";
 import ListCover from "@/src/components/cover/ListCover";
 import More from "@/src/components/More";
@@ -10,7 +10,7 @@ import Select from "@/src/components/Select";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { AlbumType } from "@/constants/Types";
+import { AlbumType } from "@/src/constants/Types";
 import { AlbumBusEvent, AlbumModifiedEvent } from "@/src/events/album/Events";
 import albumBus from "@/src/events/album";
 import { addAlbumToSong, removeAlbumFromSong, isAlbumOnSong } from "@/lib/controllers/AlbumController";

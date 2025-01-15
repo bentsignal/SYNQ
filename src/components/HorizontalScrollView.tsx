@@ -1,6 +1,6 @@
 import { View, StyleSheet, ScrollView, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent} from "react-native";
 import { useRef, useState, useEffect } from "react";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/src/constants/Colors";
 import { LinearGradient } from 'expo-linear-gradient';
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);

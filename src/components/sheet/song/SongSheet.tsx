@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
-import { Colors } from '@/constants/Colors';
+import { Colors } from '@/src/constants/Colors';
 import SongInfo from '@/src/components/song/SongInfo';
 import ListCover from '@/src/components/cover/ListCover';
-import { CoverType } from '@/constants/Types';
+import { CoverType } from '@/src/constants/Types';
 import * as Haptics from 'expo-haptics';
 import SongOptions from './SongOptions';
 import Sheet from '@/src/components/sheet';

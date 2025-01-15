@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet } from "react-native";
-import { Styles } from "@/constants/Styles";
+import { Styles } from "@/src/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/src/constants/Colors";
 import SongListPageCover from "@/src/components/cover/SongListPageCover";
-import { PageType } from "@/constants/Types";
+import { PageType } from "@/src/constants/Types";
 
 type ArtistHeaderProps = {
   id: string;

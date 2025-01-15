@@ -1,5 +1,5 @@
 import { View, StyleSheet } from "react-native";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/src/constants/Colors";
 
 const Bar = ({color}: {color?: string;}) => {
   const Local = StyleSheet.create({

@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { Colors } from '@/constants/Colors';
-import { Styles } from '@/constants/Styles';
+import { Colors } from '@/src/constants/Colors';
+import { Styles } from '@/src/constants/Styles';
 
 const ModalStyles = StyleSheet.create({
   roundedTop: {

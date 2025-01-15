@@ -2,7 +2,7 @@ import * as FileSystem from 'expo-file-system'
 import * as Sharing from 'expo-sharing'
 import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
-import { SongType, InfoType, PageType, TagsType, SourceType, SongResultType, SortType, ArtistType } from '@/constants/Types'
+import { SongType, InfoType, PageType, TagsType, SourceType, SongResultType, SortType, ArtistType } from '@/src/constants/Types'
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 import SongModel from '@/lib/models/SongModel';
 import 'react-native-get-random-values';

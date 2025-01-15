@@ -1,12 +1,12 @@
 import { View, Text, StyleSheet, TouchableOpacity, DeviceEventEmitter } from "react-native"
 import { useState, useEffect, useRef } from "react";
-import { PlaylistType, CoverType } from "@/constants/Types";
-import { Styles } from "@/constants/Styles";
-import { Colors } from "@/constants/Colors";
+import { PlaylistType, CoverType } from "@/src/constants/Types";
+import { Styles } from "@/src/constants/Styles";
+import { Colors } from "@/src/constants/Colors";
 import { router } from "expo-router";
 import ListCover from "@/src/components/cover/ListCover";
 import More from "@/src/components/More";
-import { PageType } from "@/constants/Types";
+import { PageType } from "@/src/constants/Types";
 import Select from "@/src/components/Select";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import playlistBus from "@/src/events/playlist";

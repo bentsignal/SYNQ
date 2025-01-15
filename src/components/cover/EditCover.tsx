@@ -2,7 +2,7 @@ import { View, Image, TouchableOpacity, StyleSheet, Dimensions, Animated, Text }
 import { useEffect, useLayoutEffect, useState, useRef } from 'react';
 import FastImage from 'react-native-fast-image';
 import { getSongCover } from '@/lib/controllers/ImageController';
-import { PageType, CoverType } from '@/constants/Types';
+import { PageType, CoverType } from '@/src/constants/Types';
 import { getPlaylistCover } from '@/lib/controllers/PlaylistController';
 import { getArtistCover } from '@/lib/controllers/ArtistController';
 import { getAlbumCover } from '@/lib/controllers/AlbumController';

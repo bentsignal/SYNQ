@@ -3,10 +3,10 @@ import { View, Text, Animated, PanResponder,
   StyleSheet, Easing, TouchableOpacity } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
-import { Styles } from '@/constants/Styles';
-import { Colors } from '@/constants/Colors';
-import { NotificationType } from '@/constants/Types';
-import CFG from '@/constants/Config';
+import { Styles } from '@/src/constants/Styles';
+import { Colors } from '@/src/constants/Colors';
+import { NotificationType } from '@/src/constants/Types';
+import CFG from '@/src/constants/Config';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 
 type NotificationProps = {

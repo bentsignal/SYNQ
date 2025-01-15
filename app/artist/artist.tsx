@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet } from "react-native";
 import { useEffect, useState, useRef } from "react";
-import { Styles } from "@/constants/Styles";
+import { Styles } from "@/src/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/src/constants/Colors";
 import SongList from "@/src/components/lists/song";
-import { PageType, PlaylistType, SongType, SortType, SourceType, ArtistType } from "@/constants/Types";
+import { PageType, PlaylistType, SongType, SortType, SourceType, ArtistType } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import MiniPlayer from "@/src/components/player/MiniPlayer";
 import TabBar from "@/src/components/TabBar";

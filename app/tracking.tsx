@@ -1,6 +1,6 @@
 import { View, Text, Image, Linking, StyleSheet } from 'react-native';
-import { Colors } from '@/constants/Colors';
-import { Styles } from '@/constants/Styles';
+import { Colors } from '@/src/constants/Colors';
+import { Styles } from '@/src/constants/Styles';
 import LinearGradient from 'react-native-linear-gradient';
 import { router } from 'expo-router';
 import CustomButton from '@/src/components/CustomButton';

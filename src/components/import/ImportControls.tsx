@@ -1,7 +1,7 @@
 import { View, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
-import { Styles } from '@/constants/Styles';
-import { Colors } from '@/constants/Colors';
+import { Styles } from '@/src/constants/Styles';
+import { Colors } from '@/src/constants/Colors';
 import CustomButton from '@/src/components/CustomButton';
 import { removeSongs } from '@/lib/controllers/SongController';
 import { deleteFromLibrary } from '@/lib/controllers/LibraryController';
@@ -9,7 +9,7 @@ import { darkenColor } from '@/lib/controllers/ColorController';
 import Notifications from '@/src/components/notifications/Notifications';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import { Track } from 'react-native-track-player';
-import { PageType } from '@/constants/Types';
+import { PageType } from '@/src/constants/Types';
 import TrackPlayer from 'react-native-track-player';
 import { removeFromAllPlaylists } from '@/lib/controllers/PlaylistController';
 import { router } from 'expo-router';

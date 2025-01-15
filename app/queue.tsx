@@ -2,24 +2,24 @@ import { View, StyleSheet, Text, Dimensions } from "react-native";
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import PageTitle from "@/components/PageTitle";
-import { SkipLeft, SkipRight } from "@/components/player/Skip";
-import PausePlayButtons from "@/components/player/PausePlayButtons";
-import Time from "@/components/player/Time";
-import ShuffleButton from "@/components/player/ShuffleButton";
-import SongList from "@/components/lists/song";
+import PageTitle from "@/src/components/PageTitle";
+import { SkipLeft, SkipRight } from "@/src/components/player/Skip";
+import PausePlayButtons from "@/src/components/player/PausePlayButtons";
+import Time from "@/src/components/player/Time";
+import ShuffleButton from "@/src/components/player/ShuffleButton";
+import SongList from "@/src/components/lists/song";
 import { useEffect, useState } from "react";
 import { CoverType, PageType, SongType } from "@/constants/Types";
 import { getSongById, generateSongKey } from "@/lib/controllers/SongController";
-import ListCover from "@/components/cover/ListCover";
-import SongInfo from "@/components/song/SongInfo";
+import ListCover from "@/src/components/cover/ListCover";
+import SongInfo from "@/src/components/song/SongInfo";
 import TrackPlayer, { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util";
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import { usePlaybackContext } from "@/src/context/PlaybackProvider";
-import Bar from "@/components/modals/Bar";
-import ModalStyles from "@/components/modals/Styles";
-import LoopButton from "@/components/player/LoopButton";
+import Bar from "@/src/components/modals/Bar";
+import ModalStyles from "@/src/components/modals/Styles";
+import LoopButton from "@/src/components/player/LoopButton";
 
 const Queue = () => {
 

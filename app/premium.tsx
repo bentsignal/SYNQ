@@ -5,18 +5,18 @@ import { Styles } from '@/constants/Styles';
 import { Colors, Themes } from '@/constants/Colors';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { LinearGradient } from 'expo-linear-gradient';
-import Bar from '@/components/modals/Bar';
-import CustomButton from '@/components/CustomButton';
+import Bar from '@/src/components/modals/Bar';
+import CustomButton from '@/src/components/CustomButton';
 import { NotificationType } from '@/constants/Types';
-import Notifications from '@/components/notifications/Notifications';
-import PremiumOption from '@/components/PremiumOption';
-import Loading from '@/components/Loading';
+import Notifications from '@/src/components/notifications/Notifications';
+import PremiumOption from '@/src/components/PremiumOption';
+import Loading from '@/src/components/Loading';
 import { darkenColor } from '@/lib/controllers/ColorController';
 import * as Haptics from 'expo-haptics';
 import * as PurchaseManager from '@/lib/controllers/PurchaseController';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
 import { useThemeContext } from '@/src/context/ThemeProvider';
-import ModalStyles from '@/components/modals/Styles';
+import ModalStyles from '@/src/components/modals/Styles';
 
 const Premium = () => {
 

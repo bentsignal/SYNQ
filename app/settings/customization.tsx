@@ -1,12 +1,12 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
-import Bar from '@/components/modals/Bar';
-import ModalStyles from '@/components/modals/Styles';
-import PageTitle from '@/components/PageTitle';
-import Haptic from "@/components/settings/Haptic";
-import Theme from "@/components/settings/Theme";
-import CategoryTitle from "@/components/settings/CategoryTitle";
+import Bar from '@/src/components/modals/Bar';
+import ModalStyles from '@/src/components/modals/Styles';
+import PageTitle from '@/src/components/PageTitle';
+import Haptic from "@/src/components/settings/Haptic";
+import Theme from "@/src/components/settings/Theme";
+import CategoryTitle from "@/src/components/settings/CategoryTitle";
 
 
 export default function Customization() {

@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
-import SongInfo from '@/components/song/SongInfo';
-import ListCover from '@/components/cover/ListCover';
+import SongInfo from '@/src/components/song/SongInfo';
+import ListCover from '@/src/components/cover/ListCover';
 import { CoverType } from '@/constants/Types';
 import * as Haptics from 'expo-haptics';
-import Sheet from '@/components/sheet';
-import SheetStyles from '@/components/sheet/Styles';
+import Sheet from '@/src/components/sheet';
+import SheetStyles from '@/src/components/sheet/Styles';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import SongOptions from '@/components/sheet/song/SongOptions';
-import Bar from '@/components/modals/Bar';
-import ModalStyles from '@/components/modals/Styles';
+import SongOptions from '@/src/components/sheet/song/SongOptions';
+import Bar from '@/src/components/modals/Bar';
+import ModalStyles from '@/src/components/modals/Styles';
 
 const PlayerSongEdit = () => {
   const name = 'player-song-sheet';

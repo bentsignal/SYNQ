@@ -1,22 +1,22 @@
 import { View, Text, StyleSheet, ScrollView, TextInput } from "react-native";
 import { memo } from "react";
-import Bar from "@/components/modals/Bar";
+import Bar from "@/src/components/modals/Bar";
 import { Colors } from "@/constants/Colors";
 import { Styles } from "@/constants/Styles";
 import { useEffect, useState } from "react";
 import { getPlaylistInfo, updatePlaylist } from "@/lib/controllers/PlaylistController";
 import { router } from "expo-router";
-import CustomButton from "@/components/CustomButton";
+import CustomButton from "@/src/components/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { CoverType, NotificationType, PlaylistType } from "@/constants/Types";
-import EditCover from "@/components/cover/EditCover";
+import EditCover from "@/src/components/cover/EditCover";
 import { newCover } from "@/lib/controllers/ImageController";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';
-import Notifications from "@/components/notifications";
-import ModalStyles from "@/components/modals/Styles";
+import Notifications from "@/src/components/notifications";
+import ModalStyles from "@/src/components/modals/Styles";
 import { getArtistInfo, updateArtist } from "@/lib/controllers/ArtistController";
 
 const MemoTextInput = memo(TextInput);

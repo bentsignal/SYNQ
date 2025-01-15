@@ -13,8 +13,8 @@ import ThemeProvider from "@/src/context/ThemeProvider";
 import PremiumProvider from "@/src/context/PremiumProvider";
 import Navigation from "@/app/navigation";
 import PlaybackProvider from "@/src/context/PlaybackProvider";
-import Sheets from "@/components/sheet/Sheets";
-import GlobalProgress from '@/components/GlobalProgress';
+import Sheets from "@/src/components/sheet/Sheets";
+import GlobalProgress from '@/src/components/GlobalProgress';
 
 LogBox.ignoreLogs(['Require cycle:']);
 

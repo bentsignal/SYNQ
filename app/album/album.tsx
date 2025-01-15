@@ -3,21 +3,21 @@ import { useEffect, useState } from "react";
 import { Styles } from "@/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
-import SongList from "@/components/lists/song";
+import SongList from "@/src/components/lists/song";
 import { PageType, AlbumType, SongType, SortType, SourceType, ArtistType } from "@/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
-import MiniPlayer from "@/components/player/MiniPlayer";
-import TabBar from "@/components/TabBar";
-import AlbumHeader from "@/components/lists/album/Header";
-import Overlay from "@/components/Overlay";
-import Header from "@/components/Header";
+import MiniPlayer from "@/src/components/player/MiniPlayer";
+import TabBar from "@/src/components/TabBar";
+import AlbumHeader from "@/src/components/lists/album/Header";
+import Overlay from "@/src/components/Overlay";
+import Header from "@/src/components/Header";
 import { getAlbumInfo } from "@/lib/controllers/AlbumController";
 import albumBus from "@/src/events/album";
 import { AlbumBusEvent } from "@/src/events/album/Events";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { getSongsFromAlbum } from "@/lib/controllers/AlbumController";
-import ArtistItem from "@/components/lists/artist/ArtistItem";
+import ArtistItem from "@/src/components/lists/artist/ArtistItem";
 import { getArtistsFromAlbum } from "@/lib/controllers/AlbumController";
 
 const AlbumView = ({id}: {id: string}) => {

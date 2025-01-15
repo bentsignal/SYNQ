@@ -1,16 +1,16 @@
 import { Tabs } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Easing, View } from 'react-native';
-import Server from '@/components/import/wifi/Server';
-import { HomeIcon, LibraryIcon } from '@/components/TabBarIcons';
+import Server from '@/src/components/import/wifi/Server';
+import { HomeIcon, LibraryIcon } from '@/src/components/TabBarIcons';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
-import Overlay from '@/components/Overlay';
-import NotificationModal from '@/components/modals/NotificationModal';
+import Overlay from '@/src/components/Overlay';
+import NotificationModal from '@/src/components/modals/NotificationModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import GlobalProgress from '@/components/GlobalProgress';
-import Top from '@/components/Top';
+import GlobalProgress from '@/src/components/GlobalProgress';
+import Top from '@/src/components/Top';
 import { useAssets } from 'expo-asset';
 
 const TabLayout = () => {

@@ -1,7 +1,7 @@
 import { Stack, router } from "expo-router";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { Colors } from "@/constants/Colors";
-import BackArrow from "@/components/BackArrow";
+import BackArrow from "@/src/components/BackArrow";
 
 const SettingsLayout = () => {
 

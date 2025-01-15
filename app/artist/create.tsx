@@ -2,22 +2,22 @@ import { View, Text, StyleSheet, TextInput } from "react-native"
 import { useEffect, useState, memo } from "react"
 import { Colors } from "@/constants/Colors"
 import { Styles } from "@/constants/Styles"
-import Bar from "@/components/modals/Bar"
-import CustomButton from "@/components/CustomButton"
+import Bar from "@/src/components/modals/Bar"
+import CustomButton from "@/src/components/CustomButton"
 import { router } from "expo-router"
 import { useGlobalContext } from "@/src/context/GlobalProvider"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 import { CoverType, NotificationType } from "@/constants/Types"
-import Notifications from "@/components/notifications/Notifications"
+import Notifications from "@/src/components/notifications/Notifications"
 import * as Haptics from 'expo-haptics'
 import { useThemeContext } from "@/src/context/ThemeProvider"
 import { createPlaylist } from "@/lib/controllers/PlaylistController"
-import EditCover from "@/components/cover/EditCover"
+import EditCover from "@/src/components/cover/EditCover"
 import { newCover } from "@/lib/controllers/ImageController"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { PlaylistBusEvent } from "@/src/events/playlist/Events"
 import playlistBus from "@/src/events/playlist"
-import ModalStyles from "@/components/modals/Styles";
+import ModalStyles from "@/src/components/modals/Styles";
 import { createArtist } from "@/lib/controllers/ArtistController";
 import artistBus from "@/src/events/artist";
 import { ArtistBusEvent } from "@/src/events/artist/Events";

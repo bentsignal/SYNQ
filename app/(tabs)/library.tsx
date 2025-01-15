@@ -2,28 +2,28 @@ import TrackPlayer, { Event, useTrackPlayerEvents, useActiveTrack, useProgress }
 import { setupPlayer, skipLeft, skipRight, updateQueue, playAd } from "@/lib/controllers/PlayerController";
 import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Styles } from "@/constants/Styles";
-import PageTitle from '@/components/PageTitle';
-import Notifications from "@/components/notifications/Notifications";
+import PageTitle from '@/src/components/PageTitle';
+import Notifications from "@/src/components/notifications/Notifications";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { useEffect, useState, useRef } from "react";
 import { NotificationType } from "@/constants/Types";
-import MiniPlayer from '@/components/player/MiniPlayer';
+import MiniPlayer from '@/src/components/player/MiniPlayer';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CFG from "@/constants/Config";
-import CategorySelector from "@/components/CategorySelector";
+import CategorySelector from "@/src/components/CategorySelector";
 import { Colors } from "@/constants/Colors";
-import Playlists from "@/components/library/Playlists";
-import Albums from "@/components/library/Albums";
-import Artists from "@/components/library/Artists";
-import Songs from "@/components/library/Songs";
-import Plus from "@/components/Plus";
+import Playlists from "@/src/components/library/Playlists";
+import Albums from "@/src/components/library/Albums";
+import Artists from "@/src/components/library/Artists";
+import Songs from "@/src/components/library/Songs";
+import Plus from "@/src/components/Plus";
 import { router } from "expo-router";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { usePlaybackContext } from "@/src/context/PlaybackProvider";
 import playlistBus from "@/src/events/playlist/Bus";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
-import SettingsButton from "@/components/SettingsButton";
+import SettingsButton from "@/src/components/SettingsButton";
 
 const Library = () => {
 

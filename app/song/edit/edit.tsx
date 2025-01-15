@@ -199,28 +199,6 @@ const EditSong = ({id}: {id: string}) => {
           </>
         }
         <View style={ModalStyles.fieldWrapper}>
-          <Text style={ModalStyles.fieldLabel}>Artists</Text>
-          <View style={Local.artistWrapper}>
-            {artists.length === 0 &&
-              <Text style={ModalStyles.emptyListFiller}>No artists</Text>
-            }
-            {artists.length > 0 && artists.map((artist) => {
-              return (
-                <ArtistItem
-                  key={artist.id}
-                  artist={artist}
-                  allowInteraction={false}
-                />
-              )
-            })}
-          </View>
-          <CustomButton 
-            title={'Manage Artists'}
-            handlePress={() => router.push('/artist/add?sourceType=song')}
-            buttonWidth={'90%'}
-          />
-        </View>
-        <View style={ModalStyles.fieldWrapper}>
           <Text style={ModalStyles.fieldLabel}>Albums</Text>
           <View style={Local.albumWrapper}>
             {albums.length === 0 &&
@@ -239,6 +217,28 @@ const EditSong = ({id}: {id: string}) => {
           <CustomButton 
             title={'Manage Albums'}
             handlePress={() => router.push('/album/add')}
+            buttonWidth={'90%'}
+          />
+        </View>
+        <View style={ModalStyles.fieldWrapper}>
+          <Text style={ModalStyles.fieldLabel}>Artists</Text>
+          <View style={Local.artistWrapper}>
+            {artists.length === 0 &&
+              <Text style={ModalStyles.emptyListFiller}>No artists</Text>
+            }
+            {artists.length > 0 && artists.map((artist) => {
+              return (
+                <ArtistItem
+                  key={artist.id}
+                  artist={artist}
+                  allowInteraction={false}
+                />
+              )
+            })}
+          </View>
+          <CustomButton 
+            title={'Manage Artists'}
+            handlePress={() => router.push('/artist/add?sourceType=song')}
             buttonWidth={'90%'}
           />
         </View>

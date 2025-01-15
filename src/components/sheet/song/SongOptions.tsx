@@ -114,8 +114,9 @@ const SongOptions = ({ name }: SongOptionsProps) => {
     }
     // remove from library
     else if (editSong.pageType === PageType.LIBRARY) {
-      removeFromAllPlaylists(editSong.id);
-      deleteFromLibrary(editSong.id);
+      await removeFromAllPlaylists(editSong.id);
+      await deleteFromLibrary(editSong.id);
+      songBus.emit(SongBusEvent.SONG_DELETED)
       // remove from queue and next up if applicable
       const queue = await TrackPlayer.getQueue();
       const indiciesToRemove = queue
@@ -123,7 +124,6 @@ const SongOptions = ({ name }: SongOptionsProps) => {
         .filter(index => index !== -1);
       await TrackPlayer.remove(indiciesToRemove);
       setNumModified(numModified + 1);
-      songBus.emit(SongBusEvent.SONG_DELETED)
     }
     // remove from import
     else if (editSong.pageType === PageType.IMPORT) {

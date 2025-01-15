@@ -2,7 +2,7 @@ import { View, StyleSheet, Dimensions, Image } from 'react-native';
 import { useEffect, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import { PageType } from '@/constants/Types';
-import { useThemeContext } from '@/context/ThemeProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
 import { getPlaylistCover } from '@/lib/controllers/PlaylistController';
 import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/src/events/playlist/Events';
 import playlistBus from '@/src/events/playlist';

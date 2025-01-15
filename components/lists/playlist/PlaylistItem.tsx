@@ -8,7 +8,7 @@ import ListCover from "@/components/cover/ListCover";
 import More from "@/components/More";
 import { PageType } from "@/constants/Types";
 import Select from "@/components/Select";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 import playlistBus from "@/src/events/playlist";
 import * as Haptics from 'expo-haptics';
 import { addToPlaylist, removeFromPlaylist, isSongInPlaylist, getSongCount } from "@/lib/controllers/PlaylistController";

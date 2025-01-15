@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import { Colors } from "@/constants/Colors";
 import { useActiveTrack } from "react-native-track-player";
 import { updateQueue } from "@/lib/controllers/PlayerController";
-import { useThemeContext } from "@/context/ThemeProvider";
-import { usePlaybackContext } from "@/context/PlaybackProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
+import { usePlaybackContext } from "@/src/context/PlaybackProvider";
 
 interface LoopButtonProps {
   primary?: string;

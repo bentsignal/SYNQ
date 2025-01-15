@@ -3,8 +3,8 @@ import { Colors } from '@/constants/Colors';
 import { useRef, useEffect } from 'react';
 import Svg, { Circle } from 'react-native-svg';
 import Loading from './Loading';
-import { useGlobalContext } from '@/context/GlobalProvider';
-import { useThemeContext } from '@/context/ThemeProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import Arrow from '@/components/Arrow';
-import { useThemeContext } from '@/context/ThemeProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
 
 type DropdownProps = {
   data?: any[];

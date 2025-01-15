@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import SongList from "@/components/lists/song";
 import { PageType, AlbumType, SongType, SortType, SourceType, ArtistType } from "@/constants/Types";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 import MiniPlayer from "@/components/player/MiniPlayer";
 import TabBar from "@/components/TabBar";
 import AlbumHeader from "@/components/lists/album/Header";

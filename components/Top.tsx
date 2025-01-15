@@ -1,6 +1,6 @@
 import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
-import { useThemeContext } from '@/context/ThemeProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Top() {

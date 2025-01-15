@@ -3,7 +3,7 @@ import { View, TouchableOpacity, Text, StyleSheet, Animated,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useState, useEffect, useRef } from 'react';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import { SongType } from '@/constants/Types';
@@ -20,11 +20,11 @@ import { PageType, CoverType, ArtistType } from '@/constants/Types';
 import { useActiveTrack } from "react-native-track-player";
 import { getTrackFromSong, playTrack, 
   updateQueue, playAd, addToQueue } from '@/lib/controllers/PlayerController';
-import { useThemeContext } from '@/context/ThemeProvider';
-import { usePremiumContext } from '@/context/PremiumProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
+import { usePremiumContext } from '@/src/context/PremiumProvider';
 import songBus from '@/src/events/song';
 import { SongBusEvent, SongInfoModifiedEvent, SongCoverModifiedEvent } from '@/src/events/song/Events';
-import { usePlaybackContext } from '@/context/PlaybackProvider';
+import { usePlaybackContext } from '@/src/context/PlaybackProvider';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistToggledOnSongEvent, ArtistBusEvent } from '@/src/events/artist/Events';
 import { getArtistsFromSong } from '@/lib/controllers/ArtistController';

@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { useEffect, useState } from "react";
 import More from "@/components/More";
-import { useThemeContext } from "@/context/ThemeProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
 
 type HeaderProps = {
   scrollPosition: number;

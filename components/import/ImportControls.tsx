@@ -1,5 +1,5 @@
 import { View, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import CustomButton from '@/components/CustomButton';
@@ -7,7 +7,7 @@ import { removeSongs } from '@/lib/controllers/SongController';
 import { deleteFromLibrary } from '@/lib/controllers/LibraryController';
 import { darkenColor } from '@/lib/controllers/ColorController';
 import Notifications from '@/components/notifications/Notifications';
-import { useThemeContext } from '@/context/ThemeProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
 import { Track } from 'react-native-track-player';
 import { PageType } from '@/constants/Types';
 import TrackPlayer from 'react-native-track-player';

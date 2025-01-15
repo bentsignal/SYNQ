@@ -1,6 +1,6 @@
 import { TouchableOpacity, StyleSheet, View } from "react-native";
 import { Colors } from "@/constants/Colors";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 import Svg, { Path } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import TrackPlayer, { State, usePlaybackState } from "react-native-track-player";

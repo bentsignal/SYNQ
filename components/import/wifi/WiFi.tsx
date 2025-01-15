@@ -1,7 +1,7 @@
 import { Text, View, Dimensions, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import SongList from '@/components/lists/song';
 import PageTitle from '@/components/PageTitle';
@@ -11,7 +11,7 @@ import InfoModal from '@/components/modals/InfoModal';
 import { Colors } from '@/constants/Colors';
 import Progress from '@/components/Progress';
 import { PageType } from '@/constants/Types';
-import { usePremiumContext } from '@/context/PremiumProvider';
+import { usePremiumContext } from '@/src/context/PremiumProvider';
 import CFG from '@/constants/Config';
 import SettingsButton from '@/components/SettingsButton';
 

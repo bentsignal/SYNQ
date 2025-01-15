@@ -1,8 +1,8 @@
 import { Text, Image, TouchableOpacity, View, StyleSheet } from "react-native";
 import { Styles } from "@/constants/Styles";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { Colors } from "@/constants/Colors";
-import { useThemeContext } from "@/context/ThemeProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
 
 type PageTitleProps = {
   title: string;

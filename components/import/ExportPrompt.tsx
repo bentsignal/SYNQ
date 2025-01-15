@@ -4,12 +4,12 @@ import { Styles } from "@/constants/Styles";
 import PageTitle from "@/components/PageTitle";
 import InfoModal from "@/components/modals/InfoModal";
 import ImportControls from "@/components/import/ImportControls";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 import CustomButton from "@/components/CustomButton";
 import { Colors } from "@/constants/Colors";
 import { exportSongs } from '@/lib/controllers/ImportExportController';
-import { useThemeContext } from "@/context/ThemeProvider";
-import { usePremiumContext } from "@/context/PremiumProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
+import { usePremiumContext } from "@/src/context/PremiumProvider";
 import SettingsButton from "../SettingsButton";
 
 const ExportPrompt = () => {

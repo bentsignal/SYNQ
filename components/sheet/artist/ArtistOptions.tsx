@@ -1,9 +1,9 @@
 import SheetOption from '@/components/sheet/SheetOption';
 import { PageType } from '@/constants/Types';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { useEffect, useState } from 'react';
-import { useThemeContext } from '@/context/ThemeProvider';
-import { usePremiumContext } from '@/context/PremiumProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
+import { usePremiumContext } from '@/src/context/PremiumProvider';
 import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';

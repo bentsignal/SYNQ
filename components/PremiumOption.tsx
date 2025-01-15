@@ -2,7 +2,7 @@ import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 import Skeleton from "./Skeleton";
-import { useThemeContext } from "@/context/ThemeProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
 
 type OptionProps = {
   handler: () => void;

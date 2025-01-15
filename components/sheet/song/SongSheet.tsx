@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import SongInfo from '@/components/song/SongInfo';
 import ListCover from '@/components/cover/ListCover';

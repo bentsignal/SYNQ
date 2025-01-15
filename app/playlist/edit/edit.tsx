@@ -8,12 +8,12 @@ import { getPlaylistInfo, updatePlaylist } from "@/lib/controllers/PlaylistContr
 import { router } from "expo-router";
 import CustomButton from "@/components/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useThemeContext } from "@/context/ThemeProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { CoverType, NotificationType, PlaylistType } from "@/constants/Types";
 import EditCover from "@/components/cover/EditCover";
 import { newCover } from "@/lib/controllers/ImageController";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';
 import Notifications from "@/components/notifications";
 import ModalStyles from "@/components/modals/Styles";

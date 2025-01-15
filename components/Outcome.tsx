@@ -1,14 +1,14 @@
 import { Text, View, StyleSheet } from "react-native";
 import LottieView from 'lottie-react-native';
 import * as Haptics from 'expo-haptics';
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 import CustomButton from '@/components/CustomButton';
 import { replaceColor } from 'lottie-colorify';
 import { Styles } from "@/constants/Styles";
 import { Colors } from "@/constants/Colors";
 import { darkenColor } from "@/lib/controllers/ColorController";
 import { useEffect } from "react";
-import { useThemeContext } from "@/context/ThemeProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
 
 export const Success = () => {
 

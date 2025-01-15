@@ -6,7 +6,7 @@ import Bar from '@/components/modals/Bar';
 import ModalStyles from '@/components/modals/Styles';
 import PageTitle from '@/components/PageTitle';
 import CustomButton from '@/components/CustomButton';
-import { useThemeContext } from '@/context/ThemeProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
 import * as FileSystem from 'expo-file-system';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
@@ -16,7 +16,7 @@ import Loading from '@/components/Loading';
 import playlistBus from '@/src/events/playlist/Bus';
 import { PlaylistBusEvent } from '@/src/events/playlist/Events';
 import TrackPlayer from 'react-native-track-player';
-import { usePremiumContext } from '@/context/PremiumProvider';
+import { usePremiumContext } from '@/src/context/PremiumProvider';
 import { router } from 'expo-router';
 import Option from '@/components/Option';
 

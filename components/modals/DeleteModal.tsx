@@ -2,7 +2,7 @@ import { Text, View, Modal, StyleSheet } from 'react-native';
 import CustomButton from '@/components/CustomButton';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { removeSongs } from '@/lib/controllers/SongController';
 import { deleteFromLibrary } from '@/lib/controllers/LibraryController';
 import ListCover from '@/components/cover/ListCover';
@@ -10,7 +10,7 @@ import SongInfo from '@/components/song/SongInfo';
 import { PageType, CoverType } from '@/constants/Types';
 import TrackPlayer, { Track } from 'react-native-track-player';
 import { removeFromAllPlaylists } from '@/lib/controllers/PlaylistController';
-import { useThemeContext } from '@/context/ThemeProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
 
 const DeleteModal = () => {
 

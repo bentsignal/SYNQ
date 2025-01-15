@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { useEffect, useState } from 'react';
 import PageTitle from '@/components/PageTitle';
@@ -9,7 +9,7 @@ import ImportControls from '../ImportControls';
 import Progress from '@/components/Progress';
 import InfoModal from '@/components/modals/InfoModal';
 import { PageType } from '@/constants/Types';
-import { usePremiumContext } from '@/context/PremiumProvider';
+import { usePremiumContext } from '@/src/context/PremiumProvider';
 import SettingsButton from '@/components/SettingsButton';
 
 const Files = () => {

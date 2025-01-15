@@ -1,5 +1,5 @@
 import { View, StyleSheet, Dimensions, Image } from "react-native";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { useEffect, useState } from "react";
 import SongInfo from "@/components/song/SongInfo";
 import Bar from "@/components/modals/Bar";

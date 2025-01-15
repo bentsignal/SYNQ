@@ -1,5 +1,5 @@
 import { View, ScrollView, StyleSheet, Text, Image } from 'react-native';
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { Styles } from "@/constants/Styles";
 import { importFiles } from "@/lib/controllers/ImportExportController";
 import PageTitle from '@/components/PageTitle';
@@ -13,9 +13,9 @@ import ExportPrompt from "@/components/import/ExportPrompt";
 import SavePrompt from "@/components/import/SavePrompt";  
 import SettingsButton from "@/components/SettingsButton";
 import { Colors } from '@/constants/Colors';
-import { useThemeContext } from '@/context/ThemeProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
 import { router } from 'expo-router';
-import { usePremiumContext } from '@/context/PremiumProvider';
+import { usePremiumContext } from '@/src/context/PremiumProvider';
 
 const Home = () => {
 

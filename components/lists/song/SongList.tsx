@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { SongType, PageType, SourceType } from '@/constants/Types';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 import Song from '@/components/song';
 import DeleteModal from '@/components/modals/DeleteModal';
 import { generateSongKey } from '@/lib/controllers/SongController';

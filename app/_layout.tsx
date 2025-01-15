@@ -1,7 +1,7 @@
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
-import GlobalProvider from "@/context/GlobalProvider";
+import GlobalProvider from "@/src/context/GlobalProvider";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { connect, restorePurchases } from "@/lib/controllers/PurchaseController";
@@ -9,10 +9,10 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Model from "@/lib/models/Model";
 import { LogBox } from "react-native";
 import CFG from "@/constants/Config";
-import ThemeProvider from "@/context/ThemeProvider";
-import PremiumProvider from "@/context/PremiumProvider";
+import ThemeProvider from "@/src/context/ThemeProvider";
+import PremiumProvider from "@/src/context/PremiumProvider";
 import Navigation from "@/app/navigation";
-import PlaybackProvider from "@/context/PlaybackProvider";
+import PlaybackProvider from "@/src/context/PlaybackProvider";
 import Sheets from "@/components/sheet/Sheets";
 import GlobalProgress from '@/components/GlobalProgress';
 

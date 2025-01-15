@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, PanResponder, Text, Dimensions } from 'react-native';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { Colors } from '@/constants/Colors';
 import TrackPlayer, { useProgress, usePlaybackState, State } from 'react-native-track-player';
 import { formatTime } from '@/lib/Util';
-import { useThemeContext } from '@/context/ThemeProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
 import { GestureDetector, GestureType, Gesture } from "react-native-gesture-handler";
 import Animated, { runOnJS, useSharedValue, withTiming, 
   useAnimatedStyle, Easing } from 'react-native-reanimated';

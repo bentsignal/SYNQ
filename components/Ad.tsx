@@ -4,7 +4,7 @@ import CustomButton from "./CustomButton";
 import { router } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import { Styles } from "@/constants/Styles";
-import { useThemeContext } from "@/context/ThemeProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
 
 
 const Ad = ({message}: {message: React.ReactNode}) => {

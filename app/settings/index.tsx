@@ -8,7 +8,7 @@ import CategoryTitle from "@/components/settings/CategoryTitle";
 import Haptic from "@/components/settings/Haptic";
 import PremiumToggle from "@/components/settings/PremiumToggle";
 import CFG from "@/constants/Config";
-import { usePremiumContext } from "@/context/PremiumProvider";
+import { usePremiumContext } from "@/src/context/PremiumProvider";
 import Bar from "@/components/modals/Bar";
 import CustomButton from "@/components/CustomButton";
 import { SOCIAL_LINKS } from "@/constants/Config";

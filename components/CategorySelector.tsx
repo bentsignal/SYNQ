@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import HorizontalScrollView from '@/components/HorizontalScrollView';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
-import { useThemeContext } from '@/context/ThemeProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
 import { darkenColor } from '@/lib/controllers/ColorController';
 import playlistBus from '@/src/events/playlist/Bus';
 import { PlaylistBusEvent } from '@/src/events/playlist/Events';

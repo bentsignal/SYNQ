@@ -1,7 +1,7 @@
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { useEffect } from "react";
 import { Styles } from "@/constants/Styles";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { router } from "expo-router";
 import SongInfo from '@/components/song/SongInfo';
 import ListCover from "@/components/cover/ListCover";
@@ -11,7 +11,7 @@ import { Colors, Themes } from "@/constants/Colors";
 import { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util";
 import { CoverType } from "@/constants/Types";
-import { useThemeContext } from "@/context/ThemeProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
 import { getDisabledColor, adjustLightness, darkenColor } from "@/lib/controllers/ColorController";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 

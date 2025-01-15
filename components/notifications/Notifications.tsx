@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 import Notification from './Notification';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 
 type NotificationsProps = {
   customStyles?: {};

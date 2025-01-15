@@ -1,6 +1,6 @@
 import { View, ScrollView, Animated, NativeSyntheticEvent, NativeScrollEvent, Easing, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import { useRef, useState } from 'react';

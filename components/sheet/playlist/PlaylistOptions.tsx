@@ -1,10 +1,10 @@
 import SheetOption from '@/components/sheet/SheetOption';
 import { PageType } from '@/constants/Types';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { useEffect, useState } from 'react';
 import { exportSongs } from '@/lib/controllers/ImportExportController';
-import { useThemeContext } from '@/context/ThemeProvider';
-import { usePremiumContext } from '@/context/PremiumProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
+import { usePremiumContext } from '@/src/context/PremiumProvider';
 import { deletePlaylist, getPlaylistSongs } from '@/lib/controllers/PlaylistController';
 import { getSongByResult } from '@/lib/controllers/SongController';
 import { Alert } from 'react-native';

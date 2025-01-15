@@ -1,7 +1,7 @@
 import { TouchableOpacity, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import Arrow from "@/components/Arrow";
-import { useThemeContext } from "@/context/ThemeProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
 
 const BackArrow = () => { 
   

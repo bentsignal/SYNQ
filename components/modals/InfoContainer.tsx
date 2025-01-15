@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { useThemeContext } from '@/context/ThemeProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
 
 type InfoContainerProps = {
   title: string;

@@ -2,12 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, Animated, PanResponder, 
   StyleSheet, Easing, TouchableOpacity } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { Styles } from '@/constants/Styles';
 import { Colors } from '@/constants/Colors';
 import { NotificationType } from '@/constants/Types';
 import CFG from '@/constants/Config';
-import { useThemeContext } from '@/context/ThemeProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
 
 type NotificationProps = {
   id: string;

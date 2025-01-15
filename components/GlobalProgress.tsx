@@ -1,9 +1,9 @@
 import { View, StyleSheet, Text } from "react-native";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 import Overlay from "./Overlay";
 import Progress from "./Progress";
 import Ad from "./Ad";
-import { useThemeContext } from "@/context/ThemeProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
 
 const GlobalProgress = () => {
 

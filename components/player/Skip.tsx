@@ -1,11 +1,11 @@
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { PlayButton } from './PausePlayButtons';
 import { skipLeft, skipRight, playAd } from '@/lib/controllers/PlayerController';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 import * as Haptics from 'expo-haptics';
-import { useThemeContext } from '@/context/ThemeProvider';
-import { usePremiumContext } from '@/context/PremiumProvider';
-import { usePlaybackContext } from '@/context/PlaybackProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
+import { usePremiumContext } from '@/src/context/PremiumProvider';
+import { usePlaybackContext } from '@/src/context/PlaybackProvider';
 
 const Shape = ({size, color}: {size: number, color?: string}) => {
   return (

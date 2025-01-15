@@ -5,7 +5,7 @@ import Server from '@/components/import/wifi/Server';
 import { HomeIcon, LibraryIcon } from '@/components/TabBarIcons';
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 import Overlay from '@/components/Overlay';
 import NotificationModal from '@/components/modals/NotificationModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';

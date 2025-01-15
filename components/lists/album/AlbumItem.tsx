@@ -7,7 +7,7 @@ import { router } from "expo-router";
 import ListCover from "@/components/cover/ListCover";
 import More from "@/components/More";
 import Select from "@/components/Select";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { AlbumType } from "@/constants/Types";

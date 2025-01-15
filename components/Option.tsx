@@ -2,7 +2,7 @@ import { Text, View, Image, TouchableOpacity, ImageSourcePropType, StyleSheet } 
 import { Colors } from '@/constants/Colors';
 import { Styles } from '@/constants/Styles';
 import { darkenColor } from '@/lib/controllers/ColorController';
-import { useThemeContext } from '@/context/ThemeProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
 
 type ImportOptionProps = {
   title: string;

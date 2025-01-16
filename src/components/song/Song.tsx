@@ -151,8 +151,14 @@ export default function Song({ song, fadeCover, fadeSong }: SongProps) {
         }
       }
       else {
-        const artists = await getArtistsFromAlbum(data.albumId);
-        song.info.metadata.artist = artists.map(artist => artist.name).join(', ');
+        const albumArtists = await getArtistsFromAlbum(data.albumId);
+        const songArtists = await getArtistsFromSong(Number(song.id));
+        if (data.add) {
+          song.info.metadata.artist = [...new Set([...albumArtists, ...songArtists].map(artist => artist.name))].join(', ');
+        }
+        else {
+          song.info.metadata.artist = songArtists.map(artist => artist.name).filter(artist => !albumArtists.map(a => a.name).includes(artist)).join(', ');
+        }
         forceUpdate(prev => prev + 1);
       }
     }

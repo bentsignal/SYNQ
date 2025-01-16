@@ -11,8 +11,8 @@ import Select from "@/src/components/Select";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import playlistBus from "@/src/events/playlist";
 import * as Haptics from 'expo-haptics';
-import { addToPlaylist, removeFromPlaylist, isSongInPlaylist, getSongCount } from "@/src/controllers/PlaylistController";
-import { PlaylistBusEvent, PlaylistNameModifiedEvent, PlaylistSongCountModifiedEvent } from "@/src/events/playlist/Events";
+import { addToPlaylist, removeFromPlaylist, isSongInPlaylist, getSongCount, getPlaylistCover } from "@/src/controllers/PlaylistController";
+import { PlaylistBusEvent, PlaylistImageModifiedEvent, PlaylistNameModifiedEvent, PlaylistSongCountModifiedEvent } from "@/src/events/playlist/Events";
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
 type PlaylistProps = {
@@ -30,6 +30,22 @@ const PlaylistItem = ({playlist}: PlaylistProps) => {
   const [selected, setSelected] = useState(false);
   const [songCount, setSongCount] = useState(playlist.songCount);
   const [name, setName] = useState(playlist.name);
+  const [coverImage, setCoverImage] = useState('');
+
+  const loadCover = async () => {
+    try {
+      const cover = await getPlaylistCover(playlist.id);
+      if (cover) {
+        setCoverImage(cover);
+      }
+      else {
+        setCoverImage('');
+      }
+    }
+    catch (error) {
+      console.log('error loading playlist cover:', error);
+    }
+  }
 
   const playlistChangesMade = async (add: boolean) => {
     try {
@@ -79,11 +95,17 @@ const PlaylistItem = ({playlist}: PlaylistProps) => {
   useEffect(() => {
     playlistBus.on(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, updateSongCount);
     playlistBus.on(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, updateName);
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistImageModified);
     return () => {
       playlistBus.off(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, updateSongCount);
       playlistBus.off(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, updateName);
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistImageModified);
     }
   }, []);
+
+  useEffect(() => {
+    loadCover();
+  }, [playlist]);
 
   useEffect(() => {
     if (editSong.id && playlist.pageType === PageType.ADD) {
@@ -96,6 +118,17 @@ const PlaylistItem = ({playlist}: PlaylistProps) => {
         });
     }
   }, [editSong]);
+
+  const handlePlaylistImageModified = async (data: PlaylistImageModifiedEvent) => {
+    if (data.id === playlist.id) {
+      if (data.image) {
+        setCoverImage(data.image);
+      }
+      else {
+        await loadCover();
+      }
+    }
+  }
 
   const handleMore = async () => {
     if (haptic) {
@@ -123,8 +156,9 @@ const PlaylistItem = ({playlist}: PlaylistProps) => {
         }
       }}
     >
-      <ListCover 
+      <ListCover
         id={playlist.id.toString()}
+        image={coverImage}
         type={CoverType.PLAYLIST}
         propOnLoad={() => {}}
       />

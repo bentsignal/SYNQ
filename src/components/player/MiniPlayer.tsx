@@ -1,5 +1,5 @@
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Styles } from "@/src/constants/Styles";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { router } from "expo-router";
@@ -14,6 +14,7 @@ import { CoverType } from "@/src/constants/Types";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { getDisabledColor, adjustLightness, darkenColor } from "@/src/controllers/ColorController";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { getAbsoluteSongCover } from "@/src/controllers/SongController";
 
 const MiniPlayer = () => {
 
@@ -26,7 +27,25 @@ const MiniPlayer = () => {
     opacity: opacity.value,
   }));
 
+  const [coverImage, setCoverImage] = useState('');
+
+  const loadCover = async () => {
+    try {
+      const cover = await getAbsoluteSongCover(track?.id);
+      if (cover) {
+        setCoverImage(cover);
+      }
+      else {
+        setCoverImage('');
+      }
+    }
+    catch (error) {
+      console.log('error loading song cover:', error);
+    }
+  }
+
   useEffect(() => {
+    loadCover();
     setTimeout(() => {
       opacity.value = withTiming(track ? 1 : 0, { duration: 200 });
     }, 200);
@@ -45,7 +64,7 @@ const MiniPlayer = () => {
     >
       <Animated.View style={coverStyle}>
         <ListCover 
-          id={track?.id} 
+          image={coverImage}
           type={CoverType.SONG}
           propOnLoad={() => {}}
         />

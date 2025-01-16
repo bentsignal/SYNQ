@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { Colors } from '@/src/constants/Colors';
@@ -12,20 +12,42 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import SongOptions from '@/src/components/sheet/song/SongOptions';
 import Bar from '@/src/components/modals/Bar';
 import ModalStyles from '@/src/components/modals/Styles';
+import { getAbsoluteSongCover } from '@/src/controllers/SongController';
 
 const PlayerSongEdit = () => {
   const name = 'player-song-sheet';
   const { editSong, haptic } = useGlobalContext();
   const [scrollEnabled, setScrollEnabled] = useState(false);
+  const [coverImage, setCoverImage] = useState('');
+
+  const loadCover = async () => { 
+    try {
+      if (editSong.id) {
+        const cover = await getAbsoluteSongCover(Number(editSong.id));
+        if (cover) {
+          setCoverImage(cover);
+        }
+        else {
+          setCoverImage('');
+        }
+      }
+    }
+    catch (error) {
+      console.log('error loading song cover:', error);
+    }
+  }
+
+  useEffect(() => {
+    loadCover();
+  }, [editSong.id]);
 
   return (
     <View style={local.container}>
       <Bar />
       <View style={SheetStyles.infoContainer}>
         <ListCover 
-          id={editSong.id}
+          image={coverImage}
           type={CoverType.SONG}
-          image={editSong.info?.metadata?.artwork}
           propOnLoad={() => {}}
         />
         <SongInfo 

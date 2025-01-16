@@ -32,6 +32,7 @@ import artistBus from '@/src/events/artist';
 import albumBus from '@/src/events/album';
 import { AlbumBusEvent, AlbumToggledOnSongEvent } from '@/src/events/album/Events';
 import { getAlbumCover, getArtistsFromAlbum } from '@/src/controllers/AlbumController';
+import { getAbsoluteSongCover } from '@/src/controllers/SongController';
 
 type SongProps = {
   song: SongType, 
@@ -46,6 +47,7 @@ export default function Song({ song, fadeCover, fadeSong }: SongProps) {
   const translateX = useRef(new Animated.Value(0)).current;
   const [_, forceUpdate] = useState(0);
   const [updates, setUpdates] = useState(0);
+  const [coverImage, setCoverImage] = useState('');
 
   const track = useActiveTrack();
 
@@ -93,6 +95,10 @@ export default function Song({ song, fadeCover, fadeSong }: SongProps) {
   }, [selectEnabled]);
 
   useEffect(() => {
+    loadCover();
+  }, [song]);
+
+  useEffect(() => {
     songBus.on(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
     songBus.on(SongBusEvent.SONG_COVER_MODIFIED, updateSongCover);
     artistBus.on(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
@@ -112,6 +118,7 @@ export default function Song({ song, fadeCover, fadeSong }: SongProps) {
 
   const updateAlbumInfo = async (data: AlbumToggledOnSongEvent) => {
     if (data.songId === Number(song.id)) {
+      await loadCover();
       if (song.pageType === PageType.IMPORT) {
         if (data.add) {
           const cover = await getAlbumCover(data.albumId);
@@ -182,10 +189,32 @@ export default function Song({ song, fadeCover, fadeSong }: SongProps) {
 
   const updateSongCover = async (data: SongCoverModifiedEvent) => {
     if (Number(song.id) === data.id) {
-      if (data.type === PageType.IMPORT && data.cover) {
+      if (data.cover) {
         song.info.metadata.artwork = data.cover;
+        setCoverImage(data.cover);
+      }
+      else {
+        await loadCover();
       }
       forceUpdate(prev => prev + 1);
+    }
+  }
+
+  const loadCover = async () => {
+    try {
+      const cover = await getAbsoluteSongCover(Number(song.id), true);
+      if (cover) {
+        setCoverImage(cover);
+      }
+      else if (song.info?.metadata?.artwork) {
+        setCoverImage(song.info.metadata.artwork);
+      }
+      else {
+        setCoverImage('');
+      }
+    }
+    catch (error) {
+      console.log('error loading song cover:', error);
     }
   }
 
@@ -247,10 +276,8 @@ export default function Song({ song, fadeCover, fadeSong }: SongProps) {
         onPress={handlePlay}
       >
         <ListCover 
-          image={song.info?.metadata?.artwork ? song.info.metadata.artwork : ''}
+          image={coverImage}
           type={CoverType.SONG}
-          id={song.id}
-          key={updates}
           fade={fadeCover}
           propOnLoad={() => {
             setLoaded(true);

@@ -1,147 +1,25 @@
-import { StyleSheet, Animated, Image } from 'react-native';
+import { StyleSheet, Animated } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import FastImage from 'react-native-fast-image';
-import { getSongCover } from '@/src/controllers/ImageController';
-import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { getAppIcon } from '@/src/constants/Logos';
-import { PageType, CoverType } from '@/src/constants/Types';
+import { CoverType } from '@/src/constants/Types';
 import { useThemeContext } from '@/src/context/ThemeProvider';
-import { getPlaylistCover } from '@/src/controllers/PlaylistController';
-import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/src/events/playlist/Events';
-import playlistBus from '@/src/events/playlist';
-import { SongBusEvent, SongCoverModifiedEvent } from '@/src/events/song/Events';
-import songBus from '@/src/events/song';
-import { getArtistCover } from '@/src/controllers/ArtistController';
-import artistBus from '@/src/events/artist';
-import { ArtistImageModifiedEvent } from '@/src/events/artist/Events';
-import { ArtistBusEvent } from '@/src/events/artist/Events';
-import { getAlbumCover, getAlbumCoverFromSong } from '@/src/controllers/AlbumController';
-import { AlbumBusEvent, AlbumImageModifiedEvent, AlbumToggledOnSongEvent } from '@/src/events/album/Events';
-import albumBus from '@/src/events/album';
 
 const ListCover = ({image, type, id, fade, propOnLoad}: {
   image?: string;
   type: CoverType;
-  id: string;
+  id?: string;
   fade?: boolean;
   propOnLoad: () => void;
 }) => {
 
-  const { numModified, editSong, adPlaying } = useGlobalContext();
   const { theme } = useThemeContext();
 
   const opacityRef = useRef(new Animated.Value(fade ? 0 : 1)).current;
 
   const [src, setSrc] = useState(image ? image : '');
   const [loaded, setLoaded] = useState(false);
-  let dim = src || id === 'ad' ? 60 : 20;
-
-  const getImage = async () => {
-    try {
-      if (type === CoverType.SONG) {
-        if (image) {
-          setSrc(image);
-        }
-        else {
-          const path = await getAlbumCoverFromSong(parseInt(id));
-          if (path) {
-            setSrc(path);
-          }
-          else {
-            const path = await getSongCover(id);
-            if (path) {
-              setSrc(path);
-            }
-          }
-        }
-      }
-      else if (type === CoverType.PLAYLIST) {
-        const path = await getPlaylistCover(parseInt(id), true);
-        if (path) {
-          setSrc(path);
-        }
-      }
-      else if (type === CoverType.ARTIST) {
-        const path = await getArtistCover(parseInt(id), true);
-        if (path) {
-          setSrc(path);
-        }
-      }
-      else if (type === CoverType.ALBUM) {
-        const path = await getAlbumCover(parseInt(id), true);
-        if (path) {
-          setSrc(path);
-        }
-      }
-      dim = src ? 60 : 20;
-    }
-    catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      if (!message.includes('folder')) {
-        console.log('error getting cover image for list cover:', message);
-      }
-    }
-  }
-
-  const handlePlaylistModified = async (data: PlaylistImageModifiedEvent) => {
-    if (type === CoverType.PLAYLIST && id === data.id.toString()) {
-      await getImage();
-    }
-  }
-
-  const handleSongModified = async (data: SongCoverModifiedEvent) => {
-    if (data.type === PageType.LIBRARY && Number(id) === data.id) {
-      await getImage();
-    }
-  }
-
-  const handleArtistModified = async (data: ArtistImageModifiedEvent) => {
-    if (type === CoverType.ARTIST && id === data.id.toString()) {
-      await getImage();
-    }
-  }
-
-  const handleAlbumModified = async (data: AlbumImageModifiedEvent) => {
-    if (type === CoverType.ALBUM && id === data.id.toString()) {
-      await getImage();
-    }
-    else if (type === CoverType.SONG) {
-      await getImage();
-    }
-  }
-
-  const handleAlbumToggledOnSong = async (data: AlbumToggledOnSongEvent) => {
-    if (type === CoverType.SONG && id === data.songId.toString()) {
-      await getImage();
-    }
-  }
-
-  useEffect(() => {
-    playlistBus.on(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
-    songBus.on(SongBusEvent.SONG_COVER_MODIFIED, handleSongModified);
-    artistBus.on(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistModified);
-    albumBus.on(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, handleAlbumModified);
-    albumBus.on(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, handleAlbumToggledOnSong);
-    return () => {
-      playlistBus.off(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
-      songBus.off(SongBusEvent.SONG_COVER_MODIFIED, handleSongModified);
-      artistBus.off(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistModified);
-      albumBus.off(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, handleAlbumModified);
-      albumBus.off(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, handleAlbumToggledOnSong);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (type === CoverType.SONG && id && editSong.id && editSong.id === id) {
-      getImage();
-    }
-  }, [numModified])
-
-  useEffect(() => {
-
-    getImage();
-    
-  }, [image, id]);
+  let dim = image || id === 'ad' ? 60 : 20;
 
   const Local = StyleSheet.create({
     container: {
@@ -165,8 +43,8 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
     if (id === 'ad') {
       return (getAppIcon(theme));
     }
-    else if (src) {
-      return {uri: `${src}`};
+    else if (image) {
+      return {uri: `${image}`};
     }
     else if (type === CoverType.PLAYLIST) {
       if (id === '2') {

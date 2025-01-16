@@ -11,9 +11,9 @@ import { useGlobalContext } from "@/src/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistType } from "@/src/constants/Types";
-import { ArtistBusEvent, ArtistModifiedEvent } from "@/src/events/artist/Events";
+import { ArtistBusEvent, ArtistImageModifiedEvent, ArtistModifiedEvent } from "@/src/events/artist/Events";
 import artistBus from "@/src/events/artist";
-import { addArtistToSong, removeArtistFromSong, isArtistOnSong } from "@/src/controllers/ArtistController";
+import { addArtistToSong, removeArtistFromSong, isArtistOnSong, getArtistCover } from "@/src/controllers/ArtistController";
 import { addArtistToAlbum, removeArtistFromAlbum, isArtistOnAlbum } from "@/src/controllers/AlbumController";
 
 type ArtistProps = {
@@ -27,6 +27,22 @@ const ArtistItem = ({artist, allowInteraction}: ArtistProps) => {
   
   const [selected, setSelected] = useState(false);
   const [name, setName] = useState(artist.name);
+  const [coverImage, setCoverImage] = useState('');
+
+  const loadCover = async () => {
+    try {
+      const cover = await getArtistCover(artist.id);
+      if (cover) {
+        setCoverImage(cover);
+      }
+      else {
+        setCoverImage('');
+      }
+    }
+    catch (error) {
+      console.log('error loading artist cover:', error);
+    }
+  }
 
   const selectionChanged = async (add: boolean) => {
     try {
@@ -92,8 +108,10 @@ const ArtistItem = ({artist, allowInteraction}: ArtistProps) => {
 
   useEffect(() => {
     artistBus.on(ArtistBusEvent.ARTIST_MODIFIED, updateInfo);
+    artistBus.on(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistImageModified);
     return () => {
       artistBus.off(ArtistBusEvent.ARTIST_MODIFIED, updateInfo);
+      artistBus.off(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistImageModified);
     }
   }, []);
 
@@ -105,6 +123,26 @@ const ArtistItem = ({artist, allowInteraction}: ArtistProps) => {
       checkArtistOnAlbum();
     }
   }, [editSong, editAlbum]);
+
+  useEffect(() => {
+    if (artist.image) {
+      setCoverImage(artist.image);
+    }
+    else {
+      loadCover();
+    }
+  }, [artist]);
+
+  const handleArtistImageModified = async (data: ArtistImageModifiedEvent) => {
+    if (data.id === artist.id) {
+      if (data.image) {
+        setCoverImage(data.image);
+      }
+      else {
+        await loadCover();
+      }
+    }
+  }
 
   const handleMore = async () => {
     if (haptic) {
@@ -133,8 +171,8 @@ const ArtistItem = ({artist, allowInteraction}: ArtistProps) => {
         }
       }}
     >
-      <ListCover 
-        id={artist.id.toString()}
+      <ListCover
+        image={coverImage}
         type={CoverType.ARTIST}
         propOnLoad={() => {}}
       />

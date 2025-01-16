@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Sheet from '@/src/components/sheet';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
@@ -8,12 +8,14 @@ import { Styles } from '@/src/constants/Styles';
 import { Colors } from '@/src/constants/Colors';
 import { CoverType } from '@/src/constants/Types';
 import AlbumOptions from './AlbumOptions';
+import { getAlbumCover } from '@/src/controllers/AlbumController';
 
 const AlbumSheet = ({name}: {name: string}) => {
 
   const { editAlbum } = useGlobalContext();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
+  const [coverImage, setCoverImage] = useState('');
   const scrollRef = useRef<ScrollView>(null);
 
   const onChange = (index: number) => {
@@ -26,11 +28,35 @@ const AlbumSheet = ({name}: {name: string}) => {
     }
   }
 
+  const loadCover = async () => {
+    try {
+      if (editAlbum?.image) {
+        setCoverImage(editAlbum.image);
+      }
+      else {
+        const cover = await getAlbumCover(editAlbum.id);
+        if (cover) {
+          setCoverImage(cover);
+        }
+        else {
+          setCoverImage('');
+        }
+      }
+    }
+    catch (error) {
+      console.log('error loading album cover:', error);
+    }
+  }
+
+  useEffect(() => {
+    loadCover();
+  }, [editAlbum]);
+
   return (
     <Sheet name={name} onChange={onChange}>
       <View style={SheetStyles.infoContainer}>
         <ListCover 
-          id={editAlbum?.id}
+          image={coverImage}
           type={CoverType.ALBUM}
           propOnLoad={() => {}}
         />

@@ -11,10 +11,10 @@ import { useGlobalContext } from "@/src/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { AlbumType } from "@/src/constants/Types";
-import { AlbumBusEvent, AlbumModifiedEvent } from "@/src/events/album/Events";
+import { AlbumBusEvent, AlbumImageModifiedEvent, AlbumModifiedEvent } from "@/src/events/album/Events";
 import albumBus from "@/src/events/album";
 import { addAlbumToSong, removeAlbumFromSong, 
-  isAlbumOnSong, getArtistsFromAlbum } from "@/src/controllers/AlbumController";
+  isAlbumOnSong, getArtistsFromAlbum, getAlbumCover } from "@/src/controllers/AlbumController";
 import { addArtistToSong, removeArtistFromSong } from "@/src/controllers/ArtistController";
 
 type AlbumProps = {
@@ -29,6 +29,31 @@ const AlbumItem = ({album, allowInteraction}: AlbumProps) => {
   const [selected, setSelected] = useState(false);
   const [name, setName] = useState(album.name);
   const [year, setYear] = useState(album.year);
+  const [coverImage, setCoverImage] = useState('');
+
+  const loadCover = async () => {
+    try {
+      const cover = await getAlbumCover(Number(album.id));
+      if (cover) {
+        setCoverImage(cover);
+      }
+      else {
+        setCoverImage('');
+      }
+    }
+    catch (error) {
+      console.log('error loading album cover:', error);
+    }
+  }
+
+  useEffect(() => {
+    if (album.image) {
+      setCoverImage(album.image);
+    }
+    else {
+      loadCover();
+    }
+  }, [album.id]);
 
   const selectionChanged = async (add: boolean) => {
     try {
@@ -79,10 +104,23 @@ const AlbumItem = ({album, allowInteraction}: AlbumProps) => {
     }
   }
 
+  const handleAlbumImageModified = async (data: AlbumImageModifiedEvent) => {
+    if (data.id === album.id) {
+      if (data.image) {
+        setCoverImage(data.image);
+      }
+      else {
+        await loadCover();
+      }
+    }
+  }
+
   useEffect(() => {
     albumBus.on(AlbumBusEvent.ALBUM_MODIFIED, updateInfo);
+    albumBus.on(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, handleAlbumImageModified);
     return () => {
       albumBus.off(AlbumBusEvent.ALBUM_MODIFIED, updateInfo);
+      albumBus.off(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, handleAlbumImageModified);
     }
   }, []);
 
@@ -120,7 +158,7 @@ const AlbumItem = ({album, allowInteraction}: AlbumProps) => {
       }}
     >
       <ListCover 
-        id={album.id.toString()}
+        image={coverImage}
         type={CoverType.ALBUM}
         propOnLoad={() => {}}
       />

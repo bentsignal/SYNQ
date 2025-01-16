@@ -7,6 +7,7 @@ import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 import SongModel from '@/src/models/SongModel';
 import 'react-native-get-random-values';
 import { splitImageMimeAndBuffer, getSongCover } from '@/src/controllers/ImageController';
+import { getAlbumCoverFromSong } from './AlbumController';
 
 export const updateMetadata = async (song: SongType) => {
 
@@ -206,4 +207,17 @@ export const generateSongKey = (song: SongType) => {
     return `${song.id}-${uuid}-${name}-${artist}-${album}-${cover}`;
   }
   return '-1';
+}
+
+export const getAbsoluteSongCover = async (id: number, full: boolean = false) => {
+  const albumCover = await getAlbumCoverFromSong(id, full);
+  if (albumCover) {
+    return albumCover;
+  }
+  else {
+    const cover = await getSongCover(id.toString(), full);
+    if (cover) {
+      return cover;
+    }
+  }
 }

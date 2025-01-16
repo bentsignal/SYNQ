@@ -20,6 +20,7 @@ import { usePlaybackContext } from "@/src/context/PlaybackProvider";
 import Bar from "@/src/components/modals/Bar";
 import ModalStyles from "@/src/components/modals/Styles";
 import LoopButton from "@/src/components/player/LoopButton";
+import { getAbsoluteSongCover } from "@/src/controllers/SongController";
 
 const Queue = () => {
 
@@ -30,36 +31,55 @@ const Queue = () => {
 
   const insets = useSafeAreaInsets();
   const [songs, setSongs] = useState<SongType[]>([]);
+  const [coverImage, setCoverImage] = useState('');
 
   useEffect(() => {
 
-    const loadSongs = async () => {
-      const results: SongType[] = [];
-      const queue = await TrackPlayer.getQueue();
-      const current = await TrackPlayer.getActiveTrackIndex();
-      let start = 0;
-      if (current !== null && current !== undefined) {
-        start = current + 1;
-      }
-      try {
-        let result: SongType;
-        for (let i = start; i < queue.length; i++) {
-          if (queue[i].id !== 'ad') {
-            result = await getSongById(queue[i].id);
-            result.uuid = queue[i].description;
-            results.push(result);
-          }
-        }
-      }
-      catch (error) {
-        console.log('error loading queue songs to display in list:', error);
-      }
-      setSongs(results);
-    }
-
     loadSongs();
+    loadImage();
 
   }, [track, shuffle]);
+
+  const loadImage = async () => {
+    try {
+      if (track?.id) {
+        const cover = await getAbsoluteSongCover(Number(track.id));
+        if (cover) {
+          setCoverImage(cover);
+        }
+        else {
+          setCoverImage('');
+        }
+      }
+    }
+    catch (error) {
+      console.log('error loading queue cover image:', error);
+    }
+  }
+
+  const loadSongs = async () => {
+    const results: SongType[] = [];
+    const queue = await TrackPlayer.getQueue();
+    const current = await TrackPlayer.getActiveTrackIndex();
+    let start = 0;
+    if (current !== null && current !== undefined) {
+      start = current + 1;
+    }
+    try {
+      let result: SongType;
+      for (let i = start; i < queue.length; i++) {
+        if (queue[i].id !== 'ad') {
+          result = await getSongById(queue[i].id);
+          result.uuid = queue[i].description;
+          results.push(result);
+        }
+      }
+    }
+    catch (error) {
+      console.log('error loading queue songs to display in list:', error);
+    }
+    setSongs(results);
+  }
 
   const getInfo = () => {
     if (track !== null && track !== undefined) {
@@ -90,7 +110,7 @@ const Queue = () => {
       <PageTitle title="Now Playing"/>
       <View style={Local.currentlyPlayingContainer}>
         <ListCover 
-          id={track?.id}
+          image={coverImage}
           type={CoverType.SONG}
           propOnLoad={() => {}}
           fade={true}

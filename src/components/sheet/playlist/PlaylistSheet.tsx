@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Sheet from '@/src/components/sheet';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
@@ -8,13 +8,31 @@ import { Styles } from '@/src/constants/Styles';
 import { Colors } from '@/src/constants/Colors';
 import { CoverType } from '@/src/constants/Types';
 import PlaylistOptions from '@/src/components/sheet/playlist/PlaylistOptions';
+import { getPlaylistCover } from '@/src/controllers/PlaylistController';
 
 const PlaylistSheet = ({name}: {name: string}) => {
 
   const { editPlaylist } = useGlobalContext();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
+  const [coverImage, setCoverImage] = useState('');
   const scrollRef = useRef<ScrollView>(null);
+
+  
+  const loadCover = async () => {
+    try {
+      const cover = await getPlaylistCover(editPlaylist.id);
+      if (cover) {
+        setCoverImage(cover);
+      }
+      else {
+        setCoverImage('');
+      }
+    }
+    catch (error) {
+      console.log('error loading playlist cover:', error);
+    }
+  }
 
   const onChange = (index: number) => {
     if (index === 0) {
@@ -26,11 +44,16 @@ const PlaylistSheet = ({name}: {name: string}) => {
     }
   }
 
+  useEffect(() => {
+    loadCover();
+  }, [editPlaylist.id]);
+
   return (
     <Sheet name={name} onChange={onChange}>
       <View style={SheetStyles.infoContainer}>
         <ListCover 
-          id={editPlaylist?.id}
+          id={editPlaylist?.id.toString()}
+          image={coverImage}
           type={CoverType.PLAYLIST}
           propOnLoad={() => {}}
         />

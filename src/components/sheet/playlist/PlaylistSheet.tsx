@@ -52,7 +52,7 @@ const PlaylistSheet = ({name}: {name: string}) => {
     <Sheet name={name} onChange={onChange}>
       <View style={SheetStyles.infoContainer}>
         <ListCover 
-          id={editPlaylist?.id.toString()}
+          id={editPlaylist?.id}
           image={coverImage}
           type={CoverType.PLAYLIST}
           propOnLoad={() => {}}

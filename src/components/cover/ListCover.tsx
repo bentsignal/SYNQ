@@ -19,7 +19,16 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
 
   const [src, setSrc] = useState(image ? image : '');
   const [loaded, setLoaded] = useState(false);
-  let dim = image || id === 'ad' ? 60 : 20;
+  const [dim, setDim] = useState(60);
+
+  useEffect(() => {
+    if (image || id === 'ad') {
+      setDim(60);
+    }
+    else {
+      setDim(20);
+    }
+  }, [image, id]);
 
   const Local = StyleSheet.create({
     container: {
@@ -45,6 +54,9 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
     }
     else if (image) {
       return {uri: `${image}`};
+    }
+    else if (type === CoverType.SONG) {
+      return require('@/src/assets/icons/music.png');
     }
     else if (type === CoverType.PLAYLIST) {
       if (id === '2') {

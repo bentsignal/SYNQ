@@ -1,4 +1,4 @@
-import { View, StyleSheet, Dimensions, Image } from "react-native";
+import { View, StyleSheet, Dimensions, Image, TouchableOpacity } from "react-native";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { useEffect, useState } from "react";
 import SongInfo from "@/src/components/song/SongInfo";
@@ -147,6 +147,10 @@ const Player = () => {
     return emptyImage;
   }
 
+  const handleAddToPlaylist = () => {
+    router.push('/playlist/add');
+  }
+
   return (
     <Animated.View style={[{opacity: containerOpacity}, Local.container]}>
       <CrossfadeImage 
@@ -182,6 +186,9 @@ const Player = () => {
               artistStyles={Local.artist}
             />
           </Animated.View>
+          <TouchableOpacity onPress={handleAddToPlaylist} style={Local.addWrapper}>
+            <Image source={require('@/src/assets/icons/add.png')} style={Local.add}/>
+          </TouchableOpacity>
           <More handlePress={handleMore}/>
         </View>
         <Time />
@@ -281,6 +288,16 @@ const Local = StyleSheet.create({
     fontWeight: '500',
     fontSize: 16,
     opacity: 0.5,
+  },
+  add: {
+    width: 25,
+    height: 25,
+    tintColor: Colors.text,
+  },
+  addWrapper: {
+    paddingLeft: 10,
+    paddingRight: 5,
+    paddingVertical: 5,
   }
 });
 

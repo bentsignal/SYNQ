@@ -43,7 +43,7 @@ const AddToPlaylist = () => {
   return (
     <View style={Local.wrapper}>
       <Bar />
-      <Text style={ModalStyles.header}>Manage Playlists</Text>
+      <Text style={ModalStyles.header}>Add to Playlist</Text>
       <CustomButton
         title={'New'}
         background={theme}

@@ -43,7 +43,7 @@ const AddAlbum = () => {
   return (
     <View style={Local.wrapper}>
       <Bar />
-      <Text style={ModalStyles.header}>Manage Albums</Text>
+      <Text style={ModalStyles.header}>Add to Album</Text>
       <CustomButton
         title={'New'}
         background={theme}

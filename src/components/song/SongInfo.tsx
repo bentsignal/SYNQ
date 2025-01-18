@@ -24,7 +24,7 @@ const SongInfo = ({info, name, id, showAlbum, color, titleStyles, artistStyles}:
   const { theme } = useThemeContext();
 
   useEffect(() => {
-    if (activeTrack?.id === id) {
+    if (activeTrack?.id &&activeTrack?.id === id) {
       setIsActive(true);
     }
     else if (isActive) {

@@ -13,6 +13,7 @@ const AlbumList = ({
   gradientStart,
   gradientEnd,
   emptyComponent,
+  bg,
 }: {
   albums: AlbumType[],
   headerComponent?: React.ReactNode,
@@ -21,12 +22,13 @@ const AlbumList = ({
   gradientStart?: string,
   gradientEnd?: string,
   emptyComponent?: React.ReactNode,
+  bg?: string,
 }) => {
 
   const renderItem = ({item}: {item: AlbumType}) => {
     item.pageType = pageType;
     return (
-      <MemoAlbum album={item} allowInteraction={true}/>
+      <MemoAlbum album={item} allowInteraction={true} bg={bg}/>
     );
   };
 

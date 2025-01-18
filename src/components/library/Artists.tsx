@@ -44,6 +44,7 @@ const Artists = () => {
         artists={artists}
         pageType={PageType.LIBRARY}
         emptyComponent={<Text style={Local.emptyText}>No artists in library</Text>}
+        bg={Colors.popup}
       />
     </View>
   );

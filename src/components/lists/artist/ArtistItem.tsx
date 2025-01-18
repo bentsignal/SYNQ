@@ -19,9 +19,10 @@ import { addArtistToAlbum, removeArtistFromAlbum, isArtistOnAlbum } from "@/src/
 type ArtistProps = {
   artist: ArtistType,
   allowInteraction?: boolean,
+  bg?: string,
 }
 
-const ArtistItem = ({artist, allowInteraction}: ArtistProps) => {
+const ArtistItem = ({artist, allowInteraction, bg}: ArtistProps) => {
 
   const { editSong, haptic, setEditArtist, editAlbum } = useGlobalContext();
   
@@ -159,7 +160,7 @@ const ArtistItem = ({artist, allowInteraction}: ArtistProps) => {
 
   return (
     <TouchableOpacity 
-      style={Local.container}
+      style={[Local.container, {backgroundColor: bg ?? Colors.song}]}
       activeOpacity={0.8}
       disabled={!allowInteraction || ![PageType.LIBRARY, PageType.ALBUM].includes(artist.pageType)}
       onPress={async () => {
@@ -197,7 +198,6 @@ const Local = StyleSheet.create({
     ...Styles.roundedContainer,
     ...Styles.listItem,
     ...Styles.nonSongItem,
-    backgroundColor: Colors.popup,
     width: '90%',
   },
   textWrapper: {

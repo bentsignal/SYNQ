@@ -14,6 +14,7 @@ const ArtistList = ({
   gradientStart,
   gradientEnd,
   emptyComponent,
+  bg,
 }: {
   artists: ArtistType[],
   headerComponent?: React.ReactNode,
@@ -22,12 +23,13 @@ const ArtistList = ({
   gradientStart?: string,
   gradientEnd?: string,
   emptyComponent?: React.ReactNode,
+  bg?: string,
 }) => {
 
   const renderItem = ({item}: {item: ArtistType}) => {
     item.pageType = pageType;
     return (
-      <MemoArtist artist={item} allowInteraction={true}/>
+      <MemoArtist artist={item} allowInteraction={true} bg={bg}/>
     );
   };
 

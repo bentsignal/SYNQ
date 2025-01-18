@@ -20,9 +20,10 @@ import { addArtistToSong, removeArtistFromSong } from "@/src/controllers/ArtistC
 type AlbumProps = {
   album: AlbumType,
   allowInteraction?: boolean,
+  bg?: string,
 }
 
-const AlbumItem = ({album, allowInteraction}: AlbumProps) => {
+const AlbumItem = ({album, allowInteraction, bg}: AlbumProps) => {
 
   const { editSong, haptic, setEditAlbum } = useGlobalContext();
   
@@ -145,7 +146,7 @@ const AlbumItem = ({album, allowInteraction}: AlbumProps) => {
 
   return (
     <TouchableOpacity 
-      style={Local.container}
+      style={[Local.container, {backgroundColor: bg ?? Colors.song}]}
       activeOpacity={0.8}
       disabled={!allowInteraction || ![PageType.LIBRARY].includes(album.pageType)}
       onPress={async () => {
@@ -184,7 +185,6 @@ const Local = StyleSheet.create({
     ...Styles.roundedContainer,
     ...Styles.listItem,
     ...Styles.nonSongItem,
-    backgroundColor: Colors.popup,
     width: '90%',
   },
   textWrapper: {

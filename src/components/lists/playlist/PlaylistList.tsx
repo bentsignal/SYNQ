@@ -12,6 +12,7 @@ const PlaylistList = memo(({
   bottomPadding = false,
   gradientStart,
   gradientEnd,
+  bg,
 }: {
   playlists: PlaylistType[],
   headerComponent?: React.ReactNode,
@@ -19,12 +20,13 @@ const PlaylistList = memo(({
   pageType: PageType,
   gradientStart?: string,
   gradientEnd?: string,
+  bg?: string,
 }) => {
 
   const renderItem = ({item}: {item: PlaylistType}) => {
     item.pageType = pageType;
     return (
-      <MemoPlaylist playlist={item} />
+      <MemoPlaylist playlist={item} bg={bg} />
     );
   };
 

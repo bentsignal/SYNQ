@@ -5,6 +5,7 @@ import { PageType, PlaylistType } from "@/src/constants/Types";
 import playlistBus from "@/src/events/playlist";
 import { getPlaylists } from "@/src/controllers/PlaylistController";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
+import { Colors } from "@/src/constants/Colors";
 
 const Playlists = () => {
 
@@ -40,6 +41,7 @@ const Playlists = () => {
       <PlaylistList 
         playlists={playlists}
         pageType={PageType.LIBRARY}
+        bg={Colors.popup}
       />
     </View>
   );

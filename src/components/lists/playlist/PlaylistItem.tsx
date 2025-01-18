@@ -17,9 +17,10 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 
 type PlaylistProps = {
   playlist: PlaylistType,
+  bg?: string,
 }
 
-const PlaylistItem = ({playlist}: PlaylistProps) => {
+const PlaylistItem = ({playlist, bg}: PlaylistProps) => {
 
   const { 
     
@@ -145,7 +146,7 @@ const PlaylistItem = ({playlist}: PlaylistProps) => {
 
   return (
     <TouchableOpacity 
-      style={Local.container}
+      style={[Local.container, {backgroundColor: bg ?? Colors.song}]}
       activeOpacity={0.8}
       onPress={async () => {
         if (playlist.pageType === PageType.ADD) {
@@ -184,7 +185,6 @@ const Local = StyleSheet.create({
     ...Styles.roundedContainer,
     ...Styles.listItem,
     ...Styles.nonSongItem,
-    backgroundColor: Colors.popup,
   },
   textWrapper: {
     paddingLeft: 10,

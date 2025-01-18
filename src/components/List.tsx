@@ -114,11 +114,11 @@ const List = memo((
           ListHeaderComponent={headerComponent ? <>{headerComponent}</> : null}
           ListHeaderComponentStyle={{width: '90%'}}
           contentContainerStyle={ Local.listContent }
-          maxToRenderPerBatch={10}
-          initialNumToRender={10}
+          maxToRenderPerBatch={100}
+          initialNumToRender={30}
           removeClippedSubviews={true}
-          updateCellsBatchingPeriod={50}
-          windowSize={10}
+          updateCellsBatchingPeriod={100}
+          windowSize={30}
           ListFooterComponent={footerComponent ? <>{footerComponent}</> : null}
           ListEmptyComponent={emptyComponent ? <>{emptyComponent}</> : null}
         />

@@ -99,10 +99,13 @@ const Time = () => {
   const timelineStyle = useAnimatedStyle(() => ({
     height: 8,
     transform: [{ scaleY: sliderHeight.value }],
+    borderRadius: 20 * sliderHeight.value,
   }));
 
   const progressStyle = useAnimatedStyle(() => ({
     transform: [{ scaleX: progressScale.value }],
+    borderTopLeftRadius: 20 * sliderHeight.value,
+    borderBottomLeftRadius: 20 * sliderHeight.value,
   }));
 
   return (
@@ -144,7 +147,6 @@ const styles = StyleSheet.create({
   },
   timeline: {
     width: '100%',
-    borderRadius: 20,
     overflow: 'hidden',
   },
   progressBackground: {
@@ -156,8 +158,6 @@ const styles = StyleSheet.create({
     height: 8,
   },
   progress: {
-    borderTopLeftRadius: 20,
-    borderBottomLeftRadius: 20,
     width: Dimensions.get('window').width * 0.85,
     position: 'absolute',
     left: 0,

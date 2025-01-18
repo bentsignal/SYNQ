@@ -1,39 +1,44 @@
-import { StyleSheet, Animated } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import FastImage from 'react-native-fast-image';
 import { getAppIcon } from '@/src/constants/Logos';
 import { CoverType } from '@/src/constants/Types';
 import { useThemeContext } from '@/src/context/ThemeProvider';
+import Animated, { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
 
-const ListCover = ({image, type, id, fade, size, propOnLoad}: {
+const ListCover = ({image, type, id, fade, size, empty, propOnLoad}: {
   image?: string;
   type: CoverType;
   id?: string;
   fade?: boolean;
   size?: number;
+  empty?: boolean;
   propOnLoad: () => void;
 }) => {
 
   const { theme } = useThemeContext();
 
-  const opacityRef = useRef(new Animated.Value(fade ? 0 : 1)).current;
+  const opacityRef = useSharedValue(fade ? 0 : 1);
 
-  const [src, setSrc] = useState(image ? image : '');
   const [loaded, setLoaded] = useState(false);
   const [dim, setDim] = useState(60);
 
   useEffect(() => {
     if (image || id === 'ad') {
-      setDim(60);
+      setDim(size ??60);
     }
     else {
       setDim(20);
     }
   }, [image, id, size]);
 
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacityRef.value,
+  }));
+
   const Local = StyleSheet.create({
     container: {
-      backgroundColor: src ? 'transparent' : '#D2D2D2',
+      backgroundColor: empty ? '#D2D2D2' : 'transparent',
       width: size ?? 60,
       height: size ?? 60,
       justifyContent: 'center',
@@ -45,7 +50,7 @@ const ListCover = ({image, type, id, fade, size, propOnLoad}: {
     artwork: {
       width: dim, 
       height: dim,
-      borderRadius: src || id === 'ad' ? 9 : 0,
+      borderRadius: image || id === 'ad' ? 9 : 0,
     }
   });
 
@@ -56,47 +61,47 @@ const ListCover = ({image, type, id, fade, size, propOnLoad}: {
     else if (image) {
       return {uri: `${image}`};
     }
-    else if (type === CoverType.SONG) {
-      return require('@/src/assets/icons/music.png');
-    }
-    else if (type === CoverType.PLAYLIST) {
-      if (id === '2') {
-        return require('@/src/assets/icons/heart.png');
+    else if (empty) {
+      if (type === CoverType.SONG) {
+        return require('@/src/assets/icons/music.png');
+      }
+      else if (type === CoverType.PLAYLIST) {
+        if (id === '2') {
+          return require('@/src/assets/icons/heart.png');
+        }
+        else {
+          return require('@/src/assets/icons/cassette-tape.png');
+        }
+      }
+      else if (type === CoverType.ALBUM) {
+        return require('@/src/assets/icons/cd-drive.png');
+      }
+      else if (type === CoverType.ARTIST) {
+        return require('@/src/assets/icons/user.png');
       }
       else {
-        return require('@/src/assets/icons/cassette-tape.png');
+        return require('@/src/assets/icons/music.png');
       }
     }
-    else if (type === CoverType.ALBUM) {
-      return require('@/src/assets/icons/cd-drive.png');
-    }
-    else if (type === CoverType.ARTIST) {
-      return require('@/src/assets/icons/user.png');
-    }
     else {
-      return require('@/src/assets/icons/music.png');
+      return {uri: 'transparent'};
     }
   }
 
   return (
-    <Animated.View style={[Local.container, {opacity: opacityRef}]}>
+    <Animated.View style={[Local.container, animatedStyle]}>
       <FastImage
         source={getSource()}
         style={Local.artwork}
         onLoad={() => {
           setLoaded(true);
           if (fade) {
-            Animated.timing(opacityRef, {
-              toValue: 1,
-              duration: 300,
-              useNativeDriver: false,
-            }).start();
+            opacityRef.value = withTiming(1, { duration: 300 });
           }
           propOnLoad()
         }}
         onError={() => {
           console.log('error loading list cover');
-          setSrc('');
           setLoaded(true);
           propOnLoad();
         }}

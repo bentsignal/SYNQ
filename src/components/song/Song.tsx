@@ -49,6 +49,7 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
   const [_, forceUpdate] = useState(0);
   const [updates, setUpdates] = useState(0);
   const [coverImage, setCoverImage] = useState('');
+  const [emptyCover, setEmptyCover] = useState(false);
 
   const track = useActiveTrack();
 
@@ -218,6 +219,7 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
       }
       else {
         setCoverImage('');
+        setEmptyCover(true);
       }
     }
     catch (error) {
@@ -286,6 +288,7 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
           image={coverImage}
           type={CoverType.SONG}
           fade={fadeCover}
+          empty={emptyCover}
           propOnLoad={() => {
             setLoaded(true);
           }}
@@ -348,13 +351,6 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
 
         }
       </TouchableOpacity>
-      {
-        fadeSong &&
-        <Skeleton
-          show={!loaded}
-          styles={Local.skeleton}
-        />
-      }
       <BlurView
         style={[Local.blur, {display: blur ? 'flex' : 'none'}]}
         intensity={20}

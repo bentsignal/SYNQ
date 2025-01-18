@@ -135,8 +135,8 @@ export const Styles = StyleSheet.create({
     marginBottom: 10,
   },
   nonSongItem: {
-    padding: 10,
-    // height: 90,
+    padding: 15,
+    height: 90,
   },
 
   // general styles

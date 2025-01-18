@@ -15,10 +15,12 @@ const Artists = () => {
 
 
   const [artists, setArtists] = useState<ArtistType[]>([]);
+  const [showEmptyComponent, setShowEmptyComponent] = useState(false);
 
   const refreshArtists = async () => {
     const results = await getArtists();
     setArtists(results);
+    setShowEmptyComponent(results.length === 0);
   }
 
   useEffect(() => {
@@ -45,6 +47,7 @@ const Artists = () => {
         pageType={PageType.LIBRARY}
         emptyComponent={<Text style={Local.emptyText}>No artists in library</Text>}
         bg={Colors.popup}
+        showEmptyComponent={showEmptyComponent}
       />
     </View>
   );

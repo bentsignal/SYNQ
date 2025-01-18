@@ -14,6 +14,7 @@ const ArtistList = ({
   gradientStart,
   gradientEnd,
   emptyComponent,
+  showEmptyComponent,
   bg,
 }: {
   artists: ArtistType[],
@@ -23,6 +24,7 @@ const ArtistList = ({
   gradientStart?: string,
   gradientEnd?: string,
   emptyComponent?: React.ReactNode,
+  showEmptyComponent?: boolean,
   bg?: string,
 }) => {
 
@@ -47,6 +49,7 @@ const ArtistList = ({
       gradientStart={gradientStart}
       gradientEnd={gradientEnd}
       emptyComponent={emptyComponent}
+      showEmptyComponent={showEmptyComponent}
     />
   );
 }

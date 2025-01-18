@@ -18,6 +18,7 @@ const List = memo((
     gradientStart,
     gradientEnd,
     emptyComponent,
+    showEmptyComponent = true,
   }: 
   {
     data: any[], 
@@ -31,6 +32,7 @@ const List = memo((
     gradientStart?: string,
     gradientEnd?: string,
     emptyComponent?: React.ReactNode,
+    showEmptyComponent?: boolean,
   }
 ) => {
 
@@ -120,7 +122,7 @@ const List = memo((
           updateCellsBatchingPeriod={100}
           windowSize={30}
           ListFooterComponent={footerComponent ? <>{footerComponent}</> : null}
-          ListEmptyComponent={emptyComponent ? <>{emptyComponent}</> : null}
+          ListEmptyComponent={showEmptyComponent && emptyComponent ? <>{emptyComponent}</> : null}
         />
         <AnimatedGradient
           style={ Local.topGradient }

@@ -24,6 +24,7 @@ const SongList = memo((
     gradientStart,
     gradientEnd,
     emptyComponent,
+    showEmptyComponent, 
   }: 
   {
     songs: SongType[], 
@@ -39,6 +40,7 @@ const SongList = memo((
     gradientStart?: string,
     gradientEnd?: string,
     emptyComponent?: React.ReactNode,
+    showEmptyComponent?: boolean,
   }
 ) => {
 
@@ -82,6 +84,7 @@ const SongList = memo((
         gradientStart={gradientStart}
         gradientEnd={gradientEnd}
         emptyComponent={emptyComponent}
+        showEmptyComponent={showEmptyComponent}
       />
     </>
   );

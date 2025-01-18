@@ -14,10 +14,12 @@ import { SongBusEvent } from "@/src/events/song/Events";
 export default function Songs () {
 
   const [songs, setSongs] = useState<SongType[]>([]);
+  const [showEmptyComponent, setShowEmptyComponent] = useState(false);
 
   const refreshSongs = async () => {
     const results = await getPlaylistSongs(1, PageType.LIBRARY, SortType.NEWEST);
     setSongs(results);
+    setShowEmptyComponent(results.length === 0);
   }
 
   useEffect(() => {
@@ -34,6 +36,7 @@ export default function Songs () {
     <View style={Local.container}>
       <SongList
         songs={songs}
+        showEmptyComponent={showEmptyComponent}
         pageType={PageType.LIBRARY}
         sourceId={1}
         sourceType={SourceType.PLAYLIST}

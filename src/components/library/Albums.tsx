@@ -14,10 +14,12 @@ import { Styles as MainStyles } from "@/src/constants/Styles";
 const Albums = () => {
 
   const [albums, setAlbums] = useState<AlbumType[]>([]);
+  const [showEmptyComponent, setShowEmptyComponent] = useState(false);
 
   const refreshAlbums = async () => {
     const results = await getAlbums();
     setAlbums(results);
+    setShowEmptyComponent(results.length === 0);
   }
 
   useEffect(() => {
@@ -44,6 +46,7 @@ const Albums = () => {
         pageType={PageType.LIBRARY}
         emptyComponent={<Text style={Local.emptyText}>No albums in library</Text>}
         bg={Colors.popup}
+        showEmptyComponent={showEmptyComponent}
       />
     </View>
   );

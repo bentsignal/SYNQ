@@ -15,10 +15,14 @@ import ModalStyles from '@/src/components/modals/Styles';
 import { getAbsoluteSongCover } from '@/src/controllers/SongController';
 
 const PlayerSongEdit = () => {
+
   const name = 'player-song-sheet';
+  
   const { editSong, haptic } = useGlobalContext();
+
   const [scrollEnabled, setScrollEnabled] = useState(false);
   const [coverImage, setCoverImage] = useState('');
+  const [emptyCover, setEmptyCover] = useState(false);
 
   const loadCover = async () => { 
     try {
@@ -26,9 +30,11 @@ const PlayerSongEdit = () => {
         const cover = await getAbsoluteSongCover(Number(editSong.id));
         if (cover) {
           setCoverImage(cover);
+          setEmptyCover(false);
         }
         else {
           setCoverImage('');
+          setEmptyCover(true);
         }
       }
     }
@@ -49,6 +55,7 @@ const PlayerSongEdit = () => {
           image={coverImage}
           type={CoverType.SONG}
           propOnLoad={() => {}}
+          empty={emptyCover}
         />
         <SongInfo 
           info={editSong.info ? editSong.info : {metadata: {}}} 

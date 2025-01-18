@@ -32,15 +32,18 @@ const PlaylistItem = ({playlist, bg}: PlaylistProps) => {
   const [songCount, setSongCount] = useState(playlist.songCount);
   const [name, setName] = useState(playlist.name);
   const [coverImage, setCoverImage] = useState('');
+  const [emptyCover, setEmptyCover] = useState(false);
 
   const loadCover = async () => {
     try {
       const cover = await getPlaylistCover(playlist.id);
       if (cover) {
         setCoverImage(cover);
+        setEmptyCover(false);
       }
       else {
         setCoverImage('');
+        setEmptyCover(true);
       }
     }
     catch (error) {
@@ -161,6 +164,7 @@ const PlaylistItem = ({playlist, bg}: PlaylistProps) => {
         id={playlist.id.toString()}
         image={coverImage}
         type={CoverType.PLAYLIST}
+        empty={emptyCover}
         propOnLoad={() => {}}
       />
       <View style={Local.textWrapper}>

@@ -17,7 +17,7 @@ const AlbumSheet = ({name}: {name: string}) => {
   const [scrollEnabled, setScrollEnabled] = useState(false);
   const [coverImage, setCoverImage] = useState('');
   const scrollRef = useRef<ScrollView>(null);
-
+  const [emptyCover, setEmptyCover] = useState(false);
   const onChange = (index: number) => {
     if (index === 0) {
       setScrollEnabled(false);
@@ -32,14 +32,17 @@ const AlbumSheet = ({name}: {name: string}) => {
     try {
       if (editAlbum?.image) {
         setCoverImage(editAlbum.image);
+        setEmptyCover(false);
       }
       else {
         const cover = await getAlbumCover(editAlbum.id);
         if (cover) {
           setCoverImage(cover);
+          setEmptyCover(false);
         }
         else {
           setCoverImage('');
+          setEmptyCover(true);
         }
       }
     }
@@ -59,6 +62,7 @@ const AlbumSheet = ({name}: {name: string}) => {
           image={coverImage}
           type={CoverType.ALBUM}
           propOnLoad={() => {}}
+          empty={emptyCover}
         />
         <View style={Local.textWrapper}>
           <Text style={Local.name}>{editAlbum?.name}</Text>

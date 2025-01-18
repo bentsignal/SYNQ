@@ -29,15 +29,18 @@ const ArtistItem = ({artist, allowInteraction, bg}: ArtistProps) => {
   const [selected, setSelected] = useState(false);
   const [name, setName] = useState(artist.name);
   const [coverImage, setCoverImage] = useState('');
+  const [emptyCover, setEmptyCover] = useState(false);
 
   const loadCover = async () => {
     try {
       const cover = await getArtistCover(artist.id);
       if (cover) {
         setCoverImage(cover);
+        setEmptyCover(false);
       }
       else {
         setCoverImage('');
+        setEmptyCover(true);
       }
     }
     catch (error) {
@@ -176,6 +179,7 @@ const ArtistItem = ({artist, allowInteraction, bg}: ArtistProps) => {
         image={coverImage}
         type={CoverType.ARTIST}
         propOnLoad={() => {}}
+        empty={emptyCover}
       />
       <View style={Local.textWrapper}>
         <Text style={Local.name}>{name}</Text>

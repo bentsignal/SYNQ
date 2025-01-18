@@ -213,9 +213,11 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
       const cover = await getAbsoluteSongCover(Number(song.id), true);
       if (cover) {
         setCoverImage(cover);
+        setEmptyCover(false);
       }
       else if (song.info?.metadata?.artwork) {
         setCoverImage(song.info.metadata.artwork);
+        setEmptyCover(false);
       }
       else {
         setCoverImage('');

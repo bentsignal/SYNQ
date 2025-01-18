@@ -32,6 +32,7 @@ const Queue = () => {
   const insets = useSafeAreaInsets();
   const [songs, setSongs] = useState<SongType[]>([]);
   const [coverImage, setCoverImage] = useState('');
+  const [emptyCover, setEmptyCover] = useState(false);
 
   useEffect(() => {
 
@@ -46,9 +47,11 @@ const Queue = () => {
         const cover = await getAbsoluteSongCover(Number(track.id));
         if (cover) {
           setCoverImage(cover);
+          setEmptyCover(false);
         }
         else {
           setCoverImage('');
+          setEmptyCover(true);
         }
       }
     }
@@ -114,6 +117,7 @@ const Queue = () => {
           image={coverImage}
           type={CoverType.SONG}
           propOnLoad={() => {}}
+          empty={emptyCover}
           fade={true}
         />
         {getInfo()}

@@ -28,15 +28,17 @@ const MiniPlayer = () => {
   }));
 
   const [coverImage, setCoverImage] = useState('');
-
+  const [emptyCover, setEmptyCover] = useState(false);
   const loadCover = async () => {
     try {
       const cover = await getAbsoluteSongCover(track?.id);
       if (cover) {
         setCoverImage(cover);
+        setEmptyCover(false);
       }
       else {
         setCoverImage('');
+        setEmptyCover(true);
       }
     }
     catch (error) {
@@ -67,6 +69,7 @@ const MiniPlayer = () => {
           image={coverImage}
           type={CoverType.SONG}
           propOnLoad={() => {}}
+          empty={emptyCover}
         />
       </Animated.View>
       <SongInfo 

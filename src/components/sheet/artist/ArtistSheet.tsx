@@ -16,6 +16,7 @@ const ArtistSheet = ({name}: {name: string}) => {
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
   const [coverImage, setCoverImage] = useState('');
+  const [emptyCover, setEmptyCover] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
 
   const onChange = (index: number) => {
@@ -32,14 +33,17 @@ const ArtistSheet = ({name}: {name: string}) => {
     try {
       if (editArtist?.image) {
         setCoverImage(editArtist.image);
+        setEmptyCover(false);
       }
       else {
         const cover = await getArtistCover(editArtist.id);
         if (cover) {
           setCoverImage(cover);
+          setEmptyCover(false);
         }
         else {
           setCoverImage('');
+          setEmptyCover(true);
         }
       }
     }
@@ -59,6 +63,7 @@ const ArtistSheet = ({name}: {name: string}) => {
           image={coverImage}
           type={CoverType.ARTIST}
           propOnLoad={() => {}}
+          empty={emptyCover}
         />
         <View style={Local.textWrapper}>
           <Text style={Local.name}>{editArtist?.name}</Text>

@@ -21,6 +21,7 @@ const SongSheet = ({name}: SongSheetProps) => {
   const { editSong, haptic } = useGlobalContext();
   const [scrollEnabled, setScrollEnabled] = useState(false);
   const [coverImage, setCoverImage] = useState('');
+  const [emptyCover, setEmptyCover] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
 
   const onChange = (index: number) => {
@@ -37,14 +38,17 @@ const SongSheet = ({name}: SongSheetProps) => {
     try {
       if (editSong?.info?.metadata?.artwork) {
         setCoverImage(editSong.info.metadata.artwork);
+        setEmptyCover(false);
       }
       else {
         const cover = await getAbsoluteSongCover(editSong.id);
         if (cover) {
           setCoverImage(cover);
-         }
+          setEmptyCover(false);
+        }
         else {
           setCoverImage('');
+          setEmptyCover(true);
         }
       }
     }
@@ -64,6 +68,7 @@ const SongSheet = ({name}: SongSheetProps) => {
           type={CoverType.SONG}
           image={coverImage}
           propOnLoad={() => {}}
+          empty={emptyCover}
         />
         <SongInfo 
           info={editSong.info ? editSong.info : {metadata: {}}} 

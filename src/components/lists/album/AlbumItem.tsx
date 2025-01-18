@@ -31,15 +31,18 @@ const AlbumItem = ({album, allowInteraction, bg}: AlbumProps) => {
   const [name, setName] = useState(album.name);
   const [year, setYear] = useState(album.year);
   const [coverImage, setCoverImage] = useState('');
+  const [emptyCover, setEmptyCover] = useState(false);
 
   const loadCover = async () => {
     try {
       const cover = await getAlbumCover(Number(album.id));
       if (cover) {
         setCoverImage(cover);
+        setEmptyCover(false);
       }
       else {
         setCoverImage('');
+        setEmptyCover(true);
       }
     }
     catch (error) {
@@ -162,6 +165,7 @@ const AlbumItem = ({album, allowInteraction, bg}: AlbumProps) => {
         image={coverImage}
         type={CoverType.ALBUM}
         propOnLoad={() => {}}
+        empty={emptyCover}
       />
       <View style={Local.textWrapper}>
         <Text style={Local.name} numberOfLines={1}>{name}</Text>

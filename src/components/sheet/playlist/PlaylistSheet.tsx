@@ -16,17 +16,19 @@ const PlaylistSheet = ({name}: {name: string}) => {
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
   const [coverImage, setCoverImage] = useState('');
+  const [emptyCover, setEmptyCover] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
 
-  
   const loadCover = async () => {
     try {
       const cover = await getPlaylistCover(editPlaylist.id);
       if (cover) {
         setCoverImage(cover);
+        setEmptyCover(false);
       }
       else {
         setCoverImage('');
+        setEmptyCover(true);
       }
     }
     catch (error) {
@@ -56,6 +58,7 @@ const PlaylistSheet = ({name}: {name: string}) => {
           image={coverImage}
           type={CoverType.PLAYLIST}
           propOnLoad={() => {}}
+          empty={emptyCover}
         />
         <View style={Local.textWrapper}>
           <Text style={Local.name}>{editPlaylist?.name}</Text>

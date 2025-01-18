@@ -183,7 +183,8 @@ const Local = StyleSheet.create({
   container: {
     ...Styles.roundedContainer,
     ...Styles.listItem,
-    backgroundColor: Colors.song,
+    ...Styles.nonSongItem,
+    backgroundColor: Colors.popup,
     width: '90%',
   },
   textWrapper: {

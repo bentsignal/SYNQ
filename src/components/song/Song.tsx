@@ -274,7 +274,7 @@ export default function Song({ song, fadeCover, fadeSong }: SongProps) {
       }]}>
       <TouchableOpacity 
         style={[Local.contentContainer, {
-          backgroundColor: bg,
+          // backgroundColor: bg,
           opacity: !selectEnabled || (selectEnabled && selected) ? 1 : 0.6,
         }]}
         activeOpacity={disablePlay ? 1 : 0.8}
@@ -288,8 +288,9 @@ export default function Song({ song, fadeCover, fadeSong }: SongProps) {
           propOnLoad={() => {
             setLoaded(true);
           }}
+          size={55}
         />
-        <SongInfo info={song.info} name={song.name}/>
+        <SongInfo info={song.info} name={song.name} id={song.id}/>
         {
 
           selectEnabled &&
@@ -378,6 +379,7 @@ const Local = StyleSheet.create({
   contentContainer: {
     ...Styles.roundedContainer,
     ...Styles.listItem,
+    marginBottom: 15,
   },
   skeleton: {
     ...Styles.roundedContainer,

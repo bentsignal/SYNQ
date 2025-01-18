@@ -5,11 +5,12 @@ import { getAppIcon } from '@/src/constants/Logos';
 import { CoverType } from '@/src/constants/Types';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 
-const ListCover = ({image, type, id, fade, propOnLoad}: {
+const ListCover = ({image, type, id, fade, size, propOnLoad}: {
   image?: string;
   type: CoverType;
   id?: string;
   fade?: boolean;
+  size?: number;
   propOnLoad: () => void;
 }) => {
 
@@ -28,13 +29,13 @@ const ListCover = ({image, type, id, fade, propOnLoad}: {
     else {
       setDim(20);
     }
-  }, [image, id]);
+  }, [image, id, size]);
 
   const Local = StyleSheet.create({
     container: {
       backgroundColor: src ? 'transparent' : '#D2D2D2',
-      width: 60,
-      height: 60,
+      width: size ?? 60,
+      height: size ?? 60,
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: type === CoverType.ARTIST ? 100 : 10,

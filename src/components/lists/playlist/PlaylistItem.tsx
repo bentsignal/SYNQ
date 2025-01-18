@@ -183,7 +183,8 @@ const Local = StyleSheet.create({
   container: {
     ...Styles.roundedContainer,
     ...Styles.listItem,
-    backgroundColor: Colors.song,
+    ...Styles.nonSongItem,
+    backgroundColor: Colors.popup,
   },
   textWrapper: {
     paddingLeft: 10,
@@ -192,7 +193,7 @@ const Local = StyleSheet.create({
     alignItems: 'flex-start',
   },
   name: {
-    ...Styles.h4,
+    ...Styles.h5,
     color: Colors.text,
   },
   count: {

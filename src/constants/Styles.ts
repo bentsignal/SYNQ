@@ -131,12 +131,12 @@ export const Styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    height: 90,
+    // height: 90,
     marginBottom: 10,
-    paddingLeft: 15,
-    paddingRight: 15,
-    paddingTop: 15,
-    paddingBottom: 15,
+  },
+  nonSongItem: {
+    padding: 10,
+    // height: 90,
   },
 
   // general styles

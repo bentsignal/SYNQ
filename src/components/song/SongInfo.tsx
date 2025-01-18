@@ -1,15 +1,13 @@
 import { Text, View, StyleSheet, StyleProp, TextStyle } from 'react-native';
-import { useEffect, useState } from 'react';
+import { memo } from 'react';
 import { Colors, Themes } from '@/src/constants/Colors';
 import { InfoType } from '@/src/constants/Types';
 import { Styles } from '@/src/constants/Styles';
-import { useActiveTrack } from 'react-native-track-player';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import LottieView from 'lottie-react-native';
 import { replaceColor } from 'lottie-colorify';
-import { darkenColor } from '@/src/controllers/ColorController';
 
-const SongInfo = ({info, name, id, showAlbum, color, titleStyles, artistStyles}: {
+const SongInfo = memo(({info, name, id, showAlbum, color, titleStyles, artistStyles, isActive}: {
   info: InfoType, 
   name: string,
   id?: string,
@@ -17,20 +15,10 @@ const SongInfo = ({info, name, id, showAlbum, color, titleStyles, artistStyles}:
   color?: string,
   titleStyles?: StyleProp<TextStyle>,
   artistStyles?: StyleProp<TextStyle>,
+  isActive?: boolean,
 }) => {
 
-  const activeTrack = useActiveTrack();
-  const [isActive, setIsActive] = useState(false);
   const { theme } = useThemeContext();
-
-  useEffect(() => {
-    if (activeTrack?.id &&activeTrack?.id === id) {
-      setIsActive(true);
-    }
-    else if (isActive) {
-      setIsActive(false);
-    }
-  }, [activeTrack]);
 
   const Local = StyleSheet.create({
     infoContainer: {
@@ -47,9 +35,6 @@ const SongInfo = ({info, name, id, showAlbum, color, titleStyles, artistStyles}:
       ...Styles.sub,
       color: color ? color : Colors.infoText,
       fontWeight: '500',
-    },
-    sound: {
-      width: 20,
     },
     topContainer: {
       flexDirection: 'row',
@@ -71,7 +56,7 @@ const SongInfo = ({info, name, id, showAlbum, color, titleStyles, artistStyles}:
             source={replaceColor(Themes.blue, theme, require('@/src/assets/anim/sound.json'))}
             autoPlay
             loop={true}
-            style={Local.sound}
+            style={{width: 20}}
             renderMode={'SOFTWARE'}
           />
         }
@@ -87,6 +72,6 @@ const SongInfo = ({info, name, id, showAlbum, color, titleStyles, artistStyles}:
     </View>
   );
 
-}
+});
 
 export default SongInfo;

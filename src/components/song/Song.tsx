@@ -38,9 +38,10 @@ type SongProps = {
   song: SongType, 
   fadeCover: boolean, 
   fadeSong: boolean,
+  activeId?: number,
 }
 
-export default function Song({ song, fadeCover, fadeSong }: SongProps) {
+export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps) {
 
   const [selected, setSelected] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -290,7 +291,12 @@ export default function Song({ song, fadeCover, fadeSong }: SongProps) {
           }}
           size={55}
         />
-        <SongInfo info={song.info} name={song.name} id={song.id}/>
+        <SongInfo 
+          info={song.info} 
+          name={song.name} 
+          id={song.id}
+          isActive={activeId === Number(song.id)}
+        />
         {
 
           selectEnabled &&

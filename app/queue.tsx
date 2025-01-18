@@ -98,6 +98,7 @@ const Queue = () => {
           info={info} 
           name={getFileName(track.url)}
           showAlbum={false}
+          isActive={true}
         />
       );
     }

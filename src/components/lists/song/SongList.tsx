@@ -1,10 +1,11 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { SongType, PageType, SourceType } from '@/src/constants/Types';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import Song from '@/src/components/song';
 import DeleteModal from '@/src/components/modals/DeleteModal';
 import { generateSongKey } from '@/src/controllers/SongController';
 import List from '@/src/components/List';
+import { useActiveTrack } from 'react-native-track-player';
 
 const MemoSong = memo(Song);
 
@@ -43,6 +44,16 @@ const SongList = memo((
 
   const { selectedId } = useGlobalContext();
 
+  const [activeId, setActiveId] = useState<number | undefined>(undefined);
+
+  const activeTrack = useActiveTrack();
+
+  useEffect(() => {
+    if (activeTrack) {
+      setActiveId(activeTrack.id);
+    }
+  }, [activeTrack]);
+
   const renderItem = ({item} : {item: SongType}) => {
     item.pageType = pageType;
     item.sourceId = sourceId;
@@ -52,6 +63,7 @@ const SongList = memo((
         song={item}
         fadeCover={fadeCover}
         fadeSong={fadeSong}
+        activeId={activeId}
       />
     );
   };

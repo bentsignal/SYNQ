@@ -300,7 +300,7 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
           info={song.info} 
           name={song.name} 
           id={song.id}
-          isActive={activeId === Number(song.id)}
+          isActive={song.pageType !== PageType.QUEUE && activeId === Number(song.id)}
         />
         {
 

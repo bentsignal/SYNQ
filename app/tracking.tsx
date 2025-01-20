@@ -92,7 +92,7 @@ const Tracking = () => {
         />
         <LinearGradient
           style={Local.gradient}
-          colors={['rgba(16, 16, 16, 0)', 'rgba(16, 16, 16, 1)']}
+          colors={['rgba(20, 20, 20, 0)', 'rgba(20, 20, 20, 1)']}
           pointerEvents={'none'}
         />
       </View>

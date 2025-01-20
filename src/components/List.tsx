@@ -126,12 +126,12 @@ const List = memo((
         />
         <AnimatedGradient
           style={ Local.topGradient }
-          colors={[ gradientStart || 'rgba(16, 16, 16, 1)', gradientEnd || 'rgba(16, 16, 16, 0)']}
+          colors={[ gradientStart || 'rgba(20, 20, 20, 1)', gradientEnd || 'rgba(20, 20, 20, 0)']}
           pointerEvents={'none'}
         />
         <LinearGradient
           style={ Local.bottomGradient }
-          colors={[ gradientEnd || 'rgba(16, 16, 16, 0)', gradientStart || 'rgba(16, 16, 16, 1)']}
+          colors={[ gradientEnd || 'rgba(20, 20, 20, 0)', gradientStart || 'rgba(20, 20, 20, 1)']}
           pointerEvents={'none'}
         />
       </Animated.View>

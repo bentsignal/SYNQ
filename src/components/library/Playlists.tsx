@@ -38,10 +38,9 @@ const Playlists = () => {
 
   return (
     <View style={Local.container}>
-      <PlaylistList 
+      <PlaylistList
         playlists={playlists}
         pageType={PageType.LIBRARY}
-        bg={Colors.popup}
       />
     </View>
   );

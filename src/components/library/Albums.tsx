@@ -45,7 +45,6 @@ const Albums = () => {
         albums={albums}
         pageType={PageType.LIBRARY}
         emptyComponent={<Text style={Local.emptyText}>No albums in library</Text>}
-        bg={Colors.popup}
         showEmptyComponent={showEmptyComponent}
       />
     </View>

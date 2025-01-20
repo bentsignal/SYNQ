@@ -113,7 +113,7 @@ const HorizontalScrollView = ({ children, contentWidth, containerWidth, disable 
           style={[Local.gradient, Local.leftGradient]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          colors={[ 'rgba(16, 16, 16, 1)', 'rgba(16, 16, 16, 0)']}
+          colors={[ 'rgba(20, 20, 20, 1)', 'rgba(20, 20, 20, 0)']}
           pointerEvents={'none'}
         />
       <ScrollView 
@@ -128,7 +128,7 @@ const HorizontalScrollView = ({ children, contentWidth, containerWidth, disable 
         style={[Local.gradient, Local.rightGradient]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 0 }}
-        colors={['rgba(16, 16, 16, 1)', 'rgba(16, 16, 16, 0)']}
+        colors={['rgba(20, 20, 20, 1)', 'rgba(20, 20, 20, 0)']}
         pointerEvents={'none'}
       />
       <View style={Local.tintOverlay}/>

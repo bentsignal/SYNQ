@@ -27,7 +27,7 @@ const Option = ({
 
   const { theme } = useThemeContext();
 
-  const color = bg ? bg : Colors.popup;
+  const color = bg ? bg : Colors.song;
 
   const Local = StyleSheet.create({
     container: {

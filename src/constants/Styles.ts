@@ -58,7 +58,7 @@ export const Styles = StyleSheet.create({
   tabBar: {
     borderTopWidth: 1,
     borderTopColor: Colors.popup,
-    backgroundColor: Colors.footer,
+    backgroundColor: Colors.background,
     height: '11%',
     paddingTop: 10,
     paddingBottom: Dimensions.get('screen').height < 700 ? 15 : 30

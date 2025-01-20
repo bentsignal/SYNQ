@@ -56,6 +56,9 @@ const ExportPrompt = () => {
         }, 1000);
       });
     }
+    else {
+      setShowImportAd(false);
+    }
   }
 
   const handleExport = async () => {

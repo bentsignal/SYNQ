@@ -2,13 +2,15 @@ const CFG = {
   // how long in app notification banners are shown on screen before disappearing
   notificationDuration: 5000,
   // show review prompt after importing 5 times
-  showReviewAfter: 3,
+  showReviewAfter: -1,
   // disable checks for premium subscriptoin
   devTestFreeVersion: false,
   // show premium toggle in settings
   devShowPremiumToggle: true,
   // Play an ad after x seconds of listening
   playAdAfter: 600,
+  // import ad length
+  importAdLength: 10,
   // port for wifi transfer server
   PORT: 3000,
 }

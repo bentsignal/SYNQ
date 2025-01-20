@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Dimensions } from "react-native";
-import { router } from "expo-router";
+import { useRef, useEffect } from "react";
+import { router, usePathname } from "expo-router";
 import { Styles } from "@/src/constants/Styles";
 import PageTitle from "@/src/components/PageTitle";
 import InfoModal from "@/src/components/modals/InfoModal";
@@ -21,6 +22,13 @@ import { deleteImportSongs } from "@/src/controllers/ImportExportController";
 import SettingsButton from "../SettingsButton";
 
 const SavePrompt = () => {
+
+  const pathname = usePathname();
+  const currentPath = useRef(pathname);
+
+  useEffect(() => {
+    currentPath.current = pathname;
+  }, [pathname]);
 
   const { 
 
@@ -62,7 +70,8 @@ const SavePrompt = () => {
 
   const checkForReview = async () => {
     try {
-      if (!premium) return;
+      // only ask premium users for review
+      // if (!premium) return;
       let countStr = await AsyncStorage.getItem('importCount');
       if (countStr) {
         let count = parseInt(countStr);
@@ -76,6 +85,10 @@ const SavePrompt = () => {
         }
       }
       else {
+        let available = await StoreReview.isAvailableAsync();
+        if (available) {
+          await callReview();
+        }
         await AsyncStorage.setItem('importCount', '1');
       }
     }
@@ -92,14 +105,14 @@ const SavePrompt = () => {
       await new Promise(resolve => {
         let progress = 0;
         const interval = setInterval(() => {
-          if (progress < 100) {
-            if (progress >= 5 && !showGlobalProgress) {
+          if (progress < CFG.importAdLength) {
+            if (progress >= 1 && !showGlobalProgress) {
               setShowGlobalProgress(true);
             }
-            progress += 5;
-            setGlobalProgress(progress);
+            progress += 1;
+            setGlobalProgress(Math.ceil(progress / CFG.importAdLength * 100));
           }
-          if (progress >= 100) {
+          else if (progress >= CFG.importAdLength && currentPath.current === '/') {
             clearInterval(interval);
             setShowGlobalProgress(false);
             setTimeout(() => {

@@ -11,8 +11,8 @@ const Haptic = () => {
   const { theme } = useThemeContext();
 
   const toggleHaptic = async () => {
-    await AsyncStorage.setItem('haptic', haptic ? 'false' : 'true');
     setHaptic(!haptic);
+    await AsyncStorage.setItem('haptic', haptic ? 'false' : 'true');
   }
 
   return (

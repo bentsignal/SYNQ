@@ -5,7 +5,7 @@ import { Colors } from '@/src/constants/Colors';
 import CustomButton from '@/src/components/CustomButton';
 import { removeSongs } from '@/src/controllers/SongController';
 import { deleteFromLibrary } from '@/src/controllers/LibraryController';
-import { darkenColor } from '@/src/controllers/ColorController';
+import { darkenColor, getDisabledColor } from '@/src/controllers/ColorController';
 import Notifications from '@/src/components/notifications/Notifications';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import { Track } from 'react-native-track-player';
@@ -173,7 +173,7 @@ const ImportControls = (
           background={theme}
           handlePress={mainHandle}
           disabled={mainDisabled}
-          disabledColor={darkenColor(theme, 40, 50)}
+          disabledColor={getDisabledColor(theme)}
           customStyles={{flex: 1}}
         />
       </View>

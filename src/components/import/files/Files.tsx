@@ -11,6 +11,7 @@ import InfoModal from '@/src/components/modals/InfoModal';
 import { PageType } from '@/src/constants/Types';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
 import SettingsButton from '@/src/components/SettingsButton';
+import ImportBlur from '../ImportBlur';
 
 const Files = () => {
 
@@ -68,13 +69,17 @@ const Files = () => {
     }
     else if (results.length > 0) {
       return (
-        <SongList
-          songs={results}
-          bottomPadding={true}
-          pageType={PageType.IMPORT}
-          fadeCover={false}
-          fadeSong={true}
-        />
+        <>
+          <SongList
+            songs={results}
+            bottomPadding={true}
+            pageType={PageType.IMPORT}
+            fadeCover={false}
+            fadeSong={true}
+            lockScroll={!premium}
+          />
+          {!premium && <ImportBlur />}
+        </>
       );
     }
     else {

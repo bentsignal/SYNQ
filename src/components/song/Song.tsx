@@ -353,24 +353,6 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
 
         }
       </TouchableOpacity>
-      <BlurView
-        style={[Local.blur, {display: blur ? 'flex' : 'none'}]}
-        intensity={20}
-      >
-        <View style={[Local.premiumMessageContainer, {display: message ? 'flex' : 'none'}]}>
-          <Text style={Local.premiumMessageText}>
-            Import multiple files with <Text style={{color: theme}}>Premium</Text>
-          </Text>
-          <CustomButton 
-            title={'Learn More'}
-            buttonWidth={150}
-            background={theme}
-            disabledColor={darkenColor(theme, 40, 50)}
-            opacity={.90}
-            handlePress={() => router.push('/premium')}
-          />
-        </View>
-      </BlurView>
     </Animated.View>
   );
 
@@ -401,19 +383,8 @@ const Local = StyleSheet.create({
     top: 0,
     left: 0,
     width: '90%',
-    height: 90,
-    padding: 15,
+    height: 60,
     zIndex: 2
   },
-  premiumMessageContainer: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  premiumMessageText: {
-    ...Styles.infoText,
-    paddingBottom: 10,
-    textShadowColor: Colors.background,
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 10
-  }
+  
 });

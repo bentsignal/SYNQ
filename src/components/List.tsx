@@ -19,6 +19,7 @@ const List = memo((
     gradientEnd,
     emptyComponent,
     showEmptyComponent = true,
+    lockScroll = false,
   }: 
   {
     data: any[], 
@@ -33,6 +34,7 @@ const List = memo((
     gradientEnd?: string,
     emptyComponent?: React.ReactNode,
     showEmptyComponent?: boolean,
+    lockScroll?: boolean,
   }
 ) => {
 
@@ -106,7 +108,7 @@ const List = memo((
   return (
     <>
       <Animated.View style={ Local.container}>
-        <FlatList 
+        <FlatList
           data={data}
           renderItem={item}
           keyExtractor={keyExtractor}
@@ -123,6 +125,7 @@ const List = memo((
           windowSize={30}
           ListFooterComponent={footerComponent ? <>{footerComponent}</> : null}
           ListEmptyComponent={showEmptyComponent && emptyComponent ? <>{emptyComponent}</> : null}
+          scrollEnabled={!lockScroll}
         />
         <AnimatedGradient
           style={ Local.topGradient }

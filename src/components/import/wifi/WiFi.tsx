@@ -14,6 +14,7 @@ import { PageType } from '@/src/constants/Types';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
 import CFG from '@/src/constants/Config';
 import SettingsButton from '@/src/components/SettingsButton';
+import ImportBlur from '../ImportBlur';
 
 const WiFi = () => {
 
@@ -115,13 +116,17 @@ const WiFi = () => {
     }
     else if (results.length > 0) {
       return (
-        <SongList
-          songs={results}
-          bottomPadding={true}
-          pageType={PageType.IMPORT}
-          fadeCover={false}
-          fadeSong={true}
-        />
+        <>
+          <SongList
+            songs={results}
+            bottomPadding={true}
+            pageType={PageType.IMPORT}
+            fadeCover={false}
+            fadeSong={true}
+            lockScroll={!premium}
+          />
+          {!premium && <ImportBlur />}
+        </>
       );
     }
     else {

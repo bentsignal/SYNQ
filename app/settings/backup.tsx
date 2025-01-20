@@ -140,6 +140,8 @@ export default function Backup() {
                 desc={premium ? "Manage your subcription" : 'Unlock all features'}
                 icon={require('@/src/assets/icons/premium.png')}
                 disabled={false}
+                bg={Colors.textbox}
+                iconTint={theme}
                 handlePress={() => router.push("/premium")}
               />
             }
@@ -174,7 +176,6 @@ export default function Backup() {
             <CustomButton 
               title="Restore"
               handlePress={handleRestore}
-              background={theme}
               customStyles={{marginBottom: 30}}
               buttonWidth={'100%'}
               disabled={!premium}

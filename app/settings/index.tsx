@@ -13,10 +13,13 @@ import Bar from "@/src/components/modals/Bar";
 import CustomButton from "@/src/components/CustomButton";
 import { SOCIAL_LINKS } from "@/src/constants/Config";
 import ModalStyles from "@/src/components/modals/Styles";
+import { useThemeContext } from "@/src/context/ThemeProvider";
+import { darkenColor } from "@/src/controllers/ColorController";
 
 const Settings = () => {
 
   const { premium }  = usePremiumContext();
+  const { theme } = useThemeContext();
 
   return (
     <View style={[Styles.body, Local.container]}>
@@ -32,6 +35,8 @@ const Settings = () => {
           icon={require('@/src/assets/icons/premium.png')}
           disabled={false}
           handlePress={() => router.push("/premium")}
+          iconTint={theme}
+          bg={Colors.textbox}
         />
         <Option 
           title="Customization"
@@ -39,15 +44,15 @@ const Settings = () => {
           icon={require('@/src/assets/icons/customize.png')}
           disabled={false}
           handlePress={() => router.push("/settings/customization")}
-          bg={Colors.text}
+          bg={Colors.textbox}
         />
         <Option 
           title="Backup & Restore"
           desc="Backup or restore your library"
           icon={require('@/src/assets/icons/backup.png')}
           disabled={false}
+          bg={Colors.textbox}
           handlePress={() => router.push("/settings/backup")}
-          bg={Colors.text}
         />
         <View style={Local.supportContainer}>
           <CustomButton 

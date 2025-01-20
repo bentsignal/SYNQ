@@ -119,13 +119,14 @@ const Home = () => {
           </View> */}
           {!premium && (
             <>
-              <Text style={[Local.title, Local.content]}>Premium</Text>
+              <Text style={[Local.title, Local.content, Local.premiumTitle]}>Premium</Text>
               <Option
                 title="Premium"
                 desc={premium ? "Manage your subcription" : 'Unlock all features'}
                 icon={require('@/src/assets/icons/premium.png')}
                 disabled={false}
                 handlePress={() => router.push("/premium")}
+                iconTint={theme}
               />
             </>
           )}
@@ -135,7 +136,6 @@ const Home = () => {
             desc='Import from your files'
             icon={require('@/src/assets/icons/folder.png')}
             disabled={false}
-            bg={premium ? theme : Colors.text}
             handlePress={() => {
               setLoading(true);
               setHomeState(2);
@@ -151,7 +151,6 @@ const Home = () => {
             desc='Import from your computer'
             icon={require('@/src/assets/icons/wifi.png')}
             disabled={false}
-            bg={premium ? theme : Colors.text}
             handlePress={() => {
               setShowImportAd(true);
               setLoading(true);
@@ -198,6 +197,9 @@ const Local = StyleSheet.create({
   logo: {
     height: 25,
     width: 25,
+  },
+  premiumTitle: {
+    marginBottom: 15,
   }
 });
 

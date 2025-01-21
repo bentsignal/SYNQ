@@ -267,7 +267,7 @@ const Premium = () => {
     }
     else if (error) {
       return (
-        <Text style={Local.messageText}>
+        <Text style={[Local.messageText, Local.subText]}>
           An error occured, please try again later
         </Text>
       );
@@ -288,7 +288,7 @@ const Premium = () => {
           <Text style={Local.messageText}>
             {first}
           </Text>
-          <Text style={Local.text}>
+          <Text style={[Local.text, Local.subText]}>
             {second}
           </Text>
         </>
@@ -302,13 +302,13 @@ const Premium = () => {
               activeOpacity={.9}
               onPress={() => openURL('https://directedbyshawn.com/synq-terms-conditions')}
             >
-              <Text style={Local.text}>Terms of Service · </Text>
+              <Text style={[Local.text, Local.subText]}>Terms of Service · </Text>
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={.9}
               onPress={() => openURL('https://directedbyshawn.com/synq-privacy-policy')}
             >
-              <Text style={Local.text}>Privacy Policy</Text>
+              <Text style={[Local.text, Local.subText]}>Privacy Policy</Text>
             </TouchableOpacity>
           </View>
           <CustomButton 
@@ -347,8 +347,10 @@ const Premium = () => {
             pointerEvents={'none'}
           />
         </View>
-        <View style={Local.featureContainer}>
-          <FeatureList />
+        <View style={Local.featureListContainer}>
+          <View style={Local.featureListWrapper}>
+            <FeatureList />
+          </View>
         </View>
         <View style={Local.contentContainer}>
           <Image 
@@ -412,12 +414,17 @@ const Local = StyleSheet.create({
     width: '100%',
     ...ModalStyles.roundedTop,
   },
-  featureContainer: {
+  featureListContainer: {
     height: '40%',
     width: '100%',
     position: 'absolute',
     top: 0,
-    zIndex: 1,
+    zIndex: 0,
+    justifyContent: 'center',
+  },
+  featureListWrapper: {
+    height: '50%',
+    width: '100%',
   },
   coverImage: {
     height: '100%',
@@ -477,6 +484,9 @@ const Local = StyleSheet.create({
   },
   restore: {
     marginTop: 10,
+  },
+  subText: {
+    color: Colors.infoText,
   }
 });
 

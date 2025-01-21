@@ -38,6 +38,9 @@ const PremiumOption = ({handler, tier, price, loading, selected}: OptionProps) =
     },
     textColor: {
       color: selected ? 'black' : Colors.text,
+    },
+    subText: {
+      color: selected ? 'black' : Colors.infoText,
     }
   });
 
@@ -53,7 +56,7 @@ const PremiumOption = ({handler, tier, price, loading, selected}: OptionProps) =
         onPress={handler}
       >
         <Text style={[Styles.h4, Local.textColor]}>{price}</Text>
-        <Text style={[Styles.p, Local.textColor]}>{tier}</Text>
+        <Text style={[Styles.p,Local.subText]}>{tier}</Text>
       </TouchableOpacity>
     </View>
   );

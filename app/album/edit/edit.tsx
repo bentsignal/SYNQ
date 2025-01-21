@@ -193,7 +193,7 @@ const EditAlbum = ({id}: {id: string}) => {
             })}
           </View>
           <CustomButton 
-            title={'Manage Artists'}
+            title={'Add Artists'}
             handlePress={() => router.push('/artist/add?sourceType=album')}
             buttonWidth={'90%'}
           />

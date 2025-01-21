@@ -47,7 +47,7 @@ const AddArtist = () => {
   return (
     <View style={Local.wrapper}>
       <Bar />
-      <Text style={ModalStyles.header}>Add Artist</Text>
+      <Text style={ModalStyles.header}>Add Artists</Text>
       <CustomButton
         title={'New'}
         background={theme}

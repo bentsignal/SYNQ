@@ -105,11 +105,13 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
     songBus.on(SongBusEvent.SONG_COVER_MODIFIED, updateSongCover);
     artistBus.on(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
     albumBus.on(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, updateAlbumInfo);
+    albumBus.on(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, loadCover);
     return () => {
       songBus.off(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
       songBus.off(SongBusEvent.SONG_COVER_MODIFIED, updateSongCover);
       artistBus.off(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
       albumBus.off(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, updateAlbumInfo);
+      albumBus.off(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, loadCover);
     }
   }, []);
 

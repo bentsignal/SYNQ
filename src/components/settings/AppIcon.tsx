@@ -84,6 +84,7 @@ export default function AppIcon() {
         {Object.entries(Themes).map(([key, color], index) => (
           <AppIconOption
             color={color}
+            key={index}
           />
         ))}
       </ScrollView>

@@ -7,7 +7,7 @@ import PageTitle from '@/src/components/PageTitle';
 import Haptic from "@/src/components/settings/Haptic";
 import Theme from "@/src/components/settings/Theme";
 import CategoryTitle from "@/src/components/settings/CategoryTitle";
-
+import AppIcon from "@/src/components/settings/AppIcon";
 
 export default function Customization() {
 
@@ -25,6 +25,10 @@ export default function Customization() {
             <CategoryTitle title="Theme" requiresPremium={true}/>
             <View>
               <Theme />
+            </View>
+            <CategoryTitle title="App Icon" requiresPremium={true}/>
+            <View>
+              <AppIcon />
             </View>
             <CategoryTitle title="Haptic Feedback" />
             <View>

@@ -37,11 +37,11 @@ const ThemeProvider: React.FC<Props> = ({ children }) => {
     }
   }
 
-  const changeTheme = (newTheme: string, changeIcon: boolean = true) => {
+  const changeTheme = (newTheme: string, changeIcon: boolean = false) => {
     try {
       setTheme(newTheme);
       setLogo(getLogo(newTheme));
-      if (changeIcon)setAppIcon(getIcon(newTheme));
+      if (changeIcon) setAppIcon(getIcon(newTheme));
       AsyncStorage.setItem('theme', newTheme);
     }
     catch {

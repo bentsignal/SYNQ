@@ -6,10 +6,9 @@ import { getAppIcon, getIcon } from "@/src/constants/Logos";
 
 type AppIconOptionProps = {
   color: any;
-  key?: any;
 }
 
-export default function AppIconOption({ color, key }: AppIconOptionProps) {
+export default function AppIconOption({ color }: AppIconOptionProps) {
 
   const { premium } = usePremiumContext();
 

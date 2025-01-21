@@ -1,11 +1,8 @@
-import { View, Text, ScrollView, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent, StyleSheet } from "react-native";
-import { useRef, useEffect, useState } from "react";
-import { Styles } from "@/src/constants/Styles";
+import { View, ScrollView, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent, StyleSheet } from "react-native";
+import { useRef, useState } from "react";
 import { Themes, Colors } from "@/src/constants/Colors";
-import ThemeOption from "@/src/components/settings/ThemeOption";
 import { LinearGradient } from 'expo-linear-gradient';
 import { usePremiumContext } from "@/src/context/PremiumProvider";
-import { AppIcons } from "@/src/constants/Logos";
 import AppIconOption from "./AppIconOption";
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
@@ -87,7 +84,6 @@ export default function AppIcon() {
         {Object.entries(Themes).map(([key, color], index) => (
           <AppIconOption
             color={color}
-            key={key}
           />
         ))}
       </ScrollView>

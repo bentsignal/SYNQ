@@ -6,6 +6,8 @@ import { PageType, CoverType } from '@/src/constants/Types';
 import { getPlaylistCover } from '@/src/controllers/PlaylistController';
 import { getArtistCover } from '@/src/controllers/ArtistController';
 import { getAlbumCover, getAlbumCoverFromSong } from '@/src/controllers/AlbumController';
+import albumBus from '@/src/events/album/Bus';
+import { AlbumBusEvent } from '@/src/events/album/Events';
 
 const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/5+hPwABAAEAAFPAfXAAAAAElFTkSuQmCC';
 
@@ -29,38 +31,21 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
     }).start();
   }
 
-  useLayoutEffect(() => {
-
-    const getImage = async () => {
-      try {
-        if (type === CoverType.SONG) {
-          if (image) {
-            setTimeout(() => {
-              setSrc(image);
-            }, 20);
-          }
-          else {
-            const path = await getAlbumCoverFromSong(parseInt(id));
-            if (path) {
-              setSrc(path);
-            }
-            else {
-              const path = await getSongCover(id);
-              if (path) {
-                setSrc(path);
-              }
-              else {
-                setSrc(transparent);
-              }
-            }
-          }
-        }
-        else if (type === CoverType.PLAYLIST) {
-          if (image) {
+  const getImage = async () => {
+    try {
+      if (type === CoverType.SONG) {
+        if (image) {
+          setTimeout(() => {
             setSrc(image);
+          }, 20);
+        }
+        else {
+          const path = await getAlbumCoverFromSong(parseInt(id));
+          if (path) {
+            setSrc(path);
           }
           else {
-            const path = await getPlaylistCover(parseInt(id));
+            const path = await getSongCover(id);
             if (path) {
               setSrc(path);
             }
@@ -69,48 +54,72 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
             }
           }
         }
-        else if (type === CoverType.ARTIST) {
-          if (image) {
-            setSrc(image);
-          }
-          else {
-            const path = await getArtistCover(parseInt(id), true);
-            if (path) {
-              setSrc(path);
-            }
-            else {
-              setSrc(transparent);
-            }
-          }
-        }
-        else if (type === CoverType.ALBUM) {
-          if (image) {
-            setSrc(image);
-          }
-          else {
-            const path = await getAlbumCover(parseInt(id), true);
-            if (path) {
-              setSrc(path);
-            }
-            else {
-              setSrc(transparent);
-            }
-          }
-        }
-        revealImage();
       }
-      catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        if (!message.includes('folder')) {
-          console.log('error getting cover image for edit cover:', message);
+      else if (type === CoverType.PLAYLIST) {
+        if (image) {
+          setSrc(image);
         }
-        revealImage();
+        else {
+          const path = await getPlaylistCover(parseInt(id));
+          if (path) {
+            setSrc(path);
+          }
+          else {
+            setSrc(transparent);
+          }
+        }
       }
+      else if (type === CoverType.ARTIST) {
+        if (image) {
+          setSrc(image);
+        }
+        else {
+          const path = await getArtistCover(parseInt(id), true);
+          if (path) {
+            setSrc(path);
+          }
+          else {
+            setSrc(transparent);
+          }
+        }
+      }
+      else if (type === CoverType.ALBUM) {
+        if (image) {
+          setSrc(image);
+        }
+        else {
+          const path = await getAlbumCover(parseInt(id), true);
+          if (path) {
+            setSrc(path);
+          }
+          else {
+            setSrc(transparent);
+          }
+        }
+      }
+      revealImage();
     }
+    catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (!message.includes('folder')) {
+        console.log('error getting cover image for edit cover:', message);
+      }
+      revealImage();
+    }
+  }
+
+  useLayoutEffect(() => {
 
     getImage();
 
   }, [image, id]);
+
+  useEffect(() => {
+    albumBus.on(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, getImage);
+    return () => {
+      albumBus.off(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, getImage);
+    }
+  }, []);
 
   const editCoverSize = 140;
 

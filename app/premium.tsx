@@ -17,6 +17,7 @@ import * as PurchaseManager from '@/src/controllers/PurchaseController';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import ModalStyles from '@/src/components/modals/Styles';
+import FeatureList from '@/src/components/premium/FeatureList';
 
 const Premium = () => {
 
@@ -346,6 +347,9 @@ const Premium = () => {
             pointerEvents={'none'}
           />
         </View>
+        <View style={Local.featureContainer}>
+          <FeatureList />
+        </View>
         <View style={Local.contentContainer}>
           <Image 
             source={logo}
@@ -407,6 +411,13 @@ const Local = StyleSheet.create({
     height: '40%',
     width: '100%',
     ...ModalStyles.roundedTop,
+  },
+  featureContainer: {
+    height: '40%',
+    width: '100%',
+    position: 'absolute',
+    top: 0,
+    zIndex: 1,
   },
   coverImage: {
     height: '100%',

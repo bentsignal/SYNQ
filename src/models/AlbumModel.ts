@@ -163,4 +163,9 @@ export default class AlbumModel extends Model {
     );
     return result ? true : false;
   }
+
+  public async getAlbumsContainingSong(songId: number): Promise<AlbumType[]> {
+    const result = await AlbumModel.db?.getAllAsync(`SELECT * from albums where id in (SELECT albumId from albumSongs where songId = ?);`, [songId]);
+    return result ? result as AlbumType[] : [];
+  }
 }

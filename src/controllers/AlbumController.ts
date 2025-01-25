@@ -153,3 +153,7 @@ export const getAlbumCoverFromSong = async (songId: number, full: boolean = fals
   }
   return null;
 }
+
+export const getAlbumsContainingSong = async (songId: number): Promise<AlbumType[]> => {
+  return await AlbumModel.getInstance().getAlbumsContainingSong(songId);
+}

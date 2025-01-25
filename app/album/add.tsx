@@ -9,15 +9,16 @@ import { PageType, AlbumType } from "@/src/constants/Types"
 import AlbumList from "@/src/components/lists/album"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useThemeContext } from "@/src/context/ThemeProvider"
-import { getAlbums } from "@/src/controllers/AlbumController"
+import { getAlbums, getAlbumsContainingSong } from "@/src/controllers/AlbumController"
 import { AlbumBusEvent } from "@/src/events/album/Events"
 import albumBus from "@/src/events/album/Bus"
 import ModalStyles from "@/src/components/modals/Styles"
+import { useGlobalContext } from "@/src/context/GlobalProvider"
 
 const AddAlbum = () => {
 
   const { theme } = useThemeContext();
-
+  const { editSong } = useGlobalContext();
   const insets = useSafeAreaInsets();
 
   const [albums, setAlbums] = useState<AlbumType[]>([]);
@@ -25,6 +26,15 @@ const AddAlbum = () => {
   const refreshAlbums = async () => {
     try {
       const results = await getAlbums();
+      if (editSong?.id) {
+        const albumsWithSong = await getAlbumsContainingSong(editSong.id);
+        for (let i = 0; i < results.length; i++) {
+          if (albumsWithSong.some(a => a.id === results[i].id)) {
+            const [item] = results.splice(i, 1);
+            results.unshift(item);
+          }
+        }
+      }
       setAlbums(results);
     }
     catch (error) {

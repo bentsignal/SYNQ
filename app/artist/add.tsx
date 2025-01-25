@@ -9,11 +9,12 @@ import { PageType, ArtistType, SourceType } from "@/src/constants/Types"
 import ArtistList from "@/src/components/lists/artist"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useThemeContext } from "@/src/context/ThemeProvider"
-import { getArtists } from "@/src/controllers/ArtistController"
+import { getArtists, getArtistsFromSong } from "@/src/controllers/ArtistController"
 import { ArtistBusEvent } from "@/src/events/artist/Events"
 import artistBus from "@/src/events/artist/Bus"
 import ModalStyles from "@/src/components/modals/Styles"
 import { useLocalSearchParams } from "expo-router";
+import { useGlobalContext } from "@/src/context/GlobalProvider"
 
 const AddArtist = () => {
 
@@ -21,6 +22,7 @@ const AddArtist = () => {
 
   const insets = useSafeAreaInsets();
   const { sourceType } = useLocalSearchParams();
+  const { editSong } = useGlobalContext();
   const [artists, setArtists] = useState<ArtistType[]>([]);
 
   const refreshArtists = async () => {
@@ -29,6 +31,15 @@ const AddArtist = () => {
       results.forEach(artist => {
         artist.sourceType = sourceType === 'song' ? SourceType.SONG : SourceType.ALBUM;
       });
+      if (editSong?.id) {
+        const artistsWithSong = await getArtistsFromSong(editSong.id);
+        for (let i = 0; i < results.length; i++) {
+          if (artistsWithSong.some(a => a.id === results[i].id)) {
+            const [item] = results.splice(i, 1);
+            results.unshift(item);
+          }
+        }
+      }
       setArtists(results);
     }
     catch (error) {

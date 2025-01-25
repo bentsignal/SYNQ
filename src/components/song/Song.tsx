@@ -1,7 +1,4 @@
-import { View, TouchableOpacity, Text, StyleSheet, Animated, 
-  PanResponder, Easing,
-} from 'react-native';
-import { router } from 'expo-router';
+import { TouchableOpacity, StyleSheet, Animated, PanResponder } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { Styles } from '@/src/constants/Styles';
@@ -10,10 +7,6 @@ import { SongType } from '@/src/constants/Types';
 import SongInfo from '@/src/components/song/SongInfo';
 import Select from '@/src/components/Select';
 import ListCover from '@/src/components/cover/ListCover';
-import { BlurView } from 'expo-blur';
-import CustomButton from '../CustomButton';
-import Skeleton from '../Skeleton';
-import { darkenColor } from '@/src/controllers/ColorController';
 import * as Haptics from 'expo-haptics';
 import More from '@/src/components/More';
 import { PageType, CoverType, ArtistType } from '@/src/constants/Types';
@@ -23,7 +16,8 @@ import { getTrackFromSong, playTrack,
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
 import songBus from '@/src/events/song';
-import { SongBusEvent, SongInfoModifiedEvent, SongCoverModifiedEvent } from '@/src/events/song/Events';
+import { SongBusEvent, SongInfoModifiedEvent, 
+  SongCoverModifiedEvent } from '@/src/events/song/Events';
 import { usePlaybackContext } from '@/src/context/PlaybackProvider';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistToggledOnSongEvent, ArtistBusEvent } from '@/src/events/artist/Events';
@@ -44,27 +38,27 @@ type SongProps = {
 export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps) {
 
   const [selected, setSelected] = useState(false);
-  const [loaded, setLoaded] = useState(false);
   const translateX = useRef(new Animated.Value(0)).current;
-  const [_, forceUpdate] = useState(0);
-  const [updates, setUpdates] = useState(0);
   const [coverImage, setCoverImage] = useState('');
   const [emptyCover, setEmptyCover] = useState(false);
+  const [fileName, setFileName] = useState('');
+  const [title, setTitle] = useState('');
+  const [artist, setArtist] = useState('');
+  const [album, setAlbum] = useState('');
 
   const track = useActiveTrack();
 
   const { 
 
     selectEnabled, selectedSongs, results,
-    showSongOptions,
     haptic, adPlaying, adURL, shouldPlayAd,
 
-    setSelectedSongs, setShowSongOptions,
+    setSelectedSongs, 
     setEditSong, setAdPlaying,
 
   } = useGlobalContext(); 
 
-  const { shuffle, sourceType, sourceId, setSourceType, setSourceId } = usePlaybackContext();
+  const { shuffle, setSourceType, setSourceId } = usePlaybackContext();
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
 
@@ -98,6 +92,10 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
 
   useEffect(() => {
     loadCover();
+    setFileName(song.fileName);
+    setTitle(song.title);
+    setArtist(song.artist);
+    setAlbum(song.album);
   }, [song]);
 
   useEffect(() => {
@@ -122,27 +120,38 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
 
   const updateAlbumInfo = async (data: AlbumToggledOnSongEvent) => {
     if (data.songId === Number(song.id)) {
-      await loadCover();
+      
+      let songArtists: ArtistType[] = [];
+      let albumArtists: ArtistType[] = [];
+
       if (song.pageType === PageType.IMPORT) {
+        songArtists = song.importArtists ?? [];
+        albumArtists = await getArtistsFromAlbum(data.albumId);
         if (data.add) {
           song.artwork = await getAlbumCover(data.albumId);
+          setCoverImage(song.artwork);
         }
         else {
           song.artwork = '';
+          setCoverImage('');
         }
-        forceUpdate(prev => prev + 1);
       }
       else {
-        const albumArtists = await getArtistsFromAlbum(data.albumId);
-        const songArtists = await getArtistsFromSong(Number(song.id));
-        if (data.add) {
-          song.artist = [...new Set([...albumArtists, ...songArtists].map(artist => artist.name))].join(', ');
-        }
-        else {
-          song.artist = songArtists.map(artist => artist.name).filter(artist => !albumArtists.map(a => a.name).includes(artist)).join(', ');
-        }
-        forceUpdate(prev => prev + 1);
+        loadCover();
+        albumArtists = await getArtistsFromAlbum(data.albumId);
+        songArtists = await getArtistsFromSong(Number(song.id));
       }
+
+      // add or remove artists from song
+      if (data.add) {
+        song.artist = [...new Set([...albumArtists, ...songArtists].map(artist => artist.name))].join(', ');
+        setArtist(song.artist);
+      }
+      else {
+        song.artist = songArtists.map(artist => artist.name).filter(artist => !albumArtists.map(a => a.name).includes(artist)).join(', ');
+        setArtist(song.artist);
+      }
+
     }
   }
 
@@ -156,7 +165,7 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
         artists = await getArtistsFromSong(Number(song.id));
       }
       song.artist = artists.map(artist => artist.name).join(', ');
-      forceUpdate(prev => prev + 1);
+      setArtist(song.artist);
     }
   }
 
@@ -165,7 +174,9 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
       song.title = data.title ?? song.title;
       song.artist = data.artist ?? song.artist;
       song.album = data.album ?? song.album;
-      forceUpdate(prev => prev + 1);
+      setTitle(song.title);
+      setArtist(song.artist);
+      setAlbum(song.album);
     }
   }
 
@@ -178,7 +189,6 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
       else {
         await loadCover();
       } 
-      forceUpdate(prev => prev + 1);
     }
   }
 
@@ -265,16 +275,14 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
           type={CoverType.SONG}
           fade={fadeCover}
           empty={emptyCover}
-          propOnLoad={() => {
-            setLoaded(true);
-          }}
+          propOnLoad={() => {}}
           size={55}
         />
         <SongInfo 
-          fileName={song.fileName}
-          title={song.title}
-          artist={song.artist}
-          album={song.album}
+          fileName={fileName}
+          title={title}
+          artist={artist}
+          album={album}
           id={song.id}
           isActive={song.pageType !== PageType.QUEUE && activeId === Number(song.id)}
         />

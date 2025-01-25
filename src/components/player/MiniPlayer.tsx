@@ -91,7 +91,7 @@ const MiniPlayer = () => {
           style={Local.buttonWrapper}
           onPress={() => {}}
         >
-          <SkipLeft size={18} color={textColor}/>
+          <SkipLeft size={16} color={textColor}/>
         </TouchableOpacity>
         <PausePlayButtons 
           playSize={25}
@@ -104,7 +104,7 @@ const MiniPlayer = () => {
           style={Local.buttonWrapper}
           onPress={() => {}}
         >
-          <SkipRight size={18} color={textColor}/>
+          <SkipRight size={16} color={textColor}/>
         </TouchableOpacity>
       </View>
       

@@ -97,15 +97,15 @@ const Home = () => {
     return (
       <View style={Styles.body}>
         <InfoModal />
-        <ScrollView
-          style={Local.scrollView}
-          contentContainerStyle={Local.scrollViewContent}
-        >
-          <PageTitle 
+        <PageTitle 
             title='Home'
             infoHandler={() => setShowInfoModal(true)}
             rightHandComponent={<SettingsButton />} 
           />
+        <ScrollView
+          style={Local.scrollView}
+          contentContainerStyle={Local.scrollViewContent}
+        >
           {/* <View style={[Local.content]}>
             <View style={Local.welcomeTitleContainer}>
               <Text style={Local.title}>Welcome to SYNQ</Text>
@@ -117,6 +117,10 @@ const Home = () => {
               modify the metadata of the music files, or listen to them here in the app!
             </Text>
           </View> */}
+          <Image 
+            source={require('@/src/assets/images/homepage.png')} 
+            style={Local.banner} 
+          />
           {!premium && (
             <>
               <Text style={[Local.title, Local.content, Local.premiumTitle]}>Premium</Text>
@@ -200,6 +204,13 @@ const Local = StyleSheet.create({
   },
   premiumTitle: {
     marginBottom: 15,
+    marginTop: 20,
+  },
+  banner: {
+    width: '90%', 
+    height: 100, 
+    borderRadius: 10, 
+    marginTop: 5,
   }
 });
 

@@ -14,7 +14,7 @@ import ShuffleButton from "@/src/components/player/ShuffleButton";
 import { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util"; 
 import * as Haptics from 'expo-haptics';
-import { InfoType, PageType, SongType } from "@/src/constants/Types";
+import { PageType, SongType } from "@/src/constants/Types";
 import { router } from "expo-router";
 import LoopButton from "@/src/components/player/LoopButton";
 import LinearGradient from "react-native-linear-gradient";
@@ -174,14 +174,10 @@ const Player = () => {
         <View style={Local.infoContainer}>
           <Animated.View style={infoStyle}>
             <SongInfo
-              info={{
-                name: getFileName(track?.url),
-                metadata: {
-                  name: title,
-                  artist: artist,
-                }
-              }}
-              name={name}
+              fileName={getFileName(track?.url)}
+              title={title}
+              artist={artist}
+              color={Colors.text}
               titleStyles={Local.title}
               artistStyles={Local.artist}
             />

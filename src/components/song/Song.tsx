@@ -125,43 +125,21 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
       await loadCover();
       if (song.pageType === PageType.IMPORT) {
         if (data.add) {
-          const cover = await getAlbumCover(data.albumId);
-          if (song.info.metadata?.artwork !== undefined) {
-            song.info.metadata.artwork = cover;
-          }
-          else {
-            song.info.metadata = {
-              name: '',
-              artist: '',
-              album: '',
-              artwork: cover,
-            };
-          }
-          setUpdates(prev => prev + 1);
+          song.artwork = await getAlbumCover(data.albumId);
         }
         else {
-          if (song.info.metadata?.artwork !== undefined) {
-            song.info.metadata.artwork = '';
-          }
-          else {
-            song.info.metadata = {
-              name: '',
-              artist: '',
-              album: '',
-              artwork: '',
-            };
-          }
-          setUpdates(prev => prev + 1);
+          song.artwork = '';
         }
+        forceUpdate(prev => prev + 1);
       }
       else {
         const albumArtists = await getArtistsFromAlbum(data.albumId);
         const songArtists = await getArtistsFromSong(Number(song.id));
         if (data.add) {
-          song.info.metadata.artist = [...new Set([...albumArtists, ...songArtists].map(artist => artist.name))].join(', ');
+          song.artist = [...new Set([...albumArtists, ...songArtists].map(artist => artist.name))].join(', ');
         }
         else {
-          song.info.metadata.artist = songArtists.map(artist => artist.name).filter(artist => !albumArtists.map(a => a.name).includes(artist)).join(', ');
+          song.artist = songArtists.map(artist => artist.name).filter(artist => !albumArtists.map(a => a.name).includes(artist)).join(', ');
         }
         forceUpdate(prev => prev + 1);
       }
@@ -177,22 +155,16 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
       else {
         artists = await getArtistsFromSong(Number(song.id));
       }
-      song.info.metadata.artist = artists.map(artist => artist.name).join(', ');
+      song.artist = artists.map(artist => artist.name).join(', ');
       forceUpdate(prev => prev + 1);
     }
   }
 
   const updateSongInfo = async (data: SongInfoModifiedEvent) => {
     if (Number(song.id) === data.id) {
-      if (data.title !== undefined && data.title !== null) {
-        song.info.metadata.name = data.title;
-      }
-      if (data.artist !== undefined && data.artist !== null) {
-        song.info.metadata.artist = data.artist;
-      }
-      if (data.album !== undefined && data.album !== null) {
-        song.info.metadata.album = data.album;
-      }
+      song.title = data.title ?? song.title;
+      song.artist = data.artist ?? song.artist;
+      song.album = data.album ?? song.album;
       forceUpdate(prev => prev + 1);
     }
   }
@@ -200,12 +172,12 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
   const updateSongCover = async (data: SongCoverModifiedEvent) => {
     if (Number(song.id) === data.id) {
       if (data.cover) {
-        song.info.metadata.artwork = data.cover;
+        song.artwork = data.cover;
         setCoverImage(data.cover);
       }
       else {
         await loadCover();
-      }
+      } 
       forceUpdate(prev => prev + 1);
     }
   }
@@ -217,8 +189,8 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
         setCoverImage(cover);
         setEmptyCover(false);
       }
-      else if (song.info?.metadata?.artwork) {
-        setCoverImage(song.info.metadata.artwork);
+      else if (song.artwork) {
+        setCoverImage(song.artwork);
         setEmptyCover(false);
       }
       else {
@@ -299,8 +271,10 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
           size={55}
         />
         <SongInfo 
-          info={song.info} 
-          name={song.name} 
+          fileName={song.fileName}
+          title={song.title}
+          artist={song.artist}
+          album={song.album}
           id={song.id}
           isActive={song.pageType !== PageType.QUEUE && activeId === Number(song.id)}
         />

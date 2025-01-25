@@ -144,7 +144,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
     setTimeout(() => {
       Alert.alert(
         `${selectedSongs.length > 1 ? 'Delete songs' : 'Delete song'}`,
-        `Are you sure you want to delete ${editSong.name ?? 'this song'}?`,
+        `Are you sure you want to delete ${editSong.fileName ?? 'this song'}?`,
         [
           { text: 'Cancel', style: 'cancel' },
           { text: 'Delete', style: 'destructive', onPress: () => {

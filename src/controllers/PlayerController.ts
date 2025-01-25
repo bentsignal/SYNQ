@@ -37,13 +37,14 @@ export const getTrackFromSong = async (song: SongType, theme: string): Promise<T
     if (!check(coverPath)) {
       coverPath = await getSongCover(song.id, true);
     }
-    const audioPath = `${libraryPath}/${song.name}`;
+    const audioPath = `${libraryPath}/${song.fileName}`;
     return {
       id: song.id,
       url: audioPath,
       description: uuidv4(),
-      title: song.info?.metadata?.name ? song.info.metadata.name : getFileName(audioPath),
-      artist: song.info?.metadata?.artist,
+      title: song.title ?? getFileName(audioPath),
+      artist: song.artist,
+      album: song.album,
       artwork: coverPath ? coverPath : getAppIcon(theme),
     };
   } catch (error) {

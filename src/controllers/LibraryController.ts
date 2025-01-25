@@ -65,13 +65,13 @@ export const saveToLibrary = async (
     for (let i = 0; i < songs.length; i++) {
       try {
         const song = songs[i];
-        const title = song.info.metadata?.name ? song.info.metadata.name : '';
-        const artists = song.info.metadata?.artist ? song.info.metadata.artist : '';
-        const album = song.info.metadata?.album ? song.info.metadata.album : '';
-        const artwork = song.info.metadata?.artwork ? song.info.metadata.artwork : '';
-        const fileType = song.info.fileType ? song.info.fileType : '';
+        const title = song.title ?? '';
+        const artists = song.artist ?? '';
+        const album = song.album ?? '';
+        const artwork = song.artwork ?? '';
+        const fileType = song.fileType ?? '';
         const edited = song.edited ? true : false;
-        let fileName = song.name ? song.name : '';
+        let fileName = song.fileName ?? '';
         if (fileName === '' && fileType !== '') {
           fileName = `song.${fileType}`;
         }
@@ -85,7 +85,7 @@ export const saveToLibrary = async (
           const dir = `${FileSystem.documentDirectory}library/${id}`;
           try {
             await FileSystem.makeDirectoryAsync(dir);
-            await FileSystem.copyAsync({ from: song.cacheUri, to: `${dir}/${song.name}` });
+            await FileSystem.copyAsync({ from: song.cacheUri, to: `${dir}/${song.fileName}` });
             await FileSystem.deleteAsync(song.cacheUri);
           }
           catch (error) {

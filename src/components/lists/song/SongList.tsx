@@ -2,7 +2,6 @@ import React, { memo, useEffect, useState } from 'react';
 import { SongType, PageType, SourceType } from '@/src/constants/Types';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import Song from '@/src/components/song';
-import DeleteModal from '@/src/components/modals/DeleteModal';
 import { generateSongKey } from '@/src/controllers/SongController';
 import List from '@/src/components/List';
 import { useActiveTrack } from 'react-native-track-player';
@@ -24,7 +23,7 @@ const SongList = memo((
     gradientStart,
     gradientEnd,
     emptyComponent,
-    showEmptyComponent, 
+    showEmptyComponent,
     lockScroll = false,
   }: 
   {
@@ -74,7 +73,6 @@ const SongList = memo((
 
   return (
     <>
-      <DeleteModal />
       <List 
         data={songs}
         headerComponent={headerComponent}

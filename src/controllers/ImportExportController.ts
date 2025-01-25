@@ -65,9 +65,11 @@ export const importFiles = async (
         }
       }
       song = {
-        'name': results.assets[i].name,
+        'fileName': results.assets[i].name,
         'id': idgen(10),
-        'info': info,
+        'title': info.metadata?.name ?? '',
+        'artist': info.metadata?.artist ?? '',
+        'album': info.metadata?.album ?? '',
         'importArtists': importArtists,
         'importAlbums': importAlbums,
         'cacheUri': results.assets[i].uri
@@ -108,7 +110,7 @@ export const getWifiTransferSong = async (name: string, id: string, type: string
     }
   }
   return {
-    'name': name,
+    'fileName': name,
     'id': id,
     'info': info,
     'importArtists': importArtists,
@@ -138,7 +140,7 @@ export const exportSongs = async (songs: SongType[]) => {
     }
     else {
       try {
-        const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.name}`;
+        const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
         if (song.edited) {
           await updateMetadata(song);
           song.edited = false;
@@ -163,19 +165,19 @@ export const exportSongs = async (songs: SongType[]) => {
           await updateMetadata(songs[i]);
           songs[i].edited = false;
         }
-        destination = `${dir}/${songs[i].name}`;
+        destination = `${dir}/${songs[i].fileName}`;
         await FileSystem.copyAsync({ from: songs[i].cacheUri, to: destination });
       }
       else if (songs[i].pageType === PageType.LIBRARY) {
         try {
-          const audioPath = `${FileSystem.documentDirectory}library/${songs[i].id}/${songs[i].name}`;
+          const audioPath = `${FileSystem.documentDirectory}library/${songs[i].id}/${songs[i].fileName}`;
           if (songs[i].edited) {
             await updateMetadata(songs[i]);
             songs[i].edited = false;
             await db.songExported(Number(songs[i].id));
             await FileSystem.writeAsStringAsync(audioPath, songs[i].data, { encoding: 'base64' });
           }
-          await FileSystem.copyAsync({ from: audioPath, to: `${dir}/${songs[i].name}` });
+          await FileSystem.copyAsync({ from: audioPath, to: `${dir}/${songs[i].fileName}` });
         }
         catch (error) {
           console.log('error copying song from library: ', error);

@@ -12,11 +12,17 @@ export type InfoType = {
 };
 
 export type SongType = {
-  "name": string;
   "id": string;
   "uuid"?: string;
   "data"?: string;
-  "info": InfoType;
+  "info"?: InfoType;
+  "fileName"?: string;
+  "fileType"?: string;
+  "format"?: string;
+  "title"?: string;
+  "album"?: string;
+  "artist"?: string;
+  "artwork"?: string;
   "pageType"?: PageType;
   "sourceType"?: SourceType;
   "sourceId"?: number;

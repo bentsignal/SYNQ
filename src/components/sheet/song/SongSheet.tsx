@@ -36,8 +36,8 @@ const SongSheet = ({name}: SongSheetProps) => {
 
   const loadCover = async () => {
     try {
-      if (editSong?.info?.metadata?.artwork) {
-        setCoverImage(editSong.info.metadata.artwork);
+      if (editSong.artwork) {
+        setCoverImage(editSong.artwork);
         setEmptyCover(false);
       }
       else {
@@ -71,8 +71,10 @@ const SongSheet = ({name}: SongSheetProps) => {
           empty={emptyCover}
         />
         <SongInfo 
-          info={editSong.info ? editSong.info : {metadata: {}}} 
-          name={editSong.name ? editSong.name : ''}
+          fileName={editSong.fileName}
+          title={editSong.title}
+          artist={editSong.artist}
+          album={editSong.album}
         />
       </View>
       <ScrollView

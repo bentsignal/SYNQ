@@ -1,8 +1,5 @@
 import * as FileSystem from 'expo-file-system'
-import * as Sharing from 'expo-sharing'
-import * as DocumentPicker from 'expo-document-picker'
-import { getAudioMetadata } from '@missingcore/audio-metadata';
-import { SongType, InfoType, PageType, TagsType, SourceType, SongResultType, SortType, ArtistType } from '@/src/constants/Types'
+import { SongType, PageType, TagsType } from '@/src/constants/Types'
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 import SongModel from '@/src/models/SongModel';
 import 'react-native-get-random-values';
@@ -14,7 +11,7 @@ export const updateMetadata = async (song: SongType) => {
   if ([PageType.LIBRARY, PageType.ARTIST, PageType.ALBUM].includes(song.pageType)) {
     // retrieve data if song is from library
     try {
-      const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.name}`;
+      const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
       const data = await FileSystem.readAsStringAsync(audioPath, { encoding: 'base64' });
       if (data) {
         song.data = data;
@@ -27,9 +24,7 @@ export const updateMetadata = async (song: SongType) => {
       // retrieve image if it exists
       const path = await getSongCover(song.id, true);
       const image = await FileSystem.readAsStringAsync(path, { encoding: 'base64' });
-      if (image && song.info && song.info.metadata) {
-        song.info.metadata.artwork = image;
-      }
+      song.artwork = image ? image : song.artwork;
     }
     catch (error) {
       console.log('error reading image file data: ', error);
@@ -49,10 +44,10 @@ export const updateMetadata = async (song: SongType) => {
 
   let tags: TagsType = {};
 
-  tags.title = song.info.metadata?.name ?? '';
-  tags.artist = song.info.metadata?.artist ?? '';
-  tags.album = song.info.metadata?.album ?? '';
-  const image = song.info.metadata?.artwork ?? '';
+  tags.title = song.title ?? '';
+  tags.artist = song.artist ?? '';
+  tags.album = song.album ?? '';
+  const image = song.artwork ?? '';
   if (image) {
     if ([PageType.LIBRARY, PageType.ARTIST, PageType.ALBUM].includes(song.pageType)) {
       tags.APIC = {
@@ -77,7 +72,7 @@ export const updateMetadata = async (song: SongType) => {
   }
 
   try {
-    if (['audio/mpeg', 'audio/flac'].includes(song.info.fileType ?? '')) {
+    if (['audio/mpeg', 'audio/flac'].includes(song.fileType ?? '')) {
       song.data = fromByteArray(NodeID3.writeExpo(toByteArray(song.data), tags));
     }
   }
@@ -86,9 +81,7 @@ export const updateMetadata = async (song: SongType) => {
   }
 
   if (song.pageType === PageType.LIBRARY) {
-    if (song.info.metadata && song.info.metadata.artwork) {
-      song.info.metadata.artwork = '';
-    }
+    song.artwork = '';
   }
 
 }
@@ -131,17 +124,10 @@ export const saveEdits = (
   for (let i = 0; i < results.length; i++) {
     if (results[i].id && ids.includes(results[i].id)) {
       results[i].edited = true;
-      const metadata = results[i].info?.metadata;
-      let newTitle = title ? title : results[i].info.metadata?.name;
-      let newArtist = artist ? artist : results[i].info.metadata?.artist;
-      let newAlbum = album ? album : results[i].info.metadata?.album;
-      let newArtwork = artwork ? artwork : results[i].info.metadata?.artwork;
-      results[i].info.metadata = {
-        name: newTitle,
-        artist: newArtist,
-        album: newAlbum,
-        artwork: newArtwork
-      };
+      results[i].title = title ? title : results[i].title;
+      results[i].artist = artist ? artist : results[i].artist;
+      results[i].album = album ? album : results[i].album;
+      results[i].artwork = artwork ? artwork : results[i].artwork;
     }
   }
 
@@ -163,43 +149,37 @@ export const getSongById = async (id: number) => {
 export const getSongByResult = (result: any): SongType => {
   try {
     return {
-      name: result.fileName,
+      fileName: result.fileName,
       id: result.id,
       data: '',
       edited: result.edited ? true : false,
-      info: {
-        fileType: result.fileType,
-        format: 'id3v2.4',
-        name: result.name,
-        metadata: {
-          album: result.album,
-          artist: result.artists,
-          artwork: '',
-          name: result.title,
-        }
-      }
+      fileType: result.fileType,
+      format: 'id3v2.4',
+      title: result.title,
+      album: result.album,
+      artist: result.artists,
+      artwork: '',
     };
   }
   catch (error) {
     return {
-      name: '',
+      fileName: '',
       id: '-1',
       data: '',
-      edited: false,
-      info: {}
+      edited: false
     };
   }
 }
 
 export const generateSongKey = (song: SongType) => {
   if (song) {
-    const name = song.info.metadata?.name ?? 'no-name';
-    const artist = song.info.metadata?.artist ?? 'no-artist';
-    const album = song.info.metadata?.album ?? 'no-album';
+    const name = song.title ?? 'no-name';
+    const artist = song.artist ?? 'no-artist';
+    const album = song.album ?? 'no-album';
     const uuid = song.uuid ?? 'no-uuid';
     let cover = 'no-cover';
     try {
-      cover = song.info.metadata?.artwork ? song.info.metadata.artwork.substring(0, 300) : 'no-cover';
+      cover = song.artwork ? song.artwork.substring(0, 300) : 'no-cover';
     }
     catch (error) {
       cover = 'no-cover';

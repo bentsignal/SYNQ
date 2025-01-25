@@ -73,16 +73,9 @@ const MiniPlayer = () => {
         />
       </Animated.View>
       <SongInfo 
-        info={{
-          name: getFileName(track?.url),
-          metadata: {
-            name: track?.title,
-            artist: track?.artist,
-            album: '',
-            artwork: track?.artwork,
-          }
-        }}
-        name={getFileName(track?.url)}
+        fileName={getFileName(track?.url)}
+        title={track?.title}
+        artist={track?.artist}
         showAlbum={false}
         color={textColor}
       />

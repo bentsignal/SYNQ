@@ -73,11 +73,11 @@ const EditSong = ({id}: {id: string}) => {
     if (editSong) {
       loadArtists();
       loadAlbums();
-      setTitle(editSong.info?.metadata?.name ?? '');
-      setArtist(editSong.info?.metadata?.artist ?? '');
-      setAlbum(editSong.info?.metadata?.album ?? '');
-      if (editSong.info?.metadata?.artwork) {
-        setImage(editSong.info?.metadata?.artwork);
+      setTitle(editSong.title ?? '');
+      setArtist(editSong.artist ?? '');
+      setAlbum(editSong.album ?? '');
+      if (editSong.artwork) {
+        setImage(editSong.artwork);
       }
     }
   }, [editSong]);
@@ -181,7 +181,7 @@ const EditSong = ({id}: {id: string}) => {
             display: selectedSongs.length === 0 ? 'flex' : 'none',
            }]}
         >
-          {editSong.name ?? ''}
+          {editSong.fileName ?? ''}
         </Text>
         {selectedSongs.length === 0 &&
           <>

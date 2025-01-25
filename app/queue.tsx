@@ -98,8 +98,9 @@ const Queue = () => {
       }
       return (
         <SongInfo 
-          info={info} 
-          name={getFileName(track.url)}
+          fileName={getFileName(track.url)}
+          title={track.title}
+          artist={track.artist}
           showAlbum={false}
           isActive={true}
         />

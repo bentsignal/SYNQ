@@ -57,9 +57,11 @@ const PlayerSongEdit = () => {
           propOnLoad={() => {}}
           empty={emptyCover}
         />
-        <SongInfo 
-          info={editSong.info ? editSong.info : {metadata: {}}} 
-          name={editSong.name ? editSong.name : ''}
+        <SongInfo
+          fileName={editSong.fileName}
+          title={editSong.title}
+          artist={editSong.artist}
+          album={editSong.album}
         />
       </View>
       <ScrollView

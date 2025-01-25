@@ -1,16 +1,27 @@
 import { Text, View, StyleSheet, StyleProp, TextStyle } from 'react-native';
 import { memo } from 'react';
 import { Colors, Themes } from '@/src/constants/Colors';
-import { InfoType } from '@/src/constants/Types';
 import { Styles } from '@/src/constants/Styles';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import LottieView from 'lottie-react-native';
 import { replaceColor } from 'lottie-colorify';
 
-const SongInfo = memo(({info, name, id, showAlbum, color, titleStyles, artistStyles, isActive}: {
-  info: InfoType, 
-  name: string,
+const SongInfo = memo(({
+  id, 
+  fileName,
+  title,
+  artist,
+  album,
+  showAlbum, 
+  color, titleStyles, 
+  artistStyles, 
+  isActive
+}: {
   id?: string,
+  fileName?: string,
+  title?: string,
+  artist?: string,
+  album?: string,
   showAlbum?: boolean,
   color?: string,
   titleStyles?: StyleProp<TextStyle>,
@@ -49,7 +60,7 @@ const SongInfo = memo(({info, name, id, showAlbum, color, titleStyles, artistSty
           style={ titleStyles ? titleStyles : Local.title }
           numberOfLines={1}
         >
-          {info.metadata?.name ? info.metadata.name.trimEnd() : name.trimEnd()}
+          {title ? title.trimEnd() : fileName?.trimEnd()}
         </Text>
         { isActive &&
           <LottieView 
@@ -63,11 +74,11 @@ const SongInfo = memo(({info, name, id, showAlbum, color, titleStyles, artistSty
       </View>
       <Text
         style={[artistStyles ? artistStyles : Local.artistAlbum, {
-          display: info.metadata?.artist ? 'flex' : 'none'
+          display: artist ? 'flex' : 'none'
         }]}
         numberOfLines={1}
       >
-        {info.metadata?.artist} {showAlbum && info.metadata.album ? `· ${info.metadata.album}` : ''}
+        {artist} {showAlbum && album ? `· ${album}` : ''}
       </Text>
     </View>
   );

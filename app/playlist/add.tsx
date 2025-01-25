@@ -9,23 +9,36 @@ import { PageType, PlaylistType } from "@/src/constants/Types"
 import PlaylistList from "@/src/components/lists/playlist"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useThemeContext } from "@/src/context/ThemeProvider"
-import { getPlaylists } from "@/src/controllers/PlaylistController"
+import { getPlaylists, getPlaylistsContainingSong } from "@/src/controllers/PlaylistController"
 import { PlaylistBusEvent } from "@/src/events/playlist/Events"
 import playlistBus from "@/src/events/playlist/Bus"
 import ModalStyles from "@/src/components/modals/Styles"
+import { useGlobalContext } from "@/src/context/GlobalProvider"
 
 const AddToPlaylist = () => {
 
   const { theme } = useThemeContext();
-
+  const { editSong } = useGlobalContext();
   const insets = useSafeAreaInsets();
-
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
 
   const refreshPlaylists = async () => {
     try {
-      const results = await getPlaylists();
-      setPlaylists(results.filter((playlist) => playlist.id !== 1));
+      let results = await getPlaylists();
+      results = results.filter((playlist) => playlist.id !== 1);
+      // move playlists with song to the front of the list
+      if (editSong?.id) {
+        const playlistsWithSong = await getPlaylistsContainingSong(editSong.id);
+        for (let i = 0; i < results.length; i++) {
+          if (playlistsWithSong.some(p => p.id === results[i].id)) {
+            const [item] = results.splice(i, 1);
+            results.unshift(item);
+          }
+        }
+        setPlaylists(results);
+      } else {
+        setPlaylists(results);
+      }
     }
     catch (error) {
       console.log('error refreshing playlists:', error);

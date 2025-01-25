@@ -157,5 +157,10 @@ export default class PlaylistModel extends Model {
     return result ? true : false;
   }
 
+  public async getPlaylistsContainingSong(songId: number): Promise<PlaylistType[]> {
+    const result = await PlaylistModel.db?.getAllAsync(`SELECT * from playlists where id in (SELECT playlistId from playlistSongs where songId = ?);`, [songId]);
+    return result ? result as PlaylistType[] : [];
+  }
+
 }
 

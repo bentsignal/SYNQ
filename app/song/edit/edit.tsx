@@ -215,7 +215,7 @@ const EditSong = ({id}: {id: string}) => {
             })}
           </View>
           <CustomButton 
-            title={'Add Albums'}
+            title={'Add to Albums'}
             handlePress={() => router.push('/album/add')}
             buttonWidth={'90%'}
           />

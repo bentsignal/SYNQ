@@ -135,3 +135,8 @@ export const getSongCount = async (playlistId: number) => {
   const songs = await PlaylistModel.getInstance().getSongsFromPlaylist(playlistId);
   return songs.length;
 }
+
+export const getPlaylistsContainingSong = async (songId: number) => {
+  const playlists = await PlaylistModel.getInstance().getPlaylistsContainingSong(songId);
+  return playlists;
+}

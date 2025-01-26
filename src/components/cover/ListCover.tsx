@@ -1,12 +1,12 @@
 import { StyleSheet } from 'react-native';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, memo } from 'react';
 import FastImage from 'react-native-fast-image';
 import { getAppIcon } from '@/src/constants/Logos';
 import { CoverType } from '@/src/constants/Types';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import Animated, { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
 
-const ListCover = ({image, type, id, fade, size, empty, propOnLoad}: {
+const ListCover = memo(({image, type, id, fade, size, empty, propOnLoad}: {
   image?: string;
   type: CoverType;
   id?: number;
@@ -108,6 +108,6 @@ const ListCover = ({image, type, id, fade, size, empty, propOnLoad}: {
     </Animated.View>
   );
 
-}
+});
 
 export default ListCover;

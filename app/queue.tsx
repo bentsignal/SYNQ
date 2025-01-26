@@ -52,19 +52,22 @@ const Queue = () => {
   }
 
   useEffect(() => {
-    setTimeout(() => {
-      loadingOpacity.value = withTiming(0, { duration: 300, easing: Easing.ease }, () => {
-        runOnJS(setLoading)(false);
-      });
-    }, 500);
-  }, []);
+    const interval = setInterval(async () => {
+      if (listRef.current?.props.data.length > 0) {
+        await scrollToIndex(false);
+        clearInterval(interval);
+        loadingOpacity.value = withTiming(0, { duration: 300, easing: Easing.ease }, () => {
+          runOnJS(setLoading)(false);
+        });
+      }
+    }, 3000);
+  }, [songs]);
 
   useEffect(() => {
-    setTimeout(() => {
-      scrollToIndex(false);
+    if (!loading) {
       listOpacity.value = withTiming(1, { duration: 300, easing: Easing.ease });
-    }, 1000);
-  }, [songs]);
+    }
+  }, [loading])
 
   useEffect(() => {
     loadSongs();
@@ -98,7 +101,6 @@ const Queue = () => {
   }
 
   const listContainerStyle = useAnimatedStyle(() => ({
-    display: loading ? 'none' : 'flex',
     opacity: listOpacity.value,
     flex: 1,
     width: '100%',
@@ -113,6 +115,10 @@ const Queue = () => {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'absolute',
+    height: '100%',
+    top: 0,
+    left: 0,
   }));
 
   return (

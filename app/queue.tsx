@@ -20,7 +20,8 @@ import ModalStyles from "@/src/components/modals/Styles";
 import LoopButton from "@/src/components/player/LoopButton";
 import playbackBus from "@/src/events/playback";
 import { PlaybackBusEvent } from "@/src/events/playback/Events";
-import Animated, { useSharedValue, withTiming, Easing, useAnimatedStyle } from "react-native-reanimated";
+import Loading from "@/src/components/Loading";
+import Animated, { useSharedValue, withTiming, Easing, useAnimatedStyle, runOnJS } from "react-native-reanimated";
 
 const Queue = () => {
 
@@ -32,7 +33,9 @@ const Queue = () => {
   const insets = useSafeAreaInsets();
   const [songs, setSongs] = useState<SongType[]>([]);
   const listRef = useRef<FlatList<any>>(null);
-  const opacityValue = useSharedValue(0);
+  const [loading, setLoading] = useState(true);
+  const listOpacity = useSharedValue(0);
+  const loadingOpacity = useSharedValue(1);
 
   useEffect(() => {
     scrollToIndex();
@@ -50,8 +53,16 @@ const Queue = () => {
 
   useEffect(() => {
     setTimeout(() => {
+      loadingOpacity.value = withTiming(0, { duration: 300, easing: Easing.ease }, () => {
+        runOnJS(setLoading)(false);
+      });
+    }, 500);
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
       scrollToIndex(false);
-      opacityValue.value = withTiming(1, { duration: 300, easing: Easing.ease });
+      listOpacity.value = withTiming(1, { duration: 300, easing: Easing.ease });
     }, 1000);
   }, [songs]);
 
@@ -87,10 +98,21 @@ const Queue = () => {
   }
 
   const listContainerStyle = useAnimatedStyle(() => ({
-    opacity: opacityValue.value,
+    display: loading ? 'none' : 'flex',
+    opacity: listOpacity.value,
     flex: 1,
     width: '100%',
     alignSelf: 'center',
+  }));
+
+  const loadingContainerStyle = useAnimatedStyle(() => ({
+    opacity: loadingOpacity.value,
+    display: loading ? 'flex' : 'none',
+    width: '100%',
+    alignSelf: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   }));
 
   return (
@@ -98,6 +120,9 @@ const Queue = () => {
       <Bar />
       <View style={Local.divider}/>
       <PageTitle title="Now Playing"/>
+      <Animated.View style={loadingContainerStyle}>
+        <Loading width={200} height={200}/>
+      </Animated.View>
       <Animated.View style={listContainerStyle}>
         <SongList 
           songs={songs}

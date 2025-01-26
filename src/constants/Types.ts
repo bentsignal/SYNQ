@@ -1,35 +1,35 @@
 export type InfoType = {
-  "fileType"?: string;
-  "format"?: string;
-  "name"?: string;
-  "metadata"?: {
-    "album"?: string;
-    "artist"?: string;
-    "artwork"?: string;
-    "name"?: string;
-    "year"?: number;
+  fileType?: string;
+  format?: string;
+  name?: string;
+  metadata?: {
+    album?: string;
+    artist?: string;
+    artwork?: string;
+    name?: string;
+    year?: number;
   };
 };
 
 export type SongType = {
-  "id": string;
-  "uuid"?: string;
-  "data"?: string;
-  "info"?: InfoType;
-  "fileName"?: string;
-  "fileType"?: string;
-  "format"?: string;
-  "title"?: string;
-  "album"?: string;
-  "artist"?: string;
-  "artwork"?: string;
-  "pageType"?: PageType;
-  "sourceType"?: SourceType;
-  "sourceId"?: number;
-  "edited"?: boolean;
-  "importArtists"?: ArtistType[];
-  "importAlbums"?: AlbumType[];
-  "cacheUri"?: string;
+  id: number;
+  uuid?: string;
+  data?: string;
+  info?: InfoType;
+  fileName?: string;
+  fileType?: string;
+  format?: string;
+  title?: string;
+  album?: string;
+  artist?: string;
+  artwork?: string;
+  pageType?: PageType;
+  sourceType?: SourceType;
+  sourceId?: number;
+  edited?: boolean;
+  importArtists?: ArtistType[];
+  importAlbums?: AlbumType[];
+  cacheUri?: string;
 };
 
 export type TagsType = {

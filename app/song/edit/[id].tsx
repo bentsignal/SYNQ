@@ -4,7 +4,7 @@ import EditSong from "./edit";
 const EditSongIndex = () => {
   const { id } = useLocalSearchParams();
   return (
-    <EditSong id={id as string} />
+    <EditSong id={Number(id)} />
   )
 }
 

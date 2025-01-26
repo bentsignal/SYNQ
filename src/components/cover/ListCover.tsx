@@ -9,7 +9,7 @@ import Animated, { useSharedValue, withTiming, useAnimatedStyle } from 'react-na
 const ListCover = ({image, type, id, fade, size, empty, propOnLoad}: {
   image?: string;
   type: CoverType;
-  id?: string;
+  id?: number;
   fade?: boolean;
   size?: number;
   empty?: boolean;
@@ -24,7 +24,7 @@ const ListCover = ({image, type, id, fade, size, empty, propOnLoad}: {
   const [dim, setDim] = useState(60);
 
   useEffect(() => {
-    if (image || id === 'ad') {
+    if (image || id === -2) {
       setDim(size ??60);
     }
     else {
@@ -50,12 +50,12 @@ const ListCover = ({image, type, id, fade, size, empty, propOnLoad}: {
     artwork: {
       width: dim, 
       height: dim,
-      borderRadius: image || id === 'ad' ? 9 : 0,
+      borderRadius: image || id === -2 ? 9 : 0,
     }
   });
 
   const getSource = () => {
-    if (id === 'ad') {
+    if (id === -2) {
       return (getAppIcon(theme));
     }
     else if (image) {
@@ -66,7 +66,7 @@ const ListCover = ({image, type, id, fade, size, empty, propOnLoad}: {
         return require('@/src/assets/icons/music.png');
       }
       else if (type === CoverType.PLAYLIST) {
-        if (id === '2') {
+        if (id === 2) {
           return require('@/src/assets/icons/heart.png');
         }
         else {

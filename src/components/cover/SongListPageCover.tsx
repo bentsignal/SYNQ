@@ -13,7 +13,7 @@ import { getAlbumCover } from '@/src/controllers/AlbumController';
 import { AlbumBusEvent, AlbumImageModifiedEvent } from '@/src/events/album/Events';
 import albumBus from '@/src/events/album';
 
-const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
+const SongListPageCover = ({id, type}: {id: number, type: PageType}) => {
 
   const [src, setSrc] = useState('');
   const { theme } = useThemeContext();
@@ -22,19 +22,19 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
   const getImage = async () => {
     try {
       if (type === PageType.PLAYLIST) {
-        const path = await getPlaylistCover(parseInt(id), true);
+        const path = await getPlaylistCover(id, true);
         if (path) {
           setSrc(path);
         }
       }
       else if (type === PageType.ARTIST) {
-        const path = await getArtistCover(parseInt(id), true);
+        const path = await getArtistCover(id, true);
         if (path) {
           setSrc(path);
         }
       }
       else if (type === PageType.ALBUM) {
-        const path = await getAlbumCover(parseInt(id), true);
+        const path = await getAlbumCover(id, true);
         if (path) {
           setSrc(path);
         }
@@ -46,19 +46,19 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
   }
 
   const handlePlaylistModified = async (data: PlaylistImageModifiedEvent) => {
-    if (type === PageType.PLAYLIST && id === data.id.toString()) {
+    if (type === PageType.PLAYLIST && id === data.id) {
       await getImage();
     }
   }
 
   const handleArtistModified = async (data: ArtistImageModifiedEvent) => {
-    if (type === PageType.ARTIST && id === data.id.toString()) {
+    if (type === PageType.ARTIST && id === data.id) {
       await getImage();
     }
   }
 
   const handleAlbumModified = async (data: AlbumImageModifiedEvent) => {
-    if (type === PageType.ALBUM && id === data.id.toString()) {
+    if (type === PageType.ALBUM && id === data.id) {
       await getImage();
     }
   }
@@ -101,7 +101,7 @@ const SongListPageCover = ({id, type}: {id: string, type: PageType}) => {
     if (src) {
       return {uri: `${src}`};
     }
-    else if (type === PageType.PLAYLIST && id === '2') {
+    else if (type === PageType.PLAYLIST && id === 2) {
       return require('@/src/assets/icons/heart.png');
     }
     else if (type === PageType.PLAYLIST) {

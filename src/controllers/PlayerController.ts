@@ -33,7 +33,7 @@ export const setupPlayer = async () => {
 export const getTrackFromSong = async (song: SongType, theme: string): Promise<Track | undefined> => {
   try {
     const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;          
-    let coverPath = await getAlbumCoverFromSong(Number(song.id), true);
+    let coverPath = await getAlbumCoverFromSong(song.id, true);
     if (!check(coverPath)) {
       coverPath = await getSongCover(song.id, true);
     }
@@ -54,7 +54,7 @@ export const getTrackFromSong = async (song: SongType, theme: string): Promise<T
 
 export const playAd = async (theme: string, adURL: string) => {
   const adTrack = {
-    id: 'ad',
+    id: -2,
     url: adURL,
     title: 'Premium Ad',
     artist: 'SYNQ',
@@ -84,7 +84,7 @@ export const playTrack = async (track: Track): Promise<void> => {
 }
 
 export const updateQueue = async (
-  currentId: string,
+  currentId: number,
   shuffle: boolean,
   theme: string,
   sourceType: SourceType,
@@ -109,7 +109,7 @@ export const skipLeft = async () => {
     if (progress.position < 3 && index !== 0 && index !== undefined) {
       let nextIndex = index - 1;
       let nextTrack = await TrackPlayer.getTrack(nextIndex);
-      while (nextTrack?.id === 'ad' && nextIndex >= 0) {
+      while (nextTrack?.id === -1 && nextIndex >= 0) {
         nextIndex--;
         nextTrack = await TrackPlayer.getTrack(nextIndex);
       }
@@ -149,7 +149,7 @@ export const skipRight = async (
       }
       let nextIndex = currentIndex + 1;
       let nextTrack = await TrackPlayer.getTrack(nextIndex);
-      while (nextTrack?.id === 'ad' && nextIndex < queue.length) {
+      while (nextTrack?.id === -1 && nextIndex < queue.length) {
         nextIndex++;
         nextTrack = await TrackPlayer.getTrack(nextIndex);
       }
@@ -183,7 +183,7 @@ export const getTrackArtwork = (track: Track) => {
 }
 
 export const getNextUp = async (
-  currentId: string,
+  currentId: number,
   pagination: number = 100,
   shuffle: boolean = false,
   sourceType: SourceType,
@@ -242,7 +242,7 @@ export const getNextUp = async (
 
 }
 
-export const fetchMoreSongs = async (id: string, shuffle: boolean, sourceType: SourceType, sourceId: number) => {
+export const fetchMoreSongs = async (id: number, shuffle: boolean, sourceType: SourceType, sourceId: number) => {
   try {
     let newSongs = await getNextUp(id, 100, shuffle, sourceType, sourceId);
     if (newSongs.length < 1) {

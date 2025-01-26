@@ -20,7 +20,7 @@ import { getSongsFromAlbum } from "@/src/controllers/AlbumController";
 import ArtistItem from "@/src/components/lists/artist/ArtistItem";
 import { getArtistsFromAlbum } from "@/src/controllers/AlbumController";
 
-const AlbumView = ({id}: {id: string}) => {
+const AlbumView = ({id}: {id: number}) => {
 
   const { showOverlay, haptic, setEditAlbum } = useGlobalContext();
 
@@ -34,12 +34,12 @@ const AlbumView = ({id}: {id: string}) => {
   const refreshInfo = async () => {
     if (id) {
       try {
-        const result = await getAlbumInfo(parseInt(id));
+        const result = await getAlbumInfo(id);
         result.pageType = PageType.ALBUM;
         setAlbum(result);
         setTitle(result?.name || '');
         setYear(result?.year);
-        const artists = await getArtistsFromAlbum(parseInt(id));
+        const artists = await getArtistsFromAlbum(id);
         setArtists(artists);
       }
       catch (error) {
@@ -50,7 +50,7 @@ const AlbumView = ({id}: {id: string}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getSongsFromAlbum(parseInt(id), SortType.OLDEST);
+      const songs = await getSongsFromAlbum(id, SortType.OLDEST);
       setSongs(songs);
     }
     catch (error) {
@@ -103,11 +103,11 @@ const AlbumView = ({id}: {id: string}) => {
         <SongList 
           songs={songs} 
           pageType={PageType.ALBUM}
-          sourceId={Number(id)}
+          sourceId={id}
           sourceType={SourceType.ALBUM}
           headerComponent={
             <AlbumHeader 
-              id={id as string}
+              id={id}
               title={title} 
               year={year}
               pageType={PageType.ALBUM}

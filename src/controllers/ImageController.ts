@@ -44,7 +44,7 @@ export const newCover = async () => {
   }
 }
 
-export const getSongCover = async (id: string, full: boolean = false) => {
+export const getSongCover = async (id: number, full: boolean = false) => {
   try {
     const dir = `${FileSystem.documentDirectory}library/${id}`;
     const info = await FileSystem.getInfoAsync(dir);

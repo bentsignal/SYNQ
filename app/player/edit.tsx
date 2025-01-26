@@ -27,7 +27,7 @@ const PlayerSongEdit = () => {
   const loadCover = async () => { 
     try {
       if (editSong.id) {
-        const cover = await getAbsoluteSongCover(Number(editSong.id));
+        const cover = await getAbsoluteSongCover(editSong.id);
         if (cover) {
           setCoverImage(cover);
           setEmptyCover(false);

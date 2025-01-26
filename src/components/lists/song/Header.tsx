@@ -6,7 +6,7 @@ import SongListPageCover from "@/src/components/cover/SongListPageCover";
 import { PageType } from "@/src/constants/Types";
 
 type SongListHeaderProps = {
-  id: string;
+  id: number;
   title: string;
   songCount: number;
   pageType: PageType; 

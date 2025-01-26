@@ -4,7 +4,7 @@ import { useLocalSearchParams } from "expo-router";
 const AlbumIndex = () => {
   const { id } = useLocalSearchParams();
   return (
-    <AlbumView id={id as string} />
+    <AlbumView id={Number(id)} />
   )
 }
 

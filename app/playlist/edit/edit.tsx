@@ -20,7 +20,7 @@ import ModalStyles from "@/src/components/modals/Styles";
 
 const MemoTextInput = memo(TextInput);
 
-const EditPlaylist = ({id}: {id: string}) => {
+const EditPlaylist = ({id}: {id: number}) => {
   
   const insets = useSafeAreaInsets();
   const { theme } = useThemeContext();
@@ -31,7 +31,7 @@ const EditPlaylist = ({id}: {id: string}) => {
 
   const refreshInfo = async () => {
     try {
-      const result = await getPlaylistInfo(parseInt(id));
+      const result = await getPlaylistInfo(id);
       setName(result.name);
       setOriginalName(result.name);
     } catch (error) {
@@ -46,7 +46,7 @@ const EditPlaylist = ({id}: {id: string}) => {
       }
       else {
         setName(text);
-        await updatePlaylist(parseInt(id), text === originalName ? null : text, image);
+        await updatePlaylist(id, text === originalName ? null : text, image);
       }
     }
     catch (error) {
@@ -66,7 +66,7 @@ const EditPlaylist = ({id}: {id: string}) => {
     const cover = await newCover();
     if (cover) {
       setImage(cover);
-      await updatePlaylist(parseInt(id), name === originalName ? null : name, cover);
+      await updatePlaylist(id, name === originalName ? null : name, cover);
     }
   }
 

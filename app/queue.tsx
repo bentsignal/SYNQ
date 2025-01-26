@@ -44,7 +44,7 @@ const Queue = () => {
   const loadImage = async () => {
     try {
       if (track?.id) {
-        const cover = await getAbsoluteSongCover(Number(track.id));
+        const cover = await getAbsoluteSongCover(track.id);
         if (cover) {
           setCoverImage(cover);
           setEmptyCover(false);
@@ -71,7 +71,7 @@ const Queue = () => {
     try {
       let result: SongType;
       for (let i = start; i < queue.length; i++) {
-        if (queue[i].id !== 'ad') {
+        if (queue[i].id !== -1) {
           result = await getSongById(queue[i].id);
           result.uuid = queue[i].description;
           results.push(result);

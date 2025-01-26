@@ -88,7 +88,7 @@ export const updateMetadata = async (song: SongType) => {
 
 export const removeSongs = async (
   results: [SongType],
-  ids: string[]
+  ids: number[]
 ) => {
   let newResults = [];
   for (let i = 0; i < results.length; i++) {
@@ -112,7 +112,7 @@ export const removeSongs = async (
 export const saveEdits = (
 
   results: SongType[],
-  ids: string[],
+  ids: number[],
   title: string,
   artist: string,
   album: string,
@@ -164,7 +164,7 @@ export const getSongByResult = (result: any): SongType => {
   catch (error) {
     return {
       fileName: '',
-      id: '-1',
+      id: -1,
       data: '',
       edited: false
     };
@@ -195,7 +195,7 @@ export const getAbsoluteSongCover = async (id: number, full: boolean = false) =>
     return albumCover;
   }
   else {
-    const cover = await getSongCover(id.toString(), full);
+    const cover = await getSongCover(id, full);
     if (cover) {
       return cover;
     }

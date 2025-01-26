@@ -126,7 +126,7 @@ export const getSongsFromAlbum = async (albumId: number, sort: SortType = SortTy
   return results.map(result => getSongByResult(result));
 }
 
-export const getAlbumFromMetadata = async (value: string, year?: number): Promise<AlbumType> => {
+export const getAlbumFromMetadata = async (value: string, year?: number, image?: string): Promise<AlbumType> => {
   if (value === '' || value === null || value === undefined) {
     return null;
   }
@@ -137,7 +137,7 @@ export const getAlbumFromMetadata = async (value: string, year?: number): Promis
   if (existingAlbum) {
     return existingAlbum;
   } else {
-    const newAlbum = await createAlbum(value, year);
+    const newAlbum = await createAlbum(value, year, image);
     return newAlbum;
   }
 

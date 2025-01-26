@@ -28,7 +28,7 @@ import { AlbumBusEvent, AlbumToggledOnSongEvent } from "@/src/events/album/Event
 
 const MemoTextInput = memo(TextInput);
 
-const EditSong = ({id}: {id: string}) => {
+const EditSong = ({id}: {id: number}) => {
 
   const insets = useSafeAreaInsets();
 
@@ -57,13 +57,13 @@ const EditSong = ({id}: {id: string}) => {
   }, []);
 
   const handleArtistToggled = (event: ArtistToggledOnSongEvent) => {
-    if (event.songId === parseInt(id)) {
+    if (event.songId === id) {
       loadArtists();
     }
   }
 
   const handleAlbumToggled = (event: AlbumToggledOnSongEvent) => {
-    if (event.songId === parseInt(id)) {
+    if (event.songId === id) {
       loadAlbums();
       loadArtists();
     }
@@ -87,7 +87,7 @@ const EditSong = ({id}: {id: string}) => {
       setArtists(editSong.importArtists ?? []);
     }
     else {
-      const artists = await getArtistsFromSong(parseInt(id));
+      const artists = await getArtistsFromSong(id);
       setArtists(artists);
     }
   }
@@ -97,7 +97,7 @@ const EditSong = ({id}: {id: string}) => {
       setAlbums(editSong.importAlbums ?? []);
     }
     else {
-      const albums = await getAlbumsFromSong(parseInt(id));
+      const albums = await getAlbumsFromSong(id);
       setAlbums(albums);
     }
   }

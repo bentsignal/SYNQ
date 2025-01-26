@@ -18,7 +18,7 @@ export const idgen = (len: number) => {
   for (let i = 0; i < len; i++) {
     result += Math.floor(Math.random()*10).toString();
   }
-  return result;
+  return Number(result);
 }
 
 export const isValidNumString = (str: string) => {
@@ -62,10 +62,10 @@ export const getExportNumber = async () => {
   try {
     const numberString = await AsyncStorage.getItem('exportNumber');
     if (numberString && isValidNumString(numberString)) {
-      let number = Number(numberString);
-      number++;
-      await AsyncStorage.setItem('exportNumber', number.toString());
-      return number;
+      let num = Number(numberString);
+      num++;
+      await AsyncStorage.setItem('exportNumber', num.toString());
+      return num;
     }
     else {
       throw new Error('Bad data');

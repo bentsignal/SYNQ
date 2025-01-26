@@ -35,7 +35,7 @@ const AlbumItem = ({album, allowInteraction, bg}: AlbumProps) => {
 
   const loadCover = async () => {
     try {
-      const cover = await getAlbumCover(Number(album.id));
+      const cover = await getAlbumCover(album.id);
       if (cover) {
         setCoverImage(cover);
         setEmptyCover(false);
@@ -79,7 +79,7 @@ const AlbumItem = ({album, allowInteraction, bg}: AlbumProps) => {
       }
       albumBus.emit(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, {
         albumId: album.id,
-        songId: typeof editSong.id === 'number' ? editSong.id : parseInt(editSong.id),
+        songId: editSong.id,
         add: add,
       });
     }

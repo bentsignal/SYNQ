@@ -5,7 +5,6 @@ import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { getWifiTransferSong, createImportDir } from '@/src/controllers/ImportExportController';
 import Transfer from '@/src/assets/static/Transfer';
 import { NotificationType } from '@/src/constants/Types';
-import { idgen } from '@/lib/Util';
 import { BridgeServer } from 'react-native-http-bridge-refurbished';
 import CFG from '@/src/constants/Config';
 
@@ -150,7 +149,7 @@ const Server = () => {
         const name = body.name ? body.name : '';
         const type = body.type ? body.type : '';
         const b64 = body.data ? body.data : '';
-        const id = body.id ? body.id : '';
+        const id = body.id ? Number(body.id) : 0;
 
         const acceptedTypes = ['audio/mpeg', 'audio/flac', 'audio/wav', 'audio/mp4', 'audio/aac', 'audio/x-m4a'];
 

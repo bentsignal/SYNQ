@@ -161,7 +161,7 @@ const PlaylistItem = ({playlist, bg}: PlaylistProps) => {
       }}
     >
       <ListCover
-        id={playlist.id.toString()}
+        id={playlist.id}
         image={coverImage}
         type={CoverType.PLAYLIST}
         empty={emptyCover}

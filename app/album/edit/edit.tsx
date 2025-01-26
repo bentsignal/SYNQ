@@ -24,7 +24,7 @@ import { ArtistBusEvent } from "@/src/events/artist/Events";
 
 const MemoTextInput = memo(TextInput);
 
-const EditAlbum = ({id}: {id: string}) => {
+const EditAlbum = ({id}: {id: number}) => {
   
   const insets = useSafeAreaInsets();
   const { theme } = useThemeContext();
@@ -38,7 +38,7 @@ const EditAlbum = ({id}: {id: string}) => {
 
   const refreshInfo = async () => {
     try {
-      const result = await getAlbumInfo(parseInt(id));
+      const result = await getAlbumInfo(id);
       setName(result?.name ?? null);
       setYear(result?.year ?? null);
       setOriginalName(result?.name ?? null);
@@ -49,7 +49,7 @@ const EditAlbum = ({id}: {id: string}) => {
   }
 
   const loadArtists = async () => {
-    const artists = await getArtistsFromAlbum(parseInt(id));
+    const artists = await getArtistsFromAlbum(id);
     setArtists(artists);
   }
 
@@ -72,7 +72,7 @@ const EditAlbum = ({id}: {id: string}) => {
       else {
         setName(text);
         await updateAlbum(
-          parseInt(id), 
+          id, 
           text, 
           year,
           image
@@ -97,7 +97,7 @@ const EditAlbum = ({id}: {id: string}) => {
       const yearNum = text ? parseInt(text) : null;
       setYear(yearNum);
       await updateAlbum(
-        parseInt(id), 
+        id, 
         name,
         yearNum,
         image
@@ -121,7 +121,7 @@ const EditAlbum = ({id}: {id: string}) => {
     if (cover) {
       setImage(cover);
       await updateAlbum(
-        parseInt(id), 
+        id, 
         name === originalName ? null : name,
         year === originalYear ? undefined : year,
         cover

@@ -12,7 +12,7 @@ import albumBus from '@/src/events/album/Bus';
 import { AlbumBusEvent } from '@/src/events/album/Events';
 
 export const updateSongsInLibrary = async (
-  ids: string[],
+  ids: number[],
   title: string,
   artist: string,
   album: string,
@@ -23,7 +23,7 @@ export const updateSongsInLibrary = async (
     const dir = `${FileSystem.documentDirectory}library/${ids[i]}`;
     if (cover) {
       // if song has album, write to album dir
-      const albums = await getAlbumsFromSong(Number(ids[i]));
+      const albums = await getAlbumsFromSong(ids[i]);
       if (albums.length > 0) {
         const album = albums[0];
         const albumDir = `${FileSystem.documentDirectory}albums/${album.id}`;
@@ -43,7 +43,7 @@ export const updateSongsInLibrary = async (
       }
     }
     if (title || artist || album) {
-      await db.editSong(Number(ids[i]), title, artist, album);
+      await db.editSong(ids[i], title, artist, album);
       songBus.emit(SongBusEvent.SONG_INFO_MODIFIED, {
         id: ids[i],
         type: PageType.LIBRARY,

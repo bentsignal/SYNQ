@@ -21,10 +21,9 @@ import { getArtistInfo, updateArtist } from "@/src/controllers/ArtistController"
 
 const MemoTextInput = memo(TextInput);
 
-const EditArtist = ({id}: {id: string}) => {
+const EditArtist = ({id}: {id: number}) => {
   
   const insets = useSafeAreaInsets();
-  const { theme } = useThemeContext();
   const { addNotification, haptic } = useGlobalContext();
   const [image, setImage] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
@@ -32,7 +31,7 @@ const EditArtist = ({id}: {id: string}) => {
 
   const refreshInfo = async () => {
     try {
-      const result = await getArtistInfo(parseInt(id));
+      const result = await getArtistInfo(id);
       setName(result?.name ?? null);
       setOriginalName(result?.name ?? null);
     } catch (error) {
@@ -47,7 +46,7 @@ const EditArtist = ({id}: {id: string}) => {
       }
       else {
         setName(text);
-        await updateArtist(parseInt(id), text === originalName ? null : text, image);
+        await updateArtist(id, text === originalName ? null : text, image);
       }
     }
     catch (error) {
@@ -67,7 +66,7 @@ const EditArtist = ({id}: {id: string}) => {
     const cover = await newCover();
     if (cover) {
       setImage(cover);
-      await updateArtist(parseInt(id), name === originalName ? null : name, cover);
+      await updateArtist(id, name === originalName ? null : name, cover);
     }
   }
 

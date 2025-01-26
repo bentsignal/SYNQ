@@ -75,7 +75,7 @@ const ArtistItem = ({artist, allowInteraction, bg}: ArtistProps) => {
         }
         artistBus.emit(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, {
           artistId: artist.id,
-          songId: typeof editSong.id === 'number' ? editSong.id : parseInt(editSong.id),
+          songId: editSong.id,
           add: add,
         });
       }

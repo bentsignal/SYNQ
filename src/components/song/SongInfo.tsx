@@ -17,7 +17,7 @@ const SongInfo = memo(({
   artistStyles, 
   isActive
 }: {
-  id?: string,
+  id?: number,
   fileName?: string,
   title?: string,
   artist?: string,

@@ -18,7 +18,7 @@ import * as Haptics from 'expo-haptics';
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { getSongsFromArtist } from "@/src/controllers/ArtistController";
 
-const ArtistView = ({id}: {id: string}) => {
+const ArtistView = ({id}: {id: number}) => {
 
   const { showOverlay, haptic, setEditArtist } = useGlobalContext();
 
@@ -30,7 +30,7 @@ const ArtistView = ({id}: {id: string}) => {
   const refreshInfo = async () => {
     if (id) {
       try {
-        const result = await getArtistInfo(parseInt(id));
+        const result = await getArtistInfo(id);
         result.pageType = PageType.ARTIST;
         setArtist(result);
         setTitle(result?.name || '');
@@ -43,7 +43,7 @@ const ArtistView = ({id}: {id: string}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getSongsFromArtist(parseInt(id), SortType.NEWEST);
+      const songs = await getSongsFromArtist(id, SortType.NEWEST);
       setSongs(songs);
     }
     catch (error) {
@@ -96,11 +96,11 @@ const ArtistView = ({id}: {id: string}) => {
         <SongList 
           songs={songs} 
           pageType={PageType.ARTIST}
-          sourceId={Number(id)}
+          sourceId={id}
           sourceType={SourceType.ARTIST}
           headerComponent={
             <ArtistHeader 
-              id={id as string}
+              id={id}
               title={title} 
               pageType={PageType.ARTIST}
             />

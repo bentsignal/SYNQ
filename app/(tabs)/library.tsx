@@ -145,7 +145,7 @@ const Library = () => {
 
   // sets ad playing when ad is active
   useEffect(() => {
-    if (track?.id === 'ad') {
+    if (track?.id === -2) {
       setAdPlaying(true);
       if (premium) {
         setAdPlaying(false);

@@ -17,7 +17,7 @@ import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 
-const PlaylistView = ({id}: {id: string}) => {
+const PlaylistView = ({id}: {id: number}) => {
 
   const { showOverlay, haptic, setEditPlaylist } = useGlobalContext();
 
@@ -31,7 +31,7 @@ const PlaylistView = ({id}: {id: string}) => {
   const refreshInfo = async () => {
     if (id) {
       try {
-        const result = await getPlaylistInfo(parseInt(id));
+        const result = await getPlaylistInfo(id);
         setTitle(result?.name || '');
         setSongCount(result?.songCount || 0);
       }
@@ -43,7 +43,7 @@ const PlaylistView = ({id}: {id: string}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getPlaylistSongs(parseInt(id), PageType.LIBRARY, SortType.NEWEST);
+      const songs = await getPlaylistSongs(id, PageType.LIBRARY, SortType.NEWEST);
       setSongs(songs);
     }
     catch (error) {
@@ -69,7 +69,7 @@ const PlaylistView = ({id}: {id: string}) => {
   }, []);
 
   const loadPlaylist = async () => {
-    const playlist = await getPlaylistInfo(parseInt(id));
+    const playlist = await getPlaylistInfo(id);
     playlist.pageType = PageType.PLAYLIST;
     setPlaylist(playlist);
   }
@@ -105,11 +105,11 @@ const PlaylistView = ({id}: {id: string}) => {
         <SongList 
           songs={songs} 
           pageType={PageType.LIBRARY}
-          sourceId={Number(id)}
+          sourceId={id}
           sourceType={SourceType.PLAYLIST}
           headerComponent={
             <SongListHeader 
-              id={id as string}
+              id={id}
               title={title} 
               songCount={songCount} 
               pageType={PageType.PLAYLIST}

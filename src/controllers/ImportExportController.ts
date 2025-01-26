@@ -54,7 +54,7 @@ export const importFiles = async (
       }
       let importAlbums: AlbumType[] = [];
       if (info.metadata?.album) {
-        const importAlbum = await getAlbumFromMetadata(info.metadata.album, info.metadata?.year);
+        const importAlbum = await getAlbumFromMetadata(info.metadata.album, info.metadata?.year, info.metadata?.artwork);
         if (importAlbum?.name) {
           info.metadata.album = importAlbum.name;
           importAlbum.image = info.metadata?.artwork;
@@ -83,7 +83,7 @@ export const importFiles = async (
   }
 }
 
-export const getWifiTransferSong = async (name: string, id: string, type: string, data: string): Promise<SongType> => {
+export const getWifiTransferSong = async (name: string, id: number, type: string, data: string): Promise<SongType> => {
   const destination = `${FileSystem.cacheDirectory}import/${id}${name}`;
   await FileSystem.writeAsStringAsync(destination, data, { encoding: 'base64' });
   const wantedTags = ['artwork', 'artist', 'name', 'album', 'year'] as const;
@@ -145,7 +145,7 @@ export const exportSongs = async (songs: SongType[]) => {
           await updateMetadata(song);
           song.edited = false;
           const db = SongModel.getInstance();
-          await db.songExported(Number(song.id));
+          await db.songExported(song.id);
           await FileSystem.writeAsStringAsync(audioPath, song.data, { encoding: 'base64' });
         }
         await Sharing.shareAsync(audioPath);
@@ -174,7 +174,7 @@ export const exportSongs = async (songs: SongType[]) => {
           if (songs[i].edited) {
             await updateMetadata(songs[i]);
             songs[i].edited = false;
-            await db.songExported(Number(songs[i].id));
+            await db.songExported(songs[i].id);
             await FileSystem.writeAsStringAsync(audioPath, songs[i].data, { encoding: 'base64' });
           }
           await FileSystem.copyAsync({ from: audioPath, to: `${dir}/${songs[i].fileName}` });

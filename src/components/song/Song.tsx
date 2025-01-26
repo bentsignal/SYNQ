@@ -119,7 +119,7 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
   }
 
   const updateAlbumInfo = async (data: AlbumToggledOnSongEvent) => {
-    if (data.songId === Number(song.id)) {
+    if (data.songId === song.id) {
       
       let songArtists: ArtistType[] = [];
       let albumArtists: ArtistType[] = [];
@@ -128,18 +128,21 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
         songArtists = song.importArtists ?? [];
         albumArtists = await getArtistsFromAlbum(data.albumId);
         if (data.add) {
-          song.artwork = await getAlbumCover(data.albumId);
-          setCoverImage(song.artwork);
+          const cover = await getAlbumCover(data.albumId);
+          if (cover) {
+            setCoverImage(cover);
+            setEmptyCover(false);
+          }
         }
         else {
-          song.artwork = '';
           setCoverImage('');
+          setEmptyCover(true);
         }
       }
       else {
         loadCover();
         albumArtists = await getArtistsFromAlbum(data.albumId);
-        songArtists = await getArtistsFromSong(Number(song.id));
+        songArtists = await getArtistsFromSong(song.id);
       }
 
       // add or remove artists from song
@@ -156,13 +159,13 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
   }
 
   const updateArtistInfo = async (data: ArtistToggledOnSongEvent) => {
-    if (data.songId === Number(song.id)) {
+    if (data.songId === song.id) {
       let artists: ArtistType[] = [];
       if (song.pageType === PageType.IMPORT) {
         artists = song.importArtists ?? [];
       }
       else {
-        artists = await getArtistsFromSong(Number(song.id));
+        artists = await getArtistsFromSong(song.id);
       }
       song.artist = artists.map(artist => artist.name).join(', ');
       setArtist(song.artist);
@@ -170,7 +173,7 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
   }
 
   const updateSongInfo = async (data: SongInfoModifiedEvent) => {
-    if (Number(song.id) === data.id) {
+    if (song.id === data.id) {
       song.title = data.title ?? song.title;
       song.artist = data.artist ?? song.artist;
       song.album = data.album ?? song.album;
@@ -181,7 +184,7 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
   }
 
   const updateSongCover = async (data: SongCoverModifiedEvent) => {
-    if (Number(song.id) === data.id) {
+    if (song.id === data.id) {
       if (data.cover) {
         song.artwork = data.cover;
         setCoverImage(data.cover);
@@ -194,10 +197,18 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
 
   const loadCover = async () => {
     try {
-      const cover = await getAbsoluteSongCover(Number(song.id), true);
+      const cover = await getAbsoluteSongCover(song.id, true);
       if (cover) {
         setCoverImage(cover);
         setEmptyCover(false);
+      }
+      else if (song.importAlbums && song.importAlbums.length > 0) {
+        const album = song.importAlbums[0];
+        const cover = await getAlbumCover(album.id);
+        if (cover) {
+          setCoverImage(cover);
+          setEmptyCover(false);
+        }
       }
       else if (song.artwork) {
         setCoverImage(song.artwork);
@@ -284,7 +295,7 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
           artist={artist}
           album={album}
           id={song.id}
-          isActive={song.pageType !== PageType.QUEUE && activeId === Number(song.id)}
+          isActive={song.pageType !== PageType.QUEUE && activeId === song.id}
         />
         {
 

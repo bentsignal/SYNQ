@@ -13,7 +13,7 @@ const transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAA
 
 const EditCover = ({image, id, type, handlePress, propOnLoad}: {
   image?: string; 
-  id?: string;
+  id?: number;
   type: CoverType;
   handlePress: () => void;
   propOnLoad: () => void;
@@ -40,7 +40,7 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
           }, 20);
         }
         else {
-          const path = await getAlbumCoverFromSong(parseInt(id));
+          const path = await getAlbumCoverFromSong(id);
           if (path) {
             setSrc(path);
           }
@@ -60,7 +60,7 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
           setSrc(image);
         }
         else {
-          const path = await getPlaylistCover(parseInt(id));
+          const path = await getPlaylistCover(id);
           if (path) {
             setSrc(path);
           }
@@ -74,7 +74,7 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
           setSrc(image);
         }
         else {
-          const path = await getArtistCover(parseInt(id), true);
+          const path = await getArtistCover(id, true);
           if (path) {
             setSrc(path);
           }
@@ -88,7 +88,7 @@ const EditCover = ({image, id, type, handlePress, propOnLoad}: {
           setSrc(image);
         }
         else {
-          const path = await getAlbumCover(parseInt(id), true);
+          const path = await getAlbumCover(id, true);
           if (path) {
             setSrc(path);
           }

@@ -6,7 +6,7 @@ import SongListPageCover from "@/src/components/cover/SongListPageCover";
 import { PageType } from "@/src/constants/Types";
 
 type AlbumHeaderProps = {
-  id: string;
+  id: number;
   title: string;
   year?: number;
   pageType: PageType; 

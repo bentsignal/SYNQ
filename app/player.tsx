@@ -148,6 +148,7 @@ const Player = () => {
   }
 
   const handleAddToPlaylist = () => {
+    setEditSong(song);
     router.push('/playlist/add');
   }
 

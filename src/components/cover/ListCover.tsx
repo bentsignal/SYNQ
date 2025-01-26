@@ -98,7 +98,7 @@ const ListCover = ({image, type, id, fade, size, empty, propOnLoad}: {
           if (fade) {
             opacityRef.value = withTiming(1, { duration: 300 });
           }
-          propOnLoad()
+          propOnLoad();
         }}
         onError={() => {
           setLoaded(true);

@@ -10,9 +10,6 @@ import ListCover from '@/src/components/cover/ListCover';
 import * as Haptics from 'expo-haptics';
 import More from '@/src/components/More';
 import { PageType, CoverType, ArtistType } from '@/src/constants/Types';
-import { useActiveTrack } from "react-native-track-player";
-import { getTrackFromSong, playTrack, 
-  updateQueue, playAd, addToQueue } from '@/src/controllers/PlayerController';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
 import songBus from '@/src/events/song';
@@ -32,10 +29,11 @@ type SongProps = {
   song: SongType, 
   fadeCover: boolean, 
   fadeSong: boolean,
-  activeId?: number,
+  active: boolean,
+  handlePlay: (song: SongType) => Promise<void>,
 }
 
-export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps) {
+export default function Song({ song, fadeCover, fadeSong, active, handlePlay }: SongProps) {
 
   const [selected, setSelected] = useState(false);
   const translateX = useRef(new Animated.Value(0)).current;
@@ -46,15 +44,13 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
   const [artist, setArtist] = useState('');
   const [album, setAlbum] = useState('');
 
-  const track = useActiveTrack();
-
   const { 
 
     selectEnabled, selectedSongs, results,
-    haptic, adPlaying, adURL, shouldPlayAd,
+    haptic,
 
     setSelectedSongs, 
-    setEditSong, setAdPlaying,
+    setEditSong,
 
   } = useGlobalContext(); 
 
@@ -224,47 +220,14 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
     }
   }
 
-  const handlePlay = async () => {
-    if (haptic) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-    const id = track?.id ? track.id : -1;
-    // play ad if user is non premium and has passed ad threshold
-    if (!premium && shouldPlayAd && !adPlaying) {
-      setAdPlaying(true);
-      await playAd(theme, adURL);
-      const newTrack = await getTrackFromSong(song, theme);
-      await updateQueue(song.id, shuffle, theme, song.sourceType, song.sourceId);
-      setSourceType(song.sourceType);
-      setSourceId(song.sourceId);
-      if (newTrack) {
-        await addToQueue(newTrack);
-      }
-    }
-    // if ad is not played, play song
-    else if (id !== song.id && !adPlaying) {
-      setAdPlaying(false);
-      try {
-        const newTrack = await getTrackFromSong(song, theme);
-        if (newTrack) {
-          await playTrack(newTrack);
-          await updateQueue(song.id, shuffle, theme, song.sourceType, song.sourceId);
-          setSourceType(song.sourceType);
-          setSourceId(song.sourceId);
-        }
-      }
-      catch (error) {
-        console.log('error playing song: ', error);
-      }
-    }
-  }
-
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
     onPanResponderMove: (e, gestureState) => {
       translateX.setValue(gestureState.dx);
     },
   });
+
+  console.log('render song:', song.id);
 
   return (
     <Animated.View 
@@ -279,7 +242,7 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
         }]}
         activeOpacity={disablePlay ? 1 : 0.8}
         disabled={disablePlay}
-        onPress={handlePlay}
+        onPress={() => handlePlay(song)}
       >
         <ListCover 
           image={coverImage}
@@ -295,7 +258,7 @@ export default function Song({ song, fadeCover, fadeSong, activeId }: SongProps)
           artist={artist}
           album={album}
           id={song.id}
-          isActive={song.pageType !== PageType.QUEUE && activeId === song.id}
+          isActive={song.pageType !== PageType.QUEUE && active}
         />
         {
 

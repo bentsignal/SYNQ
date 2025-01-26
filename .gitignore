@@ -21,6 +21,7 @@ commands.md
 *.ipa
 *.app
 credentials
+credentials.json
 repos
 *.swp
 assets/appIcons/icon.psd

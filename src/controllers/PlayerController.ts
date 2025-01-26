@@ -91,7 +91,7 @@ export const updateQueue = async (
   sourceId: number,
 ): Promise<void> => {
   await TrackPlayer.removeUpcomingTracks();
-  const upcoming = await getNextUp(currentId, 1000, shuffle, sourceType, sourceId);
+  const upcoming = await getNextUp(currentId, 100, shuffle, sourceType, sourceId);
   let upcomingTracks: Track[] = [];
   for (let i = 0; i < upcoming.length; i++) {
     const newTrack = await getTrackFromSong(upcoming[i], theme);

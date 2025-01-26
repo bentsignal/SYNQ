@@ -10,12 +10,10 @@ import ListCover from '@/src/components/cover/ListCover';
 import * as Haptics from 'expo-haptics';
 import More from '@/src/components/More';
 import { PageType, CoverType, ArtistType } from '@/src/constants/Types';
-import { useThemeContext } from '@/src/context/ThemeProvider';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
 import songBus from '@/src/events/song';
 import { SongBusEvent, SongInfoModifiedEvent, 
   SongCoverModifiedEvent } from '@/src/events/song/Events';
-import { usePlaybackContext } from '@/src/context/PlaybackProvider';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { ArtistToggledOnSongEvent, ArtistBusEvent } from '@/src/events/artist/Events';
 import { getArtistsFromSong } from '@/src/controllers/ArtistController';
@@ -54,9 +52,7 @@ export default function Song({ song, fadeCover, fadeSong, active, handlePlay }: 
 
   } = useGlobalContext(); 
 
-  const { shuffle, setSourceType, setSourceId } = usePlaybackContext();
   const { premium } = usePremiumContext();
-  const { theme } = useThemeContext();
 
   let blur = false;
   let message = false
@@ -226,8 +222,6 @@ export default function Song({ song, fadeCover, fadeSong, active, handlePlay }: 
       translateX.setValue(gestureState.dx);
     },
   });
-
-  console.log('render song:', song.id);
 
   return (
     <Animated.View 

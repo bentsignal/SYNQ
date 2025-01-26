@@ -13,6 +13,8 @@ import { PageType, SortType } from '@/src/constants/Types';
 import { getAlbumCoverFromSong, getSongsFromAlbum } from '@/src/controllers/AlbumController';
 import { getAlbumCoverPathFromSong, getSongCover } from '@/src/controllers/ImageController';
 import { check } from "@/lib/Util";
+import playbackBus from "../events/playback";
+import { PlaybackBusEvent } from "../events/playback/Events";
 
 export const setupPlayer = async () => {
   await TrackPlayer.setupPlayer();
@@ -100,6 +102,7 @@ export const updateQueue = async (
     }
   }
   await TrackPlayer.add(upcomingTracks);
+  playbackBus.emit(PlaybackBusEvent.QUEUE_UPDATED);
 }
 
 export const skipLeft = async () => {

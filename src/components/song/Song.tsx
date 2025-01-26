@@ -28,10 +28,11 @@ type SongProps = {
   fadeCover: boolean, 
   fadeSong: boolean,
   active: boolean,
+  previous?: boolean,
   handlePlay: (song: SongType) => Promise<void>,
 }
 
-export default function Song({ song, fadeCover, fadeSong, active, handlePlay }: SongProps) {
+export default function Song({ song, fadeCover, fadeSong, active, previous, handlePlay }: SongProps) {
 
   const [selected, setSelected] = useState(false);
   const translateX = useRef(new Animated.Value(0)).current;
@@ -227,7 +228,8 @@ export default function Song({ song, fadeCover, fadeSong, active, handlePlay }: 
     <Animated.View 
       // {...panResponder.panHandlers}
       style={[Local.container, {
-        transform: [{ translateX }]
+        transform: [{ translateX }],
+        opacity: previous ? 0.3 : 1,
       }]}>
       <TouchableOpacity 
         style={[Local.contentContainer, {
@@ -252,7 +254,7 @@ export default function Song({ song, fadeCover, fadeSong, active, handlePlay }: 
           artist={artist}
           album={album}
           id={song.id}
-          isActive={song.pageType !== PageType.QUEUE && active}
+          isActive={active}
         />
         {
 

@@ -15,11 +15,14 @@ const List = memo((
     keyExtractor,
     extra,
     setScrollPosition,
+    hideTopGradient = false,
+    hideBottomGradient = false,
     gradientStart,
     gradientEnd,
     emptyComponent,
     showEmptyComponent = true,
     lockScroll = false,
+    listRef,
   }: 
   {
     data: any[], 
@@ -30,11 +33,14 @@ const List = memo((
     keyExtractor: (item: any, index: number) => string,
     extra?: any,
     setScrollPosition?: (position: number) => void,
+    hideTopGradient?: boolean,
+    hideBottomGradient?: boolean,
     gradientStart?: string,
     gradientEnd?: string,
     emptyComponent?: React.ReactNode,
     showEmptyComponent?: boolean,
     lockScroll?: boolean,
+    listRef?: React.RefObject<FlatList<any>>,
   }
 ) => {
 
@@ -56,7 +62,7 @@ const List = memo((
     if (setScrollPosition) {
       setScrollPosition(yOffset);
     }
-    if (yOffset <= 0 && !atTop) {
+    if (yOffset <= 0 && !atTop && !hideTopGradient) {
       setAtTop(true);
       Animated.timing(topGradientOpacityRef, {
         toValue: 0,
@@ -65,7 +71,7 @@ const List = memo((
         useNativeDriver: true,
       }).start();
     }
-    else if (yOffset > 0 && atTop) {
+    else if (yOffset > 0 && atTop && !hideTopGradient) {
       setAtTop(false);
       Animated.timing(topGradientOpacityRef, {
         toValue: 1,
@@ -96,12 +102,14 @@ const List = memo((
       width: '100%', 
       height: 50,
       opacity: topGradientOpacityRef,
+      display: hideTopGradient ? 'none' : 'flex',
     },
     bottomGradient: {
       position: 'absolute', 
       bottom: bottomPadding ? (Dimensions.get('screen').height < 700 ? 70 : 50) : 0, 
       width: '100%', 
       height: 50,
+      display: hideBottomGradient ? 'none' : 'flex',
     }
   });
 
@@ -109,6 +117,7 @@ const List = memo((
     <>
       <Animated.View style={ Local.container}>
         <FlatList
+          ref={listRef}
           data={data}
           renderItem={item}
           keyExtractor={keyExtractor}

@@ -1,16 +1,18 @@
-import React, { memo, useEffect, useState, useCallback } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { SongType, PageType, SourceType } from '@/src/constants/Types';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import Song from '@/src/components/song';
 import { generateSongKey } from '@/src/controllers/SongController';
 import List from '@/src/components/List';
-import { useActiveTrack } from 'react-native-track-player';
+import TrackPlayer, { useActiveTrack } from 'react-native-track-player';
 import { addToQueue, getTrackFromSong, 
   updateQueue, playAd, playTrack } from '@/src/controllers/PlayerController';
 import * as Haptics from 'expo-haptics';
 import { usePlaybackContext } from '@/src/context/PlaybackProvider';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
+import { FlatList } from 'react-native';
+import { check } from '@/lib/Util';
 
 const MemoSong = memo(Song);
 
@@ -26,11 +28,14 @@ const SongList = memo((
     sourceId,
     sourceType,
     setScrollPosition,
+    hideTopGradient = false,
+    hideBottomGradient = false,
     gradientStart,
     gradientEnd,
     emptyComponent,
     showEmptyComponent,
     lockScroll = false,
+    listRef,
   }: 
   {
     songs: SongType[], 
@@ -43,11 +48,14 @@ const SongList = memo((
     sourceId?: number,
     sourceType?: SourceType,
     setScrollPosition?: (position: number) => void,
+    hideTopGradient?: boolean,
+    hideBottomGradient?: boolean,
     gradientStart?: string,
     gradientEnd?: string,
     emptyComponent?: React.ReactNode,
     showEmptyComponent?: boolean,
     lockScroll?: boolean,
+    listRef?: React.RefObject<FlatList<any>>,
   }
 ) => {
 
@@ -56,6 +64,18 @@ const SongList = memo((
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
   const activeTrack = useActiveTrack();
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const updateActiveIndex = async () => {
+    const index = await TrackPlayer.getActiveTrackIndex();
+    if (check(index)) {
+      setActiveIndex(index);
+    }
+  }
+
+  useEffect(() => {
+    updateActiveIndex();
+  }, [activeTrack]);
 
   const handlePlay = useCallback(async (song: SongType) => {
     if (haptic) {
@@ -92,16 +112,26 @@ const SongList = memo((
     }
   }, [haptic, premium, shouldPlayAd, adPlaying, theme, adURL, shuffle, setAdPlaying, setSourceType, setSourceId]);
 
-  const renderItem = ({item} : {item: SongType}) => {
+  const renderItem = ({item, index} : {item: SongType, index: number}) => {
     item.pageType = pageType;
     item.sourceId = sourceId;
     item.sourceType = sourceType;
+    let active, previous;
+    if (pageType === PageType.QUEUE) {
+      active = activeTrack?.id === item.id && index === activeIndex;
+      previous = index < activeIndex;
+    }
+    else {
+      active = activeTrack?.id === item.id;
+      previous = false;
+    }
     return (
       <MemoSong 
         song={item}
         fadeCover={fadeCover}
         fadeSong={fadeSong}
-        active={activeTrack?.id === item.id}
+        active={active}
+        previous={previous}
         handlePlay={handlePlay}
       />
     );
@@ -111,12 +141,15 @@ const SongList = memo((
     <>
       <List 
         data={songs}
+        listRef={listRef}
         headerComponent={headerComponent}
         footerComponent={footerComponent}
         item={renderItem}
         keyExtractor={(song, index) => generateSongKey(song)}
         extra={selectedId}
         setScrollPosition={setScrollPosition}
+        hideTopGradient={hideTopGradient}
+        hideBottomGradient={hideBottomGradient}
         gradientStart={gradientStart}
         gradientEnd={gradientEnd}
         emptyComponent={emptyComponent}

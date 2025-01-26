@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, Dimensions } from "react-native";
+import { View, StyleSheet, Text, Dimensions, FlatList } from "react-native";
 import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,19 +8,19 @@ import PausePlayButtons from "@/src/components/player/PausePlayButtons";
 import Time from "@/src/components/player/Time";
 import ShuffleButton from "@/src/components/player/ShuffleButton";
 import SongList from "@/src/components/lists/song";
-import { useEffect, useState } from "react";
-import { CoverType, PageType, SongType } from "@/src/constants/Types";
-import { getSongById, generateSongKey } from "@/src/controllers/SongController";
-import ListCover from "@/src/components/cover/ListCover";
-import SongInfo from "@/src/components/song/SongInfo";
+import { useEffect, useState, useRef } from "react";
+import { PageType, SongType } from "@/src/constants/Types";
+import { getSongById } from "@/src/controllers/SongController";
 import TrackPlayer, { useActiveTrack } from "react-native-track-player";
-import { getFileName } from "@/lib/Util";
+import { check } from "@/lib/Util";
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import { usePlaybackContext } from "@/src/context/PlaybackProvider";
 import Bar from "@/src/components/modals/Bar";
 import ModalStyles from "@/src/components/modals/Styles";
 import LoopButton from "@/src/components/player/LoopButton";
-import { getAbsoluteSongCover } from "@/src/controllers/SongController";
+import playbackBus from "@/src/events/playback";
+import { PlaybackBusEvent } from "@/src/events/playback/Events";
+import Animated, { useSharedValue, withTiming, Easing, useAnimatedStyle } from "react-native-reanimated";
 
 const Queue = () => {
 
@@ -31,46 +31,47 @@ const Queue = () => {
 
   const insets = useSafeAreaInsets();
   const [songs, setSongs] = useState<SongType[]>([]);
-  const [coverImage, setCoverImage] = useState('');
-  const [emptyCover, setEmptyCover] = useState(false);
+  const listRef = useRef<FlatList<any>>(null);
+  const opacityValue = useSharedValue(0);
 
   useEffect(() => {
+    scrollToIndex();
+  }, [track]);
 
-    loadSongs();
-    loadImage();
-
-  }, [track, shuffle]);
-
-  const loadImage = async () => {
-    try {
-      if (track?.id) {
-        const cover = await getAbsoluteSongCover(track.id);
-        if (cover) {
-          setCoverImage(cover);
-          setEmptyCover(false);
-        }
-        else {
-          setCoverImage('');
-          setEmptyCover(true);
-        }
-      }
-    }
-    catch (error) {
-      console.log('error loading queue cover image:', error);
+  const scrollToIndex = async (animated: boolean = true) => {
+    const index = await TrackPlayer.getActiveTrackIndex();
+    if (check(index)) {
+      listRef.current?.scrollToIndex({
+        index: index,
+        animated: animated,
+      });
     }
   }
+
+  useEffect(() => {
+    setTimeout(() => {
+      scrollToIndex(false);
+      opacityValue.value = withTiming(1, { duration: 300, easing: Easing.ease });
+    }, 1000);
+  }, [songs]);
+
+  useEffect(() => {
+    loadSongs();
+  }, [shuffle]);
+
+  useEffect(() => {
+    playbackBus.on(PlaybackBusEvent.QUEUE_UPDATED, loadSongs);
+    return () => {
+      playbackBus.off(PlaybackBusEvent.QUEUE_UPDATED, loadSongs);
+    }
+  }, []);
 
   const loadSongs = async () => {
     const results: SongType[] = [];
     const queue = await TrackPlayer.getQueue();
-    const current = await TrackPlayer.getActiveTrackIndex();
-    let start = 0;
-    if (current !== null && current !== undefined) {
-      start = current + 1;
-    }
     try {
       let result: SongType;
-      for (let i = start; i < queue.length; i++) {
+      for (let i = 0; i < queue.length; i++) {
         if (queue[i].id !== -1) {
           result = await getSongById(queue[i].id);
           result.uuid = queue[i].description;
@@ -82,54 +83,32 @@ const Queue = () => {
       console.log('error loading queue songs to display in list:', error);
     }
     setSongs(results);
+    scrollToIndex();
   }
 
-  const getInfo = () => {
-    if (track !== null && track !== undefined) {
-      
-      const info = {
-        name: getFileName(track.url),
-        metadata: {
-          name: track.title,
-          artist: track.artist,
-          album: '',
-          artwork: track.artwork,
-        }
-      }
-      return (
-        <SongInfo 
-          fileName={getFileName(track.url)}
-          title={track.title}
-          artist={track.artist}
-          showAlbum={false}
-          isActive={true}
-        />
-      );
-    }
-  }
+  const listContainerStyle = useAnimatedStyle(() => ({
+    opacity: opacityValue.value,
+    flex: 1,
+    width: '100%',
+    alignSelf: 'center',
+  }));
 
   return (
     <View style={[Styles.body, Local.container]}>
       <Bar />
       <View style={Local.divider}/>
       <PageTitle title="Now Playing"/>
-      <View style={Local.currentlyPlayingContainer}>
-        <ListCover 
-          image={coverImage}
-          type={CoverType.SONG}
-          propOnLoad={() => {}}
-          empty={emptyCover}
-          fade={true}
+      <Animated.View style={listContainerStyle}>
+        <SongList 
+          songs={songs}
+          pageType={PageType.QUEUE}
+          hideTopGradient={true}
+          gradientStart={'rgba(24, 24, 24, 1)'}
+          gradientEnd={'rgba(24, 24, 24, 0)'}
+          listRef={listRef}
+          footerComponent={<View style={{height: 500}}/>}
         />
-        {getInfo()}
-      </View>
-      <Text style={Local.categoryHeader}>Up Next</Text>
-      <SongList 
-        songs={songs}
-        pageType={PageType.QUEUE}
-        gradientStart={'rgba(24, 24, 24, 1)'}
-        gradientEnd={'rgba(24, 24, 24, 0)'}
-      />
+      </Animated.View>
       <View style={[Local.footer, {
         paddingBottom: insets.bottom,
       }]}>

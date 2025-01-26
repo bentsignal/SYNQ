@@ -101,7 +101,6 @@ const ListCover = ({image, type, id, fade, size, empty, propOnLoad}: {
           propOnLoad()
         }}
         onError={() => {
-          console.log('error loading list cover');
           setLoaded(true);
           propOnLoad();
         }}

@@ -1,5 +1,5 @@
-import { TouchableOpacity, StyleSheet, Animated, PanResponder } from 'react-native';
-import { useState, useEffect, useRef } from 'react';
+import { TouchableOpacity, StyleSheet, PanResponder, View } from 'react-native';
+import { useState, useEffect } from 'react';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { Styles } from '@/src/constants/Styles';
 import { Colors } from '@/src/constants/Colors';
@@ -22,6 +22,8 @@ import albumBus from '@/src/events/album';
 import { AlbumBusEvent, AlbumToggledOnSongEvent } from '@/src/events/album/Events';
 import { getAlbumCover, getArtistsFromAlbum } from '@/src/controllers/AlbumController';
 import { getAbsoluteSongCover } from '@/src/controllers/SongController';
+import Animated, { useSharedValue, useAnimatedStyle, 
+  withTiming, Easing } from 'react-native-reanimated';
 
 type SongProps = {
   song: SongType, 
@@ -35,13 +37,20 @@ type SongProps = {
 export default function Song({ song, fadeCover, fadeSong, active, previous, handlePlay }: SongProps) {
 
   const [selected, setSelected] = useState(false);
-  const translateX = useRef(new Animated.Value(0)).current;
   const [coverImage, setCoverImage] = useState('');
   const [emptyCover, setEmptyCover] = useState(false);
   const [fileName, setFileName] = useState('');
   const [title, setTitle] = useState('');
   const [artist, setArtist] = useState('');
   const [album, setAlbum] = useState('');
+
+  const opacity = useSharedValue(previous ? 0.3 : 1);
+  const opacityStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+  useEffect(() => {
+    opacity.value = withTiming(previous ? 0.3 : 1, { duration: 300, easing: Easing.ease });
+  }, [previous]);
 
   const { 
 
@@ -217,20 +226,17 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
     }
   }
 
-  const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderMove: (e, gestureState) => {
-      translateX.setValue(gestureState.dx);
-    },
-  });
+  // const panResponder = PanResponder.create({
+  //   onMoveShouldSetPanResponder: () => true,
+  //   onPanResponderMove: (e, gestureState) => {
+  //     translateX.setValue(gestureState.dx);
+  //   },
+  // });
 
   return (
     <Animated.View 
       // {...panResponder.panHandlers}
-      style={[Local.container, {
-        transform: [{ translateX }],
-        opacity: previous ? 0.3 : 1,
-      }]}>
+      style={[Local.container, opacityStyle]}>
       <TouchableOpacity 
         style={[Local.contentContainer, {
           // backgroundColor: bg,

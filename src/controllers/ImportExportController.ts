@@ -72,6 +72,7 @@ export const importFiles = async (
         'album': info.metadata?.album ?? '',
         'importArtists': importArtists,
         'importAlbums': importAlbums,
+        'artwork': importAlbums.length === 0 ? info.metadata?.artwork : '',
         'cacheUri': results.assets[i].uri
       };
       songs.push(song);
@@ -98,12 +99,13 @@ export const getWifiTransferSong = async (name: string, id: number, type: string
       info.metadata.artist = '';
     }
   }
-  let importAlbum: AlbumType = null;
+  let importAlbums: AlbumType[] = [];
   if (info.metadata?.album) {
-    importAlbum = await getAlbumFromMetadata(info.metadata.album, info.metadata?.year);
-    if (importAlbum) {
-      info.metadata.album = importAlbum?.name ?? '';
+    const importAlbum = await getAlbumFromMetadata(info.metadata.album, info.metadata?.year, info.metadata?.artwork);
+    if (importAlbum?.name) {
+      info.metadata.album = importAlbum.name;
       importAlbum.image = info.metadata?.artwork;
+      importAlbums.push(importAlbum);
     }
     else {
       info.metadata.album = '';
@@ -112,9 +114,12 @@ export const getWifiTransferSong = async (name: string, id: number, type: string
   return {
     'fileName': name,
     'id': id,
-    'info': info,
+    'title': info.metadata?.name ?? '',
+    'artist': info.metadata?.artist ?? '',
+    'album': info.metadata?.album ?? '',
+    'artwork': importAlbums.length === 0 ? info.metadata?.artwork : '',
     'importArtists': importArtists,
-    'importAlbums': importAlbum ? [importAlbum] : [],
+    'importAlbums': importAlbums,
     'cacheUri': destination
   };
 }

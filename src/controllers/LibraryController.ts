@@ -10,6 +10,7 @@ import { writeImageToLibrary, deleteImagesFromDirectory } from '@/src/controller
 import { addAlbumToSong, addArtistToAlbum, getAlbumsFromSong } from '@/src/controllers/AlbumController';
 import albumBus from '@/src/events/album/Bus';
 import { AlbumBusEvent } from '@/src/events/album/Events';
+import { flagSongAsEdited } from './SongController';
 
 export const updateSongsInLibrary = async (
   ids: number[],
@@ -28,6 +29,7 @@ export const updateSongsInLibrary = async (
         const album = albums[0];
         const albumDir = `${FileSystem.documentDirectory}albums/${album.id}`;
         await writeImageToLibrary(cover, albumDir);
+        await flagSongAsEdited(ids[i]);
         albumBus.emit(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, {
           id: album.id,
         });
@@ -36,6 +38,7 @@ export const updateSongsInLibrary = async (
       else {
         await deleteImagesFromDirectory(dir);
         await writeImageToLibrary(cover, dir);
+        await flagSongAsEdited(ids[i]);
         songBus.emit(SongBusEvent.SONG_COVER_MODIFIED, {
           id: ids[i],
           type: PageType.LIBRARY,
@@ -44,6 +47,7 @@ export const updateSongsInLibrary = async (
     }
     if (title || artist || album) {
       await db.editSong(ids[i], title, artist, album);
+      await flagSongAsEdited(ids[i]);
       songBus.emit(SongBusEvent.SONG_INFO_MODIFIED, {
         id: ids[i],
         type: PageType.LIBRARY,

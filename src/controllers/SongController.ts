@@ -1,10 +1,12 @@
 import * as FileSystem from 'expo-file-system'
-import { SongType, PageType, TagsType } from '@/src/constants/Types'
+import { SongType, PageType, TagsType, InfoType } from '@/src/constants/Types'
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 import SongModel from '@/src/models/SongModel';
 import 'react-native-get-random-values';
 import { splitImageMimeAndBuffer, getSongCover } from '@/src/controllers/ImageController';
 import { getAlbumCoverFromSong } from './AlbumController';
+import { check } from '@/lib/Util';
+import { getAudioMetadata } from '@missingcore/audio-metadata';
 
 export const updateMetadata = async (song: SongType) => {
 
@@ -200,4 +202,68 @@ export const getAbsoluteSongCover = async (id: number, full: boolean = false) =>
       return cover;
     }
   }
+}
+
+export const flagSongAsEdited = async (id: number) => {
+  return await SongModel.getInstance().flagSongAsEdited(id);
+}
+
+const checkField = (oldValue: string, newValue: string) => {
+  if (check(oldValue) && check(newValue) && oldValue !== newValue) {
+    return true;
+  }
+  else if (!check(oldValue) && !newValue) {
+    return true;
+  }
+  return false;
+}
+
+export const isSongEdited = async (id?: number, songParam?: SongType) => {
+
+  if (!check(id) && !check(songParam)) {
+    return null;
+  }
+
+  let song;
+  let url;
+  if (id) {
+    song = await getSongById(id);
+    if (song.edited) {
+      return true;
+    }
+    url = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
+  }
+  else if (songParam) {
+    song = songParam;
+    if (song.edited) {
+      return true;
+    }
+    else {
+      url = song.cacheUri;
+    }
+  }
+  else {
+    return null;
+  }
+
+  try {
+    const wantedTags = ['name', 'artist', 'album'] as const;
+    const info: InfoType = await getAudioMetadata(url, wantedTags);
+    if (checkField(info.metadata?.name, song.title)) {
+      return true;
+    }
+    else if (checkField(info.metadata?.artist, song.artist)) {
+      return true;
+    }
+    else if (checkField(info.metadata?.album, song.album)) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  catch (error) {
+    return false;
+  }
+
 }

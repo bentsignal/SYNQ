@@ -108,4 +108,14 @@ export default class SongModel extends Model {
     }
   }
 
+  public async flagSongAsEdited(id: number): Promise<boolean> {
+    try {
+      await SongModel.db?.runAsync(`UPDATE songs SET edited = TRUE WHERE id = ?;`, [id]);
+      return true;
+    } catch (error) {
+      console.error('Error flagging song as edited:', error);
+      return false;
+    }
+  }
+
 }

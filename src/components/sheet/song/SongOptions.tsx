@@ -91,6 +91,9 @@ const SongOptions = ({ name }: SongOptionsProps) => {
       if (pageType === PageType.IMPORT && !premium) {
         setShowImportAd(true);
       }
+      else {
+        setShowImportAd(false);
+      }
       setShowGlobalLoading(true);
       await exportSongs([editSong]);
       setNumModified(numModified + 1);

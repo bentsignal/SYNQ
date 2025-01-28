@@ -33,8 +33,10 @@ export const updateMetadata = async (song: SongType) => {
     }
   }
   else if (song.pageType === PageType.IMPORT) {
+    console.log('import song: ', song.title, song.importAlbums);
     if (song.importAlbums && song.importAlbums.length > 0) {
       const path = await getAlbumCover(song.importAlbums[0].id);
+      console.log('path: ', path);
       if (path) {
         const image = await FileSystem.readAsStringAsync(path, { encoding: 'base64' });
         song.artwork = image ? image : song.artwork;
@@ -75,6 +77,13 @@ export const updateMetadata = async (song: SongType) => {
           description: 'Album Cover',
           imageBuffer: buffer,
           mime: mime,
+        };
+      }
+      else {
+        tags.APIC = {
+          description: 'Album Cover',
+          imageBuffer: image,
+          mime: 'image/jpeg',
         };
       }
     }

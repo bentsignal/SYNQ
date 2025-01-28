@@ -159,21 +159,17 @@ export const getSongByResult = (result: any): SongType => {
     return {
       fileName: result.fileName,
       id: result.id,
-      data: '',
       edited: result.edited ? true : false,
       fileType: result.fileType,
       format: 'id3v2.4',
       title: result.title,
       album: result.album,
       artist: result.artists,
-      artwork: '',
     };
   }
   catch (error) {
     return {
-      fileName: '',
       id: -1,
-      data: '',
       edited: false
     };
   }

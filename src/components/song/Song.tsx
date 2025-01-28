@@ -158,10 +158,12 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
 
       // add or remove artists from song
       if (data.add) {
+        song.album = song.importAlbums[0].name;
         song.artist = [...new Set([...albumArtists, ...songArtists].map(artist => artist.name))].join(', ');
         setArtist(song.artist);
       }
       else {
+        song.album = '';
         song.artist = songArtists.map(artist => artist.name).filter(artist => !albumArtists.map(a => a.name).includes(artist)).join(', ');
         setArtist(song.artist);
       }

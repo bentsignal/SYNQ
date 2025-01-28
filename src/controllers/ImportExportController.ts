@@ -66,6 +66,7 @@ export const importFiles = async (
       }
       song = {
         'fileName': results.assets[i].name,
+        'fileType': results.assets[i].mimeType,
         'id': idgen(10),
         'title': info.metadata?.name ?? '',
         'artist': info.metadata?.artist ?? '',
@@ -113,6 +114,7 @@ export const getWifiTransferSong = async (name: string, id: number, type: string
   }
   return {
     'fileName': name,
+    'fileType': type,
     'id': id,
     'title': info.metadata?.name ?? '',
     'artist': info.metadata?.artist ?? '',

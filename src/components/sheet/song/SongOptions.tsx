@@ -244,7 +244,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
       <SheetOption 
         icon={require('@/src/assets/icons/share.png')}
         text={'Export'}
-        show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
+        show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM, PageType.IMPORT].includes(pageType)}
         handler={handleExport}
       />
     </>

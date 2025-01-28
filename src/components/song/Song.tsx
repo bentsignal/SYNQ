@@ -86,13 +86,13 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
     bg = Colors.background;
   }
 
-  useEffect(() => {
-    const checkSongEdited = async () => {
-      const edited = await isSongEdited(song);
-      console.log('song edited: ', song.title ?? song.fileName, edited);
-    }
-    checkSongEdited();
-  }, [song, title, artist, album]);
+  // useEffect(() => {
+  //   const checkSongEdited = async () => {
+  //     const edited = await isSongEdited(song);
+  //     console.log('song edited: ', song.title ?? song.fileName, edited);
+  //   }
+  //   checkSongEdited();
+  // }, [song, title, artist, album]);
 
   useEffect(() => {
     setSelected(false);

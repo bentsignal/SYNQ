@@ -10,7 +10,7 @@ import { getAudioMetadata } from '@missingcore/audio-metadata';
 
 export const updateMetadata = async (song: SongType) => {
 
-  if ([PageType.LIBRARY, PageType.ARTIST, PageType.ALBUM].includes(song.pageType)) {
+  if (song.pageType !== PageType.IMPORT) {
     // retrieve data if song is from library
     try {
       const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
@@ -34,12 +34,16 @@ export const updateMetadata = async (song: SongType) => {
   }
   else if (song.pageType === PageType.IMPORT) {
     if (song.importAlbums && song.importAlbums.length > 0) {
-      const image = await getAlbumCover(song.importAlbums[0].id);
-      if (image) {
-        song.artwork = image;
+      const path = await getAlbumCover(song.importAlbums[0].id);
+      if (path) {
+        const image = await FileSystem.readAsStringAsync(path, { encoding: 'base64' });
+        song.artwork = image ? image : song.artwork;
       }
     }
     song.data = await FileSystem.readAsStringAsync(song.cacheUri, { encoding: 'base64' });
+  }
+  else {
+    return null;
   }
 
   // validate data
@@ -80,17 +84,27 @@ export const updateMetadata = async (song: SongType) => {
   }
 
   try {
-    if (['audio/mpeg', 'audio/flac'].includes(song.fileType ?? '')) {
+    if (['audio/mpeg', 'audio/flac'].includes(song.fileType)) {
       song.data = fromByteArray(NodeID3.writeExpo(toByteArray(song.data), tags));
+      if (song.pageType === PageType.IMPORT) {
+        await FileSystem.writeAsStringAsync(song.cacheUri, song.data, { encoding: 'base64' });
+      }
+      else {
+        const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
+        await FileSystem.writeAsStringAsync(audioPath, song.data, { encoding: 'base64' });
+      }
+    }
+    else {
+      console.log('no file type for song: ', song.title, song.fileType);
     }
   }
   catch (error) {
     console.log('error modiying audio file data', error);
   }
 
-  if (song.pageType === PageType.LIBRARY) {
-    song.artwork = '';
-  }
+  // if (song.pageType === PageType.LIBRARY) {
+  //   song.artwork = '';
+  // }
 
 }
 
@@ -227,7 +241,7 @@ export const isSongEdited = async (song: SongType) => {
   }
 
   if (song.edited === true) {
-    return 1;
+    return true;
   }
 
   let url;
@@ -245,20 +259,20 @@ export const isSongEdited = async (song: SongType) => {
     const wantedTags = ['name', 'artist', 'album'] as const;
     const info: InfoType = await getAudioMetadata(url, wantedTags);
     if (checkField(info.metadata?.name, song.title)) {
-      return 3;
+      return true;
     }
     else if (checkField(info.metadata?.artist, song.artist)) {
-      return 4;
+      return true;
     }
     else if (checkField(info.metadata?.album, song.album)) {
-      return 5;
+      return true;
     }
     else {
-      return 6;
+      return false;
     }
   }
   catch (error) {
-    return 7;
+    return false;
   }
 
 }

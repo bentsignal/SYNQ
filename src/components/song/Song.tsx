@@ -24,6 +24,7 @@ import { getAlbumCover, getArtistsFromAlbum } from '@/src/controllers/AlbumContr
 import { getAbsoluteSongCover } from '@/src/controllers/SongController';
 import Animated, { useSharedValue, useAnimatedStyle, 
   withTiming, Easing } from 'react-native-reanimated';
+import { isSongEdited } from '@/src/controllers/SongController';
 
 type SongProps = {
   song: SongType, 
@@ -44,15 +45,7 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
   const [artist, setArtist] = useState('');
   const [album, setAlbum] = useState('');
 
-  const opacity = useSharedValue(previous ? 0.3 : 1);
-  const opacityStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
-  useEffect(() => {
-    opacity.value = withTiming(previous ? 0.3 : 1, { duration: 300, easing: Easing.ease });
-  }, [previous]);
-
-  const { 
+  const {
 
     selectEnabled, selectedSongs, results,
     haptic,
@@ -63,6 +56,14 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
   } = useGlobalContext(); 
 
   const { premium } = usePremiumContext();
+
+  const opacity = useSharedValue(previous ? 0.3 : 1);
+  const opacityStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+  useEffect(() => {
+    opacity.value = withTiming(previous ? 0.3 : 1, { duration: 300, easing: Easing.ease });
+  }, [previous]);
 
   let blur = false;
   let message = false
@@ -84,6 +85,14 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
   if (blur) {
     bg = Colors.background;
   }
+
+  useEffect(() => {
+    const checkSongEdited = async () => {
+      const edited = await isSongEdited(song);
+      console.log('song edited: ', song.title ?? song.fileName, edited);
+    }
+    checkSongEdited();
+  }, [song, title, artist, album]);
 
   useEffect(() => {
     setSelected(false);

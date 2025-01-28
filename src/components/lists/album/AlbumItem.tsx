@@ -109,6 +109,7 @@ const AlbumItem = ({album, allowInteraction, bg}: AlbumProps) => {
   }
 
   const handleAlbumImageModified = async (data: AlbumImageModifiedEvent) => {
+    console.log('album image modified: ', data.id, album.id);
     if (data.id === album.id) {
       if (data.image) {
         setCoverImage(data.image);

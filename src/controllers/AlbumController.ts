@@ -4,7 +4,7 @@ import { writeImageToLibrary } from "./ImageController";
 import * as FileSystem from 'expo-file-system';
 import { AlbumBusEvent } from "@/src/events/album/Events";
 import albumBus from "@/src/events/album";
-import { getSongByResult } from "./SongController";
+import { flagSongAsEdited, getSongByResult } from "./SongController";
 
 export const createAlbum = async (name: string, year?: number, image?: string): Promise<AlbumType> => {
   const albumId = await AlbumModel.getInstance().createAlbum(name, year);
@@ -95,6 +95,10 @@ export const updateAlbum = async (albumId: number, name: string, year?: number, 
   }
   if (image) {
     await writeImageToLibrary(image, `${FileSystem.documentDirectory}albums/${albumId}`);
+    const albumSongs = await getSongsFromAlbum(albumId);
+    albumSongs.forEach(song => {
+      flagSongAsEdited(song.id);
+    });
     albumBus.emit(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, {
       id: albumId,
     });

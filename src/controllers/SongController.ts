@@ -4,7 +4,7 @@ import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 import SongModel from '@/src/models/SongModel';
 import 'react-native-get-random-values';
 import { splitImageMimeAndBuffer, getSongCover } from '@/src/controllers/ImageController';
-import { getAlbumCoverFromSong } from './AlbumController';
+import { getAlbumCover, getAlbumCoverFromSong } from './AlbumController';
 import { check } from '@/lib/Util';
 import { getAudioMetadata } from '@missingcore/audio-metadata';
 
@@ -24,7 +24,7 @@ export const updateMetadata = async (song: SongType) => {
     }
     try {
       // retrieve image if it exists
-      const path = await getSongCover(song.id, true);
+      const path = await getAbsoluteSongCover(song.id, true);
       const image = await FileSystem.readAsStringAsync(path, { encoding: 'base64' });
       song.artwork = image ? image : song.artwork;
     }
@@ -33,6 +33,12 @@ export const updateMetadata = async (song: SongType) => {
     }
   }
   else if (song.pageType === PageType.IMPORT) {
+    if (song.importAlbums && song.importAlbums.length > 0) {
+      const image = await getAlbumCover(song.importAlbums[0].id);
+      if (image) {
+        song.artwork = image;
+      }
+    }
     song.data = await FileSystem.readAsStringAsync(song.cacheUri, { encoding: 'base64' });
   }
 
@@ -209,38 +215,31 @@ export const flagSongAsEdited = async (id: number) => {
 }
 
 const checkField = (oldValue: string, newValue: string) => {
-  if (check(oldValue) && check(newValue) && oldValue !== newValue) {
-    return true;
+  if (!oldValue && !newValue) {
+    return false;
   }
-  else if (!check(oldValue) && !newValue) {
+  else if (oldValue !== newValue) {
     return true;
   }
   return false;
 }
 
-export const isSongEdited = async (id?: number, songParam?: SongType) => {
+export const isSongEdited = async (song: SongType) => {
 
-  if (!check(id) && !check(songParam)) {
+  if (!check(song)) {
     return null;
   }
 
-  let song;
+  if (song.edited === true) {
+    return 1;
+  }
+
   let url;
-  if (id) {
-    song = await getSongById(id);
-    if (song.edited) {
-      return true;
-    }
+  if (song.pageType !== PageType.IMPORT) {
     url = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
   }
-  else if (songParam) {
-    song = songParam;
-    if (song.edited) {
-      return true;
-    }
-    else {
-      url = song.cacheUri;
-    }
+  else if (song.cacheUri) {
+    url = song.cacheUri;
   }
   else {
     return null;
@@ -250,20 +249,20 @@ export const isSongEdited = async (id?: number, songParam?: SongType) => {
     const wantedTags = ['name', 'artist', 'album'] as const;
     const info: InfoType = await getAudioMetadata(url, wantedTags);
     if (checkField(info.metadata?.name, song.title)) {
-      return true;
+      return 3;
     }
     else if (checkField(info.metadata?.artist, song.artist)) {
-      return true;
+      return 4;
     }
     else if (checkField(info.metadata?.album, song.album)) {
-      return true;
+      return 5;
     }
     else {
-      return false;
+      return 6;
     }
   }
   catch (error) {
-    return false;
+    return 7;
   }
 
 }

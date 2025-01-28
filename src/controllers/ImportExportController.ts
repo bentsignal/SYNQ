@@ -7,7 +7,7 @@ import SongModel from '@/src/models/SongModel';
 import { idgen, getExportNumber } from '@/lib/Util';
 import 'react-native-get-random-values';
 import { getArtistsFromMetadata } from '@/src/controllers/ArtistController';
-import { updateMetadata } from '@/src/controllers/SongController';
+import { updateMetadata, isSongEdited } from '@/src/controllers/SongController';
 import { getAlbumFromMetadata } from '@/src/controllers/AlbumController';
 
 export const importFiles = async (
@@ -137,7 +137,8 @@ export const exportSongs = async (songs: SongType[]) => {
   if (songs.length === 1) {
     const song = songs[0];
     if (song.pageType === PageType.IMPORT) {
-      if (song.edited) {
+      const edited = await isSongEdited(song);
+      if (edited) {
         await updateMetadata(song);
         song.edited = false;
       }
@@ -146,7 +147,8 @@ export const exportSongs = async (songs: SongType[]) => {
     else {
       try {
         const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
-        if (song.edited) {
+        const edited = await isSongEdited(song);
+        if (edited) {
           await updateMetadata(song);
           song.edited = false;
           const db = SongModel.getInstance();
@@ -166,7 +168,8 @@ export const exportSongs = async (songs: SongType[]) => {
     const db = SongModel.getInstance();
     for (let i = 0; i < songs.length; i++) {
       if (songs[i].pageType === PageType.IMPORT) {
-        if (songs[i].edited) {
+        const edited = await isSongEdited(songs[i]);
+        if (edited) {
           await updateMetadata(songs[i]);
           songs[i].edited = false;
         }
@@ -176,7 +179,8 @@ export const exportSongs = async (songs: SongType[]) => {
       else if (songs[i].pageType === PageType.LIBRARY) {
         try {
           const audioPath = `${FileSystem.documentDirectory}library/${songs[i].id}/${songs[i].fileName}`;
-          if (songs[i].edited) {
+          const edited = await isSongEdited(songs[i]);
+          if (edited) {
             await updateMetadata(songs[i]);
             songs[i].edited = false;
             await db.songExported(songs[i].id);

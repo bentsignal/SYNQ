@@ -118,6 +118,8 @@ export default class AlbumModel extends Model {
       result = await Promise.all(result.map(async (song) => {
         const artists = await getArtistsFromSong(song.id);
         song.artists = artists.map(artist => artist.name).join(', ');
+        const albums = await this.getAlbumsFromSong(song.id);
+        song.album = albums.map(album => album.name).join(', ');
         return song;
       }));
     }

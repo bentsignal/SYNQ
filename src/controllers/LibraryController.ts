@@ -7,7 +7,7 @@ import { SongBusEvent } from "@/src/events/song/Events";
 import 'react-native-get-random-values';
 import { addArtistToSong } from '@/src/controllers/ArtistController';
 import { writeImageToLibrary, deleteImagesFromDirectory } from '@/src/controllers/ImageController';
-import { addAlbumToSong, addArtistToAlbum, getAlbumsFromSong } from '@/src/controllers/AlbumController';
+import { addAlbumToSong, addArtistToAlbum, getAlbumsFromSong, getSongsFromAlbum } from '@/src/controllers/AlbumController';
 import albumBus from '@/src/events/album/Bus';
 import { AlbumBusEvent } from '@/src/events/album/Events';
 import { flagSongAsEdited } from './SongController';
@@ -30,6 +30,12 @@ export const updateSongsInLibrary = async (
         const albumDir = `${FileSystem.documentDirectory}albums/${album.id}`;
         await writeImageToLibrary(cover, albumDir);
         await flagSongAsEdited(ids[i]);
+        const albumSongs = await getSongsFromAlbum(album.id);
+        albumSongs.forEach(song => {
+          if (song.id !== ids[i]) {
+            flagSongAsEdited(song.id);
+          }
+        });
         albumBus.emit(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, {
           id: album.id,
         });
@@ -47,7 +53,6 @@ export const updateSongsInLibrary = async (
     }
     if (title || artist || album) {
       await db.editSong(ids[i], title, artist, album);
-      await flagSongAsEdited(ids[i]);
       songBus.emit(SongBusEvent.SONG_INFO_MODIFIED, {
         id: ids[i],
         type: PageType.LIBRARY,

@@ -11,7 +11,7 @@ type Props = {
 interface ThemeContextType {  
   theme: string;
   logo: any;
-  changeTheme: (newTheme: string) => void;
+  changeTheme: (newTheme: string, changeIcon?: boolean) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType>({

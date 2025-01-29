@@ -4,6 +4,8 @@ import CFG from '@/src/constants/Config';
 import { connect } from '@/src/controllers/PurchaseController';
 import { restorePurchases } from '@/src/controllers/PurchaseController';
 import { Colors } from '@/src/constants/Colors';
+import { getAppIcon, setAppIcon } from 'expo-icon-handler';
+import { getIcon } from '../constants/Logos';
 
 type Props = {
   children?: React.ReactNode;
@@ -29,6 +31,7 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
   const checkPurchases= async () => {
     if (CFG.devTestFreeVersion) {
       await forceResetTheme();
+      setPremium(false);
       return;
     }
     else {
@@ -46,9 +49,11 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
   }
 
   const forceResetTheme = async () => {
-    console.log(theme);
-    if (theme !== Colors.main) {  
-      changeTheme(Colors.main);
+    changeTheme(Colors.main, false);
+    const current = await getAppIcon();
+    console.log('current: ', current);
+    if (current !== 'icon-blue') {
+      setAppIcon(getIcon(Colors.main));
     }
   }
 

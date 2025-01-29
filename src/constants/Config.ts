@@ -10,7 +10,7 @@ const CFG = {
   // Play an ad after x seconds of listening
   playAdAfter: 600,
   // import ad length
-  importAdLength: 10,
+  importAdLength: 18,
   // port for wifi transfer server
   PORT: 3000,
 }

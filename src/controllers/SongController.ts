@@ -33,10 +33,8 @@ export const updateMetadata = async (song: SongType) => {
     }
   }
   else if (song.pageType === PageType.IMPORT) {
-    console.log('import song: ', song.title, song.importAlbums);
     if (song.importAlbums && song.importAlbums.length > 0) {
       const path = await getAlbumCover(song.importAlbums[0].id);
-      console.log('path: ', path);
       if (path) {
         const image = await FileSystem.readAsStringAsync(path, { encoding: 'base64' });
         song.artwork = image ? image : song.artwork;
@@ -110,10 +108,6 @@ export const updateMetadata = async (song: SongType) => {
   catch (error) {
     console.log('error modiying audio file data', error);
   }
-
-  // if (song.pageType === PageType.LIBRARY) {
-  //   song.artwork = '';
-  // }
 
 }
 

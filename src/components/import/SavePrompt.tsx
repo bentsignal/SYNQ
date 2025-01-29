@@ -64,31 +64,31 @@ const SavePrompt = () => {
   }
 
   const callReview = async () => {
-    await StoreReview.isAvailableAsync();
-    await StoreReview.requestReview();
+    const available = await StoreReview.isAvailableAsync();
+    if (available) {
+      await StoreReview.requestReview();
+      await AsyncStorage.setItem('reviewAlreadyRequested', 'true');
+    }
   }
 
   const checkForReview = async () => {
     try {
-      // only ask premium users for review
-      // if (!premium) return;
       let countStr = await AsyncStorage.getItem('importCount');
-      if (countStr) {
+      let reviewAlreadyRequested = await AsyncStorage.getItem('reviewAlreadyRequested');
+      const requested = reviewAlreadyRequested === 'true';
+      if (requested) return;
+      else if (premium && !requested) {
+        await callReview();
+      }
+      else if (countStr) {
         let count = parseInt(countStr);
         count++;
         await AsyncStorage.setItem('importCount', count.toString());
-        if (count === CFG.showReviewAfter) {
-          let available = await StoreReview.isAvailableAsync();
-          if (available) {
-            await callReview();
-          }
+        if (count >= CFG.showReviewAfter) {
+          await callReview();
         }
       }
       else {
-        let available = await StoreReview.isAvailableAsync();
-        if (available) {
-          await callReview();
-        }
         await AsyncStorage.setItem('importCount', '1');
       }
     }

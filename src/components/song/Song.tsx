@@ -320,6 +320,9 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
               setEditSong(song);
               TrueSheet.present('song-sheet');
             }}
+            style={{
+              paddingRight: 0,
+            }}
           />
 
         }

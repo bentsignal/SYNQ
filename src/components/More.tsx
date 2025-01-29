@@ -1,12 +1,13 @@
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { Colors } from '@/src/constants/Colors';
 
 type MoreProps = {
   color?: string;
   handlePress: () => void;
+  style?: StyleProp<ViewStyle>;
 }
 
-const More = ({handlePress, color}: MoreProps) => {
+const More = ({handlePress, color, style}: MoreProps) => {
 
   const Local = StyleSheet.create({
     dot: {
@@ -23,6 +24,7 @@ const More = ({handlePress, color}: MoreProps) => {
       alignItems: 'center',
       padding: 15,
       gap: 3,
+      ...(style ? StyleSheet.flatten(style) : {}),
     }
   });
 

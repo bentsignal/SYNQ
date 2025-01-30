@@ -65,7 +65,11 @@ const AlbumItem = ({album, allowInteraction, bg}: AlbumProps) => {
         editSong.importAlbums = editSong.importAlbums ?? [];
         editSong.importAlbums = add ? [...editSong.importAlbums, album] : editSong.importAlbums.filter(a => a.id !== album.id);
         const artists = await getArtistsFromAlbum(album.id);
-        editSong.importArtists = add ? [...editSong.importArtists, ...artists] : editSong.importArtists.filter(a => !artists.some(artist => artist.id === a.id));
+        editSong.importArtists = add 
+          ? [...new Set([...editSong.importArtists, ...artists.filter(artist => 
+              !editSong.importArtists.some(a => a.id === artist.id)
+            )])] 
+          : editSong.importArtists.filter(a => !artists.some(artist => artist.id === a.id));
       }
       else if (add) {
         await addAlbumToSong(album.id, editSong.id);

@@ -4,12 +4,12 @@
     "slug": "synq",
     "version": "2.0.0",
     "orientation": "portrait",
-    "icon": "./assets/appIcons/icon-blue.png",
+    "icon": "./src/assets/appIcons/icon-blue.png",
     "scheme": "synq",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./src/assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#101010"
     },
@@ -26,11 +26,11 @@
           "audio"
         ]
       },
-      "buildNumber": "25"
+      "buildNumber": "44"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#101010"
       },
       "package": "com.directedbyshawn.synq"
@@ -38,7 +38,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./src/assets/images/favicon.png"
     },
     "plugins": [
       "expo-router",
@@ -49,7 +49,8 @@
             "usesCleartextTraffic": true
           },
           "ios": {
-            "flipper": true
+            "flipper": true,
+            "deploymentTarget": "15.5"
           }
         }
       ],
@@ -62,31 +63,31 @@
           "icons": [
             {
               "name": "icon-blue",
-              "path": "./assets/appIcons/icon-blue.png"
+              "path": "./src/assets/appIcons/icon-blue.png"
             },
             {
               "name": "icon-mint",
-              "path": "./assets/appIcons/icon-mint.png"
+              "path": "./src/assets/appIcons/icon-mint.png"
             },
             {
               "name": "icon-red",
-              "path": "./assets/appIcons/icon-red.png"
+              "path": "./src/assets/appIcons/icon-red.png"
             },
             {
               "name": "icon-yellow",
-              "path": "./assets/appIcons/icon-yellow.png"
+              "path": "./src/assets/appIcons/icon-yellow.png"
             },
             {
               "name": "icon-purple",
-              "path": "./assets/appIcons/icon-purple.png"
+              "path": "./src/assets/appIcons/icon-purple.png"
             },
             {
               "name": "icon-orange",
-              "path": "./assets/appIcons/icon-orange.png"
+              "path": "./src/assets/appIcons/icon-orange.png"
             },
             {
               "name": "icon-pink",
-              "path": "./assets/appIcons/icon-pink.png"
+              "path": "./src/assets/appIcons/icon-pink.png"
             }
           ]
         }
@@ -95,8 +96,8 @@
         "expo-asset",
         {
           "assets": [
-            "assets/audio/ad.mp3",
-            "assets/images/popup.jpg"
+            "src/assets/audio/ad.mp3",
+            "src/assets/images/popup.jpg"
           ]
         }
       ],

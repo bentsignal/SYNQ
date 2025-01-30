@@ -1,23 +1,23 @@
 import { View, Text, StyleSheet } from "react-native";
 import { useEffect, useState, useRef } from "react";
-import { Styles } from "@/constants/Styles";
+import { Styles } from "@/src/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Colors } from "@/constants/Colors";
-import SongList from "@/components/lists/song";
-import { PageType, PlaylistType, SongType, SortType, SourceType } from "@/constants/Types";
-import { useGlobalContext } from "@/context/GlobalProvider";
-import MiniPlayer from "@/components/player/MiniPlayer";
-import TabBar from "@/components/TabBar";
-import SongListHeader from "@/components/lists/song/Header";
-import Overlay from "@/components/Overlay";
-import Header from "@/components/Header";
-import playlistBus from "@/station/playlist";
-import { getPlaylistInfo, getPlaylistSongs } from "@/lib/controllers/PlaylistController";
-import { PlaylistBusEvent } from "@/station/playlist/Events";
+import { Colors } from "@/src/constants/Colors";
+import SongList from "@/src/components/lists/song";
+import { PageType, PlaylistType, SongType, SortType, SourceType } from "@/src/constants/Types";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
+import MiniPlayer from "@/src/components/player/MiniPlayer";
+import TabBar from "@/src/components/TabBar";
+import SongListHeader from "@/src/components/lists/song/Header";
+import Overlay from "@/src/components/Overlay";
+import Header from "@/src/components/Header";
+import playlistBus from "@/src/events/playlist";
+import { getPlaylistInfo, getPlaylistSongs } from "@/src/controllers/PlaylistController";
+import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 
-const PlaylistView = ({id}: {id: string}) => {
+const PlaylistView = ({id}: {id: number}) => {
 
   const { showOverlay, haptic, setEditPlaylist } = useGlobalContext();
 
@@ -31,7 +31,7 @@ const PlaylistView = ({id}: {id: string}) => {
   const refreshInfo = async () => {
     if (id) {
       try {
-        const result = await getPlaylistInfo(parseInt(id));
+        const result = await getPlaylistInfo(id);
         setTitle(result?.name || '');
         setSongCount(result?.songCount || 0);
       }
@@ -43,7 +43,7 @@ const PlaylistView = ({id}: {id: string}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getPlaylistSongs(parseInt(id), PageType.LIBRARY, SortType.NEWEST);
+      const songs = await getPlaylistSongs(id, PageType.LIBRARY, SortType.NEWEST);
       setSongs(songs);
     }
     catch (error) {
@@ -69,7 +69,7 @@ const PlaylistView = ({id}: {id: string}) => {
   }, []);
 
   const loadPlaylist = async () => {
-    const playlist = await getPlaylistInfo(parseInt(id));
+    const playlist = await getPlaylistInfo(id);
     playlist.pageType = PageType.PLAYLIST;
     setPlaylist(playlist);
   }
@@ -105,11 +105,11 @@ const PlaylistView = ({id}: {id: string}) => {
         <SongList 
           songs={songs} 
           pageType={PageType.LIBRARY}
-          sourceId={Number(id)}
+          sourceId={id}
           sourceType={SourceType.PLAYLIST}
           headerComponent={
             <SongListHeader 
-              id={id as string}
+              id={id}
               title={title} 
               songCount={songCount} 
               pageType={PageType.PLAYLIST}

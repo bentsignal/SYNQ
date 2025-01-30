@@ -4,7 +4,7 @@ import PlaylistView from "./playlist";
 const PlaylistIndex = () => {
   const { id } = useLocalSearchParams();
   return (
-    <PlaylistView id={id as string} />
+    <PlaylistView id={Number(id)} />
   )
 }
 

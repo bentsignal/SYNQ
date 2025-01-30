@@ -1,7 +1,7 @@
 import { Stack, router } from "expo-router";
-import { useThemeContext } from "@/context/ThemeProvider";
-import { Colors } from "@/constants/Colors";
-import BackArrow from "@/components/BackArrow";
+import { useThemeContext } from "@/src/context/ThemeProvider";
+import { Colors } from "@/src/constants/Colors";
+import BackArrow from "@/src/components/BackArrow";
 
 const SettingsLayout = () => {
 
@@ -24,6 +24,22 @@ const SettingsLayout = () => {
         options={{
           headerTitle: 'Settings',
           contentStyle: {backgroundColor: 'transparent'},
+        }}
+      />
+      <Stack.Screen 
+        name="backup"
+        options={{
+          headerShown: false,
+          contentStyle: {backgroundColor: 'transparent'},
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen 
+        name="customization"
+        options={{
+          headerShown: false,
+          contentStyle: {backgroundColor: 'transparent'},
+          presentation: 'modal',
         }}
       />
     </Stack>

@@ -1,24 +1,27 @@
-import { View, StyleSheet, Text, Dimensions } from "react-native";
-import { Styles } from "@/constants/Styles";
-import { Colors } from "@/constants/Colors";
+import { View, StyleSheet, Text, Dimensions, FlatList } from "react-native";
+import { Styles } from "@/src/constants/Styles";
+import { Colors } from "@/src/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import PageTitle from "@/components/PageTitle";
-import { SkipLeft, SkipRight } from "@/components/player/Skip";
-import PausePlayButtons from "@/components/player/PausePlayButtons";
-import Time from "@/components/player/Time";
-import ShuffleButton from "@/components/player/ShuffleButton";
-import SongList from "@/components/lists/song";
-import { useEffect, useState } from "react";
-import { CoverType, PageType, SongType } from "@/constants/Types";
-import { getSongById, generateSongKey } from "@/lib/controllers/SongController";
-import ListCover from "@/components/cover/ListCover";
-import SongInfo from "@/components/song/SongInfo";
+import PageTitle from "@/src/components/PageTitle";
+import { SkipLeft, SkipRight } from "@/src/components/player/Skip";
+import PausePlayButtons from "@/src/components/player/PausePlayButtons";
+import Time from "@/src/components/player/Time";
+import ShuffleButton from "@/src/components/player/ShuffleButton";
+import SongList from "@/src/components/lists/song";
+import { useEffect, useState, useRef } from "react";
+import { PageType, SongType } from "@/src/constants/Types";
+import { getSongById } from "@/src/controllers/SongController";
 import TrackPlayer, { useActiveTrack } from "react-native-track-player";
-import { getFileName } from "@/lib/Util";
-import { useThemeContext } from '@/context/ThemeProvider';
-import { usePlaybackContext } from "@/context/PlaybackProvider";
-import Bar from "@/components/modals/Bar";
-import LoopButton from "@/components/player/LoopButton";
+import { check } from "@/lib/Util";
+import { useThemeContext } from '@/src/context/ThemeProvider';
+import { usePlaybackContext } from "@/src/context/PlaybackProvider";
+import Bar from "@/src/components/modals/Bar";
+import ModalStyles from "@/src/components/modals/Styles";
+import LoopButton from "@/src/components/player/LoopButton";
+import playbackBus from "@/src/events/playback";
+import { PlaybackBusEvent } from "@/src/events/playback/Events";
+import Loading from "@/src/components/Loading";
+import Animated, { useSharedValue, withTiming, Easing, useAnimatedStyle, runOnJS } from "react-native-reanimated";
 
 const Queue = () => {
 
@@ -29,81 +32,114 @@ const Queue = () => {
 
   const insets = useSafeAreaInsets();
   const [songs, setSongs] = useState<SongType[]>([]);
+  const listRef = useRef<FlatList<any>>(null);
+  const [loading, setLoading] = useState(true);
+  const listOpacity = useSharedValue(0);
+  const loadingOpacity = useSharedValue(1);
 
   useEffect(() => {
+    scrollToIndex();
+  }, [track]);
 
-    const loadSongs = async () => {
-      const results: SongType[] = [];
-      const queue = await TrackPlayer.getQueue();
-      const current = await TrackPlayer.getActiveTrackIndex();
-      let start = 0;
-      if (current !== null && current !== undefined) {
-        start = current + 1;
-      }
-      try {
-        let result: SongType;
-        for (let i = start; i < queue.length; i++) {
-          if (queue[i].id !== 'ad') {
-            result = await getSongById(queue[i].id);
-            result.uuid = queue[i].description;
-            results.push(result);
-          }
-        }
-      }
-      catch (error) {
-        console.log('error loading queue songs to display in list:', error);
-      }
-      setSongs(results);
-    }
-
-    loadSongs();
-
-  }, [track, shuffle]);
-
-  const getInfo = () => {
-    if (track !== null && track !== undefined) {
-      
-      const info = {
-        name: getFileName(track.url),
-        metadata: {
-          name: track.title,
-          artist: track.artist,
-          album: '',
-          artwork: track.artwork,
-        }
-      }
-      return (
-        <SongInfo 
-          info={info} 
-          name={getFileName(track.url)}
-          showAlbum={false}
-        />
-      );
+  const scrollToIndex = async (animated: boolean = true) => {
+    const index = await TrackPlayer.getActiveTrackIndex();
+    if (check(index)) {
+      listRef.current?.scrollToIndex({
+        index: index,
+        animated: animated,
+      });
     }
   }
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (listRef.current?.props.data.length > 0) {
+        await scrollToIndex(false);
+        clearInterval(interval);
+        loadingOpacity.value = withTiming(0, { duration: 300, easing: Easing.ease }, () => {
+          runOnJS(setLoading)(false);
+        });
+      }
+    }, 3000);
+  }, [songs]);
+
+  useEffect(() => {
+    if (!loading) {
+      listOpacity.value = withTiming(1, { duration: 300, easing: Easing.ease });
+    }
+  }, [loading])
+
+  useEffect(() => {
+    loadSongs();
+  }, [shuffle]);
+
+  useEffect(() => {
+    playbackBus.on(PlaybackBusEvent.QUEUE_UPDATED, loadSongs);
+    return () => {
+      playbackBus.off(PlaybackBusEvent.QUEUE_UPDATED, loadSongs);
+    }
+  }, []);
+
+  const loadSongs = async () => {
+    const results: SongType[] = [];
+    const queue = await TrackPlayer.getQueue();
+    try {
+      let result: SongType;
+      for (let i = 0; i < queue.length; i++) {
+        if (queue[i].id !== -1) {
+          result = await getSongById(queue[i].id);
+          result.uuid = queue[i].description;
+          results.push(result);
+        }
+      }
+    }
+    catch (error) {
+      console.log('error loading queue songs to display in list:', error);
+    }
+    setSongs(results);
+    scrollToIndex();
+  }
+
+  const listContainerStyle = useAnimatedStyle(() => ({
+    opacity: listOpacity.value,
+    flex: 1,
+    width: '100%',
+    alignSelf: 'center',
+  }));
+
+  const loadingContainerStyle = useAnimatedStyle(() => ({
+    opacity: loadingOpacity.value,
+    display: loading ? 'flex' : 'none',
+    width: '100%',
+    alignSelf: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    height: '100%',
+    top: 0,
+    left: 0,
+  }));
 
   return (
     <View style={[Styles.body, Local.container]}>
       <Bar />
       <View style={Local.divider}/>
       <PageTitle title="Now Playing"/>
-      <View style={Local.currentlyPlayingContainer}>
-        <ListCover 
-          id={track?.id}
-          type={CoverType.SONG}
-          image={track?.artwork}
-          propOnLoad={() => {}}
-          fade={true}
+      <Animated.View style={loadingContainerStyle}>
+        <Loading width={200} height={200}/>
+      </Animated.View>
+      <Animated.View style={listContainerStyle}>
+        <SongList 
+          songs={songs}
+          pageType={PageType.QUEUE}
+          hideTopGradient={true}
+          gradientStart={'rgba(24, 24, 24, 1)'}
+          gradientEnd={'rgba(24, 24, 24, 0)'}
+          listRef={listRef}
+          footerComponent={<View style={{height: 500}}/>}
         />
-        {getInfo()}
-      </View>
-      <Text style={Local.categoryHeader}>Up Next</Text>
-      <SongList 
-        songs={songs}
-        pageType={PageType.QUEUE}
-        gradientStart={'rgba(24, 24, 24, 1)'}
-        gradientEnd={'rgba(24, 24, 24, 0)'}
-      />
+      </Animated.View>
       <View style={[Local.footer, {
         paddingBottom: insets.bottom,
       }]}>
@@ -131,7 +167,7 @@ const Queue = () => {
 const Local = StyleSheet.create({
   container: {
     backgroundColor: Colors.popup,
-    ...Styles.roundedModal,
+    ...ModalStyles.roundedTop,
   },
   currentlyPlayingContainer: {
     maxWidth: Dimensions.get('window').width * 0.9,

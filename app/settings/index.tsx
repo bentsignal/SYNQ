@@ -1,21 +1,25 @@
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Linking } from "react-native";
 import { router } from "expo-router";
-import Option from "@/components/Option";
-import { Styles } from "@/constants/Styles";
-import { Colors } from "@/constants/Colors";
-import Theme from "@/components/settings/Theme";
-import CategoryTitle from "@/components/settings/CategoryTitle";
-import Haptic from "@/components/settings/Haptic";
-import PremiumToggle from "@/components/settings/PremiumToggle";
-import CFG from "@/constants/Config";
-import { usePremiumContext } from "@/context/PremiumProvider";
-import Bar from "@/components/modals/Bar";
-import CustomButton from "@/components/CustomButton";
-import { SOCIAL_LINKS } from "@/constants/Config";
+import Option from "@/src/components/Option";
+import { Styles } from "@/src/constants/Styles";
+import { Colors } from "@/src/constants/Colors";
+import Theme from "@/src/components/settings/Theme";
+import CategoryTitle from "@/src/components/settings/CategoryTitle";
+import Haptic from "@/src/components/settings/Haptic";
+import PremiumToggle from "@/src/components/settings/PremiumToggle";
+import CFG from "@/src/constants/Config";
+import { usePremiumContext } from "@/src/context/PremiumProvider";
+import Bar from "@/src/components/modals/Bar";
+import CustomButton from "@/src/components/CustomButton";
+import { SOCIAL_LINKS } from "@/src/constants/Config";
+import ModalStyles from "@/src/components/modals/Styles";
+import { useThemeContext } from "@/src/context/ThemeProvider";
+import { darkenColor } from "@/src/controllers/ColorController";
 
 const Settings = () => {
 
   const { premium }  = usePremiumContext();
+  const { theme } = useThemeContext();
 
   return (
     <View style={[Styles.body, Local.container]}>
@@ -28,26 +32,28 @@ const Settings = () => {
         <Option 
           title="Premium"
           desc={premium ? "Manage your subcription" : 'Unlock all features'}
-          icon={require('@/assets/icons/premium.png')}
+          icon={require('@/src/assets/icons/premium.png')}
           disabled={false}
           handlePress={() => router.push("/premium")}
-        /> 
-        <CategoryTitle title="Theme" requiresPremium={true}/>
-        <View style={Local.settingsCategoryContainer}>
-          <Theme />
-        </View>
-        <CategoryTitle title="Haptic Feedback" />
-        <View style={Local.settingsCategoryContainer}>
-          <Haptic />
-        </View>
-        {__DEV__ && CFG.devShowPremiumToggle && 
-          <>
-            <CategoryTitle title="Premium Toggle" />
-            <View style={Local.settingsCategoryContainer}>
-              <PremiumToggle />
-            </View>
-          </>
-        }
+          iconTint={theme}
+          bg={Colors.textbox}
+        />
+        <Option 
+          title="Customization"
+          desc="Tailor your experience"
+          icon={require('@/src/assets/icons/customize.png')}
+          disabled={false}
+          handlePress={() => router.push("/settings/customization")}
+          bg={Colors.textbox}
+        />
+        <Option 
+          title="Backup & Restore"
+          desc="Backup or restore your library"
+          icon={require('@/src/assets/icons/backup.png')}
+          disabled={false}
+          bg={Colors.textbox}
+          handlePress={() => router.push("/settings/backup")}
+        />
         <View style={Local.supportContainer}>
           <CustomButton 
             title="Contact Support"
@@ -57,18 +63,26 @@ const Settings = () => {
         </View>
         <View style={Local.socialContainer}>
           <TouchableOpacity onPress={() => Linking.openURL(SOCIAL_LINKS.x)} style={[Local.socialLink]}>
-            <Image source={require('@/assets/icons/x.png')} style={[Local.socialIcon, {
+            <Image source={require('@/src/assets/icons/x.png')} style={[Local.socialIcon, {
               width: 25, 
               height: 25,
             }]} />
           </TouchableOpacity>
           <TouchableOpacity style={Local.socialLink} onPress={() => Linking.openURL(SOCIAL_LINKS.instagram)}>
-            <Image style={Local.socialIcon} source={require('@/assets/icons/instagram.png')} />
+            <Image style={Local.socialIcon} source={require('@/src/assets/icons/instagram.png')} />
           </TouchableOpacity>
           <TouchableOpacity style={Local.socialLink} onPress={() => Linking.openURL(SOCIAL_LINKS.discord)}>
-            <Image style={Local.socialIcon} source={require('@/assets/icons/discord.png')} />
+            <Image style={Local.socialIcon} source={require('@/src/assets/icons/discord.png')} />
           </TouchableOpacity>
         </View>
+        {__DEV__ && CFG.devShowPremiumToggle && 
+          <>
+            <CategoryTitle title="Premium Toggle" />
+            <View style={Local.settingsCategoryContainer}>
+              <PremiumToggle />
+            </View>
+          </>
+        }
       </ScrollView>
     </View>
   );
@@ -85,7 +99,7 @@ const Local = StyleSheet.create({
   },
   container: {
     backgroundColor: Colors.popup,
-    ...Styles.roundedModal,
+    ...ModalStyles.roundedTop,
   },
   settingsCategoryContainer: {
     width: '90%',
@@ -101,7 +115,7 @@ const Local = StyleSheet.create({
     width: '90%',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 30,
+    marginTop: 20,
     marginBottom: 5,
   },
   socialContainer: {

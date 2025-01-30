@@ -1,0 +1,77 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useThemeContext } from '@/src/context/ThemeProvider';
+import CFG from '@/src/constants/Config';
+import { connect } from '@/src/controllers/PurchaseController';
+import { restorePurchases } from '@/src/controllers/PurchaseController';
+import { Colors } from '@/src/constants/Colors';
+import { getAppIcon, setAppIcon } from 'expo-icon-handler';
+import { getIcon } from '../constants/Logos';
+
+type Props = {
+  children?: React.ReactNode;
+}
+
+interface PremiumContextType {  
+  premium: boolean;
+  setPremium: (newValue: boolean) => void;
+}
+
+const PremiumContext = createContext<PremiumContextType>({
+  premium: false,
+  setPremium: () => {},
+});
+
+export const usePremiumContext = () => useContext(PremiumContext);
+
+const PremiumProvider: React.FC<Props> = ({ children }) => {
+
+  const { theme, changeTheme } = useThemeContext();
+  const [premium, setPremium] = useState<boolean>(true);
+
+  const checkPurchases= async () => {
+    if (CFG.devTestFreeVersion) {
+      await forceResetTheme();
+      setPremium(false);
+      return;
+    }
+    else {
+      // restore purchases
+      await connect();
+      const restored = await restorePurchases();
+      if (restored === '') {
+        setPremium(false);
+        await forceResetTheme();
+      }
+      else {
+        setPremium(true);
+      }
+    }
+  }
+
+  const forceResetTheme = async () => {
+    changeTheme(Colors.main, false);
+    const current = await getAppIcon();
+    console.log('current: ', current);
+    if (current !== 'icon-blue') {
+      setAppIcon(getIcon(Colors.main));
+    }
+  }
+
+  useEffect(() => {
+    try {
+      checkPurchases();
+    }
+    catch (error) {
+      console.log('error checking purchases:', error);
+    }
+  }, []);
+
+  return (
+    <PremiumContext.Provider value={{ premium, setPremium }}>
+      {children}
+    </PremiumContext.Provider>
+  );
+  
+}
+
+export default PremiumProvider;

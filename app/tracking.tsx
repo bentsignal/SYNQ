@@ -1,9 +1,9 @@
 import { View, Text, Image, Linking, StyleSheet } from 'react-native';
-import { Colors } from '@/constants/Colors';
-import { Styles } from '@/constants/Styles';
+import { Colors } from '@/src/constants/Colors';
+import { Styles } from '@/src/constants/Styles';
 import LinearGradient from 'react-native-linear-gradient';
 import { router } from 'expo-router';
-import CustomButton from '@/components/CustomButton';
+import CustomButton from '@/src/components/CustomButton';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { requestTrackingPermissionsAsync, getTrackingPermissionsAsync } from 'expo-tracking-transparency';
 
@@ -86,13 +86,13 @@ const Tracking = () => {
     <View style={Local.container}>
       <View style={Local.imageContainer}>
         <Image 
-          source={require('../assets/images/tracking-bg-downscaled.jpg')}
+          source={require('@/src/assets/images/premium-bg-downscaled.jpg')}
           style={Local.coverImage}
           resizeMode='cover'
         />
         <LinearGradient
           style={Local.gradient}
-          colors={['rgba(16, 16, 16, 0)', 'rgba(16, 16, 16, 1)']}
+          colors={['rgba(20, 20, 20, 0)', 'rgba(20, 20, 20, 1)']}
           pointerEvents={'none'}
         />
       </View>

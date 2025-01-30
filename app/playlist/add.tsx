@@ -1,30 +1,44 @@
 import { View, Text, StyleSheet } from "react-native"
 import { useEffect, useState } from "react"
-import { Colors } from "@/constants/Colors"
-import { Styles } from "@/constants/Styles"
-import Bar from "@/components/modals/Bar"
-import CustomButton from "@/components/CustomButton"
+import { Colors } from "@/src/constants/Colors"
+import { Styles } from "@/src/constants/Styles"
+import Bar from "@/src/components/modals/Bar"
+import CustomButton from "@/src/components/CustomButton"
 import { router } from "expo-router"
-import { PageType, PlaylistType } from "@/constants/Types"
-import PlaylistList from "@/components/lists/playlist"
+import { PageType, PlaylistType } from "@/src/constants/Types"
+import PlaylistList from "@/src/components/lists/playlist"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useThemeContext } from "@/context/ThemeProvider"
-import { getPlaylists } from "@/lib/controllers/PlaylistController"
-import { PlaylistBusEvent } from "@/station/playlist/Events"
-import playlistBus from "@/station/playlist/Bus"
+import { useThemeContext } from "@/src/context/ThemeProvider"
+import { getPlaylists, getPlaylistsContainingSong } from "@/src/controllers/PlaylistController"
+import { PlaylistBusEvent } from "@/src/events/playlist/Events"
+import playlistBus from "@/src/events/playlist/Bus"
+import ModalStyles from "@/src/components/modals/Styles"
+import { useGlobalContext } from "@/src/context/GlobalProvider"
 
 const AddToPlaylist = () => {
 
   const { theme } = useThemeContext();
-
+  const { editSong } = useGlobalContext();
   const insets = useSafeAreaInsets();
-
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
 
   const refreshPlaylists = async () => {
     try {
-      const results = await getPlaylists();
-      setPlaylists(results.filter((playlist) => playlist.id !== 1));
+      let results = await getPlaylists();
+      results = results.filter((playlist) => playlist.id !== 1);
+      // move playlists with song to the front of the list
+      if (editSong?.id) {
+        const playlistsWithSong = await getPlaylistsContainingSong(editSong.id);
+        for (let i = 0; i < results.length; i++) {
+          if (playlistsWithSong.some(p => p.id === results[i].id)) {
+            const [item] = results.splice(i, 1);
+            results.unshift(item);
+          }
+        }
+        setPlaylists(results);
+      } else {
+        setPlaylists(results);
+      }
     }
     catch (error) {
       console.log('error refreshing playlists:', error);
@@ -42,7 +56,7 @@ const AddToPlaylist = () => {
   return (
     <View style={Local.wrapper}>
       <Bar />
-      <Text style={Local.header}>Add to Playlist</Text>
+      <Text style={ModalStyles.header}>Add to Playlist</Text>
       <CustomButton
         title={'New'}
         background={theme}
@@ -57,6 +71,8 @@ const AddToPlaylist = () => {
       <PlaylistList 
         playlists={playlists}
         pageType={PageType.ADD}
+        gradientStart={'rgba(24, 24, 24, 1)'}
+        gradientEnd={'rgba(24, 24, 24, 0)'}
       />
       <View style={[Local.bottomButtonsWrapper, {paddingBottom: insets.bottom}]}>
         <CustomButton
@@ -73,13 +89,8 @@ const AddToPlaylist = () => {
 const Local = StyleSheet.create({
   wrapper: {
     ...Styles.body,
-    ...Styles.roundedModal,
-    backgroundColor: Colors.background,
-  },
-  header: {
-    ...Styles.h2,
-    color: Colors.text,
-    marginBottom: 10,
+    backgroundColor: Colors.popup,
+    ...ModalStyles.roundedTop,
   },
   bottomButtonsWrapper: {
     flexDirection: 'row',

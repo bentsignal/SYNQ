@@ -1,30 +1,30 @@
-import { View, StyleSheet, Dimensions, Image } from "react-native";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { View, StyleSheet, Dimensions, Image, TouchableOpacity } from "react-native";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { useEffect, useState } from "react";
-import SongInfo from "@/components/song/SongInfo";
-import Bar from "@/components/modals/Bar";
-import PlayerCover from "@/components/cover/PlayerCover";
-import More from "@/components/More";
-import Time from "@/components/player/Time";
-import { SkipLeft, SkipRight } from "@/components/player/Skip";
-import { getSongById } from "@/lib/controllers/SongController";
-import PausePlayButtons from "@/components/player/PausePlayButtons";
-import QueueButton from "@/components/player/QueueButton";
-import ShuffleButton from "@/components/player/ShuffleButton";
+import SongInfo from "@/src/components/song/SongInfo";
+import Bar from "@/src/components/modals/Bar";
+import PlayerCover from "@/src/components/cover/PlayerCover";
+import More from "@/src/components/More";
+import Time from "@/src/components/player/Time";
+import { SkipLeft, SkipRight } from "@/src/components/player/Skip";
+import { getSongById } from "@/src/controllers/SongController";
+import PausePlayButtons from "@/src/components/player/PausePlayButtons";
+import QueueButton from "@/src/components/player/QueueButton";
+import ShuffleButton from "@/src/components/player/ShuffleButton";
 import { useActiveTrack } from "react-native-track-player";
 import { getFileName } from "@/lib/Util"; 
 import * as Haptics from 'expo-haptics';
-import { InfoType, PageType, SongType } from "@/constants/Types";
+import { PageType, SongType } from "@/src/constants/Types";
 import { router } from "expo-router";
-import LoopButton from "@/components/player/LoopButton";
+import LoopButton from "@/src/components/player/LoopButton";
 import LinearGradient from "react-native-linear-gradient";
-import { getLuminanceFromImage, getPlayerGradientOpacity } from "@/lib/controllers/ColorController";
+import { getLuminanceFromImage, getPlayerGradientOpacity } from "@/src/controllers/ColorController";
 import Animated, {useSharedValue, withTiming, Easing, useAnimatedStyle, runOnJS} from "react-native-reanimated";
-import { Colors } from "@/constants/Colors";
-import { getTrackArtwork } from "@/lib/controllers/PlayerController";
+import { Colors } from "@/src/constants/Colors";
+import { getTrackArtwork } from "@/src/controllers/PlayerController";
 import { CrossfadeImage } from "react-native-crossfade-image";
 import { useAssets } from "expo-asset";
-import { Styles } from "@/constants/Styles";
+import ModalStyles from "@/src/components/modals/Styles";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -34,7 +34,7 @@ const Player = () => {
 
   const track = useActiveTrack();
 
-  const [assets, error] = useAssets([require('@/assets/images/popup.jpg')]);
+  const [assets, error] = useAssets([require('@/src/assets/images/popup.jpg')]);
   const [emptyImage, setEmptyImage] = useState<string>('transparent');
 
   const [song, setSong] = useState<SongType | null>(null);
@@ -147,11 +147,15 @@ const Player = () => {
     return emptyImage;
   }
 
+  const handleAddToPlaylist = () => {
+    setEditSong(song);
+    router.push('/playlist/add');
+  }
+
   return (
     <Animated.View style={[{opacity: containerOpacity}, Local.container]}>
       <CrossfadeImage 
-        source={{ uri: getBackgroundImage() }}
-        
+        source={{ uri: getBackgroundImage() }}  
         blurRadius={100}
         duration={500}
         style={[Local.bg, {
@@ -171,18 +175,17 @@ const Player = () => {
         <View style={Local.infoContainer}>
           <Animated.View style={infoStyle}>
             <SongInfo
-              info={{
-                name: getFileName(track?.url),
-                metadata: {
-                  name: title,
-                  artist: artist,
-                }
-              }}
-              name={name}
+              fileName={getFileName(track?.url)}
+              title={title}
+              artist={artist}
+              color={Colors.text}
               titleStyles={Local.title}
               artistStyles={Local.artist}
             />
           </Animated.View>
+          <TouchableOpacity onPress={handleAddToPlaylist} style={Local.addWrapper}>
+            <Image source={require('@/src/assets/icons/add.png')} style={Local.add}/>
+          </TouchableOpacity>
           <More handlePress={handleMore}/>
         </View>
         <Time />
@@ -217,7 +220,7 @@ const Player = () => {
 
 const Local = StyleSheet.create({
   bg: {
-    ...Styles.roundedModal,
+    ...ModalStyles.roundedTop,
     position: 'absolute',
     height: Dimensions.get('screen').height,
     top: 0,
@@ -251,6 +254,8 @@ const Local = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: 30,
+    marginTop: 10,
+    marginBottom: 10
   },
   bottomControlsContainer: {
     width: Dimensions.get('screen').width * 0.70,
@@ -280,6 +285,16 @@ const Local = StyleSheet.create({
     fontWeight: '500',
     fontSize: 16,
     opacity: 0.5,
+  },
+  add: {
+    width: 25,
+    height: 25,
+    tintColor: Colors.text,
+  },
+  addWrapper: {
+    paddingLeft: 10,
+    paddingRight: 5,
+    paddingVertical: 5,
   }
 });
 

@@ -1,21 +1,23 @@
 import { View, Text, Image, TouchableOpacity, Linking, Alert, StyleSheet } from 'react-native';
 import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
-import { Styles } from '@/constants/Styles';
-import { Colors, Themes } from '@/constants/Colors';
-import { useGlobalContext } from '@/context/GlobalProvider';
+import { Styles } from '@/src/constants/Styles';
+import { Colors, Themes } from '@/src/constants/Colors';
+import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { LinearGradient } from 'expo-linear-gradient';
-import Bar from '@/components/modals/Bar';
-import CustomButton from '@/components/CustomButton';
-import { NotificationType } from '@/constants/Types';
-import Notifications from '@/components/notifications/Notifications';
-import PremiumOption from '@/components/PremiumOption';
-import Loading from '@/components/Loading';
-import { darkenColor } from '@/lib/controllers/ColorController';
+import Bar from '@/src/components/modals/Bar';
+import CustomButton from '@/src/components/CustomButton';
+import { NotificationType } from '@/src/constants/Types';
+import Notifications from '@/src/components/notifications/Notifications';
+import PremiumOption from '@/src/components/PremiumOption';
+import Loading from '@/src/components/Loading';
+import { darkenColor } from '@/src/controllers/ColorController';
 import * as Haptics from 'expo-haptics';
-import * as PurchaseManager from '@/lib/controllers/PurchaseController';
-import { usePremiumContext } from '@/context/PremiumProvider';
-import { useThemeContext } from '@/context/ThemeProvider';
+import * as PurchaseManager from '@/src/controllers/PurchaseController';
+import { usePremiumContext } from '@/src/context/PremiumProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
+import ModalStyles from '@/src/components/modals/Styles';
+import FeatureList from '@/src/components/premium/FeatureList';
 
 const Premium = () => {
 
@@ -265,7 +267,7 @@ const Premium = () => {
     }
     else if (error) {
       return (
-        <Text style={Local.messageText}>
+        <Text style={[Local.messageText, Local.subText]}>
           An error occured, please try again later
         </Text>
       );
@@ -286,7 +288,7 @@ const Premium = () => {
           <Text style={Local.messageText}>
             {first}
           </Text>
-          <Text style={Local.text}>
+          <Text style={[Local.text, Local.subText]}>
             {second}
           </Text>
         </>
@@ -300,13 +302,13 @@ const Premium = () => {
               activeOpacity={.9}
               onPress={() => openURL('https://directedbyshawn.com/synq-terms-conditions')}
             >
-              <Text style={Local.text}>Terms of Service · </Text>
+              <Text style={[Local.text, Local.subText]}>Terms of Service · </Text>
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={.9}
               onPress={() => openURL('https://directedbyshawn.com/synq-privacy-policy')}
             >
-              <Text style={Local.text}>Privacy Policy</Text>
+              <Text style={[Local.text, Local.subText]}>Privacy Policy</Text>
             </TouchableOpacity>
           </View>
           <CustomButton 
@@ -336,14 +338,19 @@ const Premium = () => {
       <View style={Local.container}>
         <View style={Local.imageContainer}>
           <Image 
-            source={require('@/assets/images/premium-bg-downscaled.jpg')}
+            source={require('@/src/assets/images/premium-bg-downscaled.jpg')}
             style={Local.coverImage}
           />
           <LinearGradient
             style={Local.coverGradient}
-            colors={['rgba(16, 16, 16, 0)', 'rgba(16, 16, 16, 1)']}
+            colors={['rgba(20, 20, 20, 0)', 'rgba(20, 20, 20, 1)']}
             pointerEvents={'none'}
           />
+        </View>
+        <View style={Local.featureListContainer}>
+          <View style={Local.featureListWrapper}>
+            <FeatureList />
+          </View>
         </View>
         <View style={Local.contentContainer}>
           <Image 
@@ -393,7 +400,7 @@ const Premium = () => {
 const Local = StyleSheet.create({
   wrapper: {
     backgroundColor: Colors.background,
-    ...Styles.roundedModal,
+    ...ModalStyles.roundedTop,
   },
   container: {
     height: '100%',
@@ -405,12 +412,24 @@ const Local = StyleSheet.create({
   imageContainer: {
     height: '40%',
     width: '100%',
-    ...Styles.roundedModal,
+    ...ModalStyles.roundedTop,
+  },
+  featureListContainer: {
+    height: '40%',
+    width: '100%',
+    position: 'absolute',
+    top: 0,
+    zIndex: 0,
+    justifyContent: 'center',
+  },
+  featureListWrapper: {
+    height: '50%',
+    width: '100%',
   },
   coverImage: {
     height: '100%',
     width: '100%',
-    ...Styles.roundedModal,
+    ...ModalStyles.roundedTop,
   },
   coverGradient: {
     position: 'absolute', 
@@ -465,6 +484,9 @@ const Local = StyleSheet.create({
   },
   restore: {
     marginTop: 10,
+  },
+  subText: {
+    color: Colors.infoText,
   }
 });
 

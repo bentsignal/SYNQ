@@ -1,20 +1,20 @@
 import { useFonts } from 'expo-font';
 import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
-import GlobalProvider from "@/context/GlobalProvider";
+import GlobalProvider from "@/src/context/GlobalProvider";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { connect, restorePurchases } from "@/lib/controllers/PurchaseController";
+import { connect, restorePurchases } from "@/src/controllers/PurchaseController";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import DataManager from "@/lib/data/DataManager";
+import Model from "@/src/models/Model";
 import { LogBox } from "react-native";
-import CFG from "@/constants/Config";
-import ThemeProvider from "@/context/ThemeProvider";
-import PremiumProvider from "@/context/PremiumProvider";
+import CFG from "@/src/constants/Config";
+import ThemeProvider from "@/src/context/ThemeProvider";
+import PremiumProvider from "@/src/context/PremiumProvider";
 import Navigation from "@/app/navigation";
-import PlaybackProvider from "@/context/PlaybackProvider";
-import Sheets from "@/components/sheet/Sheets";
-import GlobalProgress from '@/components/GlobalProgress';
+import PlaybackProvider from "@/src/context/PlaybackProvider";
+import Sheets from "@/src/components/sheet/Sheets";
+import GlobalProgress from '@/src/components/GlobalProgress';
 
 LogBox.ignoreLogs(['Require cycle:']);
 
@@ -28,7 +28,7 @@ const RootLayout = () => {
   const [shouldPlayAd, setShouldPlayAd] = useState(false);
 
   const [fontLoaded] = useFonts({
-    JakartaSans: require('../assets/fonts/PlusJakartaSans-VariableFont_wght.ttf')
+    JakartaSans: require('@/src/assets/fonts/PlusJakartaSans-VariableFont_wght.ttf')
   });
 
   useEffect(() => {
@@ -52,8 +52,8 @@ const RootLayout = () => {
 
     const checkDB = async () => {
       try {
-        await DataManager.initConnection();
-        await DataManager.createTables();
+        await Model.initConnection();
+        await Model.createTables();
       }
       catch (error) {
         console.error('Error creating database:', error);

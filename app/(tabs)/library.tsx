@@ -1,25 +1,29 @@
 import TrackPlayer, { Event, useTrackPlayerEvents, useActiveTrack, useProgress } from "react-native-track-player";
-import { setupPlayer, skipLeft, skipRight, updateQueue, playAd } from "@/lib/controllers/PlayerController";
+import { setupPlayer, skipLeft, skipRight, updateQueue, playAd } from "@/src/controllers/PlayerController";
 import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
-import { Styles } from "@/constants/Styles";
-import PageTitle from '@/components/PageTitle';
-import Notifications from "@/components/notifications/Notifications";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { Styles } from "@/src/constants/Styles";
+import PageTitle from '@/src/components/PageTitle';
+import Notifications from "@/src/components/notifications/Notifications";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { useEffect, useState, useRef } from "react";
-import { NotificationType } from "@/constants/Types";
-import MiniPlayer from '@/components/player/MiniPlayer';
+import { NotificationType } from "@/src/constants/Types";
+import MiniPlayer from '@/src/components/player/MiniPlayer';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import CFG from "@/constants/Config";
-import CategorySelector from "@/components/CategorySelector";
-import { Colors } from "@/constants/Colors";
-import Playlists from "@/components/library/Playlists";
-import Albums from "@/components/library/Albums";
-import Artists from "@/components/library/Artists";
-import Plus from "@/components/Plus";
+import CFG from "@/src/constants/Config";
+import CategorySelector from "@/src/components/CategorySelector";
+import { Colors } from "@/src/constants/Colors";
+import Playlists from "@/src/components/library/Playlists";
+import Albums from "@/src/components/library/Albums";
+import Artists from "@/src/components/library/Artists";
+import Songs from "@/src/components/library/Songs";
+import Plus from "@/src/components/Plus";
 import { router } from "expo-router";
-import { useThemeContext } from "@/context/ThemeProvider";
-import { usePremiumContext } from "@/context/PremiumProvider";
-import { usePlaybackContext } from "@/context/PlaybackProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
+import { usePremiumContext } from "@/src/context/PremiumProvider";
+import { usePlaybackContext } from "@/src/context/PlaybackProvider";
+import playlistBus from "@/src/events/playlist/Bus";
+import { PlaylistBusEvent } from "@/src/events/playlist/Events";
+import SettingsButton from "@/src/components/SettingsButton";
 
 const Library = () => {
 
@@ -51,6 +55,16 @@ const Library = () => {
   const [selected, setSelected] = useState(0);
 
   const checkForAdInterval = 5;
+
+  useEffect(() => {
+    const resetTab = () => {
+      setSelected(0); 
+    }
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, resetTab);
+    return () => {
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, resetTab);
+    }
+  }, []);
 
   // used to update storage variable that counts 
   // play time. Used to determine if an ad should be played
@@ -131,7 +145,7 @@ const Library = () => {
 
   // sets ad playing when ad is active
   useEffect(() => {
-    if (track?.id === 'ad') {
+    if (track?.id === -2) {
       setAdPlaying(true);
       if (premium) {
         setAdPlaying(false);
@@ -215,9 +229,18 @@ const Library = () => {
 
   const getBody = () => {
     switch (selected) {
-      case 0: return <Playlists />
-      case 1: return <Albums />
-      case 2: return <Artists />
+      case 0: return <Songs />
+      case 1: return <Playlists />
+      case 2: return <Albums />
+      case 3: return <Artists />
+    }
+  }
+
+  const handleCreate = () => {
+    switch (selected) {
+      case 1: router.push('/playlist/create'); break;
+      case 2: router.push('/album/create'); break;
+      case 3: router.push('/artist/create'); break;
     }
   }
 
@@ -226,12 +249,17 @@ const Library = () => {
       <PageTitle 
         title="Library"
         rightHandComponent={
+          <View style={Local.buttonsContainer}>
             <TouchableOpacity 
-              onPress={() => router.push('/playlist/create')}
-              style={Local.addWrapper}
+              onPress={handleCreate}
+              style={{ display: selected === 0 ? 'none' : 'flex' }}
             >
               <Plus />
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push('/settings')}>
+              <Image source={require('@/src/assets/icons/gear.png')} style={Local.icon} />
+            </TouchableOpacity>
+          </View>
         }
       />
       <CategorySelector 
@@ -254,11 +282,17 @@ const Library = () => {
 }
 
 const Local = StyleSheet.create({
-  addWrapper: {
+  buttonsContainer: {
     flex: 1,
-    alignItems: 'flex-end',
-    justifyContent: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
+    gap: 20,
   },
+  icon: {
+    height: 25,
+    width: 25,
+  }
 });
 
 export default Library;

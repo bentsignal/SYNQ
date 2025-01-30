@@ -1,5 +1,5 @@
 import { Stack } from "expo-router"
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/src/constants/Colors";
 
 const Navigation = () => {
   return (
@@ -109,6 +109,66 @@ const Navigation = () => {
       />
       <Stack.Screen
         name="song/edit/[id]"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+          contentStyle: { backgroundColor: 'transparent'},
+        }}
+      />
+      <Stack.Screen
+        name="artist/[id]"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="artist/create"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+          contentStyle: { backgroundColor: 'transparent'},
+        }}
+      />
+      <Stack.Screen
+        name="artist/add"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+          contentStyle: { backgroundColor: 'transparent'},
+        }}
+      />
+      <Stack.Screen
+        name="artist/edit/[id]"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+          contentStyle: { backgroundColor: 'transparent'},
+        }}
+      />
+      <Stack.Screen
+        name="album/create"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+          contentStyle: { backgroundColor: 'transparent'},
+        }}
+      />
+      <Stack.Screen
+        name="album/[id]"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="album/add"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+          contentStyle: { backgroundColor: 'transparent'},
+        }}
+      />
+      <Stack.Screen
+        name="album/edit/[id]"
         options={{
           headerShown: false,
           presentation: 'modal',

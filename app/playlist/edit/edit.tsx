@@ -1,25 +1,26 @@
 import { View, Text, StyleSheet, ScrollView, TextInput } from "react-native";
 import { memo } from "react";
-import Bar from "@/components/modals/Bar";
-import { Colors } from "@/constants/Colors";
-import { Styles } from "@/constants/Styles";
+import Bar from "@/src/components/modals/Bar";
+import { Colors } from "@/src/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
 import { useEffect, useState } from "react";
-import { getPlaylistInfo, updatePlaylist } from "@/lib/controllers/PlaylistController";
+import { getPlaylistInfo, updatePlaylist } from "@/src/controllers/PlaylistController";
 import { router } from "expo-router";
-import CustomButton from "@/components/CustomButton";
+import CustomButton from "@/src/components/CustomButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useThemeContext } from "@/context/ThemeProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { CoverType, NotificationType, PlaylistType } from "@/constants/Types";
-import EditCover from "@/components/cover/EditCover";
-import { newCover } from "@/lib/controllers/SongController";
-import { useGlobalContext } from "@/context/GlobalProvider";
+import { CoverType, NotificationType, PlaylistType } from "@/src/constants/Types";
+import EditCover from "@/src/components/cover/EditCover";
+import { newCover } from "@/src/controllers/ImageController";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 import * as Haptics from 'expo-haptics';
-import Notifications from "@/components/notifications";
+import Notifications from "@/src/components/notifications";
+import ModalStyles from "@/src/components/modals/Styles";
 
 const MemoTextInput = memo(TextInput);
 
-const EditPlaylist = ({id}: {id: string}) => {
+const EditPlaylist = ({id}: {id: number}) => {
   
   const insets = useSafeAreaInsets();
   const { theme } = useThemeContext();
@@ -30,7 +31,7 @@ const EditPlaylist = ({id}: {id: string}) => {
 
   const refreshInfo = async () => {
     try {
-      const result = await getPlaylistInfo(parseInt(id));
+      const result = await getPlaylistInfo(id);
       setName(result.name);
       setOriginalName(result.name);
     } catch (error) {
@@ -38,29 +39,15 @@ const EditPlaylist = ({id}: {id: string}) => {
     }
   }
 
-  const nameInputValidation = () => {
-    if (name === '') {
-      throw new Error('Name is required');
-    }
-  }
-
-  const handleUpdateImage = async () => {
-    const cover = await newCover();
-    if (cover) {
-      setImage(cover);
-    }
-  }
-
-  const handleSave = async () => {
+  const nameInputValidation = async (text: string) => {
     try {
-      nameInputValidation();
-      await updatePlaylist(parseInt(id), name === originalName ? null : name, image);
-      if (haptic) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      if (text === '') {
+        throw new Error('Name is required');
       }
-      setTimeout(() => {  
-        router.back();
-      }, 100);
+      else {
+        setName(text);
+        await updatePlaylist(id, text === originalName ? null : text, image);
+      }
     }
     catch (error) {
       const trace = error instanceof Error ? error.message : String(error);
@@ -71,7 +58,15 @@ const EditPlaylist = ({id}: {id: string}) => {
         'Unable to update playlist',
         trace,
         () => {}
-      );    
+      );  
+    }
+  }
+
+  const handleUpdateImage = async () => {
+    const cover = await newCover();
+    if (cover) {
+      setImage(cover);
+      await updatePlaylist(id, name === originalName ? null : name, cover);
     }
   }
 
@@ -82,7 +77,7 @@ const EditPlaylist = ({id}: {id: string}) => {
   return (
     <View style={Local.wrapper}>
       <Bar />
-      <Text style={Local.header}>Edit Playlist</Text>
+      <Text style={ModalStyles.header}>Edit Playlist</Text>
       <View style={Styles.divider} />
       <KeyboardAwareScrollView 
         style={Local.scrollView}
@@ -106,18 +101,13 @@ const EditPlaylist = ({id}: {id: string}) => {
           numberOfLines={1}
           placeholder={'Enter playlist name...'}
           placeholderTextColor={Colors.altDisabled}
-          value={name}
-          onChangeText={text => setName(text)}
+          defaultValue={name}
+          onEndEditing={(evt) => nameInputValidation(evt.nativeEvent.text)}
         />
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />
       <View style={[Local.bottomButtonsWrapper, { paddingBottom: insets.bottom }]}>
         <CustomButton title="Close" handlePress={() => router.back()} />
-        <CustomButton 
-          title="Save" 
-          handlePress={handleSave} 
-          background={theme}
-        />
       </View>
     </View>
   )
@@ -126,8 +116,8 @@ const EditPlaylist = ({id}: {id: string}) => {
 const Local = StyleSheet.create({
   wrapper: {
     ...Styles.body,
-    ...Styles.roundedModal,
     backgroundColor: Colors.popup,
+    ...ModalStyles.roundedTop,
   },
   scrollView: {
     width: '100%',

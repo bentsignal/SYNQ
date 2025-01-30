@@ -6,6 +6,7 @@ import { restorePurchases } from '@/src/controllers/PurchaseController';
 import { Colors } from '@/src/constants/Colors';
 import { getAppIcon, setAppIcon } from 'expo-icon-handler';
 import { getIcon } from '../constants/Logos';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Props = {
   children?: React.ReactNode;
@@ -26,27 +27,45 @@ export const usePremiumContext = () => useContext(PremiumContext);
 const PremiumProvider: React.FC<Props> = ({ children }) => {
 
   const { theme, changeTheme } = useThemeContext();
-  const [premium, setPremium] = useState<boolean>(true);
+  const [premium, setPremium] = useState<boolean>(false);
 
   const checkPurchases= async () => {
-    if (CFG.devTestFreeVersion) {
-      await forceResetTheme();
-      setPremium(false);
-      return;
-    }
-    else {
+
+    const premiumSubscriptions = ['SYNQPremiumLifetime', 
+      'SYNQPremiumMonthly', 'SYNQPremiumYearly'];
+
+    try {
+
+      const premiumSavedData = await AsyncStorage.getItem('premium');
+
+      if (premiumSavedData === 'true' && !CFG.devTestFreeVersion) {
+        setPremium(true);
+        return;
+      }
+
       // restore purchases
       await connect();
-      const restored = await restorePurchases();
-      if (restored === '') {
-        setPremium(false);
-        await forceResetTheme();
+      const purchases = await restorePurchases();
+      if (premiumSubscriptions.includes(purchases?.name) && !CFG.devTestFreeVersion) {
+        setPremium(true);
+        await AsyncStorage.setItem('premium', 'true');
       }
       else {
-        setPremium(true);
+        setPremium(false);
+        await AsyncStorage.setItem('premium', 'false');
+        await forceResetTheme();
       }
+      
     }
+    catch (error) {
+      setPremium(false);
+      forceResetTheme();
+      await AsyncStorage.setItem('premium', 'false');
+      console.log('error checking purchases:', error);
+    }
+
   }
+
 
   const forceResetTheme = async () => {
     changeTheme(Colors.main, false);
@@ -58,12 +77,7 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
   }
 
   useEffect(() => {
-    try {
-      checkPurchases();
-    }
-    catch (error) {
-      console.log('error checking purchases:', error);
-    }
+    checkPurchases();
   }, []);
 
   return (

@@ -1,5 +1,6 @@
 import Purchases from 'react-native-purchases';
 import { revenueCatKey } from '@/src/constants/Keys';
+import { PurchaseType } from '@/src/constants/Types';
 
 export const connect = async () => {
   try {
@@ -37,8 +38,9 @@ export const getPrices = async (): Promise<{lifetime: string, monthly: string, y
 
 }
 
-export const restorePurchases = async (): Promise<string> => {
+export const restorePurchases = async (): Promise<PurchaseType | null> => {
     
+
   const restoredData = await Purchases.restorePurchases();
   const { allPurchasedProductIdentifiers, allExpirationDates } = restoredData;
 
@@ -51,12 +53,15 @@ export const restorePurchases = async (): Promise<string> => {
       const expirationDate = expirationDateString ? new Date(expirationDateString) : null;
       const currentDate = new Date();
       if (!expirationDate || expirationDate > currentDate) {
-        return(productId);
+        return {
+          name: productId,
+          expiration: expirationDate
+        };
       }
     }
   }
 
-  throw new Error('No premium subscription found');
+  return null;
 
 }
 

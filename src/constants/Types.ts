@@ -121,3 +121,8 @@ export type AlbumType = {
   image?: string;
   pageType?: PageType;
 };
+
+export type PurchaseType = {
+  name: string;
+  expiration: Date;
+}

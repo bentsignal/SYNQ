@@ -40,7 +40,6 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
 
       if (premiumSavedData === 'true' && !CFG.devTestFreeVersion) {
         setPremium(true);
-        return;
       }
 
       // restore purchases

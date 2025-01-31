@@ -36,30 +36,47 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
 
     try {
 
-      const premiumSavedData = await AsyncStorage.getItem('premium');
+      const expiration = await AsyncStorage.getItem('expiration');
 
-      if (premiumSavedData === 'true' && !CFG.devTestFreeVersion) {
-        setPremium(true);
+      if (expiration && !CFG.devTestFreeVersion) {
+        if (expiration === 'never') {
+          setPremium(true);
+          return;
+        }
+        else{
+          const expirationDate = new Date(expiration);
+          const currentDate = new Date();
+          if (expirationDate > currentDate) { 
+            setPremium(true);
+            return;
+          }
+          else {
+            setPremium(false);
+            await AsyncStorage.setItem('expiration', 'null');
+          }
+        }
       }
 
       // restore purchases
       await connect();
-      const purchases = await restorePurchases();
-      if (premiumSubscriptions.includes(purchases?.name) && !CFG.devTestFreeVersion) {
+      const purchase = await restorePurchases();
+      if (premiumSubscriptions.includes(purchase?.name) && !CFG.devTestFreeVersion) {
         setPremium(true);
-        await AsyncStorage.setItem('premium', 'true');
+        if (purchase.name === 'SYNQPremiumLifetime') {
+          await AsyncStorage.setItem('expiration', 'never');
+        }
+        else {
+          await AsyncStorage.setItem('expiration', purchase?.expiration.toISOString());
+        }
       }
       else {
         setPremium(false);
-        await AsyncStorage.setItem('premium', 'false');
+        await AsyncStorage.setItem('expiration', 'null');
         await forceResetTheme();
       }
       
     }
     catch (error) {
-      setPremium(false);
-      forceResetTheme();
-      await AsyncStorage.setItem('premium', 'false');
       console.log('error checking purchases:', error);
     }
 
@@ -69,8 +86,7 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
   const forceResetTheme = async () => {
     changeTheme(Colors.main, false);
     const current = await getAppIcon();
-    console.log('current: ', current);
-    if (current !== 'icon-blue') {
+    if (current !== 'icon-blue' && current !== 'default') {
       setAppIcon(getIcon(Colors.main));
     }
   }

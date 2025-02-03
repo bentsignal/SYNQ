@@ -19,13 +19,13 @@ const Navigation = () => {
           gestureEnabled: false,
         }} 
       />
-      <Stack.Screen 
+      {/* <Stack.Screen 
         name="tracking"
         options={{
           headerShown: false,
           animation: 'fade',
         }}
-      />
+      /> */}
       <Stack.Screen 
         name="settings"
         options={{

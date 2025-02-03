@@ -46,7 +46,6 @@
     "expo-sqlite": "~15.0.3",
     "expo-store-review": "~8.0.0",
     "expo-system-ui": "~4.0.4",
-    "expo-tracking-transparency": "~5.0.0",
     "iconv-lite": "^0.6.3",
     "lottie-colorify": "^0.8.0",
     "lottie-react-native": "7.1.0",

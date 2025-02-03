@@ -215,31 +215,33 @@ const Premium = () => {
     setLoading(true);
     try {
       const result = await PurchaseManager.restorePurchases();
-      setPremium(true);
-      setActive(true);
-      let message = 'Successfully restored ';
-      if (result === 'SYNQPremiumMonthly') {
-        setSelected(0);
-        message += 'your monthly subscription.';
+      if (result) {
+        setPremium(true);
+        setActive(true);
+        let message = 'Successfully restored ';
+        if (result.name === 'SYNQPremiumMonthly') {
+          setSelected(0);
+          message += 'your monthly subscription.';
+        }
+        else if (result.name === 'SYNQPremiumYearly') {
+          setSelected(1);
+          message += 'your yearly subscription.';
+        }
+        else if (result.name === 'SYNQPremiumLifetime') {
+          setSelected(2);
+          message += 'your lifetime subscription.';
+        }
+        else {
+          message += 'your purchase.';
+        }
+        if (haptic) {
+          Haptics.notificationAsync(
+            Haptics.NotificationFeedbackType.Success
+          );
+        }
+        Alert.alert('Success', message, [{text: 'Ok'}]);
+        setLoading(false);
       }
-      else if (result === 'SYNQPremiumYearly') {
-        setSelected(1);
-        message += 'your yearly subscription.';
-      }
-      else if (result === 'SYNQPremiumLifetime') {
-        setSelected(2);
-        message += 'your lifetime subscription.';
-      }
-      else {
-        message += 'your purchase.';
-      }
-      if (haptic) {
-        Haptics.notificationAsync(
-          Haptics.NotificationFeedbackType.Success
-        );
-      }
-      Alert.alert('Success', message, [{text: 'Ok'}]);
-      setLoading(false);
     }
     catch (error) {
       console.log(error);

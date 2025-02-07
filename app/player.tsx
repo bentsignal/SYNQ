@@ -179,8 +179,8 @@ const Player = () => {
               title={title}
               artist={artist}
               color={Colors.text}
-              titleStyles={Local.title}
-              artistStyles={Local.artist}
+              titleStyles={[Local.title, Local.dropShadow]}
+              artistStyles={[Local.artist, Local.dropShadow]}
             />
           </Animated.View>
           <TouchableOpacity onPress={handleAddToPlaylist} style={Local.addWrapper}>
@@ -295,6 +295,11 @@ const Local = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 5,
     paddingVertical: 5,
+  },
+  dropShadow: {
+    textShadowColor: 'rgba(0, 0, 0, 0.15)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 3,
   }
 });
 

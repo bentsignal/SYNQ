@@ -15,6 +15,9 @@ import { useThemeContext } from "@/src/context/ThemeProvider";
 import { getDisabledColor, adjustLightness, darkenColor } from "@/src/controllers/ColorController";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { getAbsoluteSongCover } from "@/src/controllers/SongController";
+import { CrossfadeImage } from "react-native-crossfade-image";
+import { getTrackArtwork } from "@/src/controllers/PlayerController";
+import { useAssets } from "expo-asset";
 
 const MiniPlayer = () => {
 
@@ -29,6 +32,18 @@ const MiniPlayer = () => {
 
   const [coverImage, setCoverImage] = useState('');
   const [emptyCover, setEmptyCover] = useState(false);
+  const [assets, error] = useAssets([require('@/src/assets/images/popup.jpg')]);
+  const [emptyImage, setEmptyImage] = useState<string>('transparent');
+
+  useEffect(() => {
+    if (error) {
+      return;
+    }
+    if (assets) {
+      setEmptyImage(assets[0].uri);
+    }
+  }, [assets]);
+
   const loadCover = async () => {
     try {
       const cover = await getAbsoluteSongCover(track?.id);
@@ -46,6 +61,14 @@ const MiniPlayer = () => {
     }
   }
 
+  const getBackgroundImage = () => {
+    const artwork = getTrackArtwork(track);
+    if (artwork !== 'transparent') {  
+      return artwork;
+    }
+    return emptyImage;
+  }
+
   useEffect(() => {
     loadCover();
     setTimeout(() => {
@@ -53,55 +76,75 @@ const MiniPlayer = () => {
     }, 200);
   }, [track]);
 
-  const textColor = darkenColor(theme, 50, 30);
+  const textColor = Colors.text;//darkenColor(theme, 50, 30);
 
   return (
-    <TouchableOpacity 
-      style={[Local.container, { 
-        backgroundColor: theme, 
-        display: track ? 'flex' : 'none'
-      }]}
-      activeOpacity={1}
-      onPress={() => router.push('/player')}
-    >
-      <Animated.View style={coverStyle}>
-        <ListCover 
-          image={coverImage}
-          type={CoverType.SONG}
-          propOnLoad={() => {}}
-          empty={emptyCover}
+    <>
+      <TouchableOpacity 
+        style={[Local.container, {
+          display: track ? 'flex' : 'none',
+          backgroundColor: 'transparent',
+          overflow: 'hidden',
+        }]}
+        activeOpacity={1}
+        onPress={() => router.push('/player')}
+      >
+        <CrossfadeImage 
+          source={{ uri: getBackgroundImage() }}
+          blurRadius={100}
+          duration={500}
+          style={[Local.container, {
+            zIndex: 0,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: 800,
+            height: '100%',
+            backgroundColor: Colors.popup,
+          }]}
         />
-      </Animated.View>
-      <SongInfo 
-        fileName={getFileName(track?.url)}
-        title={track?.title}
-        artist={track?.artist}
-        showAlbum={false}
-        color={textColor}
-      />
-      <View style={Local.buttonContainer}>
-        <TouchableOpacity 
-          style={Local.buttonWrapper}
-          onPress={() => {}}
-        >
-          <SkipLeft size={16} color={textColor}/>
-        </TouchableOpacity>
-        <PausePlayButtons 
-          playSize={25}
-          pauseHeight={25}
-          pauseWidth={7}
-          style={Local.playPauseButtonWrapper}
+        <Animated.View style={coverStyle}>
+          <ListCover 
+            image={coverImage}
+            type={CoverType.SONG}
+            propOnLoad={() => {}}
+            empty={emptyCover}
+          />
+        </Animated.View>
+        <SongInfo 
+          fileName={getFileName(track?.url)}
+          title={track?.title}
+          artist={track?.artist}
+          showAlbum={false}
           color={textColor}
+          titleStyles={[Local.title, Local.dropShadow]}
+          artistStyles={[Local.artist, Local.dropShadow]}
         />
-        <TouchableOpacity 
-          style={Local.buttonWrapper}
-          onPress={() => {}}
-        >
-          <SkipRight size={16} color={textColor}/>
-        </TouchableOpacity>
-      </View>
-      
-    </TouchableOpacity>
+        <View style={Local.buttonContainer}>
+          <TouchableOpacity 
+            style={Local.buttonWrapper}
+            onPress={() => {}}
+          >
+            <SkipLeft size={16} color={textColor}/>
+          </TouchableOpacity>
+          <PausePlayButtons 
+            playSize={25}
+            pauseHeight={25}
+            pauseWidth={7}
+            style={Local.playPauseButtonWrapper}
+            color={textColor}
+          />
+          <TouchableOpacity 
+            style={Local.buttonWrapper}
+            onPress={() => {}}
+          >
+            <SkipRight size={16} color={textColor}/>
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    </>
   );
 
 }
@@ -136,6 +179,20 @@ const Local = StyleSheet.create({
     paddingTop: 5,
     paddingBottom: 5,
   },
+  title: {
+    ...Styles.h5,
+    color: Colors.text,
+  },
+  artist: {
+    ...Styles.sub,
+    color: Colors.text,
+  },
+  dropShadow: {
+    textShadowColor: 'rgba(0, 0, 0, 0.15)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 3,
+  }
 });
+
 
 export default MiniPlayer;

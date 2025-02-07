@@ -13,6 +13,7 @@ import { useThemeContext } from '@/src/context/ThemeProvider';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
 import { FlatList } from 'react-native';
 import { check } from '@/lib/Util';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MemoSong = memo(Song);
 
@@ -89,10 +90,13 @@ const SongList = memo((
       const newTrack = await getTrackFromSong(song, theme);
       await updateQueue(song.id, shuffle, theme, song.sourceType, song.sourceId);
       setSourceType(song.sourceType);
+      await AsyncStorage.setItem('sourceType', song.sourceType.toString());
       setSourceId(song.sourceId);
+      await AsyncStorage.setItem('sourceId', song.sourceId.toString());
       if (newTrack) {
         await addToQueue(newTrack);
       }
+
     }
     // if ad is not played, play song
     else if (id !== song.id && !adPlaying) {
@@ -103,7 +107,10 @@ const SongList = memo((
           await playTrack(newTrack);
           await updateQueue(song.id, shuffle, theme, song.sourceType, song.sourceId);
           setSourceType(song.sourceType);
+          await AsyncStorage.setItem('sourceType', song.sourceType.toString());
           setSourceId(song.sourceId);
+          await AsyncStorage.setItem('sourceId', song.sourceId.toString());
+
         }
       }
       catch (error) {

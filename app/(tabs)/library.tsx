@@ -1,5 +1,5 @@
 import TrackPlayer, { Event, useTrackPlayerEvents, useActiveTrack, useProgress } from "react-native-track-player";
-import { setupPlayer, skipLeft, skipRight, updateQueue, playAd } from "@/src/controllers/PlayerController";
+import { skipLeft, skipRight, updateQueue, playAd } from "@/src/controllers/PlayerController";
 import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Styles } from "@/src/constants/Styles";
 import PageTitle from '@/src/components/PageTitle';
@@ -23,7 +23,7 @@ import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { usePlaybackContext } from "@/src/context/PlaybackProvider";
 import playlistBus from "@/src/events/playlist/Bus";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
-import SettingsButton from "@/src/components/SettingsButton";
+import usePlayer from "@/src/hooks/usePlayer";
 
 const Library = () => {
 
@@ -31,13 +31,11 @@ const Library = () => {
     
     haptic,
     adPlaying, adURL, shouldPlayAd,
-    playerInitialized,
 
     setShowOverlay, 
     setShowNotificationModal,
     setAdPlaying,
     setShouldPlayAd,
-    setPlayerInitialized,
 
     addNotification,
   
@@ -45,13 +43,19 @@ const Library = () => {
 
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
-  const { shuffle, loop, sourceType, sourceId } = usePlaybackContext();
+  const { shuffle, loop, 
+    sourceType, sourceId,
+    playerInitialized,
+    setPlayerInitialized,
+  } = usePlaybackContext();
+
 
   const track = useActiveTrack();
   const { position, duration } = useProgress();
+  const { setupPlayer } = usePlayer();
+
   const previousPosition = useRef(0);
   const timePlayed = useRef(0);
-
   const [selected, setSelected] = useState(0);
 
   const checkForAdInterval = 5;
@@ -129,9 +133,15 @@ const Library = () => {
 
   }, [position]);
 
+  // write position to storage to restore position on app reload
+  useEffect(() => {
+    if (position) {
+      AsyncStorage.setItem('position', position.toString());
+    }
+  }, [position]);
+
   // sets up player
   useEffect(() => {
-    
     try {
       if (!playerInitialized) {
         setupPlayer();
@@ -156,6 +166,17 @@ const Library = () => {
     else {
       setAdPlaying(false);
     }
+  }, [track]);
+
+  // write last track index to storage to restore position on app reload
+  useEffect(() => {
+    const updateLastTrackIndex = async () => {
+      if (track) {
+        const index = await TrackPlayer.getActiveTrackIndex();
+        await AsyncStorage.setItem('lastTrackIndex', index.toString());
+      }
+    }
+    updateLastTrackIndex();
   }, [track]);
 
   // link to control center

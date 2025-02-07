@@ -16,6 +16,9 @@ import { Colors } from '@/src/constants/Colors';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import { router } from 'expo-router';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
+import usePlayer from '@/src/hooks/usePlayer';
+import { useEffect } from 'react';
+import { usePlaybackContext } from '@/src/context/PlaybackProvider';
 
 const Home = () => {
 
@@ -34,6 +37,21 @@ const Home = () => {
   const { homeState, setHomeState } = useGlobalContext();
   const { theme, logo } = useThemeContext();
   const { premium } = usePremiumContext();
+  const { setupPlayer } = usePlayer();
+  const { playerInitialized, setPlayerInitialized } = usePlaybackContext();
+
+  // sets up player
+  useEffect(() => {
+    try {
+      if (!playerInitialized) {
+        setupPlayer();
+        setPlayerInitialized(true);
+      }
+    }
+    catch (error) {
+      console.log('error setting up player: ', error);
+    }
+  }, []);
 
   const browseFiles = () => {
     setLoading(true);

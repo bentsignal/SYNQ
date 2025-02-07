@@ -5,6 +5,7 @@ import { useActiveTrack } from "react-native-track-player";
 import { updateQueue } from "@/src/controllers/PlayerController";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePlaybackContext } from "@/src/context/PlaybackProvider";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface ShuffleButtonProps {
   primary?: string;
@@ -29,10 +30,13 @@ const ShuffleButton = ({ primary, useBG }: ShuffleButtonProps) => {
       const id = track ? track.id : -1;
       await updateQueue(id, newValue, theme, sourceType, sourceId);
       setShuffle(newValue);
+      await AsyncStorage.setItem('shuffle', newValue.toString());
     } catch (error) {
       setShuffle(previous);
       setLocalState(previous);
+      await AsyncStorage.setItem('shuffle', previous.toString());
     }
+
   }
 
   useEffect(() => {

@@ -15,6 +15,7 @@ import { getAlbumCoverPathFromSong, getSongCover } from '@/src/controllers/Image
 import { check } from "@/lib/Util";
 import playbackBus from "../events/playback";
 import { PlaybackBusEvent } from "../events/playback/Events";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const setupPlayer = async () => {
   await TrackPlayer.setupPlayer();
@@ -103,6 +104,8 @@ export const updateQueue = async (
   }
   await TrackPlayer.add(upcomingTracks);
   playbackBus.emit(PlaybackBusEvent.QUEUE_UPDATED);
+  const queue = await TrackPlayer.getQueue();
+  await AsyncStorage.setItem('queue', JSON.stringify(queue));
 }
 
 export const skipLeft = async () => {
@@ -170,11 +173,10 @@ export const addToQueue = async (track: Track) => {
   if (currentIndex !== undefined) {
     await TrackPlayer.add(track, currentIndex+1);
   }
-  // TODO: Figure out how to queue songs when no song is playing
-  // else {
-  //   await TrackPlayer.add(newTrack);
-  // }
+  const queue = await TrackPlayer.getQueue();
+  await AsyncStorage.setItem('queue', JSON.stringify(queue));
 }
+
 
 export const getTrackArtwork = (track: Track) => {
   if (typeof track?.artwork === 'string') {

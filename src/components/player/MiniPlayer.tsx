@@ -93,17 +93,7 @@ const MiniPlayer = () => {
           source={{ uri: getBackgroundImage() }}
           blurRadius={100}
           duration={500}
-          style={[Local.container, {
-            zIndex: 0,
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            width: 800,
-            height: '100%',
-            backgroundColor: Colors.popup,
-          }]}
+          style={[Local.container, Local.fadeImage]}
         />
         <Animated.View style={coverStyle}>
           <ListCover 
@@ -155,13 +145,25 @@ const Local = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     height: 80,
-    paddingRight: 10,
+    paddingRight: 5,
     paddingLeft: 10,
     marginBottom: 10,
-    width: '90%',
+    width: '95%',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  fadeImage: {
+    zIndex: 0,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: 800,
+    height: '100%',
+    backgroundColor: Colors.popup,
+
   },
   buttonContainer: {
     flexDirection: 'row',

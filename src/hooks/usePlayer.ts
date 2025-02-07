@@ -45,9 +45,13 @@ export default function usePlayer () {
     // jump to track
     const lastTrackIndex = await AsyncStorage.getItem('lastTrackIndex');
     if (lastTrackIndex) {
-      await TrackPlayer.skip(Number(lastTrackIndex));
+      const index = Number(lastTrackIndex);
+      await TrackPlayer.skip(index);
+      if (index > 10) {
+        await TrackPlayer.remove(Array.from({ length: index - 10 }, (_, i) => i + 1));
+      }
     }
-  
+
     // restore position
     const position = await AsyncStorage.getItem('position');
     if (position) {
@@ -70,9 +74,9 @@ export default function usePlayer () {
     
   };
 
-
   return {
     setupPlayer,
   };
+
   
 }

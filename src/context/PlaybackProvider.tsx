@@ -16,8 +16,9 @@ interface PlaybackContextType {
   setLoop: (newValue: boolean) => void;
   playerInitialized: boolean;
   setPlayerInitialized: (newValue: boolean) => void;
+  addOffset: number;
+  setAddOffset: (newValue: number) => void;
 }
-
 
 const PlaybackContext = createContext<PlaybackContextType>({
   sourceId: null,
@@ -30,8 +31,9 @@ const PlaybackContext = createContext<PlaybackContextType>({
   setLoop: () => {},
   playerInitialized: false,
   setPlayerInitialized: () => {},
+  addOffset: 0,
+  setAddOffset: () => {},
 });
-
 
 export const usePlaybackContext = () => useContext(PlaybackContext);
 
@@ -42,6 +44,7 @@ const PlaybackProvider: React.FC<Props> = ({ children }) => {
   const [shuffle, setShuffle] = useState<boolean>(false);
   const [loop, setLoop] = useState<boolean>(false);
   const [playerInitialized, setPlayerInitialized] = useState<boolean>(false);
+  const [addOffset, setAddOffset] = useState<number>(0);
 
   return (
     <PlaybackContext.Provider value={{ 
@@ -50,9 +53,11 @@ const PlaybackProvider: React.FC<Props> = ({ children }) => {
       shuffle, setShuffle,
       loop, setLoop,
       playerInitialized, setPlayerInitialized,
+      addOffset, setAddOffset,
     }}>
       {children}
     </PlaybackContext.Provider>
+
 
   );
 

@@ -1,12 +1,30 @@
-import TrackPlayer, { Capability } from "react-native-track-player";
+import TrackPlayer, { Capability, Track } from "react-native-track-player";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { usePlaybackContext } from "../context/PlaybackProvider";
 import { check } from "@/lib/Util";
-
+import { PageType, SongType, SortType, SourceType } from "../constants/Types";
+import * as Haptics from 'expo-haptics';
+import { PlaybackBusEvent } from "../events/playback/Events";
+import playbackBus from "../events/playback";
+import { getTrackFromSong } from "../controllers/PlayerController";
+import { getPlaylistSongs } from "../controllers/PlaylistController";
+import { getSongsFromArtist } from "../controllers/ArtistController";
+import { getSongsFromAlbum } from "../controllers/AlbumController";
+import { useThemeContext } from "../context/ThemeProvider";
+import { useGlobalContext } from "../context/GlobalProvider";
 
 export default function usePlayer () {
 
-  const { setShuffle, setLoop, setSourceType, setSourceId } = usePlaybackContext();
+
+  const { setShuffle, setLoop, 
+    setSourceType, setSourceId,
+    addOffset, setAddOffset,
+    sourceType, sourceId,
+    shuffle, loop,
+  } = usePlaybackContext();
+
+  const { theme } = useThemeContext();
+  const { haptic } = useGlobalContext();
 
   const setupPlayer = async () => {
 
@@ -58,6 +76,12 @@ export default function usePlayer () {
       await TrackPlayer.seekTo(Number(position));
     }
 
+    // restore add offset
+    const addOffset = await AsyncStorage.getItem('addOffset');
+    if (addOffset) {
+      setAddOffset(Number(addOffset));
+    }
+
     await TrackPlayer.pause();
 
     TrackPlayer.updateOptions({
@@ -74,9 +98,154 @@ export default function usePlayer () {
     
   };
 
+  const addToQueue = async (track: Track) => {
+    const currentIndex = await TrackPlayer.getActiveTrackIndex();
+    if (currentIndex !== undefined) {
+      await TrackPlayer.add(track, currentIndex+addOffset+1);
+      setAddOffset(addOffset+1);
+    }
+    const queue = await TrackPlayer.getQueue();
+    await AsyncStorage.setItem('queue', JSON.stringify(queue));
+    await AsyncStorage.setItem('addOffset', addOffset.toString());
+  }
+
+  const skipRight = async () => {
+    try {
+      const queue = await TrackPlayer.getQueue();
+      const currentIndex = await TrackPlayer.getActiveTrackIndex();
+      if (currentIndex >= queue.length-1 && !loop) {
+        // no next song, play error haptic feedback
+        if (haptic) {
+          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
+      }
+      else if (currentIndex !== undefined) {
+        // if loop is on, keep queue going infinitely
+        if (currentIndex >= queue.length-1 && loop) {
+          await updateQueue(queue[currentIndex].id);
+        }
+        let nextIndex = currentIndex + 1;
+        let nextTrack = await TrackPlayer.getTrack(nextIndex);
+        while (nextTrack?.id === -1 && nextIndex < queue.length) {
+          nextIndex++;
+          nextTrack = await TrackPlayer.getTrack(nextIndex);
+        }
+        await TrackPlayer.skip(nextIndex);
+        await TrackPlayer.play();
+      }
+      setAddOffset(Math.max(0, addOffset-1));
+    }
+    catch (error) {
+      console.log('error skipping right: ', error);
+    }
+  }
+
+  const skipLeft = async () => {
+    try {
+      const progress = await TrackPlayer.getProgress();
+      const index = await TrackPlayer.getActiveTrackIndex();
+      if (progress.position < 3 && index !== 0 && index !== undefined) {
+        let nextIndex = index - 1;
+        let nextTrack = await TrackPlayer.getTrack(nextIndex);
+        while (nextTrack?.id === -1 && nextIndex >= 0) {
+          nextIndex--;
+          nextTrack = await TrackPlayer.getTrack(nextIndex);
+        }
+        await TrackPlayer.skip(nextIndex);
+        await TrackPlayer.play();
+        if (addOffset > 0) setAddOffset(Math.max(0, addOffset-1));
+      }
+      else {
+        await TrackPlayer.seekTo(0);
+      }
+    }
+    catch (error) {
+      console.log('error skipping left: ', error);
+    }
+  }
+
+  const updateQueue = async (currentId: number) => {
+    await TrackPlayer.removeUpcomingTracks();
+    const upcoming = await getNextUp(currentId, 100);
+    let upcomingTracks: Track[] = [];
+    for (let i = 0; i < upcoming.length; i++) {
+      const newTrack = await getTrackFromSong(upcoming[i], theme);
+      if (newTrack) {
+        upcomingTracks.push(newTrack);
+      }
+    }
+    await TrackPlayer.add(upcomingTracks);
+    playbackBus.emit(PlaybackBusEvent.QUEUE_UPDATED);
+    const queue = await TrackPlayer.getQueue();
+    await AsyncStorage.setItem('queue', JSON.stringify(queue));
+  }
+
+  const getNextUp = async (
+    currentId: number,
+    pagination: number = 100,
+  ): Promise<SongType[]> => {
+  
+    const next: SongType[] = [];
+    let songs: SongType[] = [];
+    if (sourceType === SourceType.PLAYLIST) {
+      songs = await getPlaylistSongs(sourceId, PageType.LIBRARY, SortType.NEWEST);
+    }
+    else if (sourceType === SourceType.ARTIST) {
+      songs = await getSongsFromArtist(sourceId, SortType.NEWEST);
+    }
+    else if (sourceType === SourceType.ALBUM) {
+      songs = await getSongsFromAlbum(sourceId, SortType.OLDEST);
+    }
+    else {
+      return songs;
+    }
+  
+    try {
+      if (shuffle) {
+        const cap = pagination > songs.length ? songs.length : pagination;
+        for (let i = 0; i < cap; i++) {
+          const randomIndex = Math.floor(Math.random() * songs.length);
+          const newSong = songs[randomIndex];
+          next.push(newSong);
+          songs.splice(randomIndex, 1);
+        }
+      }
+      else {
+        const currentIndex = songs.findIndex((song: SongType) => song.id === currentId);
+        const validSongs = songs.filter((song: SongType, index: number) => index > currentIndex);
+        if (validSongs.length === 0) {
+          const cap = pagination > songs.length ? songs.length : pagination;
+          for (let i = 0; i < cap; i++) {
+            const newSong = songs[i];
+            next.push(newSong);
+          }
+        }
+        else {
+          const cap = pagination > validSongs.length ? validSongs.length : pagination;
+          for (let i = 0; i < cap; i++) {
+            const newSong = validSongs[i];
+            next.push(newSong);
+          }
+        }
+      }
+    }
+    catch (error) {
+      console.log(error);
+    }
+  
+    return next;
+  
+  }
+
   return {
     setupPlayer,
+    addToQueue,
+    skipRight,
+    skipLeft,
+    updateQueue,
   };
 
+
   
+
 }

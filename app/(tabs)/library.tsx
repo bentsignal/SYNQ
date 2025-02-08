@@ -1,5 +1,6 @@
-import TrackPlayer, { Event, useTrackPlayerEvents, useActiveTrack, useProgress } from "react-native-track-player";
-import { skipLeft, skipRight, updateQueue, playAd } from "@/src/controllers/PlayerController";
+import TrackPlayer, { Event, useTrackPlayerEvents, 
+  useActiveTrack, useProgress, PlaybackState, State } from "react-native-track-player";
+import { playAd } from "@/src/controllers/PlayerController";
 import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Styles } from "@/src/constants/Styles";
 import PageTitle from '@/src/components/PageTitle';
@@ -44,19 +45,21 @@ const Library = () => {
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
   const { shuffle, loop, 
-    sourceType, sourceId,
+    sourceType, sourceId, addOffset, 
     playerInitialized,
     setPlayerInitialized,
+    setAddOffset,
   } = usePlaybackContext();
 
 
   const track = useActiveTrack();
   const { position, duration } = useProgress();
-  const { setupPlayer } = usePlayer();
+  const { setupPlayer, skipRight, skipLeft, updateQueue } = usePlayer();
 
   const previousPosition = useRef(0);
   const timePlayed = useRef(0);
   const [selected, setSelected] = useState(0);
+  const [index, setIndex] = useState(0);
 
   const checkForAdInterval = 5;
 
@@ -153,6 +156,28 @@ const Library = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const initIndex = async () => {
+      const index = await TrackPlayer.getActiveTrackIndex();
+      setIndex(index);
+    }
+    initIndex();
+  }, []);
+
+  // song finished playing
+  useEffect(() => {
+    const checkNewIndex = async () => {
+      const newIndex = await TrackPlayer.getActiveTrackIndex();
+      if (newIndex !== index) {
+        if (newIndex - index === 1 && addOffset > 0) {
+          setAddOffset(addOffset-1);
+        }
+      }
+    }
+    checkNewIndex();
+  }, [track]);
+
+
   // sets ad playing when ad is active
   useEffect(() => {
     if (track?.id === -2) {
@@ -202,7 +227,7 @@ const Library = () => {
               playAd(theme, adURL);
             }
             else {
-              skipRight(shuffle, theme, haptic, sourceType, sourceId, loop);
+              skipRight();
             }
           }
           break;
@@ -224,8 +249,8 @@ const Library = () => {
           break;
         case Event.PlaybackQueueEnded:
           if (loop && track) {
-            updateQueue(track.id, shuffle, theme, sourceType, sourceId);
-            skipRight(shuffle, theme, haptic, sourceType, sourceId, loop);
+            updateQueue(track.id);
+            skipRight();
           }
           break;
         case Event.PlaybackError:

@@ -2,11 +2,10 @@ import { View, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useState, useEffect } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { useActiveTrack } from "react-native-track-player";
-import { updateQueue } from "@/src/controllers/PlayerController";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePlaybackContext } from "@/src/context/PlaybackProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import usePlayer from "@/src/hooks/usePlayer";
 interface ShuffleButtonProps {
   primary?: string;
   useBG?: boolean;
@@ -17,6 +16,7 @@ const ShuffleButton = ({ primary, useBG }: ShuffleButtonProps) => {
   const { theme } = useThemeContext();
   const { shuffle, setShuffle, sourceType, sourceId } = usePlaybackContext();
   const track = useActiveTrack();
+  const { updateQueue } = usePlayer();
 
   const [localState, setLocalState] = useState(shuffle);
 
@@ -28,10 +28,11 @@ const ShuffleButton = ({ primary, useBG }: ShuffleButtonProps) => {
       const newValue = !previous;
       setLocalState(newValue);
       const id = track ? track.id : -1;
-      await updateQueue(id, newValue, theme, sourceType, sourceId);
+      await updateQueue(id);
       setShuffle(newValue);
       await AsyncStorage.setItem('shuffle', newValue.toString());
-    } catch (error) {
+    } 
+    catch (error) {
       setShuffle(previous);
       setLocalState(previous);
       await AsyncStorage.setItem('shuffle', previous.toString());

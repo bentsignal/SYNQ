@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import SheetOption from '@/src/components/sheet/SheetOption';
 import { PageType, SourceType } from '@/src/constants/Types';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
-import { getTrackFromSong, addToQueue } from '@/src/controllers/PlayerController';
+import { getTrackFromSong } from '@/src/controllers/PlayerController';
 import playlistBus from '@/src/events/playlist';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -19,6 +19,8 @@ import TrackPlayer from 'react-native-track-player';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { SongBusEvent } from '@/src/events/song/Events';
 import songBus from '@/src/events/song/Bus';
+import usePlayer from '@/src/hooks/usePlayer';
+
 type SongOptionsProps = {
   name: string;
 }
@@ -39,8 +41,8 @@ const SongOptions = ({ name }: SongOptionsProps) => {
 
   } = useGlobalContext();
 
+  const { addToQueue } = usePlayer();
   const { premium } = usePremiumContext();
-  
   const { theme } = useThemeContext();
 
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);

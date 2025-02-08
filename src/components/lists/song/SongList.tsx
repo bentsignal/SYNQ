@@ -5,8 +5,7 @@ import Song from '@/src/components/song';
 import { generateSongKey } from '@/src/controllers/SongController';
 import List from '@/src/components/List';
 import TrackPlayer, { useActiveTrack } from 'react-native-track-player';
-import { addToQueue, getTrackFromSong, 
-  updateQueue, playAd, playTrack } from '@/src/controllers/PlayerController';
+import { getTrackFromSong, playAd, playTrack } from '@/src/controllers/PlayerController';
 import * as Haptics from 'expo-haptics';
 import { usePlaybackContext } from '@/src/context/PlaybackProvider';
 import { useThemeContext } from '@/src/context/ThemeProvider';
@@ -14,6 +13,7 @@ import { usePremiumContext } from '@/src/context/PremiumProvider';
 import { FlatList } from 'react-native';
 import { check } from '@/lib/Util';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import usePlayer from '@/src/hooks/usePlayer';
 
 const MemoSong = memo(Song);
 
@@ -65,6 +65,8 @@ const SongList = memo((
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
   const activeTrack = useActiveTrack();
+  const { addToQueue, updateQueue } = usePlayer();
+  
   const [activeIndex, setActiveIndex] = useState(0);
 
   const updateActiveIndex = async () => {
@@ -88,7 +90,7 @@ const SongList = memo((
       setAdPlaying(true);
       await playAd(theme, adURL);
       const newTrack = await getTrackFromSong(song, theme);
-      await updateQueue(song.id, shuffle, theme, song.sourceType, song.sourceId);
+      await updateQueue(song.id);
       setSourceType(song.sourceType);
       await AsyncStorage.setItem('sourceType', song.sourceType.toString());
       setSourceId(song.sourceId);
@@ -96,7 +98,6 @@ const SongList = memo((
       if (newTrack) {
         await addToQueue(newTrack);
       }
-
     }
     // if ad is not played, play song
     else if (id !== song.id && !adPlaying) {
@@ -105,12 +106,11 @@ const SongList = memo((
         const newTrack = await getTrackFromSong(song, theme);
         if (newTrack) {
           await playTrack(newTrack);
-          await updateQueue(song.id, shuffle, theme, song.sourceType, song.sourceId);
+          await updateQueue(song.id);
           setSourceType(song.sourceType);
           await AsyncStorage.setItem('sourceType', song.sourceType.toString());
           setSourceId(song.sourceId);
           await AsyncStorage.setItem('sourceId', song.sourceId.toString());
-
         }
       }
       catch (error) {

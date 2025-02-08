@@ -23,6 +23,7 @@ const List = memo((
     showEmptyComponent = true,
     lockScroll = false,
     listRef,
+    getItemLayout,
   }: 
   {
     data: any[], 
@@ -41,6 +42,7 @@ const List = memo((
     showEmptyComponent?: boolean,
     lockScroll?: boolean,
     listRef?: React.RefObject<FlatList<any>>,
+    getItemLayout?: (data: any[], index: number) => { length: number, offset: number, index: number },
   }
 ) => {
 
@@ -136,9 +138,11 @@ const List = memo((
           ListFooterComponent={footerComponent ? <>{footerComponent}</> : null}
           ListEmptyComponent={showEmptyComponent && emptyComponent ? <>{emptyComponent}</> : null}
           scrollEnabled={!lockScroll}
+          getItemLayout={getItemLayout}
         />
         <AnimatedGradient
           style={ Local.topGradient }
+
           colors={[ gradientStart || 'rgba(20, 20, 20, 1)', gradientEnd || 'rgba(20, 20, 20, 0)']}
           pointerEvents={'none'}
         />

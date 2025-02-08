@@ -335,6 +335,7 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
 const Local = StyleSheet.create({
   container: {
     width: '100%',
+    height: 70,
   },
   contentContainer: {
     ...Styles.roundedContainer,

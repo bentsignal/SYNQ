@@ -144,9 +144,16 @@ const SongList = memo((
     );
   };
 
+  const getItemLayout = (data: SongType[], index: number) => ({
+    length: 70,
+    offset: 70 * index,
+    index,
+  });
+
   return (
     <>
       <List 
+
         data={songs}
         listRef={listRef}
         headerComponent={headerComponent}
@@ -162,6 +169,7 @@ const SongList = memo((
         emptyComponent={emptyComponent}
         showEmptyComponent={showEmptyComponent}
         lockScroll={lockScroll}
+        getItemLayout={getItemLayout}
       />
     </>
   );

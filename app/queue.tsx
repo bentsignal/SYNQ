@@ -20,7 +20,7 @@ import ModalStyles from "@/src/components/modals/Styles";
 import LoopButton from "@/src/components/player/LoopButton";
 import playbackBus from "@/src/events/playback";
 import { PlaybackBusEvent } from "@/src/events/playback/Events";
-import Animated, { useSharedValue, useAnimatedStyle } from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from "react-native-reanimated";
 
 const Queue = () => {
 
@@ -32,7 +32,7 @@ const Queue = () => {
   const insets = useSafeAreaInsets();
   const [songs, setSongs] = useState<SongType[]>([]);
   const listRef = useRef<FlatList<any>>(null);
-  const listOpacity = useSharedValue(1);
+  const listOpacity = useSharedValue(0);
 
   useEffect(() => {
     scrollToIndex();
@@ -76,7 +76,8 @@ const Queue = () => {
       console.log('error loading queue songs to display in list:', error);
     }
     setSongs(results);
-    scrollToIndex();
+    scrollToIndex(false);
+    listOpacity.value = withTiming(1, {duration: 500, easing: Easing.inOut(Easing.ease)});
   }
 
   const listContainerStyle = useAnimatedStyle(() => ({

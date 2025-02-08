@@ -143,14 +143,6 @@ const Library = () => {
     }
   }, [position]);
 
-  useEffect(() => {
-    const id = track?.id;
-    if (id) {
-      updateQueue(id);
-    }
-  }, [shuffle]);
-
-
   // sets up player
   useEffect(() => {
     try {
@@ -257,7 +249,7 @@ const Library = () => {
           break;
         case Event.PlaybackQueueEnded:
           if (loop && track) {
-            updateQueue(track.id);
+            updateQueue(track.id, shuffle, sourceType, sourceId);
             skipRight();
           }
           break;

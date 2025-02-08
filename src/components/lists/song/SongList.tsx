@@ -90,7 +90,7 @@ const SongList = memo((
       setAdPlaying(true);
       await playAd(theme, adURL);
       const newTrack = await getTrackFromSong(song, theme);
-      await updateQueue(song.id);
+      await updateQueue(song.id, shuffle, song.sourceType, song.sourceId);
       setSourceType(song.sourceType);
       await AsyncStorage.setItem('sourceType', song.sourceType.toString());
       setSourceId(song.sourceId);
@@ -106,7 +106,7 @@ const SongList = memo((
         const newTrack = await getTrackFromSong(song, theme);
         if (newTrack) {
           await playTrack(newTrack);
-          await updateQueue(song.id);
+          await updateQueue(song.id, shuffle, song.sourceType, song.sourceId);
           setSourceType(song.sourceType);
           await AsyncStorage.setItem('sourceType', song.sourceType.toString());
           setSourceId(song.sourceId);

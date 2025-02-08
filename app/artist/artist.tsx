@@ -43,7 +43,7 @@ const ArtistView = ({id}: {id: number}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getSongsFromArtist(id, SortType.OLDEST);
+      const songs = await getSongsFromArtist(id, SortType.NEWEST);
       setSongs(songs);
     }
     catch (error) {

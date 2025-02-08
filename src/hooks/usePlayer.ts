@@ -122,7 +122,7 @@ export default function usePlayer () {
       else if (currentIndex !== undefined) {
         // if loop is on, keep queue going infinitely
         if (currentIndex >= queue.length-1 && loop) {
-          await updateQueue(queue[currentIndex].id);
+          await updateQueue(queue[currentIndex].id, shuffle, sourceType, sourceId);
         }
         let nextIndex = currentIndex + 1;
         let nextTrack = await TrackPlayer.getTrack(nextIndex);
@@ -164,9 +164,14 @@ export default function usePlayer () {
     }
   }
 
-  const updateQueue = async (currentId: number) => {
+  const updateQueue = async (
+    currentId: number, 
+    shuffleValue: boolean,
+    sourceTypeValue: SourceType,
+    sourceIdValue: number,
+  ) => {
     await TrackPlayer.removeUpcomingTracks();
-    const upcoming = await getNextUp(currentId, 100);
+    const upcoming = await getNextUp(currentId, 100, shuffleValue, sourceTypeValue, sourceIdValue);
     let upcomingTracks: Track[] = [];
     for (let i = 0; i < upcoming.length; i++) {
       const newTrack = await getTrackFromSong(upcoming[i], theme);
@@ -184,25 +189,29 @@ export default function usePlayer () {
   const getNextUp = async (
     currentId: number,
     pagination: number = 100,
+    shuffleValue: boolean,
+    sourceTypeValue: SourceType,
+    sourceIdValue: number,
   ): Promise<SongType[]> => {
   
+
     const next: SongType[] = [];
     let songs: SongType[] = [];
-    if (sourceType === SourceType.PLAYLIST) {
-      songs = await getPlaylistSongs(sourceId, PageType.LIBRARY, SortType.NEWEST);
+    if (sourceTypeValue === SourceType.PLAYLIST) {
+      songs = await getPlaylistSongs(sourceIdValue, PageType.LIBRARY, SortType.NEWEST);
     }
-    else if (sourceType === SourceType.ARTIST) {
-      songs = await getSongsFromArtist(sourceId, SortType.NEWEST);
+    else if (sourceTypeValue === SourceType.ARTIST) {
+      songs = await getSongsFromArtist(sourceIdValue, SortType.NEWEST);
     }
-    else if (sourceType === SourceType.ALBUM) {
-      songs = await getSongsFromAlbum(sourceId, SortType.OLDEST);
+    else if (sourceTypeValue === SourceType.ALBUM) {
+      songs = await getSongsFromAlbum(sourceIdValue, SortType.OLDEST);
     }
     else {
       return songs;
     }
   
     try {
-      if (shuffle) {
+      if (shuffleValue) {
         const cap = pagination > songs.length ? songs.length : pagination;
         for (let i = 0; i < cap; i++) {
           const randomIndex = Math.floor(Math.random() * songs.length);
@@ -245,8 +254,5 @@ export default function usePlayer () {
     skipLeft,
     updateQueue,
   };
-
-
-  
 
 }

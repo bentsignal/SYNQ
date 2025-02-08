@@ -8,8 +8,15 @@ import Haptic from "@/src/components/settings/Haptic";
 import Theme from "@/src/components/settings/Theme";
 import CategoryTitle from "@/src/components/settings/CategoryTitle";
 import AppIcon from "@/src/components/settings/AppIcon";
+import { useThemeContext } from '@/src/context/ThemeProvider';
+import { usePremiumContext } from '@/src/context/PremiumProvider';
+import Option from '@/src/components/Option';
+import { router } from 'expo-router';
 
 export default function Customization() {
+
+  const { premium } = usePremiumContext();
+  const { theme } = useThemeContext();
 
   return (
     <View style={[Styles.body, Local.container]}>
@@ -21,6 +28,17 @@ export default function Customization() {
         contentContainerStyle={Local.scrollViewContent}
       >
         <View style={Local.contentWrapper}>
+          {
+            !premium && <Option 
+              title="Premium"
+              desc={premium ? "Manage your subcription" : 'Unlock all features'}
+              icon={require('@/src/assets/icons/premium.png')}
+              disabled={false}
+              bg={Colors.textbox}
+              iconTint={theme}
+              handlePress={() => router.push("/premium")}
+            />
+          }
           <View style={Local.contentContainer}>
             <CategoryTitle title="Theme" requiresPremium={true}/>
             <View>

@@ -65,7 +65,7 @@ const Theme = () => {
   }
 
   return (
-    <View>
+    <View style={{opacity: premium ? 1 : 0.5}}>
       <AnimatedGradient
           style={[Local.gradient, { 
             opacity: leftGradientOpacityRef,
@@ -99,9 +99,6 @@ const Theme = () => {
         colors={['rgba(24, 24, 24, 1)', 'rgba(24, 24, 24, 0)']}
         pointerEvents={'none'}
       />
-      <View style={[Local.premiumOverlayLock, {
-        display: premium ? 'none' : 'flex',
-      }]} />
     </View>
   );
 

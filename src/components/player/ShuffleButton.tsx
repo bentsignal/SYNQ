@@ -13,10 +13,7 @@ interface ShuffleButtonProps {
 
 const ShuffleButton = ({ primary, useBG }: ShuffleButtonProps) => {
 
-  const { theme } = useThemeContext();
-  const { shuffle, setShuffle, sourceType, sourceId } = usePlaybackContext();
-  const track = useActiveTrack();
-  const { updateQueue } = usePlayer();
+  const { shuffle, setShuffle } = usePlaybackContext();
 
   const [localState, setLocalState] = useState(shuffle);
 
@@ -27,8 +24,6 @@ const ShuffleButton = ({ primary, useBG }: ShuffleButtonProps) => {
     try {
       const newValue = !previous;
       setLocalState(newValue);
-      const id = track ? track.id : -1;
-      await updateQueue(id);
       setShuffle(newValue);
       await AsyncStorage.setItem('shuffle', newValue.toString());
     } 
@@ -37,7 +32,6 @@ const ShuffleButton = ({ primary, useBG }: ShuffleButtonProps) => {
       setLocalState(previous);
       await AsyncStorage.setItem('shuffle', previous.toString());
     }
-
   }
 
   useEffect(() => {

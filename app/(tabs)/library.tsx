@@ -143,6 +143,14 @@ const Library = () => {
     }
   }, [position]);
 
+  useEffect(() => {
+    const id = track?.id;
+    if (id) {
+      updateQueue(id);
+    }
+  }, [shuffle]);
+
+
   // sets up player
   useEffect(() => {
     try {

@@ -15,12 +15,13 @@ import { useGlobalContext } from "../context/GlobalProvider";
 
 export default function usePlayer () {
 
-
   const { setShuffle, setLoop, 
     setSourceType, setSourceId,
     addOffset, setAddOffset,
     sourceType, sourceId,
     shuffle, loop,
+    incrementAddOffset, decrementAddOffset,
+    resetAddOffset,
   } = usePlaybackContext();
 
   const { theme } = useThemeContext();
@@ -102,11 +103,10 @@ export default function usePlayer () {
     const currentIndex = await TrackPlayer.getActiveTrackIndex();
     if (currentIndex !== undefined) {
       await TrackPlayer.add(track, currentIndex+addOffset+1);
-      setAddOffset(addOffset+1);
+      await incrementAddOffset();
     }
     const queue = await TrackPlayer.getQueue();
     await AsyncStorage.setItem('queue', JSON.stringify(queue));
-    await AsyncStorage.setItem('addOffset', addOffset.toString());
   }
 
   const skipRight = async () => {
@@ -133,7 +133,7 @@ export default function usePlayer () {
         await TrackPlayer.skip(nextIndex);
         await TrackPlayer.play();
       }
-      setAddOffset(Math.max(0, addOffset-1));
+      await decrementAddOffset();
     }
     catch (error) {
       console.log('error skipping right: ', error);
@@ -153,7 +153,7 @@ export default function usePlayer () {
         }
         await TrackPlayer.skip(nextIndex);
         await TrackPlayer.play();
-        if (addOffset > 0) setAddOffset(Math.max(0, addOffset-1));
+        if (addOffset > 0) await incrementAddOffset();
       }
       else {
         await TrackPlayer.seekTo(0);
@@ -178,6 +178,7 @@ export default function usePlayer () {
     playbackBus.emit(PlaybackBusEvent.QUEUE_UPDATED);
     const queue = await TrackPlayer.getQueue();
     await AsyncStorage.setItem('queue', JSON.stringify(queue));
+    await resetAddOffset();
   }
 
   const getNextUp = async (

@@ -48,7 +48,7 @@ const Library = () => {
     sourceType, sourceId, addOffset, 
     playerInitialized,
     setPlayerInitialized,
-    setAddOffset,
+    decrementAddOffset,
   } = usePlaybackContext();
 
 
@@ -170,7 +170,7 @@ const Library = () => {
       const newIndex = await TrackPlayer.getActiveTrackIndex();
       if (newIndex !== index) {
         if (newIndex - index === 1 && addOffset > 0) {
-          setAddOffset(addOffset-1);
+          decrementAddOffset();
         }
       }
     }

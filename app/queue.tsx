@@ -20,8 +20,7 @@ import ModalStyles from "@/src/components/modals/Styles";
 import LoopButton from "@/src/components/player/LoopButton";
 import playbackBus from "@/src/events/playback";
 import { PlaybackBusEvent } from "@/src/events/playback/Events";
-import Loading from "@/src/components/Loading";
-import Animated, { useSharedValue, withTiming, Easing, useAnimatedStyle, runOnJS } from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from "react-native-reanimated";
 
 const Queue = () => {
 
@@ -33,9 +32,7 @@ const Queue = () => {
   const insets = useSafeAreaInsets();
   const [songs, setSongs] = useState<SongType[]>([]);
   const listRef = useRef<FlatList<any>>(null);
-  const [loading, setLoading] = useState(true);
   const listOpacity = useSharedValue(0);
-  const loadingOpacity = useSharedValue(1);
 
   useEffect(() => {
     scrollToIndex();
@@ -50,24 +47,6 @@ const Queue = () => {
       });
     }
   }
-
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      if (listRef.current?.props.data.length > 0) {
-        await scrollToIndex(false);
-        clearInterval(interval);
-        loadingOpacity.value = withTiming(0, { duration: 300, easing: Easing.ease }, () => {
-          runOnJS(setLoading)(false);
-        });
-      }
-    }, 3000);
-  }, [songs]);
-
-  useEffect(() => {
-    if (!loading) {
-      listOpacity.value = withTiming(1, { duration: 300, easing: Easing.ease });
-    }
-  }, [loading])
 
   useEffect(() => {
     loadSongs();
@@ -97,7 +76,8 @@ const Queue = () => {
       console.log('error loading queue songs to display in list:', error);
     }
     setSongs(results);
-    scrollToIndex();
+    scrollToIndex(false);
+    listOpacity.value = withTiming(1, {duration: 500, easing: Easing.inOut(Easing.ease)});
   }
 
   const listContainerStyle = useAnimatedStyle(() => ({
@@ -107,28 +87,11 @@ const Queue = () => {
     alignSelf: 'center',
   }));
 
-  const loadingContainerStyle = useAnimatedStyle(() => ({
-    opacity: loadingOpacity.value,
-    display: loading ? 'flex' : 'none',
-    width: '100%',
-    alignSelf: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    height: '100%',
-    top: 0,
-    left: 0,
-  }));
-
   return (
     <View style={[Styles.body, Local.container]}>
       <Bar />
       <View style={Local.divider}/>
       <PageTitle title="Now Playing"/>
-      <Animated.View style={loadingContainerStyle}>
-        <Loading width={200} height={200}/>
-      </Animated.View>
       <Animated.View style={listContainerStyle}>
         <SongList 
           songs={songs}

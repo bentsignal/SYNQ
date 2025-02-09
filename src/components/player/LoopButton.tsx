@@ -1,10 +1,8 @@
 import { View, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useState, useEffect } from "react";
 import { Colors } from "@/src/constants/Colors";
-import { useActiveTrack } from "react-native-track-player";
-import { updateQueue } from "@/src/controllers/PlayerController";
-import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePlaybackContext } from "@/src/context/PlaybackProvider";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface LoopButtonProps {
   primary?: string;
@@ -25,10 +23,13 @@ const LoopButton = ({ primary, useBG }: LoopButtonProps) => {
       const newValue = !previous;
       setLocalState(newValue);
       setLoop(newValue);
+      await AsyncStorage.setItem('loop', newValue.toString());
     } catch (error) {
       setLoop(previous);
       setLocalState(previous);
+      await AsyncStorage.setItem('loop', previous.toString());
     }
+
   }
 
   useEffect(() => {

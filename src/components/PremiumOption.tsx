@@ -3,6 +3,7 @@ import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
 import Skeleton from "./Skeleton";
 import { useThemeContext } from "@/src/context/ThemeProvider";
+import { darkenColor } from "../controllers/ColorController";
 
 type OptionProps = {
   handler: () => void;
@@ -15,6 +16,8 @@ type OptionProps = {
 const PremiumOption = ({handler, tier, price, loading, selected}: OptionProps) => {
   
   const { theme } = useThemeContext();
+
+  const darken = darkenColor(theme, 50, 30);
 
   const Local = StyleSheet.create({
     optionContainer: {
@@ -37,11 +40,12 @@ const PremiumOption = ({handler, tier, price, loading, selected}: OptionProps) =
       borderRadius: 10,
     },
     textColor: {
-      color: selected ? 'black' : Colors.text,
+      color: selected ? darken : Colors.text,
     },
     subText: {
-      color: selected ? 'black' : Colors.infoText,
+      color: selected ? darken : Colors.infoText,
     }
+
   });
 
   return (

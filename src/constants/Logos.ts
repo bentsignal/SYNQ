@@ -75,7 +75,7 @@ export const getLogo = (id: string) => {
 }
 
 export const getIcon = (id: string) => {
-  if (id === Themes.blue || id === 'blue') {
+  if (id === Themes.blue || id === 'blue' || id === 'default') {
     return 'icon-blue';
   }
   else if (id === Themes.purple || id === 'purple') {

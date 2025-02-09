@@ -4,6 +4,8 @@ import { Themes, Colors } from "@/src/constants/Colors";
 import { LinearGradient } from 'expo-linear-gradient';
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import AppIconOption from "./AppIconOption";
+import { getAppIcon } from "expo-icon-handler";
+import { getIcon } from "@/src/constants/Logos";
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -16,7 +18,8 @@ export default function AppIcon() {
 
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
-  
+  const [selected, setSelected] = useState(getAppIcon());
+
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
 
     const { contentOffset } = event.nativeEvent;
@@ -64,17 +67,17 @@ export default function AppIcon() {
   }
 
   return (
-    <View>
+    <View style={{opacity: premium ? 1 : 0.5}}>
       <AnimatedGradient
-          style={[Local.gradient, { 
-            opacity: leftGradientOpacityRef,
-            left: 0,
-          }]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          colors={[ 'rgba(24, 24, 24, 1)', 'rgba(24, 24, 24, 0)']}
-          pointerEvents={'none'}
-        />
+        style={[Local.gradient, { 
+          opacity: leftGradientOpacityRef,
+          left: 0,
+        }]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        colors={[ 'rgba(24, 24, 24, 1)', 'rgba(24, 24, 24, 0)']}
+        pointerEvents={'none'}
+      />
       <ScrollView 
         horizontal
         onScroll={handleScroll}
@@ -85,6 +88,8 @@ export default function AppIcon() {
           <AppIconOption
             color={color}
             key={index}
+            selected={selected === getIcon(color) || (color === Themes.blue && selected === 'default')}
+            changeSelection={setSelected}
           />
         ))}
       </ScrollView>
@@ -98,9 +103,9 @@ export default function AppIcon() {
         colors={['rgba(24, 24, 24, 1)', 'rgba(24, 24, 24, 0)']}
         pointerEvents={'none'}
       />
-      <View style={[Local.premiumOverlayLock, {
+      {/* <View style={[Local.premiumOverlayLock, {
         display: premium ? 'none' : 'flex',
-      }]} />
+      }]} /> */}
     </View>
   );
 

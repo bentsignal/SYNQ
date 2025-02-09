@@ -110,6 +110,8 @@ const AlbumView = ({id}: {id: number}) => {
               id={id}
               title={title} 
               year={year}
+              leadArtist={artists[0]}
+              songCount={songs.length}
               pageType={PageType.ALBUM}
             />
           }

@@ -109,9 +109,12 @@ export default class AlbumModel extends Model {
     return result ? result as AlbumType[] : [];
   }
 
-  public async getSongsFromAlbum(albumId: number, sort: SortType = SortType.NEWEST): Promise<SongResultType[]> {
+  public async getSongsFromAlbum(albumId: number, sort: SortType = SortType.TRACK): Promise<SongResultType[]> {
     let result = await AlbumModel.db?.getAllAsync<SongResultType>(
-      `SELECT * FROM songs WHERE id IN (SELECT songId FROM albumSongs WHERE albumId = ?);`, 
+      `SELECT songs.*, albumSongs.track 
+      FROM songs 
+      INNER JOIN albumSongs ON songs.id = albumSongs.songId 
+      WHERE albumSongs.albumId = ?;`, 
       [albumId]
     );
     if (result) {
@@ -125,6 +128,13 @@ export default class AlbumModel extends Model {
     }
     if (sort === SortType.NEWEST) {
       return result.reverse();
+    }
+    else if (sort === SortType.TRACK) {
+      return result.sort((a, b) => {
+        if (!a?.track) return 1;
+        if (!b?.track) return -1;
+        return a.track - b.track;
+      });
     }
     return result;
   }

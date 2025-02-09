@@ -50,7 +50,7 @@ const AlbumView = ({id}: {id: number}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getSongsFromAlbum(id, SortType.OLDEST);
+      const songs = await getSongsFromAlbum(id, SortType.TRACK);
       setSongs(songs);
     }
     catch (error) {

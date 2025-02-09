@@ -73,6 +73,7 @@ export enum SortType {
   ALBUM = 3,
   OLDEST = 4,
   NEWEST = 5,
+  TRACK = 6,
 }
 
 export enum PageType {

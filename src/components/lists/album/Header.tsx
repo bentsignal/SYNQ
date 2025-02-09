@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { router } from "expo-router";
 import { getArtistCover } from "@/src/controllers/ArtistController";
 import ListCover from "../../cover/ListCover";
-import SongCount from "../../song/SongCount";
+import SongCount from "../../song/CountAndDuration";
 
 type AlbumHeaderProps = {
   id: number;

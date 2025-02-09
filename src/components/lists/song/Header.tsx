@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/src/constants/Colors";
 import SongListPageCover from "@/src/components/cover/SongListPageCover";
 import { PageType } from "@/src/constants/Types";
-import SongCount from "../../song/SongCount";
+import SongCount from "../../song/CountAndDuration";
 
 type SongListHeaderProps = {
   id: number;

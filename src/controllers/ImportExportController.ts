@@ -73,7 +73,6 @@ export const importFiles = async (
         'id': idgen(10),
         'title': info.metadata?.name ?? '',
         'artist': info.metadata?.artist ?? '',
-
         'album': info.metadata?.album ?? '',
         'importArtists': importArtists,
         'importAlbums': importAlbums,

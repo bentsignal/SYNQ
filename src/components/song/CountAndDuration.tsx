@@ -1,23 +1,19 @@
+import { getDurationString } from "@/lib/Util";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { Text, StyleSheet } from "react-native";
 
-type SongCountProps = {
+type CountAndDurationProps = {
   songCount: number;
   duration: number;
 }
 
-export default function SongCount({songCount, duration}: SongCountProps) {
-
-  const hours = Math.floor(duration / 3600);
-  const minutes = Math.ceil(duration / 60) % 60;
+export default function CountAndDuration({songCount, duration}: CountAndDurationProps) {
 
   return (
     <Text style={Local.songCount}>
-      {songCount} song{songCount === 1 ? '' : 's'}
-      {hours > 0 && `, ${hours} hour${hours === 1 ? '' : 's'} `}
-      {hours === 0 && minutes > 0 && ', '}
-      {minutes > 0 && `${minutes} minute${minutes === 1 ? '' : 's'}`}
+      {songCount && `${songCount} song${songCount === 1 ? '' : 's'}`}
+      {duration > 0 && `, ${getDurationString(duration)}`}
     </Text>
   )
 }

@@ -25,6 +25,8 @@ import artistBus from "@/src/events/artist/Bus";
 import albumBus from "@/src/events/album/Bus";
 import { ArtistBusEvent, ArtistToggledOnSongEvent } from "@/src/events/artist/Events";
 import { AlbumBusEvent, AlbumToggledOnSongEvent } from "@/src/events/album/Events";
+import CountAndDuration from "@/src/components/song/CountAndDuration";
+import { getDurationString } from "@/lib/Util";
 
 const MemoTextInput = memo(TextInput);
 
@@ -176,13 +178,18 @@ const EditSong = ({id}: {id: number}) => {
             propOnLoad={() => {}}
           />
         </View>
-        <Text 
-          style={[Local.name, { 
-            display: selectedSongs.length === 0 ? 'flex' : 'none',
-           }]}
-        >
-          {editSong.fileName ?? ''}
-        </Text>
+        <View style={Local.fileInfoContainer}>
+          <Text 
+            style={[Local.name, { 
+              display: selectedSongs.length === 0 ? 'flex' : 'none',
+            }]}
+          >
+            {editSong.fileName ?? ''}
+          </Text>
+          <Text style={Local.duration}>
+            {getDurationString(editSong.duration)}
+          </Text>
+        </View>
         {selectedSongs.length === 0 &&
           <>
             <Text style={Styles.textboxLabel}>Title</Text>
@@ -274,11 +281,20 @@ const Local = StyleSheet.create({
     width: '90%',
     marginBottom: 20,
   },
+  fileInfoContainer: {
+    width: '90%',
+    marginBottom: 20,
+    gap: 5,
+  },
   name: {
     ...Styles.h5,
     color: Colors.infoText,
     width: '90%',
-    marginBottom: 20,
+  },
+  duration: {
+    ...Styles.h5,
+    color: Colors.infoText,
+    width: '90%',
   },
   bottomButtonsWrapper: {
     flexDirection: 'row',
@@ -320,5 +336,6 @@ const Local = StyleSheet.create({
     flexWrap: 'wrap',
   },
 });
+
 
 export default EditSong;

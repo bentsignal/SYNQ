@@ -76,3 +76,9 @@ export const getExportNumber = async () => {
     return 1;
   }
 }
+
+export const getDurationString = (duration: number) => {
+  const hours = Math.floor(duration / 3600);
+  const minutes = Math.ceil(duration / 60) % 60;
+  return `${hours > 0 ? `${hours} hour${hours === 1 ? '' : 's'} ` : ''}${minutes > 0 ? `${minutes} minute${minutes === 1 ? '' : 's'}` : ''}`;
+}

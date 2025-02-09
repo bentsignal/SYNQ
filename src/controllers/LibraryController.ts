@@ -81,12 +81,12 @@ export const saveToLibrary = async (
         const fileType = song.fileType ?? '';
         const edited = song.edited ? true : false;
         const track = song.track ?? -1;
+        const duration = song.duration ?? 0;
         let fileName = song.fileName ?? '';
         if (fileName === '' && fileType !== '') {
           fileName = `song.${fileType}`;
         }
         const genre = 'Music';
-        const duration = 0;
         // insert song into database
         const id = await db.insertSong(title, artists, album, genre, duration, fileType, fileName, edited);
         if (id !== -1) {

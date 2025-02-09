@@ -13,7 +13,7 @@ export const loadAudio = async (audioUri) => {
     sound = loadedSound;
     const status = await loadedSound.getStatusAsync();
     if (!status.isLoaded) return 0;
-    return status.durationMillis * 1000;
+    return Math.floor(status.durationMillis / 1000);
   } catch (error) {
     console.error('Error loading audio:', error);
     return 0;
@@ -28,11 +28,8 @@ export const unloadAudio = async (sound: Audio.Sound | null) => {
     try {
       await sound.unloadAsync();
       sound = null;
-      console.log("Audio unloaded successfully");
     } catch (error) {
       console.error("Error unloading audio:", error);
     }
-  } else {
-    console.log("No audio to unload");
   }
 };

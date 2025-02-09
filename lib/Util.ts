@@ -77,8 +77,16 @@ export const getExportNumber = async () => {
   }
 }
 
-export const getDurationString = (duration: number) => {
+export const getDurationString = (duration: number, showSeconds = false) => {
+  if (duration <= 0) return '';
+
+  const seconds = duration % 60;
+  const minutes = showSeconds ? Math.floor(duration / 60) % 60 : Math.ceil(duration / 60) % 60;
   const hours = Math.floor(duration / 3600);
-  const minutes = Math.ceil(duration / 60) % 60;
-  return `${hours > 0 ? `${hours} hour${hours === 1 ? '' : 's'} ` : ''}${minutes > 0 ? `${minutes} minute${minutes === 1 ? '' : 's'}` : ''}`;
+  
+  const hoursString = hours > 0 ? `${hours} hour${hours === 1 ? '' : 's'} ` : '';
+  const minutesString = minutes > 0 ? `${minutes} minute${minutes === 1 ? '' : 's'} ` : '';
+  const secondsString = showSeconds && seconds > 0 ? `${seconds} second${seconds === 1 ? '' : 's'}` : '';
+  
+  return `${hoursString}${minutesString}${secondsString}`;
 }

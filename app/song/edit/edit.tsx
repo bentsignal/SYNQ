@@ -187,7 +187,7 @@ const EditSong = ({id}: {id: number}) => {
             {editSong.fileName ?? ''}
           </Text>
           <Text style={Local.duration}>
-            {getDurationString(editSong.duration)}
+            {getDurationString(editSong.duration, true)}
           </Text>
         </View>
         {selectedSongs.length === 0 &&
@@ -288,11 +288,11 @@ const Local = StyleSheet.create({
   },
   name: {
     ...Styles.h5,
-    color: Colors.infoText,
+    color: Colors.text,
     width: '90%',
   },
   duration: {
-    ...Styles.h5,
+    ...Styles.h6,
     color: Colors.infoText,
     width: '90%',
   },

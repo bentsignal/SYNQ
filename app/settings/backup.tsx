@@ -19,6 +19,7 @@ import TrackPlayer from 'react-native-track-player';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
 import { router } from 'expo-router';
 import Option from '@/src/components/Option';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Backup() {
 
@@ -89,10 +90,17 @@ export default function Backup() {
             for (const item of items) {
               await FileSystem.deleteAsync(`${FileSystem.documentDirectory}${item}`);
             }
+            try {
+              await AsyncStorage.clear();
+            }
+            catch (error) {
+              console.log('Error clearing async storage:', error);
+            }
             await Model.reconnect();
             await Model.createTables();
             playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
             TrackPlayer.reset();
+
             Alert.alert('Success', 'Library erased successfully. Please restart the app.');
             setLoading(false);
           }

@@ -1,9 +1,12 @@
 import * as SQLite from 'expo-sqlite';
 import { SongType } from '@/src/constants/Types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default class Model {
 
   protected static db: SQLite.SQLiteDatabase | null = null;
+  private static currentVersion: number = 2; // set current db version
+  private static storedVersionKey: string = 'dbVersion';
 
   protected constructor() {}
   
@@ -41,6 +44,7 @@ export default class Model {
       await this.createArtistsTable();
       await this.createArtistSongsTable();
       await this.createArtistsAlbumsTable();
+      await this.migrate();
       return true;
     }
     catch (error) {
@@ -205,4 +209,45 @@ export default class Model {
     }
   } 
 
+  private static async getVersion(): Promise<number> {
+    try {
+      const versionString = await AsyncStorage.getItem(this.storedVersionKey);
+      const version = versionString ? parseInt(versionString, 10) : 0;
+      return version;
+    } catch (error) {
+      console.error("Failed to get database version from async storage, assuming version 0", error);
+      return 0;
+    }
+  }
+
+  private static async setVersion(version: number): Promise<void> {
+    try {
+      await AsyncStorage.setItem(this.storedVersionKey, version.toString());
+    } catch (error) {
+      console.error("Failed to update database version in async storage", error);
+    }
+  }
+
+  private static async migrate(): Promise<void> {
+    const storedVersion = await this.getVersion();
+
+    if (storedVersion < this.currentVersion) {
+      console.log(`Database migration needed. Current version: ${storedVersion}, target version: ${this.currentVersion}`);
+
+      if (storedVersion < 2) {
+        try {
+          await this.db?.execAsync(`ALTER TABLE albumSongs ADD COLUMN track INTEGER;`);
+          console.log('Migration to version 2 complete: added track column to albumSongs table.');
+        } catch (migrationError) {
+          console.error('Error migrating to version 2:', migrationError);
+        }
+      }
+
+      await this.setVersion(this.currentVersion);
+      console.log(`Database migrated to version ${this.currentVersion}`);
+
+    } else {
+      console.log('No database migration needed.');
+    }
+  }
 }

@@ -77,10 +77,10 @@ export default class AlbumModel extends Model {
     }
   }
 
-  public async addAlbumToSong(albumId: number, songId: number): Promise<void> {
+  public async addAlbumToSong(albumId: number, songId: number, track?: number): Promise<void> {
     await AlbumModel.db?.runAsync(
-      `INSERT INTO albumSongs (albumId, songId) VALUES (?, ?);`, 
-      [albumId, songId]
+      `INSERT INTO albumSongs (albumId, songId, track) VALUES (?, ?, ?);`, 
+      [albumId, songId, track || null]
     );
   }
 

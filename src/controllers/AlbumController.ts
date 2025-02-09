@@ -105,8 +105,8 @@ export const updateAlbum = async (albumId: number, name: string, year?: number, 
   }
 }
 
-export const addAlbumToSong = async (albumId: number, songId: number) => {
-  await AlbumModel.getInstance().addAlbumToSong(albumId, songId);
+export const addAlbumToSong = async (albumId: number, songId: number, track?: number) => {
+  await AlbumModel.getInstance().addAlbumToSong(albumId, songId, track);
 }
 
 export const removeAlbumFromSong = async (albumId: number, songId: number) => {

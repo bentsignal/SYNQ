@@ -10,6 +10,8 @@ import { getArtistsFromMetadata } from '@/src/controllers/ArtistController';
 import { updateMetadata, isSongEdited } from '@/src/controllers/SongController';
 import { getAlbumFromMetadata } from '@/src/controllers/AlbumController';
 
+const wantedTags = ['artwork', 'artist', 'name', 'album', 'year', 'track'] as const;
+
 export const importFiles = async (
   countdown: (value: number) => void,
   updateSize: (value: number) => void,
@@ -21,7 +23,6 @@ export const importFiles = async (
   });
   const songs: SongType[] = [];
   let song: SongType;
-  const wantedTags = ['artwork', 'artist', 'name', 'album', 'year'] as const;
   if (results.canceled === false) {
     await createImportDir();
     updateSize(results.assets.length);
@@ -74,10 +75,12 @@ export const importFiles = async (
         'importArtists': importArtists,
         'importAlbums': importAlbums,
         'artwork': importAlbums.length === 0 ? info.metadata?.artwork : '',
-        'cacheUri': results.assets[i].uri
+        'cacheUri': results.assets[i].uri,
+        'track': info.metadata?.track ?? -1,
       };
       songs.push(song);
     }
+
     return songs;
   }
   else {
@@ -88,7 +91,6 @@ export const importFiles = async (
 export const getWifiTransferSong = async (name: string, id: number, type: string, data: string): Promise<SongType> => {
   const destination = `${FileSystem.cacheDirectory}import/${id}${name}`;
   await FileSystem.writeAsStringAsync(destination, data, { encoding: 'base64' });
-  const wantedTags = ['artwork', 'artist', 'name', 'album', 'year'] as const;
   const info = await getAudioMetadata(destination, wantedTags);
   let importArtists: ArtistType[] = [];
   if (info.metadata?.artist) {
@@ -122,9 +124,11 @@ export const getWifiTransferSong = async (name: string, id: number, type: string
     'artwork': importAlbums.length === 0 ? info.metadata?.artwork : '',
     'importArtists': importArtists,
     'importAlbums': importAlbums,
-    'cacheUri': destination
+    'cacheUri': destination,
+    'track': info.metadata?.track ?? -1,
   };
 }
+
 
 export const exportSongs = async (songs: SongType[]) => {
 

@@ -8,6 +8,7 @@ export type InfoType = {
     artwork?: string;
     name?: string;
     year?: number;
+    track?: number;
   };
 };
 
@@ -30,6 +31,7 @@ export type SongType = {
   importArtists?: ArtistType[];
   importAlbums?: AlbumType[];
   cacheUri?: string;
+  track?: number;
 };
 
 export type TagsType = {
@@ -53,6 +55,7 @@ export type SongResultType = {
   fileType?: string;
   fileName?: string;
   edited?: boolean;
+  track?: number;
 }
 
 export type InstructionsModalProps = {

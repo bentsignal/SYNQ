@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { router } from "expo-router";
 import { getArtistCover } from "@/src/controllers/ArtistController";
 import ListCover from "../../cover/ListCover";
+import SongCount from "../../song/SongCount";
 
 type AlbumHeaderProps = {
   id: number;
@@ -17,9 +18,10 @@ type AlbumHeaderProps = {
   pageType: PageType; 
   leadArtist?: ArtistType;
   songCount?: number;
+  duration?: number;
 }
 
-const AlbumHeader = ({id, title, year, pageType, leadArtist, songCount}: AlbumHeaderProps) => {
+const AlbumHeader = ({id, title, year, pageType, leadArtist, songCount, duration}: AlbumHeaderProps) => {
   const insets = useSafeAreaInsets();
   const [artistCover, setArtistCover] = useState('');
   const [emptyArtistCover, setEmptyArtistCover] = useState(false);
@@ -48,14 +50,12 @@ const AlbumHeader = ({id, title, year, pageType, leadArtist, songCount}: AlbumHe
   return (
     <View style={[Local.container, {paddingTop: insets.top}]}>
       <View style={Local.coverWrapper}>
-
         <SongListPageCover id={id} type={pageType}/>
       </View>
       <View style={Local.infoWrapper}>
         <Text style={Local.title}>{title}</Text>
-        
         <Text style={Local.year}>Album · {year ?? 'Unknown Year'}</Text>
-        <Text style={Local.songCount}>{songCount} song{songCount === 1 ? '' : 's'}</Text>
+        <SongCount songCount={songCount} duration={duration}/>
         {/* {leadArtist &&
           <TouchableOpacity 
             activeOpacity={0.8}
@@ -114,15 +114,6 @@ const Local = StyleSheet.create({
     ...Styles.h4,
     color: Colors.text,
     marginVertical: 3,
-  },
-  songCount: {
-    marginTop: 2,
-    ...Styles.infoText,
-    fontSize: 14,
-    textAlign: 'center',
-    color: Colors.infoText,
-
-    width: '100%',
   },
   coverWrapper: {
     justifyContent: 'center',

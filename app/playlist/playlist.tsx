@@ -27,6 +27,7 @@ const PlaylistView = ({id}: {id: number}) => {
   const [songCount, setSongCount] = useState(0);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [playlist, setPlaylist] = useState<PlaylistType | null>(null);
+  const [duration, setDuration] = useState(0);
 
   const refreshInfo = async () => {
     if (id) {
@@ -45,6 +46,8 @@ const PlaylistView = ({id}: {id: number}) => {
     try {
       const songs = await getPlaylistSongs(id, PageType.LIBRARY, SortType.NEWEST);
       setSongs(songs);
+      const duration = songs.reduce((acc, song) => acc + (song.duration ?? 0), 0);
+      setDuration(duration);
     }
     catch (error) {
       console.log('error refreshing playlist songs:', error);
@@ -113,6 +116,7 @@ const PlaylistView = ({id}: {id: number}) => {
               title={title} 
               songCount={songCount} 
               pageType={PageType.PLAYLIST}
+              duration={duration}
             />
           }
           setScrollPosition={setScrollPosition}

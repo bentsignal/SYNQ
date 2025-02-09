@@ -30,6 +30,7 @@ const AlbumView = ({id}: {id: number}) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [album, setAlbum] = useState<AlbumType | null>(null);
   const [artists, setArtists] = useState<ArtistType[]>([]);
+  const [duration, setDuration] = useState<number>(0);
 
   const refreshInfo = async () => {
     if (id) {
@@ -52,10 +53,13 @@ const AlbumView = ({id}: {id: number}) => {
     try {
       const songs = await getSongsFromAlbum(id, SortType.TRACK);
       setSongs(songs);
+      const duration = songs.reduce((acc, song) => acc + (song.duration ?? 0), 0);
+      setDuration(duration);
     }
     catch (error) {
       console.log('error refreshing album songs:', error);
     }
+
   }
 
   const triggerRefresh = () => {
@@ -113,6 +117,7 @@ const AlbumView = ({id}: {id: number}) => {
               leadArtist={artists[0]}
               songCount={songs.length}
               pageType={PageType.ALBUM}
+              duration={duration}
             />
           }
           setScrollPosition={setScrollPosition}

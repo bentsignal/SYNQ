@@ -4,15 +4,18 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/src/constants/Colors";
 import SongListPageCover from "@/src/components/cover/SongListPageCover";
 import { PageType } from "@/src/constants/Types";
+import SongCount from "../../song/SongCount";
 
 type SongListHeaderProps = {
   id: number;
   title: string;
   songCount: number;
   pageType: PageType; 
+  duration: number;
 }
 
-const SongListHeader = ({id, title, songCount, pageType}: SongListHeaderProps) => {
+
+const SongListHeader = ({id, title, songCount, pageType, duration}: SongListHeaderProps) => {
   const insets = useSafeAreaInsets();
   return (
     <View style={[Local.container, {paddingTop: insets.top}]}>
@@ -20,7 +23,7 @@ const SongListHeader = ({id, title, songCount, pageType}: SongListHeaderProps) =
         <SongListPageCover id={id} type={pageType}/>
       </View>
       <Text style={Local.title}>{title}</Text>
-      <Text style={Local.songCount}>{songCount} songs</Text>
+      <SongCount songCount={songCount} duration={duration}/>
     </View>
   );
 }

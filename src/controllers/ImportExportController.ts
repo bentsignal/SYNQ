@@ -9,6 +9,7 @@ import 'react-native-get-random-values';
 import { getArtistsFromMetadata } from '@/src/controllers/ArtistController';
 import { updateMetadata, isSongEdited } from '@/src/controllers/SongController';
 import { getAlbumFromMetadata } from '@/src/controllers/AlbumController';
+import { loadAudio } from './AudioController';
 
 const wantedTags = ['artwork', 'artist', 'name', 'album', 'year', 'track'] as const;
 
@@ -65,18 +66,21 @@ export const importFiles = async (
           info.metadata.album = '';
         }
       }
+      const duration = await loadAudio(results.assets[i].uri);
       song = {
         'fileName': results.assets[i].name,
         'fileType': results.assets[i].mimeType,
         'id': idgen(10),
         'title': info.metadata?.name ?? '',
         'artist': info.metadata?.artist ?? '',
+
         'album': info.metadata?.album ?? '',
         'importArtists': importArtists,
         'importAlbums': importAlbums,
         'artwork': importAlbums.length === 0 ? info.metadata?.artwork : '',
         'cacheUri': results.assets[i].uri,
         'track': info.metadata?.track ?? -1,
+        'duration': duration,
       };
       songs.push(song);
     }
@@ -114,6 +118,7 @@ export const getWifiTransferSong = async (name: string, id: number, type: string
       info.metadata.album = '';
     }
   }
+  const duration = await loadAudio(destination);
   return {
     'fileName': name,
     'fileType': type,
@@ -126,8 +131,10 @@ export const getWifiTransferSong = async (name: string, id: number, type: string
     'importAlbums': importAlbums,
     'cacheUri': destination,
     'track': info.metadata?.track ?? -1,
+    'duration': duration,
   };
 }
+
 
 
 export const exportSongs = async (songs: SongType[]) => {

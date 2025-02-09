@@ -32,6 +32,7 @@ export type SongType = {
   importAlbums?: AlbumType[];
   cacheUri?: string;
   track?: number;
+  duration?: number;
 };
 
 export type TagsType = {

@@ -4,7 +4,7 @@ import * as DocumentPicker from 'expo-document-picker'
 import { getAudioMetadata } from '@missingcore/audio-metadata';
 import { SongType, InfoType, PageType, ArtistType, AlbumType } from '@/src/constants/Types'
 import SongModel from '@/src/models/SongModel';
-import { idgen, getExportNumber } from '@/lib/Util';
+import { idgen, getExportNumber, checkForTrackNumber } from '@/lib/Util';
 import 'react-native-get-random-values';
 import { getArtistsFromMetadata } from '@/src/controllers/ArtistController';
 import { updateMetadata, isSongEdited } from '@/src/controllers/SongController';
@@ -67,18 +67,32 @@ export const importFiles = async (
         }
       }
       const duration = await loadAudio(results.assets[i].uri);
+      let title = info.metadata?.name ?? '';
+      let track: number | null = null;
+      const checkFileName = checkForTrackNumber(results.assets[i].name);
+      if (checkFileName) {
+        track = checkFileName;
+      }
+      const checkTitle = checkForTrackNumber(title);
+      if (checkTitle) {
+        track = checkTitle;
+        title = title.substring(3);
+      }
+      if (info.metadata?.track) {
+        track = info.metadata.track;
+      }
       song = {
         'fileName': results.assets[i].name,
         'fileType': results.assets[i].mimeType,
         'id': idgen(10),
-        'title': info.metadata?.name ?? '',
+        'title': title,
         'artist': info.metadata?.artist ?? '',
         'album': info.metadata?.album ?? '',
         'importArtists': importArtists,
         'importAlbums': importAlbums,
         'artwork': importAlbums.length === 0 ? info.metadata?.artwork : '',
         'cacheUri': results.assets[i].uri,
-        'track': info.metadata?.track ?? -1,
+        'track': track,
         'duration': duration,
       };
       songs.push(song);
@@ -118,23 +132,35 @@ export const getWifiTransferSong = async (name: string, id: number, type: string
     }
   }
   const duration = await loadAudio(destination);
+  let title = info.metadata?.name ?? '';
+  let track: number | null = null;
+  const checkFileName = checkForTrackNumber(name);
+  if (checkFileName) {
+    track = checkFileName;
+  }
+  const checkTitle = checkForTrackNumber(title);
+  if (checkTitle) {
+    track = checkTitle;
+    title = title.substring(3);
+  }
+  if (info.metadata?.track) {
+    track = info.metadata.track;
+  }
   return {
     'fileName': name,
     'fileType': type,
     'id': id,
-    'title': info.metadata?.name ?? '',
+    'title': title,
     'artist': info.metadata?.artist ?? '',
     'album': info.metadata?.album ?? '',
     'artwork': importAlbums.length === 0 ? info.metadata?.artwork : '',
     'importArtists': importArtists,
     'importAlbums': importAlbums,
     'cacheUri': destination,
-    'track': info.metadata?.track ?? -1,
+    'track': track,
     'duration': duration,
   };
 }
-
-
 
 export const exportSongs = async (songs: SongType[]) => {
 

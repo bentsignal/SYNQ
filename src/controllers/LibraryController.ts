@@ -80,7 +80,6 @@ export const saveToLibrary = async (
         const artwork = song.artwork ?? '';
         const fileType = song.fileType ?? '';
         const edited = song.edited ? true : false;
-        const track = song.track ?? -1;
         const duration = song.duration ?? 0;
         let fileName = song.fileName ?? '';
         if (fileName === '' && fileType !== '') {
@@ -105,7 +104,7 @@ export const saveToLibrary = async (
           }
           if (song.importAlbums && song.importAlbums.length > 0) {
             for (let j = 0; j < song.importAlbums.length; j++) {
-              await addAlbumToSong(song.importAlbums[j].id, id, track);
+              await addAlbumToSong(song.importAlbums[j].id, id, song.track);
               // add artists to album if they aren't already on it
               if (song.importArtists && song.importArtists.length > 0) {
                 for (let k = 0; k < song.importArtists.length; k++) {

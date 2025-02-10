@@ -91,16 +91,16 @@ export const getDurationString = (duration: number, showSeconds = false) => {
   return `${hoursString}${minutesString}${secondsString}`;
 }
 
-export const checkForTrackNumber = (str: string): number => {
-  if (str.length < 3) return -1;
+export const checkForTrackNumber = (str: string): number | null => {
+  if (str.length < 3) return null;
   
   const firstTwoChars = str.substring(0, 2);
   const thirdChar = str[2];
 
-  if (thirdChar !== ' ') return -1;
+  if (thirdChar !== ' ') return null;
 
   const num = parseInt(firstTwoChars);
-  if (isNaN(num)) return -1;
+  if (isNaN(num)) return null;
 
   return num;
 }

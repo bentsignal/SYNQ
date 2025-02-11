@@ -30,7 +30,7 @@ const AlbumView = ({id}: {id: number}) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [album, setAlbum] = useState<AlbumType | null>(null);
   const [artists, setArtists] = useState<ArtistType[]>([]);
-  const [duration, setDuration] = useState<number>(0);
+  const [duration, setDuration] = useState<number | null>(null);
 
   const refreshInfo = async () => {
     if (id) {

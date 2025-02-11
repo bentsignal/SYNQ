@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { router } from "expo-router";
 import { getArtistCover } from "@/src/controllers/ArtistController";
 import ListCover from "../../cover/ListCover";
-import SongCount from "../../song/CountAndDuration";
+import CountAndDuration from "../../song/CountAndDuration";
 
 type AlbumHeaderProps = {
   id: number;
@@ -55,7 +55,7 @@ const AlbumHeader = ({id, title, year, pageType, leadArtist, songCount, duration
       <View style={Local.infoWrapper}>
         <Text style={Local.title}>{title}</Text>
         <Text style={Local.year}>Album · {year ?? 'Unknown Year'}</Text>
-        <SongCount songCount={songCount} duration={duration}/>
+        <CountAndDuration songCount={songCount} duration={duration}/>
         {/* {leadArtist &&
           <TouchableOpacity 
             activeOpacity={0.8}

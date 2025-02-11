@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/src/constants/Colors";
 import SongListPageCover from "@/src/components/cover/SongListPageCover";
 import { PageType } from "@/src/constants/Types";
-import SongCount from "../../song/CountAndDuration";
+import CountAndDuration from "../../song/CountAndDuration";
 
 type SongListHeaderProps = {
   id: number;
@@ -23,7 +23,7 @@ const SongListHeader = ({id, title, songCount, pageType, duration}: SongListHead
         <SongListPageCover id={id} type={pageType}/>
       </View>
       <Text style={Local.title}>{title}</Text>
-      <SongCount songCount={songCount} duration={duration}/>
+      <CountAndDuration songCount={songCount} duration={duration}/>
     </View>
   );
 }

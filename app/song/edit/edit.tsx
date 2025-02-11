@@ -25,7 +25,6 @@ import artistBus from "@/src/events/artist/Bus";
 import albumBus from "@/src/events/album/Bus";
 import { ArtistBusEvent, ArtistToggledOnSongEvent } from "@/src/events/artist/Events";
 import { AlbumBusEvent, AlbumToggledOnSongEvent } from "@/src/events/album/Events";
-import CountAndDuration from "@/src/components/song/CountAndDuration";
 import { getDurationString } from "@/lib/Util";
 
 const MemoTextInput = memo(TextInput);

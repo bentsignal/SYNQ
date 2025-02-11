@@ -61,12 +61,12 @@ const Premium = () => {
       message,
       trace,
       () => {
-        router.back();
-        router.back();
-        setTimeout(() => {
-          setShowOverlay(true);
-          setShowNotificationModal(true);
-        }, 100);
+        // router.back();
+        // router.back();
+        // setTimeout(() => {
+        //   setShowOverlay(true);
+        //   setShowNotificationModal(true);
+        // }, 100);
       }
     );
   }
@@ -198,6 +198,7 @@ const Premium = () => {
       setLoading(false);
     }
     catch (error) {
+      console.log('error purchasing premium:', error);
       const trace = error instanceof Error ? error.message : String(error);
       if (!trace.includes('cancelled')) {
         sendErrorNotification(

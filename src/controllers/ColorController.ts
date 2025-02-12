@@ -76,5 +76,5 @@ export const getLuminanceFromImage = async (uri: string) => {
 }
 
 export const getPlayerGradientOpacity = (luminance: number) => {
-  return Math.pow(luminance / 0.7 - 0.7, 2) + 0.2;
+  return Math.pow(luminance / 0.7 - 0.7, 2) + 0.4;
 }

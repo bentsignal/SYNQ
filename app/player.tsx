@@ -43,7 +43,7 @@ const Player = () => {
   const [title, setTitle] = useState<string>(track?.title || '');
 
   const containerOpacity = useSharedValue(0);
-  const gradientOpacity = useSharedValue(0.2);
+  const gradientOpacity = useSharedValue(0.4);
   const infoOpacity = useSharedValue(1);
 
   const gradientStyle = useAnimatedStyle(() => ({
@@ -103,8 +103,9 @@ const Player = () => {
     }
 
     const getOpacity= async () => {
+      const base = .2;
       if (!track) {
-        return 0.2;
+        return base;
       }
       if (typeof track?.artwork !== 'string') {
         return 0;
@@ -116,7 +117,7 @@ const Player = () => {
       }
       catch (error) {
         console.log(error);
-        return 0.2;
+        return base;
       }
     }
 

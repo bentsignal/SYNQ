@@ -53,7 +53,7 @@ const AlbumHeader = ({id, title, year, pageType, leadArtist, songCount, duration
       <View style={Local.coverWrapper}>
         <SongListPageCover id={id} type={pageType}/>
       </View>
-      <View style={Local.infoWrapper}>
+      <View style={ListStyles.infoWrapper}>
         <Text style={ListStyles.title}>{title}</Text>
         <Text style={ListStyles.sub}>Album · {year ?? 'Unknown Year'}</Text>
         <CountAndDuration songCount={songCount} duration={duration}/>
@@ -84,24 +84,6 @@ const Local = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
-  },
-  title: {
-    ...Styles.h3,
-    textAlign: 'center',
-    color: Colors.text,
-    width: '100%',
-  },
-  infoWrapper: {
-    marginTop: 20,
-    marginBottom: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  year: {
-    ...Styles.p,
-    textAlign: 'center',
-    color: Colors.infoText,
-    width: '100%',
   },
   leadArtistContainer: {
     flexDirection: 'row',

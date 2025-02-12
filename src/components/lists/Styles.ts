@@ -3,6 +3,12 @@ import { Colors } from "@/src/constants/Colors";
 import { StyleSheet } from "react-native";
 
 export const ListStyles = StyleSheet.create({
+  infoWrapper: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    marginTop: 20,
+  },
   title: {
     ...Styles.h3,
     textAlign: 'center',

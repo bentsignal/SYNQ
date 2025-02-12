@@ -33,9 +33,11 @@ const ArtistHeader = ({id, title, pageType}: ArtistHeaderProps) => {
       <View style={Local.coverWrapper}>
         <SongListPageCover id={id} type={pageType}/>
       </View>
-      <Text style={ListStyles.title}>{title}</Text>
-      <Text style={ListStyles.sub}>Artist</Text>
-      <CountAndDuration songCount={songCount} duration={0}/>
+      <View style={Local.infoWrapper}>
+        <Text style={ListStyles.title}>{title}</Text>
+        <Text style={ListStyles.sub}>Artist</Text>
+        <CountAndDuration songCount={songCount} duration={0}/>
+      </View>
     </View>
   );
 }
@@ -45,22 +47,17 @@ const Local = StyleSheet.create({
     textAlign: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
-    marginTop: 20,
-  },
-  title: {
-    ...Styles.h3,
-    textAlign: 'center',
-    color: Colors.text,
-    width: '100%',
-    marginTop: 10,
-    marginBottom: 5,
   },
   coverWrapper: {
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10,
-    marginBottom: 10,
+  },
+  infoWrapper: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    marginTop: 20,
   }
 });
 

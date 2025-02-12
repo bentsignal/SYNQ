@@ -36,6 +36,7 @@ const ArtistView = ({id}: {id: number}) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [artist, setArtist] = useState<ArtistType | null>(null);
   const [tabIndex, setTabIndex] = useState(0);
+  const [showEmptyComponent, setShowEmptyComponent] = useState(false);
 
   const refreshInfo = async () => {
     if (id) {
@@ -55,6 +56,7 @@ const ArtistView = ({id}: {id: number}) => {
     try {
       const songs = await getSongsFromArtist(id, SortType.NEWEST);
       setSongs(songs);
+      setShowEmptyComponent(songs.length === 0);
     }
     catch (error) {
       console.log('error refreshing playlist songs:', error);
@@ -126,22 +128,24 @@ const ArtistView = ({id}: {id: number}) => {
           <SongList 
             songs={songs} 
             pageType={PageType.ARTIST}
-          sourceId={id}
-          sourceType={SourceType.ARTIST}
-          headerComponent={
-            <>
-              <ArtistHeader 
-                id={id}
-                title={title} 
-                pageType={PageType.ARTIST}
-              />
-              <TabSelector 
-                tabs={['Songs', 'Albums']}
-                index={tabIndex}
-                onSelect={setTabIndex}
-              />
-            </>
-          }
+            sourceId={id}
+            sourceType={SourceType.ARTIST}
+            showEmptyComponent={showEmptyComponent}
+            emptyComponent={<Text style={Local.emptyText}>No songs in library</Text>}
+            headerComponent={
+              <>
+                <ArtistHeader 
+                  id={id}
+                  title={title} 
+                  pageType={PageType.ARTIST}
+                />
+                <TabSelector 
+                  tabs={['Songs', 'Albums']}
+                  index={tabIndex}
+                  onSelect={setTabIndex}
+                />
+              </>
+            }
             setScrollPosition={setScrollPosition}
           />
         )}

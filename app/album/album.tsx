@@ -19,6 +19,8 @@ import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { getSongsFromAlbum } from "@/src/controllers/AlbumController";
 import ArtistItem from "@/src/components/lists/artist/ArtistItem";
 import { getArtistsFromAlbum } from "@/src/controllers/AlbumController";
+import Animated, { useAnimatedStyle, 
+  withTiming, useSharedValue } from "react-native-reanimated";
 
 const AlbumView = ({id}: {id: number}) => {
 
@@ -31,6 +33,12 @@ const AlbumView = ({id}: {id: number}) => {
   const [album, setAlbum] = useState<AlbumType | null>(null);
   const [artists, setArtists] = useState<ArtistType[]>([]);
   const [duration, setDuration] = useState<number | null>(null);
+
+  const artistListOpacity = useSharedValue(0);
+
+  const artistListAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: artistListOpacity.value,
+  }));
 
   const refreshInfo = async () => {
     if (id) {
@@ -55,6 +63,7 @@ const AlbumView = ({id}: {id: number}) => {
       setSongs(songs);
       const duration = songs.reduce((acc, song) => acc + (song.duration ?? 0), 0);
       setDuration(duration);
+      artistListOpacity.value = withTiming(1, { duration: 500 });
     }
     catch (error) {
       console.log('error refreshing album songs:', error);
@@ -122,7 +131,7 @@ const AlbumView = ({id}: {id: number}) => {
           }
           setScrollPosition={setScrollPosition}
           footerComponent={
-            <View style={Local.artistList}>
+            <Animated.View style={[Local.artistList, artistListAnimatedStyle]}>
               {artists.length > 0 && <Text style={Local.artistListTitle}>Artists</Text>}
               {artists.map((artist) => (
                 <ArtistItem 
@@ -131,7 +140,7 @@ const AlbumView = ({id}: {id: number}) => {
                   allowInteraction={true}
                 />
               ))}
-            </View>
+            </Animated.View>
           }
         />
         <View style={Local.miniPlayerContainer}>

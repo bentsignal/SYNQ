@@ -152,8 +152,7 @@ const SongList = memo((
 
   return (
     <>
-      <List 
-
+      <List
         data={songs}
         listRef={listRef}
         headerComponent={headerComponent}

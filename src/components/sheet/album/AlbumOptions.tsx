@@ -9,7 +9,8 @@ import { router } from 'expo-router';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { AlbumBusEvent } from '@/src/events/album/Events';
 import albumBus from '@/src/events/album';
-import { deleteAlbum } from '@/src/controllers/AlbumController';
+import { deleteAlbum, getSongsFromAlbum } from '@/src/controllers/AlbumController';
+import { exportSongs } from '@/src/controllers/ImportExportController';
 
 const AlbumOptions = ({name}: {name: string}) => {
 
@@ -40,8 +41,8 @@ const AlbumOptions = ({name}: {name: string}) => {
     try {
       TrueSheet.dismiss(name);
       setShowGlobalLoading(true);
-      // let songs = await getPlaylistSongs(editPlaylist.id);
-      // await exportSongs(songs);
+      let songs = await getSongsFromAlbum(editAlbum.id);
+      await exportSongs(songs);
       setShowGlobalLoading(false);
     }
     catch (error) {
@@ -95,8 +96,9 @@ const AlbumOptions = ({name}: {name: string}) => {
       <SheetOption 
         icon={require('@/src/assets/icons/share.png')}
         text={'Export'}
-        show={[PageType.LIBRARY, PageType.ALBUM].includes(pageType) && premium && false}
+        show={[PageType.LIBRARY, PageType.ALBUM].includes(pageType) && premium}
         handler={handleExport}
+        premiumOnly
       />
       <SheetOption
         icon={require('@/src/assets/icons/delete.png')}

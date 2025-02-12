@@ -2,15 +2,19 @@ import { TouchableOpacity, Text, Image, ImageURISource, StyleSheet } from "react
 import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
 import { getDisabledColor } from "@/src/controllers/ColorController";
+import { usePremiumContext } from "@/src/context/PremiumProvider";
 
 type SongOptionProps = {
   icon: ImageURISource;
   text: string;
   show?: boolean;
   handler: () => void;
+  premiumOnly?: boolean;
 }
 
-const SheetOption = ({ icon, text, show=true, handler }: SongOptionProps) => {
+const SheetOption = ({ icon, text, show=true, handler, premiumOnly=false }: SongOptionProps) => {
+
+  const { premium } = usePremiumContext();
 
   return (
     <TouchableOpacity
@@ -30,6 +34,7 @@ const SheetOption = ({ icon, text, show=true, handler }: SongOptionProps) => {
       }]}>
         {text}
       </Text>
+      {premiumOnly && !premium && <Text style={Local.premiumText}>Premium</Text>}
     </TouchableOpacity>
   );
 
@@ -47,6 +52,11 @@ const Local = StyleSheet.create({
     marginRight: 15,
     width: 22,
     height: 22,
+  },
+  premiumText: {
+    color: Colors.main,
+    ...Styles.h6, 
+    marginLeft: 5,
   },
 });
 

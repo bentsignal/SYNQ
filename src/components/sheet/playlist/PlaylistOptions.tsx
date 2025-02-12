@@ -44,6 +44,7 @@ const PlaylistOptions = ({name}: {name: string}) => {
       TrueSheet.dismiss(name);
       setShowGlobalLoading(true);
       let songs = await getPlaylistSongs(editPlaylist.id);
+      console.log(songs);
       await exportSongs(songs);
       setShowGlobalLoading(false);
     }
@@ -100,6 +101,7 @@ const PlaylistOptions = ({name}: {name: string}) => {
         text={'Export'}
         show={[PageType.LIBRARY, PageType.PLAYLIST].includes(pageType) && premium}
         handler={handleExport}
+        premiumOnly
       />
       <SheetOption
         icon={require('@/src/assets/icons/delete.png')}

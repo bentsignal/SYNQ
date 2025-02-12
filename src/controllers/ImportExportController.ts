@@ -214,7 +214,7 @@ export const exportSongs = async (songs: SongType[]) => {
         destination = `${dir}/${songs[i].fileName}`;
         await FileSystem.copyAsync({ from: songs[i].cacheUri, to: destination });
       }
-      else if (songs[i].pageType === PageType.LIBRARY) {
+      else {
         try {
           const audioPath = `${FileSystem.documentDirectory}library/${songs[i].id}/${songs[i].fileName}`;
           const edited = await isSongEdited(songs[i]);

@@ -11,8 +11,6 @@ import { updateMetadata, isSongEdited } from '@/src/controllers/SongController';
 import { getAlbumFromMetadata } from '@/src/controllers/AlbumController';
 import { loadAudio } from './AudioController';
 
-const wantedTags = ['artwork', 'artist', 'name', 'album', 'year', 'track'] as const;
-
 export const importFiles = async (
   countdown: (value: number) => void,
   updateSize: (value: number) => void,
@@ -36,66 +34,17 @@ export const importFiles = async (
         to: newUri
       });
       results.assets[i].uri = newUri;
-      let info: InfoType = {};
-      await getAudioMetadata(results.assets[i].uri, wantedTags)
-        .then((meta) => {
-          info = meta;
-        }).catch((error) => {
-          console.log(error);
-        });
-      info.fileType = results.assets[i].mimeType;
-      let importArtists: ArtistType[] = [];
-      if (info.metadata?.artist) {
-        importArtists = await getArtistsFromMetadata(info.metadata.artist);
-        if (importArtists.length > 0) {
-          info.metadata.artist = importArtists.map(artist => artist.name).join(', ');
-        }
-        else {
-          info.metadata.artist = '';
-        }
+      try {
+        song = await processSong(newUri, 
+          results.assets[i].name, 
+          idgen(10), 
+          results.assets[i].mimeType
+        );
+        songs.push(song);
       }
-      let importAlbums: AlbumType[] = [];
-      if (info.metadata?.album) {
-        const importAlbum = await getAlbumFromMetadata(info.metadata.album, info.metadata?.year, info.metadata?.artwork);
-        if (importAlbum?.name) {
-          info.metadata.album = importAlbum.name;
-          importAlbum.image = info.metadata?.artwork;
-          importAlbums.push(importAlbum);
-        }
-        else {
-          info.metadata.album = '';
-        }
+      catch (error) {
+        console.log('error processing song:', results.assets[i].name, error);
       }
-      const duration = await loadAudio(results.assets[i].uri);
-      let title = info.metadata?.name ?? '';
-      let track: number | null = null;
-      const checkFileName = checkForTrackNumber(results.assets[i].name);
-      if (checkFileName) {
-        track = checkFileName;
-      }
-      const checkTitle = checkForTrackNumber(title);
-      if (checkTitle) {
-        track = checkTitle;
-        title = title.substring(3);
-      }
-      if (info.metadata?.track) {
-        track = info.metadata.track;
-      }
-      song = {
-        'fileName': results.assets[i].name,
-        'fileType': results.assets[i].mimeType,
-        'id': idgen(10),
-        'title': title,
-        'artist': info.metadata?.artist ?? '',
-        'album': info.metadata?.album ?? '',
-        'importArtists': importArtists,
-        'importAlbums': importAlbums,
-        'artwork': importAlbums.length === 0 ? info.metadata?.artwork : '',
-        'cacheUri': results.assets[i].uri,
-        'track': track,
-        'duration': duration,
-      };
-      songs.push(song);
     }
 
     return songs;
@@ -108,7 +57,23 @@ export const importFiles = async (
 export const getWifiTransferSong = async (name: string, id: number, type: string, data: string): Promise<SongType> => {
   const destination = `${FileSystem.cacheDirectory}import/${id}${name}`;
   await FileSystem.writeAsStringAsync(destination, data, { encoding: 'base64' });
-  const info = await getAudioMetadata(destination, wantedTags);
+  const song = await processSong(destination, name, id, type);
+  return song;
+}
+
+const processSong = async (url: string, name: string, id: number, type: string) => {
+
+  // read metadata from file
+  const wantedTags = ['artwork', 'artist', 'name', 'album', 'year', 'track'] as const;
+  let info: InfoType = {};
+  try {
+    info = await getAudioMetadata(url, wantedTags);
+  }
+  catch (error) {
+    console.log('error reading metadata:', name, error);
+  }
+
+  // add artists 
   let importArtists: ArtistType[] = [];
   if (info.metadata?.artist) {
     importArtists = await getArtistsFromMetadata(info.metadata.artist);
@@ -119,6 +84,8 @@ export const getWifiTransferSong = async (name: string, id: number, type: string
       info.metadata.artist = '';
     }
   }
+
+  // add albums
   let importAlbums: AlbumType[] = [];
   if (info.metadata?.album) {
     const importAlbum = await getAlbumFromMetadata(info.metadata.album, info.metadata?.year, info.metadata?.artwork);
@@ -131,7 +98,11 @@ export const getWifiTransferSong = async (name: string, id: number, type: string
       info.metadata.album = '';
     }
   }
-  const duration = await loadAudio(destination);
+
+  // get duration of song
+  const duration = await loadAudio(url);
+
+  // check for track number
   let title = info.metadata?.name ?? '';
   let track: number | null = null;
   const checkFileName = checkForTrackNumber(name);
@@ -146,6 +117,7 @@ export const getWifiTransferSong = async (name: string, id: number, type: string
   if (info.metadata?.track) {
     track = info.metadata.track;
   }
+
   return {
     'fileName': name,
     'fileType': type,
@@ -156,10 +128,11 @@ export const getWifiTransferSong = async (name: string, id: number, type: string
     'artwork': importAlbums.length === 0 ? info.metadata?.artwork : '',
     'importArtists': importArtists,
     'importAlbums': importAlbums,
-    'cacheUri': destination,
+    'cacheUri': url,
     'track': track,
     'duration': duration,
   };
+  
 }
 
 export const exportSongs = async (songs: SongType[]) => {

@@ -10,6 +10,7 @@ import { router } from "expo-router";
 import { getArtistCover } from "@/src/controllers/ArtistController";
 import ListCover from "../../cover/ListCover";
 import CountAndDuration from "../../song/CountAndDuration";
+import { ListStyles } from "../Styles";
 
 type AlbumHeaderProps = {
   id: number;
@@ -53,8 +54,8 @@ const AlbumHeader = ({id, title, year, pageType, leadArtist, songCount, duration
         <SongListPageCover id={id} type={pageType}/>
       </View>
       <View style={Local.infoWrapper}>
-        <Text style={Local.title}>{title}</Text>
-        <Text style={Local.year}>Album · {year ?? 'Unknown Year'}</Text>
+        <Text style={ListStyles.title}>{title}</Text>
+        <Text style={ListStyles.sub}>Album · {year ?? 'Unknown Year'}</Text>
         <CountAndDuration songCount={songCount} duration={duration}/>
         {/* {leadArtist &&
           <TouchableOpacity 

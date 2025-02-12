@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { Text, StyleSheet } from "react-native";
 import Animated, { useAnimatedStyle, 
   withTiming, useSharedValue } from "react-native-reanimated";
+import { ListStyles } from "../lists/Styles";
 
 type CountAndDurationProps = {
   songCount: number;
@@ -27,7 +28,7 @@ export default function CountAndDuration({songCount, duration}: CountAndDuration
 
   return (
     <Animated.View style={animatedStyle}>
-      <Text style={Local.songCount}>
+      <Text style={ListStyles.count}>
         {check(songCount) && `${songCount} song${songCount === 1 ? '' : 's'}`}
         {check(duration) && duration > 0 && `, ${getDurationString(duration)}`}
       </Text>
@@ -35,16 +36,4 @@ export default function CountAndDuration({songCount, duration}: CountAndDuration
   );
 
 }
-
-const Local = StyleSheet.create({
-  songCount: {
-    marginTop: 2,
-    ...Styles.infoText,
-    fontSize: 14,
-    textAlign: 'center',
-    color: Colors.infoText,
-    width: '100%',
-    minHeight: 15,
-  },
-})
 

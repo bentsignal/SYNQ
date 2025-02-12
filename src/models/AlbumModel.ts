@@ -180,4 +180,9 @@ export default class AlbumModel extends Model {
     const result = await AlbumModel.db?.getAllAsync(`SELECT * from albums where id in (SELECT albumId from albumSongs where songId = ?);`, [songId]);
     return result ? result as AlbumType[] : [];
   }
+
+  public async getAlbumsFromArtist(artistId: number): Promise<AlbumType[]> {
+    const result = await AlbumModel.db?.getAllAsync(`SELECT * from albums where id in (SELECT albumId from artistsAlbums where artistId = ?);`, [artistId]);
+    return result ? result as AlbumType[] : [];
+  }
 }

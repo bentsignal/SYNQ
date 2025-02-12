@@ -161,3 +161,7 @@ export const getAlbumCoverFromSong = async (songId: number, full: boolean = fals
 export const getAlbumsContainingSong = async (songId: number): Promise<AlbumType[]> => {
   return await AlbumModel.getInstance().getAlbumsContainingSong(songId);
 }
+
+export const getAlbumsFromArtist = async (artistId: number): Promise<AlbumType[]> => {
+  return await AlbumModel.getInstance().getAlbumsFromArtist(artistId);
+}

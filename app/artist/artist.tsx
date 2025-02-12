@@ -4,7 +4,8 @@ import { Styles } from "@/src/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/src/constants/Colors";
 import SongList from "@/src/components/lists/song";
-import { PageType, PlaylistType, SongType, SortType, SourceType, ArtistType } from "@/src/constants/Types";
+import { PageType, PlaylistType, SongType, SortType, 
+  SourceType, ArtistType, AlbumType } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import MiniPlayer from "@/src/components/player/MiniPlayer";
 import TabBar from "@/src/components/TabBar";
@@ -17,15 +18,24 @@ import { ArtistBusEvent } from "@/src/events/artist/Events";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { getSongsFromArtist } from "@/src/controllers/ArtistController";
+import { getAlbumsFromArtist } from "@/src/controllers/AlbumController";
+import { AlbumBusEvent } from "@/src/events/album/Events";
+import albumBus from "@/src/events/album";
+import { PlaylistBusEvent } from "@/src/events/playlist/Events";
+import playlistBus from "@/src/events/playlist";
+import AlbumList from "@/src/components/lists/album";
+import TabSelector from "@/src/components/TabSelector";
 
 const ArtistView = ({id}: {id: number}) => {
 
   const { showOverlay, haptic, setEditArtist } = useGlobalContext();
 
   const [songs, setSongs] = useState<SongType[]>([]);
+  const [albums, setAlbums] = useState<AlbumType[]>([]);
   const [title, setTitle] = useState('');
   const [scrollPosition, setScrollPosition] = useState(0);
   const [artist, setArtist] = useState<ArtistType | null>(null);
+  const [tabIndex, setTabIndex] = useState(0);
 
   const refreshInfo = async () => {
     if (id) {
@@ -51,18 +61,37 @@ const ArtistView = ({id}: {id: number}) => {
     }
   }
 
+  const refreshAlbums = async () => {
+    try {
+      const results = await getAlbumsFromArtist(id);
+      setAlbums(results);
+    }
+    catch (error) {
+      console.log('error refreshing artist albums:', error);
+    }
+  }
+
   const triggerRefresh = () => {
     refreshSongs();
     refreshInfo();
+    refreshAlbums();
   }
 
   // refresh song list and info when changes are are sent from emitter;
   useEffect(() => {
     artistBus.on(ArtistBusEvent.ARTIST_MODIFIED, refreshInfo);
     artistBus.on(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, refreshSongs);
+    albumBus.on(AlbumBusEvent.ALBUM_CREATED, refreshAlbums);
+    albumBus.on(AlbumBusEvent.ALBUM_DELETED, refreshAlbums);
+    albumBus.on(AlbumBusEvent.ALBUM_MODIFIED, refreshAlbums);
+    playlistBus.on(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshAlbums);
     return () => {
       artistBus.off(ArtistBusEvent.ARTIST_MODIFIED, refreshInfo);
       artistBus.off(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, refreshSongs);
+      albumBus.off(AlbumBusEvent.ALBUM_CREATED, refreshAlbums);
+      albumBus.off(AlbumBusEvent.ALBUM_DELETED, refreshAlbums);
+      albumBus.off(AlbumBusEvent.ALBUM_MODIFIED, refreshAlbums);
+      playlistBus.off(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshAlbums);
     }
   }, []);
 
@@ -93,20 +122,51 @@ const ArtistView = ({id}: {id: number}) => {
           handleMore={handleMore}
         />
         <Overlay show={showOverlay} activeOpacity={0.95}/>
-        <SongList 
-          songs={songs} 
-          pageType={PageType.ARTIST}
+        {tabIndex === 0 && (
+          <SongList 
+            songs={songs} 
+            pageType={PageType.ARTIST}
           sourceId={id}
           sourceType={SourceType.ARTIST}
           headerComponent={
-            <ArtistHeader 
-              id={id}
-              title={title} 
-              pageType={PageType.ARTIST}
-            />
+            <>
+              <ArtistHeader 
+                id={id}
+                title={title} 
+                pageType={PageType.ARTIST}
+              />
+              <TabSelector 
+                tabs={['Songs', 'Albums']}
+                index={tabIndex}
+                onSelect={setTabIndex}
+              />
+            </>
           }
-          setScrollPosition={setScrollPosition}
-        />
+            setScrollPosition={setScrollPosition}
+          />
+        )}
+        {tabIndex === 1 && (
+          <AlbumList
+            albums={albums}
+            pageType={PageType.LIBRARY}
+            headerComponent={
+              <>
+                <ArtistHeader 
+                  id={id}
+                  title={title} 
+                  pageType={PageType.ARTIST}
+                />
+                <TabSelector 
+                  tabs={['Songs', 'Albums']}
+                  index={tabIndex}
+                  onSelect={setTabIndex}
+                />
+              </>
+            }
+            emptyComponent={<Text style={Local.emptyText}>No albums in library</Text>}
+            showEmptyComponent={albums.length === 0}
+          />
+        )}
         <View style={Local.miniPlayerContainer}>
           <MiniPlayer />
         </View>
@@ -131,6 +191,12 @@ const Local = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 0,
+  },
+  emptyText: {
+    ...Styles.h5,
+    textAlign: 'center',
+    marginTop: 20,
+    color: Colors.text,
   },
 });
 

@@ -182,6 +182,7 @@ export const getSongByResult = (result: any): SongType => {
       title: result.title,
       album: result.album,
       artist: result.artists,
+      duration: result.duration,
     };
   }
   catch (error) {

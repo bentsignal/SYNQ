@@ -80,12 +80,12 @@ export const saveToLibrary = async (
         const artwork = song.artwork ?? '';
         const fileType = song.fileType ?? '';
         const edited = song.edited ? true : false;
+        const duration = song.duration ?? 0;
         let fileName = song.fileName ?? '';
         if (fileName === '' && fileType !== '') {
           fileName = `song.${fileType}`;
         }
         const genre = 'Music';
-        const duration = 0;
         // insert song into database
         const id = await db.insertSong(title, artists, album, genre, duration, fileType, fileName, edited);
         if (id !== -1) {
@@ -104,7 +104,7 @@ export const saveToLibrary = async (
           }
           if (song.importAlbums && song.importAlbums.length > 0) {
             for (let j = 0; j < song.importAlbums.length; j++) {
-              await addAlbumToSong(song.importAlbums[j].id, id);
+              await addAlbumToSong(song.importAlbums[j].id, id, song.track);
               // add artists to album if they aren't already on it
               if (song.importArtists && song.importArtists.length > 0) {
                 for (let k = 0; k < song.importArtists.length; k++) {

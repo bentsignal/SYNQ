@@ -204,7 +204,7 @@ export default function usePlayer () {
       songs = await getSongsFromArtist(sourceIdValue, SortType.NEWEST);
     }
     else if (sourceTypeValue === SourceType.ALBUM) {
-      songs = await getSongsFromAlbum(sourceIdValue, SortType.OLDEST);
+      songs = await getSongsFromAlbum(sourceIdValue, SortType.TRACK);
     }
     else {
       return songs;

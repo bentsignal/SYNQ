@@ -76,3 +76,31 @@ export const getExportNumber = async () => {
     return 1;
   }
 }
+
+export const getDurationString = (duration: number, showSeconds = false) => {
+  if (duration <= 0) return '';
+
+  const seconds = duration % 60;
+  const minutes = showSeconds ? Math.floor(duration / 60) % 60 : Math.ceil(duration / 60) % 60;
+  const hours = Math.floor(duration / 3600);
+  
+  const hoursString = hours > 0 ? `${hours} hour${hours === 1 ? '' : 's'} ` : '';
+  const minutesString = minutes > 0 ? `${minutes} minute${minutes === 1 ? '' : 's'} ` : '';
+  const secondsString = showSeconds && seconds > 0 ? `${seconds} second${seconds === 1 ? '' : 's'}` : '';
+  
+  return `${hoursString}${minutesString}${secondsString}`;
+}
+
+export const checkForTrackNumber = (str: string): number | null => {
+  if (str.length < 3) return null;
+  
+  const firstTwoChars = str.substring(0, 2);
+  const thirdChar = str[2];
+
+  if (thirdChar !== ' ') return null;
+
+  const num = parseInt(firstTwoChars);
+  if (isNaN(num)) return null;
+
+  return num;
+}

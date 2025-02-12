@@ -8,6 +8,7 @@ export type InfoType = {
     artwork?: string;
     name?: string;
     year?: number;
+    track?: number;
   };
 };
 
@@ -30,6 +31,8 @@ export type SongType = {
   importArtists?: ArtistType[];
   importAlbums?: AlbumType[];
   cacheUri?: string;
+  track?: number;
+  duration?: number;
 };
 
 export type TagsType = {
@@ -53,6 +56,7 @@ export type SongResultType = {
   fileType?: string;
   fileName?: string;
   edited?: boolean;
+  track?: number;
 }
 
 export type InstructionsModalProps = {
@@ -70,6 +74,7 @@ export enum SortType {
   ALBUM = 3,
   OLDEST = 4,
   NEWEST = 5,
+  TRACK = 6,
 }
 
 export enum PageType {

@@ -174,7 +174,7 @@ const AlbumItem = ({album, allowInteraction, bg}: AlbumProps) => {
       />
       <View style={Local.textWrapper}>
         <Text style={Local.name} numberOfLines={1}>{name}</Text>
-        {year && <Text style={Local.year} numberOfLines={1}>{year}</Text>}
+        <Text style={Local.year} numberOfLines={1}>{year ?? 'Unknown Year'}</Text>
       </View>
       {allowInteraction && album.pageType === PageType.LIBRARY &&
         <More handlePress={handleMore} />

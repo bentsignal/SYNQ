@@ -77,10 +77,10 @@ export default class AlbumModel extends Model {
     }
   }
 
-  public async addAlbumToSong(albumId: number, songId: number): Promise<void> {
+  public async addAlbumToSong(albumId: number, songId: number, track?: number): Promise<void> {
     await AlbumModel.db?.runAsync(
-      `INSERT INTO albumSongs (albumId, songId) VALUES (?, ?);`, 
-      [albumId, songId]
+      `INSERT INTO albumSongs (albumId, songId, track) VALUES (?, ?, ?);`, 
+      [albumId, songId, track || null]
     );
   }
 
@@ -109,9 +109,12 @@ export default class AlbumModel extends Model {
     return result ? result as AlbumType[] : [];
   }
 
-  public async getSongsFromAlbum(albumId: number, sort: SortType = SortType.NEWEST): Promise<SongResultType[]> {
+  public async getSongsFromAlbum(albumId: number, sort: SortType = SortType.TRACK): Promise<SongResultType[]> {
     let result = await AlbumModel.db?.getAllAsync<SongResultType>(
-      `SELECT * FROM songs WHERE id IN (SELECT songId FROM albumSongs WHERE albumId = ?);`, 
+      `SELECT songs.*, albumSongs.track 
+      FROM songs 
+      INNER JOIN albumSongs ON songs.id = albumSongs.songId 
+      WHERE albumSongs.albumId = ?;`, 
       [albumId]
     );
     if (result) {
@@ -125,6 +128,13 @@ export default class AlbumModel extends Model {
     }
     if (sort === SortType.NEWEST) {
       return result.reverse();
+    }
+    else if (sort === SortType.TRACK) {
+      return result.sort((a, b) => {
+        if (!a?.track) return 1;
+        if (!b?.track) return -1;
+        return a.track - b.track;
+      });
     }
     return result;
   }
@@ -168,6 +178,11 @@ export default class AlbumModel extends Model {
 
   public async getAlbumsContainingSong(songId: number): Promise<AlbumType[]> {
     const result = await AlbumModel.db?.getAllAsync(`SELECT * from albums where id in (SELECT albumId from albumSongs where songId = ?);`, [songId]);
+    return result ? result as AlbumType[] : [];
+  }
+
+  public async getAlbumsFromArtist(artistId: number): Promise<AlbumType[]> {
+    const result = await AlbumModel.db?.getAllAsync(`SELECT * from albums where id in (SELECT albumId from artistsAlbums where artistId = ?);`, [artistId]);
     return result ? result as AlbumType[] : [];
   }
 }

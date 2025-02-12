@@ -105,8 +105,8 @@ export const updateAlbum = async (albumId: number, name: string, year?: number, 
   }
 }
 
-export const addAlbumToSong = async (albumId: number, songId: number) => {
-  await AlbumModel.getInstance().addAlbumToSong(albumId, songId);
+export const addAlbumToSong = async (albumId: number, songId: number, track?: number) => {
+  await AlbumModel.getInstance().addAlbumToSong(albumId, songId, track);
 }
 
 export const removeAlbumFromSong = async (albumId: number, songId: number) => {
@@ -125,7 +125,7 @@ export const getAlbumsFromSong = async (songId: number): Promise<AlbumType[]> =>
   return await AlbumModel.getInstance().getAlbumsFromSong(songId);
 }
 
-export const getSongsFromAlbum = async (albumId: number, sort: SortType = SortType.NEWEST): Promise<SongType[]> => {
+export const getSongsFromAlbum = async (albumId: number, sort: SortType = SortType.TRACK): Promise<SongType[]> => {
   const results = await AlbumModel.getInstance().getSongsFromAlbum(albumId, sort);
   return results.map(result => getSongByResult(result));
 }
@@ -160,4 +160,8 @@ export const getAlbumCoverFromSong = async (songId: number, full: boolean = fals
 
 export const getAlbumsContainingSong = async (songId: number): Promise<AlbumType[]> => {
   return await AlbumModel.getInstance().getAlbumsContainingSong(songId);
+}
+
+export const getAlbumsFromArtist = async (artistId: number): Promise<AlbumType[]> => {
+  return await AlbumModel.getInstance().getAlbumsFromArtist(artistId);
 }

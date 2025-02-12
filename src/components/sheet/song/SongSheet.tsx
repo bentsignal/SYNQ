@@ -87,7 +87,7 @@ const SongSheet = ({name}: SongSheetProps) => {
           paddingBottom: 300,
         }}
       >
-        <SongOptions name={name}/>
+        <SongOptions name={name} library={true} />
       </ScrollView>
     </Sheet>
   );

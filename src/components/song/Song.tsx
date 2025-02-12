@@ -237,6 +237,19 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
     }
   }
 
+  const handleMore = async () => {
+    if (haptic) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    setEditSong(song);
+    if (song.pageType === PageType.IMPORT) {
+      TrueSheet.present('import-song-sheet');
+    }
+    else {
+      TrueSheet.present('song-sheet');
+    }
+  }
+
   // const panResponder = PanResponder.create({
   //   onMoveShouldSetPanResponder: () => true,
   //   onPanResponderMove: (e, gestureState) => {
@@ -313,16 +326,8 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
           !selectEnabled && song.pageType !== PageType.QUEUE &&
 
           <More 
-            handlePress={() => {
-              if (haptic) {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              }
-              setEditSong(song);
-              TrueSheet.present('song-sheet');
-            }}
-            style={{
-              paddingRight: 0,
-            }}
+            handlePress={handleMore}
+            style={Local.more}
           />
 
         }
@@ -361,5 +366,7 @@ const Local = StyleSheet.create({
     height: 60,
     zIndex: 2
   },
-  
+  more: {
+    paddingRight: 0,
+  }
 });

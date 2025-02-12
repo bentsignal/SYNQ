@@ -23,9 +23,10 @@ import usePlayer from '@/src/hooks/usePlayer';
 
 type SongOptionsProps = {
   name: string;
+  library?: boolean;
 }
 
-const SongOptions = ({ name }: SongOptionsProps) => {
+const SongOptions = ({ name, library = false }: SongOptionsProps) => {
 
   const { 
     
@@ -206,34 +207,38 @@ const SongOptions = ({ name }: SongOptionsProps) => {
 
   return (
     <>
-      <SheetOption 
-        icon={inLiked ? require('@/src/assets/icons/unheart.png') : require('@/src/assets/icons/heart.png')}
-        text={inLiked ? 'Remove from Liked Songs' : 'Add to Liked Songs'}
-        show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
-        handler={handleToggleinLiked}
-      />
-      <SheetOption 
-        icon={require('@/src/assets/icons/add.png')}
-        text={'Add to Playlist'}
-        show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
-        handler={handleAddToPlaylist}
-      />
-      <SheetOption 
-        icon={require('@/src/assets/icons/remove.png')}
-        text={'Remove from Playlist'}
-        show={[PageType.LIBRARY, PageType.PLAYER].includes(pageType) 
-          && editSong.sourceId !== undefined
-          && editSong.sourceId !== 1
-          && editSong.sourceType === SourceType.PLAYLIST
-        }
-        handler={handleRemoveFromPlaylist}
-      />
-      <SheetOption 
-        icon={require('@/src/assets/icons/add-to-queue.png')}
-        text={'Add to Queue'}
-        show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
-        handler={handleAddToQueue}
-      />
+      {library && 
+        <>
+          <SheetOption 
+            icon={inLiked ? require('@/src/assets/icons/unheart.png') : require('@/src/assets/icons/heart.png')}
+            text={inLiked ? 'Remove from Liked Songs' : 'Add to Liked Songs'}
+            show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
+            handler={handleToggleinLiked}
+          />
+          <SheetOption 
+            icon={require('@/src/assets/icons/add.png')}
+            text={'Add to Playlist'}
+            show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
+            handler={handleAddToPlaylist}
+          />
+          <SheetOption 
+            icon={require('@/src/assets/icons/remove.png')}
+            text={'Remove from Playlist'}
+            show={[PageType.LIBRARY, PageType.PLAYER].includes(pageType) 
+              && editSong.sourceId !== undefined
+              && editSong.sourceId !== 1
+              && editSong.sourceType === SourceType.PLAYLIST
+            }
+            handler={handleRemoveFromPlaylist}
+          />
+          <SheetOption 
+            icon={require('@/src/assets/icons/add-to-queue.png')}
+            text={'Add to Queue'}
+            show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
+            handler={handleAddToQueue}
+          />
+        </>
+      }
       <SheetOption 
         icon={require('@/src/assets/icons/edit.png')}
         text={'Edit'}

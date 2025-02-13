@@ -3,16 +3,18 @@ import { useState, useEffect, useRef } from "react";
 import { Styles } from "@/src/constants/Styles";
 import PageTitle from "@/src/components/PageTitle";
 import InfoModal from "@/src/components/modals/InfoModal";
-import ImportControls from "@/src/components/import/ImportControls";
+import ImportControls from "@/src/components/import/Controls";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import CustomButton from "@/src/components/CustomButton";
 import { Colors } from "@/src/constants/Colors";
 import { exportSongs } from '@/src/controllers/ImportExportController';
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
-import SettingsButton from "../SettingsButton";
+import SettingsButton from "@/src/components/SettingsButton";
 import CFG from "@/src/constants/Config";
 import { usePathname } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { router } from "expo-router";
 
 const ExportPrompt = () => {
 
@@ -28,7 +30,7 @@ const ExportPrompt = () => {
     importState, results,
     showImportAd, showGlobalProgress,
   
-    setHomeState, setShowInfoModal,
+    setShowInfoModal,
     setShowGlobalLoading, 
     setShowGlobalProgress,
     setGlobalProgress,
@@ -39,6 +41,7 @@ const ExportPrompt = () => {
 
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
+  const insets = useSafeAreaInsets();
 
   const [disabled, setDisabled] = useState(false);
 
@@ -54,7 +57,7 @@ const ExportPrompt = () => {
             progress += 1;
             setGlobalProgress(Math.ceil(progress / CFG.importAdLength * 100));
           }
-          else if (progress >= CFG.importAdLength && currentPath.current === '/') {
+          else if (progress >= CFG.importAdLength && currentPath.current === '/import/export') {
             clearInterval(interval);
             setShowGlobalProgress(false);
             setTimeout(() => {
@@ -90,16 +93,16 @@ const ExportPrompt = () => {
   }
 
   const handleBack = () => {
-    setHomeState(importState);
+    router.back();
     setLoading(false);
   }
 
   const handleNext = () => {
-    setHomeState(6);
+    router.push('/import/save');
   }
 
   return (
-    <View style={Styles.body}>
+    <View style={[Styles.body, { paddingTop: insets.top + 10 }]}>
       <InfoModal />
       <PageTitle 
         title='Export Music'

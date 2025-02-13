@@ -4,13 +4,8 @@ import { Styles } from "@/src/constants/Styles";
 import { importFiles } from "@/src/controllers/ImportExportController";
 import PageTitle from '@/src/components/PageTitle';
 import Option from "@/src/components/Option";
-import WiFi from "@/src/components/import/wifi/WiFi";
-import Files from "@/src/components/import/files/Files";
-import { Success, Failure } from "@/src/components/Outcome";
 import InfoModal from "@/src/components/modals/InfoModal";
 import Notifications from "@/src/components/notifications/Notifications";
-import ExportPrompt from "@/src/components/import/ExportPrompt";
-import SavePrompt from "@/src/components/import/SavePrompt";  
 import SettingsButton from "@/src/components/SettingsButton";
 import { Colors } from '@/src/constants/Colors';
 import { useThemeContext } from '@/src/context/ThemeProvider';
@@ -23,10 +18,8 @@ import { usePlaybackContext } from '@/src/context/PlaybackProvider';
 const Home = () => {
 
   const { 
-
-    serverStarted,
     
-    setServerStarted, setShowInfoModal,
+    setShowInfoModal,
     setLoading, setTransferProgress, 
     setTransferSize, setLoadAnimInProgress, 
     setExportDisabled, setResults,
@@ -34,8 +27,7 @@ const Home = () => {
   
   } = useGlobalContext();
 
-  const { homeState, setHomeState } = useGlobalContext();
-  const { theme, logo } = useThemeContext();
+  const { theme } = useThemeContext();
   const { premium } = usePremiumContext();
   const { setupPlayer } = usePlayer();
   const { playerInitialized, setPlayerInitialized } = usePlaybackContext();
@@ -71,120 +63,88 @@ const Home = () => {
         setResults(results);
       }
       else {
-        setHomeState(0);
+        router.replace('/(tabs)');
       }
     })
     .catch((error) => {
       console.log(error);
       setLoading(false);
-      setHomeState(4);
+      router.push('/import/failure');
     })
   }
 
-  if (homeState === 1) {
-    return (
-      <WiFi />
-    );
-  }
-  else if (homeState === 2) {
-    return (
-      <Files />
-    );
-  }
-  else if (homeState === 3) {
-    return (
-      <Success />
-    );
-  }
-  else if (homeState === 4) {
-    return (
-      <Failure />
-    );
-  }
-  else if (homeState === 5) {
-    return (
-      <ExportPrompt />
-    );
-  }
-  else if (homeState === 6) {
-    return (
-      <SavePrompt />
-    );
-  }
-  else {
-    return (
-      <View style={Styles.body}>
-        <InfoModal />
-        <PageTitle 
-            title='Home'
-            infoHandler={() => setShowInfoModal(true)}
-            rightHandComponent={<SettingsButton />} 
-          />
-        <ScrollView
-          style={Local.scrollView}
-          contentContainerStyle={Local.scrollViewContent}
-        >
-          {/* <View style={[Local.content]}>
-            <View style={Local.welcomeTitleContainer}>
-              <Text style={Local.title}>Welcome to SYNQ</Text>
-              <Image source={logo} style={Local.logo} />
-            </View>
-            <Text style={[Styles.description]}>
-              The coolest place to listen to your music! Below, you can import files
-              from this device, or from another device on your network. You can then
-              modify the metadata of the music files, or listen to them here in the app!
-            </Text>
-          </View> */}
-          <Image 
-            source={require('@/src/assets/images/homepage.png')} 
-            style={Local.banner} 
-          />
-          {!premium && (
-            <>
-              <Text style={[Local.title, Local.content, Local.premiumTitle]}>Premium</Text>
-              <Option
-                title="Premium"
-                desc={premium ? "Manage your subcription" : 'Unlock all features'}
-                icon={require('@/src/assets/icons/premium.png')}
-                disabled={false}
-                handlePress={() => router.push("/premium")}
-                iconTint={theme}
-              />
-            </>
-          )}
-          <Text style={[Local.title, Local.content, { marginTop: 20, marginBottom: 20 }]}>Import Music</Text>
-          <Option
-            title='Files'
-            desc='Import from your files'
-            icon={require('@/src/assets/icons/folder.png')}
-            disabled={false}
-            handlePress={() => {
-              setLoading(true);
-              setHomeState(2);
-              setResults([]);
-              setShowImportAd(true);
-              setTimeout(() => {
-                browseFiles();
-              }, 10);
-            }}
-          />
-          <Option 
-            title='Network'
-            desc='Import from your computer'
-            icon={require('@/src/assets/icons/wifi.png')}
-            disabled={false}
-            handlePress={() => {
-              setShowImportAd(true);
-              setLoading(true);
-              setResults([]);
-              setHomeState(1);
-            }}
-          />
-        </ScrollView>
-        <Notifications customStyles={Local.notifications}/>
-      </View>
-    );
-  }
+  return (
+    <View style={Styles.body}>
+      <InfoModal />
+      <PageTitle 
+          title='Home'
+          infoHandler={() => setShowInfoModal(true)}
+          rightHandComponent={<SettingsButton />} 
+        />
+      <ScrollView
+        style={Local.scrollView}
+        contentContainerStyle={Local.scrollViewContent}
+      >
+        {/* <View style={[Local.content]}>
+          <View style={Local.welcomeTitleContainer}>
+            <Text style={Local.title}>Welcome to SYNQ</Text>
+            <Image source={logo} style={Local.logo} />
+          </View>
+          <Text style={[Styles.description]}>
+            The coolest place to listen to your music! Below, you can import files
+            from this device, or from another device on your network. You can then
+            modify the metadata of the music files, or listen to them here in the app!
+          </Text>
+        </View> */}
+        <Image 
+          source={require('@/src/assets/images/homepage.png')} 
+          style={Local.banner} 
+        />
+        {!premium && (
+          <>
+            <Text style={[Local.title, Local.content, Local.premiumTitle]}>Premium</Text>
+            <Option
+              title="Premium"
+              desc={premium ? "Manage your subcription" : 'Unlock all features'}
+              icon={require('@/src/assets/icons/premium.png')}
+              disabled={false}
+              handlePress={() => router.push("/premium")}
+              iconTint={theme}
+            />
+          </>
+        )}
+        <Text style={[Local.title, Local.content, { marginTop: 20, marginBottom: 20 }]}>Import Music</Text>
+        <Option
+          title='Files'
+          desc='Import from your files'
+          icon={require('@/src/assets/icons/folder.png')}
+          disabled={false}
+          handlePress={() => {
+            setLoading(true);
+            router.push('/import/files');
+            setResults([]);
+            setShowImportAd(true);
+            setTimeout(() => {
+              browseFiles();
+            }, 10);
+          }}
+        />
+        <Option 
+          title='Network'
+          desc='Import from your computer'
+          icon={require('@/src/assets/icons/wifi.png')}
+          disabled={false}
+          handlePress={() => {
+            setShowImportAd(true);
+            setLoading(true);
+            setResults([]);
+            router.push('/import/wifi');
+          }}
+        />
+      </ScrollView>
+      <Notifications customStyles={Local.notifications}/>
+    </View>
+  );
   
 }
 

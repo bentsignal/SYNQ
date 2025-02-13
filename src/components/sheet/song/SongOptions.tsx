@@ -34,7 +34,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
     numModified,
     haptic, selectedSongs, results,
 
-    setExportDisabled, setHomeState,
+    setExportDisabled,
     setResults,
     setShowImportAd,
     setShowGlobalLoading,
@@ -114,7 +114,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
       const newResults = await removeSongs(results, selectedSongs);
       if (newResults.length <= 0) {
         setExportDisabled(true);
-        setHomeState(0);
+        router.replace('/(tabs)');
       }
       setResults(newResults);
     }
@@ -139,7 +139,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
         setExportDisabled(true);
       }
       if (newResults.length === 0) {
-        setHomeState(0);
+        router.replace('/(tabs)');
       }
       setResults(newResults);
     }

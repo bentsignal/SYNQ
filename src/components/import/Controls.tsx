@@ -13,16 +13,22 @@ import { PageType } from '@/src/constants/Types';
 import TrackPlayer from 'react-native-track-player';
 import { removeFromAllPlaylists } from '@/src/controllers/PlaylistController';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const ImportControls = (
-  {altTitle, mainTitle, altHandle, mainHandle, altDisabled, mainDisabled}: {
+type ImportControlsProps = {
   altTitle?: string,
   mainTitle?: string,
   altHandle?: () => void,
   mainHandle?: () => void,
   altDisabled?: boolean,
   mainDisabled?: boolean,
-}) => {
+}
+
+const ImportControls = (
+  {
+    altTitle, mainTitle, altHandle, mainHandle, altDisabled, mainDisabled}: 
+    ImportControlsProps
+  ) => {
 
   const {
 
@@ -32,17 +38,17 @@ const ImportControls = (
 
     setEditSong, 
     setResults, setNumModified,
-    setExportDisabled, setHomeState,
+    setExportDisabled,
     setSelectEnabled,
 
   } = useGlobalContext();
 
   const { theme } = useThemeContext();
-
+  const insets = useSafeAreaInsets();
   const Local = StyleSheet.create({
     container: {
       position: 'absolute',
-      bottom: 10,
+      bottom: insets.bottom,
       width: '100%',
       justifyContent: 'flex-end',
       alignItems: 'center',
@@ -88,7 +94,7 @@ const ImportControls = (
         const newResults = await removeSongs(results, selectedSongs);
         if (newResults.length <= 0) {
           setExportDisabled(true);
-          setHomeState(0);
+          router.replace('/(tabs)');
         }
         setResults(newResults);
       }
@@ -112,7 +118,7 @@ const ImportControls = (
           setExportDisabled(true);
         }
         if (newResults.length === 0) {
-          setHomeState(0);
+          router.replace('/(tabs)');
         }
         setResults(newResults);
       }

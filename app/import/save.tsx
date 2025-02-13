@@ -4,7 +4,7 @@ import { router, usePathname } from "expo-router";
 import { Styles } from "@/src/constants/Styles";
 import PageTitle from "@/src/components/PageTitle";
 import InfoModal from "@/src/components/modals/InfoModal";
-import ImportControls from "@/src/components/import/ImportControls";
+import ImportControls from "@/src/components/import/Controls";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { Colors } from "@/src/constants/Colors";
 import Checkbox from "expo-checkbox";
@@ -19,7 +19,8 @@ import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import playlistBus from "@/src/events/playlist";
 import { deleteImportSongs } from "@/src/controllers/ImportExportController";
-import SettingsButton from "../SettingsButton";
+import SettingsButton from "@/src/components/SettingsButton";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SavePrompt = () => {
 
@@ -38,7 +39,7 @@ const SavePrompt = () => {
     showImportAd, showGlobalProgress, globalProgress,
 
     setExportDisabled, setLoading,
-    setHomeState, setShowInfoModal,
+    setShowInfoModal,
     setTransferSize, setResults,
     setShouldSaveToLibrary, 
     setShowGlobalProgress, setGlobalProgress,
@@ -48,6 +49,7 @@ const SavePrompt = () => {
 
   const { theme } = useThemeContext();
   const { premium } = usePremiumContext();
+  const insets = useSafeAreaInsets();
 
   const callReset = async () => {
     return await axios.get(`${URL}/reset`);
@@ -112,7 +114,7 @@ const SavePrompt = () => {
             progress += 1;
             setGlobalProgress(Math.ceil(progress / CFG.importAdLength * 100));
           }
-          else if (progress >= CFG.importAdLength && currentPath.current === '/') {
+          else if (progress >= CFG.importAdLength && currentPath.current === '/import/save') {
             clearInterval(interval);
             setShowGlobalProgress(false);
             setTimeout(() => {
@@ -138,7 +140,7 @@ const SavePrompt = () => {
         saveToLibrary(songs, progress).then(() => {
           playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
           setLoading(false);
-          setHomeState(3);
+          router.replace('/import/success');
           setTransferSize(0);
           setShowImportAd(false);
           setResults([]);
@@ -149,13 +151,12 @@ const SavePrompt = () => {
             checkForReview();
           }, 500);
           setTimeout(() => {
-            router.replace('/(tabs)/library')
-            setHomeState(0);
+            router.replace('/(tabs)/library');
           }, 1500);
         })
         .catch((error) => {
           setLoading(false);
-          setHomeState(4);
+          router.push('/import/failure');
           setTransferSize(0);
           setShowImportAd(false);
           setResults([]);
@@ -166,7 +167,7 @@ const SavePrompt = () => {
       }, 10);
     }
     else {
-      setHomeState(3);
+      router.push('/import/success');
       await deleteImportSongs(results);
       setResults([]);
       setTransferSize(0);
@@ -176,13 +177,13 @@ const SavePrompt = () => {
         checkForReview();
       }, 500);
       setTimeout(() => {
-        setHomeState(0);
+        router.replace('/(tabs)');
       }, 1500);
     }
   }
 
   return (
-    <View style={Styles.body}>
+    <View style={[Styles.body, { paddingTop: insets.top + 10 }]}>
       <InfoModal />
       <PageTitle 
         title='Save Music'
@@ -214,10 +215,10 @@ const SavePrompt = () => {
           showCircle={false}
         />
       </View>
-      <ImportControls 
+      <ImportControls
         altTitle='Back'
         mainTitle='Finish'
-        altHandle={() => setHomeState(5)}
+        altHandle={() => router.back()}
         mainHandle={handleImport}
         altDisabled={exportDisabled}
         mainDisabled={exportDisabled}

@@ -40,7 +40,7 @@ export default function ImportBlur() {
 const Local = StyleSheet.create({
   blur: {
     position: 'absolute',
-    top: 120,
+    top: 180,
     left: 0,
     right: 0,
     bottom: 0,

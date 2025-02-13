@@ -7,6 +7,7 @@ import Transfer from '@/src/assets/static/Transfer';
 import { NotificationType } from '@/src/constants/Types';
 import { BridgeServer } from 'react-native-http-bridge-refurbished';
 import CFG from '@/src/constants/Config';
+import { usePathname } from 'expo-router';
 
 const getIP = async () => {
   return await Network.getIpAddressAsync();
@@ -16,22 +17,22 @@ const Server = () => {
 
   const {
 
-    homeState, results, transferProgress,
-    serverStarted, routesInitialized,
+    homeState, results,
 
     addNotification,
 
-    setHomeState, setResults, setTransferSize,
-    setExportDisabled, setWifiDisabled, setLoading,
+    setResults, setTransferSize,
+    setExportDisabled, setLoading,
     setIP, setSelectedId, setTransferProgress,
     setLoadAnimInProgress, setShowOverlay,
-    setShowNotificationModal, setServerStarted,
-    setRoutesInitialized,
+    setShowNotificationModal,
 
   } = useGlobalContext();
 
+  const pathname = usePathname();
+
   const resultsRef = useRef<Array<any>>([]);
-  const homeStateRef = useRef(0);
+  const allowTransfer = useRef(false);
   const midTransfer = useRef(false);
   const receivedRequests = new Set();
 
@@ -40,8 +41,8 @@ const Server = () => {
   }, [results]);
 
   useEffect(() => {
-    homeStateRef.current = homeState
-  }, [homeState]);
+    allowTransfer.current = pathname === '/import/wifi';
+  }, [pathname]);
 
   const sendErrorNotification = (trace: string) => {
     addNotification(
@@ -94,7 +95,7 @@ const Server = () => {
     });
 
     server.post('/startTransfer', async (req: any, res: any) => {
-      if (homeStateRef.current != 1) {
+      if (!allowTransfer.current) {
         return res.json({
           status: 400,
           message: 'Must be on Wifi Transfer page in app'

@@ -40,7 +40,6 @@ const GlobalProgress = () => {
 
   return (
     <View style={Local.container}>
-      
       <Progress 
         completion={globalProgress} 
         loading={showGlobalLoading} 

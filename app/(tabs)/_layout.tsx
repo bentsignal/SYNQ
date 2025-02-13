@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Easing, View } from 'react-native';
-import Server from '@/src/components/import/wifi/Server';
+import Server from '@/src/components/import/Server';
 import { HomeIcon, LibraryIcon } from '@/src/components/TabBarIcons';
 import { Colors } from '@/src/constants/Colors';
 import { Styles } from '@/src/constants/Styles';

@@ -175,6 +175,48 @@ const Navigation = () => {
           contentStyle: { backgroundColor: 'transparent'},
         }}
       />
+      <Stack.Screen
+        name="import/files"
+        options={{
+          headerShown: false,
+          gestureEnabled: false,
+        }}
+      />
+      <Stack.Screen
+        name="import/wifi"
+        options={{
+          headerShown: false,
+          gestureEnabled: false,
+        }}
+      />
+      <Stack.Screen
+        name="import/save"
+        options={{
+          headerShown: false,
+          gestureEnabled: false,
+        }}
+      />
+      <Stack.Screen
+        name="import/export"
+        options={{
+          headerShown: false,
+          gestureEnabled: false,
+        }}
+      />
+      <Stack.Screen
+        name="import/success"
+        options={{
+          headerShown: false,
+          gestureEnabled: false,
+        }}
+      />
+      <Stack.Screen
+        name="import/failure"
+        options={{
+          headerShown: false,
+          gestureEnabled: false,
+        }}
+      />
     </Stack>
   );
   

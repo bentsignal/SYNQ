@@ -14,6 +14,7 @@ import { usePremiumContext } from '@/src/context/PremiumProvider';
 import usePlayer from '@/src/hooks/usePlayer';
 import { useEffect } from 'react';
 import { usePlaybackContext } from '@/src/context/PlaybackProvider';
+import MiniPlayer from '@/src/components/player/MiniPlayer';
 
 const Home = () => {
 
@@ -129,7 +130,7 @@ const Home = () => {
             }, 10);
           }}
         />
-        <Option 
+        <Option
           title='Network'
           desc='Import from your computer'
           icon={require('@/src/assets/icons/wifi.png')}
@@ -142,6 +143,7 @@ const Home = () => {
           }}
         />
       </ScrollView>
+      <MiniPlayer />
       <Notifications customStyles={Local.notifications}/>
     </View>
   );

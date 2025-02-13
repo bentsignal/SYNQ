@@ -77,26 +77,26 @@ const TabLayout = () => {
           },
         }}
       >
-          <Tabs.Screen
-            name='index'
-            options={{
-              title: 'Home',
-              tabBarIcon: ({ color, focused }) => (
-                <HomeIcon focused={focused}/>
-              ),
-              animation: 'none',
-            }}
-          />
-          <Tabs.Screen 
-            name='library'
-            options={{
-              title:'Library',
-              tabBarIcon: ({ color, focused }) => (
-                <LibraryIcon focused={focused}/>
-              ),
-              animation: 'none',
-            }}
-          />
+        <Tabs.Screen
+          name='index'
+          options={{
+            title: 'Home',
+            tabBarIcon: ({ color, focused }) => (
+              <HomeIcon focused={focused}/>
+            ),
+            animation: 'none',
+          }}
+        />
+        <Tabs.Screen 
+          name='library'
+          options={{
+            title:'Library',
+            tabBarIcon: ({ color, focused }) => (
+              <LibraryIcon focused={focused}/>
+            ),
+            animation: 'none',
+          }}
+        />
       </Tabs>
     </>
   );

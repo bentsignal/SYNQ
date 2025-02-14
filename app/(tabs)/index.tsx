@@ -21,6 +21,7 @@ import CFG from '@/src/constants/Config';
 import { playAd } from '@/src/controllers/PlayerController';
 import { NotificationType } from '@/src/constants/Types';
 import { useTrackPlayerEvents, Event } from 'react-native-track-player';
+import { usePostHog } from 'posthog-react-native';
 
 const Home = () => {
 
@@ -56,6 +57,8 @@ const Home = () => {
   const { setupPlayer, skipLeft, skipRight, updateQueue } = usePlayer();
   const track = useActiveTrack();
   const { position, duration } = useProgress();
+  
+  const posthog = usePostHog();
 
   const previousPosition = useRef(0);
   const timePlayed = useRef(0);
@@ -340,6 +343,7 @@ const Home = () => {
           disabled={false}
           handlePress={() => {
             setLoading(true);
+            posthog.capture('import_files');
             router.push('/import/files');
             setTimeout(() => {
               setResults([]);
@@ -355,6 +359,7 @@ const Home = () => {
           disabled={false}
           handlePress={() => {
             setLoading(true);
+            posthog.capture('import_wifi');
             router.push('/import/wifi');
             setTimeout(() => {
               setResults([]);

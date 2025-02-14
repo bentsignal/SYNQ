@@ -15,6 +15,8 @@ import Navigation from "@/app/navigation";
 import PlaybackProvider from "@/src/context/PlaybackProvider";
 import Sheets from "@/src/components/sheet/Sheets";
 import GlobalProgress from '@/src/components/GlobalProgress';
+import { PostHogProvider } from 'posthog-react-native';
+import { posthogKey } from '@/src/constants/Keys';
 
 LogBox.ignoreLogs(['Require cycle:']);
 
@@ -78,18 +80,20 @@ const RootLayout = () => {
     <ThemeProvider>
       <PremiumProvider>
         <PlaybackProvider>
-          <GlobalProvider
-            initShouldPlayAd={shouldPlayAd}
-            children={
-              <>
+          <GlobalProvider initShouldPlayAd={shouldPlayAd}>
+            <PostHogProvider apiKey={posthogKey}
+              options={{
+                host: 'https://us.i.posthog.com',
+                enableSessionReplay: true,
+              }}
+            >
+              <GestureHandlerRootView style={{flex: 1}}>
                 <GlobalProgress />
                 <Sheets />
-                <GestureHandlerRootView style={{flex: 1}}>
-                  <Navigation />
-                </GestureHandlerRootView>
-              </>
-            }
-          />
+                <Navigation />
+              </GestureHandlerRootView>
+            </PostHogProvider>
+          </GlobalProvider>
         </PlaybackProvider>
       </PremiumProvider>
     </ThemeProvider>

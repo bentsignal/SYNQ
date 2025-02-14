@@ -65,17 +65,21 @@ export default function ImportControls() {
         setMainDisabled(exportDisabled);
       }
     }
-    else if (pathname === 'import/export') {
+    else if (pathname === '/import/export') {
       setAltTitle('Back');
       setMainTitle('Next');
       setAltDisabled(showGlobalLoading);
       setMainDisabled(showGlobalLoading);
     }
-    else if (pathname === 'import/save') {
+    else if (pathname === '/import/save') {
       setAltTitle('Back');
       setMainTitle('Finish');
       setAltDisabled(exportDisabled);
       setMainDisabled(exportDisabled);
+    }
+    else if (pathname === '/import/success') {
+      setAltDisabled(true);
+      setMainDisabled(true);
     }
   }, [pathname, loading, exportDisabled, showGlobalLoading, transferSize]);
 
@@ -243,7 +247,9 @@ export default function ImportControls() {
           />
         </TouchableOpacity>
       </View>
-      <View style={Local.mainButtonContainer}>
+      <View style={[Local.mainButtonContainer, {
+        display: ['/import/success', '/import/failure'].includes(pathname) ? 'none' : 'flex'
+        }]}>
         <CustomButton 
           title={altTitle}
           background={Colors.altButton}

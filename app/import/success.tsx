@@ -26,13 +26,24 @@ export default function Success() {
   source = replaceColor('#63a3ff', theme, source); // main
 
   return (
-    <LottieView 
-      source={source}
-      autoPlay
-      loop={false}
-      style={{flexGrow: 1, width: 100}}
-      renderMode={'SOFTWARE'}
-    />
+    <View style={Local.container}>
+      <LottieView 
+        source={source}
+        autoPlay
+        loop={false}
+        style={{flexGrow: 1, width: 100}}
+        renderMode={'SOFTWARE'}
+      />
+    </View>
   );
 
 }
+
+const Local = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 100,
+  }
+});

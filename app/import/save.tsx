@@ -135,7 +135,6 @@ const SavePrompt = () => {
       setTimeout(() => {
         saveToLibrary(songs, progress).then(() => {
           playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
-          setLoading(false);
           router.replace('/import/success');
           setTransferSize(0);
           setShowImportAd(false);
@@ -147,6 +146,7 @@ const SavePrompt = () => {
             checkForReview();
           }, 500);
           setTimeout(() => {
+            setLoading(false);
             router.replace('/(tabs)/library');
           }, 1500);
         })
@@ -168,11 +168,11 @@ const SavePrompt = () => {
       setResults([]);
       setTransferSize(0);
       setShowImportAd(false);
-      setLoading(false);
       setTimeout(() => {
         checkForReview();
       }, 500);
       setTimeout(() => {
+        setLoading(false);
         router.replace('/(tabs)');
       }, 1500);
     }

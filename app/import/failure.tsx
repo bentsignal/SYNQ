@@ -59,7 +59,8 @@ export default function Failure() {
 const Local = StyleSheet.create({
   container: {
     ...Styles.main,
-    flexGrow: 1
+    flexGrow: 1,
+    paddingBottom: 100
   },
   header: {
     ...Styles.h1,

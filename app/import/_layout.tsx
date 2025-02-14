@@ -4,12 +4,20 @@ import { Colors } from "@/src/constants/Colors";
 
 import ImportControls from "@/src/components/import/Controls";
 import ImportHeader from "@/src/components/import/Header";
+import Overlay from "@/src/components/Overlay";
+
+import { useGlobalContext } from "@/src/context/GlobalProvider";
 
 export default function ImportLayout() {
+
+  const {
+    showOverlay,
+  } = useGlobalContext();
 
   return (
     <>
       <ImportHeader />
+      <Overlay show={showOverlay} activeOpacity={.9} />
       <Stack
         screenOptions={{
           headerShown: false,

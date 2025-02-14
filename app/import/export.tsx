@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import { Styles } from "@/src/constants/Styles";
 import PageTitle from "@/src/components/PageTitle";
 import InfoModal from "@/src/components/modals/InfoModal";
-import ImportControls from "@/src/components/import/Controls";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import CustomButton from "@/src/components/CustomButton";
 import { Colors } from "@/src/constants/Colors";
@@ -14,7 +13,6 @@ import SettingsButton from "@/src/components/SettingsButton";
 import CFG from "@/src/constants/Config";
 import { usePathname } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { router } from "expo-router";
 
 const ExportPrompt = () => {
 
@@ -27,7 +25,7 @@ const ExportPrompt = () => {
 
   const { 
     
-    importState, results,
+    results,
     showImportAd, showGlobalProgress,
   
     setShowInfoModal,
@@ -35,7 +33,6 @@ const ExportPrompt = () => {
     setShowGlobalProgress,
     setGlobalProgress,
     setShowImportAd,
-    setLoading,
 
   } = useGlobalContext();
 
@@ -92,24 +89,8 @@ const ExportPrompt = () => {
     }
   }
 
-  const handleBack = () => {
-    router.back();
-    setLoading(false);
-  }
-
-  const handleNext = () => {
-    router.push('/import/save');
-  }
-
   return (
-    <View style={[Styles.body, { paddingTop: insets.top + 10 }]}>
-      <InfoModal />
-      <PageTitle 
-        title='Export Music'
-        infoHandler={() => setShowInfoModal(true)}
-        showList={false}
-        rightHandComponent={<SettingsButton />}
-      />
+    <>
       <View style={Local.body}>
         <Text style={Local.prompt}>
           Export your edited songs?
@@ -126,15 +107,7 @@ const ExportPrompt = () => {
           handlePress={handleExport}
         />
       </View>
-      <ImportControls 
-        altTitle='Back'
-        mainTitle='Next'
-        altHandle={handleBack}
-        mainHandle={handleNext}
-        altDisabled={disabled}
-        mainDisabled={disabled}
-      />
-    </View>
+    </>
   );
 }
 
@@ -142,7 +115,7 @@ const Local = StyleSheet.create({
   body: {
     ...Styles.main,
     width: '90%',
-    marginBottom: Dimensions.get('screen').height < 700 ? 70 : 50,
+    marginBottom: Dimensions.get('screen').height < 700 ? 100 : 80,
   },
   prompt: {
     ...Styles.h3,

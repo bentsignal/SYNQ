@@ -4,7 +4,6 @@ import { router, usePathname } from "expo-router";
 import { Styles } from "@/src/constants/Styles";
 import PageTitle from "@/src/components/PageTitle";
 import InfoModal from "@/src/components/modals/InfoModal";
-import ImportControls from "@/src/components/import/Controls";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { Colors } from "@/src/constants/Colors";
 import Checkbox from "expo-checkbox";
@@ -21,6 +20,8 @@ import playlistBus from "@/src/events/playlist";
 import { deleteImportSongs } from "@/src/controllers/ImportExportController";
 import SettingsButton from "@/src/components/SettingsButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import importBus from "@/src/events/import";
+import { ImportBusEvent } from "@/src/events/import/Events";
 
 const SavePrompt = () => {
 
@@ -35,8 +36,9 @@ const SavePrompt = () => {
 
     results,
     importState, loading,
-    shouldSaveToLibrary, exportDisabled,
-    showImportAd, showGlobalProgress, globalProgress,
+    shouldSaveToLibrary,
+    showImportAd, showGlobalProgress,
+    ip, 
 
     setExportDisabled, setLoading,
     setShowInfoModal,
@@ -50,19 +52,13 @@ const SavePrompt = () => {
   const { theme } = useThemeContext();
   const { premium } = usePremiumContext();
   const insets = useSafeAreaInsets();
-
-  const callReset = async () => {
-    return await axios.get(`${URL}/reset`);
-  }
   
-  const resetResults = () => {
-    callReset().then((response) => {
-      return null;
-    })
-    .catch((error) => {
-      console.log(error);
-      return null;
-    });
+  const resetResults = async () => {
+    try {
+      await axios.get(`http://${ip}${CFG.PORT}/reset`);
+    } catch (error) {
+      console.log('error resetting results: ', error);
+    }
   }
 
   const callReview = async () => {
@@ -182,15 +178,15 @@ const SavePrompt = () => {
     }
   }
 
+  useEffect(() => {
+    importBus.on(ImportBusEvent.TRIGGER_FINISH, handleImport);
+    return () => {
+      importBus.off(ImportBusEvent.TRIGGER_FINISH, handleImport);
+    };
+  }, [handleImport]);
+
   return (
-    <View style={[Styles.body, { paddingTop: insets.top + 10 }]}>
-      <InfoModal />
-      <PageTitle 
-        title='Save Music'
-        infoHandler={() => setShowInfoModal(true)}
-        showList={false}
-        rightHandComponent={<SettingsButton />}
-      />
+    <>
       <View style={[Local.body, {display: loading ? 'none' : 'flex'}]}>
         <Text style={Local.prompt}>
           Save to SYNQ library?
@@ -215,15 +211,7 @@ const SavePrompt = () => {
           showCircle={false}
         />
       </View>
-      <ImportControls
-        altTitle='Back'
-        mainTitle='Finish'
-        altHandle={() => router.back()}
-        mainHandle={handleImport}
-        altDisabled={exportDisabled}
-        mainDisabled={exportDisabled}
-      />
-    </View>
+    </>
   );
 }
 
@@ -231,7 +219,7 @@ const Local = StyleSheet.create({
   body: {
     ...Styles.main,
     width: '90%',
-    marginBottom: Dimensions.get('screen').height < 700 ? 70 : 50,
+    marginBottom: Dimensions.get('screen').height < 700 ? 100 : 80,
   },
   prompt: {
     ...Styles.h3,

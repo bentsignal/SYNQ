@@ -8,10 +8,9 @@ import { usePostHog } from "posthog-react-native";
 type ThemeOptionProps = {
   color: string;
   name: string;
-  key?: any;
 }
 
-const ThemeOption = ({ color, name, key }: ThemeOptionProps) => {
+const ThemeOption = ({ color, name }: ThemeOptionProps) => {
 
   const { premium } = usePremiumContext();
   const { theme, changeTheme } = useThemeContext();

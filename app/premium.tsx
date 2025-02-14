@@ -190,7 +190,7 @@ const Premium = () => {
         default:
           throw new Error('Invalid purchase option');
       }
-      posthog.capture('purchase_premium', {
+      posthog.capture('attempt_purchase_premium', {
         tier: id,
       });
       await PurchaseManager.purchase(id);
@@ -202,10 +202,17 @@ const Premium = () => {
       setPremium(true);
       updateStatus(await PurchaseManager.checkStatus());
       setLoading(false);
+      posthog.capture('success_purchase_premium', {
+        tier: id,
+      });
     }
     catch (error) {
       console.log('error purchasing premium:', error);
       const trace = error instanceof Error ? error.message : String(error);
+      posthog.capture('error_purchase_premium', {
+        error: trace,
+        cancelled: trace.includes('cancelled'),
+      });
       if (!trace.includes('cancelled')) {
         sendErrorNotification(
           'Premium Error',

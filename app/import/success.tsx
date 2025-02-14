@@ -26,17 +26,13 @@ export default function Success() {
   source = replaceColor('#63a3ff', theme, source); // main
 
   return (
-    <View style={Styles.body}>
-      <View style={Styles.main}>
-        <LottieView 
-          source={source}
-          autoPlay
-          loop={false}
-          style={{flexGrow: 1, width: 100}}
-          renderMode={'SOFTWARE'}
-        />
-      </View>
-    </View>
+    <LottieView 
+      source={source}
+      autoPlay
+      loop={false}
+      style={{flexGrow: 1, width: 100}}
+      renderMode={'SOFTWARE'}
+    />
   );
 
 }

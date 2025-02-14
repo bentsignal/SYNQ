@@ -73,7 +73,7 @@ const WiFi = () => {
     }
     else if (loading || loadAnimInProgress || results.length === 0) {
       return (
-        <View style={[Styles.main, Local.container]}>
+        <View style={[Styles.main, Local.container, {paddingBottom: 100}]}>
           <Progress 
             completion={completion} 
             loading={loading}

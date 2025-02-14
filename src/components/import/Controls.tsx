@@ -53,10 +53,10 @@ export default function ImportControls() {
   const [mainDisabled, setMainDisabled] = useState(false);
 
   useEffect(() => {
-    if (pathname === 'import/files' || pathname === 'import/wifi') {
+    if (pathname === '/import/files' || pathname === '/import/wifi') {
       setAltTitle('Cancel');
       setMainTitle('Next');
-      if (pathname === 'import/files') {
+      if (pathname === '/import/files') {
         setAltDisabled(loading);
         setMainDisabled(exportDisabled);
       }

@@ -41,7 +41,7 @@ const Files = () => {
       return (
         <View
           style={[Styles.main, {
-            paddingBottom: 50
+            paddingBottom: 100
           }]}
         >
           <Progress 

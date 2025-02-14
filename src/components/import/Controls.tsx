@@ -128,13 +128,15 @@ export default function ImportControls() {
     console.log('altHandle: ', pathname);
     if (pathname === '/import/files' || pathname === '/import/wifi') {
       router.back();
-      setLoading(false);
-      setTransferSize(0);
-      setResults([]);
-      setExportDisabled(true);
-      if (pathname === '/import/wifi') {
-        resetResults();
-      }
+      setTimeout(() => {
+        setLoading(false);
+        setTransferSize(0);
+        setResults([]);
+        setExportDisabled(true);
+        if (pathname === '/import/wifi') {
+          resetResults();
+        }
+      }, 10);
     }
     else if (pathname === '/import/export') {
       router.back();

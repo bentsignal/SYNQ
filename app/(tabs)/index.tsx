@@ -341,9 +341,9 @@ const Home = () => {
           handlePress={() => {
             setLoading(true);
             router.push('/import/files');
-            setResults([]);
-            setShowImportAd(true);
             setTimeout(() => {
+              setResults([]);
+              setShowImportAd(true);
               browseFiles();
             }, 10);
           }}
@@ -354,10 +354,12 @@ const Home = () => {
           icon={require('@/src/assets/icons/wifi.png')}
           disabled={false}
           handlePress={() => {
-            setShowImportAd(true);
             setLoading(true);
-            setResults([]);
             router.push('/import/wifi');
+            setTimeout(() => {
+              setResults([]);
+              setShowImportAd(true);
+            }, 10);
           }}
         />
       </ScrollView>

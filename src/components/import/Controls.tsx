@@ -129,7 +129,6 @@ export default function ImportControls() {
   }
 
   const altHandle = () => {
-    console.log('altHandle: ', pathname);
     if (pathname === '/import/files' || pathname === '/import/wifi') {
       router.back();
       setTimeout(() => {

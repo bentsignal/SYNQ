@@ -52,11 +52,7 @@ const TabLayout = () => {
       <Server />
       <Tabs
         screenOptions={{
-          headerShown: true,
-          headerStyle: Styles.header,
-          header: () => <Top />,
-          headerShadowVisible: false,
-          headerTitleStyle: Styles.infoText,
+          headerShown: false,
           tabBarActiveTintColor: Colors.tabActive,
           tabBarInactiveTintColor: Colors.tabInactive,
           tabBarStyle: Styles.tabBar,
@@ -67,7 +63,8 @@ const TabLayout = () => {
           sceneStyle: {
             backgroundColor: Colors.background,
           },
-          animation: 'shift',
+          // animation: 'shift',
+          animation: 'none',
           transitionSpec: {
             animation: 'timing',
             config: {
@@ -85,6 +82,8 @@ const TabLayout = () => {
               <HomeIcon focused={focused}/>
             ),
             animation: 'none',
+            headerShown: true,
+            header: () => <Top />,
           }}
         />
         <Tabs.Screen 

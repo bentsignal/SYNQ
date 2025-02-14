@@ -171,7 +171,7 @@ const ArtistItem = ({artist, allowInteraction, bg}: ArtistProps) => {
           await handleSelect();
         }
         else {
-          router.push(`/artist/${artist.id}`);
+          router.push(`/library/artist/${artist.id}`);
         }
       }}
     >

@@ -171,10 +171,6 @@ const ArtistView = ({id}: {id: number}) => {
             showEmptyComponent={albums.length === 0}
           />
         )}
-        <View style={Local.miniPlayerContainer}>
-          <MiniPlayer />
-        </View>
-        <TabBar />
       </View>
     </View>
   );
@@ -189,12 +185,6 @@ const Local = StyleSheet.create({
     ...Styles.body,
     flex: 1,
     backgroundColor: Colors.background,
-  },
-  miniPlayerContainer: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 0,
   },
   emptyText: {
     ...Styles.h5,

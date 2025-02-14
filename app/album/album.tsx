@@ -143,10 +143,6 @@ const AlbumView = ({id}: {id: number}) => {
             </Animated.View>
           }
         />
-        <View style={Local.miniPlayerContainer}>
-          <MiniPlayer />
-        </View>
-        <TabBar />
       </View>
     </View>
   );
@@ -161,12 +157,6 @@ const Local = StyleSheet.create({
     ...Styles.body,
     flex: 1,
     backgroundColor: Colors.background,
-  },
-  miniPlayerContainer: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 0,
   },
   artistList: {
     width: '100%',

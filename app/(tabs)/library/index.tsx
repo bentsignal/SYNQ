@@ -1,9 +1,7 @@
 import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Styles } from "@/src/constants/Styles";
 import PageTitle from '@/src/components/PageTitle';
-import Notifications from "@/src/components/notifications/Notifications";
 import { useEffect, useState } from "react";
-import MiniPlayer from '@/src/components/player/MiniPlayer';
 import CategorySelector from "@/src/components/CategorySelector";
 import Playlists from "@/src/components/library/Playlists";
 import Albums from "@/src/components/library/Albums";
@@ -71,13 +69,6 @@ const Library = () => {
       />
       <View style={Styles.divider} />
       {getBody()}
-      <MiniPlayer />
-      <Notifications  
-        customStyles={{
-          position: 'absolute',
-          bottom: 0,
-        }}
-      />
     </View>
   );
 }

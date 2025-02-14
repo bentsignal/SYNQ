@@ -1,0 +1,47 @@
+import { Stack } from "expo-router";
+
+import { Styles } from "@/src/constants/Styles";
+import { Colors } from "@/src/constants/Colors";
+
+import Top from "@/src/components/Top";
+import MiniPlayer from "@/src/components/player/MiniPlayer";
+import Notifications from "@/src/components/notifications";
+
+export default function LibraryLayout() {
+  return (
+    <>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: {
+            backgroundColor: Colors.background,
+          },
+        }}
+      >
+        <Stack.Screen 
+          name="index"
+          options={{
+            headerShown: true,
+            header: () => <Top />,
+          }}
+        />
+        <Stack.Screen 
+          name="album/[id]"
+        />
+        <Stack.Screen 
+          name="artist/[id]"
+        />
+        <Stack.Screen 
+          name="playlist/[id]"
+        />
+      </Stack>
+      <MiniPlayer />
+      <Notifications  
+        customStyles={{
+          position: 'absolute',
+          bottom: 0,
+        }}
+      />
+    </>
+  )
+}

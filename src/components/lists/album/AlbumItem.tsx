@@ -162,7 +162,7 @@ const AlbumItem = ({album, allowInteraction, bg}: AlbumProps) => {
           await handleSelect();
         }
         else {
-          router.push(`/album/${album.id}`);
+          router.push(`/library/album/${album.id}`);
         }
       }}
     >

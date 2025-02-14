@@ -11,14 +11,15 @@ import { ArtistBusEvent } from '@/src/events/artist/Events';
 import artistBus from '@/src/events/artist';
 import { deleteArtist, getSongsFromArtist } from '@/src/controllers/ArtistController';
 import { exportSongs } from '@/src/controllers/ImportExportController';
+import { usePostHog } from 'posthog-react-native';
 
 const ArtistOptions = ({name}: {name: string}) => {
 
   const { editArtist, setShowGlobalLoading } = useGlobalContext();
 
   const { premium } = usePremiumContext();
-  
   const { theme } = useThemeContext();
+  const posthog = usePostHog();
 
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
 
@@ -32,6 +33,7 @@ const ArtistOptions = ({name}: {name: string}) => {
 
   const handleEdit = () => {
     TrueSheet.dismiss(name);
+    posthog.capture('edit_artist');
     setTimeout(() => {
       router.push(`/artist/edit/${editArtist.id}`);
     }, actionDelay);
@@ -40,6 +42,7 @@ const ArtistOptions = ({name}: {name: string}) => {
   const handleExport = async () => {
     try {
       TrueSheet.dismiss(name);
+      posthog.capture('export_artist');
       setShowGlobalLoading(true);
       let songs = await getSongsFromArtist(editArtist.id);
       await exportSongs(songs);
@@ -53,6 +56,7 @@ const ArtistOptions = ({name}: {name: string}) => {
 
   const executeDelete = async () => {
     try {
+      posthog.capture('delete_artist');
       await deleteArtist(editArtist.id);
       artistBus.emit(ArtistBusEvent.ARTIST_DELETED);
     }

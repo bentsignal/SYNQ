@@ -7,9 +7,13 @@ import { router } from "expo-router";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { Colors } from "@/src/constants/Colors";
 import LinearGradient from "react-native-linear-gradient";
+import { usePostHog } from "posthog-react-native";
+import { usePremiumContext } from "@/src/context/PremiumProvider";
 
 export default function ImportBlur() {  
   const { theme } = useThemeContext();
+  const { premium } = usePremiumContext();
+  const posthog = usePostHog();
   return (
     <BlurView style={Local.blur} intensity={10} tint='dark'>
       <View style={Local.premiumMessageContainer}>
@@ -22,7 +26,12 @@ export default function ImportBlur() {
           background={theme}
           disabledColor={darkenColor(theme, 40, 50)}
           opacity={.90}
-          handlePress={() => router.push('/premium')}
+          handlePress={() => {
+            posthog.capture('check_premium', {
+              premium: premium
+            });
+            router.push('/premium')}
+          }
         />
       </View>
       <View style={Local.gradientContainer}>

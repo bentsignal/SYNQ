@@ -11,14 +11,14 @@ import { AlbumBusEvent } from '@/src/events/album/Events';
 import albumBus from '@/src/events/album';
 import { deleteAlbum, getSongsFromAlbum } from '@/src/controllers/AlbumController';
 import { exportSongs } from '@/src/controllers/ImportExportController';
+import { usePostHog } from 'posthog-react-native';
 
 const AlbumOptions = ({name}: {name: string}) => {
 
   const { editAlbum, setShowGlobalLoading } = useGlobalContext();
-
   const { premium } = usePremiumContext();
-  
   const { theme } = useThemeContext();
+  const posthog = usePostHog();
 
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
 
@@ -32,6 +32,7 @@ const AlbumOptions = ({name}: {name: string}) => {
 
   const handleEdit = () => {
     TrueSheet.dismiss(name);
+    posthog.capture('edit_album');
     setTimeout(() => {
       router.push(`/album/edit/${editAlbum.id}`);
     }, actionDelay);
@@ -40,6 +41,7 @@ const AlbumOptions = ({name}: {name: string}) => {
   const handleExport = async () => {
     try {
       TrueSheet.dismiss(name);
+      posthog.capture('export_album');
       setShowGlobalLoading(true);
       let songs = await getSongsFromAlbum(editAlbum.id);
       await exportSongs(songs);
@@ -53,6 +55,7 @@ const AlbumOptions = ({name}: {name: string}) => {
 
   const executeDelete = async () => {
     try {
+      posthog.capture('delete_album');
       await deleteAlbum(editAlbum.id);
       albumBus.emit(AlbumBusEvent.ALBUM_DELETED);
     }

@@ -330,7 +330,12 @@ const Home = () => {
               desc={premium ? "Manage your subcription" : 'Unlock all features'}
               icon={require('@/src/assets/icons/premium.png')}
               disabled={false}
-              handlePress={() => router.push("/premium")}
+              handlePress={() => {
+                posthog.capture('check_premium', {
+                  premium: premium
+                });
+                router.push("/premium")}
+              }
               iconTint={theme}
             />
           </>

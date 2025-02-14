@@ -13,15 +13,9 @@ import SettingsButton from "@/src/components/SettingsButton";
 import CFG from "@/src/constants/Config";
 import { usePathname } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { usePostHog } from 'posthog-react-native';
 
 const ExportPrompt = () => {
-
-  const pathname = usePathname();
-  const currentPath = useRef(pathname);
-
-  useEffect(() => {
-    currentPath.current = pathname;
-  }, [pathname]);
 
   const { 
     
@@ -39,6 +33,13 @@ const ExportPrompt = () => {
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
   const insets = useSafeAreaInsets();
+  const pathname = usePathname();
+  const currentPath = useRef(pathname);
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    currentPath.current = pathname;
+  }, [pathname]);
 
   const [disabled, setDisabled] = useState(false);
 
@@ -71,6 +72,7 @@ const ExportPrompt = () => {
 
   const handleExport = async () => {
     try {
+      posthog.capture('export_during_import');
       setDisabled(true);
       setShowGlobalLoading(true);
       setShowGlobalProgress(false);

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TrackPlayer, { Track } from 'react-native-track-player';
 import { router, usePathname } from 'expo-router';
+import { usePostHog } from 'posthog-react-native';
 import axios from 'axios';
 
 import { useGlobalContext } from '@/src/context/GlobalProvider';
@@ -46,6 +47,7 @@ export default function ImportControls() {
   const { theme } = useThemeContext();
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
+  const posthog = usePostHog();
 
   const [altTitle, setAltTitle] = useState('Cancel');
   const [mainTitle, setMainTitle] = useState('Next');
@@ -131,6 +133,7 @@ export default function ImportControls() {
   const altHandle = () => {
     if (pathname === '/import/files' || pathname === '/import/wifi') {
       router.back();
+      posthog.capture('import_cancel');
       setTimeout(() => {
         setLoading(false);
         setTransferSize(0);
@@ -160,6 +163,9 @@ export default function ImportControls() {
     }
     else if (pathname === '/import/save') {
       importBus.emit(ImportBusEvent.TRIGGER_FINISH);
+      posthog.capture('import_finish', {
+        numberOfSongs: results.length,
+      });
     }
   }
   

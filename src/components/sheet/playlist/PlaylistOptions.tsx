@@ -12,15 +12,14 @@ import { router } from 'expo-router';
 import { PlaylistBusEvent } from '@/src/events/playlist/Events';
 import playlistBus from '@/src/events/playlist';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-
+import { usePostHog } from 'posthog-react-native';
 
 const PlaylistOptions = ({name}: {name: string}) => {
 
   const { editPlaylist, setShowGlobalLoading } = useGlobalContext();
-
   const { premium } = usePremiumContext();
-  
   const { theme } = useThemeContext();
+  const posthog = usePostHog();
 
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
 
@@ -34,6 +33,7 @@ const PlaylistOptions = ({name}: {name: string}) => {
 
   const handleEdit = () => {
     TrueSheet.dismiss(name);
+    posthog.capture('edit_playlist');
     setTimeout(() => {
       router.push(`/playlist/edit/${editPlaylist.id}`);
     }, actionDelay);
@@ -42,6 +42,7 @@ const PlaylistOptions = ({name}: {name: string}) => {
   const handleExport = async () => {
     try {
       TrueSheet.dismiss(name);
+      posthog.capture('export_playlist');
       setShowGlobalLoading(true);
       let songs = await getPlaylistSongs(editPlaylist.id);
       console.log(songs);
@@ -56,6 +57,7 @@ const PlaylistOptions = ({name}: {name: string}) => {
 
   const executeDelete = async () => {
     try {
+      posthog.capture('delete_playlist');
       await deletePlaylist(editPlaylist.id);
       playlistBus.emit(PlaylistBusEvent.PLAYLIST_DELETED);
     }

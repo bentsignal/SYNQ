@@ -88,6 +88,7 @@ export default function AppIcon() {
           <AppIconOption
             color={color}
             key={index}
+            name={key}
             selected={selected === getIcon(color) || (color === Themes.blue && selected === 'default')}
             changeSelection={setSelected}
           />

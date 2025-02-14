@@ -22,15 +22,9 @@ import SettingsButton from "@/src/components/SettingsButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import importBus from "@/src/events/import";
 import { ImportBusEvent } from "@/src/events/import/Events";
+import { usePostHog } from 'posthog-react-native';
 
 const SavePrompt = () => {
-
-  const pathname = usePathname();
-  const currentPath = useRef(pathname);
-
-  useEffect(() => {
-    currentPath.current = pathname;
-  }, [pathname]);
 
   const { 
 
@@ -52,6 +46,14 @@ const SavePrompt = () => {
   const { theme } = useThemeContext();
   const { premium } = usePremiumContext();
   const insets = useSafeAreaInsets();
+
+  const pathname = usePathname();
+  const currentPath = useRef(pathname);
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    currentPath.current = pathname;
+  }, [pathname]);
   
   const resetResults = async () => {
     try {
@@ -185,6 +187,13 @@ const SavePrompt = () => {
     };
   }, [handleImport]);
 
+  const toggleSave = (value: boolean) => {
+    setShouldSaveToLibrary(value);
+    posthog.capture('import_save_to_library', {
+      value: value,
+    });
+  }
+
   return (
     <>
       <View style={[Local.body, {display: loading ? 'none' : 'flex'}]}>
@@ -199,7 +208,7 @@ const SavePrompt = () => {
           <Text style={Local.checkboxText}>Save to library</Text>
           <Checkbox
             value={shouldSaveToLibrary}
-            onValueChange={setShouldSaveToLibrary}
+            onValueChange={toggleSave}
             color={theme}
           />
         </View>

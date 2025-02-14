@@ -12,11 +12,13 @@ import { useThemeContext } from '@/src/context/ThemeProvider';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
 import Option from '@/src/components/Option';
 import { router } from 'expo-router';
+import { usePostHog } from 'posthog-react-native';
 
 export default function Customization() {
 
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
+  const posthog = usePostHog();
 
   return (
     <View style={[Styles.body, Local.container]}>
@@ -36,7 +38,12 @@ export default function Customization() {
               disabled={false}
               bg={Colors.textbox}
               iconTint={theme}
-              handlePress={() => router.push("/premium")}
+              handlePress={() => {
+                posthog.capture('check_premium', {
+                  premium: premium
+                });
+                router.push("/premium")}
+              }
             />
           }
           <View style={Local.contentContainer}>

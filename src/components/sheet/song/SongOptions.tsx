@@ -20,6 +20,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { SongBusEvent } from '@/src/events/song/Events';
 import songBus from '@/src/events/song/Bus';
 import usePlayer from '@/src/hooks/usePlayer';
+import { usePostHog } from 'posthog-react-native';
 
 type SongOptionsProps = {
   name: string;
@@ -45,6 +46,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
   const { addToQueue } = usePlayer();
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
+  const posthog = usePostHog();
 
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
   const [inLiked, setinLiked] = useState(false);
@@ -83,6 +85,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
 
   const handleEditSong = () => {
     TrueSheet.dismiss(name);
+    posthog.capture('edit_song');
     setTimeout(() => {
       router.push(`/song/edit/${editSong.id}`);
     }, actionDelay);
@@ -90,6 +93,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
 
   const handleExport = async () => {
     try {
+      posthog.capture('export_song');
       TrueSheet.dismiss(name);
       if (pageType === PageType.IMPORT && !premium) {
         setShowImportAd(true);
@@ -109,6 +113,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
   }
 
   const executeDelete = async () => {
+    posthog.capture('delete_song');
     // handle bulk delete
     if (selectedSongs.length > 0) {
       const newResults = await removeSongs(results, selectedSongs);
@@ -162,6 +167,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
   }
 
   const handleAddToPlaylist = () => {
+    posthog.capture('add_to_playlist');
     TrueSheet.dismiss(name);
     setTimeout(() => {
       router.push('/playlist/add');
@@ -169,6 +175,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
   }
 
   const handleRemoveFromPlaylist = async () => {
+    posthog.capture('remove_from_playlist');
     TrueSheet.dismiss(name);
     try {
       await removeFromPlaylist(editSong.sourceId, editSong.id);
@@ -182,6 +189,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
   }
 
   const handleToggleinLiked = async () => {
+    posthog.capture('toggle_in_liked');
     TrueSheet.dismiss(name);
     try {
       if (inLiked) {

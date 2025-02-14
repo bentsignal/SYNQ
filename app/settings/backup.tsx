@@ -20,12 +20,14 @@ import { usePremiumContext } from '@/src/context/PremiumProvider';
 import { router } from 'expo-router';
 import Option from '@/src/components/Option';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { usePostHog } from 'posthog-react-native';
 
 export default function Backup() {
 
   const { theme } = useThemeContext();
   const [loading, setLoading] = useState(false);
   const { premium } = usePremiumContext();
+  const posthog = usePostHog();
 
   const handleBackup = async () => {
     try {
@@ -150,7 +152,12 @@ export default function Backup() {
                 disabled={false}
                 bg={Colors.textbox}
                 iconTint={theme}
-                handlePress={() => router.push("/premium")}
+                handlePress={() => {
+                  posthog.capture('check_premium', {
+                    premium: premium
+                  });
+                  router.push("/premium")}
+                }
               />
             }
           <View style={Local.contentContainer}>

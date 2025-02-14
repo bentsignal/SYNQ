@@ -3,16 +3,29 @@ import { memo } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
+import { usePostHog } from "posthog-react-native";
 
 type ThemeOptionProps = {
   color: string;
+  name: string;
   key?: any;
 }
 
-const ThemeOption = ({ color }: ThemeOptionProps) => {
+const ThemeOption = ({ color, name, key }: ThemeOptionProps) => {
 
   const { premium } = usePremiumContext();
   const { theme, changeTheme } = useThemeContext();
+  const posthog = usePostHog();
+
+  const handleChange = () => {
+    if (!premium) {
+      return;
+    }
+    posthog.capture('theme_change', {
+      theme: name,
+    });
+    changeTheme(color);
+  }
 
   return (
     <TouchableOpacity 
@@ -21,7 +34,7 @@ const ThemeOption = ({ color }: ThemeOptionProps) => {
         borderColor: color === theme ? Colors.text : 'transparent',
       }]}
       activeOpacity={1}
-      onPress={() => { if (premium) changeTheme(color); }}
+      onPress={handleChange}
     />
   );
 }

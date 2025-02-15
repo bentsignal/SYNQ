@@ -77,28 +77,28 @@ const RootLayout = () => {
   }, [fontLoaded]);
 
   return (
-    <ThemeProvider>
-      <PremiumProvider>
-        <PlaybackProvider>
-          <GlobalProvider initShouldPlayAd={shouldPlayAd}>
-            <PostHogProvider apiKey={posthogKey}
-              options={{
-                host: 'https://us.i.posthog.com',
-                enableSessionReplay: true,
-              }}
-            >
+    <PostHogProvider apiKey={posthogKey}
+      options={{
+        host: 'https://us.i.posthog.com',
+        enableSessionReplay: true,
+      }}
+    >
+      <ThemeProvider>
+        <PremiumProvider>
+          <PlaybackProvider>
+            <GlobalProvider initShouldPlayAd={shouldPlayAd}>
               <GestureHandlerRootView style={{flex: 1}}>
                 <GlobalProgress />
                 <Sheets />
                 <Navigation />
               </GestureHandlerRootView>
-            </PostHogProvider>
-          </GlobalProvider>
-        </PlaybackProvider>
-      </PremiumProvider>
-    </ThemeProvider>
+            </GlobalProvider>
+          </PlaybackProvider>
+        </PremiumProvider>
+      </ThemeProvider>
+    </PostHogProvider>
   );
-  
+
 }
 
 export default RootLayout;

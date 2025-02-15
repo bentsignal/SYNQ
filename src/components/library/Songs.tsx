@@ -16,6 +16,7 @@ export default function Songs () {
 
   const [songs, setSongs] = useState<SongType[]>([]);
   const [showEmptyComponent, setShowEmptyComponent] = useState(false);
+  const [query, setQuery] = useState('');
 
   const refreshSongs = async () => {
     const results = await getPlaylistSongs(1, PageType.LIBRARY, SortType.NEWEST);
@@ -37,7 +38,7 @@ export default function Songs () {
     <View style={Local.container}>
       <SongList
         songs={songs}
-        headerComponent={<QueryWrapper />}
+        headerComponent={<QueryWrapper setQuery={setQuery} query={query} />}
         showEmptyComponent={showEmptyComponent}
         pageType={PageType.LIBRARY}
         sourceId={1}

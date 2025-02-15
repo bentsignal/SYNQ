@@ -1,20 +1,43 @@
-import { View, TextInput, Image, StyleSheet } from "react-native";
+import { View, TextInput, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
+import React from "react";
 
-export default function Search() {
+type SearchProps = {
+  setQuery: (text: string) => void;
+  query: string;
+}
+
+export default function Search({ setQuery, query }: SearchProps) {
+  const inputRef = React.useRef<TextInput>(null);
+
   return (
     <View style={Local.container}>
       <Image 
         source={require('@/src/assets/icons/search.png')} 
-        style={Local.image} 
+        style={Local.searchImage} 
       />
       <TextInput
+        ref={inputRef}
         style={Local.input}
         placeholder="Search"
-        onChangeText={() => {}}
+        onChangeText={setQuery}
         placeholderTextColor={Colors.text}
       />
+      {query.length > 0 && (
+        <TouchableOpacity 
+          style={Local.clearButton} 
+          onPress={() => {
+            setQuery('');
+            inputRef.current?.clear();
+          }}
+        >
+          <Image 
+            source={require('@/src/assets/icons/close.png')} 
+            style={Local.clearImage} 
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -26,9 +49,9 @@ const Local = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     backgroundColor: Colors.song,
-    padding: 10,
+    paddingLeft: 15,
   },
-  image: {
+  searchImage: {
     width: 15,
     height: 15,
     tintColor: Colors.text,
@@ -37,5 +60,17 @@ const Local = StyleSheet.create({
   input: {
     flex: 1,
     color: Colors.text,
+    ...Styles.h6,
+    paddingVertical: 12,
+  },
+  clearButton: {
+    paddingHorizontal: 10,
+    marginRight: 7,
+    paddingVertical: 12,
+  },
+  clearImage: {
+    width: 12,
+    height: 12,
+    tintColor: Colors.text,
   },
 });

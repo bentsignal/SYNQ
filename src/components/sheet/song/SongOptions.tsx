@@ -212,6 +212,9 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
       console.log('error toggling in favorites: ', error);
     }
   }
+  
+  const exportIncludes = [PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM, PageType.IMPORT].includes(pageType);
+  const deleteExports = [PageType.LIBRARY, PageType.IMPORT].includes(pageType);
 
   return (
     <>
@@ -256,13 +259,13 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
       <SheetOption
         icon={require('@/src/assets/icons/delete.png')}
         text={'Delete'}
-        show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
+        show={premium ? deleteExports : deleteExports && library}
         handler={handleDeleteSong}
       />
       <SheetOption 
         icon={require('@/src/assets/icons/share.png')}
         text={'Export'}
-        show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM, PageType.IMPORT].includes(pageType)}
+        show={premium ? exportIncludes : exportIncludes && library}
         handler={handleExport}
       />
     </>

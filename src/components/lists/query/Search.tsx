@@ -55,7 +55,7 @@ const Local = StyleSheet.create({
     width: 15,
     height: 15,
     tintColor: Colors.text,
-    marginRight: 10,
+    marginRight: 12,
   },
   input: {
     flex: 1,

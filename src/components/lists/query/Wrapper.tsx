@@ -19,7 +19,10 @@ export default function QueryWrapper({ setQuery, query }: QueryWrapperProps) {
 const Local = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    marginBottom: 10,
+    marginBottom: 15,
+    marginTop: 3,
     gap: 5,
+    width: '102%',
+    marginLeft: -2.5,
   },
 });

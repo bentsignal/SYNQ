@@ -79,7 +79,7 @@ const MiniPlayer = () => {
   const textColor = Colors.text;//darkenColor(theme, 50, 30);
 
   return (
-    <>
+    <View style={Local.wrapper}>
       <TouchableOpacity 
         style={[Local.container, {
           display: track ? 'flex' : 'none',
@@ -134,12 +134,17 @@ const MiniPlayer = () => {
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
-    </>
+    </View>
   );
 
 }
 
 const Local = StyleSheet.create({
+  wrapper: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   container: {
     ...Styles.roundedContainer,
     position: 'absolute',

@@ -20,12 +20,14 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import { SongBusEvent } from '@/src/events/song/Events';
 import songBus from '@/src/events/song/Bus';
 import usePlayer from '@/src/hooks/usePlayer';
+import { usePostHog } from 'posthog-react-native';
 
 type SongOptionsProps = {
   name: string;
+  library?: boolean;
 }
 
-const SongOptions = ({ name }: SongOptionsProps) => {
+const SongOptions = ({ name, library = false }: SongOptionsProps) => {
 
   const { 
     
@@ -33,7 +35,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
     numModified,
     haptic, selectedSongs, results,
 
-    setExportDisabled, setHomeState,
+    setExportDisabled,
     setResults,
     setShowImportAd,
     setShowGlobalLoading,
@@ -44,6 +46,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
   const { addToQueue } = usePlayer();
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
+  const posthog = usePostHog();
 
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
   const [inLiked, setinLiked] = useState(false);
@@ -82,6 +85,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
 
   const handleEditSong = () => {
     TrueSheet.dismiss(name);
+    posthog.capture('edit_song');
     setTimeout(() => {
       router.push(`/song/edit/${editSong.id}`);
     }, actionDelay);
@@ -89,6 +93,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
 
   const handleExport = async () => {
     try {
+      posthog.capture('export_song');
       TrueSheet.dismiss(name);
       if (pageType === PageType.IMPORT && !premium) {
         setShowImportAd(true);
@@ -108,12 +113,13 @@ const SongOptions = ({ name }: SongOptionsProps) => {
   }
 
   const executeDelete = async () => {
+    posthog.capture('delete_song');
     // handle bulk delete
     if (selectedSongs.length > 0) {
       const newResults = await removeSongs(results, selectedSongs);
       if (newResults.length <= 0) {
         setExportDisabled(true);
-        setHomeState(0);
+        router.replace('/(tabs)');
       }
       setResults(newResults);
     }
@@ -138,7 +144,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
         setExportDisabled(true);
       }
       if (newResults.length === 0) {
-        setHomeState(0);
+        router.replace('/(tabs)');
       }
       setResults(newResults);
     }
@@ -161,6 +167,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
   }
 
   const handleAddToPlaylist = () => {
+    posthog.capture('add_to_playlist');
     TrueSheet.dismiss(name);
     setTimeout(() => {
       router.push('/playlist/add');
@@ -168,6 +175,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
   }
 
   const handleRemoveFromPlaylist = async () => {
+    posthog.capture('remove_from_playlist');
     TrueSheet.dismiss(name);
     try {
       await removeFromPlaylist(editSong.sourceId, editSong.id);
@@ -181,6 +189,7 @@ const SongOptions = ({ name }: SongOptionsProps) => {
   }
 
   const handleToggleinLiked = async () => {
+    posthog.capture('toggle_in_liked');
     TrueSheet.dismiss(name);
     try {
       if (inLiked) {
@@ -203,37 +212,44 @@ const SongOptions = ({ name }: SongOptionsProps) => {
       console.log('error toggling in favorites: ', error);
     }
   }
+  
+  const exportIncludes = [PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM, PageType.IMPORT].includes(pageType);
+  const deleteExports = [PageType.LIBRARY, PageType.IMPORT].includes(pageType);
 
   return (
     <>
-      <SheetOption 
-        icon={inLiked ? require('@/src/assets/icons/unheart.png') : require('@/src/assets/icons/heart.png')}
-        text={inLiked ? 'Remove from Liked Songs' : 'Add to Liked Songs'}
-        show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
-        handler={handleToggleinLiked}
-      />
-      <SheetOption 
-        icon={require('@/src/assets/icons/add.png')}
-        text={'Add to Playlist'}
-        show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
-        handler={handleAddToPlaylist}
-      />
-      <SheetOption 
-        icon={require('@/src/assets/icons/remove.png')}
-        text={'Remove from Playlist'}
-        show={[PageType.LIBRARY, PageType.PLAYER].includes(pageType) 
-          && editSong.sourceId !== undefined
-          && editSong.sourceId !== 1
-          && editSong.sourceType === SourceType.PLAYLIST
-        }
-        handler={handleRemoveFromPlaylist}
-      />
-      <SheetOption 
-        icon={require('@/src/assets/icons/add-to-queue.png')}
-        text={'Add to Queue'}
-        show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
-        handler={handleAddToQueue}
-      />
+      {library && 
+        <>
+          <SheetOption 
+            icon={inLiked ? require('@/src/assets/icons/unheart.png') : require('@/src/assets/icons/heart.png')}
+            text={inLiked ? 'Remove from Liked Songs' : 'Add to Liked Songs'}
+            show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
+            handler={handleToggleinLiked}
+          />
+          <SheetOption 
+            icon={require('@/src/assets/icons/add.png')}
+            text={'Add to Playlist'}
+            show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
+            handler={handleAddToPlaylist}
+          />
+          <SheetOption 
+            icon={require('@/src/assets/icons/remove.png')}
+            text={'Remove from Playlist'}
+            show={[PageType.LIBRARY, PageType.PLAYER].includes(pageType) 
+              && editSong.sourceId !== undefined
+              && editSong.sourceId !== 1
+              && editSong.sourceType === SourceType.PLAYLIST
+            }
+            handler={handleRemoveFromPlaylist}
+          />
+          <SheetOption 
+            icon={require('@/src/assets/icons/add-to-queue.png')}
+            text={'Add to Queue'}
+            show={[PageType.LIBRARY, PageType.QUEUE, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM].includes(pageType)}
+            handler={handleAddToQueue}
+          />
+        </>
+      }
       <SheetOption 
         icon={require('@/src/assets/icons/edit.png')}
         text={'Edit'}
@@ -243,13 +259,13 @@ const SongOptions = ({ name }: SongOptionsProps) => {
       <SheetOption
         icon={require('@/src/assets/icons/delete.png')}
         text={'Delete'}
-        show={[PageType.LIBRARY, PageType.IMPORT].includes(pageType)}
+        show={premium ? deleteExports : deleteExports && library}
         handler={handleDeleteSong}
       />
       <SheetOption 
         icon={require('@/src/assets/icons/share.png')}
         text={'Export'}
-        show={[PageType.LIBRARY, PageType.PLAYER, PageType.ARTIST, PageType.ALBUM, PageType.IMPORT].includes(pageType)}
+        show={premium ? exportIncludes : exportIncludes && library}
         handler={handleExport}
       />
     </>

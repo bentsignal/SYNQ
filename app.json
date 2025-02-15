@@ -2,7 +2,7 @@
   "expo": {
     "name": "synq",
     "slug": "synq",
-    "version": "2.2.0",
+    "version": "2.3.0",
     "orientation": "portrait",
     "icon": "./src/assets/appIcons/icon-blue.png",
     "scheme": "synq",
@@ -26,7 +26,7 @@
           "audio"
         ]
       },
-      "buildNumber": "57"
+      "buildNumber": "61"
     },
     "android": {
       "adaptiveIcon": {
@@ -98,7 +98,8 @@
           ]
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

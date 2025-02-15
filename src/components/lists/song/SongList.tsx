@@ -14,6 +14,7 @@ import { FlatList } from 'react-native';
 import { check } from '@/lib/Util';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import usePlayer from '@/src/hooks/usePlayer';
+import { usePostHog } from 'posthog-react-native';
 
 const MemoSong = memo(Song);
 
@@ -65,6 +66,7 @@ const SongList = memo((
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
   const activeTrack = useActiveTrack();
+  const posthog = usePostHog();
   const { addToQueue, updateQueue } = usePlayer();
   
   const [activeIndex, setActiveIndex] = useState(0);
@@ -87,6 +89,7 @@ const SongList = memo((
     const id = activeTrack?.id ? activeTrack.id : -1;
     // play ad if user is non premium and has passed ad threshold
     if (!premium && shouldPlayAd && !adPlaying) {
+      posthog.capture('play_ad');
       setAdPlaying(true);
       await playAd(theme, adURL);
       const newTrack = await getTrackFromSong(song, theme);
@@ -101,6 +104,7 @@ const SongList = memo((
     }
     // if ad is not played, play song
     else if (id !== song.id && !adPlaying) {
+      posthog.capture('play_song');
       setAdPlaying(false);
       try {
         const newTrack = await getTrackFromSong(song, theme);

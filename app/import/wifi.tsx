@@ -1,12 +1,10 @@
 import { Text, View, Dimensions, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { Styles } from '@/src/constants/Styles';
 import SongList from '@/src/components/lists/song';
 import PageTitle from '@/src/components/PageTitle';
-import ImportInstructions from '@/src/components/import/wifi/ImportInstructions';
-import ImportControls from '../ImportControls';
+import ImportInstructions from '@/src/components/import/Instructions';
 import InfoModal from '@/src/components/modals/InfoModal';
 import { Colors } from '@/src/constants/Colors';
 import Progress from '@/src/components/Progress';
@@ -14,7 +12,8 @@ import { PageType } from '@/src/constants/Types';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
 import CFG from '@/src/constants/Config';
 import SettingsButton from '@/src/components/SettingsButton';
-import ImportBlur from '../ImportBlur';
+import ImportBlur from '@/src/components/import/Blur';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const WiFi = () => {
 
@@ -23,16 +22,14 @@ const WiFi = () => {
     results, transferSize, loading,
     ip, wifiDisabled,
     transferProgress, loadAnimInProgress,
-    homeState, exportDisabled,
 
-    setResults, setExportDisabled, setLoading,
+    setExportDisabled,
     setShowInfoModal,
-    setImportState, setHomeState,
-    setTransferSize,
 
   } = useGlobalContext();
 
   const { premium } = usePremiumContext();
+  const insets = useSafeAreaInsets();
 
   const Local = StyleSheet.create({
     container: {
@@ -61,35 +58,6 @@ const WiFi = () => {
     }
   }, [transferProgress]);
 
-  const callReset = async () => {
-    const resetEndpoint = `http://${URL}${CFG.PORT === 80 ? '' : `:${CFG.PORT}`}`;
-    return await axios.get(`${resetEndpoint}/reset`);
-  }
-  
-  const resetResults = () => {
-    callReset().then((response) => {
-      return null;
-    })
-    .catch((error) => {
-      console.log(error);
-      return null;
-    })
-  }
-
-  const handleCancel = () => {
-    setLoading(false);
-    setTransferSize(0);
-    setHomeState(0);
-    setResults([]);
-    setExportDisabled(true);
-    resetResults();
-  }
-
-  const handleNext = () => {
-    setImportState(homeState);
-    setHomeState(5);
-  }
-
   const getBody = () => {
     if (wifiDisabled) {
       return (
@@ -105,7 +73,7 @@ const WiFi = () => {
     }
     else if (loading || loadAnimInProgress || results.length === 0) {
       return (
-        <View style={[Styles.main, Local.container]}>
+        <View style={[Styles.main, Local.container, {paddingBottom: 100}]}>
           <Progress 
             completion={completion} 
             loading={loading}
@@ -151,25 +119,18 @@ const WiFi = () => {
   }
 
   return (
-    <View style={Styles.body}>
-      <InfoModal />
-      <PageTitle 
-        title='Transfer Files'
-        showList={false &&results.length > 1 && premium && !loadAnimInProgress}
-        infoHandler={() => setShowInfoModal(true)}
-        rightHandComponent={<SettingsButton />}
-      />
-      {getInstructions()}
+    <>
+      {!wifiDisabled && results.length === 0 && transferSize <= 0 &&
+        <ImportInstructions
+          title='In your web browser, enter:'
+          desc={`${URL}${CFG.PORT === 80 ? '' : `:${CFG.PORT}`}`}
+          icon={require('@/src/assets/icons/wifi.png')}
+          disabled={wifiDisabled}
+          handlePress={() => {}}
+        />
+      }
       {getBody()}
-      <ImportControls
-        altTitle='Cancel'
-        mainTitle='Next'
-        altHandle={handleCancel}
-        mainHandle={handleNext}
-        altDisabled={transferSize > 0}
-        mainDisabled={exportDisabled}
-      />
-    </View>
+    </>
   )
 }
 

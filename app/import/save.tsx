@@ -4,7 +4,6 @@ import { router, usePathname } from "expo-router";
 import { Styles } from "@/src/constants/Styles";
 import PageTitle from "@/src/components/PageTitle";
 import InfoModal from "@/src/components/modals/InfoModal";
-import ImportControls from "@/src/components/import/ImportControls";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { Colors } from "@/src/constants/Colors";
 import Checkbox from "expo-checkbox";
@@ -19,26 +18,24 @@ import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import playlistBus from "@/src/events/playlist";
 import { deleteImportSongs } from "@/src/controllers/ImportExportController";
-import SettingsButton from "../SettingsButton";
+import SettingsButton from "@/src/components/SettingsButton";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import importBus from "@/src/events/import";
+import { ImportBusEvent } from "@/src/events/import/Events";
+import { usePostHog } from 'posthog-react-native';
 
 const SavePrompt = () => {
-
-  const pathname = usePathname();
-  const currentPath = useRef(pathname);
-
-  useEffect(() => {
-    currentPath.current = pathname;
-  }, [pathname]);
 
   const { 
 
     results,
     importState, loading,
-    shouldSaveToLibrary, exportDisabled,
-    showImportAd, showGlobalProgress, globalProgress,
+    shouldSaveToLibrary,
+    showImportAd, showGlobalProgress,
+    ip, 
 
     setExportDisabled, setLoading,
-    setHomeState, setShowInfoModal,
+    setShowInfoModal,
     setTransferSize, setResults,
     setShouldSaveToLibrary, 
     setShowGlobalProgress, setGlobalProgress,
@@ -48,19 +45,22 @@ const SavePrompt = () => {
 
   const { theme } = useThemeContext();
   const { premium } = usePremiumContext();
+  const insets = useSafeAreaInsets();
 
-  const callReset = async () => {
-    return await axios.get(`${URL}/reset`);
-  }
+  const pathname = usePathname();
+  const currentPath = useRef(pathname);
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    currentPath.current = pathname;
+  }, [pathname]);
   
-  const resetResults = () => {
-    callReset().then((response) => {
-      return null;
-    })
-    .catch((error) => {
-      console.log(error);
-      return null;
-    });
+  const resetResults = async () => {
+    try {
+      await axios.get(`http://${ip}${CFG.PORT}/reset`);
+    } catch (error) {
+      console.log('error resetting results: ', error);
+    }
   }
 
   const callReview = async () => {
@@ -112,7 +112,7 @@ const SavePrompt = () => {
             progress += 1;
             setGlobalProgress(Math.ceil(progress / CFG.importAdLength * 100));
           }
-          else if (progress >= CFG.importAdLength && currentPath.current === '/') {
+          else if (progress >= CFG.importAdLength && currentPath.current === '/import/save') {
             clearInterval(interval);
             setShowGlobalProgress(false);
             setTimeout(() => {
@@ -137,8 +137,7 @@ const SavePrompt = () => {
       setTimeout(() => {
         saveToLibrary(songs, progress).then(() => {
           playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
-          setLoading(false);
-          setHomeState(3);
+          router.replace('/import/success');
           setTransferSize(0);
           setShowImportAd(false);
           setResults([]);
@@ -149,13 +148,13 @@ const SavePrompt = () => {
             checkForReview();
           }, 500);
           setTimeout(() => {
-            router.replace('/(tabs)/library')
-            setHomeState(0);
+            setLoading(false);
+            router.replace('/(tabs)/library');
           }, 1500);
         })
         .catch((error) => {
           setLoading(false);
-          setHomeState(4);
+          router.push('/import/failure');
           setTransferSize(0);
           setShowImportAd(false);
           setResults([]);
@@ -166,30 +165,37 @@ const SavePrompt = () => {
       }, 10);
     }
     else {
-      setHomeState(3);
+      router.push('/import/success');
       await deleteImportSongs(results);
       setResults([]);
       setTransferSize(0);
       setShowImportAd(false);
-      setLoading(false);
       setTimeout(() => {
         checkForReview();
       }, 500);
       setTimeout(() => {
-        setHomeState(0);
+        setLoading(false);
+        router.replace('/(tabs)');
       }, 1500);
     }
   }
 
+  useEffect(() => {
+    importBus.on(ImportBusEvent.TRIGGER_FINISH, handleImport);
+    return () => {
+      importBus.off(ImportBusEvent.TRIGGER_FINISH, handleImport);
+    };
+  }, [handleImport]);
+
+  const toggleSave = (value: boolean) => {
+    setShouldSaveToLibrary(value);
+    posthog.capture('import_save_to_library', {
+      value: value,
+    });
+  }
+
   return (
-    <View style={Styles.body}>
-      <InfoModal />
-      <PageTitle 
-        title='Save Music'
-        infoHandler={() => setShowInfoModal(true)}
-        showList={false}
-        rightHandComponent={<SettingsButton />}
-      />
+    <>
       <View style={[Local.body, {display: loading ? 'none' : 'flex'}]}>
         <Text style={Local.prompt}>
           Save to SYNQ library?
@@ -202,7 +208,7 @@ const SavePrompt = () => {
           <Text style={Local.checkboxText}>Save to library</Text>
           <Checkbox
             value={shouldSaveToLibrary}
-            onValueChange={setShouldSaveToLibrary}
+            onValueChange={toggleSave}
             color={theme}
           />
         </View>
@@ -214,15 +220,7 @@ const SavePrompt = () => {
           showCircle={false}
         />
       </View>
-      <ImportControls 
-        altTitle='Back'
-        mainTitle='Finish'
-        altHandle={() => setHomeState(5)}
-        mainHandle={handleImport}
-        altDisabled={exportDisabled}
-        mainDisabled={exportDisabled}
-      />
-    </View>
+    </>
   );
 }
 
@@ -230,7 +228,7 @@ const Local = StyleSheet.create({
   body: {
     ...Styles.main,
     width: '90%',
-    marginBottom: Dimensions.get('screen').height < 700 ? 70 : 50,
+    marginBottom: Dimensions.get('screen').height < 700 ? 100 : 80,
   },
   prompt: {
     ...Styles.h3,

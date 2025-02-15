@@ -175,6 +175,13 @@ const Navigation = () => {
           contentStyle: { backgroundColor: 'transparent'},
         }}
       />
+      <Stack.Screen 
+        name="import"
+        options={{
+          headerShown: false,
+          gestureEnabled: false,
+        }}
+      />
     </Stack>
   );
   

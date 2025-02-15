@@ -18,6 +18,7 @@ import { usePremiumContext } from '@/src/context/PremiumProvider';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import ModalStyles from '@/src/components/modals/Styles';
 import FeatureList from '@/src/components/premium/FeatureList';
+import { usePostHog } from 'posthog-react-native';
 
 const Premium = () => {
 
@@ -31,6 +32,8 @@ const Premium = () => {
     setShowNotificationModal,
   
   } = useGlobalContext();
+
+  const posthog = usePostHog();
 
   const { premium, setPremium } = usePremiumContext();
   const { theme, logo } = useThemeContext();
@@ -187,6 +190,9 @@ const Premium = () => {
         default:
           throw new Error('Invalid purchase option');
       }
+      posthog.capture('attempt_purchase_premium', {
+        tier: id,
+      });
       await PurchaseManager.purchase(id);
       if (haptic) {
         Haptics.notificationAsync(
@@ -196,10 +202,17 @@ const Premium = () => {
       setPremium(true);
       updateStatus(await PurchaseManager.checkStatus());
       setLoading(false);
+      posthog.capture('success_purchase_premium', {
+        tier: id,
+      });
     }
     catch (error) {
       console.log('error purchasing premium:', error);
       const trace = error instanceof Error ? error.message : String(error);
+      posthog.capture('error_purchase_premium', {
+        error: trace,
+        cancelled: trace.includes('cancelled'),
+      });
       if (!trace.includes('cancelled')) {
         sendErrorNotification(
           'Premium Error',

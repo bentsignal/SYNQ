@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Linking } from "react-native";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import Option from "@/src/components/Option";
 import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
@@ -15,11 +15,28 @@ import { SOCIAL_LINKS } from "@/src/constants/Config";
 import ModalStyles from "@/src/components/modals/Styles";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { darkenColor } from "@/src/controllers/ColorController";
+import * as StoreReview from 'expo-store-review';
+import { usePostHog } from 'posthog-react-native';
 
 const Settings = () => {
 
   const { premium }  = usePremiumContext();
   const { theme } = useThemeContext();
+  const posthog = usePostHog();
+
+  const callReview = async () => {
+    const available = await StoreReview.isAvailableAsync();
+    if (available) {
+      await StoreReview.requestReview();
+    }
+  }
+
+  const handleSocialPress = (url: string) => {
+    posthog.capture('social_press', {
+      url,
+    });
+    Linking.openURL(url);
+  }
 
   return (
     <View style={[Styles.body, Local.container]}>
@@ -34,7 +51,12 @@ const Settings = () => {
           desc={premium ? "Manage your subcription" : 'Unlock all features'}
           icon={require('@/src/assets/icons/premium.png')}
           disabled={false}
-          handlePress={() => router.push("/premium")}
+          handlePress={() => {
+            posthog.capture('check_premium', {
+              premium: premium
+            });
+            router.push("/premium")}
+          }
           iconTint={theme}
           bg={Colors.textbox}
         />
@@ -54,24 +76,32 @@ const Settings = () => {
           bg={Colors.textbox}
           handlePress={() => router.push("/settings/backup")}
         />
-        <View style={Local.supportContainer}>
-          <CustomButton 
+        <View style={Local.buttonsContainer}>
+          {/* <CustomButton 
             title="Contact Support"
             buttonWidth={200}
             handlePress={() => Linking.openURL('https://directedbyshawn.com/synq-support')}
+          /> */}
+          <CustomButton 
+            title="Leave a Review"
+            buttonWidth={200}
+            handlePress={callReview}
           />
+          <TouchableOpacity onPress={() => Linking.openURL('https://directedbyshawn.com/synq-support')}>
+            <Text style={Local.supportText}>Contact Support</Text>
+          </TouchableOpacity>
         </View>
         <View style={Local.socialContainer}>
-          <TouchableOpacity onPress={() => Linking.openURL(SOCIAL_LINKS.x)} style={[Local.socialLink]}>
+          <TouchableOpacity onPress={() => handleSocialPress(SOCIAL_LINKS.x)} style={[Local.socialLink]}>
             <Image source={require('@/src/assets/icons/x.png')} style={[Local.socialIcon, {
               width: 25, 
               height: 25,
             }]} />
           </TouchableOpacity>
-          <TouchableOpacity style={Local.socialLink} onPress={() => Linking.openURL(SOCIAL_LINKS.instagram)}>
+          <TouchableOpacity style={Local.socialLink} onPress={() => handleSocialPress(SOCIAL_LINKS.instagram)}>
             <Image style={Local.socialIcon} source={require('@/src/assets/icons/instagram.png')} />
           </TouchableOpacity>
-          <TouchableOpacity style={Local.socialLink} onPress={() => Linking.openURL(SOCIAL_LINKS.discord)}>
+          <TouchableOpacity style={Local.socialLink} onPress={() => handleSocialPress(SOCIAL_LINKS.discord)}>
             <Image style={Local.socialIcon} source={require('@/src/assets/icons/discord.png')} />
           </TouchableOpacity>
         </View>
@@ -111,19 +141,19 @@ const Local = StyleSheet.create({
   scrollViewContent: {
     alignItems: 'center',
   },
-  supportContainer: {
+  buttonsContainer: {
     width: '90%',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 5,
+    gap: 10,
+    marginVertical: 10,
+    marginBottom: 15,
   },
   socialContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 10,
     width: '90%',
-    marginVertical: 10,
   },
   socialIcon: {
     width: 30,
@@ -134,6 +164,10 @@ const Local = StyleSheet.create({
     padding: 5,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  supportText: {
+    ...Styles.h6,
+    color: Colors.infoText,
   }
 });
 

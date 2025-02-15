@@ -6,19 +6,25 @@ import { setAppIcon, getAppIcon } from "expo-icon-handler";
 import { getAppIcon as getAppIconImage, getIcon } from "@/src/constants/Logos";
 import { adjustLightness } from "@/src/controllers/ColorController";
 import { Colors } from "@/src/constants/Colors";
+import { usePostHog } from "posthog-react-native";
 
 type AppIconOptionProps = {
   color: any;
+  name: string;
   selected: boolean;
   changeSelection: (color: any) => void;
 }
 
-export default function AppIconOption({ color, selected, changeSelection }: AppIconOptionProps) {
+export default function AppIconOption({ color, name, selected, changeSelection }: AppIconOptionProps) {
 
   const { premium } = usePremiumContext();
+  const posthog = usePostHog();
 
   const handlePress = () => {
     if (premium) {
+      posthog.capture('app_icon_change', {
+        icon: name,
+      });
       setAppIcon(getIcon(color));
       changeSelection(getIcon(color));
     }

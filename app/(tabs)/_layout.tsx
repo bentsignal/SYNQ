@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Easing, View } from 'react-native';
-import Server from '@/src/components/import/wifi/Server';
+import Server from '@/src/components/import/Server';
 import { HomeIcon, LibraryIcon } from '@/src/components/TabBarIcons';
 import { Colors } from '@/src/constants/Colors';
 import { Styles } from '@/src/constants/Styles';
@@ -52,11 +52,7 @@ const TabLayout = () => {
       <Server />
       <Tabs
         screenOptions={{
-          headerShown: true,
-          headerStyle: Styles.header,
-          header: () => <Top />,
-          headerShadowVisible: false,
-          headerTitleStyle: Styles.infoText,
+          headerShown: false,
           tabBarActiveTintColor: Colors.tabActive,
           tabBarInactiveTintColor: Colors.tabInactive,
           tabBarStyle: Styles.tabBar,
@@ -67,7 +63,8 @@ const TabLayout = () => {
           sceneStyle: {
             backgroundColor: Colors.background,
           },
-          animation: 'shift',
+          // animation: 'shift',
+          animation: 'none',
           transitionSpec: {
             animation: 'timing',
             config: {
@@ -77,26 +74,28 @@ const TabLayout = () => {
           },
         }}
       >
-          <Tabs.Screen
-            name='index'
-            options={{
-              title: 'Home',
-              tabBarIcon: ({ color, focused }) => (
-                <HomeIcon focused={focused}/>
-              ),
-              animation: 'none',
-            }}
-          />
-          <Tabs.Screen 
-            name='library'
-            options={{
-              title:'Library',
-              tabBarIcon: ({ color, focused }) => (
-                <LibraryIcon focused={focused}/>
-              ),
-              animation: 'none',
-            }}
-          />
+        <Tabs.Screen
+          name='index'
+          options={{
+            title: 'Home',
+            tabBarIcon: ({ color, focused }) => (
+              <HomeIcon focused={focused}/>
+            ),
+            animation: 'none',
+            headerShown: true,
+            header: () => <Top />,
+          }}
+        />
+        <Tabs.Screen 
+          name='library'
+          options={{
+            title:'Library',
+            tabBarIcon: ({ color, focused }) => (
+              <LibraryIcon focused={focused}/>
+            ),
+            animation: 'none',
+          }}
+        />
       </Tabs>
     </>
   );

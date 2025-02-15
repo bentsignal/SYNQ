@@ -1,48 +1,94 @@
 import { View, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useEffect, useState } from 'react';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import TrackPlayer, { Track } from 'react-native-track-player';
+import { router, usePathname } from 'expo-router';
+import { usePostHog } from 'posthog-react-native';
+import axios from 'axios';
+
 import { useGlobalContext } from '@/src/context/GlobalProvider';
+import { useThemeContext } from '@/src/context/ThemeProvider';
 import { Styles } from '@/src/constants/Styles';
 import { Colors } from '@/src/constants/Colors';
-import CustomButton from '@/src/components/CustomButton';
+import { PageType } from '@/src/constants/Types';
+import CFG from '@/src/constants/Config';
+
 import { removeSongs } from '@/src/controllers/SongController';
 import { deleteFromLibrary } from '@/src/controllers/LibraryController';
 import { darkenColor, getDisabledColor } from '@/src/controllers/ColorController';
-import Notifications from '@/src/components/notifications/Notifications';
-import { useThemeContext } from '@/src/context/ThemeProvider';
-import { Track } from 'react-native-track-player';
-import { PageType } from '@/src/constants/Types';
-import TrackPlayer from 'react-native-track-player';
 import { removeFromAllPlaylists } from '@/src/controllers/PlaylistController';
-import { router } from 'expo-router';
 
-const ImportControls = (
-  {altTitle, mainTitle, altHandle, mainHandle, altDisabled, mainDisabled}: {
-  altTitle?: string,
-  mainTitle?: string,
-  altHandle?: () => void,
-  mainHandle?: () => void,
-  altDisabled?: boolean,
-  mainDisabled?: boolean,
-}) => {
+import importBus from '@/src/events/import';
+import { ImportBusEvent } from '@/src/events/import/Events';
+
+import Notifications from '@/src/components/notifications/Notifications';
+import CustomButton from '@/src/components/CustomButton';
+
+export default function ImportControls() {
 
   const {
 
     results, selectEnabled,
     selectedSongs, editSong,
-    numModified,
+    numModified, loading,
+    exportDisabled, homeState,
+    ip, showGlobalLoading,
+    transferSize,
 
-    setEditSong, 
+    setEditSong, setImportState,
     setResults, setNumModified,
-    setExportDisabled, setHomeState,
+    setExportDisabled,
     setSelectEnabled,
+    setLoading, setTransferSize,
 
   } = useGlobalContext();
 
   const { theme } = useThemeContext();
+  const insets = useSafeAreaInsets();
+  const pathname = usePathname();
+  const posthog = usePostHog();
+
+  const [altTitle, setAltTitle] = useState('Cancel');
+  const [mainTitle, setMainTitle] = useState('Next');
+  const [altDisabled, setAltDisabled] = useState(false);
+  const [mainDisabled, setMainDisabled] = useState(false);
+
+  useEffect(() => {
+    if (pathname === '/import/files' || pathname === '/import/wifi') {
+      setAltTitle('Cancel');
+      setMainTitle('Next');
+      if (pathname === '/import/files') {
+        setAltDisabled(loading);
+        setMainDisabled(exportDisabled);
+      }
+      else {
+        setAltDisabled(transferSize > 0);
+        setMainDisabled(exportDisabled);
+      }
+    }
+    else if (pathname === '/import/export') {
+      setAltTitle('Back');
+      setMainTitle('Next');
+      setAltDisabled(showGlobalLoading);
+      setMainDisabled(showGlobalLoading);
+    }
+    else if (pathname === '/import/save') {
+      setAltTitle('Back');
+      setMainTitle('Finish');
+      setAltDisabled(exportDisabled);
+      setMainDisabled(exportDisabled);
+    }
+    else if (pathname === '/import/success') {
+      setAltDisabled(true);
+      setMainDisabled(true);
+    }
+  }, [pathname, loading, exportDisabled, showGlobalLoading, transferSize]);
 
   const Local = StyleSheet.create({
     container: {
       position: 'absolute',
-      bottom: 10,
+      bottom: insets.bottom,
       width: '100%',
       justifyContent: 'flex-end',
       alignItems: 'center',
@@ -76,6 +122,53 @@ const ImportControls = (
     }
   });
 
+  const resetResults = async () => {
+    try {
+      await axios.get(`http://${ip}${CFG.PORT}/reset`);
+    } catch (error) {
+      console.log('error resetting results: ', error);
+    }
+  }
+
+  const altHandle = () => {
+    if (pathname === '/import/files' || pathname === '/import/wifi') {
+      router.back();
+      posthog.capture('import_cancel');
+      setTimeout(() => {
+        setLoading(false);
+        setTransferSize(0);
+        setResults([]);
+        setExportDisabled(true);
+        if (pathname === '/import/wifi') {
+          resetResults();
+        }
+      }, 10);
+    }
+    else if (pathname === '/import/export') {
+      router.back();
+      setLoading(false);
+    }
+    else if (pathname === '/import/save') {
+      router.back();
+    }
+  }
+
+  const mainHandle = () => {
+    if (pathname === '/import/files' || pathname === '/import/wifi') {
+      setImportState(homeState);
+      router.push('/import/export');
+    }
+    else if (pathname === '/import/export') {
+      router.push('/import/save');
+    }
+    else if (pathname === '/import/save') {
+      importBus.emit(ImportBusEvent.TRIGGER_FINISH);
+      posthog.capture('import_finish', {
+        numberOfSongs: results.length,
+      });
+    }
+  }
+  
   const handleEdit = () => {
     setEditSong({});
     router.push(`/song/edit/${editSong.id}`);
@@ -88,7 +181,7 @@ const ImportControls = (
         const newResults = await removeSongs(results, selectedSongs);
         if (newResults.length <= 0) {
           setExportDisabled(true);
-          setHomeState(0);
+          router.replace('/(tabs)');
         }
         setResults(newResults);
       }
@@ -112,7 +205,7 @@ const ImportControls = (
           setExportDisabled(true);
         }
         if (newResults.length === 0) {
-          setHomeState(0);
+          router.replace('/(tabs)');
         }
         setResults(newResults);
       }
@@ -159,9 +252,11 @@ const ImportControls = (
           />
         </TouchableOpacity>
       </View>
-      <View style={Local.mainButtonContainer}>
+      <View style={[Local.mainButtonContainer, {
+        display: ['/import/success', '/import/failure'].includes(pathname) ? 'none' : 'flex'
+        }]}>
         <CustomButton 
-          title={altTitle ?? 'Cancel'}
+          title={altTitle}
           background={Colors.altButton}
           handlePress={altHandle}
           disabled={altDisabled}
@@ -169,7 +264,7 @@ const ImportControls = (
           customStyles={{flex: 1}}
         />
         <CustomButton 
-          title={mainTitle ?? 'Next'}
+          title={mainTitle}
           background={theme}
           handlePress={mainHandle}
           disabled={mainDisabled}
@@ -181,5 +276,3 @@ const ImportControls = (
   );
 
 }
-
-export default ImportControls;

@@ -156,7 +156,7 @@ const PlaylistItem = ({playlist, bg}: PlaylistProps) => {
           await handleSelect();
         }
         else {
-          router.push(`/playlist/${playlist.id}`);
+          router.push(`/library/playlist/${playlist.id}`);
         }
       }}
     >

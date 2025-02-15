@@ -85,6 +85,7 @@ const Theme = () => {
         {Object.entries(Themes).map(([key, color], index) => (
           <ThemeOption
             color={color}
+            name={key}
             key={key}
           />
         ))}

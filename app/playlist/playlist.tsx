@@ -121,10 +121,6 @@ const PlaylistView = ({id}: {id: number}) => {
           }
           setScrollPosition={setScrollPosition}
         />
-        <View style={Local.miniPlayerContainer}>
-          <MiniPlayer />
-        </View>
-        <TabBar />
       </View>
     </View>
   );
@@ -139,12 +135,6 @@ const Local = StyleSheet.create({
     ...Styles.body,
     flex: 1,
     backgroundColor: Colors.background,
-  },
-  miniPlayerContainer: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 0,
   },
 });
 

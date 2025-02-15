@@ -48,17 +48,26 @@ export default class PlaylistModel extends Model {
     }
   }
 
-  public async getSongsFromPlaylist(playlistId: number, sort: SortType = SortType.NEWEST): Promise<SongResultType[]> {
+  public async getSongsFromPlaylist(
+    playlistId: number,
+    sort: SortType = SortType.NEWEST,
+    query?: string
+  ): Promise<SongResultType[]> {
     try {
       if (!PlaylistModel.db) {
         await PlaylistModel.initConnection();
       }
       let result = await PlaylistModel.db?.getAllAsync<SongResultType>(`
-        SELECT songs.* 
+        SELECT DISTINCT songs.* 
         FROM songs
         INNER JOIN playlistSongs ON songs.id = playlistSongs.songId
-        WHERE playlistSongs.playlistId = ?;
-      `, [playlistId]);
+        LEFT JOIN albumSongs ON songs.id = albumSongs.songId
+        LEFT JOIN albums ON albumSongs.albumId = albums.id
+        LEFT JOIN artistSongs ON songs.id = artistSongs.songId
+        LEFT JOIN artists ON artistSongs.artistId = artists.id
+        WHERE playlistSongs.playlistId = ?
+        ${query ? 'AND (LOWER(songs.title) LIKE ? OR LOWER(artists.name) LIKE ? OR LOWER(albums.name) LIKE ?)' : ''};
+      `, query ? [playlistId, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : [playlistId]);
 
       if (!result) {
         return [];

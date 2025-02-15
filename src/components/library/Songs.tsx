@@ -19,7 +19,12 @@ export default function Songs () {
   const [query, setQuery] = useState('');
 
   const refreshSongs = async () => {
-    const results = await getPlaylistSongs(1, PageType.LIBRARY, SortType.NEWEST);
+    const results = await getPlaylistSongs(
+      1,
+      PageType.LIBRARY,
+      SortType.NEWEST,
+      query
+    );
     setSongs(results);
     setShowEmptyComponent(results.length === 0);
   }
@@ -33,6 +38,11 @@ export default function Songs () {
       songBus.off(SongBusEvent.SONG_DELETED, refreshSongs);
     }
   }, []);
+
+  useEffect(() => {
+    console.log(query);
+    refreshSongs();
+  }, [query]);
 
   return (
     <View style={Local.container}>

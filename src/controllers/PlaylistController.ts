@@ -70,9 +70,14 @@ export const getPlaylistInfo = async (playlistId: number) => {
   return await db.getPlaylistInfoById(playlistId);
 }
 
-export const getPlaylistSongs = async (playlistId: number, pageType?: PageType, sort: SortType = SortType.NEWEST) => {
+export const getPlaylistSongs = async (
+  playlistId: number,
+  pageType?: PageType,
+  sort: SortType = SortType.NEWEST,
+  query?: string
+) => {
   const db = PlaylistModel.getInstance();
-  const results = await db.getSongsFromPlaylist(playlistId, sort);
+  const results = await db.getSongsFromPlaylist(playlistId, sort, query);
   const songs = results.map(song => {
     const result = getSongByResult(song);
     result.pageType = pageType ?? PageType.LIBRARY;

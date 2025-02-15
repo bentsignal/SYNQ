@@ -40,7 +40,6 @@ export default function Songs () {
   }, []);
 
   useEffect(() => {
-    console.log(query);
     refreshSongs();
   }, [query]);
 

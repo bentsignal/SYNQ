@@ -16,6 +16,7 @@ import { getPlaylistInfo, getPlaylistSongs } from "@/src/controllers/PlaylistCon
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import * as Haptics from 'expo-haptics';
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
+import QueryWrapper from "@/src/components/lists/query/Wrapper";
 
 const PlaylistView = ({id}: {id: number}) => {
 
@@ -28,6 +29,7 @@ const PlaylistView = ({id}: {id: number}) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [playlist, setPlaylist] = useState<PlaylistType | null>(null);
   const [duration, setDuration] = useState(0);
+  const [query, setQuery] = useState('');
 
   const refreshInfo = async () => {
     if (id) {
@@ -44,7 +46,7 @@ const PlaylistView = ({id}: {id: number}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getPlaylistSongs(id, PageType.LIBRARY, SortType.NEWEST);
+      const songs = await getPlaylistSongs(id, PageType.LIBRARY, SortType.NEWEST, query);
       setSongs(songs);
       const duration = songs.reduce((acc, song) => acc + (song.duration ?? 0), 0);
       setDuration(duration);
@@ -82,6 +84,10 @@ const PlaylistView = ({id}: {id: number}) => {
     triggerRefresh();
   }, [id]);
 
+  useEffect(() => {
+    refreshSongs();
+  }, [query]);
+
   const handleMore = () => {
     if (haptic) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -111,13 +117,19 @@ const PlaylistView = ({id}: {id: number}) => {
           sourceId={id}
           sourceType={SourceType.PLAYLIST}
           headerComponent={
-            <SongListHeader 
-              id={id}
-              title={title} 
-              songCount={songCount} 
-              pageType={PageType.PLAYLIST}
-              duration={duration}
-            />
+            <>
+              <SongListHeader 
+                id={id}
+                title={title} 
+                songCount={songCount} 
+                pageType={PageType.PLAYLIST}
+                duration={duration}
+              />
+              <QueryWrapper setQuery={setQuery} query={query} />
+            </>
+          }
+          footerComponent={
+            <View style={{height: 1000}} />
           }
           setScrollPosition={setScrollPosition}
         />

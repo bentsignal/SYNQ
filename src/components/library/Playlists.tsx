@@ -6,14 +6,16 @@ import playlistBus from "@/src/events/playlist";
 import { getPlaylists } from "@/src/controllers/PlaylistController";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import { Colors } from "@/src/constants/Colors";
+import QueryWrapper from "@/src/components/lists/query/Wrapper";
 
 const Playlists = () => {
 
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
+  const [query, setQuery] = useState('');
 
   const refreshPlaylists = async () => {
     try {
-      const results = await getPlaylists();
+      const results = await getPlaylists(query);
       setPlaylists(results.filter(p =>p.id !== 1));
     }
     catch (error) {
@@ -24,6 +26,10 @@ const Playlists = () => {
   useEffect(() => {
     refreshPlaylists();
   }, []);
+
+  useEffect(() => {
+    refreshPlaylists();
+  }, [query]);
 
   useEffect(() => {
     playlistBus.on(PlaylistBusEvent.PLAYLIST_CREATED, refreshPlaylists);
@@ -41,6 +47,9 @@ const Playlists = () => {
       <PlaylistList
         playlists={playlists}
         pageType={PageType.LIBRARY}
+        headerComponent={
+          <QueryWrapper setQuery={setQuery} query={query} />
+        }
       />
     </View>
   );

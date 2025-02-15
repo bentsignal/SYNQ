@@ -18,14 +18,15 @@ export default class PlaylistModel extends Model {
     return PlaylistModel.instance;
   }
 
-  public async getPlaylists(): Promise<PlaylistType[]> {
+  public async getPlaylists(query?: string): Promise<PlaylistType[]> {
     try {
       const result = await PlaylistModel.db?.getAllAsync(`
         SELECT playlists.*, COUNT(playlistSongs.songId) as songCount 
         FROM playlists
         LEFT JOIN playlistSongs ON playlists.id = playlistSongs.playlistId
+        ${query ? 'WHERE LOWER(playlists.name) LIKE ?' : ''}
         GROUP BY playlists.id;
-      `);
+      `, query ? [`%${query.toLowerCase()}%`] : []);
       return result as PlaylistType[];
     }
     catch (error) {

@@ -7,6 +7,7 @@ import { Colors } from '@/src/constants/Colors';
 import { getAppIcon, setAppIcon } from 'expo-icon-handler';
 import { getIcon } from '../constants/Logos';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { usePostHog } from 'posthog-react-native';
 
 type Props = {
   children?: React.ReactNode;
@@ -27,7 +28,16 @@ export const usePremiumContext = () => useContext(PremiumContext);
 const PremiumProvider: React.FC<Props> = ({ children }) => {
 
   const { theme, changeTheme } = useThemeContext();
+  const posthog = usePostHog();
   const [premium, setPremium] = useState<boolean>(false);
+
+  useEffect(() => {
+    posthog.capture('$set', {
+      '$set': {
+        'premium': premium,
+      },
+    });
+  }, [premium]);
 
   const checkPurchases= async () => {
 

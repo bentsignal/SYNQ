@@ -32,8 +32,8 @@ export const getArtistInfo = async (artistId: number): Promise<ArtistType | null
   return await ArtistModel.getInstance().getArtistInfo(artistId);
 }
 
-export const getArtists = async (): Promise<ArtistType[]> => {
-  return await ArtistModel.getInstance().getArtists();
+export const getArtists = async (query?: string): Promise<ArtistType[]> => {
+  return await ArtistModel.getInstance().getArtists(query);
 }
 
 const makeArtistsDir = async () => {

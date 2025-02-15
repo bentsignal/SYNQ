@@ -10,15 +10,16 @@ import { ArtistBusEvent } from "@/src/events/artist/Events";
 import playlistBus from "@/src/events/playlist";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import { Styles as MainStyles } from "@/src/constants/Styles";
+import QueryWrapper from "@/src/components/lists/query/Wrapper";
 
 const Artists = () => {
 
 
   const [artists, setArtists] = useState<ArtistType[]>([]);
   const [showEmptyComponent, setShowEmptyComponent] = useState(false);
-
+  const [query, setQuery] = useState('');
   const refreshArtists = async () => {
-    const results = await getArtists();
+    const results = await getArtists(query);
     setArtists(results);
     setShowEmptyComponent(results.length === 0);
   }
@@ -26,6 +27,10 @@ const Artists = () => {
   useEffect(() => {
     refreshArtists();
   }, []);
+
+  useEffect(() => {
+    refreshArtists();
+  }, [query]);
 
   useEffect(() => {
     artistBus.on(ArtistBusEvent.ARTIST_CREATED, refreshArtists);
@@ -47,6 +52,9 @@ const Artists = () => {
         pageType={PageType.LIBRARY}
         emptyComponent={<Text style={Local.emptyText}>No artists in library</Text>}
         showEmptyComponent={showEmptyComponent}
+        headerComponent={
+          <QueryWrapper setQuery={setQuery} query={query} />
+        }
       />
     </View>
   );

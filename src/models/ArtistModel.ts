@@ -17,8 +17,12 @@ export default class ArtistModel extends Model {
     return ArtistModel.instance;
   }
 
-  public async getArtists(sort: SortType = SortType.ARTIST): Promise<ArtistType[]> {
-    const result = await ArtistModel.db?.getAllAsync<ArtistType>(`SELECT * FROM artists;`);
+  public async getArtists(query?: string, sort: SortType = SortType.ARTIST): Promise<ArtistType[]> {
+    const result = await ArtistModel.db?.getAllAsync<ArtistType>(`
+      SELECT artists.* FROM artists
+      ${query ? 'WHERE LOWER(artists.name) LIKE ?' : ''}
+      GROUP BY artists.id;
+      `, query ? [`%${query.toLowerCase()}%`] : []);
     if (!result) {
       return [];
     }

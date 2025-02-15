@@ -10,14 +10,16 @@ import { AlbumBusEvent } from "@/src/events/album/Events";
 import playlistBus from "@/src/events/playlist";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import { Styles as MainStyles } from "@/src/constants/Styles";
+import QueryWrapper from "@/src/components/lists/query/Wrapper";
 
 const Albums = () => {
 
   const [albums, setAlbums] = useState<AlbumType[]>([]);
   const [showEmptyComponent, setShowEmptyComponent] = useState(false);
+  const [query, setQuery] = useState('');
 
   const refreshAlbums = async () => {
-    const results = await getAlbums();
+    const results = await getAlbums(query);
     setAlbums(results);
     setShowEmptyComponent(results.length === 0);
   }
@@ -25,6 +27,10 @@ const Albums = () => {
   useEffect(() => {
     refreshAlbums();
   }, []);
+
+  useEffect(() => {
+    refreshAlbums();
+  }, [query]);
 
   useEffect(() => {
     albumBus.on(AlbumBusEvent.ALBUM_CREATED, refreshAlbums);
@@ -46,6 +52,9 @@ const Albums = () => {
         pageType={PageType.LIBRARY}
         emptyComponent={<Text style={Local.emptyText}>No albums in library</Text>}
         showEmptyComponent={showEmptyComponent}
+        headerComponent={
+          <QueryWrapper setQuery={setQuery} query={query} />
+        }
       />
     </View>
   );

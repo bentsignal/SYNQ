@@ -17,8 +17,15 @@ export default class AlbumModel extends Model {
     return AlbumModel.instance;
   }
 
-  public async getAlbums(sort: SortType = SortType.ALBUM): Promise<AlbumType[]> {
-    const result = await AlbumModel.db?.getAllAsync<AlbumType>(`SELECT * FROM albums;`);
+  public async getAlbums(query?: string, sort: SortType = SortType.ALBUM): Promise<AlbumType[]> {
+    const result = await AlbumModel.db?.getAllAsync<AlbumType>(`
+      SELECT albums.*, COUNT(artistsAlbums.artistId) as artistCount
+      FROM albums
+      INNER JOIN artistsAlbums ON albums.id = artistsAlbums.albumId
+      LEFT JOIN artists ON artistsAlbums.artistId = artists.id
+      ${query ? 'WHERE LOWER(albums.name) LIKE ? OR LOWER(artists.name) LIKE ?' : ''}
+      GROUP BY albums.id;
+      `, query ? [`%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : []);
     if (!result) {
       return [];
     }

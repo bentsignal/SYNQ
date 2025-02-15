@@ -125,7 +125,7 @@ const PlaylistView = ({id}: {id: number}) => {
                 pageType={PageType.PLAYLIST}
                 duration={duration}
               />
-              <QueryWrapper setQuery={setQuery} query={query} />
+              <QueryWrapper setQuery={setQuery} query={query} songList/>
             </>
           }
           footerComponent={

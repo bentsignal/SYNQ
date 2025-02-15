@@ -139,7 +139,7 @@ const AlbumView = ({id}: {id: number}) => {
                 pageType={PageType.ALBUM}
                 duration={duration}
               />
-              <QueryWrapper setQuery={setQuery} query={query} />
+              <QueryWrapper setQuery={setQuery} query={query} songList/>
             </>
           }
           setScrollPosition={setScrollPosition}

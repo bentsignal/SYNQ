@@ -47,7 +47,7 @@ export default function Songs () {
     <View style={Local.container}>
       <SongList
         songs={songs}
-        headerComponent={<QueryWrapper setQuery={setQuery} query={query} />}
+        headerComponent={<QueryWrapper setQuery={setQuery} query={query} songList/>}
         showEmptyComponent={showEmptyComponent}
         pageType={PageType.LIBRARY}
         sourceId={1}

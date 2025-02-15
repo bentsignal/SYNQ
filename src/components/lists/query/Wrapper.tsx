@@ -5,11 +5,15 @@ import Sort from "./Sort";
 type QueryWrapperProps = {
   setQuery: (text: string) => void;
   query: string;
+  songList?: boolean;
 }
 
-export default function QueryWrapper({ setQuery, query }: QueryWrapperProps) {
+export default function QueryWrapper({ setQuery, query, songList }: QueryWrapperProps) {
   return (
-    <View style={Local.container}>
+    <View style={[Local.container, songList ? {
+      width: '102%',
+      marginLeft: -2.5,
+    } : {}]}>
       <Search setQuery={setQuery} query={query} />
       <Sort />
     </View>
@@ -22,7 +26,5 @@ const Local = StyleSheet.create({
     marginBottom: 15,
     marginTop: 3,
     gap: 5,
-    width: '102%',
-    marginLeft: -2.5,
   },
 });

@@ -32,8 +32,8 @@ export const getAlbumInfo = async (albumId: number): Promise<AlbumType | null> =
   return await AlbumModel.getInstance().getAlbumInfo(albumId);
 }
 
-export const getAlbums = async (): Promise<AlbumType[]> => {
-  return await AlbumModel.getInstance().getAlbums();
+export const getAlbums = async (query?: string): Promise<AlbumType[]> => {
+  return await AlbumModel.getInstance().getAlbums(query);
 }
 
 export const getArtistsFromAlbum = async (albumId: number): Promise<AlbumType[]> => {

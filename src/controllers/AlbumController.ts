@@ -125,8 +125,8 @@ export const getAlbumsFromSong = async (songId: number): Promise<AlbumType[]> =>
   return await AlbumModel.getInstance().getAlbumsFromSong(songId);
 }
 
-export const getSongsFromAlbum = async (albumId: number, sort: SortType = SortType.TRACK): Promise<SongType[]> => {
-  const results = await AlbumModel.getInstance().getSongsFromAlbum(albumId, sort);
+export const getSongsFromAlbum = async (albumId: number, sort: SortType = SortType.TRACK, query?: string): Promise<SongType[]> => {
+  const results = await AlbumModel.getInstance().getSongsFromAlbum(albumId, sort, query);
   return results.map(result => getSongByResult(result));
 }
 

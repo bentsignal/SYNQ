@@ -21,6 +21,7 @@ import ArtistItem from "@/src/components/lists/artist/ArtistItem";
 import { getArtistsFromAlbum } from "@/src/controllers/AlbumController";
 import Animated, { useAnimatedStyle, 
   withTiming, useSharedValue } from "react-native-reanimated";
+import QueryWrapper from "@/src/components/lists/query/Wrapper";
 
 const AlbumView = ({id}: {id: number}) => {
 
@@ -32,7 +33,9 @@ const AlbumView = ({id}: {id: number}) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [album, setAlbum] = useState<AlbumType | null>(null);
   const [artists, setArtists] = useState<ArtistType[]>([]);
+  const [count, setCount] = useState(0);
   const [duration, setDuration] = useState<number | null>(null);
+  const [query, setQuery] = useState('');
 
   const artistListOpacity = useSharedValue(0);
 
@@ -59,10 +62,13 @@ const AlbumView = ({id}: {id: number}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getSongsFromAlbum(id, SortType.TRACK);
+      const songs = await getSongsFromAlbum(id, SortType.TRACK, query);
       setSongs(songs);
       const duration = songs.reduce((acc, song) => acc + (song.duration ?? 0), 0);
-      setDuration(duration);
+      if (query === '') {
+        setCount(songs.length);
+        setDuration(duration);
+      }
       artistListOpacity.value = withTiming(1, { duration: 500 });
     }
     catch (error) {
@@ -89,6 +95,10 @@ const AlbumView = ({id}: {id: number}) => {
   useEffect(() => {
     triggerRefresh();
   }, [id]);
+
+  useEffect(() => {
+    refreshSongs();
+  }, [query]);
 
   const handleMore = () => {
     if (haptic) {
@@ -119,15 +129,18 @@ const AlbumView = ({id}: {id: number}) => {
           sourceId={id}
           sourceType={SourceType.ALBUM}
           headerComponent={
-            <AlbumHeader 
-              id={id}
-              title={title} 
-              year={year}
-              leadArtist={artists[0]}
-              songCount={songs.length}
-              pageType={PageType.ALBUM}
-              duration={duration}
-            />
+            <>
+              <AlbumHeader 
+                id={id}
+                title={title} 
+                year={year}
+                leadArtist={artists[0]}
+                songCount={count}
+                pageType={PageType.ALBUM}
+                duration={duration}
+              />
+              <QueryWrapper setQuery={setQuery} query={query} />
+            </>
           }
           setScrollPosition={setScrollPosition}
           footerComponent={
@@ -160,6 +173,7 @@ const Local = StyleSheet.create({
   },
   artistList: {
     width: '100%',
+    height: 1000,
   },
   artistListTitle: {
     ...Styles.h4,

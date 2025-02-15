@@ -93,8 +93,26 @@ export default class ArtistModel extends Model {
     return result ? result as ArtistType[] : [];
   }
 
-  public async getSongsFromArtist(artistId: number, sort: SortType = SortType.NEWEST): Promise<SongResultType[]> {
-    let result = await ArtistModel.db?.getAllAsync<SongResultType>(`SELECT * FROM songs WHERE id IN (SELECT songId FROM artistSongs WHERE artistId = ?);`, [artistId]);
+  public async getSongsFromArtist(
+    artistId: number,
+    sort: SortType = SortType.NEWEST,
+    query?: string
+  ): Promise<SongResultType[]> {
+    let result = await ArtistModel.db?.getAllAsync<SongResultType>(`
+      SELECT DISTINCT songs.*
+      FROM songs
+      LEFT JOIN albumSongs ON songs.id = albumSongs.songId
+      LEFT JOIN albums ON albumSongs.albumId = albums.id
+      LEFT JOIN artistSongs AS mainArtist ON songs.id = mainArtist.songId
+      LEFT JOIN (
+        SELECT songId, GROUP_CONCAT(artists.name) as all_artists
+        FROM artistSongs
+        JOIN artists ON artistSongs.artistId = artists.id
+        GROUP BY songId
+      ) AS otherArtists ON songs.id = otherArtists.songId
+      WHERE mainArtist.artistId = ?
+      ${query ? 'AND (LOWER(songs.title) LIKE ? OR LOWER(otherArtists.all_artists) LIKE ? OR LOWER(albums.name) LIKE ?)' : ''}
+      `, query ? [artistId, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : [artistId]);
     if (result) {
       result = await Promise.all( result.map(async (song) => {
         const artists = await this.getArtistsFromSong(song.id);

@@ -25,6 +25,7 @@ import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import playlistBus from "@/src/events/playlist";
 import AlbumList from "@/src/components/lists/album";
 import TabSelector from "@/src/components/TabSelector";
+import QueryWrapper from "@/src/components/lists/query/Wrapper";
 
 const ArtistView = ({id}: {id: number}) => {
 
@@ -37,6 +38,8 @@ const ArtistView = ({id}: {id: number}) => {
   const [artist, setArtist] = useState<ArtistType | null>(null);
   const [tabIndex, setTabIndex] = useState(0);
   const [showEmptyComponent, setShowEmptyComponent] = useState(false);
+  const [songsQuery, setSongsQuery] = useState('');
+  const [albumsQuery, setAlbumsQuery] = useState('');
 
   const refreshInfo = async () => {
     if (id) {
@@ -54,7 +57,7 @@ const ArtistView = ({id}: {id: number}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getSongsFromArtist(id, SortType.NEWEST);
+      const songs = await getSongsFromArtist(id, SortType.NEWEST, songsQuery);
       setSongs(songs);
       setShowEmptyComponent(songs.length === 0);
     }
@@ -65,7 +68,7 @@ const ArtistView = ({id}: {id: number}) => {
 
   const refreshAlbums = async () => {
     try {
-      const results = await getAlbumsFromArtist(id);
+      const results = await getAlbumsFromArtist(id, albumsQuery);
       setAlbums(results);
     }
     catch (error) {
@@ -78,6 +81,23 @@ const ArtistView = ({id}: {id: number}) => {
     refreshInfo();
     refreshAlbums();
   }
+
+  useEffect(() => {
+    refreshSongs();
+  }, [songsQuery]);
+
+  useEffect(() => {
+    refreshAlbums();
+  }, [albumsQuery]);
+
+  useEffect(() => {
+    if (tabIndex === 0) {
+      setAlbumsQuery('');
+    }
+    else {
+      setSongsQuery('');
+    }
+  }, [tabIndex]);
 
   // refresh song list and info when changes are are sent from emitter;
   useEffect(() => {
@@ -144,8 +164,10 @@ const ArtistView = ({id}: {id: number}) => {
                   index={tabIndex}
                   onSelect={setTabIndex}
                 />
+                <QueryWrapper setQuery={setSongsQuery} query={songsQuery} songList/>
               </>
             }
+            footerComponent={<View style={{height: 1000}}/>}
             setScrollPosition={setScrollPosition}
           />
         )}
@@ -165,8 +187,10 @@ const ArtistView = ({id}: {id: number}) => {
                   index={tabIndex}
                   onSelect={setTabIndex}
                 />
+                <QueryWrapper setQuery={setAlbumsQuery} query={albumsQuery} />
               </>
             }
+            footerComponent={<View style={{height: 1000}}/>}
             emptyComponent={<Text style={Local.emptyText}>No albums in library</Text>}
             showEmptyComponent={albums.length === 0}
           />

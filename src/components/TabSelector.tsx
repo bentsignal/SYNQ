@@ -36,8 +36,8 @@ const Local = StyleSheet.create({
     gap: 10,
     borderBottomWidth: 1,
     borderBottomColor: Colors.popup,
-    marginBottom: 10,
-    paddingBottom: 10,
+    marginBottom: 12,
+    paddingBottom: 15,
   },
   tabWrapper: {
     backgroundColor: Colors.song,

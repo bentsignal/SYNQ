@@ -191,8 +191,16 @@ export default class AlbumModel extends Model {
     return result ? result as AlbumType[] : [];
   }
 
-  public async getAlbumsFromArtist(artistId: number): Promise<AlbumType[]> {
-    const result = await AlbumModel.db?.getAllAsync(`SELECT * from albums where id in (SELECT albumId from artistsAlbums where artistId = ?);`, [artistId]);
+  public async getAlbumsFromArtist(artistId: number, query?: string): Promise<AlbumType[]> {
+    const result = await AlbumModel.db?.getAllAsync(`
+      SELECT DISTINCT albums.*
+      FROM albums
+      INNER JOIN artistsAlbums ON albums.id = artistsAlbums.albumId
+      LEFT JOIN artistsAlbums aa2 ON albums.id = aa2.albumId
+      LEFT JOIN artists a2 ON aa2.artistId = a2.id
+      WHERE artistsAlbums.artistId = ?
+      ${query ? 'AND (LOWER(albums.name) LIKE ? OR LOWER(a2.name) LIKE ?)' : ''}
+      `, query ? [artistId, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : [artistId]);
     return result ? result as AlbumType[] : [];
   }
 }

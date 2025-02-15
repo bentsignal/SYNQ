@@ -10,6 +10,7 @@ import { Styles as MainStyles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
 import songBus from "@/src/events/song/Bus";
 import { SongBusEvent } from "@/src/events/song/Events";
+import QueryWrapper from "../lists/query/Wrapper";
 
 export default function Songs () {
 
@@ -36,6 +37,7 @@ export default function Songs () {
     <View style={Local.container}>
       <SongList
         songs={songs}
+        headerComponent={<QueryWrapper />}
         showEmptyComponent={showEmptyComponent}
         pageType={PageType.LIBRARY}
         sourceId={1}

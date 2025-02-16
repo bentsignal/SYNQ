@@ -1,4 +1,4 @@
-import { AlbumType, SongType, SortType } from "@/src/constants/Types";
+import { AlbumType, SongType, SortOrder, SortType } from "@/src/constants/Types";
 import AlbumModel from "@/src/models/AlbumModel";
 import { writeImageToLibrary } from "./ImageController";
 import * as FileSystem from 'expo-file-system';
@@ -32,8 +32,8 @@ export const getAlbumInfo = async (albumId: number): Promise<AlbumType | null> =
   return await AlbumModel.getInstance().getAlbumInfo(albumId);
 }
 
-export const getAlbums = async (query?: string): Promise<AlbumType[]> => {
-  return await AlbumModel.getInstance().getAlbums(query);
+export const getAlbums = async (query?: string, sort?: SortType, order?: SortOrder): Promise<AlbumType[]> => {
+  return await AlbumModel.getInstance().getAlbums(query, sort, order);
 }
 
 export const getArtistsFromAlbum = async (albumId: number): Promise<AlbumType[]> => {

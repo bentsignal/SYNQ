@@ -1,5 +1,5 @@
 import Model from "./Model";
-import { AlbumType, SortType, SongResultType, ArtistType, PageType } from "@/src/constants/Types";
+import { AlbumType, SortType, SongResultType, ArtistType, PageType, SortOrder } from "@/src/constants/Types";
 import { getArtistsFromSong } from "@/src/controllers/ArtistController";
 
 export default class AlbumModel extends Model {
@@ -17,7 +17,11 @@ export default class AlbumModel extends Model {
     return AlbumModel.instance;
   }
 
-  public async getAlbums(query?: string, sort: SortType = SortType.ALBUM): Promise<AlbumType[]> {
+  public async getAlbums(
+    query?: string,
+    sort: SortType = SortType.ALBUM,
+    order: SortOrder = SortOrder.ASC
+  ): Promise<AlbumType[]> {
     const result = await AlbumModel.db?.getAllAsync<AlbumType>(`
       SELECT albums.*, COUNT(artistsAlbums.artistId) as artistCount
       FROM albums
@@ -30,11 +34,15 @@ export default class AlbumModel extends Model {
       return [];
     }
     if (sort === SortType.ALBUM) {
-      return result.sort((a, b) => {
+      const sorted = result.sort((a, b) => {
         if (!a?.name) return 1;
         if (!b?.name) return -1;
         return a.name.localeCompare(b.name);
       });
+      return order === SortOrder.DESC ? sorted.reverse() : sorted;
+    }
+    else if (sort === SortType.DATE) {
+      return order === SortOrder.DESC ? result.reverse() : result;
     }
     return result;
   }

@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { AlbumType, PageType } from "@/src/constants/Types";
+import { AlbumType, PageType, SortOrder, SortType } from "@/src/constants/Types";
 import { useState, useEffect } from "react";
 import AlbumList from "@/src/components/lists/album";
 import { getAlbums } from "@/src/controllers/AlbumController";
@@ -17,9 +17,11 @@ const Albums = () => {
   const [albums, setAlbums] = useState<AlbumType[]>([]);
   const [showEmptyComponent, setShowEmptyComponent] = useState(false);
   const [query, setQuery] = useState('');
+  const [sort, setSort] = useState<SortType>(SortType.ALBUM);
+  const [order, setOrder] = useState<SortOrder>(SortOrder.ASC);
 
   const refreshAlbums = async () => {
-    const results = await getAlbums(query);
+    const results = await getAlbums(query, sort, order);
     setAlbums(results);
     setShowEmptyComponent(results.length === 0);
   }
@@ -30,7 +32,7 @@ const Albums = () => {
 
   useEffect(() => {
     refreshAlbums();
-  }, [query]);
+  }, [query, sort, order]);
 
   useEffect(() => {
     albumBus.on(AlbumBusEvent.ALBUM_CREATED, refreshAlbums);
@@ -53,7 +55,19 @@ const Albums = () => {
         emptyComponent={<Text style={Local.emptyText}>No albums in library</Text>}
         showEmptyComponent={showEmptyComponent}
         headerComponent={
-          <QueryWrapper setQuery={setQuery} query={query} />
+          <QueryWrapper 
+            setQuery={setQuery} 
+            query={query} 
+            setSort={setSort} 
+            sort={sort} 
+            order={order} 
+            setOrder={setOrder}
+            hideSortTypes={{
+              [SortType.TITLE]: true,
+              [SortType.ARTIST]: true,
+              [SortType.TRACK]: true,
+            }}
+            />
         }
       />
     </View>

@@ -1,4 +1,4 @@
-import { ArtistType, SongType, SortType } from "@/src/constants/Types";
+import { ArtistType, SongType, SortOrder, SortType } from "@/src/constants/Types";
 import ArtistModel from "@/src/models/ArtistModel";
 import { writeImageToLibrary } from "./ImageController";
 import * as FileSystem from 'expo-file-system';
@@ -32,8 +32,12 @@ export const getArtistInfo = async (artistId: number): Promise<ArtistType | null
   return await ArtistModel.getInstance().getArtistInfo(artistId);
 }
 
-export const getArtists = async (query?: string): Promise<ArtistType[]> => {
-  return await ArtistModel.getInstance().getArtists(query);
+export const getArtists = async (
+  query?: string, 
+  sort?: SortType, 
+  order?: SortOrder
+): Promise<ArtistType[]> => {
+  return await ArtistModel.getInstance().getArtists(query, sort, order);
 }
 
 const makeArtistsDir = async () => {

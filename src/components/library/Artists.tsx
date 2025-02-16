@@ -1,7 +1,8 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { ArtistType, PageType } from "@/src/constants/Types";
+import { ArtistType, PageType, 
+  SortOrder, SortType } from "@/src/constants/Types";
 import { useState, useEffect } from "react";
 import ArtistList from "@/src/components/lists/artist";
 import { getArtists } from "@/src/controllers/ArtistController";
@@ -18,8 +19,11 @@ const Artists = () => {
   const [artists, setArtists] = useState<ArtistType[]>([]);
   const [showEmptyComponent, setShowEmptyComponent] = useState(false);
   const [query, setQuery] = useState('');
+  const [sort, setSort] = useState<SortType>(SortType.ARTIST);
+  const [order, setOrder] = useState<SortOrder>(SortOrder.ASC);
+
   const refreshArtists = async () => {
-    const results = await getArtists(query);
+    const results = await getArtists(query, sort, order);
     setArtists(results);
     setShowEmptyComponent(results.length === 0);
   }
@@ -30,7 +34,7 @@ const Artists = () => {
 
   useEffect(() => {
     refreshArtists();
-  }, [query]);
+  }, [query, sort, order]);
 
   useEffect(() => {
     artistBus.on(ArtistBusEvent.ARTIST_CREATED, refreshArtists);
@@ -53,7 +57,20 @@ const Artists = () => {
         emptyComponent={<Text style={Local.emptyText}>No artists in library</Text>}
         showEmptyComponent={showEmptyComponent}
         headerComponent={
-          <QueryWrapper setQuery={setQuery} query={query} />
+          <QueryWrapper 
+            setQuery={setQuery} 
+            query={query} 
+            setSort={setSort} 
+            sort={sort} 
+            order={order} 
+            setOrder={setOrder}
+            hideSortTypes={{
+              [SortType.DATE]: true,
+              [SortType.ALBUM]: true,
+              [SortType.TRACK]: true,
+              [SortType.TITLE]: true,
+            }}
+          />
         }
       />
     </View>

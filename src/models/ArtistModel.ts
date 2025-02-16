@@ -1,6 +1,6 @@
 import { getAlbumsFromSong } from "../controllers/AlbumController";
 import Model from "./Model";
-import { ArtistType, SortType, SongResultType } from "@/src/constants/Types";
+import { ArtistType, SortType, SongResultType, SortOrder } from "@/src/constants/Types";
 
 export default class ArtistModel extends Model {
 
@@ -17,17 +17,23 @@ export default class ArtistModel extends Model {
     return ArtistModel.instance;
   }
 
-  public async getArtists(query?: string, sort: SortType = SortType.ARTIST): Promise<ArtistType[]> {
+  public async getArtists(
+    query?: string, 
+    sort: SortType = SortType.ARTIST, 
+    order: SortOrder = SortOrder.ASC
+  ): Promise<ArtistType[]> {
     const result = await ArtistModel.db?.getAllAsync<ArtistType>(`
       SELECT artists.* FROM artists
       ${query ? 'WHERE LOWER(artists.name) LIKE ?' : ''}
       GROUP BY artists.id;
       `, query ? [`%${query.toLowerCase()}%`] : []);
+
     if (!result) {
       return [];
     }
     if (sort === SortType.ARTIST) {
-      return result.sort((a, b) => a?.name.localeCompare(b?.name));
+      const sorted = result.sort((a, b) => a?.name.localeCompare(b?.name));
+      return order === SortOrder.ASC ? sorted : sorted.reverse();
     }
     return result;
   }

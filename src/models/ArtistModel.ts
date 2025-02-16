@@ -101,7 +101,7 @@ export default class ArtistModel extends Model {
 
   public async getSongsFromArtist(
     artistId: number,
-    sort: SortType = SortType.NEWEST,
+    sort: SortType = SortType.DATE,
     order: SortOrder = SortOrder.DESC,
     query?: string
   ): Promise<SongResultType[]> {

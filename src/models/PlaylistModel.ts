@@ -61,7 +61,7 @@ export default class PlaylistModel extends Model {
 
   public async getSongsFromPlaylist(
     playlistId: number,
-    sort: SortType = SortType.NEWEST,
+    sort: SortType = SortType.DATE,
     order: SortOrder = SortOrder.DESC,
     query?: string
   ): Promise<SongResultType[]> {

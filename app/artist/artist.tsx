@@ -40,7 +40,7 @@ const ArtistView = ({id}: {id: number}) => {
   const [showEmptyComponent, setShowEmptyComponent] = useState(false);
   const [songsQuery, setSongsQuery] = useState('');
   const [albumsQuery, setAlbumsQuery] = useState('');
-  const [songSort, setSongSort] = useState<SortType>(SortType.NEWEST);
+  const [songSort, setSongSort] = useState<SortType>(SortType.DATE);
   const [songOrder, setSongOrder] = useState<SortOrder>(SortOrder.DESC);
   const [albumSort, setAlbumSort] = useState<SortType>(SortType.ALBUM);
   const [albumOrder, setAlbumOrder] = useState<SortOrder>(SortOrder.ASC);

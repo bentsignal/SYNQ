@@ -80,7 +80,7 @@ export const getPlaylistInfo = async (playlistId: number) => {
 export const getPlaylistSongs = async (
   playlistId: number,
   pageType?: PageType,
-  sort: SortType = SortType.NEWEST,
+  sort: SortType = SortType.DATE,
   order: SortOrder = SortOrder.DESC,
   query?: string
 ) => {

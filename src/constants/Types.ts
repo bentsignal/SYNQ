@@ -72,8 +72,6 @@ export enum SortType {
   TITLE = 1,
   ARTIST = 2,
   ALBUM = 3,
-  OLDEST = 4,
-  NEWEST = 5,
   TRACK = 6,
   DATE = 7,
   YEAR = 8,

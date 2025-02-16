@@ -108,7 +108,7 @@ export const getArtistsFromSong = async (songId: number): Promise<ArtistType[]> 
 
 export const getSongsFromArtist = async (
   artistId: number,
-  sort: SortType = SortType.NEWEST,
+  sort: SortType = SortType.DATE,
   order: SortOrder = SortOrder.DESC,
   query?: string
 ): Promise<SongType[]> => {

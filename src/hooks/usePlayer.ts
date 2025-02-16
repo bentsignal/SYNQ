@@ -198,13 +198,13 @@ export default function usePlayer () {
     const next: SongType[] = [];
     let songs: SongType[] = [];
     if (sourceTypeValue === SourceType.PLAYLIST) {
-      songs = await getPlaylistSongs(sourceIdValue, PageType.LIBRARY, SortType.NEWEST);
+      songs = await getPlaylistSongs(sourceIdValue, PageType.LIBRARY);
     }
     else if (sourceTypeValue === SourceType.ARTIST) {
-      songs = await getSongsFromArtist(sourceIdValue, SortType.NEWEST);
+      songs = await getSongsFromArtist(sourceIdValue);
     }
     else if (sourceTypeValue === SourceType.ALBUM) {
-      songs = await getSongsFromAlbum(sourceIdValue, SortType.TRACK);
+      songs = await getSongsFromAlbum(sourceIdValue);
     }
     else {
       return songs;

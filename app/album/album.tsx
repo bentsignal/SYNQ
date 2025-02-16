@@ -134,6 +134,9 @@ const AlbumView = ({id}: {id: number}) => {
           pageType={PageType.ALBUM}
           sourceId={id}
           sourceType={SourceType.ALBUM}
+          sort={sort}
+          order={order}
+          query={query}
           headerComponent={
             <>
               <AlbumHeader 

@@ -2,7 +2,7 @@ import TrackPlayer, { Capability, Track } from "react-native-track-player";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { usePlaybackContext } from "../context/PlaybackProvider";
 import { check } from "@/lib/Util";
-import { PageType, SongType, SortType, SourceType } from "../constants/Types";
+import { PageType, SongType, SortOrder, SortType, SourceType } from "../constants/Types";
 import * as Haptics from 'expo-haptics';
 import { PlaybackBusEvent } from "../events/playback/Events";
 import playbackBus from "../events/playback";
@@ -169,9 +169,20 @@ export default function usePlayer () {
     shuffleValue: boolean,
     sourceTypeValue: SourceType,
     sourceIdValue: number,
+    sort?: SortType,
+    order?: SortOrder,
+    query?: string,
   ) => {
     await TrackPlayer.removeUpcomingTracks();
-    const upcoming = await getNextUp(currentId, 100, shuffleValue, sourceTypeValue, sourceIdValue);
+    const upcoming = await getNextUp(
+      currentId, 100, 
+      shuffleValue, 
+      sourceTypeValue, 
+      sourceIdValue, 
+      sort, 
+      order,
+      query
+    );
     let upcomingTracks: Track[] = [];
     for (let i = 0; i < upcoming.length; i++) {
       const newTrack = await getTrackFromSong(upcoming[i], theme);
@@ -192,19 +203,21 @@ export default function usePlayer () {
     shuffleValue: boolean,
     sourceTypeValue: SourceType,
     sourceIdValue: number,
+    sort?: SortType,
+    order?: SortOrder,
+    query?: string,
   ): Promise<SongType[]> => {
   
-
     const next: SongType[] = [];
     let songs: SongType[] = [];
     if (sourceTypeValue === SourceType.PLAYLIST) {
-      songs = await getPlaylistSongs(sourceIdValue, PageType.LIBRARY);
+      songs = await getPlaylistSongs(sourceIdValue, PageType.LIBRARY, sort, order, query);
     }
     else if (sourceTypeValue === SourceType.ARTIST) {
-      songs = await getSongsFromArtist(sourceIdValue);
+      songs = await getSongsFromArtist(sourceIdValue, sort, order, query);
     }
     else if (sourceTypeValue === SourceType.ALBUM) {
-      songs = await getSongsFromAlbum(sourceIdValue);
+      songs = await getSongsFromAlbum(sourceIdValue, sort, order, query);
     }
     else {
       return songs;

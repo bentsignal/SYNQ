@@ -50,6 +50,9 @@ export default function Songs () {
     <View style={Local.container}>
       <SongList
         songs={songs}
+        sort={sort}
+        order={order}
+        query={query}
         headerComponent={
           <QueryWrapper 
             setQuery={setQuery} 
@@ -71,7 +74,9 @@ export default function Songs () {
         pageType={PageType.LIBRARY}
         sourceId={1}
         sourceType={SourceType.PLAYLIST}
-        emptyComponent={<Text style={Local.emptyText}>No songs in library</Text>}
+        emptyComponent={
+          <Text style={Local.emptyText}>No songs in library</Text>
+        }
       />
     </View> 
   );

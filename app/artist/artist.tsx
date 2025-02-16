@@ -164,6 +164,9 @@ const ArtistView = ({id}: {id: number}) => {
             pageType={PageType.ARTIST}
             sourceId={id}
             sourceType={SourceType.ARTIST}
+            sort={songSort}
+            order={songOrder}
+            query={songsQuery}
             showEmptyComponent={showEmptyComponent}
             emptyComponent={<Text style={Local.emptyText}>No songs in library</Text>}
             headerComponent={

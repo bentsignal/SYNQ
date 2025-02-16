@@ -122,6 +122,9 @@ const PlaylistView = ({id}: {id: number}) => {
           pageType={PageType.LIBRARY}
           sourceId={id}
           sourceType={SourceType.PLAYLIST}
+          sort={sort}
+          order={order}
+          query={query}
           headerComponent={
             <>
               <SongListHeader 

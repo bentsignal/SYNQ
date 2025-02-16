@@ -1,47 +1,172 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
-import { useRef } from "react";
+import { Text, TouchableOpacity, StyleSheet } from "react-native";
 
-import { MenuView, MenuComponentRef } from '@react-native-menu/menu'
+import { MenuView, NativeActionEvent } from '@react-native-menu/menu'
 
 import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
-import { SortType } from "@/src/constants/Types";
+import { SortType, SortOrder } from "@/src/constants/Types";
 
 type SortProps = {
   setSort: (sort: SortType) => void;
   sort: SortType;
+  order: SortOrder;
+  setOrder: (order: SortOrder) => void;
 }
 
-export default function Sort({ setSort, sort }: SortProps) {
-
-  const menuRef = useRef<MenuComponentRef>(null);
+export default function Sort({ setSort, sort, order, setOrder }: SortProps) {
+  
+  const handleChange = (nativeEvent: NativeActionEvent) => {
+    const event = nativeEvent.nativeEvent.event;
+    if (event === 'date-asc') {
+      setSort(SortType.DATE);
+      setOrder(SortOrder.ASC);
+    } else if (event === 'date-desc') {
+      setSort(SortType.DATE);
+      setOrder(SortOrder.DESC);
+    } else if (event === 'title-asc') {
+      setSort(SortType.TITLE);
+      setOrder(SortOrder.ASC);
+    } else if (event === 'title-desc') {
+      setSort(SortType.TITLE);
+      setOrder(SortOrder.DESC);
+    } else if (event === 'artist-asc') {
+      setSort(SortType.ARTIST);
+      setOrder(SortOrder.ASC);
+    } else if (event === 'artist-desc') {
+      setSort(SortType.ARTIST);
+      setOrder(SortOrder.DESC);
+    } else if (event === 'album-asc') {
+      setSort(SortType.ALBUM);
+      setOrder(SortOrder.ASC);
+    } else if (event === 'album-desc') {
+      setSort(SortType.ALBUM);
+      setOrder(SortOrder.DESC);
+    } else if (event === 'track-asc') {
+      setSort(SortType.TRACK);
+      setOrder(SortOrder.ASC);
+    } else if (event === 'track-desc') {
+      setSort(SortType.TRACK);
+      setOrder(SortOrder.DESC);
+    }
+  }
   
   return (
-    <>
-      <TouchableOpacity 
-        style={Local.container} 
-        activeOpacity={0.8}
-        onPress={() => {
-          menuRef.current?.show();
-        }}
-      >
-        <Text style={Local.text}>Sort</Text>
-      </TouchableOpacity>
-      <MenuView ref={menuRef} actions={[
+    <MenuView
+      title="Sort By"
+      style={Local.container}
+      onPressAction={handleChange}
+      actions={[
         {
-          title: 'Alphabetical',
+          id: 'date',
+          title: 'Date Added',
+          titleColor: Colors.text,
+          subactions: [
+            {
+              id: 'date-asc',
+              title: 'Ascending',
+              subtitle: 'Oldest → Newest',
+              titleColor: Colors.text,
+              state: sort === SortType.DATE && order === SortOrder.ASC ? 'on' : 'off',
+            },
+            {
+              id: 'date-desc',
+              title: 'Descending',
+              subtitle: 'Newest → Oldest',
+              titleColor: Colors.text,
+              state: sort === SortType.DATE && order === SortOrder.DESC ? 'on' : 'off',
+            }
+          ],
         },
         {
-          title: 'Newest',
+          id: 'title',
+          title: 'Title',
+          titleColor: Colors.text,
+          subactions: [
+            {
+              id: 'title-asc',
+              title: 'Ascending',
+              subtitle: 'A-Z',
+              titleColor: Colors.text,
+              state: sort === SortType.TITLE && order === SortOrder.ASC ? 'on' : 'off',
+            },
+            {
+              id: 'title-desc',
+              title: 'Descending',
+              subtitle: 'Z-A',
+              titleColor: Colors.text,
+              state: sort === SortType.TITLE && order === SortOrder.DESC ? 'on' : 'off',
+            }
+          ],
         },
         {
-          title: 'Oldest',
+          id: 'artist',
+          title: 'Artist',
+          titleColor: Colors.text,
+          subactions: [
+            {
+              id: 'artist-asc',
+              title: 'Ascending',
+              subtitle: 'A-Z',
+              titleColor: Colors.text,
+              state: sort === SortType.ARTIST && order === SortOrder.ASC ? 'on' : 'off',
+            },
+            {
+              id: 'artist-desc',
+              title: 'Descending',
+              subtitle: 'Z-A',
+              titleColor: Colors.text,
+              state: sort === SortType.ARTIST && order === SortOrder.DESC ? 'on' : 'off',
+            }
+          ],
         },
-
-      ]} />
-    </>
+        {
+          id: 'album',
+          title: 'Album',
+          titleColor: Colors.text,
+          subactions: [
+            {
+              id: 'album-asc',
+              title: 'Ascending',
+              subtitle: 'A-Z',
+              titleColor: Colors.text,
+              state: sort === SortType.ALBUM && order === SortOrder.ASC ? 'on' : 'off',
+            },
+            {
+              id: 'album-desc',
+              title: 'Descending',
+              subtitle: 'Z-A',
+              titleColor: Colors.text,
+              state: sort === SortType.ALBUM && order === SortOrder.DESC ? 'on' : 'off',
+            }
+          ],
+        },
+        {
+          id: 'track',
+          title: 'Track',
+          titleColor: Colors.text,
+          subactions: [
+            {
+              id: 'track-asc',
+              title: 'Ascending',
+              subtitle: '1 → 999',
+              titleColor: Colors.text,
+              state: sort === SortType.TRACK && order === SortOrder.ASC ? 'on' : 'off',
+            },
+            {
+              id: 'track-desc',
+              title: 'Descending',
+              subtitle: '999 → 1',
+              titleColor: Colors.text,
+              state: sort === SortType.TRACK && order === SortOrder.DESC ? 'on' : 'off',
+            }
+          ],
+        },
+      ]}
+      shouldOpenOnLongPress={false}
+    >
+      <Text style={Local.text}>Sort</Text>
+    </MenuView>
   );
-
 } 
 
 const Local = StyleSheet.create({
@@ -52,11 +177,6 @@ const Local = StyleSheet.create({
     paddingHorizontal: 15,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  image: {
-    width: 15,
-    height: 15,
-    tintColor: Colors.text,
   },
   text: {
     ...Styles.h6,

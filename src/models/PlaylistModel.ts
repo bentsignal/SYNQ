@@ -1,5 +1,5 @@
 import Model from './Model';
-import { PlaylistType, SongResultType, SortType } from '@/src/constants/Types';
+import { PlaylistType, SongResultType, SortOrder, SortType } from '@/src/constants/Types';
 import { getArtistsFromSong } from '../controllers/ArtistController';
 import { getAlbumsFromSong } from '../controllers/AlbumController';
 
@@ -52,6 +52,7 @@ export default class PlaylistModel extends Model {
   public async getSongsFromPlaylist(
     playlistId: number,
     sort: SortType = SortType.NEWEST,
+    order: SortOrder = SortOrder.DESC,
     query?: string
   ): Promise<SongResultType[]> {
     try {
@@ -85,22 +86,21 @@ export default class PlaylistModel extends Model {
       if (!result) {
         return [];
       }
-      if (sort === SortType.NEWEST) {
-        return result.reverse();
-      }
-      else if (sort === SortType.OLDEST) {
-        return result;
+      if (sort === SortType.DATE) {
+        return order === SortOrder.DESC ? result.reverse() : result;
       }
       else if (sort === SortType.TITLE) {
-        return result.sort((a, b) => a?.title.localeCompare(b?.title));
+        const sorted = result.sort((a, b) => a?.title.localeCompare(b?.title));
+        return order === SortOrder.DESC ? sorted.reverse() : sorted;
       }
       else if (sort === SortType.ARTIST) {
-        return result.sort((a, b) => a?.artists.localeCompare(b?.artists));
+        const sorted = result.sort((a, b) => a?.artists.localeCompare(b?.artists));
+        return order === SortOrder.DESC ? sorted.reverse() : sorted;
       }
       else if (sort === SortType.ALBUM) {
-        return result.sort((a, b) => a?.album.localeCompare(b?.album));
+        const sorted = result.sort((a, b) => a?.album.localeCompare(b?.album));
+        return order === SortOrder.DESC ? sorted.reverse() : sorted;
       }
-      
       return result;
     }
     catch (error) {

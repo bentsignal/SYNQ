@@ -1,6 +1,6 @@
 import { View, StyleSheet, Text } from "react-native";
 import SongList from "../lists/song/SongList";
-import { PageType, SongType, SortType, SourceType } from "@/src/constants/Types";
+import { PageType, SongType, SortOrder, SortType, SourceType } from "@/src/constants/Types";
 import { useEffect } from "react";
 import { useState } from "react";
 import { getPlaylistSongs } from "@/src/controllers/PlaylistController";
@@ -17,12 +17,15 @@ export default function Songs () {
   const [songs, setSongs] = useState<SongType[]>([]);
   const [showEmptyComponent, setShowEmptyComponent] = useState(false);
   const [query, setQuery] = useState('');
+  const [sort, setSort] = useState<SortType>(SortType.DATE);
+  const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
 
   const refreshSongs = async () => {
     const results = await getPlaylistSongs(
       1,
       PageType.LIBRARY,
-      SortType.NEWEST,
+      sort,
+      order,
       query
     );
     setSongs(results);
@@ -41,13 +44,23 @@ export default function Songs () {
 
   useEffect(() => {
     refreshSongs();
-  }, [query]);
+  }, [query, sort, order]);
 
   return (
     <View style={Local.container}>
       <SongList
         songs={songs}
-        headerComponent={<QueryWrapper setQuery={setQuery} query={query} songList/>}
+        headerComponent={
+          <QueryWrapper 
+            setQuery={setQuery} 
+            query={query} 
+            setSort={setSort}
+            sort={sort}
+            order={order}
+            setOrder={setOrder}
+            songList
+          />
+        }
         showEmptyComponent={showEmptyComponent}
         pageType={PageType.LIBRARY}
         sourceId={1}

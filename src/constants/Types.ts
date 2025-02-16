@@ -75,6 +75,12 @@ export enum SortType {
   OLDEST = 4,
   NEWEST = 5,
   TRACK = 6,
+  DATE = 7,
+}
+
+export enum SortOrder {
+  ASC = 1,
+  DESC = 2,
 }
 
 export enum PageType {

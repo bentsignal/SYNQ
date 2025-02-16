@@ -22,6 +22,7 @@ export default function usePlayer () {
     shuffle, loop,
     incrementAddOffset, decrementAddOffset,
     resetAddOffset,
+    sort, order, query,
   } = usePlaybackContext();
 
   const { theme } = useThemeContext();
@@ -122,7 +123,15 @@ export default function usePlayer () {
       else if (currentIndex !== undefined) {
         // if loop is on, keep queue going infinitely
         if (currentIndex >= queue.length-1 && loop) {
-          await updateQueue(queue[currentIndex].id, shuffle, sourceType, sourceId);
+          await updateQueue(
+            queue[currentIndex].id, 
+            shuffle, 
+            sourceType, 
+            sourceId,
+            sort,
+            order,
+            query
+          );
         }
         let nextIndex = currentIndex + 1;
         let nextTrack = await TrackPlayer.getTrack(nextIndex);

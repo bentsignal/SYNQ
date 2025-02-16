@@ -1,4 +1,4 @@
-import { SourceType } from '@/src/constants/Types';
+import { SortOrder, SortType, SourceType } from '@/src/constants/Types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useState } from 'react';
 
@@ -22,6 +22,12 @@ interface PlaybackContextType {
   incrementAddOffset: () => Promise<void>;
   decrementAddOffset: () => Promise<void>;
   resetAddOffset: () => Promise<void>;
+  sort: SortType;
+  setSort: (newValue: SortType) => void;
+  order: SortOrder;
+  setOrder: (newValue: SortOrder) => void;
+  query: string;
+  setQuery: (newValue: string) => void;
 }
 
 
@@ -42,6 +48,12 @@ const PlaybackContext = createContext<PlaybackContextType>({
   incrementAddOffset: () => Promise.resolve(),
   decrementAddOffset: () => Promise.resolve(),
   resetAddOffset: () => Promise.resolve(),
+  sort: SortType.DATE,
+  setSort: () => {},
+  order: SortOrder.DESC,
+  setOrder: () => {},
+  query: '',
+  setQuery: () => {},
 });
 
 
@@ -55,6 +67,9 @@ const PlaybackProvider: React.FC<Props> = ({ children }) => {
   const [loop, setLoop] = useState<boolean>(false);
   const [playerInitialized, setPlayerInitialized] = useState<boolean>(false);
   const [addOffset, setAddOffset] = useState<number>(0);
+  const [sort, setSort] = useState<SortType | null>(null);
+  const [order, setOrder] = useState<SortOrder | null>(null);
+  const [query, setQuery] = useState<string>('');
 
   const incrementAddOffset = async () => {
     const newOffset = addOffset+1;
@@ -84,6 +99,9 @@ const PlaybackProvider: React.FC<Props> = ({ children }) => {
       playerInitialized, setPlayerInitialized,
       addOffset, setAddOffset,
       incrementAddOffset, decrementAddOffset, resetAddOffset,
+      sort, setSort,
+      order, setOrder,
+      query, setQuery,
     }}>
       {children}
 

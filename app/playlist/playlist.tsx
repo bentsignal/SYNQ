@@ -4,10 +4,8 @@ import { Styles } from "@/src/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/src/constants/Colors";
 import SongList from "@/src/components/lists/song";
-import { PageType, PlaylistType, SongType, SortType, SourceType } from "@/src/constants/Types";
+import { PageType, PlaylistType, SongType, SortOrder, SortType, SourceType } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
-import MiniPlayer from "@/src/components/player/MiniPlayer";
-import TabBar from "@/src/components/TabBar";
 import SongListHeader from "@/src/components/lists/song/Header";
 import Overlay from "@/src/components/Overlay";
 import Header from "@/src/components/Header";
@@ -30,6 +28,8 @@ const PlaylistView = ({id}: {id: number}) => {
   const [playlist, setPlaylist] = useState<PlaylistType | null>(null);
   const [duration, setDuration] = useState(0);
   const [query, setQuery] = useState('');
+  const [sort, setSort] = useState<SortType>(SortType.DATE);
+  const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
 
   const refreshInfo = async () => {
     if (id) {
@@ -46,7 +46,13 @@ const PlaylistView = ({id}: {id: number}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getPlaylistSongs(id, PageType.LIBRARY, SortType.NEWEST, query);
+      const songs = await getPlaylistSongs(
+        id,
+        PageType.LIBRARY,
+        sort,
+        order,
+        query
+      );
       setSongs(songs);
       const duration = songs.reduce((acc, song) => acc + (song.duration ?? 0), 0);
       setDuration(duration);
@@ -86,7 +92,7 @@ const PlaylistView = ({id}: {id: number}) => {
 
   useEffect(() => {
     refreshSongs();
-  }, [query]);
+  }, [query, sort, order]);
 
   const handleMore = () => {
     if (haptic) {
@@ -125,7 +131,18 @@ const PlaylistView = ({id}: {id: number}) => {
                 pageType={PageType.PLAYLIST}
                 duration={duration}
               />
-              <QueryWrapper setQuery={setQuery} query={query} songList/>
+              <QueryWrapper 
+                setQuery={setQuery} 
+                query={query} 
+                setSort={setSort} 
+                sort={sort} 
+                order={order}
+                setOrder={setOrder}
+                songList
+                hideSortTypes={{
+                  [SortType.TRACK]: true,
+                }}
+              />
             </>
           }
           footerComponent={

@@ -231,8 +231,8 @@ export default class AlbumModel extends Model {
       LEFT JOIN artistsAlbums aa2 ON albums.id = aa2.albumId
       LEFT JOIN artists a2 ON aa2.artistId = a2.id
       WHERE artistsAlbums.artistId = ?
-      ${query ? 'AND (LOWER(albums.name) LIKE ? OR LOWER(a2.name) LIKE ?)' : ''}
-      `, query ? [artistId, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : [artistId]);
+      ${query ? 'AND (LOWER(albums.name) LIKE ? OR LOWER(a2.name) LIKE ? OR LOWER(albums.year) LIKE ?)' : ''}
+      `, query ? [artistId, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : [artistId]);
     if (!result) {
       return [];
     }

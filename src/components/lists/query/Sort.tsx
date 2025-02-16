@@ -4,17 +4,17 @@ import { MenuView, NativeActionEvent, MenuAction } from '@react-native-menu/menu
 
 import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
-import { SortType, SortOrder, PageType, HideSortTypes } from "@/src/constants/Types";
+import { SortType, SortOrder, PageType, ShowSortTypes } from "@/src/constants/Types";
 
 type SortProps = {
   setSort: (sort: SortType) => void;
   sort: SortType;
   order: SortOrder;
   setOrder: (order: SortOrder) => void;
-  hideSortTypes?: HideSortTypes;
+  showSortTypes?: ShowSortTypes;
 }
 
-export default function Sort({ setSort, sort, order, setOrder, hideSortTypes }: SortProps) {
+export default function Sort({ setSort, sort, order, setOrder, showSortTypes }: SortProps) {
   
   const handleChange = (nativeEvent: NativeActionEvent) => {
     const event = nativeEvent.nativeEvent.event;
@@ -48,12 +48,18 @@ export default function Sort({ setSort, sort, order, setOrder, hideSortTypes }: 
     } else if (event === 'track-desc') {
       setSort(SortType.TRACK);
       setOrder(SortOrder.DESC);
+    } else if (event === 'year-asc') {
+      setSort(SortType.YEAR);
+      setOrder(SortOrder.ASC);
+    } else if (event === 'year-desc') {
+      setSort(SortType.YEAR);
+      setOrder(SortOrder.DESC);
     }
   }
 
   const actions: MenuAction[] = [];
 
-  if (!hideSortTypes?.[SortType.DATE]) {
+  if (showSortTypes?.[SortType.DATE]) {
     actions.push({
       id: 'date',
       title: 'Date Added',
@@ -76,7 +82,7 @@ export default function Sort({ setSort, sort, order, setOrder, hideSortTypes }: 
       ],
     });
   }
-  if (!hideSortTypes?.[SortType.TITLE]) {
+  if (showSortTypes?.[SortType.TITLE]) {
     actions.push({
       id: 'title',
       title: 'Title',
@@ -99,7 +105,7 @@ export default function Sort({ setSort, sort, order, setOrder, hideSortTypes }: 
       ],
     });
   }
-  if (!hideSortTypes?.[SortType.ARTIST]) {
+  if (showSortTypes?.[SortType.ARTIST]) {
     actions.push({
       id: 'artist',
       title: 'Artist',
@@ -122,7 +128,7 @@ export default function Sort({ setSort, sort, order, setOrder, hideSortTypes }: 
       ],
     });
   }
-  if (!hideSortTypes?.[SortType.ALBUM]) {
+  if (showSortTypes?.[SortType.ALBUM]) {
     actions.push({
       id: 'album',
       title: 'Album',
@@ -145,7 +151,7 @@ export default function Sort({ setSort, sort, order, setOrder, hideSortTypes }: 
       ],
     });
   }
-  if (!hideSortTypes?.[SortType.TRACK]) {
+  if (showSortTypes?.[SortType.TRACK]) {
     actions.push({
       id: 'track',
       title: 'Track',
@@ -166,7 +172,30 @@ export default function Sort({ setSort, sort, order, setOrder, hideSortTypes }: 
           state: sort === SortType.TRACK && order === SortOrder.DESC ? 'on' : 'off',
         }
       ],
-    },);
+    });
+  }
+  if (showSortTypes?.[SortType.YEAR]) {
+    actions.push({
+      id: 'year',
+      title: 'Year',
+      titleColor: Colors.text,
+      subactions: [
+        {
+          id: 'year-asc',
+          title: 'Ascending',
+          subtitle: '2001 → 2025',
+          titleColor: Colors.text,
+          state: sort === SortType.YEAR && order === SortOrder.ASC ? 'on' : 'off',
+        },
+        {
+          id: 'year-desc',
+          title: 'Descending',
+          subtitle: '2025 → 2001',
+          titleColor: Colors.text,
+          state: sort === SortType.YEAR && order === SortOrder.DESC ? 'on' : 'off',
+        }
+      ],
+    });
   }
 
   return (
@@ -180,7 +209,7 @@ export default function Sort({ setSort, sort, order, setOrder, hideSortTypes }: 
       <Text style={Local.text}>Sort</Text>
     </MenuView>
   );
-} 
+}
 
 const Local = StyleSheet.create({
   container: {

@@ -186,10 +186,9 @@ const ArtistView = ({id}: {id: number}) => {
                   sort={songSort}
                   order={songOrder}
                   setOrder={setSongOrder}
-                  hideSortTypes={{
-                    [SortType.ARTIST]: true,
-                    [SortType.DATE]: true,
-                    [SortType.TRACK]: true,
+                  showSortTypes={{
+                    [SortType.TITLE]: true,
+                    [SortType.ALBUM]: true,
                   }}
                 />
               </>
@@ -221,11 +220,9 @@ const ArtistView = ({id}: {id: number}) => {
                   sort={albumSort}
                   order={albumOrder}
                   setOrder={setAlbumOrder}
-                  hideSortTypes={{
-                    [SortType.DATE]: true,
-                    [SortType.TRACK]: true,
-                    [SortType.TITLE]: true,
-                    [SortType.ARTIST]: true,
+                  showSortTypes={{
+                    [SortType.ALBUM]: true,
+                    [SortType.YEAR]: true,
                   }}
                 />
               </>

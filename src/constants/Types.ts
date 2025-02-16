@@ -76,9 +76,10 @@ export enum SortType {
   NEWEST = 5,
   TRACK = 6,
   DATE = 7,
+  YEAR = 8,
 }
 
-export type HideSortTypes = {
+export type ShowSortTypes = {
   [key in SortType]?: boolean;
 }
 

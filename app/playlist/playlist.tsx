@@ -139,8 +139,11 @@ const PlaylistView = ({id}: {id: number}) => {
                 order={order}
                 setOrder={setOrder}
                 songList
-                hideSortTypes={{
-                  [SortType.TRACK]: true,
+                showSortTypes={{
+                  [SortType.TITLE]: true,
+                  [SortType.ARTIST]: true,
+                  [SortType.ALBUM]: true,
+                  [SortType.DATE]: true,
                 }}
               />
             </>

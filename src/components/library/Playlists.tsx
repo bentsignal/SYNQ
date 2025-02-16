@@ -57,10 +57,9 @@ const Playlists = () => {
             sort={sort} 
             order={order} 
             setOrder={setOrder}
-            hideSortTypes={{
-              [SortType.ARTIST]: true,
-              [SortType.ALBUM]: true,
-              [SortType.TRACK]: true,
+            showSortTypes={{
+              [SortType.DATE]: true,
+              [SortType.TITLE]: true,
             }}
           />
         }

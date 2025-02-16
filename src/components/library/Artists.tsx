@@ -64,10 +64,9 @@ const Artists = () => {
             sort={sort} 
             order={order} 
             setOrder={setOrder}
-            hideSortTypes={{
+            showSortTypes={{
+              [SortType.ARTIST]: true,
               [SortType.DATE]: true,
-              [SortType.ALBUM]: true,
-              [SortType.TRACK]: true,
               [SortType.TITLE]: true,
             }}
           />

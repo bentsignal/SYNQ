@@ -153,11 +153,9 @@ const AlbumView = ({id}: {id: number}) => {
                 order={order} 
                 setOrder={setOrder}
                 songList
-                hideSortTypes={{
-                  [SortType.DATE]: true,
-                  [SortType.ARTIST]: true,
-                  [SortType.ALBUM]: true,
-
+                showSortTypes={{
+                  [SortType.TITLE]: true,
+                  [SortType.TRACK]: true,
                 }}
               />
             </>

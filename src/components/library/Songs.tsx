@@ -58,8 +58,11 @@ export default function Songs () {
             sort={sort}
             order={order}
             setOrder={setOrder}
-            hideSortTypes={{
-              [SortType.TRACK]: true,
+            showSortTypes={{
+              [SortType.TITLE]: true,
+              [SortType.ARTIST]: true,
+              [SortType.ALBUM]: true,
+              [SortType.DATE]: true,
             }}
             songList
           />

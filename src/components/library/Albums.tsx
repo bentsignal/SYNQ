@@ -62,12 +62,12 @@ const Albums = () => {
             sort={sort} 
             order={order} 
             setOrder={setOrder}
-            hideSortTypes={{
-              [SortType.TITLE]: true,
-              [SortType.ARTIST]: true,
-              [SortType.TRACK]: true,
+            showSortTypes={{
+              [SortType.ALBUM]: true,
+              [SortType.YEAR]: true,
+              [SortType.DATE]: true,
             }}
-            />
+          />
         }
       />
     </View>

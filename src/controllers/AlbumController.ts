@@ -172,6 +172,16 @@ export const getAlbumsContainingSong = async (songId: number): Promise<AlbumType
   return await AlbumModel.getInstance().getAlbumsContainingSong(songId);
 }
 
-export const getAlbumsFromArtist = async (artistId: number, query?: string): Promise<AlbumType[]> => {
-  return await AlbumModel.getInstance().getAlbumsFromArtist(artistId, query);
+export const getAlbumsFromArtist = async (
+  artistId: number, 
+  sort: SortType = SortType.ALBUM,
+  order: SortOrder = SortOrder.ASC,
+  query?: string
+): Promise<AlbumType[]> => {
+  return await AlbumModel.getInstance().getAlbumsFromArtist(
+    artistId, 
+    sort, 
+    order, 
+    query
+  );
 }

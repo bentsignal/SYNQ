@@ -102,6 +102,7 @@ export default class ArtistModel extends Model {
   public async getSongsFromArtist(
     artistId: number,
     sort: SortType = SortType.NEWEST,
+    order: SortOrder = SortOrder.DESC,
     query?: string
   ): Promise<SongResultType[]> {
     let result = await ArtistModel.db?.getAllAsync<SongResultType>(`
@@ -128,8 +129,13 @@ export default class ArtistModel extends Model {
         return song;
       }));
     }
-    if (sort === SortType.NEWEST) {
-      return result.reverse();
+    if (sort === SortType.TITLE) {
+      const sorted = result.sort((a, b) => a?.title.localeCompare(b?.title));
+      return order === SortOrder.ASC ? sorted : sorted.reverse();
+    }
+    else if (sort === SortType.ALBUM) {
+      const sorted = result.sort((a, b) => a?.album.localeCompare(b?.album));
+      return order === SortOrder.ASC ? sorted : sorted.reverse();
     }
     else {
       return result;

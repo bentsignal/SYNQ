@@ -210,8 +210,13 @@ export default class AlbumModel extends Model {
     return result ? result as AlbumType[] : [];
   }
 
-  public async getAlbumsFromArtist(artistId: number, query?: string): Promise<AlbumType[]> {
-    const result = await AlbumModel.db?.getAllAsync(`
+  public async getAlbumsFromArtist(
+    artistId: number,
+    sort: SortType = SortType.ALBUM,
+    order: SortOrder = SortOrder.ASC,
+    query?: string
+  ): Promise<AlbumType[]> {
+    const result = await AlbumModel.db?.getAllAsync<AlbumType>(`
       SELECT DISTINCT albums.*
       FROM albums
       INNER JOIN artistsAlbums ON albums.id = artistsAlbums.albumId
@@ -220,6 +225,17 @@ export default class AlbumModel extends Model {
       WHERE artistsAlbums.artistId = ?
       ${query ? 'AND (LOWER(albums.name) LIKE ? OR LOWER(a2.name) LIKE ?)' : ''}
       `, query ? [artistId, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : [artistId]);
-    return result ? result as AlbumType[] : [];
+    if (!result) {
+      return [];
+    }
+    if (sort === SortType.ALBUM) {
+      const sorted = result.sort((a, b) => {
+        if (!a?.name) return 1;
+        if (!b?.name) return -1;
+        return a.name.localeCompare(b.name);
+      });
+      return order === SortOrder.ASC ? sorted : sorted.reverse();
+    }
+    return result;
   }
 }

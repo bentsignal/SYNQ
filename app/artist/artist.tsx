@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/src/constants/Colors";
 import SongList from "@/src/components/lists/song";
 import { PageType, PlaylistType, SongType, SortType, 
-  SourceType, ArtistType, AlbumType } from "@/src/constants/Types";
+  SourceType, ArtistType, AlbumType, SortOrder } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import MiniPlayer from "@/src/components/player/MiniPlayer";
 import TabBar from "@/src/components/TabBar";
@@ -40,6 +40,10 @@ const ArtistView = ({id}: {id: number}) => {
   const [showEmptyComponent, setShowEmptyComponent] = useState(false);
   const [songsQuery, setSongsQuery] = useState('');
   const [albumsQuery, setAlbumsQuery] = useState('');
+  const [songSort, setSongSort] = useState<SortType>(SortType.NEWEST);
+  const [songOrder, setSongOrder] = useState<SortOrder>(SortOrder.DESC);
+  const [albumSort, setAlbumSort] = useState<SortType>(SortType.ALBUM);
+  const [albumOrder, setAlbumOrder] = useState<SortOrder>(SortOrder.ASC);
 
   const refreshInfo = async () => {
     if (id) {
@@ -57,7 +61,12 @@ const ArtistView = ({id}: {id: number}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getSongsFromArtist(id, SortType.NEWEST, songsQuery);
+      const songs = await getSongsFromArtist(
+        id, 
+        songSort, 
+        songOrder, 
+        songsQuery
+      );
       setSongs(songs);
       setShowEmptyComponent(songs.length === 0);
     }
@@ -68,7 +77,12 @@ const ArtistView = ({id}: {id: number}) => {
 
   const refreshAlbums = async () => {
     try {
-      const results = await getAlbumsFromArtist(id, albumsQuery);
+      const results = await getAlbumsFromArtist(
+        id, 
+        albumSort, 
+        albumOrder, 
+        albumsQuery
+      );
       setAlbums(results);
     }
     catch (error) {
@@ -84,11 +98,11 @@ const ArtistView = ({id}: {id: number}) => {
 
   useEffect(() => {
     refreshSongs();
-  }, [songsQuery]);
+  }, [songsQuery, songSort, songOrder]);
 
   useEffect(() => {
     refreshAlbums();
-  }, [albumsQuery]);
+  }, [albumsQuery, albumSort, albumOrder]);
 
   useEffect(() => {
     if (tabIndex === 0) {
@@ -164,7 +178,20 @@ const ArtistView = ({id}: {id: number}) => {
                   index={tabIndex}
                   onSelect={setTabIndex}
                 />
-                <QueryWrapper setQuery={setSongsQuery} query={songsQuery} songList/>
+                <QueryWrapper 
+                  setQuery={setSongsQuery} 
+                  query={songsQuery} 
+                  songList
+                  setSort={setSongSort}
+                  sort={songSort}
+                  order={songOrder}
+                  setOrder={setSongOrder}
+                  hideSortTypes={{
+                    [SortType.ARTIST]: true,
+                    [SortType.DATE]: true,
+                    [SortType.TRACK]: true,
+                  }}
+                />
               </>
             }
             footerComponent={<View style={{height: 1000}}/>}
@@ -187,7 +214,20 @@ const ArtistView = ({id}: {id: number}) => {
                   index={tabIndex}
                   onSelect={setTabIndex}
                 />
-                <QueryWrapper setQuery={setAlbumsQuery} query={albumsQuery} />
+                <QueryWrapper 
+                  setQuery={setAlbumsQuery} 
+                  query={albumsQuery} 
+                  setSort={setAlbumSort}
+                  sort={albumSort}
+                  order={albumOrder}
+                  setOrder={setAlbumOrder}
+                  hideSortTypes={{
+                    [SortType.DATE]: true,
+                    [SortType.TRACK]: true,
+                    [SortType.TITLE]: true,
+                    [SortType.ARTIST]: true,
+                  }}
+                />
               </>
             }
             footerComponent={<View style={{height: 1000}}/>}

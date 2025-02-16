@@ -5,7 +5,7 @@ import { Styles } from "@/src/constants/Styles"
 import Bar from "@/src/components/modals/Bar"
 import CustomButton from "@/src/components/CustomButton"
 import { router } from "expo-router"
-import { PageType, ArtistType, SourceType } from "@/src/constants/Types"
+import { PageType, ArtistType, SourceType, SortOrder, SortType } from "@/src/constants/Types"
 import ArtistList from "@/src/components/lists/artist"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useThemeContext } from "@/src/context/ThemeProvider"
@@ -15,6 +15,7 @@ import artistBus from "@/src/events/artist/Bus"
 import ModalStyles from "@/src/components/modals/Styles"
 import { useLocalSearchParams } from "expo-router";
 import { useGlobalContext } from "@/src/context/GlobalProvider"
+import QueryWrapper from "@/src/components/lists/query/Wrapper"
 
 const AddArtist = () => {
 
@@ -24,10 +25,13 @@ const AddArtist = () => {
   const { sourceType } = useLocalSearchParams();
   const { editSong } = useGlobalContext();
   const [artists, setArtists] = useState<ArtistType[]>([]);
+  const [query, setQuery] = useState<string>('');
+  const [sort, setSort] = useState<SortType>(SortType.ARTIST);
+  const [order, setOrder] = useState<SortOrder>(SortOrder.ASC);
 
   const refreshArtists = async () => {
     try {
-      const results = await getArtists();
+      const results = await getArtists(query, sort, order);
       results.forEach(artist => {
         artist.sourceType = sourceType === 'song' ? SourceType.SONG : SourceType.ALBUM;
       });
@@ -46,6 +50,10 @@ const AddArtist = () => {
       console.log('error refreshing playlists:', error);
     }
   }
+
+  useEffect(() => {
+    refreshArtists();
+  }, [query, sort, order]);
 
   useEffect(() => {
     refreshArtists();
@@ -75,6 +83,20 @@ const AddArtist = () => {
         pageType={PageType.ADD}
         gradientStart={'rgba(24, 24, 24, 1)'}
         gradientEnd={'rgba(24, 24, 24, 0)'}
+        headerComponent={
+          <QueryWrapper 
+            query={query} 
+            setQuery={setQuery} 
+            sort={sort} 
+            setSort={setSort} 
+            order={order} 
+            setOrder={setOrder}
+            showSortTypes={{
+              [SortType.ARTIST]: true,
+              [SortType.DATE]: true,
+            }}
+          />
+        }
       />
       <View style={[Local.bottomButtonsWrapper, {paddingBottom: insets.bottom}]}>
         <CustomButton

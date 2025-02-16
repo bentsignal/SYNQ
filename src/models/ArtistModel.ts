@@ -39,6 +39,9 @@ export default class ArtistModel extends Model {
       const sorted = result.sort((a, b) => a?.name.localeCompare(b?.name));
       return order === SortOrder.ASC ? sorted : sorted.reverse();
     }
+    else if (sort === SortType.DATE) {
+      return order === SortOrder.ASC ? result : result.reverse();
+    }
     return result;
   }
 

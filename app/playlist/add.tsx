@@ -5,7 +5,7 @@ import { Styles } from "@/src/constants/Styles"
 import Bar from "@/src/components/modals/Bar"
 import CustomButton from "@/src/components/CustomButton"
 import { router } from "expo-router"
-import { PageType, PlaylistType } from "@/src/constants/Types"
+import { PageType, PlaylistType, SortOrder, SortType } from "@/src/constants/Types"
 import PlaylistList from "@/src/components/lists/playlist"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useThemeContext } from "@/src/context/ThemeProvider"
@@ -14,6 +14,7 @@ import { PlaylistBusEvent } from "@/src/events/playlist/Events"
 import playlistBus from "@/src/events/playlist/Bus"
 import ModalStyles from "@/src/components/modals/Styles"
 import { useGlobalContext } from "@/src/context/GlobalProvider"
+import QueryWrapper from "@/src/components/lists/query/Wrapper"
 
 const AddToPlaylist = () => {
 
@@ -21,11 +22,21 @@ const AddToPlaylist = () => {
   const { editSong } = useGlobalContext();
   const insets = useSafeAreaInsets();
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
+  const [query, setQuery] = useState<string>('');
+  const [sort, setSort] = useState<SortType>(SortType.DATE);
+  const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
+
 
   const refreshPlaylists = async () => {
     try {
-      let results = await getPlaylists();
+      let results = await getPlaylists(query, sort, order);
       results = results.filter((playlist) => playlist.id !== 1);
+      // move liked songs to the front of the list
+      const likedSongs = results.find(p => p.id === 2);
+      if (likedSongs) {
+        results.splice(results.indexOf(likedSongs), 2);
+        results.unshift(likedSongs);
+      }
       // move playlists with song to the front of the list
       if (editSong?.id) {
         const playlistsWithSong = await getPlaylistsContainingSong(editSong.id);
@@ -44,6 +55,10 @@ const AddToPlaylist = () => {
       console.log('error refreshing playlists:', error);
     }
   }
+
+  useEffect(() => {
+    refreshPlaylists();
+  }, [query, sort, order]);
 
   useEffect(() => {
     refreshPlaylists();
@@ -73,6 +88,20 @@ const AddToPlaylist = () => {
         pageType={PageType.ADD}
         gradientStart={'rgba(24, 24, 24, 1)'}
         gradientEnd={'rgba(24, 24, 24, 0)'}
+        headerComponent={
+          <QueryWrapper 
+            query={query} 
+            setQuery={setQuery} 
+            sort={sort} 
+            setSort={setSort} 
+            order={order} 
+            setOrder={setOrder}
+            showSortTypes={{
+              [SortType.TITLE]: true,
+              [SortType.DATE]: true,
+            }}
+          />
+        }
       />
       <View style={[Local.bottomButtonsWrapper, {paddingBottom: insets.bottom}]}>
         <CustomButton

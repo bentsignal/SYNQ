@@ -44,6 +44,14 @@ export default class AlbumModel extends Model {
     else if (sort === SortType.DATE) {
       return order === SortOrder.DESC ? result.reverse() : result;
     }
+    else if (sort === SortType.YEAR) {
+      const sorted = result.sort((a, b) => {
+        if (!a?.year) return 1;
+        if (!b?.year) return -1;
+        return a.year - b.year;
+      });
+      return order === SortOrder.DESC ? sorted.reverse() : sorted;
+    }
     return result;
   }
 

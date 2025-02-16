@@ -144,9 +144,8 @@ export const getAlbumFromMetadata = async (value: string, year?: number, image?:
   if (value === '' || value === null || value === undefined) {
     return null;
   }
-
-  const allAlbums = await AlbumModel.getInstance().getAlbums();
-  const existingAlbum = allAlbums.find(album => album.name && album.name.toLowerCase() === value.toLowerCase());
+  const albums = await AlbumModel.getInstance().getAlbums(value.toLowerCase());
+  const existingAlbum = albums.find(album => album.name && album.name.toLowerCase() === value.toLowerCase());
 
   if (existingAlbum) {
     return existingAlbum;

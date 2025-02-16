@@ -23,6 +23,9 @@ export default function Search({ setQuery, query }: SearchProps) {
         placeholder="Search"
         onChangeText={setQuery}
         placeholderTextColor={Colors.text}
+        autoCapitalize="none"
+        autoComplete="off"
+        autoCorrect={false}
       />
       {query.length > 0 && (
         <TouchableOpacity 

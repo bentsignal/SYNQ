@@ -1,19 +1,20 @@
 import { Text, TouchableOpacity, StyleSheet } from "react-native";
 
-import { MenuView, NativeActionEvent } from '@react-native-menu/menu'
+import { MenuView, NativeActionEvent, MenuAction } from '@react-native-menu/menu'
 
 import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
-import { SortType, SortOrder } from "@/src/constants/Types";
+import { SortType, SortOrder, PageType } from "@/src/constants/Types";
 
 type SortProps = {
   setSort: (sort: SortType) => void;
   sort: SortType;
   order: SortOrder;
   setOrder: (order: SortOrder) => void;
+  pageType?: PageType;
 }
 
-export default function Sort({ setSort, sort, order, setOrder }: SortProps) {
+export default function Sort({ setSort, sort, order, setOrder, pageType }: SortProps) {
   
   const handleChange = (nativeEvent: NativeActionEvent) => {
     const event = nativeEvent.nativeEvent.event;
@@ -49,119 +50,131 @@ export default function Sort({ setSort, sort, order, setOrder }: SortProps) {
       setOrder(SortOrder.DESC);
     }
   }
-  
+
+  const actions: MenuAction[] = [];
+  if ([PageType.PLAYLIST].includes(pageType)) {
+    actions.push({
+      id: 'date',
+      title: 'Date Added',
+      titleColor: Colors.text,
+      subactions: [
+        {
+          id: 'date-asc',
+          title: 'Ascending',
+          subtitle: 'Oldest → Newest',
+          titleColor: Colors.text,
+          state: sort === SortType.DATE && order === SortOrder.ASC ? 'on' : 'off',
+        },
+        {
+          id: 'date-desc',
+          title: 'Descending',
+          subtitle: 'Newest → Oldest',
+          titleColor: Colors.text,
+          state: sort === SortType.DATE && order === SortOrder.DESC ? 'on' : 'off',
+        }
+      ],
+    });
+  }
+  if ([PageType.PLAYLIST].includes(pageType)) {
+    actions.push({
+      id: 'title',
+      title: 'Title',
+      titleColor: Colors.text,
+      subactions: [
+        {
+          id: 'title-asc',
+          title: 'Ascending',
+          subtitle: 'A-Z',
+          titleColor: Colors.text,
+          state: sort === SortType.TITLE && order === SortOrder.ASC ? 'on' : 'off',
+        },
+        {
+          id: 'title-desc',
+          title: 'Descending',
+          subtitle: 'Z-A',
+          titleColor: Colors.text,
+          state: sort === SortType.TITLE && order === SortOrder.DESC ? 'on' : 'off',
+        }
+      ],
+    });
+  }
+  if ([PageType.PLAYLIST].includes(pageType)) {
+    actions.push({
+      id: 'artist',
+      title: 'Artist',
+      titleColor: Colors.text,
+      subactions: [
+        {
+          id: 'artist-asc',
+          title: 'Ascending',
+          subtitle: 'A-Z',
+          titleColor: Colors.text,
+          state: sort === SortType.ARTIST && order === SortOrder.ASC ? 'on' : 'off',
+        },
+        {
+          id: 'artist-desc',
+          title: 'Descending',
+          subtitle: 'Z-A',
+          titleColor: Colors.text,
+          state: sort === SortType.ARTIST && order === SortOrder.DESC ? 'on' : 'off',
+        }
+      ],
+    });
+  }
+  if ([PageType.PLAYLIST].includes(pageType)) {
+    actions.push({
+      id: 'album',
+      title: 'Album',
+      titleColor: Colors.text,
+      subactions: [
+        {
+          id: 'album-asc',
+          title: 'Ascending',
+          subtitle: 'A-Z',
+          titleColor: Colors.text,
+          state: sort === SortType.ALBUM && order === SortOrder.ASC ? 'on' : 'off',
+        },
+        {
+          id: 'album-desc',
+          title: 'Descending',
+          subtitle: 'Z-A',
+          titleColor: Colors.text,
+          state: sort === SortType.ALBUM && order === SortOrder.DESC ? 'on' : 'off',
+        }
+      ],
+    });
+  }
+
+  if ([PageType.ALBUM].includes(pageType)) {
+    actions.push({
+      id: 'track',
+      title: 'Track',
+      titleColor: Colors.text,
+      subactions: [
+        {
+          id: 'track-asc',
+          title: 'Ascending',
+          subtitle: '1 → 999',
+          titleColor: Colors.text,
+          state: sort === SortType.TRACK && order === SortOrder.ASC ? 'on' : 'off',
+        },
+        {
+          id: 'track-desc',
+          title: 'Descending',
+          subtitle: '999 → 1',
+          titleColor: Colors.text,
+          state: sort === SortType.TRACK && order === SortOrder.DESC ? 'on' : 'off',
+        }
+      ],
+    },);
+  }
+
   return (
     <MenuView
       title="Sort By"
       style={Local.container}
       onPressAction={handleChange}
-      actions={[
-        {
-          id: 'date',
-          title: 'Date Added',
-          titleColor: Colors.text,
-          subactions: [
-            {
-              id: 'date-asc',
-              title: 'Ascending',
-              subtitle: 'Oldest → Newest',
-              titleColor: Colors.text,
-              state: sort === SortType.DATE && order === SortOrder.ASC ? 'on' : 'off',
-            },
-            {
-              id: 'date-desc',
-              title: 'Descending',
-              subtitle: 'Newest → Oldest',
-              titleColor: Colors.text,
-              state: sort === SortType.DATE && order === SortOrder.DESC ? 'on' : 'off',
-            }
-          ],
-        },
-        {
-          id: 'title',
-          title: 'Title',
-          titleColor: Colors.text,
-          subactions: [
-            {
-              id: 'title-asc',
-              title: 'Ascending',
-              subtitle: 'A-Z',
-              titleColor: Colors.text,
-              state: sort === SortType.TITLE && order === SortOrder.ASC ? 'on' : 'off',
-            },
-            {
-              id: 'title-desc',
-              title: 'Descending',
-              subtitle: 'Z-A',
-              titleColor: Colors.text,
-              state: sort === SortType.TITLE && order === SortOrder.DESC ? 'on' : 'off',
-            }
-          ],
-        },
-        {
-          id: 'artist',
-          title: 'Artist',
-          titleColor: Colors.text,
-          subactions: [
-            {
-              id: 'artist-asc',
-              title: 'Ascending',
-              subtitle: 'A-Z',
-              titleColor: Colors.text,
-              state: sort === SortType.ARTIST && order === SortOrder.ASC ? 'on' : 'off',
-            },
-            {
-              id: 'artist-desc',
-              title: 'Descending',
-              subtitle: 'Z-A',
-              titleColor: Colors.text,
-              state: sort === SortType.ARTIST && order === SortOrder.DESC ? 'on' : 'off',
-            }
-          ],
-        },
-        {
-          id: 'album',
-          title: 'Album',
-          titleColor: Colors.text,
-          subactions: [
-            {
-              id: 'album-asc',
-              title: 'Ascending',
-              subtitle: 'A-Z',
-              titleColor: Colors.text,
-              state: sort === SortType.ALBUM && order === SortOrder.ASC ? 'on' : 'off',
-            },
-            {
-              id: 'album-desc',
-              title: 'Descending',
-              subtitle: 'Z-A',
-              titleColor: Colors.text,
-              state: sort === SortType.ALBUM && order === SortOrder.DESC ? 'on' : 'off',
-            }
-          ],
-        },
-        {
-          id: 'track',
-          title: 'Track',
-          titleColor: Colors.text,
-          subactions: [
-            {
-              id: 'track-asc',
-              title: 'Ascending',
-              subtitle: '1 → 999',
-              titleColor: Colors.text,
-              state: sort === SortType.TRACK && order === SortOrder.ASC ? 'on' : 'off',
-            },
-            {
-              id: 'track-desc',
-              title: 'Descending',
-              subtitle: '999 → 1',
-              titleColor: Colors.text,
-              state: sort === SortType.TRACK && order === SortOrder.DESC ? 'on' : 'off',
-            }
-          ],
-        },
-      ]}
+      actions={actions}
       shouldOpenOnLongPress={false}
     >
       <Text style={Local.text}>Sort</Text>

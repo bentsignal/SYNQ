@@ -58,6 +58,7 @@ export default function Songs () {
             sort={sort}
             order={order}
             setOrder={setOrder}
+            pageType={PageType.PLAYLIST}
             songList
           />
         }

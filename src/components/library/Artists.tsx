@@ -67,7 +67,6 @@ const Artists = () => {
             showSortTypes={{
               [SortType.ARTIST]: true,
               [SortType.DATE]: true,
-              [SortType.TITLE]: true,
             }}
           />
         }

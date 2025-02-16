@@ -17,8 +17,8 @@ const Albums = () => {
   const [albums, setAlbums] = useState<AlbumType[]>([]);
   const [showEmptyComponent, setShowEmptyComponent] = useState(false);
   const [query, setQuery] = useState('');
-  const [sort, setSort] = useState<SortType>(SortType.ALBUM);
-  const [order, setOrder] = useState<SortOrder>(SortOrder.ASC);
+  const [sort, setSort] = useState<SortType>(SortType.DATE);
+  const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
 
   const refreshAlbums = async () => {
     const results = await getAlbums(query, sort, order);

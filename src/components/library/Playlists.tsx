@@ -13,11 +13,16 @@ const Playlists = () => {
   const [playlists, setPlaylists] = useState<PlaylistType[]>([]);
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState<SortType>(SortType.DATE);
-  const [order, setOrder] = useState<SortOrder>(SortOrder.ASC);
+  const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
 
   const refreshPlaylists = async () => {
     try {
       const results = await getPlaylists(query, sort, order);
+      const likedSongs = results.find(p => p.id === 2);
+      if (likedSongs) {
+        results.splice(results.indexOf(likedSongs), 2);
+        results.unshift(likedSongs);
+      }
       setPlaylists(results.filter(p =>p.id !== 1));
     }
     catch (error) {

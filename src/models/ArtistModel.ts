@@ -24,9 +24,13 @@ export default class ArtistModel extends Model {
   ): Promise<ArtistType[]> {
     const result = await ArtistModel.db?.getAllAsync<ArtistType>(`
       SELECT artists.* FROM artists
-      ${query ? 'WHERE LOWER(artists.name) LIKE ?' : ''}
+      LEFT JOIN artistSongs ON artists.id = artistSongs.artistId
+      LEFT JOIN songs ON artistSongs.songId = songs.id
+      LEFT JOIN albumSongs ON songs.id = albumSongs.songId
+      LEFT JOIN albums ON albumSongs.albumId = albums.id
+      ${query ? 'WHERE LOWER(artists.name) LIKE ? OR LOWER(songs.title) LIKE ? OR LOWER(albums.name) LIKE ?' : ''}
       GROUP BY artists.id;
-      `, query ? [`%${query.toLowerCase()}%`] : []);
+      `, query ? [`%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : []);
 
     if (!result) {
       return [];

@@ -4,10 +4,9 @@ import { Styles } from "@/src/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/src/constants/Colors";
 import SongList from "@/src/components/lists/song";
-import { PageType, AlbumType, SongType, SortType, SourceType, ArtistType } from "@/src/constants/Types";
+import { PageType, AlbumType, SongType, 
+  SortType, SourceType, ArtistType, SortOrder } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
-import MiniPlayer from "@/src/components/player/MiniPlayer";
-import TabBar from "@/src/components/TabBar";
 import AlbumHeader from "@/src/components/lists/album/Header";
 import Overlay from "@/src/components/Overlay";
 import Header from "@/src/components/Header";
@@ -36,6 +35,8 @@ const AlbumView = ({id}: {id: number}) => {
   const [count, setCount] = useState(0);
   const [duration, setDuration] = useState<number | null>(null);
   const [query, setQuery] = useState('');
+  const [sort, setSort] = useState<SortType>(SortType.TRACK);
+  const [order, setOrder] = useState<SortOrder>(SortOrder.ASC);
 
   const artistListOpacity = useSharedValue(0);
 
@@ -62,7 +63,12 @@ const AlbumView = ({id}: {id: number}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getSongsFromAlbum(id, SortType.TRACK, query);
+      const songs = await getSongsFromAlbum(
+        id, 
+        sort, 
+        order, 
+        query
+      );
       setSongs(songs);
       const duration = songs.reduce((acc, song) => acc + (song.duration ?? 0), 0);
       if (query === '') {
@@ -98,7 +104,7 @@ const AlbumView = ({id}: {id: number}) => {
 
   useEffect(() => {
     refreshSongs();
-  }, [query]);
+  }, [query, sort, order]);
 
   const handleMore = () => {
     if (haptic) {
@@ -139,7 +145,21 @@ const AlbumView = ({id}: {id: number}) => {
                 pageType={PageType.ALBUM}
                 duration={duration}
               />
-              <QueryWrapper setQuery={setQuery} query={query} songList/>
+              <QueryWrapper 
+                setQuery={setQuery} 
+                query={query} 
+                setSort={setSort} 
+                sort={sort} 
+                order={order} 
+                setOrder={setOrder}
+                songList
+                hideSortTypes={{
+                  [SortType.DATE]: true,
+                  [SortType.ARTIST]: true,
+                  [SortType.ALBUM]: true,
+
+                }}
+              />
             </>
           }
           setScrollPosition={setScrollPosition}

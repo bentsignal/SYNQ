@@ -124,7 +124,12 @@ export default class AlbumModel extends Model {
     return result ? result as AlbumType[] : [];
   }
 
-  public async getSongsFromAlbum(albumId: number, sort: SortType = SortType.TRACK, query?: string): Promise<SongResultType[]> {
+  public async getSongsFromAlbum(
+    albumId: number,
+    sort: SortType = SortType.TRACK,
+    order: SortOrder = SortOrder.ASC,
+    query?: string
+  ): Promise<SongResultType[]> {
     let result = await AlbumModel.db?.getAllAsync<SongResultType>(
       `SELECT DISTINCT songs.*, albumSongs.track 
       FROM songs 
@@ -144,15 +149,21 @@ export default class AlbumModel extends Model {
         return song;
       }));
     }
-    if (sort === SortType.NEWEST) {
-      return result.reverse();
-    }
-    else if (sort === SortType.TRACK) {
-      return result.sort((a, b) => {
+    if (sort === SortType.TRACK) {
+      const sorted = result.sort((a, b) => {
         if (!a?.track) return 1;
         if (!b?.track) return -1;
         return a.track - b.track;
       });
+      return order === SortOrder.ASC ? sorted : sorted.reverse();
+    }
+    else if (sort === SortType.TITLE) {
+      const sorted = result.sort((a, b) => {
+        if (!a?.title) return 1;
+        if (!b?.title) return -1;
+        return a.title.localeCompare(b.title);
+      });
+      return order === SortOrder.ASC ? sorted : sorted.reverse();
     }
     return result;
   }

@@ -34,6 +34,14 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     posthog.capture('$set', {
       '$set': {
+        'dev': __DEV__
+      },
+    });
+  }, []);
+
+  useEffect(() => {
+    posthog.capture('$set', {
+      '$set': {
         'premium': premium,
       },
     });

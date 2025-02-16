@@ -25,9 +25,30 @@ import { usePostHog } from 'posthog-react-native';
 export default function Backup() {
 
   const { theme } = useThemeContext();
-  const [loading, setLoading] = useState(false);
   const { premium } = usePremiumContext();
   const posthog = usePostHog();
+
+  const [loading, setLoading] = useState(false);
+
+  const clearDocumentDirectory = async () => {
+    const items = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
+    for (const item of items) {
+      await FileSystem.deleteAsync(`${FileSystem.documentDirectory}${item}`);
+    }
+  }
+
+  const clearAsyncStorage = async () => {
+    await AsyncStorage.clear();
+  }
+
+  const resetDB = async () => {
+    await Model.reconnect();
+    await Model.createTables();
+  }
+
+  const resetPlayer = async () => {
+    TrackPlayer.reset();
+  }
 
   const handleBackup = async () => {
     try {
@@ -52,19 +73,39 @@ export default function Backup() {
         copyToCacheDirectory: true
       });
       if (!result.canceled) {
-        // Clear document directory
-        const items = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
-        for (const item of items) {
-          await FileSystem.deleteAsync(`${FileSystem.documentDirectory}${item}`);
+        try {
+          await clearDocumentDirectory();
         }
-        // Unzip backup into document directory
-        await unzip(result.assets[0].uri, FileSystem.documentDirectory);
-        // reconnect to db
-        await Model.reconnect();
-        await Model.createTables();
+        catch (error) {
+          throw new Error('Error clearing document directory:', error);
+        }
+        try {
+          await clearAsyncStorage();
+        }
+        catch (error) {
+          throw new Error('Error clearing async storage:', error);
+        }
+        try {
+          await unzip(result.assets[0].uri, FileSystem.documentDirectory);
+        }
+        catch (error) {
+          throw new Error('Error unzipping backup:', error);
+        }
+        try {
+          await resetDB();
+        }
+        catch (error) {
+          throw new Error('Error reconnecting to db:', error);
+        }
+        try {
+          await resetPlayer();
+        }
+        catch (error) {
+          throw new Error('Error resetting track player:', error);
+        }
         playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
-        TrackPlayer.reset();
-        Alert.alert('Success', 'Library restored successfully. Please restart the app.');
+        Alert.alert('Success', 'Library restored successfully.');
+        setLoading(false);
       }
     } catch (error) {
       console.log('Error restoring backup:', error);
@@ -87,24 +128,39 @@ export default function Backup() {
           style: 'destructive',
           onPress: async () => {
             setLoading(true);
-            // Clear document directory
-            const items = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
-            for (const item of items) {
-              await FileSystem.deleteAsync(`${FileSystem.documentDirectory}${item}`);
-            }
             try {
-              await AsyncStorage.clear();
+              try {
+                await clearDocumentDirectory();
+              }
+              catch (error) {
+                throw new Error('Error clearing document directory:', error);
+              }
+              try {
+                await clearAsyncStorage();
+              }
+              catch (error) {
+                throw new Error('Error clearing async storage:', error);
+              }
+              try {
+                await resetDB();
+              }
+              catch (error) {
+                throw new Error('Error reconnecting to db:', error);
+              }
+              try {
+                await resetPlayer();
+              }
+              catch (error) {
+                throw new Error('Error resetting track player:', error);
+              }
+              playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
+              Alert.alert('Success', 'Library erased successfully.');
+              setLoading(false);
             }
             catch (error) {
-              console.log('Error clearing async storage:', error);
+              console.log('Error resetting app:', error);
+              showErrorAlert(`Failed to reset app. If the error persists, please contact support.`);
             }
-            await Model.reconnect();
-            await Model.createTables();
-            playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
-            TrackPlayer.reset();
-
-            Alert.alert('Success', 'Library erased successfully. Please restart the app.');
-            setLoading(false);
           }
         }
       ]);

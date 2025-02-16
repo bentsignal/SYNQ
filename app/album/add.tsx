@@ -5,7 +5,7 @@ import { Styles } from "@/src/constants/Styles"
 import Bar from "@/src/components/modals/Bar"
 import CustomButton from "@/src/components/CustomButton"
 import { router } from "expo-router"
-import { PageType, AlbumType } from "@/src/constants/Types"
+import { PageType, AlbumType, SortOrder, SortType } from "@/src/constants/Types"
 import AlbumList from "@/src/components/lists/album"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useThemeContext } from "@/src/context/ThemeProvider"
@@ -14,6 +14,7 @@ import { AlbumBusEvent } from "@/src/events/album/Events"
 import albumBus from "@/src/events/album/Bus"
 import ModalStyles from "@/src/components/modals/Styles"
 import { useGlobalContext } from "@/src/context/GlobalProvider"
+import QueryWrapper from "@/src/components/lists/query/Wrapper"
 
 const AddAlbum = () => {
 
@@ -22,10 +23,13 @@ const AddAlbum = () => {
   const insets = useSafeAreaInsets();
 
   const [albums, setAlbums] = useState<AlbumType[]>([]);
+  const [query, setQuery] = useState<string>('');
+  const [sort, setSort] = useState<SortType>(SortType.DATE);
+  const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
 
   const refreshAlbums = async () => {
     try {
-      const results = await getAlbums();
+      const results = await getAlbums(query, sort, order);
       if (editSong?.id) {
         const albumsWithSong = await getAlbumsContainingSong(editSong.id);
         for (let i = 0; i < results.length; i++) {
@@ -50,6 +54,10 @@ const AddAlbum = () => {
     }
   }, []);
 
+  useEffect(() => {
+    refreshAlbums();
+  }, [query, sort, order]);
+
   return (
     <View style={Local.wrapper}>
       <Bar />
@@ -70,6 +78,21 @@ const AddAlbum = () => {
         pageType={PageType.ADD}
         gradientStart={'rgba(24, 24, 24, 1)'}
         gradientEnd={'rgba(24, 24, 24, 0)'}
+        headerComponent={
+          <QueryWrapper 
+            query={query} 
+            setQuery={setQuery} 
+            sort={sort} 
+            setSort={setSort} 
+            order={order} 
+            setOrder={setOrder}
+            showSortTypes={{
+              [SortType.ALBUM]: true,
+              [SortType.DATE]: true,
+              [SortType.YEAR]: true,
+            }}
+          />
+        }
       />
       <View style={[Local.bottomButtonsWrapper, {paddingBottom: insets.bottom}]}>
         <CustomButton

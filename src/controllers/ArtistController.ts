@@ -1,4 +1,4 @@
-import { ArtistType, SongType, SortType } from "@/src/constants/Types";
+import { ArtistType, SongType, SortOrder, SortType } from "@/src/constants/Types";
 import ArtistModel from "@/src/models/ArtistModel";
 import { writeImageToLibrary } from "./ImageController";
 import * as FileSystem from 'expo-file-system';
@@ -32,8 +32,12 @@ export const getArtistInfo = async (artistId: number): Promise<ArtistType | null
   return await ArtistModel.getInstance().getArtistInfo(artistId);
 }
 
-export const getArtists = async (): Promise<ArtistType[]> => {
-  return await ArtistModel.getInstance().getArtists();
+export const getArtists = async (
+  query?: string, 
+  sort?: SortType, 
+  order?: SortOrder
+): Promise<ArtistType[]> => {
+  return await ArtistModel.getInstance().getArtists(query, sort, order);
 }
 
 const makeArtistsDir = async () => {
@@ -102,8 +106,18 @@ export const getArtistsFromSong = async (songId: number): Promise<ArtistType[]> 
   return await ArtistModel.getInstance().getArtistsFromSong(songId);
 }
 
-export const getSongsFromArtist = async (artistId: number, sort: SortType = SortType.NEWEST): Promise<SongType[]> => {
-  const results = await ArtistModel.getInstance().getSongsFromArtist(artistId, sort);
+export const getSongsFromArtist = async (
+  artistId: number,
+  sort: SortType = SortType.DATE,
+  order: SortOrder = SortOrder.DESC,
+  query?: string
+): Promise<SongType[]> => {
+  const results = await ArtistModel.getInstance().getSongsFromArtist(
+    artistId, 
+    sort, 
+    order, 
+    query
+  );
   const songs = results.map(result => getSongByResult(result));
   return songs;
 }

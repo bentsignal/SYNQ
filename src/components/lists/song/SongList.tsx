@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { SongType, PageType, SourceType } from '@/src/constants/Types';
+import { SongType, PageType, SourceType, SortType, SortOrder } from '@/src/constants/Types';
 import { useGlobalContext } from '@/src/context/GlobalProvider';
 import Song from '@/src/components/song';
 import { generateSongKey } from '@/src/controllers/SongController';
@@ -38,6 +38,9 @@ const SongList = memo((
     showEmptyComponent,
     lockScroll = false,
     listRef,
+    sort,
+    order,
+    query,
   }: 
   {
     songs: SongType[], 
@@ -58,11 +61,14 @@ const SongList = memo((
     showEmptyComponent?: boolean,
     lockScroll?: boolean,
     listRef?: React.RefObject<FlatList<any>>,
+    sort?: SortType,
+    order?: SortOrder,
+    query?: string,
   }
 ) => {
 
   const { selectedId, haptic, adPlaying, setAdPlaying, shouldPlayAd, adURL } = useGlobalContext();
-  const { shuffle, setSourceType, setSourceId } = usePlaybackContext();
+  const { shuffle, setSourceType, setSourceId, setSort, setOrder, setQuery } = usePlaybackContext();
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
   const activeTrack = useActiveTrack();
@@ -93,11 +99,22 @@ const SongList = memo((
       setAdPlaying(true);
       await playAd(theme, adURL);
       const newTrack = await getTrackFromSong(song, theme);
-      await updateQueue(song.id, shuffle, song.sourceType, song.sourceId);
+      await updateQueue(
+        song.id, 
+        shuffle, 
+        song.sourceType, 
+        song.sourceId, 
+        sort,
+        order,
+        query
+      );
       setSourceType(song.sourceType);
       await AsyncStorage.setItem('sourceType', song.sourceType.toString());
       setSourceId(song.sourceId);
       await AsyncStorage.setItem('sourceId', song.sourceId.toString());
+      setSort(sort);
+      setOrder(order);
+      setQuery(query);
       if (newTrack) {
         await addToQueue(newTrack);
       }
@@ -109,19 +126,35 @@ const SongList = memo((
       try {
         const newTrack = await getTrackFromSong(song, theme);
         if (newTrack) {
+
           await playTrack(newTrack);
-          await updateQueue(song.id, shuffle, song.sourceType, song.sourceId);
+          await updateQueue(
+            song.id, 
+            shuffle, 
+            song.sourceType, 
+            song.sourceId, 
+            sort, 
+            order, 
+            query
+          );
           setSourceType(song.sourceType);
           await AsyncStorage.setItem('sourceType', song.sourceType.toString());
           setSourceId(song.sourceId);
           await AsyncStorage.setItem('sourceId', song.sourceId.toString());
+          setSort(sort);
+          setOrder(order);
+          setQuery(query);
         }
       }
       catch (error) {
         console.log('error playing song: ', error);
       }
     }
-  }, [haptic, premium, shouldPlayAd, adPlaying, theme, adURL, shuffle, setAdPlaying, setSourceType, setSourceId]);
+  }, [
+    haptic, premium, shouldPlayAd, adPlaying, theme, 
+    adURL, shuffle, setAdPlaying, setSourceType, 
+    setSourceId, sort, order, query
+  ]);
 
   const renderItem = ({item, index} : {item: SongType, index: number}) => {
     item.pageType = pageType;

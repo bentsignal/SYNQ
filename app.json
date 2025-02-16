@@ -2,7 +2,7 @@
   "expo": {
     "name": "synq",
     "slug": "synq",
-    "version": "2.3.0",
+    "version": "2.4.0",
     "orientation": "portrait",
     "icon": "./src/assets/appIcons/icon-blue.png",
     "scheme": "synq",
@@ -26,7 +26,7 @@
           "audio"
         ]
       },
-      "buildNumber": "61"
+      "buildNumber": "65"
     },
     "android": {
       "adaptiveIcon": {

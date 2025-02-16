@@ -1,5 +1,5 @@
 import Model from './Model';
-import { PlaylistType, SongResultType, SortType } from '@/src/constants/Types';
+import { PlaylistType, SongResultType, SortOrder, SortType } from '@/src/constants/Types';
 import { getArtistsFromSong } from '../controllers/ArtistController';
 import { getAlbumsFromSong } from '../controllers/AlbumController';
 
@@ -18,15 +18,26 @@ export default class PlaylistModel extends Model {
     return PlaylistModel.instance;
   }
 
-  public async getPlaylists(): Promise<PlaylistType[]> {
+  public async getPlaylists(query?: string, sort?: SortType, order?: SortOrder): Promise<PlaylistType[]> {
     try {
-      const result = await PlaylistModel.db?.getAllAsync(`
+      const result = await PlaylistModel.db?.getAllAsync<PlaylistType>(`
         SELECT playlists.*, COUNT(playlistSongs.songId) as songCount 
         FROM playlists
         LEFT JOIN playlistSongs ON playlists.id = playlistSongs.playlistId
+        ${query ? 'WHERE LOWER(playlists.name) LIKE ?' : ''}
         GROUP BY playlists.id;
-      `);
-      return result as PlaylistType[];
+      `, query ? [`%${query.toLowerCase()}%`] : []);
+      if (!result) {
+        return [];
+      }
+      if (sort === SortType.DATE) {
+        return order === SortOrder.DESC ? result.reverse() : result;
+      }
+      else if (sort === SortType.TITLE) {
+        const sorted = result.sort((a, b) => a.name.localeCompare(b.name));
+        return order === SortOrder.DESC ? sorted.reverse() : sorted;
+      }
+      return result;
     }
     catch (error) {
       throw new Error('Error getting playlists: ' + error);
@@ -48,17 +59,27 @@ export default class PlaylistModel extends Model {
     }
   }
 
-  public async getSongsFromPlaylist(playlistId: number, sort: SortType = SortType.NEWEST): Promise<SongResultType[]> {
+  public async getSongsFromPlaylist(
+    playlistId: number,
+    sort: SortType = SortType.DATE,
+    order: SortOrder = SortOrder.DESC,
+    query?: string
+  ): Promise<SongResultType[]> {
     try {
       if (!PlaylistModel.db) {
         await PlaylistModel.initConnection();
       }
       let result = await PlaylistModel.db?.getAllAsync<SongResultType>(`
-        SELECT songs.* 
+        SELECT DISTINCT songs.* 
         FROM songs
         INNER JOIN playlistSongs ON songs.id = playlistSongs.songId
-        WHERE playlistSongs.playlistId = ?;
-      `, [playlistId]);
+        LEFT JOIN albumSongs ON songs.id = albumSongs.songId
+        LEFT JOIN albums ON albumSongs.albumId = albums.id
+        LEFT JOIN artistSongs ON songs.id = artistSongs.songId
+        LEFT JOIN artists ON artistSongs.artistId = artists.id
+        WHERE playlistSongs.playlistId = ?
+        ${query ? 'AND (LOWER(songs.title) LIKE ? OR LOWER(artists.name) LIKE ? OR LOWER(albums.name) LIKE ?)' : ''};
+      `, query ? [playlistId, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : [playlistId]);
 
       if (!result) {
         return [];
@@ -75,22 +96,21 @@ export default class PlaylistModel extends Model {
       if (!result) {
         return [];
       }
-      if (sort === SortType.NEWEST) {
-        return result.reverse();
-      }
-      else if (sort === SortType.OLDEST) {
-        return result;
+      if (sort === SortType.DATE) {
+        return order === SortOrder.DESC ? result.reverse() : result;
       }
       else if (sort === SortType.TITLE) {
-        return result.sort((a, b) => a?.title.localeCompare(b?.title));
+        const sorted = result.sort((a, b) => a?.title.localeCompare(b?.title));
+        return order === SortOrder.DESC ? sorted.reverse() : sorted;
       }
       else if (sort === SortType.ARTIST) {
-        return result.sort((a, b) => a?.artists.localeCompare(b?.artists));
+        const sorted = result.sort((a, b) => a?.artists.localeCompare(b?.artists));
+        return order === SortOrder.DESC ? sorted.reverse() : sorted;
       }
       else if (sort === SortType.ALBUM) {
-        return result.sort((a, b) => a?.album.localeCompare(b?.album));
+        const sorted = result.sort((a, b) => a?.album.localeCompare(b?.album));
+        return order === SortOrder.DESC ? sorted.reverse() : sorted;
       }
-      
       return result;
     }
     catch (error) {

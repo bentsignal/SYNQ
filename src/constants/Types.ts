@@ -72,9 +72,18 @@ export enum SortType {
   TITLE = 1,
   ARTIST = 2,
   ALBUM = 3,
-  OLDEST = 4,
-  NEWEST = 5,
   TRACK = 6,
+  DATE = 7,
+  YEAR = 8,
+}
+
+export type ShowSortTypes = {
+  [key in SortType]?: boolean;
+}
+
+export enum SortOrder {
+  ASC = 1,
+  DESC = 2,
 }
 
 export enum PageType {

@@ -4,10 +4,9 @@ import { Styles } from "@/src/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/src/constants/Colors";
 import SongList from "@/src/components/lists/song";
-import { PageType, AlbumType, SongType, SortType, SourceType, ArtistType } from "@/src/constants/Types";
+import { PageType, AlbumType, SongType, 
+  SortType, SourceType, ArtistType, SortOrder } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
-import MiniPlayer from "@/src/components/player/MiniPlayer";
-import TabBar from "@/src/components/TabBar";
 import AlbumHeader from "@/src/components/lists/album/Header";
 import Overlay from "@/src/components/Overlay";
 import Header from "@/src/components/Header";
@@ -21,6 +20,7 @@ import ArtistItem from "@/src/components/lists/artist/ArtistItem";
 import { getArtistsFromAlbum } from "@/src/controllers/AlbumController";
 import Animated, { useAnimatedStyle, 
   withTiming, useSharedValue } from "react-native-reanimated";
+import QueryWrapper from "@/src/components/lists/query/Wrapper";
 
 const AlbumView = ({id}: {id: number}) => {
 
@@ -32,7 +32,11 @@ const AlbumView = ({id}: {id: number}) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [album, setAlbum] = useState<AlbumType | null>(null);
   const [artists, setArtists] = useState<ArtistType[]>([]);
+  const [count, setCount] = useState(0);
   const [duration, setDuration] = useState<number | null>(null);
+  const [query, setQuery] = useState('');
+  const [sort, setSort] = useState<SortType>(SortType.TRACK);
+  const [order, setOrder] = useState<SortOrder>(SortOrder.ASC);
 
   const artistListOpacity = useSharedValue(0);
 
@@ -59,10 +63,18 @@ const AlbumView = ({id}: {id: number}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getSongsFromAlbum(id, SortType.TRACK);
+      const songs = await getSongsFromAlbum(
+        id, 
+        sort, 
+        order, 
+        query
+      );
       setSongs(songs);
       const duration = songs.reduce((acc, song) => acc + (song.duration ?? 0), 0);
-      setDuration(duration);
+      if (query === '') {
+        setCount(songs.length);
+        setDuration(duration);
+      }
       artistListOpacity.value = withTiming(1, { duration: 500 });
     }
     catch (error) {
@@ -89,6 +101,10 @@ const AlbumView = ({id}: {id: number}) => {
   useEffect(() => {
     triggerRefresh();
   }, [id]);
+
+  useEffect(() => {
+    refreshSongs();
+  }, [query, sort, order]);
 
   const handleMore = () => {
     if (haptic) {
@@ -118,16 +134,34 @@ const AlbumView = ({id}: {id: number}) => {
           pageType={PageType.ALBUM}
           sourceId={id}
           sourceType={SourceType.ALBUM}
+          sort={sort}
+          order={order}
+          query={query}
           headerComponent={
-            <AlbumHeader 
-              id={id}
-              title={title} 
-              year={year}
-              leadArtist={artists[0]}
-              songCount={songs.length}
-              pageType={PageType.ALBUM}
-              duration={duration}
-            />
+            <>
+              <AlbumHeader 
+                id={id}
+                title={title} 
+                year={year}
+                leadArtist={artists[0]}
+                songCount={count}
+                pageType={PageType.ALBUM}
+                duration={duration}
+              />
+              <QueryWrapper 
+                setQuery={setQuery} 
+                query={query} 
+                setSort={setSort} 
+                sort={sort} 
+                order={order} 
+                setOrder={setOrder}
+                songList
+                showSortTypes={{
+                  [SortType.TITLE]: true,
+                  [SortType.TRACK]: true,
+                }}
+              />
+            </>
           }
           setScrollPosition={setScrollPosition}
           footerComponent={
@@ -160,6 +194,7 @@ const Local = StyleSheet.create({
   },
   artistList: {
     width: '100%',
+    height: 1000,
   },
   artistListTitle: {
     ...Styles.h4,

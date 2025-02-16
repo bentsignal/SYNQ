@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/src/constants/Colors";
 import SongList from "@/src/components/lists/song";
 import { PageType, PlaylistType, SongType, SortType, 
-  SourceType, ArtistType, AlbumType } from "@/src/constants/Types";
+  SourceType, ArtistType, AlbumType, SortOrder } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import MiniPlayer from "@/src/components/player/MiniPlayer";
 import TabBar from "@/src/components/TabBar";
@@ -25,6 +25,7 @@ import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import playlistBus from "@/src/events/playlist";
 import AlbumList from "@/src/components/lists/album";
 import TabSelector from "@/src/components/TabSelector";
+import QueryWrapper from "@/src/components/lists/query/Wrapper";
 
 const ArtistView = ({id}: {id: number}) => {
 
@@ -37,6 +38,12 @@ const ArtistView = ({id}: {id: number}) => {
   const [artist, setArtist] = useState<ArtistType | null>(null);
   const [tabIndex, setTabIndex] = useState(0);
   const [showEmptyComponent, setShowEmptyComponent] = useState(false);
+  const [songsQuery, setSongsQuery] = useState('');
+  const [albumsQuery, setAlbumsQuery] = useState('');
+  const [songSort, setSongSort] = useState<SortType>(SortType.ALBUM);
+  const [songOrder, setSongOrder] = useState<SortOrder>(SortOrder.DESC);
+  const [albumSort, setAlbumSort] = useState<SortType>(SortType.YEAR);
+  const [albumOrder, setAlbumOrder] = useState<SortOrder>(SortOrder.DESC);
 
   const refreshInfo = async () => {
     if (id) {
@@ -54,7 +61,12 @@ const ArtistView = ({id}: {id: number}) => {
 
   const refreshSongs = async () => {
     try {
-      const songs = await getSongsFromArtist(id, SortType.NEWEST);
+      const songs = await getSongsFromArtist(
+        id, 
+        songSort, 
+        songOrder, 
+        songsQuery
+      );
       setSongs(songs);
       setShowEmptyComponent(songs.length === 0);
     }
@@ -65,7 +77,12 @@ const ArtistView = ({id}: {id: number}) => {
 
   const refreshAlbums = async () => {
     try {
-      const results = await getAlbumsFromArtist(id);
+      const results = await getAlbumsFromArtist(
+        id, 
+        albumSort, 
+        albumOrder, 
+        albumsQuery
+      );
       setAlbums(results);
     }
     catch (error) {
@@ -78,6 +95,23 @@ const ArtistView = ({id}: {id: number}) => {
     refreshInfo();
     refreshAlbums();
   }
+
+  useEffect(() => {
+    refreshSongs();
+  }, [songsQuery, songSort, songOrder]);
+
+  useEffect(() => {
+    refreshAlbums();
+  }, [albumsQuery, albumSort, albumOrder]);
+
+  useEffect(() => {
+    if (tabIndex === 0) {
+      setAlbumsQuery('');
+    }
+    else {
+      setSongsQuery('');
+    }
+  }, [tabIndex]);
 
   // refresh song list and info when changes are are sent from emitter;
   useEffect(() => {
@@ -130,6 +164,9 @@ const ArtistView = ({id}: {id: number}) => {
             pageType={PageType.ARTIST}
             sourceId={id}
             sourceType={SourceType.ARTIST}
+            sort={songSort}
+            order={songOrder}
+            query={songsQuery}
             showEmptyComponent={showEmptyComponent}
             emptyComponent={<Text style={Local.emptyText}>No songs in library</Text>}
             headerComponent={
@@ -144,8 +181,22 @@ const ArtistView = ({id}: {id: number}) => {
                   index={tabIndex}
                   onSelect={setTabIndex}
                 />
+                <QueryWrapper 
+                  setQuery={setSongsQuery} 
+                  query={songsQuery} 
+                  songList
+                  setSort={setSongSort}
+                  sort={songSort}
+                  order={songOrder}
+                  setOrder={setSongOrder}
+                  showSortTypes={{
+                    [SortType.TITLE]: true,
+                    [SortType.ALBUM]: true,
+                  }}
+                />
               </>
             }
+            footerComponent={<View style={{height: 1000}}/>}
             setScrollPosition={setScrollPosition}
           />
         )}
@@ -165,8 +216,21 @@ const ArtistView = ({id}: {id: number}) => {
                   index={tabIndex}
                   onSelect={setTabIndex}
                 />
+                <QueryWrapper 
+                  setQuery={setAlbumsQuery} 
+                  query={albumsQuery} 
+                  setSort={setAlbumSort}
+                  sort={albumSort}
+                  order={albumOrder}
+                  setOrder={setAlbumOrder}
+                  showSortTypes={{
+                    [SortType.ALBUM]: true,
+                    [SortType.YEAR]: true,
+                  }}
+                />
               </>
             }
+            footerComponent={<View style={{height: 1000}}/>}
             emptyComponent={<Text style={Local.emptyText}>No albums in library</Text>}
             showEmptyComponent={albums.length === 0}
           />

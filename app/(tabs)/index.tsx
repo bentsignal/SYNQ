@@ -52,7 +52,9 @@ const Home = () => {
     sourceType, sourceId, addOffset, 
     playerInitialized,
     setPlayerInitialized,
-    decrementAddOffset } = usePlaybackContext();
+    decrementAddOffset,
+    sort, order, query,
+  } = usePlaybackContext();
 
   const { setupPlayer, skipLeft, skipRight, updateQueue } = usePlayer();
   const track = useActiveTrack();
@@ -271,7 +273,15 @@ const Home = () => {
           break;
         case Event.PlaybackQueueEnded:
           if (loop && track) {
-            updateQueue(track.id, shuffle, sourceType, sourceId);
+            updateQueue(
+              track.id, 
+              shuffle, 
+              sourceType, 
+              sourceId,
+              sort,
+              order,
+              query
+            );
             skipRight();
           }
           break;

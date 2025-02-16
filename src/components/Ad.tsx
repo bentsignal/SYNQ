@@ -5,12 +5,12 @@ import { router } from "expo-router";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-
+import { usePostHog } from "posthog-react-native";
 
 const Ad = ({message}: {message: React.ReactNode}) => {
 
   const { theme } = useThemeContext();
-
+  const posthog = usePostHog();
   return (
     <View style={Local.container}>
       <Text style={Local.header}>Ad</Text>
@@ -21,7 +21,10 @@ const Ad = ({message}: {message: React.ReactNode}) => {
         title="Learn More"
         buttonWidth={150}
         background={theme}
-        handlePress={() => router.push('/premium')} 
+        handlePress={() => {
+          posthog.capture('check_premium');
+          router.push('/premium');
+        }} 
       />
     </View>
   );

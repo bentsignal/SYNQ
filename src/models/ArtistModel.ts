@@ -1,6 +1,6 @@
 import { getAlbumsFromSong } from "../controllers/AlbumController";
 import Model from "./Model";
-import { ArtistType, SortType, SongResultType } from "@/src/constants/Types";
+import { ArtistType, SortType, SongResultType, SortOrder } from "@/src/constants/Types";
 
 export default class ArtistModel extends Model {
 
@@ -17,13 +17,30 @@ export default class ArtistModel extends Model {
     return ArtistModel.instance;
   }
 
-  public async getArtists(sort: SortType = SortType.ARTIST): Promise<ArtistType[]> {
-    const result = await ArtistModel.db?.getAllAsync<ArtistType>(`SELECT * FROM artists;`);
+  public async getArtists(
+    query?: string, 
+    sort: SortType = SortType.ARTIST, 
+    order: SortOrder = SortOrder.ASC
+  ): Promise<ArtistType[]> {
+    const result = await ArtistModel.db?.getAllAsync<ArtistType>(`
+      SELECT artists.* FROM artists
+      LEFT JOIN artistSongs ON artists.id = artistSongs.artistId
+      LEFT JOIN songs ON artistSongs.songId = songs.id
+      LEFT JOIN albumSongs ON songs.id = albumSongs.songId
+      LEFT JOIN albums ON albumSongs.albumId = albums.id
+      ${query ? 'WHERE LOWER(artists.name) LIKE ? OR LOWER(songs.title) LIKE ? OR LOWER(albums.name) LIKE ?' : ''}
+      GROUP BY artists.id;
+      `, query ? [`%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : []);
+
     if (!result) {
       return [];
     }
     if (sort === SortType.ARTIST) {
-      return result.sort((a, b) => a?.name.localeCompare(b?.name));
+      const sorted = result.sort((a, b) => a?.name.localeCompare(b?.name));
+      return order === SortOrder.ASC ? sorted : sorted.reverse();
+    }
+    else if (sort === SortType.DATE) {
+      return order === SortOrder.ASC ? result : result.reverse();
     }
     return result;
   }
@@ -89,8 +106,27 @@ export default class ArtistModel extends Model {
     return result ? result as ArtistType[] : [];
   }
 
-  public async getSongsFromArtist(artistId: number, sort: SortType = SortType.NEWEST): Promise<SongResultType[]> {
-    let result = await ArtistModel.db?.getAllAsync<SongResultType>(`SELECT * FROM songs WHERE id IN (SELECT songId FROM artistSongs WHERE artistId = ?);`, [artistId]);
+  public async getSongsFromArtist(
+    artistId: number,
+    sort: SortType = SortType.DATE,
+    order: SortOrder = SortOrder.DESC,
+    query?: string
+  ): Promise<SongResultType[]> {
+    let result = await ArtistModel.db?.getAllAsync<SongResultType>(`
+      SELECT DISTINCT songs.*
+      FROM songs
+      LEFT JOIN albumSongs ON songs.id = albumSongs.songId
+      LEFT JOIN albums ON albumSongs.albumId = albums.id
+      LEFT JOIN artistSongs AS mainArtist ON songs.id = mainArtist.songId
+      LEFT JOIN (
+        SELECT songId, GROUP_CONCAT(artists.name) as all_artists
+        FROM artistSongs
+        JOIN artists ON artistSongs.artistId = artists.id
+        GROUP BY songId
+      ) AS otherArtists ON songs.id = otherArtists.songId
+      WHERE mainArtist.artistId = ?
+      ${query ? 'AND (LOWER(songs.title) LIKE ? OR LOWER(otherArtists.all_artists) LIKE ? OR LOWER(albums.name) LIKE ?)' : ''}
+      `, query ? [artistId, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : [artistId]);
     if (result) {
       result = await Promise.all( result.map(async (song) => {
         const artists = await this.getArtistsFromSong(song.id);
@@ -100,8 +136,13 @@ export default class ArtistModel extends Model {
         return song;
       }));
     }
-    if (sort === SortType.NEWEST) {
-      return result.reverse();
+    if (sort === SortType.TITLE) {
+      const sorted = result.sort((a, b) => a?.title.localeCompare(b?.title));
+      return order === SortOrder.ASC ? sorted : sorted.reverse();
+    }
+    else if (sort === SortType.ALBUM) {
+      const sorted = result.sort((a, b) => a?.album.localeCompare(b?.album));
+      return order === SortOrder.ASC ? sorted : sorted.reverse();
     }
     else {
       return result;

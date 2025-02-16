@@ -2,7 +2,7 @@ import PlaylistModel from "@/src/models/PlaylistModel";
 import playlistBus from "@/src/events/playlist";
 import * as FileSystem from 'expo-file-system';
 import { getSongByResult } from "@/src/controllers/SongController";
-import { PageType, SortType } from "@/src/constants/Types";
+import { PageType, SortOrder, SortType } from "@/src/constants/Types";
 import { writeImageToLibrary } from "@/src/controllers/ImageController";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 
@@ -29,9 +29,16 @@ export const deletePlaylist = async (playlistId: number) => {
   
 }
 
-export const getPlaylists = async () => {
-  const db = PlaylistModel.getInstance();
-  return await db.getPlaylists();
+export const getPlaylists = async (
+  query?: string,
+  sort?: SortType,
+  order?: SortOrder,
+) => {
+  return await PlaylistModel.getInstance().getPlaylists(
+    query,
+    sort,
+    order,
+  );
 }
 
 export const removeFromAllPlaylists = async (songId: number) => {
@@ -70,9 +77,15 @@ export const getPlaylistInfo = async (playlistId: number) => {
   return await db.getPlaylistInfoById(playlistId);
 }
 
-export const getPlaylistSongs = async (playlistId: number, pageType?: PageType, sort: SortType = SortType.NEWEST) => {
+export const getPlaylistSongs = async (
+  playlistId: number,
+  pageType?: PageType,
+  sort: SortType = SortType.DATE,
+  order: SortOrder = SortOrder.DESC,
+  query?: string
+) => {
   const db = PlaylistModel.getInstance();
-  const results = await db.getSongsFromPlaylist(playlistId, sort);
+  const results = await db.getSongsFromPlaylist(playlistId, sort, order, query);
   const songs = results.map(song => {
     const result = getSongByResult(song);
     result.pageType = pageType ?? PageType.LIBRARY;

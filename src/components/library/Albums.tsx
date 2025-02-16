@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { AlbumType, PageType } from "@/src/constants/Types";
+import { AlbumType, PageType, SortOrder, SortType } from "@/src/constants/Types";
 import { useState, useEffect } from "react";
 import AlbumList from "@/src/components/lists/album";
 import { getAlbums } from "@/src/controllers/AlbumController";
@@ -10,14 +10,18 @@ import { AlbumBusEvent } from "@/src/events/album/Events";
 import playlistBus from "@/src/events/playlist";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import { Styles as MainStyles } from "@/src/constants/Styles";
+import QueryWrapper from "@/src/components/lists/query/Wrapper";
 
 const Albums = () => {
 
   const [albums, setAlbums] = useState<AlbumType[]>([]);
   const [showEmptyComponent, setShowEmptyComponent] = useState(false);
+  const [query, setQuery] = useState('');
+  const [sort, setSort] = useState<SortType>(SortType.DATE);
+  const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
 
   const refreshAlbums = async () => {
-    const results = await getAlbums();
+    const results = await getAlbums(query, sort, order);
     setAlbums(results);
     setShowEmptyComponent(results.length === 0);
   }
@@ -25,6 +29,10 @@ const Albums = () => {
   useEffect(() => {
     refreshAlbums();
   }, []);
+
+  useEffect(() => {
+    refreshAlbums();
+  }, [query, sort, order]);
 
   useEffect(() => {
     albumBus.on(AlbumBusEvent.ALBUM_CREATED, refreshAlbums);
@@ -46,6 +54,21 @@ const Albums = () => {
         pageType={PageType.LIBRARY}
         emptyComponent={<Text style={Local.emptyText}>No albums in library</Text>}
         showEmptyComponent={showEmptyComponent}
+        headerComponent={
+          <QueryWrapper 
+            setQuery={setQuery} 
+            query={query} 
+            setSort={setSort} 
+            sort={sort} 
+            order={order} 
+            setOrder={setOrder}
+            showSortTypes={{
+              [SortType.ALBUM]: true,
+              [SortType.YEAR]: true,
+              [SortType.DATE]: true,
+            }}
+          />
+        }
       />
     </View>
   );

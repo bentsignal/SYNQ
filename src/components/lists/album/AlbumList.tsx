@@ -15,6 +15,7 @@ const AlbumList = ({
   emptyComponent,
   bg,
   showEmptyComponent,
+  footerComponent,
 }: {
   albums: AlbumType[],
   headerComponent?: React.ReactNode,
@@ -25,6 +26,7 @@ const AlbumList = ({
   emptyComponent?: React.ReactNode,
   bg?: string,
   showEmptyComponent?: boolean,
+  footerComponent?: React.ReactNode,
 }) => {
 
   const renderItem = ({item}: {item: AlbumType}) => {
@@ -49,6 +51,7 @@ const AlbumList = ({
       gradientEnd={gradientEnd}
       emptyComponent={emptyComponent}
       showEmptyComponent={showEmptyComponent}
+      footerComponent={footerComponent}
     />
   );
 }

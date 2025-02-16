@@ -2,7 +2,7 @@ import TrackPlayer, { Capability, Track } from "react-native-track-player";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { usePlaybackContext } from "../context/PlaybackProvider";
 import { check } from "@/lib/Util";
-import { PageType, SongType, SortType, SourceType } from "../constants/Types";
+import { PageType, SongType, SortOrder, SortType, SourceType } from "../constants/Types";
 import * as Haptics from 'expo-haptics';
 import { PlaybackBusEvent } from "../events/playback/Events";
 import playbackBus from "../events/playback";
@@ -22,6 +22,7 @@ export default function usePlayer () {
     shuffle, loop,
     incrementAddOffset, decrementAddOffset,
     resetAddOffset,
+    sort, order, query,
   } = usePlaybackContext();
 
   const { theme } = useThemeContext();
@@ -122,7 +123,15 @@ export default function usePlayer () {
       else if (currentIndex !== undefined) {
         // if loop is on, keep queue going infinitely
         if (currentIndex >= queue.length-1 && loop) {
-          await updateQueue(queue[currentIndex].id, shuffle, sourceType, sourceId);
+          await updateQueue(
+            queue[currentIndex].id, 
+            shuffle, 
+            sourceType, 
+            sourceId,
+            sort,
+            order,
+            query
+          );
         }
         let nextIndex = currentIndex + 1;
         let nextTrack = await TrackPlayer.getTrack(nextIndex);
@@ -169,9 +178,20 @@ export default function usePlayer () {
     shuffleValue: boolean,
     sourceTypeValue: SourceType,
     sourceIdValue: number,
+    sort?: SortType,
+    order?: SortOrder,
+    query?: string,
   ) => {
     await TrackPlayer.removeUpcomingTracks();
-    const upcoming = await getNextUp(currentId, 100, shuffleValue, sourceTypeValue, sourceIdValue);
+    const upcoming = await getNextUp(
+      currentId, 100, 
+      shuffleValue, 
+      sourceTypeValue, 
+      sourceIdValue, 
+      sort, 
+      order,
+      query
+    );
     let upcomingTracks: Track[] = [];
     for (let i = 0; i < upcoming.length; i++) {
       const newTrack = await getTrackFromSong(upcoming[i], theme);
@@ -192,19 +212,21 @@ export default function usePlayer () {
     shuffleValue: boolean,
     sourceTypeValue: SourceType,
     sourceIdValue: number,
+    sort?: SortType,
+    order?: SortOrder,
+    query?: string,
   ): Promise<SongType[]> => {
   
-
     const next: SongType[] = [];
     let songs: SongType[] = [];
     if (sourceTypeValue === SourceType.PLAYLIST) {
-      songs = await getPlaylistSongs(sourceIdValue, PageType.LIBRARY, SortType.NEWEST);
+      songs = await getPlaylistSongs(sourceIdValue, PageType.LIBRARY, sort, order, query);
     }
     else if (sourceTypeValue === SourceType.ARTIST) {
-      songs = await getSongsFromArtist(sourceIdValue, SortType.NEWEST);
+      songs = await getSongsFromArtist(sourceIdValue, sort, order, query);
     }
     else if (sourceTypeValue === SourceType.ALBUM) {
-      songs = await getSongsFromAlbum(sourceIdValue, SortType.TRACK);
+      songs = await getSongsFromAlbum(sourceIdValue, sort, order, query);
     }
     else {
       return songs;

@@ -78,6 +78,10 @@ export enum SortType {
   DATE = 7,
 }
 
+export type HideSortTypes = {
+  [key in SortType]?: boolean;
+}
+
 export enum SortOrder {
   ASC = 1,
   DESC = 2,

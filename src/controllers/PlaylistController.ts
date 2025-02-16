@@ -29,8 +29,16 @@ export const deletePlaylist = async (playlistId: number) => {
   
 }
 
-export const getPlaylists = async (query?: string) => {
-  return await PlaylistModel.getInstance().getPlaylists(query);
+export const getPlaylists = async (
+  query?: string,
+  sort?: SortType,
+  order?: SortOrder,
+) => {
+  return await PlaylistModel.getInstance().getPlaylists(
+    query,
+    sort,
+    order,
+  );
 }
 
 export const removeFromAllPlaylists = async (songId: number) => {

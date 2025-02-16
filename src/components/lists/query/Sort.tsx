@@ -4,17 +4,17 @@ import { MenuView, NativeActionEvent, MenuAction } from '@react-native-menu/menu
 
 import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
-import { SortType, SortOrder, PageType } from "@/src/constants/Types";
+import { SortType, SortOrder, PageType, HideSortTypes } from "@/src/constants/Types";
 
 type SortProps = {
   setSort: (sort: SortType) => void;
   sort: SortType;
   order: SortOrder;
   setOrder: (order: SortOrder) => void;
-  pageType?: PageType;
+  hideSortTypes?: HideSortTypes;
 }
 
-export default function Sort({ setSort, sort, order, setOrder, pageType }: SortProps) {
+export default function Sort({ setSort, sort, order, setOrder, hideSortTypes }: SortProps) {
   
   const handleChange = (nativeEvent: NativeActionEvent) => {
     const event = nativeEvent.nativeEvent.event;
@@ -52,7 +52,8 @@ export default function Sort({ setSort, sort, order, setOrder, pageType }: SortP
   }
 
   const actions: MenuAction[] = [];
-  if ([PageType.PLAYLIST].includes(pageType)) {
+
+  if (!hideSortTypes?.[SortType.DATE]) {
     actions.push({
       id: 'date',
       title: 'Date Added',
@@ -75,7 +76,7 @@ export default function Sort({ setSort, sort, order, setOrder, pageType }: SortP
       ],
     });
   }
-  if ([PageType.PLAYLIST].includes(pageType)) {
+  if (!hideSortTypes?.[SortType.TITLE]) {
     actions.push({
       id: 'title',
       title: 'Title',
@@ -98,7 +99,7 @@ export default function Sort({ setSort, sort, order, setOrder, pageType }: SortP
       ],
     });
   }
-  if ([PageType.PLAYLIST].includes(pageType)) {
+  if (!hideSortTypes?.[SortType.ARTIST]) {
     actions.push({
       id: 'artist',
       title: 'Artist',
@@ -121,7 +122,7 @@ export default function Sort({ setSort, sort, order, setOrder, pageType }: SortP
       ],
     });
   }
-  if ([PageType.PLAYLIST].includes(pageType)) {
+  if (!hideSortTypes?.[SortType.ALBUM]) {
     actions.push({
       id: 'album',
       title: 'Album',
@@ -144,8 +145,7 @@ export default function Sort({ setSort, sort, order, setOrder, pageType }: SortP
       ],
     });
   }
-
-  if ([PageType.ALBUM].includes(pageType)) {
+  if (!hideSortTypes?.[SortType.TRACK]) {
     actions.push({
       id: 'track',
       title: 'Track',

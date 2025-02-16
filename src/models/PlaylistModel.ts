@@ -18,16 +18,26 @@ export default class PlaylistModel extends Model {
     return PlaylistModel.instance;
   }
 
-  public async getPlaylists(query?: string): Promise<PlaylistType[]> {
+  public async getPlaylists(query?: string, sort?: SortType, order?: SortOrder): Promise<PlaylistType[]> {
     try {
-      const result = await PlaylistModel.db?.getAllAsync(`
+      const result = await PlaylistModel.db?.getAllAsync<PlaylistType>(`
         SELECT playlists.*, COUNT(playlistSongs.songId) as songCount 
         FROM playlists
         LEFT JOIN playlistSongs ON playlists.id = playlistSongs.playlistId
         ${query ? 'WHERE LOWER(playlists.name) LIKE ?' : ''}
         GROUP BY playlists.id;
       `, query ? [`%${query.toLowerCase()}%`] : []);
-      return result as PlaylistType[];
+      if (!result) {
+        return [];
+      }
+      if (sort === SortType.DATE) {
+        return order === SortOrder.DESC ? result.reverse() : result;
+      }
+      else if (sort === SortType.TITLE) {
+        const sorted = result.sort((a, b) => a.name.localeCompare(b.name));
+        return order === SortOrder.DESC ? sorted.reverse() : sorted;
+      }
+      return result;
     }
     catch (error) {
       throw new Error('Error getting playlists: ' + error);

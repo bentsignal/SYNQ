@@ -58,7 +58,9 @@ export default function Songs () {
             sort={sort}
             order={order}
             setOrder={setOrder}
-            pageType={PageType.PLAYLIST}
+            hideSortTypes={{
+              [SortType.TRACK]: true,
+            }}
             songList
           />
         }

@@ -2,7 +2,7 @@ import { View, StyleSheet } from "react-native";
 import Search from "./Search";
 import Sort from "./Sort";
 
-import { SortType, SortOrder, PageType } from "@/src/constants/Types";
+import { SortType, SortOrder, HideSortTypes } from "@/src/constants/Types";
 
 type QueryWrapperProps = {
   setQuery: (text: string) => void;
@@ -12,7 +12,7 @@ type QueryWrapperProps = {
   order?: SortOrder;
   setOrder?: (order: SortOrder) => void;
   songList?: boolean;
-  pageType?: PageType;
+  hideSortTypes?: HideSortTypes;
 }
 
 export default function QueryWrapper({ 
@@ -20,7 +20,7 @@ export default function QueryWrapper({
   setSort, sort, 
   order, setOrder, 
   songList,
-  pageType
+  hideSortTypes
 }: QueryWrapperProps) {
   return (
     <View style={[Local.container, songList ? {
@@ -33,7 +33,7 @@ export default function QueryWrapper({
         sort={sort} 
         order={order} 
         setOrder={setOrder}
-        pageType={pageType}
+        hideSortTypes={hideSortTypes}
       />
     </View>
   );

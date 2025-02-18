@@ -78,29 +78,28 @@ const RootLayout = () => {
   }, [fontLoaded]);
 
   return (
-    <PrivacyProvider>
-      <PostHogProvider apiKey={posthogKey}
-        options={{
-          host: 'https://us.i.posthog.com',
-          enableSessionReplay: true,
-          disabled: CFG.devDisableAnalytics,
-        }}
-      >
-        <ThemeProvider>
-          <PremiumProvider>
-            <PlaybackProvider>
-              <GlobalProvider initShouldPlayAd={shouldPlayAd}>
-                <GestureHandlerRootView style={{flex: 1}}>
-                  <GlobalProgress />
-                  <Sheets />
-                  <Navigation />
-                </GestureHandlerRootView>
-              </GlobalProvider>
-            </PlaybackProvider>
-          </PremiumProvider>
-        </ThemeProvider>
-      </PostHogProvider>
-    </PrivacyProvider>
+    <PostHogProvider
+      apiKey={posthogKey}
+      options={{
+        host: 'https://us.i.posthog.com',
+        enableSessionReplay: true,
+        disabled: __DEV__,
+      }}
+    >
+      <ThemeProvider>
+        <PremiumProvider>
+          <PlaybackProvider>
+            <GlobalProvider initShouldPlayAd={shouldPlayAd}>
+              <GestureHandlerRootView style={{flex: 1}}>
+                <GlobalProgress />
+                <Sheets />
+                <Navigation />
+              </GestureHandlerRootView>
+            </GlobalProvider>
+          </PlaybackProvider>
+        </PremiumProvider>
+      </ThemeProvider>
+    </PostHogProvider>
   );
 
 }

@@ -60,10 +60,10 @@ export default function Customization() {
             <View>
               <Haptic />
             </View>
-            <CategoryTitle title="Analytics" />
+            {/* <CategoryTitle title="Analytics" />
             <View>
               <Analytics />
-            </View>
+            </View> */}
           </View>
         </View>
       </ScrollView>

@@ -39,11 +39,12 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   marginBottom: {
-    marginBottom: 5,
+    marginBottom: 4,
   },
   dragger: {
-    width: '30%',
+    width: 20,
     height: 2,
+    borderRadius: 10,
     backgroundColor: Color_Pallete.crystal_white,
   },
   image: {

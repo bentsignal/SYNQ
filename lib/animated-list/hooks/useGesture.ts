@@ -251,13 +251,13 @@ export const useGesture = (
   const animatedStyles = useAnimatedStyle(() => {
     return {
       top: top.value,
-      transform: [
-        {
-          scale: isCurrentDraggingItem.value
-            ? interpolate(isDraggingDerived.value, [0, 1], [1, 1.025])
-            : interpolate(isDraggingDerived.value, [0, 1], [1, 0.98]),
-        },
-      ],
+      // transform: [
+      //   {
+      //     scale: isCurrentDraggingItem.value
+      //       ? interpolate(isDraggingDerived.value, [0, 1], [1, 1.025])
+      //       : interpolate(isDraggingDerived.value, [0, 1], [1, 0.98]),
+      //   },
+      // ],
       backgroundColor: isCurrentDraggingItem.value
         ? interpolateColor(
             isDraggingDerived.value,

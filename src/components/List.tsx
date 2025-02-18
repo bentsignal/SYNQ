@@ -19,7 +19,6 @@ const List = memo((
     bottomPadding = false,
     item,
     draggableItem,
-    handleReorder,
     draggable, 
     onDragEnd, 
     keyExtractor,
@@ -33,6 +32,7 @@ const List = memo((
     showEmptyComponent = true,
     lockScroll = false,
     listRef,
+    dragRef,
     getItemLayout,
   }: 
   {
@@ -42,7 +42,6 @@ const List = memo((
     bottomPadding?: boolean,
     item: ListRenderItem<any>,
     draggableItem?: RenderItem<any>,
-    handleReorder?: (from: number, to: number) => void,
     draggable?: boolean,
     onDragEnd?: (params: DragEndParams<any>) => void,
     keyExtractor: (item: any, index: number) => string,
@@ -56,6 +55,7 @@ const List = memo((
     showEmptyComponent?: boolean,
     lockScroll?: boolean,
     listRef?: React.RefObject<FlatList<any>>,
+    dragRef?: React.RefObject<any>,
     getItemLayout?: (data: any[], index: number) => { length: number, offset: number, index: number },
   }
 ) => {
@@ -134,7 +134,7 @@ const List = memo((
       <Animated.View style={ Local.container}>
         {draggable ? 
           <DraggableFlatlist
-            // ref={listRef}
+            ref={dragRef}
             data={data}
             renderItem={draggableItem}
             keyExtractor={keyExtractor}

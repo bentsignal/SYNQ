@@ -22,6 +22,7 @@ import playbackBus from "@/src/events/playback";
 import { PlaybackBusEvent } from "@/src/events/playback/Events";
 import Animated, { useSharedValue, useAnimatedStyle, 
   withTiming, Easing } from "react-native-reanimated";
+import DraggableFlatlist, { DragEndParams } from "react-native-draggable-flatlist";
 // import { List as AnimatedList } from "@/lib/animated-list/List";
 
 const Queue = () => {
@@ -33,7 +34,7 @@ const Queue = () => {
 
   const insets = useSafeAreaInsets();
   const [songs, setSongs] = useState<SongType[]>([]);
-  const listRef = useRef<FlatList<any>>(null);
+  const listRef = useRef<any>(null);
   const listOpacity = useSharedValue(0);
 
   useEffect(() => {
@@ -89,11 +90,9 @@ const Queue = () => {
     alignSelf: 'center',
   }));
 
-  const handleReorder = (from: number, to: number) => {
-    const copy = [...songs];
-    const [removed] = copy.splice(from, 1);
-    copy.splice(to, 0, removed);
-    setSongs(copy);
+  const onDragEnd = async ({ data, from, to }: DragEndParams<any>) => {
+    setSongs(data);
+    await TrackPlayer.move(from, to);
   }
 
   return (
@@ -108,10 +107,10 @@ const Queue = () => {
           hideTopGradient={true}
           gradientStart={'rgba(24, 24, 24, 1)'}
           gradientEnd={'rgba(24, 24, 24, 0)'}
-          listRef={listRef}
+          dragRef={listRef}
           footerComponent={<View style={{height: 500}}/>}
           draggable={true}
-          handleReorder={handleReorder}
+          onDragEnd={onDragEnd}
         />
       </Animated.View>
       {/* <View style={{flex: 1, width: '100%'}}>

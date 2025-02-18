@@ -14,15 +14,17 @@ export default function Handle() {
 
 const Local = StyleSheet.create({
   container: {
-    width: 30,
-    height: 30,
+    // width: 30,
+    // height: 30,
+    // backgroundColor: 'red',
     justifyContent: 'center',
     gap: 5,
-    padding: 5,
+    padding: 20,
+    paddingRight: 10,
   },
   handle: {
-    width: '100%',
-    height: '10%',
+    width: 20,
+    height: 2,
     backgroundColor: Colors.text,
     borderRadius: 5,
   },

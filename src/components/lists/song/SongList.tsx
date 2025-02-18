@@ -15,7 +15,7 @@ import { check } from '@/lib/Util';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import usePlayer from '@/src/hooks/usePlayer';
 import { usePostHog } from 'posthog-react-native';
-import { DragEndParams, RenderItemParams } from 'react-native-draggable-flatlist';
+import DraggableFlatlist, { DragEndParams, RenderItemParams } from 'react-native-draggable-flatlist';
 
 const MemoSong = memo(Song);
 
@@ -39,11 +39,12 @@ const SongList = memo((
     showEmptyComponent,
     lockScroll = false,
     listRef,
+    dragRef, 
     sort,
     order,
     query,
     draggable,
-    handleReorder,
+    onDragEnd,
   }: 
   {
     songs: SongType[], 
@@ -64,11 +65,12 @@ const SongList = memo((
     showEmptyComponent?: boolean,
     lockScroll?: boolean,
     listRef?: React.RefObject<FlatList<any>>,
+    dragRef?: React.RefObject<typeof DraggableFlatlist<any>>,
     sort?: SortType,
     order?: SortOrder,
     query?: string,
     draggable?: boolean,
-    handleReorder?: (from: number, to: number) => void,
+    onDragEnd?: (params: DragEndParams<any>) => void,
   }
 ) => {
 
@@ -186,12 +188,7 @@ const SongList = memo((
     );
   };
 
-  const onDragEnd = async ({ data, from, to }: DragEndParams<any>) => {
-    await TrackPlayer.move(from, to);
-  }
-
   const draggableItem = useCallback(({item, getIndex, drag, isActive} : RenderItemParams<SongType>) => {
-    // console.log(info);
     item.pageType = pageType;
     item.sourceId = sourceId;
     item.sourceType = sourceType;
@@ -207,7 +204,11 @@ const SongList = memo((
     return (
       <TouchableOpacity
         style={{width: '100%'}}
-        onLongPress={drag}
+        onLongPress={() => {
+          if (getIndex() > activeIndex) {
+            drag();
+          }
+        }}
       >
         <MemoSong 
           song={item}
@@ -235,6 +236,7 @@ const SongList = memo((
       <List
         data={songs}
         listRef={listRef}
+        dragRef={dragRef}
         headerComponent={headerComponent}
         footerComponent={footerComponent}
         item={renderItem}
@@ -251,7 +253,6 @@ const SongList = memo((
         getItemLayout={getItemLayout}
         draggable={draggable}
         draggableItem={draggableItem}
-        handleReorder={handleReorder}
         onDragEnd={onDragEnd}
       />
     </>

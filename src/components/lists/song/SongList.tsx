@@ -206,6 +206,9 @@ const SongList = memo((
         style={{width: '100%'}}
         onLongPress={() => {
           if (getIndex() > activeIndex) {
+            if (haptic) {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }
             drag();
           }
         }}

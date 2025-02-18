@@ -20,7 +20,9 @@ import ModalStyles from "@/src/components/modals/Styles";
 import LoopButton from "@/src/components/player/LoopButton";
 import playbackBus from "@/src/events/playback";
 import { PlaybackBusEvent } from "@/src/events/playback/Events";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle, 
+  withTiming, Easing } from "react-native-reanimated";
+import { List as AnimatedList } from "@/lib/animated-list/List";
 
 const Queue = () => {
 
@@ -92,7 +94,7 @@ const Queue = () => {
       <Bar />
       <View style={Local.divider}/>
       <PageTitle title="Now Playing"/>
-      <Animated.View style={listContainerStyle}>
+      {/* <Animated.View style={listContainerStyle}>
         <SongList 
           songs={songs}
           pageType={PageType.QUEUE}
@@ -102,7 +104,10 @@ const Queue = () => {
           listRef={listRef}
           footerComponent={<View style={{height: 500}}/>}
         />
-      </Animated.View>
+      </Animated.View> */}
+      <View style={{flex: 1, width: '100%'}}>
+        <AnimatedList />
+      </View>
       <View style={[Local.footer, {
         paddingBottom: insets.bottom,
       }]}>

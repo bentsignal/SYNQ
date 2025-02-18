@@ -17,6 +17,7 @@ import Sheets from "@/src/components/sheet/Sheets";
 import GlobalProgress from '@/src/components/GlobalProgress';
 import { PostHogProvider } from 'posthog-react-native';
 import { posthogKey } from '@/src/constants/Keys';
+import PrivacyProvider from '@/src/context/PrivacyProvider';
 
 LogBox.ignoreLogs(['Require cycle:']);
 
@@ -77,26 +78,29 @@ const RootLayout = () => {
   }, [fontLoaded]);
 
   return (
-    <PostHogProvider apiKey={posthogKey}
-      options={{
-        host: 'https://us.i.posthog.com',
-        enableSessionReplay: true,
-      }}
-    >
-      <ThemeProvider>
-        <PremiumProvider>
-          <PlaybackProvider>
-            <GlobalProvider initShouldPlayAd={shouldPlayAd}>
-              <GestureHandlerRootView style={{flex: 1}}>
-                <GlobalProgress />
-                <Sheets />
-                <Navigation />
-              </GestureHandlerRootView>
-            </GlobalProvider>
-          </PlaybackProvider>
-        </PremiumProvider>
-      </ThemeProvider>
-    </PostHogProvider>
+    <PrivacyProvider>
+      <PostHogProvider apiKey={posthogKey}
+        options={{
+          host: 'https://us.i.posthog.com',
+          enableSessionReplay: true,
+          disabled: CFG.devDisableAnalytics,
+        }}
+      >
+        <ThemeProvider>
+          <PremiumProvider>
+            <PlaybackProvider>
+              <GlobalProvider initShouldPlayAd={shouldPlayAd}>
+                <GestureHandlerRootView style={{flex: 1}}>
+                  <GlobalProgress />
+                  <Sheets />
+                  <Navigation />
+                </GestureHandlerRootView>
+              </GlobalProvider>
+            </PlaybackProvider>
+          </PremiumProvider>
+        </ThemeProvider>
+      </PostHogProvider>
+    </PrivacyProvider>
   );
 
 }

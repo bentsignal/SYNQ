@@ -13,6 +13,7 @@ import { usePremiumContext } from '@/src/context/PremiumProvider';
 import Option from '@/src/components/Option';
 import { router } from 'expo-router';
 import { usePostHog } from 'posthog-react-native';
+import Analytics from '@/src/components/settings/Analytics';
 
 export default function Customization() {
 
@@ -58,6 +59,10 @@ export default function Customization() {
             <CategoryTitle title="Haptic Feedback" />
             <View>
               <Haptic />
+            </View>
+            <CategoryTitle title="Analytics" />
+            <View>
+              <Analytics />
             </View>
           </View>
         </View>

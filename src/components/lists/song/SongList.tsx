@@ -10,11 +10,12 @@ import * as Haptics from 'expo-haptics';
 import { usePlaybackContext } from '@/src/context/PlaybackProvider';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
-import { FlatList } from 'react-native';
+import { FlatList, TouchableOpacity } from 'react-native';
 import { check } from '@/lib/Util';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import usePlayer from '@/src/hooks/usePlayer';
 import { usePostHog } from 'posthog-react-native';
+import { DragEndParams, RenderItemParams } from 'react-native-draggable-flatlist';
 
 const MemoSong = memo(Song);
 
@@ -41,6 +42,8 @@ const SongList = memo((
     sort,
     order,
     query,
+    draggable,
+    handleReorder,
   }: 
   {
     songs: SongType[], 
@@ -64,6 +67,8 @@ const SongList = memo((
     sort?: SortType,
     order?: SortOrder,
     query?: string,
+    draggable?: boolean,
+    handleReorder?: (from: number, to: number) => void,
   }
 ) => {
 
@@ -181,6 +186,44 @@ const SongList = memo((
     );
   };
 
+  const onDragEnd = async ({ data, from, to }: DragEndParams<any>) => {
+    await TrackPlayer.move(from, to);
+  }
+
+  const draggableItem = useCallback(({item, getIndex, drag, isActive} : RenderItemParams<SongType>) => {
+    // console.log(info);
+    item.pageType = pageType;
+    item.sourceId = sourceId;
+    item.sourceType = sourceType;
+    let active, previous;
+    if (pageType === PageType.QUEUE) {
+      active = activeTrack?.id === item.id && getIndex() === activeIndex;
+      previous = getIndex() < activeIndex;
+    }
+    else {
+      active = activeTrack?.id === item.id;
+      previous = false;
+    }
+    return (
+      <TouchableOpacity
+        style={{width: '100%'}}
+        onLongPress={drag}
+      >
+        <MemoSong 
+          song={item}
+          fadeCover={fadeCover}
+          fadeSong={fadeSong}
+          active={active}
+          previous={previous}
+          handlePlay={handlePlay}
+        />
+      </TouchableOpacity>
+    );
+  }, [
+    pageType, sourceId, sourceType, activeTrack, activeIndex, 
+    handlePlay, fadeCover, fadeSong
+  ]);
+
   const getItemLayout = (data: SongType[], index: number) => ({
     length: 70,
     offset: 70 * index,
@@ -206,6 +249,10 @@ const SongList = memo((
         showEmptyComponent={showEmptyComponent}
         lockScroll={lockScroll}
         getItemLayout={getItemLayout}
+        draggable={draggable}
+        draggableItem={draggableItem}
+        handleReorder={handleReorder}
+        onDragEnd={onDragEnd}
       />
     </>
   );

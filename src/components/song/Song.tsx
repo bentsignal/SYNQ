@@ -25,6 +25,7 @@ import { getAbsoluteSongCover } from '@/src/controllers/SongController';
 import Animated, { useSharedValue, useAnimatedStyle, 
   withTiming, Easing } from 'react-native-reanimated';
 import { isSongEdited } from '@/src/controllers/SongController';
+import Handle from '../lists/Handle';
 
 type SongProps = {
   song: SongType, 
@@ -35,7 +36,14 @@ type SongProps = {
   handlePlay: (song: SongType) => Promise<void>,
 }
 
-export default function Song({ song, fadeCover, fadeSong, active, previous, handlePlay }: SongProps) {
+export default function Song({ 
+  song, 
+  fadeCover, 
+  fadeSong, 
+  active, 
+  previous, 
+  handlePlay,
+}: SongProps) {
 
   const [selected, setSelected] = useState(false);
   const [coverImage, setCoverImage] = useState('');
@@ -288,7 +296,7 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
         />
         {
 
-          selectEnabled &&
+          selectEnabled && song.pageType !== PageType.QUEUE &&
           
           <Select 
             active={selected} 
@@ -331,6 +339,12 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
           />
 
         }
+
+        {
+          song.pageType === PageType.QUEUE &&
+          <Handle />
+        }
+
       </TouchableOpacity>
     </Animated.View>
   );

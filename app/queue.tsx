@@ -22,7 +22,7 @@ import playbackBus from "@/src/events/playback";
 import { PlaybackBusEvent } from "@/src/events/playback/Events";
 import Animated, { useSharedValue, useAnimatedStyle, 
   withTiming, Easing } from "react-native-reanimated";
-import { List as AnimatedList } from "@/lib/animated-list/List";
+// import { List as AnimatedList } from "@/lib/animated-list/List";
 
 const Queue = () => {
 
@@ -89,12 +89,19 @@ const Queue = () => {
     alignSelf: 'center',
   }));
 
+  const handleReorder = (from: number, to: number) => {
+    const copy = [...songs];
+    const [removed] = copy.splice(from, 1);
+    copy.splice(to, 0, removed);
+    setSongs(copy);
+  }
+
   return (
     <View style={[Styles.body, Local.container]}>
       <Bar />
       <View style={Local.divider}/>
       <PageTitle title="Now Playing"/>
-      {/* <Animated.View style={listContainerStyle}>
+      <Animated.View style={listContainerStyle}>
         <SongList 
           songs={songs}
           pageType={PageType.QUEUE}
@@ -103,11 +110,13 @@ const Queue = () => {
           gradientEnd={'rgba(24, 24, 24, 0)'}
           listRef={listRef}
           footerComponent={<View style={{height: 500}}/>}
+          draggable={true}
+          handleReorder={handleReorder}
         />
-      </Animated.View> */}
-      <View style={{flex: 1, width: '100%'}}>
+      </Animated.View>
+      {/* <View style={{flex: 1, width: '100%'}}>
         <AnimatedList />
-      </View>
+      </View> */}
       <View style={[Local.footer, {
         paddingBottom: insets.bottom,
       }]}>

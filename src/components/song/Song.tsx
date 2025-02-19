@@ -34,6 +34,7 @@ type SongProps = {
   active: boolean,
   previous?: boolean,
   handlePlay: (song: SongType) => Promise<void>,
+  draggable?: boolean,
 }
 
 export default function Song({ 
@@ -43,6 +44,7 @@ export default function Song({
   active, 
   previous, 
   handlePlay,
+  draggable,
 }: SongProps) {
 
   const [selected, setSelected] = useState(false);
@@ -133,7 +135,7 @@ export default function Song({
   }, []);
 
   let disablePlay = false;
-  if (song.pageType && [PageType.IMPORT, PageType.QUEUE].includes(song.pageType)) { 
+  if (song.pageType && [PageType.IMPORT, PageType.QUEUE, PageType.REORDER].includes(song.pageType)) { 
     disablePlay = true;
   }
 
@@ -296,7 +298,7 @@ export default function Song({
         />
         {
 
-          selectEnabled && song.pageType !== PageType.QUEUE &&
+          selectEnabled && song.pageType !== PageType.QUEUE && !draggable &&
           
           <Select 
             active={selected} 
@@ -331,7 +333,7 @@ export default function Song({
 
         {
 
-          !selectEnabled && song.pageType !== PageType.QUEUE &&
+          !selectEnabled && song.pageType !== PageType.QUEUE && !draggable &&
 
           <More 
             handlePress={handleMore}
@@ -341,7 +343,7 @@ export default function Song({
         }
 
         {
-          song.pageType === PageType.QUEUE &&
+          draggable &&
           <Handle />
         }
 

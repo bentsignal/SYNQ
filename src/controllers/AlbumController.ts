@@ -184,3 +184,7 @@ export const getAlbumsFromArtist = async (
     query
   );
 }
+
+export const updateTrackNumber = async (albumId: number, songId: number, track: number) => {
+  await AlbumModel.getInstance().updateTrackNumber(albumId, songId, track);
+}

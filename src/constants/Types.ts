@@ -97,6 +97,7 @@ export enum PageType {
   CREATE = 8,
   ADD = 9,
   EDIT = 10,
+  REORDER = 11,
 }
 
 export enum SourceType {

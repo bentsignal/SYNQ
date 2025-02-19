@@ -22,8 +22,7 @@ import playbackBus from "@/src/events/playback";
 import { PlaybackBusEvent } from "@/src/events/playback/Events";
 import Animated, { useSharedValue, useAnimatedStyle, 
   withTiming, Easing } from "react-native-reanimated";
-import DraggableFlatlist, { DragEndParams } from "react-native-draggable-flatlist";
-// import { List as AnimatedList } from "@/lib/animated-list/List";
+import { DragEndParams } from "react-native-draggable-flatlist";
 
 const Queue = () => {
 

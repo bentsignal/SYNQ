@@ -258,4 +258,16 @@ export default class AlbumModel extends Model {
     }
     return result;
   }
+
+  public async updateTrackNumber(
+    albumId: number, 
+    songId: number, 
+    track: number
+  ): Promise<void> {
+    await AlbumModel.db?.runAsync(
+      `UPDATE albumSongs SET track = ? WHERE albumId = ? AND songId = ?;`,
+      [track, albumId, songId]
+    );
+  }
+
 }

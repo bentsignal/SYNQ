@@ -205,12 +205,13 @@ const SongList = memo((
       <TouchableOpacity
         style={{width: '100%'}}
         onLongPress={() => {
-          if (getIndex() > activeIndex) {
-            if (haptic) {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            }
-            drag();
+          if (pageType === PageType.QUEUE && getIndex() <= activeIndex) {
+            return;
           }
+          if (haptic) {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          }
+          drag();
         }}
       >
         <MemoSong 
@@ -219,13 +220,14 @@ const SongList = memo((
           fadeSong={fadeSong}
           active={active}
           previous={previous}
-          handlePlay={handlePlay}
+          handlePlay={async (song: SongType) => {}}
+          draggable={draggable}
         />
       </TouchableOpacity>
     );
   }, [
     pageType, sourceId, sourceType, activeTrack, activeIndex, 
-    handlePlay, fadeCover, fadeSong
+    fadeCover, fadeSong
   ]);
 
   const getItemLayout = (data: SongType[], index: number) => ({

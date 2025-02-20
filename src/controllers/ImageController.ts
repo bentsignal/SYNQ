@@ -4,7 +4,8 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { SaveFormat } from 'expo-image-manipulator';
 import { Image } from 'react-native';
 import 'react-native-get-random-values';
-import { getAlbumsFromSong } from '@/src/controllers/AlbumController';
+import { getAlbumCover, getAlbumsFromSong } from '@/src/controllers/AlbumController';
+import { SongType } from '../constants/Types';
 
 export const splitImageMimeAndBuffer = (image: string) => {
   // extract mime from start of string

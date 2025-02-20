@@ -14,7 +14,7 @@ import { CoverType } from "@/src/constants/Types";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { getDisabledColor, adjustLightness, darkenColor } from "@/src/controllers/ColorController";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { getAbsoluteSongCover } from "@/src/controllers/SongController";
+import { getLibrarySongCover } from "@/src/controllers/SongController";
 import { CrossfadeImage } from "react-native-crossfade-image";
 import { getTrackArtwork } from "@/src/controllers/PlayerController";
 import { useAssets } from "expo-asset";
@@ -46,7 +46,7 @@ const MiniPlayer = () => {
 
   const loadCover = async () => {
     try {
-      const cover = await getAbsoluteSongCover(track?.id);
+      const cover = await getLibrarySongCover(track?.id);
       if (cover) {
         setCoverImage(cover);
         setEmptyCover(false);

@@ -521,6 +521,14 @@
 			path = "synq/icon-orange";
 			sourceTree = "<group>";
 		};
+		115CF23516554E429BA8BADD /* icon-red */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "icon-red";
+			path = "synq/icon-red";
+			sourceTree = "<group>";
+		};
 		1190E5782BDE4318A24707C1 /* icon-orange */ = {
 			isa = PBXGroup;
 			children = (
@@ -1417,6 +1425,13 @@
 				565466DB3FE84A8EA325B8E8 /* icon-purple */,
 				4F35C3A767444025A38DE749 /* icon-orange */,
 				088B495B55334557BA5CBF1E /* icon-pink */,
+				8DCA2397909841698D3C7BDC /* icon-blue */,
+				80FD6C333D7A4A2F9FB59BE9 /* icon-mint */,
+				115CF23516554E429BA8BADD /* icon-red */,
+				DF5C3546E50344A3B62575B0 /* icon-yellow */,
+				7C57F4FB4BEC45198F454469 /* icon-purple */,
+				36A751A8A76D461FBC90855E /* icon-orange */,
+				C287CD61591648B0AED9F94E /* icon-pink */,
 			);
 			name = synq;
 			sourceTree = "<group>";
@@ -2276,6 +2291,14 @@
 			);
 			name = "icon-red";
 			path = "synq/icon-red";
+			sourceTree = "<group>";
+		};
+		36A751A8A76D461FBC90855E /* icon-orange */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "icon-orange";
+			path = "synq/icon-orange";
 			sourceTree = "<group>";
 		};
 		36CA929A07EC4627944207DE /* icon-red */ = {
@@ -3992,6 +4015,14 @@
 			path = "synq/icon-orange";
 			sourceTree = "<group>";
 		};
+		7C57F4FB4BEC45198F454469 /* icon-purple */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "icon-purple";
+			path = "synq/icon-purple";
+			sourceTree = "<group>";
+		};
 		7D2A3A26D67243D1A2E40EAD /* icon-pink */ = {
 			isa = PBXGroup;
 			children = (
@@ -4086,6 +4117,14 @@
 			);
 			name = "icon-yellow";
 			path = "synq/icon-yellow";
+			sourceTree = "<group>";
+		};
+		80FD6C333D7A4A2F9FB59BE9 /* icon-mint */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "icon-mint";
+			path = "synq/icon-mint";
 			sourceTree = "<group>";
 		};
 		815D3CBF15344606A900DA51 /* icon-yellow */ = {
@@ -4453,6 +4492,14 @@
 			);
 			name = "icon-purple";
 			path = "synq/icon-purple";
+			sourceTree = "<group>";
+		};
+		8DCA2397909841698D3C7BDC /* icon-blue */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "icon-blue";
+			path = "synq/icon-blue";
 			sourceTree = "<group>";
 		};
 		8E3EB1BEE63B41068EBC4D62 /* icon-pink */ = {
@@ -5938,6 +5985,14 @@
 			path = "synq/icon-yellow";
 			sourceTree = "<group>";
 		};
+		C287CD61591648B0AED9F94E /* icon-pink */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "icon-pink";
+			path = "synq/icon-pink";
+			sourceTree = "<group>";
+		};
 		C2E1D09417674FE89C15282B /* icon-pink */ = {
 			isa = PBXGroup;
 			children = (
@@ -6587,6 +6642,14 @@
 			);
 			name = "icon-purple";
 			path = "synq/icon-purple";
+			sourceTree = "<group>";
+		};
+		DF5C3546E50344A3B62575B0 /* icon-yellow */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "icon-yellow";
+			path = "synq/icon-yellow";
 			sourceTree = "<group>";
 		};
 		DF718FE75E964714998C99C2 /* icon-red */ = {

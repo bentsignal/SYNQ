@@ -81,7 +81,7 @@
     <key>CFBundlePackageType</key>
     <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
     <key>CFBundleShortVersionString</key>
-    <string>2.4.0</string>
+    <string>2.5.1</string>
     <key>CFBundleSignature</key>
     <string>????</string>
     <key>CFBundleURLTypes</key>
@@ -89,8 +89,7 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>synq</string>
-          <string>com.directedbyshawn.synq</string>
+          <string>666565396036070</string>
         </array>
       </dict>
       <dict>
@@ -101,7 +100,13 @@
       </dict>
     </array>
     <key>CFBundleVersion</key>
-    <string>61</string>
+    <string>69</string>
+    <key>FacebookAppID</key>
+    <string>666565396036070</string>
+    <key>FacebookClientToken</key>
+    <string>061ab03cceff44df511a1f07a8f5416c</string>
+    <key>FacebookDisplayName</key>
+    <string>SYNQ</string>
     <key>LSMinimumSystemVersion</key>
     <string>12.0</string>
     <key>LSRequiresIPhoneOS</key>

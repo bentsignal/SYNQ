@@ -24,7 +24,17 @@
         "LSSupportsOpeningDocumentsInPlace": true,
         "UIBackgroundModes": [
           "audio"
-        ]
+        ],
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "666565396036070"
+            ]
+          }
+        ],
+        "FacebookAppID": "666565396036070",
+        "FacebookClientToken": "061ab03cceff44df511a1f07a8f5416c",
+        "FacebookDisplayName": "SYNQ"
       },
       "buildNumber": "68"
     },

@@ -16,8 +16,9 @@ import PlaybackProvider from "@/src/context/PlaybackProvider";
 import Sheets from "@/src/components/sheet/Sheets";
 import GlobalProgress from '@/src/components/GlobalProgress';
 import { PostHogProvider } from 'posthog-react-native';
-import { posthogKey } from '@/src/constants/Keys';
+import { posthogKey, facebookAppId } from '@/src/constants/Keys';
 import PrivacyProvider from '@/src/context/PrivacyProvider';
+import { Settings } from 'react-native-fbsdk-next'
 
 LogBox.ignoreLogs(['Require cycle:']);
 
@@ -37,6 +38,9 @@ const RootLayout = () => {
   useEffect(() => {
 
     SplashScreen.preventAutoHideAsync();
+
+    Settings.setAppID(facebookAppId);
+    Settings.initializeSDK();
 
     // automatically hide splash screen after 7 seconds
     setTimeout(() => {

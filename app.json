@@ -2,7 +2,7 @@
   "expo": {
     "name": "synq",
     "slug": "synq",
-    "version": "2.5.1",
+    "version": "2.5.2",
     "orientation": "portrait",
     "icon": "./src/assets/appIcons/icon-blue.png",
     "scheme": "synq",
@@ -36,7 +36,7 @@
         "FacebookClientToken": "061ab03cceff44df511a1f07a8f5416c",
         "FacebookDisplayName": "SYNQ"
       },
-      "buildNumber": "75"
+      "buildNumber": "77"
     },
     "android": {
       "adaptiveIcon": {

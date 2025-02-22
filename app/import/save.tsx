@@ -90,6 +90,10 @@ const SavePrompt = () => {
       }
       else {
         await AsyncStorage.setItem('importCount', '1');
+        let count = 1;
+        if (count >= CFG.showReviewAfter) {
+          await callReview();
+        }
       }
     }
     catch (error) {

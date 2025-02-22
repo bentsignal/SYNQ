@@ -4,6 +4,7 @@ export enum AlbumBusEvent {
   ALBUM_MODIFIED = 'album_modified',
   ALBUM_IMAGE_MODIFIED = 'album_image_modified',
   ALBUM_TOGGLED_ON_SONG = 'album_toggled_on_song',
+  ALBUM_REORDERED = 'album_reordered',
 }
 
 export type AlbumModifiedEvent = {
@@ -22,3 +23,8 @@ export type AlbumToggledOnSongEvent = {
   songId: number;
   add?: boolean;
 } 
+
+export type AlbumReorderedEvent = {
+  albumId: number;
+}
+

@@ -1,7 +1,13 @@
-import { FlatList, Dimensions, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent, StyleSheet, ListRenderItem } from 'react-native';
+import { FlatList, Dimensions, Animated,
+   Easing, NativeSyntheticEvent, NativeScrollEvent, 
+   StyleSheet, ListRenderItem } from 'react-native';
 import React, { useRef, useEffect, useState, memo } from 'react';
+
 import { LinearGradient } from 'expo-linear-gradient';
+
 import { Styles } from '@/src/constants/Styles';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import DraggableFlatlist, { DragEndParams, RenderItem } from 'react-native-draggable-flatlist';
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -12,6 +18,9 @@ const List = memo((
     footerComponent,
     bottomPadding = false,
     item,
+    draggableItem,
+    draggable, 
+    onDragEnd, 
     keyExtractor,
     extra,
     setScrollPosition,
@@ -23,6 +32,7 @@ const List = memo((
     showEmptyComponent = true,
     lockScroll = false,
     listRef,
+    dragRef,
     getItemLayout,
   }: 
   {
@@ -31,6 +41,9 @@ const List = memo((
     footerComponent?: React.ReactNode,
     bottomPadding?: boolean,
     item: ListRenderItem<any>,
+    draggableItem?: RenderItem<any>,
+    draggable?: boolean,
+    onDragEnd?: (params: DragEndParams<any>) => void,
     keyExtractor: (item: any, index: number) => string,
     extra?: any,
     setScrollPosition?: (position: number) => void,
@@ -42,6 +55,7 @@ const List = memo((
     showEmptyComponent?: boolean,
     lockScroll?: boolean,
     listRef?: React.RefObject<FlatList<any>>,
+    dragRef?: React.RefObject<any>,
     getItemLayout?: (data: any[], index: number) => { length: number, offset: number, index: number },
   }
 ) => {
@@ -118,28 +132,56 @@ const List = memo((
   return (
     <>
       <Animated.View style={ Local.container}>
-        <FlatList
-          ref={listRef}
-          data={data}
-          renderItem={item}
-          keyExtractor={keyExtractor}
-          extraData={extra}
-          onScroll={handleScroll}
-          style={Local.list}
-          ListHeaderComponent={headerComponent ? <>{headerComponent}</> : null}
-          ListHeaderComponentStyle={{width: '90%'}}
-          contentContainerStyle={ Local.listContent }
-          maxToRenderPerBatch={10}
-          initialNumToRender={10}
-          removeClippedSubviews={true}
-          updateCellsBatchingPeriod={50}
-          windowSize={21}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={footerComponent ? <>{footerComponent}</> : null}
-          ListEmptyComponent={showEmptyComponent && emptyComponent ? <>{emptyComponent}</> : null}
-          scrollEnabled={!lockScroll}
-          getItemLayout={getItemLayout}
-        />
+        {draggable ? 
+          <DraggableFlatlist
+            ref={dragRef}
+            data={data}
+            renderItem={draggableItem}
+            keyExtractor={keyExtractor}
+            extraData={extra}
+            onScroll={handleScroll}
+            style={Local.list}
+            containerStyle={{width: '100%'}}
+            ListHeaderComponent={headerComponent ? <>{headerComponent}</> : null}
+            ListHeaderComponentStyle={{width: '90%'}}
+            contentContainerStyle={ Local.listContent }
+            maxToRenderPerBatch={10}
+            initialNumToRender={10}
+            removeClippedSubviews={true}
+            updateCellsBatchingPeriod={50}
+            windowSize={21}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={footerComponent ? <>{footerComponent}</> : null}
+            ListEmptyComponent={showEmptyComponent && emptyComponent ? <>{emptyComponent}</> : null}
+            scrollEnabled={!lockScroll}
+            getItemLayout={getItemLayout}
+            onDragEnd={onDragEnd}
+          />
+        : 
+          <FlatList
+            ref={listRef}
+            data={data}
+            renderItem={item}
+            keyExtractor={keyExtractor}
+            extraData={extra}
+            onScroll={handleScroll}
+            style={Local.list}
+            ListHeaderComponent={headerComponent ? <>{headerComponent}</> : null}
+            ListHeaderComponentStyle={{width: '90%'}}
+            contentContainerStyle={ Local.listContent }
+            maxToRenderPerBatch={10}
+            initialNumToRender={10}
+            removeClippedSubviews={true}
+            updateCellsBatchingPeriod={50}
+            windowSize={21}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={footerComponent ? <>{footerComponent}</> : null}
+            ListEmptyComponent={showEmptyComponent && emptyComponent ? <>{emptyComponent}</> : null}
+            scrollEnabled={!lockScroll}
+            getItemLayout={getItemLayout}
+          />
+        }
+        
         <AnimatedGradient
           style={ Local.topGradient }
 

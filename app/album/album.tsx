@@ -92,9 +92,11 @@ const AlbumView = ({id}: {id: number}) => {
   useEffect(() => {
     albumBus.on(AlbumBusEvent.ALBUM_MODIFIED, refreshInfo);
     albumBus.on(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, refreshSongs);
+    albumBus.on(AlbumBusEvent.ALBUM_REORDERED, refreshSongs);
     return () => {
       albumBus.off(AlbumBusEvent.ALBUM_MODIFIED, refreshInfo);
       albumBus.off(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, refreshSongs);
+      albumBus.off(AlbumBusEvent.ALBUM_REORDERED, refreshSongs);
     }
   }, []);
 

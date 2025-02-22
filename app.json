@@ -2,7 +2,7 @@
   "expo": {
     "name": "synq",
     "slug": "synq",
-    "version": "2.4.0",
+    "version": "2.5.1",
     "orientation": "portrait",
     "icon": "./src/assets/appIcons/icon-blue.png",
     "scheme": "synq",
@@ -24,9 +24,19 @@
         "LSSupportsOpeningDocumentsInPlace": true,
         "UIBackgroundModes": [
           "audio"
-        ]
+        ],
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "fb666565396036070"
+            ]
+          }
+        ],
+        "FacebookAppID": "666565396036070",
+        "FacebookClientToken": "061ab03cceff44df511a1f07a8f5416c",
+        "FacebookDisplayName": "SYNQ"
       },
-      "buildNumber": "65"
+      "buildNumber": "75"
     },
     "android": {
       "adaptiveIcon": {

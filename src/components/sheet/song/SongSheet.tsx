@@ -10,7 +10,7 @@ import SongOptions from './SongOptions';
 import Sheet from '@/src/components/sheet';
 import SheetStyles from '@/src/components/sheet/Styles';
 import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { getAbsoluteSongCover } from '@/src/controllers/SongController';
+import { getLibrarySongCover } from '@/src/controllers/SongController';
 
 type SongSheetProps = {
   name: string,
@@ -41,7 +41,7 @@ const SongSheet = ({name}: SongSheetProps) => {
         setEmptyCover(false);
       }
       else {
-        const cover = await getAbsoluteSongCover(editSong.id);
+        const cover = await getLibrarySongCover(editSong.id);
         if (cover) {
           setCoverImage(cover);
           setEmptyCover(false);

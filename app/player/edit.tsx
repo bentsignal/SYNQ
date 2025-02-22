@@ -12,7 +12,7 @@ import { TrueSheet } from '@lodev09/react-native-true-sheet';
 import SongOptions from '@/src/components/sheet/song/SongOptions';
 import Bar from '@/src/components/modals/Bar';
 import ModalStyles from '@/src/components/modals/Styles';
-import { getAbsoluteSongCover } from '@/src/controllers/SongController';
+import { getLibrarySongCover } from '@/src/controllers/SongController';
 
 const PlayerSongEdit = () => {
 
@@ -27,7 +27,7 @@ const PlayerSongEdit = () => {
   const loadCover = async () => { 
     try {
       if (editSong.id) {
-        const cover = await getAbsoluteSongCover(editSong.id);
+        const cover = await getLibrarySongCover(editSong.id);
         if (cover) {
           setCoverImage(cover);
           setEmptyCover(false);

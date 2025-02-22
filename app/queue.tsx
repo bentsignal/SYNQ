@@ -20,7 +20,9 @@ import ModalStyles from "@/src/components/modals/Styles";
 import LoopButton from "@/src/components/player/LoopButton";
 import playbackBus from "@/src/events/playback";
 import { PlaybackBusEvent } from "@/src/events/playback/Events";
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing } from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle, 
+  withTiming, Easing } from "react-native-reanimated";
+import { DragEndParams } from "react-native-draggable-flatlist";
 
 const Queue = () => {
 
@@ -31,7 +33,7 @@ const Queue = () => {
 
   const insets = useSafeAreaInsets();
   const [songs, setSongs] = useState<SongType[]>([]);
-  const listRef = useRef<FlatList<any>>(null);
+  const listRef = useRef<any>(null);
   const listOpacity = useSharedValue(0);
 
   useEffect(() => {
@@ -87,6 +89,11 @@ const Queue = () => {
     alignSelf: 'center',
   }));
 
+  const onDragEnd = async ({ data, from, to }: DragEndParams<any>) => {
+    setSongs(data);
+    await TrackPlayer.move(from, to);
+  }
+
   return (
     <View style={[Styles.body, Local.container]}>
       <Bar />
@@ -99,10 +106,15 @@ const Queue = () => {
           hideTopGradient={true}
           gradientStart={'rgba(24, 24, 24, 1)'}
           gradientEnd={'rgba(24, 24, 24, 0)'}
-          listRef={listRef}
+          dragRef={listRef}
           footerComponent={<View style={{height: 500}}/>}
+          draggable={true}
+          onDragEnd={onDragEnd}
         />
       </Animated.View>
+      {/* <View style={{flex: 1, width: '100%'}}>
+        <AnimatedList />
+      </View> */}
       <View style={[Local.footer, {
         paddingBottom: insets.bottom,
       }]}>

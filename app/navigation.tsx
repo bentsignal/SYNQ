@@ -175,6 +175,14 @@ const Navigation = () => {
           contentStyle: { backgroundColor: 'transparent'},
         }}
       />
+      <Stack.Screen
+        name="album/reorder"
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+          contentStyle: { backgroundColor: 'transparent'},
+        }}
+      />
       <Stack.Screen 
         name="import"
         options={{

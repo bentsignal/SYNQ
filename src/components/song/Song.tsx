@@ -21,10 +21,11 @@ import artistBus from '@/src/events/artist';
 import albumBus from '@/src/events/album';
 import { AlbumBusEvent, AlbumToggledOnSongEvent } from '@/src/events/album/Events';
 import { getAlbumCover, getArtistsFromAlbum } from '@/src/controllers/AlbumController';
-import { getAbsoluteSongCover } from '@/src/controllers/SongController';
+import { getLibrarySongCover, getImportSongCover } from '@/src/controllers/SongController';
 import Animated, { useSharedValue, useAnimatedStyle, 
   withTiming, Easing } from 'react-native-reanimated';
 import { isSongEdited } from '@/src/controllers/SongController';
+import Handle from '../lists/Handle';
 
 type SongProps = {
   song: SongType, 
@@ -33,9 +34,18 @@ type SongProps = {
   active: boolean,
   previous?: boolean,
   handlePlay: (song: SongType) => Promise<void>,
+  draggable?: boolean,
 }
 
-export default function Song({ song, fadeCover, fadeSong, active, previous, handlePlay }: SongProps) {
+export default function Song({ 
+  song, 
+  fadeCover, 
+  fadeSong, 
+  active, 
+  previous, 
+  handlePlay,
+  draggable,
+}: SongProps) {
 
   const [selected, setSelected] = useState(false);
   const [coverImage, setCoverImage] = useState('');
@@ -125,7 +135,7 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
   }, []);
 
   let disablePlay = false;
-  if (song.pageType && [PageType.IMPORT, PageType.QUEUE].includes(song.pageType)) { 
+  if (song.pageType && [PageType.IMPORT, PageType.QUEUE, PageType.REORDER].includes(song.pageType)) { 
     disablePlay = true;
   }
 
@@ -139,11 +149,7 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
         songArtists = song.importArtists ?? [];
         albumArtists = await getArtistsFromAlbum(data.albumId);
         if (data.add) {
-          const cover = await getAlbumCover(data.albumId);
-          if (cover) {
-            setCoverImage(cover);
-            setEmptyCover(false);
-          }
+          await loadCover();
         }
         else {
           setCoverImage('');
@@ -210,26 +216,31 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
 
   const loadCover = async () => {
     try {
-      const cover = await getAbsoluteSongCover(song.id, true);
-      if (cover) {
-        setCoverImage(cover);
-        setEmptyCover(false);
-      }
-      else if (song.importAlbums && song.importAlbums.length > 0) {
-        const album = song.importAlbums[0];
-        const cover = await getAlbumCover(album.id);
+      if (song.pageType === PageType.IMPORT) {
+        const cover = await getImportSongCover(song);
         if (cover) {
           setCoverImage(cover);
           setEmptyCover(false);
         }
-      }
-      else if (song.artwork) {
-        setCoverImage(song.artwork);
-        setEmptyCover(false);
+        else {
+          setCoverImage('');
+          setEmptyCover(true);
+        }
       }
       else {
-        setCoverImage('');
-        setEmptyCover(true);
+        const cover = await getLibrarySongCover(song.id, true);
+        if (cover) {
+          setCoverImage(cover);
+          setEmptyCover(false);
+        }
+        else if (song.artwork) {
+          setCoverImage(song.artwork);
+          setEmptyCover(false);
+        }
+        else {
+          setCoverImage('');
+          setEmptyCover(true);
+        }
       }
     }
     catch (error) {
@@ -288,7 +299,7 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
         />
         {
 
-          selectEnabled &&
+          selectEnabled && song.pageType !== PageType.QUEUE && !draggable &&
           
           <Select 
             active={selected} 
@@ -323,7 +334,7 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
 
         {
 
-          !selectEnabled && song.pageType !== PageType.QUEUE &&
+          !selectEnabled && song.pageType !== PageType.QUEUE && !draggable &&
 
           <More 
             handlePress={handleMore}
@@ -331,6 +342,12 @@ export default function Song({ song, fadeCover, fadeSong, active, previous, hand
           />
 
         }
+
+        {
+          draggable &&
+          <Handle />
+        }
+
       </TouchableOpacity>
     </Animated.View>
   );

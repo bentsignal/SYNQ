@@ -11,7 +11,7 @@ import CustomButton from "@/src/components/CustomButton";
 import Notifications from "@/src/components/notifications/Notifications";
 import { router } from "expo-router";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
-import { saveEdits } from "@/src/controllers/SongController";
+import { getLibrarySongCover, saveEdits, getImportSongCover } from "@/src/controllers/SongController";
 import { updateSongsInLibrary } from "@/src/controllers/LibraryController";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { newCover } from "@/src/controllers/ImageController";
@@ -67,6 +67,7 @@ const EditSong = ({id}: {id: number}) => {
     if (event.songId === id) {
       loadAlbums();
       loadArtists();
+      loadCover();
     }
   }
 
@@ -77,9 +78,7 @@ const EditSong = ({id}: {id: number}) => {
       setTitle(editSong.title ?? '');
       setArtist(editSong.artist ?? '');
       setAlbum(editSong.album ?? '');
-      if (editSong.artwork) {
-        setImage(editSong.artwork);
-      }
+      loadCover();
     }
   }, [editSong]);
 
@@ -103,6 +102,17 @@ const EditSong = ({id}: {id: number}) => {
     }
   }
 
+  const loadCover = async () => {
+    if (editSong.pageType === PageType.IMPORT) {
+      const cover = await getImportSongCover(editSong);
+      setImage(cover ?? '');
+    }
+    else {
+      const cover = await getLibrarySongCover(id, true);
+      setImage(cover ?? '');
+    }
+  }
+
   const handleUpdateImage = async () => {
     const cover = await newCover();
     if (cover) {
@@ -122,7 +132,7 @@ const EditSong = ({id}: {id: number}) => {
         await updateSongsInLibrary([editSong.id], newTitle, artist, album, newImage);
       }
       else if (editSong.pageType === PageType.IMPORT) {
-        const newResults = saveEdits(
+        const newResults = await saveEdits(
           results,
           [editSong.id],
           newTitle,
@@ -134,7 +144,7 @@ const EditSong = ({id}: {id: number}) => {
         setNumModified(numModified + 1);
       }
       else if (selectedSongs.length > 0) {
-        const newResults = saveEdits(
+        const newResults = await saveEdits(
           results,
           selectedSongs,
           newTitle,

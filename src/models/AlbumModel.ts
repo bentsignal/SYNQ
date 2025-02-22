@@ -232,9 +232,11 @@ export default class AlbumModel extends Model {
       INNER JOIN artistsAlbums ON albums.id = artistsAlbums.albumId
       LEFT JOIN artistsAlbums aa2 ON albums.id = aa2.albumId
       LEFT JOIN artists a2 ON aa2.artistId = a2.id
+      LEFT JOIN albumSongs ON albums.id = albumSongs.albumId
+      LEFT JOIN songs ON albumSongs.songId = songs.id
       WHERE artistsAlbums.artistId = ?
-      ${query ? 'AND (LOWER(albums.name) LIKE ? OR LOWER(a2.name) LIKE ? OR LOWER(albums.year) LIKE ?)' : ''}
-      `, query ? [artistId, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : [artistId]);
+      ${query ? 'AND (LOWER(albums.name) LIKE ? OR LOWER(a2.name) LIKE ? OR LOWER(albums.year) LIKE ? OR LOWER(songs.title) LIKE ?)' : ''}
+      `, query ? [artistId, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : [artistId]);
     if (!result) {
       return [];
     }
@@ -256,4 +258,16 @@ export default class AlbumModel extends Model {
     }
     return result;
   }
+
+  public async updateTrackNumber(
+    albumId: number, 
+    songId: number, 
+    track: number
+  ): Promise<void> {
+    await AlbumModel.db?.runAsync(
+      `UPDATE albumSongs SET track = ? WHERE albumId = ? AND songId = ?;`,
+      [track, albumId, songId]
+    );
+  }
+
 }

@@ -3,10 +3,12 @@ import { SongType, PageType, TagsType, InfoType } from '@/src/constants/Types'
 import { toByteArray, fromByteArray } from 'react-native-quick-base64'
 import SongModel from '@/src/models/SongModel';
 import 'react-native-get-random-values';
-import { splitImageMimeAndBuffer, getSongCover } from '@/src/controllers/ImageController';
-import { getAlbumCover, getAlbumCoverFromSong } from './AlbumController';
+import { splitImageMimeAndBuffer, getSongCover, writeImageToLibrary } from '@/src/controllers/ImageController';
+import { getAlbumCover, getAlbumCoverFromSong, getSongsFromAlbum } from './AlbumController';
 import { check } from '@/lib/Util';
 import { getAudioMetadata } from '@missingcore/audio-metadata';
+import albumBus from '../events/album';
+import { AlbumBusEvent } from '../events/album/Events';
 
 export const updateMetadata = async (song: SongType) => {
 
@@ -24,7 +26,7 @@ export const updateMetadata = async (song: SongType) => {
     }
     try {
       // retrieve image if it exists
-      const path = await getAbsoluteSongCover(song.id, true);
+      const path = await getLibrarySongCover(song.id, true);
       const image = await FileSystem.readAsStringAsync(path, { encoding: 'base64' });
       song.artwork = image ? image : song.artwork;
     }
@@ -134,7 +136,7 @@ export const removeSongs = async (
   return newResults;
 }
 
-export const saveEdits = (
+export const saveEdits = async (
 
   results: SongType[],
   ids: number[],
@@ -152,7 +154,24 @@ export const saveEdits = (
       results[i].title = title ? title : results[i].title;
       results[i].artist = artist ? artist : results[i].artist;
       results[i].album = album ? album : results[i].album;
-      results[i].artwork = artwork ? artwork : results[i].artwork;
+      if (results[i].importAlbums && results[i].importAlbums.length > 0) {
+        const album = results[i].importAlbums[0];
+        const albumDir = `${FileSystem.documentDirectory}albums/${album.id}`;
+        await writeImageToLibrary(artwork, albumDir);
+        await flagSongAsEdited(results[i].id);
+        const albumSongs = await getSongsFromAlbum(album.id);
+        albumSongs.forEach(song => {
+          if (song.id !== results[i].id) {
+            flagSongAsEdited(song.id);
+          }
+        });
+        albumBus.emit(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, {
+          id: album.id,
+        });
+      }
+      else {
+        results[i].artwork = artwork ? artwork : results[i].artwork;
+      }
     }
   }
 
@@ -211,7 +230,7 @@ export const generateSongKey = (song: SongType) => {
   return '-1';
 }
 
-export const getAbsoluteSongCover = async (id: number, full: boolean = false) => {
+export const getLibrarySongCover = async (id: number, full: boolean = false) => {
   const albumCover = await getAlbumCoverFromSong(id, full);
   if (albumCover) {
     return albumCover;
@@ -221,6 +240,28 @@ export const getAbsoluteSongCover = async (id: number, full: boolean = false) =>
     if (cover) {
       return cover;
     }
+  }
+}
+
+export const getImportSongCover = async (song: SongType) => {
+  if (song.importAlbums && song.importAlbums.length > 0) {
+    const album = song.importAlbums[0];
+    const cover = await getAlbumCover(album.id);
+    if (cover) {
+      return cover;
+    }
+    else if (song.artwork) {
+      return song.artwork;
+    }
+    else {
+      return null;
+    }
+  }
+  else if (song.artwork) {
+    return song.artwork;
+  }
+  else {
+    return null;
   }
 }
 

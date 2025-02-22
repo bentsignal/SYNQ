@@ -88,6 +88,13 @@ const AlbumOptions = ({name}: {name: string}) => {
     }, actionDelay);
   }
 
+  const handleReorder = () => {
+    TrueSheet.dismiss(name);
+    setTimeout(() => {
+      router.push(`/album/reorder`);
+    }, actionDelay);
+  }
+
   return (
     <>
       <SheetOption 
@@ -95,6 +102,12 @@ const AlbumOptions = ({name}: {name: string}) => {
         text={'Edit'}
         show={[PageType.LIBRARY, PageType.ALBUM].includes(pageType)}
         handler={handleEdit}
+      />
+      <SheetOption 
+        icon={require('@/src/assets/icons/list.png')}
+        text={'Reorder'}
+        show={[PageType.LIBRARY, PageType.ALBUM].includes(pageType)}
+        handler={handleReorder}
       />
       <SheetOption 
         icon={require('@/src/assets/icons/share.png')}

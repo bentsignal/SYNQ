@@ -2,7 +2,7 @@ const CFG = {
   // how long in app notification banners are shown on screen before disappearing
   notificationDuration: 5000,
   // show review prompt after importing 5 times
-  showReviewAfter: 3,
+  showReviewAfter: 1,
   // disable checks for premium subscriptoin
   devTestFreeVersion: false && __DEV__,
   // show premium toggle in settings

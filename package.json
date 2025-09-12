@@ -15,6 +15,7 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
+    "@babel/runtime": "^7.28.4",
     "@expo/vector-icons": "^14.0.4",
     "@killerwink/lottie-react-native-color": "^1.0.2",
     "@lodev09/react-native-true-sheet": "^0.13.0",

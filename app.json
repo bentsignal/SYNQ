@@ -22,14 +22,10 @@
         "UIStatusBarStyle": "UIStatusBarStyleLightContent",
         "UIFileSharingEnabled": true,
         "LSSupportsOpeningDocumentsInPlace": true,
-        "UIBackgroundModes": [
-          "audio"
-        ],
+        "UIBackgroundModes": ["audio"],
         "CFBundleURLTypes": [
           {
-            "CFBundleURLSchemes": [
-              "fb666565396036070"
-            ]
+            "CFBundleURLSchemes": ["fb666565396036070"]
           }
         ],
         "FacebookAppID": "666565396036070",
@@ -102,10 +98,7 @@
       [
         "expo-asset",
         {
-          "assets": [
-            "src/assets/audio/ad.mp3",
-            "src/assets/images/popup.jpg"
-          ]
+          "assets": ["src/assets/audio/ad.mp3", "src/assets/images/popup.jpg"]
         }
       ],
       "expo-font",

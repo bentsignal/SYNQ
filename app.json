@@ -2,7 +2,7 @@
   "expo": {
     "name": "synq",
     "slug": "synq",
-    "version": "2.5.2",
+    "version": "3.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/appIcons/icon-blue.png",
     "scheme": "synq",
@@ -22,17 +22,21 @@
         "UIStatusBarStyle": "UIStatusBarStyleLightContent",
         "UIFileSharingEnabled": true,
         "LSSupportsOpeningDocumentsInPlace": true,
-        "UIBackgroundModes": ["audio"],
+        "UIBackgroundModes": [
+          "audio"
+        ],
         "CFBundleURLTypes": [
           {
-            "CFBundleURLSchemes": ["fb666565396036070"]
+            "CFBundleURLSchemes": [
+              "fb666565396036070"
+            ]
           }
         ],
         "FacebookAppID": "666565396036070",
         "FacebookClientToken": "061ab03cceff44df511a1f07a8f5416c",
         "FacebookDisplayName": "SYNQ"
       },
-      "buildNumber": "83"
+      "buildNumber": "86"
     },
     "android": {
       "adaptiveIcon": {
@@ -98,7 +102,10 @@
       [
         "expo-asset",
         {
-          "assets": ["src/assets/audio/ad.mp3", "src/assets/images/popup.jpg"]
+          "assets": [
+            "src/assets/audio/ad.mp3",
+            "src/assets/images/popup.jpg"
+          ]
         }
       ],
       "expo-font",

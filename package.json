@@ -3,16 +3,17 @@
   "main": "expo-router/entry",
   "version": "3.0.0",
   "scripts": {
+    "dev": "expo start",
     "lint": "expo lint",
     "prebuild-ios": "expo prebuild --platform ios",
     "link-ios": "cd ios && bundle exec pod install --repo-update && cd ..",
+    "init-ios": "pnpm run prebuild-ios && pnpm run link-ios",
     "build-dev-ios": "eas build -p ios --profile development --local",
-    "dev-ios": "pnpm run prebuild-ios && pnpm run link-ios && pnpm run build-dev-ios",
+    "build-dev-client-ios": "eas build -p ios --profile development-client --local",
+    "build-scratch-dev-ios": "pnpm run init-ios && pnpm run build-dev-ios",
     "build-prod-ios": "eas build -p ios --local",
-    "prod-ios": "pnpm run prebuild-ios && pnpm run link-ios && pnpm run build-prod-ios",
-    "clean-ios": "cd ios && bundle exec pod cache clean --all && rm -rf Pods && rm -rf Podfile.lock  && rm -rf build && bundle exec pod repo update  && bundle exec pod install --repo-update && cd ..",
-    "android": "expo run:android",
-    "ios": "expo run:ios"
+    "build-scratch-prod-ios": "pnpm run init-ios && pnpm run build-prod-ios",
+    "clean-ios": "cd ios && bundle exec pod cache clean --all && rm -rf Pods && rm -rf Podfile.lock  && rm -rf build && bundle exec pod repo update  && bundle exec pod install --repo-update && cd .."
   },
   "dependencies": {
     "@babel/runtime": "^7.28.4",
@@ -96,6 +97,7 @@
     "@types/react": "~18.3.12",
     "@types/react-test-renderer": "^18.3.0",
     "@types/tinycolor2": "^1.4.6",
+    "babel-preset-expo": "^54.0.1",
     "react-test-renderer": "18.3.1",
     "typescript": "~5.7.2"
   },

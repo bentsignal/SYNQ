@@ -5,12 +5,14 @@
   "scripts": {
     "lint": "expo lint",
     "prebuild-ios": "expo prebuild --platform ios",
-    "link-ios": "cd ios && pod install --repo-update && cd ..",
+    "link-ios": "cd ios && bundle exec pod install --repo-update && cd ..",
     "build-dev-ios": "eas build -p ios --profile development --local",
     "dev-ios": "pnpm run prebuild-ios && pnpm run link-ios && pnpm run build-dev-ios",
     "build-prod-ios": "eas build -p ios --local",
     "prod-ios": "pnpm run prebuild-ios && pnpm run link-ios && pnpm run build-prod-ios",
-    "clean-ios": "cd ios && pod cache clean --all && rm -rf Pods && rm -rf Podfile.lock  && rm -rf build && pod repo update  && pod install --repo-update && cd .."
+    "clean-ios": "cd ios && bundle exec pod cache clean --all && rm -rf Pods && rm -rf Podfile.lock  && rm -rf build && bundle exec pod repo update  && bundle exec pod install --repo-update && cd ..",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",

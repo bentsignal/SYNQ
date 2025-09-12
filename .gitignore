@@ -1,6 +1,5 @@
 node_modules/
 hide
-.ruby-version
 .expo/
 dist/
 npm-debug.*

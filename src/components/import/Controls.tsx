@@ -18,6 +18,7 @@ import importBus from "@/src/events/import";
 import { ImportBusEvent } from "@/src/events/import/Events";
 import axios from "axios";
 import { router, usePathname } from "expo-router";
+import { SquarePen, Trash } from "lucide-react-native";
 import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import TrackPlayer, { Track } from "react-native-track-player";
@@ -240,8 +241,9 @@ export default function ImportControls() {
           ]}
           onPress={handleEdit}
         >
-          <Image
-            source={require("@/src/assets/icons/edit.png")}
+          <SquarePen
+            size={20}
+            color={Colors.text}
             style={Local.batchButtonIcon}
           />
         </TouchableOpacity>
@@ -253,10 +255,7 @@ export default function ImportControls() {
           ]}
           onPress={handleDelete}
         >
-          <Image
-            source={require("@/src/assets/icons/delete.png")}
-            style={Local.batchButtonIcon}
-          />
+          <Trash size={20} color={Colors.text} style={Local.batchButtonIcon} />
         </TouchableOpacity>
       </View>
       <View

@@ -13,12 +13,12 @@ const CFG = {
   importAdLength: 18,
   // port for wifi transfer server
   PORT: 3000,
-}
+};
 
 export const SOCIAL_LINKS = {
-  x: 'https://x.com/SYNQMusic',
-  instagram: 'https://instagram.com/synq.cc',
-  discord: 'https://discord.gg/zaSkUrDvpz',
-}
+  x: "https://x.com/SYNQ_cc",
+  instagram: "https://instagram.com/synq.cc",
+  discord: "https://discord.gg/KwC24St29g",
+};
 
 export default CFG;

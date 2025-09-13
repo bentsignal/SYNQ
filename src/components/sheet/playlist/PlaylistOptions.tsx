@@ -14,6 +14,7 @@ import playlistBus from "@/src/events/playlist";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
+import { Share, SquarePen, Trash } from "lucide-react-native";
 import { Alert } from "react-native";
 import { posthog } from "@/lib/posthog";
 
@@ -95,13 +96,13 @@ const PlaylistOptions = ({ name }: { name: string }) => {
   return (
     <>
       <SheetOption
-        icon={require("@/src/assets/icons/edit.png")}
+        icon={SquarePen}
         text={"Edit"}
         show={[PageType.LIBRARY, PageType.PLAYLIST].includes(pageType)}
         handler={handleEdit}
       />
       <SheetOption
-        icon={require("@/src/assets/icons/share.png")}
+        icon={Share}
         text={"Export"}
         show={
           [PageType.LIBRARY, PageType.PLAYLIST].includes(pageType) && premium
@@ -110,7 +111,7 @@ const PlaylistOptions = ({ name }: { name: string }) => {
         premiumOnly
       />
       <SheetOption
-        icon={require("@/src/assets/icons/delete.png")}
+        icon={Trash}
         text={"Delete"}
         show={
           [PageType.LIBRARY, PageType.PLAYLIST].includes(pageType) &&

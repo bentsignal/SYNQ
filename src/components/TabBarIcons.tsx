@@ -1,57 +1,43 @@
+import { Colors } from "@/src/constants/Colors";
 import { Image, StyleSheet } from "react-native";
 
 type TabIconProps = {
-  focused: boolean
-}
+  focused: boolean;
+};
 
 const Local = StyleSheet.create({
   icon: {
     width: 25,
-    height: 25
-  }
+    height: 25,
+  },
 });
 
-export const HomeIcon = ({
-  focused
-}: TabIconProps) => {
-
-  const active = '@/src/assets/icons/home-active.png';
-  const inactive = '@/src/assets/icons/home-inactive.png';
-
+export const HomeIcon = ({ focused }: TabIconProps) => {
   return (
-    <Image 
-      source={focused ? require(active) : require(inactive)}
-      style={Local.icon}
+    <Image
+      source={require("@/src/assets/icons/home.png")}
+      style={[
+        Local.icon,
+        { tintColor: focused ? Colors.text : Colors.tabInactive },
+      ]}
     />
   );
-
 };
 
-export const LibraryIcon = ({
-  focused
-}: TabIconProps) => {
-  const active = '@/src/assets/icons/library-active.png';
-  const inactive = '@/src/assets/icons/library-inactive.png'
+export const LibraryIcon = ({ focused }: TabIconProps) => {
+  const active = "@/src/assets/icons/library-active.png";
+  const inactive = "@/src/assets/icons/library-inactive.png";
   return (
-    <Image 
-      source={focused ? require(active) : require(inactive)}
-      style={Local.icon}
-    />
-  )
-};
-
-export const SettingsIcon = ({
-  focused
-}: TabIconProps) => {
-
-  const active = '@/src/assets/icons/gear.png';
-  const inactive = '@/src/assets/icons/gear-inactive.png';
-
-  return (
-    <Image 
-      source={focused ? require(active) : require(inactive)}
-      style={Local.icon}
+    <Image
+      source={require("@/src/assets/icons/library.png")}
+      style={[
+        Local.icon,
+        {
+          tintColor: focused ? Colors.text : Colors.tabInactive,
+          width: 22,
+          height: 22,
+        },
+      ]}
     />
   );
-
 };

@@ -1,20 +1,34 @@
-import { TouchableOpacity, Text, Image, ImageURISource, StyleSheet } from "react-native";
-import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
-import { getDisabledColor } from "@/src/controllers/ColorController";
+import { Styles } from "@/src/constants/Styles";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
+import { getDisabledColor } from "@/src/controllers/ColorController";
+import { LucideIcon } from "lucide-react-native";
+import {
+  Image,
+  ImageURISource,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 
 type SongOptionProps = {
-  icon: ImageURISource;
+  icon: LucideIcon;
   text: string;
   show?: boolean;
   handler: () => void;
   premiumOnly?: boolean;
-}
+};
 
-const SheetOption = ({ icon, text, show=true, handler, premiumOnly=false }: SongOptionProps) => {
-
+const SheetOption = ({
+  icon,
+  text,
+  show = true,
+  handler,
+  premiumOnly = false,
+}: SongOptionProps) => {
   const { premium } = usePremiumContext();
+
+  const IconComponent = icon as LucideIcon;
 
   return (
     <TouchableOpacity
@@ -23,27 +37,32 @@ const SheetOption = ({ icon, text, show=true, handler, premiumOnly=false }: Song
       onPress={handler}
       disabled={!show}
     >
-      <Image
-        source={icon}
-        style={[Local.icon, {
-          tintColor: show ? Colors.tabInactive : getDisabledColor(Colors.tabInactive),
-        }]}
+      <IconComponent
+        size={22}
+        color={show ? Colors.tabInactive : getDisabledColor(Colors.tabInactive)}
+        style={Local.icon}
       />
-      <Text style={[Styles.h5, {
-        color: show ? Colors.text : getDisabledColor(Colors.tabInactive),
-      }]}>
+      <Text
+        style={[
+          Styles.h5,
+          {
+            color: show ? Colors.text : getDisabledColor(Colors.tabInactive),
+          },
+        ]}
+      >
         {text}
       </Text>
-      {premiumOnly && !premium && <Text style={Local.premiumText}>Premium</Text>}
+      {premiumOnly && !premium && (
+        <Text style={Local.premiumText}>Premium</Text>
+      )}
     </TouchableOpacity>
   );
-
 };
 
 const Local = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingTop: 5,
     paddingBottom: 5,
     marginBottom: 15,
@@ -55,7 +74,7 @@ const Local = StyleSheet.create({
   },
   premiumText: {
     color: Colors.main,
-    ...Styles.h6, 
+    ...Styles.h6,
     marginLeft: 5,
   },
 });

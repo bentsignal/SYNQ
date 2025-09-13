@@ -22,6 +22,16 @@ import usePlayer from "@/src/hooks/usePlayer";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
+import {
+  CircleMinus,
+  CirclePlus,
+  Heart,
+  HeartMinus,
+  ListPlus,
+  Share,
+  SquarePen,
+  Trash,
+} from "lucide-react-native";
 import { Alert } from "react-native";
 import TrackPlayer, { Track } from "react-native-track-player";
 import { posthog } from "@/lib/posthog";
@@ -229,11 +239,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
       {library && (
         <>
           <SheetOption
-            icon={
-              inLiked
-                ? require("@/src/assets/icons/unheart.png")
-                : require("@/src/assets/icons/heart.png")
-            }
+            icon={inLiked ? HeartMinus : Heart}
             text={inLiked ? "Remove from Liked Songs" : "Add to Liked Songs"}
             show={[
               PageType.LIBRARY,
@@ -244,7 +250,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
             handler={handleToggleinLiked}
           />
           <SheetOption
-            icon={require("@/src/assets/icons/add.png")}
+            icon={CirclePlus}
             text={"Add to Playlist"}
             show={[
               PageType.LIBRARY,
@@ -255,7 +261,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
             handler={handleAddToPlaylist}
           />
           <SheetOption
-            icon={require("@/src/assets/icons/remove.png")}
+            icon={CircleMinus}
             text={"Remove from Playlist"}
             show={
               [PageType.LIBRARY, PageType.PLAYER].includes(pageType) &&
@@ -266,7 +272,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
             handler={handleRemoveFromPlaylist}
           />
           <SheetOption
-            icon={require("@/src/assets/icons/add-to-queue.png")}
+            icon={ListPlus}
             text={"Add to Queue"}
             show={[
               PageType.LIBRARY,
@@ -280,7 +286,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
         </>
       )}
       <SheetOption
-        icon={require("@/src/assets/icons/edit.png")}
+        icon={SquarePen}
         text={"Edit"}
         show={[
           PageType.LIBRARY,
@@ -291,13 +297,13 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
         handler={handleEditSong}
       />
       <SheetOption
-        icon={require("@/src/assets/icons/delete.png")}
+        icon={Trash}
         text={"Delete"}
         show={premium ? deleteExports : deleteExports && library}
         handler={handleDeleteSong}
       />
       <SheetOption
-        icon={require("@/src/assets/icons/share.png")}
+        icon={Share}
         text={"Export"}
         show={premium ? exportIncludes : exportIncludes && library}
         handler={handleExport}

@@ -1,21 +1,28 @@
-import { View, TextInput, Image, StyleSheet, TouchableOpacity } from "react-native";
+import React from "react";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import React from "react";
+import { X } from "lucide-react-native";
+import {
+  Image,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 type SearchProps = {
   setQuery: (text: string) => void;
   query: string;
-}
+};
 
 export default function Search({ setQuery, query }: SearchProps) {
   const inputRef = React.useRef<TextInput>(null);
 
   return (
     <View style={Local.container}>
-      <Image 
-        source={require('@/src/assets/icons/search.png')} 
-        style={Local.searchImage} 
+      <Image
+        source={require("@/src/assets/icons/search.png")}
+        style={Local.searchImage}
       />
       <TextInput
         ref={inputRef}
@@ -28,17 +35,14 @@ export default function Search({ setQuery, query }: SearchProps) {
         autoCorrect={false}
       />
       {query.length > 0 && (
-        <TouchableOpacity 
-          style={Local.clearButton} 
+        <TouchableOpacity
+          style={Local.clearButton}
           onPress={() => {
-            setQuery('');
+            setQuery("");
             inputRef.current?.clear();
           }}
         >
-          <Image 
-            source={require('@/src/assets/icons/close.png')} 
-            style={Local.clearImage} 
-          />
+          <X size={14} color={Colors.text} />
         </TouchableOpacity>
       )}
     </View>
@@ -48,8 +52,8 @@ export default function Search({ setQuery, query }: SearchProps) {
 const Local = StyleSheet.create({
   container: {
     ...Styles.roundedContainer,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
     backgroundColor: Colors.song,
     paddingLeft: 15,
@@ -71,9 +75,7 @@ const Local = StyleSheet.create({
     marginRight: 7,
     paddingVertical: 12,
   },
-  clearImage: {
-    width: 12,
-    height: 12,
-    tintColor: Colors.text,
+  closeIcon: {
+    color: Colors.text,
   },
 });

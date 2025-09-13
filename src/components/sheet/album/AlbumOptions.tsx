@@ -13,6 +13,12 @@ import albumBus from "@/src/events/album";
 import { AlbumBusEvent } from "@/src/events/album/Events";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
+import {
+  ListChevronsUpDown,
+  Share,
+  SquarePen,
+  Trash,
+} from "lucide-react-native";
 import { Alert } from "react-native";
 import { posthog } from "@/lib/posthog";
 
@@ -100,26 +106,26 @@ const AlbumOptions = ({ name }: { name: string }) => {
   return (
     <>
       <SheetOption
-        icon={require("@/src/assets/icons/edit.png")}
+        icon={SquarePen}
         text={"Edit"}
         show={[PageType.LIBRARY, PageType.ALBUM].includes(pageType)}
         handler={handleEdit}
       />
       <SheetOption
-        icon={require("@/src/assets/icons/list.png")}
+        icon={ListChevronsUpDown}
         text={"Reorder"}
         show={[PageType.LIBRARY, PageType.ALBUM].includes(pageType)}
         handler={handleReorder}
       />
       <SheetOption
-        icon={require("@/src/assets/icons/share.png")}
+        icon={Share}
         text={"Export"}
         show={[PageType.LIBRARY, PageType.ALBUM].includes(pageType) && premium}
         handler={handleExport}
         premiumOnly
       />
       <SheetOption
-        icon={require("@/src/assets/icons/delete.png")}
+        icon={Trash}
         text={"Delete"}
         show={[PageType.LIBRARY, PageType.ALBUM].includes(pageType)}
         handler={handleDelete}

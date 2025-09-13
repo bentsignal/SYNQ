@@ -1,63 +1,56 @@
-import { Text, Image, TouchableOpacity, View, StyleSheet } from "react-native";
+import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
-import { Colors } from "@/src/constants/Colors";
 import { useThemeContext } from "@/src/context/ThemeProvider";
+import { Info, List } from "lucide-react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type PageTitleProps = {
   title: string;
   infoHandler?: () => void;
   showList?: boolean;
   rightHandComponent?: React.ReactNode;
-}
+};
 
 const PageTitle = ({
   title,
   infoHandler,
   showList,
-  rightHandComponent
+  rightHandComponent,
 }: PageTitleProps) => {
-
-  const { 
-
+  const {
     selectEnabled,
-    
-    setSelectEnabled, setShowOverlay,
-  
+
+    setSelectEnabled,
+    setShowOverlay,
   } = useGlobalContext();
 
   const { theme } = useThemeContext();
 
   const Local = StyleSheet.create({
     pageTitle: {
-      textAlign: 'left',
-      alignSelf: 'stretch',
+      textAlign: "left",
+      alignSelf: "stretch",
       color: Colors.text,
     },
     pageTitleContainer: {
-      width: '90%',
-      flexDirection: 'row',
-      justifyContent: 'flex-start',
-      alignItems: 'center',
-      marginBottom: 20
+      width: "90%",
+      flexDirection: "row",
+      justifyContent: "flex-start",
+      alignItems: "center",
+      marginBottom: 20,
     },
     listWrapper: {
       flexGrow: 1,
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'flex-end',
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "flex-end",
     },
     listIcon: {
       width: 20,
       height: 20,
-      tintColor: selectEnabled ? theme : 'white',
+      tintColor: selectEnabled ? theme : "white",
     },
-    infoIcon: {
-      height: 25,
-      width: 25,
-      marginLeft: 10,
-      tintColor: theme,
-    }
   });
 
   const info = () => {
@@ -69,19 +62,13 @@ const PageTitle = ({
             setShowOverlay(true);
           }}
         >
-          <Image 
-            source={require('@/src/assets/icons/info.png')}
-            style={Local.infoIcon}
-          />
+          <Info size={25} color={theme} style={{ marginLeft: 10 }} />
         </TouchableOpacity>
       );
+    } else {
+      return <></>;
     }
-    else {
-      return (
-        <></>
-      );
-    }
-  }
+  };
 
   const list = () => {
     if (showList) {
@@ -92,32 +79,21 @@ const PageTitle = ({
               setSelectEnabled(!selectEnabled);
             }}
           >
-            <Image 
-              source={selectEnabled 
-                        ? require('@/src/assets/icons/list-active.png') 
-                        : require('@/src/assets/icons/list.png')
-                      }
-              style={Local.listIcon}
-            />
+            <List size={25} color={selectEnabled ? theme : Colors.text} />
           </TouchableOpacity>
         </View>
-      )
+      );
     }
-  }
+  };
 
   return (
     <View style={Local.pageTitleContainer}>
-      <Text style={[Styles.h2, Local.pageTitle]}>
-        {title}
-      </Text>
+      <Text style={[Styles.h2, Local.pageTitle]}>{title}</Text>
       {info()}
       {list()}
       {rightHandComponent}
     </View>
   );
-  
-}
-
-
+};
 
 export default PageTitle;

@@ -1,25 +1,26 @@
-import SheetOption from '@/src/components/sheet/SheetOption';
-import { PageType } from '@/src/constants/Types';
-import { useGlobalContext } from '@/src/context/GlobalProvider';
-import { useEffect, useState } from 'react';
-import { exportSongs } from '@/src/controllers/ImportExportController';
-import { useThemeContext } from '@/src/context/ThemeProvider';
-import { usePremiumContext } from '@/src/context/PremiumProvider';
-import { deletePlaylist, getPlaylistSongs } from '@/src/controllers/PlaylistController';
-import { getSongByResult } from '@/src/controllers/SongController';
-import { Alert } from 'react-native';
-import { router } from 'expo-router';
-import { PlaylistBusEvent } from '@/src/events/playlist/Events';
-import playlistBus from '@/src/events/playlist';
-import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { usePostHog } from 'posthog-react-native';
+import { useEffect, useState } from "react";
+import SheetOption from "@/src/components/sheet/SheetOption";
+import { PageType } from "@/src/constants/Types";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { usePremiumContext } from "@/src/context/PremiumProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
+import { exportSongs } from "@/src/controllers/ImportExportController";
+import {
+  deletePlaylist,
+  getPlaylistSongs,
+} from "@/src/controllers/PlaylistController";
+import { getSongByResult } from "@/src/controllers/SongController";
+import playlistBus from "@/src/events/playlist";
+import { PlaylistBusEvent } from "@/src/events/playlist/Events";
+import { TrueSheet } from "@lodev09/react-native-true-sheet";
+import { router } from "expo-router";
+import { Alert } from "react-native";
+import { posthog } from "@/lib/posthog";
 
-const PlaylistOptions = ({name}: {name: string}) => {
-
+const PlaylistOptions = ({ name }: { name: string }) => {
   const { editPlaylist, setShowGlobalLoading } = useGlobalContext();
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
-  const posthog = usePostHog();
 
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
 
@@ -33,86 +34,92 @@ const PlaylistOptions = ({name}: {name: string}) => {
 
   const handleEdit = () => {
     TrueSheet.dismiss(name);
-    posthog.capture('edit_playlist');
+    posthog.capture("edit_playlist");
     setTimeout(() => {
       router.push(`/playlist/edit/${editPlaylist.id}`);
     }, actionDelay);
-  }
+  };
 
   const handleExport = async () => {
     try {
       TrueSheet.dismiss(name);
-      posthog.capture('export_playlist');
+      posthog.capture("export_playlist");
       setShowGlobalLoading(true);
       let songs = await getPlaylistSongs(editPlaylist.id);
       console.log(songs);
       await exportSongs(songs);
       setShowGlobalLoading(false);
-    }
-    catch (error) {
-      console.log('error exporting song: ', error);
+    } catch (error) {
+      console.log("error exporting song: ", error);
       setShowGlobalLoading(false);
     }
-  }
+  };
 
   const executeDelete = async () => {
     try {
-      posthog.capture('delete_playlist');
+      posthog.capture("delete_playlist");
       await deletePlaylist(editPlaylist.id);
       playlistBus.emit(PlaylistBusEvent.PLAYLIST_DELETED);
+    } catch (error) {
+      console.log("error deleting playlist: ", error);
     }
-    catch (error) {
-      console.log('error deleting playlist: ', error);
-    }
-  }
+  };
 
   const handleDelete = () => {
     TrueSheet.dismiss(name);
     setTimeout(() => {
       Alert.alert(
-        'Delete Playlist',
-        `Are you sure you want to delete ${editPlaylist.name ?? 'this playlist'}?`,
+        "Delete Playlist",
+        `Are you sure you want to delete ${editPlaylist.name ?? "this playlist"}?`,
         [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Delete', style: 'destructive', onPress: () => {
-            if (pageType === PageType.PLAYLIST) {
-              router.back();
-              setTimeout(() => {
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Delete",
+            style: "destructive",
+            onPress: () => {
+              if (pageType === PageType.PLAYLIST) {
+                router.back();
+                setTimeout(() => {
+                  executeDelete();
+                }, 300);
+              } else {
                 executeDelete();
-              }, 300);
-            }
-            else {
-              executeDelete();
-            }
-          }}
-        ]
+              }
+            },
+          },
+        ],
       );
     }, actionDelay);
-  }
+  };
 
   return (
     <>
-      <SheetOption 
-        icon={require('@/src/assets/icons/edit.png')}
-        text={'Edit'}
+      <SheetOption
+        icon={require("@/src/assets/icons/edit.png")}
+        text={"Edit"}
         show={[PageType.LIBRARY, PageType.PLAYLIST].includes(pageType)}
         handler={handleEdit}
       />
-      <SheetOption 
-        icon={require('@/src/assets/icons/share.png')}
-        text={'Export'}
-        show={[PageType.LIBRARY, PageType.PLAYLIST].includes(pageType) && premium}
+      <SheetOption
+        icon={require("@/src/assets/icons/share.png")}
+        text={"Export"}
+        show={
+          [PageType.LIBRARY, PageType.PLAYLIST].includes(pageType) && premium
+        }
         handler={handleExport}
         premiumOnly
       />
       <SheetOption
-        icon={require('@/src/assets/icons/delete.png')}
-        text={'Delete'}
-        show={[PageType.LIBRARY, PageType.PLAYLIST].includes(pageType) && editPlaylist.id !== 2}
+        icon={require("@/src/assets/icons/delete.png")}
+        text={"Delete"}
+        show={
+          [PageType.LIBRARY, PageType.PLAYLIST].includes(pageType) &&
+          editPlaylist.id !== 2
+        }
         handler={handleDelete}
       />
     </>
-  )
-}
+  );
+};
 
 export default PlaylistOptions;

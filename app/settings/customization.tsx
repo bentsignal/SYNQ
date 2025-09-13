@@ -1,58 +1,56 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Styles } from '@/src/constants/Styles';
-import { Colors } from '@/src/constants/Colors';
-import Bar from '@/src/components/modals/Bar';
-import ModalStyles from '@/src/components/modals/Styles';
-import PageTitle from '@/src/components/PageTitle';
+import Bar from "@/src/components/modals/Bar";
+import ModalStyles from "@/src/components/modals/Styles";
+import Option from "@/src/components/Option";
+import PageTitle from "@/src/components/PageTitle";
+import Analytics from "@/src/components/settings/Analytics";
+import AppIcon from "@/src/components/settings/AppIcon";
+import CategoryTitle from "@/src/components/settings/CategoryTitle";
 import Haptic from "@/src/components/settings/Haptic";
 import Theme from "@/src/components/settings/Theme";
-import CategoryTitle from "@/src/components/settings/CategoryTitle";
-import AppIcon from "@/src/components/settings/AppIcon";
-import { useThemeContext } from '@/src/context/ThemeProvider';
-import { usePremiumContext } from '@/src/context/PremiumProvider';
-import Option from '@/src/components/Option';
-import { router } from 'expo-router';
-import { usePostHog } from 'posthog-react-native';
-import Analytics from '@/src/components/settings/Analytics';
+import { Colors } from "@/src/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
+import { usePremiumContext } from "@/src/context/PremiumProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
+import { router } from "expo-router";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { posthog } from "@/lib/posthog";
 
 export default function Customization() {
-
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
-  const posthog = usePostHog();
 
   return (
     <View style={[Styles.body, Local.container]}>
       <Bar />
-      <View style={{marginTop: 20}} />
+      <View style={{ marginTop: 20 }} />
       <PageTitle title="Customization" />
-      <ScrollView 
+      <ScrollView
         style={[Local.scrollView]}
         contentContainerStyle={Local.scrollViewContent}
       >
         <View style={Local.contentWrapper}>
-          {
-            !premium && <Option 
+          {!premium && (
+            <Option
               title="Premium"
-              desc={premium ? "Manage your subcription" : 'Unlock all features'}
-              icon={require('@/src/assets/icons/premium.png')}
+              desc={premium ? "Manage your subcription" : "Unlock all features"}
+              icon={require("@/src/assets/icons/premium.png")}
               disabled={false}
               bg={Colors.textbox}
               iconTint={theme}
               handlePress={() => {
-                posthog.capture('check_premium', {
-                  premium: premium
+                posthog.capture("check_premium", {
+                  premium: premium,
                 });
-                router.push("/premium")}
-              }
+                router.push("/premium");
+              }}
             />
-          }
+          )}
           <View style={Local.contentContainer}>
-            <CategoryTitle title="Theme" requiresPremium={true}/>
+            <CategoryTitle title="Theme" requiresPremium={true} />
             <View>
               <Theme />
             </View>
-            <CategoryTitle title="App Icon" requiresPremium={true}/>
+            <CategoryTitle title="App Icon" requiresPremium={true} />
             <View>
               <AppIcon />
             </View>
@@ -69,7 +67,6 @@ export default function Customization() {
       </ScrollView>
     </View>
   );
-
 }
 
 const Local = StyleSheet.create({
@@ -78,7 +75,7 @@ const Local = StyleSheet.create({
     ...ModalStyles.roundedTop,
   },
   scrollView: {
-    width: '100%',
+    width: "100%",
   },
   headerText: {
     color: Colors.text,
@@ -89,23 +86,23 @@ const Local = StyleSheet.create({
     color: Colors.infoText,
     ...Styles.p,
     marginBottom: 20,
-    width: '100%',
+    width: "100%",
   },
   scrollViewContent: {
-    width: '100%',
+    width: "100%",
   },
   contentWrapper: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   contentContainer: {
-    width: '90%',
+    width: "90%",
   },
   loadingContainer: {
-    width: '100%',
-    height: '80%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  }
+    width: "100%",
+    height: "80%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

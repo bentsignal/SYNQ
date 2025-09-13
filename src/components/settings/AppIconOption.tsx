@@ -1,49 +1,54 @@
-import { TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useEffect, useState } from "react";
+import { Colors } from "@/src/constants/Colors";
+import { getAppIcon as getAppIconImage, getIcon } from "@/src/constants/Logos";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { setAppIcon, getAppIcon } from "expo-icon-handler";
-import { getAppIcon as getAppIconImage, getIcon } from "@/src/constants/Logos";
 import { adjustLightness } from "@/src/controllers/ColorController";
-import { Colors } from "@/src/constants/Colors";
-import { usePostHog } from "posthog-react-native";
+import { getAppIcon, setAppIcon } from "expo-icon-handler";
+import { Image, StyleSheet, TouchableOpacity } from "react-native";
+import { posthog } from "@/lib/posthog";
 
 type AppIconOptionProps = {
   color: any;
   name: string;
   selected: boolean;
   changeSelection: (color: any) => void;
-}
+};
 
-export default function AppIconOption({ color, name, selected, changeSelection }: AppIconOptionProps) {
-
+export default function AppIconOption({
+  color,
+  name,
+  selected,
+  changeSelection,
+}: AppIconOptionProps) {
   const { premium } = usePremiumContext();
-  const posthog = usePostHog();
 
   const handlePress = () => {
     if (premium) {
-      posthog.capture('app_icon_change', {
+      posthog.capture("app_icon_change", {
         icon: name,
       });
       setAppIcon(getIcon(color));
       changeSelection(getIcon(color));
     }
-  }
+  };
 
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={Local.option}
       activeOpacity={1}
       onPress={handlePress}
     >
       <Image
         source={getAppIconImage(color)}
-        style={[Local.icon, { 
-          borderWidth: selected ? 0.5 : 0,
-        }]}
+        style={[
+          Local.icon,
+          {
+            borderWidth: selected ? 0.5 : 0,
+          },
+        ]}
       />
     </TouchableOpacity>
-
   );
 }
 
@@ -58,5 +63,5 @@ const Local = StyleSheet.create({
     height: 70,
     borderRadius: 15,
     borderColor: Colors.text,
-  }
+  },
 });

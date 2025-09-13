@@ -1,30 +1,30 @@
-import { useFonts } from "expo-font";
 import { useEffect, useState } from "react";
-import * as SplashScreen from "expo-splash-screen";
+import Navigation from "@/app/navigation";
+import GlobalProgress from "@/src/components/GlobalProgress";
+import Sheets from "@/src/components/sheet/Sheets";
+import CFG from "@/src/constants/Config";
+import {
+  PUBLIC_FACEBOOK_APP_ID,
+  PUBLIC_POSTHOG_KEY,
+} from "@/src/constants/Keys";
 import GlobalProvider from "@/src/context/GlobalProvider";
-import { router } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import PlaybackProvider from "@/src/context/PlaybackProvider";
+import PremiumProvider from "@/src/context/PremiumProvider";
+import PrivacyProvider from "@/src/context/PrivacyProvider";
+import ThemeProvider from "@/src/context/ThemeProvider";
 import {
   connect,
   restorePurchases,
 } from "@/src/controllers/PurchaseController";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Model from "@/src/models/Model";
-import { LogBox } from "react-native";
-import CFG from "@/src/constants/Config";
-import ThemeProvider from "@/src/context/ThemeProvider";
-import PremiumProvider from "@/src/context/PremiumProvider";
-import Navigation from "@/app/navigation";
-import PlaybackProvider from "@/src/context/PlaybackProvider";
-import Sheets from "@/src/components/sheet/Sheets";
-import GlobalProgress from "@/src/components/GlobalProgress";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFonts } from "expo-font";
+import { router } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import { PostHogProvider } from "posthog-react-native";
-import {
-  PUBLIC_POSTHOG_KEY,
-  PUBLIC_FACEBOOK_APP_ID,
-} from "@/src/constants/Keys";
-import PrivacyProvider from "@/src/context/PrivacyProvider";
+import { LogBox } from "react-native";
 import { Settings } from "react-native-fbsdk-next";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 LogBox.ignoreLogs(["Require cycle:"]);
 

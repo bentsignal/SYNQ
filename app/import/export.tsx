@@ -1,33 +1,31 @@
-import { View, Text, StyleSheet, Dimensions } from "react-native";
-import { useState, useEffect, useRef } from "react";
-import { Styles } from "@/src/constants/Styles";
-import PageTitle from "@/src/components/PageTitle";
-import InfoModal from "@/src/components/modals/InfoModal";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useEffect, useRef, useState } from "react";
 import CustomButton from "@/src/components/CustomButton";
-import { Colors } from "@/src/constants/Colors";
-import { exportSongs } from '@/src/controllers/ImportExportController';
-import { useThemeContext } from "@/src/context/ThemeProvider";
-import { usePremiumContext } from "@/src/context/PremiumProvider";
+import InfoModal from "@/src/components/modals/InfoModal";
+import PageTitle from "@/src/components/PageTitle";
 import SettingsButton from "@/src/components/SettingsButton";
+import { Colors } from "@/src/constants/Colors";
 import CFG from "@/src/constants/Config";
+import { Styles } from "@/src/constants/Styles";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { usePremiumContext } from "@/src/context/PremiumProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
+import { exportSongs } from "@/src/controllers/ImportExportController";
 import { usePathname } from "expo-router";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { usePostHog } from 'posthog-react-native';
+import { posthog } from "@/lib/posthog";
 
 const ExportPrompt = () => {
-
-  const { 
-    
+  const {
     results,
-    showImportAd, showGlobalProgress,
-  
+    showImportAd,
+    showGlobalProgress,
+
     setShowInfoModal,
-    setShowGlobalLoading, 
+    setShowGlobalLoading,
     setShowGlobalProgress,
     setGlobalProgress,
     setShowImportAd,
-
   } = useGlobalContext();
 
   const { premium } = usePremiumContext();
@@ -35,7 +33,6 @@ const ExportPrompt = () => {
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
   const currentPath = useRef(pathname);
-  const posthog = usePostHog();
 
   useEffect(() => {
     currentPath.current = pathname;
@@ -45,7 +42,7 @@ const ExportPrompt = () => {
 
   const checkForAd = async () => {
     if (!premium && showImportAd) {
-      await new Promise(resolve => {
+      await new Promise((resolve) => {
         let progress = 0;
         const interval = setInterval(() => {
           if (progress < CFG.importAdLength) {
@@ -53,9 +50,11 @@ const ExportPrompt = () => {
               setShowGlobalProgress(true);
             }
             progress += 1;
-            setGlobalProgress(Math.ceil(progress / CFG.importAdLength * 100));
-          }
-          else if (progress >= CFG.importAdLength && currentPath.current === '/import/export') {
+            setGlobalProgress(Math.ceil((progress / CFG.importAdLength) * 100));
+          } else if (
+            progress >= CFG.importAdLength &&
+            currentPath.current === "/import/export"
+          ) {
             clearInterval(interval);
             setShowGlobalProgress(false);
             setTimeout(() => {
@@ -64,15 +63,14 @@ const ExportPrompt = () => {
           }
         }, 1000);
       });
-    }
-    else {
+    } else {
       setShowImportAd(false);
     }
-  }
+  };
 
   const handleExport = async () => {
     try {
-      posthog.capture('export_during_import');
+      posthog.capture("export_during_import");
       setDisabled(true);
       setShowGlobalLoading(true);
       setShowGlobalProgress(false);
@@ -83,57 +81,55 @@ const ExportPrompt = () => {
       setShowGlobalLoading(false);
       setDisabled(false);
       setShowImportAd(false);
-    }
-    catch (error) {
+    } catch (error) {
       setShowGlobalLoading(false);
       setDisabled(false);
-      console.log('Error exporting songs: ', error);
+      console.log("Error exporting songs: ", error);
     }
-  }
+  };
 
   return (
     <>
       <View style={Local.body}>
-        <Text style={Local.prompt}>
-          Export your edited songs?
-        </Text>
+        <Text style={Local.prompt}>Export your edited songs?</Text>
         <Text style={Local.info}>
-          To learn how to export your songs to Spotify, click the info icon at the top of the page.
+          To learn how to export your songs to Spotify, click the info icon at
+          the top of the page.
         </Text>
         <CustomButton
-          title='Export'
+          title="Export"
           background={theme}
           customStyles={Local.button}
-          buttonWidth='40%'
+          buttonWidth="40%"
           disabled={disabled}
           handlePress={handleExport}
         />
       </View>
     </>
   );
-}
+};
 
 const Local = StyleSheet.create({
   body: {
     ...Styles.main,
-    width: '90%',
-    marginBottom: Dimensions.get('screen').height < 700 ? 100 : 80,
+    width: "90%",
+    marginBottom: Dimensions.get("screen").height < 700 ? 100 : 80,
   },
   prompt: {
     ...Styles.h3,
     color: Colors.text,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 10,
   },
   info: {
     ...Styles.p,
     color: Colors.infoText,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 10,
   },
   button: {
     marginVertical: 10,
-  }
+  },
 });
 
 export default ExportPrompt;

@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
     "jsx": "react-jsx",
+    "jsxImportSource": "nativewind",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "*"
-      ]
+      "@/*": ["*"]
     }
   },
   "extends": "expo/tsconfig.base",
@@ -14,6 +13,7 @@
     "**/*.tsx",
     "**/*.js",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts" 
+    "expo-env.d.ts",
+    "nativewind-env.d.ts"
   ]
 }

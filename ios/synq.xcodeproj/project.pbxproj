@@ -71,6 +71,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		08E4DF85B1014B53BC21B944 /* icon-purple */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "icon-purple";
+			path = "synq/icon-purple";
+			sourceTree = "<group>";
+		};
 		13B07FAE1A68108700A75B9A /* synq */ = {
 			isa = PBXGroup;
 			children = (
@@ -90,8 +98,22 @@
 				4A1F1007414E48DFA2E965A9 /* icon-mint */,
 				39881174B20448EAAC450D31 /* icon-blue */,
 				218364DA68E74BE083A91882 /* icon-purple */,
+				F9D9828F218B46B19EBBEC0A /* icon-mint */,
+				5C90351621564B6C80B83432 /* icon-purple */,
+				5C86EBAA90DB48F38EE1FFFD /* icon-blue */,
+				15015C8A19F1401DAB56A712 /* icon-red */,
+				08E4DF85B1014B53BC21B944 /* icon-purple */,
+				7F87C8F499874A6EB61ED2AB /* icon-red */,
 			);
 			name = synq;
+			sourceTree = "<group>";
+		};
+		15015C8A19F1401DAB56A712 /* icon-red */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "icon-red";
+			path = "synq/icon-red";
 			sourceTree = "<group>";
 		};
 		218364DA68E74BE083A91882 /* icon-purple */ = {
@@ -141,6 +163,22 @@
 			path = "synq/icon-mint";
 			sourceTree = "<group>";
 		};
+		5C86EBAA90DB48F38EE1FFFD /* icon-blue */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "icon-blue";
+			path = "synq/icon-blue";
+			sourceTree = "<group>";
+		};
+		5C90351621564B6C80B83432 /* icon-purple */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "icon-purple";
+			path = "synq/icon-purple";
+			sourceTree = "<group>";
+		};
 		7BA82282034D49A4B4432CD1 /* icon-blue */ = {
 			isa = PBXGroup;
 			children = (
@@ -149,6 +187,14 @@
 			);
 			name = "icon-blue";
 			path = "synq/icon-blue";
+			sourceTree = "<group>";
+		};
+		7F87C8F499874A6EB61ED2AB /* icon-red */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "icon-red";
+			path = "synq/icon-red";
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -233,6 +279,14 @@
 				92DBD88DE9BF7D494EA9DA96 /* synq */,
 			);
 			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
+		F9D9828F218B46B19EBBEC0A /* icon-mint */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "icon-mint";
+			path = "synq/icon-mint";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -598,7 +652,7 @@
 					"$(inherited)",
 					" ",
 				);
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/.pnpm/react-native@0.76.3_@babel+core@7.28.4_@babel+preset-env@7.28.3_@babel+core@7.28.4__@re_e0d968d7e6e6a284f38f5201ef9c8c25/node_modules/react-native";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
 				USE_HERMES = true;
@@ -653,7 +707,7 @@
 					"$(inherited)",
 					" ",
 				);
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/.pnpm/react-native@0.76.3_@babel+core@7.28.4_@babel+preset-env@7.28.3_@babel+core@7.28.4__@re_e0d968d7e6e6a284f38f5201ef9c8c25/node_modules/react-native";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;

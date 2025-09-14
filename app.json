@@ -14,6 +14,7 @@
       "backgroundColor": "#101010"
     },
     "backgroundColor": "#101010",
+    "jsEngine": "hermes",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.directedbyshawn.synq",
@@ -36,7 +37,7 @@
         "FacebookClientToken": "061ab03cceff44df511a1f07a8f5416c",
         "FacebookDisplayName": "SYNQ"
       },
-      "buildNumber": "86"
+      "buildNumber": "91"
     },
     "android": {
       "adaptiveIcon": {

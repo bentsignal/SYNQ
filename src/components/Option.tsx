@@ -41,7 +41,7 @@ const Option = ({
     >
       <Image
         source={icon}
-        className="mr-4 size-12"
+        className="mr-4 size-10"
         tintColor={iconTint || colors.foreground}
       />
       <View>

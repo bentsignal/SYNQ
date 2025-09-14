@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import PlayerCover from "@/src/components/cover/PlayerCover";
 import Bar from "@/src/components/modals/Bar";
 import ModalStyles from "@/src/components/modals/Styles";
-import More from "@/src/components/More";
 import LoopButton from "@/src/components/player/LoopButton";
 import PausePlayButtons from "@/src/components/player/PausePlayButtons";
 import QueueButton from "@/src/components/player/QueueButton";
@@ -19,10 +18,11 @@ import {
 } from "@/src/controllers/ColorController";
 import { getTrackArtwork } from "@/src/controllers/PlayerController";
 import { getSongById } from "@/src/controllers/SongController";
+import colors from "@/src/lib/colors";
 import { useAssets } from "expo-asset";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
-import { CirclePlus } from "lucide-react-native";
+import { CirclePlus, Ellipsis } from "lucide-react-native";
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import { CrossfadeImage } from "react-native-crossfade-image";
 import LinearGradient from "react-native-linear-gradient";
@@ -212,7 +212,9 @@ const Player = () => {
           >
             <CirclePlus size={25} style={Local.add} />
           </TouchableOpacity>
-          <More handlePress={handleMore} />
+          <TouchableOpacity className="p-3" onPress={handleMore}>
+            <Ellipsis color={colors.foreground} />
+          </TouchableOpacity>
         </View>
         <Time />
         <View style={Local.controlsContainer}>

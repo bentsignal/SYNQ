@@ -5,13 +5,13 @@ import Artists from "@/src/components/library/Artists";
 import Playlists from "@/src/components/library/Playlists";
 import Songs from "@/src/components/library/Songs";
 import PageTitle from "@/src/components/PageTitle";
-import Plus from "@/src/components/Plus";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import playlistBus from "@/src/events/playlist/Bus";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
+import colors from "@/src/lib/colors";
 import { router } from "expo-router";
-import { Cog } from "lucide-react-native";
+import { Cog, PlusIcon } from "lucide-react-native";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
 const Library = () => {
@@ -64,10 +64,10 @@ const Library = () => {
               onPress={handleCreate}
               style={{ display: selected === 0 ? "none" : "flex" }}
             >
-              <Plus />
+              <PlusIcon size={24} color={colors.foreground} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push("/settings")}>
-              <Cog size={25} color={Colors.text} />
+              <Cog size={24} color={colors.foreground} />
             </TouchableOpacity>
           </View>
         }

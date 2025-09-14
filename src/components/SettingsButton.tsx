@@ -7,7 +7,7 @@ export default function SettingsButton() {
   return (
     <View style={Local.container}>
       <TouchableOpacity onPress={() => router.push("/settings")}>
-        <Cog size={25} color={Colors.text} />
+        <Cog size={24} color={Colors.text} />
       </TouchableOpacity>
     </View>
   );

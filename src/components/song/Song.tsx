@@ -1,69 +1,91 @@
-import { TouchableOpacity, StyleSheet, PanResponder, View } from 'react-native';
-import { useState, useEffect } from 'react';
-import { useGlobalContext } from '@/src/context/GlobalProvider';
-import { Styles } from '@/src/constants/Styles';
-import { Colors } from '@/src/constants/Colors';
-import { SongType } from '@/src/constants/Types';
-import SongInfo from '@/src/components/song/SongInfo';
-import Select from '@/src/components/Select';
-import ListCover from '@/src/components/cover/ListCover';
-import * as Haptics from 'expo-haptics';
-import More from '@/src/components/More';
-import { PageType, CoverType, ArtistType } from '@/src/constants/Types';
-import { usePremiumContext } from '@/src/context/PremiumProvider';
-import songBus from '@/src/events/song';
-import { SongBusEvent, SongInfoModifiedEvent, 
-  SongCoverModifiedEvent } from '@/src/events/song/Events';
-import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { ArtistToggledOnSongEvent, ArtistBusEvent } from '@/src/events/artist/Events';
-import { getArtistsFromSong } from '@/src/controllers/ArtistController';
-import artistBus from '@/src/events/artist';
-import albumBus from '@/src/events/album';
-import { AlbumBusEvent, AlbumToggledOnSongEvent } from '@/src/events/album/Events';
-import { getAlbumCover, getArtistsFromAlbum } from '@/src/controllers/AlbumController';
-import { getLibrarySongCover, getImportSongCover } from '@/src/controllers/SongController';
-import Animated, { useSharedValue, useAnimatedStyle, 
-  withTiming, Easing } from 'react-native-reanimated';
-import { isSongEdited } from '@/src/controllers/SongController';
-import Handle from '../lists/Handle';
+import { useEffect, useState } from "react";
+import ListCover from "@/src/components/cover/ListCover";
+import Select from "@/src/components/Select";
+import SongInfo from "@/src/components/song/SongInfo";
+import { Colors } from "@/src/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
+import {
+  ArtistType,
+  CoverType,
+  PageType,
+  SongType,
+} from "@/src/constants/Types";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { usePremiumContext } from "@/src/context/PremiumProvider";
+import {
+  getAlbumCover,
+  getArtistsFromAlbum,
+} from "@/src/controllers/AlbumController";
+import { getArtistsFromSong } from "@/src/controllers/ArtistController";
+import {
+  getImportSongCover,
+  getLibrarySongCover,
+  isSongEdited,
+} from "@/src/controllers/SongController";
+import albumBus from "@/src/events/album";
+import {
+  AlbumBusEvent,
+  AlbumToggledOnSongEvent,
+} from "@/src/events/album/Events";
+import artistBus from "@/src/events/artist";
+import {
+  ArtistBusEvent,
+  ArtistToggledOnSongEvent,
+} from "@/src/events/artist/Events";
+import songBus from "@/src/events/song";
+import {
+  SongBusEvent,
+  SongCoverModifiedEvent,
+  SongInfoModifiedEvent,
+} from "@/src/events/song/Events";
+import { TrueSheet } from "@lodev09/react-native-true-sheet";
+import * as Haptics from "expo-haptics";
+import { Ellipsis } from "lucide-react-native";
+import { PanResponder, StyleSheet, TouchableOpacity, View } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import Handle from "../lists/Handle";
 
 type SongProps = {
-  song: SongType, 
-  fadeCover: boolean, 
-  fadeSong: boolean,
-  active: boolean,
-  previous?: boolean,
-  handlePlay: (song: SongType) => Promise<void>,
-  draggable?: boolean,
-}
+  song: SongType;
+  fadeCover: boolean;
+  fadeSong: boolean;
+  active: boolean;
+  previous?: boolean;
+  handlePlay: (song: SongType) => Promise<void>;
+  draggable?: boolean;
+};
 
-export default function Song({ 
-  song, 
-  fadeCover, 
-  fadeSong, 
-  active, 
-  previous, 
+export default function Song({
+  song,
+  fadeCover,
+  fadeSong,
+  active,
+  previous,
   handlePlay,
   draggable,
 }: SongProps) {
-
   const [selected, setSelected] = useState(false);
-  const [coverImage, setCoverImage] = useState('');
+  const [coverImage, setCoverImage] = useState("");
   const [emptyCover, setEmptyCover] = useState(false);
-  const [fileName, setFileName] = useState('');
-  const [title, setTitle] = useState('');
-  const [artist, setArtist] = useState('');
-  const [album, setAlbum] = useState('');
+  const [fileName, setFileName] = useState("");
+  const [title, setTitle] = useState("");
+  const [artist, setArtist] = useState("");
+  const [album, setAlbum] = useState("");
 
   const {
-
-    selectEnabled, selectedSongs, results,
+    selectEnabled,
+    selectedSongs,
+    results,
     haptic,
 
-    setSelectedSongs, 
+    setSelectedSongs,
     setEditSong,
-
-  } = useGlobalContext(); 
+  } = useGlobalContext();
 
   const { premium } = usePremiumContext();
 
@@ -72,11 +94,14 @@ export default function Song({
     opacity: opacity.value,
   }));
   useEffect(() => {
-    opacity.value = withTiming(previous ? 0.3 : 1, { duration: 300, easing: Easing.ease });
+    opacity.value = withTiming(previous ? 0.3 : 1, {
+      duration: 300,
+      easing: Easing.ease,
+    });
   }, [previous]);
 
   let blur = false;
-  let message = false
+  let message = false;
   if (results && results[0] && results[1] && results[0].id && results[1].id) {
     if (!premium) {
       if (results[0].id != song.id) {
@@ -131,17 +156,19 @@ export default function Song({
       artistBus.off(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
       albumBus.off(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, updateAlbumInfo);
       albumBus.off(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, loadCover);
-    }
+    };
   }, []);
 
   let disablePlay = false;
-  if (song.pageType && [PageType.IMPORT, PageType.QUEUE, PageType.REORDER].includes(song.pageType)) { 
+  if (
+    song.pageType &&
+    [PageType.IMPORT, PageType.QUEUE, PageType.REORDER].includes(song.pageType)
+  ) {
     disablePlay = true;
   }
 
   const updateAlbumInfo = async (data: AlbumToggledOnSongEvent) => {
     if (data.songId === song.id) {
-      
       let songArtists: ArtistType[] = [];
       let albumArtists: ArtistType[] = [];
 
@@ -150,13 +177,11 @@ export default function Song({
         albumArtists = await getArtistsFromAlbum(data.albumId);
         if (data.add) {
           await loadCover();
-        }
-        else {
-          setCoverImage('');
+        } else {
+          setCoverImage("");
           setEmptyCover(true);
         }
-      }
-      else {
+      } else {
         loadCover();
         albumArtists = await getArtistsFromAlbum(data.albumId);
         songArtists = await getArtistsFromSong(song.id);
@@ -165,31 +190,35 @@ export default function Song({
       // add or remove artists from song
       if (data.add) {
         song.album = song.importAlbums[0].name;
-        song.artist = [...new Set([...albumArtists, ...songArtists].map(artist => artist.name))].join(', ');
+        song.artist = [
+          ...new Set(
+            [...albumArtists, ...songArtists].map((artist) => artist.name),
+          ),
+        ].join(", ");
+        setArtist(song.artist);
+      } else {
+        song.album = "";
+        song.artist = songArtists
+          .map((artist) => artist.name)
+          .filter((artist) => !albumArtists.map((a) => a.name).includes(artist))
+          .join(", ");
         setArtist(song.artist);
       }
-      else {
-        song.album = '';
-        song.artist = songArtists.map(artist => artist.name).filter(artist => !albumArtists.map(a => a.name).includes(artist)).join(', ');
-        setArtist(song.artist);
-      }
-
     }
-  }
+  };
 
   const updateArtistInfo = async (data: ArtistToggledOnSongEvent) => {
     if (data.songId === song.id) {
       let artists: ArtistType[] = [];
       if (song.pageType === PageType.IMPORT) {
         artists = song.importArtists ?? [];
-      }
-      else {
+      } else {
         artists = await getArtistsFromSong(song.id);
       }
-      song.artist = artists.map(artist => artist.name).join(', ');
+      song.artist = artists.map((artist) => artist.name).join(", ");
       setArtist(song.artist);
     }
-  }
+  };
 
   const updateSongInfo = async (data: SongInfoModifiedEvent) => {
     if (song.id === data.id) {
@@ -200,19 +229,18 @@ export default function Song({
       setArtist(song.artist);
       setAlbum(song.album);
     }
-  }
+  };
 
   const updateSongCover = async (data: SongCoverModifiedEvent) => {
     if (song.id === data.id) {
       if (data.cover) {
         song.artwork = data.cover;
         setCoverImage(data.cover);
-      }
-      else {
+      } else {
         await loadCover();
-      } 
+      }
     }
-  }
+  };
 
   const loadCover = async () => {
     try {
@@ -221,32 +249,27 @@ export default function Song({
         if (cover) {
           setCoverImage(cover);
           setEmptyCover(false);
-        }
-        else {
-          setCoverImage('');
+        } else {
+          setCoverImage("");
           setEmptyCover(true);
         }
-      }
-      else {
+      } else {
         const cover = await getLibrarySongCover(song.id, true);
         if (cover) {
           setCoverImage(cover);
           setEmptyCover(false);
-        }
-        else if (song.artwork) {
+        } else if (song.artwork) {
           setCoverImage(song.artwork);
           setEmptyCover(false);
-        }
-        else {
-          setCoverImage('');
+        } else {
+          setCoverImage("");
           setEmptyCover(true);
         }
       }
+    } catch (error) {
+      console.log("error loading song cover:", error);
     }
-    catch (error) {
-      console.log('error loading song cover:', error);
-    }
-  }
+  };
 
   const handleMore = async () => {
     if (haptic) {
@@ -254,12 +277,11 @@ export default function Song({
     }
     setEditSong(song);
     if (song.pageType === PageType.IMPORT) {
-      TrueSheet.present('import-song-sheet');
+      TrueSheet.present("import-song-sheet");
+    } else {
+      TrueSheet.present("song-sheet");
     }
-    else {
-      TrueSheet.present('song-sheet');
-    }
-  }
+  };
 
   // const panResponder = PanResponder.create({
   //   onMoveShouldSetPanResponder: () => true,
@@ -269,19 +291,23 @@ export default function Song({
   // });
 
   return (
-    <Animated.View 
+    <Animated.View
       // {...panResponder.panHandlers}
-      style={[Local.container, opacityStyle]}>
-      <TouchableOpacity 
-        style={[Local.contentContainer, {
-          // backgroundColor: bg,
-          opacity: !selectEnabled || (selectEnabled && selected) ? 1 : 0.6,
-        }]}
+      style={[Local.container, opacityStyle]}
+    >
+      <TouchableOpacity
+        style={[
+          Local.contentContainer,
+          {
+            // backgroundColor: bg,
+            opacity: !selectEnabled || (selectEnabled && selected) ? 1 : 0.6,
+          },
+        ]}
         activeOpacity={disablePlay ? 1 : 0.8}
         disabled={disablePlay}
         onPress={() => handlePlay(song)}
       >
-        <ListCover 
+        <ListCover
           image={coverImage}
           type={CoverType.SONG}
           fade={fadeCover}
@@ -289,7 +315,7 @@ export default function Song({
           propOnLoad={() => {}}
           size={55}
         />
-        <SongInfo 
+        <SongInfo
           fileName={fileName}
           title={title}
           artist={artist}
@@ -297,12 +323,9 @@ export default function Song({
           id={song.id}
           isActive={active}
         />
-        {
-
-          selectEnabled && song.pageType !== PageType.QUEUE && !draggable &&
-          
-          <Select 
-            active={selected} 
+        {selectEnabled && song.pageType !== PageType.QUEUE && !draggable && (
+          <Select
+            active={selected}
             handlePress={() => {
               setSelected(!selected);
               let newSongs = [];
@@ -310,16 +333,14 @@ export default function Song({
               if (!selected && !selectedSongs.includes(song.id)) {
                 if (selectedSongs.length == 0) {
                   newSongs[0] = song.id;
-                }
-                else {
+                } else {
                   for (i = 0; i < selectedSongs.length; i++) {
                     newSongs[i] = selectedSongs[i];
                   }
                   newSongs[i] = song.id;
                 }
                 setSelectedSongs(newSongs);
-              }
-              else if (selected) {
+              } else if (selected) {
                 for (i = 0; i < selectedSongs.length; i++) {
                   if (selectedSongs[i] != song.id) {
                     newSongs.push(selectedSongs[i]);
@@ -329,34 +350,25 @@ export default function Song({
               }
             }}
           />
+        )}
 
-        }
-
-        {
-
-          !selectEnabled && song.pageType !== PageType.QUEUE && !draggable &&
-
-          <More 
-            handlePress={handleMore}
+        {!selectEnabled && song.pageType !== PageType.QUEUE && !draggable && (
+          <Ellipsis
+            onPress={handleMore}
+            color={Colors.text}
             style={Local.more}
           />
+        )}
 
-        }
-
-        {
-          draggable &&
-          <Handle />
-        }
-
+        {draggable && <Handle />}
       </TouchableOpacity>
     </Animated.View>
   );
-
 }
 
 const Local = StyleSheet.create({
   container: {
-    width: '100%',
+    width: "100%",
     height: 70,
   },
   contentContainer: {
@@ -366,24 +378,26 @@ const Local = StyleSheet.create({
   },
   skeleton: {
     ...Styles.roundedContainer,
-    position: 'absolute',
-    width: '90%',
+    position: "absolute",
+    width: "90%",
     height: 90,
     zIndex: 1,
   },
   blur: {
     ...Styles.roundedContainer,
-    overflow: 'hidden',
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
+    overflow: "hidden",
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
     top: 0,
     left: 0,
-    width: '90%',
+    width: "90%",
     height: 60,
-    zIndex: 2
+    zIndex: 2,
   },
   more: {
     paddingRight: 0,
-  }
+    paddingVertical: 15,
+    paddingLeft: 15,
+  },
 });

@@ -1,22 +1,27 @@
-import { View, Text, StyleSheet } from "react-native";
-import { Styles } from "@/src/constants/Styles";
-import { Colors } from "@/src/constants/Colors";
-import BackArrow from "@/src/components/BackArrow";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { BlurView } from "expo-blur";
 import { useEffect, useState } from "react";
-import More from "@/src/components/More";
+import { Colors } from "@/src/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
 import { useThemeContext } from "@/src/context/ThemeProvider";
+import { BlurView } from "expo-blur";
+import { router } from "expo-router";
+import { ChevronLeft, Ellipsis } from "lucide-react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import colors from "../lib/colors";
 
 type HeaderProps = {
   scrollPosition: number;
   title: string;
   showMore?: boolean;
   handleMore?: () => void;
-}
+};
 
-const Header = ({scrollPosition, title, showMore, handleMore}: HeaderProps) => {
-
+const Header = ({
+  scrollPosition,
+  title,
+  showMore,
+  handleMore,
+}: HeaderProps) => {
   const insets = useSafeAreaInsets();
   const { theme } = useThemeContext();
   const [showHeader, setShowHeader] = useState(false);
@@ -26,8 +31,7 @@ const Header = ({scrollPosition, title, showMore, handleMore}: HeaderProps) => {
   useEffect(() => {
     if (scrollPosition > threshold && !showHeader) {
       setShowHeader(true);
-    }
-    else if (scrollPosition <= threshold && showHeader) {
+    } else if (scrollPosition <= threshold && showHeader) {
       setShowHeader(false);
     }
   }, [scrollPosition]);
@@ -35,51 +39,61 @@ const Header = ({scrollPosition, title, showMore, handleMore}: HeaderProps) => {
   return (
     <>
       <BlurView
-        style={[Local.container, Local.blurContainer, {
-          paddingTop: insets.top + 2,
-          opacity: showHeader ? 1 : 0,
-          height: height + 5,
-        }]}
+        style={[
+          Local.container,
+          Local.blurContainer,
+          {
+            paddingTop: insets.top + 2,
+            opacity: showHeader ? 1 : 0,
+            height: height + 5,
+          },
+        ]}
         intensity={70}
         tint="dark"
       />
-      <View style={[Local.container, {
-          paddingTop: insets.top + 2,
-        }]}
+      <View
+        style={[
+          Local.container,
+          {
+            paddingTop: insets.top + 2,
+          },
+        ]}
         onLayout={(event) => {
           const { height } = event.nativeEvent.layout;
           setHeight(height);
         }}
       >
-        <View style={[Local.arrowWrapper, Local.centered]}>
-          <BackArrow />
-        </View>
-        <View style={[Local.titleWrapper, {
-          opacity: showHeader ? 1 : 0,
-        }]}>
+        <TouchableOpacity className="px-4 pb-2" onPress={() => router.back()}>
+          <ChevronLeft color={colors.foreground} />
+        </TouchableOpacity>
+        <View
+          style={[
+            Local.titleWrapper,
+            {
+              opacity: showHeader ? 1 : 0,
+            },
+          ]}
+        >
           <Text style={Local.title}>{title}</Text>
         </View>
-        <View style={[Local.moreWrapper, Local.centered]}>
-          <More 
-            color={theme}
-            handlePress={handleMore} 
-          />
-        </View>
+        <TouchableOpacity className="px-4 pb-2" onPress={handleMore}>
+          <Ellipsis color={colors.foreground} />
+        </TouchableOpacity>
       </View>
     </>
   );
-}
+};
 
 const Local = StyleSheet.create({
   container: {
     // height: 100,
-    width: '100%',
-    position: 'absolute',
+    width: "100%",
+    position: "absolute",
     top: 0,
     left: 0,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexDirection: 'row',
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexDirection: "row",
     zIndex: 102,
   },
   blurContainer: {
@@ -88,8 +102,8 @@ const Local = StyleSheet.create({
     opacity: 0,
   },
   centered: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   arrowWrapper: {
     minWidth: 50,

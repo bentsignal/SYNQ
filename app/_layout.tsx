@@ -22,9 +22,10 @@ import { useFonts } from "expo-font";
 import { router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { PostHogProvider } from "posthog-react-native";
-import { LogBox } from "react-native";
+import { LogBox, Text, View } from "react-native";
 import { Settings } from "react-native-fbsdk-next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import "../globals.css";
 
 LogBox.ignoreLogs(["Require cycle:"]);
 

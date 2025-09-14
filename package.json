@@ -30,6 +30,7 @@
     "@react-navigation/native": "^7.0.0",
     "axios": "^1.7.7",
     "buffer": "^6.0.3",
+    "clsx": "^2.1.1",
     "eventemitter3": "^5.0.1",
     "expo": "^52.0.11",
     "expo-application": "~6.0.2",
@@ -91,6 +92,7 @@
     "react-native-tracking-transparency": "^0.1.2",
     "react-native-web": "^0.19.13",
     "react-native-zip-archive": "^7.0.1",
+    "tailwind-merge": "2.6.0",
     "tinycolor2": "^1.6.0",
     "uuid": "^11.0.3"
   },

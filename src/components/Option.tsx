@@ -4,12 +4,10 @@ import { ChevronRight } from "lucide-react-native";
 import {
   Image,
   ImageSourcePropType,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import Arrow from "./Arrow";
 
 type ImportOptionProps = {
   title: string;
@@ -47,8 +45,8 @@ const Option = ({
         tintColor={iconTint || colors.foreground}
       />
       <View>
-        <Text className="text-foreground text-xl font-semibold">{title}</Text>
-        <Text className="text-muted-foreground text-xl">{desc}</Text>
+        <Text className="text-foreground text-lg font-semibold">{title}</Text>
+        <Text className="text-muted-foreground">{desc}</Text>
       </View>
       <View className="flex-1 items-end justify-end">
         <ChevronRight size={24} color={colors.foreground} />

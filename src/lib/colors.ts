@@ -1,6 +1,6 @@
 export default {
   background: "#161616",
-  foreground: "#EEEEEE",
+  foreground: "#F3F3F3",
   muted: "#1F1F1F",
   "muted-foreground": "#8F8F8F",
   card: "#262626",

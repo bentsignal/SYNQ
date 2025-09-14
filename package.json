@@ -5,15 +5,18 @@
   "scripts": {
     "dev": "expo start",
     "lint": "expo lint",
-    "prebuild-ios": "expo prebuild --platform ios",
-    "link-ios": "cd ios && bundle exec pod install --repo-update && cd ..",
-    "init-ios": "pnpm run prebuild-ios && pnpm run link-ios",
-    "build-dev-ios": "eas build -p ios --profile development --local",
-    "build-dev-client-ios": "eas build -p ios --profile development-client --local",
-    "build-scratch-dev-ios": "pnpm run init-ios && pnpm run build-dev-ios",
-    "build-prod-ios": "eas build -p ios --local",
-    "build-scratch-prod-ios": "pnpm run init-ios && pnpm run build-prod-ios",
-    "clean-ios": "cd ios && bundle exec pod cache clean --all && rm -rf Pods && rm -rf Podfile.lock  && rm -rf build && bundle exec pod repo update  && bundle exec pod install --repo-update && cd .."
+    "clean": "cd ios && bundle exec pod cache clean --all && rm -rf Pods && rm -rf Podfile.lock && rm -rf build && bundle exec pod repo update && bundle exec pod install --repo-update && cd ..",
+    "prebuild": "expo prebuild --platform ios",
+    "link": "cd ios && bundle exec pod install --repo-update && cd ..",
+    "prep": "pnpm run prebuild && pnpm run link",
+    "build-dev": "eas build -p ios --profile development --local",
+    "build-dev-client": "eas build -p ios --profile development-client --local",
+    "build-prod": "eas build -p ios --local",
+    "build-fresh-dev": "pnpm run prep && pnpm run build-dev",
+    "build-fresh-dev-client": "pnpm run prep && pnpm run build-dev-client",
+    "build-fresh-prod": "pnpm run prep && pnpm run build-prod",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@babel/runtime": "^7.28.4",

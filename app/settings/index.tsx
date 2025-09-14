@@ -55,7 +55,6 @@ const Settings = () => {
           title="Premium"
           desc={premium ? "Manage your subcription" : "Unlock all features"}
           icon={require("@/src/assets/icons/premium.png")}
-          disabled={false}
           handlePress={() => {
             posthog.capture("check_premium", {
               premium: premium,
@@ -63,22 +62,20 @@ const Settings = () => {
             router.push("/premium");
           }}
           iconTint={theme}
-          bg={Colors.textbox}
+          containerClass="bg-card"
         />
         <Option
           title="Customization"
           desc="Tailor your experience"
           icon={require("@/src/assets/icons/customize.png")}
-          disabled={false}
           handlePress={() => router.push("/settings/customization")}
-          bg={Colors.textbox}
+          containerClass="bg-card"
         />
         <Option
           title="Backup & Restore"
           desc="Backup or restore your library"
           icon={require("@/src/assets/icons/backup.png")}
-          disabled={false}
-          bg={Colors.textbox}
+          containerClass="bg-card"
           handlePress={() => router.push("/settings/backup")}
         />
         <View style={Local.buttonsContainer}>

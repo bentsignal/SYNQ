@@ -348,7 +348,6 @@ const Home = () => {
               title="Premium"
               desc={premium ? "Manage your subcription" : "Unlock all features"}
               icon={require("@/src/assets/icons/premium.png")}
-              disabled={false}
               handlePress={() => {
                 posthog.capture("check_premium", {
                   premium: premium,
@@ -372,7 +371,6 @@ const Home = () => {
           title="Files"
           desc="Import from your files"
           icon={require("@/src/assets/icons/folder.png")}
-          disabled={false}
           handlePress={() => {
             setLoading(true);
             posthog.capture("import_files");
@@ -388,7 +386,6 @@ const Home = () => {
           title="Network"
           desc="Import from your computer"
           icon={require("@/src/assets/icons/wifi.png")}
-          disabled={false}
           handlePress={() => {
             setLoading(true);
             posthog.capture("import_wifi");

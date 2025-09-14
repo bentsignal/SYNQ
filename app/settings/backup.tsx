@@ -212,8 +212,7 @@ export default function Backup() {
               title="Premium"
               desc={premium ? "Manage your subcription" : "Unlock all features"}
               icon={require("@/src/assets/icons/premium.png")}
-              disabled={false}
-              bg={Colors.textbox}
+              containerClass="bg-card"
               iconTint={theme}
               handlePress={() => {
                 posthog.capture("check_premium", {

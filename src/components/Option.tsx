@@ -1,16 +1,22 @@
-import { Text, View, Image, TouchableOpacity, ImageSourcePropType, StyleSheet } from 'react-native';
-import { Colors } from '@/src/constants/Colors';
-import { Styles } from '@/src/constants/Styles';
-import { darkenColor } from '@/src/controllers/ColorController';
-import { useThemeContext } from '@/src/context/ThemeProvider';
-import Arrow from './Arrow';
+import colors from "@/src/lib/colors";
+import { cn } from "@/src/lib/util";
+import { ChevronRight } from "lucide-react-native";
+import {
+  Image,
+  ImageSourcePropType,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Arrow from "./Arrow";
 
 type ImportOptionProps = {
   title: string;
   desc: string;
   icon: ImageSourcePropType;
-  disabled: boolean;
-  bg?: string;
+  disabled?: boolean;
+  containerClass?: string;
   iconTint?: string;
   handlePress: () => void;
 };
@@ -20,76 +26,35 @@ const Option = ({
   desc,
   icon,
   disabled,
-  bg,
+  containerClass,
   iconTint,
-  handlePress
-} : ImportOptionProps) => {
-
-  const { theme } = useThemeContext();
-
-  const color = bg ? bg : Colors.song;
-
-  const Local = StyleSheet.create({
-    container: {
-      ...Styles.roundedContainer,
-      flexDirection: 'row',
-      alignItems: 'center',
-      width: '90%',
-      backgroundColor: disabled ? darkenColor(color, 40, 50) : color,
-      padding: 20,
-      marginBottom: 10
-    },
-    icon: {
-      width: 36,
-      height: 36,
-      marginRight: 16,
-      tintColor: iconTint ? iconTint : Colors.text
-    },
-    title: {
-      ...Styles.h4,
-      color: Colors.text
-    },
-    desc: {
-      ...Styles.p,
-      color: Colors.infoText
-    },
-    arrowContainer: {
-      flex: 1,
-      justifyContent: 'flex-end',
-      alignItems: 'flex-end',
-      marginRight: 5,
-    }
-  });
-
+  handlePress,
+}: ImportOptionProps) => {
   return (
     <TouchableOpacity
-      onPress={disabled ? () => {} : handlePress}
-      activeOpacity={disabled ? 1 : 0.9}
-      style={Local.container}
+      onPress={handlePress}
+      activeOpacity={0.9}
+      disabled={disabled}
+      className={cn(
+        "bg-muted mb-3 w-11/12 flex-row items-center rounded-3xl p-5",
+        disabled && "opacity-50",
+        containerClass,
+      )}
     >
-      <Image 
-        source={icon} 
-        style={Local.icon}
+      <Image
+        source={icon}
+        className="mr-4 size-12"
+        tintColor={iconTint || colors.foreground}
       />
       <View>
-        <Text style={Local.title}>
-          {title}
-        </Text>
-        <Text style={Local.desc}>
-          {desc}
-        </Text>
+        <Text className="text-foreground text-xl font-semibold">{title}</Text>
+        <Text className="text-muted-foreground text-xl">{desc}</Text>
       </View>
-      <View style={Local.arrowContainer}>
-        <Arrow
-          containerStyle={{transform: [ {rotate: '135deg'}]}}
-          arrowStyle={{backgroundColor: Colors.text}}
-          arrowLength={10}
-          arrowWidth={2}
-        />
+      <View className="flex-1 items-end justify-end">
+        <ChevronRight size={24} color={colors.foreground} />
       </View>
     </TouchableOpacity>
   );
-
-}
+};
 
 export default Option;

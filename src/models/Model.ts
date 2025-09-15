@@ -1,24 +1,23 @@
-import * as SQLite from 'expo-sqlite';
-import { SongType } from '@/src/constants/Types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SongType } from "@/src/constants/Types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SQLite from "expo-sqlite";
 
 export default class Model {
-
   protected static db: SQLite.SQLiteDatabase | null = null;
   private static currentVersion: number = 2; // set current db version
-  private static storedVersionKey: string = 'dbVersion';
+  private static storedVersionKey: string = "dbVersion";
 
   protected constructor() {}
-  
+
   public static async initConnection() {
     if (!this.db) {
-      this.db = await SQLite.openDatabaseAsync('synq.db');
+      this.db = await SQLite.openDatabaseAsync("synq.db");
     }
   }
 
   public static async reconnect() {
     await this.db?.closeAsync();
-    this.db = await SQLite.openDatabaseAsync('synq.db');
+    this.db = await SQLite.openDatabaseAsync("synq.db");
   }
 
   public static async checkConnection(): Promise<boolean> {
@@ -28,7 +27,7 @@ export default class Model {
       }
       return true;
     } catch (error) {
-      console.error('Database connection error:', error);
+      console.error("Database connection error:", error);
       this.db = null;
       return false;
     }
@@ -46,9 +45,8 @@ export default class Model {
       await this.createArtistsAlbumsTable();
       await this.migrate();
       return true;
-    }
-    catch (error) {
-      console.error('Error creating tables:', error);
+    } catch (error) {
+      console.error("Error creating tables:", error);
       return false;
     }
   }
@@ -69,9 +67,8 @@ export default class Model {
         );
       `);
       return true;
-    }
-    catch (error) {
-      throw new Error('Error creating song table: ' + error);
+    } catch (error) {
+      throw new Error("Error creating song table: " + error);
     }
   }
 
@@ -101,9 +98,8 @@ export default class Model {
         );
       `);
       return true;
-    }
-    catch (error) {
-      console.error('Error creating playlists table:', error);
+    } catch (error) {
+      console.error("Error creating playlists table:", error);
       return false;
     }
   }
@@ -118,9 +114,8 @@ export default class Model {
         );
       `);
       return true;
-    }
-    catch (error) {
-      console.error('Error creating playlist songs table:', error);
+    } catch (error) {
+      console.error("Error creating playlist songs table:", error);
       return false;
     }
   }
@@ -135,9 +130,8 @@ export default class Model {
         );
       `);
       return true;
-    }
-    catch (error) {
-      console.error('Error creating albums table:', error);
+    } catch (error) {
+      console.error("Error creating albums table:", error);
       return false;
     }
   }
@@ -152,9 +146,8 @@ export default class Model {
         );
       `);
       return true;
-    }
-    catch (error) {
-      console.error('Error creating album songs table:', error);
+    } catch (error) {
+      console.error("Error creating album songs table:", error);
       return false;
     }
   }
@@ -168,9 +161,8 @@ export default class Model {
         );
       `);
       return true;
-    }
-    catch (error) {
-      console.error('Error creating artists table:', error);
+    } catch (error) {
+      console.error("Error creating artists table:", error);
       return false;
     }
   }
@@ -185,12 +177,11 @@ export default class Model {
         );
       `);
       return true;
-    }
-    catch (error) {
-      console.error('Error creating artist songs table:', error);
+    } catch (error) {
+      console.error("Error creating artist songs table:", error);
       return false;
     }
-  } 
+  }
 
   public static async createArtistsAlbumsTable(): Promise<boolean> {
     try {
@@ -202,12 +193,11 @@ export default class Model {
         );
       `);
       return true;
-    }
-    catch (error) {
-      console.error('Error creating artists albums table:', error);
+    } catch (error) {
+      console.error("Error creating artists albums table:", error);
       return false;
     }
-  } 
+  }
 
   private static async getVersion(): Promise<number> {
     try {
@@ -215,7 +205,10 @@ export default class Model {
       const version = versionString ? parseInt(versionString, 10) : 0;
       return version;
     } catch (error) {
-      console.error("Failed to get database version from async storage, assuming version 0", error);
+      console.error(
+        "Failed to get database version from async storage, assuming version 0",
+        error,
+      );
       return 0;
     }
   }
@@ -224,7 +217,10 @@ export default class Model {
     try {
       await AsyncStorage.setItem(this.storedVersionKey, version.toString());
     } catch (error) {
-      console.error("Failed to update database version in async storage", error);
+      console.error(
+        "Failed to update database version in async storage",
+        error,
+      );
     }
   }
 
@@ -232,22 +228,27 @@ export default class Model {
     const storedVersion = await this.getVersion();
 
     if (storedVersion < this.currentVersion) {
-      console.log(`Database migration needed. Current version: ${storedVersion}, target version: ${this.currentVersion}`);
+      console.log(
+        `Database migration needed. Current version: ${storedVersion}, target version: ${this.currentVersion}`,
+      );
 
       if (storedVersion < 2) {
         try {
-          await this.db?.execAsync(`ALTER TABLE albumSongs ADD COLUMN track INTEGER;`);
-          console.log('Migration to version 2 complete: added track column to albumSongs table.');
+          await this.db?.execAsync(
+            `ALTER TABLE albumSongs ADD COLUMN track INTEGER;`,
+          );
+          console.log(
+            "Migration to version 2 complete: added track column to albumSongs table.",
+          );
         } catch (migrationError) {
-          console.error('Error migrating to version 2:', migrationError);
+          console.error("Error migrating to version 2:", migrationError);
         }
       }
 
       await this.setVersion(this.currentVersion);
       console.log(`Database migrated to version ${this.currentVersion}`);
-
     } else {
-      console.log('No database migration needed.');
+      console.log("No database migration needed.");
     }
   }
 }

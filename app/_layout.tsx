@@ -2,32 +2,21 @@ import { useEffect, useState } from "react";
 import Navigation from "@/app/navigation";
 import GlobalProgress from "@/src/components/GlobalProgress";
 import Sheets from "@/src/components/sheet/Sheets";
-import CFG from "@/src/constants/Config";
-import {
-  PUBLIC_FACEBOOK_APP_ID,
-  PUBLIC_POSTHOG_KEY,
-} from "@/src/constants/Keys";
+import { PUBLIC_FACEBOOK_APP_ID } from "@/src/constants/Keys";
 import GlobalProvider from "@/src/context/GlobalProvider";
 import PlaybackProvider from "@/src/context/PlaybackProvider";
 import PremiumProvider from "@/src/context/PremiumProvider";
-import PrivacyProvider from "@/src/context/PrivacyProvider";
 import ThemeProvider from "@/src/context/ThemeProvider";
-import {
-  connect,
-  restorePurchases,
-} from "@/src/controllers/PurchaseController";
-import Model from "@/src/models/Model";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFonts } from "expo-font";
-import { router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { PostHogProvider } from "posthog-react-native";
-import { LogBox, Text, View } from "react-native";
+import { LogBox } from "react-native";
 import { Settings } from "react-native-fbsdk-next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../globals.css";
 import { db } from "@/src/db";
 import migrations from "@/src/db/migrations/migrations";
+import Model from "@/src/models/Model";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 
 LogBox.ignoreLogs(["Require cycle:"]);
@@ -52,7 +41,6 @@ const RootLayout = () => {
     Settings.setAppID(PUBLIC_FACEBOOK_APP_ID);
     Settings.initializeSDK();
 
-    // automatically hide splash screen after 7 seconds
     setTimeout(() => {
       SplashScreen.hideAsync();
     }, 7000);
@@ -69,7 +57,6 @@ const RootLayout = () => {
     const checkDB = async () => {
       try {
         await Model.initConnection();
-        await Model.createTables();
       } catch (error) {
         console.error("Error creating database:", error);
       }

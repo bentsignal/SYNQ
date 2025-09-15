@@ -26,6 +26,9 @@ import { LogBox, Text, View } from "react-native";
 import { Settings } from "react-native-fbsdk-next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../globals.css";
+import migrations from "@/drizzle/migrations";
+import { db } from "@/src/db";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 
 LogBox.ignoreLogs(["Require cycle:"]);
 
@@ -36,6 +39,8 @@ SplashScreen.setOptions({
 
 const RootLayout = () => {
   const [shouldPlayAd, setShouldPlayAd] = useState(false);
+
+  const { success, error } = useMigrations(db, migrations);
 
   const [fontLoaded] = useFonts({
     JakartaSans: require("@/src/assets/fonts/PlusJakartaSans-VariableFont_wght.ttf"),

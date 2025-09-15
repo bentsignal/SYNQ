@@ -1,24 +1,36 @@
-import { View, StyleSheet, Text } from "react-native";
-import SongList from "../lists/song/SongList";
-import { PageType, SongType, SortOrder, SortType, SourceType } from "@/src/constants/Types";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Colors } from "@/src/constants/Colors";
+import { Styles as MainStyles } from "@/src/constants/Styles";
+import {
+  PageType,
+  SongType,
+  SortOrder,
+  SortType,
+  SourceType,
+} from "@/src/constants/Types";
 import { getPlaylistSongs } from "@/src/controllers/PlaylistController";
+import { db } from "@/src/db";
+import * as schema from "@/src/db/schema";
 import playlistBus from "@/src/events/playlist/Bus";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
-import { Styles as MainStyles } from "@/src/constants/Styles";
-import { Colors } from "@/src/constants/Colors";
 import songBus from "@/src/events/song/Bus";
 import { SongBusEvent } from "@/src/events/song/Events";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { StyleSheet, Text, View } from "react-native";
 import QueryWrapper from "../lists/query/Wrapper";
+import SongList from "../lists/song/SongList";
 
-export default function Songs () {
-
+export default function Songs() {
   const [songs, setSongs] = useState<SongType[]>([]);
   const [showEmptyComponent, setShowEmptyComponent] = useState(false);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortType>(SortType.DATE);
   const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
+  const { data } = useLiveQuery(db.select().from(schema.songsTable), []);
+  console.log(
+    "data",
+    data.map((song) => song.title),
+  );
 
   const refreshSongs = async () => {
     const results = await getPlaylistSongs(
@@ -26,11 +38,11 @@ export default function Songs () {
       PageType.LIBRARY,
       sort,
       order,
-      query
+      query,
     );
     setSongs(results);
     setShowEmptyComponent(results.length === 0);
-  }
+  };
 
   useEffect(() => {
     refreshSongs();
@@ -39,7 +51,7 @@ export default function Songs () {
     return () => {
       playlistBus.off(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshSongs);
       songBus.off(SongBusEvent.SONG_DELETED, refreshSongs);
-    }
+    };
   }, []);
 
   useEffect(() => {
@@ -54,9 +66,9 @@ export default function Songs () {
         order={order}
         query={query}
         headerComponent={
-          <QueryWrapper 
-            setQuery={setQuery} 
-            query={query} 
+          <QueryWrapper
+            setQuery={setQuery}
+            query={query}
             setSort={setSort}
             sort={sort}
             order={order}
@@ -78,19 +90,18 @@ export default function Songs () {
           <Text style={Local.emptyText}>No songs in library</Text>
         }
       />
-    </View> 
+    </View>
   );
-
 }
 
 const Local = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
+    width: "100%",
   },
   emptyText: {
     ...MainStyles.h5,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 20,
     color: Colors.text,
   },

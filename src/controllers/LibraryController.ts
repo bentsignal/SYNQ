@@ -1,16 +1,27 @@
-import * as FileSystem from 'expo-file-system'
-import { SongType, PageType } from '@/src/constants/Types'
-import SongModel from '@/src/models/SongModel';
-import PlaylistModel from '@/src/models/PlaylistModel';
+import { PageType, SongType } from "@/src/constants/Types";
 import songBus from "@/src/events/song/Bus";
 import { SongBusEvent } from "@/src/events/song/Events";
-import 'react-native-get-random-values';
-import { addArtistToSong } from '@/src/controllers/ArtistController';
-import { writeImageToLibrary, deleteImagesFromDirectory } from '@/src/controllers/ImageController';
-import { addAlbumToSong, addArtistToAlbum, getAlbumsFromSong, getSongsFromAlbum } from '@/src/controllers/AlbumController';
-import albumBus from '@/src/events/album/Bus';
-import { AlbumBusEvent } from '@/src/events/album/Events';
-import { flagSongAsEdited } from './SongController';
+import PlaylistModel from "@/src/models/PlaylistModel";
+import SongModel from "@/src/models/SongModel";
+import * as FileSystem from "expo-file-system";
+import "react-native-get-random-values";
+import {
+  addAlbumToSong,
+  addArtistToAlbum,
+  getAlbumsFromSong,
+  getSongsFromAlbum,
+} from "@/src/controllers/AlbumController";
+import { addArtistToSong } from "@/src/controllers/ArtistController";
+import {
+  deleteImagesFromDirectory,
+  writeImageToLibrary,
+} from "@/src/controllers/ImageController";
+import { db } from "@/src/db";
+import * as schema from "@/src/db/schema";
+import albumBus from "@/src/events/album/Bus";
+import { AlbumBusEvent } from "@/src/events/album/Events";
+import { eq } from "drizzle-orm";
+import { flagSongAsEdited } from "./SongController";
 
 export const updateSongsInLibrary = async (
   ids: number[],
@@ -31,7 +42,7 @@ export const updateSongsInLibrary = async (
         await writeImageToLibrary(cover, albumDir);
         await flagSongAsEdited(ids[i]);
         const albumSongs = await getSongsFromAlbum(album.id);
-        albumSongs.forEach(song => {
+        albumSongs.forEach((song) => {
           if (song.id !== ids[i]) {
             flagSongAsEdited(song.id);
           }
@@ -62,7 +73,7 @@ export const updateSongsInLibrary = async (
       });
     }
   }
-}
+};
 
 export const saveToLibrary = async (
   songs: SongType[],
@@ -74,31 +85,42 @@ export const saveToLibrary = async (
     for (let i = 0; i < songs.length; i++) {
       try {
         const song = songs[i];
-        const title = song.title ?? '';
-        const artists = song.artist ?? '';
-        const album = song.album ?? '';
-        const artwork = song.artwork ?? '';
-        const fileType = song.fileType ?? '';
+        const title = song.title ?? "";
+        const artists = song.artist ?? "";
+        const album = song.album ?? "";
+        const artwork = song.artwork ?? "";
+        const fileType = song.fileType ?? "";
         const edited = song.edited ? true : false;
         const duration = song.duration ?? 0;
-        let fileName = song.fileName ?? '';
-        if (fileName === '' && fileType !== '') {
+        let fileName = song.fileName ?? "";
+        if (fileName === "" && fileType !== "") {
           fileName = `song.${fileType}`;
         }
-        const genre = 'Music';
+        const genre = "Music";
         // insert song into database
-        const id = await db.insertSong(title, artists, album, genre, duration, fileType, fileName, edited);
+        const id = await db.insertSong(
+          title,
+          artists,
+          album,
+          genre,
+          duration,
+          fileType,
+          fileName,
+          edited,
+        );
         if (id !== -1) {
           // create directory and write song data if successfully inserted into DB
           await createLibraryDir();
           const dir = `${FileSystem.documentDirectory}library/${id}`;
           try {
             await FileSystem.makeDirectoryAsync(dir);
-            await FileSystem.copyAsync({ from: song.cacheUri, to: `${dir}/${song.fileName}` });
+            await FileSystem.copyAsync({
+              from: song.cacheUri,
+              to: `${dir}/${song.fileName}`,
+            });
             await FileSystem.deleteAsync(song.cacheUri);
-          }
-          catch (error) {
-            console.log('error writing audio: ', error);
+          } catch (error) {
+            console.log("error writing audio: ", error);
             // TODO: delete song from DB
             continue;
           }
@@ -108,7 +130,10 @@ export const saveToLibrary = async (
               // add artists to album if they aren't already on it
               if (song.importArtists && song.importArtists.length > 0) {
                 for (let k = 0; k < song.importArtists.length; k++) {
-                  await addArtistToAlbum(song.importArtists[k].id, song.importAlbums[j].id);
+                  await addArtistToAlbum(
+                    song.importArtists[k].id,
+                    song.importAlbums[j].id,
+                  );
                 }
               }
               // create album directory if it doesn't exist
@@ -119,12 +144,14 @@ export const saveToLibrary = async (
               }
               // write album cover to directory if it doesn't exist
               const files = await FileSystem.readDirectoryAsync(albumDir);
-              if (!files.includes('cover_small.jpg') && !files.includes('cover_full.jpg')) {
+              if (
+                !files.includes("cover_small.jpg") &&
+                !files.includes("cover_full.jpg")
+              ) {
                 await writeImageToLibrary(song.importAlbums[j].image, albumDir);
               }
             }
-          }
-          else {
+          } else {
             await writeImageToLibrary(artwork, dir);
           }
           // add song to library playlist
@@ -137,41 +164,42 @@ export const saveToLibrary = async (
           }
         }
         progress(i + 1);
-      }
-      catch (error) {
-        console.error('Error inserting song: ', error);
+      } catch (error) {
+        console.error("Error inserting song: ", error);
         progress(i + 1);
       }
     }
-  }
-  catch (error) {
+  } catch (error) {
     const trace = error instanceof Error ? error.message : String(error);
-    throw new Error('Error saving to library: ' + trace);
+    throw new Error("Error saving to library: " + trace);
   }
 };
 
 export const deleteFromLibrary = async (id: number) => {
   try {
-    const db = SongModel.getInstance();
-    const removed = await db.removeSong(id);
+    const removed = await db
+      .delete(schema.songsTable)
+      .where(eq(schema.songsTable.id, id));
     if (removed) {
-      await FileSystem.deleteAsync(`${FileSystem.documentDirectory}library/${id}`);
+      await FileSystem.deleteAsync(
+        `${FileSystem.documentDirectory}library/${id}`,
+      );
     }
     return removed;
+  } catch (error) {
+    console.log("error deleting from library: ", error);
   }
-  catch (error) {
-    console.log('error deleting from library: ', error);
-  }
-}
+};
 
 const createLibraryDir = async () => {
   try {
-    await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}library`);
-  }
-  catch (error) {
+    await FileSystem.makeDirectoryAsync(
+      `${FileSystem.documentDirectory}library`,
+    );
+  } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    if (!message.includes('already exists')) {
-      console.log('error creating library directory: ', error);
+    if (!message.includes("already exists")) {
+      console.log("error creating library directory: ", error);
     }
   }
-}
+};

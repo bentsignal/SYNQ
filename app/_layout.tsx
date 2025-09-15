@@ -26,8 +26,8 @@ import { LogBox, Text, View } from "react-native";
 import { Settings } from "react-native-fbsdk-next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../globals.css";
-import migrations from "@/drizzle/migrations";
 import { db } from "@/src/db";
+import migrations from "@/src/db/migrations/migrations";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 
 LogBox.ignoreLogs(["Require cycle:"]);

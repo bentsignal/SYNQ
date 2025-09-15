@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "20049ecb-4298-4c72-afa7-0b586a9ab4d0",
+  "id": "45d32fe2-a097-419b-ad4c-be47cdd4119e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "albumSongs": {
@@ -23,13 +23,6 @@
         },
         "songId": {
           "name": "songId",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "track": {
-          "name": "track",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,

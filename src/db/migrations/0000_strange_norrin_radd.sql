@@ -1,8 +1,7 @@
 CREATE TABLE `albumSongs` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`albumId` integer,
-	`songId` integer,
-	`track` integer
+	`songId` integer
 );
 --> statement-breakpoint
 CREATE TABLE `albums` (

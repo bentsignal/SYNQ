@@ -5,8 +5,15 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1757952356331,
-      "tag": "0000_condemned_plazm",
+      "when": 1757953561552,
+      "tag": "0000_strange_norrin_radd",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1757953677412,
+      "tag": "0001_broad_sentry",
       "breakpoints": true
     }
   ]

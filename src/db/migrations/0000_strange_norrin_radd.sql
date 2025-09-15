@@ -49,3 +49,7 @@ CREATE TABLE `songs` (
 	`fileType` text,
 	`fileName` text
 );
+--> statement-breakpoint
+INSERT INTO `playlists` (`name`) VALUES ('Library');
+--> statement-breakpoint
+INSERT INTO `playlists` (`name`) VALUES ('Liked Songs');

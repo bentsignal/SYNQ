@@ -1,15 +1,21 @@
-import * as FileSystem from 'expo-file-system'
-import * as Sharing from 'expo-sharing'
-import * as DocumentPicker from 'expo-document-picker'
-import { getAudioMetadata } from '@missingcore/audio-metadata';
-import { SongType, InfoType, PageType, ArtistType, AlbumType } from '@/src/constants/Types'
-import SongModel from '@/src/models/SongModel';
-import { idgen, getExportNumber, checkForTrackNumber } from '@/lib/Util';
-import 'react-native-get-random-values';
-import { getArtistsFromMetadata } from '@/src/controllers/ArtistController';
-import { updateMetadata, isSongEdited } from '@/src/controllers/SongController';
-import { getAlbumFromMetadata } from '@/src/controllers/AlbumController';
-import { loadAudio } from './AudioController';
+import {
+  AlbumType,
+  ArtistType,
+  InfoType,
+  PageType,
+  SongType,
+} from "@/src/constants/Types";
+import { checkForTrackNumber, getExportNumber, idgen } from "@/src/lib/util";
+import SongModel from "@/src/models/SongModel";
+import { getAudioMetadata } from "@missingcore/audio-metadata";
+import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
+import "react-native-get-random-values";
+import { getAlbumFromMetadata } from "@/src/controllers/AlbumController";
+import { getArtistsFromMetadata } from "@/src/controllers/ArtistController";
+import { isSongEdited, updateMetadata } from "@/src/controllers/SongController";
+import { loadAudio } from "./AudioController";
 
 export const importFiles = async (
   countdown: (value: number) => void,
@@ -18,7 +24,7 @@ export const importFiles = async (
   const results = await DocumentPicker.getDocumentAsync({
     type: ["audio/mpeg", "audio/wav", "audio/mp4", "audio/flac", "audio/aac"],
     multiple: true,
-    copyToCacheDirectory: true
+    copyToCacheDirectory: true,
   });
   const songs: SongType[] = [];
   let song: SongType;
@@ -31,71 +37,91 @@ export const importFiles = async (
       const newUri = `${FileSystem.cacheDirectory}import/${results.assets[i].name}`;
       await FileSystem.moveAsync({
         from: results.assets[i].uri,
-        to: newUri
+        to: newUri,
       });
       results.assets[i].uri = newUri;
       try {
-        song = await processSong(newUri, 
-          results.assets[i].name, 
-          idgen(10), 
-          results.assets[i].mimeType
+        song = await processSong(
+          newUri,
+          results.assets[i].name,
+          idgen(10),
+          results.assets[i].mimeType,
         );
         songs.push(song);
-      }
-      catch (error) {
-        console.log('error processing song:', results.assets[i].name, error);
+      } catch (error) {
+        console.log("error processing song:", results.assets[i].name, error);
       }
     }
 
     return songs;
-  }
-  else {
+  } else {
     return songs;
   }
-}
+};
 
-export const getWifiTransferSong = async (name: string, id: number, type: string, data: string): Promise<SongType> => {
+export const getWifiTransferSong = async (
+  name: string,
+  id: number,
+  type: string,
+  data: string,
+): Promise<SongType> => {
   const destination = `${FileSystem.cacheDirectory}import/${id}${name}`;
-  await FileSystem.writeAsStringAsync(destination, data, { encoding: 'base64' });
+  await FileSystem.writeAsStringAsync(destination, data, {
+    encoding: "base64",
+  });
   const song = await processSong(destination, name, id, type);
   return song;
-}
+};
 
-const processSong = async (url: string, name: string, id: number, type: string) => {
-
+const processSong = async (
+  url: string,
+  name: string,
+  id: number,
+  type: string,
+) => {
   // read metadata from file
-  const wantedTags = ['artwork', 'artist', 'name', 'album', 'year', 'track'] as const;
+  const wantedTags = [
+    "artwork",
+    "artist",
+    "name",
+    "album",
+    "year",
+    "track",
+  ] as const;
   let info: InfoType = {};
   try {
     info = await getAudioMetadata(url, wantedTags);
-  }
-  catch (error) {
-    console.log('error reading metadata:', name, error);
+  } catch (error) {
+    console.log("error reading metadata:", name, error);
   }
 
-  // add artists 
+  // add artists
   let importArtists: ArtistType[] = [];
   if (info.metadata?.artist) {
     importArtists = await getArtistsFromMetadata(info.metadata.artist);
     if (importArtists.length > 0) {
-      info.metadata.artist = importArtists.map(artist => artist.name).join(', ');
-    }
-    else {
-      info.metadata.artist = '';
+      info.metadata.artist = importArtists
+        .map((artist) => artist.name)
+        .join(", ");
+    } else {
+      info.metadata.artist = "";
     }
   }
 
   // add albums
   let importAlbums: AlbumType[] = [];
   if (info.metadata?.album) {
-    const importAlbum = await getAlbumFromMetadata(info.metadata.album, info.metadata?.year, info.metadata?.artwork);
+    const importAlbum = await getAlbumFromMetadata(
+      info.metadata.album,
+      info.metadata?.year,
+      info.metadata?.artwork,
+    );
     if (importAlbum?.name) {
       info.metadata.album = importAlbum.name;
       importAlbum.image = info.metadata?.artwork;
       importAlbums.push(importAlbum);
-    }
-    else {
-      info.metadata.album = '';
+    } else {
+      info.metadata.album = "";
     }
   }
 
@@ -103,7 +129,7 @@ const processSong = async (url: string, name: string, id: number, type: string) 
   const duration = await loadAudio(url);
 
   // check for track number
-  let title = info.metadata?.name ?? '';
+  let title = info.metadata?.name ?? "";
   let track: number | null = null;
   const checkFileName = checkForTrackNumber(name);
   if (checkFileName) {
@@ -119,24 +145,22 @@ const processSong = async (url: string, name: string, id: number, type: string) 
   }
 
   return {
-    'fileName': name,
-    'fileType': type,
-    'id': id,
-    'title': title,
-    'artist': info.metadata?.artist ?? '',
-    'album': info.metadata?.album ?? '',
-    'artwork': importAlbums.length === 0 ? info.metadata?.artwork : '',
-    'importArtists': importArtists,
-    'importAlbums': importAlbums,
-    'cacheUri': url,
-    'track': track,
-    'duration': duration,
+    fileName: name,
+    fileType: type,
+    id: id,
+    title: title,
+    artist: info.metadata?.artist ?? "",
+    album: info.metadata?.album ?? "",
+    artwork: importAlbums.length === 0 ? info.metadata?.artwork : "",
+    importArtists: importArtists,
+    importAlbums: importAlbums,
+    cacheUri: url,
+    track: track,
+    duration: duration,
   };
-  
-}
+};
 
 export const exportSongs = async (songs: SongType[]) => {
-
   const date = new Date();
   const exportNumber = await getExportNumber();
   const dir = `${FileSystem.documentDirectory}batch ${exportNumber}  -  ${date.getMonth()}.${date.getDate()}.${date.getFullYear()}`;
@@ -154,8 +178,7 @@ export const exportSongs = async (songs: SongType[]) => {
         song.edited = false;
       }
       await Sharing.shareAsync(song.cacheUri);
-    }
-    else {
+    } else {
       try {
         const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
         const edited = await isSongEdited(song);
@@ -164,13 +187,14 @@ export const exportSongs = async (songs: SongType[]) => {
           song.edited = false;
           const db = SongModel.getInstance();
           await db.songExported(song.id);
-          await FileSystem.writeAsStringAsync(audioPath, song.data, { encoding: 'base64' });
+          await FileSystem.writeAsStringAsync(audioPath, song.data, {
+            encoding: "base64",
+          });
         }
         await Sharing.shareAsync(audioPath);
-      }
-      catch (error) {
-        console.log('error sharing song from library: ', error);
-        throw new Error('Error sharing song from library: ' + error);
+      } catch (error) {
+        console.log("error sharing song from library: ", error);
+        throw new Error("Error sharing song from library: " + error);
       }
     }
   }
@@ -185,9 +209,11 @@ export const exportSongs = async (songs: SongType[]) => {
           songs[i].edited = false;
         }
         destination = `${dir}/${songs[i].fileName}`;
-        await FileSystem.copyAsync({ from: songs[i].cacheUri, to: destination });
-      }
-      else {
+        await FileSystem.copyAsync({
+          from: songs[i].cacheUri,
+          to: destination,
+        });
+      } else {
         try {
           const audioPath = `${FileSystem.documentDirectory}library/${songs[i].id}/${songs[i].fileName}`;
           const edited = await isSongEdited(songs[i]);
@@ -195,12 +221,16 @@ export const exportSongs = async (songs: SongType[]) => {
             await updateMetadata(songs[i]);
             songs[i].edited = false;
             await db.songExported(songs[i].id);
-            await FileSystem.writeAsStringAsync(audioPath, songs[i].data, { encoding: 'base64' });
+            await FileSystem.writeAsStringAsync(audioPath, songs[i].data, {
+              encoding: "base64",
+            });
           }
-          await FileSystem.copyAsync({ from: audioPath, to: `${dir}/${songs[i].fileName}` });
-        }
-        catch (error) {
-          console.log('error copying song from library: ', error);
+          await FileSystem.copyAsync({
+            from: audioPath,
+            to: `${dir}/${songs[i].fileName}`,
+          });
+        } catch (error) {
+          console.log("error copying song from library: ", error);
         }
       }
     }
@@ -208,8 +238,7 @@ export const exportSongs = async (songs: SongType[]) => {
   }
 
   await FileSystem.deleteAsync(dir);
-
-}
+};
 
 export const deleteImportSongs = async (songs: SongType[]) => {
   for (let i = 0; i < songs.length; i++) {
@@ -217,7 +246,7 @@ export const deleteImportSongs = async (songs: SongType[]) => {
       await FileSystem.deleteAsync(songs[i].cacheUri);
     }
   }
-}
+};
 
 export const createImportDir = async () => {
   try {
@@ -227,11 +256,10 @@ export const createImportDir = async () => {
       await FileSystem.deleteAsync(importDir);
     }
     await FileSystem.makeDirectoryAsync(importDir);
-  }
-  catch (error) {
+  } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    if (!message.includes('already exists')) {
-      console.log('error creating import directory: ', error);
+    if (!message.includes("already exists")) {
+      console.log("error creating import directory: ", error);
     }
   }
-}
+};

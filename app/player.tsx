@@ -19,6 +19,7 @@ import {
 import { getTrackArtwork } from "@/src/controllers/PlayerController";
 import { getSongById } from "@/src/controllers/SongController";
 import colors from "@/src/lib/colors";
+import { getFileName } from "@/src/lib/util";
 import { useAssets } from "expo-asset";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
@@ -34,7 +35,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useActiveTrack } from "react-native-track-player";
-import { getFileName } from "@/lib/Util";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 

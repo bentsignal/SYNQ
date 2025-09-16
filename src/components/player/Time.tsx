@@ -1,16 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, PanResponder, Text, Dimensions } from 'react-native';
-import { useGlobalContext } from '@/src/context/GlobalProvider';
-import { Colors } from '@/src/constants/Colors';
-import TrackPlayer, { useProgress, usePlaybackState, State } from 'react-native-track-player';
-import { formatTime } from '@/lib/Util';
-import { useThemeContext } from '@/src/context/ThemeProvider';
-import { GestureDetector, GestureType, Gesture } from "react-native-gesture-handler";
-import Animated, { runOnJS, useSharedValue, withTiming, 
-  useAnimatedStyle, Easing } from 'react-native-reanimated';
+import React, { useEffect, useRef, useState } from "react";
+import { Colors } from "@/src/constants/Colors";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
+import { formatTime } from "@/src/lib/util";
+import { Dimensions, PanResponder, StyleSheet, Text, View } from "react-native";
+import {
+  Gesture,
+  GestureDetector,
+  GestureType,
+} from "react-native-gesture-handler";
+import Animated, {
+  Easing,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import TrackPlayer, {
+  State,
+  usePlaybackState,
+  useProgress,
+} from "react-native-track-player";
 
 const Time = () => {
-
   const interval = 50;
 
   const { adPlaying } = useGlobalContext();
@@ -28,11 +40,17 @@ const Time = () => {
   const sharedDuration = useSharedValue(duration);
   const progressScale = useSharedValue(0);
   const sliderHeight = useSharedValue(1);
-  const windowWidth = useSharedValue(Dimensions.get('window').width);
+  const windowWidth = useSharedValue(Dimensions.get("window").width);
 
   useEffect(() => {
     if (scrubbing.value) return;
-    if (!(playbackState.state === State.Playing || playbackState.state === State.Paused)) return;
+    if (
+      !(
+        playbackState.state === State.Playing ||
+        playbackState.state === State.Paused
+      )
+    )
+      return;
     setElapsedSec(Math.floor(position));
     setRemainingSec(Math.floor(duration) - Math.floor(position));
     updateTimeline();
@@ -53,19 +71,19 @@ const Time = () => {
       duration: interval,
       easing: Easing.linear,
     });
-  }
+  };
 
   const jump = async (newPosition: number) => {
     await TrackPlayer.seekTo(newPosition);
     setTimeout(() => {
       scrubbing.value = false;
     }, interval);
-  }
+  };
 
   const updateTimes = (newElapsed: number, newRemaining: number) => {
     setElapsedSec(newElapsed);
     setRemainingSec(newRemaining);
-  }
+  };
 
   const handleGesture = Gesture.Pan()
     .onStart((e) => {
@@ -79,17 +97,27 @@ const Time = () => {
       if (!allowScrub.value) return;
       const dx = e.allTouches[0].x;
       const multiplier = 1.2;
-      const newCompletionRaw = preScrubCompletion.value + (dx / windowWidth.value * multiplier);
+      const newCompletionRaw =
+        preScrubCompletion.value + (dx / windowWidth.value) * multiplier;
       const newCompletion = Math.max(0, Math.min(newCompletionRaw, 1));
       progressScale.value = newCompletion;
-      const newElapsed = Math.max(0, Math.min(Math.floor(newCompletion * sharedDuration.value), sharedDuration.value));
+      const newElapsed = Math.max(
+        0,
+        Math.min(
+          Math.floor(newCompletion * sharedDuration.value),
+          sharedDuration.value,
+        ),
+      );
       const newRemaining = Math.floor(sharedDuration.value) - newElapsed;
       runOnJS(updateTimes)(newElapsed, newRemaining);
       postScrubCompletion.value = Math.max(0, Math.min(newCompletion, 1));
     })
     .onEnd((e) => {
       if (!allowScrub.value) return;
-      const newPosition = Math.min(Math.max(0, postScrubCompletion.value * sharedDuration.value), sharedDuration.value);
+      const newPosition = Math.min(
+        Math.max(0, postScrubCompletion.value * sharedDuration.value),
+        sharedDuration.value,
+      );
       runOnJS(jump)(newPosition);
       sliderHeight.value = withTiming(1, {
         duration: 200,
@@ -113,13 +141,17 @@ const Time = () => {
       <GestureDetector gesture={handleGesture}>
         <View style={styles.timelineContainer}>
           <Animated.View style={[styles.timeline, timelineStyle]}>
-            <Animated.View style={styles.progressBackground}/>
-            <Animated.View 
-              style={[styles.progress, progressStyle, { 
-                backgroundColor: Colors.progress,
-                height: 8,
-                transformOrigin: 'left',
-              }]}
+            <Animated.View style={styles.progressBackground} />
+            <Animated.View
+              style={[
+                styles.progress,
+                progressStyle,
+                {
+                  backgroundColor: Colors.progress,
+                  height: 8,
+                  transformOrigin: "left",
+                },
+              ]}
             />
           </Animated.View>
           <View style={styles.timeContainer}>
@@ -134,47 +166,47 @@ const Time = () => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
     marginTop: 10,
     height: 50,
   },
   timelineContainer: {
-    width: Dimensions.get('window').width * 0.85,
+    width: Dimensions.get("window").width * 0.85,
     paddingTop: 10,
     paddingBottom: 10,
     marginBottom: 10,
   },
   timeline: {
-    width: '100%',
-    overflow: 'hidden',
+    width: "100%",
+    overflow: "hidden",
   },
   progressBackground: {
-    backgroundColor: 'rgba(232, 232, 232, 0.3)',
-    width: Dimensions.get('window').width * 0.85,
-    position: 'absolute',
+    backgroundColor: "rgba(232, 232, 232, 0.3)",
+    width: Dimensions.get("window").width * 0.85,
+    position: "absolute",
     left: 0,
     top: 0,
     height: 8,
   },
   progress: {
-    width: Dimensions.get('window').width * 0.85,
-    position: 'absolute',
+    width: Dimensions.get("window").width * 0.85,
+    position: "absolute",
     left: 0,
     top: 0,
   },
   timeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
     marginTop: 10,
   },
   timeText: {
     fontSize: 12,
     // color: '#888',
     color: Colors.text,
-    fontWeight: '700',
-    fontVariant: ['tabular-nums'],
+    fontWeight: "700",
+    fontVariant: ["tabular-nums"],
   },
 });
 

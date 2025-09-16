@@ -1,22 +1,21 @@
-import { View, Text } from 'react-native';
-import { useGlobalContext } from '@/src/context/GlobalProvider';
-import { Styles } from '@/src/constants/Styles';
-import { useEffect, useState } from 'react';
-import { getCompletion } from '@/lib/Util';
-import SongList from '@/src/components/lists/song';
-import Progress from '@/src/components/Progress';
-import { PageType } from '@/src/constants/Types';
-import { usePremiumContext } from '@/src/context/PremiumProvider';
-import ImportBlur from '@/src/components/import/Blur';
+import { useEffect, useState } from "react";
+import ImportBlur from "@/src/components/import/Blur";
+import SongList from "@/src/components/lists/song";
+import Progress from "@/src/components/Progress";
+import { Styles } from "@/src/constants/Styles";
+import { PageType } from "@/src/constants/Types";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { usePremiumContext } from "@/src/context/PremiumProvider";
+import { getCompletion } from "@/src/lib/util";
+import { Text, View } from "react-native";
 
 const Files = () => {
-
-  const { 
-    
-    results, loading,
+  const {
+    results,
+    loading,
     transferSize,
-    transferProgress, loadAnimInProgress,
-
+    transferProgress,
+    loadAnimInProgress,
   } = useGlobalContext();
 
   const { premium } = usePremiumContext();
@@ -32,19 +31,21 @@ const Files = () => {
     if (loading || loadAnimInProgress) {
       return (
         <View
-          style={[Styles.main, {
-            paddingBottom: 100
-          }]}
+          style={[
+            Styles.main,
+            {
+              paddingBottom: 100,
+            },
+          ]}
         >
-          <Progress 
-            completion={completion} 
+          <Progress
+            completion={completion}
             loading={loading}
             showCircle={loadAnimInProgress}
           />
         </View>
-      )
-    }
-    else if (results.length > 0) {
+      );
+    } else if (results.length > 0) {
       return (
         <>
           <SongList
@@ -58,16 +59,12 @@ const Files = () => {
           {!premium && <ImportBlur />}
         </>
       );
+    } else {
+      return <></>;
     }
-    else {
-      return (
-        <></>
-      );
-    }
-  }
+  };
 
   return getBody();
-  
-}
+};
 
 export default Files;

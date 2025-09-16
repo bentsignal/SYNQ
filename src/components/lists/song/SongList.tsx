@@ -20,6 +20,7 @@ import {
 import { generateSongKey } from "@/src/controllers/SongController";
 import usePlayer from "@/src/hooks/usePlayer";
 import { posthog } from "@/src/lib/posthog";
+import { check } from "@/src/lib/util";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
 import { FlatList, TouchableOpacity } from "react-native";
@@ -28,7 +29,6 @@ import DraggableFlatlist, {
   RenderItemParams,
 } from "react-native-draggable-flatlist";
 import TrackPlayer, { useActiveTrack } from "react-native-track-player";
-import { check } from "@/lib/Util";
 
 const MemoSong = memo(Song);
 

@@ -11,11 +11,11 @@ import {
 import { exportSongs } from "@/src/controllers/ImportExportController";
 import artistBus from "@/src/events/artist";
 import { ArtistBusEvent } from "@/src/events/artist/Events";
+import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
 import { Share, SquarePen, Trash } from "lucide-react-native";
 import { Alert } from "react-native";
-import { posthog } from "@/lib/posthog";
 
 const ArtistOptions = ({ name }: { name: string }) => {
   const { editArtist, setShowGlobalLoading } = useGlobalContext();

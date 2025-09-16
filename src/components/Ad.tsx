@@ -2,10 +2,10 @@ import React from "react";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { useThemeContext } from "@/src/context/ThemeProvider";
+import { posthog } from "@/src/lib/posthog";
 import { router } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import CustomButton from "./CustomButton";
-import { posthog } from "@/lib/posthog";
 
 const Ad = ({ message }: { message: React.ReactNode }) => {
   const { theme } = useThemeContext();

@@ -16,13 +16,13 @@ import { removeFromAllPlaylists } from "@/src/controllers/PlaylistController";
 import { removeSongs } from "@/src/controllers/SongController";
 import importBus from "@/src/events/import";
 import { ImportBusEvent } from "@/src/events/import/Events";
+import { posthog } from "@/src/lib/posthog";
 import axios from "axios";
 import { router, usePathname } from "expo-router";
 import { SquarePen, Trash } from "lucide-react-native";
 import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import TrackPlayer, { Track } from "react-native-track-player";
-import { posthog } from "@/lib/posthog";
 
 export default function ImportControls() {
   const {

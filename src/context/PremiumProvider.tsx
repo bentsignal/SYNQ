@@ -1,13 +1,15 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { useThemeContext } from "@/src/context/ThemeProvider";
-import CFG from "@/src/constants/Config";
-import { connect } from "@/src/controllers/PurchaseController";
-import { restorePurchases } from "@/src/controllers/PurchaseController";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
+import CFG from "@/src/constants/Config";
+import { useThemeContext } from "@/src/context/ThemeProvider";
+import {
+  connect,
+  restorePurchases,
+} from "@/src/controllers/PurchaseController";
+import { posthog } from "@/src/lib/posthog";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAppIcon, setAppIcon } from "expo-icon-handler";
 import { getIcon } from "../constants/Logos";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { posthog } from "@/lib/posthog";
 
 type Props = {
   children?: React.ReactNode;
@@ -85,7 +87,7 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
         } else {
           await AsyncStorage.setItem(
             "expiration",
-            purchase?.expiration.toISOString()
+            purchase?.expiration.toISOString(),
           );
         }
       } else {

@@ -16,6 +16,7 @@ import { useThemeContext } from "@/src/context/ThemeProvider";
 import { importFiles } from "@/src/controllers/ImportExportController";
 import { playAd } from "@/src/controllers/PlayerController";
 import usePlayer from "@/src/hooks/usePlayer";
+import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -25,7 +26,6 @@ import TrackPlayer, {
   useProgress,
   useTrackPlayerEvents,
 } from "react-native-track-player";
-import { posthog } from "@/lib/posthog";
 
 const Home = () => {
   const {

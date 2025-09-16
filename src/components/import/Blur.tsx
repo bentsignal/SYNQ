@@ -3,12 +3,12 @@ import { Styles } from "@/src/constants/Styles";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { darkenColor } from "@/src/controllers/ColorController";
+import { posthog } from "@/src/lib/posthog";
 import { BlurView } from "expo-blur";
 import { router } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import CustomButton from "../CustomButton";
-import { posthog } from "@/lib/posthog";
 
 export default function ImportBlur() {
   const { theme } = useThemeContext();

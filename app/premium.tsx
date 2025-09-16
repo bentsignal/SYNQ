@@ -14,6 +14,7 @@ import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { darkenColor } from "@/src/controllers/ColorController";
 import * as PurchaseManager from "@/src/controllers/PurchaseController";
+import { posthog } from "@/src/lib/posthog";
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -26,7 +27,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { posthog } from "@/lib/posthog";
 
 const Premium = () => {
   const {

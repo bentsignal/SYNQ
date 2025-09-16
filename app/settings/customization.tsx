@@ -11,9 +11,9 @@ import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
+import { posthog } from "@/src/lib/posthog";
 import { router } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import { posthog } from "@/lib/posthog";
 
 export default function Customization() {
   const { premium } = usePremiumContext();

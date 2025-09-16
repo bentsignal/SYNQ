@@ -11,6 +11,7 @@ import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import playlistBus from "@/src/events/playlist/Bus";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
+import { posthog } from "@/src/lib/posthog";
 import Model from "@/src/models/Model";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as DocumentPicker from "expo-document-picker";
@@ -27,7 +28,6 @@ import {
 } from "react-native";
 import TrackPlayer from "react-native-track-player";
 import { unzip, zip } from "react-native-zip-archive";
-import { posthog } from "@/lib/posthog";
 
 export default function Backup() {
   const { theme } = useThemeContext();

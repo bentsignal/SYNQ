@@ -12,11 +12,11 @@ import {
 import { getSongByResult } from "@/src/controllers/SongController";
 import playlistBus from "@/src/events/playlist";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
+import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
 import { Share, SquarePen, Trash } from "lucide-react-native";
 import { Alert } from "react-native";
-import { posthog } from "@/lib/posthog";
 
 const PlaylistOptions = ({ name }: { name: string }) => {
   const { editPlaylist, setShowGlobalLoading } = useGlobalContext();

@@ -11,6 +11,7 @@ import {
 import { exportSongs } from "@/src/controllers/ImportExportController";
 import albumBus from "@/src/events/album";
 import { AlbumBusEvent } from "@/src/events/album/Events";
+import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
 import {
@@ -20,7 +21,6 @@ import {
   Trash,
 } from "lucide-react-native";
 import { Alert } from "react-native";
-import { posthog } from "@/lib/posthog";
 
 const AlbumOptions = ({ name }: { name: string }) => {
   const { editAlbum, setShowGlobalLoading } = useGlobalContext();

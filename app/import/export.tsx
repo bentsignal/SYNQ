@@ -10,10 +10,10 @@ import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { exportSongs } from "@/src/controllers/ImportExportController";
+import { posthog } from "@/src/lib/posthog";
 import { usePathname } from "expo-router";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { posthog } from "@/lib/posthog";
 
 const ExportPrompt = () => {
   const {

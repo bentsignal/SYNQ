@@ -19,6 +19,7 @@ import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import songBus from "@/src/events/song/Bus";
 import { SongBusEvent } from "@/src/events/song/Events";
 import usePlayer from "@/src/hooks/usePlayer";
+import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
@@ -34,7 +35,6 @@ import {
 } from "lucide-react-native";
 import { Alert } from "react-native";
 import TrackPlayer, { Track } from "react-native-track-player";
-import { posthog } from "@/lib/posthog";
 
 type SongOptionsProps = {
   name: string;

@@ -15,6 +15,7 @@ import importBus from "@/src/events/import";
 import { ImportBusEvent } from "@/src/events/import/Events";
 import playlistBus from "@/src/events/playlist";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
+import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import Checkbox from "expo-checkbox";
@@ -22,7 +23,6 @@ import { router, usePathname } from "expo-router";
 import * as StoreReview from "expo-store-review";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { posthog } from "@/lib/posthog";
 
 const SavePrompt = () => {
   const {

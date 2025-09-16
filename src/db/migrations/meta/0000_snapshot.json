@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "45d32fe2-a097-419b-ad4c-be47cdd4119e",
+  "id": "5f309572-95c1-4a63-ae26-3e46509f2568",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "albumSongs": {

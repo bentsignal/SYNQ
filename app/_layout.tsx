@@ -26,6 +26,8 @@ SplashScreen.setOptions({
   duration: 300,
 });
 
+SplashScreen.preventAutoHideAsync();
+
 const RootLayout = () => {
   const [shouldPlayAd, setShouldPlayAd] = useState(false);
 
@@ -36,14 +38,12 @@ const RootLayout = () => {
   });
 
   useEffect(() => {
-    SplashScreen.preventAutoHideAsync();
-
-    Settings.setAppID(PUBLIC_FACEBOOK_APP_ID);
-    Settings.initializeSDK();
-
     setTimeout(() => {
       SplashScreen.hideAsync();
     }, 7000);
+
+    Settings.setAppID(PUBLIC_FACEBOOK_APP_ID);
+    Settings.initializeSDK();
 
     const loadShouldPlayAd = async () => {
       try {
@@ -66,7 +66,6 @@ const RootLayout = () => {
     checkDB();
   }, []);
 
-  // hide splash screen after fonts are loaded
   useEffect(() => {
     if (fontLoaded) {
       setTimeout(() => {

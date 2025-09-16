@@ -26,11 +26,6 @@ export default function Songs() {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortType>(SortType.DATE);
   const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
-  const { data } = useLiveQuery(db.select().from(schema.songsTable), []);
-  console.log(
-    "data",
-    data.map((song) => song.title),
-  );
 
   const refreshSongs = async () => {
     const results = await getPlaylistSongs(

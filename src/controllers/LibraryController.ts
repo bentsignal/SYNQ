@@ -178,8 +178,8 @@ export const saveToLibrary = async (
 export const deleteFromLibrary = async (id: number) => {
   try {
     const removed = await db
-      .delete(schema.songsTable)
-      .where(eq(schema.songsTable.id, id));
+      .delete(schema.songs)
+      .where(eq(schema.songs.id, id));
     if (removed) {
       await FileSystem.deleteAsync(
         `${FileSystem.documentDirectory}library/${id}`,

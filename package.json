@@ -5,16 +5,10 @@
   "scripts": {
     "dev": "expo start",
     "lint": "expo lint",
-    "clean": "cd ios && bundle exec pod cache clean --all && rm -rf Pods && rm -rf Podfile.lock && rm -rf build && bundle exec pod repo update && bundle exec pod install --repo-update && cd ..",
-    "prebuild": "expo prebuild --platform ios",
-    "link": "cd ios && bundle exec pod install --repo-update && cd ..",
-    "prep": "pnpm run prebuild && pnpm run link",
+    "prebuild": "expo prebuild --clean --platform ios",
     "build-dev": "eas build -p ios --profile development --local",
     "build-dev-client": "eas build -p ios --profile development-client --local",
     "build-prod": "eas build -p ios --local",
-    "build-fresh-dev": "pnpm run prep && pnpm run build-dev",
-    "build-fresh-dev-client": "pnpm run prep && pnpm run build-dev-client",
-    "build-fresh-prod": "pnpm run prep && pnpm run build-prod",
     "android": "expo run:android",
     "ios": "expo run:ios"
   },

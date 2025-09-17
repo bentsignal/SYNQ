@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "synq",
+    "name": "SYNQ",
     "slug": "synq",
     "version": "3.0.0",
     "orientation": "portrait",
@@ -19,23 +19,12 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.directedbyshawn.synq",
       "infoPlist": {
-        "CFBundleDisplayName": "SYNQ",
         "UIStatusBarStyle": "UIStatusBarStyleLightContent",
         "UIFileSharingEnabled": true,
         "LSSupportsOpeningDocumentsInPlace": true,
         "UIBackgroundModes": [
           "audio"
-        ],
-        "CFBundleURLTypes": [
-          {
-            "CFBundleURLSchemes": [
-              "fb666565396036070"
-            ]
-          }
-        ],
-        "FacebookAppID": "666565396036070",
-        "FacebookClientToken": "061ab03cceff44df511a1f07a8f5416c",
-        "FacebookDisplayName": "SYNQ"
+        ]
       },
       "buildNumber": "93"
     },
@@ -55,7 +44,6 @@
       "expo-router",
       "expo-font",
       "expo-localization",
-      "react-native-fbsdk-next",
       [
         "expo-asset",
         {
@@ -110,6 +98,16 @@
               "path": "./src/assets/appIcons/icon-pink.png"
             }
           ]
+        }
+      ],
+      [
+        "react-native-fbsdk-next",
+        {
+          "appID": "666565396036070",
+          "clientToken": "061ab03cceff44df511a1f07a8f5416c",
+          "schema": "fb666565396036070",
+          "displayName": "SYNQ",
+          "iosUserTrackingPermission": false
         }
       ]
     ],

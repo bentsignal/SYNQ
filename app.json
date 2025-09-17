@@ -37,7 +37,7 @@
         "FacebookClientToken": "061ab03cceff44df511a1f07a8f5416c",
         "FacebookDisplayName": "SYNQ"
       },
-      "buildNumber": "91"
+      "buildNumber": "93"
     },
     "android": {
       "adaptiveIcon": {
@@ -53,6 +53,18 @@
     },
     "plugins": [
       "expo-router",
+      "expo-font",
+      "expo-localization",
+      "react-native-fbsdk-next",
+      [
+        "expo-asset",
+        {
+          "assets": [
+            "src/assets/audio/ad.mp3",
+            "src/assets/images/popup.jpg"
+          ]
+        }
+      ],
       [
         "expo-build-properties",
         {
@@ -99,18 +111,7 @@
             }
           ]
         }
-      ],
-      [
-        "expo-asset",
-        {
-          "assets": [
-            "src/assets/audio/ad.mp3",
-            "src/assets/images/popup.jpg"
-          ]
-        }
-      ],
-      "expo-font",
-      "expo-localization"
+      ]
     ],
     "experiments": {
       "typedRoutes": true

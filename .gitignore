@@ -25,6 +25,7 @@ assets/appIcons/icon.psd
 .vscode/
 ios
 android
+.env
 
 # macOS
 .DS_Store

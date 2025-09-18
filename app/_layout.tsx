@@ -19,7 +19,10 @@ import migrations from "@/src/db/migrations/migrations";
 import Model from "@/src/models/Model";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 
-LogBox.ignoreLogs(["Require cycle:"]);
+LogBox.ignoreLogs([
+  "Require cycle:",
+  "`onLayout` supplied to `React.Fragment`",
+]);
 
 SplashScreen.setOptions({
   fade: true,

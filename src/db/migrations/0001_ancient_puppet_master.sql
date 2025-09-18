@@ -1,1 +1,1 @@
-ALTER TABLE `albumSongs` ADD `track` integer;
+ALTER TABLE `albumSongs` ADD COLUMN IF NOT EXISTS `track` integer;

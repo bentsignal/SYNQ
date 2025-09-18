@@ -23,6 +23,8 @@ repos
 *.swp
 assets/appIcons/icon.psd
 .vscode/
+ios
+android
 
 # macOS
 .DS_Store

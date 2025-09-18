@@ -41,7 +41,7 @@
         ],
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "96"
+      "buildNumber": "99"
     },
     "android": {
       "adaptiveIcon": {
@@ -128,7 +128,8 @@
       "expo-sqlite"
     ],
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "reactCompiler": true
     },
     "extra": {
       "router": {

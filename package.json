@@ -107,6 +107,7 @@
     "babel-plugin-inline-import": "^3.0.0",
     "babel-preset-expo": "^13.0.0",
     "drizzle-kit": "^0.31.4",
+    "expo-atlas": "^0.4.3",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.5.14",
     "react-test-renderer": "18.3.1",

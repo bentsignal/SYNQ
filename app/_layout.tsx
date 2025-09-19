@@ -17,6 +17,7 @@ import "../globals.css";
 import { db } from "@/src/db";
 import migrations from "@/src/db/migrations/migrations";
 import Model from "@/src/models/Model";
+import { usePreferences } from "@/src/stores/preferences";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 
 LogBox.ignoreLogs([
@@ -35,6 +36,10 @@ const RootLayout = () => {
   const [shouldPlayAd, setShouldPlayAd] = useState(false);
 
   const { success, error } = useMigrations(db, migrations);
+
+  const initializePreferences = usePreferences(
+    (state) => state.initializePreferences,
+  );
 
   const [fontLoaded] = useFonts({
     JakartaSans: require("@/src/assets/fonts/PlusJakartaSans-VariableFont_wght.ttf"),
@@ -67,6 +72,7 @@ const RootLayout = () => {
 
     loadShouldPlayAd();
     checkDB();
+    initializePreferences();
   }, []);
 
   useEffect(() => {

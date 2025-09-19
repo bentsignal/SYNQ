@@ -1,47 +1,44 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { useGlobalContext } from '@/src/context/GlobalProvider';
-import { Colors } from '@/src/constants/Colors';
-import SongInfo from '@/src/components/song/SongInfo';
-import ListCover from '@/src/components/cover/ListCover';
-import { CoverType } from '@/src/constants/Types';
-import * as Haptics from 'expo-haptics';
-import Sheet from '@/src/components/sheet';
-import SheetStyles from '@/src/components/sheet/Styles';
-import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import SongOptions from '@/src/components/sheet/song/SongOptions';
-import Bar from '@/src/components/modals/Bar';
-import ModalStyles from '@/src/components/modals/Styles';
-import { getLibrarySongCover } from '@/src/controllers/SongController';
+import { useEffect, useState } from "react";
+import ListCover from "@/src/components/cover/ListCover";
+import Bar from "@/src/components/modals/Bar";
+import ModalStyles from "@/src/components/modals/Styles";
+import SongOptions from "@/src/components/sheet/song/SongOptions";
+import SheetStyles from "@/src/components/sheet/Styles";
+import SongInfo from "@/src/components/song/SongInfo";
+import { Colors } from "@/src/constants/Colors";
+import { CoverType } from "@/src/constants/Types";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { getLibrarySongCover } from "@/src/controllers/SongController";
+import { useHaptics } from "@/src/hooks/use-haptics";
+import { TrueSheet } from "@lodev09/react-native-true-sheet";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 const PlayerSongEdit = () => {
+  const name = "player-song-sheet";
 
-  const name = 'player-song-sheet';
-  
-  const { editSong, haptic } = useGlobalContext();
+  const { editSong } = useGlobalContext();
+  const { sendHaptic } = useHaptics();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
-  const [coverImage, setCoverImage] = useState('');
+  const [coverImage, setCoverImage] = useState("");
   const [emptyCover, setEmptyCover] = useState(false);
 
-  const loadCover = async () => { 
+  const loadCover = async () => {
     try {
       if (editSong.id) {
         const cover = await getLibrarySongCover(editSong.id);
         if (cover) {
           setCoverImage(cover);
           setEmptyCover(false);
-        }
-        else {
-          setCoverImage('');
+        } else {
+          setCoverImage("");
           setEmptyCover(true);
         }
       }
+    } catch (error) {
+      console.log("error loading song cover:", error);
     }
-    catch (error) {
-      console.log('error loading song cover:', error);
-    }
-  }
+  };
 
   useEffect(() => {
     loadCover();
@@ -51,7 +48,7 @@ const PlayerSongEdit = () => {
     <View style={local.container}>
       <Bar />
       <View style={SheetStyles.infoContainer}>
-        <ListCover 
+        <ListCover
           image={coverImage}
           type={CoverType.SONG}
           propOnLoad={() => {}}
@@ -69,17 +66,15 @@ const PlayerSongEdit = () => {
         onMomentumScrollBegin={(event) => {
           if (event.nativeEvent.contentOffset.y < 0) {
             TrueSheet.dismiss(name);
-            if (haptic) {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            }
+            sendHaptic("medium");
           }
         }}
       >
-        <SongOptions name={name}/>
+        <SongOptions name={name} />
       </ScrollView>
     </View>
   );
-}
+};
 
 const local = StyleSheet.create({
   container: {
@@ -88,7 +83,7 @@ const local = StyleSheet.create({
     ...ModalStyles.roundedTop,
     paddingLeft: 20,
     paddingRight: 20,
-  }
+  },
 });
 
 export default PlayerSongEdit;

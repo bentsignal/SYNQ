@@ -1,45 +1,51 @@
-import { View, Text, StyleSheet } from "react-native";
-import { useEffect, useState, useRef } from "react";
-import { Styles } from "@/src/constants/Styles";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Colors } from "@/src/constants/Colors";
-import SongList from "@/src/components/lists/song";
-import { PageType, PlaylistType, SongType, SortType, 
-  SourceType, ArtistType, AlbumType, SortOrder } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
-import MiniPlayer from "@/src/components/player/MiniPlayer";
-import TabBar from "@/src/components/TabBar";
-import ArtistHeader from "@/src/components/lists/artist/Header";
-import Overlay from "@/src/components/Overlay";
+import { useEffect, useState } from "react";
 import Header from "@/src/components/Header";
-import { getArtistInfo } from "@/src/controllers/ArtistController";
+import AlbumList from "@/src/components/lists/album";
+import ArtistHeader from "@/src/components/lists/artist/Header";
+import QueryWrapper from "@/src/components/lists/query/Wrapper";
+import SongList from "@/src/components/lists/song";
+import Overlay from "@/src/components/Overlay";
+import TabSelector from "@/src/components/TabSelector";
+import { Colors } from "@/src/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
+import {
+  AlbumType,
+  ArtistType,
+  PageType,
+  SongType,
+  SortOrder,
+  SortType,
+  SourceType,
+} from "@/src/constants/Types";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { getAlbumsFromArtist } from "@/src/controllers/AlbumController";
+import {
+  getArtistInfo,
+  getSongsFromArtist,
+} from "@/src/controllers/ArtistController";
+import albumBus from "@/src/events/album";
+import { AlbumBusEvent } from "@/src/events/album/Events";
 import artistBus from "@/src/events/artist";
 import { ArtistBusEvent } from "@/src/events/artist/Events";
-import * as Haptics from 'expo-haptics';
-import { TrueSheet } from "@lodev09/react-native-true-sheet";
-import { getSongsFromArtist } from "@/src/controllers/ArtistController";
-import { getAlbumsFromArtist } from "@/src/controllers/AlbumController";
-import { AlbumBusEvent } from "@/src/events/album/Events";
-import albumBus from "@/src/events/album";
-import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import playlistBus from "@/src/events/playlist";
-import AlbumList from "@/src/components/lists/album";
-import TabSelector from "@/src/components/TabSelector";
-import QueryWrapper from "@/src/components/lists/query/Wrapper";
+import { PlaylistBusEvent } from "@/src/events/playlist/Events";
+import { useHaptics } from "@/src/hooks/use-haptics";
+import { TrueSheet } from "@lodev09/react-native-true-sheet";
+import { StyleSheet, Text, View } from "react-native";
 
-const ArtistView = ({id}: {id: number}) => {
-
-  const { showOverlay, haptic, setEditArtist } = useGlobalContext();
+const ArtistView = ({ id }: { id: number }) => {
+  const { showOverlay, setEditArtist } = useGlobalContext();
+  const { sendHaptic } = useHaptics();
 
   const [songs, setSongs] = useState<SongType[]>([]);
   const [albums, setAlbums] = useState<AlbumType[]>([]);
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
   const [scrollPosition, setScrollPosition] = useState(0);
   const [artist, setArtist] = useState<ArtistType | null>(null);
   const [tabIndex, setTabIndex] = useState(0);
   const [showEmptyComponent, setShowEmptyComponent] = useState(false);
-  const [songsQuery, setSongsQuery] = useState('');
-  const [albumsQuery, setAlbumsQuery] = useState('');
+  const [songsQuery, setSongsQuery] = useState("");
+  const [albumsQuery, setAlbumsQuery] = useState("");
   const [songSort, setSongSort] = useState<SortType>(SortType.ALBUM);
   const [songOrder, setSongOrder] = useState<SortOrder>(SortOrder.DESC);
   const [albumSort, setAlbumSort] = useState<SortType>(SortType.YEAR);
@@ -51,50 +57,47 @@ const ArtistView = ({id}: {id: number}) => {
         const result = await getArtistInfo(id);
         result.pageType = PageType.ARTIST;
         setArtist(result);
-        setTitle(result?.name || '');
-      }
-      catch (error) {
-        console.log('error refreshing playlist info:', error);
+        setTitle(result?.name || "");
+      } catch (error) {
+        console.log("error refreshing playlist info:", error);
       }
     }
-  }
+  };
 
   const refreshSongs = async () => {
     try {
       const songs = await getSongsFromArtist(
-        id, 
-        songSort, 
-        songOrder, 
-        songsQuery
+        id,
+        songSort,
+        songOrder,
+        songsQuery,
       );
       setSongs(songs);
       setShowEmptyComponent(songs.length === 0);
+    } catch (error) {
+      console.log("error refreshing playlist songs:", error);
     }
-    catch (error) {
-      console.log('error refreshing playlist songs:', error);
-    }
-  }
+  };
 
   const refreshAlbums = async () => {
     try {
       const results = await getAlbumsFromArtist(
-        id, 
-        albumSort, 
-        albumOrder, 
-        albumsQuery
+        id,
+        albumSort,
+        albumOrder,
+        albumsQuery,
       );
       setAlbums(results);
+    } catch (error) {
+      console.log("error refreshing artist albums:", error);
     }
-    catch (error) {
-      console.log('error refreshing artist albums:', error);
-    }
-  }
+  };
 
   const triggerRefresh = () => {
     refreshSongs();
     refreshInfo();
     refreshAlbums();
-  }
+  };
 
   useEffect(() => {
     refreshSongs();
@@ -106,10 +109,9 @@ const ArtistView = ({id}: {id: number}) => {
 
   useEffect(() => {
     if (tabIndex === 0) {
-      setAlbumsQuery('');
-    }
-    else {
-      setSongsQuery('');
+      setAlbumsQuery("");
+    } else {
+      setSongsQuery("");
     }
   }, [tabIndex]);
 
@@ -128,7 +130,7 @@ const ArtistView = ({id}: {id: number}) => {
       albumBus.off(AlbumBusEvent.ALBUM_DELETED, refreshAlbums);
       albumBus.off(AlbumBusEvent.ALBUM_MODIFIED, refreshAlbums);
       playlistBus.off(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshAlbums);
-    }
+    };
   }, []);
 
   useEffect(() => {
@@ -136,31 +138,28 @@ const ArtistView = ({id}: {id: number}) => {
   }, [id]);
 
   const handleMore = () => {
-    if (haptic) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    sendHaptic("light");
     setEditArtist(artist);
     try {
-      TrueSheet.present('artist-sheet');
+      TrueSheet.present("artist-sheet");
+    } catch (error) {
+      console.log("error snapping to artist sheet:", error);
     }
-    catch (error) {
-      console.log('error snapping to artist sheet:', error);
-    }
-  }
+  };
 
   return (
     <View style={Local.wrapper}>
       <View style={Local.container}>
-        <Header 
+        <Header
           scrollPosition={scrollPosition}
           title={title}
           showMore={true}
           handleMore={handleMore}
         />
-        <Overlay show={showOverlay} activeOpacity={0.95}/>
+        <Overlay show={showOverlay} activeOpacity={0.95} />
         {tabIndex === 0 && (
-          <SongList 
-            songs={songs} 
+          <SongList
+            songs={songs}
             pageType={PageType.ARTIST}
             sourceId={id}
             sourceType={SourceType.ARTIST}
@@ -168,22 +167,24 @@ const ArtistView = ({id}: {id: number}) => {
             order={songOrder}
             query={songsQuery}
             showEmptyComponent={showEmptyComponent}
-            emptyComponent={<Text style={Local.emptyText}>No songs in library</Text>}
+            emptyComponent={
+              <Text style={Local.emptyText}>No songs in library</Text>
+            }
             headerComponent={
               <>
-                <ArtistHeader 
+                <ArtistHeader
                   id={id}
-                  title={title} 
+                  title={title}
                   pageType={PageType.ARTIST}
                 />
-                <TabSelector 
-                  tabs={['Songs', 'Albums']}
+                <TabSelector
+                  tabs={["Songs", "Albums"]}
                   index={tabIndex}
                   onSelect={setTabIndex}
                 />
-                <QueryWrapper 
-                  setQuery={setSongsQuery} 
-                  query={songsQuery} 
+                <QueryWrapper
+                  setQuery={setSongsQuery}
+                  query={songsQuery}
                   songList
                   setSort={setSongSort}
                   sort={songSort}
@@ -196,7 +197,7 @@ const ArtistView = ({id}: {id: number}) => {
                 />
               </>
             }
-            footerComponent={<View style={{height: 1000}}/>}
+            footerComponent={<View style={{ height: 1000 }} />}
             setScrollPosition={setScrollPosition}
           />
         )}
@@ -206,19 +207,19 @@ const ArtistView = ({id}: {id: number}) => {
             pageType={PageType.LIBRARY}
             headerComponent={
               <>
-                <ArtistHeader 
+                <ArtistHeader
                   id={id}
-                  title={title} 
+                  title={title}
                   pageType={PageType.ARTIST}
                 />
-                <TabSelector 
-                  tabs={['Songs', 'Albums']}
+                <TabSelector
+                  tabs={["Songs", "Albums"]}
                   index={tabIndex}
                   onSelect={setTabIndex}
                 />
-                <QueryWrapper 
-                  setQuery={setAlbumsQuery} 
-                  query={albumsQuery} 
+                <QueryWrapper
+                  setQuery={setAlbumsQuery}
+                  query={albumsQuery}
                   setSort={setAlbumSort}
                   sort={albumSort}
                   order={albumOrder}
@@ -230,20 +231,22 @@ const ArtistView = ({id}: {id: number}) => {
                 />
               </>
             }
-            footerComponent={<View style={{height: 1000}}/>}
-            emptyComponent={<Text style={Local.emptyText}>No albums in library</Text>}
+            footerComponent={<View style={{ height: 1000 }} />}
+            emptyComponent={
+              <Text style={Local.emptyText}>No albums in library</Text>
+            }
             showEmptyComponent={albums.length === 0}
           />
         )}
       </View>
     </View>
   );
-}
+};
 
 const Local = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: "black",
   },
   container: {
     ...Styles.body,
@@ -252,7 +255,7 @@ const Local = StyleSheet.create({
   },
   emptyText: {
     ...Styles.h5,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 20,
     color: Colors.text,
   },

@@ -18,6 +18,7 @@ import { getTrackFromSong } from "../controllers/PlayerController";
 import { getPlaylistSongs } from "../controllers/PlaylistController";
 import playbackBus from "../events/playback";
 import { PlaybackBusEvent } from "../events/playback/Events";
+import { useHaptics } from "./use-haptics";
 
 export default function usePlayer() {
   const {
@@ -40,7 +41,7 @@ export default function usePlayer() {
   } = usePlaybackContext();
 
   const { theme } = useThemeContext();
-  const { haptic } = useGlobalContext();
+  const { sendHaptic } = useHaptics();
 
   const setupPlayer = async () => {
     await TrackPlayer.setupPlayer();
@@ -129,12 +130,8 @@ export default function usePlayer() {
       const queue = await TrackPlayer.getQueue();
       const currentIndex = await TrackPlayer.getActiveTrackIndex();
       if (currentIndex >= queue.length - 1 && !loop) {
-        // no next song, play error haptic feedback
-        if (haptic) {
-          await Haptics.notificationAsync(
-            Haptics.NotificationFeedbackType.Error,
-          );
-        }
+        // no next song
+        sendHaptic("error");
       } else if (currentIndex !== undefined) {
         // if loop is on, keep queue going infinitely
         if (currentIndex >= queue.length - 1 && loop) {

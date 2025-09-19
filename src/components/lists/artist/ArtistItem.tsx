@@ -27,9 +27,9 @@ import {
   ArtistImageModifiedEvent,
   ArtistModifiedEvent,
 } from "@/src/events/artist/Events";
+import { useHaptics } from "@/src/hooks/use-haptics";
 import colors from "@/src/lib/colors";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
-import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams } from "expo-router";
 import { Ellipsis } from "lucide-react-native";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -41,7 +41,8 @@ type ArtistProps = {
 };
 
 const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
-  const { editSong, haptic, setEditArtist, editAlbum } = useGlobalContext();
+  const { editSong, setEditArtist, editAlbum } = useGlobalContext();
+  const { sendHaptic } = useHaptics();
 
   const [selected, setSelected] = useState(false);
   const [name, setName] = useState(artist.name);
@@ -164,9 +165,7 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
   };
 
   const handleMore = async () => {
-    if (haptic) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    sendHaptic("light");
     setEditArtist(artist);
     TrueSheet.present("artist-sheet");
   };

@@ -1,33 +1,34 @@
-import { View, Text, StyleSheet, TextInput } from "react-native"
-import { useEffect, useState, memo } from "react"
-import { Colors } from "@/src/constants/Colors"
-import { Styles } from "@/src/constants/Styles"
-import Bar from "@/src/components/modals/Bar"
-import CustomButton from "@/src/components/CustomButton"
-import { router } from "expo-router"
-import { useGlobalContext } from "@/src/context/GlobalProvider"
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
-import { CoverType, NotificationType } from "@/src/constants/Types"
-import Notifications from "@/src/components/notifications/Notifications"
-import * as Haptics from 'expo-haptics'
-import { useThemeContext } from "@/src/context/ThemeProvider"
-import { createAlbum } from "@/src/controllers/AlbumController"
-import EditCover from "@/src/components/cover/EditCover"
-import { newCover } from "@/src/controllers/ImageController"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { AlbumBusEvent } from "@/src/events/album/Events"
-import albumBus from "@/src/events/album"
+import { memo, useEffect, useState } from "react";
+import EditCover from "@/src/components/cover/EditCover";
+import CustomButton from "@/src/components/CustomButton";
+import Bar from "@/src/components/modals/Bar";
 import ModalStyles from "@/src/components/modals/Styles";
+import Notifications from "@/src/components/notifications/Notifications";
+import { Colors } from "@/src/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
+import { CoverType, NotificationType } from "@/src/constants/Types";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
+import { createAlbum } from "@/src/controllers/AlbumController";
+import { newCover } from "@/src/controllers/ImageController";
+import albumBus from "@/src/events/album";
+import { AlbumBusEvent } from "@/src/events/album/Events";
+import { useHaptics } from "@/src/hooks/use-haptics";
+import { router } from "expo-router";
+import { StyleSheet, Text, TextInput, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const MemoTextInput = memo(TextInput);
 
 const CreateAlbum = () => {
+  const { addNotification } = useGlobalContext();
 
-  const { haptic, addNotification } = useGlobalContext();
+  const { sendHaptic } = useHaptics();
 
   const { theme } = useThemeContext();
 
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [year, setYear] = useState<number | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const insets = useSafeAreaInsets();
@@ -37,31 +38,28 @@ const CreateAlbum = () => {
     if (cover) {
       setImage(cover);
     }
-  }
+  };
 
   const handleCreate = async () => {
     try {
       await createAlbum(name, year, image);
-      if (haptic) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
+      sendHaptic("success");
       albumBus.emit(AlbumBusEvent.ALBUM_CREATED);
       setTimeout(() => {
         router.back();
       }, 100);
-    }
-    catch (error) {
+    } catch (error) {
       const trace = error instanceof Error ? error.message : String(error);
       addNotification(
         NotificationType.ERROR,
-        'Error',
+        "Error",
         trace,
-        'Unable to create album',
+        "Unable to create album",
         trace,
-        () => {}
+        () => {},
       );
     }
-  }
+  };
 
   return (
     <View style={Local.wrapper}>
@@ -87,7 +85,7 @@ const CreateAlbum = () => {
           autoCorrect={true}
           editable
           numberOfLines={1}
-          placeholder={'Enter album name...'}
+          placeholder={"Enter album name..."}
           placeholderTextColor={Colors.altDisabled}
           defaultValue={name}
           onEndEditing={(evt) => setName(evt.nativeEvent.text)}
@@ -99,28 +97,29 @@ const CreateAlbum = () => {
           editable
           numberOfLines={1}
           keyboardType="numeric"
-          placeholder={'Enter album year...'}
+          placeholder={"Enter album year..."}
           placeholderTextColor={Colors.altDisabled}
           defaultValue={year?.toString()}
-          onEndEditing={(evt) => setYear(evt.nativeEvent.text ? parseInt(evt.nativeEvent.text) : null)}
+          onEndEditing={(evt) =>
+            setYear(
+              evt.nativeEvent.text ? parseInt(evt.nativeEvent.text) : null,
+            )
+          }
         />
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />
-      <View style={[Local.buttonContainer, {paddingBottom: insets.bottom}]}>
+      <View style={[Local.buttonContainer, { paddingBottom: insets.bottom }]}>
+        <CustomButton title="Cancel" handlePress={() => router.back()} />
         <CustomButton
-          title='Cancel'
-          handlePress={() => router.back()}
-        />
-        <CustomButton
-          title='Create'
-          disabled={name === ''}
+          title="Create"
+          disabled={name === ""}
           background={theme}
           handlePress={handleCreate}
         />
       </View>
     </View>
   );
-}
+};
 
 const Local = StyleSheet.create({
   wrapper: {
@@ -133,19 +132,19 @@ const Local = StyleSheet.create({
     marginBottom: 20,
     ...Styles.textbox,
     ...Styles.roundedContainer,
-    width: '90%',
+    width: "90%",
   },
   scrollView: {
-    width: '100%',
+    width: "100%",
     paddingTop: 20,
   },
   scrollViewContent: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   coverWrapper: {
-    width: '90%',
+    width: "90%",
     marginBottom: 20,
   },
   label: {
@@ -154,15 +153,15 @@ const Local = StyleSheet.create({
     marginBottom: 10,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center', 
+    flexDirection: "row",
+    justifyContent: "center",
     gap: 10,
-    width: '100%',
+    width: "100%",
   },
   notifications: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 100,
-  }
-})
+  },
+});
 
 export default CreateAlbum;

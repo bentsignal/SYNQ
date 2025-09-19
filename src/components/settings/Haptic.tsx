@@ -1,31 +1,26 @@
-import { Switch } from "react-native-gesture-handler";
 import { Colors } from "@/src/constants/Colors";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
-import { getDisabledColor } from "@/src/controllers/ColorController";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useThemeContext } from "@/src/context/ThemeProvider";
+import { getDisabledColor } from "@/src/controllers/ColorController";
+import { usePreferences } from "@/src/stores/preferences";
+import { Switch } from "react-native-gesture-handler";
 
 const Haptic = () => {
-
-  const { haptic, setHaptic} = useGlobalContext();
   const { theme } = useThemeContext();
 
-  const toggleHaptic = async () => {
-    setHaptic(!haptic);
-    await AsyncStorage.setItem('haptic', haptic ? 'false' : 'true');
-  }
+  const hapticFeedback = usePreferences((state) => state.hapticFeedback);
+  const toggleHapticFeedback = usePreferences(
+    (state) => state.toggleHapticFeedback,
+  );
 
   return (
     <Switch
       trackColor={{ false: getDisabledColor(theme), true: theme }}
       thumbColor={Colors.text}
-      ios_backgroundColor={getDisabledColor(theme)}
-      onValueChange={toggleHaptic}
-      style={{marginTop: 10, marginBottom: 10}}
-      value={haptic}
+      onValueChange={toggleHapticFeedback}
+      style={{ marginTop: 10, marginBottom: 10 }}
+      value={hapticFeedback}
     />
   );
-
-}
+};
 
 export default Haptic;

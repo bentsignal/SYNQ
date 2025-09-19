@@ -1,10 +1,12 @@
-import { TouchableOpacity, StyleSheet, View } from "react-native";
-import { Colors } from "@/src/constants/Colors";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
-import Svg, { Path } from 'react-native-svg';
-import * as Haptics from 'expo-haptics';
-import TrackPlayer, { State, usePlaybackState } from "react-native-track-player";
 import { useEffect, useState } from "react";
+import { Colors } from "@/src/constants/Colors";
+import { useHaptics } from "@/src/hooks/use-haptics";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import Svg, { Path } from "react-native-svg";
+import TrackPlayer, {
+  State,
+  usePlaybackState,
+} from "react-native-track-player";
 
 const PausePlayButtons = ({
   playSize,
@@ -19,8 +21,7 @@ const PausePlayButtons = ({
   style: {};
   color?: string;
 }) => {
-
-  const { haptic } = useGlobalContext();
+  const { sendHaptic } = useHaptics();
 
   const playbackState = usePlaybackState();
   const [currentState, setCurrentState] = useState(playbackState.state);
@@ -33,51 +34,55 @@ const PausePlayButtons = ({
 
   const togglePlayback = async () => {
     try {
+      sendHaptic("soft");
       if ([State.Paused, State.Ready].includes(currentState)) {
-        if (haptic) {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
-        }
-        await TrackPlayer.play(); 
-      }
-      else {
-        if (haptic) {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
-        }
+        await TrackPlayer.play();
+      } else {
         await TrackPlayer.pause();
       }
+    } catch (error) {
+      console.error("Error toggling play/pause:", error);
     }
-    catch (error) {
-      console.error('Error toggling play/pause:', error);
-    }
-  }
+  };
 
   const getButton = () => {
-    if ([State.Paused, State.Ready].includes(currentState) && ![State.Loading, State.Buffering].includes(previousState)) {
-      return <PlayButton size={playSize} color={color}/>
+    if (
+      [State.Paused, State.Ready].includes(currentState) &&
+      ![State.Loading, State.Buffering].includes(previousState)
+    ) {
+      return <PlayButton size={playSize} color={color} />;
+    } else {
+      return (
+        <PauseButton height={pauseHeight} width={pauseWidth} color={color} />
+      );
     }
-    else {
-      return <PauseButton height={pauseHeight} width={pauseWidth} color={color}/>
-    }
-  }
+  };
 
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       onPress={togglePlayback}
-      style={{...style}}
+      style={{ ...style }}
       activeOpacity={0.8}
     >
       {getButton()}
     </TouchableOpacity>
   );
-}
+};
 
-export const PauseButton = ({width, height, color}: {width: number, height: number, color?: string}) => {
-
+export const PauseButton = ({
+  width,
+  height,
+  color,
+}: {
+  width: number;
+  height: number;
+  color?: string;
+}) => {
   const Local = StyleSheet.create({
     container: {
-      justifyContent: 'center',
-      alignItems: 'center',
-      flexDirection: 'row',
+      justifyContent: "center",
+      alignItems: "center",
+      flexDirection: "row",
       gap: 5,
     },
     pause: {
@@ -90,25 +95,32 @@ export const PauseButton = ({width, height, color}: {width: number, height: numb
 
   return (
     <View style={Local.container}>
-      <View style={Local.pause}/>
-      <View style={Local.pause}/> 
+      <View style={Local.pause} />
+      <View style={Local.pause} />
     </View>
   );
+};
 
-}
-
-export const PlayButton = ({size, color}: {size: number, color?: string}) => {
+export const PlayButton = ({
+  size,
+  color,
+}: {
+  size: number;
+  color?: string;
+}) => {
   return (
-    <Svg 
-      fill={color ? color : "#FFFFFF"} 
-      viewBox="0 0 163.861 163.861" 
-      width={size} 
-      height={size} 
+    <Svg
+      fill={color ? color : "#FFFFFF"}
+      viewBox="0 0 163.861 163.861"
+      width={size}
+      height={size}
     >
-      <Path d="M34.857,3.613C20.084-4.861,8.107,2.081,8.107,19.106v125.637c0,17.042,11.977,23.975,26.75,15.509L144.67,97.275
-        c14.778-8.477,14.778-22.211,0-30.686L34.857,3.613z"/>
+      <Path
+        d="M34.857,3.613C20.084-4.861,8.107,2.081,8.107,19.106v125.637c0,17.042,11.977,23.975,26.75,15.509L144.67,97.275
+        c14.778-8.477,14.778-22.211,0-30.686L34.857,3.613z"
+      />
     </Svg>
-  )
-}
+  );
+};
 
 export default PausePlayButtons;

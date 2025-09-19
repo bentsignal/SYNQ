@@ -18,10 +18,10 @@ import playlistBus from "@/src/events/playlist";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import songBus from "@/src/events/song/Bus";
 import { SongBusEvent } from "@/src/events/song/Events";
+import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/hooks/usePlayer";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
-import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import {
   CircleMinus,
@@ -45,7 +45,6 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
   const {
     editSong,
     numModified,
-    haptic,
     selectedSongs,
     results,
 
@@ -59,7 +58,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
   const { addToQueue } = usePlayer();
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
-
+  const { sendHaptic } = useHaptics();
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
   const [inLiked, setinLiked] = useState(false);
 
@@ -83,9 +82,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
 
   const handleAddToQueue = () => {
     TrueSheet.dismiss(name);
-    if (haptic) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    sendHaptic("light");
     setTimeout(async () => {
       const newTrack = await getTrackFromSong(editSong, theme);
       if (newTrack) {

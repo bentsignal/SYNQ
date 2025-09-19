@@ -22,9 +22,9 @@ import {
   AlbumImageModifiedEvent,
   AlbumModifiedEvent,
 } from "@/src/events/album/Events";
+import { useHaptics } from "@/src/hooks/use-haptics";
 import colors from "@/src/lib/colors";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
-import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { Ellipsis } from "lucide-react-native";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -36,7 +36,8 @@ type AlbumProps = {
 };
 
 const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
-  const { editSong, haptic, setEditAlbum } = useGlobalContext();
+  const { editSong, setEditAlbum } = useGlobalContext();
+  const { sendHaptic } = useHaptics();
 
   const [selected, setSelected] = useState(false);
   const [name, setName] = useState(album.name);
@@ -160,9 +161,7 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
   }, [editSong]);
 
   const handleMore = async () => {
-    if (haptic) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    sendHaptic("light");
     setEditAlbum(album);
     TrueSheet.present("album-sheet");
   };

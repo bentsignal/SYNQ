@@ -41,10 +41,10 @@ import {
   SongInfoModifiedEvent,
 } from "@/src/events/song/Events";
 import ListCover from "@/src/features/cover/components/list-cover";
+import { useHaptics } from "@/src/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { eq, InferSelectModel } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import * as Haptics from "expo-haptics";
 import { Ellipsis } from "lucide-react-native";
 import { PanResponder, StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, {
@@ -101,14 +101,13 @@ export default function Song({
     selectEnabled,
     selectedSongs,
     results,
-    haptic,
 
     setSelectedSongs,
     setEditSong,
   } = useGlobalContext();
 
   const { premium } = usePremiumContext();
-
+  const { sendHaptic } = useHaptics();
   const opacity = useSharedValue(previous ? 0.3 : 1);
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -292,9 +291,7 @@ export default function Song({
   };
 
   const handleMore = async () => {
-    if (haptic) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    sendHaptic("light");
     setEditSong(song);
     if (song.pageType === PageType.IMPORT) {
       TrueSheet.present("import-song-sheet");

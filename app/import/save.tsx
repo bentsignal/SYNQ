@@ -1,8 +1,5 @@
 import { useEffect, useRef } from "react";
-import InfoModal from "@/src/components/modals/InfoModal";
-import PageTitle from "@/src/components/PageTitle";
 import Progress from "@/src/components/Progress";
-import SettingsButton from "@/src/components/SettingsButton";
 import { Colors } from "@/src/constants/Colors";
 import CFG from "@/src/constants/Config";
 import { Styles } from "@/src/constants/Styles";
@@ -15,6 +12,7 @@ import importBus from "@/src/events/import";
 import { ImportBusEvent } from "@/src/events/import/Events";
 import playlistBus from "@/src/events/playlist";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
+import { useHaptics } from "@/src/hooks/use-haptics";
 import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -22,7 +20,6 @@ import Checkbox from "expo-checkbox";
 import { router, usePathname } from "expo-router";
 import * as StoreReview from "expo-store-review";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SavePrompt = () => {
   const {
@@ -48,8 +45,7 @@ const SavePrompt = () => {
 
   const { theme } = useThemeContext();
   const { premium } = usePremiumContext();
-  const insets = useSafeAreaInsets();
-
+  const { sendHaptic } = useHaptics();
   const pathname = usePathname();
   const currentPath = useRef(pathname);
 
@@ -145,6 +141,7 @@ const SavePrompt = () => {
         saveToLibrary(songs, progress)
           .then(() => {
             playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
+            sendHaptic("success");
             router.replace("/import/success");
             setTransferSize(0);
             setShowImportAd(false);
@@ -162,6 +159,7 @@ const SavePrompt = () => {
           })
           .catch((error) => {
             setLoading(false);
+            sendHaptic("error");
             router.push("/import/failure");
             setTransferSize(0);
             setShowImportAd(false);
@@ -172,6 +170,7 @@ const SavePrompt = () => {
           });
       }, 10);
     } else {
+      sendHaptic("success");
       router.push("/import/success");
       await deleteImportSongs(results);
       setResults([]);

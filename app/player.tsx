@@ -18,10 +18,10 @@ import {
 } from "@/src/controllers/ColorController";
 import { getTrackArtwork } from "@/src/controllers/PlayerController";
 import { getSongById } from "@/src/controllers/SongController";
+import { useHaptics } from "@/src/hooks/use-haptics";
 import colors from "@/src/lib/colors";
 import { getFileName } from "@/src/lib/util";
 import { useAssets } from "expo-asset";
-import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { CirclePlus, Ellipsis } from "lucide-react-native";
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -39,7 +39,9 @@ import { useActiveTrack } from "react-native-track-player";
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 const Player = () => {
-  const { haptic, setEditSong } = useGlobalContext();
+  const { setEditSong } = useGlobalContext();
+
+  const { sendHaptic } = useHaptics();
 
   const track = useActiveTrack();
 
@@ -148,9 +150,7 @@ const Player = () => {
   }, [track]);
 
   const handleMore = () => {
-    if (haptic) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    sendHaptic("light");
     setEditSong(song);
     router.push("/player/edit");
   };

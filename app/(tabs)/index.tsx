@@ -15,6 +15,7 @@ import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { importFiles } from "@/src/controllers/ImportExportController";
 import { playAd } from "@/src/controllers/PlayerController";
+import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/hooks/usePlayer";
 import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -38,7 +39,6 @@ const Home = () => {
     setResults,
     setShowImportAd,
 
-    haptic,
     adPlaying,
     adURL,
     shouldPlayAd,
@@ -53,6 +53,7 @@ const Home = () => {
 
   const { theme } = useThemeContext();
   const { premium } = usePremiumContext();
+  const { sendHaptic } = useHaptics();
 
   const {
     shuffle,
@@ -168,6 +169,7 @@ const Home = () => {
       .catch((error) => {
         console.log(error);
         setLoading(false);
+        sendHaptic("error");
         router.push("/import/failure");
       });
   };

@@ -1,13 +1,19 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Animated, PanResponder, 
-  StyleSheet, Easing, TouchableOpacity } from 'react-native';
-import * as Haptics from 'expo-haptics';
-import { useGlobalContext } from '@/src/context/GlobalProvider';
-import { Styles } from '@/src/constants/Styles';
-import { Colors } from '@/src/constants/Colors';
-import { NotificationType } from '@/src/constants/Types';
-import CFG from '@/src/constants/Config';
-import { useThemeContext } from '@/src/context/ThemeProvider';
+import React, { useEffect, useRef, useState } from "react";
+import { Colors } from "@/src/constants/Colors";
+import CFG from "@/src/constants/Config";
+import { Styles } from "@/src/constants/Styles";
+import { NotificationType } from "@/src/constants/Types";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useHaptics } from "@/src/hooks/use-haptics";
+import {
+  Animated,
+  Easing,
+  PanResponder,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 
 type NotificationProps = {
   id: string;
@@ -17,43 +23,46 @@ type NotificationProps = {
   message: string;
   trace: string;
   onClick: () => void;
-}
+};
 
-const Notification = ({ id, type, title, brief, message, trace, onClick, }: NotificationProps) => {
-
+const Notification = ({
+  id,
+  type,
+  title,
+  brief,
+  message,
+  trace,
+  onClick,
+}: NotificationProps) => {
   const translateX = useRef(new Animated.Value(600)).current;
   const opacity = useRef(new Animated.Value(1)).current;
   const [visible, setVisible] = useState(true);
 
   const {
-
-    haptic,
-
-    setShowOverlay, setNotificationType,
-    setNotificationMessage, setNotificationTitle,
-    setShowNotificationModal, setNotificationTrace,
-    notifications, removeNotification
-
+    setShowOverlay,
+    setNotificationType,
+    setNotificationMessage,
+    setNotificationTitle,
+    setShowNotificationModal,
+    setNotificationTrace,
+    notifications,
+    removeNotification,
   } = useGlobalContext();
 
   const { theme } = useThemeContext();
+  const { sendHaptic } = useHaptics();
 
   useEffect(() => {
-    if (haptic) {
-      if (type === NotificationType.ERROR) {
-        Haptics.notificationAsync(
-          Haptics.NotificationFeedbackType.Error
-        );
-      }
-      else {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
+    if (type === NotificationType.ERROR) {
+      sendHaptic("error");
+    } else {
+      sendHaptic("light");
     }
     Animated.timing(translateX, {
       toValue: 0,
       duration: 500,
       useNativeDriver: true,
-      easing: Easing.out(Easing.ease)
+      easing: Easing.out(Easing.ease),
     }).start(() => {
       setTimeout(() => {
         hideBanner();
@@ -66,12 +75,12 @@ const Notification = ({ id, type, title, brief, message, trace, onClick, }: Noti
       toValue: 0,
       duration: 300,
       useNativeDriver: true,
-      easing: Easing.out(Easing.ease)
+      easing: Easing.out(Easing.ease),
     }).start(() => {
       removeNotification(id);
       setVisible(false);
     });
-  }
+  };
 
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
@@ -104,16 +113,22 @@ const Notification = ({ id, type, title, brief, message, trace, onClick, }: Noti
   return (
     <Animated.View
       {...panResponder.panHandlers}
-      style={[BannerStyles.body, Styles.roundedContainer, Styles.backgroundBlendShadow, { 
-        opacity: opacity,
-        backgroundColor: type === NotificationType.GENERAL ? theme : Colors.error,
-        transform: [{ translateX }] 
-      }]}
+      style={[
+        BannerStyles.body,
+        Styles.roundedContainer,
+        Styles.backgroundBlendShadow,
+        {
+          opacity: opacity,
+          backgroundColor:
+            type === NotificationType.GENERAL ? theme : Colors.error,
+          transform: [{ translateX }],
+        },
+      ]}
     >
       <TouchableOpacity
         style={{
-          flexDirection: 'row',
-          width: '100%',
+          flexDirection: "row",
+          width: "100%",
         }}
         activeOpacity={0.7}
         onPress={() => {
@@ -125,23 +140,22 @@ const Notification = ({ id, type, title, brief, message, trace, onClick, }: Noti
           hideBanner();
         }}
       >
-        <Text 
-          style={[BannerStyles.title, {
-            display: title ? 'flex' : 'none'
-          }]}
+        <Text
+          style={[
+            BannerStyles.title,
+            {
+              display: title ? "flex" : "none",
+            },
+          ]}
         >
           {title} ▸
         </Text>
-        <Text 
-          style={[BannerStyles.brief, ]}
-          numberOfLines={1}
-        >
+        <Text style={[BannerStyles.brief]} numberOfLines={1}>
           {brief}
         </Text>
       </TouchableOpacity>
     </Animated.View>
   );
-
 };
 
 const BannerStyles = StyleSheet.create({
@@ -150,20 +164,20 @@ const BannerStyles = StyleSheet.create({
     marginHorizontal: 10,
     marginBottom: 10,
     zIndex: 11,
-    width: '95%',
-    overflow: 'hidden',
+    width: "95%",
+    overflow: "hidden",
   },
   brief: {
-    color: 'black',
+    color: "black",
     fontSize: 16,
     flex: 1,
   },
   title: {
-    color: 'black',
+    color: "black",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     paddingRight: 5,
-  }
+  },
 });
 
 export default Notification;

@@ -1,24 +1,20 @@
-import { Tabs } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
-import { Easing, View } from 'react-native';
-import Server from '@/src/components/import/Server';
-import { HomeIcon, LibraryIcon } from '@/src/components/TabBarIcons';
-import { Colors } from '@/src/constants/Colors';
-import { Styles } from '@/src/constants/Styles';
-import { useGlobalContext } from '@/src/context/GlobalProvider';
-import Overlay from '@/src/components/Overlay';
-import NotificationModal from '@/src/components/modals/NotificationModal';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import GlobalProgress from '@/src/components/GlobalProgress';
-import Top from '@/src/components/Top';
-import { useAssets } from 'expo-asset';
+import { useEffect, useRef, useState } from "react";
+import Server from "@/src/components/import/Server";
+import NotificationModal from "@/src/components/modals/NotificationModal";
+import Overlay from "@/src/components/Overlay";
+import { HomeIcon, LibraryIcon } from "@/src/components/TabBarIcons";
+import Top from "@/src/components/Top";
+import { Colors } from "@/src/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useAssets } from "expo-asset";
+import { Tabs } from "expo-router";
+import { Easing, View } from "react-native";
 
 const TabLayout = () => {
+  const { showOverlay, setAdURL } = useGlobalContext();
 
-  
-  const { showOverlay, setHaptic, setAdURL } = useGlobalContext();
-
-  const [assets, error] = useAssets([require('@/src/assets/audio/ad.mp3')]);
+  const [assets, error] = useAssets([require("@/src/assets/audio/ad.mp3")]);
 
   useEffect(() => {
     if (error) {
@@ -29,26 +25,10 @@ const TabLayout = () => {
     }
   }, [assets]);
 
-  useEffect(() => {
-
-    const loadHapticSetting = async () => {
-      try {
-        const haptic = await AsyncStorage.getItem('haptic');
-        setHaptic(haptic === 'false' ? false : true);
-      }
-      catch {
-        setHaptic(true);
-      }
-    }
-
-    loadHapticSetting();
-
-  }, []);
-
   return (
     <>
       <NotificationModal />
-      <Overlay show={showOverlay} activeOpacity={0.95}/>
+      <Overlay show={showOverlay} activeOpacity={0.95} />
       <Server />
       <Tabs
         screenOptions={{
@@ -64,9 +44,9 @@ const TabLayout = () => {
             backgroundColor: Colors.background,
           },
           // animation: 'shift',
-          animation: 'none',
+          animation: "none",
           transitionSpec: {
-            animation: 'timing',
+            animation: "timing",
             config: {
               duration: 300,
               easing: Easing.out(Easing.ease),
@@ -75,31 +55,28 @@ const TabLayout = () => {
         }}
       >
         <Tabs.Screen
-          name='index'
+          name="index"
           options={{
-            title: 'Home',
-            tabBarIcon: ({ color, focused }) => (
-              <HomeIcon focused={focused}/>
-            ),
-            animation: 'none',
+            title: "Home",
+            tabBarIcon: ({ color, focused }) => <HomeIcon focused={focused} />,
+            animation: "none",
             headerShown: true,
             header: () => <Top />,
           }}
         />
-        <Tabs.Screen 
-          name='library'
+        <Tabs.Screen
+          name="library"
           options={{
-            title:'Library',
+            title: "Library",
             tabBarIcon: ({ color, focused }) => (
-              <LibraryIcon focused={focused}/>
+              <LibraryIcon focused={focused} />
             ),
-            animation: 'none',
+            animation: "none",
           }}
         />
       </Tabs>
     </>
   );
-
-}
+};
 
 export default TabLayout;

@@ -19,9 +19,9 @@ import {
   PlaylistNameModifiedEvent,
   PlaylistSongCountModifiedEvent,
 } from "@/src/events/playlist/Events";
+import { useHaptics } from "@/src/hooks/use-haptics";
 import colors from "@/src/lib/colors";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
-import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { Ellipsis } from "lucide-react-native";
 import {
@@ -38,7 +38,8 @@ type PlaylistProps = {
 };
 
 const PlaylistItem = ({ playlist, bg }: PlaylistProps) => {
-  const { editSong, haptic, setEditPlaylist, numModified } = useGlobalContext();
+  const { editSong, setEditPlaylist, numModified } = useGlobalContext();
+  const { sendHaptic } = useHaptics();
 
   const [selected, setSelected] = useState(false);
   const [songCount, setSongCount] = useState(playlist.songCount);
@@ -155,9 +156,7 @@ const PlaylistItem = ({ playlist, bg }: PlaylistProps) => {
   };
 
   const handleMore = async () => {
-    if (haptic) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+    sendHaptic("light");
     setEditPlaylist(playlist);
     TrueSheet.present("playlist-sheet");
   };

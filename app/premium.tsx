@@ -14,8 +14,8 @@ import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { darkenColor } from "@/src/controllers/ColorController";
 import * as PurchaseManager from "@/src/controllers/PurchaseController";
+import { useHaptics } from "@/src/hooks/use-haptics";
 import { posthog } from "@/src/lib/posthog";
-import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import {
@@ -30,15 +30,15 @@ import {
 
 const Premium = () => {
   const {
-    haptic,
-
     addNotification,
 
     setShowOverlay,
     setShowNotificationModal,
   } = useGlobalContext();
 
-  const { premium, setPremium } = usePremiumContext();
+  const { sendHaptic } = useHaptics();
+
+  const { setPremium } = usePremiumContext();
   const { theme, logo } = useThemeContext();
 
   const [selected, setSelected] = useState(0);
@@ -206,9 +206,7 @@ const Premium = () => {
         tier: id,
       });
       await PurchaseManager.purchase(id);
-      if (haptic) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
+      sendHaptic("success");
       setPremium(true);
       updateStatus(await PurchaseManager.checkStatus());
       setLoading(false);
@@ -254,18 +252,14 @@ const Premium = () => {
         } else {
           message += "your purchase.";
         }
-        if (haptic) {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        }
+        sendHaptic("success");
         Alert.alert("Success", message, [{ text: "Ok" }]);
         setLoading(false);
       }
     } catch (error) {
       console.log(error);
       setLoading(false);
-      if (haptic) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      }
+      sendHaptic("error");
       Alert.alert("ERROR", "Could not restore purchases", [
         {
           text: "Ok",

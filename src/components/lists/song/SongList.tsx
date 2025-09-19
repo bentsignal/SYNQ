@@ -18,11 +18,11 @@ import {
   playTrack,
 } from "@/src/controllers/PlayerController";
 import { generateSongKey } from "@/src/controllers/SongController";
+import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/hooks/usePlayer";
 import { posthog } from "@/src/lib/posthog";
 import { check } from "@/src/lib/util";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Haptics from "expo-haptics";
 import { FlatList, TouchableOpacity } from "react-native";
 import DraggableFlatlist, {
   DragEndParams,
@@ -84,14 +84,14 @@ const SongList = memo(
     draggable?: boolean;
     onDragEnd?: (params: DragEndParams<any>) => void;
   }) => {
-    const { selectedId, haptic, adPlaying, setAdPlaying, shouldPlayAd, adURL } =
+    const { selectedId, adPlaying, setAdPlaying, shouldPlayAd, adURL } =
       useGlobalContext();
     const { shuffle, setSourceType, setSourceId, setSort, setOrder, setQuery } =
       usePlaybackContext();
     const { premium } = usePremiumContext();
     const { theme } = useThemeContext();
     const activeTrack = useActiveTrack();
-
+    const { sendHaptic } = useHaptics();
     const { addToQueue, updateQueue } = usePlayer();
 
     const [activeIndex, setActiveIndex] = useState(0);
@@ -109,9 +109,7 @@ const SongList = memo(
 
     const handlePlay = useCallback(
       async (song: SongType) => {
-        if (haptic) {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        }
+        sendHaptic("light");
         const id = activeTrack?.id ? activeTrack.id : -1;
         // play ad if user is non premium and has passed ad threshold
         if (!premium && shouldPlayAd && !adPlaying) {
@@ -173,7 +171,6 @@ const SongList = memo(
         }
       },
       [
-        haptic,
         premium,
         shouldPlayAd,
         adPlaying,
@@ -233,9 +230,7 @@ const SongList = memo(
               if (pageType === PageType.QUEUE && getIndex() <= activeIndex) {
                 return;
               }
-              if (haptic) {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              }
+              sendHaptic("light");
               drag();
             }}
           >

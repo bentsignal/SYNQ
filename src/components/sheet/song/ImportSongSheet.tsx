@@ -1,26 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
-import { useGlobalContext } from '@/src/context/GlobalProvider';
-import { Colors } from '@/src/constants/Colors';
-import SongInfo from '@/src/components/song/SongInfo';
-import ListCover from '@/src/components/cover/ListCover';
-import { CoverType } from '@/src/constants/Types';
-import * as Haptics from 'expo-haptics';
-import SongOptions from './SongOptions';
-import Sheet from '@/src/components/sheet';
-import SheetStyles from '@/src/components/sheet/Styles';
-import { TrueSheet } from '@lodev09/react-native-true-sheet';
-import { getLibrarySongCover } from '@/src/controllers/SongController';
+import React, { useEffect, useRef, useState } from "react";
+import ListCover from "@/src/components/cover/ListCover";
+import Sheet from "@/src/components/sheet";
+import SheetStyles from "@/src/components/sheet/Styles";
+import SongInfo from "@/src/components/song/SongInfo";
+import { CoverType } from "@/src/constants/Types";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { getLibrarySongCover } from "@/src/controllers/SongController";
+import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
+import SongOptions from "./SongOptions";
 
 type SongSheetProps = {
-  name: string,
-}
+  name: string;
+};
 
-export default function ImportSongSheet({name}: SongSheetProps) {
-
-  const { editSong, haptic } = useGlobalContext();
+export default function ImportSongSheet({ name }: SongSheetProps) {
+  const { editSong } = useGlobalContext();
   const [scrollEnabled, setScrollEnabled] = useState(false);
-  const [coverImage, setCoverImage] = useState('');
+  const [coverImage, setCoverImage] = useState("");
   const [emptyCover, setEmptyCover] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
 
@@ -28,34 +24,30 @@ export default function ImportSongSheet({name}: SongSheetProps) {
     if (index === 0) {
       setScrollEnabled(false);
       scrollRef.current?.scrollTo({ y: 0, animated: true });
-    }
-    else if (index === 1) {
+    } else if (index === 1) {
       setScrollEnabled(true);
     }
-  }
+  };
 
   const loadCover = async () => {
     try {
       if (editSong.artwork) {
         setCoverImage(editSong.artwork);
         setEmptyCover(false);
-      }
-      else {
+      } else {
         const cover = await getLibrarySongCover(editSong.id);
         if (cover) {
           setCoverImage(cover);
           setEmptyCover(false);
-        }
-        else {
-          setCoverImage('');
+        } else {
+          setCoverImage("");
           setEmptyCover(true);
         }
       }
+    } catch (error) {
+      console.log("error loading song cover:", error);
     }
-    catch (error) {
-      console.log('error loading song cover:', error);
-    }
-  }
+  };
 
   useEffect(() => {
     loadCover();
@@ -64,13 +56,13 @@ export default function ImportSongSheet({name}: SongSheetProps) {
   return (
     <Sheet name={name} onChange={onChange}>
       <View style={SheetStyles.infoContainer}>
-        <ListCover 
+        <ListCover
           type={CoverType.SONG}
           image={coverImage}
           propOnLoad={() => {}}
           empty={emptyCover}
         />
-        <SongInfo 
+        <SongInfo
           fileName={editSong.fileName}
           title={editSong.title}
           artist={editSong.artist}
@@ -81,13 +73,13 @@ export default function ImportSongSheet({name}: SongSheetProps) {
         ref={scrollRef}
         scrollEnabled={scrollEnabled}
         style={{
-          height: Dimensions.get('window').height
+          height: Dimensions.get("window").height,
         }}
         contentContainerStyle={{
           paddingBottom: 300,
         }}
       >
-        <SongOptions name={name}/>
+        <SongOptions name={name} />
       </ScrollView>
     </Sheet>
   );

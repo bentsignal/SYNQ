@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ListCover from "@/src/components/cover/ListCover";
+// import ListCover from "@/src/components/cover/ListCover";
 import Select from "@/src/components/Select";
 import SongInfo from "@/src/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
@@ -22,6 +22,8 @@ import {
   getLibrarySongCover,
   isSongEdited,
 } from "@/src/controllers/SongController";
+import { db } from "@/src/db";
+import * as schema from "@/src/db/schema";
 import albumBus from "@/src/events/album";
 import {
   AlbumBusEvent,
@@ -38,7 +40,10 @@ import {
   SongCoverModifiedEvent,
   SongInfoModifiedEvent,
 } from "@/src/events/song/Events";
+import ListCover from "@/src/features/cover/components/list-cover";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
+import { eq, InferSelectModel } from "drizzle-orm";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import * as Haptics from "expo-haptics";
 import { Ellipsis } from "lucide-react-native";
 import { PanResponder, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -49,6 +54,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import Handle from "../lists/Handle";
+
+type SchemaSong = InferSelectModel<typeof schema.songs>;
 
 type SongProps = {
   song: SongType;
@@ -76,6 +83,19 @@ export default function Song({
   const [title, setTitle] = useState("");
   const [artist, setArtist] = useState("");
   const [album, setAlbum] = useState("");
+
+  const { data: albums } = useLiveQuery(
+    db
+      .select()
+      .from(schema.albumSongs)
+      .where(eq(schema.albumSongs.songId, song.id))
+      .innerJoin(
+        schema.albums,
+        eq(schema.albumSongs.albumId, schema.albums.id),
+      ),
+  );
+
+  console.log(albums);
 
   const {
     selectEnabled,
@@ -309,11 +329,9 @@ export default function Song({
       >
         <ListCover
           image={coverImage}
-          type={CoverType.SONG}
-          fade={fadeCover}
-          empty={emptyCover}
-          propOnLoad={() => {}}
-          size={55}
+          type="song"
+          fadeOnLoad={fadeCover}
+          size={50}
         />
         <SongInfo
           fileName={fileName}
@@ -369,7 +387,6 @@ export default function Song({
 const Local = StyleSheet.create({
   container: {
     width: "100%",
-    height: 70,
   },
   contentContainer: {
     ...Styles.roundedContainer,

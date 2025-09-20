@@ -25,9 +25,7 @@ import {
 import albumBus from "@/src/events/album";
 import { AlbumBusEvent } from "@/src/events/album/Events";
 import { useHaptics } from "@/src/hooks/use-haptics";
-import { usePreferences } from "@/src/stores/preferences";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
-import * as Haptics from "expo-haptics";
 import { StyleSheet, Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,

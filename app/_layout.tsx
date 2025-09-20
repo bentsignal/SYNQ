@@ -16,8 +16,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../globals.css";
 import { db } from "@/src/db";
 import migrations from "@/src/db/migrations/migrations";
+import { useHapticStore } from "@/src/hooks/use-haptics";
 import Model from "@/src/models/Model";
-import { usePreferences } from "@/src/stores/preferences";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 
 LogBox.ignoreLogs([
@@ -37,8 +37,8 @@ const RootLayout = () => {
 
   const { success, error } = useMigrations(db, migrations);
 
-  const initializePreferences = usePreferences(
-    (state) => state.initializePreferences,
+  const loadHapticFeedbackPreference = useHapticStore(
+    (state) => state.loadHapticFeedbackPreference,
   );
 
   const [fontLoaded] = useFonts({
@@ -72,7 +72,7 @@ const RootLayout = () => {
 
     loadShouldPlayAd();
     checkDB();
-    initializePreferences();
+    loadHapticFeedbackPreference();
   }, []);
 
   useEffect(() => {

@@ -15,6 +15,13 @@
       "when": 1758039697636,
       "tag": "0001_ancient_puppet_master",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1758471089737,
+      "tag": "0002_eager_jamie_braddock",
+      "breakpoints": true
     }
   ]
 }

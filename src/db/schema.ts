@@ -3,10 +3,7 @@ import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 export const songs = sqliteTable("songs", {
   id: int("id").primaryKey({ autoIncrement: true }),
   title: text("title"),
-  edited: int("edited", { mode: "boolean" }).default(false),
-  artists: text("artists"),
-  album: text("album"),
-  genre: text("genre"),
+  snapshotAtLastExport: text(),
   duration: int("duration"),
   fileType: text("fileType"),
   fileName: text("fileName"),

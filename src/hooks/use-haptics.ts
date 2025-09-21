@@ -12,17 +12,16 @@ type HapticType =
   | "rigid";
 
 interface HapticStoreProps {
-  loadHapticFeedbackPreference: () => void;
   hapticFeedbackEnabled: boolean;
+  setHapticFeedbackEnabled: (enabled: boolean) => void;
   toggleHapticFeedback: () => void;
 }
 
 export const useHapticStore = create<HapticStoreProps>((set, get) => ({
-  loadHapticFeedbackPreference: async () => {
-    const hapticPreference = await AsyncStorage.getItem("haptic");
-    set({ hapticFeedbackEnabled: hapticPreference === "true" });
-  },
   hapticFeedbackEnabled: true,
+  setHapticFeedbackEnabled: (enabled: boolean) => {
+    set({ hapticFeedbackEnabled: enabled });
+  },
   toggleHapticFeedback: async () => {
     const currentValue = get().hapticFeedbackEnabled;
     set({ hapticFeedbackEnabled: !currentValue });
@@ -31,6 +30,15 @@ export const useHapticStore = create<HapticStoreProps>((set, get) => ({
 }));
 
 export const useHaptics = () => {
+  const setHapticFeedbackEnabled = useHapticStore(
+    (state) => state.setHapticFeedbackEnabled,
+  );
+
+  const loadHapticFeedbackPreference = async () => {
+    const hapticPreference = await AsyncStorage.getItem("haptic");
+    setHapticFeedbackEnabled(hapticPreference === "true");
+  };
+
   const sendHaptic = (type: HapticType) => {
     const hapticFeedbackEnabled =
       useHapticStore.getState().hapticFeedbackEnabled;
@@ -64,5 +72,5 @@ export const useHaptics = () => {
     }
   };
 
-  return { sendHaptic };
+  return { sendHaptic, loadHapticFeedbackPreference };
 };

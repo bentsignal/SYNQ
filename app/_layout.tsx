@@ -16,7 +16,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../globals.css";
 import { db, expo as dbExpo } from "@/src/db";
 import migrations from "@/src/db/migrations/migrations";
-import { useHapticStore } from "@/src/hooks/use-haptics";
+import { useHaptics, useHapticStore } from "@/src/hooks/use-haptics";
 import Model from "@/src/models/Model";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
@@ -39,9 +39,7 @@ const RootLayout = () => {
   const { success, error } = useMigrations(db, migrations);
   useDrizzleStudio(dbExpo);
 
-  const loadHapticFeedbackPreference = useHapticStore(
-    (state) => state.loadHapticFeedbackPreference,
-  );
+  const { loadHapticFeedbackPreference } = useHaptics();
 
   const [fontLoaded] = useFonts({
     JakartaSans: require("@/src/assets/fonts/PlusJakartaSans-VariableFont_wght.ttf"),

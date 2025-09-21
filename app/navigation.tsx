@@ -1,198 +1,142 @@
-import { Stack } from "expo-router"
 import { Colors } from "@/src/constants/Colors";
+import { Stack } from "expo-router";
 
 const Navigation = () => {
   return (
     <Stack
       screenOptions={{
+        headerShown: false,
         contentStyle: {
-          backgroundColor: Colors.background,
+          backgroundColor: "transparent",
         },
       }}
     >
-      <Stack.Screen 
-        name="(tabs)" 
-        options={{ 
-          headerShown: false,
-          animation: 'fade',
+      <Stack.Screen
+        name="(tabs)"
+        options={{
+          animation: "fade",
           animationDuration: 300,
           gestureEnabled: false,
-        }} 
-      />
-      {/* <Stack.Screen 
-        name="tracking"
-        options={{
-          headerShown: false,
-          animation: 'fade',
         }}
-      /> */}
-      <Stack.Screen 
+      />
+      <Stack.Screen
         name="settings"
         options={{
-          headerShown: false,
-          presentation: 'modal',
-          contentStyle: { backgroundColor: 'transparent' },
+          presentation: "modal",
         }}
       />
-      <Stack.Screen 
+      <Stack.Screen
         name="premium"
         options={{
           presentation: "modal",
-          headerShown: false,
-          contentStyle: { backgroundColor: 'transparent' },
         }}
       />
-      <Stack.Screen 
+      <Stack.Screen
         name="player"
         options={{
           presentation: "modal",
-          contentStyle: { backgroundColor: 'transparent' },
           gestureEnabled: true,
           gestureDirection: "vertical",
           fullScreenGestureEnabled: true,
-          headerShown: false,
         }}
       />
-      <Stack.Screen 
+      <Stack.Screen
         name="player/edit"
         options={{
           presentation: "modal",
-          headerShown: false,
           gestureEnabled: true,
           gestureDirection: "vertical",
           fullScreenGestureEnabled: true,
-          contentStyle: { backgroundColor: 'transparent' },
         }}
       />
-      <Stack.Screen 
+      <Stack.Screen
         name="queue"
         options={{
           presentation: "modal",
-          // animation: 'fade_from_bottom',
           animationDuration: 300,
           gestureEnabled: true,
-          gestureDirection: 'vertical',
+          gestureDirection: "vertical",
           fullScreenGestureEnabled: true,
-          headerShown: false,
-          contentStyle: { backgroundColor: 'transparent' },
         }}
       />
-      <Stack.Screen
-        name="playlist/[id]"
-        options={{
-          headerShown: false,
-        }}
-      />
+      <Stack.Screen name="playlist/[id]" />
+      <Stack.Screen name="album/[id]" />
+      <Stack.Screen name="artist/[id]" />
       <Stack.Screen
         name="playlist/add"
         options={{
-          headerShown: false,
-          presentation: 'modal',
-          contentStyle: { backgroundColor: 'transparent'}
+          presentation: "modal",
         }}
       />
       <Stack.Screen
         name="playlist/create"
         options={{
-          headerShown: false,
-          presentation: 'modal',
-          contentStyle: { backgroundColor: 'transparent'},
+          presentation: "modal",
         }}
       />
       <Stack.Screen
         name="playlist/edit/[id]"
         options={{
-          headerShown: false,
-          presentation: 'modal',
-          contentStyle: { backgroundColor: 'transparent'},
+          presentation: "modal",
         }}
       />
       <Stack.Screen
         name="song/edit/[id]"
         options={{
-          headerShown: false,
-          presentation: 'modal',
-          contentStyle: { backgroundColor: 'transparent'},
+          presentation: "modal",
         }}
       />
-      <Stack.Screen
-        name="artist/[id]"
-        options={{
-          headerShown: false,
-        }}
-      />
+
       <Stack.Screen
         name="artist/create"
         options={{
-          headerShown: false,
-          presentation: 'modal',
-          contentStyle: { backgroundColor: 'transparent'},
+          presentation: "modal",
         }}
       />
       <Stack.Screen
         name="artist/add"
         options={{
-          headerShown: false,
-          presentation: 'modal',
-          contentStyle: { backgroundColor: 'transparent'},
+          presentation: "modal",
         }}
       />
       <Stack.Screen
         name="artist/edit/[id]"
         options={{
-          headerShown: false,
-          presentation: 'modal',
-          contentStyle: { backgroundColor: 'transparent'},
+          presentation: "modal",
         }}
       />
       <Stack.Screen
         name="album/create"
         options={{
-          headerShown: false,
-          presentation: 'modal',
-          contentStyle: { backgroundColor: 'transparent'},
-        }}
-      />
-      <Stack.Screen
-        name="album/[id]"
-        options={{
-          headerShown: false,
+          presentation: "modal",
         }}
       />
       <Stack.Screen
         name="album/add"
         options={{
-          headerShown: false,
-          presentation: 'modal',
-          contentStyle: { backgroundColor: 'transparent'},
+          presentation: "modal",
         }}
       />
       <Stack.Screen
         name="album/edit/[id]"
         options={{
-          headerShown: false,
-          presentation: 'modal',
-          contentStyle: { backgroundColor: 'transparent'},
+          presentation: "modal",
         }}
       />
       <Stack.Screen
         name="album/reorder"
         options={{
-          headerShown: false,
-          presentation: 'modal',
-          contentStyle: { backgroundColor: 'transparent'},
+          presentation: "modal",
         }}
       />
-      <Stack.Screen 
+      <Stack.Screen
         name="import"
         options={{
-          headerShown: false,
           gestureEnabled: false,
         }}
       />
     </Stack>
   );
-  
-}
+};
 
 export default Navigation;

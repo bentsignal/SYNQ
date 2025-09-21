@@ -8,18 +8,15 @@ import PlaybackProvider from "@/src/context/PlaybackProvider";
 import PremiumProvider from "@/src/context/PremiumProvider";
 import ThemeProvider from "@/src/context/ThemeProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { LogBox } from "react-native";
 import { Settings } from "react-native-fbsdk-next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../globals.css";
-import { db, expo as dbExpo } from "@/src/db";
-import migrations from "@/src/db/migrations/migrations";
-import { useHaptics, useHapticStore } from "@/src/hooks/use-haptics";
+import { useInitDB } from "@/src/db";
+import { useFont } from "@/src/hooks/use-font";
+import { useHaptics } from "@/src/hooks/use-haptics";
 import Model from "@/src/models/Model";
-import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 
 LogBox.ignoreLogs([
   "Require cycle:",
@@ -36,14 +33,9 @@ SplashScreen.preventAutoHideAsync();
 const RootLayout = () => {
   const [shouldPlayAd, setShouldPlayAd] = useState(false);
 
-  const { success, error } = useMigrations(db, migrations);
-  useDrizzleStudio(dbExpo);
-
+  useInitDB();
   const { loadHapticFeedbackPreference } = useHaptics();
-
-  const [fontLoaded] = useFonts({
-    JakartaSans: require("@/src/assets/fonts/PlusJakartaSans-VariableFont_wght.ttf"),
-  });
+  const { fontLoaded } = useFont();
 
   useEffect(() => {
     setTimeout(() => {

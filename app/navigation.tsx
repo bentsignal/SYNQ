@@ -17,6 +17,9 @@ const Navigation = () => {
           animation: "fade",
           animationDuration: 300,
           gestureEnabled: false,
+          contentStyle: {
+            backgroundColor: Colors.background,
+          },
         }}
       />
       <Stack.Screen
@@ -133,6 +136,9 @@ const Navigation = () => {
         name="import"
         options={{
           gestureEnabled: false,
+          contentStyle: {
+            backgroundColor: Colors.background,
+          },
         }}
       />
     </Stack>

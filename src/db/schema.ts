@@ -7,7 +7,7 @@ export const songs = sqliteTable("songs", {
   duration: int("duration"),
   fileType: text("fileType"),
   pathToFile: text("pathToFile"),
-  coverImage: int("coverImageId").references(() => images.id, {
+  coverImage: text("coverImageHash").references(() => images.hash, {
     onDelete: "set null",
     onUpdate: "cascade",
   }),
@@ -16,8 +16,7 @@ export const songs = sqliteTable("songs", {
 export const images = sqliteTable(
   "images",
   {
-    id: int("id").primaryKey({ autoIncrement: true }),
-    hash: text("hash"),
+    hash: text("hash").primaryKey(),
   },
   (table) => [uniqueIndex("unique_hash").on(table.hash)],
 );
@@ -25,7 +24,7 @@ export const images = sqliteTable(
 export const playlists = sqliteTable("playlists", {
   id: int("id").primaryKey({ autoIncrement: true }),
   name: text("name"),
-  coverImage: int("coverImageId").references(() => images.id, {
+  coverImage: text("coverImageHash").references(() => images.hash, {
     onDelete: "set null",
     onUpdate: "cascade",
   }),
@@ -41,7 +40,7 @@ export const albums = sqliteTable("albums", {
   id: int("id").primaryKey({ autoIncrement: true }),
   name: text("name"),
   year: int("year"),
-  coverImage: int("coverImageId").references(() => images.id, {
+  coverImage: text("coverImageHash").references(() => images.hash, {
     onDelete: "set null",
     onUpdate: "cascade",
   }),
@@ -57,7 +56,7 @@ export const albumSongs = sqliteTable("albumSongs", {
 export const artists = sqliteTable("artists", {
   id: int("id").primaryKey({ autoIncrement: true }),
   name: text("name"),
-  profileImage: int("profileImageId").references(() => images.id, {
+  profileImage: text("profileImageHash").references(() => images.hash, {
     onDelete: "set null",
     onUpdate: "cascade",
   }),

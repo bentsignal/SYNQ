@@ -36,6 +36,13 @@
       "when": 1758568832245,
       "tag": "0004_windy_arclight",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1758574136108,
+      "tag": "0005_rainy_vapor",
+      "breakpoints": true
     }
   ]
 }

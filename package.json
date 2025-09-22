@@ -25,6 +25,7 @@
     "axios": "^1.7.7",
     "babel-plugin-react-compiler": "19.0.0-beta-af1b7da-20250417",
     "buffer": "^6.0.3",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.44.5",
     "eventemitter3": "^5.0.1",

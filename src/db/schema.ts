@@ -6,7 +6,7 @@ export const songs = sqliteTable("songs", {
   snapshotAtLastExport: text("snapshotAtLastExport"),
   duration: int("duration"),
   fileType: text("fileType"),
-  fileName: text("fileName"),
+  pathToFile: text("pathToFile"),
   coverImage: int("coverImageId").references(() => images.id, {
     onDelete: "set null",
     onUpdate: "cascade",

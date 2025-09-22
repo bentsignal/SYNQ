@@ -9,6 +9,7 @@
     "build-dev": "eas build -p ios --profile development --local",
     "build-dev-client": "eas build -p ios --profile development-client --local",
     "build-prod": "eas build -p ios --local",
+    "migrate": "drizzle-kit generate",
     "android": "expo run:android",
     "ios": "expo run:ios"
   },

@@ -8,6 +8,7 @@ export const songs = sqliteTable("songs", {
   fileType: text("fileType"),
   pathToFile: text("pathToFile"),
   originalFileName: text("originalFileName"),
+  ingestComplete: int("ingestComplete").default(0),
   coverImage: text().references(() => images.hash, {
     onDelete: "set null",
     onUpdate: "cascade",

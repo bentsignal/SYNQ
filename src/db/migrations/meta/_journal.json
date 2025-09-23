@@ -26,22 +26,8 @@
     {
       "idx": 3,
       "version": "6",
-      "when": 1758471695340,
-      "tag": "0003_small_rage",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1758568832245,
-      "tag": "0004_windy_arclight",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "6",
-      "when": 1758574136108,
-      "tag": "0005_rainy_vapor",
+      "when": 1758645034686,
+      "tag": "0003_broken_killmonger",
       "breakpoints": true
     }
   ]

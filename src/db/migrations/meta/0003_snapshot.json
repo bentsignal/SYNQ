@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "1c5efcba-d64a-482c-b24b-fea9ad952f98",
+  "id": "032bd462-82c4-4bb1-bdfc-a28d3c1a6237",
   "prevId": "f2bae144-347d-4508-a9f5-77f39c83ce78",
   "tables": {
     "albumSongs": {
@@ -66,9 +66,9 @@
           "notNull": false,
           "autoincrement": false
         },
-        "coverImageId": {
-          "name": "coverImageId",
-          "type": "integer",
+        "coverImage": {
+          "name": "coverImage",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -76,15 +76,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "albums_coverImageId_images_id_fk": {
-          "name": "albums_coverImageId_images_id_fk",
+        "albums_coverImage_images_hash_fk": {
+          "name": "albums_coverImage_images_hash_fk",
           "tableFrom": "albums",
           "tableTo": "images",
           "columnsFrom": [
-            "coverImageId"
+            "coverImage"
           ],
           "columnsTo": [
-            "id"
+            "hash"
           ],
           "onDelete": "set null",
           "onUpdate": "cascade"
@@ -142,9 +142,9 @@
           "notNull": false,
           "autoincrement": false
         },
-        "profileImageId": {
-          "name": "profileImageId",
-          "type": "integer",
+        "profileImage": {
+          "name": "profileImage",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -152,15 +152,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "artists_profileImageId_images_id_fk": {
-          "name": "artists_profileImageId_images_id_fk",
+        "artists_profileImage_images_hash_fk": {
+          "name": "artists_profileImage_images_hash_fk",
           "tableFrom": "artists",
           "tableTo": "images",
           "columnsFrom": [
-            "profileImageId"
+            "profileImage"
           ],
           "columnsTo": [
-            "id"
+            "hash"
           ],
           "onDelete": "set null",
           "onUpdate": "cascade"
@@ -204,18 +204,11 @@
     "images": {
       "name": "images",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
         "hash": {
           "name": "hash",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false,
+          "primaryKey": true,
+          "notNull": true,
           "autoincrement": false
         }
       },
@@ -281,9 +274,9 @@
           "notNull": false,
           "autoincrement": false
         },
-        "coverImageId": {
-          "name": "coverImageId",
-          "type": "integer",
+        "coverImage": {
+          "name": "coverImage",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -291,15 +284,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "playlists_coverImageId_images_id_fk": {
-          "name": "playlists_coverImageId_images_id_fk",
+        "playlists_coverImage_images_hash_fk": {
+          "name": "playlists_coverImage_images_hash_fk",
           "tableFrom": "playlists",
           "tableTo": "images",
           "columnsFrom": [
-            "coverImageId"
+            "coverImage"
           ],
           "columnsTo": [
-            "id"
+            "hash"
           ],
           "onDelete": "set null",
           "onUpdate": "cascade"
@@ -347,16 +340,16 @@
           "notNull": false,
           "autoincrement": false
         },
-        "fileName": {
-          "name": "fileName",
+        "pathToFile": {
+          "name": "pathToFile",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "coverImageId": {
-          "name": "coverImageId",
-          "type": "integer",
+        "coverImage": {
+          "name": "coverImage",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -364,15 +357,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "songs_coverImageId_images_id_fk": {
-          "name": "songs_coverImageId_images_id_fk",
+        "songs_coverImage_images_hash_fk": {
+          "name": "songs_coverImage_images_hash_fk",
           "tableFrom": "songs",
           "tableTo": "images",
           "columnsFrom": [
-            "coverImageId"
+            "coverImage"
           ],
           "columnsTo": [
-            "id"
+            "hash"
           ],
           "onDelete": "set null",
           "onUpdate": "cascade"

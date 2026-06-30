@@ -182,9 +182,12 @@ feature-oriented packages.
    - Done: global loading/progress/import-ad overlay state now lives in
      `apps/old/src/features/app-shell/context/GlobalProgressProvider.tsx`
      instead of `GlobalProvider`.
-   - Next safe slices: split notifications and sheet refs after auditing their
-     consumers. Avoid selected songs, import results, and edit targets until
-     their owning feature boundaries are clearer.
+   - Done: notification queue/modal state and actions now live in
+     `apps/old/src/features/notifications/context/NotificationsProvider.tsx`
+     instead of `GlobalProvider`.
+   - Next safe slices: split sheet refs after auditing their consumers, then
+     separate overlay/info-modal state. Avoid selected songs, import results,
+     and edit targets until their owning feature boundaries are clearer.
 
 6. Extract playback orchestration.
    - `apps/old/app/(tabs)/index.tsx` still coordinates player setup, ad timing,

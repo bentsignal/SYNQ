@@ -7,7 +7,7 @@ import Notifications from "@/src/components/notifications/Notifications";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType, NotificationType } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { createAlbum } from "@/src/controllers/AlbumController";
 import { newCover } from "@/src/controllers/ImageController";
@@ -20,7 +20,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const MemoTextInput = memo(TextInput);
 
 const CreateAlbum = () => {
-  const { addNotification } = useGlobalContext();
+  const { addNotification } = useNotificationsContext();
 
   const { sendHaptic } = useHaptics();
 

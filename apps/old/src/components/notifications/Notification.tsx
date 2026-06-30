@@ -3,7 +3,7 @@ import { Colors } from "@/src/constants/Colors";
 import CFG from "@/src/constants/Config";
 import { Styles } from "@/src/constants/Styles";
 import { NotificationType } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import {
@@ -39,15 +39,12 @@ const Notification = ({
   const [visible, setVisible] = useState(true);
 
   const {
-    setShowOverlay,
     setNotificationType,
     setNotificationMessage,
     setNotificationTitle,
-    setShowNotificationModal,
     setNotificationTrace,
-    notifications,
     removeNotification,
-  } = useGlobalContext();
+  } = useNotificationsContext();
 
   const { theme } = useThemeContext();
   const { sendHaptic } = useHaptics();

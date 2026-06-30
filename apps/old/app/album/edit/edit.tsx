@@ -8,7 +8,7 @@ import Notifications from "@/src/components/notifications";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { ArtistType, CoverType, NotificationType } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import {
   getAlbumInfo,
@@ -25,7 +25,7 @@ const MemoTextInput = memo(TextInput);
 
 const EditAlbum = ({ id }: { id: number }) => {
   const insets = useSafeAreaInsets();
-  const { addNotification } = useGlobalContext();
+  const { addNotification } = useNotificationsContext();
   const [image, setImage] = useState<string | undefined>();
   const [name, setName] = useState<string | undefined>();
   const [year, setYear] = useState<number | undefined>();

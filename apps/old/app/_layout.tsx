@@ -17,6 +17,7 @@ import { useInitDB } from "@synq/db";
 import { useFont } from "@/src/hooks/use-font";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { GlobalProgressProvider } from "@/src/features/app-shell/context/GlobalProgressProvider";
+import { NotificationsProvider } from "@/src/features/notifications/context/NotificationsProvider";
 
 LogBox.ignoreLogs([
   "Require cycle:",
@@ -72,11 +73,13 @@ const RootLayout = () => {
         <PlaybackProvider>
           <GlobalProvider initShouldPlayAd={shouldPlayAd}>
             <GlobalProgressProvider>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <GlobalProgress />
-                <Sheets />
-                <Navigation />
-              </GestureHandlerRootView>
+              <NotificationsProvider>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <GlobalProgress />
+                  <Sheets />
+                  <Navigation />
+                </GestureHandlerRootView>
+              </NotificationsProvider>
             </GlobalProgressProvider>
           </GlobalProvider>
         </PlaybackProvider>

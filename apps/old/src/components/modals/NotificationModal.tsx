@@ -8,18 +8,21 @@ import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import InfoContainer from "./InfoContainer";
 import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 
 const NotificationModal = () => {
 
   const {
       
       showNotificationModal,
-      notificationType, notificationMessage,
+      notificationMessage,
       notificationTitle, notificationTrace,
       
-      setShowNotificationModal, setShowOverlay,
+      setShowNotificationModal,
     
-  } = useGlobalContext();
+  } = useNotificationsContext();
+
+  const { setShowOverlay } = useGlobalContext();
 
   const { theme } = useThemeContext();
 

@@ -1,25 +1,30 @@
-import { View } from 'react-native';
-import Notification from './Notification';
-import { useGlobalContext } from '@/src/context/GlobalProvider';
+import { View } from "react-native";
+import Notification from "./Notification";
+import {
+  type AppNotification,
+  useNotificationsContext,
+} from "@/src/features/notifications/context/NotificationsProvider";
 
 type NotificationsProps = {
   customStyles?: {};
-}
+};
 
 const Notifications = ({ customStyles }: NotificationsProps) => {
-
-  const { notifications } = useGlobalContext();
+  const { notifications } = useNotificationsContext();
 
   return (
     <View
-      style={[customStyles, {
-        width: '100%',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        zIndex: 10
-      }]}
+      style={[
+        customStyles,
+        {
+          width: "100%",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          zIndex: 10,
+        },
+      ]}
     >
-      {notifications.map((notification: any) => (
+      {notifications.map((notification: AppNotification) => (
         <Notification
           key={notification.id}
           id={notification.id}
@@ -33,6 +38,6 @@ const Notifications = ({ customStyles }: NotificationsProps) => {
       ))}
     </View>
   );
-}
+};
 
 export default Notifications;

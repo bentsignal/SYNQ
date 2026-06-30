@@ -7,7 +7,7 @@ import Notifications from "@/src/components/notifications";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType, NotificationType } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import {
   getArtistInfo,
   updateArtist,
@@ -22,7 +22,7 @@ const MemoTextInput = memo(TextInput);
 
 const EditArtist = ({ id }: { id: number }) => {
   const insets = useSafeAreaInsets();
-  const { addNotification } = useGlobalContext();
+  const { addNotification } = useNotificationsContext();
   const [image, setImage] = useState<string | undefined>();
   const [name, setName] = useState<string | undefined>();
   const [originalName, setOriginalName] = useState<string | undefined>();

@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { NotificationType, SongType } from "@/src/constants/Types";
+import { SongType } from "@/src/constants/Types";
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -34,14 +34,6 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
   const [showOverlay, setShowOverlay] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showInfoModal, setShowInfoModal] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-  const [notificationType, setNotificationType] = useState(
-    NotificationType.GENERAL,
-  );
-  const [notificationTitle, setNotificationTitle] = useState("");
-  const [notificationMessage, setNotificationMessage] = useState("");
-  const [showNotificationModal, setShowNotificationModal] = useState(false);
-  const [notificationTrace, setNotificationTrace] = useState("");
   const [numModified, setNumModified] = useState(0);
   const [shouldSaveToLibrary, setShouldSaveToLibrary] = useState(true);
   const [importFinishRequest, setImportFinishRequest] = useState(0);
@@ -59,21 +51,6 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
   useEffect(() => {
     setShouldPlayAd(initShouldPlayAd ? true : false);
   }, [initShouldPlayAd]);
-
-  const addNotification = useCallback(
-    (type, title, brief, message, trace, onClick) => {
-      const id = Date.now().toString();
-      setNotifications((prev) => [
-        ...prev,
-        { id, type, title, brief, message, trace, onClick },
-      ]);
-    },
-    [],
-  );
-
-  const removeNotification = useCallback((id) => {
-    setNotifications((prev) => prev.filter((item) => item.id !== id));
-  }, []);
 
   const requestImportFinish = useCallback(() => {
     setImportFinishRequest((value) => value + 1);
@@ -126,20 +103,6 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
         setErrorMessage,
         showInfoModal,
         setShowInfoModal,
-        notifications,
-        setNotifications,
-        notificationType,
-        setNotificationType,
-        notificationTitle,
-        setNotificationTitle,
-        notificationMessage,
-        setNotificationMessage,
-        showNotificationModal,
-        setShowNotificationModal,
-        notificationTrace,
-        setNotificationTrace,
-        addNotification,
-        removeNotification,
         numModified,
         setNumModified,
         shouldSaveToLibrary,

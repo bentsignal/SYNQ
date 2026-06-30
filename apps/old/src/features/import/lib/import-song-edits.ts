@@ -1,5 +1,11 @@
 import { AlbumType, ArtistType, SongType } from "@/src/constants/Types";
-import { getLibraryAlbumCoverPath } from "@/src/features/library/repository/library-entity-repository";
+import { writeCoverImageToDirectory } from "@/src/features/images/repository/image-repository";
+import {
+  getLibraryAlbumCoverPath,
+  updateLibraryAlbum,
+} from "@/src/features/library/repository/library-entity-repository";
+import { getLibraryAlbumSongs } from "@/src/features/library/repository/library-song-repository";
+import SongModel from "@/src/models/SongModel";
 import * as FileSystem from "expo-file-system";
 
 const uniqueArtistsById = (artists: ArtistType[]) => {
@@ -105,4 +111,55 @@ export const removeImportSongs = async (songs: SongType[], ids: number[]) => {
   }
 
   return remainingSongs;
+};
+
+export const saveImportSongEdits = async ({
+  songs,
+  ids,
+  title,
+  artist,
+  album,
+  artwork,
+}: {
+  songs: SongType[];
+  ids: number[];
+  title: string;
+  artist: string;
+  album: string;
+  artwork: string;
+}) => {
+  for (const song of songs) {
+    if (!ids.includes(song.id)) {
+      continue;
+    }
+
+    song.edited = true;
+    song.title = title || song.title;
+    song.artist = artist || song.artist;
+    song.album = album || song.album;
+
+    const importAlbum = song.importAlbums?.[0];
+    if (importAlbum && artwork) {
+      const albumDirectory = `${FileSystem.documentDirectory}albums/${importAlbum.id}`;
+      await writeCoverImageToDirectory(artwork, albumDirectory);
+      await updateLibraryAlbum({
+        id: importAlbum.id,
+        image: artwork,
+      });
+
+      await SongModel.getInstance().flagSongAsEdited(song.id);
+      const albumSongs = await getLibraryAlbumSongs({
+        albumId: importAlbum.id,
+      });
+      for (const albumSong of albumSongs) {
+        if (albumSong.id !== song.id) {
+          await SongModel.getInstance().flagSongAsEdited(albumSong.id);
+        }
+      }
+    } else {
+      song.artwork = artwork || song.artwork;
+    }
+  }
+
+  return songs;
 };

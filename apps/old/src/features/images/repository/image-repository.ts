@@ -128,6 +128,87 @@ export const writeImageToFileSystem = async (
   await FileSystem.deleteAsync(tempPath);
 };
 
+export const writeCoverImageToDirectory = async (
+  base64image: string,
+  directory: string,
+) => {
+  if (!base64image) {
+    return;
+  }
+
+  const infoString = base64image.split(/,(.*)/s)[0];
+  const mimeTypeFull = infoString.split(/;(.*)/s)[0];
+  const mimeType = mimeTypeFull.split(/:(.*)/s)[1];
+  const buffer = base64image.split(",")[1];
+  let extension = "";
+
+  if (mimeType === "image/jpeg") {
+    extension = "jpg";
+  } else if (mimeType === "image/png") {
+    extension = "png";
+  }
+
+  if (extension === "") {
+    throw new Error("Invalid image format: " + mimeType);
+  }
+
+  const directoryInfo = await FileSystem.getInfoAsync(directory);
+  if (!directoryInfo.exists) {
+    await FileSystem.makeDirectoryAsync(directory, {
+      intermediates: true,
+    });
+  }
+
+  const tempPath = `${directory}/cover_temp.${extension}`;
+  await FileSystem.writeAsStringAsync(tempPath, buffer, { encoding: "base64" });
+
+  const { width: imageWidth } = await new Promise<{ width: number }>(
+    (resolve, reject) => {
+      Image.getSize(tempPath, (width) => resolve({ width }), reject);
+    },
+  );
+  const fullResizeOptions: ImageManipulator.ActionResize = {
+    resize: {
+      width: Math.min(1500, imageWidth),
+      height: Math.min(1500, imageWidth),
+    },
+  };
+  const smallResizeOptions: ImageManipulator.ActionResize = {
+    resize: {
+      width: Math.min(200, imageWidth),
+      height: Math.min(200, imageWidth),
+    },
+  };
+
+  const fullConvert = await ImageManipulator.manipulateAsync(
+    tempPath,
+    [fullResizeOptions],
+    { compress: 1, format: SaveFormat.JPEG, base64: true },
+  );
+  if (fullConvert.base64) {
+    await FileSystem.writeAsStringAsync(
+      `${directory}/cover_full.jpg`,
+      fullConvert.base64,
+      { encoding: "base64" },
+    );
+  }
+
+  const smallConvert = await ImageManipulator.manipulateAsync(
+    tempPath,
+    [smallResizeOptions],
+    { compress: 0.5, format: SaveFormat.JPEG, base64: true },
+  );
+  if (smallConvert.base64) {
+    await FileSystem.writeAsStringAsync(
+      `${directory}/cover_small.jpg`,
+      smallConvert.base64,
+      { encoding: "base64" },
+    );
+  }
+
+  await FileSystem.deleteAsync(tempPath);
+};
+
 export const getImagePathFromHash = (hash: string) => {
   return {
     pathToFullImage: `${imageDirectory}/${hash}-full.jpg`,

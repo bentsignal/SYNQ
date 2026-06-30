@@ -23,8 +23,10 @@ import {
 } from "@/src/features/library/repository/library-song-repository";
 import { updateSongsInLibrary } from "@/src/controllers/LibraryController";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
-import { getImportSongCover } from "@/src/features/import/lib/import-song-edits";
-import { saveEdits } from "@/src/controllers/SongController";
+import {
+  getImportSongCover,
+  saveImportSongEdits,
+} from "@/src/features/import/lib/import-song-edits";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { getDurationString } from "@/src/lib/util";
 import { router, useFocusEffect } from "expo-router";
@@ -140,25 +142,25 @@ const EditSong = ({ id }: { id: number }) => {
           newImage,
         );
       } else if (editSong.pageType === PageType.IMPORT) {
-        const newResults = await saveEdits(
-          results,
-          [editSong.id],
-          newTitle,
+        const newResults = await saveImportSongEdits({
+          songs: results,
+          ids: [editSong.id],
+          title: newTitle,
           artist,
           album,
-          newImage,
-        );
+          artwork: newImage,
+        });
         setResults(newResults);
         setNumModified(numModified + 1);
       } else if (selectedSongs.length > 0) {
-        const newResults = await saveEdits(
-          results,
-          selectedSongs,
-          newTitle,
+        const newResults = await saveImportSongEdits({
+          songs: results,
+          ids: selectedSongs,
+          title: newTitle,
           artist,
           album,
-          newImage,
-        );
+          artwork: newImage,
+        });
         setResults(newResults);
         setNumModified(numModified + 1);
       }

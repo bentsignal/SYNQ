@@ -172,6 +172,9 @@ feature-oriented packages.
    - Import-song cover fallback, import-result removal, and song list key
      generation now live in feature-level helpers instead of requiring
      `SongController` from UI components.
+   - Import song edit saves now run through the import feature helper with
+     hash-backed album cover updates, removing the final app-level
+     `SongController` import.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

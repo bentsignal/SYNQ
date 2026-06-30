@@ -27,8 +27,8 @@ const CreateAlbum = () => {
   const { theme } = useThemeContext();
 
   const [name, setName] = useState("");
-  const [year, setYear] = useState<number | null>(null);
-  const [image, setImage] = useState<string | null>(null);
+  const [year, setYear] = useState<number | undefined>();
+  const [image, setImage] = useState<string | undefined>();
   const insets = useSafeAreaInsets();
 
   const handleUpdateImage = async () => {
@@ -99,7 +99,9 @@ const CreateAlbum = () => {
           defaultValue={year?.toString()}
           onEndEditing={(evt) =>
             setYear(
-              evt.nativeEvent.text ? parseInt(evt.nativeEvent.text) : null,
+              evt.nativeEvent.text
+                ? parseInt(evt.nativeEvent.text)
+                : undefined,
             )
           }
         />
@@ -125,10 +127,10 @@ const Local = StyleSheet.create({
     ...ModalStyles.roundedTop,
   },
   textBox: {
-    fontSize: 16,
-    marginBottom: 20,
     ...Styles.textbox,
     ...Styles.roundedContainer,
+    fontSize: 16,
+    marginBottom: 20,
     width: "90%",
   },
   scrollView: {

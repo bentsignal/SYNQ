@@ -93,9 +93,14 @@ export const getAlbumCover = async (albumId: number, full: boolean = false) => {
   }
 }
 
-export const updateAlbum = async (albumId: number, name: string, year?: number, image?: string) => {
+export const updateAlbum = async (
+  albumId: number,
+  name?: string,
+  year?: number,
+  image?: string,
+) => {
   if (name || year !== undefined) {
-    await AlbumModel.getInstance().updateAlbum(albumId, name, year);
+    await AlbumModel.getInstance().updateAlbum(albumId, name ?? "", year);
   }
   if (image) {
     await writeImageToLibrary(image, `${FileSystem.documentDirectory}albums/${albumId}`);
@@ -148,7 +153,11 @@ export const getSongsFromAlbum = async (
   return results.map(result => getSongByResult(result));
 }
 
-export const getAlbumFromMetadata = async (value: string, year?: number, image?: string): Promise<AlbumType> => {
+export const getAlbumFromMetadata = async (
+  value: string,
+  year?: number,
+  image?: string,
+): Promise<AlbumType | null> => {
   if (value === '' || value === null || value === undefined) {
     return null;
   }
@@ -164,7 +173,10 @@ export const getAlbumFromMetadata = async (value: string, year?: number, image?:
 
 }
 
-export const getAlbumCoverFromSong = async (songId: number, full: boolean = false): Promise<string> => {
+export const getAlbumCoverFromSong = async (
+  songId: number,
+  full: boolean = false,
+): Promise<string | null> => {
   const albums = await getAlbumsFromSong(songId);
   for (let i = 0; i < albums.length; i++) {
     const path = await getAlbumCover(albums[i].id, full);

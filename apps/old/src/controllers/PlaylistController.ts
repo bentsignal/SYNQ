@@ -112,7 +112,11 @@ const makePlaylistsDir = async () => {
   }
 }
 
-export const updatePlaylist = async (playlistId: number, name: string, image: string) => {
+export const updatePlaylist = async (
+  playlistId: number,
+  name?: string,
+  image?: string,
+) => {
   const db = PlaylistModel.getInstance();
   if (name) {
     await db.updatePlaylist(playlistId, name);

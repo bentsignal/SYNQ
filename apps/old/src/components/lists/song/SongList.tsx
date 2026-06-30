@@ -282,7 +282,10 @@ const SongList = memo(
       ],
     );
 
-    const getItemLayout = (data: SongType[], index: number) => ({
+    const getItemLayout = (
+      data: ArrayLike<SongType> | null | undefined,
+      index: number,
+    ) => ({
       length: 70,
       offset: 70 * index,
       index,

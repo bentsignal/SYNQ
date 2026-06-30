@@ -19,8 +19,11 @@ feature-oriented packages.
   `ShuffleButton`, and `PlayerController` has been reduced, and `SongList`
   source metadata now has local defaults/guards. The shared list/query UI
   boundary has also been tightened around optional sort state, draggable item
-  rendering, and album/artist relation rows. Treat remaining errors as a
-  tracked cleanup lane, not a monorepo migration blocker.
+  rendering, and album/artist relation rows. Album, artist, and playlist
+  create/edit routes now normalize optional form values to `undefined`, and
+  their update controllers expose the optional-field behavior they already had
+  at runtime. Treat remaining errors as a tracked cleanup lane, not a monorepo
+  migration blocker.
 
 ## Priority Lanes
 
@@ -276,8 +279,11 @@ feature-oriented packages.
      calling playback queue helpers.
    - Done: tighten shared list/query component nullability in `List`,
      `QueryWrapper`, `AlbumItem`, `ArtistItem`, and the album header.
-   - Next: continue strict-null cleanup in route screens, starting with album,
-     artist, playlist create/edit forms and the player route.
+   - Done: normalize album, artist, and playlist create/edit form optional
+     values, remove duplicate textbox style overwrites, and tighten the
+     matching update controller contracts.
+   - Next: continue strict-null cleanup in the player route, backup settings,
+     cover editing, and import/library controllers.
 
 ## Guardrails
 

@@ -23,13 +23,16 @@ const MemoTextInput = memo(TextInput);
 const EditPlaylist = ({ id }: { id: number }) => {
   const insets = useSafeAreaInsets();
   const { addNotification } = useGlobalContext();
-  const [image, setImage] = useState<string | null>(null);
-  const [name, setName] = useState<string | null>(null);
-  const [originalName, setOriginalName] = useState<string | null>(null);
+  const [image, setImage] = useState<string | undefined>();
+  const [name, setName] = useState<string | undefined>();
+  const [originalName, setOriginalName] = useState<string | undefined>();
 
   const refreshInfo = async () => {
     try {
       const result = await getPlaylistInfo(id);
+      if (!result) {
+        return;
+      }
       setName(result.name);
       setOriginalName(result.name);
     } catch (error) {
@@ -43,7 +46,7 @@ const EditPlaylist = ({ id }: { id: number }) => {
         throw new Error("Name is required");
       } else {
         setName(text);
-        await updatePlaylist(id, text === originalName ? null : text, image);
+        await updatePlaylist(id, text === originalName ? undefined : text, image);
       }
     } catch (error) {
       const trace = error instanceof Error ? error.message : String(error);
@@ -62,7 +65,7 @@ const EditPlaylist = ({ id }: { id: number }) => {
     const cover = await newCover();
     if (cover) {
       setImage(cover);
-      await updatePlaylist(id, name === originalName ? null : name, cover);
+      await updatePlaylist(id, name === originalName ? undefined : name, cover);
     }
   };
 
@@ -148,10 +151,10 @@ const Local = StyleSheet.create({
     width: "100%",
   },
   textBox: {
-    fontSize: 16,
-    marginBottom: 20,
     ...Styles.textbox,
     ...Styles.roundedContainer,
+    fontSize: 16,
+    marginBottom: 20,
     width: "90%",
   },
   notifications: {

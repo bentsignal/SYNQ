@@ -26,20 +26,20 @@ const MemoTextInput = memo(TextInput);
 const EditAlbum = ({ id }: { id: number }) => {
   const insets = useSafeAreaInsets();
   const { addNotification } = useGlobalContext();
-  const [image, setImage] = useState<string | null>(null);
-  const [name, setName] = useState<string | null>(null);
-  const [year, setYear] = useState<number | null>(null);
-  const [originalName, setOriginalName] = useState<string | null>(null);
-  const [originalYear, setOriginalYear] = useState<number | null>(null);
+  const [image, setImage] = useState<string | undefined>();
+  const [name, setName] = useState<string | undefined>();
+  const [year, setYear] = useState<number | undefined>();
+  const [originalName, setOriginalName] = useState<string | undefined>();
+  const [originalYear, setOriginalYear] = useState<number | undefined>();
   const [artists, setArtists] = useState<ArtistType[]>([]);
 
   const refreshInfo = useCallback(async () => {
     try {
       const result = await getAlbumInfo(id);
-      setName(result?.name ?? null);
-      setYear(result?.year ?? null);
-      setOriginalName(result?.name ?? null);
-      setOriginalYear(result?.year ?? null);
+      setName(result?.name);
+      setYear(result?.year);
+      setOriginalName(result?.name);
+      setOriginalYear(result?.year);
     } catch (error) {
       console.error("error getting album info:", error);
     }
@@ -73,7 +73,7 @@ const EditAlbum = ({ id }: { id: number }) => {
 
   const yearInputValidation = async (text: string) => {
     try {
-      const yearNum = text ? parseInt(text) : null;
+      const yearNum = text ? parseInt(text) : undefined;
       setYear(yearNum);
       await updateAlbum(id, name, yearNum, image);
     } catch (error) {
@@ -95,7 +95,7 @@ const EditAlbum = ({ id }: { id: number }) => {
       setImage(cover);
       await updateAlbum(
         id,
-        name === originalName ? null : name,
+        name === originalName ? undefined : name,
         year === originalYear ? undefined : year,
         cover,
       );
@@ -226,10 +226,10 @@ const Local = StyleSheet.create({
     width: "100%",
   },
   textBox: {
-    fontSize: 16,
-    marginBottom: 20,
     ...Styles.textbox,
     ...Styles.roundedContainer,
+    fontSize: 16,
+    marginBottom: 20,
     width: "90%",
   },
   notifications: {

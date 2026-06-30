@@ -23,15 +23,15 @@ const MemoTextInput = memo(TextInput);
 const EditArtist = ({ id }: { id: number }) => {
   const insets = useSafeAreaInsets();
   const { addNotification } = useGlobalContext();
-  const [image, setImage] = useState<string | null>(null);
-  const [name, setName] = useState<string | null>(null);
-  const [originalName, setOriginalName] = useState<string | null>(null);
+  const [image, setImage] = useState<string | undefined>();
+  const [name, setName] = useState<string | undefined>();
+  const [originalName, setOriginalName] = useState<string | undefined>();
 
   const refreshInfo = async () => {
     try {
       const result = await getArtistInfo(id);
-      setName(result?.name ?? null);
-      setOriginalName(result?.name ?? null);
+      setName(result?.name);
+      setOriginalName(result?.name);
     } catch (error) {
       console.error("error getting artist info:", error);
     }
@@ -43,7 +43,7 @@ const EditArtist = ({ id }: { id: number }) => {
         throw new Error("Name is required");
       } else {
         setName(text);
-        await updateArtist(id, text === originalName ? null : text, image);
+        await updateArtist(id, text === originalName ? undefined : text, image);
       }
     } catch (error) {
       const trace = error instanceof Error ? error.message : String(error);
@@ -62,7 +62,7 @@ const EditArtist = ({ id }: { id: number }) => {
     const cover = await newCover();
     if (cover) {
       setImage(cover);
-      await updateArtist(id, name === originalName ? null : name, cover);
+      await updateArtist(id, name === originalName ? undefined : name, cover);
     }
   };
 
@@ -148,10 +148,10 @@ const Local = StyleSheet.create({
     width: "100%",
   },
   textBox: {
-    fontSize: 16,
-    marginBottom: 20,
     ...Styles.textbox,
     ...Styles.roundedContainer,
+    fontSize: 16,
+    marginBottom: 20,
     width: "90%",
   },
   notifications: {

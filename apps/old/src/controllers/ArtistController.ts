@@ -82,10 +82,14 @@ export const getArtistCover = async (artistId: number, full: boolean = false) =>
   }
 }
 
-export const updateArtist = async (artistId: number, name: string, image: string) => {
-  const db = ArtistModel.getInstance();
+export const updateArtist = async (
+  artistId: number,
+  name?: string,
+  image?: string,
+) => {
+  const model = ArtistModel.getInstance();
   if (name) {
-    await db.updateArtist(artistId, name);
+    await model.updateArtist(artistId, name);
   }
   if (image) {
     await writeImageToLibrary(image, `${FileSystem.documentDirectory}artists/${artistId}`);

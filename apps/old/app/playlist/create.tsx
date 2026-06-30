@@ -26,7 +26,7 @@ const CreatePlaylist = () => {
   const { theme } = useThemeContext();
 
   const [name, setName] = useState("");
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState<string | undefined>();
   const insets = useSafeAreaInsets();
 
   const handleUpdateImage = async () => {
@@ -110,10 +110,10 @@ const Local = StyleSheet.create({
     ...ModalStyles.roundedTop,
   },
   textBox: {
-    fontSize: 16,
-    marginBottom: 20,
     ...Styles.textbox,
     ...Styles.roundedContainer,
+    fontSize: 16,
+    marginBottom: 20,
     width: "90%",
   },
   scrollView: {

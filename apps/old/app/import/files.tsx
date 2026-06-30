@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import ImportBlur from "@/src/features/import/components/Blur";
 import SongList from "@/src/features/library/components/lists/song";
 import Progress from "@/src/features/import/components/Progress";
@@ -6,8 +5,8 @@ import { Styles } from "@/src/constants/Styles";
 import { PageType } from "@/src/constants/Types";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
-import { getCompletion } from "@/src/lib/util";
-import { Text, View } from "react-native";
+import { useImportTransferCompletion } from "@/src/features/import/hooks/use-import-transfer-completion";
+import { View } from "react-native";
 
 const Files = () => {
   const {
@@ -19,13 +18,10 @@ const Files = () => {
   } = useImportFlowContext();
 
   const { premium } = usePremiumContext();
-
-  const [completion, setCompletion] = useState(0);
-  useEffect(() => {
-    if (transferSize >= 0 && transferProgress >= 0) {
-      setCompletion(getCompletion(transferSize, transferProgress));
-    }
-  }, [transferProgress]);
+  const completion = useImportTransferCompletion({
+    transferProgress,
+    transferSize,
+  });
 
   const getBody = () => {
     if (loading || loadAnimInProgress) {

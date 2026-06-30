@@ -420,6 +420,9 @@ feature-oriented packages.
    - Done: import session state (`results`, transfer progress, loading,
      export-disabled state, selected transfer row, and Wi-Fi transfer address)
      now lives in `ImportFlowProvider` instead of `GlobalProvider`.
+   - Done: import file and Wi-Fi routes now derive transfer completion through
+     `apps/old/src/features/import/hooks/use-import-transfer-completion.ts`
+     instead of mirroring progress into route-local state.
    - Done: edit/action-sheet state now lives in
      `apps/old/src/features/action-sheet/context/ActionSheetProvider.tsx`, and
      the legacy `GlobalProvider` has been removed.

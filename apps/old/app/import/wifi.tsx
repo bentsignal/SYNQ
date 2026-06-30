@@ -1,8 +1,7 @@
 import { Text, View, Dimensions, StyleSheet } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Styles } from '@/src/constants/Styles';
 import SongList from '@/src/features/library/components/lists/song';
-import PageTitle from '@/src/shared/components/PageTitle';
 import ImportInstructions from '@/src/features/import/components/Instructions';
 import { Colors } from '@/src/constants/Colors';
 import Progress from '@/src/features/import/components/Progress';
@@ -10,9 +9,8 @@ import { PageType } from '@/src/constants/Types';
 import { usePremiumContext } from '@/src/features/premium/context/PremiumProvider';
 import { useImportFlowContext } from '@/src/features/import/context/ImportFlowProvider';
 import CFG from '@/src/constants/Config';
-import SettingsButton from '@/src/shared/components/SettingsButton';
 import ImportBlur from '@/src/features/import/components/Blur';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useImportTransferCompletion } from '@/src/features/import/hooks/use-import-transfer-completion';
 
 const WiFi = () => {
 
@@ -27,7 +25,6 @@ const WiFi = () => {
   } = useImportFlowContext();
 
   const { premium } = usePremiumContext();
-  const insets = useSafeAreaInsets();
 
   const Local = StyleSheet.create({
     container: {
@@ -40,21 +37,17 @@ const WiFi = () => {
     }
   });
 
-  const [completion, setCompletion] = useState(0);
-  const [URL, setURL] = useState('');
+  const completion = useImportTransferCompletion({
+    transferProgress,
+    transferSize,
+  });
+  const url = !wifiDisabled ? ip : '';
 
   useEffect(() => {
 
-    setExportDisabled(results.length > 0 ? false : true);
-    setURL(!wifiDisabled ? `${ip}` : '');
+    setExportDisabled(results.length === 0);
 
-  }, []);
-
-  useEffect(() => {
-    if (transferSize > 0 && transferProgress >= 0) {
-      setCompletion(((transferProgress / transferSize) * 100));
-    }
-  }, [transferProgress]);
+  }, [results.length, setExportDisabled]);
 
   const getBody = () => {
     if (wifiDisabled) {
@@ -102,26 +95,12 @@ const WiFi = () => {
     }
   }
 
-  const getInstructions = () => {
-    if (!wifiDisabled && results.length === 0 && transferSize <= 0) {
-      return (
-        <ImportInstructions
-          title='In your web browser, enter:'
-          desc={`${URL}${CFG.PORT === 80 ? '' : `:${CFG.PORT}`}`}
-          icon={require('@/src/assets/icons/wifi.png')}
-          disabled={wifiDisabled}
-          handlePress={() => {}}
-        />
-      );
-    }
-  }
-
   return (
     <>
       {!wifiDisabled && results.length === 0 && transferSize <= 0 &&
         <ImportInstructions
           title='In your web browser, enter:'
-          desc={`${URL}${CFG.PORT === 80 ? '' : `:${CFG.PORT}`}`}
+          desc={`${url}${CFG.PORT === 80 ? '' : `:${CFG.PORT}`}`}
           icon={require('@/src/assets/icons/wifi.png')}
           disabled={wifiDisabled}
           handlePress={() => {}}

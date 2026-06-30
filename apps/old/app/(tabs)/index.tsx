@@ -100,7 +100,9 @@ const Home = () => {
   useEffect(() => {
     const initIndex = async () => {
       const index = await TrackPlayer.getActiveTrackIndex();
-      setIndex(index);
+      if (index !== undefined) {
+        setIndex(index);
+      }
     };
     initIndex();
   }, []);
@@ -109,6 +111,10 @@ const Home = () => {
   useEffect(() => {
     const checkNewIndex = async () => {
       const newIndex = await TrackPlayer.getActiveTrackIndex();
+      if (newIndex === undefined) {
+        return;
+      }
+
       if (newIndex !== index) {
         if (newIndex - index === 1 && addOffset > 0) {
           decrementAddOffset();
@@ -137,7 +143,9 @@ const Home = () => {
     const updateLastTrackIndex = async () => {
       if (track) {
         const index = await TrackPlayer.getActiveTrackIndex();
-        await AsyncStorage.setItem("lastTrackIndex", index.toString());
+        if (index !== undefined) {
+          await AsyncStorage.setItem("lastTrackIndex", index.toString());
+        }
       }
     };
     updateLastTrackIndex();
@@ -250,7 +258,7 @@ const Home = () => {
           }
           break;
         case Event.PlaybackQueueEnded:
-          if (loop && track) {
+          if (loop && track && sourceType !== null && sourceId !== null) {
             updateQueue(
               track.id,
               shuffle,

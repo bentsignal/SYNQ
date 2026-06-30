@@ -89,7 +89,7 @@ export const playTrack = async (track: Track): Promise<void> => {
   await TrackPlayer.play();
 };
 
-export const getTrackArtwork = (track: Track) => {
+export const getTrackArtwork = (track?: Track) => {
   if (typeof track?.artwork === "string") {
     return track?.artwork;
   } else {

@@ -28,7 +28,7 @@ export const isValidNumString = (str: string) => {
 
 // get file name from global path
 export const getFileName = (path?: string) => {
-  return path ? path.split("/").pop() : "";
+  return path ? (path.split("/").pop() ?? "") : "";
 };
 
 export const formatTime = (totalSeconds: number) => {

@@ -140,7 +140,12 @@ const Player = () => {
     };
 
     const getSong = async () => {
-      const currentSong = await getSongById(track?.id);
+      if (track === undefined) {
+        setSong(null);
+        return;
+      }
+
+      const currentSong = await getSongById(track.id);
       currentSong.pageType = PageType.PLAYER;
       setSong(currentSong);
     };
@@ -150,6 +155,10 @@ const Player = () => {
   }, [track]);
 
   const handleMore = () => {
+    if (!song) {
+      return;
+    }
+
     sendHaptic("light");
     setEditSong(song);
     router.push("/player/edit");
@@ -164,6 +173,10 @@ const Player = () => {
   };
 
   const handleAddToPlaylist = () => {
+    if (!song) {
+      return;
+    }
+
     setEditSong(song);
     router.push("/playlist/add");
   };

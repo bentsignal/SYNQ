@@ -22,8 +22,10 @@ feature-oriented packages.
   rendering, and album/artist relation rows. Album, artist, and playlist
   create/edit routes now normalize optional form values to `undefined`, and
   their update controllers expose the optional-field behavior they already had
-  at runtime. Treat remaining errors as a tracked cleanup lane, not a monorepo
-  migration blocker.
+  at runtime. The home/player playback route now guards missing TrackPlayer
+  index, track, and source metadata before updating local playback state or
+  rebuilding queues. Treat remaining errors as a tracked cleanup lane, not a
+  monorepo migration blocker.
 
 ## Priority Lanes
 
@@ -282,8 +284,10 @@ feature-oriented packages.
    - Done: normalize album, artist, and playlist create/edit form optional
      values, remove duplicate textbox style overwrites, and tighten the
      matching update controller contracts.
-   - Next: continue strict-null cleanup in the player route, backup settings,
-     cover editing, and import/library controllers.
+   - Done: guard missing active track/index/source metadata in the home tab and
+     player route playback UI.
+   - Next: continue strict-null cleanup in backup settings, cover editing, and
+     import/library controllers.
 
 ## Guardrails
 

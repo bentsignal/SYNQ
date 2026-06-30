@@ -1,4 +1,3 @@
-import { SongType } from "@/src/constants/Types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SQLite from "expo-sqlite";
 

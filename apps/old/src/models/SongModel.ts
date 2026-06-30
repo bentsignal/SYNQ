@@ -6,10 +6,6 @@ export default class SongModel extends Model {
 
   private static instance: SongModel;
 
-  constructor() {
-    super();
-  }
-
   public static getInstance(): SongModel {
     if (!SongModel.instance) {
       SongModel.instance = new SongModel();

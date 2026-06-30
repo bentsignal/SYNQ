@@ -241,6 +241,9 @@ feature-oriented packages.
    - Backup restore/erase database reset now goes through a backup feature
      service instead of importing legacy `Model` directly from the settings
      route.
+   - Unreferenced legacy `AlbumModel`, `ArtistModel`, and `PlaylistModel`
+     files have been removed; remaining model compatibility is limited to
+     backup database reset/setup and song edited/export flag writes.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

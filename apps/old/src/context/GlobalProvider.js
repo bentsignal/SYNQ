@@ -2,14 +2,13 @@ import React, {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useState,
 } from "react";
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
 
-const GlobalProvider = ({ children, initShouldPlayAd }) => {
+const GlobalProvider = ({ children }) => {
   const [homeState, setHomeState] = useState(0);
   const [importState, setImportState] = useState(0);
   const [results, setResults] = useState([]);
@@ -25,18 +24,9 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
   const [numModified, setNumModified] = useState(0);
   const [shouldSaveToLibrary, setShouldSaveToLibrary] = useState(true);
   const [importFinishRequest, setImportFinishRequest] = useState(0);
-  const [adPlaying, setAdPlaying] = useState(false);
-  const [adURL, setAdURL] = useState("");
-  const [shouldPlayAd, setShouldPlayAd] = useState(
-    initShouldPlayAd ? true : false,
-  );
   const [editPlaylist, setEditPlaylist] = useState({});
   const [editArtist, setEditArtist] = useState({});
   const [editAlbum, setEditAlbum] = useState({});
-
-  useEffect(() => {
-    setShouldPlayAd(initShouldPlayAd ? true : false);
-  }, [initShouldPlayAd]);
 
   const requestImportFinish = useCallback(() => {
     setImportFinishRequest((value) => value + 1);
@@ -75,12 +65,6 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
         setShouldSaveToLibrary,
         importFinishRequest,
         requestImportFinish,
-        adPlaying,
-        setAdPlaying,
-        adURL,
-        setAdURL,
-        shouldPlayAd,
-        setShouldPlayAd,
         editPlaylist,
         setEditPlaylist,
         editArtist,

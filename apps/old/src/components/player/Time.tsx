@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
+import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { formatTime } from "@/src/lib/util";
 import { Dimensions, PanResponder, StyleSheet, Text, View } from "react-native";
 import {
@@ -25,7 +25,7 @@ import TrackPlayer, {
 const Time = () => {
   const interval = 50;
 
-  const { adPlaying } = useGlobalContext();
+  const { adPlaying } = usePlaybackAdContext();
   const { theme } = useThemeContext();
   const { position, duration } = useProgress(interval);
   const playbackState = usePlaybackState();

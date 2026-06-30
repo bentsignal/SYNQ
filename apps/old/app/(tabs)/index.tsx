@@ -18,6 +18,7 @@ import { useGlobalProgressContext } from "@/src/features/app-shell/context/Globa
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useIngestStore } from "@/src/features/ingest/hooks/use-ingest";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
+import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import usePlayer from "@/src/hooks/usePlayer";
 import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -34,19 +35,14 @@ const Home = () => {
   const {
     setLoading,
     setResults,
-
-    adPlaying,
-    adURL,
-    shouldPlayAd,
-
-    setAdPlaying,
-    setShouldPlayAd,
   } = useGlobalContext();
 
   const { setShowInfoModal, setShowOverlay } = useAppShellContext();
   const { setShowImportAd } = useGlobalProgressContext();
   const { addNotification, setShowNotificationModal } =
     useNotificationsContext();
+  const { adPlaying, adURL, shouldPlayAd, setAdPlaying, setShouldPlayAd } =
+    usePlaybackAdContext();
 
   const { theme } = useThemeContext();
   const { premium } = usePremiumContext();

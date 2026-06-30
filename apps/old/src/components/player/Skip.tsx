@@ -1,7 +1,7 @@
-import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { playAd } from "@/src/controllers/PlayerController";
+import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/hooks/usePlayer";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
@@ -25,7 +25,8 @@ export const SkipRight = ({
   size: number;
   color?: string;
 }) => {
-  const { adPlaying, adURL, setAdPlaying, shouldPlayAd } = useGlobalContext();
+  const { adPlaying, adURL, setAdPlaying, shouldPlayAd } =
+    usePlaybackAdContext();
 
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
@@ -52,8 +53,10 @@ export const SkipRight = ({
 };
 
 export const SkipLeft = ({ size, color }: { size: number; color?: string }) => {
-  const { premium, adPlaying, theme, adURL, setAdPlaying, shouldPlayAd } =
-    useGlobalContext();
+  const { adPlaying, adURL, setAdPlaying, shouldPlayAd } =
+    usePlaybackAdContext();
+  const { premium } = usePremiumContext();
+  const { theme } = useThemeContext();
   const { skipLeft } = usePlayer();
   const { sendHaptic } = useHaptics();
 

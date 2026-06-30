@@ -18,6 +18,7 @@ import {
   playTrack,
 } from "@/src/controllers/PlayerController";
 import { generateSongKey } from "@/src/controllers/SongController";
+import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/hooks/usePlayer";
 import { posthog } from "@/src/lib/posthog";
@@ -83,8 +84,9 @@ const SongList = memo(
     draggable?: boolean;
     onDragEnd?: (params: DragEndParams<any>) => void;
   }) => {
-    const { selectedId, adPlaying, setAdPlaying, shouldPlayAd, adURL } =
-      useGlobalContext();
+    const { selectedId } = useGlobalContext();
+    const { adPlaying, setAdPlaying, shouldPlayAd, adURL } =
+      usePlaybackAdContext();
     const { shuffle, setSourceType, setSourceId, setSort, setOrder, setQuery } =
       usePlaybackContext();
     const { premium } = usePremiumContext();

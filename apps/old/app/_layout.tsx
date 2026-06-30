@@ -19,6 +19,7 @@ import { useHaptics } from "@/src/hooks/use-haptics";
 import { AppShellProvider } from "@/src/features/app-shell/context/AppShellProvider";
 import { GlobalProgressProvider } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { NotificationsProvider } from "@/src/features/notifications/context/NotificationsProvider";
+import { PlaybackAdProvider } from "@/src/features/playback/context/PlaybackAdProvider";
 import { SelectionProvider } from "@/src/features/selection/context/SelectionProvider";
 
 LogBox.ignoreLogs([
@@ -73,21 +74,23 @@ const RootLayout = () => {
     <ThemeProvider>
       <PremiumProvider>
         <PlaybackProvider>
-          <GlobalProvider initShouldPlayAd={shouldPlayAd}>
-            <AppShellProvider>
-              <GlobalProgressProvider>
-                <NotificationsProvider>
-                  <SelectionProvider>
-                    <GestureHandlerRootView style={{ flex: 1 }}>
-                      <GlobalProgress />
-                      <Sheets />
-                      <Navigation />
-                    </GestureHandlerRootView>
-                  </SelectionProvider>
-                </NotificationsProvider>
-              </GlobalProgressProvider>
-            </AppShellProvider>
-          </GlobalProvider>
+          <PlaybackAdProvider initShouldPlayAd={shouldPlayAd}>
+            <GlobalProvider>
+              <AppShellProvider>
+                <GlobalProgressProvider>
+                  <NotificationsProvider>
+                    <SelectionProvider>
+                      <GestureHandlerRootView style={{ flex: 1 }}>
+                        <GlobalProgress />
+                        <Sheets />
+                        <Navigation />
+                      </GestureHandlerRootView>
+                    </SelectionProvider>
+                  </NotificationsProvider>
+                </GlobalProgressProvider>
+              </AppShellProvider>
+            </GlobalProvider>
+          </PlaybackAdProvider>
         </PlaybackProvider>
       </PremiumProvider>
     </ThemeProvider>

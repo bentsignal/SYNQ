@@ -82,6 +82,7 @@ const PlaylistView = ({ id }: { id: number }) => {
                 songCount={songCount}
                 pageType={PageType.PLAYLIST}
                 duration={duration}
+                image={playlist?.fullImage}
               />
               <QueryWrapper
                 setQuery={setQuery}

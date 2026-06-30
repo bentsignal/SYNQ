@@ -53,14 +53,17 @@ export const useAlbumInfoQuery = (albumId: number) => {
       }
     });
 
+    const imagePaths = firstAlbum.coverImage
+      ? getImagePathFromHash(firstAlbum.coverImage)
+      : null;
+
     return {
       album: {
         id: firstAlbum.id,
         name: firstAlbum.name ?? "",
         year: firstAlbum.year ?? undefined,
-        image: firstAlbum.coverImage
-          ? getImagePathFromHash(firstAlbum.coverImage).pathToSmallImage
-          : undefined,
+        image: imagePaths?.pathToSmallImage,
+        fullImage: imagePaths?.pathToFullImage,
         pageType: PageType.ALBUM,
       } satisfies AlbumType,
       artists: Array.from(artistMap.values()),

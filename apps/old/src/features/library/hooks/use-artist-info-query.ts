@@ -21,12 +21,15 @@ export const useArtistInfoQuery = (artistId: number) => {
       return null;
     }
 
+    const imagePaths = row.profileImage
+      ? getImagePathFromHash(row.profileImage)
+      : null;
+
     return {
       id: row.id,
       name: row.name ?? "",
-      image: row.profileImage
-        ? getImagePathFromHash(row.profileImage).pathToSmallImage
-        : undefined,
+      image: imagePaths?.pathToSmallImage,
+      fullImage: imagePaths?.pathToFullImage,
       pageType: PageType.ARTIST,
     };
   }, [data]);

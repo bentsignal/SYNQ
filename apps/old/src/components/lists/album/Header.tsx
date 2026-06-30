@@ -20,9 +20,10 @@ type AlbumHeaderProps = {
   leadArtist?: ArtistType;
   songCount?: number;
   duration?: number;
+  image?: string;
 }
 
-const AlbumHeader = ({id, title, year, pageType, leadArtist, songCount, duration}: AlbumHeaderProps) => {
+const AlbumHeader = ({id, title, year, pageType, leadArtist, songCount, duration, image}: AlbumHeaderProps) => {
   const insets = useSafeAreaInsets();
   const [artistCover, setArtistCover] = useState('');
   const [emptyArtistCover, setEmptyArtistCover] = useState(false);
@@ -51,7 +52,7 @@ const AlbumHeader = ({id, title, year, pageType, leadArtist, songCount, duration
   return (
     <View style={[Local.container, {paddingTop: insets.top}]}>
       <View style={Local.coverWrapper}>
-        <SongListPageCover id={id} type={pageType}/>
+        <SongListPageCover id={id} type={pageType} image={image}/>
       </View>
       <View style={ListStyles.infoWrapper}>
         <Text style={ListStyles.title}>{title}</Text>
@@ -105,4 +106,4 @@ const Local = StyleSheet.create({
   }
 });
 
-export default AlbumHeader; 
+export default AlbumHeader;

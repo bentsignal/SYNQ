@@ -101,6 +101,7 @@ const ArtistView = ({ id }: { id: number }) => {
                   title={title}
                   pageType={PageType.ARTIST}
                   songCount={totalSongCount}
+                  image={artist?.fullImage}
                 />
                 <TabSelector
                   tabs={["Songs", "Albums"]}
@@ -137,6 +138,7 @@ const ArtistView = ({ id }: { id: number }) => {
                   title={title}
                   pageType={PageType.ARTIST}
                   songCount={totalSongCount}
+                  image={artist?.fullImage}
                 />
                 <TabSelector
                   tabs={["Songs", "Albums"]}

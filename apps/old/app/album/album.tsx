@@ -98,6 +98,7 @@ const AlbumView = ({ id }: { id: number }) => {
                 songCount={totalSongCount}
                 pageType={PageType.ALBUM}
                 duration={totalDuration}
+                image={album?.fullImage}
               />
               <QueryWrapper
                 setQuery={setQuery}

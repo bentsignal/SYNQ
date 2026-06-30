@@ -12,6 +12,7 @@ type ArtistHeaderProps = {
   title: string;
   pageType: PageType;
   songCount?: number;
+  image?: string;
 };
 
 const ArtistHeader = ({
@@ -19,13 +20,14 @@ const ArtistHeader = ({
   title,
   pageType,
   songCount = 0,
+  image,
 }: ArtistHeaderProps) => {
   const insets = useSafeAreaInsets();
 
   return (
     <View style={[Local.container, { paddingTop: insets.top }]}>
       <View style={Local.coverWrapper}>
-        <SongListPageCover id={id} type={pageType} />
+        <SongListPageCover id={id} type={pageType} image={image} />
       </View>
       <View style={ListStyles.infoWrapper}>
         <Text style={ListStyles.title}>{title}</Text>

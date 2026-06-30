@@ -1,84 +1,66 @@
-import { View, StyleSheet, Dimensions, Image } from 'react-native';
-import { useEffect, useState } from 'react';
+import { View, StyleSheet, Dimensions } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import { PageType } from '@/src/constants/Types';
-import { useThemeContext } from '@/src/context/ThemeProvider';
 import { getPlaylistCover } from '@/src/controllers/PlaylistController';
-import { PlaylistBusEvent, PlaylistImageModifiedEvent } from '@/src/events/playlist/Events';
-import playlistBus from '@/src/events/playlist';
 import { getArtistCover } from '@/src/controllers/ArtistController';
-import { ArtistBusEvent, ArtistImageModifiedEvent } from '@/src/events/artist/Events';
-import artistBus from '@/src/events/artist';
 import { getAlbumCover } from '@/src/controllers/AlbumController';
-import { AlbumBusEvent, AlbumImageModifiedEvent } from '@/src/events/album/Events';
-import albumBus from '@/src/events/album';
 
-const SongListPageCover = ({id, type}: {id: number, type: PageType}) => {
+type SongListPageCoverProps = {
+  id: number;
+  type: PageType;
+  image?: string;
+};
 
-  const [src, setSrc] = useState('');
-  const { theme } = useThemeContext();
+const SongListPageCover = ({id, type, image}: SongListPageCoverProps) => {
+
+  const [fallbackSrc, setFallbackSrc] = useState('');
   const coverPercent = 0.65;
+  const src = image ?? fallbackSrc;
 
-  const getImage = async () => {
+  const loadFallbackImage = useCallback(async () => {
+    if (image) {
+      setFallbackSrc('');
+      return;
+    }
+
     try {
       if (type === PageType.PLAYLIST) {
         const path = await getPlaylistCover(id, true);
         if (path) {
-          setSrc(path);
+          setFallbackSrc(path);
+        }
+        else {
+          setFallbackSrc('');
         }
       }
       else if (type === PageType.ARTIST) {
         const path = await getArtistCover(id, true);
         if (path) {
-          setSrc(path);
+          setFallbackSrc(path);
+        }
+        else {
+          setFallbackSrc('');
         }
       }
       else if (type === PageType.ALBUM) {
         const path = await getAlbumCover(id, true);
         if (path) {
-          setSrc(path);
+          setFallbackSrc(path);
+        }
+        else {
+          setFallbackSrc('');
         }
       }
     }
     catch (error) {
       console.log('error getting cover image for player: ', error);
     }
-  }
-
-  const handlePlaylistModified = async (data: PlaylistImageModifiedEvent) => {
-    if (type === PageType.PLAYLIST && id === data.id) {
-      await getImage();
-    }
-  }
-
-  const handleArtistModified = async (data: ArtistImageModifiedEvent) => {
-    if (type === PageType.ARTIST && id === data.id) {
-      await getImage();
-    }
-  }
-
-  const handleAlbumModified = async (data: AlbumImageModifiedEvent) => {
-    if (type === PageType.ALBUM && id === data.id) {
-      await getImage();
-    }
-  }
+  }, [id, image, type]);
 
   useEffect(() => {
-    playlistBus.on(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified); 
-    artistBus.on(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistModified);
-    albumBus.on(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, handleAlbumModified);
-    return () => {
-      playlistBus.off(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, handlePlaylistModified);
-      artistBus.off(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, handleArtistModified);
-      albumBus.off(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, handleAlbumModified);
-    }
-  }, []);
-
-  useEffect(() => {
-    
-    getImage();
-
-  }, [id]);
+    loadFallbackImage();
+  }, [loadFallbackImage]);
 
   const Local = StyleSheet.create({
     container: {

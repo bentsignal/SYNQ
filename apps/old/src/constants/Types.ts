@@ -119,6 +119,7 @@ export type PlaylistType = {
   name: string;
   songCount: number;
   image?: string;
+  fullImage?: string;
   pageType?: PageType;
 };
 
@@ -126,6 +127,7 @@ export type ArtistType = {
   id: number;
   name: string;
   image?: string;
+  fullImage?: string;
   pageType?: PageType;
   sourceType?: SourceType;
 };
@@ -135,6 +137,7 @@ export type AlbumType = {
   name: string;
   year?: number;
   image?: string;
+  fullImage?: string;
   pageType?: PageType;
 };
 

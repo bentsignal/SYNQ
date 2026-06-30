@@ -38,13 +38,16 @@ export const usePlaylistInfoQuery = (playlistId: number) => {
       return null;
     }
 
+    const imagePaths = row.coverImage
+      ? getImagePathFromHash(row.coverImage)
+      : null;
+
     return {
       id: row.id,
       name: row.name ?? "",
       songCount: row.songCount,
-      image: row.coverImage
-        ? getImagePathFromHash(row.coverImage).pathToSmallImage
-        : undefined,
+      image: imagePaths?.pathToSmallImage,
+      fullImage: imagePaths?.pathToFullImage,
     };
   }, [data]);
 

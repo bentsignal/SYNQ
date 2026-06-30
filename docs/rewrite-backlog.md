@@ -74,6 +74,9 @@ feature-oriented packages.
    - Album and artist row metadata now renders from props; `AlbumItem` no
      longer listens for `ALBUM_MODIFIED`, and `ArtistItem` no longer listens
      for `ARTIST_MODIFIED`.
+   - Playlist row metadata and counts now render from props; `PlaylistItem` no
+     longer listens for `PLAYLIST_NAME_MODIFIED` or
+     `PLAYLIST_SONG_COUNT_MODIFIED`.
    - Next target: remove import-only metadata listeners from `Song.tsx` with a
      typed import edit store.
 
@@ -134,6 +137,8 @@ feature-oriented packages.
    - Done: add `usePlaylistInfoQuery(id)` for playlist detail header state.
    - Reuse `useLibrarySongsQuery` for playlist detail songs while deciding
      whether a playlist-specific wrapper is still useful.
+   - Done: remove `PLAYLIST_NAME_MODIFIED` and
+     `PLAYLIST_SONG_COUNT_MODIFIED` display listeners from playlist rows.
    - Replace count/name/image/content listeners and remove the broad
      `PLAYLIST_SONGS_IMPORTED` invalidation pattern.
 

@@ -31,7 +31,6 @@ import songBus from "@/src/events/song";
 import {
   SongBusEvent,
   SongCoverModifiedEvent,
-  SongInfoModifiedEvent,
 } from "@/src/events/song/Events";
 import ListCover from "@/src/features/cover/components/list-cover";
 import { useHaptics } from "@/src/hooks/use-haptics";
@@ -162,12 +161,10 @@ export default function Song({
       return;
     }
 
-    songBus.on(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
     artistBus.on(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
     albumBus.on(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, updateAlbumInfo);
 
     return () => {
-      songBus.off(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
       artistBus.off(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
       albumBus.off(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, updateAlbumInfo);
     };
@@ -231,17 +228,6 @@ export default function Song({
       }
       song.artist = artists.map((artist) => artist.name).join(", ");
       setArtist(song.artist);
-    }
-  };
-
-  const updateSongInfo = async (data: SongInfoModifiedEvent) => {
-    if (song.id === data.id) {
-      song.title = data.title ?? song.title;
-      song.artist = data.artist ?? song.artist;
-      song.album = data.album ?? song.album;
-      setTitle(song.title);
-      setArtist(song.artist);
-      setAlbum(song.album);
     }
   };
 

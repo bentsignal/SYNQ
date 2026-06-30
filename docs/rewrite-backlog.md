@@ -31,6 +31,8 @@ feature-oriented packages.
      queue flows.
    - `apps/old/src/features/library/hooks/use-library-songs-query.ts` now
      owns the first list-level library songs live query.
+   - `apps/old/src/features/library/repository/song-metadata-repository.ts`
+     now owns saved-library title and relation writes for song edits.
    - Add hooks such as `useSongRelationsQuery` and `usePlaylistSongsQuery`.
    - Avoid per-row live queries in large lists.
 
@@ -41,6 +43,8 @@ feature-oriented packages.
    - Song/library refresh has started. `Songs.tsx` no longer listens for
      `SONG_DELETED` or `PLAYLIST_SONGS_IMPORTED`; it receives sorted,
      filtered library data from `useLibrarySongsQuery`.
+   - `SONG_INFO_MODIFIED` has been removed from the saved-library edit path;
+     metadata edits now update `songs`, `artistSongs`, and `albumSongs`.
    - Next target: remove remaining row-level cover and import-only metadata
      listeners from `Song.tsx` by moving cover image state into database-backed
      image references or a typed import edit store.
@@ -87,6 +91,8 @@ feature-oriented packages.
    - Done: saved library row metadata is now prop-derived from the list query,
      not patched by `SONG_INFO_MODIFIED`, `ARTIST_TOGGLED_ON_SONG`, or
      `ALBUM_TOGGLED_ON_SONG`.
+   - Done: saved library metadata edits write through a feature repository into
+     the Drizzle-owned `songs`, `artistSongs`, and `albumSongs` tables.
    - Next: remove `SONG_COVER_MODIFIED` and `ALBUM_IMAGE_MODIFIED` from
      `apps/old/src/components/song/Song.tsx`.
    - Then remove `apps/old/src/events/song`.

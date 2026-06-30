@@ -20,6 +20,7 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import albumBus from "@/src/events/album/Bus";
 import { AlbumBusEvent } from "@/src/events/album/Events";
+import { updateLibrarySongMetadata } from "@/src/features/library/repository/song-metadata-repository";
 import { eq } from "drizzle-orm";
 import { flagSongAsEdited } from "./SongController";
 
@@ -30,7 +31,6 @@ export const updateSongsInLibrary = async (
   album: string,
   cover: string,
 ) => {
-  const db = SongModel.getInstance();
   for (let i = 0; i < ids.length; i++) {
     const dir = `${FileSystem.documentDirectory}library/${ids[i]}`;
     if (cover) {
@@ -63,13 +63,11 @@ export const updateSongsInLibrary = async (
       }
     }
     if (title || artist || album) {
-      await db.editSong(ids[i], title, artist, album);
-      songBus.emit(SongBusEvent.SONG_INFO_MODIFIED, {
+      await updateLibrarySongMetadata({
         id: ids[i],
-        type: PageType.LIBRARY,
-        title: title,
-        artist: artist,
-        album: album,
+        title,
+        artist,
+        album,
       });
     }
   }

@@ -330,6 +330,9 @@ feature-oriented packages.
      wrappers, settings button) now live in
      `apps/old/src/features/ingest/components` instead of generic
      `src/components` files.
+   - Done: import progress UI now lives in
+     `apps/old/src/features/import/components/Progress.tsx` instead of the
+     generic root `src/components` folder.
    - Future target packages/folders: `shared/db` repositories and
      `apps/new/src/features/ingest`.
    - Keep Effect at workflow boundaries; keep UI state minimal and observable.

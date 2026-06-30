@@ -5,7 +5,7 @@ import SongList from '@/src/components/lists/song';
 import PageTitle from '@/src/components/PageTitle';
 import ImportInstructions from '@/src/features/import/components/Instructions';
 import { Colors } from '@/src/constants/Colors';
-import Progress from '@/src/components/Progress';
+import Progress from '@/src/features/import/components/Progress';
 import { PageType } from '@/src/constants/Types';
 import { usePremiumContext } from '@/src/features/premium/context/PremiumProvider';
 import { useImportFlowContext } from '@/src/features/import/context/ImportFlowProvider';

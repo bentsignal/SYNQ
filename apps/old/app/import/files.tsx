@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ImportBlur from "@/src/features/import/components/Blur";
 import SongList from "@/src/components/lists/song";
-import Progress from "@/src/components/Progress";
+import Progress from "@/src/features/import/components/Progress";
 import { Styles } from "@/src/constants/Styles";
 import { PageType } from "@/src/constants/Types";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";

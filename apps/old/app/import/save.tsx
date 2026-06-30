@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import Progress from "@/src/components/Progress";
+import Progress from "@/src/features/import/components/Progress";
 import { Colors } from "@/src/constants/Colors";
 import CFG from "@/src/constants/Config";
 import { Styles } from "@/src/constants/Styles";

@@ -1,8 +1,8 @@
-import { View, Animated, Easing, StyleSheet } from 'react-native';
+import { Animated, Easing, StyleSheet } from 'react-native';
 import { Colors } from '@/src/constants/Colors';
 import { useRef, useEffect } from 'react';
 import Svg, { Circle } from 'react-native-svg';
-import Loading from './Loading';
+import Loading from '@/src/components/Loading';
 import { useThemeContext } from '@/src/features/theme/context/ThemeProvider';
 import { useImportFlowContext } from '@/src/features/import/context/ImportFlowProvider';
 

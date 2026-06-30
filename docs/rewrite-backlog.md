@@ -353,6 +353,9 @@ feature-oriented packages.
    - Done: album/artist/playlist detail header and artist tab selector UI now
      live in `apps/old/src/features/library/components` instead of the generic
      root `src/components` folder.
+   - Done: reusable album/artist/playlist/song list surfaces now live under
+     `apps/old/src/features/library/components/lists` instead of the generic
+     root `src/components/lists` folder.
    - Done: notification queue/modal state and actions now live in
      `apps/old/src/features/notifications/context/NotificationsProvider.tsx`
      instead of `GlobalProvider`.

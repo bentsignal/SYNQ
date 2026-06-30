@@ -1,8 +1,8 @@
 import { Fragment, memo, useCallback, useEffect, useState } from "react";
 import EditCover from "@/src/features/cover/components/EditCover";
 import CustomButton from "@/src/components/CustomButton";
-import AlbumItem from "@/src/components/lists/album/AlbumItem";
-import ArtistItem from "@/src/components/lists/artist/ArtistItem";
+import AlbumItem from "@/src/features/library/components/lists/album/AlbumItem";
+import ArtistItem from "@/src/features/library/components/lists/artist/ArtistItem";
 import Bar from "@/src/components/modals/Bar";
 import ModalStyles from "@/src/components/modals/Styles";
 import Notifications from "@/src/features/notifications/components/Notifications";

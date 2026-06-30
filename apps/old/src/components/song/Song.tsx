@@ -20,7 +20,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import Handle from "../lists/Handle";
+import Handle from "@/src/features/library/components/lists/Handle";
 
 type SongProps = {
   song: SongType;

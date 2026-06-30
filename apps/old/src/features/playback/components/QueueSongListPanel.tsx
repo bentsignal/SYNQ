@@ -1,4 +1,4 @@
-import SongList from "@/src/components/lists/song";
+import SongList from "@/src/features/library/components/lists/song";
 import { PageType } from "@/src/constants/Types";
 import { usePlaybackQueueDisplay } from "@/src/features/playback/hooks/use-playback-queue-display";
 import { useRef } from "react";

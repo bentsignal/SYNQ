@@ -1,7 +1,7 @@
 import { Text, View, Dimensions, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Styles } from '@/src/constants/Styles';
-import SongList from '@/src/components/lists/song';
+import SongList from '@/src/features/library/components/lists/song';
 import PageTitle from '@/src/components/PageTitle';
 import ImportInstructions from '@/src/features/import/components/Instructions';
 import { Colors } from '@/src/constants/Colors';

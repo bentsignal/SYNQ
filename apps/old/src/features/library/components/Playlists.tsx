@@ -1,8 +1,8 @@
 import { StyleSheet, View } from "react-native";
-import PlaylistList from "@/src/components/lists/playlist";
+import PlaylistList from "@/src/features/library/components/lists/playlist";
 import { useState } from "react";
 import { PageType, SortType, SortOrder } from "@/src/constants/Types";
-import QueryWrapper from "@/src/components/lists/query/Wrapper";
+import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
 import { useLibraryPlaylistsQuery } from "@/src/features/library/hooks/use-library-playlists-query";
 
 const Playlists = () => {

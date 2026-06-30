@@ -1,48 +1,46 @@
-import { AlbumType, PageType } from "@/src/constants/Types";
+import { ArtistType, PageType } from "@/src/constants/Types";
 import List from "@/src/components/List";
-import AlbumItem from "@/src/components/lists/album/AlbumItem";
+import ArtistItem from "@/src/features/library/components/lists/artist/ArtistItem";
 import { memo } from "react";
 
-const MemoAlbum = memo(AlbumItem);
+const MemoArtist = memo(ArtistItem);
 
-const AlbumList = ({
-  albums,
+const ArtistList = ({
+  artists,
   headerComponent,
   pageType,
   bottomPadding = false,
   gradientStart,
   gradientEnd,
   emptyComponent,
-  bg,
   showEmptyComponent,
-  footerComponent,
+  bg,
 }: {
-  albums: AlbumType[],
+  artists: ArtistType[],
   headerComponent?: React.ReactNode,
   bottomPadding?: boolean,
   pageType: PageType,
   gradientStart?: string,
   gradientEnd?: string,
   emptyComponent?: React.ReactNode,
-  bg?: string,
   showEmptyComponent?: boolean,
-  footerComponent?: React.ReactNode,
+  bg?: string,
 }) => {
 
-  const renderItem = ({item}: {item: AlbumType}) => {
+  const renderItem = ({item}: {item: ArtistType}) => {
     item.pageType = pageType;
     return (
-      <MemoAlbum album={item} allowInteraction={true} bg={bg}/>
+      <MemoArtist artist={item} allowInteraction={true} bg={bg}/>
     );
   };
 
-  const getKey = (item: AlbumType) => {
+  const getKey = (item: ArtistType) => {
     return `${item.id}-${item.name}`;
   }
 
   return (
     <List 
-      data={albums}
+      data={artists}
       headerComponent={headerComponent}
       item={renderItem}
       keyExtractor={getKey}
@@ -51,9 +49,8 @@ const AlbumList = ({
       gradientEnd={gradientEnd}
       emptyComponent={emptyComponent}
       showEmptyComponent={showEmptyComponent}
-      footerComponent={footerComponent}
     />
   );
 }
 
-export default AlbumList; 
+export default ArtistList;

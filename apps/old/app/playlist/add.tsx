@@ -6,12 +6,12 @@ import Bar from "@/src/components/modals/Bar";
 import CustomButton from "@/src/components/CustomButton";
 import { router } from "expo-router";
 import { PageType, SortOrder, SortType } from "@/src/constants/Types";
-import PlaylistList from "@/src/components/lists/playlist";
+import PlaylistList from "@/src/features/library/components/lists/playlist";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import ModalStyles from "@/src/components/modals/Styles";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import QueryWrapper from "@/src/components/lists/query/Wrapper";
+import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
 import { useLibraryPlaylistsQuery } from "@/src/features/library/hooks/use-library-playlists-query";
 
 const AddToPlaylist = () => {

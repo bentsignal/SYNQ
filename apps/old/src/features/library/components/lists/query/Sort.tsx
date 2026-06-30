@@ -1,10 +1,10 @@
-import { Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Text, StyleSheet } from "react-native";
 
 import { MenuView, NativeActionEvent, MenuAction } from '@react-native-menu/menu'
 
 import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
-import { SortType, SortOrder, PageType, ShowSortTypes } from "@/src/constants/Types";
+import { SortType, SortOrder, ShowSortTypes } from "@/src/constants/Types";
 
 type SortProps = {
   setSort: (sort: SortType) => void;

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import Header from "@/src/features/library/components/Header";
-import AlbumList from "@/src/components/lists/album";
-import ArtistHeader from "@/src/components/lists/artist/Header";
-import QueryWrapper from "@/src/components/lists/query/Wrapper";
-import SongList from "@/src/components/lists/song";
+import AlbumList from "@/src/features/library/components/lists/album";
+import ArtistHeader from "@/src/features/library/components/lists/artist/Header";
+import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
+import SongList from "@/src/features/library/components/lists/song";
 import Overlay from "@/src/features/app-shell/components/Overlay";
 import TabSelector from "@/src/features/library/components/TabSelector";
 import { Colors } from "@/src/constants/Colors";

@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import Header from "@/src/features/library/components/Header";
-import QueryWrapper from "@/src/components/lists/query/Wrapper";
-import SongList from "@/src/components/lists/song";
-import SongListHeader from "@/src/components/lists/song/Header";
+import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
+import SongList from "@/src/features/library/components/lists/song";
+import SongListHeader from "@/src/features/library/components/lists/song/Header";
 import Overlay from "@/src/features/app-shell/components/Overlay";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";

@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/src/constants/Colors";
 import SongListPageCover from "@/src/features/cover/components/SongListPageCover";
 import { ArtistType, PageType } from "@/src/constants/Types";
-import CountAndDuration from "../../song/CountAndDuration";
+import CountAndDuration from "@/src/components/song/CountAndDuration";
 import { ListStyles } from "../Styles";
 
 type AlbumHeaderProps = {

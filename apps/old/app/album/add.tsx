@@ -6,12 +6,12 @@ import Bar from "@/src/components/modals/Bar";
 import CustomButton from "@/src/components/CustomButton";
 import { router } from "expo-router";
 import { PageType, SortOrder, SortType } from "@/src/constants/Types";
-import AlbumList from "@/src/components/lists/album";
+import AlbumList from "@/src/features/library/components/lists/album";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import ModalStyles from "@/src/components/modals/Styles";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import QueryWrapper from "@/src/components/lists/query/Wrapper";
+import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
 import { useLibraryAlbumsQuery } from "@/src/features/library/hooks/use-library-albums-query";
 
 const AddAlbum = () => {

@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from "react";
 import List from "@/src/components/List";
 import Song from "@/src/components/song";
-import { DraggableSongItem } from "@/src/components/lists/song/DraggableSongItem";
+import { DraggableSongItem } from "@/src/features/library/components/lists/song/DraggableSongItem";
 import {
   PageType,
   SongType,

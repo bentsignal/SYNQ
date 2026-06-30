@@ -9,8 +9,8 @@ import {
 } from "@/src/constants/Types";
 import { useLibrarySongsQuery } from "@/src/features/library/hooks/use-library-songs-query";
 import { StyleSheet, Text, View } from "react-native";
-import QueryWrapper from "@/src/components/lists/query/Wrapper";
-import SongList from "@/src/components/lists/song/SongList";
+import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
+import SongList from "@/src/features/library/components/lists/song/SongList";
 
 export default function Songs() {
   const [query, setQuery] = useState("");

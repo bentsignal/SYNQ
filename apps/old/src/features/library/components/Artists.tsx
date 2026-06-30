@@ -2,9 +2,9 @@ import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "@/src/constants/Colors";
 import { PageType, SortOrder, SortType } from "@/src/constants/Types";
 import { useState } from "react";
-import ArtistList from "@/src/components/lists/artist";
+import ArtistList from "@/src/features/library/components/lists/artist";
 import { Styles as MainStyles } from "@/src/constants/Styles";
-import QueryWrapper from "@/src/components/lists/query/Wrapper";
+import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
 import { useLibraryArtistsQuery } from "@/src/features/library/hooks/use-library-artists-query";
 
 const Artists = () => {

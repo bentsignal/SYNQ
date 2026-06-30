@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from "react";
 import EditCover from "@/src/features/cover/components/EditCover";
 import CustomButton from "@/src/components/CustomButton";
-import ArtistItem from "@/src/components/lists/artist/ArtistItem";
+import ArtistItem from "@/src/features/library/components/lists/artist/ArtistItem";
 import Bar from "@/src/components/modals/Bar";
 import ModalStyles from "@/src/components/modals/Styles";
 import Notifications from "@/src/features/notifications/components";

@@ -6,7 +6,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { ListStyles } from "../lists/Styles";
+import { ListStyles } from "@/src/features/library/components/lists/Styles";
 
 type CountAndDurationProps = {
   songCount?: number;

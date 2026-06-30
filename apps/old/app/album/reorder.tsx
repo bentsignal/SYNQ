@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import CustomButton from "@/src/components/CustomButton";
-import SongList from "@/src/components/lists/song/SongList";
+import SongList from "@/src/features/library/components/lists/song/SongList";
 import Bar from "@/src/components/modals/Bar";
 import ModalStyles from "@/src/components/modals/Styles";
 import { Colors } from "@/src/constants/Colors";

@@ -11,12 +11,12 @@ import {
   SortOrder,
   SortType,
 } from "@/src/constants/Types";
-import ArtistList from "@/src/components/lists/artist";
+import ArtistList from "@/src/features/library/components/lists/artist";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import ModalStyles from "@/src/components/modals/Styles";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import QueryWrapper from "@/src/components/lists/query/Wrapper";
+import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
 import { useLibraryArtistsQuery } from "@/src/features/library/hooks/use-library-artists-query";
 
 const AddArtist = () => {

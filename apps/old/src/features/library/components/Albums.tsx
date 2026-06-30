@@ -2,9 +2,9 @@ import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "@/src/constants/Colors";
 import { PageType, SortOrder, SortType } from "@/src/constants/Types";
 import { useState } from "react";
-import AlbumList from "@/src/components/lists/album";
+import AlbumList from "@/src/features/library/components/lists/album";
 import { Styles as MainStyles } from "@/src/constants/Styles";
-import QueryWrapper from "@/src/components/lists/query/Wrapper";
+import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
 import { useLibraryAlbumsQuery } from "@/src/features/library/hooks/use-library-albums-query";
 
 const Albums = () => {

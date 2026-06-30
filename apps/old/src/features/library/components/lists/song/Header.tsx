@@ -1,11 +1,9 @@
 import { View, Text, StyleSheet } from "react-native";
-import { Styles } from "@/src/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Colors } from "@/src/constants/Colors";
 import SongListPageCover from "@/src/features/cover/components/SongListPageCover";
 import { PageType } from "@/src/constants/Types";
-import CountAndDuration from "../../song/CountAndDuration";
-import { ListStyles } from '@/src/components/lists/Styles';
+import CountAndDuration from "@/src/components/song/CountAndDuration";
+import { ListStyles } from '@/src/features/library/components/lists/Styles';
 
 type SongListHeaderProps = {
   id: number;

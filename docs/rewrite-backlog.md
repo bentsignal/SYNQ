@@ -184,6 +184,8 @@ feature-oriented packages.
    - Album and artist add/remove row actions now mutate song/album join tables
      through Drizzle-backed repositories instead of `AlbumController` and
      `ArtistController`.
+   - Edit cover fallback loading now uses the Drizzle-backed library song cover
+     repository instead of chaining through album and image controllers.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

@@ -1,10 +1,7 @@
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { CoverType } from "@/src/constants/Types";
-import {
-  getAlbumCoverFromSong,
-} from "@/src/controllers/AlbumController";
-import { getSongCover } from "@/src/controllers/ImageController";
+import { getLibrarySongCoverPath } from "@/src/features/library/repository/library-song-repository";
 import { SquarePen } from "lucide-react-native";
 import {
   Animated,
@@ -57,16 +54,11 @@ const EditCover = ({
       }
 
       if (type === CoverType.SONG) {
-        const path = await getAlbumCoverFromSong(id);
+        const path = await getLibrarySongCoverPath(id);
         if (path) {
           setSrc(path);
         } else {
-          const path = await getSongCover(id);
-          if (path) {
-            setSrc(path);
-          } else {
-            setSrc(transparent);
-          }
+          setSrc(transparent);
         }
       } else {
         setSrc(transparent);

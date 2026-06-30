@@ -9,10 +9,8 @@ import { Styles } from "@/src/constants/Styles";
 import { CoverType, NotificationType } from "@/src/constants/Types";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { newCover } from "@/src/controllers/ImageController";
-import {
-  getPlaylistInfo,
-  updatePlaylist,
-} from "@/src/controllers/PlaylistController";
+import { updatePlaylist } from "@/src/controllers/PlaylistController";
+import { usePlaylistInfoQuery } from "@/src/features/library/hooks/use-playlist-info-query";
 import { router } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -23,22 +21,10 @@ const MemoTextInput = memo(TextInput);
 const EditPlaylist = ({ id }: { id: number }) => {
   const insets = useSafeAreaInsets();
   const { addNotification } = useNotificationsContext();
+  const { playlist } = usePlaylistInfoQuery(id);
   const [image, setImage] = useState<string | undefined>();
   const [name, setName] = useState<string | undefined>();
   const [originalName, setOriginalName] = useState<string | undefined>();
-
-  const refreshInfo = async () => {
-    try {
-      const result = await getPlaylistInfo(id);
-      if (!result) {
-        return;
-      }
-      setName(result.name);
-      setOriginalName(result.name);
-    } catch (error) {
-      console.error("error getting playlist info:", error);
-    }
-  };
 
   const nameInputValidation = async (text: string) => {
     try {
@@ -70,8 +56,9 @@ const EditPlaylist = ({ id }: { id: number }) => {
   };
 
   useEffect(() => {
-    refreshInfo();
-  }, [id]);
+    setName(playlist?.name);
+    setOriginalName(playlist?.name);
+  }, [playlist]);
 
   return (
     <View style={Local.wrapper}>
@@ -100,7 +87,8 @@ const EditPlaylist = ({ id }: { id: number }) => {
           numberOfLines={1}
           placeholder={"Enter playlist name..."}
           placeholderTextColor={Colors.altDisabled}
-          defaultValue={name}
+          value={name ?? ""}
+          onChangeText={setName}
           onEndEditing={(evt) => nameInputValidation(evt.nativeEvent.text)}
         />
       </KeyboardAwareScrollView>

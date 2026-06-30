@@ -81,6 +81,8 @@ feature-oriented packages.
      reads its header info from `usePlaylistInfoQuery` and its songs from
      `useLibrarySongsQuery` instead of listening for `PLAYLIST_CONTENT_MODIFIED`,
      `PLAYLIST_SONG_COUNT_MODIFIED`, or `PLAYLIST_NAME_MODIFIED`.
+   - Playlist edit now hydrates its form from `usePlaylistInfoQuery` instead
+     of route-local `getPlaylistInfo` controller refresh.
    - Album library refresh has started. `Albums.tsx` now reads from
      `useLibraryAlbumsQuery` instead of listening for `ALBUM_CREATED`,
      `ALBUM_DELETED`, `ALBUM_MODIFIED`, or `PLAYLIST_SONGS_IMPORTED`.
@@ -99,6 +101,8 @@ feature-oriented packages.
      `useArtistSongsQuery`, and `useArtistAlbumsQuery` instead of listening for
      `ARTIST_MODIFIED`, `ARTIST_TOGGLED_ON_SONG`, album events, or
      `PLAYLIST_SONGS_IMPORTED`.
+   - Artist edit now hydrates its form from `useArtistInfoQuery` instead of
+     route-local `getArtistInfo` controller refresh.
    - Album and artist row metadata now renders from props; `AlbumItem` no
      longer listens for `ALBUM_MODIFIED`, and `ArtistItem` no longer listens
      for `ARTIST_MODIFIED`.

@@ -324,10 +324,10 @@ const Local = StyleSheet.create({
     marginVertical: 20,
   },
   textBox: {
-    fontSize: 16,
-    marginBottom: 20,
     ...Styles.textbox,
     ...Styles.roundedContainer,
+    fontSize: 16,
+    marginBottom: 20,
     width: "90%",
   },
   notifications: {

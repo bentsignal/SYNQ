@@ -47,56 +47,50 @@ const EditCover = ({
 
   const getImage = async () => {
     try {
+      if (image) {
+        setSrc(image);
+        revealImage();
+        return;
+      }
+
+      if (id === undefined) {
+        setSrc(transparent);
+        revealImage();
+        return;
+      }
+
       if (type === CoverType.SONG) {
-        if (image) {
-          setTimeout(() => {
-            setSrc(image);
-          }, 20);
+        const path = await getAlbumCoverFromSong(id);
+        if (path) {
+          setSrc(path);
         } else {
-          const path = await getAlbumCoverFromSong(id);
+          const path = await getSongCover(id);
           if (path) {
             setSrc(path);
           } else {
-            const path = await getSongCover(id);
-            if (path) {
-              setSrc(path);
-            } else {
-              setSrc(transparent);
-            }
+            setSrc(transparent);
           }
         }
       } else if (type === CoverType.PLAYLIST) {
-        if (image) {
-          setSrc(image);
+        const path = await getPlaylistCover(id);
+        if (path) {
+          setSrc(path);
         } else {
-          const path = await getPlaylistCover(id);
-          if (path) {
-            setSrc(path);
-          } else {
-            setSrc(transparent);
-          }
+          setSrc(transparent);
         }
       } else if (type === CoverType.ARTIST) {
-        if (image) {
-          setSrc(image);
+        const path = await getArtistCover(id, true);
+        if (path) {
+          setSrc(path);
         } else {
-          const path = await getArtistCover(id, true);
-          if (path) {
-            setSrc(path);
-          } else {
-            setSrc(transparent);
-          }
+          setSrc(transparent);
         }
       } else if (type === CoverType.ALBUM) {
-        if (image) {
-          setSrc(image);
+        const path = await getAlbumCover(id, true);
+        if (path) {
+          setSrc(path);
         } else {
-          const path = await getAlbumCover(id, true);
-          if (path) {
-            setSrc(path);
-          } else {
-            setSrc(transparent);
-          }
+          setSrc(transparent);
         }
       }
       revealImage();
@@ -111,7 +105,7 @@ const EditCover = ({
 
   useLayoutEffect(() => {
     getImage();
-  }, [image, id]);
+  }, [image, id, type]);
 
   const editCoverSize = 140;
 

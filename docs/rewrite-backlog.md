@@ -28,6 +28,8 @@ feature-oriented packages.
   once before filesystem operations and wrap restore/erase substep errors
   without relying on invalid `Error` constructor overloads. Treat remaining
   errors as a tracked cleanup lane, not a monorepo migration blocker.
+  Cover editing now treats missing entity IDs as a transparent placeholder and
+  only calls persisted cover loaders when a real ID is available.
 
 ## Priority Lanes
 
@@ -290,8 +292,10 @@ feature-oriented packages.
      player route playback UI.
    - Done: normalize backup/restore document-directory and error wrapping
      boundaries.
-   - Next: continue strict-null cleanup in cover editing and import/library
-     controllers.
+   - Done: guard optional cover IDs in `EditCover` and fix the song edit
+     textbox style overwrite.
+   - Next: continue strict-null cleanup in import/library controllers,
+     premium purchase state, and media utility controllers.
 
 ## Guardrails
 

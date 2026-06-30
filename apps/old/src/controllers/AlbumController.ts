@@ -1,6 +1,6 @@
 import { AlbumType, SongType, SortOrder, SortType } from "@/src/constants/Types";
 import AlbumModel from "@/src/models/AlbumModel";
-import { writeImageToLibrary } from "./ImageController";
+import { writeImageToLibrary } from "@/src/features/images/repository/image-repository";
 import * as FileSystem from 'expo-file-system';
 import { flagSongAsEdited, getSongByResult } from "./SongController";
 import { saveCoverImage } from "@/src/lib/image-utils";

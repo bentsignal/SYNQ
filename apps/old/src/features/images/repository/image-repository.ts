@@ -10,6 +10,17 @@ import { Image } from "react-native";
 
 const imageDirectory = `${FileSystem.documentDirectory}images`;
 
+export const splitImageMimeAndBuffer = (image: string) => {
+  const infoString = image.split(/,(.*)/s)[0];
+  const mimeTypeFull = infoString.split(/;(.*)/s)[0];
+  const mimeType = mimeTypeFull.split(/:(.*)/s)[1];
+  const bufferString = image.split(/,(.*)/s)[1];
+  return {
+    mime: mimeType,
+    buffer: bufferString,
+  };
+};
+
 export const pickCoverImage = async () => {
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -207,6 +218,43 @@ export const writeCoverImageToDirectory = async (
   }
 
   await FileSystem.deleteAsync(tempPath);
+};
+
+export const writeImageToLibrary = writeCoverImageToDirectory;
+
+export const getSongCover = async (id: number, full = false) => {
+  try {
+    const dir = `${FileSystem.documentDirectory}library/${id}`;
+    const info = await FileSystem.getInfoAsync(dir);
+    if (!info.exists) {
+      return undefined;
+    }
+
+    const contents = await FileSystem.readDirectoryAsync(dir);
+    const fileName = full ? "cover_full.jpg" : "cover_small.jpg";
+    if (contents.includes(fileName)) {
+      return `${dir}/${fileName}?${info.modificationTime}`;
+    }
+  } catch (error) {
+    const trace = error instanceof Error ? error.message : String(error);
+    if (!(trace.includes("folder") && trace.includes("doesn't exist"))) {
+      console.log("error getting cover image: ", error);
+    }
+  }
+};
+
+export const deleteImagesFromDirectory = async (dir: string) => {
+  try {
+    const contents = await FileSystem.readDirectoryAsync(dir);
+    if (contents.includes("cover_full.jpg")) {
+      await FileSystem.deleteAsync(`${dir}/cover_full.jpg`);
+    }
+    if (contents.includes("cover_small.jpg")) {
+      await FileSystem.deleteAsync(`${dir}/cover_small.jpg`);
+    }
+  } catch (error) {
+    console.log("error deleting images from directory: ", error);
+  }
 };
 
 export const getImagePathFromHash = (hash: string) => {

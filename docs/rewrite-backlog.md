@@ -218,6 +218,9 @@ feature-oriented packages.
      `ImportExportController`, `LibraryController`, and `PurchaseController`
      files have been removed after their app-facing behavior moved to feature
      modules or shared libs.
+   - Legacy cover filesystem helpers now live in the images feature repository,
+     and remaining controllers import that feature code directly instead of
+     depending on `ImageController`.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

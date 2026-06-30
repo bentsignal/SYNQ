@@ -7,7 +7,7 @@ import {
   getSongCover,
   splitImageMimeAndBuffer,
   writeImageToLibrary,
-} from "@/src/controllers/ImageController";
+} from "@/src/features/images/repository/image-repository";
 import { check } from "@/src/lib/util";
 import { saveCoverImage } from "@/src/lib/image-utils";
 import { getAudioMetadata } from "@missingcore/audio-metadata";

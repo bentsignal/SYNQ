@@ -86,10 +86,12 @@ export default class PlaylistModel extends Model {
       }
 
       result = await Promise.all( result.map(async (song) => {
-        const artists = await getArtistsFromSong(song.id);
-        song.artists = artists.map(artist => artist.name).join(', ');
-        const albums = await getAlbumsFromSong(song.id);
-        song.album = albums.map(album => album.name).join(', ');
+        if (song.id !== undefined) {
+          const artists = await getArtistsFromSong(song.id);
+          song.artists = artists.map(artist => artist.name).join(', ');
+          const albums = await getAlbumsFromSong(song.id);
+          song.album = albums.map(album => album.name).join(', ');
+        }
         return song;
       }));
 
@@ -100,15 +102,27 @@ export default class PlaylistModel extends Model {
         return order === SortOrder.DESC ? result.reverse() : result;
       }
       else if (sort === SortType.TITLE) {
-        const sorted = result.sort((a, b) => a?.title.localeCompare(b?.title));
+        const sorted = result.sort((a, b) => {
+          if (!a?.title) return 1;
+          if (!b?.title) return -1;
+          return a.title.localeCompare(b.title);
+        });
         return order === SortOrder.DESC ? sorted.reverse() : sorted;
       }
       else if (sort === SortType.ARTIST) {
-        const sorted = result.sort((a, b) => a?.artists.localeCompare(b?.artists));
+        const sorted = result.sort((a, b) => {
+          if (!a?.artists) return 1;
+          if (!b?.artists) return -1;
+          return a.artists.localeCompare(b.artists);
+        });
         return order === SortOrder.DESC ? sorted.reverse() : sorted;
       }
       else if (sort === SortType.ALBUM) {
-        const sorted = result.sort((a, b) => a?.album.localeCompare(b?.album));
+        const sorted = result.sort((a, b) => {
+          if (!a?.album) return 1;
+          if (!b?.album) return -1;
+          return a.album.localeCompare(b.album);
+        });
         return order === SortOrder.DESC ? sorted.reverse() : sorted;
       }
       return result;
@@ -186,4 +200,3 @@ export default class PlaylistModel extends Model {
   }
 
 }
-

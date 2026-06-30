@@ -13,8 +13,7 @@ feature-oriented packages.
 - `pnpm --filter @synq/db lint` and `pnpm --filter @synq/db typecheck`
   succeed. `@synq/db` is now the Drizzle schema, migration, and runtime DB
   package consumed by `apps/old`.
-- `pnpm --filter @synq/old typecheck` fails on pre-existing strict-null and
-  third-party type issues. The playback nullability cluster around
+- `pnpm --filter @synq/old typecheck` succeeds. The playback nullability cluster around
   `PlaybackProvider`, `usePlayer`, `MiniPlayer`, `PausePlayButtons`,
   `ShuffleButton`, and `PlayerController` has been reduced, and `SongList`
   source metadata now has local defaults/guards. The shared list/query UI
@@ -35,7 +34,10 @@ feature-oriented packages.
   guard missing duration and invalid RGB parses before returning media metadata.
   Import/export and save-to-library controllers now require real cache/file
   paths before filesystem work and avoid creating orphaned library rows when
-  imported path data is incomplete.
+  imported path data is incomplete. Legacy song controllers/models now guard
+  optional row IDs, metadata fields, and filesystem paths locally, and the old
+  player no longer depends on `react-native-crossfade-image` for background
+  transitions.
 
 ## Priority Lanes
 
@@ -305,8 +307,12 @@ feature-oriented packages.
    - Done: tighten audio duration and image color luminance helpers.
    - Done: guard import/export and save-to-library filesystem paths before
      sharing, copying, or inserting library rows.
-   - Next: continue strict-null cleanup in legacy song/album/artist/playlist
-     controllers and models.
+   - Done: clear the remaining old-app source strict-null errors in legacy
+     song/album/artist/playlist controllers and models.
+   - Done: replace the broken `react-native-crossfade-image` dependency with a
+     local typed player background fade component.
+   - Next: treat `pnpm --filter @synq/old typecheck` as a required guardrail
+     while continuing feature extraction and reactive state migration.
 
 ## Guardrails
 

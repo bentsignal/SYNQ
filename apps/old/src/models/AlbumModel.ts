@@ -140,7 +140,8 @@ export default class AlbumModel extends Model {
     order: SortOrder = SortOrder.ASC,
     query?: string
   ): Promise<SongResultType[]> {
-    let result = await AlbumModel.db?.getAllAsync<SongResultType>(
+    let result =
+      (await AlbumModel.db?.getAllAsync<SongResultType>(
       `SELECT DISTINCT songs.*, albumSongs.track 
       FROM songs 
       INNER JOIN albumSongs ON songs.id = albumSongs.songId 
@@ -149,16 +150,16 @@ export default class AlbumModel extends Model {
       WHERE albumSongs.albumId = ?
       ${query ? 'AND (LOWER(songs.title) LIKE ? OR LOWER(artists.name) LIKE ?)' : ''};`, 
       query ? [albumId, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : [albumId]
-    );
-    if (result) {
-      result = await Promise.all(result.map(async (song) => {
+    )) ?? [];
+    result = await Promise.all(result.map(async (song) => {
+      if (song.id !== undefined) {
         const artists = await getArtistsFromSong(song.id);
         song.artists = artists.map(artist => artist.name).join(', ');
         const albums = await this.getAlbumsFromSong(song.id);
         song.album = albums.map(album => album.name).join(', ');
-        return song;
-      }));
-    }
+      }
+      return song;
+    }));
     if (sort === SortType.TRACK) {
       const sorted = result.sort((a, b) => {
         if (!a?.track) return 1;

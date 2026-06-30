@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import PlayerCover from "@/src/components/cover/PlayerCover";
+import CrossfadeImage from "@/src/components/image/CrossfadeImage";
 import Bar from "@/src/components/modals/Bar";
 import ModalStyles from "@/src/components/modals/Styles";
 import LoopButton from "@/src/components/player/LoopButton";
@@ -25,7 +26,6 @@ import { useAssets } from "expo-asset";
 import { router } from "expo-router";
 import { CirclePlus, Ellipsis } from "lucide-react-native";
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
-import { CrossfadeImage } from "react-native-crossfade-image";
 import LinearGradient from "react-native-linear-gradient";
 import Animated, {
   Easing,

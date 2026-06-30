@@ -24,6 +24,10 @@ export const updateMetadata = async (song: SongType) => {
   if (song.pageType !== PageType.IMPORT) {
     // retrieve data if song is from library
     try {
+      if (!song.fileName) {
+        console.log("Library song missing fileName, skipping audio read:", song.id);
+        return;
+      }
       const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
       const data = await FileSystem.readAsStringAsync(audioPath, {
         encoding: "base64",
@@ -37,10 +41,12 @@ export const updateMetadata = async (song: SongType) => {
     try {
       // retrieve image if it exists
       const path = await getLibrarySongCover(song.id, true);
-      const image = await FileSystem.readAsStringAsync(path, {
-        encoding: "base64",
-      });
-      song.artwork = image ? image : song.artwork;
+      if (path) {
+        const image = await FileSystem.readAsStringAsync(path, {
+          encoding: "base64",
+        });
+        song.artwork = image ? image : song.artwork;
+      }
     } catch (error) {
       console.log("error reading image file data: ", error);
     }
@@ -53,6 +59,10 @@ export const updateMetadata = async (song: SongType) => {
         });
         song.artwork = image ? image : song.artwork;
       }
+    }
+    if (!song.cacheUri) {
+      console.log("Import song missing cacheUri, skipping metadata update:", song.id);
+      return;
     }
     song.data = await FileSystem.readAsStringAsync(song.cacheUri, {
       encoding: "base64",
@@ -77,9 +87,8 @@ export const updateMetadata = async (song: SongType) => {
   const image = song.artwork ?? "";
   if (image) {
     if (
-      [PageType.LIBRARY, PageType.ARTIST, PageType.ALBUM].includes(
-        song.pageType,
-      )
+      song.pageType &&
+      [PageType.LIBRARY, PageType.ARTIST, PageType.ALBUM].includes(song.pageType)
     ) {
       tags.APIC = {
         description: "Album Cover",
@@ -107,15 +116,23 @@ export const updateMetadata = async (song: SongType) => {
   }
 
   try {
-    if (["audio/mpeg", "audio/flac"].includes(song.fileType)) {
+    if (song.fileType && ["audio/mpeg", "audio/flac"].includes(song.fileType)) {
       song.data = fromByteArray(
         NodeID3.writeExpo(toByteArray(song.data), tags),
       );
       if (song.pageType === PageType.IMPORT) {
+        if (!song.cacheUri) {
+          console.log("Import song missing cacheUri, skipping metadata write:", song.id);
+          return;
+        }
         await FileSystem.writeAsStringAsync(song.cacheUri, song.data, {
           encoding: "base64",
         });
       } else {
+        if (!song.fileName) {
+          console.log("Library song missing fileName, skipping metadata write:", song.id);
+          return;
+        }
         const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
         await FileSystem.writeAsStringAsync(audioPath, song.data, {
           encoding: "base64",
@@ -129,15 +146,16 @@ export const updateMetadata = async (song: SongType) => {
   }
 };
 
-export const removeSongs = async (results: [SongType], ids: number[]) => {
+export const removeSongs = async (results: SongType[], ids: number[]) => {
   let newResults = [];
   for (let i = 0; i < results.length; i++) {
-    if (results[i].id) {
-      if (!ids.includes(results[i].id)) {
-        newResults.push(results[i]);
-      } else if (results[i].cacheUri) {
+    const song = results[i];
+    if (song.id) {
+      if (!ids.includes(song.id)) {
+        newResults.push(song);
+      } else if (song.cacheUri) {
         try {
-          await FileSystem.deleteAsync(results[i].cacheUri);
+          await FileSystem.deleteAsync(song.cacheUri);
         } catch (error) {
           console.log("error deleting cached song file: ", error);
         }
@@ -157,13 +175,17 @@ export const saveEdits = async (
 ) => {
   // update each song in results
   for (let i = 0; i < results.length; i++) {
-    if (results[i].id && ids.includes(results[i].id)) {
-      results[i].edited = true;
-      results[i].title = title ? title : results[i].title;
-      results[i].artist = artist ? artist : results[i].artist;
-      results[i].album = album ? album : results[i].album;
-      if (results[i].importAlbums && results[i].importAlbums.length > 0) {
-        const album = results[i].importAlbums[0];
+    const song = results[i];
+    if (song.id && ids.includes(song.id)) {
+      song.edited = true;
+      song.title = title ? title : song.title;
+      song.artist = artist ? artist : song.artist;
+      song.album = album ? album : song.album;
+      if (song.importAlbums && song.importAlbums.length > 0) {
+        const album = song.importAlbums[0];
+        if (!album) {
+          continue;
+        }
         const albumDir = `${FileSystem.documentDirectory}albums/${album.id}`;
         if (artwork) {
           await writeImageToLibrary(artwork, albumDir);
@@ -174,16 +196,16 @@ export const saveEdits = async (
               .set({ coverImage })
               .where(eq(schema.albums.id, album.id));
           }
-          await flagSongAsEdited(results[i].id);
+          await flagSongAsEdited(song.id);
           const albumSongs = await getSongsFromAlbum(album.id);
-          albumSongs.forEach((song) => {
-            if (song.id !== results[i].id) {
-              flagSongAsEdited(song.id);
+          albumSongs.forEach((albumSong) => {
+            if (albumSong.id !== undefined && albumSong.id !== song.id) {
+              flagSongAsEdited(albumSong.id);
             }
           });
         }
       } else {
-        results[i].artwork = artwork ? artwork : results[i].artwork;
+        song.artwork = artwork ? artwork : song.artwork;
       }
     }
   }
@@ -276,7 +298,7 @@ export const flagSongAsEdited = async (id: number) => {
   return await SongModel.getInstance().flagSongAsEdited(id);
 };
 
-const checkField = (oldValue: string, newValue: string) => {
+const checkField = (oldValue?: string, newValue?: string) => {
   if (!oldValue && !newValue) {
     return false;
   } else if (oldValue !== newValue) {
@@ -296,6 +318,9 @@ export const isSongEdited = async (song: SongType) => {
 
   let url;
   if (song.pageType !== PageType.IMPORT) {
+    if (!song.fileName) {
+      return null;
+    }
     url = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
   } else if (song.cacheUri) {
     url = song.cacheUri;

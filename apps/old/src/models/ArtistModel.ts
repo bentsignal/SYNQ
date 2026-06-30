@@ -112,7 +112,8 @@ export default class ArtistModel extends Model {
     order: SortOrder = SortOrder.DESC,
     query?: string
   ): Promise<SongResultType[]> {
-    let result = await ArtistModel.db?.getAllAsync<SongResultType>(`
+    let result =
+      (await ArtistModel.db?.getAllAsync<SongResultType>(`
       SELECT DISTINCT songs.*
       FROM songs
       LEFT JOIN albumSongs ON songs.id = albumSongs.songId
@@ -126,22 +127,30 @@ export default class ArtistModel extends Model {
       ) AS otherArtists ON songs.id = otherArtists.songId
       WHERE mainArtist.artistId = ?
       ${query ? 'AND (LOWER(songs.title) LIKE ? OR LOWER(otherArtists.all_artists) LIKE ? OR LOWER(albums.name) LIKE ?)' : ''}
-      `, query ? [artistId, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : [artistId]);
-    if (result) {
-      result = await Promise.all( result.map(async (song) => {
+      `, query ? [artistId, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`, `%${query.toLowerCase()}%`] : [artistId])) ?? [];
+    result = await Promise.all( result.map(async (song) => {
+      if (song.id !== undefined) {
         const artists = await this.getArtistsFromSong(song.id);
         song.artists = artists.map(artist => artist.name).join(', ');
         const albums = await getAlbumsFromSong(song.id);
         song.album = albums.map(album => album.name).join(', ');
-        return song;
-      }));
-    }
+      }
+      return song;
+    }));
     if (sort === SortType.TITLE) {
-      const sorted = result.sort((a, b) => a?.title.localeCompare(b?.title));
+      const sorted = result.sort((a, b) => {
+        if (!a?.title) return 1;
+        if (!b?.title) return -1;
+        return a.title.localeCompare(b.title);
+      });
       return order === SortOrder.ASC ? sorted : sorted.reverse();
     }
     else if (sort === SortType.ALBUM) {
-      const sorted = result.sort((a, b) => a?.album.localeCompare(b?.album));
+      const sorted = result.sort((a, b) => {
+        if (!a?.album) return 1;
+        if (!b?.album) return -1;
+        return a.album.localeCompare(b.album);
+      });
       return order === SortOrder.ASC ? sorted : sorted.reverse();
     }
     else {

@@ -62,10 +62,10 @@ export default class SongModel extends Model {
       }
       const result = await SongModel.db?.getFirstAsync<SongResultType>(`SELECT * FROM songs WHERE id = ?;`, [id]);
       const artists = await getArtistsFromSong(id);
-      if (result !== null){
+      if (result) {
         result.artists = artists.map(artist => artist.name).join(', ');
       }
-      return result ? result : null;
+      return result ?? null;
     } catch (error) {
       console.error('Error getting song by id:', error);
     }

@@ -60,7 +60,7 @@ export default function ListCover({
   );
 }
 
-const Fallback = ({ type, size, containerClass }: ListCoverProps) => {
+const Fallback = ({ type, size = 60, containerClass }: ListCoverProps) => {
   const icon = defaultCoverIcons[type];
   const iconSize = size / 3;
   return (

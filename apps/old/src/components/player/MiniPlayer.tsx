@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ListCover from "@/src/components/cover/ListCover";
+import CrossfadeImage from "@/src/components/image/CrossfadeImage";
 import { SkipLeft, SkipRight } from "@/src/components/player/Skip";
 import SongInfo from "@/src/components/song/SongInfo";
 import { Colors, Themes } from "@/src/constants/Colors";
@@ -18,7 +19,6 @@ import { getFileName } from "@/src/lib/util";
 import { useAssets } from "expo-asset";
 import { router } from "expo-router";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { CrossfadeImage } from "react-native-crossfade-image";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,

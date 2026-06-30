@@ -1,13 +1,14 @@
 import {
-  PageType,
   SongType,
   SortOrder,
   SortType,
   SourceType,
 } from "@/src/constants/Types";
-import { getSongsFromAlbum } from "@/src/controllers/AlbumController";
-import { getSongsFromArtist } from "@/src/controllers/ArtistController";
-import { getPlaylistSongs } from "@/src/controllers/PlaylistController";
+import {
+  getLibraryAlbumSongs,
+  getLibraryArtistSongs,
+  getLibraryPlaylistSongs,
+} from "@/src/features/library/repository/library-song-repository";
 
 export const getNextUp = async (
   currentId: number,
@@ -22,17 +23,26 @@ export const getNextUp = async (
   const next: SongType[] = [];
   let songs: SongType[] = [];
   if (sourceTypeValue === SourceType.PLAYLIST) {
-    songs = await getPlaylistSongs(
-      sourceIdValue,
-      PageType.LIBRARY,
+    songs = await getLibraryPlaylistSongs({
+      playlistId: sourceIdValue,
       sort,
       order,
       query,
-    );
+    });
   } else if (sourceTypeValue === SourceType.ARTIST) {
-    songs = await getSongsFromArtist(sourceIdValue, sort, order, query);
+    songs = await getLibraryArtistSongs({
+      artistId: sourceIdValue,
+      sort,
+      order,
+      query,
+    });
   } else if (sourceTypeValue === SourceType.ALBUM) {
-    songs = await getSongsFromAlbum(sourceIdValue, sort, order, query);
+    songs = await getLibraryAlbumSongs({
+      albumId: sourceIdValue,
+      sort,
+      order,
+      query,
+    });
   } else {
     return songs;
   }

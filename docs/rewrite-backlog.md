@@ -189,6 +189,9 @@ feature-oriented packages.
      the save screen.
    - Playback queue refresh no longer uses an event bus; `PlaybackProvider`
      exposes a queue revision signal that reloads queue UI from TrackPlayer.
+   - Playback queue assembly now reads playlist, album, and artist source
+     songs through the Drizzle-backed library song repository instead of legacy
+     entity controllers.
    - No app event bus modules remain; `apps/old/src/events` has been removed.
    - Next target: continue strict-null/typecheck cleanup, starting with
      `SongList` source metadata defaults and import/library controller

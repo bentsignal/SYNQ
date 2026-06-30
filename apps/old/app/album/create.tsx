@@ -9,8 +9,8 @@ import { Styles } from "@/src/constants/Styles";
 import { CoverType, NotificationType } from "@/src/constants/Types";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { createAlbum } from "@/src/controllers/AlbumController";
 import { newCover } from "@/src/controllers/ImageController";
+import { createLibraryAlbum } from "@/src/features/library/repository/library-entity-repository";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { router } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
@@ -40,7 +40,7 @@ const CreateAlbum = () => {
 
   const handleCreate = async () => {
     try {
-      await createAlbum(name, year, image);
+      await createLibraryAlbum(name, year, image);
       sendHaptic("success");
       setTimeout(() => {
         router.back();
@@ -84,8 +84,8 @@ const CreateAlbum = () => {
           numberOfLines={1}
           placeholder={"Enter album name..."}
           placeholderTextColor={Colors.altDisabled}
-          defaultValue={name}
-          onEndEditing={(evt) => setName(evt.nativeEvent.text)}
+          value={name}
+          onChangeText={setName}
         />
         <Text style={Styles.textboxLabel}>Year</Text>
         <MemoTextInput
@@ -96,14 +96,10 @@ const CreateAlbum = () => {
           keyboardType="numeric"
           placeholder={"Enter album year..."}
           placeholderTextColor={Colors.altDisabled}
-          defaultValue={year?.toString()}
-          onEndEditing={(evt) =>
-            setYear(
-              evt.nativeEvent.text
-                ? parseInt(evt.nativeEvent.text)
-                : undefined,
-            )
-          }
+          value={year?.toString() ?? ""}
+          onChangeText={(text) => {
+            setYear(text ? parseInt(text) : undefined);
+          }}
         />
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />

@@ -121,6 +121,12 @@ feature-oriented packages.
      `ARTIST_CREATED`.
    - Playlist, album, and artist create screens no longer emit now-unused
      `PLAYLIST_CREATED`, `ALBUM_CREATED`, or `ARTIST_CREATED` events.
+   - Artist create now writes through a Drizzle-backed library entity
+     repository and stores cover art by image hash instead of calling the
+     legacy artist controller from the route.
+   - Playlist and album create now share the same Drizzle-backed library entity
+     repository and controlled form inputs instead of route-level legacy
+     controller create calls.
    - Import song rows now receive artist/album display metadata through
      immutable `results` updates when import relations are toggled, so
      `Song.tsx` no longer listens for `ARTIST_TOGGLED_ON_SONG` or

@@ -10,7 +10,7 @@ import { CoverType, NotificationType } from "@/src/constants/Types";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { newCover } from "@/src/controllers/ImageController";
-import { createPlaylist } from "@/src/controllers/PlaylistController";
+import { createLibraryPlaylist } from "@/src/features/library/repository/library-entity-repository";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { router } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
@@ -38,10 +38,7 @@ const CreatePlaylist = () => {
 
   const handleCreate = async () => {
     try {
-      if (name === "") {
-        throw new Error("Name is required");
-      }
-      await createPlaylist(name, image);
+      await createLibraryPlaylist(name, image);
       sendHaptic("success");
       setTimeout(() => {
         router.back();
@@ -85,8 +82,8 @@ const CreatePlaylist = () => {
           numberOfLines={1}
           placeholder={"Enter playlist name..."}
           placeholderTextColor={Colors.altDisabled}
-          defaultValue={name}
-          onEndEditing={(evt) => setName(evt.nativeEvent.text)}
+          value={name}
+          onChangeText={setName}
         />
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />

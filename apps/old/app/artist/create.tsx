@@ -9,8 +9,8 @@ import { Styles } from "@/src/constants/Styles";
 import { CoverType, NotificationType } from "@/src/constants/Types";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { createArtist } from "@/src/controllers/ArtistController";
 import { newCover } from "@/src/controllers/ImageController";
+import { createLibraryArtist } from "@/src/features/library/repository/library-entity-repository";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { router } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
@@ -38,7 +38,7 @@ const CreateArtist = () => {
 
   const handleCreate = async () => {
     try {
-      await createArtist(name, image);
+      await createLibraryArtist(name, image);
       sendHaptic("success");
       setTimeout(() => {
         router.back();
@@ -69,7 +69,7 @@ const CreateArtist = () => {
         <View style={Local.coverWrapper}>
           <EditCover
             image={image}
-            type={CoverType.PLAYLIST}
+            type={CoverType.ARTIST}
             handlePress={() => handleUpdateImage()}
             propOnLoad={() => {}}
           />
@@ -82,8 +82,8 @@ const CreateArtist = () => {
           numberOfLines={1}
           placeholder={"Enter artist name..."}
           placeholderTextColor={Colors.altDisabled}
-          defaultValue={name}
-          onEndEditing={(evt) => setName(evt.nativeEvent.text)}
+          value={name}
+          onChangeText={setName}
         />
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />

@@ -233,9 +233,11 @@ feature-oriented packages.
    - Done: player setup/restore now lives in
      `apps/old/src/features/playback/lib/player-setup-service.ts` with typed
      playback state restore callbacks.
-   - Next safe slice: split `use-player.ts` queue mutations into typed queue
-     actions, then move track creation cover lookups behind a narrower playback
-     feature API.
+   - Done: TrackPlayer queue mutations now live in
+     `apps/old/src/features/playback/lib/player-queue-actions-service.ts`, so
+     `use-player.ts` wires playback context into typed queue actions.
+   - Next safe slice: centralize ad-gated playback commands shared by skip
+     buttons, remote controls, timing effects, and song-row playback.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

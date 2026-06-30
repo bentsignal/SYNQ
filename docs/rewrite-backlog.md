@@ -49,6 +49,9 @@ feature-oriented packages.
      `albums.coverImage`, and `Song.tsx` renders cover art from the
      list-level live query instead of `SONG_COVER_MODIFIED` or
      `ALBUM_IMAGE_MODIFIED`.
+   - Playlist library refresh has started. `Playlists.tsx` now reads from
+     `useLibraryPlaylistsQuery` instead of listening for `PLAYLIST_CREATED`,
+     `PLAYLIST_DELETED`, or `PLAYLIST_SONGS_IMPORTED`.
    - Next target: remove import-only metadata listeners from `Song.tsx` with a
      typed import edit store.
 
@@ -104,7 +107,9 @@ feature-oriented packages.
    - Then remove `apps/old/src/events/song`.
 
 2. Playlist:
-   - Add `usePlaylistsQuery`, `usePlaylistInfoQuery(id)`, and
+   - Done: add `useLibraryPlaylistsQuery` for the list-level library playlist
+     screen.
+   - Add `usePlaylistInfoQuery(id)` and
      `usePlaylistSongsQuery(id, query, sort, order)`.
    - Replace count/name/image/content listeners and remove the broad
      `PLAYLIST_SONGS_IMPORTED` invalidation pattern.

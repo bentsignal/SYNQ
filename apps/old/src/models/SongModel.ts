@@ -1,6 +1,6 @@
 import Model from './Model';
 import { SongResultType } from '@/src/constants/Types';
-import { getArtistsFromSong } from '../controllers/ArtistController';
+import { getLibrarySongArtists } from "@/src/features/library/repository/library-song-repository";
 
 export default class SongModel extends Model {
 
@@ -61,7 +61,7 @@ export default class SongModel extends Model {
         await SongModel.initConnection();
       }
       const result = await SongModel.db?.getFirstAsync<SongResultType>(`SELECT * FROM songs WHERE id = ?;`, [id]);
-      const artists = await getArtistsFromSong(id);
+      const artists = await getLibrarySongArtists(id);
       if (result) {
         result.artists = artists.map(artist => artist.name).join(', ');
       }

@@ -1,7 +1,7 @@
 import PlaylistModel from "@/src/models/PlaylistModel";
 import * as FileSystem from 'expo-file-system';
-import { getSongByResult } from "@/src/controllers/SongController";
 import { PageType, SortOrder, SortType } from "@/src/constants/Types";
+import { getSongByResult } from "@/src/features/library/lib/song-result-mapper";
 import { writeImageToLibrary } from "@/src/features/images/repository/image-repository";
 import { saveCoverImage } from "@/src/lib/image-utils";
 import { db as drizzleDb } from "@synq/db";

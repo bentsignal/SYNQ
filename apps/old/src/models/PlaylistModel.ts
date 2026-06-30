@@ -1,7 +1,9 @@
 import Model from './Model';
 import { PlaylistType, SongResultType, SortOrder, SortType } from '@/src/constants/Types';
-import { getArtistsFromSong } from '../controllers/ArtistController';
-import { getAlbumsFromSong } from '../controllers/AlbumController';
+import {
+  getLibrarySongAlbums,
+  getLibrarySongArtists,
+} from "@/src/features/library/repository/library-song-repository";
 
 export default class PlaylistModel extends Model {
 
@@ -87,9 +89,9 @@ export default class PlaylistModel extends Model {
 
       result = await Promise.all( result.map(async (song) => {
         if (song.id !== undefined) {
-          const artists = await getArtistsFromSong(song.id);
+          const artists = await getLibrarySongArtists(song.id);
           song.artists = artists.map(artist => artist.name).join(', ');
-          const albums = await getAlbumsFromSong(song.id);
+          const albums = await getLibrarySongAlbums(song.id);
           song.album = albums.map(album => album.name).join(', ');
         }
         return song;

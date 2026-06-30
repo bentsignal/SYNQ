@@ -1,6 +1,6 @@
 import Model from "./Model";
 import { AlbumType, SortType, SongResultType, ArtistType, PageType, SortOrder } from "@/src/constants/Types";
-import { getArtistsFromSong } from "@/src/controllers/ArtistController";
+import { getLibrarySongArtists } from "@/src/features/library/repository/library-song-repository";
 
 export default class AlbumModel extends Model {
 
@@ -153,7 +153,7 @@ export default class AlbumModel extends Model {
     )) ?? [];
     result = await Promise.all(result.map(async (song) => {
       if (song.id !== undefined) {
-        const artists = await getArtistsFromSong(song.id);
+        const artists = await getLibrarySongArtists(song.id);
         song.artists = artists.map(artist => artist.name).join(', ');
         const albums = await this.getAlbumsFromSong(song.id);
         song.album = albums.map(album => album.name).join(', ');

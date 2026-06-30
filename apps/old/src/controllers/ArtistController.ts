@@ -1,8 +1,8 @@
 import { ArtistType, SongType, SortOrder, SortType } from "@/src/constants/Types";
+import { getSongByResult } from "@/src/features/library/lib/song-result-mapper";
 import ArtistModel from "@/src/models/ArtistModel";
 import { writeImageToLibrary } from "@/src/features/images/repository/image-repository";
 import * as FileSystem from 'expo-file-system';
-import { getSongByResult } from "./SongController";
 import { saveCoverImage } from "@/src/lib/image-utils";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";

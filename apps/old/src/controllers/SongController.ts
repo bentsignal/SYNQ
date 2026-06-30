@@ -1,4 +1,5 @@
 import { InfoType, PageType, SongType, TagsType } from "@/src/constants/Types";
+import { getSongByResult } from "@/src/features/library/lib/song-result-mapper";
 import SongModel from "@/src/models/SongModel";
 import * as FileSystem from "expo-file-system";
 import { fromByteArray, toByteArray } from "react-native-quick-base64";
@@ -220,27 +221,6 @@ export const getSongById = async (id: number) => {
     return getSongByResult(result);
   } catch (error) {
     throw new Error("Error getting song by id: " + error);
-  }
-};
-
-export const getSongByResult = (result: any): SongType => {
-  try {
-    return {
-      fileName: result.fileName,
-      id: result.id,
-      edited: result.edited ? true : false,
-      fileType: result.fileType,
-      format: "id3v2.4",
-      title: result.title,
-      album: result.album,
-      artist: result.artists,
-      duration: result.duration,
-    };
-  } catch (error) {
-    return {
-      id: -1,
-      edited: false,
-    };
   }
 };
 

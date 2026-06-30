@@ -221,6 +221,10 @@ feature-oriented packages.
    - Legacy cover filesystem helpers now live in the images feature repository,
      and remaining controllers import that feature code directly instead of
      depending on `ImageController`.
+   - Legacy models now hydrate song artist/album display metadata through the
+     library song repository instead of importing album/artist controllers.
+   - Legacy song-result mapping now lives in the library feature layer instead
+     of being exported from `SongController` for other controllers to reuse.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

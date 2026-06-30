@@ -271,6 +271,33 @@ export const getLibraryArtistSongs = async ({
   });
 };
 
+export const getLibrarySongById = async (
+  songId: number,
+  pageType: PageType = PageType.LIBRARY,
+) => {
+  const rows = await db
+    .select({
+      song: schema.songs,
+      artistName: schema.artists.name,
+      albumName: schema.albums.name,
+      albumCoverImage: schema.albums.coverImage,
+    })
+    .from(schema.songs)
+    .leftJoin(schema.artistSongs, eq(schema.songs.id, schema.artistSongs.songId))
+    .leftJoin(schema.artists, eq(schema.artistSongs.artistId, schema.artists.id))
+    .leftJoin(schema.albumSongs, eq(schema.songs.id, schema.albumSongs.songId))
+    .leftJoin(
+      schema.albums,
+      and(
+        eq(schema.albumSongs.albumId, schema.albums.id),
+        eq(schema.albumSongs.songId, schema.songs.id),
+      ),
+    )
+    .where(eq(schema.songs.id, songId));
+
+  return rowsToSongs(rows, pageType)[0] ?? null;
+};
+
 export const getLibrarySongAlbums = async (songId: number) => {
   const rows = await db
     .select({

@@ -17,8 +17,8 @@ import {
   getLuminanceFromImage,
   getPlayerGradientOpacity,
 } from "@/src/controllers/ColorController";
+import { getLibrarySongById } from "@/src/features/library/repository/library-song-repository";
 import { getTrackArtwork } from "@/src/features/playback/lib/track-factory";
-import { getSongById } from "@/src/controllers/SongController";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import colors from "@/src/lib/colors";
 import { getFileName } from "@/src/lib/util";
@@ -145,8 +145,7 @@ const Player = () => {
         return;
       }
 
-      const currentSong = await getSongById(track.id);
-      currentSong.pageType = PageType.PLAYER;
+      const currentSong = await getLibrarySongById(track.id, PageType.PLAYER);
       setSong(currentSong);
     };
 

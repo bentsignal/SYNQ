@@ -1,11 +1,11 @@
-import { SongType } from "@/src/constants/Types";
+import { PageType, SongType } from "@/src/constants/Types";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
 import usePlayer from "@/src/features/playback/hooks/use-player";
 import {
   getActiveQueueTrackIndex,
   getPlaybackQueue,
 } from "@/src/features/playback/lib/player-queue-actions-service";
-import { getSongById } from "@/src/controllers/SongController";
+import { getLibrarySongById } from "@/src/features/library/repository/library-song-repository";
 import { check } from "@/src/lib/util";
 import { type MutableRefObject, useCallback, useEffect, useState } from "react";
 import { type DragEndParams } from "react-native-draggable-flatlist";
@@ -48,10 +48,12 @@ export const usePlaybackQueueDisplay = ({
     const results: SongType[] = [];
     const queue = await getPlaybackQueue();
     try {
-      let result: SongType;
       for (let i = 0; i < queue.length; i++) {
         if (queue[i].id !== -1) {
-          result = await getSongById(queue[i].id);
+          const result = await getLibrarySongById(queue[i].id, PageType.QUEUE);
+          if (!result) {
+            continue;
+          }
           result.uuid = queue[i].description;
           results.push(result);
         }

@@ -163,6 +163,8 @@ feature-oriented packages.
    - Song edit saved-library relation hydration now reads artists and albums
      through the Drizzle-backed library song repository instead of legacy
      artist/album controllers.
+   - Player and playback queue display song hydration now reads through the
+     Drizzle-backed library song repository instead of `SongController`.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

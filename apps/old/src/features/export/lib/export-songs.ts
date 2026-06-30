@@ -1,5 +1,8 @@
 import { PageType, SongType } from "@/src/constants/Types";
-import { isSongEdited, updateMetadata } from "@/src/controllers/SongController";
+import {
+  isExportSongEdited,
+  updateExportSongMetadata,
+} from "@/src/features/export/lib/export-metadata";
 import { getExportNumber } from "@/src/lib/util";
 import SongModel from "@/src/models/SongModel";
 import * as FileSystem from "expo-file-system";
@@ -19,9 +22,9 @@ export const exportSongs = async (songs: SongType[]) => {
       if (!song.cacheUri) {
         throw new Error("Import song is missing a cache URI");
       }
-      const edited = await isSongEdited(song);
+      const edited = await isExportSongEdited(song);
       if (edited) {
-        await updateMetadata(song);
+        await updateExportSongMetadata(song);
         song.edited = false;
       }
       await Sharing.shareAsync(song.cacheUri);
@@ -31,9 +34,9 @@ export const exportSongs = async (songs: SongType[]) => {
           throw new Error(`Library song ${song.id} has no fileName`);
         }
         const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
-        const edited = await isSongEdited(song);
+        const edited = await isExportSongEdited(song);
         if (edited) {
-          await updateMetadata(song);
+          await updateExportSongMetadata(song);
           if (!song.data) {
             throw new Error(
               `Library song ${song.id} has no audio data after metadata update`,
@@ -60,9 +63,9 @@ export const exportSongs = async (songs: SongType[]) => {
         if (!song.cacheUri || !song.fileName) {
           continue;
         }
-        const edited = await isSongEdited(song);
+        const edited = await isExportSongEdited(song);
         if (edited) {
-          await updateMetadata(song);
+          await updateExportSongMetadata(song);
           song.edited = false;
         }
         destination = `${dir}/${song.fileName}`;
@@ -76,9 +79,9 @@ export const exportSongs = async (songs: SongType[]) => {
             continue;
           }
           const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
-          const edited = await isSongEdited(song);
+          const edited = await isExportSongEdited(song);
           if (edited) {
-            await updateMetadata(song);
+            await updateExportSongMetadata(song);
             if (!song.data) {
               throw new Error(
                 `Library song ${song.id} has no audio data after metadata update`,

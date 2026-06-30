@@ -205,6 +205,8 @@ feature-oriented packages.
      as the next export cleanup seam.
    - `ImportExportController.exportSongs` is now a compatibility alias to the
      export feature implementation instead of a duplicate export body.
+   - Export metadata comparison and writeback now live in the export feature
+     layer, using repository/import cover lookups instead of `SongController`.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

@@ -5,8 +5,8 @@ import { useActionSheetContext } from "@/src/features/action-sheet/context/Actio
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { exportSongs } from "@/src/controllers/ImportExportController";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
-import { getPlaylistSongs } from "@/src/controllers/PlaylistController";
 import { deleteLibraryPlaylist } from "@/src/features/library/repository/library-entity-repository";
+import { getLibraryPlaylistSongs } from "@/src/features/library/repository/library-song-repository";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
@@ -41,8 +41,10 @@ const PlaylistOptions = ({ name }: { name: string }) => {
       TrueSheet.dismiss(name);
       posthog.capture("export_playlist");
       setShowGlobalLoading(true);
-      let songs = await getPlaylistSongs(editPlaylist.id);
-      console.log(songs);
+      const songs = await getLibraryPlaylistSongs({
+        playlistId: editPlaylist.id,
+        pageType: PageType.PLAYLIST,
+      });
       await exportSongs(songs);
       setShowGlobalLoading(false);
     } catch (error) {

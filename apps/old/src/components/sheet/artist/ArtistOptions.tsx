@@ -3,10 +3,10 @@ import SheetOption from "@/src/components/sheet/SheetOption";
 import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
-import { getSongsFromArtist } from "@/src/controllers/ArtistController";
 import { exportSongs } from "@/src/controllers/ImportExportController";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { deleteLibraryArtist } from "@/src/features/library/repository/library-entity-repository";
+import { getLibraryArtistSongs } from "@/src/features/library/repository/library-song-repository";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
@@ -42,7 +42,7 @@ const ArtistOptions = ({ name }: { name: string }) => {
       TrueSheet.dismiss(name);
       posthog.capture("export_artist");
       setShowGlobalLoading(true);
-      let songs = await getSongsFromArtist(editArtist.id);
+      const songs = await getLibraryArtistSongs({ artistId: editArtist.id });
       await exportSongs(songs);
       setShowGlobalLoading(false);
     } catch (error) {

@@ -3,10 +3,10 @@ import SheetOption from "@/src/components/sheet/SheetOption";
 import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
-import { getSongsFromAlbum } from "@/src/controllers/AlbumController";
 import { exportSongs } from "@/src/controllers/ImportExportController";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { deleteLibraryAlbum } from "@/src/features/library/repository/library-entity-repository";
+import { getLibraryAlbumSongs } from "@/src/features/library/repository/library-song-repository";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
@@ -46,7 +46,7 @@ const AlbumOptions = ({ name }: { name: string }) => {
       TrueSheet.dismiss(name);
       posthog.capture("export_album");
       setShowGlobalLoading(true);
-      let songs = await getSongsFromAlbum(editAlbum.id);
+      const songs = await getLibraryAlbumSongs({ albumId: editAlbum.id });
       await exportSongs(songs);
       setShowGlobalLoading(false);
     } catch (error) {

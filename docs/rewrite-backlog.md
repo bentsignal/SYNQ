@@ -88,6 +88,8 @@ feature-oriented packages.
    - Playlist delete now removes playlist rows and joins through the
      Drizzle-backed library entity repository instead of the legacy playlist
      controller.
+   - Playlist export now reads songs through the Drizzle-backed library song
+     repository instead of the legacy playlist controller.
    - Album library refresh has started. `Albums.tsx` now reads from
      `useLibraryAlbumsQuery` instead of listening for `ALBUM_CREATED`,
      `ALBUM_DELETED`, `ALBUM_MODIFIED`, or `PLAYLIST_SONGS_IMPORTED`.
@@ -109,6 +111,8 @@ feature-oriented packages.
      controller.
    - Album delete now removes album rows and joins through the Drizzle-backed
      library entity repository instead of the legacy album controller.
+   - Album export now reads songs through the Drizzle-backed library song
+     repository instead of the legacy album controller.
    - Artist detail content has started. `app/artist/artist.tsx` now reads
      artist info, songs, and albums from `useArtistInfoQuery`,
      `useArtistSongsQuery`, and `useArtistAlbumsQuery` instead of listening for
@@ -120,6 +124,8 @@ feature-oriented packages.
      library entity repository instead of the legacy artist controller.
    - Artist delete now removes artist rows and joins through the Drizzle-backed
      library entity repository instead of the legacy artist controller.
+   - Artist export now reads songs through the Drizzle-backed library song
+     repository instead of the legacy artist controller.
    - Cover picking for album, artist, playlist, and song edit/create flows now
      lives in the images feature repository instead of the legacy image
      controller.

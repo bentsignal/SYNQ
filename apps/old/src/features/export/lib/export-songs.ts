@@ -3,8 +3,8 @@ import {
   isExportSongEdited,
   updateExportSongMetadata,
 } from "@/src/features/export/lib/export-metadata";
+import { markLibrarySongAsExported } from "@/src/features/library/repository/song-metadata-repository";
 import { getExportNumber } from "@/src/lib/util";
-import SongModel from "@/src/models/SongModel";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 
@@ -43,8 +43,7 @@ export const exportSongs = async (songs: SongType[]) => {
             );
           }
           song.edited = false;
-          const db = SongModel.getInstance();
-          await db.songExported(song.id);
+          await markLibrarySongAsExported(song.id);
           await FileSystem.writeAsStringAsync(audioPath, song.data, {
             encoding: "base64",
           });
@@ -56,7 +55,6 @@ export const exportSongs = async (songs: SongType[]) => {
       }
     }
   } else if (songs.length > 1) {
-    const db = SongModel.getInstance();
     for (let i = 0; i < songs.length; i++) {
       const song = songs[i];
       if (song.pageType === PageType.IMPORT) {
@@ -88,7 +86,7 @@ export const exportSongs = async (songs: SongType[]) => {
               );
             }
             song.edited = false;
-            await db.songExported(song.id);
+            await markLibrarySongAsExported(song.id);
             await FileSystem.writeAsStringAsync(audioPath, song.data, {
               encoding: "base64",
             });

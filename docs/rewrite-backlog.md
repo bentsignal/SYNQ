@@ -235,6 +235,9 @@ feature-oriented packages.
      `ArtistController`, `PlaylistController`, and `SongController`) have been
      removed after app, feature, model, and controller callers moved off the
      controller layer.
+   - Export completion writes now go through the library metadata repository
+     compatibility helper instead of importing `SongModel` from the export
+     feature.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

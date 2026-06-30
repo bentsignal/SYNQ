@@ -113,6 +113,10 @@ export const flagLibrarySongAsEdited = async (songId: number) => {
   await SongModel.getInstance().flagSongAsEdited(songId);
 };
 
+export const markLibrarySongAsExported = async (songId: number) => {
+  await SongModel.getInstance().songExported(songId);
+};
+
 export const updateLibrarySongs = async ({
   ids,
   title,

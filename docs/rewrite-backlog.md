@@ -425,6 +425,9 @@ feature-oriented packages.
      instead of mirroring progress into route-local state.
    - Done: import save progress now reuses the transfer-completion hook, and
      the import progress indicator declares its animated dependencies.
+   - Done: import save orchestration now lives in
+     `apps/old/src/features/import/hooks/use-import-save-flow.ts`, leaving the
+     save route focused on prompt/progress UI.
    - Done: edit/action-sheet state now lives in
      `apps/old/src/features/action-sheet/context/ActionSheetProvider.tsx`, and
      the legacy `GlobalProvider` has been removed.

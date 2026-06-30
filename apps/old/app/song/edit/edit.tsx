@@ -24,6 +24,7 @@ import {
   getLibrarySongCover,
   saveEdits,
 } from "@/src/controllers/SongController";
+import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { getDurationString } from "@/src/lib/util";
 import { router, useFocusEffect } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
@@ -37,14 +38,13 @@ const EditSong = ({ id }: { id: number }) => {
 
   const {
     editSong,
-    selectedSongs,
     results,
     setResults,
-    setSelectedSongs,
     setNumModified,
     numModified,
-    setSelectEnabled,
   } = useGlobalContext();
+  const { selectedSongs, setSelectedSongs, setSelectEnabled } =
+    useSelectionContext();
 
   const [title, setTitle] = useState("");
   const [artist, setArtist] = useState("");

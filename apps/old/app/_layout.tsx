@@ -19,6 +19,7 @@ import { useHaptics } from "@/src/hooks/use-haptics";
 import { AppShellProvider } from "@/src/features/app-shell/context/AppShellProvider";
 import { GlobalProgressProvider } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { NotificationsProvider } from "@/src/features/notifications/context/NotificationsProvider";
+import { SelectionProvider } from "@/src/features/selection/context/SelectionProvider";
 
 LogBox.ignoreLogs([
   "Require cycle:",
@@ -76,11 +77,13 @@ const RootLayout = () => {
             <AppShellProvider>
               <GlobalProgressProvider>
                 <NotificationsProvider>
-                  <GestureHandlerRootView style={{ flex: 1 }}>
-                    <GlobalProgress />
-                    <Sheets />
-                    <Navigation />
-                  </GestureHandlerRootView>
+                  <SelectionProvider>
+                    <GestureHandlerRootView style={{ flex: 1 }}>
+                      <GlobalProgress />
+                      <Sheets />
+                      <Navigation />
+                    </GestureHandlerRootView>
+                  </SelectionProvider>
                 </NotificationsProvider>
               </GlobalProgressProvider>
             </AppShellProvider>

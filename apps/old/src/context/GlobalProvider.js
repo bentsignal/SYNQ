@@ -21,8 +21,6 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
   const [transferSize, setTransferSize] = useState(0);
   const [transferProgress, setTransferProgress] = useState(0);
   const [wifiDisabled, setWifiDisabled] = useState(false);
-  const [selectEnabled, setSelectEnabled] = useState(false);
-  const [selectedSongs, setSelectedSongs] = useState([]);
   const [loadAnimInProgress, setLoadAnimInProgress] = useState(false);
   const [numModified, setNumModified] = useState(0);
   const [shouldSaveToLibrary, setShouldSaveToLibrary] = useState(true);
@@ -67,10 +65,6 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
         setIP,
         wifiDisabled,
         setWifiDisabled,
-        selectEnabled,
-        setSelectEnabled,
-        selectedSongs,
-        setSelectedSongs,
         transferProgress,
         setTransferProgress,
         loadAnimInProgress,

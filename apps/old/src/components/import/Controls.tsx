@@ -15,6 +15,7 @@ import { deleteFromLibrary } from "@/src/controllers/LibraryController";
 import { removeFromAllPlaylists } from "@/src/controllers/PlaylistController";
 import { removeSongs } from "@/src/controllers/SongController";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
+import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { posthog } from "@/src/lib/posthog";
 import axios from "axios";
 import { router, usePathname } from "expo-router";
@@ -26,8 +27,6 @@ import TrackPlayer, { Track } from "react-native-track-player";
 export default function ImportControls() {
   const {
     results,
-    selectEnabled,
-    selectedSongs,
     editSong,
     numModified,
     loading,
@@ -41,13 +40,14 @@ export default function ImportControls() {
     setResults,
     setNumModified,
     setExportDisabled,
-    setSelectEnabled,
     setLoading,
     setTransferSize,
     requestImportFinish,
   } = useGlobalContext();
 
   const { showGlobalLoading } = useGlobalProgressContext();
+  const { selectEnabled, selectedSongs, setSelectEnabled } =
+    useSelectionContext();
 
   const { theme } = useThemeContext();
   const insets = useSafeAreaInsets();

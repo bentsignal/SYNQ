@@ -1,7 +1,7 @@
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
+import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { Info, List } from "lucide-react-native";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -19,11 +19,7 @@ const PageTitle = ({
   showList,
   rightHandComponent,
 }: PageTitleProps) => {
-  const {
-    selectEnabled,
-
-    setSelectEnabled,
-  } = useGlobalContext();
+  const { selectEnabled, setSelectEnabled } = useSelectionContext();
   const { setShowOverlay } = useAppShellContext();
 
   const { theme } = useThemeContext();

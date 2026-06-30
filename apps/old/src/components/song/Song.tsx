@@ -9,6 +9,7 @@ import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { getImportSongCover } from "@/src/controllers/SongController";
 import ListCover from "@/src/features/cover/components/list-cover";
+import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { Ellipsis } from "lucide-react-native";
@@ -52,14 +53,9 @@ export default function Song({
   const displayCover =
     song.pageType === PageType.IMPORT ? coverImage : song.artwork;
 
-  const {
-    selectEnabled,
-    selectedSongs,
-    results,
-
-    setSelectedSongs,
-    setEditSong,
-  } = useGlobalContext();
+  const { results, setEditSong } = useGlobalContext();
+  const { selectEnabled, selectedSongs, setSelectedSongs } =
+    useSelectionContext();
 
   const { premium } = usePremiumContext();
   const { sendHaptic } = useHaptics();

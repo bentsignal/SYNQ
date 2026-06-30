@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import Server from "@/src/features/import/components/Server";
-import NotificationModal from "@/src/components/modals/NotificationModal";
+import NotificationModal from "@/src/features/notifications/components/NotificationModal";
 import Overlay from "@/src/features/app-shell/components/Overlay";
 import { HomeIcon, LibraryIcon } from "@/src/features/app-shell/components/TabBarIcons";
 import Top from "@/src/features/app-shell/components/Top";
@@ -10,7 +10,7 @@ import { useAppShellContext } from "@/src/features/app-shell/context/AppShellPro
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { useAssets } from "expo-asset";
 import { Tabs } from "expo-router";
-import { Easing, View } from "react-native";
+import { Easing } from "react-native";
 
 const TabLayout = () => {
   const { setAdURL } = usePlaybackAdContext();
@@ -25,7 +25,7 @@ const TabLayout = () => {
     if (assets) {
       setAdURL(assets[0].uri);
     }
-  }, [assets]);
+  }, [assets, error, setAdURL]);
 
   return (
     <>
@@ -60,7 +60,7 @@ const TabLayout = () => {
           name="index"
           options={{
             title: "Home",
-            tabBarIcon: ({ color, focused }) => <HomeIcon focused={focused} />,
+            tabBarIcon: ({ focused }) => <HomeIcon focused={focused} />,
             animation: "none",
             headerShown: true,
             header: () => <Top />,
@@ -70,9 +70,7 @@ const TabLayout = () => {
           name="library"
           options={{
             title: "Library",
-            tabBarIcon: ({ color, focused }) => (
-              <LibraryIcon focused={focused} />
-            ),
+            tabBarIcon: ({ focused }) => <LibraryIcon focused={focused} />,
             animation: "none",
           }}
         />

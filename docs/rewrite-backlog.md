@@ -350,6 +350,9 @@ feature-oriented packages.
    - Done: notification banner UI now lives in
      `apps/old/src/features/notifications/components` instead of the generic
      `src/components/notifications` folder.
+   - Done: notification detail modal UI now lives in
+     `apps/old/src/features/notifications/components/NotificationModal.tsx`
+     instead of the generic `src/components/modals` folder.
    - Done: overlay and info-modal visibility now live in
      `apps/old/src/features/app-shell/context/AppShellProvider.tsx` instead of
      `GlobalProvider`.

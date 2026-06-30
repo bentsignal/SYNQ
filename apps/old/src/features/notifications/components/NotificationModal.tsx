@@ -1,25 +1,22 @@
-import { Text, View, Dimensions, Image, Modal, StyleSheet } from "react-native";
-import CustomModal from "./CustomModal";
-import VerticalScrollView from "../VerticalScrollView";
-import CustomButton from "../CustomButton";
-import ModalTitle from "./ModalTitle";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
+import CustomButton from "@/src/components/CustomButton";
+import VerticalScrollView from "@/src/components/VerticalScrollView";
+import CustomModal from "@/src/components/modals/CustomModal";
+import InfoContainer from "@/src/components/modals/InfoContainer";
+import ModalTitle from "@/src/components/modals/ModalTitle";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import InfoContainer from "./InfoContainer";
-import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 
 const NotificationModal = () => {
-
   const {
-      
-      showNotificationModal,
-      notificationMessage,
-      notificationTitle, notificationTrace,
-      
-      setShowNotificationModal,
-    
+    showNotificationModal,
+    notificationMessage,
+    notificationTitle,
+    notificationTrace,
+    setShowNotificationModal,
   } = useNotificationsContext();
 
   const { setShowOverlay } = useAppShellContext();
@@ -28,72 +25,59 @@ const NotificationModal = () => {
 
   const Local = StyleSheet.create({
     container: {
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: '95%',
+      justifyContent: "center",
+      alignItems: "center",
+      width: "95%",
       marginTop: 20,
       marginBottom: 20,
     },
     contentContainer: {
       ...Styles.roundedContainer,
-      width: '95%',
-      justifyContent: 'flex-start',
-      alignItems: 'center',
+      width: "95%",
+      justifyContent: "flex-start",
+      alignItems: "center",
       marginTop: 20,
       marginBottom: 20,
     },
     message: {
       color: Colors.text,
       fontSize: 18,
-      textAlign: 'center',
+      textAlign: "center",
       marginBottom: 20,
-      width: '90%',
+      width: "90%",
     },
     traceWrapper: {
-      width: '90%',
+      width: "90%",
     },
     button: {
       marginTop: 10,
-    }
+    },
   });
 
   return (
-    <CustomModal
-      show={showNotificationModal}
-      width={'95%'}
-    >
+    <CustomModal show={showNotificationModal} width="95%">
       <View style={Local.container}>
-        <ModalTitle title={notificationTitle}/>
+        <ModalTitle title={notificationTitle} />
         <VerticalScrollView
           backgroundColor={Colors.popup}
-          maxHeight={Dimensions.get('screen').height * 0.3}
-          minHeight={Dimensions.get('screen').height * 0.5}
+          maxHeight={Dimensions.get("screen").height * 0.3}
+          minHeight={Dimensions.get("screen").height * 0.5}
         >
           <View style={Local.contentContainer}>
-            <Text style={Local.message}>
-              {notificationMessage}
-            </Text>
-            {
-
-              notificationTrace !== null && notificationTrace !== undefined && notificationTrace.length > 0 ? 
-
+            <Text style={Local.message}>{notificationMessage}</Text>
+            {notificationTrace !== null &&
+            notificationTrace !== undefined &&
+            notificationTrace.length > 0 ? (
               <View style={Local.traceWrapper}>
-                <InfoContainer
-                  title={'More Info'}
-                  contentHeight={3000}
-                >
+                <InfoContainer title="More Info" contentHeight={3000}>
                   <Text style={Styles.description}>{notificationTrace}</Text>
                 </InfoContainer>
               </View>
-
-              : null
-
-            }
-            
+            ) : null}
           </View>
         </VerticalScrollView>
-        <CustomButton 
-          title='Close'
+        <CustomButton
+          title="Close"
           background={theme}
           handlePress={() => {
             setShowOverlay(false);
@@ -104,6 +88,6 @@ const NotificationModal = () => {
       </View>
     </CustomModal>
   );
-}
+};
 
 export default NotificationModal;

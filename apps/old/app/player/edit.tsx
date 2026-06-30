@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import ListCover from "@/src/features/cover/components/ListCover";
 import Bar from "@/src/shared/components/modals/Bar";
 import ModalStyles from "@/src/shared/components/modals/Styles";
@@ -8,7 +7,7 @@ import SongInfo from "@/src/features/library/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
 import { CoverType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import { getLibrarySongCoverPath } from "@/src/features/library/repository/library-song-repository";
+import { useSongSheetCover } from "@/src/features/action-sheet/hooks/use-song-sheet-cover";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -18,31 +17,7 @@ const PlayerSongEdit = () => {
 
   const { editSong } = useActionSheetContext();
   const { sendHaptic } = useHaptics();
-
-  const [scrollEnabled, setScrollEnabled] = useState(false);
-  const [coverImage, setCoverImage] = useState("");
-  const [emptyCover, setEmptyCover] = useState(false);
-
-  const loadCover = async () => {
-    try {
-      if (editSong.id) {
-        const cover = await getLibrarySongCoverPath(editSong.id);
-        if (cover) {
-          setCoverImage(cover);
-          setEmptyCover(false);
-        } else {
-          setCoverImage("");
-          setEmptyCover(true);
-        }
-      }
-    } catch (error) {
-      console.log("error loading song cover:", error);
-    }
-  };
-
-  useEffect(() => {
-    loadCover();
-  }, [editSong.id]);
+  const { coverImage, emptyCover } = useSongSheetCover(editSong);
 
   return (
     <View style={local.container}>
@@ -62,7 +37,7 @@ const PlayerSongEdit = () => {
         />
       </View>
       <ScrollView
-        scrollEnabled={scrollEnabled}
+        scrollEnabled={false}
         onMomentumScrollBegin={(event) => {
           if (event.nativeEvent.contentOffset.y < 0) {
             TrueSheet.dismiss(name);

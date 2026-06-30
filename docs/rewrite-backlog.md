@@ -427,6 +427,9 @@ feature-oriented packages.
    - Done: song action sheets now share
      `apps/old/src/features/action-sheet/hooks/use-song-sheet-cover.ts`
      instead of duplicating cover-loading state/effects in each sheet.
+   - Done: entity action sheets now share
+     `apps/old/src/features/action-sheet/hooks/use-sheet-scroll.ts`, and the
+     player edit sheet reuses the song sheet cover hook.
    - In progress: playback orchestration is moving out of the home screen into
      feature hooks. Avoid import results and edit targets until their owning
      feature boundaries are clearer.

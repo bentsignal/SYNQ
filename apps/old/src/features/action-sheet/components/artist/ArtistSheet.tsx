@@ -1,4 +1,3 @@
-import React, { useState, useRef } from 'react';
 import Sheet from '@/src/features/action-sheet/components';
 import { useActionSheetContext } from '@/src/features/action-sheet/context/ActionSheetProvider';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
@@ -8,26 +7,15 @@ import { Styles } from '@/src/constants/Styles';
 import { Colors } from '@/src/constants/Colors';
 import { CoverType } from '@/src/constants/Types';
 import ArtistOptions from '@/src/features/action-sheet/components/artist/ArtistOptions';
+import { useSheetScroll } from '@/src/features/action-sheet/hooks/use-sheet-scroll';
 
 const ArtistSheet = ({name}: {name: string}) => {
 
   const { editArtist } = useActionSheetContext();
-
-  const [scrollEnabled, setScrollEnabled] = useState(false);
-  const scrollRef = useRef<ScrollView>(null);
-
-  const onChange = (index: number) => {
-    if (index === 0) {
-      setScrollEnabled(false);
-      scrollRef.current?.scrollTo({ y: 0, animated: true });
-    }
-    else if (index === 1) {
-      setScrollEnabled(true);
-    }
-  }
+  const { handleSheetChange, scrollEnabled, scrollRef } = useSheetScroll();
 
   return (
-    <Sheet name={name} onChange={onChange}>
+    <Sheet name={name} onChange={handleSheetChange}>
       <View style={SheetStyles.infoContainer}>
         <ListCover 
           image={editArtist?.image}

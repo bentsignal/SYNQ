@@ -1,4 +1,3 @@
-import React, { useRef, useState } from "react";
 import ListCover from "@/src/features/cover/components/ListCover";
 import Sheet from "@/src/features/action-sheet/components";
 import SheetStyles from "@/src/features/action-sheet/components/Styles";
@@ -8,6 +7,7 @@ import { useActionSheetContext } from "@/src/features/action-sheet/context/Actio
 import { Dimensions, ScrollView, View } from "react-native";
 import SongOptions from "./SongOptions";
 import { useSongSheetCover } from "@/src/features/action-sheet/hooks/use-song-sheet-cover";
+import { useSheetScroll } from "@/src/features/action-sheet/hooks/use-sheet-scroll";
 
 type SongSheetProps = {
   name: string;
@@ -15,21 +15,11 @@ type SongSheetProps = {
 
 const SongSheet = ({ name }: SongSheetProps) => {
   const { editSong } = useActionSheetContext();
-  const [scrollEnabled, setScrollEnabled] = useState(false);
   const { coverImage, emptyCover } = useSongSheetCover(editSong);
-  const scrollRef = useRef<ScrollView>(null);
-
-  const onChange = (index: number) => {
-    if (index === 0) {
-      setScrollEnabled(false);
-      scrollRef.current?.scrollTo({ y: 0, animated: true });
-    } else if (index === 1) {
-      setScrollEnabled(true);
-    }
-  };
+  const { handleSheetChange, scrollEnabled, scrollRef } = useSheetScroll();
 
   return (
-    <Sheet name={name} onChange={onChange}>
+    <Sheet name={name} onChange={handleSheetChange}>
       <View style={SheetStyles.infoContainer}>
         <ListCover
           type={CoverType.SONG}

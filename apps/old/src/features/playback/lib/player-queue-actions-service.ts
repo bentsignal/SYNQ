@@ -44,6 +44,14 @@ export const moveQueueTrack = async (from: number, to: number) => {
   await TrackPlayer.move(from, to);
 };
 
+export const getActiveQueueTrackIndex = async () => {
+  return TrackPlayer.getActiveTrackIndex();
+};
+
+export const getPlaybackQueue = async () => {
+  return TrackPlayer.getQueue();
+};
+
 export const removeTracksBySongIds = async (songIds: number[]) => {
   const idsToRemove = new Set(songIds);
   const queue = await TrackPlayer.getQueue();

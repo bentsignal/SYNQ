@@ -1,8 +1,6 @@
+import { getActiveQueueTrackIndex } from "@/src/features/playback/lib/player-queue-actions-service";
 import { useEffect, useState } from "react";
-import TrackPlayer, {
-  type Track,
-  useActiveTrack,
-} from "react-native-track-player";
+import { type Track, useActiveTrack } from "react-native-track-player";
 
 export const useActiveQueueTrack = () => {
   const activeTrack = useActiveTrack();
@@ -10,7 +8,7 @@ export const useActiveQueueTrack = () => {
 
   useEffect(() => {
     const updateActiveIndex = async () => {
-      const index = await TrackPlayer.getActiveTrackIndex();
+      const index = await getActiveQueueTrackIndex();
       if (index !== undefined) {
         setActiveIndex(index);
       }

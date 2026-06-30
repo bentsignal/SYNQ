@@ -1,6 +1,10 @@
 import { SongType } from "@/src/constants/Types";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
 import usePlayer from "@/src/features/playback/hooks/use-player";
+import {
+  getActiveQueueTrackIndex,
+  getPlaybackQueue,
+} from "@/src/features/playback/lib/player-queue-actions-service";
 import { getSongById } from "@/src/controllers/SongController";
 import { check } from "@/src/lib/util";
 import { type MutableRefObject, useCallback, useEffect, useState } from "react";
@@ -11,7 +15,7 @@ import {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import TrackPlayer, { useActiveTrack } from "react-native-track-player";
+import { useActiveTrack } from "react-native-track-player";
 
 type PlaybackQueueDisplayParams = {
   listRef: MutableRefObject<any>;
@@ -29,7 +33,7 @@ export const usePlaybackQueueDisplay = ({
 
   const scrollToIndex = useCallback(
     async (animated: boolean = true) => {
-      const index = await TrackPlayer.getActiveTrackIndex();
+      const index = await getActiveQueueTrackIndex();
       if (check(index)) {
         listRef.current?.scrollToIndex({
           index,
@@ -42,7 +46,7 @@ export const usePlaybackQueueDisplay = ({
 
   const loadSongs = useCallback(async () => {
     const results: SongType[] = [];
-    const queue = await TrackPlayer.getQueue();
+    const queue = await getPlaybackQueue();
     try {
       let result: SongType;
       for (let i = 0; i < queue.length; i++) {

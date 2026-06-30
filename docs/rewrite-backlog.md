@@ -287,6 +287,9 @@ feature-oriented packages.
      command object in the remote-event hook.
    - Done: premium ad skip now calls the playback queue action service instead
      of importing TrackPlayer directly in the ad-actions hook.
+   - Done: playback hooks now read active queue index and queue contents
+     through the playback queue action service instead of importing the
+     TrackPlayer command object directly.
    - Next safe slice: continue moving remaining TrackPlayer calls in UI
      components behind playback feature APIs.
 

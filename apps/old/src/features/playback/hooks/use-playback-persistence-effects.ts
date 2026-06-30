@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
 import usePlayer from "@/src/features/playback/hooks/use-player";
+import { getActiveQueueTrackIndex } from "@/src/features/playback/lib/player-queue-actions-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import TrackPlayer, { type Track } from "react-native-track-player";
+import { type Track } from "react-native-track-player";
 
 type PlaybackPersistenceEffectsParams = {
   position: number;
@@ -46,7 +47,7 @@ export const usePlaybackPersistenceEffects = ({
 
   useEffect(() => {
     const initIndex = async () => {
-      const activeIndex = await TrackPlayer.getActiveTrackIndex();
+      const activeIndex = await getActiveQueueTrackIndex();
       if (activeIndex !== undefined) {
         setIndex(activeIndex);
       }
@@ -56,7 +57,7 @@ export const usePlaybackPersistenceEffects = ({
 
   useEffect(() => {
     const checkNewIndex = async () => {
-      const newIndex = await TrackPlayer.getActiveTrackIndex();
+      const newIndex = await getActiveQueueTrackIndex();
       if (newIndex === undefined) {
         return;
       }
@@ -74,7 +75,7 @@ export const usePlaybackPersistenceEffects = ({
   useEffect(() => {
     const updateLastTrackIndex = async () => {
       if (track) {
-        const activeIndex = await TrackPlayer.getActiveTrackIndex();
+        const activeIndex = await getActiveQueueTrackIndex();
         if (activeIndex !== undefined) {
           await AsyncStorage.setItem("lastTrackIndex", activeIndex.toString());
         }

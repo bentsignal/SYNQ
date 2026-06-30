@@ -1,18 +1,10 @@
-import * as DocumentPicker from "expo-document-picker";
+import { Cause, Effect, pipe } from "effect";
 import { router } from "expo-router";
 import { create } from "zustand";
-import { digest } from "../lib/digest";
+import { digest, selectFiles } from "../lib/ingest";
 import { posthog } from "../lib/posthog";
 
 type IngestState = "idle" | "browsing" | "transferring" | "processing";
-
-const supportedFileTypes = [
-  "audio/mpeg",
-  "audio/wav",
-  "audio/mp4",
-  "audio/flac",
-  "audio/aac",
-];
 
 interface IngestStore {
   ingestState: IngestState;
@@ -33,23 +25,48 @@ export const useIngestStore = create<IngestStore>((set, get) => ({
     set({ ingestState: "browsing" });
     posthog.capture("import_files");
     router.push("/ingest/from-file-browser");
-    await new Promise((resolve) => setTimeout(resolve, 10));
-    const results = await DocumentPicker.getDocumentAsync({
-      type: supportedFileTypes,
-      multiple: true,
-      copyToCacheDirectory: true,
-    });
-    if (results.canceled || results.assets.length === 0) {
-      get().reset();
-      router.replace("/(tabs)");
-      return;
-    }
-    set({ numFilesToIngest: results.assets.length, ingestState: "processing" });
-    for (let i = 0; i < results.assets.length; i++) {
-      set({ numFilesIngested: i });
-      const asset = results.assets[i];
-      await digest(asset);
-    }
-    get().reset();
+    const ingest = pipe(
+      selectFiles,
+      Effect.tap((assets) =>
+        Effect.sync(() =>
+          set({
+            ingestState: "processing",
+            numFilesToIngest: assets.length,
+            numFilesIngested: 0,
+          }),
+        ),
+      ),
+      Effect.flatMap((assets) =>
+        Effect.forEach(
+          assets,
+          (asset, index) =>
+            pipe(
+              Effect.promise(() => digest(asset)),
+              Effect.tap(() =>
+                Effect.sync(() => set({ numFilesIngested: index + 1 })),
+              ),
+            ),
+          { concurrency: 1 },
+        ),
+      ),
+      Effect.tap(() => Effect.sync(() => router.replace("/ingest/success"))),
+      Effect.catchTags({
+        FileSelectionCanceled: (_FileSelectionCanceled) => {
+          router.replace("/(tabs)");
+          return Effect.succeed(0);
+        },
+        NoFilesSelected: (_NoFilesSelected) => {
+          router.replace("/(tabs)");
+          return Effect.succeed(0);
+        },
+      }),
+      Effect.catchAllCause((cause) => {
+        router.replace("/ingest/failure");
+        console.error("error ingesting files: ", Cause.pretty(cause));
+        return Effect.succeed(0);
+      }),
+      Effect.withLogSpan("ingest-file-browser"),
+    );
+    Effect.runPromise(ingest).then(() => get().reset());
   },
 }));

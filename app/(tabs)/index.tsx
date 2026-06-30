@@ -13,9 +13,8 @@ import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { usePlaybackContext } from "@/src/context/PlaybackProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { importFiles } from "@/src/controllers/ImportExportController";
 import { playAd } from "@/src/controllers/PlayerController";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useIngestStore } from "@/src/hooks/use-ingest";
 import usePlayer from "@/src/hooks/usePlayer";
 import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -32,10 +31,6 @@ const Home = () => {
   const {
     setShowInfoModal,
     setLoading,
-    setTransferProgress,
-    setTransferSize,
-    setLoadAnimInProgress,
-    setExportDisabled,
     setResults,
     setShowImportAd,
 
@@ -53,7 +48,10 @@ const Home = () => {
 
   const { theme } = useThemeContext();
   const { premium } = usePremiumContext();
-  const { sendHaptic } = useHaptics();
+
+  const ingestFromFileBrowser = useIngestStore(
+    (state) => state.ingestFromFileBrowser,
+  );
 
   const {
     shuffle,
@@ -144,35 +142,6 @@ const Home = () => {
     };
     updateLastTrackIndex();
   }, [track]);
-
-  const browseFiles = () => {
-    setLoading(true);
-    const updateCountdown = (value: number) => setTransferProgress(value);
-    const updateSize = (value: number) => {
-      setTransferSize(value);
-      if (value > 2) {
-        setLoadAnimInProgress(true);
-      }
-    };
-    importFiles(updateCountdown, updateSize)
-      .then((results) => {
-        setTransferSize(-1);
-        setTransferProgress(-1);
-        setLoading(false);
-        if (results.length > 0) {
-          setExportDisabled(false);
-          setResults(results);
-        } else {
-          router.replace("/(tabs)");
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        setLoading(false);
-        sendHaptic("error");
-        router.push("/import/failure");
-      });
-  };
 
   // used to update storage variable that counts
   // play time. Used to determine if an ad should be played
@@ -374,14 +343,7 @@ const Home = () => {
           desc="Import from your files"
           icon={require("@/src/assets/icons/folder.png")}
           handlePress={() => {
-            setLoading(true);
-            posthog.capture("import_files");
-            router.push("/import/files");
-            setTimeout(() => {
-              setResults([]);
-              setShowImportAd(true);
-              browseFiles();
-            }, 10);
+            ingestFromFileBrowser();
           }}
         />
         <Option

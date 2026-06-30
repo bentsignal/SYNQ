@@ -16,7 +16,6 @@ import "../globals.css";
 import { useInitDB } from "@/src/db";
 import { useFont } from "@/src/hooks/use-font";
 import { useHaptics } from "@/src/hooks/use-haptics";
-import Model from "@/src/models/Model";
 
 LogBox.ignoreLogs([
   "Require cycle:",
@@ -54,16 +53,7 @@ const RootLayout = () => {
       }
     };
 
-    const checkDB = async () => {
-      try {
-        await Model.initConnection();
-      } catch (error) {
-        console.error("Error creating database:", error);
-      }
-    };
-
     loadShouldPlayAd();
-    checkDB();
     loadHapticFeedbackPreference();
   }, []);
 

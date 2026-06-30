@@ -17,9 +17,9 @@ type ProgressProps = {
 
 const Progress = ({ completion, loading, showCircle, linear }: ProgressProps) => {
 
-  let completionRef = useRef(new Animated.Value(283)).current;
-  let circleOpacityRef = useRef(new Animated.Value(0)).current;
-  let globalOpacityRef = useRef(new Animated.Value(0)).current;
+  const completionRef = useRef(new Animated.Value(283)).current;
+  const circleOpacityRef = useRef(new Animated.Value(0)).current;
+  const globalOpacityRef = useRef(new Animated.Value(0)).current;
 
   const { loadAnimInProgress, setLoadAnimInProgress } = useImportFlowContext();
 
@@ -39,7 +39,7 @@ const Progress = ({ completion, loading, showCircle, linear }: ProgressProps) =>
       easing: loadAnimInProgress ? Easing.out(Easing.ease) : Easing.in(Easing.ease),
       useNativeDriver: true,
     }).start();
-  }, [loading]);
+  }, [globalOpacityRef, loadAnimInProgress, loading]);
 
   useEffect(() => {
     let to;
@@ -55,44 +55,27 @@ const Progress = ({ completion, loading, showCircle, linear }: ProgressProps) =>
       easing: loadAnimInProgress ? Easing.out(Easing.ease) : Easing.in(Easing.ease),
       useNativeDriver: true, 
     }).start();
-  }, [showCircle]);
+  }, [circleOpacityRef, loadAnimInProgress, showCircle]);
 
   useEffect(() => {
 
-    let progressValue = Math.abs(((completion / 100) * 283) - 283);
-    if (progressValue < 0) {
-      progressValue = 0;
-    }
-    else if (progressValue >= 283) {
-      progressValue = 283;
-    }
+    const progressValue = Math.min(
+      283,
+      Math.max(0, Math.abs(((completion / 100) * 283) - 283)),
+    );
     
-    if (linear) {
-      Animated.timing(completionRef, {
-        toValue: progressValue,
-        duration: 1000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      }).start(() => {
-        if (progressValue <= 0) {
-          setLoadAnimInProgress(false);
-        }
-      });
-    }
-    else {
-      Animated.timing(completionRef, {
-        toValue: progressValue,
-        duration: 500,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }).start(() => {
-        if (progressValue <= 0) {
-          setLoadAnimInProgress(false);
-        }
-      });
-    }
+    Animated.timing(completionRef, {
+      toValue: progressValue,
+      duration: linear ? 1000 : 500,
+      easing: linear ? Easing.linear : Easing.out(Easing.ease),
+      useNativeDriver: true,
+    }).start(() => {
+      if (progressValue <= 0) {
+        setLoadAnimInProgress(false);
+      }
+    });
 
-  }, [completion]);
+  }, [completion, completionRef, linear, setLoadAnimInProgress]);
 
   const Local = StyleSheet.create({
     container: {

@@ -423,6 +423,8 @@ feature-oriented packages.
    - Done: import file and Wi-Fi routes now derive transfer completion through
      `apps/old/src/features/import/hooks/use-import-transfer-completion.ts`
      instead of mirroring progress into route-local state.
+   - Done: import save progress now reuses the transfer-completion hook, and
+     the import progress indicator declares its animated dependencies.
    - Done: edit/action-sheet state now lives in
      `apps/old/src/features/action-sheet/context/ActionSheetProvider.tsx`, and
      the legacy `GlobalProvider` has been removed.

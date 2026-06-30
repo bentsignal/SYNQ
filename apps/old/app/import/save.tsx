@@ -7,13 +7,14 @@ import { usePremiumContext } from "@/src/features/premium/context/PremiumProvide
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
+import { useImportTransferCompletion } from "@/src/features/import/hooks/use-import-transfer-completion";
 import { deleteImportSongs } from "@/src/features/import/lib/import-song-edits";
 import { saveImportSongsToLibrary } from "@/src/features/import/lib/save-import-to-library";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import Checkbox from "expo-checkbox";
+import ExpoCheckbox from "expo-checkbox";
 import { router, usePathname } from "expo-router";
 import * as StoreReview from "expo-store-review";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
@@ -55,10 +56,10 @@ const SavePrompt = () => {
   const pathname = usePathname();
   const currentPath = useRef(pathname);
   const handledImportFinishRequest = useRef(0);
-  const saveCompletion =
-    transferSize > 0
-      ? Math.min(100, Math.round((transferProgress / transferSize) * 100))
-      : 0;
+  const saveCompletion = useImportTransferCompletion({
+    transferProgress,
+    transferSize,
+  });
 
   useEffect(() => {
     currentPath.current = pathname;
@@ -231,7 +232,7 @@ const SavePrompt = () => {
         </Text>
         <View style={Local.checkboxContainer}>
           <Text style={Local.checkboxText}>Save to library</Text>
-          <Checkbox
+          <ExpoCheckbox
             value={shouldSaveToLibrary}
             onValueChange={toggleSave}
             color={theme}

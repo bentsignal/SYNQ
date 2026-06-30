@@ -120,6 +120,9 @@ feature-oriented packages.
      library entity repository instead of the legacy artist controller.
    - Artist delete now removes artist rows and joins through the Drizzle-backed
      library entity repository instead of the legacy artist controller.
+   - Cover picking for album, artist, playlist, and song edit/create flows now
+     lives in the images feature repository instead of the legacy image
+     controller.
    - Album and artist row metadata now renders from props; `AlbumItem` no
      longer listens for `ALBUM_MODIFIED`, and `ArtistItem` no longer listens
      for `ARTIST_MODIFIED`.

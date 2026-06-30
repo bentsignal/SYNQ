@@ -5,9 +5,33 @@ import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system";
 import * as ImageManipulator from "expo-image-manipulator";
 import { SaveFormat } from "expo-image-manipulator";
+import * as ImagePicker from "expo-image-picker";
 import { Image } from "react-native";
 
 const imageDirectory = `${FileSystem.documentDirectory}images`;
+
+export const pickCoverImage = async () => {
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    base64: true,
+    selectionLimit: 1,
+    allowsEditing: true,
+    aspect: [1, 1],
+    quality: 0.3,
+  });
+
+  const image = result.assets?.[0];
+  if (
+    !result.canceled &&
+    image?.base64 &&
+    image.mimeType &&
+    (image.mimeType === "image/jpeg" || image.mimeType === "image/png")
+  ) {
+    return `data:${image.mimeType};base64,${image.base64}`;
+  }
+
+  return "";
+};
 
 export const saveCoverImage = async (base64image?: string) => {
   if (!base64image) return null;

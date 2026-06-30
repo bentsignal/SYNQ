@@ -8,7 +8,7 @@ import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType, NotificationType } from "@/src/constants/Types";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
-import { newCover } from "@/src/controllers/ImageController";
+import { pickCoverImage } from "@/src/features/images/repository/image-repository";
 import { usePlaylistInfoQuery } from "@/src/features/library/hooks/use-playlist-info-query";
 import { updateLibraryPlaylist } from "@/src/features/library/repository/library-entity-repository";
 import { router } from "expo-router";
@@ -52,7 +52,7 @@ const EditPlaylist = ({ id }: { id: number }) => {
   };
 
   const handleUpdateImage = async () => {
-    const cover = await newCover();
+    const cover = await pickCoverImage();
     if (cover) {
       setImage(cover);
       await updateLibraryPlaylist({

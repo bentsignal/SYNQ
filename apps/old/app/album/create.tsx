@@ -9,7 +9,7 @@ import { Styles } from "@/src/constants/Styles";
 import { CoverType, NotificationType } from "@/src/constants/Types";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { newCover } from "@/src/controllers/ImageController";
+import { pickCoverImage } from "@/src/features/images/repository/image-repository";
 import { createLibraryAlbum } from "@/src/features/library/repository/library-entity-repository";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { router } from "expo-router";
@@ -32,7 +32,7 @@ const CreateAlbum = () => {
   const insets = useSafeAreaInsets();
 
   const handleUpdateImage = async () => {
-    const cover = await newCover();
+    const cover = await pickCoverImage();
     if (cover) {
       setImage(cover);
     }

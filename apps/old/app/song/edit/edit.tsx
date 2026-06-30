@@ -17,7 +17,7 @@ import {
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { getAlbumsFromSong } from "@/src/controllers/AlbumController";
 import { getArtistsFromSong } from "@/src/controllers/ArtistController";
-import { newCover } from "@/src/controllers/ImageController";
+import { pickCoverImage } from "@/src/features/images/repository/image-repository";
 import { updateSongsInLibrary } from "@/src/controllers/LibraryController";
 import {
   getImportSongCover,
@@ -105,7 +105,7 @@ const EditSong = ({ id }: { id: number }) => {
   );
 
   const handleUpdateImage = async () => {
-    const cover = await newCover();
+    const cover = await pickCoverImage();
     if (cover) {
       setImage(cover);
       await handleSave({ newTitle: title, newImage: cover });

@@ -1,11 +1,9 @@
 import * as FileSystem from 'expo-file-system'
-import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { SaveFormat } from 'expo-image-manipulator';
 import { Image } from 'react-native';
 import 'react-native-get-random-values';
-import { getAlbumCover, getAlbumsFromSong } from '@/src/controllers/AlbumController';
-import { SongType } from '../constants/Types';
+import { getAlbumsFromSong } from '@/src/controllers/AlbumController';
 
 export const splitImageMimeAndBuffer = (image: string) => {
   // extract mime from start of string
@@ -18,31 +16,6 @@ export const splitImageMimeAndBuffer = (image: string) => {
     mime: mimeType,
     buffer: bufferString
   };
-}
-
-export const newCover = async () => {
-  // TODO: import image and crop and save value to cover
-  const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    base64: true,
-    selectionLimit: 1,
-    allowsEditing: true,
-    aspect: [1, 1],
-    quality: 0.3,
-  });
-  if (
-    result.assets &&
-    result.assets.length > 0 &&
-    result.assets[0].base64 &&
-    result.assets[0].mimeType &&
-    (result.assets[0].mimeType == 'image/jpeg' || result.assets[0].mimeType == 'image/png') &&
-    !result.canceled
-  ) {
-    return `data:${result.assets[0].mimeType};base64,${result.assets[0].base64}`;
-  }
-  else {
-    return '';
-  }
 }
 
 export const getSongCover = async (id: number, full: boolean = false) => {
@@ -79,21 +52,18 @@ export const writeImageToLibrary = async (artwork: string, dir: string) => {
     const mimeType = mimeTypeFull.split(/:(.*)/s)[1];
     const buffer = artwork.split(',')[1];
     let extension = '';
-    let format = SaveFormat.JPEG;
     if (mimeType === 'image/jpeg') {
       extension = 'jpg';
-      format = SaveFormat.JPEG;
     }
     else if (mimeType === 'image/png') {
       extension = 'png';
-      format = SaveFormat.PNG;
     }
     // write images if valid format
     if (extension !== '') {
       // write image as is
       await FileSystem.writeAsStringAsync(`${dir}/cover_temp.${extension}`, buffer, { encoding: 'base64' });
       // Get full size image dimensions
-      const { width: imageWidth, height: imageHeight } = await new Promise<{ width: number, height: number }>((resolve, reject) => {
+      const { width: imageWidth } = await new Promise<{ width: number, height: number }>((resolve, reject) => {
         Image.getSize(`${dir}/cover_temp.${extension}`, (width, height) => resolve({ width, height }), reject);
       });
       const fullResizeOptions: ImageManipulator.ActionResize = {resize: {

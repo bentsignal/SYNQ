@@ -1,5 +1,5 @@
 import { View, ViewProps } from "react-native";
-import { cn } from "../lib/util";
+import { cn } from "@/src/lib/util";
 import { BottomInset, TopInset } from "./safe-area-insets";
 
 export const SafeContainer = ({

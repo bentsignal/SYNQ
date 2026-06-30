@@ -1,4 +1,4 @@
-import Button, { Label } from "@/src/components/button";
+import Button, { Label } from "@/src/features/ingest/components/button";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { useIngestStore } from "@/src/features/ingest/hooks/use-ingest";
 import { router } from "expo-router";

@@ -1,7 +1,7 @@
-import PageTitle from "@/src/components/page-title";
-import { BottomInset } from "@/src/components/safe-area-insets";
-import { SafeContainer } from "@/src/components/safe-container";
-import SettingsButton from "@/src/components/settings-button";
+import PageTitle from "@/src/features/ingest/components/page-title";
+import { BottomInset } from "@/src/features/ingest/components/safe-area-insets";
+import { SafeContainer } from "@/src/features/ingest/components/safe-container";
+import SettingsButton from "@/src/features/ingest/components/settings-button";
 import colors from "@/src/lib/colors";
 import { Stack, usePathname } from "expo-router";
 import { View } from "react-native";

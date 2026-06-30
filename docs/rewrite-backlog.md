@@ -326,6 +326,10 @@ feature-oriented packages.
    - Done: import route controls, header, Wi-Fi server, instructions, and
      premium blur UI moved from generic `src/components/import` into the
      import feature folder.
+   - Done: newer ingest flow UI primitives (`button`, page title, safe-area
+     wrappers, settings button) now live in
+     `apps/old/src/features/ingest/components` instead of generic
+     `src/components` files.
    - Future target packages/folders: `shared/db` repositories and
      `apps/new/src/features/ingest`.
    - Keep Effect at workflow boundaries; keep UI state minimal and observable.

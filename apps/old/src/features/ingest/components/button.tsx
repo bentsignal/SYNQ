@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
 } from "react-native";
-import { cn } from "../lib/util";
+import { cn } from "@/src/lib/util";
 
 const variants = cva("rounded-2xl", {
   variants: {

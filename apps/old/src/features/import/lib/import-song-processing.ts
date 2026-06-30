@@ -3,8 +3,13 @@ import {
   getLibraryAlbumFromMetadata,
   getLibraryArtistsFromMetadata,
 } from "@/src/features/library/repository/library-entity-repository";
-import { checkForTrackNumber } from "@/src/lib/util";
-import { getAudioDurationFromFile, getMetadataFromFile } from "@synq/audio";
+import { checkForTrackNumber, idgen } from "@/src/lib/util";
+import {
+  getAudioDurationFromFile,
+  getMetadataFromFile,
+  supportedAudioFileTypes,
+} from "@synq/audio";
+import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 
 export const createImportDir = async () => {
@@ -34,6 +39,51 @@ export const getWifiTransferSong = async (
     encoding: "base64",
   });
   return processImportSongFromFile(destination, name, id, type);
+};
+
+export const importFiles = async (
+  countdown: (value: number) => void,
+  updateSize: (value: number) => void,
+) => {
+  const results = await DocumentPicker.getDocumentAsync({
+    type: supportedAudioFileTypes,
+    multiple: true,
+    copyToCacheDirectory: true,
+  });
+
+  const songs: SongType[] = [];
+  if (results.canceled) {
+    return songs;
+  }
+
+  await createImportDir();
+  updateSize(results.assets.length);
+
+  for (let index = 0; index < results.assets.length; index += 1) {
+    const asset = results.assets[index];
+    countdown(results.assets.length - index);
+    const newUri = `${FileSystem.cacheDirectory}import/${asset.name}`;
+    await FileSystem.moveAsync({
+      from: asset.uri,
+      to: newUri,
+    });
+    asset.uri = newUri;
+
+    try {
+      songs.push(
+        await processImportSongFromFile(
+          newUri,
+          asset.name,
+          idgen(10),
+          asset.mimeType ?? asset.name,
+        ),
+      );
+    } catch (error) {
+      console.log("error processing song:", asset.name, error);
+    }
+  }
+
+  return songs;
 };
 
 export const processImportSongFromFile = async (

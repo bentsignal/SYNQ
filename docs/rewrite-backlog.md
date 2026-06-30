@@ -207,6 +207,9 @@ feature-oriented packages.
      export feature implementation instead of a duplicate export body.
    - Export metadata comparison and writeback now live in the export feature
      layer, using repository/import cover lookups instead of `SongController`.
+   - `ImportExportController` now delegates its remaining compatibility exports
+     to import/export feature modules instead of carrying legacy import/export
+     implementations.
    - Premium purchase calls now live behind a premium feature service instead
      of importing `PurchaseController` from the premium screen/provider.
    - Remaining relative component imports of `ColorController` now point at

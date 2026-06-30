@@ -1,20 +1,31 @@
 import { useMemo } from "react";
-import { ArtistType, SortOrder, SortType } from "@/src/constants/Types";
+import {
+  ArtistType,
+  SortOrder,
+  SortType,
+  SourceType,
+} from "@/src/constants/Types";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 
 type LibraryArtistsQueryOptions = {
+  prioritizeSongId?: number;
   query?: string;
   sort?: SortType;
   order?: SortOrder;
+  sourceType?: SourceType;
 };
 
 type ArtistRow = {
   artist: typeof schema.artists.$inferSelect;
   songTitle: string | null;
   albumName: string | null;
+};
+
+type ArtistMembershipRow = {
+  artistId: number | null;
 };
 
 type ArtistSearchEntry = {
@@ -44,6 +55,20 @@ const sortArtists = (
   return order === SortOrder.DESC ? sorted.reverse() : sorted;
 };
 
+const prioritizeArtists = (
+  artists: ArtistType[],
+  priorityIds: Set<number>,
+) => {
+  if (priorityIds.size === 0) {
+    return artists;
+  }
+
+  const selected = artists.filter((artist) => priorityIds.has(artist.id));
+  const remaining = artists.filter((artist) => !priorityIds.has(artist.id));
+
+  return [...selected, ...remaining];
+};
+
 const matchesQuery = (entry: ArtistSearchEntry, query: string) => {
   if (!query) {
     return true;
@@ -54,7 +79,7 @@ const matchesQuery = (entry: ArtistSearchEntry, query: string) => {
   return values.some((value) => value?.toLowerCase().includes(query));
 };
 
-const rowsToEntries = (rows: ArtistRow[]) => {
+const rowsToEntries = (rows: ArtistRow[], sourceType?: SourceType) => {
   const artistMap = new Map<number, ArtistSearchEntry>();
 
   rows.forEach(({ artist, songTitle, albumName }) => {
@@ -64,6 +89,7 @@ const rowsToEntries = (rows: ArtistRow[]) => {
         artist: {
           id: artist.id,
           name: artist.name ?? "",
+          sourceType,
         },
         songTitles: new Set<string>(),
         albumNames: new Set<string>(),
@@ -84,9 +110,11 @@ const rowsToEntries = (rows: ArtistRow[]) => {
 };
 
 export const useLibraryArtistsQuery = ({
+  prioritizeSongId,
   query,
   sort = SortType.ARTIST,
   order = SortOrder.ASC,
+  sourceType,
 }: LibraryArtistsQueryOptions) => {
   const { data, error, updatedAt } = useLiveQuery(
     db
@@ -107,16 +135,32 @@ export const useLibraryArtistsQuery = ({
       )
       .leftJoin(schema.albums, eq(schema.albumSongs.albumId, schema.albums.id)),
   );
+  const { data: membershipData } = useLiveQuery(
+    db
+      .select({
+        artistId: schema.artistSongs.artistId,
+      })
+      .from(schema.artistSongs)
+      .where(eq(schema.artistSongs.songId, prioritizeSongId ?? -1)),
+  );
 
   const artists = useMemo(() => {
     const normalizedQuery = normalizeQuery(query);
-    const entries = rowsToEntries((data ?? []) as ArtistRow[]);
+    const entries = rowsToEntries((data ?? []) as ArtistRow[], sourceType);
+    const priorityIds = new Set(
+      ((membershipData ?? []) as ArtistMembershipRow[])
+        .map((row) => row.artistId)
+        .filter((id): id is number => typeof id === "number"),
+    );
     const filteredArtists = entries
       .filter((entry) => matchesQuery(entry, normalizedQuery))
       .map((entry) => entry.artist);
 
-    return sortArtists(filteredArtists, sort, order);
-  }, [data, query, sort, order]);
+    return prioritizeArtists(
+      sortArtists(filteredArtists, sort, order),
+      priorityIds,
+    );
+  }, [data, membershipData, query, sort, order, sourceType]);
 
   return {
     artists,

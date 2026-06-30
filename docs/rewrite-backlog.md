@@ -81,6 +81,9 @@ feature-oriented packages.
      membership prioritization instead of listening for `PLAYLIST_CREATED`.
    - Add-to-album now reads from `useLibraryAlbumsQuery` with membership
      prioritization instead of listening for `ALBUM_CREATED`.
+   - Add-to-artist now reads from `useLibraryArtistsQuery` with membership
+     prioritization and source tagging instead of listening for
+     `ARTIST_CREATED`.
    - Next target: remove import-only metadata listeners from `Song.tsx` with a
      typed import edit store.
 
@@ -163,6 +166,9 @@ feature-oriented packages.
 4. Artist:
    - Done: add `useLibraryArtistsQuery` for the list-level library artist
      screen.
+   - Done: add membership prioritization and source tagging to
+     `useLibraryArtistsQuery`, and use it in `app/artist/add.tsx` instead of
+     the `ARTIST_CREATED` listener.
    - Done: add `useArtistInfoQuery`, `useArtistSongsQuery`, and
      `useArtistAlbumsQuery` for the artist detail screen.
    - Done: remove `ARTIST_MODIFIED` display listeners from artist rows.

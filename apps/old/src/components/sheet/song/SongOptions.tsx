@@ -14,8 +14,6 @@ import {
   removeFromPlaylist,
 } from "@/src/controllers/PlaylistController";
 import { removeSongs } from "@/src/controllers/SongController";
-import songBus from "@/src/events/song/Bus";
-import { SongBusEvent } from "@/src/events/song/Events";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/hooks/usePlayer";
 import { posthog } from "@/src/lib/posthog";
@@ -131,7 +129,6 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
     else if (editSong.pageType === PageType.LIBRARY) {
       await removeFromAllPlaylists(editSong.id);
       await deleteFromLibrary(editSong.id);
-      songBus.emit(SongBusEvent.SONG_DELETED);
       // remove from queue and next up if applicable
       const queue = await TrackPlayer.getQueue();
       const indiciesToRemove = queue

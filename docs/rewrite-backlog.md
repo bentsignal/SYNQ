@@ -118,6 +118,8 @@ feature-oriented packages.
      refreshes through live queries after imports, backup restores, and erases.
    - Playlist bus has been removed after list, detail, row metadata, cover,
      delete, import, backup, and add/remove flows moved off playlist events.
+   - Song bus has been removed after saved-library rows, edit flows, cover
+     edits, and deletes moved onto reactive data or direct local state updates.
    - Next target: remove remaining non-image playlist, album, and artist events
      once their last emitters are replaced by reactive state or local actions.
 
@@ -172,7 +174,7 @@ feature-oriented packages.
      `ALBUM_TOGGLED_ON_SONG` listeners from `apps/old/src/components/song/Song.tsx`.
    - Done: move `app/song/edit/edit.tsx` relation refresh to focus refresh
      plus `editSong` context updates from relation list rows.
-   - Then remove `apps/old/src/events/song`.
+   - Done: remove the remaining emit-only song event bus module.
 
 2. Playlist:
    - Done: add `useLibraryPlaylistsQuery` for the list-level library playlist

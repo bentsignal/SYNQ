@@ -21,6 +21,11 @@ import {
   isArtistOnSong,
   removeArtistFromSong,
 } from "@/src/controllers/ArtistController";
+import {
+  addImportSongArtist,
+  removeImportSongArtist,
+  replaceImportSong,
+} from "@/src/features/import/lib/import-song-edits";
 import artistBus from "@/src/events/artist";
 import {
   ArtistBusEvent,
@@ -40,7 +45,13 @@ type ArtistProps = {
 };
 
 const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
-  const { editSong, setEditArtist, editAlbum } = useGlobalContext();
+  const {
+    editSong,
+    setEditSong,
+    setEditArtist,
+    editAlbum,
+    setResults,
+  } = useGlobalContext();
   const { sendHaptic } = useHaptics();
 
   const [selected, setSelected] = useState(false);
@@ -77,10 +88,15 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
         });
       } else if (artist.sourceType === SourceType.SONG && editSong) {
         if (editSong.pageType === PageType.IMPORT) {
-          editSong.importArtists = editSong.importArtists ?? [];
-          editSong.importArtists = add
-            ? [...editSong.importArtists, artist]
-            : editSong.importArtists.filter((a) => a.id !== artist.id);
+          if (add) {
+            addImportSongArtist(editSong, artist);
+          } else {
+            removeImportSongArtist(editSong, artist.id);
+          }
+          setEditSong({ ...editSong });
+          setResults((currentResults) =>
+            replaceImportSong(currentResults, editSong),
+          );
         } else if (add) {
           await addArtistToSong(artist.id, editSong.id);
         } else {

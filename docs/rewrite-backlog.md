@@ -86,8 +86,11 @@ feature-oriented packages.
      `ARTIST_CREATED`.
    - Playlist, album, and artist create screens no longer emit now-unused
      `PLAYLIST_CREATED`, `ALBUM_CREATED`, or `ARTIST_CREATED` events.
-   - Next target: remove import-only metadata listeners from `Song.tsx` with a
-     typed import edit store.
+   - Import song rows now receive artist/album display metadata through
+     immutable `results` updates when import relations are toggled, so
+     `Song.tsx` no longer listens for `ARTIST_TOGGLED_ON_SONG` or
+     `ALBUM_TOGGLED_ON_SONG`.
+   - Next target: move song edit relation refresh out of bus listeners.
 
 4. Split ingest/media.
    - Current checkpoint files: `apps/old/src/hooks/use-ingest.ts`,
@@ -136,8 +139,10 @@ feature-oriented packages.
    - Done: saved library cover edits write through the same feature repository
      into Drizzle image references, and saved library rows render cover art
      from `useLibrarySongsQuery`.
-   - Next: remove import-only `ARTIST_TOGGLED_ON_SONG` and
+   - Done: remove import-only `ARTIST_TOGGLED_ON_SONG` and
      `ALBUM_TOGGLED_ON_SONG` listeners from `apps/old/src/components/song/Song.tsx`.
+   - Next: move `app/song/edit/edit.tsx` relation refresh to local callbacks or
+     a typed edit store.
    - Then remove `apps/old/src/events/song`.
 
 2. Playlist:

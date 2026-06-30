@@ -4,26 +4,10 @@ import Select from "@/src/components/Select";
 import SongInfo from "@/src/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import {
-  ArtistType,
-  PageType,
-  SongType,
-} from "@/src/constants/Types";
+import { PageType, SongType } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
-import { getArtistsFromAlbum } from "@/src/controllers/AlbumController";
-import { getArtistsFromSong } from "@/src/controllers/ArtistController";
 import { getImportSongCover } from "@/src/controllers/SongController";
-import albumBus from "@/src/events/album";
-import {
-  AlbumBusEvent,
-  AlbumToggledOnSongEvent,
-} from "@/src/events/album/Events";
-import artistBus from "@/src/events/artist";
-import {
-  ArtistBusEvent,
-  ArtistToggledOnSongEvent,
-} from "@/src/events/artist/Events";
 import ListCover from "@/src/features/cover/components/list-cover";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
@@ -59,19 +43,12 @@ export default function Song({
   const [selected, setSelected] = useState(false);
   const [coverImage, setCoverImage] = useState("");
   const [emptyCover, setEmptyCover] = useState(false);
-  const [fileName, setFileName] = useState("");
-  const [title, setTitle] = useState("");
-  const [artist, setArtist] = useState("");
-  const [album, setAlbum] = useState("");
-  const displayMetadata =
-    song.pageType === PageType.IMPORT
-      ? { fileName, title, artist, album }
-      : {
-          fileName: song.fileName ?? "",
-          title: song.title ?? "",
-          artist: song.artist ?? "",
-          album: song.album ?? "",
-        };
+  const displayMetadata = {
+    fileName: song.fileName ?? "",
+    title: song.title ?? "",
+    artist: song.artist ?? "",
+    album: song.album ?? "",
+  };
   const displayCover =
     song.pageType === PageType.IMPORT ? coverImage : song.artwork;
 
@@ -137,25 +114,7 @@ export default function Song({
     if (song.pageType === PageType.IMPORT) {
       loadCover();
     }
-    setFileName(song.fileName ?? "");
-    setTitle(song.title ?? "");
-    setArtist(song.artist ?? "");
-    setAlbum(song.album ?? "");
   }, [song]);
-
-  useEffect(() => {
-    if (song.pageType !== PageType.IMPORT) {
-      return;
-    }
-
-    artistBus.on(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
-    albumBus.on(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, updateAlbumInfo);
-
-    return () => {
-      artistBus.off(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
-      albumBus.off(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, updateAlbumInfo);
-    };
-  }, [song.pageType]);
 
   let disablePlay = false;
   if (
@@ -164,59 +123,6 @@ export default function Song({
   ) {
     disablePlay = true;
   }
-
-  const updateAlbumInfo = async (data: AlbumToggledOnSongEvent) => {
-    if (data.songId === song.id) {
-      let songArtists: ArtistType[] = [];
-      let albumArtists: ArtistType[] = [];
-
-      if (song.pageType === PageType.IMPORT) {
-        songArtists = song.importArtists ?? [];
-        albumArtists = await getArtistsFromAlbum(data.albumId);
-        if (data.add) {
-          await loadCover();
-        } else {
-          setCoverImage("");
-          setEmptyCover(true);
-        }
-      } else {
-        loadCover();
-        albumArtists = await getArtistsFromAlbum(data.albumId);
-        songArtists = await getArtistsFromSong(song.id);
-      }
-
-      // add or remove artists from song
-      if (data.add) {
-        song.album = song.importAlbums[0].name;
-        song.artist = [
-          ...new Set(
-            [...albumArtists, ...songArtists].map((artist) => artist.name),
-          ),
-        ].join(", ");
-        setArtist(song.artist);
-      } else {
-        song.album = "";
-        song.artist = songArtists
-          .map((artist) => artist.name)
-          .filter((artist) => !albumArtists.map((a) => a.name).includes(artist))
-          .join(", ");
-        setArtist(song.artist);
-      }
-    }
-  };
-
-  const updateArtistInfo = async (data: ArtistToggledOnSongEvent) => {
-    if (data.songId === song.id) {
-      let artists: ArtistType[] = [];
-      if (song.pageType === PageType.IMPORT) {
-        artists = song.importArtists ?? [];
-      } else {
-        artists = await getArtistsFromSong(song.id);
-      }
-      song.artist = artists.map((artist) => artist.name).join(", ");
-      setArtist(song.artist);
-    }
-  };
 
   const loadCover = async () => {
     try {

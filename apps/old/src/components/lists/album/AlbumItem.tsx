@@ -21,6 +21,11 @@ import {
   AlbumBusEvent,
   AlbumImageModifiedEvent,
 } from "@/src/events/album/Events";
+import {
+  addImportSongAlbum,
+  removeImportSongAlbum,
+  replaceImportSong,
+} from "@/src/features/import/lib/import-song-edits";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import colors from "@/src/lib/colors";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
@@ -35,7 +40,7 @@ type AlbumProps = {
 };
 
 const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
-  const { editSong, setEditAlbum } = useGlobalContext();
+  const { editSong, setEditSong, setEditAlbum, setResults } = useGlobalContext();
   const { sendHaptic } = useHaptics();
 
   const [selected, setSelected] = useState(false);
@@ -68,24 +73,16 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
   const selectionChanged = async (add: boolean) => {
     try {
       if (editSong.pageType === PageType.IMPORT) {
-        editSong.importAlbums = editSong.importAlbums ?? [];
-        editSong.importAlbums = add
-          ? [...editSong.importAlbums, album]
-          : editSong.importAlbums.filter((a) => a.id !== album.id);
         const artists = await getArtistsFromAlbum(album.id);
-        editSong.importArtists = add
-          ? [
-              ...new Set([
-                ...editSong.importArtists,
-                ...artists.filter(
-                  (artist) =>
-                    !editSong.importArtists.some((a) => a.id === artist.id),
-                ),
-              ]),
-            ]
-          : editSong.importArtists.filter(
-              (a) => !artists.some((artist) => artist.id === a.id),
-            );
+        if (add) {
+          addImportSongAlbum(editSong, album, artists);
+        } else {
+          removeImportSongAlbum(editSong, album.id, artists);
+        }
+        setEditSong({ ...editSong });
+        setResults((currentResults) =>
+          replaceImportSong(currentResults, editSong),
+        );
       } else if (add) {
         await addAlbumToSong(album.id, editSong.id);
         const artists = await getArtistsFromAlbum(album.id);

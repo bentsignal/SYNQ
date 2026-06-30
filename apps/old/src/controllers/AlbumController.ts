@@ -117,9 +117,6 @@ export const updateAlbum = async (albumId: number, name: string, year?: number, 
     albumSongs.forEach(song => {
       flagSongAsEdited(song.id);
     });
-    albumBus.emit(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, {
-      id: albumId,
-    });
   }
 }
 

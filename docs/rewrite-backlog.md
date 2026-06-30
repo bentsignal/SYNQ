@@ -105,8 +105,10 @@ feature-oriented packages.
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or
      `ARTIST_IMAGE_MODIFIED`.
-   - Next target: remove now-unused image modification emits/types after
-     confirming no fallback-only cover flows still depend on them.
+   - Now-unused playlist, album, and artist image modification emits/types have
+     been removed; image refresh is driven by Drizzle writes plus live queries.
+   - Next target: remove remaining non-image playlist, album, and artist events
+     once their last emitters are replaced by reactive state or local actions.
 
 4. Split ingest/media.
    - Current checkpoint files: `apps/old/src/hooks/use-ingest.ts`,
@@ -177,6 +179,7 @@ feature-oriented packages.
      `PLAYLIST_IMAGE_MODIFIED` listeners.
    - Done: render playlist detail page cover art from `usePlaylistInfoQuery`
      instead of `PLAYLIST_IMAGE_MODIFIED`.
+   - Done: remove now-unused `PLAYLIST_IMAGE_MODIFIED` emits and event types.
    - Replace count/name/image/content listeners and remove the broad
      `PLAYLIST_SONGS_IMPORTED` invalidation pattern.
 
@@ -193,6 +196,7 @@ feature-oriented packages.
      `ALBUM_IMAGE_MODIFIED` listeners.
    - Done: render album detail page cover art from `useAlbumInfoQuery` instead
      of `ALBUM_IMAGE_MODIFIED`.
+   - Done: remove now-unused `ALBUM_IMAGE_MODIFIED` emits and event types.
    - Add album order/image queries where the reorder and cover flows still
      need Drizzle-backed state.
    - Replace `ALBUM_*` events, including `ALBUM_TOGGLED_ON_SONG` and
@@ -215,6 +219,7 @@ feature-oriented packages.
      `ARTIST_IMAGE_MODIFIED` listeners.
    - Done: render artist detail page cover art from `useArtistInfoQuery`
      instead of `ARTIST_IMAGE_MODIFIED`.
+   - Done: remove now-unused `ARTIST_IMAGE_MODIFIED` emits and event types.
    - Add artist relation/image queries where add/edit/cover flows still need
      Drizzle-backed state.
    - Replace artist edit/list/detail listeners.

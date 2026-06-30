@@ -135,9 +135,6 @@ export const updatePlaylist = async (playlistId: number, name: string, image: st
         .set({ coverImage })
         .where(eq(schema.playlists.id, playlistId));
     }
-    playlistBus.emit(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, {
-      id: playlistId,
-    });
   }
 }
 

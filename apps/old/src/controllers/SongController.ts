@@ -14,8 +14,6 @@ import { getAudioMetadata } from "@missingcore/audio-metadata";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
-import albumBus from "../events/album";
-import { AlbumBusEvent } from "../events/album/Events";
 import {
   getAlbumCover,
   getAlbumCoverFromSong,
@@ -182,9 +180,6 @@ export const saveEdits = async (
             if (song.id !== results[i].id) {
               flagSongAsEdited(song.id);
             }
-          });
-          albumBus.emit(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, {
-            id: album.id,
           });
         }
       } else {

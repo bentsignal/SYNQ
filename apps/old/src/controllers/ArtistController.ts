@@ -102,9 +102,6 @@ export const updateArtist = async (artistId: number, name: string, image: string
         .set({ profileImage })
         .where(eq(schema.artists.id, artistId));
     }
-    artistBus.emit(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, {
-      id: artistId,
-    });
   }
 }
 

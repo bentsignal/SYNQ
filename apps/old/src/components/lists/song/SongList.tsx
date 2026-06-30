@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback } from "react";
 import List from "@/src/components/List";
 import Song from "@/src/components/song";
 import {
@@ -11,6 +11,7 @@ import {
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
 import { generateSongKey } from "@/src/controllers/SongController";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
+import { useActiveQueueTrack } from "@/src/features/playback/hooks/use-active-queue-track";
 import { useAdGatedPlaybackCommand } from "@/src/features/playback/hooks/use-ad-gated-playback-command";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/features/playback/hooks/use-player";
@@ -21,7 +22,6 @@ import DraggableFlatlist, {
   DragEndParams,
   RenderItemParams,
 } from "react-native-draggable-flatlist";
-import TrackPlayer, { useActiveTrack } from "react-native-track-player";
 
 const MemoSong = memo(Song);
 
@@ -80,19 +80,10 @@ const SongList = memo(
     const { selectedId } = useImportFlowContext();
     const { shuffle, setSourceType, setSourceId, setSort, setOrder, setQuery } =
       usePlaybackContext();
-    const activeTrack = useActiveTrack();
+    const { activeIndex, activeTrack } = useActiveQueueTrack();
     const { sendHaptic } = useHaptics();
     const { addSongToQueue, playSong, updateQueue } = usePlayer();
     const { runAdGatedPlaybackCommand } = useAdGatedPlaybackCommand();
-
-    const [activeIndex, setActiveIndex] = useState(0);
-
-    const updateActiveIndex = async () => {
-      const index = await TrackPlayer.getActiveTrackIndex();
-      if (index !== undefined) {
-        setActiveIndex(index);
-      }
-    };
 
     const selectedSort = sort ?? SortType.DATE;
     const selectedOrder = order ?? SortOrder.DESC;
@@ -114,10 +105,6 @@ const SongList = memo(
       setOrder(selectedOrder);
       setQuery(selectedQuery);
     };
-
-    useEffect(() => {
-      updateActiveIndex();
-    }, [activeTrack]);
 
     const handlePlay = useCallback(
       async (song: SongType) => {

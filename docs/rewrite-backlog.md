@@ -248,8 +248,11 @@ feature-oriented packages.
    - Done: song rows now call `usePlayer().playSong` and
      `usePlayer().addSongToQueue` instead of importing track creation or
      TrackPlayer play helpers directly.
-   - Next safe slice: move queue active-index reads and source persistence out
-     of `SongList` so the list component becomes UI-focused.
+   - Done: song rows now read active track/index through
+     `apps/old/src/features/playback/hooks/use-active-queue-track.ts` instead
+     of calling TrackPlayer directly.
+   - Next safe slice: move source persistence out of `SongList` so the list
+     component becomes UI-focused.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

@@ -1,4 +1,4 @@
-import { ArtistType, PageType } from "@/src/constants/Types";
+import { AlbumType, ArtistType, PageType } from "@/src/constants/Types";
 import {
   getImagePathFromHash,
   saveCoverImage,
@@ -224,6 +224,43 @@ export const getLibraryArtistCoverPath = async (
 
   const paths = getImagePathFromHash(profileImage);
   return full ? paths.pathToFullImage : paths.pathToSmallImage;
+};
+
+export const getLibraryArtistsFromMetadata = async (value: string) => {
+  const names = value
+    .split(",")
+    .map((name) => name.trim())
+    .filter(Boolean);
+
+  if (names.length === 0) {
+    return [];
+  }
+
+  const existingArtists = await db.select().from(schema.artists);
+  const artists: ArtistType[] = [];
+
+  for (const name of names) {
+    const existingArtist = existingArtists.find(
+      (artist) => artist.name?.toLowerCase() === name.toLowerCase(),
+    );
+
+    if (existingArtist) {
+      const imagePaths = existingArtist.profileImage
+        ? getImagePathFromHash(existingArtist.profileImage)
+        : null;
+      artists.push({
+        id: existingArtist.id,
+        name: existingArtist.name ?? name,
+        image: imagePaths?.pathToSmallImage,
+        fullImage: imagePaths?.pathToFullImage,
+      });
+      continue;
+    }
+
+    artists.push(await createLibraryArtist(name));
+  }
+
+  return artists;
 };
 
 export const createLibraryPlaylist = async (name: string, image?: string) => {
@@ -478,4 +515,36 @@ export const getLibraryAlbumArtists = async (albumId: number) => {
       pageType: PageType.EDIT,
     } satisfies ArtistType;
   });
+};
+
+export const getLibraryAlbumFromMetadata = async (
+  value: string,
+  year?: number,
+  image?: string,
+): Promise<AlbumType | null> => {
+  const name = value.trim();
+  if (!name) {
+    return null;
+  }
+
+  const albums = await db.select().from(schema.albums);
+  const existingAlbum = albums.find(
+    (album) => album.name?.toLowerCase() === name.toLowerCase(),
+  );
+
+  if (existingAlbum) {
+    const imagePaths = existingAlbum.coverImage
+      ? getImagePathFromHash(existingAlbum.coverImage)
+      : null;
+
+    return {
+      id: existingAlbum.id,
+      name: existingAlbum.name ?? name,
+      year: existingAlbum.year ?? undefined,
+      image: imagePaths?.pathToSmallImage,
+      fullImage: imagePaths?.pathToFullImage,
+    } satisfies AlbumType;
+  }
+
+  return createLibraryAlbum(name, year, image);
 };

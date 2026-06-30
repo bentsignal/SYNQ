@@ -1,7 +1,10 @@
 import { useEffect, useRef } from 'react';
 import * as Network from 'expo-network';
 import * as Device from 'expo-device';
-import { getWifiTransferSong, createImportDir } from '@/src/controllers/ImportExportController';
+import {
+  createImportDir,
+  getWifiTransferSong,
+} from '@/src/features/import/lib/import-song-processing';
 import Transfer from '@/src/assets/static/Transfer';
 import { NotificationType } from '@/src/constants/Types';
 import { BridgeServer } from 'react-native-http-bridge-refurbished';

@@ -195,6 +195,9 @@ feature-oriented packages.
      repository cover updates instead of `LibraryController.saveToLibrary`.
    - Import cache cleanup for the "do not save to library" path now lives in
      the import feature edit helpers instead of `ImportExportController`.
+   - Wi-Fi import upload processing now lives in the import feature layer,
+     using repository-backed metadata album/artist creation instead of
+     importing `ImportExportController` from the server component.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

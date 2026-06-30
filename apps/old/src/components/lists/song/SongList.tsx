@@ -13,10 +13,10 @@ import { generateSongKey } from "@/src/controllers/SongController";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { useActiveQueueTrack } from "@/src/features/playback/hooks/use-active-queue-track";
 import { useAdGatedPlaybackCommand } from "@/src/features/playback/hooks/use-ad-gated-playback-command";
+import { usePlaybackSourcePersistence } from "@/src/features/playback/hooks/use-playback-source-persistence";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/features/playback/hooks/use-player";
 import { posthog } from "@/src/lib/posthog";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FlatList, TouchableOpacity } from "react-native";
 import DraggableFlatlist, {
   DragEndParams,
@@ -78,8 +78,7 @@ const SongList = memo(
     onDragEnd?: (params: DragEndParams<any>) => void;
   }) => {
     const { selectedId } = useImportFlowContext();
-    const { shuffle, setSourceType, setSourceId, setSort, setOrder, setQuery } =
-      usePlaybackContext();
+    const { shuffle } = usePlaybackContext();
     const { activeIndex, activeTrack } = useActiveQueueTrack();
     const { sendHaptic } = useHaptics();
     const { addSongToQueue, playSong, updateQueue } = usePlayer();
@@ -88,23 +87,16 @@ const SongList = memo(
     const selectedSort = sort ?? SortType.DATE;
     const selectedOrder = order ?? SortOrder.DESC;
     const selectedQuery = query ?? "";
+    const { persistPlaybackSource } = usePlaybackSourcePersistence({
+      sort: selectedSort,
+      order: selectedOrder,
+      query: selectedQuery,
+    });
 
     const getSongSource = (song: SongType) => ({
       id: sourceId ?? song.sourceId,
       type: sourceType ?? song.sourceType,
     });
-
-    const persistPlaybackSource = async (
-      source: { id: number; type: SourceType },
-    ) => {
-      setSourceType(source.type);
-      await AsyncStorage.setItem("sourceType", source.type.toString());
-      setSourceId(source.id);
-      await AsyncStorage.setItem("sourceId", source.id.toString());
-      setSort(selectedSort);
-      setOrder(selectedOrder);
-      setQuery(selectedQuery);
-    };
 
     const handlePlay = useCallback(
       async (song: SongType) => {
@@ -172,8 +164,6 @@ const SongList = memo(
       },
       [
         shuffle,
-        setSourceType,
-        setSourceId,
         selectedSort,
         selectedOrder,
         selectedQuery,

@@ -189,7 +189,7 @@ feature-oriented packages.
    - Song edit saves now call a feature-level library metadata repository
      batch update instead of `LibraryController.updateSongsInLibrary`.
    - Color helpers now live in `src/lib/color-utils`, with UI/app imports moved
-     off `ColorController` and the old controller kept as a compatibility shim.
+     off `ColorController` and the unreferenced compatibility shim removed.
    - Import save-to-library now runs through a feature-level import library
      saver with Drizzle-backed song creation, playlist/album/artist joins, and
      repository cover updates instead of `LibraryController.saveToLibrary`.
@@ -214,6 +214,10 @@ feature-oriented packages.
      of importing `PurchaseController` from the premium screen/provider.
    - Remaining relative component imports of `ColorController` now point at
      `src/lib/color-utils`.
+   - Unreferenced `AudioController`, `ColorController`,
+     `ImportExportController`, `LibraryController`, and `PurchaseController`
+     files have been removed after their app-facing behavior moved to feature
+     modules or shared libs.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

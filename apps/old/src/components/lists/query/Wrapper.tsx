@@ -6,10 +6,10 @@ import { SortType, SortOrder, ShowSortTypes } from "@/src/constants/Types";
 type QueryWrapperProps = {
   setQuery: (text: string) => void;
   query: string;
-  setSort?: (sort: SortType) => void;
-  sort?: SortType;
-  order?: SortOrder;
-  setOrder?: (order: SortOrder) => void;
+  setSort: (sort: SortType) => void;
+  sort: SortType;
+  order: SortOrder;
+  setOrder: (order: SortOrder) => void;
   songList?: boolean;
   showSortTypes?: ShowSortTypes;
 }
@@ -27,10 +27,10 @@ export default function QueryWrapper({
       marginLeft: -2.5,
     } : {}]}>
       <Search setQuery={setQuery} query={query} />
-      <Sort 
-        setSort={setSort} 
-        sort={sort} 
-        order={order} 
+      <Sort
+        setSort={setSort}
+        sort={sort}
+        order={order}
         setOrder={setOrder}
         showSortTypes={showSortTypes}
       />

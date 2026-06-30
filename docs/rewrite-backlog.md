@@ -17,7 +17,9 @@ feature-oriented packages.
   third-party type issues. The playback nullability cluster around
   `PlaybackProvider`, `usePlayer`, `MiniPlayer`, `PausePlayButtons`,
   `ShuffleButton`, and `PlayerController` has been reduced, and `SongList`
-  source metadata now has local defaults/guards. Treat remaining errors as a
+  source metadata now has local defaults/guards. The shared list/query UI
+  boundary has also been tightened around optional sort state, draggable item
+  rendering, and album/artist relation rows. Treat remaining errors as a
   tracked cleanup lane, not a monorepo migration blocker.
 
 ## Priority Lanes
@@ -272,8 +274,10 @@ feature-oriented packages.
 2. Song lists:
    - Done: normalize `SongList` source metadata defaults and guards before
      calling playback queue helpers.
-   - Next: continue list component strict-null cleanup in album/artist rows and
-     query wrapper props.
+   - Done: tighten shared list/query component nullability in `List`,
+     `QueryWrapper`, `AlbumItem`, `ArtistItem`, and the album header.
+   - Next: continue strict-null cleanup in route screens, starting with album,
+     artist, playlist create/edit forms and the player route.
 
 ## Guardrails
 

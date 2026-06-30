@@ -6,7 +6,6 @@ import React, { useRef, useEffect, useState, memo } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Styles } from '@/src/constants/Styles';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import DraggableFlatlist, { DragEndParams, RenderItem } from 'react-native-draggable-flatlist';
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
@@ -56,7 +55,10 @@ const List = memo((
     lockScroll?: boolean,
     listRef?: React.RefObject<FlatList<any>>,
     dragRef?: React.RefObject<any>,
-    getItemLayout?: (data: any[], index: number) => { length: number, offset: number, index: number },
+    getItemLayout?: (
+      data: ArrayLike<any> | null | undefined,
+      index: number,
+    ) => { length: number, offset: number, index: number },
   }
 ) => {
 
@@ -132,7 +134,7 @@ const List = memo((
   return (
     <>
       <Animated.View style={ Local.container}>
-        {draggable ? 
+        {draggable && draggableItem ?
           <DraggableFlatlist
             ref={dragRef}
             data={data}

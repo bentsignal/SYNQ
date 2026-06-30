@@ -7,6 +7,7 @@ import {
   ArtistType,
   CoverType,
   PageType,
+  SongType,
   SourceType,
 } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
@@ -79,7 +80,7 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
             removeImportSongArtist(editSong, artist.id);
           }
           setEditSong({ ...editSong });
-          setResults((currentResults) =>
+          setResults((currentResults: SongType[]) =>
             replaceImportSong(currentResults, editSong),
           );
         } else {
@@ -99,7 +100,10 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
   const checkArtistOnSong = useCallback(async () => {
     let result = false;
     if (editSong.pageType === PageType.IMPORT) {
-      result = editSong.importArtists?.some((a) => a.id === artist.id);
+      result =
+        editSong.importArtists?.some(
+          (importArtist: ArtistType) => importArtist.id === artist.id,
+        ) ?? false;
     } else {
       result = await isArtistOnSong(artist.id, editSong.id);
     }
@@ -152,7 +156,10 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
       activeOpacity={0.8}
       disabled={
         !allowInteraction ||
-        ![PageType.LIBRARY, PageType.ALBUM].includes(artist.pageType)
+        !(
+          artist.pageType === PageType.LIBRARY ||
+          artist.pageType === PageType.ALBUM
+        )
       }
       onPress={async () => {
         if (artist.pageType === PageType.ADD) {

@@ -1,8 +1,6 @@
 import { useEffect } from "react";
-import { Colors } from "@/src/constants/Colors";
-import { Styles } from "@/src/constants/Styles";
-import { check, getDurationString } from "@/src/lib/util";
-import { StyleSheet, Text } from "react-native";
+import { getDurationString } from "@/src/lib/util";
+import { Text } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -11,8 +9,8 @@ import Animated, {
 import { ListStyles } from "../lists/Styles";
 
 type CountAndDurationProps = {
-  songCount: number;
-  duration: number;
+  songCount?: number;
+  duration?: number;
 };
 
 export default function CountAndDuration({
@@ -20,12 +18,14 @@ export default function CountAndDuration({
   duration,
 }: CountAndDurationProps) {
   const opacity = useSharedValue(0);
+  const hasSongCount = songCount !== undefined && songCount !== null;
+  const hasDuration = duration !== undefined && duration !== null;
 
   useEffect(() => {
-    if (check(songCount) && check(duration)) {
+    if (hasSongCount && hasDuration) {
       opacity.value = withTiming(1, { duration: 500 });
     }
-  }, [songCount, duration]);
+  }, [duration, hasDuration, hasSongCount, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -34,8 +34,8 @@ export default function CountAndDuration({
   return (
     <Animated.View style={animatedStyle}>
       <Text style={ListStyles.count}>
-        {check(songCount) && `${songCount} song${songCount === 1 ? "" : "s"}`}
-        {check(duration) && duration > 0 && `, ${getDurationString(duration)}`}
+        {hasSongCount && `${songCount} song${songCount === 1 ? "" : "s"}`}
+        {hasDuration && duration > 0 && `, ${getDurationString(duration)}`}
       </Text>
     </Animated.View>
   );

@@ -3,7 +3,7 @@ import ListCover from "@/src/components/cover/ListCover";
 import Select from "@/src/components/Select";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { AlbumType, CoverType, PageType } from "@/src/constants/Types";
+import { AlbumType, CoverType, PageType, SongType } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import {
   addAlbumToSong,
@@ -68,7 +68,7 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
           removeImportSongAlbum(editSong, album.id, artists);
         }
         setEditSong({ ...editSong });
-        setResults((currentResults) =>
+        setResults((currentResults: SongType[]) =>
           replaceImportSong(currentResults, editSong),
         );
       } else {
@@ -95,7 +95,10 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
   const checkAlbumOnSong = useCallback(async () => {
     let result = false;
     if (editSong.pageType === PageType.IMPORT) {
-      result = editSong.importAlbums?.some((a) => a.id === album.id);
+      result =
+        editSong.importAlbums?.some(
+          (importAlbum: AlbumType) => importAlbum.id === album.id,
+        ) ?? false;
     } else {
       result = await isAlbumOnSong(album.id, editSong.id);
     }
@@ -124,7 +127,7 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
       style={[Local.container, { backgroundColor: bg ?? Colors.song }]}
       activeOpacity={0.8}
       disabled={
-        !allowInteraction || ![PageType.LIBRARY].includes(album.pageType)
+        !allowInteraction || album.pageType !== PageType.LIBRARY
       }
       onPress={async () => {
         if (album.pageType === PageType.ADD) {

@@ -5,6 +5,10 @@ import * as FileSystem from 'expo-file-system';
 import { ArtistBusEvent } from "@/src/events/artist/Events";
 import artistBus from "@/src/events/artist";
 import { getSongByResult } from "./SongController";
+import { saveCoverImage } from "@/src/lib/image-utils";
+import { db } from "@synq/db";
+import * as schema from "@synq/db/schema";
+import { eq } from "drizzle-orm";
 
 export const createArtist = async (name: string, image?: string): Promise<ArtistType> => {
   const artistId = await ArtistModel.getInstance().createArtist(name);
@@ -13,6 +17,13 @@ export const createArtist = async (name: string, image?: string): Promise<Artist
     await makeArtistsDir();
     await FileSystem.makeDirectoryAsync(dir);
     await writeImageToLibrary(image, dir);
+    const profileImage = await saveCoverImage(image);
+    if (profileImage) {
+      await db
+        .update(schema.artists)
+        .set({ profileImage })
+        .where(eq(schema.artists.id, artistId));
+    }
   }
   return { id: artistId, name: name };
 }
@@ -84,6 +95,13 @@ export const updateArtist = async (artistId: number, name: string, image: string
   }
   if (image) {
     await writeImageToLibrary(image, `${FileSystem.documentDirectory}artists/${artistId}`);
+    const profileImage = await saveCoverImage(image);
+    if (profileImage) {
+      await db
+        .update(schema.artists)
+        .set({ profileImage })
+        .where(eq(schema.artists.id, artistId));
+    }
     artistBus.emit(ArtistBusEvent.ARTIST_IMAGE_MODIFIED, {
       id: artistId,
     });

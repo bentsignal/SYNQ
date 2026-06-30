@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { AlbumType, SortOrder, SortType } from "@/src/constants/Types";
+import { getImagePathFromHash } from "@/src/lib/image-utils";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
@@ -80,6 +81,9 @@ const rowsToEntries = (rows: ArtistAlbumRow[]) => {
           id: album.id,
           name: album.name ?? "",
           year: album.year ?? undefined,
+          image: album.coverImage
+            ? getImagePathFromHash(album.coverImage).pathToSmallImage
+            : undefined,
         },
         songTitles: new Set<string>(),
       } satisfies ArtistAlbumSearchEntry);

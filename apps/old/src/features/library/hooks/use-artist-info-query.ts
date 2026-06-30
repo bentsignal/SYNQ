@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { ArtistType, PageType } from "@/src/constants/Types";
+import { getImagePathFromHash } from "@/src/lib/image-utils";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
@@ -23,6 +24,9 @@ export const useArtistInfoQuery = (artistId: number) => {
     return {
       id: row.id,
       name: row.name ?? "",
+      image: row.profileImage
+        ? getImagePathFromHash(row.profileImage).pathToSmallImage
+        : undefined,
       pageType: PageType.ARTIST,
     };
   }, [data]);

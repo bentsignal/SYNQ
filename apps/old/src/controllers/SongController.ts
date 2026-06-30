@@ -9,7 +9,11 @@ import {
   writeImageToLibrary,
 } from "@/src/controllers/ImageController";
 import { check } from "@/src/lib/util";
+import { saveCoverImage } from "@/src/lib/image-utils";
 import { getAudioMetadata } from "@missingcore/audio-metadata";
+import { db } from "@synq/db";
+import * as schema from "@synq/db/schema";
+import { eq } from "drizzle-orm";
 import albumBus from "../events/album";
 import { AlbumBusEvent } from "../events/album/Events";
 import {
@@ -163,17 +167,26 @@ export const saveEdits = async (
       if (results[i].importAlbums && results[i].importAlbums.length > 0) {
         const album = results[i].importAlbums[0];
         const albumDir = `${FileSystem.documentDirectory}albums/${album.id}`;
-        await writeImageToLibrary(artwork, albumDir);
-        await flagSongAsEdited(results[i].id);
-        const albumSongs = await getSongsFromAlbum(album.id);
-        albumSongs.forEach((song) => {
-          if (song.id !== results[i].id) {
-            flagSongAsEdited(song.id);
+        if (artwork) {
+          await writeImageToLibrary(artwork, albumDir);
+          const coverImage = await saveCoverImage(artwork);
+          if (coverImage) {
+            await db
+              .update(schema.albums)
+              .set({ coverImage })
+              .where(eq(schema.albums.id, album.id));
           }
-        });
-        albumBus.emit(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, {
-          id: album.id,
-        });
+          await flagSongAsEdited(results[i].id);
+          const albumSongs = await getSongsFromAlbum(album.id);
+          albumSongs.forEach((song) => {
+            if (song.id !== results[i].id) {
+              flagSongAsEdited(song.id);
+            }
+          });
+          albumBus.emit(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, {
+            id: album.id,
+          });
+        }
       } else {
         results[i].artwork = artwork ? artwork : results[i].artwork;
       }

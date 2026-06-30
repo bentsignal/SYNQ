@@ -5,6 +5,7 @@ import {
   SortType,
   SourceType,
 } from "@/src/constants/Types";
+import { getImagePathFromHash } from "@/src/lib/image-utils";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
@@ -89,6 +90,9 @@ const rowsToEntries = (rows: ArtistRow[], sourceType?: SourceType) => {
         artist: {
           id: artist.id,
           name: artist.name ?? "",
+          image: artist.profileImage
+            ? getImagePathFromHash(artist.profileImage).pathToSmallImage
+            : undefined,
           sourceType,
         },
         songTitles: new Set<string>(),

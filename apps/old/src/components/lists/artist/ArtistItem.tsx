@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ListCover from "@/src/components/cover/ListCover";
 import Select from "@/src/components/Select";
 import { Colors } from "@/src/constants/Colors";
@@ -26,11 +26,6 @@ import {
   removeImportSongArtist,
   replaceImportSong,
 } from "@/src/features/import/lib/import-song-edits";
-import artistBus from "@/src/events/artist";
-import {
-  ArtistBusEvent,
-  ArtistImageModifiedEvent,
-} from "@/src/events/artist/Events";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import colors from "@/src/lib/colors";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
@@ -56,23 +51,16 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
   const { sendHaptic } = useHaptics();
 
   const [selected, setSelected] = useState(false);
-  const [coverImage, setCoverImage] = useState("");
-  const [emptyCover, setEmptyCover] = useState(false);
+  const [fallbackCoverImage, setFallbackCoverImage] = useState("");
 
-  const loadCover = async () => {
+  const loadFallbackCover = useCallback(async () => {
     try {
       const cover = await getArtistCover(artist.id);
-      if (cover) {
-        setCoverImage(cover);
-        setEmptyCover(false);
-      } else {
-        setCoverImage("");
-        setEmptyCover(true);
-      }
+      setFallbackCoverImage(cover ?? "");
     } catch (error) {
       console.log("error loading artist cover:", error);
     }
-  };
+  }, [artist.id]);
 
   const selectionChanged = async (add: boolean) => {
     try {
@@ -108,7 +96,7 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
     }
   };
 
-  const checkArtistOnSong = async () => {
+  const checkArtistOnSong = useCallback(async () => {
     let result = false;
     if (editSong.pageType === PageType.IMPORT) {
       result = editSong.importArtists?.some((a) => a.id === artist.id);
@@ -116,27 +104,14 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
       result = await isArtistOnSong(artist.id, editSong.id);
     }
     setSelected(result);
-  };
+  }, [artist.id, editSong]);
 
-  const checkArtistOnAlbum = async () => {
+  const checkArtistOnAlbum = useCallback(async () => {
     console.log(artist.id, editAlbum.id);
     const result = await isArtistOnAlbum(artist.id, editAlbum.id);
     console.log(artist.name, result);
     setSelected(result);
-  };
-
-  useEffect(() => {
-    artistBus.on(
-      ArtistBusEvent.ARTIST_IMAGE_MODIFIED,
-      handleArtistImageModified,
-    );
-    return () => {
-      artistBus.off(
-        ArtistBusEvent.ARTIST_IMAGE_MODIFIED,
-        handleArtistImageModified,
-      );
-    };
-  }, []);
+  }, [artist.id, artist.name, editAlbum]);
 
   useEffect(() => {
     if (editSong.id && artist.sourceType === SourceType.SONG) {
@@ -144,25 +119,21 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
     } else if (editAlbum.id && artist.sourceType === SourceType.ALBUM) {
       checkArtistOnAlbum();
     }
-  }, [editSong, editAlbum]);
+  }, [
+    artist.sourceType,
+    checkArtistOnAlbum,
+    checkArtistOnSong,
+    editAlbum,
+    editSong,
+  ]);
 
   useEffect(() => {
     if (artist.image) {
-      setCoverImage(artist.image);
+      setFallbackCoverImage("");
     } else {
-      loadCover();
+      loadFallbackCover();
     }
-  }, [artist]);
-
-  const handleArtistImageModified = async (data: ArtistImageModifiedEvent) => {
-    if (data.id === artist.id) {
-      if (data.image) {
-        setCoverImage(data.image);
-      } else {
-        await loadCover();
-      }
-    }
-  };
+  }, [artist.id, artist.image, loadFallbackCover]);
 
   const handleMore = async () => {
     sendHaptic("light");
@@ -192,10 +163,10 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
       }}
     >
       <ListCover
-        image={coverImage}
+        image={artist.image ?? fallbackCoverImage}
         type={CoverType.ARTIST}
         propOnLoad={() => {}}
-        empty={emptyCover}
+        empty={!artist.image && !fallbackCoverImage}
       />
       <View style={Local.textWrapper}>
         <Text style={Local.name}>{artist.name}</Text>

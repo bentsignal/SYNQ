@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ListCover from "@/src/components/cover/ListCover";
 import Select from "@/src/components/Select";
 import { Colors } from "@/src/constants/Colors";
@@ -16,11 +16,6 @@ import {
   addArtistToSong,
   removeArtistFromSong,
 } from "@/src/controllers/ArtistController";
-import albumBus from "@/src/events/album";
-import {
-  AlbumBusEvent,
-  AlbumImageModifiedEvent,
-} from "@/src/events/album/Events";
 import {
   addImportSongAlbum,
   removeImportSongAlbum,
@@ -44,31 +39,24 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
   const { sendHaptic } = useHaptics();
 
   const [selected, setSelected] = useState(false);
-  const [coverImage, setCoverImage] = useState("");
-  const [emptyCover, setEmptyCover] = useState(false);
+  const [fallbackCoverImage, setFallbackCoverImage] = useState("");
 
-  const loadCover = async () => {
+  const loadFallbackCover = useCallback(async () => {
     try {
       const cover = await getAlbumCover(album.id);
-      if (cover) {
-        setCoverImage(cover);
-        setEmptyCover(false);
-      } else {
-        setCoverImage("");
-        setEmptyCover(true);
-      }
+      setFallbackCoverImage(cover ?? "");
     } catch (error) {
       console.log("error loading album cover:", error);
     }
-  };
+  }, [album.id]);
 
   useEffect(() => {
     if (album.image) {
-      setCoverImage(album.image);
+      setFallbackCoverImage("");
     } else {
-      loadCover();
+      loadFallbackCover();
     }
-  }, [album.id]);
+  }, [album.id, album.image, loadFallbackCover]);
 
   const selectionChanged = async (add: boolean) => {
     try {
@@ -104,7 +92,7 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
     }
   };
 
-  const checkAlbumOnSong = async () => {
+  const checkAlbumOnSong = useCallback(async () => {
     let result = false;
     if (editSong.pageType === PageType.IMPORT) {
       result = editSong.importAlbums?.some((a) => a.id === album.id);
@@ -112,34 +100,13 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
       result = await isAlbumOnSong(album.id, editSong.id);
     }
     setSelected(result);
-  };
-
-  const handleAlbumImageModified = async (data: AlbumImageModifiedEvent) => {
-    console.log("album image modified: ", data.id, album.id);
-    if (data.id === album.id) {
-      if (data.image) {
-        setCoverImage(data.image);
-      } else {
-        await loadCover();
-      }
-    }
-  };
-
-  useEffect(() => {
-    albumBus.on(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, handleAlbumImageModified);
-    return () => {
-      albumBus.off(
-        AlbumBusEvent.ALBUM_IMAGE_MODIFIED,
-        handleAlbumImageModified,
-      );
-    };
-  }, []);
+  }, [album.id, editSong]);
 
   useEffect(() => {
     if (editSong.id && album.pageType === PageType.ADD) {
       checkAlbumOnSong();
     }
-  }, [editSong]);
+  }, [album.pageType, checkAlbumOnSong, editSong]);
 
   const handleMore = async () => {
     sendHaptic("light");
@@ -168,10 +135,10 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
       }}
     >
       <ListCover
-        image={coverImage}
+        image={album.image ?? fallbackCoverImage}
         type={CoverType.ALBUM}
         propOnLoad={() => {}}
-        empty={emptyCover}
+        empty={!album.image && !fallbackCoverImage}
       />
       <View style={Local.textWrapper}>
         <Text style={Local.name} numberOfLines={1}>

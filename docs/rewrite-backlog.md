@@ -96,6 +96,9 @@ feature-oriented packages.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.
+   - Album and artist row covers now render from Drizzle-backed live query
+     image props instead of `ALBUM_IMAGE_MODIFIED` or `ARTIST_IMAGE_MODIFIED`
+     listeners.
    - Next target: replace remaining artist/album image listeners with
      Drizzle-backed cover props or focused refreshes.
 
@@ -176,6 +179,8 @@ feature-oriented packages.
    - Done: add `useAlbumInfoQuery` and `useAlbumSongsQuery` for the album
      detail screen.
    - Done: remove `ALBUM_MODIFIED` display listeners from album rows.
+   - Done: render album row cover art from live query props instead of
+     `ALBUM_IMAGE_MODIFIED` listeners.
    - Add album order/image queries where the reorder and cover flows still
      need Drizzle-backed state.
    - Replace `ALBUM_*` events, including `ALBUM_TOGGLED_ON_SONG` and
@@ -194,6 +199,8 @@ feature-oriented packages.
    - Done: remove `ARTIST_MODIFIED` display listeners from artist rows.
    - Done: remove `ARTIST_TOGGLED_ON_ALBUM` listener/emit path from album edit
      relation refresh.
+   - Done: render artist row cover art from live query props instead of
+     `ARTIST_IMAGE_MODIFIED` listeners.
    - Add artist relation/image queries where add/edit/cover flows still need
      Drizzle-backed state.
    - Replace artist edit/list/detail listeners.

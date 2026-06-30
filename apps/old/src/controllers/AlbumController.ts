@@ -5,6 +5,10 @@ import * as FileSystem from 'expo-file-system';
 import { AlbumBusEvent } from "@/src/events/album/Events";
 import albumBus from "@/src/events/album";
 import { flagSongAsEdited, getSongByResult } from "./SongController";
+import { saveCoverImage } from "@/src/lib/image-utils";
+import { db } from "@synq/db";
+import * as schema from "@synq/db/schema";
+import { eq } from "drizzle-orm";
 
 export const createAlbum = async (name: string, year?: number, image?: string): Promise<AlbumType> => {
   const albumId = await AlbumModel.getInstance().createAlbum(name, year);
@@ -13,6 +17,13 @@ export const createAlbum = async (name: string, year?: number, image?: string): 
     await makeAlbumsDir();
     await FileSystem.makeDirectoryAsync(dir);
     await writeImageToLibrary(image, dir);
+    const coverImage = await saveCoverImage(image);
+    if (coverImage) {
+      await db
+        .update(schema.albums)
+        .set({ coverImage })
+        .where(eq(schema.albums.id, albumId));
+    }
   }
   return { id: albumId, name: name, year: year };
 }
@@ -95,6 +106,13 @@ export const updateAlbum = async (albumId: number, name: string, year?: number, 
   }
   if (image) {
     await writeImageToLibrary(image, `${FileSystem.documentDirectory}albums/${albumId}`);
+    const coverImage = await saveCoverImage(image);
+    if (coverImage) {
+      await db
+        .update(schema.albums)
+        .set({ coverImage })
+        .where(eq(schema.albums.id, albumId));
+    }
     const albumSongs = await getSongsFromAlbum(albumId);
     albumSongs.forEach(song => {
       flagSongAsEdited(song.id);

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { AlbumType, ArtistType, PageType } from "@/src/constants/Types";
+import { getImagePathFromHash } from "@/src/lib/image-utils";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
@@ -57,6 +58,9 @@ export const useAlbumInfoQuery = (albumId: number) => {
         id: firstAlbum.id,
         name: firstAlbum.name ?? "",
         year: firstAlbum.year ?? undefined,
+        image: firstAlbum.coverImage
+          ? getImagePathFromHash(firstAlbum.coverImage).pathToSmallImage
+          : undefined,
         pageType: PageType.ALBUM,
       } satisfies AlbumType,
       artists: Array.from(artistMap.values()),

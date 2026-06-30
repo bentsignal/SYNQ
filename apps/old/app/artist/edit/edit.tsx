@@ -81,7 +81,7 @@ const EditArtist = ({ id }: { id: number }) => {
         <View style={Local.coverWrapper}>
           <EditCover
             id={id}
-            image={image}
+            image={image ?? artist?.fullImage}
             type={CoverType.ARTIST}
             handlePress={() => handleUpdateImage()}
             propOnLoad={() => {}}

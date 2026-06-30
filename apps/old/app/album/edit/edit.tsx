@@ -122,7 +122,7 @@ const EditAlbum = ({ id }: { id: number }) => {
         <View style={Local.coverWrapper}>
           <EditCover
             id={id}
-            image={image}
+            image={image ?? album?.fullImage}
             type={CoverType.ALBUM}
             handlePress={() => handleUpdateImage()}
             propOnLoad={() => {}}

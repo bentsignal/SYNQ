@@ -1,13 +1,10 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { CoverType } from "@/src/constants/Types";
 import {
-  getAlbumCover,
   getAlbumCoverFromSong,
 } from "@/src/controllers/AlbumController";
-import { getArtistCover } from "@/src/controllers/ArtistController";
 import { getSongCover } from "@/src/controllers/ImageController";
-import { getPlaylistCover } from "@/src/controllers/PlaylistController";
 import { SquarePen } from "lucide-react-native";
 import {
   Animated,
@@ -37,15 +34,15 @@ const EditCover = ({
   const [src, setSrc] = useState(image ? image : transparent);
   const [loaded, setLoaded] = useState(false);
 
-  const revealImage = () => {
+  const revealImage = useCallback(() => {
     Animated.timing(opacityRef, {
       toValue: 1,
       duration: 300,
       useNativeDriver: false,
     }).start();
-  };
+  }, [opacityRef]);
 
-  const getImage = async () => {
+  const getImage = useCallback(async () => {
     try {
       if (image) {
         setSrc(image);
@@ -71,27 +68,8 @@ const EditCover = ({
             setSrc(transparent);
           }
         }
-      } else if (type === CoverType.PLAYLIST) {
-        const path = await getPlaylistCover(id);
-        if (path) {
-          setSrc(path);
-        } else {
-          setSrc(transparent);
-        }
-      } else if (type === CoverType.ARTIST) {
-        const path = await getArtistCover(id, true);
-        if (path) {
-          setSrc(path);
-        } else {
-          setSrc(transparent);
-        }
-      } else if (type === CoverType.ALBUM) {
-        const path = await getAlbumCover(id, true);
-        if (path) {
-          setSrc(path);
-        } else {
-          setSrc(transparent);
-        }
+      } else {
+        setSrc(transparent);
       }
       revealImage();
     } catch (error) {
@@ -101,11 +79,11 @@ const EditCover = ({
       }
       revealImage();
     }
-  };
+  }, [id, image, revealImage, type]);
 
   useLayoutEffect(() => {
     getImage();
-  }, [image, id, type]);
+  }, [getImage]);
 
   const editCoverSize = 140;
 

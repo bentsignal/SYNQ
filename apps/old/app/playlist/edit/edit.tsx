@@ -81,7 +81,7 @@ const EditPlaylist = ({ id }: { id: number }) => {
         <View style={Local.coverWrapper}>
           <EditCover
             id={id}
-            image={image}
+            image={image ?? playlist?.fullImage}
             type={CoverType.PLAYLIST}
             handlePress={() => handleUpdateImage()}
             propOnLoad={() => {}}

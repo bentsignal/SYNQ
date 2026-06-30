@@ -129,6 +129,9 @@ feature-oriented packages.
    - Cover picking for album, artist, playlist, and song edit/create flows now
      lives in the images feature repository instead of the legacy image
      controller.
+   - Album, artist, and playlist edit cover previews now receive live-query
+     image props and no longer ask `EditCover` to fetch legacy entity cover
+     directories.
    - Album and artist row metadata now renders from props; `AlbumItem` no
      longer listens for `ALBUM_MODIFIED`, and `ArtistItem` no longer listens
      for `ARTIST_MODIFIED`.

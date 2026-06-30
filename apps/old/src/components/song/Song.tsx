@@ -34,7 +34,6 @@ import {
   SongInfoModifiedEvent,
 } from "@/src/events/song/Events";
 import ListCover from "@/src/features/cover/components/list-cover";
-import { useSongRowMetadata } from "@/src/features/library/hooks/use-song-row-metadata";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { Ellipsis } from "lucide-react-native";
@@ -73,11 +72,15 @@ export default function Song({
   const [title, setTitle] = useState("");
   const [artist, setArtist] = useState("");
   const [album, setAlbum] = useState("");
-  const metadata = useSongRowMetadata(song);
   const displayMetadata =
     song.pageType === PageType.IMPORT
       ? { fileName, title, artist, album }
-      : metadata;
+      : {
+          fileName: song.fileName ?? "",
+          title: song.title ?? "",
+          artist: song.artist ?? "",
+          album: song.album ?? "",
+        };
 
   const {
     selectEnabled,

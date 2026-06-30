@@ -73,7 +73,7 @@ const List = memo((
       easing: Easing.in(Easing.ease),
       useNativeDriver: true,
     }).start();
-  }, []);
+  }, [globalOpacityRef]);
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const yOffset = event.nativeEvent.contentOffset.y;

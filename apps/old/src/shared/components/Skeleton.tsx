@@ -31,6 +31,9 @@ const Skeleton = ({show, styles}: SkeletonProps) => {
     );
     pulse.start();
 
+    return () => {
+      pulse.stop();
+    };
   }, [skeletonAnimation]);
 
   useEffect(() => {
@@ -43,7 +46,7 @@ const Skeleton = ({show, styles}: SkeletonProps) => {
         setRender(false);
       });
     }
-  }, [show])
+  }, [fadeAnimation, show])
 
   const backgroundColor = skeletonAnimation.interpolate({
     inputRange: [0, 1],

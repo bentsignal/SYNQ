@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { useEffect, useState, useRef, memo } from 'react';
+import { useState, memo } from 'react';
 import FastImage from 'react-native-fast-image';
 import { getAppIcon } from '@/src/constants/Logos';
 import { CoverType } from '@/src/constants/Types';
@@ -21,16 +21,7 @@ const ListCover = memo(({image, type, id, fade, size, empty, propOnLoad}: {
   const opacityRef = useSharedValue(fade ? 0 : 1);
 
   const [loaded, setLoaded] = useState(false);
-  const [dim, setDim] = useState(60);
-
-  useEffect(() => {
-    if (image || id === -2) {
-      setDim(size ??60);
-    }
-    else {
-      setDim(20);
-    }
-  }, [image, id, size]);
+  const dim = image || id === -2 ? size ?? 60 : 20;
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacityRef.value,

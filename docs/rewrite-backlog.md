@@ -363,6 +363,8 @@ feature-oriented packages.
      `apps/old/src/shared/components`, while the legacy tab bar moved into the
      app-shell feature, leaving no files in the generic root `src/components`
      folder.
+   - Done: shared list, skeleton, and legacy list-cover primitives now avoid
+     stale animation dependencies and derived render state.
    - Done: notification queue/modal state and actions now live in
      `apps/old/src/features/notifications/context/NotificationsProvider.tsx`
      instead of `GlobalProvider`.

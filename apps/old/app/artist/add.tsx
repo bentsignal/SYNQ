@@ -2,8 +2,8 @@ import { StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import Bar from "@/src/components/modals/Bar";
-import CustomButton from "@/src/components/CustomButton";
+import Bar from "@/src/shared/components/modals/Bar";
+import CustomButton from "@/src/shared/components/CustomButton";
 import { router, useLocalSearchParams } from "expo-router";
 import {
   PageType,
@@ -14,7 +14,7 @@ import {
 import ArtistList from "@/src/features/library/components/lists/artist";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import ModalStyles from "@/src/components/modals/Styles";
+import ModalStyles from "@/src/shared/components/modals/Styles";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
 import { useLibraryArtistsQuery } from "@/src/features/library/hooks/use-library-artists-query";

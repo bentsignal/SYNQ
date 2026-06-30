@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import CustomButton from "@/src/components/CustomButton";
-import PageTitle from "@/src/components/PageTitle";
-import SettingsButton from "@/src/components/SettingsButton";
+import CustomButton from "@/src/shared/components/CustomButton";
+import PageTitle from "@/src/shared/components/PageTitle";
+import SettingsButton from "@/src/shared/components/SettingsButton";
 import { Colors } from "@/src/constants/Colors";
 import CFG from "@/src/constants/Config";
 import { Styles } from "@/src/constants/Styles";

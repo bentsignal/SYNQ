@@ -2,7 +2,7 @@ import { Text, View, Dimensions, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Styles } from '@/src/constants/Styles';
 import SongList from '@/src/features/library/components/lists/song';
-import PageTitle from '@/src/components/PageTitle';
+import PageTitle from '@/src/shared/components/PageTitle';
 import ImportInstructions from '@/src/features/import/components/Instructions';
 import { Colors } from '@/src/constants/Colors';
 import Progress from '@/src/features/import/components/Progress';
@@ -10,7 +10,7 @@ import { PageType } from '@/src/constants/Types';
 import { usePremiumContext } from '@/src/features/premium/context/PremiumProvider';
 import { useImportFlowContext } from '@/src/features/import/context/ImportFlowProvider';
 import CFG from '@/src/constants/Config';
-import SettingsButton from '@/src/components/SettingsButton';
+import SettingsButton from '@/src/shared/components/SettingsButton';
 import ImportBlur from '@/src/features/import/components/Blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

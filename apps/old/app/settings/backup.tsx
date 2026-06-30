@@ -1,10 +1,10 @@
 import { useState } from "react";
-import CustomButton from "@/src/components/CustomButton";
-import Loading from "@/src/components/Loading";
-import Bar from "@/src/components/modals/Bar";
-import ModalStyles from "@/src/components/modals/Styles";
-import Option from "@/src/components/Option";
-import PageTitle from "@/src/components/PageTitle";
+import CustomButton from "@/src/shared/components/CustomButton";
+import Loading from "@/src/shared/components/Loading";
+import Bar from "@/src/shared/components/modals/Bar";
+import ModalStyles from "@/src/shared/components/modals/Styles";
+import Option from "@/src/shared/components/Option";
+import PageTitle from "@/src/shared/components/PageTitle";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";

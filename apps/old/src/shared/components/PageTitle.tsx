@@ -4,7 +4,7 @@ import { useAppShellContext } from "@/src/features/app-shell/context/AppShellPro
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { Info, List } from "lucide-react-native";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type PageTitleProps = {
   title: string;

@@ -4,7 +4,7 @@ import Albums from "@/src/features/library/components/Albums";
 import Artists from "@/src/features/library/components/Artists";
 import Playlists from "@/src/features/library/components/Playlists";
 import Songs from "@/src/features/library/components/Songs";
-import PageTitle from "@/src/components/PageTitle";
+import PageTitle from "@/src/shared/components/PageTitle";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import colors from "@/src/lib/colors";

@@ -8,7 +8,7 @@ import { BlurView } from "expo-blur";
 import { router } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import CustomButton from "@/src/components/CustomButton";
+import CustomButton from "@/src/shared/components/CustomButton";
 
 export default function ImportBlur() {
   const { theme } = useThemeContext();

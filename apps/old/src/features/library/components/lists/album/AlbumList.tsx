@@ -1,5 +1,5 @@
 import { AlbumType, PageType } from "@/src/constants/Types";
-import List from "@/src/components/List";
+import List from "@/src/shared/components/List";
 import AlbumItem from "@/src/features/library/components/lists/album/AlbumItem";
 import { memo } from "react";
 

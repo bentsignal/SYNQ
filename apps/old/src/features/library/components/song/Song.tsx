@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Select from "@/src/components/Select";
+import Select from "@/src/shared/components/Select";
 import SongInfo from "@/src/features/library/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";

@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { useState } from 'react';
-import HorizontalScrollView from '@/src/components/HorizontalScrollView';
+import HorizontalScrollView from '@/src/shared/components/HorizontalScrollView';
 import { Colors } from '@/src/constants/Colors';
 import { Styles } from '@/src/constants/Styles';
 import { useThemeContext } from '@/src/features/theme/context/ThemeProvider';

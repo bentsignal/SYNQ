@@ -1,6 +1,6 @@
-import Bar from "@/src/components/modals/Bar";
-import ModalStyles from "@/src/components/modals/Styles";
-import PageTitle from "@/src/components/PageTitle";
+import Bar from "@/src/shared/components/modals/Bar";
+import ModalStyles from "@/src/shared/components/modals/Styles";
+import PageTitle from "@/src/shared/components/PageTitle";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { QueueControls } from "@/src/features/playback/components/QueueControls";

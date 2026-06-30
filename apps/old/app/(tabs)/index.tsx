@@ -1,9 +1,9 @@
 import InfoModal from "@/src/features/app-shell/components/InfoModal";
 import Notifications from "@/src/features/notifications/components/Notifications";
-import Option from "@/src/components/Option";
-import PageTitle from "@/src/components/PageTitle";
+import Option from "@/src/shared/components/Option";
+import PageTitle from "@/src/shared/components/PageTitle";
 import MiniPlayer from "@/src/features/playback/components/MiniPlayer";
-import SettingsButton from "@/src/components/SettingsButton";
+import SettingsButton from "@/src/shared/components/SettingsButton";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";

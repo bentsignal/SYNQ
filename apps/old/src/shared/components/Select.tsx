@@ -1,5 +1,5 @@
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Colors } from "../constants/Colors";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Colors } from "@/src/constants/Colors";
 
 const Select = ({
   active,

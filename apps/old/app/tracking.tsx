@@ -3,7 +3,7 @@
 // import { Styles } from '@/src/constants/Styles';
 // import LinearGradient from 'react-native-linear-gradient';
 // import { router } from 'expo-router';
-// import CustomButton from '@/src/components/CustomButton';
+// import CustomButton from '@/src/shared/components/CustomButton';
 // import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // import { requestTrackingPermissionsAsync, getTrackingPermissionsAsync } from 'expo-tracking-transparency';
 

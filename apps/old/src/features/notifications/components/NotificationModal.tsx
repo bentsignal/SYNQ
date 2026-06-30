@@ -1,9 +1,9 @@
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import CustomButton from "@/src/components/CustomButton";
-import VerticalScrollView from "@/src/components/VerticalScrollView";
-import CustomModal from "@/src/components/modals/CustomModal";
-import InfoContainer from "@/src/components/modals/InfoContainer";
-import ModalTitle from "@/src/components/modals/ModalTitle";
+import CustomButton from "@/src/shared/components/CustomButton";
+import VerticalScrollView from "@/src/shared/components/VerticalScrollView";
+import CustomModal from "@/src/shared/components/modals/CustomModal";
+import InfoContainer from "@/src/shared/components/modals/InfoContainer";
+import ModalTitle from "@/src/shared/components/modals/ModalTitle";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";

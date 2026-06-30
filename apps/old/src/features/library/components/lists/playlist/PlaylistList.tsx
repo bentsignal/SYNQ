@@ -1,4 +1,4 @@
-import List from '@/src/components/List';
+import List from '@/src/shared/components/List';
 import { memo } from 'react';
 import { PlaylistType, PageType } from '@/src/constants/Types';
 import PlaylistItem from '@/src/features/library/components/lists/playlist/PlaylistItem';

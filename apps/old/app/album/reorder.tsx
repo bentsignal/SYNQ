@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import CustomButton from "@/src/components/CustomButton";
+import CustomButton from "@/src/shared/components/CustomButton";
 import SongList from "@/src/features/library/components/lists/song/SongList";
-import Bar from "@/src/components/modals/Bar";
-import ModalStyles from "@/src/components/modals/Styles";
+import Bar from "@/src/shared/components/modals/Bar";
+import ModalStyles from "@/src/shared/components/modals/Styles";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { PageType, SongType, SortOrder, SortType } from "@/src/constants/Types";

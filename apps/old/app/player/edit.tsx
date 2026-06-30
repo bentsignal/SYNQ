@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ListCover from "@/src/features/cover/components/ListCover";
-import Bar from "@/src/components/modals/Bar";
-import ModalStyles from "@/src/components/modals/Styles";
+import Bar from "@/src/shared/components/modals/Bar";
+import ModalStyles from "@/src/shared/components/modals/Styles";
 import SongOptions from "@/src/features/action-sheet/components/song/SongOptions";
 import SheetStyles from "@/src/features/action-sheet/components/Styles";
 import SongInfo from "@/src/features/library/components/song/SongInfo";

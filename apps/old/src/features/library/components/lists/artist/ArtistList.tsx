@@ -1,5 +1,5 @@
 import { ArtistType, PageType } from "@/src/constants/Types";
-import List from "@/src/components/List";
+import List from "@/src/shared/components/List";
 import ArtistItem from "@/src/features/library/components/lists/artist/ArtistItem";
 import { memo } from "react";
 

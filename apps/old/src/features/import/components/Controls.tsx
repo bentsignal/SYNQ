@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import CustomButton from "@/src/components/CustomButton";
+import CustomButton from "@/src/shared/components/CustomButton";
 import Notifications from "@/src/features/notifications/components/Notifications";
 import { Colors } from "@/src/constants/Colors";
 import CFG from "@/src/constants/Config";

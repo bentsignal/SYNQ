@@ -5,7 +5,7 @@ import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { posthog } from "@/src/lib/posthog";
 import { router } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
-import CustomButton from "@/src/components/CustomButton";
+import CustomButton from "@/src/shared/components/CustomButton";
 
 const Ad = ({ message }: { message: React.ReactNode }) => {
   const { theme } = useThemeContext();

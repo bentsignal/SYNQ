@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
   ViewStyle,
 } from "react-native";
 
@@ -27,8 +25,6 @@ const Dropdown = ({
   containerStyles,
   setSelected,
 }: DropdownProps) => {
-  const { theme } = useThemeContext();
-
   const [open, setOpen] = useState(false);
 
   const toggleOpen = () => {

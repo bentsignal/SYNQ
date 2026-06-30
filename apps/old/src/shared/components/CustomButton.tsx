@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { StyleProp, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { Colors } from '@/src/constants/Colors';
 import { Styles } from '@/src/constants/Styles';
 import { getDisabledColor } from '@/src/lib/color-utils';
@@ -12,7 +12,7 @@ type MainButtonProps = {
   disabled?: boolean;
   buttonWidth?: any;
   textColor?: string;
-  customStyles?: {};
+  customStyles?: StyleProp<ViewStyle>;
 };
 
 const CustomButton = ({
@@ -32,7 +32,6 @@ const CustomButton = ({
   const Local = StyleSheet.create({
     buttonWrapper: {
       ...Styles.roundedContainer,
-      ...customStyles,
       minWidth: 100,
       height: 42,
       justifyContent: 'center',
@@ -50,7 +49,7 @@ const CustomButton = ({
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={opacity ? opacity : 0.8}
-      style={Local.buttonWrapper}
+      style={[Local.buttonWrapper, customStyles]}
       disabled={disabled}
     >
       <Text style={Local.buttonText}>

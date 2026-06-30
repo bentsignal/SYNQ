@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import PlayerCover from "@/src/features/cover/components/PlayerCover";
 import CrossfadeImage from "@/src/features/playback/components/CrossfadeImage";
-import Bar from "@/src/components/modals/Bar";
-import ModalStyles from "@/src/components/modals/Styles";
+import Bar from "@/src/shared/components/modals/Bar";
+import ModalStyles from "@/src/shared/components/modals/Styles";
 import LoopButton from "@/src/features/playback/components/LoopButton";
 import PausePlayButtons from "@/src/features/playback/components/PausePlayButtons";
 import QueueButton from "@/src/features/playback/components/QueueButton";

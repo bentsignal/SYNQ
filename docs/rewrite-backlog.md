@@ -359,6 +359,10 @@ feature-oriented packages.
    - Done: shared song row, song info, and count/duration UI now live under
      `apps/old/src/features/library/components/song` instead of the generic
      root `src/components/song` folder.
+   - Done: remaining shared UI primitives and modal primitives now live under
+     `apps/old/src/shared/components`, while the legacy tab bar moved into the
+     app-shell feature, leaving no files in the generic root `src/components`
+     folder.
    - Done: notification queue/modal state and actions now live in
      `apps/old/src/features/notifications/context/NotificationsProvider.tsx`
      instead of `GlobalProvider`.

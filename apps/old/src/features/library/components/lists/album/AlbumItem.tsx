@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import ListCover from "@/src/features/cover/components/ListCover";
-import Select from "@/src/components/Select";
+import Select from "@/src/shared/components/Select";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { AlbumType, CoverType, PageType, SongType } from "@/src/constants/Types";

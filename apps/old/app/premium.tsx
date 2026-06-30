@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import CustomButton from "@/src/components/CustomButton";
-import Loading from "@/src/components/Loading";
-import Bar from "@/src/components/modals/Bar";
-import ModalStyles from "@/src/components/modals/Styles";
+import CustomButton from "@/src/shared/components/CustomButton";
+import Loading from "@/src/shared/components/Loading";
+import Bar from "@/src/shared/components/modals/Bar";
+import ModalStyles from "@/src/shared/components/modals/Styles";
 import Notifications from "@/src/features/notifications/components/Notifications";
 import FeatureList from "@/src/features/premium/components/FeatureList";
 import PremiumOption from "@/src/features/premium/components/PremiumOption";

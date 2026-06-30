@@ -1,9 +1,9 @@
 import { memo, useEffect, useState } from "react";
 import EditCover from "@/src/features/cover/components/EditCover";
-import CustomButton from "@/src/components/CustomButton";
+import CustomButton from "@/src/shared/components/CustomButton";
 import ArtistItem from "@/src/features/library/components/lists/artist/ArtistItem";
-import Bar from "@/src/components/modals/Bar";
-import ModalStyles from "@/src/components/modals/Styles";
+import Bar from "@/src/shared/components/modals/Bar";
+import ModalStyles from "@/src/shared/components/modals/Styles";
 import Notifications from "@/src/features/notifications/components";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";

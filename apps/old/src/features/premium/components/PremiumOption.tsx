@@ -4,7 +4,7 @@ import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { darkenColor } from "@/src/lib/color-utils";
 import { posthog } from "@/src/lib/posthog";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Skeleton from "@/src/components/Skeleton";
+import Skeleton from "@/src/shared/components/Skeleton";
 
 type OptionProps = {
   handler: () => void;

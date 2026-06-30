@@ -1,6 +1,5 @@
-import { TouchableOpacity, View, Text, Animated } from "react-native";
+import { Animated } from "react-native";
 import { useEffect, useRef, useState } from "react";
-import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
 
 type SkeletonProps = {

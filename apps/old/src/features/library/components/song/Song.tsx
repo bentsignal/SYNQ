@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Select from "@/src/components/Select";
-import SongInfo from "@/src/components/song/SongInfo";
+import SongInfo from "@/src/features/library/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { PageType, SongType } from "@/src/constants/Types";

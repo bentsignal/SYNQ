@@ -1,4 +1,4 @@
-import Song from "@/src/components/song";
+import Song from "@/src/features/library/components/song";
 import { PageType, SongType, SourceType } from "@/src/constants/Types";
 import React, { memo } from "react";
 import { TouchableOpacity } from "react-native";

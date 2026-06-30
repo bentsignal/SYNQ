@@ -3,7 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SongListPageCover from "@/src/features/cover/components/SongListPageCover";
 import { PageType } from "@/src/constants/Types";
 import { ListStyles } from "../Styles";
-import CountAndDuration from "@/src/components/song/CountAndDuration";
+import CountAndDuration from "@/src/features/library/components/song/CountAndDuration";
 
 type ArtistHeaderProps = {
   id: number;

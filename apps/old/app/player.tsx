@@ -9,7 +9,7 @@ import QueueButton from "@/src/features/playback/components/QueueButton";
 import ShuffleButton from "@/src/features/playback/components/ShuffleButton";
 import { SkipLeft, SkipRight } from "@/src/features/playback/components/Skip";
 import Time from "@/src/features/playback/components/Time";
-import SongInfo from "@/src/components/song/SongInfo";
+import SongInfo from "@/src/features/library/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
 import { PageType, SongType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";

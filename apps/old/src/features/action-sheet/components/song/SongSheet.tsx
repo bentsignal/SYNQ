@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import ListCover from "@/src/features/cover/components/ListCover";
 import Sheet from "@/src/features/action-sheet/components";
 import SheetStyles from "@/src/features/action-sheet/components/Styles";
-import SongInfo from "@/src/components/song/SongInfo";
+import SongInfo from "@/src/features/library/components/song/SongInfo";
 import { CoverType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { getLibrarySongCoverPath } from "@/src/features/library/repository/library-song-repository";

@@ -356,6 +356,9 @@ feature-oriented packages.
    - Done: reusable album/artist/playlist/song list surfaces now live under
      `apps/old/src/features/library/components/lists` instead of the generic
      root `src/components/lists` folder.
+   - Done: shared song row, song info, and count/duration UI now live under
+     `apps/old/src/features/library/components/song` instead of the generic
+     root `src/components/song` folder.
    - Done: notification queue/modal state and actions now live in
      `apps/old/src/features/notifications/context/NotificationsProvider.tsx`
      instead of `GlobalProvider`.

@@ -1,6 +1,7 @@
 import { InfoType, PageType, SongType, TagsType } from "@/src/constants/Types";
 import { getImportSongCover } from "@/src/features/import/lib/import-song-edits";
 import { getLibrarySongCoverPath } from "@/src/features/library/repository/library-song-repository";
+import { isLibrarySongSnapshotStale } from "@/src/features/library/repository/song-metadata-repository";
 import { check } from "@/src/lib/util";
 import { getAudioMetadata } from "@missingcore/audio-metadata";
 import * as FileSystem from "expo-file-system";
@@ -180,6 +181,13 @@ export const isExportSongEdited = async (song: SongType) => {
 
   if (song.edited === true) {
     return true;
+  }
+
+  if (song.pageType !== PageType.IMPORT) {
+    const snapshotStale = await isLibrarySongSnapshotStale(song.id);
+    if (snapshotStale === true) {
+      return true;
+    }
   }
 
   const url =

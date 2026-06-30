@@ -242,8 +242,10 @@ feature-oriented packages.
      service instead of importing legacy `Model` directly from the settings
      route.
    - Unreferenced legacy `AlbumModel`, `ArtistModel`, and `PlaylistModel`
-     files have been removed; remaining model compatibility is limited to
-     backup database reset/setup and song edited/export flag writes.
+     files have been removed.
+   - Song edited/export compatibility now uses the Drizzle-backed library song
+     snapshot instead of legacy `SongModel`; remaining model compatibility is
+     limited to backup database reset/setup.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

@@ -12,9 +12,9 @@ import {
   songs,
 } from "@synq/db/schema";
 import { eq, inArray } from "drizzle-orm";
-import * as Crypto from "expo-crypto";
 import { DocumentPickerAsset } from "expo-document-picker";
 import { saveCoverImage } from "@/src/features/images/repository/image-repository";
+import { saveLibrarySongSnapshot } from "@/src/features/library/repository/song-metadata-repository";
 
 export const createIngestedSongFromAsset = async (
   asset: DocumentPickerAsset,
@@ -37,7 +37,7 @@ export const createIngestedSongFromAsset = async (
   await storeArtistsForNewSong(songId, metadata.artist);
   await storeAlbumsForNewSong(songId, metadata.album, coverImageHash);
   // TODO: store artists for new album
-  await saveSongSnapshot(songId);
+  await saveLibrarySongSnapshot(songId);
   await db
     .update(songs)
     .set({ ingestComplete: 1 })
@@ -107,71 +107,4 @@ const storeAlbumsForNewSong = async (
   await db
     .insert(albumSongs)
     .values(newAlbumsIds.map((albumId) => ({ albumId, songId })));
-};
-
-const getArtistsOnSong = async (songId: number) => {
-  return await db
-    .select({ name: artists.name, profileImage: artists.profileImage })
-    .from(artistSongs)
-    .innerJoin(artists, eq(artistSongs.artistId, artists.id))
-    .where(eq(artistSongs.songId, songId));
-};
-
-const getAlbumsContainingSong = async (songId: number) => {
-  return await db
-    .select({
-      name: albums.name,
-      year: albums.year,
-      coverImage: albums.coverImage,
-    })
-    .from(albumSongs)
-    .innerJoin(albums, eq(albumSongs.albumId, albums.id))
-    .where(eq(albumSongs.songId, songId));
-};
-
-const getSnapshotHash = async (songId: number) => {
-  const result = await db
-    .select()
-    .from(songs)
-    .where(eq(songs.id, songId))
-    .limit(1);
-  if (result.length === 0) {
-    throw new Error("Song not found");
-  }
-  const song = result[0];
-  const albumsContainingSong = await getAlbumsContainingSong(songId);
-  const albumNames = albumsContainingSong
-    .map(
-      (album) =>
-        `${album.name ?? ""}${album.year ?? ""}${album.coverImage ?? ""}`,
-    )
-    .sort()
-    .join(",");
-  const artistsOnSong = await getArtistsOnSong(songId);
-  const artistNames = artistsOnSong
-    .map((artist) => artist.name)
-    .sort()
-    .join(",");
-  const hashFunctionInput = [
-    song.title,
-    song.duration,
-    song.fileType,
-    song.coverImage,
-    artistNames,
-    albumNames,
-  ].join("-");
-  console.log("hashFunctionInput", hashFunctionInput);
-  const hash = await Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    hashFunctionInput,
-  );
-  return hash;
-};
-
-const saveSongSnapshot = async (songId: number) => {
-  const hash = await getSnapshotHash(songId);
-  await db
-    .update(songs)
-    .set({ snapshotAtLastExport: hash })
-    .where(eq(songs.id, songId));
 };

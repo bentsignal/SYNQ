@@ -91,6 +91,9 @@ feature-oriented packages.
      info/artists from `useAlbumInfoQuery` and songs from `useAlbumSongsQuery`
      instead of listening for `ALBUM_MODIFIED`, `ALBUM_TOGGLED_ON_SONG`, or
      `ALBUM_REORDERED`.
+   - Album reorder now reads songs from `useAlbumSongsQuery` and writes order
+     changes through a Drizzle-backed album-song repository instead of
+     route-local controller fetch/update loops.
    - Artist detail content has started. `app/artist/artist.tsx` now reads
      artist info, songs, and albums from `useArtistInfoQuery`,
      `useArtistSongsQuery`, and `useArtistAlbumsQuery` instead of listening for

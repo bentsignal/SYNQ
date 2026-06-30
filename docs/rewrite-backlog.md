@@ -280,6 +280,8 @@ feature-oriented packages.
    - Done: delete flows in import controls and song options now call
      `usePlayer().removeSongsFromQueue` instead of duplicating TrackPlayer
      queue scans/removals.
+   - Done: backup erase/reset now calls `usePlayer().resetPlayer`; no
+     `app` or generic `components` files import TrackPlayer directly.
    - Next safe slice: continue moving remaining TrackPlayer calls in UI
      components behind playback feature APIs.
 

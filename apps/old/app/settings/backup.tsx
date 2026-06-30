@@ -15,6 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { router } from "expo-router";
+import usePlayer from "@/src/features/playback/hooks/use-player";
 import * as Sharing from "expo-sharing";
 import {
   Alert,
@@ -24,12 +25,12 @@ import {
   Text,
   View,
 } from "react-native";
-import TrackPlayer from "react-native-track-player";
 import { unzip, zip } from "react-native-zip-archive";
 
 export default function Backup() {
   const { theme } = useThemeContext();
   const { premium } = usePremiumContext();
+  const { resetPlayer } = usePlayer();
 
   const [loading, setLoading] = useState(false);
 
@@ -61,10 +62,6 @@ export default function Backup() {
   const resetDB = async () => {
     await Model.reconnect();
     await Model.createTables();
-  };
-
-  const resetPlayer = async () => {
-    TrackPlayer.reset();
   };
 
   const handleBackup = async () => {

@@ -14,6 +14,7 @@ import {
   addTrackToQueue,
   moveQueueTrack,
   removeTracksBySongIds,
+  resetPlaybackQueue,
   seekToPlaybackPosition,
   skipToNextPlayableTrack,
   skipToPreviousPlayableTrack,
@@ -79,6 +80,10 @@ export default function usePlayer() {
 
   const removeSongsFromQueue = async (songIds: number[]) => {
     await removeTracksBySongIds(songIds);
+  };
+
+  const resetPlayer = async () => {
+    await resetPlaybackQueue();
   };
 
   const seekToPosition = async (position: number) => {
@@ -153,6 +158,7 @@ export default function usePlayer() {
     moveQueueSong,
     playSong,
     removeSongsFromQueue,
+    resetPlayer,
     seekToPosition,
     skipRight,
     skipLeft,

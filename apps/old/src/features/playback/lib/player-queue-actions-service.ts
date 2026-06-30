@@ -56,6 +56,10 @@ export const removeTracksBySongIds = async (songIds: number[]) => {
   await TrackPlayer.remove(indicesToRemove);
 };
 
+export const resetPlaybackQueue = async () => {
+  await TrackPlayer.reset();
+};
+
 export const seekToPlaybackPosition = async (position: number) => {
   await TrackPlayer.seekTo(position);
 };

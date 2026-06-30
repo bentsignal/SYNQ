@@ -113,6 +113,13 @@ export const removeImportSongs = async (songs: SongType[], ids: number[]) => {
   return remainingSongs;
 };
 
+export const deleteImportSongs = async (songs: SongType[]) => {
+  await removeImportSongs(
+    songs,
+    songs.map((song) => song.id),
+  );
+};
+
 export const saveImportSongEdits = async ({
   songs,
   ids,

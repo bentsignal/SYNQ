@@ -193,6 +193,8 @@ feature-oriented packages.
    - Import save-to-library now runs through a feature-level import library
      saver with Drizzle-backed song creation, playlist/album/artist joins, and
      repository cover updates instead of `LibraryController.saveToLibrary`.
+   - Import cache cleanup for the "do not save to library" path now lives in
+     the import feature edit helpers instead of `ImportExportController`.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

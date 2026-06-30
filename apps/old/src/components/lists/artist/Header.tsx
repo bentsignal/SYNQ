@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { Styles } from "@/src/constants/Styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/src/constants/Colors";
-import SongListPageCover from "@/src/components/cover/SongListPageCover";
+import SongListPageCover from "@/src/features/cover/components/SongListPageCover";
 import { PageType } from "@/src/constants/Types";
 import { ListStyles } from "../Styles";
 import CountAndDuration from "@/src/components/song/CountAndDuration";

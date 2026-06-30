@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import Sheet from '@/src/features/action-sheet/components';
 import { useActionSheetContext } from '@/src/features/action-sheet/context/ActionSheetProvider';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
-import ListCover from '@/src/components/cover/ListCover';
+import ListCover from '@/src/features/cover/components/ListCover';
 import SheetStyles from '@/src/features/action-sheet/components/Styles';
 import { Styles } from '@/src/constants/Styles';
 import { Colors } from '@/src/constants/Colors';

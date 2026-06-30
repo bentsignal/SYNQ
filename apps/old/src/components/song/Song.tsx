@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-// import ListCover from "@/src/components/cover/ListCover";
 import Select from "@/src/components/Select";
 import SongInfo from "@/src/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";

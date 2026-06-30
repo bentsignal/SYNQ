@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import ListCover from "@/src/components/cover/ListCover";
+import ListCover from "@/src/features/cover/components/ListCover";
 import Select from "@/src/components/Select";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";

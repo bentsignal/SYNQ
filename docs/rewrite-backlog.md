@@ -311,6 +311,9 @@ feature-oriented packages.
      moved to the feature path.
    - Done: move hashed cover image persistence and path helpers into
      `apps/old/src/features/images/repository/image-repository.ts`.
+   - Done: shared cover UI components now live in
+     `apps/old/src/features/cover/components` instead of the generic
+     `src/components/cover` folder.
    - Done: removed the old `apps/old/src/lib/image-utils.ts` compatibility
      shim after image callers moved to feature repositories.
    - Done: import album cover edits now write only hash-backed image rows

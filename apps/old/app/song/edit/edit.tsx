@@ -1,5 +1,5 @@
 import { Fragment, memo, useCallback, useEffect, useState } from "react";
-import EditCover from "@/src/components/cover/EditCover";
+import EditCover from "@/src/features/cover/components/EditCover";
 import CustomButton from "@/src/components/CustomButton";
 import AlbumItem from "@/src/components/lists/album/AlbumItem";
 import ArtistItem from "@/src/components/lists/artist/ArtistItem";

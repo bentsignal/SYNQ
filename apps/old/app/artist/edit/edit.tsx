@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from "react";
-import EditCover from "@/src/components/cover/EditCover";
+import EditCover from "@/src/features/cover/components/EditCover";
 import CustomButton from "@/src/components/CustomButton";
 import Bar from "@/src/components/modals/Bar";
 import ModalStyles from "@/src/components/modals/Styles";

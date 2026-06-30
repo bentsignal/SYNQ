@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ListCover from "@/src/components/cover/ListCover";
+import ListCover from "@/src/features/cover/components/ListCover";
 import CrossfadeImage from "@/src/components/image/CrossfadeImage";
 import { SkipLeft, SkipRight } from "@/src/features/playback/components/Skip";
 import SongInfo from "@/src/components/song/SongInfo";

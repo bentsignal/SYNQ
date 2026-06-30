@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import ListCover from "@/src/components/cover/ListCover";
+import ListCover from "@/src/features/cover/components/ListCover";
 import Sheet from "@/src/features/action-sheet/components";
 import SheetStyles from "@/src/features/action-sheet/components/Styles";
 import SongInfo from "@/src/components/song/SongInfo";

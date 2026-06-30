@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ListCover from "@/src/components/cover/ListCover";
+import ListCover from "@/src/features/cover/components/ListCover";
 import Bar from "@/src/components/modals/Bar";
 import ModalStyles from "@/src/components/modals/Styles";
 import SongOptions from "@/src/features/action-sheet/components/song/SongOptions";

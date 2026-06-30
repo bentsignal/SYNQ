@@ -424,6 +424,9 @@ feature-oriented packages.
    - Done: action sheet surfaces and entity sheet option components now live in
      `apps/old/src/features/action-sheet/components` instead of the generic
      `src/components/sheet` folder.
+   - Done: song action sheets now share
+     `apps/old/src/features/action-sheet/hooks/use-song-sheet-cover.ts`
+     instead of duplicating cover-loading state/effects in each sheet.
    - In progress: playback orchestration is moving out of the home screen into
      feature hooks. Avoid import results and edit targets until their owning
      feature boundaries are clearer.

@@ -4,8 +4,6 @@ import { usePremiumContext } from "@/src/features/premium/context/PremiumProvide
 import { getDisabledColor } from "@/src/lib/color-utils";
 import { LucideIcon } from "lucide-react-native";
 import {
-  Image,
-  ImageURISource,
   StyleSheet,
   Text,
   TouchableOpacity,

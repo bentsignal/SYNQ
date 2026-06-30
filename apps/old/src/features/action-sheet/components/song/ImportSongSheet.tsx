@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import ListCover from "@/src/features/cover/components/ListCover";
 import Sheet from "@/src/features/action-sheet/components";
 import SheetStyles from "@/src/features/action-sheet/components/Styles";
 import SongInfo from "@/src/features/library/components/song/SongInfo";
 import { CoverType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import { getLibrarySongCoverPath } from "@/src/features/library/repository/library-song-repository";
-import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
+import { Dimensions, ScrollView, View } from "react-native";
 import SongOptions from "./SongOptions";
+import { useSongSheetCover } from "@/src/features/action-sheet/hooks/use-song-sheet-cover";
 
 type SongSheetProps = {
   name: string;
@@ -16,8 +16,7 @@ type SongSheetProps = {
 export default function ImportSongSheet({ name }: SongSheetProps) {
   const { editSong } = useActionSheetContext();
   const [scrollEnabled, setScrollEnabled] = useState(false);
-  const [coverImage, setCoverImage] = useState("");
-  const [emptyCover, setEmptyCover] = useState(false);
+  const { coverImage, emptyCover } = useSongSheetCover(editSong);
   const scrollRef = useRef<ScrollView>(null);
 
   const onChange = (index: number) => {
@@ -28,30 +27,6 @@ export default function ImportSongSheet({ name }: SongSheetProps) {
       setScrollEnabled(true);
     }
   };
-
-  const loadCover = async () => {
-    try {
-      if (editSong.artwork) {
-        setCoverImage(editSong.artwork);
-        setEmptyCover(false);
-      } else {
-        const cover = await getLibrarySongCoverPath(editSong.id);
-        if (cover) {
-          setCoverImage(cover);
-          setEmptyCover(false);
-        } else {
-          setCoverImage("");
-          setEmptyCover(true);
-        }
-      }
-    } catch (error) {
-      console.log("error loading song cover:", error);
-    }
-  };
-
-  useEffect(() => {
-    loadCover();
-  }, [editSong]);
 
   return (
     <Sheet name={name} onChange={onChange}>

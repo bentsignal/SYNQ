@@ -46,19 +46,6 @@ export type TagsType = {
   }
 };
 
-export type SongResultType = {
-  id?: number;
-  title?: string;
-  artists?: string;
-  album?: string;
-  genre?: string;
-  duration?: number;
-  fileType?: string;
-  fileName?: string;
-  edited?: boolean;
-  track?: number;
-}
-
 export type InstructionsModalProps = {
   dontShowOption?: boolean;
 };

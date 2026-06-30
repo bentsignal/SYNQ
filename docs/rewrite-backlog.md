@@ -249,6 +249,8 @@ feature-oriented packages.
    - Backup restore/erase database reset now uses the shared `@synq/db` reset
      helper instead of the legacy `Model`; `apps/old/src/models` has been
      removed.
+   - The unused legacy `SongResultType` row shape and song result mapper have
+     been removed after the model/controller callers disappeared.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

@@ -2,7 +2,7 @@ import { SortOrder, SortType, SourceType } from "@/src/constants/Types";
 import { getNextUp } from "@/src/features/playback/lib/playback-queue-service";
 import { getTrackFromSong } from "@/src/features/playback/lib/player-track-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import TrackPlayer, { Track } from "react-native-track-player";
+import TrackPlayer, { State, Track } from "react-native-track-player";
 
 type SendPlaybackError = (type: "error") => void;
 
@@ -42,6 +42,18 @@ export const addTrackToQueue = async ({
 
 export const moveQueueTrack = async (from: number, to: number) => {
   await TrackPlayer.move(from, to);
+};
+
+export const seekToPlaybackPosition = async (position: number) => {
+  await TrackPlayer.seekTo(position);
+};
+
+export const togglePlaybackState = async (currentState: State) => {
+  if ([State.Paused, State.Ready].includes(currentState)) {
+    await TrackPlayer.play();
+  } else {
+    await TrackPlayer.pause();
+  }
 };
 
 export const skipToNextPlayableTrack = async ({

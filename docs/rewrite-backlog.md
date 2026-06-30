@@ -274,8 +274,11 @@ feature-oriented packages.
    - Done: the remaining queue route shell now lives in
      `apps/old/src/features/playback/components/QueueScreen.tsx`; the Expo
      route only exports the feature screen.
-   - Next safe slice: shift to the next high-value playback route or start
-     moving remaining TrackPlayer calls behind playback feature APIs.
+   - Done: pause/play and time scrub seek commands now route through
+     `usePlayer()` and the playback queue action service instead of direct
+     TrackPlayer calls in UI controls.
+   - Next safe slice: continue moving remaining TrackPlayer calls in UI
+     components behind playback feature APIs.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

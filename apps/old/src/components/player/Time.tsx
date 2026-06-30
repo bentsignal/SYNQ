@@ -1,14 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
-import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
+import usePlayer from "@/src/features/playback/hooks/use-player";
 import { formatTime } from "@/src/lib/util";
-import { Dimensions, PanResponder, StyleSheet, Text, View } from "react-native";
-import {
-  Gesture,
-  GestureDetector,
-  GestureType,
-} from "react-native-gesture-handler";
+import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   Easing,
   runOnJS,
@@ -16,17 +12,13 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import TrackPlayer, {
-  State,
-  usePlaybackState,
-  useProgress,
-} from "react-native-track-player";
+import { State, usePlaybackState, useProgress } from "react-native-track-player";
 
 const Time = () => {
   const interval = 50;
 
   const { adPlaying } = usePlaybackAdContext();
-  const { theme } = useThemeContext();
+  const { seekToPosition } = usePlayer();
   const { position, duration } = useProgress(interval);
   const playbackState = usePlaybackState();
 
@@ -74,7 +66,7 @@ const Time = () => {
   };
 
   const jump = async (newPosition: number) => {
-    await TrackPlayer.seekTo(newPosition);
+    await seekToPosition(newPosition);
     setTimeout(() => {
       scrubbing.value = false;
     }, interval);

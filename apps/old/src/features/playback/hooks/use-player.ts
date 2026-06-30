@@ -13,13 +13,15 @@ import {
 import {
   addTrackToQueue,
   moveQueueTrack,
+  seekToPlaybackPosition,
   skipToNextPlayableTrack,
   skipToPreviousPlayableTrack,
+  togglePlaybackState,
   updateUpcomingQueue,
 } from "@/src/features/playback/lib/player-queue-actions-service";
 import { setupPlayer as setupTrackPlayer } from "@/src/features/playback/lib/player-setup-service";
 import { useHaptics } from "@/src/hooks/use-haptics";
-import { Track } from "react-native-track-player";
+import { State, Track } from "react-native-track-player";
 
 export default function usePlayer() {
   const {
@@ -72,6 +74,14 @@ export default function usePlayer() {
 
   const moveQueueSong = async (from: number, to: number) => {
     await moveQueueTrack(from, to);
+  };
+
+  const seekToPosition = async (position: number) => {
+    await seekToPlaybackPosition(position);
+  };
+
+  const togglePlayback = async (currentState: State) => {
+    await togglePlaybackState(currentState);
   };
 
   const playSong = async (song: SongType) => {
@@ -137,8 +147,10 @@ export default function usePlayer() {
     addSongToQueue,
     moveQueueSong,
     playSong,
+    seekToPosition,
     skipRight,
     skipLeft,
+    togglePlayback,
     updateQueue,
   };
 }

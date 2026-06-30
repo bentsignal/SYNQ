@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
+import usePlayer from "@/src/features/playback/hooks/use-player";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import TrackPlayer, {
-  State,
-  usePlaybackState,
-} from "react-native-track-player";
+import { State, usePlaybackState } from "react-native-track-player";
 
 const PausePlayButtons = ({
   playSize,
@@ -18,10 +16,11 @@ const PausePlayButtons = ({
   playSize: number;
   pauseHeight: number;
   pauseWidth: number;
-  style: {};
+  style: object;
   color?: string;
 }) => {
   const { sendHaptic } = useHaptics();
+  const { togglePlayback: togglePlayerPlayback } = usePlayer();
 
   const playbackState = usePlaybackState();
   const [currentState, setCurrentState] = useState(
@@ -37,11 +36,7 @@ const PausePlayButtons = ({
   const togglePlayback = async () => {
     try {
       sendHaptic("soft");
-      if ([State.Paused, State.Ready].includes(currentState)) {
-        await TrackPlayer.play();
-      } else {
-        await TrackPlayer.pause();
-      }
+      await togglePlayerPlayback(currentState);
     } catch (error) {
       console.error("Error toggling play/pause:", error);
     }

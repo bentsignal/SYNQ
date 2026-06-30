@@ -9,8 +9,8 @@ import {
   SortType,
   SourceType,
 } from "@/src/constants/Types";
-import { generateSongKey } from "@/src/controllers/SongController";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
+import { generateSongKey } from "@/src/features/library/lib/song-display";
 import { useActiveQueueTrack } from "@/src/features/playback/hooks/use-active-queue-track";
 import { useSongPlaybackHandler } from "@/src/features/playback/hooks/use-song-playback-handler";
 import { useHaptics } from "@/src/hooks/use-haptics";

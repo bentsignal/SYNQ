@@ -10,9 +10,9 @@ import { useThemeContext } from "@/src/context/ThemeProvider";
 import { getDisabledColor } from "@/src/controllers/ColorController";
 import { deleteFromLibrary } from "@/src/controllers/LibraryController";
 import { removeFromAllPlaylists } from "@/src/controllers/PlaylistController";
-import { removeSongs } from "@/src/controllers/SongController";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
+import { removeImportSongs } from "@/src/features/import/lib/import-song-edits";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { posthog } from "@/src/lib/posthog";
 import axios from "axios";
@@ -174,7 +174,7 @@ export default function ImportControls() {
     try {
       // handle bulk delete
       if (selectedSongs.length > 0) {
-        const newResults = await removeSongs(results, selectedSongs);
+        const newResults = await removeImportSongs(results, selectedSongs);
         if (newResults.length <= 0) {
           setExportDisabled(true);
           router.replace("/(tabs)");
@@ -191,7 +191,7 @@ export default function ImportControls() {
       // remove from import
       else if (editSong.pageType === PageType.IMPORT) {
         const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id];
-        const newResults = await removeSongs(results, ids);
+        const newResults = await removeImportSongs(results, ids);
         if (newResults.length <= 0) {
           setExportDisabled(true);
         }

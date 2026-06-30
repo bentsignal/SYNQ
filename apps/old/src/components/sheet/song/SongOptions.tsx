@@ -11,11 +11,11 @@ import {
   removeFromAllPlaylists,
   removeFromPlaylist,
 } from "@/src/controllers/PlaylistController";
-import { removeSongs } from "@/src/controllers/SongController";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/features/playback/hooks/use-player";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
+import { removeImportSongs } from "@/src/features/import/lib/import-song-edits";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
@@ -112,7 +112,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
     posthog.capture("delete_song");
     // handle bulk delete
     if (selectedSongs.length > 0) {
-      const newResults = await removeSongs(results, selectedSongs);
+      const newResults = await removeImportSongs(results, selectedSongs);
       if (newResults.length <= 0) {
         setExportDisabled(true);
         router.replace("/(tabs)");
@@ -129,7 +129,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
     // remove from import
     else if (editSong.pageType === PageType.IMPORT) {
       const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id];
-      const newResults = await removeSongs(results, ids);
+      const newResults = await removeImportSongs(results, ids);
       if (newResults.length <= 0) {
         setExportDisabled(true);
       }

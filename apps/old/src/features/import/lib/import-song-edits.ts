@@ -1,4 +1,6 @@
 import { AlbumType, ArtistType, SongType } from "@/src/constants/Types";
+import { getLibraryAlbumCoverPath } from "@/src/features/library/repository/library-entity-repository";
+import * as FileSystem from "expo-file-system";
 
 const uniqueArtistsById = (artists: ArtistType[]) => {
   const seen = new Set<number>();
@@ -71,3 +73,36 @@ export const syncImportSongDisplayMetadata = (song: SongType) => {
 
 export const replaceImportSong = (songs: SongType[], song: SongType) =>
   songs.map((result) => (result.id === song.id ? { ...song } : result));
+
+export const getImportSongCover = async (song: SongType) => {
+  const album = song.importAlbums?.[0];
+  if (album) {
+    const cover = await getLibraryAlbumCoverPath(album.id);
+    if (cover) {
+      return cover;
+    }
+  }
+
+  return song.artwork ?? null;
+};
+
+export const removeImportSongs = async (songs: SongType[], ids: number[]) => {
+  const remainingSongs: SongType[] = [];
+
+  for (const song of songs) {
+    if (!ids.includes(song.id)) {
+      remainingSongs.push(song);
+      continue;
+    }
+
+    if (song.cacheUri) {
+      try {
+        await FileSystem.deleteAsync(song.cacheUri);
+      } catch (error) {
+        console.log("error deleting cached song file: ", error);
+      }
+    }
+  }
+
+  return remainingSongs;
+};

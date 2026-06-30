@@ -169,6 +169,9 @@ feature-oriented packages.
      repository and is shared by playback track creation, mini player, player
      edit, song edit, and song sheets instead of routing through
      `SongController` cover helpers.
+   - Import-song cover fallback, import-result removal, and song list key
+     generation now live in feature-level helpers instead of requiring
+     `SongController` from UI components.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

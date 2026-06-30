@@ -22,8 +22,9 @@ import {
   getLibrarySongCoverPath,
 } from "@/src/features/library/repository/library-song-repository";
 import { updateSongsInLibrary } from "@/src/controllers/LibraryController";
-import { getImportSongCover, saveEdits } from "@/src/controllers/SongController";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
+import { getImportSongCover } from "@/src/features/import/lib/import-song-edits";
+import { saveEdits } from "@/src/controllers/SongController";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { getDurationString } from "@/src/lib/util";
 import { router, useFocusEffect } from "expo-router";

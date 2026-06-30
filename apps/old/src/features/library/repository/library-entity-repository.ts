@@ -1,4 +1,7 @@
-import { saveCoverImage } from "@/src/features/images/repository/image-repository";
+import {
+  getImagePathFromHash,
+  saveCoverImage,
+} from "@/src/features/images/repository/image-repository";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq, ne } from "drizzle-orm";
@@ -290,4 +293,23 @@ export const deleteLibraryAlbum = async (id: number) => {
     .delete(schema.artistsAlbums)
     .where(eq(schema.artistsAlbums.albumId, id));
   await db.delete(schema.albums).where(eq(schema.albums.id, id));
+};
+
+export const getLibraryAlbumCoverPath = async (
+  albumId: number,
+  full: boolean = false,
+) => {
+  const rows = await db
+    .select({ coverImage: schema.albums.coverImage })
+    .from(schema.albums)
+    .where(eq(schema.albums.id, albumId))
+    .limit(1);
+
+  const coverImage = rows[0]?.coverImage;
+  if (!coverImage) {
+    return null;
+  }
+
+  const paths = getImagePathFromHash(coverImage);
+  return full ? paths.pathToFullImage : paths.pathToSmallImage;
 };

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Server from "@/src/components/import/Server";
+import Server from "@/src/features/import/components/Server";
 import NotificationModal from "@/src/components/modals/NotificationModal";
 import Overlay from "@/src/components/Overlay";
 import { HomeIcon, LibraryIcon } from "@/src/components/TabBarIcons";

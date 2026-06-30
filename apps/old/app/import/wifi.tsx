@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Styles } from '@/src/constants/Styles';
 import SongList from '@/src/components/lists/song';
 import PageTitle from '@/src/components/PageTitle';
-import ImportInstructions from '@/src/components/import/Instructions';
+import ImportInstructions from '@/src/features/import/components/Instructions';
 import InfoModal from '@/src/components/modals/InfoModal';
 import { Colors } from '@/src/constants/Colors';
 import Progress from '@/src/components/Progress';
@@ -12,7 +12,7 @@ import { usePremiumContext } from '@/src/features/premium/context/PremiumProvide
 import { useImportFlowContext } from '@/src/features/import/context/ImportFlowProvider';
 import CFG from '@/src/constants/Config';
 import SettingsButton from '@/src/components/SettingsButton';
-import ImportBlur from '@/src/components/import/Blur';
+import ImportBlur from '@/src/features/import/components/Blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const WiFi = () => {

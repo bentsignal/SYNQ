@@ -2,8 +2,8 @@ import { Stack } from "expo-router";
 
 import { Colors } from "@/src/constants/Colors";
 
-import ImportControls from "@/src/components/import/Controls";
-import ImportHeader from "@/src/components/import/Header";
+import ImportControls from "@/src/features/import/components/Controls";
+import ImportHeader from "@/src/features/import/components/Header";
 import Overlay from "@/src/components/Overlay";
 
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";

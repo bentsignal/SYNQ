@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ImportBlur from "@/src/components/import/Blur";
+import ImportBlur from "@/src/features/import/components/Blur";
 import SongList from "@/src/components/lists/song";
 import Progress from "@/src/components/Progress";
 import { Styles } from "@/src/constants/Styles";

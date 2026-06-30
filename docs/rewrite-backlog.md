@@ -320,6 +320,9 @@ feature-oriented packages.
      artist/album creation and relation dedupe, including album artist links.
    - Done: import save-to-library progress now updates the import flow context
      instead of rendering a hardcoded zero-progress placeholder.
+   - Done: import route controls, header, Wi-Fi server, instructions, and
+     premium blur UI moved from generic `src/components/import` into the
+     import feature folder.
    - Future target packages/folders: `shared/db` repositories and
      `apps/new/src/features/ingest`.
    - Keep Effect at workflow boundaries; keep UI state minimal and observable.

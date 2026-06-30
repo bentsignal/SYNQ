@@ -2,13 +2,13 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Styles } from '@/src/constants/Styles';
 import PagerView from 'react-native-pager-view';
 import { BlurView } from 'expo-blur';
-import { Colors, Themes } from '@/src/constants/Colors';
-import { useEffect, useRef, useState } from 'react';
+import { Colors } from '@/src/constants/Colors';
+import { useEffect, useRef } from 'react';
 
 export default function FeatureList() {
 
-  const [page, setPage] = useState(0);
   const autoScroll = useRef(true);
+  const currentPage = useRef(0);
   const pagerRef = useRef<PagerView>(null);
 
   const intensity = 20;
@@ -41,17 +41,13 @@ export default function FeatureList() {
     if (!autoScroll.current) return;
 
     const interval = setInterval(() => {
-      setPage(currentPage => {
-        if (autoScroll.current) {
-          const nextPage = (currentPage + 1) % features.length;
-          pagerRef.current?.setPage(nextPage);
-          return nextPage;
-        }
-        else {
-          clearInterval(interval);
-          return currentPage;
-        }
-      });
+      if (!autoScroll.current) {
+        clearInterval(interval);
+        return;
+      }
+
+      currentPage.current = (currentPage.current + 1) % features.length;
+      pagerRef.current?.setPage(currentPage.current);
     }, 3000);
 
     return () => clearInterval(interval);

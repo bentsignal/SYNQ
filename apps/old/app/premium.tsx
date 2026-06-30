@@ -4,7 +4,7 @@ import Loading from "@/src/components/Loading";
 import Bar from "@/src/components/modals/Bar";
 import ModalStyles from "@/src/components/modals/Styles";
 import Notifications from "@/src/features/notifications/components/Notifications";
-import FeatureList from "@/src/components/premium/FeatureList";
+import FeatureList from "@/src/features/premium/components/FeatureList";
 import PremiumOption from "@/src/components/PremiumOption";
 import { Colors, Themes } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";

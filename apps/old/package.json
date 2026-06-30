@@ -37,7 +37,6 @@
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.44.5",
     "effect": "^3.17.14",
-    "eventemitter3": "^5.0.1",
     "expo": "^53.0.22",
     "expo-application": "~6.1.5",
     "expo-asset": "~11.1.7",

@@ -63,7 +63,7 @@ feature-oriented packages.
    - Avoid per-row live queries in large lists.
 
 3. Replace event buses.
-   - Current buses live under `apps/old/src/events`.
+   - Done: `apps/old/src/events` has been removed.
    - Convert one domain at a time to database-backed reactive queries or typed
      domain actions.
    - Song/library refresh has started. `Songs.tsx` no longer listens for
@@ -293,6 +293,8 @@ feature-oriented packages.
      songs through the Drizzle-backed library song repository instead of legacy
      entity controllers.
    - No app event bus modules remain; `apps/old/src/events` has been removed.
+   - The stale `eventemitter3` dependency has been removed from `@synq/old`
+     after the app event buses were retired.
    - Next target: continue strict-null/typecheck cleanup, starting with
      `SongList` source metadata defaults and import/library controller
      nullability.

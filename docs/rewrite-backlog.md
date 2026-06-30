@@ -52,6 +52,10 @@ feature-oriented packages.
    - Playlist library refresh has started. `Playlists.tsx` now reads from
      `useLibraryPlaylistsQuery` instead of listening for `PLAYLIST_CREATED`,
      `PLAYLIST_DELETED`, or `PLAYLIST_SONGS_IMPORTED`.
+   - Playlist detail content has started. `app/playlist/playlist.tsx` now
+     reads its header info from `usePlaylistInfoQuery` and its songs from
+     `useLibrarySongsQuery` instead of listening for `PLAYLIST_CONTENT_MODIFIED`,
+     `PLAYLIST_SONG_COUNT_MODIFIED`, or `PLAYLIST_NAME_MODIFIED`.
    - Next target: remove import-only metadata listeners from `Song.tsx` with a
      typed import edit store.
 
@@ -109,8 +113,9 @@ feature-oriented packages.
 2. Playlist:
    - Done: add `useLibraryPlaylistsQuery` for the list-level library playlist
      screen.
-   - Add `usePlaylistInfoQuery(id)` and
-     `usePlaylistSongsQuery(id, query, sort, order)`.
+   - Done: add `usePlaylistInfoQuery(id)` for playlist detail header state.
+   - Reuse `useLibrarySongsQuery` for playlist detail songs while deciding
+     whether a playlist-specific wrapper is still useful.
    - Replace count/name/image/content listeners and remove the broad
      `PLAYLIST_SONGS_IMPORTED` invalidation pattern.
 

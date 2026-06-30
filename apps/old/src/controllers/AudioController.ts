@@ -1,19 +1,15 @@
 import { Audio } from 'expo-av';
 
-export const loadAudio = async (audioUri) => {
+export const loadAudio = async (audioUri: string) => {
 
   let sound: Audio.Sound | null = null;
 
   try {
-    if (sound) {
-      await sound.unloadAsync();
-      sound = null;
-    }
     const { sound: loadedSound } = await Audio.Sound.createAsync({ uri: audioUri });
     sound = loadedSound;
     const status = await loadedSound.getStatusAsync();
     if (!status.isLoaded) return 0;
-    return Math.floor(status.durationMillis / 1000);
+    return Math.floor((status.durationMillis ?? 0) / 1000);
   } catch (error) {
     console.error('Error loading audio:', error);
     return 0;

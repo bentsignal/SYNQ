@@ -31,7 +31,8 @@ feature-oriented packages.
   Cover editing now treats missing entity IDs as a transparent placeholder and
   only calls persisted cover loaders when a real ID is available. Premium
   restore now reads the active RevenueCat entitlement and represents lifetime
-  purchases with a nullable expiration.
+  purchases with a nullable expiration. Audio and color utility controllers now
+  guard missing duration and invalid RGB parses before returning media metadata.
 
 ## Priority Lanes
 
@@ -298,8 +299,9 @@ feature-oriented packages.
      textbox style overwrite.
    - Done: tighten premium restore state around active RevenueCat entitlements
      and nullable lifetime expirations.
-   - Next: continue strict-null cleanup in import/library controllers and media
-     utility controllers.
+   - Done: tighten audio duration and image color luminance helpers.
+   - Next: continue strict-null cleanup in import/library controllers and
+     legacy song/album/artist/playlist models.
 
 ## Guardrails
 

@@ -57,16 +57,25 @@ export const getLuminance = ({r, g, b}: {r: number, g: number, b: number}) => {
   return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
 }
 
+const isRGB = (
+  color: ReturnType<typeof hexToRGB>,
+): color is { r: number; g: number; b: number } => {
+  return color !== null;
+};
+
 export const getLuminanceFromImage = async (uri: string) => {
 
   const colors = await getColorsFromImage(uri);
 
   const luminances = [
-    getLuminance(hexToRGB(colors.background)),
-    getLuminance(hexToRGB(colors.primary)), 
-    getLuminance(hexToRGB(colors.secondary)),
-    getLuminance(hexToRGB(colors.detail))
-  ].filter(l => l > 0);
+    hexToRGB(colors.background),
+    hexToRGB(colors.primary),
+    hexToRGB(colors.secondary),
+    hexToRGB(colors.detail),
+  ]
+    .filter(isRGB)
+    .map(getLuminance)
+    .filter(l => l > 0);
 
   const averageLuminance = luminances.length > 0 ? 
     luminances.reduce((a, b) => a + b) / luminances.length : 

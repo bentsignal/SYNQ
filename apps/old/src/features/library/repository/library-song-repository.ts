@@ -61,6 +61,21 @@ const matchesQuery = (song: SongType, query: string) => {
   );
 };
 
+const getLegacyCoverPath = async (directory: string, full: boolean) => {
+  const info = await FileSystem.getInfoAsync(directory);
+  if (!info.exists) {
+    return null;
+  }
+
+  const contents = await FileSystem.readDirectoryAsync(directory);
+  const fileName = full ? "cover_full.jpg" : "cover_small.jpg";
+  if (!contents.includes(fileName)) {
+    return null;
+  }
+
+  return `${directory}/${fileName}?${info.modificationTime}`;
+};
+
 const sortSongs = (
   songs: SongType[],
   sort: SortType,
@@ -313,6 +328,7 @@ export const getLibrarySongCoverPath = async (
 ) => {
   const albumRows = await db
     .select({
+      albumId: schema.albums.id,
       coverImage: schema.albums.coverImage,
     })
     .from(schema.albumSongs)
@@ -327,6 +343,16 @@ export const getLibrarySongCoverPath = async (
     return full ? paths.pathToFullImage : paths.pathToSmallImage;
   }
 
+  for (const { albumId } of albumRows) {
+    const legacyAlbumCover = await getLegacyCoverPath(
+      `${FileSystem.documentDirectory}albums/${albumId}`,
+      full,
+    );
+    if (legacyAlbumCover) {
+      return legacyAlbumCover;
+    }
+  }
+
   const songRows = await db
     .select({
       coverImage: schema.songs.coverImage,
@@ -336,7 +362,10 @@ export const getLibrarySongCoverPath = async (
 
   const songCoverHash = songRows[0]?.coverImage;
   if (!songCoverHash) {
-    return null;
+    return getLegacyCoverPath(
+      `${FileSystem.documentDirectory}library/${songId}`,
+      full,
+    );
   }
 
   const paths = getImagePathFromHash(songCoverHash);

@@ -228,6 +228,9 @@ feature-oriented packages.
    - Song edit-flag writes now go through a library metadata repository
      compatibility helper, removing `AlbumController` and import edit helpers
      from direct `SongController`/`SongModel` calls for that mutation.
+   - Library album/song cover fallbacks now live in feature repositories, so
+     `SongController` no longer imports `AlbumController` for cover or album
+     song lookups.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

@@ -6,6 +6,7 @@ import {
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq, ne } from "drizzle-orm";
+import * as FileSystem from "expo-file-system";
 
 const assertUniqueArtistName = async (name: string) => {
   const existingArtist = await db
@@ -484,12 +485,24 @@ export const getLibraryAlbumCoverPath = async (
     .limit(1);
 
   const coverImage = rows[0]?.coverImage;
-  if (!coverImage) {
+  if (coverImage) {
+    const paths = getImagePathFromHash(coverImage);
+    return full ? paths.pathToFullImage : paths.pathToSmallImage;
+  }
+
+  const legacyDirectory = `${FileSystem.documentDirectory}albums/${albumId}`;
+  const info = await FileSystem.getInfoAsync(legacyDirectory);
+  if (!info.exists) {
     return null;
   }
 
-  const paths = getImagePathFromHash(coverImage);
-  return full ? paths.pathToFullImage : paths.pathToSmallImage;
+  const contents = await FileSystem.readDirectoryAsync(legacyDirectory);
+  const fileName = full ? "cover_full.jpg" : "cover_small.jpg";
+  if (!contents.includes(fileName)) {
+    return null;
+  }
+
+  return `${legacyDirectory}/${fileName}?${info.modificationTime}`;
 };
 
 export const getLibraryAlbumArtists = async (albumId: number) => {

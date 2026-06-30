@@ -1,5 +1,10 @@
 import { InfoType, PageType, SongType, TagsType } from "@/src/constants/Types";
 import { getSongByResult } from "@/src/features/library/lib/song-result-mapper";
+import { getLibraryAlbumCoverPath } from "@/src/features/library/repository/library-entity-repository";
+import {
+  getLibraryAlbumSongs,
+  getLibrarySongCoverPath,
+} from "@/src/features/library/repository/library-song-repository";
 import { flagLibrarySongAsEdited } from "@/src/features/library/repository/song-metadata-repository";
 import SongModel from "@/src/models/SongModel";
 import * as FileSystem from "expo-file-system";
@@ -16,11 +21,6 @@ import { getAudioMetadata } from "@missingcore/audio-metadata";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
-import {
-  getAlbumCover,
-  getAlbumCoverFromSong,
-  getSongsFromAlbum,
-} from "./AlbumController";
 
 export const updateMetadata = async (song: SongType) => {
   if (song.pageType !== PageType.IMPORT) {
@@ -54,7 +54,7 @@ export const updateMetadata = async (song: SongType) => {
     }
   } else if (song.pageType === PageType.IMPORT) {
     if (song.importAlbums && song.importAlbums.length > 0) {
-      const path = await getAlbumCover(song.importAlbums[0].id);
+      const path = await getLibraryAlbumCoverPath(song.importAlbums[0].id);
       if (path) {
         const image = await FileSystem.readAsStringAsync(path, {
           encoding: "base64",
@@ -199,7 +199,9 @@ export const saveEdits = async (
               .where(eq(schema.albums.id, album.id));
           }
           await flagSongAsEdited(song.id);
-          const albumSongs = await getSongsFromAlbum(album.id);
+          const albumSongs = await getLibraryAlbumSongs({
+            albumId: album.id,
+          });
           albumSongs.forEach((albumSong) => {
             if (albumSong.id !== undefined && albumSong.id !== song.id) {
               flagSongAsEdited(albumSong.id);
@@ -246,21 +248,21 @@ export const getLibrarySongCover = async (
   id: number,
   full: boolean = false,
 ) => {
-  const albumCover = await getAlbumCoverFromSong(id, full);
-  if (albumCover) {
-    return albumCover;
-  } else {
-    const cover = await getSongCover(id, full);
-    if (cover) {
-      return cover;
-    }
+  const repositoryCover = await getLibrarySongCoverPath(id, full);
+  if (repositoryCover) {
+    return repositoryCover;
+  }
+
+  const cover = await getSongCover(id, full);
+  if (cover) {
+    return cover;
   }
 };
 
 export const getImportSongCover = async (song: SongType) => {
   if (song.importAlbums && song.importAlbums.length > 0) {
     const album = song.importAlbums[0];
-    const cover = await getAlbumCover(album.id);
+    const cover = await getLibraryAlbumCoverPath(album.id);
     if (cover) {
       return cover;
     } else if (song.artwork) {

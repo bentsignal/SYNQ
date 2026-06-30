@@ -56,6 +56,9 @@ feature-oriented packages.
      reads its header info from `usePlaylistInfoQuery` and its songs from
      `useLibrarySongsQuery` instead of listening for `PLAYLIST_CONTENT_MODIFIED`,
      `PLAYLIST_SONG_COUNT_MODIFIED`, or `PLAYLIST_NAME_MODIFIED`.
+   - Album library refresh has started. `Albums.tsx` now reads from
+     `useLibraryAlbumsQuery` instead of listening for `ALBUM_CREATED`,
+     `ALBUM_DELETED`, `ALBUM_MODIFIED`, or `PLAYLIST_SONGS_IMPORTED`.
    - Next target: remove import-only metadata listeners from `Song.tsx` with a
      typed import edit store.
 
@@ -120,7 +123,8 @@ feature-oriented packages.
      `PLAYLIST_SONGS_IMPORTED` invalidation pattern.
 
 3. Album:
-   - Add album list/detail/song/order/image queries.
+   - Done: add `useLibraryAlbumsQuery` for the list-level library album screen.
+   - Add album detail/song/order/image queries.
    - Replace `ALBUM_*` events, including `ALBUM_TOGGLED_ON_SONG` and
      `ALBUM_REORDERED`.
 

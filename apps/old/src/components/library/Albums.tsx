@@ -1,66 +1,32 @@
-import { View, Text, StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "@/src/constants/Colors";
-import { Styles } from "@/src/constants/Styles";
-import { AlbumType, PageType, SortOrder, SortType } from "@/src/constants/Types";
-import { useState, useEffect } from "react";
+import { PageType, SortOrder, SortType } from "@/src/constants/Types";
+import { useState } from "react";
 import AlbumList from "@/src/components/lists/album";
-import { getAlbums } from "@/src/controllers/AlbumController";
-import albumBus from "@/src/events/album";
-import { AlbumBusEvent } from "@/src/events/album/Events";
-import playlistBus from "@/src/events/playlist";
-import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import { Styles as MainStyles } from "@/src/constants/Styles";
 import QueryWrapper from "@/src/components/lists/query/Wrapper";
+import { useLibraryAlbumsQuery } from "@/src/features/library/hooks/use-library-albums-query";
 
 const Albums = () => {
-
-  const [albums, setAlbums] = useState<AlbumType[]>([]);
-  const [showEmptyComponent, setShowEmptyComponent] = useState(false);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortType>(SortType.DATE);
   const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
-
-  const refreshAlbums = async () => {
-    const results = await getAlbums(query, sort, order);
-    setAlbums(results);
-    setShowEmptyComponent(results.length === 0);
-  }
-
-  useEffect(() => {
-    refreshAlbums();
-  }, []);
-
-  useEffect(() => {
-    refreshAlbums();
-  }, [query, sort, order]);
-
-  useEffect(() => {
-    albumBus.on(AlbumBusEvent.ALBUM_CREATED, refreshAlbums);
-    albumBus.on(AlbumBusEvent.ALBUM_DELETED, refreshAlbums);
-    albumBus.on(AlbumBusEvent.ALBUM_MODIFIED, refreshAlbums);
-    playlistBus.on(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshAlbums);
-    return () => {
-      albumBus.off(AlbumBusEvent.ALBUM_CREATED, refreshAlbums);
-      albumBus.off(AlbumBusEvent.ALBUM_DELETED, refreshAlbums);
-      albumBus.off(AlbumBusEvent.ALBUM_MODIFIED, refreshAlbums);      
-      playlistBus.off(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshAlbums);
-    }
-  }, []);
+  const { albums, isEmpty } = useLibraryAlbumsQuery({ query, sort, order });
 
   return (
     <View style={Local.container}>
-      <AlbumList 
+      <AlbumList
         albums={albums}
         pageType={PageType.LIBRARY}
         emptyComponent={<Text style={Local.emptyText}>No albums in library</Text>}
-        showEmptyComponent={showEmptyComponent}
+        showEmptyComponent={isEmpty}
         headerComponent={
-          <QueryWrapper 
-            setQuery={setQuery} 
-            query={query} 
-            setSort={setSort} 
-            sort={sort} 
-            order={order} 
+          <QueryWrapper
+            setQuery={setQuery}
+            query={query}
+            setSort={setSort}
+            sort={sort}
+            order={order}
             setOrder={setOrder}
             showSortTypes={{
               [SortType.ALBUM]: true,
@@ -72,16 +38,16 @@ const Albums = () => {
       />
     </View>
   );
-}
+};
 
 const Local = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
+    width: "100%",
   },
   emptyText: {
     ...MainStyles.h5,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 20,
     color: Colors.text,
   },

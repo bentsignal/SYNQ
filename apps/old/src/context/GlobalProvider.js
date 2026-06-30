@@ -3,10 +3,8 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from "react";
-import { SongType } from "@/src/constants/Types";
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -16,22 +14,16 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
   const [importState, setImportState] = useState(0);
   const [results, setResults] = useState([]);
   const [exportDisabled, setExportDisabled] = useState(true);
-  const [showDelete, setShowDelete] = useState(false);
-  const [showEdit, setShowEdit] = useState(false);
   const [selectedId, setSelectedId] = useState("");
   const [editSong, setEditSong] = useState({});
   const [loading, setLoading] = useState(false);
   const [ip, setIP] = useState("0.0.0.0");
   const [transferSize, setTransferSize] = useState(0);
   const [transferProgress, setTransferProgress] = useState(0);
-  const [serverStarted, setServerStarted] = useState(false);
-  const [routesInitialized, setRoutesInitialized] = useState(false);
   const [wifiDisabled, setWifiDisabled] = useState(false);
   const [selectEnabled, setSelectEnabled] = useState(false);
   const [selectedSongs, setSelectedSongs] = useState([]);
   const [loadAnimInProgress, setLoadAnimInProgress] = useState(false);
-  const [showSongOptions, setShowSongOptions] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [numModified, setNumModified] = useState(0);
   const [shouldSaveToLibrary, setShouldSaveToLibrary] = useState(true);
   const [importFinishRequest, setImportFinishRequest] = useState(0);
@@ -43,8 +35,6 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
   const [editPlaylist, setEditPlaylist] = useState({});
   const [editArtist, setEditArtist] = useState({});
   const [editAlbum, setEditAlbum] = useState({});
-  const importSongSheet = useRef(null);
-  const libraryPlaylistSheet = useRef(null);
 
   useEffect(() => {
     setShouldPlayAd(initShouldPlayAd ? true : false);
@@ -65,10 +55,6 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
         setResults,
         exportDisabled,
         setExportDisabled,
-        showDelete,
-        setShowDelete,
-        showEdit,
-        setShowEdit,
         editSong,
         setEditSong,
         loading,
@@ -77,10 +63,6 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
         setSelectedId,
         transferSize,
         setTransferSize,
-        serverStarted,
-        setServerStarted,
-        routesInitialized,
-        setRoutesInitialized,
         ip,
         setIP,
         wifiDisabled,
@@ -93,10 +75,6 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
         setTransferProgress,
         loadAnimInProgress,
         setLoadAnimInProgress,
-        showSongOptions,
-        setShowSongOptions,
-        errorMessage,
-        setErrorMessage,
         numModified,
         setNumModified,
         shouldSaveToLibrary,
@@ -109,8 +87,6 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
         setAdURL,
         shouldPlayAd,
         setShouldPlayAd,
-        importSongSheet,
-        libraryPlaylistSheet,
         editPlaylist,
         setEditPlaylist,
         editArtist,

@@ -188,9 +188,11 @@ feature-oriented packages.
    - Done: overlay and info-modal visibility now live in
      `apps/old/src/features/app-shell/context/AppShellProvider.tsx` instead of
      `GlobalProvider`.
-   - Next safe slices: split sheet refs after auditing their consumers. Avoid
-     selected songs, import results, and edit targets until their owning
-     feature boundaries are clearer.
+   - Done: unused sheet refs and stale modal/control flags were removed from
+     `GlobalProvider` after auditing that no active callers used them.
+   - Next safe slices: split selected-song state or playback ad state after
+     auditing their consumers. Avoid import results and edit targets until
+     their owning feature boundaries are clearer.
 
 6. Extract playback orchestration.
    - `apps/old/app/(tabs)/index.tsx` still coordinates player setup, ad timing,

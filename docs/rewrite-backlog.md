@@ -172,6 +172,9 @@ feature-oriented packages.
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or
      `ARTIST_IMAGE_MODIFIED`.
+   - Song list page cover rendering now uses those live-query image props
+     directly and no longer falls back to legacy cover controller filesystem
+     reads.
    - Now-unused playlist, album, and artist image modification emits/types have
      been removed; image refresh is driven by Drizzle writes plus live queries.
    - Now-unused `ALBUM_REORDERED` emit/types have been removed from the reorder

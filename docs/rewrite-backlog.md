@@ -231,6 +231,10 @@ feature-oriented packages.
    - Library album/song cover fallbacks now live in feature repositories, so
      `SongController` no longer imports `AlbumController` for cover or album
      song lookups.
+   - The remaining unreferenced legacy controllers (`AlbumController`,
+     `ArtistController`, `PlaylistController`, and `SongController`) have been
+     removed after app, feature, model, and controller callers moved off the
+     controller layer.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

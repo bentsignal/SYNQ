@@ -21,6 +21,7 @@ import { GlobalProgressProvider } from "@/src/features/app-shell/context/GlobalP
 import { ImportFlowProvider } from "@/src/features/import/context/ImportFlowProvider";
 import { NotificationsProvider } from "@/src/features/notifications/context/NotificationsProvider";
 import { PlaybackAdProvider } from "@/src/features/playback/context/PlaybackAdProvider";
+import { PrivacyProvider } from "@/src/features/privacy/context/PrivacyProvider";
 import { SelectionProvider } from "@/src/features/selection/context/SelectionProvider";
 
 LogBox.ignoreLogs([
@@ -81,13 +82,15 @@ const RootLayout = () => {
                 <GlobalProgressProvider>
                   <ImportFlowProvider>
                     <NotificationsProvider>
-                      <SelectionProvider>
-                        <GestureHandlerRootView style={{ flex: 1 }}>
-                          <GlobalProgress />
-                          <Sheets />
-                          <Navigation />
-                        </GestureHandlerRootView>
-                      </SelectionProvider>
+                      <PrivacyProvider>
+                        <SelectionProvider>
+                          <GestureHandlerRootView style={{ flex: 1 }}>
+                            <GlobalProgress />
+                            <Sheets />
+                            <Navigation />
+                          </GestureHandlerRootView>
+                        </SelectionProvider>
+                      </PrivacyProvider>
                     </NotificationsProvider>
                   </ImportFlowProvider>
                 </GlobalProgressProvider>

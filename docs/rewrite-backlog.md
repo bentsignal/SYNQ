@@ -340,6 +340,10 @@ feature-oriented packages.
    - Done: playback ad state now lives in
      `apps/old/src/features/playback/context/PlaybackAdProvider.tsx` instead
      of `GlobalProvider`.
+   - Done: privacy/analytics preference state now lives in
+     `apps/old/src/features/privacy/context/PrivacyProvider.tsx` and is
+     mounted in the root app shell instead of relying on an unmounted generic
+     context default.
    - Done: import flow state now lives in
      `apps/old/src/features/import/context/ImportFlowProvider.tsx` instead of
      `GlobalProvider`.

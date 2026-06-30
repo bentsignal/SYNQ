@@ -29,18 +29,21 @@ feature-oriented packages.
 2. Build typed repositories and reactive query hooks.
    - Start with songs because they touch player, library, import, edit, and
      queue flows.
-   - Add hooks such as `useLibrarySongsQuery`, `useSongRelationsQuery`, and
-     `usePlaylistSongsQuery`.
+   - `apps/old/src/features/library/hooks/use-library-songs-query.ts` now
+     owns the first list-level library songs live query.
+   - Add hooks such as `useSongRelationsQuery` and `usePlaylistSongsQuery`.
    - Avoid per-row live queries in large lists.
 
 3. Replace event buses.
    - Current buses live under `apps/old/src/events`.
    - Convert one domain at a time to database-backed reactive queries or typed
      domain actions.
-   - First target: song/library refresh. Remove `SONG_DELETED`,
-     `SONG_INFO_MODIFIED`, `SONG_COVER_MODIFIED`, and the
-     `PLAYLIST_SONGS_IMPORTED` listener in `Songs.tsx` after replacing them
-     with a library songs live query.
+   - Song/library refresh has started. `Songs.tsx` no longer listens for
+     `SONG_DELETED` or `PLAYLIST_SONGS_IMPORTED`; it receives sorted,
+     filtered library data from `useLibrarySongsQuery`.
+   - Next target: remove remaining row-level cover and import-only metadata
+     listeners from `Song.tsx` by moving cover image state into database-backed
+     image references or a typed import edit store.
 
 4. Split ingest/media.
    - Current checkpoint files: `apps/old/src/hooks/use-ingest.ts`,
@@ -69,7 +72,8 @@ feature-oriented packages.
 ## Suggested Agent Tasks
 
 - Worker A: create song repository/query hooks and convert library songs screen
-  away from manual controller refresh.
+  away from manual controller refresh. The first library list hook is complete;
+  continue with cover/image and playlist-detail query hooks.
 - Worker B: scaffold `apps/new` Expo app after `apps/old` has a committed
   monorepo baseline; do not copy old monolithic components.
 - Worker C: fix typecheck by domain, starting with `SongType` nullability and
@@ -78,10 +82,13 @@ feature-oriented packages.
 ## Event Bus Removal Order
 
 1. Song/library:
-   - Replace `apps/old/src/components/library/Songs.tsx` refresh listeners with
-     a single `useLibrarySongsQuery({ query, sort, order })`.
-   - Remove row-local song patch listeners in `apps/old/src/components/song/Song.tsx`
-     after song relation data is query-derived.
+   - Done: replace `apps/old/src/components/library/Songs.tsx` refresh
+     listeners with a single `useLibrarySongsQuery({ query, sort, order })`.
+   - Done: saved library row metadata is now prop-derived from the list query,
+     not patched by `SONG_INFO_MODIFIED`, `ARTIST_TOGGLED_ON_SONG`, or
+     `ALBUM_TOGGLED_ON_SONG`.
+   - Next: remove `SONG_COVER_MODIFIED` and `ALBUM_IMAGE_MODIFIED` from
+     `apps/old/src/components/song/Song.tsx`.
    - Then remove `apps/old/src/events/song`.
 
 2. Playlist:

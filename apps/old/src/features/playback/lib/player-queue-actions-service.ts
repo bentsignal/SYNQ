@@ -40,6 +40,10 @@ export const addTrackToQueue = async ({
   await AsyncStorage.setItem("queue", JSON.stringify(queue));
 };
 
+export const moveQueueTrack = async (from: number, to: number) => {
+  await TrackPlayer.move(from, to);
+};
+
 export const skipToNextPlayableTrack = async ({
   loop,
   sourceType,

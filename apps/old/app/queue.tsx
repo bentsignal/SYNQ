@@ -12,10 +12,11 @@ import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { PageType, SongType } from "@/src/constants/Types";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
+import usePlayer from "@/src/features/playback/hooks/use-player";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { getSongById } from "@/src/controllers/SongController";
 import { check } from "@/src/lib/util";
-import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 import { DragEndParams } from "react-native-draggable-flatlist";
 import Animated, {
   Easing,
@@ -28,6 +29,7 @@ import TrackPlayer, { useActiveTrack } from "react-native-track-player";
 
 const Queue = () => {
   const { queueRevision, shuffle } = usePlaybackContext();
+  const { moveQueueSong } = usePlayer();
   const { theme } = useThemeContext();
 
   const track = useActiveTrack();
@@ -87,7 +89,7 @@ const Queue = () => {
 
   const onDragEnd = async ({ data, from, to }: DragEndParams<any>) => {
     setSongs(data);
-    await TrackPlayer.move(from, to);
+    await moveQueueSong(from, to);
   };
 
   return (

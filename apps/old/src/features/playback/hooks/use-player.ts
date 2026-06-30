@@ -12,6 +12,7 @@ import {
 } from "@/src/features/playback/lib/player-track-service";
 import {
   addTrackToQueue,
+  moveQueueTrack,
   skipToNextPlayableTrack,
   skipToPreviousPlayableTrack,
   updateUpcomingQueue,
@@ -67,6 +68,10 @@ export default function usePlayer() {
     if (newTrack) {
       await addToQueue(newTrack);
     }
+  };
+
+  const moveQueueSong = async (from: number, to: number) => {
+    await moveQueueTrack(from, to);
   };
 
   const playSong = async (song: SongType) => {
@@ -130,6 +135,7 @@ export default function usePlayer() {
     setupPlayer,
     addToQueue,
     addSongToQueue,
+    moveQueueSong,
     playSong,
     skipRight,
     skipLeft,

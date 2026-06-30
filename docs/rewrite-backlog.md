@@ -260,7 +260,11 @@ feature-oriented packages.
    - Done: queue drag row rendering now lives in
      `apps/old/src/components/lists/song/DraggableSongItem.tsx` instead of
      inline inside `SongList`.
-   - Next safe slice: move queue reorder behavior behind playback feature APIs.
+   - Done: queue reorder now calls `usePlayer().moveQueueSong`, which delegates
+     to the playback queue action service instead of calling TrackPlayer
+     directly from the queue screen.
+   - Next safe slice: move queue display loading/active-index scrolling out of
+     `app/queue.tsx` behind playback feature hooks.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

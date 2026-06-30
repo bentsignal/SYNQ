@@ -473,6 +473,9 @@ feature-oriented packages.
    - Done: song press playback orchestration now lives in
      `apps/old/src/features/playback/hooks/use-song-playback-handler.ts`, so
      `SongList` no longer owns ad-gated play/add queue behavior.
+   - Done: song row UI no longer carries dead premium-blur/message state,
+     stale pan-responder scaffolding, or manual selection-array copying; the
+     selection toggle and import-cover loading paths are now explicit helpers.
    - Done: queue drag row rendering now lives in
      `apps/old/src/components/lists/song/DraggableSongItem.tsx` instead of
      inline inside `SongList`.

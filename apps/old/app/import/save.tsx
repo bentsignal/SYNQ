@@ -9,7 +9,7 @@ import { useGlobalProgressContext } from "@/src/features/app-shell/context/Globa
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { deleteImportSongs } from "@/src/features/import/lib/import-song-edits";
 import { saveImportSongsToLibrary } from "@/src/features/import/lib/save-import-to-library";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";

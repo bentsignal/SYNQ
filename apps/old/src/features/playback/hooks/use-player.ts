@@ -22,7 +22,7 @@ import {
 } from "@/src/features/playback/lib/player-queue-actions-service";
 import { setupPlayer as setupTrackPlayer } from "@/src/features/playback/lib/player-setup-service";
 import { getTrackFromSong } from "@/src/features/playback/lib/track-factory";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { State, Track } from "react-native-track-player";
 
 export default function usePlayer() {

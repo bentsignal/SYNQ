@@ -17,7 +17,7 @@ import { useActionSheetContext } from "@/src/features/action-sheet/context/Actio
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useAlbumInfoQuery } from "@/src/features/library/hooks/use-album-info-query";
 import { useAlbumSongsQuery } from "@/src/features/library/hooks/use-album-songs-query";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { StyleSheet, Text, View } from "react-native";
 import Animated, {

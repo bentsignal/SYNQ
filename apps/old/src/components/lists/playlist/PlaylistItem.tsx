@@ -11,7 +11,7 @@ import {
   isSongInLibraryPlaylist,
   removeSongFromLibraryPlaylist,
 } from "@/src/features/library/repository/library-entity-repository";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import colors from "@/src/lib/colors";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";

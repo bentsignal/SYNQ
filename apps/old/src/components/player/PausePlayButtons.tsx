@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
 import usePlayer from "@/src/features/playback/hooks/use-player";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { State, usePlaybackState } from "react-native-track-player";

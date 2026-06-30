@@ -22,7 +22,7 @@ import {
   replaceImportSong,
 } from "@/src/features/import/lib/import-song-edits";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import colors from "@/src/lib/colors";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";

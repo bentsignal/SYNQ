@@ -330,6 +330,10 @@ feature-oriented packages.
    - Done: overlay and info-modal visibility now live in
      `apps/old/src/features/app-shell/context/AppShellProvider.tsx` instead of
      `GlobalProvider`.
+   - Done: font loading now lives in
+     `apps/old/src/features/app-shell/hooks/use-font.ts`, and haptic
+     preference/actions now live in
+     `apps/old/src/features/haptics/hooks/use-haptics.ts`.
    - Done: unused sheet refs and stale modal/control flags were removed from
      `GlobalProvider` after auditing that no active callers used them.
    - Done: selected-song UI state now lives in

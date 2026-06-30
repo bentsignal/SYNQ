@@ -14,7 +14,7 @@ import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { darkenColor } from "@/src/lib/color-utils";
 import * as PurchaseManager from "@/src/features/premium/lib/purchase-service";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { posthog } from "@/src/lib/posthog";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";

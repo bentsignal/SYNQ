@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
+import { useCallback } from "react";
 import { create } from "zustand";
 
 type HapticType =
@@ -34,12 +35,12 @@ export const useHaptics = () => {
     (state) => state.setHapticFeedbackEnabled,
   );
 
-  const loadHapticFeedbackPreference = async () => {
+  const loadHapticFeedbackPreference = useCallback(async () => {
     const hapticPreference = await AsyncStorage.getItem("haptic");
     setHapticFeedbackEnabled(hapticPreference === "true");
-  };
+  }, [setHapticFeedbackEnabled]);
 
-  const sendHaptic = (type: HapticType) => {
+  const sendHaptic = useCallback((type: HapticType) => {
     const hapticFeedbackEnabled =
       useHapticStore.getState().hapticFeedbackEnabled;
 
@@ -70,7 +71,7 @@ export const useHaptics = () => {
       default:
         break;
     }
-  };
+  }, []);
 
   return { sendHaptic, loadHapticFeedbackPreference };
 };

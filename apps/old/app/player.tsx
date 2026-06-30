@@ -19,7 +19,7 @@ import {
 } from "@/src/lib/color-utils";
 import { getLibrarySongById } from "@/src/features/library/repository/library-song-repository";
 import { getTrackArtwork } from "@/src/features/playback/lib/track-factory";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import colors from "@/src/lib/colors";
 import { getFileName } from "@/src/lib/util";
 import { useAssets } from "expo-asset";

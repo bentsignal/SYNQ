@@ -10,7 +10,7 @@ import {
   removeSongFromLibraryPlaylist,
 } from "@/src/features/library/repository/library-entity-repository";
 import { deleteLibrarySong } from "@/src/features/library/repository/library-song-repository";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import usePlayer from "@/src/features/playback/hooks/use-player";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";

@@ -1,5 +1,5 @@
 import { useAdGatedPlaybackCommand } from "@/src/features/playback/hooks/use-ad-gated-playback-command";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import usePlayer from "@/src/features/playback/hooks/use-player";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { PlayButton } from "./PausePlayButtons";

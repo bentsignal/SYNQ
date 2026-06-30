@@ -8,7 +8,7 @@ import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProv
 import { useAdGatedPlaybackCommand } from "@/src/features/playback/hooks/use-ad-gated-playback-command";
 import { usePlaybackSourcePersistence } from "@/src/features/playback/hooks/use-playback-source-persistence";
 import usePlayer from "@/src/features/playback/hooks/use-player";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { posthog } from "@/src/lib/posthog";
 import { useCallback } from "react";
 import { type Track } from "react-native-track-player";

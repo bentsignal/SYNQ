@@ -11,7 +11,7 @@ import ListCover from "@/src/features/cover/components/list-cover";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { getImportSongCover } from "@/src/features/import/lib/import-song-edits";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { Ellipsis } from "lucide-react-native";
 import { PanResponder, StyleSheet, TouchableOpacity, View } from "react-native";

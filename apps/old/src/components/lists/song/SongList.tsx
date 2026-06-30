@@ -13,7 +13,7 @@ import { useImportFlowContext } from "@/src/features/import/context/ImportFlowPr
 import { generateSongKey } from "@/src/features/library/lib/song-display";
 import { useActiveQueueTrack } from "@/src/features/playback/hooks/use-active-queue-track";
 import { useSongPlaybackHandler } from "@/src/features/playback/hooks/use-song-playback-handler";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { FlatList } from "react-native";
 import DraggableFlatlist, {
   DragEndParams,

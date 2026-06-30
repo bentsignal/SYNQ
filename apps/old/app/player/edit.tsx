@@ -9,7 +9,7 @@ import { Colors } from "@/src/constants/Colors";
 import { CoverType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { getLibrarySongCoverPath } from "@/src/features/library/repository/library-song-repository";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { ScrollView, StyleSheet, View } from "react-native";
 

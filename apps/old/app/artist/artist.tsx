@@ -19,7 +19,7 @@ import { useAppShellContext } from "@/src/features/app-shell/context/AppShellPro
 import { useArtistAlbumsQuery } from "@/src/features/library/hooks/use-artist-albums-query";
 import { useArtistInfoQuery } from "@/src/features/library/hooks/use-artist-info-query";
 import { useArtistSongsQuery } from "@/src/features/library/hooks/use-artist-songs-query";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { StyleSheet, Text, View } from "react-native";
 

@@ -5,7 +5,7 @@ import { Styles } from "@/src/constants/Styles";
 import { NotificationType } from "@/src/constants/Types";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import {
   Animated,
   Easing,

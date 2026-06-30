@@ -11,7 +11,7 @@ import { useNotificationsContext } from "@/src/features/notifications/context/No
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { pickCoverImage } from "@/src/features/images/repository/image-repository";
 import { createLibraryAlbum } from "@/src/features/library/repository/library-entity-repository";
-import { useHaptics } from "@/src/hooks/use-haptics";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { router } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";

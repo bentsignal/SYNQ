@@ -1,6 +1,6 @@
 import { SortOrder, SortType, SourceType } from "@/src/constants/Types";
 import { getNextUp } from "@/src/features/playback/lib/playback-queue-service";
-import { getTrackFromSong } from "@/src/features/playback/lib/player-track-service";
+import { getTrackFromSong } from "@/src/features/playback/lib/track-factory";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TrackPlayer, { State, Track } from "react-native-track-player";
 
@@ -50,6 +50,21 @@ export const getActiveQueueTrackIndex = async () => {
 
 export const getPlaybackQueue = async () => {
   return TrackPlayer.getQueue();
+};
+
+export const playTrackNow = async (track: Track): Promise<void> => {
+  const currentIndex = await TrackPlayer.getActiveTrackIndex();
+  const queue = await TrackPlayer.getQueue();
+  if (currentIndex === queue.length - 1) {
+    await TrackPlayer.add(track);
+    await TrackPlayer.skipToNext();
+  } else if (currentIndex === undefined) {
+    await TrackPlayer.add(track);
+  } else {
+    await TrackPlayer.add(track, currentIndex + 1);
+    await TrackPlayer.skipToNext();
+  }
+  await TrackPlayer.play();
 };
 
 export const removeTracksBySongIds = async (songIds: number[]) => {

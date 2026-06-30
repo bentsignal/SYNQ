@@ -7,14 +7,11 @@ import {
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
 import {
-  getTrackFromSong,
-  playTrack,
-} from "@/src/features/playback/lib/player-track-service";
-import {
   addTrackToQueue,
   moveQueueTrack,
   pausePlayback,
   playPlayback,
+  playTrackNow,
   removeTracksBySongIds,
   resetPlaybackQueue,
   seekToPlaybackPosition,
@@ -24,6 +21,7 @@ import {
   updateUpcomingQueue,
 } from "@/src/features/playback/lib/player-queue-actions-service";
 import { setupPlayer as setupTrackPlayer } from "@/src/features/playback/lib/player-setup-service";
+import { getTrackFromSong } from "@/src/features/playback/lib/track-factory";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { State, Track } from "react-native-track-player";
 
@@ -110,7 +108,7 @@ export default function usePlayer() {
       return false;
     }
 
-    await playTrack(newTrack);
+    await playTrackNow(newTrack);
     return true;
   };
 

@@ -290,6 +290,9 @@ feature-oriented packages.
    - Done: playback hooks now read active queue index and queue contents
      through the playback queue action service instead of importing the
      TrackPlayer command object directly.
+   - Done: track playback queue mutation now lives in the playback queue action
+     service, leaving the track service focused on ad-track construction and
+     track factory re-exports.
    - Next safe slice: continue moving remaining TrackPlayer calls in UI
      components behind playback feature APIs.
 

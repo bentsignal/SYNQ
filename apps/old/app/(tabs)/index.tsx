@@ -1,4 +1,4 @@
-import InfoModal from "@/src/components/modals/InfoModal";
+import InfoModal from "@/src/features/app-shell/components/InfoModal";
 import Notifications from "@/src/features/notifications/components/Notifications";
 import Option from "@/src/components/Option";
 import PageTitle from "@/src/components/PageTitle";

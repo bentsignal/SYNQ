@@ -4,7 +4,6 @@ import { Styles } from '@/src/constants/Styles';
 import SongList from '@/src/components/lists/song';
 import PageTitle from '@/src/components/PageTitle';
 import ImportInstructions from '@/src/features/import/components/Instructions';
-import InfoModal from '@/src/components/modals/InfoModal';
 import { Colors } from '@/src/constants/Colors';
 import Progress from '@/src/components/Progress';
 import { PageType } from '@/src/constants/Types';

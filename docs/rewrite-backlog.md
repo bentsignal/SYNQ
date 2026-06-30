@@ -356,6 +356,9 @@ feature-oriented packages.
    - Done: overlay and info-modal visibility now live in
      `apps/old/src/features/app-shell/context/AppShellProvider.tsx` instead of
      `GlobalProvider`.
+   - Done: app-shell instructions modal UI now lives in
+     `apps/old/src/features/app-shell/components/InfoModal.tsx` instead of the
+     generic `src/components/modals` folder.
    - Done: font loading now lives in
      `apps/old/src/features/app-shell/hooks/use-font.ts`, and haptic
      preference/actions now live in

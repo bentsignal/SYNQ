@@ -1,22 +1,19 @@
-import { Text, View, Dimensions, Image, StyleSheet, } from "react-native";
-import CustomModal from "./CustomModal";
-import VerticalScrollView from "../VerticalScrollView";
-import CustomButton from "../CustomButton";
-import ModalTitle from "./ModalTitle";
-import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
+import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import CustomButton from "@/src/components/CustomButton";
+import VerticalScrollView from "@/src/components/VerticalScrollView";
+import CustomModal from "@/src/components/modals/CustomModal";
+import InfoContainer from "@/src/components/modals/InfoContainer";
+import ModalTitle from "@/src/components/modals/ModalTitle";
 import { Colors } from "@/src/constants/Colors";
-import { Styles } from "@/src/constants/Styles";
-import InfoContainer from "./InfoContainer";
+import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 
 const InfoModal = () => {
 
-  const { 
-
+  const {
     showInfoModal,
-    
-    setShowInfoModal, setShowOverlay,
-  
+    setShowInfoModal,
+    setShowOverlay,
   } = useAppShellContext();
 
   const { theme } = useThemeContext();

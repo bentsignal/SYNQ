@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { usePathname } from "expo-router";
 
-import InfoModal from "@/src/components/modals/InfoModal";
+import InfoModal from "@/src/features/app-shell/components/InfoModal";
 import PageTitle from "@/src/components/PageTitle";
 import SettingsButton from "@/src/components/SettingsButton";
 

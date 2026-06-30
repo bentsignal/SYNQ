@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import CustomButton from "@/src/components/CustomButton";
-import InfoModal from "@/src/components/modals/InfoModal";
 import PageTitle from "@/src/components/PageTitle";
 import SettingsButton from "@/src/components/SettingsButton";
 import { Colors } from "@/src/constants/Colors";

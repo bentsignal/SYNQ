@@ -42,12 +42,8 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
   const [notificationMessage, setNotificationMessage] = useState("");
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [notificationTrace, setNotificationTrace] = useState("");
-  const [showGlobalLoading, setShowGlobalLoading] = useState(false);
-  const [showGlobalProgress, setShowGlobalProgress] = useState(false);
-  const [globalProgress, setGlobalProgress] = useState(0);
   const [numModified, setNumModified] = useState(0);
   const [shouldSaveToLibrary, setShouldSaveToLibrary] = useState(true);
-  const [showImportAd, setShowImportAd] = useState(false);
   const [importFinishRequest, setImportFinishRequest] = useState(0);
   const [adPlaying, setAdPlaying] = useState(false);
   const [adURL, setAdURL] = useState("");
@@ -144,18 +140,10 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
         setNotificationTrace,
         addNotification,
         removeNotification,
-        showGlobalLoading,
-        setShowGlobalLoading,
-        showGlobalProgress,
-        setShowGlobalProgress,
-        globalProgress,
-        setGlobalProgress,
         numModified,
         setNumModified,
         shouldSaveToLibrary,
         setShouldSaveToLibrary,
-        showImportAd,
-        setShowImportAd,
         importFinishRequest,
         requestImportFinish,
         adPlaying,

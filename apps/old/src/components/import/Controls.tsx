@@ -14,6 +14,7 @@ import {
 import { deleteFromLibrary } from "@/src/controllers/LibraryController";
 import { removeFromAllPlaylists } from "@/src/controllers/PlaylistController";
 import { removeSongs } from "@/src/controllers/SongController";
+import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { posthog } from "@/src/lib/posthog";
 import axios from "axios";
 import { router, usePathname } from "expo-router";
@@ -33,7 +34,6 @@ export default function ImportControls() {
     exportDisabled,
     homeState,
     ip,
-    showGlobalLoading,
     transferSize,
 
     setEditSong,
@@ -46,6 +46,8 @@ export default function ImportControls() {
     setTransferSize,
     requestImportFinish,
   } = useGlobalContext();
+
+  const { showGlobalLoading } = useGlobalProgressContext();
 
   const { theme } = useThemeContext();
   const insets = useSafeAreaInsets();

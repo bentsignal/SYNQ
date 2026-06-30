@@ -9,6 +9,7 @@ import {
   getSongsFromAlbum,
 } from "@/src/controllers/AlbumController";
 import { exportSongs } from "@/src/controllers/ImportExportController";
+import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
@@ -21,7 +22,8 @@ import {
 import { Alert } from "react-native";
 
 const AlbumOptions = ({ name }: { name: string }) => {
-  const { editAlbum, setShowGlobalLoading } = useGlobalContext();
+  const { editAlbum } = useGlobalContext();
+  const { setShowGlobalLoading } = useGlobalProgressContext();
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
 

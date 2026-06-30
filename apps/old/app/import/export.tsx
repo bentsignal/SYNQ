@@ -10,6 +10,7 @@ import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { exportSongs } from "@/src/controllers/ImportExportController";
+import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { posthog } from "@/src/lib/posthog";
 import { usePathname } from "expo-router";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
@@ -18,15 +19,18 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const ExportPrompt = () => {
   const {
     results,
-    showImportAd,
-    showGlobalProgress,
 
     setShowInfoModal,
+  } = useGlobalContext();
+
+  const {
+    showImportAd,
+    showGlobalProgress,
     setShowGlobalLoading,
     setShowGlobalProgress,
     setGlobalProgress,
     setShowImportAd,
-  } = useGlobalContext();
+  } = useGlobalProgressContext();
 
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();

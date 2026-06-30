@@ -8,6 +8,7 @@ import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { deleteImportSongs } from "@/src/controllers/ImportExportController";
 import { saveToLibrary } from "@/src/controllers/LibraryController";
+import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,8 +24,6 @@ const SavePrompt = () => {
     importState,
     loading,
     shouldSaveToLibrary,
-    showImportAd,
-    showGlobalProgress,
     importFinishRequest,
     ip,
 
@@ -34,11 +33,16 @@ const SavePrompt = () => {
     setTransferSize,
     setResults,
     setShouldSaveToLibrary,
+  } = useGlobalContext();
+
+  const {
+    showImportAd,
+    showGlobalProgress,
     setShowGlobalProgress,
     setGlobalProgress,
     setShowImportAd,
     setShowGlobalLoading,
-  } = useGlobalContext();
+  } = useGlobalProgressContext();
 
   const { theme } = useThemeContext();
   const { premium } = usePremiumContext();

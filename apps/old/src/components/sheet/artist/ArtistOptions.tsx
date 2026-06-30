@@ -9,6 +9,7 @@ import {
   getSongsFromArtist,
 } from "@/src/controllers/ArtistController";
 import { exportSongs } from "@/src/controllers/ImportExportController";
+import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
@@ -16,7 +17,8 @@ import { Share, SquarePen, Trash } from "lucide-react-native";
 import { Alert } from "react-native";
 
 const ArtistOptions = ({ name }: { name: string }) => {
-  const { editArtist, setShowGlobalLoading } = useGlobalContext();
+  const { editArtist } = useGlobalContext();
+  const { setShowGlobalLoading } = useGlobalProgressContext();
 
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();

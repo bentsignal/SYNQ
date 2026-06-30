@@ -16,6 +16,7 @@ import {
 import { removeSongs } from "@/src/controllers/SongController";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/hooks/usePlayer";
+import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
@@ -46,10 +47,11 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
 
     setExportDisabled,
     setResults,
-    setShowImportAd,
-    setShowGlobalLoading,
     setNumModified,
   } = useGlobalContext();
+
+  const { setShowImportAd, setShowGlobalLoading } =
+    useGlobalProgressContext();
 
   const { addToQueue } = usePlayer();
   const { premium } = usePremiumContext();

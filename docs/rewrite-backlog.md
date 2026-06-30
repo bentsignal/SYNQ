@@ -179,10 +179,12 @@ feature-oriented packages.
    - `apps/old/src/context/GlobalProvider.js` owns too many concerns.
    - Split into notifications, selections, sheets, ads, and ingest/import state.
    - Prefer typed hooks/stores with narrow ownership.
-   - Next safe slice: extract global loading/progress state
-     (`showGlobalLoading`, `showGlobalProgress`, `globalProgress`, and likely
-     `showImportAd`) into an app-shell/progress provider before touching
-     selected songs, import results, edit targets, or notifications.
+   - Done: global loading/progress/import-ad overlay state now lives in
+     `apps/old/src/features/app-shell/context/GlobalProgressProvider.tsx`
+     instead of `GlobalProvider`.
+   - Next safe slices: split notifications and sheet refs after auditing their
+     consumers. Avoid selected songs, import results, and edit targets until
+     their owning feature boundaries are clearer.
 
 6. Extract playback orchestration.
    - `apps/old/app/(tabs)/index.tsx` still coordinates player setup, ad timing,

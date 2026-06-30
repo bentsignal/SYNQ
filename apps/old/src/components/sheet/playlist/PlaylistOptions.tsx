@@ -5,6 +5,7 @@ import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { exportSongs } from "@/src/controllers/ImportExportController";
+import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import {
   deletePlaylist,
   getPlaylistSongs,
@@ -17,7 +18,8 @@ import { Share, SquarePen, Trash } from "lucide-react-native";
 import { Alert } from "react-native";
 
 const PlaylistOptions = ({ name }: { name: string }) => {
-  const { editPlaylist, setShowGlobalLoading } = useGlobalContext();
+  const { editPlaylist } = useGlobalContext();
+  const { setShowGlobalLoading } = useGlobalProgressContext();
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
 

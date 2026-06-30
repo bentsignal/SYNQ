@@ -306,15 +306,13 @@ feature-oriented packages.
      types, and track-number parsing used by the ingest workflow.
    - Done: move file-browser selection, Effect/Zustand ingest workflow, and
      Drizzle song persistence into `apps/old/src/features/ingest`.
-   - Done: keep `apps/old/src/lib/ingest.ts` and
-     `apps/old/src/hooks/use-ingest.ts` as compatibility shims while callers
-     migrate to the feature path.
+   - Done: removed the old `apps/old/src/lib/ingest.ts` and
+     `apps/old/src/hooks/use-ingest.ts` compatibility shims after callers
+     moved to the feature path.
    - Done: move hashed cover image persistence and path helpers into
-     `apps/old/src/features/images/repository/image-repository.ts`, with
-     `apps/old/src/lib/image-utils.ts` kept as a legacy controller shim.
-   - Keep legacy cover-folder writes in `ImageController` and the legacy
-     entity controllers until their filesystem/database writes can move behind
-     feature repositories.
+     `apps/old/src/features/images/repository/image-repository.ts`.
+   - Done: removed the old `apps/old/src/lib/image-utils.ts` compatibility
+     shim after image callers moved to feature repositories.
    - Future target packages/folders: `shared/db` repositories and
      `apps/new/src/features/ingest`.
    - Keep Effect at workflow boundaries; keep UI state minimal and observable.

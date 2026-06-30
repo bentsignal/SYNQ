@@ -31,7 +31,6 @@ import {
   Trash,
 } from "lucide-react-native";
 import { Alert } from "react-native";
-import TrackPlayer, { Track } from "react-native-track-player";
 
 type SongOptionsProps = {
   name: string;
@@ -50,7 +49,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
     useGlobalProgressContext();
   const { selectedSongs } = useSelectionContext();
 
-  const { addSongToQueue } = usePlayer();
+  const { addSongToQueue, removeSongsFromQueue } = usePlayer();
   const { premium } = usePremiumContext();
   const { sendHaptic } = useHaptics();
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
@@ -124,14 +123,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
     else if (editSong.pageType === PageType.LIBRARY) {
       await removeFromAllPlaylists(editSong.id);
       await deleteFromLibrary(editSong.id);
-      // remove from queue and next up if applicable
-      const queue = await TrackPlayer.getQueue();
-      const indiciesToRemove = queue
-        .map((track: Track, index: number) =>
-          track.id === editSong.id ? index : -1,
-        )
-        .filter((index) => index !== -1);
-      await TrackPlayer.remove(indiciesToRemove);
+      await removeSongsFromQueue([editSong.id]);
       setNumModified(numModified + 1);
     }
     // remove from import

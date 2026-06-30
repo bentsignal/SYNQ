@@ -7,10 +7,7 @@ import { Styles } from "@/src/constants/Styles";
 import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import {
-  darkenColor,
-  getDisabledColor,
-} from "@/src/controllers/ColorController";
+import { getDisabledColor } from "@/src/controllers/ColorController";
 import { deleteFromLibrary } from "@/src/controllers/LibraryController";
 import { removeFromAllPlaylists } from "@/src/controllers/PlaylistController";
 import { removeSongs } from "@/src/controllers/SongController";
@@ -21,9 +18,9 @@ import { posthog } from "@/src/lib/posthog";
 import axios from "axios";
 import { router, usePathname } from "expo-router";
 import { SquarePen, Trash } from "lucide-react-native";
-import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import TrackPlayer, { Track } from "react-native-track-player";
+import usePlayer from "@/src/features/playback/hooks/use-player";
 
 export default function ImportControls() {
   const {
@@ -52,6 +49,7 @@ export default function ImportControls() {
     useSelectionContext();
 
   const { theme } = useThemeContext();
+  const { removeSongsFromQueue } = usePlayer();
   const insets = useSafeAreaInsets();
   const pathname = usePathname();
 
@@ -187,14 +185,7 @@ export default function ImportControls() {
       else if (editSong.pageType === PageType.LIBRARY) {
         deleteFromLibrary(editSong.id);
         removeFromAllPlaylists(editSong.id);
-        // remove from queue and next up if applicable
-        const queue = await TrackPlayer.getQueue();
-        const indiciesToRemove = queue
-          .map((track: Track, index: number) =>
-            track.id === editSong.id ? index : -1,
-          )
-          .filter((index) => index !== -1);
-        await TrackPlayer.remove(indiciesToRemove);
+        await removeSongsFromQueue([editSong.id]);
         setNumModified(numModified + 1);
       }
       // remove from import

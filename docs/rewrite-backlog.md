@@ -277,6 +277,9 @@ feature-oriented packages.
    - Done: pause/play and time scrub seek commands now route through
      `usePlayer()` and the playback queue action service instead of direct
      TrackPlayer calls in UI controls.
+   - Done: delete flows in import controls and song options now call
+     `usePlayer().removeSongsFromQueue` instead of duplicating TrackPlayer
+     queue scans/removals.
    - Next safe slice: continue moving remaining TrackPlayer calls in UI
      components behind playback feature APIs.
 

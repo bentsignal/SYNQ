@@ -21,7 +21,7 @@ import {
   getLibrarySongArtists,
   getLibrarySongCoverPath,
 } from "@/src/features/library/repository/library-song-repository";
-import { updateSongsInLibrary } from "@/src/controllers/LibraryController";
+import { updateLibrarySongs } from "@/src/features/library/repository/song-metadata-repository";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import {
   getImportSongCover,
@@ -134,13 +134,13 @@ const EditSong = ({ id }: { id: number }) => {
           editPageType,
         )
       ) {
-        await updateSongsInLibrary(
-          [editSong.id],
-          newTitle,
+        await updateLibrarySongs({
+          ids: [editSong.id],
+          title: newTitle,
           artist,
           album,
-          newImage,
-        );
+          cover: newImage,
+        });
       } else if (editSong.pageType === PageType.IMPORT) {
         const newResults = await saveImportSongEdits({
           songs: results,

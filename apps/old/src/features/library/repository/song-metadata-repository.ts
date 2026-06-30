@@ -12,6 +12,14 @@ type UpdateLibrarySongMetadataInput = {
   album?: string;
 };
 
+type UpdateLibrarySongsInput = {
+  ids: number[];
+  title?: string;
+  artist?: string;
+  album?: string;
+  cover?: string;
+};
+
 const replaceSongArtists = async (songId: number, artistValue: string) => {
   const artists = await getArtistsFromMetadata(artistValue);
 
@@ -96,4 +104,27 @@ export const updateLibrarySongCover = async (songId: number, cover: string) => {
     .update(schema.songs)
     .set({ coverImage })
     .where(eq(schema.songs.id, songId));
+};
+
+export const updateLibrarySongs = async ({
+  ids,
+  title,
+  artist,
+  album,
+  cover,
+}: UpdateLibrarySongsInput) => {
+  for (const id of ids) {
+    if (cover) {
+      await updateLibrarySongCover(id, cover);
+    }
+
+    if (title || artist || album) {
+      await updateLibrarySongMetadata({
+        id,
+        title,
+        artist,
+        album,
+      });
+    }
+  }
 };

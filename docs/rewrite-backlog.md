@@ -186,6 +186,8 @@ feature-oriented packages.
      `ArtistController`.
    - Edit cover fallback loading now uses the Drizzle-backed library song cover
      repository instead of chaining through album and image controllers.
+   - Song edit saves now call a feature-level library metadata repository
+     batch update instead of `LibraryController.updateSongsInLibrary`.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

@@ -45,7 +45,7 @@ export const importFiles = async (
           newUri,
           results.assets[i].name,
           idgen(10),
-          results.assets[i].mimeType,
+          results.assets[i].mimeType ?? results.assets[i].name,
         );
         songs.push(song);
       } catch (error) {
@@ -130,7 +130,7 @@ const processSong = async (
 
   // check for track number
   let title = info.metadata?.name ?? "";
-  let track: number | null = null;
+  let track: number | undefined;
   const checkFileName = checkForTrackNumber(name);
   if (checkFileName) {
     track = checkFileName;
@@ -155,7 +155,7 @@ const processSong = async (
     importArtists: importArtists,
     importAlbums: importAlbums,
     cacheUri: url,
-    track: track,
+    track,
     duration: duration,
   };
 };
@@ -172,6 +172,9 @@ export const exportSongs = async (songs: SongType[]) => {
   if (songs.length === 1) {
     const song = songs[0];
     if (song.pageType === PageType.IMPORT) {
+      if (!song.cacheUri) {
+        throw new Error("Import song is missing a cache URI");
+      }
       const edited = await isSongEdited(song);
       if (edited) {
         await updateMetadata(song);
@@ -180,10 +183,18 @@ export const exportSongs = async (songs: SongType[]) => {
       await Sharing.shareAsync(song.cacheUri);
     } else {
       try {
+        if (!song.fileName) {
+          throw new Error(`Library song ${song.id} has no fileName`);
+        }
         const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
         const edited = await isSongEdited(song);
         if (edited) {
           await updateMetadata(song);
+          if (!song.data) {
+            throw new Error(
+              `Library song ${song.id} has no audio data after metadata update`,
+            );
+          }
           song.edited = false;
           const db = SongModel.getInstance();
           await db.songExported(song.id);
@@ -202,32 +213,44 @@ export const exportSongs = async (songs: SongType[]) => {
   else if (songs.length > 1) {
     const db = SongModel.getInstance();
     for (let i = 0; i < songs.length; i++) {
-      if (songs[i].pageType === PageType.IMPORT) {
-        const edited = await isSongEdited(songs[i]);
-        if (edited) {
-          await updateMetadata(songs[i]);
-          songs[i].edited = false;
+      const song = songs[i];
+      if (song.pageType === PageType.IMPORT) {
+        if (!song.cacheUri || !song.fileName) {
+          continue;
         }
-        destination = `${dir}/${songs[i].fileName}`;
+        const edited = await isSongEdited(song);
+        if (edited) {
+          await updateMetadata(song);
+          song.edited = false;
+        }
+        destination = `${dir}/${song.fileName}`;
         await FileSystem.copyAsync({
-          from: songs[i].cacheUri,
+          from: song.cacheUri,
           to: destination,
         });
       } else {
         try {
-          const audioPath = `${FileSystem.documentDirectory}library/${songs[i].id}/${songs[i].fileName}`;
-          const edited = await isSongEdited(songs[i]);
+          if (!song.fileName) {
+            continue;
+          }
+          const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
+          const edited = await isSongEdited(song);
           if (edited) {
-            await updateMetadata(songs[i]);
-            songs[i].edited = false;
-            await db.songExported(songs[i].id);
-            await FileSystem.writeAsStringAsync(audioPath, songs[i].data, {
+            await updateMetadata(song);
+            if (!song.data) {
+              throw new Error(
+                `Library song ${song.id} has no audio data after metadata update`,
+              );
+            }
+            song.edited = false;
+            await db.songExported(song.id);
+            await FileSystem.writeAsStringAsync(audioPath, song.data, {
               encoding: "base64",
             });
           }
           await FileSystem.copyAsync({
             from: audioPath,
-            to: `${dir}/${songs[i].fileName}`,
+            to: `${dir}/${song.fileName}`,
           });
         } catch (error) {
           console.log("error copying song from library: ", error);
@@ -242,8 +265,9 @@ export const exportSongs = async (songs: SongType[]) => {
 
 export const deleteImportSongs = async (songs: SongType[]) => {
   for (let i = 0; i < songs.length; i++) {
-    if (songs[i].cacheUri) {
-      await FileSystem.deleteAsync(songs[i].cacheUri);
+    const song = songs[i];
+    if (song.cacheUri) {
+      await FileSystem.deleteAsync(song.cacheUri);
     }
   }
 };

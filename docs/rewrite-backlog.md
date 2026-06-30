@@ -33,6 +33,9 @@ feature-oriented packages.
   restore now reads the active RevenueCat entitlement and represents lifetime
   purchases with a nullable expiration. Audio and color utility controllers now
   guard missing duration and invalid RGB parses before returning media metadata.
+  Import/export and save-to-library controllers now require real cache/file
+  paths before filesystem work and avoid creating orphaned library rows when
+  imported path data is incomplete.
 
 ## Priority Lanes
 
@@ -300,8 +303,10 @@ feature-oriented packages.
    - Done: tighten premium restore state around active RevenueCat entitlements
      and nullable lifetime expirations.
    - Done: tighten audio duration and image color luminance helpers.
-   - Next: continue strict-null cleanup in import/library controllers and
-     legacy song/album/artist/playlist models.
+   - Done: guard import/export and save-to-library filesystem paths before
+     sharing, copying, or inserting library rows.
+   - Next: continue strict-null cleanup in legacy song/album/artist/playlist
+     controllers and models.
 
 ## Guardrails
 

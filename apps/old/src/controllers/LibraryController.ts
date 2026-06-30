@@ -84,9 +84,12 @@ export const saveToLibrary = async (
         const fileType = song.fileType ?? "";
         const edited = song.edited ? true : false;
         const duration = song.duration ?? 0;
-        let fileName = song.fileName ?? "";
-        if (fileName === "" && fileType !== "") {
-          fileName = `song.${fileType}`;
+        const fileName = song.fileName;
+        const cacheUri = song.cacheUri;
+        if (!fileName || !cacheUri) {
+          console.log("Skipping import song with missing file path data:", song.id);
+          progress(i + 1);
+          continue;
         }
         const genre = "Music";
         // insert song into database
@@ -107,10 +110,10 @@ export const saveToLibrary = async (
           try {
             await FileSystem.makeDirectoryAsync(dir);
             await FileSystem.copyAsync({
-              from: song.cacheUri,
-              to: `${dir}/${song.fileName}`,
+              from: cacheUri,
+              to: `${dir}/${fileName}`,
             });
-            await FileSystem.deleteAsync(song.cacheUri);
+            await FileSystem.deleteAsync(cacheUri);
           } catch (error) {
             console.log("error writing audio: ", error);
             // TODO: delete song from DB
@@ -140,7 +143,10 @@ export const saveToLibrary = async (
                 !files.includes("cover_small.jpg") &&
                 !files.includes("cover_full.jpg")
               ) {
-                await writeImageToLibrary(song.importAlbums[j].image, albumDir);
+                await writeImageToLibrary(
+                  song.importAlbums[j].image ?? "",
+                  albumDir,
+                );
               }
             }
           } else {

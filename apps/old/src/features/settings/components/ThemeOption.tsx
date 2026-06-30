@@ -1,4 +1,3 @@
-import { memo } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";

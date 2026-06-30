@@ -1,74 +1,23 @@
-import { View, Text, ScrollView, Animated, Easing, NativeSyntheticEvent, NativeScrollEvent, StyleSheet } from "react-native";
-import { useRef, useEffect, useState } from "react";
-import { Styles } from "@/src/constants/Styles";
-import { Themes, Colors } from "@/src/constants/Colors";
+import { View, ScrollView, Animated, StyleSheet } from "react-native";
+import { Themes } from "@/src/constants/Colors";
 import ThemeOption from "@/src/features/settings/components/ThemeOption";
 import { LinearGradient } from 'expo-linear-gradient';
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
+import { useHorizontalFadeScroll } from "@/src/features/settings/hooks/use-horizontal-fade-scroll";
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 
 const Theme = () => {
 
   const { premium } = usePremiumContext();
-
-  const leftGradientOpacityRef = useRef(new Animated.Value(0)).current;
-  const rightGradientOpacityRef = useRef(new Animated.Value(1)).current;
-
-  const [atStart, setAtStart] = useState(true);
-  const [atEnd, setAtEnd] = useState(false);
-  
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-
-    const { contentOffset } = event.nativeEvent;
-    const xOffset = contentOffset.x;
-
-    // start
-    if (xOffset <= 5 && !atStart) {
-      setAtStart(true);
-      Animated.timing(leftGradientOpacityRef, {
-        toValue: 0,
-        duration: 200,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }).start();
-    }
-    else if (xOffset > 5 && atStart) {
-      setAtStart(false);
-      Animated.timing(leftGradientOpacityRef, {
-        toValue: 1,
-        duration: 200,
-        easing: Easing.in(Easing.ease),
-        useNativeDriver: true,
-      }).start();
-    }
-
-    // end
-    if (xOffset >= 200 && !atEnd) {
-      setAtEnd(true);
-      Animated.timing(rightGradientOpacityRef, {
-        toValue: 0,
-        duration: 200,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }).start();
-    }
-    else if (xOffset < 200 && atEnd) {
-      setAtEnd(false);
-      Animated.timing(rightGradientOpacityRef, {
-        toValue: 1,
-        duration: 200,
-        easing: Easing.in(Easing.ease),
-        useNativeDriver: true,
-      }).start();
-    }
-  }
+  const { handleScroll, leftGradientOpacity, rightGradientOpacity } =
+    useHorizontalFadeScroll();
 
   return (
     <View style={{opacity: premium ? 1 : 0.5}}>
       <AnimatedGradient
           style={[Local.gradient, { 
-            opacity: leftGradientOpacityRef,
+            opacity: leftGradientOpacity,
             left: 0,
           }]}
           start={{ x: 0, y: 0 }}
@@ -92,7 +41,7 @@ const Theme = () => {
       </ScrollView>
       <AnimatedGradient
         style={[Local.gradient, {
-          opacity: rightGradientOpacityRef,
+          opacity: rightGradientOpacity,
           right: 0, 
         }]}
         start={{ x: 1, y: 0 }}
@@ -119,15 +68,6 @@ const Local = StyleSheet.create({
     maxHeight: 100,
     position: 'relative',
   },
-  premiumOverlayLock: {
-    height: 100,
-    width: '100%',
-    backgroundColor: Colors.popup,
-    position: 'absolute',
-    top: 0,
-    zIndex: 5,
-    opacity: 0.5,
-  }
 });
 
 export default Theme;

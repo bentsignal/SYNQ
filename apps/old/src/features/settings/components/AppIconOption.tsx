@@ -1,11 +1,8 @@
-import { useEffect, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { getAppIcon as getAppIconImage, getIcon } from "@/src/constants/Logos";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
-import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import { adjustLightness } from "@/src/lib/color-utils";
 import { posthog } from "@/src/lib/posthog";
-import { getAppIcon, setAppIcon } from "expo-icon-handler";
+import { setAppIcon } from "expo-icon-handler";
 import { Image, StyleSheet, TouchableOpacity } from "react-native";
 
 type AppIconOptionProps = {

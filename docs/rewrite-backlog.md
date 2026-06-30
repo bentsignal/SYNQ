@@ -409,6 +409,9 @@ feature-oriented packages.
    - Done: settings screen UI components now live in
      `apps/old/src/features/settings/components` instead of the generic
      `src/components/settings` folder.
+   - Done: settings theme and app-icon pickers now share
+     `apps/old/src/features/settings/hooks/use-horizontal-fade-scroll.ts`
+     instead of duplicating scroll-gradient animation state in both components.
    - Done: import flow state now lives in
      `apps/old/src/features/import/context/ImportFlowProvider.tsx` instead of
      `GlobalProvider`.

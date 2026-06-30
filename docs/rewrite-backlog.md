@@ -107,6 +107,8 @@ feature-oriented packages.
      `ARTIST_IMAGE_MODIFIED`.
    - Now-unused playlist, album, and artist image modification emits/types have
      been removed; image refresh is driven by Drizzle writes plus live queries.
+   - Now-unused `ALBUM_REORDERED` emit/types have been removed from the reorder
+     flow; album song ordering is read from the live album-song query.
    - Next target: remove remaining non-image playlist, album, and artist events
      once their last emitters are replaced by reactive state or local actions.
 
@@ -197,6 +199,7 @@ feature-oriented packages.
    - Done: render album detail page cover art from `useAlbumInfoQuery` instead
      of `ALBUM_IMAGE_MODIFIED`.
    - Done: remove now-unused `ALBUM_IMAGE_MODIFIED` emits and event types.
+   - Done: remove now-unused `ALBUM_REORDERED` emits and event types.
    - Add album order/image queries where the reorder and cover flows still
      need Drizzle-backed state.
    - Replace `ALBUM_*` events, including `ALBUM_TOGGLED_ON_SONG` and

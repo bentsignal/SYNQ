@@ -93,8 +93,11 @@ feature-oriented packages.
    - Song edit relation refresh now keys off focus refresh and `editSong`
      context updates from the add/remove rows instead of
      `ARTIST_TOGGLED_ON_SONG` or `ALBUM_TOGGLED_ON_SONG` listeners.
-   - Next target: replace album-edit artist relation listeners with the same
-     edit-store pattern.
+   - Album edit artist relation refresh now keys off focus refresh and
+     `editAlbum` context updates from add/remove rows instead of
+     `ARTIST_TOGGLED_ON_ALBUM`.
+   - Next target: replace remaining artist/album image listeners with
+     Drizzle-backed cover props or focused refreshes.
 
 4. Split ingest/media.
    - Current checkpoint files: `apps/old/src/hooks/use-ingest.ts`,
@@ -189,6 +192,8 @@ feature-oriented packages.
    - Done: add `useArtistInfoQuery`, `useArtistSongsQuery`, and
      `useArtistAlbumsQuery` for the artist detail screen.
    - Done: remove `ARTIST_MODIFIED` display listeners from artist rows.
+   - Done: remove `ARTIST_TOGGLED_ON_ALBUM` listener/emit path from album edit
+     relation refresh.
    - Add artist relation/image queries where add/edit/cover flows still need
      Drizzle-backed state.
    - Replace artist edit/list/detail listeners.

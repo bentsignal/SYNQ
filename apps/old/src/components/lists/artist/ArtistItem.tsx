@@ -50,6 +50,7 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
     setEditSong,
     setEditArtist,
     editAlbum,
+    setEditAlbum,
     setResults,
   } = useGlobalContext();
   const { sendHaptic } = useHaptics();
@@ -81,11 +82,7 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
         } else {
           await removeArtistFromAlbum(artist.id, editAlbum.id);
         }
-        artistBus.emit(ArtistBusEvent.ARTIST_TOGGLED_ON_ALBUM, {
-          artistId: artist.id,
-          albumId: editAlbum.id,
-          add: add,
-        });
+        setEditAlbum({ ...editAlbum });
       } else if (artist.sourceType === SourceType.SONG && editSong) {
         if (editSong.pageType === PageType.IMPORT) {
           if (add) {

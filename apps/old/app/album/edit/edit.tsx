@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import EditCover from "@/src/components/cover/EditCover";
 import CustomButton from "@/src/components/CustomButton";
 import ArtistItem from "@/src/components/lists/artist/ArtistItem";
@@ -16,9 +16,7 @@ import {
   updateAlbum,
 } from "@/src/controllers/AlbumController";
 import { newCover } from "@/src/controllers/ImageController";
-import artistBus from "@/src/events/artist";
-import { ArtistBusEvent } from "@/src/events/artist/Events";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -35,7 +33,7 @@ const EditAlbum = ({ id }: { id: number }) => {
   const [originalYear, setOriginalYear] = useState<number | null>(null);
   const [artists, setArtists] = useState<ArtistType[]>([]);
 
-  const refreshInfo = async () => {
+  const refreshInfo = useCallback(async () => {
     try {
       const result = await getAlbumInfo(id);
       setName(result?.name ?? null);
@@ -45,26 +43,12 @@ const EditAlbum = ({ id }: { id: number }) => {
     } catch (error) {
       console.error("error getting album info:", error);
     }
-  };
+  }, [id]);
 
-  const loadArtists = async () => {
+  const loadArtists = useCallback(async () => {
     const artists = await getArtistsFromAlbum(id);
     setArtists(artists);
-  };
-
-  const handleArtistToggled = () => {
-    loadArtists();
-  };
-
-  useEffect(() => {
-    artistBus.on(ArtistBusEvent.ARTIST_TOGGLED_ON_ALBUM, handleArtistToggled);
-    return () => {
-      artistBus.off(
-        ArtistBusEvent.ARTIST_TOGGLED_ON_ALBUM,
-        handleArtistToggled,
-      );
-    };
-  }, []);
+  }, [id]);
 
   const nameInputValidation = async (text: string) => {
     try {
@@ -121,7 +105,13 @@ const EditAlbum = ({ id }: { id: number }) => {
   useEffect(() => {
     refreshInfo();
     loadArtists();
-  }, [id]);
+  }, [loadArtists, refreshInfo]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadArtists();
+    }, [loadArtists]),
+  );
 
   return (
     <View style={Local.wrapper}>

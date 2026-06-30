@@ -224,6 +224,9 @@ feature-oriented packages.
    - Done: the remaining live `PlayerController` helpers now live in
      `apps/old/src/features/playback/lib/player-track-service.ts`, and the
      stale legacy controller file has been removed.
+   - Done: track creation and artwork helpers now live in
+     `apps/old/src/features/playback/lib/track-factory.ts`, separate from
+     TrackPlayer queue side effects.
    - Next safe slice: split `use-player.ts` into typed queue actions and player
      setup/restore actions, then move track creation cover lookups behind a
      narrower playback feature API.

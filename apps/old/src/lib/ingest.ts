@@ -1,4 +1,9 @@
-import { getAudioMetadata } from "@missingcore/audio-metadata";
+import {
+  getAudioDurationFromFile,
+  getMetadataFromFile,
+  getTrackNumberFromString,
+  supportedAudioFileTypes,
+} from "@synq/audio";
 import { eq, inArray } from "drizzle-orm";
 import { Data, Effect } from "effect";
 import * as Crypto from "expo-crypto";
@@ -12,25 +17,7 @@ import {
   artistSongs,
   songs,
 } from "@synq/db/schema";
-import { getAudioDurationFromFile } from "./audio-utils";
 import { saveCoverImage } from "./image-utils";
-
-const audioMetadataTagsToRetrieve = [
-  "artwork",
-  "artist",
-  "name",
-  "album",
-  "year",
-  "track",
-] as const;
-
-const supportedAudioFileTypes = [
-  "audio/mpeg",
-  "audio/wav",
-  "audio/mp4",
-  "audio/flac",
-  "audio/aac",
-];
 
 export class FileSelectionCanceled extends Data.TaggedError(
   "FileSelectionCanceled",
@@ -54,11 +41,6 @@ export const selectFiles = Effect.gen(function* () {
     return yield* Effect.fail(new NoFilesSelected({}));
   return results.assets;
 });
-
-export const getMetadataFromFile = async (filePath: string) => {
-  const result = await getAudioMetadata(filePath, audioMetadataTagsToRetrieve);
-  return result.metadata;
-};
 
 export const digest = async (asset: DocumentPickerAsset) => {
   const metadata = await getMetadataFromFile(asset.uri);
@@ -211,29 +193,4 @@ const saveSongSnapshot = async (songId: number) => {
     .update(songs)
     .set({ snapshotAtLastExport: hash })
     .where(eq(songs.id, songId));
-};
-
-export const getTrackNumberFromString = (value: string) => {
-  const trackNumber = checkForTrackNumber(value);
-  if (trackNumber) {
-    return {
-      strippedValue: value.substring(3),
-      trackNumber: trackNumber,
-    };
-  }
-  return { strippedValue: value, trackNumber: null };
-};
-
-export const checkForTrackNumber = (str: string) => {
-  if (str.length < 3) return null;
-
-  const firstTwoChars = str.substring(0, 2);
-  const thirdChar = str[2];
-
-  if (thirdChar !== " ") return null;
-
-  const num = parseInt(firstTwoChars);
-  if (isNaN(num)) return null;
-
-  return num;
 };

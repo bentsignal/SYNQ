@@ -13,6 +13,9 @@ feature-oriented packages.
 - `pnpm --filter @synq/db lint` and `pnpm --filter @synq/db typecheck`
   succeed. `@synq/db` is now the Drizzle schema, migration, and runtime DB
   package consumed by `apps/old`.
+- `pnpm --filter @synq/audio lint` and `pnpm --filter @synq/audio typecheck`
+  succeed. `@synq/audio` owns reusable Expo-bound audio duration, metadata,
+  supported-file-type, and ingest track-number helpers consumed by `apps/old`.
 - `pnpm --filter @synq/old typecheck` succeeds. The playback nullability cluster around
   `PlaybackProvider`, `usePlayer`, `MiniPlayer`, `PausePlayButtons`,
   `ShuffleButton`, and `PlayerController` has been reduced, and `SongList`
@@ -154,9 +157,17 @@ feature-oriented packages.
 
 4. Split ingest/media.
    - Current checkpoint files: `apps/old/src/hooks/use-ingest.ts`,
-     `apps/old/src/lib/ingest.ts`, `apps/old/src/lib/audio-utils.ts`, and
-     `apps/old/src/lib/image-utils.ts`.
-   - Target packages/folders: `shared/audio`, `shared/db`, and
+     `apps/old/src/lib/ingest.ts`, `apps/old/src/lib/image-utils.ts`, and
+     `shared/audio`.
+   - `shared/audio` now owns reusable audio duration, metadata, supported file
+     types, and track-number parsing used by the ingest workflow.
+   - Next target folder: `apps/old/src/features/ingest`, keeping
+     `apps/old/src/lib/ingest.ts` and `apps/old/src/hooks/use-ingest.ts` as
+     compatibility shims while the feature boundary settles.
+   - Keep image persistence in `apps/old/src/lib/image-utils.ts` until the
+     library hooks and legacy controllers have a shared image repository
+     boundary.
+   - Future target packages/folders: `shared/db` repositories and
      `apps/new/src/features/ingest`.
    - Keep Effect at workflow boundaries; keep UI state minimal and observable.
 

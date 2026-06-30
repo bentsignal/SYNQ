@@ -1,34 +1,22 @@
 import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import HorizontalScrollView from '@/src/components/HorizontalScrollView';
 import { Colors } from '@/src/constants/Colors';
 import { Styles } from '@/src/constants/Styles';
 import { useThemeContext } from '@/src/context/ThemeProvider';
 import { darkenColor } from '@/src/controllers/ColorController';
-import playlistBus from '@/src/events/playlist/Bus';
-import { PlaylistBusEvent } from '@/src/events/playlist/Events';
 
 type CategorySelectorProps = {
   containerStyle: ViewStyle;
+  selected: number;
   callback: (selected: number) => void;
 }
 
 
-const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) => {
+const CategorySelector = ({ containerStyle, selected, callback }: CategorySelectorProps) => {
 
   const [contentWidth, setContentWidth] = useState(0);
   const [containerWidth, setContainerWidth] = useState(0);
-  const [selected, setSelected] = useState(0);
-
-  useEffect(() => {
-    const setTab = () => {
-      setSelected(0);
-    }
-    playlistBus.on(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, setTab);
-    return () => {
-      playlistBus.off(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, setTab);
-    }
-  }, []);
 
   const { theme } = useThemeContext();
 
@@ -63,7 +51,6 @@ const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) =
           <TouchableOpacity 
             style={[Local.itemContainer, { backgroundColor: selected === 0 ? theme : Colors.song }]}
             onPress={() => {
-              setSelected(0);
               callback(0);
             }}
             activeOpacity={0.8}
@@ -73,7 +60,6 @@ const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) =
           <TouchableOpacity 
             style={[Local.itemContainer, { backgroundColor: selected === 1 ? theme : Colors.song }]}
             onPress={() => {
-              setSelected(1);
               callback(1);
             }}
             activeOpacity={0.8}
@@ -83,7 +69,6 @@ const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) =
           <TouchableOpacity 
             style={[Local.itemContainer, { backgroundColor: selected === 2 ? theme : Colors.song }]}
             onPress={() => {
-              setSelected(2);
               callback(2);
             }}
             activeOpacity={0.8}
@@ -93,7 +78,6 @@ const CategorySelector = ({ containerStyle, callback }: CategorySelectorProps) =
           <TouchableOpacity 
             style={[Local.itemContainer, { backgroundColor: selected === 3 ? theme : Colors.song }]}
             onPress={() => {
-              setSelected(3);
               callback(3);
             }}
             activeOpacity={0.8}

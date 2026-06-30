@@ -113,6 +113,11 @@ feature-oriented packages.
      and reorder refresh moved off album events.
    - Artist bus has been removed after list, detail, row metadata, cover, and
      delete refresh moved off artist events.
+   - Library category reset no longer uses `PLAYLIST_SONGS_IMPORTED`; the
+     category selector is controlled by the library screen, and library data
+     refreshes through live queries after imports, backup restores, and erases.
+   - Playlist bus has been removed after list, detail, row metadata, cover,
+     delete, import, backup, and add/remove flows moved off playlist events.
    - Next target: remove remaining non-image playlist, album, and artist events
      once their last emitters are replaced by reactive state or local actions.
 
@@ -186,8 +191,10 @@ feature-oriented packages.
    - Done: render playlist detail page cover art from `usePlaylistInfoQuery`
      instead of `PLAYLIST_IMAGE_MODIFIED`.
    - Done: remove now-unused `PLAYLIST_IMAGE_MODIFIED` emits and event types.
-   - Replace count/name/image/content listeners and remove the broad
-     `PLAYLIST_SONGS_IMPORTED` invalidation pattern.
+   - Done: remove the broad `PLAYLIST_SONGS_IMPORTED` invalidation/reset
+     pattern from import, backup, library, and category selector flows.
+   - Done: remove count/name/content/delete emits and the remaining playlist
+     event bus module.
 
 3. Album:
    - Done: add `useLibraryAlbumsQuery` for the list-level library album screen.

@@ -14,8 +14,6 @@ import {
   removeFromPlaylist,
 } from "@/src/controllers/PlaylistController";
 import { removeSongs } from "@/src/controllers/SongController";
-import playlistBus from "@/src/events/playlist";
-import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import songBus from "@/src/events/song/Bus";
 import { SongBusEvent } from "@/src/events/song/Events";
 import { useHaptics } from "@/src/hooks/use-haptics";
@@ -191,9 +189,6 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
     TrueSheet.dismiss(name);
     try {
       await removeFromPlaylist(editSong.sourceId, editSong.id);
-      setTimeout(() => {
-        playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
-      }, 50);
     } catch (error) {
       console.log("error removing from playlist: ", error);
     }
@@ -210,13 +205,6 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
         await addToPlaylist(2, editSong.id);
         setinLiked(true);
       }
-      setTimeout(() => {
-        playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
-        playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, {
-          id: 2,
-          songCount: -1,
-        });
-      }, 50);
     } catch (error) {
       console.log("error toggling in favorites: ", error);
     }

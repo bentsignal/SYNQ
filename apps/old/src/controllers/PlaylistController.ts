@@ -1,10 +1,8 @@
 import PlaylistModel from "@/src/models/PlaylistModel";
-import playlistBus from "@/src/events/playlist";
 import * as FileSystem from 'expo-file-system';
 import { getSongByResult } from "@/src/controllers/SongController";
 import { PageType, SortOrder, SortType } from "@/src/constants/Types";
 import { writeImageToLibrary } from "@/src/controllers/ImageController";
-import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import { saveCoverImage } from "@/src/lib/image-utils";
 import { db as drizzleDb } from "@synq/db";
 import * as schema from "@synq/db/schema";
@@ -59,9 +57,6 @@ export const removeFromAllPlaylists = async (songId: number) => {
     for (const playlist of playlists) {
       await db.removeFromPlaylist(playlist.id, songId);
     }
-    setTimeout(() => {
-      playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
-    }, 50);
   }
   catch (error) {
     console.log('error removing from all playlists: ', error);
@@ -121,10 +116,6 @@ export const updatePlaylist = async (playlistId: number, name: string, image: st
   const db = PlaylistModel.getInstance();
   if (name) {
     await db.updatePlaylist(playlistId, name);
-    playlistBus.emit(PlaylistBusEvent.PLAYLIST_NAME_MODIFIED, {
-      id: playlistId,
-      name: name,
-    });
   }
   if (image) {
     await writeImageToLibrary(image, `${FileSystem.documentDirectory}playlists/${playlistId}`);

@@ -9,8 +9,6 @@ import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import playlistBus from "@/src/events/playlist/Bus";
-import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import { posthog } from "@/src/lib/posthog";
 import Model from "@/src/models/Model";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -108,9 +106,15 @@ export default function Backup() {
         } catch (error) {
           throw new Error("Error resetting track player:", error);
         }
-        playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
         Alert.alert("Success", "Library restored successfully.");
         setLoading(false);
+        router.replace({
+          pathname: "/(tabs)/library",
+          params: {
+            category: "songs",
+            resetKey: Date.now().toString(),
+          },
+        });
       }
     } catch (error) {
       console.log("Error restoring backup:", error);
@@ -158,9 +162,15 @@ export default function Backup() {
                 } catch (error) {
                   throw new Error("Error resetting track player:", error);
                 }
-                playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
                 Alert.alert("Success", "Library erased successfully.");
                 setLoading(false);
+                router.replace({
+                  pathname: "/(tabs)/library",
+                  params: {
+                    category: "songs",
+                    resetKey: Date.now().toString(),
+                  },
+                });
               } catch (error) {
                 console.log("Error resetting app:", error);
                 showErrorAlert(

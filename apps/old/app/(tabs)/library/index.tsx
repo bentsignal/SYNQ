@@ -7,25 +7,23 @@ import Songs from "@/src/components/library/Songs";
 import PageTitle from "@/src/components/PageTitle";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import playlistBus from "@/src/events/playlist/Bus";
-import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import colors from "@/src/lib/colors";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { Cog, PlusIcon } from "lucide-react-native";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
 const Library = () => {
+  const { category, resetKey } = useLocalSearchParams<{
+    category?: string;
+    resetKey?: string;
+  }>();
   const [selected, setSelected] = useState(0);
 
   useEffect(() => {
-    const resetTab = () => {
+    if (category === "songs") {
       setSelected(0);
-    };
-    playlistBus.on(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, resetTab);
-    return () => {
-      playlistBus.off(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, resetTab);
-    };
-  }, []);
+    }
+  }, [category, resetKey]);
 
   const getBody = () => {
     switch (selected) {
@@ -76,6 +74,7 @@ const Library = () => {
         containerStyle={{
           width: "90%",
         }}
+        selected={selected}
         callback={setSelected}
       />
       <View style={Styles.divider} />

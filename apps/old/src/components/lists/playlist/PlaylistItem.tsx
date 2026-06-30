@@ -11,10 +11,6 @@ import {
   isSongInPlaylist,
   removeFromPlaylist,
 } from "@/src/controllers/PlaylistController";
-import playlistBus from "@/src/events/playlist";
-import {
-  PlaylistBusEvent,
-} from "@/src/events/playlist/Events";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import colors from "@/src/lib/colors";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
@@ -47,18 +43,8 @@ const PlaylistItem = ({ playlist, bg }: PlaylistProps) => {
     try {
       if (add) {
         await addToPlaylist(playlist.id, editSong.id);
-        playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, {
-          id: playlist.id,
-          songCount: playlist.songCount + 1,
-        });
-        playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
       } else {
         await removeFromPlaylist(playlist.id, editSong.id);
-        playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONG_COUNT_MODIFIED, {
-          id: playlist.id,
-          songCount: playlist.songCount - 1,
-        });
-        playlistBus.emit(PlaylistBusEvent.PLAYLIST_CONTENT_MODIFIED);
       }
     } catch (error) {
       console.log("error saving playlist changes: ", error);

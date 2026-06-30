@@ -10,8 +10,6 @@ import { deleteImportSongs } from "@/src/controllers/ImportExportController";
 import { saveToLibrary } from "@/src/controllers/LibraryController";
 import importBus from "@/src/events/import";
 import { ImportBusEvent } from "@/src/events/import/Events";
-import playlistBus from "@/src/events/playlist";
-import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -140,7 +138,6 @@ const SavePrompt = () => {
       setTimeout(() => {
         saveToLibrary(songs, progress)
           .then(() => {
-            playlistBus.emit(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED);
             sendHaptic("success");
             router.replace("/import/success");
             setTransferSize(0);
@@ -154,7 +151,13 @@ const SavePrompt = () => {
             }, 500);
             setTimeout(() => {
               setLoading(false);
-              router.replace("/(tabs)/library");
+              router.replace({
+                pathname: "/(tabs)/library",
+                params: {
+                  category: "songs",
+                  resetKey: Date.now().toString(),
+                },
+              });
             }, 1500);
           })
           .catch((error) => {

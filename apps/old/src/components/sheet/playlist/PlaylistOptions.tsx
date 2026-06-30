@@ -10,8 +10,6 @@ import {
   getPlaylistSongs,
 } from "@/src/controllers/PlaylistController";
 import { getSongByResult } from "@/src/controllers/SongController";
-import playlistBus from "@/src/events/playlist";
-import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
@@ -60,7 +58,6 @@ const PlaylistOptions = ({ name }: { name: string }) => {
     try {
       posthog.capture("delete_playlist");
       await deletePlaylist(editPlaylist.id);
-      playlistBus.emit(PlaylistBusEvent.PLAYLIST_DELETED);
     } catch (error) {
       console.log("error deleting playlist: ", error);
     }

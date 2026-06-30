@@ -110,4 +110,6 @@ const ListCover = memo(({image, type, id, fade, size, empty, propOnLoad}: {
 
 });
 
+ListCover.displayName = "ListCover";
+
 export default ListCover;

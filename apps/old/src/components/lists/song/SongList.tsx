@@ -292,4 +292,6 @@ const SongList = memo(
   },
 );
 
+SongList.displayName = "SongList";
+
 export default SongList;

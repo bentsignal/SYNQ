@@ -85,4 +85,6 @@ const SongInfo = memo(({
 
 });
 
+SongInfo.displayName = "SongInfo";
+
 export default SongInfo;

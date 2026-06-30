@@ -48,6 +48,7 @@ const PlaylistList = memo(({
 
 });
 
-export default PlaylistList;
+PlaylistList.displayName = "PlaylistList";
 
+export default PlaylistList;
 

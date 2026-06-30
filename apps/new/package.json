@@ -1,0 +1,12 @@
+{
+  "name": "@synq/new",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "clean": "rm -rf .cache .expo dist",
+    "dev": "echo \"@synq/new is not scaffolded yet\"",
+    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore",
+    "lint": "echo \"@synq/new has no source yet\"",
+    "typecheck": "echo \"@synq/new has no source yet\""
+  }
+}

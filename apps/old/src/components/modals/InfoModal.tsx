@@ -133,7 +133,7 @@ const InfoModal = () => {
                 </View> */}
                 <View style={Local.infoStepContainer}>
                   <Text style={[Local.infoStepTitle, {marginBottom: 20}]}>
-                    1. Hit "Save to Files" in the popup
+                    1. Hit &quot;Save to Files&quot; in the popup
                   </Text>
                   <Image 
                     source={require('@/src/assets/images/save-instructions.jpg')}

@@ -199,4 +199,6 @@ const List = memo((
 
 });
 
+List.displayName = "List";
+
 export default List;

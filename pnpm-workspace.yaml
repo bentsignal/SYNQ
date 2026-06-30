@@ -1,1 +1,6 @@
+packages:
+  - apps/*
+  - shared/*
+  - tooling/*
+
 minimumReleaseAge: 1440

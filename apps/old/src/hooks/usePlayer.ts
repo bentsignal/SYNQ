@@ -1,6 +1,5 @@
 import { check } from "@/src/lib/util";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Haptics from "expo-haptics";
 import TrackPlayer, { Capability, Track } from "react-native-track-player";
 import {
   PageType,
@@ -9,7 +8,6 @@ import {
   SortType,
   SourceType,
 } from "../constants/Types";
-import { useGlobalContext } from "../context/GlobalProvider";
 import { usePlaybackContext } from "../context/PlaybackProvider";
 import { useThemeContext } from "../context/ThemeProvider";
 import { getSongsFromAlbum } from "../controllers/AlbumController";

@@ -1,24 +1,23 @@
-import { Text, View, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { usePathname } from "expo-router";
-
-import { Colors } from "@/src/constants/Colors";
-import { Styles } from "@/src/constants/Styles";
 
 import InfoModal from "@/src/components/modals/InfoModal";
 import PageTitle from "@/src/components/PageTitle";
 import SettingsButton from "@/src/components/SettingsButton";
 
 import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 
 export default function ImportHeader() {
 
   const {
-    results, premium, loadAnimInProgress,
+    results, loadAnimInProgress,
   } = useGlobalContext();
+  const { premium } = usePremiumContext();
   const { setShowInfoModal } = useAppShellContext();
 
   const insets = useSafeAreaInsets();

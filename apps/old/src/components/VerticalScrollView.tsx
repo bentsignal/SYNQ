@@ -1,13 +1,10 @@
 import { View, ScrollView, Animated, NativeSyntheticEvent, NativeScrollEvent, Easing, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useGlobalContext } from '@/src/context/GlobalProvider';
-import { Styles } from '@/src/constants/Styles';
 import { Colors } from '@/src/constants/Colors';
 import { useRef, useState } from 'react';
 import { hexToRGB } from '@/src/controllers/ColorController';
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
-const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
 type VerticalScrollViewProps = {
   children?: React.ReactNode;

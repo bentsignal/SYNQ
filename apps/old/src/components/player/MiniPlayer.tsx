@@ -3,16 +3,9 @@ import ListCover from "@/src/components/cover/ListCover";
 import CrossfadeImage from "@/src/components/image/CrossfadeImage";
 import { SkipLeft, SkipRight } from "@/src/components/player/Skip";
 import SongInfo from "@/src/components/song/SongInfo";
-import { Colors, Themes } from "@/src/constants/Colors";
+import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
-import { useThemeContext } from "@/src/context/ThemeProvider";
-import {
-  adjustLightness,
-  darkenColor,
-  getDisabledColor,
-} from "@/src/controllers/ColorController";
 import { getTrackArtwork } from "@/src/controllers/PlayerController";
 import { getLibrarySongCover } from "@/src/controllers/SongController";
 import { getFileName } from "@/src/lib/util";
@@ -28,8 +21,6 @@ import { useActiveTrack } from "react-native-track-player";
 import PausePlayButtons from "./PausePlayButtons";
 
 const MiniPlayer = () => {
-  const { theme } = useThemeContext();
-
   const track = useActiveTrack();
 
   const opacity = useSharedValue(0);
@@ -85,7 +76,7 @@ const MiniPlayer = () => {
     }, 200);
   }, [track]);
 
-  const textColor = Colors.text; //darkenColor(theme, 50, 30);
+  const textColor = Colors.text;
 
   return (
     <View style={Local.wrapper}>

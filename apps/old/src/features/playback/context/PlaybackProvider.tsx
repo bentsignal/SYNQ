@@ -1,10 +1,10 @@
-import { SortOrder, SortType, SourceType } from '@/src/constants/Types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, useContext, useState } from 'react';
+import { SortOrder, SortType, SourceType } from "@/src/constants/Types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useContext, useState } from "react";
 
 type Props = {
   children?: React.ReactNode;
-}
+};
 
 interface PlaybackContextType {
   sourceId: number | null;
@@ -30,10 +30,7 @@ interface PlaybackContextType {
   setQuery: (newValue: string) => void;
   queueRevision: number;
   requestQueueRefresh: () => void;
-}
-
-
-
+};
 const PlaybackContext = createContext<PlaybackContextType>({
   sourceId: null,
   setSourceId: () => {},
@@ -54,17 +51,15 @@ const PlaybackContext = createContext<PlaybackContextType>({
   setSort: () => {},
   order: SortOrder.DESC,
   setOrder: () => {},
-  query: '',
+  query: "",
   setQuery: () => {},
   queueRevision: 0,
   requestQueueRefresh: () => {},
 });
 
-
 export const usePlaybackContext = () => useContext(PlaybackContext);
 
 const PlaybackProvider: React.FC<Props> = ({ children }) => {
-
   const [sourceId, setSourceId] = useState<number | null>(null);
   const [sourceType, setSourceType] = useState<SourceType | null>(null);
   const [shuffle, setShuffle] = useState<boolean>(false);
@@ -73,53 +68,63 @@ const PlaybackProvider: React.FC<Props> = ({ children }) => {
   const [addOffset, setAddOffset] = useState<number>(0);
   const [sort, setSort] = useState<SortType>(SortType.DATE);
   const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
-  const [query, setQuery] = useState<string>('');
+  const [query, setQuery] = useState<string>("");
   const [queueRevision, setQueueRevision] = useState(0);
 
   const incrementAddOffset = async () => {
-    const newOffset = addOffset+1;
+    const newOffset = addOffset + 1;
     setAddOffset(newOffset);
-    await AsyncStorage.setItem('addOffset', newOffset.toString());
-  }
+    await AsyncStorage.setItem("addOffset", newOffset.toString());
+  };
 
   const decrementAddOffset = async () => {
     if (addOffset > 0) {
-      const newOffset = addOffset-1;
+      const newOffset = addOffset - 1;
       setAddOffset(newOffset);
-      await AsyncStorage.setItem('addOffset', newOffset.toString());
+      await AsyncStorage.setItem("addOffset", newOffset.toString());
     }
-  }
+  };
 
   const resetAddOffset = async () => {
     setAddOffset(0);
-    await AsyncStorage.setItem('addOffset', '0');
-  }
+    await AsyncStorage.setItem("addOffset", "0");
+  };
 
   const requestQueueRefresh = () => {
     setQueueRevision((value) => value + 1);
-  }
+  };
 
   return (
-    <PlaybackContext.Provider value={{ 
-      sourceId, setSourceId, 
-      sourceType, setSourceType, 
-      shuffle, setShuffle,
-      loop, setLoop,
-      playerInitialized, setPlayerInitialized,
-      addOffset, setAddOffset,
-      incrementAddOffset, decrementAddOffset, resetAddOffset,
-      sort, setSort,
-      order, setOrder,
-      query, setQuery,
-      queueRevision, requestQueueRefresh,
-    }}>
+    <PlaybackContext.Provider
+      value={{
+        sourceId,
+        setSourceId,
+        sourceType,
+        setSourceType,
+        shuffle,
+        setShuffle,
+        loop,
+        setLoop,
+        playerInitialized,
+        setPlayerInitialized,
+        addOffset,
+        setAddOffset,
+        incrementAddOffset,
+        decrementAddOffset,
+        resetAddOffset,
+        sort,
+        setSort,
+        order,
+        setOrder,
+        query,
+        setQuery,
+        queueRevision,
+        requestQueueRefresh,
+      }}
+    >
       {children}
-
     </PlaybackContext.Provider>
-
-
   );
-
-}
+};
 
 export default PlaybackProvider;

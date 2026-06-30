@@ -8,7 +8,7 @@ import {
   SortType,
   SourceType,
 } from "@/src/constants/Types";
-import { usePlaybackContext } from "@/src/context/PlaybackProvider";
+import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import {

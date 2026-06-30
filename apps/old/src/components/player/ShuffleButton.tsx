@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { useActiveTrack } from "react-native-track-player";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { usePlaybackContext } from "@/src/context/PlaybackProvider";
+import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import usePlayer from "@/src/hooks/usePlayer";
 

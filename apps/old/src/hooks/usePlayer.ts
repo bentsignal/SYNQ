@@ -8,7 +8,7 @@ import {
   SortType,
   SourceType,
 } from "../constants/Types";
-import { usePlaybackContext } from "../context/PlaybackProvider";
+import { usePlaybackContext } from "../features/playback/context/PlaybackProvider";
 import { useThemeContext } from "../context/ThemeProvider";
 import { getSongsFromAlbum } from "../controllers/AlbumController";
 import { getSongsFromArtist } from "../controllers/ArtistController";

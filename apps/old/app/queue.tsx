@@ -11,7 +11,7 @@ import Time from "@/src/components/player/Time";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { PageType, SongType } from "@/src/constants/Types";
-import { usePlaybackContext } from "@/src/context/PlaybackProvider";
+import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { getSongById } from "@/src/controllers/SongController";
 import { check } from "@/src/lib/util";

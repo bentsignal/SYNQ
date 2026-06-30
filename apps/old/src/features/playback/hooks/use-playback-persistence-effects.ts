@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { usePlaybackContext } from "@/src/context/PlaybackProvider";
+import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
 import usePlayer from "@/src/hooks/usePlayer";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TrackPlayer, { type Track } from "react-native-track-player";

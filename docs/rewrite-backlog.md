@@ -215,9 +215,12 @@ feature-oriented packages.
      instead of directly inside `apps/old/app/(tabs)/index.tsx`.
    - Done: `use-home-playback-effects.ts` now delegates to focused hooks for
      player persistence, ad timing, and remote event handling.
-   - Next safe slice: move the persistence and remote-event logic behind a
-     typed playback feature API so callers no longer import legacy
-     `usePlayer`/controllers directly.
+   - Done: playback state provider now lives at
+     `apps/old/src/features/playback/context/PlaybackProvider.tsx` instead of
+     the legacy generic context folder.
+   - Next safe slice: move legacy `usePlayer` and player controller operations
+     behind a typed playback feature API so callers no longer import playback
+     controllers directly.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

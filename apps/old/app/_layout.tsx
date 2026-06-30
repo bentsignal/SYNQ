@@ -3,7 +3,7 @@ import Navigation from "@/app/navigation";
 import GlobalProgress from "@/src/components/GlobalProgress";
 import Sheets from "@/src/components/sheet/Sheets";
 import { PUBLIC_FACEBOOK_APP_ID } from "@/src/constants/Keys";
-import PlaybackProvider from "@/src/context/PlaybackProvider";
+import PlaybackProvider from "@/src/features/playback/context/PlaybackProvider";
 import PremiumProvider from "@/src/context/PremiumProvider";
 import ThemeProvider from "@/src/context/ThemeProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";

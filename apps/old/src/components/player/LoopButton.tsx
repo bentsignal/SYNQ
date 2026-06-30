@@ -1,7 +1,7 @@
 import { View, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useState, useEffect } from "react";
 import { Colors } from "@/src/constants/Colors";
-import { usePlaybackContext } from "@/src/context/PlaybackProvider";
+import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface LoopButtonProps {

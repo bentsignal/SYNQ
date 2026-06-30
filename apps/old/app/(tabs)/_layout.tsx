@@ -7,12 +7,14 @@ import Top from "@/src/components/Top";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useAssets } from "expo-asset";
 import { Tabs } from "expo-router";
 import { Easing, View } from "react-native";
 
 const TabLayout = () => {
-  const { showOverlay, setAdURL } = useGlobalContext();
+  const { setAdURL } = useGlobalContext();
+  const { showOverlay } = useAppShellContext();
 
   const [assets, error] = useAssets([require("@/src/assets/audio/ad.mp3")]);
 

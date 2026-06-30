@@ -16,6 +16,7 @@ import "../globals.css";
 import { useInitDB } from "@synq/db";
 import { useFont } from "@/src/hooks/use-font";
 import { useHaptics } from "@/src/hooks/use-haptics";
+import { AppShellProvider } from "@/src/features/app-shell/context/AppShellProvider";
 import { GlobalProgressProvider } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { NotificationsProvider } from "@/src/features/notifications/context/NotificationsProvider";
 
@@ -72,15 +73,17 @@ const RootLayout = () => {
       <PremiumProvider>
         <PlaybackProvider>
           <GlobalProvider initShouldPlayAd={shouldPlayAd}>
-            <GlobalProgressProvider>
-              <NotificationsProvider>
-                <GestureHandlerRootView style={{ flex: 1 }}>
-                  <GlobalProgress />
-                  <Sheets />
-                  <Navigation />
-                </GestureHandlerRootView>
-              </NotificationsProvider>
-            </GlobalProgressProvider>
+            <AppShellProvider>
+              <GlobalProgressProvider>
+                <NotificationsProvider>
+                  <GestureHandlerRootView style={{ flex: 1 }}>
+                    <GlobalProgress />
+                    <Sheets />
+                    <Navigation />
+                  </GestureHandlerRootView>
+                </NotificationsProvider>
+              </GlobalProgressProvider>
+            </AppShellProvider>
           </GlobalProvider>
         </PlaybackProvider>
       </PremiumProvider>

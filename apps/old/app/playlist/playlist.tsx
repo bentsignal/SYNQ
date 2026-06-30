@@ -13,6 +13,7 @@ import {
   SourceType,
 } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useLibrarySongsQuery } from "@/src/features/library/hooks/use-library-songs-query";
 import { usePlaylistInfoQuery } from "@/src/features/library/hooks/use-playlist-info-query";
 import { useHaptics } from "@/src/hooks/use-haptics";
@@ -20,7 +21,8 @@ import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { StyleSheet, View } from "react-native";
 
 const PlaylistView = ({ id }: { id: number }) => {
-  const { showOverlay, setEditPlaylist } = useGlobalContext();
+  const { setEditPlaylist } = useGlobalContext();
+  const { showOverlay } = useAppShellContext();
   const { sendHaptic } = useHaptics();
 
   const [scrollPosition, setScrollPosition] = useState(0);

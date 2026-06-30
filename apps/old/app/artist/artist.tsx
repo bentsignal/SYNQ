@@ -15,6 +15,7 @@ import {
   SourceType,
 } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useArtistAlbumsQuery } from "@/src/features/library/hooks/use-artist-albums-query";
 import { useArtistInfoQuery } from "@/src/features/library/hooks/use-artist-info-query";
 import { useArtistSongsQuery } from "@/src/features/library/hooks/use-artist-songs-query";
@@ -23,7 +24,8 @@ import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { StyleSheet, Text, View } from "react-native";
 
 const ArtistView = ({ id }: { id: number }) => {
-  const { showOverlay, setEditArtist } = useGlobalContext();
+  const { setEditArtist } = useGlobalContext();
+  const { showOverlay } = useAppShellContext();
   const { sendHaptic } = useHaptics();
 
   const [scrollPosition, setScrollPosition] = useState(0);

@@ -12,13 +12,14 @@ import PageTitle from "@/src/components/PageTitle";
 import SettingsButton from "@/src/components/SettingsButton";
 
 import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 
 export default function ImportHeader() {
 
   const {
     results, premium, loadAnimInProgress,
-    showInfoModal, setShowInfoModal,
   } = useGlobalContext();
+  const { setShowInfoModal } = useAppShellContext();
 
   const insets = useSafeAreaInsets();
   const pathname = usePathname();

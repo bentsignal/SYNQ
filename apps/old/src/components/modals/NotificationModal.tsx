@@ -3,11 +3,11 @@ import CustomModal from "./CustomModal";
 import VerticalScrollView from "../VerticalScrollView";
 import CustomButton from "../CustomButton";
 import ModalTitle from "./ModalTitle";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import InfoContainer from "./InfoContainer";
 import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 
 const NotificationModal = () => {
@@ -22,7 +22,7 @@ const NotificationModal = () => {
     
   } = useNotificationsContext();
 
-  const { setShowOverlay } = useGlobalContext();
+  const { setShowOverlay } = useAppShellContext();
 
   const { theme } = useThemeContext();
 

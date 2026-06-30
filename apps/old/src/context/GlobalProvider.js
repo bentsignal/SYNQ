@@ -31,9 +31,7 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
   const [selectedSongs, setSelectedSongs] = useState([]);
   const [loadAnimInProgress, setLoadAnimInProgress] = useState(false);
   const [showSongOptions, setShowSongOptions] = useState(false);
-  const [showOverlay, setShowOverlay] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [showInfoModal, setShowInfoModal] = useState(false);
   const [numModified, setNumModified] = useState(0);
   const [shouldSaveToLibrary, setShouldSaveToLibrary] = useState(true);
   const [importFinishRequest, setImportFinishRequest] = useState(0);
@@ -97,12 +95,8 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
         setLoadAnimInProgress,
         showSongOptions,
         setShowSongOptions,
-        showOverlay,
-        setShowOverlay,
         errorMessage,
         setErrorMessage,
-        showInfoModal,
-        setShowInfoModal,
         numModified,
         setNumModified,
         shouldSaveToLibrary,

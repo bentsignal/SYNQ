@@ -17,11 +17,7 @@ import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const ExportPrompt = () => {
-  const {
-    results,
-
-    setShowInfoModal,
-  } = useGlobalContext();
+  const { results } = useGlobalContext();
 
   const {
     showImportAd,

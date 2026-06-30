@@ -8,6 +8,7 @@ import { NotificationType } from '@/src/constants/Types';
 import { BridgeServer } from 'react-native-http-bridge-refurbished';
 import CFG from '@/src/constants/Config';
 import { usePathname } from 'expo-router';
+import { useAppShellContext } from '@/src/features/app-shell/context/AppShellProvider';
 import { useNotificationsContext } from '@/src/features/notifications/context/NotificationsProvider';
 
 const getIP = async () => {
@@ -23,10 +24,11 @@ const Server = () => {
     setResults, setTransferSize,
     setExportDisabled, setLoading,
     setIP, setSelectedId, setTransferProgress,
-    setLoadAnimInProgress, setShowOverlay,
+    setLoadAnimInProgress,
 
   } = useGlobalContext();
 
+  const { setShowOverlay } = useAppShellContext();
   const { addNotification, setShowNotificationModal } =
     useNotificationsContext();
 

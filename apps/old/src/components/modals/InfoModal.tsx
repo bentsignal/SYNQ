@@ -3,7 +3,7 @@ import CustomModal from "./CustomModal";
 import VerticalScrollView from "../VerticalScrollView";
 import CustomButton from "../CustomButton";
 import ModalTitle from "./ModalTitle";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import InfoContainer from "./InfoContainer";
@@ -17,7 +17,7 @@ const InfoModal = () => {
     
     setShowInfoModal, setShowOverlay,
   
-  } = useGlobalContext();
+  } = useAppShellContext();
 
   const { theme } = useThemeContext();
 

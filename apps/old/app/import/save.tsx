@@ -29,7 +29,6 @@ const SavePrompt = () => {
 
     setExportDisabled,
     setLoading,
-    setShowInfoModal,
     setTransferSize,
     setResults,
     setShouldSaveToLibrary,

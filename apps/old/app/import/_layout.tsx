@@ -6,13 +6,10 @@ import ImportControls from "@/src/components/import/Controls";
 import ImportHeader from "@/src/components/import/Header";
 import Overlay from "@/src/components/Overlay";
 
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 
 export default function ImportLayout() {
-
-  const {
-    showOverlay,
-  } = useGlobalContext();
+  const { showOverlay } = useAppShellContext();
 
   return (
     <>
@@ -71,4 +68,3 @@ export default function ImportLayout() {
   );
   
 }
-

@@ -15,6 +15,7 @@ import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { playAd } from "@/src/controllers/PlayerController";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
+import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useIngestStore } from "@/src/features/ingest/hooks/use-ingest";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import usePlayer from "@/src/hooks/usePlayer";
@@ -31,7 +32,6 @@ import TrackPlayer, {
 
 const Home = () => {
   const {
-    setShowInfoModal,
     setLoading,
     setResults,
 
@@ -39,11 +39,11 @@ const Home = () => {
     adURL,
     shouldPlayAd,
 
-    setShowOverlay,
     setAdPlaying,
     setShouldPlayAd,
   } = useGlobalContext();
 
+  const { setShowInfoModal, setShowOverlay } = useAppShellContext();
   const { setShowImportAd } = useGlobalProgressContext();
   const { addNotification, setShowNotificationModal } =
     useNotificationsContext();

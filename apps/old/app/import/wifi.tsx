@@ -24,7 +24,6 @@ const WiFi = () => {
     transferProgress, loadAnimInProgress,
 
     setExportDisabled,
-    setShowInfoModal,
 
   } = useGlobalContext();
 

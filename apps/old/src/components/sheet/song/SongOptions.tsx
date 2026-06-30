@@ -3,10 +3,8 @@ import SheetOption from "@/src/components/sheet/SheetOption";
 import { PageType, SourceType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
-import { useThemeContext } from "@/src/context/ThemeProvider";
 import { exportSongs } from "@/src/controllers/ImportExportController";
 import { deleteFromLibrary } from "@/src/controllers/LibraryController";
-import { getTrackFromSong } from "@/src/features/playback/lib/player-track-service";
 import {
   addToPlaylist,
   isSongInPlaylist,
@@ -52,9 +50,8 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
     useGlobalProgressContext();
   const { selectedSongs } = useSelectionContext();
 
-  const { addToQueue } = usePlayer();
+  const { addSongToQueue } = usePlayer();
   const { premium } = usePremiumContext();
-  const { theme } = useThemeContext();
   const { sendHaptic } = useHaptics();
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
   const [inLiked, setinLiked] = useState(false);
@@ -81,10 +78,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
     TrueSheet.dismiss(name);
     sendHaptic("light");
     setTimeout(async () => {
-      const newTrack = await getTrackFromSong(editSong, theme);
-      if (newTrack) {
-        await addToQueue(newTrack);
-      }
+      await addSongToQueue(editSong);
     }, actionDelay);
   };
 

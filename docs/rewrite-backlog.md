@@ -243,8 +243,10 @@ feature-oriented packages.
    - Done: command-driven and timing-driven ad side effects now share
      `apps/old/src/features/playback/hooks/use-playback-ad-actions.ts`, while
      timing decisions remain inside `use-playback-ad-timing-effects.ts`.
-   - Next safe slice: move song-row play/add commands behind playback feature
-     APIs so UI rows no longer import track factories or TrackPlayer commands.
+   - Done: song option add-to-queue now calls `usePlayer().addSongToQueue`
+     instead of importing track creation helpers directly.
+   - Next safe slice: move song-row play commands behind playback feature APIs
+     so `SongList` no longer imports track factories or TrackPlayer commands.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

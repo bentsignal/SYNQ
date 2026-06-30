@@ -143,5 +143,5 @@ export type AlbumType = {
 
 export type PurchaseType = {
   name: string;
-  expiration: Date;
+  expiration: Date | null;
 }

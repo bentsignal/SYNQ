@@ -78,16 +78,20 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
       await connect();
       const purchase = await restorePurchases();
       if (
-        premiumSubscriptions.includes(purchase?.name) &&
+        purchase &&
+        premiumSubscriptions.includes(purchase.name) &&
         !CFG.devTestFreeVersion
       ) {
         setPremium(true);
-        if (purchase.name === "SYNQPremiumLifetime") {
+        if (
+          purchase.expiration === null ||
+          purchase.name === "SYNQPremiumLifetime"
+        ) {
           await AsyncStorage.setItem("expiration", "never");
         } else {
           await AsyncStorage.setItem(
             "expiration",
-            purchase?.expiration.toISOString(),
+            purchase.expiration.toISOString(),
           );
         }
       } else {

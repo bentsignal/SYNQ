@@ -29,7 +29,9 @@ feature-oriented packages.
   without relying on invalid `Error` constructor overloads. Treat remaining
   errors as a tracked cleanup lane, not a monorepo migration blocker.
   Cover editing now treats missing entity IDs as a transparent placeholder and
-  only calls persisted cover loaders when a real ID is available.
+  only calls persisted cover loaders when a real ID is available. Premium
+  restore now reads the active RevenueCat entitlement and represents lifetime
+  purchases with a nullable expiration.
 
 ## Priority Lanes
 
@@ -294,8 +296,10 @@ feature-oriented packages.
      boundaries.
    - Done: guard optional cover IDs in `EditCover` and fix the song edit
      textbox style overwrite.
-   - Next: continue strict-null cleanup in import/library controllers,
-     premium purchase state, and media utility controllers.
+   - Done: tighten premium restore state around active RevenueCat entitlements
+     and nullable lifetime expirations.
+   - Next: continue strict-null cleanup in import/library controllers and media
+     utility controllers.
 
 ## Guardrails
 

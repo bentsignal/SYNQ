@@ -45,31 +45,18 @@ export const getPrices = async (): Promise<{
 
 export const restorePurchases = async (): Promise<PurchaseType | null> => {
   const restoredData = await Purchases.restorePurchases();
-  const { allPurchasedProductIdentifiers, allExpirationDates } = restoredData;
+  const entitlement = restoredData.entitlements?.active?.Premium;
 
-  const premiumSubscriptions = [
-    "SYNQPremiumLifetime",
-    "SYNQPremiumMonthly",
-    "SYNQPremiumYearly",
-  ];
-
-  for (const productId of premiumSubscriptions) {
-    if (allPurchasedProductIdentifiers.includes(productId)) {
-      const expirationDateString = allExpirationDates[productId];
-      const expirationDate = expirationDateString
-        ? new Date(expirationDateString)
-        : null;
-      const currentDate = new Date();
-      if (!expirationDate || expirationDate > currentDate) {
-        return {
-          name: productId,
-          expiration: expirationDate,
-        };
-      }
-    }
+  if (!entitlement) {
+    return null;
   }
 
-  return null;
+  return {
+    name: entitlement.productIdentifier,
+    expiration: entitlement.expirationDate
+      ? new Date(entitlement.expirationDate)
+      : null,
+  };
 };
 
 const getMonthName = (monthNumber: number) => {

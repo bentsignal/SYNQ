@@ -48,6 +48,7 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
   const [numModified, setNumModified] = useState(0);
   const [shouldSaveToLibrary, setShouldSaveToLibrary] = useState(true);
   const [showImportAd, setShowImportAd] = useState(false);
+  const [importFinishRequest, setImportFinishRequest] = useState(0);
   const [adPlaying, setAdPlaying] = useState(false);
   const [adURL, setAdURL] = useState("");
   const [shouldPlayAd, setShouldPlayAd] = useState(
@@ -76,6 +77,10 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
 
   const removeNotification = useCallback((id) => {
     setNotifications((prev) => prev.filter((item) => item.id !== id));
+  }, []);
+
+  const requestImportFinish = useCallback(() => {
+    setImportFinishRequest((value) => value + 1);
   }, []);
 
   return (
@@ -151,6 +156,8 @@ const GlobalProvider = ({ children, initShouldPlayAd }) => {
         setShouldSaveToLibrary,
         showImportAd,
         setShowImportAd,
+        importFinishRequest,
+        requestImportFinish,
         adPlaying,
         setAdPlaying,
         adURL,

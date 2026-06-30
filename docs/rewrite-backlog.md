@@ -120,8 +120,11 @@ feature-oriented packages.
      delete, import, backup, and add/remove flows moved off playlist events.
    - Song bus has been removed after saved-library rows, edit flows, cover
      edits, and deletes moved onto reactive data or direct local state updates.
-   - Next target: remove remaining non-image playlist, album, and artist events
-     once their last emitters are replaced by reactive state or local actions.
+   - Import finish command no longer uses an event bus; the import footer now
+     requests completion through a narrow GlobalProvider command consumed by
+     the save screen.
+   - Next target: replace the playback queue event bus with queue state sourced
+     from TrackPlayer or a focused playback store.
 
 4. Split ingest/media.
    - Current checkpoint files: `apps/old/src/hooks/use-ingest.ts`,
@@ -243,8 +246,8 @@ feature-oriented packages.
    - Replace artist edit/list/detail listeners.
 
 5. Import command bus:
-   - Replace `TRIGGER_FINISH` with save-screen owned workflow state or a typed
-     import store.
+   - Done: replace `TRIGGER_FINISH` with a GlobalProvider import finish
+     request consumed by the save screen.
 
 6. Playback bus:
    - Replace `QUEUE_UPDATED` with a TrackPlayer-backed queue hook/store rather

@@ -8,8 +8,6 @@ import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { deleteImportSongs } from "@/src/controllers/ImportExportController";
 import { saveToLibrary } from "@/src/controllers/LibraryController";
-import importBus from "@/src/events/import";
-import { ImportBusEvent } from "@/src/events/import/Events";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -27,6 +25,7 @@ const SavePrompt = () => {
     shouldSaveToLibrary,
     showImportAd,
     showGlobalProgress,
+    importFinishRequest,
     ip,
 
     setExportDisabled,
@@ -46,6 +45,7 @@ const SavePrompt = () => {
   const { sendHaptic } = useHaptics();
   const pathname = usePathname();
   const currentPath = useRef(pathname);
+  const handledImportFinishRequest = useRef(0);
 
   useEffect(() => {
     currentPath.current = pathname;
@@ -190,11 +190,11 @@ const SavePrompt = () => {
   };
 
   useEffect(() => {
-    importBus.on(ImportBusEvent.TRIGGER_FINISH, handleImport);
-    return () => {
-      importBus.off(ImportBusEvent.TRIGGER_FINISH, handleImport);
-    };
-  }, [handleImport]);
+    if (importFinishRequest > handledImportFinishRequest.current) {
+      handledImportFinishRequest.current = importFinishRequest;
+      handleImport();
+    }
+  }, [importFinishRequest]);
 
   const toggleSave = (value: boolean) => {
     setShouldSaveToLibrary(value);

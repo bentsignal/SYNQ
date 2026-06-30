@@ -14,8 +14,6 @@ import {
 import { deleteFromLibrary } from "@/src/controllers/LibraryController";
 import { removeFromAllPlaylists } from "@/src/controllers/PlaylistController";
 import { removeSongs } from "@/src/controllers/SongController";
-import importBus from "@/src/events/import";
-import { ImportBusEvent } from "@/src/events/import/Events";
 import { posthog } from "@/src/lib/posthog";
 import axios from "axios";
 import { router, usePathname } from "expo-router";
@@ -46,6 +44,7 @@ export default function ImportControls() {
     setSelectEnabled,
     setLoading,
     setTransferSize,
+    requestImportFinish,
   } = useGlobalContext();
 
   const { theme } = useThemeContext();
@@ -157,7 +156,7 @@ export default function ImportControls() {
     } else if (pathname === "/import/export") {
       router.push("/import/save");
     } else if (pathname === "/import/save") {
-      importBus.emit(ImportBusEvent.TRIGGER_FINISH);
+      requestImportFinish();
       posthog.capture("import_finish", {
         numberOfSongs: results.length,
       });

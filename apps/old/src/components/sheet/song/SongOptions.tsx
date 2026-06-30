@@ -4,13 +4,12 @@ import { PageType, SourceType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { exportSongs } from "@/src/controllers/ImportExportController";
-import { deleteFromLibrary } from "@/src/controllers/LibraryController";
 import {
   addSongToLibraryPlaylist,
   isSongInLibraryPlaylist,
-  removeSongFromAllLibraryPlaylists,
   removeSongFromLibraryPlaylist,
 } from "@/src/features/library/repository/library-entity-repository";
+import { deleteLibrarySong } from "@/src/features/library/repository/library-song-repository";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/features/playback/hooks/use-player";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
@@ -121,8 +120,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
     }
     // remove from library
     else if (editSong.pageType === PageType.LIBRARY) {
-      await removeSongFromAllLibraryPlaylists(editSong.id);
-      await deleteFromLibrary(editSong.id);
+      await deleteLibrarySong(editSong.id);
       await removeSongsFromQueue([editSong.id]);
       setNumModified(numModified + 1);
     }

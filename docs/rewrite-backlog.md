@@ -178,6 +178,9 @@ feature-oriented packages.
    - Playlist membership checks and mutations now use the Drizzle-backed
      library entity repository from song options, import controls, and playlist
      rows instead of `PlaylistController`.
+   - Library song deletion now runs through the Drizzle-backed song repository
+     from import controls and song options, including relation cleanup and
+     filesystem removal instead of `LibraryController`.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

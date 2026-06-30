@@ -8,11 +8,10 @@ import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { getDisabledColor } from "@/src/controllers/ColorController";
-import { deleteFromLibrary } from "@/src/controllers/LibraryController";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { removeImportSongs } from "@/src/features/import/lib/import-song-edits";
-import { removeSongFromAllLibraryPlaylists } from "@/src/features/library/repository/library-entity-repository";
+import { deleteLibrarySong } from "@/src/features/library/repository/library-song-repository";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { posthog } from "@/src/lib/posthog";
 import axios from "axios";
@@ -183,8 +182,7 @@ export default function ImportControls() {
       }
       // remove from library
       else if (editSong.pageType === PageType.LIBRARY) {
-        await deleteFromLibrary(editSong.id);
-        await removeSongFromAllLibraryPlaylists(editSong.id);
+        await deleteLibrarySong(editSong.id);
         await removeSongsFromQueue([editSong.id]);
         setNumModified(numModified + 1);
       }

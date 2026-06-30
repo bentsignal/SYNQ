@@ -10,6 +10,7 @@ import { getImagePathFromHash } from "@/src/features/images/repository/image-rep
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";
+import * as FileSystem from "expo-file-system";
 
 type SongRelationRow = {
   song: typeof schema.songs.$inferSelect;
@@ -332,6 +333,26 @@ export const getLibrarySongCoverPath = async (
 
   const paths = getImagePathFromHash(songCoverHash);
   return full ? paths.pathToFullImage : paths.pathToSmallImage;
+};
+
+export const deleteLibrarySong = async (songId: number) => {
+  await db.delete(schema.albumSongs).where(eq(schema.albumSongs.songId, songId));
+  await db
+    .delete(schema.artistSongs)
+    .where(eq(schema.artistSongs.songId, songId));
+  await db
+    .delete(schema.playlistSongs)
+    .where(eq(schema.playlistSongs.songId, songId));
+  await db.delete(schema.songs).where(eq(schema.songs.id, songId));
+
+  try {
+    await FileSystem.deleteAsync(
+      `${FileSystem.documentDirectory}library/${songId}`,
+      { idempotent: true },
+    );
+  } catch (error) {
+    console.log("error deleting library song files: ", error);
+  }
 };
 
 export const getLibrarySongAlbums = async (songId: number) => {

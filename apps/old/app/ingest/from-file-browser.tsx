@@ -1,6 +1,6 @@
 import Button, { Label } from "@/src/components/button";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { useIngestStore } from "@/src/hooks/use-ingest";
+import { useIngestStore } from "@/src/features/ingest/hooks/use-ingest";
 import { router } from "expo-router";
 import { Text, View } from "react-native";
 

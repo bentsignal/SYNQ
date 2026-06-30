@@ -156,14 +156,15 @@ feature-oriented packages.
      nullability.
 
 4. Split ingest/media.
-   - Current checkpoint files: `apps/old/src/hooks/use-ingest.ts`,
-     `apps/old/src/lib/ingest.ts`, `apps/old/src/lib/image-utils.ts`, and
-     `shared/audio`.
+   - Current checkpoint files: `apps/old/src/features/ingest`,
+     `apps/old/src/lib/image-utils.ts`, and `shared/audio`.
    - `shared/audio` now owns reusable audio duration, metadata, supported file
      types, and track-number parsing used by the ingest workflow.
-   - Next target folder: `apps/old/src/features/ingest`, keeping
-     `apps/old/src/lib/ingest.ts` and `apps/old/src/hooks/use-ingest.ts` as
-     compatibility shims while the feature boundary settles.
+   - Done: move file-browser selection, Effect/Zustand ingest workflow, and
+     Drizzle song persistence into `apps/old/src/features/ingest`.
+   - Done: keep `apps/old/src/lib/ingest.ts` and
+     `apps/old/src/hooks/use-ingest.ts` as compatibility shims while callers
+     migrate to the feature path.
    - Keep image persistence in `apps/old/src/lib/image-utils.ts` until the
      library hooks and legacy controllers have a shared image repository
      boundary.

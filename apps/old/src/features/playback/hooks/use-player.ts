@@ -3,10 +3,10 @@ import { getTrackFromSong } from "@/src/features/playback/lib/player-track-servi
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
 import { getNextUp } from "@/src/features/playback/lib/playback-queue-service";
+import { setupPlayer as setupTrackPlayer } from "@/src/features/playback/lib/player-setup-service";
 import { useHaptics } from "@/src/hooks/use-haptics";
-import { check } from "@/src/lib/util";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import TrackPlayer, { Capability, Track } from "react-native-track-player";
+import TrackPlayer, { Track } from "react-native-track-player";
 
 export default function usePlayer() {
   const {
@@ -33,74 +33,12 @@ export default function usePlayer() {
   const { sendHaptic } = useHaptics();
 
   const setupPlayer = async () => {
-    await TrackPlayer.setupPlayer();
-
-    // restore shuffle
-    const shuffle = await AsyncStorage.getItem("shuffle");
-    if (check(shuffle)) {
-      setShuffle(shuffle === "true");
-    }
-
-    // restore loop
-    const loop = await AsyncStorage.getItem("loop");
-    if (check(loop)) {
-      setLoop(loop === "true");
-    }
-
-    // restore source type
-    const sourceType = await AsyncStorage.getItem("sourceType");
-    if (check(sourceType)) {
-      setSourceType(Number(sourceType));
-    }
-
-    // restore source id
-    const sourceId = await AsyncStorage.getItem("sourceId");
-    if (check(sourceId)) {
-      setSourceId(Number(sourceId));
-    }
-
-    // restore queue
-    const queue = await AsyncStorage.getItem("queue");
-    if (queue) {
-      await TrackPlayer.setQueue(JSON.parse(queue));
-    }
-
-    // jump to track
-    const lastTrackIndex = await AsyncStorage.getItem("lastTrackIndex");
-    if (lastTrackIndex) {
-      const index = Number(lastTrackIndex);
-      await TrackPlayer.skip(index);
-      if (index > 10) {
-        await TrackPlayer.remove(
-          Array.from({ length: index - 10 }, (_, i) => i + 1),
-        );
-      }
-    }
-
-    // restore position
-    const position = await AsyncStorage.getItem("position");
-    if (position) {
-      await TrackPlayer.seekTo(Number(position));
-    }
-
-    // restore add offset
-    const addOffset = await AsyncStorage.getItem("addOffset");
-    if (addOffset) {
-      setAddOffset(Number(addOffset));
-    }
-
-    await TrackPlayer.pause();
-
-    TrackPlayer.updateOptions({
-      capabilities: [
-        Capability.Play,
-        Capability.Pause,
-        Capability.SkipToNext,
-        Capability.SkipToPrevious,
-        Capability.Skip,
-        Capability.Stop,
-        Capability.SeekTo,
-      ],
+    await setupTrackPlayer({
+      setShuffle,
+      setLoop,
+      setSourceType,
+      setSourceId,
+      setAddOffset,
     });
   };
 

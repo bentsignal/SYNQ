@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 import CFG from "@/src/constants/Config";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { playAd } from "@/src/controllers/PlayerController";
+import { playAd } from "@/src/features/playback/lib/player-track-service";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TrackPlayer, { type Track } from "react-native-track-player";

@@ -1,29 +1,11 @@
 import { getAppIcon } from "@/src/constants/Logos";
-import { SongType, SourceType } from "@/src/constants/Types";
-import { getFileName } from "@/src/lib/util";
+import { SongType } from "@/src/constants/Types";
+import { getAlbumCoverFromSong } from "@/src/controllers/AlbumController";
+import { getSongCover } from "@/src/controllers/ImageController";
+import { getFileName, check } from "@/src/lib/util";
 import * as FileSystem from "expo-file-system";
-import * as Haptics from "expo-haptics";
-import TrackPlayer, {
-  Capability,
-  Event,
-  Track,
-  useTrackPlayerEvents,
-} from "react-native-track-player";
 import "react-native-get-random-values";
-import { PageType, SortType } from "@/src/constants/Types";
-import {
-  getAlbumCoverFromSong,
-  getSongsFromAlbum,
-} from "@/src/controllers/AlbumController";
-import { getSongsFromArtist } from "@/src/controllers/ArtistController";
-import {
-  getAlbumCoverPathFromSong,
-  getSongCover,
-} from "@/src/controllers/ImageController";
-import { getPlaylistSongs } from "@/src/controllers/PlaylistController";
-import { getSongById } from "@/src/controllers/SongController";
-import { check } from "@/src/lib/util";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import TrackPlayer, { Track } from "react-native-track-player";
 import { v4 as uuidv4 } from "uuid";
 
 export const getTrackFromSong = async (
@@ -95,27 +77,4 @@ export const getTrackArtwork = (track?: Track) => {
   } else {
     return "transparent";
   }
-};
-
-export const getNextValidSong = async (
-  songs: number[],
-): Promise<SongType | null> => {
-  let foundSong = false;
-  let newSong = null;
-  let attempts = 0;
-  const MAX_ATTEMPTS = 50;
-  while (!foundSong && attempts < MAX_ATTEMPTS) {
-    if (songs.length === 0) {
-      throw new Error("No valid songs found in next up");
-    }
-    const newId = songs.shift();
-    if (newId && newId !== -1) {
-      newSong = await getSongById(newId);
-      if (![null, undefined, -1, "-1"].includes(newSong.id)) {
-        foundSong = true;
-      }
-    }
-    attempts++;
-  }
-  return newSong;
 };

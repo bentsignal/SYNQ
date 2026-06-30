@@ -7,7 +7,7 @@ import {
 } from "@/src/constants/Types";
 import { getSongsFromAlbum } from "@/src/controllers/AlbumController";
 import { getSongsFromArtist } from "@/src/controllers/ArtistController";
-import { getTrackFromSong } from "@/src/controllers/PlayerController";
+import { getTrackFromSong } from "@/src/features/playback/lib/player-track-service";
 import { getPlaylistSongs } from "@/src/controllers/PlaylistController";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";

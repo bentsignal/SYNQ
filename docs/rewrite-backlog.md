@@ -221,9 +221,12 @@ feature-oriented packages.
    - Done: legacy `usePlayer` now lives at
      `apps/old/src/features/playback/hooks/use-player.ts` so queue mutation and
      skip behavior are owned by the playback feature.
+   - Done: the remaining live `PlayerController` helpers now live in
+     `apps/old/src/features/playback/lib/player-track-service.ts`, and the
+     stale legacy controller file has been removed.
    - Next safe slice: split `use-player.ts` into typed queue actions and player
-     setup/restore actions, then move player controller operations behind the
-     same playback feature API.
+     setup/restore actions, then move track creation cover lookups behind a
+     narrower playback feature API.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

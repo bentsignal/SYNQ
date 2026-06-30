@@ -6,7 +6,7 @@ import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { exportSongs } from "@/src/controllers/ImportExportController";
 import { deleteFromLibrary } from "@/src/controllers/LibraryController";
-import { getTrackFromSong } from "@/src/controllers/PlayerController";
+import { getTrackFromSong } from "@/src/features/playback/lib/player-track-service";
 import {
   addToPlaylist,
   isSongInPlaylist,

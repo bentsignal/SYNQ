@@ -1,6 +1,6 @@
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { playAd } from "@/src/controllers/PlayerController";
+import { playAd } from "@/src/features/playback/lib/player-track-service";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/features/playback/hooks/use-player";

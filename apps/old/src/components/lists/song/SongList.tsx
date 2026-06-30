@@ -15,7 +15,7 @@ import {
   getTrackFromSong,
   playAd,
   playTrack,
-} from "@/src/controllers/PlayerController";
+} from "@/src/features/playback/lib/player-track-service";
 import { generateSongKey } from "@/src/controllers/SongController";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";

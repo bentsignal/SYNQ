@@ -17,7 +17,7 @@ import {
   getLuminanceFromImage,
   getPlayerGradientOpacity,
 } from "@/src/controllers/ColorController";
-import { getTrackArtwork } from "@/src/controllers/PlayerController";
+import { getTrackArtwork } from "@/src/features/playback/lib/player-track-service";
 import { getSongById } from "@/src/controllers/SongController";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import colors from "@/src/lib/colors";

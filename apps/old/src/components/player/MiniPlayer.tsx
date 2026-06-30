@@ -6,7 +6,7 @@ import SongInfo from "@/src/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType } from "@/src/constants/Types";
-import { getTrackArtwork } from "@/src/controllers/PlayerController";
+import { getTrackArtwork } from "@/src/features/playback/lib/player-track-service";
 import { getLibrarySongCover } from "@/src/controllers/SongController";
 import { getFileName } from "@/src/lib/util";
 import { useAssets } from "expo-asset";

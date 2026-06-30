@@ -2,7 +2,7 @@ import { NotificationType } from "@/src/constants/Types";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { playAd } from "@/src/controllers/PlayerController";
+import { playAd } from "@/src/features/playback/lib/player-track-service";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";

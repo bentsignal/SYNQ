@@ -200,6 +200,9 @@ feature-oriented packages.
      importing `ImportExportController` from the server component.
    - Song metadata updates now resolve album/artist metadata through library
      repository helpers instead of `AlbumController`/`ArtistController`.
+   - Export UI actions now import `exportSongs` from the export feature module
+     instead of `ImportExportController`, leaving the metadata writer internals
+     as the next export cleanup seam.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

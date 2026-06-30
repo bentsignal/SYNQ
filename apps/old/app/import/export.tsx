@@ -8,7 +8,7 @@ import CFG from "@/src/constants/Config";
 import { Styles } from "@/src/constants/Styles";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { exportSongs } from "@/src/controllers/ImportExportController";
+import { exportSongs } from "@/src/features/export/lib/export-songs";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { posthog } from "@/src/lib/posthog";

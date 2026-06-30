@@ -3,7 +3,7 @@ import SheetOption from "@/src/components/sheet/SheetOption";
 import { PageType, SourceType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
-import { exportSongs } from "@/src/controllers/ImportExportController";
+import { exportSongs } from "@/src/features/export/lib/export-songs";
 import {
   addSongToLibraryPlaylist,
   isSongInLibraryPlaylist,

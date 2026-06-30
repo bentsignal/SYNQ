@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { PlaylistType, SortOrder, SortType } from "@/src/constants/Types";
+import { getImagePathFromHash } from "@/src/lib/image-utils";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { count, eq } from "drizzle-orm";
@@ -15,6 +16,7 @@ type LibraryPlaylistsQueryOptions = {
 type PlaylistRow = {
   id: number;
   name: string | null;
+  coverImage: string | null;
   songCount: number;
 };
 
@@ -78,6 +80,9 @@ const rowsToPlaylists = (rows: PlaylistRow[]): PlaylistType[] =>
       id: row.id,
       name: row.name ?? "",
       songCount: row.songCount,
+      image: row.coverImage
+        ? getImagePathFromHash(row.coverImage).pathToSmallImage
+        : undefined,
     }));
 
 export const useLibraryPlaylistsQuery = ({
@@ -91,6 +96,7 @@ export const useLibraryPlaylistsQuery = ({
       .select({
         id: schema.playlists.id,
         name: schema.playlists.name,
+        coverImage: schema.playlists.coverImage,
         songCount: count(schema.playlistSongs.songId),
       })
       .from(schema.playlists)

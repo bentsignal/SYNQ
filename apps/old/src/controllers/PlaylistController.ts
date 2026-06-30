@@ -5,6 +5,10 @@ import { getSongByResult } from "@/src/controllers/SongController";
 import { PageType, SortOrder, SortType } from "@/src/constants/Types";
 import { writeImageToLibrary } from "@/src/controllers/ImageController";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
+import { saveCoverImage } from "@/src/lib/image-utils";
+import { db as drizzleDb } from "@synq/db";
+import * as schema from "@synq/db/schema";
+import { eq } from "drizzle-orm";
 
 export const createPlaylist = async (name: string, image?: string) => {
   const db = PlaylistModel.getInstance();
@@ -14,6 +18,13 @@ export const createPlaylist = async (name: string, image?: string) => {
     await makePlaylistsDir();
     await FileSystem.makeDirectoryAsync(dir);
     await writeImageToLibrary(image, dir);
+    const coverImage = await saveCoverImage(image);
+    if (coverImage) {
+      await drizzleDb
+        .update(schema.playlists)
+        .set({ coverImage })
+        .where(eq(schema.playlists.id, id));
+    }
   }
 }
 
@@ -117,6 +128,13 @@ export const updatePlaylist = async (playlistId: number, name: string, image: st
   }
   if (image) {
     await writeImageToLibrary(image, `${FileSystem.documentDirectory}playlists/${playlistId}`);
+    const coverImage = await saveCoverImage(image);
+    if (coverImage) {
+      await drizzleDb
+        .update(schema.playlists)
+        .set({ coverImage })
+        .where(eq(schema.playlists.id, playlistId));
+    }
     playlistBus.emit(PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED, {
       id: playlistId,
     });

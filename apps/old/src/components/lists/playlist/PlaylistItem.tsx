@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ListCover from "@/src/components/cover/ListCover";
 import Select from "@/src/components/Select";
 import { Colors } from "@/src/constants/Colors";
@@ -14,7 +14,6 @@ import {
 import playlistBus from "@/src/events/playlist";
 import {
   PlaylistBusEvent,
-  PlaylistImageModifiedEvent,
 } from "@/src/events/playlist/Events";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import colors from "@/src/lib/colors";
@@ -33,23 +32,16 @@ const PlaylistItem = ({ playlist, bg }: PlaylistProps) => {
   const { sendHaptic } = useHaptics();
 
   const [selected, setSelected] = useState(false);
-  const [coverImage, setCoverImage] = useState("");
-  const [emptyCover, setEmptyCover] = useState(false);
+  const [fallbackCoverImage, setFallbackCoverImage] = useState("");
 
-  const loadCover = async () => {
+  const loadFallbackCover = useCallback(async () => {
     try {
       const cover = await getPlaylistCover(playlist.id);
-      if (cover) {
-        setCoverImage(cover);
-        setEmptyCover(false);
-      } else {
-        setCoverImage("");
-        setEmptyCover(true);
-      }
+      setFallbackCoverImage(cover ?? "");
     } catch (error) {
       console.log("error loading playlist cover:", error);
     }
-  };
+  }, [playlist.id]);
 
   const playlistChangesMade = async (add: boolean) => {
     try {
@@ -74,21 +66,12 @@ const PlaylistItem = ({ playlist, bg }: PlaylistProps) => {
   };
 
   useEffect(() => {
-    playlistBus.on(
-      PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED,
-      handlePlaylistImageModified,
-    );
-    return () => {
-      playlistBus.off(
-        PlaylistBusEvent.PLAYLIST_IMAGE_MODIFIED,
-        handlePlaylistImageModified,
-      );
-    };
-  }, []);
-
-  useEffect(() => {
-    loadCover();
-  }, [playlist]);
+    if (playlist.image) {
+      setFallbackCoverImage("");
+    } else {
+      loadFallbackCover();
+    }
+  }, [loadFallbackCover, playlist.id, playlist.image]);
 
   useEffect(() => {
     if (editSong.id && playlist.pageType === PageType.ADD) {
@@ -101,18 +84,6 @@ const PlaylistItem = ({ playlist, bg }: PlaylistProps) => {
         });
     }
   }, [editSong]);
-
-  const handlePlaylistImageModified = async (
-    data: PlaylistImageModifiedEvent,
-  ) => {
-    if (data.id === playlist.id) {
-      if (data.image) {
-        setCoverImage(data.image);
-      } else {
-        await loadCover();
-      }
-    }
-  };
 
   const handleMore = async () => {
     sendHaptic("light");
@@ -139,9 +110,9 @@ const PlaylistItem = ({ playlist, bg }: PlaylistProps) => {
     >
       <ListCover
         id={playlist.id}
-        image={coverImage}
+        image={playlist.image ?? fallbackCoverImage}
         type={CoverType.PLAYLIST}
-        empty={emptyCover}
+        empty={!playlist.image && !fallbackCoverImage}
         propOnLoad={() => {}}
       />
       <View style={Local.textWrapper}>

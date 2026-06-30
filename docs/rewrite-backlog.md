@@ -99,6 +99,8 @@ feature-oriented packages.
    - Album and artist row covers now render from Drizzle-backed live query
      image props instead of `ALBUM_IMAGE_MODIFIED` or `ARTIST_IMAGE_MODIFIED`
      listeners.
+   - Playlist row covers now render from Drizzle-backed live query image props
+     instead of `PLAYLIST_IMAGE_MODIFIED` listeners.
    - Next target: replace remaining artist/album image listeners with
      Drizzle-backed cover props or focused refreshes.
 
@@ -167,6 +169,8 @@ feature-oriented packages.
      it in `app/playlist/add.tsx` instead of the `PLAYLIST_CREATED` listener.
    - Done: remove the now-unused `PLAYLIST_CREATED` emit from
      `app/playlist/create.tsx`.
+   - Done: render playlist row cover art from live query props instead of
+     `PLAYLIST_IMAGE_MODIFIED` listeners.
    - Replace count/name/image/content listeners and remove the broad
      `PLAYLIST_SONGS_IMPORTED` invalidation pattern.
 

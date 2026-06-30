@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { PlaylistType } from "@/src/constants/Types";
+import { getImagePathFromHash } from "@/src/lib/image-utils";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { count, eq } from "drizzle-orm";
@@ -8,6 +9,7 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 type PlaylistInfoRow = {
   id: number;
   name: string | null;
+  coverImage: string | null;
   songCount: number;
 };
 
@@ -17,6 +19,7 @@ export const usePlaylistInfoQuery = (playlistId: number) => {
       .select({
         id: schema.playlists.id,
         name: schema.playlists.name,
+        coverImage: schema.playlists.coverImage,
         songCount: count(schema.playlistSongs.songId),
       })
       .from(schema.playlists)
@@ -39,6 +42,9 @@ export const usePlaylistInfoQuery = (playlistId: number) => {
       id: row.id,
       name: row.name ?? "",
       songCount: row.songCount,
+      image: row.coverImage
+        ? getImagePathFromHash(row.coverImage).pathToSmallImage
+        : undefined,
     };
   }, [data]);
 

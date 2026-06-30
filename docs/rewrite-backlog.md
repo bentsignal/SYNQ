@@ -96,6 +96,9 @@ feature-oriented packages.
    - Album reorder now reads songs from `useAlbumSongsQuery` and writes order
      changes through a Drizzle-backed album-song repository instead of
      route-local controller fetch/update loops.
+   - Album edit now hydrates album fields and artist relations from
+     `useAlbumInfoQuery` instead of route-local `getAlbumInfo` and
+     `getArtistsFromAlbum` controller refresh.
    - Artist detail content has started. `app/artist/artist.tsx` now reads
      artist info, songs, and albums from `useArtistInfoQuery`,
      `useArtistSongsQuery`, and `useArtistAlbumsQuery` instead of listening for

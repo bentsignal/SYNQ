@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import EditCover from "@/src/components/cover/EditCover";
 import CustomButton from "@/src/components/CustomButton";
 import ArtistItem from "@/src/components/lists/artist/ArtistItem";
@@ -7,16 +7,12 @@ import ModalStyles from "@/src/components/modals/Styles";
 import Notifications from "@/src/components/notifications";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { ArtistType, CoverType, NotificationType } from "@/src/constants/Types";
+import { CoverType, NotificationType } from "@/src/constants/Types";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
-import { useThemeContext } from "@/src/context/ThemeProvider";
-import {
-  getAlbumInfo,
-  getArtistsFromAlbum,
-  updateAlbum,
-} from "@/src/controllers/AlbumController";
+import { updateAlbum } from "@/src/controllers/AlbumController";
 import { newCover } from "@/src/controllers/ImageController";
-import { router, useFocusEffect } from "expo-router";
+import { useAlbumInfoQuery } from "@/src/features/library/hooks/use-album-info-query";
+import { router } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -31,24 +27,7 @@ const EditAlbum = ({ id }: { id: number }) => {
   const [year, setYear] = useState<number | undefined>();
   const [originalName, setOriginalName] = useState<string | undefined>();
   const [originalYear, setOriginalYear] = useState<number | undefined>();
-  const [artists, setArtists] = useState<ArtistType[]>([]);
-
-  const refreshInfo = useCallback(async () => {
-    try {
-      const result = await getAlbumInfo(id);
-      setName(result?.name);
-      setYear(result?.year);
-      setOriginalName(result?.name);
-      setOriginalYear(result?.year);
-    } catch (error) {
-      console.error("error getting album info:", error);
-    }
-  }, [id]);
-
-  const loadArtists = useCallback(async () => {
-    const artists = await getArtistsFromAlbum(id);
-    setArtists(artists);
-  }, [id]);
+  const { album, artists } = useAlbumInfoQuery(id);
 
   const nameInputValidation = async (text: string) => {
     try {
@@ -103,15 +82,11 @@ const EditAlbum = ({ id }: { id: number }) => {
   };
 
   useEffect(() => {
-    refreshInfo();
-    loadArtists();
-  }, [loadArtists, refreshInfo]);
-
-  useFocusEffect(
-    useCallback(() => {
-      loadArtists();
-    }, [loadArtists]),
-  );
+    setName(album?.name);
+    setYear(album?.year);
+    setOriginalName(album?.name);
+    setOriginalYear(album?.year);
+  }, [album]);
 
   return (
     <View style={Local.wrapper}>
@@ -140,7 +115,8 @@ const EditAlbum = ({ id }: { id: number }) => {
           numberOfLines={1}
           placeholder={"Enter album name..."}
           placeholderTextColor={Colors.altDisabled}
-          defaultValue={name}
+          value={name ?? ""}
+          onChangeText={setName}
           onEndEditing={(evt) => nameInputValidation(evt.nativeEvent.text)}
         />
         <Text style={Styles.textboxLabel}>Year</Text>
@@ -152,7 +128,10 @@ const EditAlbum = ({ id }: { id: number }) => {
           keyboardType="numeric"
           placeholder={"Enter album year..."}
           placeholderTextColor={Colors.altDisabled}
-          defaultValue={year?.toString()}
+          value={year?.toString() ?? ""}
+          onChangeText={(text) => {
+            setYear(text ? parseInt(text) : undefined);
+          }}
           onEndEditing={(evt) => yearInputValidation(evt.nativeEvent.text)}
         />
         <View style={[ModalStyles.fieldWrapper, { paddingBottom: 20 }]}>

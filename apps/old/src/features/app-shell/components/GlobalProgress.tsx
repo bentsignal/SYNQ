@@ -1,4 +1,4 @@
-import Ad from "@/src/components/Ad";
+import Ad from "@/src/features/premium/components/Ad";
 import Overlay from "@/src/features/app-shell/components/Overlay";
 import Progress from "@/src/components/Progress";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";

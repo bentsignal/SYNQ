@@ -1,7 +1,7 @@
 import { View, StyleSheet, Dimensions, Text, Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Colors } from '@/src/constants/Colors';
-import Ad from '@/src/components/Ad';
+import Ad from '@/src/features/premium/components/Ad';
 import { useThemeContext } from '@/src/features/theme/context/ThemeProvider';
 import { usePlaybackAdContext } from '@/src/features/playback/context/PlaybackAdProvider';
 

@@ -313,6 +313,9 @@ feature-oriented packages.
      `apps/old/src/features/images/repository/image-repository.ts`.
    - Done: removed the old `apps/old/src/lib/image-utils.ts` compatibility
      shim after image callers moved to feature repositories.
+   - Done: import album cover edits now write only hash-backed image rows
+     through the library repository instead of duplicating legacy
+     `albums/{id}/cover_*.jpg` files.
    - Future target packages/folders: `shared/db` repositories and
      `apps/new/src/features/ingest`.
    - Keep Effect at workflow boundaries; keep UI state minimal and observable.

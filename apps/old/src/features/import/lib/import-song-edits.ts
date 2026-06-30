@@ -1,5 +1,4 @@
 import { AlbumType, ArtistType, SongType } from "@/src/constants/Types";
-import { writeCoverImageToDirectory } from "@/src/features/images/repository/image-repository";
 import {
   getLibraryAlbumCoverPath,
   updateLibraryAlbum,
@@ -147,8 +146,6 @@ export const saveImportSongEdits = async ({
 
     const importAlbum = song.importAlbums?.[0];
     if (importAlbum && artwork) {
-      const albumDirectory = `${FileSystem.documentDirectory}albums/${importAlbum.id}`;
-      await writeCoverImageToDirectory(artwork, albumDirectory);
       await updateLibraryAlbum({
         id: importAlbum.id,
         image: artwork,

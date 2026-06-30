@@ -3,7 +3,7 @@ import { useThemeContext } from "@/src/context/ThemeProvider";
 import { playAd } from "@/src/controllers/PlayerController";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { useHaptics } from "@/src/hooks/use-haptics";
-import usePlayer from "@/src/hooks/usePlayer";
+import usePlayer from "@/src/features/playback/hooks/use-player";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { PlayButton } from "./PausePlayButtons";
 

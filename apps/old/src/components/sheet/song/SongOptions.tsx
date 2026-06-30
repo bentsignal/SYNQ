@@ -15,7 +15,7 @@ import {
 } from "@/src/controllers/PlaylistController";
 import { removeSongs } from "@/src/controllers/SongController";
 import { useHaptics } from "@/src/hooks/use-haptics";
-import usePlayer from "@/src/hooks/usePlayer";
+import usePlayer from "@/src/features/playback/hooks/use-player";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";

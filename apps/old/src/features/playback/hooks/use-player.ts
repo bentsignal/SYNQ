@@ -1,20 +1,20 @@
-import { check } from "@/src/lib/util";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import TrackPlayer, { Capability, Track } from "react-native-track-player";
 import {
   PageType,
   SongType,
   SortOrder,
   SortType,
   SourceType,
-} from "../constants/Types";
-import { usePlaybackContext } from "../features/playback/context/PlaybackProvider";
-import { useThemeContext } from "../context/ThemeProvider";
-import { getSongsFromAlbum } from "../controllers/AlbumController";
-import { getSongsFromArtist } from "../controllers/ArtistController";
-import { getTrackFromSong } from "../controllers/PlayerController";
-import { getPlaylistSongs } from "../controllers/PlaylistController";
-import { useHaptics } from "./use-haptics";
+} from "@/src/constants/Types";
+import { getSongsFromAlbum } from "@/src/controllers/AlbumController";
+import { getSongsFromArtist } from "@/src/controllers/ArtistController";
+import { getTrackFromSong } from "@/src/controllers/PlayerController";
+import { getPlaylistSongs } from "@/src/controllers/PlaylistController";
+import { useThemeContext } from "@/src/context/ThemeProvider";
+import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
+import { useHaptics } from "@/src/hooks/use-haptics";
+import { check } from "@/src/lib/util";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import TrackPlayer, { Capability, Track } from "react-native-track-player";
 
 export default function usePlayer() {
   const {

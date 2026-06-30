@@ -20,7 +20,7 @@ import { generateSongKey } from "@/src/controllers/SongController";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { useHaptics } from "@/src/hooks/use-haptics";
-import usePlayer from "@/src/hooks/usePlayer";
+import usePlayer from "@/src/features/playback/hooks/use-player";
 import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FlatList, TouchableOpacity } from "react-native";

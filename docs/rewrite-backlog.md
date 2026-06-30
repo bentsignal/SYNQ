@@ -218,9 +218,12 @@ feature-oriented packages.
    - Done: playback state provider now lives at
      `apps/old/src/features/playback/context/PlaybackProvider.tsx` instead of
      the legacy generic context folder.
-   - Next safe slice: move legacy `usePlayer` and player controller operations
-     behind a typed playback feature API so callers no longer import playback
-     controllers directly.
+   - Done: legacy `usePlayer` now lives at
+     `apps/old/src/features/playback/hooks/use-player.ts` so queue mutation and
+     skip behavior are owned by the playback feature.
+   - Next safe slice: split `use-player.ts` into typed queue actions and player
+     setup/restore actions, then move player controller operations behind the
+     same playback feature API.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

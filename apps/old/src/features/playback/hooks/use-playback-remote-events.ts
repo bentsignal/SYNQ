@@ -6,7 +6,7 @@ import { playAd } from "@/src/controllers/PlayerController";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
-import usePlayer from "@/src/hooks/usePlayer";
+import usePlayer from "@/src/features/playback/hooks/use-player";
 import TrackPlayer, {
   Event,
   type Track,

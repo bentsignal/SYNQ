@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import CategorySelector from "@/src/components/CategorySelector";
+import CategorySelector from "@/src/features/library/components/CategorySelector";
 import Albums from "@/src/features/library/components/Albums";
 import Artists from "@/src/features/library/components/Artists";
 import Playlists from "@/src/features/library/components/Playlists";

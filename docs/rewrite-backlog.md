@@ -347,6 +347,9 @@ feature-oriented packages.
    - Done: app-shell chrome (`GlobalProgress`, `Overlay`, tab icons, safe top
      spacer) now lives in `apps/old/src/features/app-shell/components` instead
      of the generic root `src/components` folder.
+   - Done: library tab category selector UI now lives in
+     `apps/old/src/features/library/components/CategorySelector.tsx` instead
+     of the generic root `src/components` folder.
    - Done: notification queue/modal state and actions now live in
      `apps/old/src/features/notifications/context/NotificationsProvider.tsx`
      instead of `GlobalProvider`.

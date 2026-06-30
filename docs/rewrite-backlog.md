@@ -316,6 +316,8 @@ feature-oriented packages.
    - Done: import album cover edits now write only hash-backed image rows
      through the library repository instead of duplicating legacy
      `albums/{id}/cover_*.jpg` files.
+   - Done: file-browser ingest now reuses library metadata repositories for
+     artist/album creation and relation dedupe, including album artist links.
    - Future target packages/folders: `shared/db` repositories and
      `apps/new/src/features/ingest`.
    - Keep Effect at workflow boundaries; keep UI state minimal and observable.

@@ -4,16 +4,19 @@ import {
   getTrackNumberFromString,
 } from "@synq/audio";
 import { db } from "@synq/db";
-import {
-  albums,
-  albumSongs,
-  artists,
-  artistSongs,
-  songs,
-} from "@synq/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import { songs } from "@synq/db/schema";
+import { eq } from "drizzle-orm";
 import { DocumentPickerAsset } from "expo-document-picker";
 import { saveCoverImage } from "@/src/features/images/repository/image-repository";
+import {
+  addArtistToLibraryAlbum,
+  getLibraryAlbumFromMetadata,
+  getLibraryArtistsFromMetadata,
+} from "@/src/features/library/repository/library-entity-repository";
+import {
+  addAlbumToLibrarySong,
+  addArtistToLibrarySong,
+} from "@/src/features/library/repository/library-song-repository";
 import { saveLibrarySongSnapshot } from "@/src/features/library/repository/song-metadata-repository";
 
 export const createIngestedSongFromAsset = async (
@@ -22,9 +25,11 @@ export const createIngestedSongFromAsset = async (
   const metadata = await getMetadataFromFile(asset.uri);
   const duration = await getAudioDurationFromFile(asset.uri);
   const coverImageHash = await saveCoverImage(metadata.artwork);
-  const { strippedValue: songTitle } = getTrackNumberFromString(
+  const { strippedValue: songTitle, trackNumber } = getTrackNumberFromString(
     metadata.name ?? asset.name,
   );
+  const metadataTrack =
+    typeof metadata.track === "number" ? metadata.track : trackNumber ?? undefined;
   const insertResult = await db.insert(songs).values({
     title: songTitle,
     duration,
@@ -34,9 +39,14 @@ export const createIngestedSongFromAsset = async (
     coverImage: coverImageHash,
   });
   const songId = insertResult.lastInsertRowId;
-  await storeArtistsForNewSong(songId, metadata.artist);
-  await storeAlbumsForNewSong(songId, metadata.album, coverImageHash);
-  // TODO: store artists for new album
+  const songArtists = await storeArtistsForNewSong(songId, metadata.artist);
+  const songAlbums = await storeAlbumsForNewSong(
+    songId,
+    metadata.album,
+    metadata.artwork,
+    metadataTrack,
+  );
+  await storeArtistsForNewAlbums(songArtists, songAlbums);
   await saveLibrarySongSnapshot(songId);
   await db
     .update(songs)
@@ -50,61 +60,52 @@ const storeArtistsForNewSong = async (
   songId: number,
   artistsInMetadata?: string,
 ) => {
-  if (!artistsInMetadata) return;
-  const listOfArtistsInMetadata = artistsInMetadata
-    .split(",")
-    .map((artist) => artist.trim())
-    .filter((artist) => artist !== "");
-  const existingArtists = await db
-    .select({ name: artists.name })
-    .from(artists)
-    .where(inArray(artists.name, listOfArtistsInMetadata));
-  const newArtists = listOfArtistsInMetadata.filter(
-    (artist) =>
-      !existingArtists.some((existingArtist) => existingArtist.name === artist),
-  );
-  const newArtistsIds = await Promise.all(
-    newArtists.map(async (artist) => {
-      const newArtist = await db
-        .insert(artists)
-        .values({ name: artist })
-        .returning({ id: artists.id });
-      return newArtist[0].id;
-    }),
-  );
-  await db
-    .insert(artistSongs)
-    .values(newArtistsIds.map((artistId) => ({ artistId, songId })));
+  if (!artistsInMetadata) return [];
+
+  const artists = await getLibraryArtistsFromMetadata(artistsInMetadata);
+
+  for (const artist of artists) {
+    await addArtistToLibrarySong(artist.id, songId);
+  }
+
+  return artists;
 };
 
 const storeAlbumsForNewSong = async (
   songId: number,
   albumsInMetadata?: string,
-  coverImage?: string | null,
+  artwork?: string,
+  track?: number,
 ) => {
-  if (!albumsInMetadata) return;
-  const listOfAlbumsInMetadata = albumsInMetadata
+  if (!albumsInMetadata) return [];
+
+  const albumNames = albumsInMetadata
     .split(",")
     .map((album) => album.trim())
     .filter((album) => album !== "");
-  const existingAlbums = await db
-    .select({ name: albums.name })
-    .from(albums)
-    .where(inArray(albums.name, listOfAlbumsInMetadata));
-  const newAlbums = listOfAlbumsInMetadata.filter(
-    (album) =>
-      !existingAlbums.some((existingAlbum) => existingAlbum.name === album),
+
+  const albums = (
+    await Promise.all(
+      albumNames.map((albumName) =>
+        getLibraryAlbumFromMetadata(albumName, undefined, artwork),
+      ),
+    )
+  ).filter((album) => album !== null);
+
+  for (const album of albums) {
+    await addAlbumToLibrarySong(album.id, songId, track);
+  }
+
+  return albums;
+};
+
+const storeArtistsForNewAlbums = async (
+  artists: Awaited<ReturnType<typeof storeArtistsForNewSong>>,
+  albums: Awaited<ReturnType<typeof storeAlbumsForNewSong>>,
+) => {
+  await Promise.all(
+    albums.flatMap((album) =>
+      artists.map((artist) => addArtistToLibraryAlbum(artist.id, album.id)),
+    ),
   );
-  const newAlbumsIds = await Promise.all(
-    newAlbums.map(async (album) => {
-      const newAlbum = await db
-        .insert(albums)
-        .values({ name: album, coverImage })
-        .returning({ id: albums.id });
-      return newAlbum[0].id;
-    }),
-  );
-  await db
-    .insert(albumSongs)
-    .values(newAlbumsIds.map((albumId) => ({ albumId, songId })));
 };

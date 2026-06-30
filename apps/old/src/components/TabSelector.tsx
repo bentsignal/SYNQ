@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Colors } from "../constants/Colors";
 import { Styles } from "../constants/Styles";
 import { useThemeContext } from "../context/ThemeProvider";
-import { darkenColor } from "../controllers/ColorController";
+import { darkenColor } from "../lib/color-utils";
 
 type TabSelectorProps = {
   tabs: string[];
@@ -51,4 +51,3 @@ const Local = StyleSheet.create({
     color: Colors.text,
   },
 });
-

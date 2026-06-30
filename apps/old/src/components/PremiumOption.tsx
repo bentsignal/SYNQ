@@ -1,9 +1,9 @@
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { useThemeContext } from "@/src/context/ThemeProvider";
+import { darkenColor } from "@/src/lib/color-utils";
 import { posthog } from "@/src/lib/posthog";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { darkenColor } from "../controllers/ColorController";
 import Skeleton from "./Skeleton";
 
 type OptionProps = {

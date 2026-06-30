@@ -209,6 +209,8 @@ feature-oriented packages.
      layer, using repository/import cover lookups instead of `SongController`.
    - Premium purchase calls now live behind a premium feature service instead
      of importing `PurchaseController` from the premium screen/provider.
+   - Remaining relative component imports of `ColorController` now point at
+     `src/lib/color-utils`.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

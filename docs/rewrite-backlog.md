@@ -101,6 +101,9 @@ feature-oriented packages.
    - Album edit now hydrates album fields and artist relations from
      `useAlbumInfoQuery` instead of route-local `getAlbumInfo` and
      `getArtistsFromAlbum` controller refresh.
+   - Album edit now writes name, year, and cover changes through the
+     Drizzle-backed library entity repository instead of the legacy album
+     controller.
    - Artist detail content has started. `app/artist/artist.tsx` now reads
      artist info, songs, and albums from `useArtistInfoQuery`,
      `useArtistSongsQuery`, and `useArtistAlbumsQuery` instead of listening for

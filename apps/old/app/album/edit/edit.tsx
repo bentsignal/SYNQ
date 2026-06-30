@@ -9,15 +9,22 @@ import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType, NotificationType } from "@/src/constants/Types";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
-import { updateAlbum } from "@/src/controllers/AlbumController";
 import { newCover } from "@/src/controllers/ImageController";
 import { useAlbumInfoQuery } from "@/src/features/library/hooks/use-album-info-query";
+import { updateLibraryAlbum } from "@/src/features/library/repository/library-entity-repository";
 import { router } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const MemoTextInput = memo(TextInput);
+
+const getChangedYear = (
+  nextYear: number | undefined,
+  originalYear: number | undefined,
+) => {
+  return nextYear === originalYear ? undefined : nextYear ?? null;
+};
 
 const EditAlbum = ({ id }: { id: number }) => {
   const insets = useSafeAreaInsets();
@@ -35,7 +42,12 @@ const EditAlbum = ({ id }: { id: number }) => {
         throw new Error("Name is required");
       } else {
         setName(text);
-        await updateAlbum(id, text, year, image);
+        await updateLibraryAlbum({
+          id,
+          name: text === originalName ? undefined : text,
+          year: getChangedYear(year, originalYear),
+          image,
+        });
       }
     } catch (error) {
       const trace = error instanceof Error ? error.message : String(error);
@@ -52,9 +64,18 @@ const EditAlbum = ({ id }: { id: number }) => {
 
   const yearInputValidation = async (text: string) => {
     try {
-      const yearNum = text ? parseInt(text) : undefined;
+      const yearNum = text ? parseInt(text, 10) : undefined;
+      if (Number.isNaN(yearNum)) {
+        throw new Error("Year must be a number");
+      }
+
       setYear(yearNum);
-      await updateAlbum(id, name, yearNum, image);
+      await updateLibraryAlbum({
+        id,
+        name: name === originalName ? undefined : name,
+        year: getChangedYear(yearNum, originalYear),
+        image,
+      });
     } catch (error) {
       const trace = error instanceof Error ? error.message : String(error);
       addNotification(
@@ -72,12 +93,12 @@ const EditAlbum = ({ id }: { id: number }) => {
     const cover = await newCover();
     if (cover) {
       setImage(cover);
-      await updateAlbum(
+      await updateLibraryAlbum({
         id,
-        name === originalName ? undefined : name,
-        year === originalYear ? undefined : year,
-        cover,
-      );
+        name: name === originalName ? undefined : name,
+        year: getChangedYear(year, originalYear),
+        image: cover,
+      });
     }
   };
 

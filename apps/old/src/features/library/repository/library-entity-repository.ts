@@ -74,6 +74,21 @@ const assertUniqueAlbumName = async (name: string) => {
   }
 };
 
+const assertUniqueAlbumNameForUpdate = async (
+  albumId: number,
+  name: string,
+) => {
+  const existingAlbum = await db
+    .select({ id: schema.albums.id })
+    .from(schema.albums)
+    .where(and(eq(schema.albums.name, name), ne(schema.albums.id, albumId)))
+    .limit(1);
+
+  if (existingAlbum.length > 0) {
+    throw new Error("Album already exists");
+  }
+};
+
 export const createLibraryArtist = async (name: string, image?: string) => {
   const cleanName = name.trim();
 
@@ -216,4 +231,40 @@ export const createLibraryAlbum = async (
     name: cleanName,
     year,
   };
+};
+
+export const updateLibraryAlbum = async ({
+  id,
+  name,
+  year,
+  image,
+}: {
+  id: number;
+  name?: string;
+  year?: number | null;
+  image?: string;
+}) => {
+  const cleanName = name?.trim();
+  const coverImage = await saveCoverImage(image);
+
+  if (cleanName !== undefined && !cleanName) {
+    throw new Error("Album name is required");
+  }
+
+  if (cleanName !== undefined) {
+    await assertUniqueAlbumNameForUpdate(id, cleanName);
+  }
+
+  if (cleanName === undefined && year === undefined && coverImage === null) {
+    return;
+  }
+
+  await db
+    .update(schema.albums)
+    .set({
+      ...(cleanName !== undefined ? { name: cleanName } : {}),
+      ...(year !== undefined ? { year } : {}),
+      ...(coverImage !== null ? { coverImage } : {}),
+    })
+    .where(eq(schema.albums.id, id));
 };

@@ -245,8 +245,11 @@ feature-oriented packages.
      timing decisions remain inside `use-playback-ad-timing-effects.ts`.
    - Done: song option add-to-queue now calls `usePlayer().addSongToQueue`
      instead of importing track creation helpers directly.
-   - Next safe slice: move song-row play commands behind playback feature APIs
-     so `SongList` no longer imports track factories or TrackPlayer commands.
+   - Done: song rows now call `usePlayer().playSong` and
+     `usePlayer().addSongToQueue` instead of importing track creation or
+     TrackPlayer play helpers directly.
+   - Next safe slice: move queue active-index reads and source persistence out
+     of `SongList` so the list component becomes UI-focused.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

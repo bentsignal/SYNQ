@@ -9,11 +9,6 @@ import {
   SourceType,
 } from "@/src/constants/Types";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
-import { useThemeContext } from "@/src/context/ThemeProvider";
-import {
-  getTrackFromSong,
-  playTrack,
-} from "@/src/features/playback/lib/player-track-service";
 import { generateSongKey } from "@/src/controllers/SongController";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { useAdGatedPlaybackCommand } from "@/src/features/playback/hooks/use-ad-gated-playback-command";
@@ -26,7 +21,7 @@ import DraggableFlatlist, {
   DragEndParams,
   RenderItemParams,
 } from "react-native-draggable-flatlist";
-import TrackPlayer, { type Track, useActiveTrack } from "react-native-track-player";
+import TrackPlayer, { useActiveTrack } from "react-native-track-player";
 
 const MemoSong = memo(Song);
 
@@ -85,10 +80,9 @@ const SongList = memo(
     const { selectedId } = useImportFlowContext();
     const { shuffle, setSourceType, setSourceId, setSort, setOrder, setQuery } =
       usePlaybackContext();
-    const { theme } = useThemeContext();
     const activeTrack = useActiveTrack();
     const { sendHaptic } = useHaptics();
-    const { addToQueue, updateQueue } = usePlayer();
+    const { addSongToQueue, playSong, updateQueue } = usePlayer();
     const { runAdGatedPlaybackCommand } = useAdGatedPlaybackCommand();
 
     const [activeIndex, setActiveIndex] = useState(0);
@@ -134,9 +128,7 @@ const SongList = memo(
         const playbackSourceType = playbackSource.type;
         const hasPlaybackSource =
           playbackSourceType !== undefined && playbackSourceId !== undefined;
-        const queueSelectedTrackAfterAdStarts = async (
-          newTrack?: Track,
-        ) => {
+        const queueSelectedTrackAfterAdStarts = async () => {
           if (hasPlaybackSource) {
             await updateQueue(
               song.id,
@@ -152,16 +144,13 @@ const SongList = memo(
               type: playbackSourceType,
             });
           }
-          if (newTrack) {
-            await addToQueue(newTrack);
-          }
+          await addSongToQueue(song);
         };
 
         await runAdGatedPlaybackCommand({
           afterAdStarts: async () => {
             posthog.capture("play_ad");
-            const newTrack = await getTrackFromSong(song, theme);
-            await queueSelectedTrackAfterAdStarts(newTrack);
+            await queueSelectedTrackAfterAdStarts();
           },
           command: async () => {
             if (id === song.id) {
@@ -170,9 +159,8 @@ const SongList = memo(
 
             posthog.capture("play_song");
             try {
-              const newTrack = await getTrackFromSong(song, theme);
-              if (newTrack) {
-                await playTrack(newTrack);
+              const didPlaySong = await playSong(song);
+              if (didPlaySong) {
                 if (hasPlaybackSource) {
                   await updateQueue(
                     song.id,
@@ -196,7 +184,6 @@ const SongList = memo(
         });
       },
       [
-        theme,
         shuffle,
         setSourceType,
         setSourceId,

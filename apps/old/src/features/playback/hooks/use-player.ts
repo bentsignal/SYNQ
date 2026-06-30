@@ -1,7 +1,15 @@
-import { SongType, SortOrder, SortType, SourceType } from "@/src/constants/Types";
+import {
+  SongType,
+  SortOrder,
+  SortType,
+  SourceType,
+} from "@/src/constants/Types";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
-import { getTrackFromSong } from "@/src/features/playback/lib/player-track-service";
+import {
+  getTrackFromSong,
+  playTrack,
+} from "@/src/features/playback/lib/player-track-service";
 import {
   addTrackToQueue,
   skipToNextPlayableTrack,
@@ -61,6 +69,16 @@ export default function usePlayer() {
     }
   };
 
+  const playSong = async (song: SongType) => {
+    const newTrack = await getTrackFromSong(song, theme);
+    if (!newTrack) {
+      return false;
+    }
+
+    await playTrack(newTrack);
+    return true;
+  };
+
   const skipRight = async () => {
     await skipToNextPlayableTrack({
       loop,
@@ -112,6 +130,7 @@ export default function usePlayer() {
     setupPlayer,
     addToQueue,
     addSongToQueue,
+    playSong,
     skipRight,
     skipLeft,
     updateQueue,

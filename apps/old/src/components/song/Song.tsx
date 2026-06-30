@@ -6,24 +6,17 @@ import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import {
   ArtistType,
-  CoverType,
   PageType,
   SongType,
 } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
-import {
-  getAlbumCover,
-  getArtistsFromAlbum,
-} from "@/src/controllers/AlbumController";
+import { getArtistsFromAlbum } from "@/src/controllers/AlbumController";
 import { getArtistsFromSong } from "@/src/controllers/ArtistController";
 import {
   getImportSongCover,
   getLibrarySongCover,
-  isSongEdited,
 } from "@/src/controllers/SongController";
-import { db } from "@synq/db";
-import * as schema from "@synq/db/schema";
 import albumBus from "@/src/events/album";
 import {
   AlbumBusEvent,
@@ -41,10 +34,9 @@ import {
   SongInfoModifiedEvent,
 } from "@/src/events/song/Events";
 import ListCover from "@/src/features/cover/components/list-cover";
+import { useSongRowMetadata } from "@/src/features/library/hooks/use-song-row-metadata";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
-import { eq, InferSelectModel } from "drizzle-orm";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { Ellipsis } from "lucide-react-native";
 import { PanResponder, StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, {
@@ -54,8 +46,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import Handle from "../lists/Handle";
-
-type SchemaSong = InferSelectModel<typeof schema.songs>;
 
 type SongProps = {
   song: SongType;
@@ -83,19 +73,11 @@ export default function Song({
   const [title, setTitle] = useState("");
   const [artist, setArtist] = useState("");
   const [album, setAlbum] = useState("");
-
-  const { data: albums } = useLiveQuery(
-    db
-      .select()
-      .from(schema.albumSongs)
-      .where(eq(schema.albumSongs.songId, song.id))
-      .innerJoin(
-        schema.albums,
-        eq(schema.albumSongs.albumId, schema.albums.id),
-      ),
-  );
-
-  console.log(albums);
+  const metadata = useSongRowMetadata(song);
+  const displayMetadata =
+    song.pageType === PageType.IMPORT
+      ? { fileName, title, artist, album }
+      : metadata;
 
   const {
     selectEnabled,
@@ -157,26 +139,36 @@ export default function Song({
 
   useEffect(() => {
     loadCover();
-    setFileName(song.fileName);
-    setTitle(song.title);
-    setArtist(song.artist);
-    setAlbum(song.album);
+    setFileName(song.fileName ?? "");
+    setTitle(song.title ?? "");
+    setArtist(song.artist ?? "");
+    setAlbum(song.album ?? "");
   }, [song]);
 
   useEffect(() => {
-    songBus.on(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
     songBus.on(SongBusEvent.SONG_COVER_MODIFIED, updateSongCover);
-    artistBus.on(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
-    albumBus.on(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, updateAlbumInfo);
     albumBus.on(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, loadCover);
     return () => {
-      songBus.off(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
       songBus.off(SongBusEvent.SONG_COVER_MODIFIED, updateSongCover);
-      artistBus.off(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
-      albumBus.off(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, updateAlbumInfo);
       albumBus.off(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, loadCover);
     };
   }, []);
+
+  useEffect(() => {
+    if (song.pageType !== PageType.IMPORT) {
+      return;
+    }
+
+    songBus.on(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
+    artistBus.on(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
+    albumBus.on(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, updateAlbumInfo);
+
+    return () => {
+      songBus.off(SongBusEvent.SONG_INFO_MODIFIED, updateSongInfo);
+      artistBus.off(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, updateArtistInfo);
+      albumBus.off(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, updateAlbumInfo);
+    };
+  }, [song.pageType]);
 
   let disablePlay = false;
   if (
@@ -331,10 +323,10 @@ export default function Song({
           size={50}
         />
         <SongInfo
-          fileName={fileName}
-          title={title}
-          artist={artist}
-          album={album}
+          fileName={displayMetadata.fileName}
+          title={displayMetadata.title}
+          artist={displayMetadata.artist}
+          album={displayMetadata.album}
           id={song.id}
           isActive={active}
         />

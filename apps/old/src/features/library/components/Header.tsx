@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { BlurView } from "expo-blur";
 import { router } from "expo-router";
 import { ChevronLeft, Ellipsis } from "lucide-react-native";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import colors from "../lib/colors";
+import colors from "@/src/lib/colors";
 
 type HeaderProps = {
   scrollPosition: number;
@@ -23,7 +22,6 @@ const Header = ({
   handleMore,
 }: HeaderProps) => {
   const insets = useSafeAreaInsets();
-  const { theme } = useThemeContext();
   const [showHeader, setShowHeader] = useState(false);
   const [height, setHeight] = useState(0);
   const threshold = 500;
@@ -34,7 +32,7 @@ const Header = ({
     } else if (scrollPosition <= threshold && showHeader) {
       setShowHeader(false);
     }
-  }, [scrollPosition]);
+  }, [scrollPosition, showHeader]);
 
   return (
     <>

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import Header from "@/src/components/Header";
+import Header from "@/src/features/library/components/Header";
 import QueryWrapper from "@/src/components/lists/query/Wrapper";
 import SongList from "@/src/components/lists/song";
 import SongListHeader from "@/src/components/lists/song/Header";

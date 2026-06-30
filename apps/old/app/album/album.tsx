@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Header from "@/src/components/Header";
+import Header from "@/src/features/library/components/Header";
 import AlbumHeader from "@/src/components/lists/album/Header";
 import ArtistItem from "@/src/components/lists/artist/ArtistItem";
 import QueryWrapper from "@/src/components/lists/query/Wrapper";

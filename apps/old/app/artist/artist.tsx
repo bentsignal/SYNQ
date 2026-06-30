@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import Header from "@/src/components/Header";
+import Header from "@/src/features/library/components/Header";
 import AlbumList from "@/src/components/lists/album";
 import ArtistHeader from "@/src/components/lists/artist/Header";
 import QueryWrapper from "@/src/components/lists/query/Wrapper";
 import SongList from "@/src/components/lists/song";
 import Overlay from "@/src/features/app-shell/components/Overlay";
-import TabSelector from "@/src/components/TabSelector";
+import TabSelector from "@/src/features/library/components/TabSelector";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import {

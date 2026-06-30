@@ -1,6 +1,6 @@
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
-import { playAd } from "@/src/features/playback/lib/player-track-service";
+import { playAd } from "@/src/features/playback/lib/playback-ad-service";
 import { skipToNextQueueTrack } from "@/src/features/playback/lib/player-queue-actions-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback } from "react";

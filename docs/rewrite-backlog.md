@@ -221,9 +221,9 @@ feature-oriented packages.
    - Done: legacy `usePlayer` now lives at
      `apps/old/src/features/playback/hooks/use-player.ts` so queue mutation and
      skip behavior are owned by the playback feature.
-   - Done: the remaining live `PlayerController` helpers now live in
-     `apps/old/src/features/playback/lib/player-track-service.ts`, and the
-     stale legacy controller file has been removed.
+   - Done: the remaining live `PlayerController` helpers have been split into
+     feature-owned playback factories/services, and the stale legacy controller
+     file has been removed.
    - Done: track creation and artwork helpers now live in
      `apps/old/src/features/playback/lib/track-factory.ts`, separate from
      TrackPlayer queue side effects.
@@ -293,6 +293,9 @@ feature-oriented packages.
    - Done: track playback queue mutation now lives in the playback queue action
      service, leaving the track service focused on ad-track construction and
      track factory re-exports.
+   - Done: the obsolete player-track compatibility service has been removed;
+     artwork callers import the track factory directly, and ad playback now
+     lives in `apps/old/src/features/playback/lib/playback-ad-service.ts`.
    - Next safe slice: continue moving remaining TrackPlayer calls in UI
      components behind playback feature APIs.
 

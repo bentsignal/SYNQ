@@ -9,8 +9,8 @@ import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
+import { resetBackupDatabaseConnection } from "@/src/features/backup/lib/backup-database-service";
 import { posthog } from "@/src/lib/posthog";
-import Model from "@/src/models/Model";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
@@ -60,8 +60,7 @@ export default function Backup() {
   };
 
   const resetDB = async () => {
-    await Model.reconnect();
-    await Model.createTables();
+    await resetBackupDatabaseConnection();
   };
 
   const handleBackup = async () => {

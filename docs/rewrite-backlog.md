@@ -238,6 +238,9 @@ feature-oriented packages.
    - Export completion writes now go through the library metadata repository
      compatibility helper instead of importing `SongModel` from the export
      feature.
+   - Backup restore/erase database reset now goes through a backup feature
+     service instead of importing legacy `Model` directly from the settings
+     route.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

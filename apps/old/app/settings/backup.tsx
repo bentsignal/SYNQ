@@ -33,12 +33,24 @@ export default function Backup() {
 
   const [loading, setLoading] = useState(false);
 
+  const getDocumentDirectory = () => {
+    if (!FileSystem.documentDirectory) {
+      throw new Error("Document directory is unavailable.");
+    }
+
+    return FileSystem.documentDirectory;
+  };
+
+  const wrapError = (message: string, error: unknown) => {
+    const details = error instanceof Error ? error.message : String(error);
+    return new Error(`${message} ${details}`);
+  };
+
   const clearDocumentDirectory = async () => {
-    const items = await FileSystem.readDirectoryAsync(
-      FileSystem.documentDirectory,
-    );
+    const documentDirectory = getDocumentDirectory();
+    const items = await FileSystem.readDirectoryAsync(documentDirectory);
     for (const item of items) {
-      await FileSystem.deleteAsync(`${FileSystem.documentDirectory}${item}`);
+      await FileSystem.deleteAsync(`${documentDirectory}${item}`);
     }
   };
 
@@ -58,9 +70,10 @@ export default function Backup() {
   const handleBackup = async () => {
     try {
       setLoading(true);
+      const documentDirectory = getDocumentDirectory();
       const pathToZip = await zip(
-        `${FileSystem.documentDirectory}`,
-        `${FileSystem.documentDirectory}backup.zip`,
+        documentDirectory,
+        `${documentDirectory}backup.zip`,
       );
       await Sharing.shareAsync(pathToZip);
     } catch (error) {
@@ -84,27 +97,27 @@ export default function Backup() {
         try {
           await clearDocumentDirectory();
         } catch (error) {
-          throw new Error("Error clearing document directory:", error);
+          throw wrapError("Error clearing document directory:", error);
         }
         try {
           await clearAsyncStorage();
         } catch (error) {
-          throw new Error("Error clearing async storage:", error);
+          throw wrapError("Error clearing async storage:", error);
         }
         try {
-          await unzip(result.assets[0].uri, FileSystem.documentDirectory);
+          await unzip(result.assets[0].uri, getDocumentDirectory());
         } catch (error) {
-          throw new Error("Error unzipping backup:", error);
+          throw wrapError("Error unzipping backup:", error);
         }
         try {
           await resetDB();
         } catch (error) {
-          throw new Error("Error reconnecting to db:", error);
+          throw wrapError("Error reconnecting to db:", error);
         }
         try {
           await resetPlayer();
         } catch (error) {
-          throw new Error("Error resetting track player:", error);
+          throw wrapError("Error resetting track player:", error);
         }
         Alert.alert("Success", "Library restored successfully.");
         setLoading(false);
@@ -145,22 +158,22 @@ export default function Backup() {
                 try {
                   await clearDocumentDirectory();
                 } catch (error) {
-                  throw new Error("Error clearing document directory:", error);
+                  throw wrapError("Error clearing document directory:", error);
                 }
                 try {
                   await clearAsyncStorage();
                 } catch (error) {
-                  throw new Error("Error clearing async storage:", error);
+                  throw wrapError("Error clearing async storage:", error);
                 }
                 try {
                   await resetDB();
                 } catch (error) {
-                  throw new Error("Error reconnecting to db:", error);
+                  throw wrapError("Error reconnecting to db:", error);
                 }
                 try {
                   await resetPlayer();
                 } catch (error) {
-                  throw new Error("Error resetting track player:", error);
+                  throw wrapError("Error resetting track player:", error);
                 }
                 Alert.alert("Success", "Library erased successfully.");
                 setLoading(false);

@@ -24,8 +24,10 @@ feature-oriented packages.
   their update controllers expose the optional-field behavior they already had
   at runtime. The home/player playback route now guards missing TrackPlayer
   index, track, and source metadata before updating local playback state or
-  rebuilding queues. Treat remaining errors as a tracked cleanup lane, not a
-  monorepo migration blocker.
+  rebuilding queues. Backup settings now resolve the Expo document directory
+  once before filesystem operations and wrap restore/erase substep errors
+  without relying on invalid `Error` constructor overloads. Treat remaining
+  errors as a tracked cleanup lane, not a monorepo migration blocker.
 
 ## Priority Lanes
 
@@ -286,8 +288,10 @@ feature-oriented packages.
      matching update controller contracts.
    - Done: guard missing active track/index/source metadata in the home tab and
      player route playback UI.
-   - Next: continue strict-null cleanup in backup settings, cover editing, and
-     import/library controllers.
+   - Done: normalize backup/restore document-directory and error wrapping
+     boundaries.
+   - Next: continue strict-null cleanup in cover editing and import/library
+     controllers.
 
 ## Guardrails
 

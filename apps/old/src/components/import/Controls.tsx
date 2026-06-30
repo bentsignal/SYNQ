@@ -37,7 +37,6 @@ export default function ImportControls() {
     results,
     loading,
     exportDisabled,
-    homeState,
     ip,
     transferSize,
     setResults,
@@ -156,7 +155,7 @@ export default function ImportControls() {
 
   const mainHandle = () => {
     if (pathname === "/import/files" || pathname === "/import/wifi") {
-      setImportState(homeState);
+      setImportState(0);
       router.push("/import/export");
     } else if (pathname === "/import/export") {
       router.push("/import/save");

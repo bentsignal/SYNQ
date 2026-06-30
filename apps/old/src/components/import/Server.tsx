@@ -19,7 +19,7 @@ const Server = () => {
 
   const {
 
-    homeState, results,
+    results,
 
     setResults, setTransferSize,
     setExportDisabled, setLoading,

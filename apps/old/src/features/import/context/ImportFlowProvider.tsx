@@ -11,8 +11,6 @@ import {
 import type { SongType } from "@/src/constants/Types";
 
 type ImportFlowContextValue = {
-  homeState: number;
-  setHomeState: Dispatch<SetStateAction<number>>;
   results: SongType[];
   setResults: Dispatch<SetStateAction<SongType[]>>;
   exportDisabled: boolean;
@@ -54,7 +52,6 @@ export const useImportFlowContext = () => {
 };
 
 export const ImportFlowProvider = ({ children }: PropsWithChildren) => {
-  const [homeState, setHomeState] = useState(0);
   const [results, setResults] = useState<SongType[]>([]);
   const [exportDisabled, setExportDisabled] = useState(true);
   const [selectedId, setSelectedId] = useState<string | number>("");
@@ -74,8 +71,6 @@ export const ImportFlowProvider = ({ children }: PropsWithChildren) => {
 
   const value = useMemo(
     () => ({
-      homeState,
-      setHomeState,
       results,
       setResults,
       exportDisabled,
@@ -102,7 +97,6 @@ export const ImportFlowProvider = ({ children }: PropsWithChildren) => {
       requestImportFinish,
     }),
     [
-      homeState,
       results,
       exportDisabled,
       selectedId,

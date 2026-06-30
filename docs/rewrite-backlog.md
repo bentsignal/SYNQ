@@ -62,6 +62,10 @@ feature-oriented packages.
    - Artist library refresh has started. `Artists.tsx` now reads from
      `useLibraryArtistsQuery` instead of listening for `ARTIST_CREATED`,
      `ARTIST_DELETED`, `ARTIST_MODIFIED`, or `PLAYLIST_SONGS_IMPORTED`.
+   - Album detail content has started. `app/album/album.tsx` now reads album
+     info/artists from `useAlbumInfoQuery` and songs from `useAlbumSongsQuery`
+     instead of listening for `ALBUM_MODIFIED`, `ALBUM_TOGGLED_ON_SONG`, or
+     `ALBUM_REORDERED`.
    - Next target: remove import-only metadata listeners from `Song.tsx` with a
      typed import edit store.
 
@@ -127,7 +131,10 @@ feature-oriented packages.
 
 3. Album:
    - Done: add `useLibraryAlbumsQuery` for the list-level library album screen.
-   - Add album detail/song/order/image queries.
+   - Done: add `useAlbumInfoQuery` and `useAlbumSongsQuery` for the album
+     detail screen.
+   - Add album order/image queries where the reorder and cover flows still
+     need Drizzle-backed state.
    - Replace `ALBUM_*` events, including `ALBUM_TOGGLED_ON_SONG` and
      `ALBUM_REORDERED`.
 

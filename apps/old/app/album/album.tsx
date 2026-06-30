@@ -8,22 +8,14 @@ import Overlay from "@/src/components/Overlay";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import {
-  AlbumType,
-  ArtistType,
   PageType,
-  SongType,
   SortOrder,
   SortType,
   SourceType,
 } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
-import {
-  getAlbumInfo,
-  getArtistsFromAlbum,
-  getSongsFromAlbum,
-} from "@/src/controllers/AlbumController";
-import albumBus from "@/src/events/album";
-import { AlbumBusEvent } from "@/src/events/album/Events";
+import { useAlbumInfoQuery } from "@/src/features/library/hooks/use-album-info-query";
+import { useAlbumSongsQuery } from "@/src/features/library/hooks/use-album-songs-query";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { StyleSheet, Text, View } from "react-native";
@@ -38,17 +30,19 @@ const AlbumView = ({ id }: { id: number }) => {
 
   const { sendHaptic } = useHaptics();
 
-  const [songs, setSongs] = useState<SongType[]>([]);
-  const [title, setTitle] = useState("");
-  const [year, setYear] = useState<number>();
   const [scrollPosition, setScrollPosition] = useState(0);
-  const [album, setAlbum] = useState<AlbumType | null>(null);
-  const [artists, setArtists] = useState<ArtistType[]>([]);
-  const [count, setCount] = useState(0);
-  const [duration, setDuration] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortType>(SortType.TRACK);
   const [order, setOrder] = useState<SortOrder>(SortOrder.ASC);
+  const { album, artists } = useAlbumInfoQuery(id);
+  const { songs, totalSongCount, totalDuration } = useAlbumSongsQuery({
+    albumId: id,
+    query,
+    sort,
+    order,
+  });
+  const title = album?.name ?? "";
+  const year = album?.year;
 
   const artistListOpacity = useSharedValue(0);
 
@@ -56,66 +50,17 @@ const AlbumView = ({ id }: { id: number }) => {
     opacity: artistListOpacity.value,
   }));
 
-  const refreshInfo = async () => {
-    if (id) {
-      try {
-        const result = await getAlbumInfo(id);
-        result.pageType = PageType.ALBUM;
-        setAlbum(result);
-        setTitle(result?.name || "");
-        setYear(result?.year);
-        const artists = await getArtistsFromAlbum(id);
-        setArtists(artists);
-      } catch (error) {
-        console.log("error refreshing album info:", error);
-      }
-    }
-  };
-
-  const refreshSongs = async () => {
-    try {
-      const songs = await getSongsFromAlbum(id, sort, order, query);
-      setSongs(songs);
-      const duration = songs.reduce(
-        (acc, song) => acc + (song.duration ?? 0),
-        0,
-      );
-      if (query === "") {
-        setCount(songs.length);
-        setDuration(duration);
-      }
+  useEffect(() => {
+    if (songs.length > 0 || artists.length > 0) {
       artistListOpacity.value = withTiming(1, { duration: 500 });
-    } catch (error) {
-      console.log("error refreshing album songs:", error);
     }
-  };
-
-  const triggerRefresh = () => {
-    refreshSongs();
-    refreshInfo();
-  };
-
-  // refresh song list and info when changes are are sent from emitter;
-  useEffect(() => {
-    albumBus.on(AlbumBusEvent.ALBUM_MODIFIED, refreshInfo);
-    albumBus.on(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, refreshSongs);
-    albumBus.on(AlbumBusEvent.ALBUM_REORDERED, refreshSongs);
-    return () => {
-      albumBus.off(AlbumBusEvent.ALBUM_MODIFIED, refreshInfo);
-      albumBus.off(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, refreshSongs);
-      albumBus.off(AlbumBusEvent.ALBUM_REORDERED, refreshSongs);
-    };
-  }, []);
-
-  useEffect(() => {
-    triggerRefresh();
-  }, [id]);
-
-  useEffect(() => {
-    refreshSongs();
-  }, [query, sort, order]);
+  }, [artistListOpacity, artists.length, songs.length]);
 
   const handleMore = () => {
+    if (!album) {
+      return;
+    }
+
     sendHaptic("light");
     setEditAlbum(album);
     try {
@@ -150,9 +95,9 @@ const AlbumView = ({ id }: { id: number }) => {
                 title={title}
                 year={year}
                 leadArtist={artists[0]}
-                songCount={count}
+                songCount={totalSongCount}
                 pageType={PageType.ALBUM}
-                duration={duration}
+                duration={totalDuration}
               />
               <QueryWrapper
                 setQuery={setQuery}

@@ -227,6 +227,9 @@ feature-oriented packages.
    - Done: track creation and artwork helpers now live in
      `apps/old/src/features/playback/lib/track-factory.ts`, separate from
      TrackPlayer queue side effects.
+   - Done: next-up source lookup and pagination now live in
+     `apps/old/src/features/playback/lib/playback-queue-service.ts` instead of
+     inside `use-player.ts`.
    - Next safe slice: split `use-player.ts` into typed queue actions and player
      setup/restore actions, then move track creation cover lookups behind a
      narrower playback feature API.

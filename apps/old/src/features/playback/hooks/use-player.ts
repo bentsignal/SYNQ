@@ -1,16 +1,8 @@
-import {
-  PageType,
-  SongType,
-  SortOrder,
-  SortType,
-  SourceType,
-} from "@/src/constants/Types";
-import { getSongsFromAlbum } from "@/src/controllers/AlbumController";
-import { getSongsFromArtist } from "@/src/controllers/ArtistController";
+import { SortOrder, SortType, SourceType } from "@/src/constants/Types";
 import { getTrackFromSong } from "@/src/features/playback/lib/player-track-service";
-import { getPlaylistSongs } from "@/src/controllers/PlaylistController";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
+import { getNextUp } from "@/src/features/playback/lib/playback-queue-service";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { check } from "@/src/lib/util";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -221,72 +213,6 @@ export default function usePlayer() {
     const queue = await TrackPlayer.getQueue();
     await AsyncStorage.setItem("queue", JSON.stringify(queue));
     await resetAddOffset();
-  };
-
-  const getNextUp = async (
-    currentId: number,
-    pagination: number = 100,
-    shuffleValue: boolean,
-    sourceTypeValue: SourceType,
-    sourceIdValue: number,
-    sort?: SortType,
-    order?: SortOrder,
-    query?: string,
-  ): Promise<SongType[]> => {
-    const next: SongType[] = [];
-    let songs: SongType[] = [];
-    if (sourceTypeValue === SourceType.PLAYLIST) {
-      songs = await getPlaylistSongs(
-        sourceIdValue,
-        PageType.LIBRARY,
-        sort,
-        order,
-        query,
-      );
-    } else if (sourceTypeValue === SourceType.ARTIST) {
-      songs = await getSongsFromArtist(sourceIdValue, sort, order, query);
-    } else if (sourceTypeValue === SourceType.ALBUM) {
-      songs = await getSongsFromAlbum(sourceIdValue, sort, order, query);
-    } else {
-      return songs;
-    }
-
-    try {
-      if (shuffleValue) {
-        const cap = pagination > songs.length ? songs.length : pagination;
-        for (let i = 0; i < cap; i++) {
-          const randomIndex = Math.floor(Math.random() * songs.length);
-          const newSong = songs[randomIndex];
-          next.push(newSong);
-          songs.splice(randomIndex, 1);
-        }
-      } else {
-        const currentIndex = songs.findIndex(
-          (song: SongType) => song.id === currentId,
-        );
-        const validSongs = songs.filter(
-          (song: SongType, index: number) => index > currentIndex,
-        );
-        if (validSongs.length === 0) {
-          const cap = pagination > songs.length ? songs.length : pagination;
-          for (let i = 0; i < cap; i++) {
-            const newSong = songs[i];
-            next.push(newSong);
-          }
-        } else {
-          const cap =
-            pagination > validSongs.length ? validSongs.length : pagination;
-          for (let i = 0; i < cap; i++) {
-            const newSong = validSongs[i];
-            next.push(newSong);
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-
-    return next;
   };
 
   return {

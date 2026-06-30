@@ -77,6 +77,8 @@ feature-oriented packages.
    - Playlist row metadata and counts now render from props; `PlaylistItem` no
      longer listens for `PLAYLIST_NAME_MODIFIED` or
      `PLAYLIST_SONG_COUNT_MODIFIED`.
+   - Add-to-playlist now reads from `useLibraryPlaylistsQuery` with
+     membership prioritization instead of listening for `PLAYLIST_CREATED`.
    - Next target: remove import-only metadata listeners from `Song.tsx` with a
      typed import edit store.
 
@@ -139,6 +141,8 @@ feature-oriented packages.
      whether a playlist-specific wrapper is still useful.
    - Done: remove `PLAYLIST_NAME_MODIFIED` and
      `PLAYLIST_SONG_COUNT_MODIFIED` display listeners from playlist rows.
+   - Done: add membership prioritization to `useLibraryPlaylistsQuery` and use
+     it in `app/playlist/add.tsx` instead of the `PLAYLIST_CREATED` listener.
    - Replace count/name/image/content listeners and remove the broad
      `PLAYLIST_SONGS_IMPORTED` invalidation pattern.
 

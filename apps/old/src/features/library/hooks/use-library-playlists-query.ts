@@ -6,6 +6,7 @@ import { count, eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 
 type LibraryPlaylistsQueryOptions = {
+  prioritizeSongId?: number;
   query?: string;
   sort?: SortType;
   order?: SortOrder;
@@ -15,6 +16,10 @@ type PlaylistRow = {
   id: number;
   name: string | null;
   songCount: number;
+};
+
+type PlaylistMembershipRow = {
+  playlistId: number | null;
 };
 
 const normalizeQuery = (query?: string) => query?.trim().toLowerCase() ?? "";
@@ -50,6 +55,22 @@ const prioritizeLikedSongs = (playlists: PlaylistType[]) => {
   return likedSongs ? [likedSongs, ...remaining] : remaining;
 };
 
+const prioritizePlaylists = (
+  playlists: PlaylistType[],
+  priorityIds: Set<number>,
+) => {
+  if (priorityIds.size === 0) {
+    return playlists;
+  }
+
+  const selected = playlists.filter((playlist) => priorityIds.has(playlist.id));
+  const remaining = playlists.filter(
+    (playlist) => !priorityIds.has(playlist.id),
+  );
+
+  return [...selected, ...remaining];
+};
+
 const rowsToPlaylists = (rows: PlaylistRow[]): PlaylistType[] =>
   rows
     .filter((row) => row.id !== 1)
@@ -60,6 +81,7 @@ const rowsToPlaylists = (rows: PlaylistRow[]): PlaylistType[] =>
     }));
 
 export const useLibraryPlaylistsQuery = ({
+  prioritizeSongId,
   query,
   sort = SortType.DATE,
   order = SortOrder.DESC,
@@ -78,16 +100,32 @@ export const useLibraryPlaylistsQuery = ({
       )
       .groupBy(schema.playlists.id),
   );
+  const { data: membershipData } = useLiveQuery(
+    db
+      .select({
+        playlistId: schema.playlistSongs.playlistId,
+      })
+      .from(schema.playlistSongs)
+      .where(eq(schema.playlistSongs.songId, prioritizeSongId ?? -1)),
+  );
 
   const playlists = useMemo(() => {
     const normalizedQuery = normalizeQuery(query);
     const mappedPlaylists = rowsToPlaylists((data ?? []) as PlaylistRow[]);
+    const priorityIds = new Set(
+      ((membershipData ?? []) as PlaylistMembershipRow[])
+        .map((row) => row.playlistId)
+        .filter((id): id is number => typeof id === "number"),
+    );
     const filteredPlaylists = mappedPlaylists.filter((playlist) =>
       matchesQuery(playlist, normalizedQuery),
     );
 
-    return prioritizeLikedSongs(sortPlaylists(filteredPlaylists, sort, order));
-  }, [data, query, sort, order]);
+    return prioritizePlaylists(
+      prioritizeLikedSongs(sortPlaylists(filteredPlaylists, sort, order)),
+      priorityIds,
+    );
+  }, [data, membershipData, query, sort, order]);
 
   return {
     playlists,

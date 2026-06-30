@@ -23,9 +23,12 @@ const SavePrompt = () => {
     results,
     loading,
     ip,
+    transferProgress,
+    transferSize,
 
     setExportDisabled,
     setLoading,
+    setTransferProgress,
     setTransferSize,
     setResults,
   } = useImportFlowContext();
@@ -52,6 +55,10 @@ const SavePrompt = () => {
   const pathname = usePathname();
   const currentPath = useRef(pathname);
   const handledImportFinishRequest = useRef(0);
+  const saveCompletion =
+    transferSize > 0
+      ? Math.min(100, Math.round((transferProgress / transferSize) * 100))
+      : 0;
 
   useEffect(() => {
     currentPath.current = pathname;
@@ -137,9 +144,11 @@ const SavePrompt = () => {
       setExportDisabled(true);
       setLoading(true);
       await checkForAd();
-      const songs = premium ? results : [results[0]];
+      const songs = premium ? results : results.slice(0, 1);
+      setTransferProgress(0);
+      setTransferSize(songs.length);
       const progress = (value: number) => {
-        // TODO: Implement progress
+        setTransferProgress(value);
       };
       setTimeout(() => {
         saveImportSongsToLibrary(songs, progress)
@@ -147,6 +156,7 @@ const SavePrompt = () => {
             sendHaptic("success");
             router.replace("/import/success");
             setTransferSize(0);
+            setTransferProgress(0);
             setShowImportAd(false);
             setResults([]);
             if (importState === 1) {
@@ -171,6 +181,7 @@ const SavePrompt = () => {
             sendHaptic("error");
             router.push("/import/failure");
             setTransferSize(0);
+            setTransferProgress(0);
             setShowImportAd(false);
             setResults([]);
             if (importState === 1) {
@@ -184,6 +195,7 @@ const SavePrompt = () => {
       await deleteImportSongs(results);
       setResults([]);
       setTransferSize(0);
+      setTransferProgress(0);
       setShowImportAd(false);
       setTimeout(() => {
         checkForReview();
@@ -227,7 +239,11 @@ const SavePrompt = () => {
         </View>
       </View>
       <View style={[Local.body, { display: loading ? "flex" : "none" }]}>
-        <Progress completion={0} loading={loading} showCircle={false} />
+        <Progress
+          completion={saveCompletion}
+          loading={loading}
+          showCircle={false}
+        />
       </View>
     </>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import ListCover from "@/src/features/cover/components/ListCover";
 import CrossfadeImage from "@/src/features/playback/components/CrossfadeImage";
 import { SkipLeft, SkipRight } from "@/src/features/playback/components/Skip";
@@ -6,10 +6,8 @@ import SongInfo from "@/src/features/library/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType } from "@/src/constants/Types";
-import { getLibrarySongCoverPath } from "@/src/features/library/repository/library-song-repository";
-import { getTrackArtwork } from "@/src/features/playback/lib/track-factory";
+import { useMiniPlayerArtwork } from "@/src/features/playback/hooks/use-mini-player-artwork";
 import { getFileName } from "@/src/lib/util";
-import { useAssets } from "expo-asset";
 import { router } from "expo-router";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, {
@@ -17,70 +15,26 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { useActiveTrack } from "react-native-track-player";
 import PausePlayButtons from "./PausePlayButtons";
 
 const MiniPlayer = () => {
-  const track = useActiveTrack();
+  const { backgroundImage, coverImage, emptyCover, track } =
+    useMiniPlayerArtwork();
 
   const opacity = useSharedValue(0);
   const coverStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
 
-  const [coverImage, setCoverImage] = useState("");
-  const [emptyCover, setEmptyCover] = useState(false);
-  const [assets, error] = useAssets([require("@/src/assets/images/popup.jpg")]);
-  const [emptyImage, setEmptyImage] = useState<string>("transparent");
-
   useEffect(() => {
-    if (error) {
-      return;
-    }
-    if (assets) {
-      setEmptyImage(assets[0].uri);
-    }
-  }, [assets]);
-
-  const loadCover = async () => {
-    try {
-      if (track?.id === undefined) {
-        setCoverImage("");
-        setEmptyCover(true);
-        return;
-      }
-
-      const cover = await getLibrarySongCoverPath(Number(track.id));
-      if (cover) {
-        setCoverImage(cover);
-        setEmptyCover(false);
-      } else {
-        setCoverImage("");
-        setEmptyCover(true);
-      }
-    } catch (error) {
-      console.log("error loading song cover:", error);
-    }
-  };
-
-  const getBackgroundImage = () => {
-    if (!track) {
-      return emptyImage;
-    }
-
-    const artwork = getTrackArtwork(track);
-    if (artwork !== "transparent") {
-      return artwork;
-    }
-    return emptyImage;
-  };
-
-  useEffect(() => {
-    loadCover();
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       opacity.value = withTiming(track ? 1 : 0, { duration: 200 });
     }, 200);
-  }, [track]);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [opacity, track]);
 
   const textColor = Colors.text;
 
@@ -99,7 +53,7 @@ const MiniPlayer = () => {
         onPress={() => router.push("/player")}
       >
         <CrossfadeImage
-          source={{ uri: getBackgroundImage() }}
+          source={{ uri: backgroundImage }}
           blurRadius={100}
           duration={500}
           style={[Local.container, Local.fadeImage]}

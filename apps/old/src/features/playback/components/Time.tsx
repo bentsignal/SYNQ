@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import usePlayer from "@/src/features/playback/hooks/use-player";
@@ -14,12 +14,12 @@ import Animated, {
 } from "react-native-reanimated";
 import { State, usePlaybackState, useProgress } from "react-native-track-player";
 
-const Time = () => {
-  const interval = 50;
+const PROGRESS_INTERVAL = 50;
 
+const Time = () => {
   const { adPlaying } = usePlaybackAdContext();
   const { seekToPosition } = usePlayer();
-  const { position, duration } = useProgress(interval);
+  const { position, duration } = useProgress(PROGRESS_INTERVAL);
   const playbackState = usePlaybackState();
 
   const [elapsedSec, setElapsedSec] = useState(0);
@@ -34,6 +34,13 @@ const Time = () => {
   const sliderHeight = useSharedValue(1);
   const windowWidth = useSharedValue(Dimensions.get("window").width);
 
+  const updateTimeline = useCallback(() => {
+    progressScale.value = withTiming(duration === 0 ? 0 : position / duration, {
+      duration: PROGRESS_INTERVAL,
+      easing: Easing.linear,
+    });
+  }, [duration, position, progressScale]);
+
   useEffect(() => {
     if (scrubbing.value) return;
     if (
@@ -46,36 +53,29 @@ const Time = () => {
     setElapsedSec(Math.floor(position));
     setRemainingSec(Math.floor(duration) - Math.floor(position));
     updateTimeline();
-  }, [position]);
+  }, [duration, playbackState.state, position, scrubbing, updateTimeline]);
 
   useEffect(() => {
     allowScrub.value = !adPlaying;
-  }, [adPlaying]);
+  }, [adPlaying, allowScrub]);
 
   useEffect(() => {
     if (duration === 0) return;
     progressScale.value = position / duration;
     sharedDuration.value = Math.floor(duration);
-  }, [duration]);
+  }, [duration, position, progressScale, sharedDuration]);
 
-  const updateTimeline = () => {
-    progressScale.value = withTiming(duration === 0 ? 0 : position / duration, {
-      duration: interval,
-      easing: Easing.linear,
-    });
-  };
-
-  const jump = async (newPosition: number) => {
+  const jump = useCallback(async (newPosition: number) => {
     await seekToPosition(newPosition);
     setTimeout(() => {
       scrubbing.value = false;
-    }, interval);
-  };
+    }, PROGRESS_INTERVAL);
+  }, [scrubbing, seekToPosition]);
 
-  const updateTimes = (newElapsed: number, newRemaining: number) => {
+  const updateTimes = useCallback((newElapsed: number, newRemaining: number) => {
     setElapsedSec(newElapsed);
     setRemainingSec(newRemaining);
-  };
+  }, []);
 
   const handleGesture = Gesture.Pan()
     .onStart((e) => {

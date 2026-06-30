@@ -198,6 +198,8 @@ feature-oriented packages.
    - Wi-Fi import upload processing now lives in the import feature layer,
      using repository-backed metadata album/artist creation instead of
      importing `ImportExportController` from the server component.
+   - Song metadata updates now resolve album/artist metadata through library
+     repository helpers instead of `AlbumController`/`ArtistController`.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

@@ -1,6 +1,8 @@
-import { getAlbumFromMetadata } from "@/src/controllers/AlbumController";
-import { getArtistsFromMetadata } from "@/src/controllers/ArtistController";
 import { saveCoverImage } from "@/src/features/images/repository/image-repository";
+import {
+  getLibraryAlbumFromMetadata,
+  getLibraryArtistsFromMetadata,
+} from "@/src/features/library/repository/library-entity-repository";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
@@ -21,7 +23,7 @@ type UpdateLibrarySongsInput = {
 };
 
 const replaceSongArtists = async (songId: number, artistValue: string) => {
-  const artists = await getArtistsFromMetadata(artistValue);
+  const artists = await getLibraryArtistsFromMetadata(artistValue);
 
   await db
     .delete(schema.artistSongs)
@@ -40,7 +42,7 @@ const replaceSongArtists = async (songId: number, artistValue: string) => {
 };
 
 const replaceSongAlbum = async (songId: number, albumValue: string) => {
-  const album = await getAlbumFromMetadata(albumValue);
+  const album = await getLibraryAlbumFromMetadata(albumValue);
 
   await db
     .delete(schema.albumSongs)

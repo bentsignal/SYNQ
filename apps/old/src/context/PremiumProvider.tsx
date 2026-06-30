@@ -5,7 +5,7 @@ import { useThemeContext } from "@/src/context/ThemeProvider";
 import {
   connect,
   restorePurchases,
-} from "@/src/controllers/PurchaseController";
+} from "@/src/features/premium/lib/purchase-service";
 import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAppIcon, setAppIcon } from "expo-icon-handler";

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import SongList from "@/src/components/lists/song";
 import Bar from "@/src/components/modals/Bar";
 import ModalStyles from "@/src/components/modals/Styles";
@@ -10,87 +10,21 @@ import { SkipLeft, SkipRight } from "@/src/components/player/Skip";
 import Time from "@/src/components/player/Time";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { PageType, SongType } from "@/src/constants/Types";
-import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
-import usePlayer from "@/src/features/playback/hooks/use-player";
+import { PageType } from "@/src/constants/Types";
+import { usePlaybackQueueDisplay } from "@/src/features/playback/hooks/use-playback-queue-display";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { getSongById } from "@/src/controllers/SongController";
-import { check } from "@/src/lib/util";
 import { Dimensions, StyleSheet, View } from "react-native";
-import { DragEndParams } from "react-native-draggable-flatlist";
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import TrackPlayer, { useActiveTrack } from "react-native-track-player";
 
 const Queue = () => {
-  const { queueRevision, shuffle } = usePlaybackContext();
-  const { moveQueueSong } = usePlayer();
   const { theme } = useThemeContext();
 
-  const track = useActiveTrack();
-
   const insets = useSafeAreaInsets();
-  const [songs, setSongs] = useState<SongType[]>([]);
   const listRef = useRef<any>(null);
-  const listOpacity = useSharedValue(0);
-
-  useEffect(() => {
-    scrollToIndex();
-  }, [track]);
-
-  const scrollToIndex = async (animated: boolean = true) => {
-    const index = await TrackPlayer.getActiveTrackIndex();
-    if (check(index)) {
-      listRef.current?.scrollToIndex({
-        index: index,
-        animated: animated,
-      });
-    }
-  };
-
-  useEffect(() => {
-    loadSongs();
-  }, [queueRevision, shuffle]);
-
-  const loadSongs = async () => {
-    const results: SongType[] = [];
-    const queue = await TrackPlayer.getQueue();
-    try {
-      let result: SongType;
-      for (let i = 0; i < queue.length; i++) {
-        if (queue[i].id !== -1) {
-          result = await getSongById(queue[i].id);
-          result.uuid = queue[i].description;
-          results.push(result);
-        }
-      }
-    } catch (error) {
-      console.log("error loading queue songs to display in list:", error);
-    }
-    setSongs(results);
-    scrollToIndex(false);
-    listOpacity.value = withTiming(1, {
-      duration: 500,
-      easing: Easing.inOut(Easing.ease),
-    });
-  };
-
-  const listContainerStyle = useAnimatedStyle(() => ({
-    opacity: listOpacity.value,
-    flex: 1,
-    width: "100%",
-    alignSelf: "center",
-  }));
-
-  const onDragEnd = async ({ data, from, to }: DragEndParams<any>) => {
-    setSongs(data);
-    await moveQueueSong(from, to);
-  };
+  const { listContainerStyle, onDragEnd, songs } = usePlaybackQueueDisplay({
+    listRef,
+  });
 
   return (
     <View style={[Styles.body, Local.container]}>

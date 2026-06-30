@@ -263,8 +263,11 @@ feature-oriented packages.
    - Done: queue reorder now calls `usePlayer().moveQueueSong`, which delegates
      to the playback queue action service instead of calling TrackPlayer
      directly from the queue screen.
-   - Next safe slice: move queue display loading/active-index scrolling out of
-     `app/queue.tsx` behind playback feature hooks.
+   - Done: queue display loading, active-track scrolling, fade-in animation,
+     and drag-end state updates now live in
+     `apps/old/src/features/playback/hooks/use-playback-queue-display.ts`.
+   - Next safe slice: split the queue route controls/layout into playback
+     feature components so `app/queue.tsx` is mostly route composition.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

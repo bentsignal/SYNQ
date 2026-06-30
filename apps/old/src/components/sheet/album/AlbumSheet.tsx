@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import Sheet from '@/src/components/sheet';
 import { useActionSheetContext } from '@/src/features/action-sheet/context/ActionSheetProvider';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
@@ -8,16 +8,13 @@ import { Styles } from '@/src/constants/Styles';
 import { Colors } from '@/src/constants/Colors';
 import { CoverType } from '@/src/constants/Types';
 import AlbumOptions from './AlbumOptions';
-import { getAlbumCover } from '@/src/controllers/AlbumController';
 
 const AlbumSheet = ({name}: {name: string}) => {
 
   const { editAlbum } = useActionSheetContext();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
-  const [coverImage, setCoverImage] = useState('');
   const scrollRef = useRef<ScrollView>(null);
-  const [emptyCover, setEmptyCover] = useState(false);
   const onChange = (index: number) => {
     if (index === 0) {
       setScrollEnabled(false);
@@ -28,41 +25,14 @@ const AlbumSheet = ({name}: {name: string}) => {
     }
   }
 
-  const loadCover = async () => {
-    try {
-      if (editAlbum?.image) {
-        setCoverImage(editAlbum.image);
-        setEmptyCover(false);
-      }
-      else {
-        const cover = await getAlbumCover(editAlbum.id);
-        if (cover) {
-          setCoverImage(cover);
-          setEmptyCover(false);
-        }
-        else {
-          setCoverImage('');
-          setEmptyCover(true);
-        }
-      }
-    }
-    catch (error) {
-      console.log('error loading album cover:', error);
-    }
-  }
-
-  useEffect(() => {
-    loadCover();
-  }, [editAlbum]);
-
   return (
     <Sheet name={name} onChange={onChange}>
       <View style={SheetStyles.infoContainer}>
         <ListCover 
-          image={coverImage}
+          image={editAlbum?.image}
           type={CoverType.ALBUM}
           propOnLoad={() => {}}
-          empty={emptyCover}
+          empty={!editAlbum?.image}
         />
         <View style={Local.textWrapper}>
           <Text style={Local.name}>{editAlbum?.name}</Text>
@@ -102,4 +72,4 @@ const Local = StyleSheet.create({
   },
 });
 
-export default AlbumSheet; 
+export default AlbumSheet;

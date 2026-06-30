@@ -165,6 +165,9 @@ feature-oriented packages.
      listeners.
    - Playlist row covers now render from Drizzle-backed live query image props
      instead of `PLAYLIST_IMAGE_MODIFIED` listeners.
+   - Playlist, album, and artist sheet headers now render cover art from the
+     action-sheet entity image props instead of legacy cover controller
+     filesystem lookups.
    - Song list page covers now receive playlist, album, and artist cover paths
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or

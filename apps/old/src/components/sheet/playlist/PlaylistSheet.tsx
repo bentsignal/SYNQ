@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import Sheet from '@/src/components/sheet';
 import { useActionSheetContext } from '@/src/features/action-sheet/context/ActionSheetProvider';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
@@ -8,33 +8,13 @@ import { Styles } from '@/src/constants/Styles';
 import { Colors } from '@/src/constants/Colors';
 import { CoverType } from '@/src/constants/Types';
 import PlaylistOptions from '@/src/components/sheet/playlist/PlaylistOptions';
-import { getPlaylistCover } from '@/src/controllers/PlaylistController';
 
 const PlaylistSheet = ({name}: {name: string}) => {
 
   const { editPlaylist } = useActionSheetContext();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
-  const [coverImage, setCoverImage] = useState('');
-  const [emptyCover, setEmptyCover] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
-
-  const loadCover = async () => {
-    try {
-      const cover = await getPlaylistCover(editPlaylist.id);
-      if (cover) {
-        setCoverImage(cover);
-        setEmptyCover(false);
-      }
-      else {
-        setCoverImage('');
-        setEmptyCover(true);
-      }
-    }
-    catch (error) {
-      console.log('error loading playlist cover:', error);
-    }
-  }
 
   const onChange = (index: number) => {
     if (index === 0) {
@@ -46,19 +26,15 @@ const PlaylistSheet = ({name}: {name: string}) => {
     }
   }
 
-  useEffect(() => {
-    loadCover();
-  }, [editPlaylist.id]);
-
   return (
     <Sheet name={name} onChange={onChange}>
       <View style={SheetStyles.infoContainer}>
         <ListCover 
           id={editPlaylist?.id}
-          image={coverImage}
+          image={editPlaylist?.image}
           type={CoverType.PLAYLIST}
           propOnLoad={() => {}}
-          empty={emptyCover}
+          empty={!editPlaylist?.image}
         />
         <View style={Local.textWrapper}>
           <Text style={Local.name}>{editPlaylist?.name}</Text>

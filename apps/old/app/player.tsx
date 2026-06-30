@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PlayerCover from "@/src/features/cover/components/PlayerCover";
-import CrossfadeImage from "@/src/components/image/CrossfadeImage";
+import CrossfadeImage from "@/src/features/playback/components/CrossfadeImage";
 import Bar from "@/src/components/modals/Bar";
 import ModalStyles from "@/src/components/modals/Styles";
 import LoopButton from "@/src/features/playback/components/LoopButton";

@@ -459,6 +459,9 @@ feature-oriented packages.
    - Done: shared playback buttons, mini-player, skip controls, and time scrub
      UI now live in `apps/old/src/features/playback/components`; the generic
      `src/components/player` folder has been removed.
+   - Done: player artwork crossfade UI now lives in
+     `apps/old/src/features/playback/components/CrossfadeImage.tsx` instead of
+     the generic `src/components/image` folder.
    - Done: queue song list panel now lives in
      `apps/old/src/features/playback/components/QueueSongListPanel.tsx`, so
      `app/queue.tsx` is mostly route composition.

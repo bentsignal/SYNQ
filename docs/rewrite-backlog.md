@@ -254,8 +254,11 @@ feature-oriented packages.
    - Done: playback source persistence now lives in
      `apps/old/src/features/playback/hooks/use-playback-source-persistence.ts`
      instead of directly inside `SongList`.
-   - Next safe slice: split `SongList` playback press handling into a focused
-     playback hook so the list component becomes UI-focused.
+   - Done: song press playback orchestration now lives in
+     `apps/old/src/features/playback/hooks/use-song-playback-handler.ts`, so
+     `SongList` no longer owns ad-gated play/add queue behavior.
+   - Next safe slice: split queue-row drag rendering out of `SongList` or move
+     queue reorder behavior behind playback feature APIs.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

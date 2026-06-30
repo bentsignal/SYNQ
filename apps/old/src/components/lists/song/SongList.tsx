@@ -8,15 +8,11 @@ import {
   SortType,
   SourceType,
 } from "@/src/constants/Types";
-import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
 import { generateSongKey } from "@/src/controllers/SongController";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { useActiveQueueTrack } from "@/src/features/playback/hooks/use-active-queue-track";
-import { useAdGatedPlaybackCommand } from "@/src/features/playback/hooks/use-ad-gated-playback-command";
-import { usePlaybackSourcePersistence } from "@/src/features/playback/hooks/use-playback-source-persistence";
+import { useSongPlaybackHandler } from "@/src/features/playback/hooks/use-song-playback-handler";
 import { useHaptics } from "@/src/hooks/use-haptics";
-import usePlayer from "@/src/features/playback/hooks/use-player";
-import { posthog } from "@/src/lib/posthog";
 import { FlatList, TouchableOpacity } from "react-native";
 import DraggableFlatlist, {
   DragEndParams,
@@ -78,97 +74,20 @@ const SongList = memo(
     onDragEnd?: (params: DragEndParams<any>) => void;
   }) => {
     const { selectedId } = useImportFlowContext();
-    const { shuffle } = usePlaybackContext();
     const { activeIndex, activeTrack } = useActiveQueueTrack();
     const { sendHaptic } = useHaptics();
-    const { addSongToQueue, playSong, updateQueue } = usePlayer();
-    const { runAdGatedPlaybackCommand } = useAdGatedPlaybackCommand();
 
     const selectedSort = sort ?? SortType.DATE;
     const selectedOrder = order ?? SortOrder.DESC;
     const selectedQuery = query ?? "";
-    const { persistPlaybackSource } = usePlaybackSourcePersistence({
+    const { handlePlay } = useSongPlaybackHandler({
+      activeTrack,
+      sourceId,
+      sourceType,
       sort: selectedSort,
       order: selectedOrder,
       query: selectedQuery,
     });
-
-    const getSongSource = (song: SongType) => ({
-      id: sourceId ?? song.sourceId,
-      type: sourceType ?? song.sourceType,
-    });
-
-    const handlePlay = useCallback(
-      async (song: SongType) => {
-        sendHaptic("light");
-        const id = activeTrack?.id ? activeTrack.id : -1;
-        const playbackSource = getSongSource(song);
-        const playbackSourceId = playbackSource.id;
-        const playbackSourceType = playbackSource.type;
-        const hasPlaybackSource =
-          playbackSourceType !== undefined && playbackSourceId !== undefined;
-        const queueSelectedTrackAfterAdStarts = async () => {
-          if (hasPlaybackSource) {
-            await updateQueue(
-              song.id,
-              shuffle,
-              playbackSourceType,
-              playbackSourceId,
-              selectedSort,
-              selectedOrder,
-              selectedQuery,
-            );
-            await persistPlaybackSource({
-              id: playbackSourceId,
-              type: playbackSourceType,
-            });
-          }
-          await addSongToQueue(song);
-        };
-
-        await runAdGatedPlaybackCommand({
-          afterAdStarts: async () => {
-            posthog.capture("play_ad");
-            await queueSelectedTrackAfterAdStarts();
-          },
-          command: async () => {
-            if (id === song.id) {
-              return;
-            }
-
-            posthog.capture("play_song");
-            try {
-              const didPlaySong = await playSong(song);
-              if (didPlaySong) {
-                if (hasPlaybackSource) {
-                  await updateQueue(
-                    song.id,
-                    shuffle,
-                    playbackSourceType,
-                    playbackSourceId,
-                    selectedSort,
-                    selectedOrder,
-                    selectedQuery,
-                  );
-                  await persistPlaybackSource({
-                    id: playbackSourceId,
-                    type: playbackSourceType,
-                  });
-                }
-              }
-            } catch (error) {
-              console.log("error playing song: ", error);
-            }
-          },
-        });
-      },
-      [
-        shuffle,
-        selectedSort,
-        selectedOrder,
-        selectedQuery,
-      ],
-    );
 
     const renderItem = ({ item, index }: { item: SongType; index: number }) => {
       item.pageType = pageType;

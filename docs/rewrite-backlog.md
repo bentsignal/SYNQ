@@ -257,8 +257,10 @@ feature-oriented packages.
    - Done: song press playback orchestration now lives in
      `apps/old/src/features/playback/hooks/use-song-playback-handler.ts`, so
      `SongList` no longer owns ad-gated play/add queue behavior.
-   - Next safe slice: split queue-row drag rendering out of `SongList` or move
-     queue reorder behavior behind playback feature APIs.
+   - Done: queue drag row rendering now lives in
+     `apps/old/src/components/lists/song/DraggableSongItem.tsx` instead of
+     inline inside `SongList`.
+   - Next safe slice: move queue reorder behavior behind playback feature APIs.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

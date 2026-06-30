@@ -1,6 +1,7 @@
 import React, { memo, useCallback } from "react";
 import List from "@/src/components/List";
 import Song from "@/src/components/song";
+import { DraggableSongItem } from "@/src/components/lists/song/DraggableSongItem";
 import {
   PageType,
   SongType,
@@ -13,7 +14,7 @@ import { useImportFlowContext } from "@/src/features/import/context/ImportFlowPr
 import { useActiveQueueTrack } from "@/src/features/playback/hooks/use-active-queue-track";
 import { useSongPlaybackHandler } from "@/src/features/playback/hooks/use-song-playback-handler";
 import { useHaptics } from "@/src/hooks/use-haptics";
-import { FlatList, TouchableOpacity } from "react-native";
+import { FlatList } from "react-native";
 import DraggableFlatlist, {
   DragEndParams,
   RenderItemParams,
@@ -114,46 +115,20 @@ const SongList = memo(
     };
 
     const draggableItem = useCallback(
-      ({ item, getIndex, drag, isActive }: RenderItemParams<SongType>) => {
-        item.pageType = pageType;
-        item.sourceId = sourceId;
-        item.sourceType = sourceType;
-        const index = getIndex();
-        let active, previous;
-        if (pageType === PageType.QUEUE) {
-          active = activeTrack?.id === item.id && index === activeIndex;
-          previous = index !== undefined && index < activeIndex;
-        } else {
-          active = activeTrack?.id === item.id;
-          previous = false;
-        }
-        return (
-          <TouchableOpacity
-            style={{ width: "100%" }}
-            onLongPress={() => {
-              if (
-                pageType === PageType.QUEUE &&
-                index !== undefined &&
-                index <= activeIndex
-              ) {
-                return;
-              }
-              sendHaptic("light");
-              drag();
-            }}
-          >
-            <MemoSong
-              song={item}
-              fadeCover={fadeCover}
-              fadeSong={fadeSong}
-              active={active}
-              previous={previous}
-              handlePlay={async (song: SongType) => {}}
-              draggable={draggable}
-            />
-          </TouchableOpacity>
-        );
-      },
+      (params: RenderItemParams<SongType>) => (
+        <DraggableSongItem
+          {...params}
+          activeIndex={activeIndex}
+          activeTrack={activeTrack}
+          draggable={draggable}
+          fadeCover={fadeCover}
+          fadeSong={fadeSong}
+          pageType={pageType}
+          sendHaptic={sendHaptic}
+          sourceId={sourceId}
+          sourceType={sourceType}
+        />
+      ),
       [
         pageType,
         sourceId,
@@ -162,6 +137,8 @@ const SongList = memo(
         activeIndex,
         fadeCover,
         fadeSong,
+        draggable,
+        sendHaptic,
       ],
     );
 

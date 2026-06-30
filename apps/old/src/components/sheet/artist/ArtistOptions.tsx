@@ -9,8 +9,6 @@ import {
   getSongsFromArtist,
 } from "@/src/controllers/ArtistController";
 import { exportSongs } from "@/src/controllers/ImportExportController";
-import artistBus from "@/src/events/artist";
-import { ArtistBusEvent } from "@/src/events/artist/Events";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
@@ -59,7 +57,6 @@ const ArtistOptions = ({ name }: { name: string }) => {
     try {
       posthog.capture("delete_artist");
       await deleteArtist(editArtist.id);
-      artistBus.emit(ArtistBusEvent.ARTIST_DELETED);
     } catch (error) {
       console.log("error deleting artist: ", error);
     }

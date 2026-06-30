@@ -2,8 +2,6 @@ import { ArtistType, SongType, SortOrder, SortType } from "@/src/constants/Types
 import ArtistModel from "@/src/models/ArtistModel";
 import { writeImageToLibrary } from "./ImageController";
 import * as FileSystem from 'expo-file-system';
-import { ArtistBusEvent } from "@/src/events/artist/Events";
-import artistBus from "@/src/events/artist";
 import { getSongByResult } from "./SongController";
 import { saveCoverImage } from "@/src/lib/image-utils";
 import { db } from "@synq/db";
@@ -88,10 +86,6 @@ export const updateArtist = async (artistId: number, name: string, image: string
   const db = ArtistModel.getInstance();
   if (name) {
     await db.updateArtist(artistId, name);
-    artistBus.emit(ArtistBusEvent.ARTIST_MODIFIED, {
-      id: artistId,
-      name: name,
-    });
   }
   if (image) {
     await writeImageToLibrary(image, `${FileSystem.documentDirectory}artists/${artistId}`);

@@ -111,6 +111,8 @@ feature-oriented packages.
      flow; album song ordering is read from the live album-song query.
    - Album bus has been removed after list, detail, row metadata, cover, delete,
      and reorder refresh moved off album events.
+   - Artist bus has been removed after list, detail, row metadata, cover, and
+     delete refresh moved off artist events.
    - Next target: remove remaining non-image playlist, album, and artist events
      once their last emitters are replaced by reactive state or local actions.
 
@@ -226,6 +228,7 @@ feature-oriented packages.
    - Done: render artist detail page cover art from `useArtistInfoQuery`
      instead of `ARTIST_IMAGE_MODIFIED`.
    - Done: remove now-unused `ARTIST_IMAGE_MODIFIED` emits and event types.
+   - Done: remove the remaining emit-only artist event bus module.
    - Add artist relation/image queries where add/edit/cover flows still need
      Drizzle-backed state.
    - Replace artist edit/list/detail listeners.

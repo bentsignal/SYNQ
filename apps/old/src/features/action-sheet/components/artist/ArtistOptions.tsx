@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import SheetOption from "@/src/components/sheet/SheetOption";
+import SheetOption from "@/src/features/action-sheet/components/SheetOption";
 import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";

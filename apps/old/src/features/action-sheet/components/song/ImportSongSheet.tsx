@@ -1,19 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import ListCover from "@/src/components/cover/ListCover";
-import Sheet from "@/src/components/sheet";
-import SheetStyles from "@/src/components/sheet/Styles";
+import Sheet from "@/src/features/action-sheet/components";
+import SheetStyles from "@/src/features/action-sheet/components/Styles";
 import SongInfo from "@/src/components/song/SongInfo";
 import { CoverType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { getLibrarySongCoverPath } from "@/src/features/library/repository/library-song-repository";
-import { Dimensions, ScrollView, View } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import SongOptions from "./SongOptions";
 
 type SongSheetProps = {
   name: string;
 };
 
-const SongSheet = ({ name }: SongSheetProps) => {
+export default function ImportSongSheet({ name }: SongSheetProps) {
   const { editSong } = useActionSheetContext();
   const [scrollEnabled, setScrollEnabled] = useState(false);
   const [coverImage, setCoverImage] = useState("");
@@ -79,10 +79,8 @@ const SongSheet = ({ name }: SongSheetProps) => {
           paddingBottom: 300,
         }}
       >
-        <SongOptions name={name} library={true} />
+        <SongOptions name={name} />
       </ScrollView>
     </Sheet>
   );
-};
-
-export default SongSheet;
+}

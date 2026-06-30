@@ -1,17 +1,17 @@
 import React, { useState, useRef } from 'react';
-import Sheet from '@/src/components/sheet';
+import Sheet from '@/src/features/action-sheet/components';
 import { useActionSheetContext } from '@/src/features/action-sheet/context/ActionSheetProvider';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import ListCover from '@/src/components/cover/ListCover';
-import SheetStyles from '@/src/components/sheet/Styles';
+import SheetStyles from '@/src/features/action-sheet/components/Styles';
 import { Styles } from '@/src/constants/Styles';
 import { Colors } from '@/src/constants/Colors';
 import { CoverType } from '@/src/constants/Types';
-import PlaylistOptions from '@/src/components/sheet/playlist/PlaylistOptions';
+import ArtistOptions from '@/src/features/action-sheet/components/artist/ArtistOptions';
 
-const PlaylistSheet = ({name}: {name: string}) => {
+const ArtistSheet = ({name}: {name: string}) => {
 
-  const { editPlaylist } = useActionSheetContext();
+  const { editArtist } = useActionSheetContext();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
@@ -30,15 +30,13 @@ const PlaylistSheet = ({name}: {name: string}) => {
     <Sheet name={name} onChange={onChange}>
       <View style={SheetStyles.infoContainer}>
         <ListCover 
-          id={editPlaylist?.id}
-          image={editPlaylist?.image}
-          type={CoverType.PLAYLIST}
+          image={editArtist?.image}
+          type={CoverType.ARTIST}
           propOnLoad={() => {}}
-          empty={!editPlaylist?.image}
+          empty={!editArtist?.image}
         />
         <View style={Local.textWrapper}>
-          <Text style={Local.name}>{editPlaylist?.name}</Text>
-          <Text style={Local.count}>{editPlaylist?.songCount} {editPlaylist?.songCount === 1 ? 'song' : 'songs'}</Text>
+          <Text style={Local.name}>{editArtist?.name}</Text>
         </View>
       </View> 
       <ScrollView
@@ -51,7 +49,7 @@ const PlaylistSheet = ({name}: {name: string}) => {
           paddingBottom: 300,
         }}
       >
-        <PlaylistOptions name={name}/>
+        <ArtistOptions name={name}/>
       </ScrollView>
     </Sheet>
   );
@@ -74,4 +72,4 @@ const Local = StyleSheet.create({
   },
 });
 
-export default PlaylistSheet;
+export default ArtistSheet;

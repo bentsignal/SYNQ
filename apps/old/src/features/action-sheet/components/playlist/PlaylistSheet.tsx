@@ -1,20 +1,21 @@
 import React, { useState, useRef } from 'react';
-import Sheet from '@/src/components/sheet';
+import Sheet from '@/src/features/action-sheet/components';
 import { useActionSheetContext } from '@/src/features/action-sheet/context/ActionSheetProvider';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import ListCover from '@/src/components/cover/ListCover';
-import SheetStyles from '@/src/components/sheet/Styles';
+import SheetStyles from '@/src/features/action-sheet/components/Styles';
 import { Styles } from '@/src/constants/Styles';
 import { Colors } from '@/src/constants/Colors';
 import { CoverType } from '@/src/constants/Types';
-import AlbumOptions from './AlbumOptions';
+import PlaylistOptions from '@/src/features/action-sheet/components/playlist/PlaylistOptions';
 
-const AlbumSheet = ({name}: {name: string}) => {
+const PlaylistSheet = ({name}: {name: string}) => {
 
-  const { editAlbum } = useActionSheetContext();
+  const { editPlaylist } = useActionSheetContext();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
+
   const onChange = (index: number) => {
     if (index === 0) {
       setScrollEnabled(false);
@@ -29,14 +30,15 @@ const AlbumSheet = ({name}: {name: string}) => {
     <Sheet name={name} onChange={onChange}>
       <View style={SheetStyles.infoContainer}>
         <ListCover 
-          image={editAlbum?.image}
-          type={CoverType.ALBUM}
+          id={editPlaylist?.id}
+          image={editPlaylist?.image}
+          type={CoverType.PLAYLIST}
           propOnLoad={() => {}}
-          empty={!editAlbum?.image}
+          empty={!editPlaylist?.image}
         />
         <View style={Local.textWrapper}>
-          <Text style={Local.name}>{editAlbum?.name}</Text>
-          {editAlbum?.year && <Text style={Local.year}>{editAlbum.year}</Text>}
+          <Text style={Local.name}>{editPlaylist?.name}</Text>
+          <Text style={Local.count}>{editPlaylist?.songCount} {editPlaylist?.songCount === 1 ? 'song' : 'songs'}</Text>
         </View>
       </View> 
       <ScrollView
@@ -49,7 +51,7 @@ const AlbumSheet = ({name}: {name: string}) => {
           paddingBottom: 300,
         }}
       >
-        <AlbumOptions name={name}/>
+        <PlaylistOptions name={name}/>
       </ScrollView>
     </Sheet>
   );
@@ -66,10 +68,10 @@ const Local = StyleSheet.create({
     ...Styles.h4,
     color: Colors.text,
   },
-  year: {
+  count: {
     ...Styles.p,
     color: Colors.infoText,
   },
 });
 
-export default AlbumSheet;
+export default PlaylistSheet;

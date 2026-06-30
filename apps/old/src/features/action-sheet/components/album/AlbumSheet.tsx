@@ -1,21 +1,20 @@
 import React, { useState, useRef } from 'react';
-import Sheet from '@/src/components/sheet';
+import Sheet from '@/src/features/action-sheet/components';
 import { useActionSheetContext } from '@/src/features/action-sheet/context/ActionSheetProvider';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import ListCover from '@/src/components/cover/ListCover';
-import SheetStyles from '@/src/components/sheet/Styles';
+import SheetStyles from '@/src/features/action-sheet/components/Styles';
 import { Styles } from '@/src/constants/Styles';
 import { Colors } from '@/src/constants/Colors';
 import { CoverType } from '@/src/constants/Types';
-import ArtistOptions from '@/src/components/sheet/artist/ArtistOptions';
+import AlbumOptions from './AlbumOptions';
 
-const ArtistSheet = ({name}: {name: string}) => {
+const AlbumSheet = ({name}: {name: string}) => {
 
-  const { editArtist } = useActionSheetContext();
+  const { editAlbum } = useActionSheetContext();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
-
   const onChange = (index: number) => {
     if (index === 0) {
       setScrollEnabled(false);
@@ -30,13 +29,14 @@ const ArtistSheet = ({name}: {name: string}) => {
     <Sheet name={name} onChange={onChange}>
       <View style={SheetStyles.infoContainer}>
         <ListCover 
-          image={editArtist?.image}
-          type={CoverType.ARTIST}
+          image={editAlbum?.image}
+          type={CoverType.ALBUM}
           propOnLoad={() => {}}
-          empty={!editArtist?.image}
+          empty={!editAlbum?.image}
         />
         <View style={Local.textWrapper}>
-          <Text style={Local.name}>{editArtist?.name}</Text>
+          <Text style={Local.name}>{editAlbum?.name}</Text>
+          {editAlbum?.year && <Text style={Local.year}>{editAlbum.year}</Text>}
         </View>
       </View> 
       <ScrollView
@@ -49,7 +49,7 @@ const ArtistSheet = ({name}: {name: string}) => {
           paddingBottom: 300,
         }}
       >
-        <ArtistOptions name={name}/>
+        <AlbumOptions name={name}/>
       </ScrollView>
     </Sheet>
   );
@@ -66,10 +66,10 @@ const Local = StyleSheet.create({
     ...Styles.h4,
     color: Colors.text,
   },
-  count: {
+  year: {
     ...Styles.p,
     color: Colors.infoText,
   },
 });
 
-export default ArtistSheet;
+export default AlbumSheet;

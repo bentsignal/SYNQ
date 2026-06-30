@@ -1,52 +1,50 @@
 import { useEffect, useState } from "react";
-import SheetOption from "@/src/components/sheet/SheetOption";
+import SheetOption from "@/src/features/action-sheet/components/SheetOption";
 import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
 import { exportSongs } from "@/src/features/export/lib/export-songs";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
-import { deleteLibraryAlbum } from "@/src/features/library/repository/library-entity-repository";
-import { getLibraryAlbumSongs } from "@/src/features/library/repository/library-song-repository";
+import { deleteLibraryPlaylist } from "@/src/features/library/repository/library-entity-repository";
+import { getLibraryPlaylistSongs } from "@/src/features/library/repository/library-song-repository";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
-import {
-  ListChevronsUpDown,
-  Share,
-  SquarePen,
-  Trash,
-} from "lucide-react-native";
+import { Share, SquarePen, Trash } from "lucide-react-native";
 import { Alert } from "react-native";
 
-const AlbumOptions = ({ name }: { name: string }) => {
-  const { editAlbum } = useActionSheetContext();
+const PlaylistOptions = ({ name }: { name: string }) => {
+  const { editPlaylist } = useActionSheetContext();
   const { setShowGlobalLoading } = useGlobalProgressContext();
   const { premium } = usePremiumContext();
 
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
 
   useEffect(() => {
-    if (editAlbum.pageType) {
-      setPageType(editAlbum.pageType);
+    if (editPlaylist.pageType) {
+      setPageType(editPlaylist.pageType);
     }
-  }, [editAlbum]);
+  }, [editPlaylist]);
 
   const actionDelay = 10;
 
   const handleEdit = () => {
     TrueSheet.dismiss(name);
-    posthog.capture("edit_album");
+    posthog.capture("edit_playlist");
     setTimeout(() => {
-      router.push(`/album/edit/${editAlbum.id}`);
+      router.push(`/playlist/edit/${editPlaylist.id}`);
     }, actionDelay);
   };
 
   const handleExport = async () => {
     try {
       TrueSheet.dismiss(name);
-      posthog.capture("export_album");
+      posthog.capture("export_playlist");
       setShowGlobalLoading(true);
-      const songs = await getLibraryAlbumSongs({ albumId: editAlbum.id });
+      const songs = await getLibraryPlaylistSongs({
+        playlistId: editPlaylist.id,
+        pageType: PageType.PLAYLIST,
+      });
       await exportSongs(songs);
       setShowGlobalLoading(false);
     } catch (error) {
@@ -57,10 +55,10 @@ const AlbumOptions = ({ name }: { name: string }) => {
 
   const executeDelete = async () => {
     try {
-      posthog.capture("delete_album");
-      await deleteLibraryAlbum(editAlbum.id);
+      posthog.capture("delete_playlist");
+      await deleteLibraryPlaylist(editPlaylist.id);
     } catch (error) {
-      console.log("error deleting album: ", error);
+      console.log("error deleting playlist: ", error);
     }
   };
 
@@ -68,15 +66,15 @@ const AlbumOptions = ({ name }: { name: string }) => {
     TrueSheet.dismiss(name);
     setTimeout(() => {
       Alert.alert(
-        "Delete Album",
-        `Are you sure you want to delete ${editAlbum.name ?? "this album"}? (Deleting an album will not remove its songs)`,
+        "Delete Playlist",
+        `Are you sure you want to delete ${editPlaylist.name ?? "this playlist"}?`,
         [
           { text: "Cancel", style: "cancel" },
           {
             text: "Delete",
             style: "destructive",
             onPress: () => {
-              if (pageType === PageType.ALBUM) {
+              if (pageType === PageType.PLAYLIST) {
                 router.back();
                 setTimeout(() => {
                   executeDelete();
@@ -91,42 +89,34 @@ const AlbumOptions = ({ name }: { name: string }) => {
     }, actionDelay);
   };
 
-  const handleReorder = () => {
-    TrueSheet.dismiss(name);
-    setTimeout(() => {
-      router.push(`/album/reorder`);
-    }, actionDelay);
-  };
-
   return (
     <>
       <SheetOption
         icon={SquarePen}
         text={"Edit"}
-        show={[PageType.LIBRARY, PageType.ALBUM].includes(pageType)}
+        show={[PageType.LIBRARY, PageType.PLAYLIST].includes(pageType)}
         handler={handleEdit}
-      />
-      <SheetOption
-        icon={ListChevronsUpDown}
-        text={"Reorder"}
-        show={[PageType.LIBRARY, PageType.ALBUM].includes(pageType)}
-        handler={handleReorder}
       />
       <SheetOption
         icon={Share}
         text={"Export"}
-        show={[PageType.LIBRARY, PageType.ALBUM].includes(pageType) && premium}
+        show={
+          [PageType.LIBRARY, PageType.PLAYLIST].includes(pageType) && premium
+        }
         handler={handleExport}
         premiumOnly
       />
       <SheetOption
         icon={Trash}
         text={"Delete"}
-        show={[PageType.LIBRARY, PageType.ALBUM].includes(pageType)}
+        show={
+          [PageType.LIBRARY, PageType.PLAYLIST].includes(pageType) &&
+          editPlaylist.id !== 2
+        }
         handler={handleDelete}
       />
     </>
   );
 };
 
-export default AlbumOptions;
+export default PlaylistOptions;

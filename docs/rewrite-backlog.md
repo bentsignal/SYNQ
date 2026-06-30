@@ -371,6 +371,9 @@ feature-oriented packages.
    - Done: edit/action-sheet state now lives in
      `apps/old/src/features/action-sheet/context/ActionSheetProvider.tsx`, and
      the legacy `GlobalProvider` has been removed.
+   - Done: action sheet surfaces and entity sheet option components now live in
+     `apps/old/src/features/action-sheet/components` instead of the generic
+     `src/components/sheet` folder.
    - In progress: playback orchestration is moving out of the home screen into
      feature hooks. Avoid import results and edit targets until their owning
      feature boundaries are clearer.

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Navigation from "@/app/navigation";
 import GlobalProgress from "@/src/components/GlobalProgress";
-import Sheets from "@/src/components/sheet/Sheets";
+import Sheets from "@/src/features/action-sheet/components/Sheets";
 import { PUBLIC_FACEBOOK_APP_ID } from "@/src/constants/Keys";
 import PlaybackProvider from "@/src/features/playback/context/PlaybackProvider";
 import PremiumProvider from "@/src/features/premium/context/PremiumProvider";

@@ -24,12 +24,14 @@ const PausePlayButtons = ({
   const { sendHaptic } = useHaptics();
 
   const playbackState = usePlaybackState();
-  const [currentState, setCurrentState] = useState(playbackState.state);
+  const [currentState, setCurrentState] = useState(
+    playbackState.state ?? State.None,
+  );
   const [previousState, setPreviousState] = useState(State.Playing);
 
   useEffect(() => {
     setPreviousState(currentState);
-    setCurrentState(playbackState.state);
+    setCurrentState(playbackState.state ?? State.None);
   }, [playbackState.state]);
 
   const togglePlayback = async () => {

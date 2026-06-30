@@ -14,8 +14,10 @@ feature-oriented packages.
   succeed. `@synq/db` is now the Drizzle schema, migration, and runtime DB
   package consumed by `apps/old`.
 - `pnpm --filter @synq/old typecheck` fails on pre-existing strict-null and
-  third-party type issues. Treat this as a tracked cleanup lane, not a monorepo
-  migration blocker.
+  third-party type issues. The playback nullability cluster around
+  `PlaybackProvider`, `usePlayer`, `MiniPlayer`, `PausePlayButtons`,
+  `ShuffleButton`, and `PlayerController` has been reduced. Treat remaining
+  errors as a tracked cleanup lane, not a monorepo migration blocker.
 
 ## Priority Lanes
 
@@ -125,8 +127,10 @@ feature-oriented packages.
      the save screen.
    - Playback queue refresh no longer uses an event bus; `PlaybackProvider`
      exposes a queue revision signal that reloads queue UI from TrackPlayer.
-   - Next target: delete the now-unused playback event module after verifying
-     no references remain.
+   - No app event bus modules remain; `apps/old/src/events` has been removed.
+   - Next target: continue strict-null/typecheck cleanup, starting with
+     `SongList` source metadata defaults and import/library controller
+     nullability.
 
 4. Split ingest/media.
    - Current checkpoint files: `apps/old/src/hooks/use-ingest.ts`,
@@ -254,6 +258,19 @@ feature-oriented packages.
 6. Playback bus:
    - Done: replace `QUEUE_UPDATED` with a PlaybackProvider queue revision
      signal read by the queue screen.
+   - Done: remove the remaining playback event module.
+
+## Typecheck Cleanup Order
+
+1. Playback:
+   - Done: give `PlaybackProvider` non-null sort/order defaults matching the
+     context contract.
+   - Done: guard undefined active track/index/state values in player controls.
+   - Done: skip queue rebuilds until playback source metadata is available.
+
+2. Song lists:
+   - Next: normalize `SongList` source metadata defaults before calling
+     playback queue helpers.
 
 ## Guardrails
 

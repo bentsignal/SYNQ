@@ -29,7 +29,7 @@ const ShuffleButton = ({ primary, useBG }: ShuffleButtonProps) => {
       setShuffle(newValue);
       await AsyncStorage.setItem('shuffle', newValue.toString());
       const id = track?.id;
-      if (id) {
+      if (id && sourceType !== null && sourceId !== null) {
         await updateQueue(id, newValue, sourceType, sourceId);
       }
     } 

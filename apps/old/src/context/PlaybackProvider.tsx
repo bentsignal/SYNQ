@@ -71,8 +71,8 @@ const PlaybackProvider: React.FC<Props> = ({ children }) => {
   const [loop, setLoop] = useState<boolean>(false);
   const [playerInitialized, setPlayerInitialized] = useState<boolean>(false);
   const [addOffset, setAddOffset] = useState<number>(0);
-  const [sort, setSort] = useState<SortType | null>(null);
-  const [order, setOrder] = useState<SortOrder | null>(null);
+  const [sort, setSort] = useState<SortType>(SortType.DATE);
+  const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
   const [query, setQuery] = useState<string>('');
   const [queueRevision, setQueueRevision] = useState(0);
 

@@ -31,8 +31,15 @@ export const getTrackFromSong = async (
   theme: string,
 ): Promise<Track | undefined> => {
   try {
+    if (!song.fileName) {
+      return undefined;
+    }
+
     const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;
-    let coverPath = await getAlbumCoverFromSong(song.id, true);
+    let coverPath: string | null | undefined = await getAlbumCoverFromSong(
+      song.id,
+      true,
+    );
     if (!check(coverPath)) {
       coverPath = await getSongCover(song.id, true);
     }

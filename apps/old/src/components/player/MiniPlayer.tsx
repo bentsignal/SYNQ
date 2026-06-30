@@ -67,6 +67,10 @@ const MiniPlayer = () => {
   };
 
   const getBackgroundImage = () => {
+    if (!track) {
+      return emptyImage;
+    }
+
     const artwork = getTrackArtwork(track);
     if (artwork !== "transparent") {
       return artwork;

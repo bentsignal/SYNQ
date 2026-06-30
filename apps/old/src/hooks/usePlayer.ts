@@ -128,12 +128,22 @@ export default function usePlayer() {
     try {
       const queue = await TrackPlayer.getQueue();
       const currentIndex = await TrackPlayer.getActiveTrackIndex();
+      if (currentIndex === undefined) {
+        sendHaptic("error");
+        return;
+      }
+
       if (currentIndex >= queue.length - 1 && !loop) {
         // no next song
         sendHaptic("error");
-      } else if (currentIndex !== undefined) {
+      } else {
         // if loop is on, keep queue going infinitely
         if (currentIndex >= queue.length - 1 && loop) {
+          if (sourceType === null || sourceId === null) {
+            sendHaptic("error");
+            return;
+          }
+
           await updateQueue(
             queue[currentIndex].id,
             shuffle,

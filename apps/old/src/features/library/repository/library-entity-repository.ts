@@ -146,6 +146,14 @@ export const updateLibraryArtist = async ({
     .where(eq(schema.artists.id, id));
 };
 
+export const deleteLibraryArtist = async (id: number) => {
+  await db.delete(schema.artistSongs).where(eq(schema.artistSongs.artistId, id));
+  await db
+    .delete(schema.artistsAlbums)
+    .where(eq(schema.artistsAlbums.artistId, id));
+  await db.delete(schema.artists).where(eq(schema.artists.id, id));
+};
+
 export const createLibraryPlaylist = async (name: string, image?: string) => {
   const cleanName = name.trim();
 
@@ -201,6 +209,13 @@ export const updateLibraryPlaylist = async ({
       ...(coverImage !== null ? { coverImage } : {}),
     })
     .where(eq(schema.playlists.id, id));
+};
+
+export const deleteLibraryPlaylist = async (id: number) => {
+  await db
+    .delete(schema.playlistSongs)
+    .where(eq(schema.playlistSongs.playlistId, id));
+  await db.delete(schema.playlists).where(eq(schema.playlists.id, id));
 };
 
 export const createLibraryAlbum = async (
@@ -267,4 +282,12 @@ export const updateLibraryAlbum = async ({
       ...(coverImage !== null ? { coverImage } : {}),
     })
     .where(eq(schema.albums.id, id));
+};
+
+export const deleteLibraryAlbum = async (id: number) => {
+  await db.delete(schema.albumSongs).where(eq(schema.albumSongs.albumId, id));
+  await db
+    .delete(schema.artistsAlbums)
+    .where(eq(schema.artistsAlbums.albumId, id));
+  await db.delete(schema.albums).where(eq(schema.albums.id, id));
 };

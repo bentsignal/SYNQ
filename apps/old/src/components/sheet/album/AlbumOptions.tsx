@@ -3,13 +3,10 @@ import SheetOption from "@/src/components/sheet/SheetOption";
 import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
-import { useThemeContext } from "@/src/context/ThemeProvider";
-import {
-  deleteAlbum,
-  getSongsFromAlbum,
-} from "@/src/controllers/AlbumController";
+import { getSongsFromAlbum } from "@/src/controllers/AlbumController";
 import { exportSongs } from "@/src/controllers/ImportExportController";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
+import { deleteLibraryAlbum } from "@/src/features/library/repository/library-entity-repository";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
@@ -25,7 +22,6 @@ const AlbumOptions = ({ name }: { name: string }) => {
   const { editAlbum } = useActionSheetContext();
   const { setShowGlobalLoading } = useGlobalProgressContext();
   const { premium } = usePremiumContext();
-  const { theme } = useThemeContext();
 
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
 
@@ -62,7 +58,7 @@ const AlbumOptions = ({ name }: { name: string }) => {
   const executeDelete = async () => {
     try {
       posthog.capture("delete_album");
-      await deleteAlbum(editAlbum.id);
+      await deleteLibraryAlbum(editAlbum.id);
     } catch (error) {
       console.log("error deleting album: ", error);
     }

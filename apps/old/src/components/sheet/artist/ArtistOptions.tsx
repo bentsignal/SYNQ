@@ -3,13 +3,10 @@ import SheetOption from "@/src/components/sheet/SheetOption";
 import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
-import { useThemeContext } from "@/src/context/ThemeProvider";
-import {
-  deleteArtist,
-  getSongsFromArtist,
-} from "@/src/controllers/ArtistController";
+import { getSongsFromArtist } from "@/src/controllers/ArtistController";
 import { exportSongs } from "@/src/controllers/ImportExportController";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
+import { deleteLibraryArtist } from "@/src/features/library/repository/library-entity-repository";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
@@ -21,7 +18,6 @@ const ArtistOptions = ({ name }: { name: string }) => {
   const { setShowGlobalLoading } = useGlobalProgressContext();
 
   const { premium } = usePremiumContext();
-  const { theme } = useThemeContext();
 
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
 
@@ -58,7 +54,7 @@ const ArtistOptions = ({ name }: { name: string }) => {
   const executeDelete = async () => {
     try {
       posthog.capture("delete_artist");
-      await deleteArtist(editArtist.id);
+      await deleteLibraryArtist(editArtist.id);
     } catch (error) {
       console.log("error deleting artist: ", error);
     }

@@ -3,14 +3,10 @@ import SheetOption from "@/src/components/sheet/SheetOption";
 import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
-import { useThemeContext } from "@/src/context/ThemeProvider";
 import { exportSongs } from "@/src/controllers/ImportExportController";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
-import {
-  deletePlaylist,
-  getPlaylistSongs,
-} from "@/src/controllers/PlaylistController";
-import { getSongByResult } from "@/src/controllers/SongController";
+import { getPlaylistSongs } from "@/src/controllers/PlaylistController";
+import { deleteLibraryPlaylist } from "@/src/features/library/repository/library-entity-repository";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
@@ -21,7 +17,6 @@ const PlaylistOptions = ({ name }: { name: string }) => {
   const { editPlaylist } = useActionSheetContext();
   const { setShowGlobalLoading } = useGlobalProgressContext();
   const { premium } = usePremiumContext();
-  const { theme } = useThemeContext();
 
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
 
@@ -59,7 +54,7 @@ const PlaylistOptions = ({ name }: { name: string }) => {
   const executeDelete = async () => {
     try {
       posthog.capture("delete_playlist");
-      await deletePlaylist(editPlaylist.id);
+      await deleteLibraryPlaylist(editPlaylist.id);
     } catch (error) {
       console.log("error deleting playlist: ", error);
     }

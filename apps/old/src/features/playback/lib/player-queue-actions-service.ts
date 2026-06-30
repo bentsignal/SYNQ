@@ -68,6 +68,10 @@ export const pausePlayback = async () => {
   await TrackPlayer.pause();
 };
 
+export const skipToNextQueueTrack = async () => {
+  await TrackPlayer.skipToNext();
+};
+
 export const seekToPlaybackPosition = async (position: number) => {
   await TrackPlayer.seekTo(position);
 };

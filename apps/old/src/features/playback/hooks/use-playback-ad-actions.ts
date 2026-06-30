@@ -1,9 +1,9 @@
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { playAd } from "@/src/features/playback/lib/player-track-service";
+import { skipToNextQueueTrack } from "@/src/features/playback/lib/player-queue-actions-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback } from "react";
-import TrackPlayer from "react-native-track-player";
 
 export const usePlaybackAdActions = () => {
   const { adURL, setAdPlaying, setShouldPlayAd } = usePlaybackAdContext();
@@ -23,7 +23,7 @@ export const usePlaybackAdActions = () => {
   const skipActiveAdForPremium = useCallback(async () => {
     setAdPlaying(false);
     setShouldPlayAd(false);
-    await TrackPlayer.skipToNext();
+    await skipToNextQueueTrack();
   }, [setAdPlaying, setShouldPlayAd]);
 
   return {

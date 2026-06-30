@@ -285,6 +285,8 @@ feature-oriented packages.
    - Done: remote playback play/pause/seek/reset commands now call
      `usePlayer()` actions instead of importing the concrete TrackPlayer
      command object in the remote-event hook.
+   - Done: premium ad skip now calls the playback queue action service instead
+     of importing TrackPlayer directly in the ad-actions hook.
    - Next safe slice: continue moving remaining TrackPlayer calls in UI
      components behind playback feature APIs.
 

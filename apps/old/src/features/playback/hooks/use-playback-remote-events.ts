@@ -1,11 +1,9 @@
 import { NotificationType } from "@/src/constants/Types";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
-import { usePremiumContext } from "@/src/context/PremiumProvider";
-import { useThemeContext } from "@/src/context/ThemeProvider";
-import { playAd } from "@/src/features/playback/lib/player-track-service";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
+import { useAdGatedPlaybackCommand } from "@/src/features/playback/hooks/use-ad-gated-playback-command";
 import usePlayer from "@/src/features/playback/hooks/use-player";
 import TrackPlayer, {
   Event,
@@ -23,10 +21,8 @@ export const usePlaybackRemoteEvents = ({
   const { setShowOverlay } = useAppShellContext();
   const { addNotification, setShowNotificationModal } =
     useNotificationsContext();
-  const { adPlaying, adURL, shouldPlayAd, setAdPlaying } =
-    usePlaybackAdContext();
-  const { theme } = useThemeContext();
-  const { premium } = usePremiumContext();
+  const { adPlaying } = usePlaybackAdContext();
+  const { runAdGatedPlaybackCommand } = useAdGatedPlaybackCommand();
   const { skipLeft, skipRight, updateQueue } = usePlayer();
 
   const { shuffle, loop, sourceType, sourceId, sort, order, query } =
@@ -51,24 +47,10 @@ export const usePlaybackRemoteEvents = ({
           TrackPlayer.pause();
           break;
         case Event.RemoteNext:
-          if (!adPlaying) {
-            if (!premium && shouldPlayAd && !adPlaying) {
-              setAdPlaying(true);
-              playAd(theme, adURL);
-            } else {
-              skipRight();
-            }
-          }
+          runAdGatedPlaybackCommand({ command: skipRight });
           break;
         case Event.RemotePrevious:
-          if (!adPlaying) {
-            if (!premium && shouldPlayAd && !adPlaying) {
-              setAdPlaying(true);
-              playAd(theme, adURL);
-            } else {
-              skipLeft();
-            }
-          }
+          runAdGatedPlaybackCommand({ command: skipLeft });
           break;
         case Event.RemoteSeek:
           if (!adPlaying) {

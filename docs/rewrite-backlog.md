@@ -236,8 +236,13 @@ feature-oriented packages.
    - Done: TrackPlayer queue mutations now live in
      `apps/old/src/features/playback/lib/player-queue-actions-service.ts`, so
      `use-player.ts` wires playback context into typed queue actions.
-   - Next safe slice: centralize ad-gated playback commands shared by skip
-     buttons, remote controls, timing effects, and song-row playback.
+   - Done: ad-gated playback commands now share
+     `apps/old/src/features/playback/hooks/use-ad-gated-playback-command.ts`
+     for skip buttons, remote next/previous, and song-row playback while
+     preserving the song-row post-ad queue behavior.
+   - Next safe slice: fold the timing-driven ad start/reset path into a
+     narrower playback ad action, keeping command-driven and timing-driven
+     behavior separate.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

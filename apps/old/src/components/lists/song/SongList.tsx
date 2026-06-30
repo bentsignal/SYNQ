@@ -9,16 +9,14 @@ import {
   SourceType,
 } from "@/src/constants/Types";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
-import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import {
   getTrackFromSong,
-  playAd,
   playTrack,
 } from "@/src/features/playback/lib/player-track-service";
 import { generateSongKey } from "@/src/controllers/SongController";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
-import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
+import { useAdGatedPlaybackCommand } from "@/src/features/playback/hooks/use-ad-gated-playback-command";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/features/playback/hooks/use-player";
 import { posthog } from "@/src/lib/posthog";
@@ -28,7 +26,7 @@ import DraggableFlatlist, {
   DragEndParams,
   RenderItemParams,
 } from "react-native-draggable-flatlist";
-import TrackPlayer, { useActiveTrack } from "react-native-track-player";
+import TrackPlayer, { type Track, useActiveTrack } from "react-native-track-player";
 
 const MemoSong = memo(Song);
 
@@ -85,15 +83,13 @@ const SongList = memo(
     onDragEnd?: (params: DragEndParams<any>) => void;
   }) => {
     const { selectedId } = useImportFlowContext();
-    const { adPlaying, setAdPlaying, shouldPlayAd, adURL } =
-      usePlaybackAdContext();
     const { shuffle, setSourceType, setSourceId, setSort, setOrder, setQuery } =
       usePlaybackContext();
-    const { premium } = usePremiumContext();
     const { theme } = useThemeContext();
     const activeTrack = useActiveTrack();
     const { sendHaptic } = useHaptics();
     const { addToQueue, updateQueue } = usePlayer();
+    const { runAdGatedPlaybackCommand } = useAdGatedPlaybackCommand();
 
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -138,12 +134,9 @@ const SongList = memo(
         const playbackSourceType = playbackSource.type;
         const hasPlaybackSource =
           playbackSourceType !== undefined && playbackSourceId !== undefined;
-        // play ad if user is non premium and has passed ad threshold
-        if (!premium && shouldPlayAd && !adPlaying) {
-          posthog.capture("play_ad");
-          setAdPlaying(true);
-          await playAd(theme, adURL);
-          const newTrack = await getTrackFromSong(song, theme);
+        const queueSelectedTrackAfterAdStarts = async (
+          newTrack?: Track,
+        ) => {
           if (hasPlaybackSource) {
             await updateQueue(
               song.id,
@@ -162,44 +155,49 @@ const SongList = memo(
           if (newTrack) {
             await addToQueue(newTrack);
           }
-        }
-        // if ad is not played, play song
-        else if (id !== song.id && !adPlaying) {
-          posthog.capture("play_song");
-          setAdPlaying(false);
-          try {
+        };
+
+        await runAdGatedPlaybackCommand({
+          afterAdStarts: async () => {
+            posthog.capture("play_ad");
             const newTrack = await getTrackFromSong(song, theme);
-            if (newTrack) {
-              await playTrack(newTrack);
-              if (hasPlaybackSource) {
-                await updateQueue(
-                  song.id,
-                  shuffle,
-                  playbackSourceType,
-                  playbackSourceId,
-                  selectedSort,
-                  selectedOrder,
-                  selectedQuery,
-                );
-                await persistPlaybackSource({
-                  id: playbackSourceId,
-                  type: playbackSourceType,
-                });
-              }
+            await queueSelectedTrackAfterAdStarts(newTrack);
+          },
+          command: async () => {
+            if (id === song.id) {
+              return;
             }
-          } catch (error) {
-            console.log("error playing song: ", error);
-          }
-        }
+
+            posthog.capture("play_song");
+            try {
+              const newTrack = await getTrackFromSong(song, theme);
+              if (newTrack) {
+                await playTrack(newTrack);
+                if (hasPlaybackSource) {
+                  await updateQueue(
+                    song.id,
+                    shuffle,
+                    playbackSourceType,
+                    playbackSourceId,
+                    selectedSort,
+                    selectedOrder,
+                    selectedQuery,
+                  );
+                  await persistPlaybackSource({
+                    id: playbackSourceId,
+                    type: playbackSourceType,
+                  });
+                }
+              }
+            } catch (error) {
+              console.log("error playing song: ", error);
+            }
+          },
+        });
       },
       [
-        premium,
-        shouldPlayAd,
-        adPlaying,
         theme,
-        adURL,
         shuffle,
-        setAdPlaying,
         setSourceType,
         setSourceId,
         selectedSort,

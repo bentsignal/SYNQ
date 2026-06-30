@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import Server from "@/src/features/import/components/Server";
 import NotificationModal from "@/src/components/modals/NotificationModal";
-import Overlay from "@/src/components/Overlay";
-import { HomeIcon, LibraryIcon } from "@/src/components/TabBarIcons";
-import Top from "@/src/components/Top";
+import Overlay from "@/src/features/app-shell/components/Overlay";
+import { HomeIcon, LibraryIcon } from "@/src/features/app-shell/components/TabBarIcons";
+import Top from "@/src/features/app-shell/components/Top";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";

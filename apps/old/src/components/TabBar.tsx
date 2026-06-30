@@ -1,7 +1,10 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Styles } from "@/src/constants/Styles";
 import { router } from "expo-router";
-import { LibraryIcon, HomeIcon } from "./TabBarIcons";
+import {
+  HomeIcon,
+  LibraryIcon,
+} from "@/src/features/app-shell/components/TabBarIcons";
 
 const TabBar = () => {
   return (

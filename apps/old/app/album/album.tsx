@@ -4,7 +4,7 @@ import AlbumHeader from "@/src/components/lists/album/Header";
 import ArtistItem from "@/src/components/lists/artist/ArtistItem";
 import QueryWrapper from "@/src/components/lists/query/Wrapper";
 import SongList from "@/src/components/lists/song";
-import Overlay from "@/src/components/Overlay";
+import Overlay from "@/src/features/app-shell/components/Overlay";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import {

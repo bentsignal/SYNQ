@@ -3,7 +3,7 @@ import { Stack } from "expo-router";
 import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
 
-import Top from "@/src/components/Top";
+import Top from "@/src/features/app-shell/components/Top";
 import MiniPlayer from "@/src/features/playback/components/MiniPlayer";
 import Notifications from "@/src/features/notifications/components";
 

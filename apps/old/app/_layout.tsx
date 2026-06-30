@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Navigation from "@/app/navigation";
-import GlobalProgress from "@/src/components/GlobalProgress";
+import GlobalProgress from "@/src/features/app-shell/components/GlobalProgress";
 import Sheets from "@/src/features/action-sheet/components/Sheets";
 import { PUBLIC_FACEBOOK_APP_ID } from "@/src/constants/Keys";
 import PlaybackProvider from "@/src/features/playback/context/PlaybackProvider";

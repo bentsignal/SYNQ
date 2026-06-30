@@ -3,7 +3,7 @@ import Header from "@/src/components/Header";
 import QueryWrapper from "@/src/components/lists/query/Wrapper";
 import SongList from "@/src/components/lists/song";
 import SongListHeader from "@/src/components/lists/song/Header";
-import Overlay from "@/src/components/Overlay";
+import Overlay from "@/src/features/app-shell/components/Overlay";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import {

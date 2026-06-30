@@ -4,7 +4,7 @@ import { Colors } from "@/src/constants/Colors";
 
 import ImportControls from "@/src/features/import/components/Controls";
 import ImportHeader from "@/src/features/import/components/Header";
-import Overlay from "@/src/components/Overlay";
+import Overlay from "@/src/features/app-shell/components/Overlay";
 
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 

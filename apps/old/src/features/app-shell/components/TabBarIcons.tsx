@@ -25,8 +25,6 @@ export const HomeIcon = ({ focused }: TabIconProps) => {
 };
 
 export const LibraryIcon = ({ focused }: TabIconProps) => {
-  const active = "@/src/assets/icons/library-active.png";
-  const inactive = "@/src/assets/icons/library-inactive.png";
   return (
     <Image
       source={require("@/src/assets/icons/library.png")}

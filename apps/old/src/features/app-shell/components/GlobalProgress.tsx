@@ -1,6 +1,6 @@
-import Ad from "./Ad";
-import Overlay from "./Overlay";
-import Progress from "./Progress";
+import Ad from "@/src/components/Ad";
+import Overlay from "@/src/features/app-shell/components/Overlay";
+import Progress from "@/src/components/Progress";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { StyleSheet, Text, View } from "react-native";

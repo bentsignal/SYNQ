@@ -25,12 +25,11 @@ import artistBus from "@/src/events/artist";
 import {
   ArtistBusEvent,
   ArtistImageModifiedEvent,
-  ArtistModifiedEvent,
 } from "@/src/events/artist/Events";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import colors from "@/src/lib/colors";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
-import { router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import { Ellipsis } from "lucide-react-native";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -45,7 +44,6 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
   const { sendHaptic } = useHaptics();
 
   const [selected, setSelected] = useState(false);
-  const [name, setName] = useState(artist.name);
   const [coverImage, setCoverImage] = useState("");
   const [emptyCover, setEmptyCover] = useState(false);
 
@@ -116,21 +114,12 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
     setSelected(result);
   };
 
-  const updateInfo = (data: ArtistModifiedEvent) => {
-    if (artist.id === data.id) {
-      setName(data.name);
-      artist.name = data.name;
-    }
-  };
-
   useEffect(() => {
-    artistBus.on(ArtistBusEvent.ARTIST_MODIFIED, updateInfo);
     artistBus.on(
       ArtistBusEvent.ARTIST_IMAGE_MODIFIED,
       handleArtistImageModified,
     );
     return () => {
-      artistBus.off(ArtistBusEvent.ARTIST_MODIFIED, updateInfo);
       artistBus.off(
         ArtistBusEvent.ARTIST_IMAGE_MODIFIED,
         handleArtistImageModified,
@@ -198,7 +187,7 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
         empty={emptyCover}
       />
       <View style={Local.textWrapper}>
-        <Text style={Local.name}>{name}</Text>
+        <Text style={Local.name}>{artist.name}</Text>
       </View>
       {allowInteraction && artist.pageType === PageType.LIBRARY && (
         <TouchableOpacity className="py-2 pl-2" onPress={handleMore}>

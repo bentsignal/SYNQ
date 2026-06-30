@@ -20,7 +20,6 @@ import albumBus from "@/src/events/album";
 import {
   AlbumBusEvent,
   AlbumImageModifiedEvent,
-  AlbumModifiedEvent,
 } from "@/src/events/album/Events";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import colors from "@/src/lib/colors";
@@ -40,8 +39,6 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
   const { sendHaptic } = useHaptics();
 
   const [selected, setSelected] = useState(false);
-  const [name, setName] = useState(album.name);
-  const [year, setYear] = useState(album.year);
   const [coverImage, setCoverImage] = useState("");
   const [emptyCover, setEmptyCover] = useState(false);
 
@@ -122,15 +119,6 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
     setSelected(result);
   };
 
-  const updateInfo = (data: AlbumModifiedEvent) => {
-    if (album.id === data.id) {
-      setName(data.name);
-      setYear(data.year);
-      album.name = data.name;
-      album.year = data.year;
-    }
-  };
-
   const handleAlbumImageModified = async (data: AlbumImageModifiedEvent) => {
     console.log("album image modified: ", data.id, album.id);
     if (data.id === album.id) {
@@ -143,10 +131,8 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
   };
 
   useEffect(() => {
-    albumBus.on(AlbumBusEvent.ALBUM_MODIFIED, updateInfo);
     albumBus.on(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, handleAlbumImageModified);
     return () => {
-      albumBus.off(AlbumBusEvent.ALBUM_MODIFIED, updateInfo);
       albumBus.off(
         AlbumBusEvent.ALBUM_IMAGE_MODIFIED,
         handleAlbumImageModified,
@@ -194,10 +180,10 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
       />
       <View style={Local.textWrapper}>
         <Text style={Local.name} numberOfLines={1}>
-          {name}
+          {album.name}
         </Text>
         <Text style={Local.year} numberOfLines={1}>
-          {year ?? "Unknown Year"}
+          {album.year ?? "Unknown Year"}
         </Text>
       </View>
       {allowInteraction && album.pageType === PageType.LIBRARY && (

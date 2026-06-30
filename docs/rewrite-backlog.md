@@ -71,6 +71,9 @@ feature-oriented packages.
      `useArtistSongsQuery`, and `useArtistAlbumsQuery` instead of listening for
      `ARTIST_MODIFIED`, `ARTIST_TOGGLED_ON_SONG`, album events, or
      `PLAYLIST_SONGS_IMPORTED`.
+   - Album and artist row metadata now renders from props; `AlbumItem` no
+     longer listens for `ALBUM_MODIFIED`, and `ArtistItem` no longer listens
+     for `ARTIST_MODIFIED`.
    - Next target: remove import-only metadata listeners from `Song.tsx` with a
      typed import edit store.
 
@@ -138,6 +141,7 @@ feature-oriented packages.
    - Done: add `useLibraryAlbumsQuery` for the list-level library album screen.
    - Done: add `useAlbumInfoQuery` and `useAlbumSongsQuery` for the album
      detail screen.
+   - Done: remove `ALBUM_MODIFIED` display listeners from album rows.
    - Add album order/image queries where the reorder and cover flows still
      need Drizzle-backed state.
    - Replace `ALBUM_*` events, including `ALBUM_TOGGLED_ON_SONG` and
@@ -148,6 +152,7 @@ feature-oriented packages.
      screen.
    - Done: add `useArtistInfoQuery`, `useArtistSongsQuery`, and
      `useArtistAlbumsQuery` for the artist detail screen.
+   - Done: remove `ARTIST_MODIFIED` display listeners from artist rows.
    - Add artist relation/image queries where add/edit/cover flows still need
      Drizzle-backed state.
    - Replace artist edit/list/detail listeners.

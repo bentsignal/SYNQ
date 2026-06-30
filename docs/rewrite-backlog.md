@@ -387,6 +387,9 @@ feature-oriented packages.
    - Done: premium upsell ad UI now lives in
      `apps/old/src/features/premium/components/Ad.tsx` instead of the generic
      root `src/components` folder.
+   - Done: premium purchase option UI now lives in
+     `apps/old/src/features/premium/components/PremiumOption.tsx` instead of
+     the generic root `src/components` folder.
    - Done: settings screen UI components now live in
      `apps/old/src/features/settings/components` instead of the generic
      `src/components/settings` folder.

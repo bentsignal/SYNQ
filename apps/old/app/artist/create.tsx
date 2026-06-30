@@ -3,7 +3,7 @@ import EditCover from "@/src/features/cover/components/EditCover";
 import CustomButton from "@/src/components/CustomButton";
 import Bar from "@/src/components/modals/Bar";
 import ModalStyles from "@/src/components/modals/Styles";
-import Notifications from "@/src/components/notifications/Notifications";
+import Notifications from "@/src/features/notifications/components/Notifications";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType, NotificationType } from "@/src/constants/Types";

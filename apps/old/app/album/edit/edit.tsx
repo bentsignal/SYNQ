@@ -4,7 +4,7 @@ import CustomButton from "@/src/components/CustomButton";
 import ArtistItem from "@/src/components/lists/artist/ArtistItem";
 import Bar from "@/src/components/modals/Bar";
 import ModalStyles from "@/src/components/modals/Styles";
-import Notifications from "@/src/components/notifications";
+import Notifications from "@/src/features/notifications/components";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType, NotificationType } from "@/src/constants/Types";

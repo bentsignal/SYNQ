@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { type StyleProp, View, type ViewStyle } from "react-native";
 import Notification from "./Notification";
 import {
   type AppNotification,
@@ -6,7 +6,7 @@ import {
 } from "@/src/features/notifications/context/NotificationsProvider";
 
 type NotificationsProps = {
-  customStyles?: {};
+  customStyles?: StyleProp<ViewStyle>;
 };
 
 const Notifications = ({ customStyles }: NotificationsProps) => {

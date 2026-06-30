@@ -1,5 +1,5 @@
 import InfoModal from "@/src/components/modals/InfoModal";
-import Notifications from "@/src/components/notifications/Notifications";
+import Notifications from "@/src/features/notifications/components/Notifications";
 import Option from "@/src/components/Option";
 import PageTitle from "@/src/components/PageTitle";
 import MiniPlayer from "@/src/features/playback/components/MiniPlayer";

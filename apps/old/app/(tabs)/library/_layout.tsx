@@ -5,7 +5,7 @@ import { Colors } from "@/src/constants/Colors";
 
 import Top from "@/src/components/Top";
 import MiniPlayer from "@/src/features/playback/components/MiniPlayer";
-import Notifications from "@/src/components/notifications";
+import Notifications from "@/src/features/notifications/components";
 
 export default function LibraryLayout() {
   return (

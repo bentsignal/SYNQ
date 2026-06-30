@@ -15,6 +15,7 @@ import { deleteFromLibrary } from "@/src/controllers/LibraryController";
 import { removeFromAllPlaylists } from "@/src/controllers/PlaylistController";
 import { removeSongs } from "@/src/controllers/SongController";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
+import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { posthog } from "@/src/lib/posthog";
 import axios from "axios";
@@ -36,14 +37,14 @@ export default function ImportControls() {
     transferSize,
 
     setEditSong,
-    setImportState,
     setResults,
     setNumModified,
     setExportDisabled,
     setLoading,
     setTransferSize,
-    requestImportFinish,
   } = useGlobalContext();
+
+  const { setImportState, requestImportFinish } = useImportFlowContext();
 
   const { showGlobalLoading } = useGlobalProgressContext();
   const { selectEnabled, selectedSongs, setSelectEnabled } =

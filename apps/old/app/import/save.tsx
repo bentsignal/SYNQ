@@ -9,6 +9,7 @@ import { useThemeContext } from "@/src/context/ThemeProvider";
 import { deleteImportSongs } from "@/src/controllers/ImportExportController";
 import { saveToLibrary } from "@/src/controllers/LibraryController";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
+import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -21,18 +22,21 @@ import { Dimensions, StyleSheet, Text, View } from "react-native";
 const SavePrompt = () => {
   const {
     results,
-    importState,
     loading,
-    shouldSaveToLibrary,
-    importFinishRequest,
     ip,
 
     setExportDisabled,
     setLoading,
     setTransferSize,
     setResults,
-    setShouldSaveToLibrary,
   } = useGlobalContext();
+
+  const {
+    importState,
+    shouldSaveToLibrary,
+    importFinishRequest,
+    setShouldSaveToLibrary,
+  } = useImportFlowContext();
 
   const {
     showImportAd,

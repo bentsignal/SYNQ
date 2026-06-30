@@ -18,6 +18,7 @@ import { useFont } from "@/src/hooks/use-font";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { AppShellProvider } from "@/src/features/app-shell/context/AppShellProvider";
 import { GlobalProgressProvider } from "@/src/features/app-shell/context/GlobalProgressProvider";
+import { ImportFlowProvider } from "@/src/features/import/context/ImportFlowProvider";
 import { NotificationsProvider } from "@/src/features/notifications/context/NotificationsProvider";
 import { PlaybackAdProvider } from "@/src/features/playback/context/PlaybackAdProvider";
 import { SelectionProvider } from "@/src/features/selection/context/SelectionProvider";
@@ -78,15 +79,17 @@ const RootLayout = () => {
             <GlobalProvider>
               <AppShellProvider>
                 <GlobalProgressProvider>
-                  <NotificationsProvider>
-                    <SelectionProvider>
-                      <GestureHandlerRootView style={{ flex: 1 }}>
-                        <GlobalProgress />
-                        <Sheets />
-                        <Navigation />
-                      </GestureHandlerRootView>
-                    </SelectionProvider>
-                  </NotificationsProvider>
+                  <ImportFlowProvider>
+                    <NotificationsProvider>
+                      <SelectionProvider>
+                        <GestureHandlerRootView style={{ flex: 1 }}>
+                          <GlobalProgress />
+                          <Sheets />
+                          <Navigation />
+                        </GestureHandlerRootView>
+                      </SelectionProvider>
+                    </NotificationsProvider>
+                  </ImportFlowProvider>
                 </GlobalProgressProvider>
               </AppShellProvider>
             </GlobalProvider>

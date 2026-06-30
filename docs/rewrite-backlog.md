@@ -196,9 +196,12 @@ feature-oriented packages.
    - Done: playback ad state now lives in
      `apps/old/src/features/playback/context/PlaybackAdProvider.tsx` instead
      of `GlobalProvider`.
-   - Next safe slices: split import transfer state or continue extracting
-     playback orchestration from the home screen. Avoid import results and edit
-     targets until their owning feature boundaries are clearer.
+   - Done: import flow state now lives in
+     `apps/old/src/features/import/context/ImportFlowProvider.tsx` instead of
+     `GlobalProvider`.
+   - Next safe slice: continue extracting playback orchestration from the home
+     screen. Avoid import results and edit targets until their owning feature
+     boundaries are clearer.
 
 6. Extract playback orchestration.
    - `apps/old/app/(tabs)/index.tsx` still coordinates player setup, ad timing,

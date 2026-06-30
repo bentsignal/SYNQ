@@ -12,16 +12,16 @@ import {
 } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import {
-  addArtistToAlbum,
-  isArtistOnAlbum,
-  removeArtistFromAlbum,
-} from "@/src/controllers/AlbumController";
+  addArtistToLibraryAlbum,
+  getLibraryArtistCoverPath,
+  isArtistOnLibraryAlbum,
+  removeArtistFromLibraryAlbum,
+} from "@/src/features/library/repository/library-entity-repository";
 import {
-  addArtistToSong,
-  getArtistCover,
-  isArtistOnSong,
-  removeArtistFromSong,
-} from "@/src/controllers/ArtistController";
+  addArtistToLibrarySong,
+  isArtistOnLibrarySong,
+  removeArtistFromLibrarySong,
+} from "@/src/features/library/repository/library-song-repository";
 import {
   addImportSongArtist,
   removeImportSongArtist,
@@ -57,7 +57,7 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
 
   const loadFallbackCover = useCallback(async () => {
     try {
-      const cover = await getArtistCover(artist.id);
+      const cover = await getLibraryArtistCoverPath(artist.id);
       setFallbackCoverImage(cover ?? "");
     } catch (error) {
       console.log("error loading artist cover:", error);
@@ -68,9 +68,9 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
     try {
       if (artist.sourceType === SourceType.ALBUM && editAlbum) {
         if (add) {
-          await addArtistToAlbum(artist.id, editAlbum.id);
+          await addArtistToLibraryAlbum(artist.id, editAlbum.id);
         } else {
-          await removeArtistFromAlbum(artist.id, editAlbum.id);
+          await removeArtistFromLibraryAlbum(artist.id, editAlbum.id);
         }
         setEditAlbum({ ...editAlbum });
       } else if (artist.sourceType === SourceType.SONG && editSong) {
@@ -86,9 +86,9 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
           );
         } else {
           if (add) {
-            await addArtistToSong(artist.id, editSong.id);
+            await addArtistToLibrarySong(artist.id, editSong.id);
           } else {
-            await removeArtistFromSong(artist.id, editSong.id);
+            await removeArtistFromLibrarySong(artist.id, editSong.id);
           }
           setEditSong({ ...editSong });
         }
@@ -106,17 +106,15 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
           (importArtist: ArtistType) => importArtist.id === artist.id,
         ) ?? false;
     } else {
-      result = await isArtistOnSong(artist.id, editSong.id);
+      result = await isArtistOnLibrarySong(artist.id, editSong.id);
     }
     setSelected(result);
   }, [artist.id, editSong]);
 
   const checkArtistOnAlbum = useCallback(async () => {
-    console.log(artist.id, editAlbum.id);
-    const result = await isArtistOnAlbum(artist.id, editAlbum.id);
-    console.log(artist.name, result);
+    const result = await isArtistOnLibraryAlbum(artist.id, editAlbum.id);
     setSelected(result);
-  }, [artist.id, artist.name, editAlbum]);
+  }, [artist.id, editAlbum]);
 
   useEffect(() => {
     if (editSong.id && artist.sourceType === SourceType.SONG) {

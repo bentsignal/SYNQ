@@ -181,6 +181,9 @@ feature-oriented packages.
    - Library song deletion now runs through the Drizzle-backed song repository
      from import controls and song options, including relation cleanup and
      filesystem removal instead of `LibraryController`.
+   - Album and artist add/remove row actions now mutate song/album join tables
+     through Drizzle-backed repositories instead of `AlbumController` and
+     `ArtistController`.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

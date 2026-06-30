@@ -6,16 +6,16 @@ import { Styles } from "@/src/constants/Styles";
 import { AlbumType, CoverType, PageType, SongType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import {
-  addAlbumToSong,
-  getAlbumCover,
-  getArtistsFromAlbum,
-  isAlbumOnSong,
-  removeAlbumFromSong,
-} from "@/src/controllers/AlbumController";
+  getLibraryAlbumArtists,
+  getLibraryAlbumCoverPath,
+} from "@/src/features/library/repository/library-entity-repository";
 import {
-  addArtistToSong,
-  removeArtistFromSong,
-} from "@/src/controllers/ArtistController";
+  addAlbumToLibrarySong,
+  addArtistToLibrarySong,
+  isAlbumOnLibrarySong,
+  removeAlbumFromLibrarySong,
+  removeArtistFromLibrarySong,
+} from "@/src/features/library/repository/library-song-repository";
 import {
   addImportSongAlbum,
   removeImportSongAlbum,
@@ -45,7 +45,7 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
 
   const loadFallbackCover = useCallback(async () => {
     try {
-      const cover = await getAlbumCover(album.id);
+      const cover = await getLibraryAlbumCoverPath(album.id);
       setFallbackCoverImage(cover ?? "");
     } catch (error) {
       console.log("error loading album cover:", error);
@@ -62,8 +62,8 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
 
   const selectionChanged = async (add: boolean) => {
     try {
+      const artists = await getLibraryAlbumArtists(album.id);
       if (editSong.pageType === PageType.IMPORT) {
-        const artists = await getArtistsFromAlbum(album.id);
         if (add) {
           addImportSongAlbum(editSong, album, artists);
         } else {
@@ -75,16 +75,18 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
         );
       } else {
         if (add) {
-          await addAlbumToSong(album.id, editSong.id);
-          const artists = await getArtistsFromAlbum(album.id);
+          await addAlbumToLibrarySong(album.id, editSong.id);
           await Promise.all(
-            artists.map((artist) => addArtistToSong(artist.id, editSong.id)),
+            artists.map((artist) =>
+              addArtistToLibrarySong(artist.id, editSong.id),
+            ),
           );
         } else {
-          await removeAlbumFromSong(album.id, editSong.id);
-          const artists = await getArtistsFromAlbum(album.id);
+          await removeAlbumFromLibrarySong(album.id, editSong.id);
           await Promise.all(
-            artists.map((artist) => removeArtistFromSong(artist.id, editSong.id)),
+            artists.map((artist) =>
+              removeArtistFromLibrarySong(artist.id, editSong.id),
+            ),
           );
         }
         setEditSong({ ...editSong });
@@ -102,7 +104,7 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
           (importAlbum: AlbumType) => importAlbum.id === album.id,
         ) ?? false;
     } else {
-      result = await isAlbumOnSong(album.id, editSong.id);
+      result = await isAlbumOnLibrarySong(album.id, editSong.id);
     }
     setSelected(result);
   }, [album.id, editSong]);

@@ -355,6 +355,102 @@ export const deleteLibrarySong = async (songId: number) => {
   }
 };
 
+export const addArtistToLibrarySong = async (
+  artistId: number,
+  songId: number,
+) => {
+  const exists = await isArtistOnLibrarySong(artistId, songId);
+  if (exists) {
+    return;
+  }
+
+  await db.insert(schema.artistSongs).values({
+    artistId,
+    songId,
+  });
+};
+
+export const removeArtistFromLibrarySong = async (
+  artistId: number,
+  songId: number,
+) => {
+  await db
+    .delete(schema.artistSongs)
+    .where(
+      and(
+        eq(schema.artistSongs.artistId, artistId),
+        eq(schema.artistSongs.songId, songId),
+      ),
+    );
+};
+
+export const isArtistOnLibrarySong = async (
+  artistId: number,
+  songId: number,
+) => {
+  const rows = await db
+    .select({ id: schema.artistSongs.id })
+    .from(schema.artistSongs)
+    .where(
+      and(
+        eq(schema.artistSongs.artistId, artistId),
+        eq(schema.artistSongs.songId, songId),
+      ),
+    )
+    .limit(1);
+
+  return rows.length > 0;
+};
+
+export const addAlbumToLibrarySong = async (
+  albumId: number,
+  songId: number,
+  track?: number,
+) => {
+  const exists = await isAlbumOnLibrarySong(albumId, songId);
+  if (exists) {
+    return;
+  }
+
+  await db.insert(schema.albumSongs).values({
+    albumId,
+    songId,
+    track,
+  });
+};
+
+export const removeAlbumFromLibrarySong = async (
+  albumId: number,
+  songId: number,
+) => {
+  await db
+    .delete(schema.albumSongs)
+    .where(
+      and(
+        eq(schema.albumSongs.albumId, albumId),
+        eq(schema.albumSongs.songId, songId),
+      ),
+    );
+};
+
+export const isAlbumOnLibrarySong = async (
+  albumId: number,
+  songId: number,
+) => {
+  const rows = await db
+    .select({ id: schema.albumSongs.id })
+    .from(schema.albumSongs)
+    .where(
+      and(
+        eq(schema.albumSongs.albumId, albumId),
+        eq(schema.albumSongs.songId, songId),
+      ),
+    )
+    .limit(1);
+
+  return rows.length > 0;
+};
+
 export const getLibrarySongAlbums = async (songId: number) => {
   const rows = await db
     .select({

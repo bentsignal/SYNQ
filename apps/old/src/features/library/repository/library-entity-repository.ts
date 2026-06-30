@@ -1,3 +1,4 @@
+import { ArtistType, PageType } from "@/src/constants/Types";
 import {
   getImagePathFromHash,
   saveCoverImage,
@@ -155,6 +156,72 @@ export const deleteLibraryArtist = async (id: number) => {
     .delete(schema.artistsAlbums)
     .where(eq(schema.artistsAlbums.artistId, id));
   await db.delete(schema.artists).where(eq(schema.artists.id, id));
+};
+
+export const addArtistToLibraryAlbum = async (
+  artistId: number,
+  albumId: number,
+) => {
+  const exists = await isArtistOnLibraryAlbum(artistId, albumId);
+  if (exists) {
+    return;
+  }
+
+  await db.insert(schema.artistsAlbums).values({
+    artistId,
+    albumId,
+  });
+};
+
+export const removeArtistFromLibraryAlbum = async (
+  artistId: number,
+  albumId: number,
+) => {
+  await db
+    .delete(schema.artistsAlbums)
+    .where(
+      and(
+        eq(schema.artistsAlbums.artistId, artistId),
+        eq(schema.artistsAlbums.albumId, albumId),
+      ),
+    );
+};
+
+export const isArtistOnLibraryAlbum = async (
+  artistId: number,
+  albumId: number,
+) => {
+  const rows = await db
+    .select({ id: schema.artistsAlbums.id })
+    .from(schema.artistsAlbums)
+    .where(
+      and(
+        eq(schema.artistsAlbums.artistId, artistId),
+        eq(schema.artistsAlbums.albumId, albumId),
+      ),
+    )
+    .limit(1);
+
+  return rows.length > 0;
+};
+
+export const getLibraryArtistCoverPath = async (
+  artistId: number,
+  full: boolean = false,
+) => {
+  const rows = await db
+    .select({ profileImage: schema.artists.profileImage })
+    .from(schema.artists)
+    .where(eq(schema.artists.id, artistId))
+    .limit(1);
+
+  const profileImage = rows[0]?.profileImage;
+  if (!profileImage) {
+    return null;
+  }
+
+  const paths = getImagePathFromHash(profileImage);
+  return full ? paths.pathToFullImage : paths.pathToSmallImage;
 };
 
 export const createLibraryPlaylist = async (name: string, image?: string) => {
@@ -379,4 +446,29 @@ export const getLibraryAlbumCoverPath = async (
 
   const paths = getImagePathFromHash(coverImage);
   return full ? paths.pathToFullImage : paths.pathToSmallImage;
+};
+
+export const getLibraryAlbumArtists = async (albumId: number) => {
+  const rows = await db
+    .select({ artist: schema.artists })
+    .from(schema.artistsAlbums)
+    .innerJoin(
+      schema.artists,
+      eq(schema.artistsAlbums.artistId, schema.artists.id),
+    )
+    .where(eq(schema.artistsAlbums.albumId, albumId));
+
+  return rows.map(({ artist }) => {
+    const imagePaths = artist.profileImage
+      ? getImagePathFromHash(artist.profileImage)
+      : null;
+
+    return {
+      id: artist.id,
+      name: artist.name ?? "",
+      image: imagePaths?.pathToSmallImage,
+      fullImage: imagePaths?.pathToFullImage,
+      pageType: PageType.EDIT,
+    } satisfies ArtistType;
+  });
 };

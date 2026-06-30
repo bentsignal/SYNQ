@@ -83,24 +83,22 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
         setResults((currentResults) =>
           replaceImportSong(currentResults, editSong),
         );
-      } else if (add) {
-        await addAlbumToSong(album.id, editSong.id);
-        const artists = await getArtistsFromAlbum(album.id);
-        await Promise.all(
-          artists.map((artist) => addArtistToSong(artist.id, editSong.id)),
-        );
       } else {
-        await removeAlbumFromSong(album.id, editSong.id);
-        const artists = await getArtistsFromAlbum(album.id);
-        await Promise.all(
-          artists.map((artist) => removeArtistFromSong(artist.id, editSong.id)),
-        );
+        if (add) {
+          await addAlbumToSong(album.id, editSong.id);
+          const artists = await getArtistsFromAlbum(album.id);
+          await Promise.all(
+            artists.map((artist) => addArtistToSong(artist.id, editSong.id)),
+          );
+        } else {
+          await removeAlbumFromSong(album.id, editSong.id);
+          const artists = await getArtistsFromAlbum(album.id);
+          await Promise.all(
+            artists.map((artist) => removeArtistFromSong(artist.id, editSong.id)),
+          );
+        }
+        setEditSong({ ...editSong });
       }
-      albumBus.emit(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, {
-        albumId: album.id,
-        songId: editSong.id,
-        add: add,
-      });
     } catch (error) {
       console.log("error saving album list changes: ", error);
     }

@@ -97,16 +97,14 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
           setResults((currentResults) =>
             replaceImportSong(currentResults, editSong),
           );
-        } else if (add) {
-          await addArtistToSong(artist.id, editSong.id);
         } else {
-          await removeArtistFromSong(artist.id, editSong.id);
+          if (add) {
+            await addArtistToSong(artist.id, editSong.id);
+          } else {
+            await removeArtistFromSong(artist.id, editSong.id);
+          }
+          setEditSong({ ...editSong });
         }
-        artistBus.emit(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, {
-          artistId: artist.id,
-          songId: editSong.id,
-          add: add,
-        });
       }
     } catch (error) {
       console.log("error saving artist list changes: ", error);

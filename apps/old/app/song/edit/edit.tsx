@@ -1,4 +1,4 @@
-import { Fragment, memo, useEffect, useState } from "react";
+import { Fragment, memo, useCallback, useEffect, useState } from "react";
 import EditCover from "@/src/components/cover/EditCover";
 import CustomButton from "@/src/components/CustomButton";
 import AlbumItem from "@/src/components/lists/album/AlbumItem";
@@ -15,7 +15,6 @@ import {
   PageType,
 } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
-import { useThemeContext } from "@/src/context/ThemeProvider";
 import { getAlbumsFromSong } from "@/src/controllers/AlbumController";
 import { getArtistsFromSong } from "@/src/controllers/ArtistController";
 import { newCover } from "@/src/controllers/ImageController";
@@ -25,19 +24,8 @@ import {
   getLibrarySongCover,
   saveEdits,
 } from "@/src/controllers/SongController";
-import albumBus from "@/src/events/album/Bus";
-import {
-  AlbumBusEvent,
-  AlbumToggledOnSongEvent,
-} from "@/src/events/album/Events";
-import artistBus from "@/src/events/artist/Bus";
-import {
-  ArtistBusEvent,
-  ArtistToggledOnSongEvent,
-} from "@/src/events/artist/Events";
 import { getDurationString } from "@/src/lib/util";
-import * as Haptics from "expo-haptics";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -48,7 +36,6 @@ const EditSong = ({ id }: { id: number }) => {
   const insets = useSafeAreaInsets();
 
   const {
-    haptic,
     editSong,
     selectedSongs,
     results,
@@ -57,10 +44,7 @@ const EditSong = ({ id }: { id: number }) => {
     setNumModified,
     numModified,
     setSelectEnabled,
-    selectEnabled,
   } = useGlobalContext();
-
-  const { theme } = useThemeContext();
 
   const [title, setTitle] = useState("");
   const [artist, setArtist] = useState("");
@@ -69,59 +53,25 @@ const EditSong = ({ id }: { id: number }) => {
   const [artists, setArtists] = useState<ArtistType[]>([]);
   const [albums, setAlbums] = useState<AlbumType[]>([]);
 
-  useEffect(() => {
-    artistBus.on(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, handleArtistToggled);
-    albumBus.on(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, handleAlbumToggled);
-    return () => {
-      artistBus.off(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, handleArtistToggled);
-      albumBus.off(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, handleAlbumToggled);
-    };
-  }, []);
-
-  const handleArtistToggled = (event: ArtistToggledOnSongEvent) => {
-    if (event.songId === id) {
-      loadArtists();
-    }
-  };
-
-  const handleAlbumToggled = (event: AlbumToggledOnSongEvent) => {
-    if (event.songId === id) {
-      loadAlbums();
-      loadArtists();
-      loadCover();
-    }
-  };
-
-  useEffect(() => {
-    if (editSong) {
-      loadArtists();
-      loadAlbums();
-      setTitle(editSong.title ?? "");
-      setArtist(editSong.artist ?? "");
-      setAlbum(editSong.album ?? "");
-      loadCover();
-    }
-  }, [editSong]);
-
-  const loadArtists = async () => {
+  const loadArtists = useCallback(async () => {
     if (editSong.pageType === PageType.IMPORT) {
       setArtists(editSong.importArtists ?? []);
     } else {
       const artists = await getArtistsFromSong(id);
       setArtists(artists);
     }
-  };
+  }, [editSong, id]);
 
-  const loadAlbums = async () => {
+  const loadAlbums = useCallback(async () => {
     if (editSong.pageType === PageType.IMPORT) {
       setAlbums(editSong.importAlbums ?? []);
     } else {
       const albums = await getAlbumsFromSong(id);
       setAlbums(albums);
     }
-  };
+  }, [editSong, id]);
 
-  const loadCover = async () => {
+  const loadCover = useCallback(async () => {
     if (editSong.pageType === PageType.IMPORT) {
       const cover = await getImportSongCover(editSong);
       setImage(cover ?? "");
@@ -129,7 +79,30 @@ const EditSong = ({ id }: { id: number }) => {
       const cover = await getLibrarySongCover(id, true);
       setImage(cover ?? "");
     }
-  };
+  }, [editSong, id]);
+
+  const refreshRelations = useCallback(() => {
+    if (editSong) {
+      loadArtists();
+      loadAlbums();
+      loadCover();
+    }
+  }, [editSong, loadAlbums, loadArtists, loadCover]);
+
+  useEffect(() => {
+    if (editSong) {
+      setTitle(editSong.title ?? "");
+      setArtist(editSong.artist ?? "");
+      setAlbum(editSong.album ?? "");
+      refreshRelations();
+    }
+  }, [editSong, refreshRelations]);
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshRelations();
+    }, [refreshRelations]),
+  );
 
   const handleUpdateImage = async () => {
     const cover = await newCover();

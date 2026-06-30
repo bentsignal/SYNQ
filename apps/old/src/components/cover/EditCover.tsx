@@ -1,6 +1,6 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
-import { CoverType, PageType } from "@/src/constants/Types";
+import { CoverType } from "@/src/constants/Types";
 import {
   getAlbumCover,
   getAlbumCoverFromSong,
@@ -8,15 +8,10 @@ import {
 import { getArtistCover } from "@/src/controllers/ArtistController";
 import { getSongCover } from "@/src/controllers/ImageController";
 import { getPlaylistCover } from "@/src/controllers/PlaylistController";
-import albumBus from "@/src/events/album/Bus";
-import { AlbumBusEvent } from "@/src/events/album/Events";
 import { SquarePen } from "lucide-react-native";
 import {
   Animated,
-  Dimensions,
-  Image,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -117,13 +112,6 @@ const EditCover = ({
   useLayoutEffect(() => {
     getImage();
   }, [image, id]);
-
-  useEffect(() => {
-    albumBus.on(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, getImage);
-    return () => {
-      albumBus.off(AlbumBusEvent.ALBUM_TOGGLED_ON_SONG, getImage);
-    };
-  }, []);
 
   const editCoverSize = 140;
 

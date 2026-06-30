@@ -90,7 +90,11 @@ feature-oriented packages.
      immutable `results` updates when import relations are toggled, so
      `Song.tsx` no longer listens for `ARTIST_TOGGLED_ON_SONG` or
      `ALBUM_TOGGLED_ON_SONG`.
-   - Next target: move song edit relation refresh out of bus listeners.
+   - Song edit relation refresh now keys off focus refresh and `editSong`
+     context updates from the add/remove rows instead of
+     `ARTIST_TOGGLED_ON_SONG` or `ALBUM_TOGGLED_ON_SONG` listeners.
+   - Next target: replace album-edit artist relation listeners with the same
+     edit-store pattern.
 
 4. Split ingest/media.
    - Current checkpoint files: `apps/old/src/hooks/use-ingest.ts`,
@@ -141,8 +145,8 @@ feature-oriented packages.
      from `useLibrarySongsQuery`.
    - Done: remove import-only `ARTIST_TOGGLED_ON_SONG` and
      `ALBUM_TOGGLED_ON_SONG` listeners from `apps/old/src/components/song/Song.tsx`.
-   - Next: move `app/song/edit/edit.tsx` relation refresh to local callbacks or
-     a typed edit store.
+   - Done: move `app/song/edit/edit.tsx` relation refresh to focus refresh
+     plus `editSong` context updates from relation list rows.
    - Then remove `apps/old/src/events/song`.
 
 2. Playlist:

@@ -8,9 +8,9 @@ import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType, NotificationType } from "@/src/constants/Types";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
-import { updateArtist } from "@/src/controllers/ArtistController";
 import { newCover } from "@/src/controllers/ImageController";
 import { useArtistInfoQuery } from "@/src/features/library/hooks/use-artist-info-query";
+import { updateLibraryArtist } from "@/src/features/library/repository/library-entity-repository";
 import { router } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -32,7 +32,11 @@ const EditArtist = ({ id }: { id: number }) => {
         throw new Error("Name is required");
       } else {
         setName(text);
-        await updateArtist(id, text === originalName ? undefined : text, image);
+        await updateLibraryArtist({
+          id,
+          name: text === originalName ? undefined : text,
+          image,
+        });
       }
     } catch (error) {
       const trace = error instanceof Error ? error.message : String(error);
@@ -51,7 +55,11 @@ const EditArtist = ({ id }: { id: number }) => {
     const cover = await newCover();
     if (cover) {
       setImage(cover);
-      await updateArtist(id, name === originalName ? undefined : name, cover);
+      await updateLibraryArtist({
+        id,
+        name: name === originalName ? undefined : name,
+        image: cover,
+      });
     }
   };
 

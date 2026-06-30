@@ -1,7 +1,7 @@
 import { saveCoverImage } from "@/src/features/images/repository/image-repository";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 
 const assertUniqueArtistName = async (name: string) => {
   const existingArtist = await db
@@ -15,11 +15,46 @@ const assertUniqueArtistName = async (name: string) => {
   }
 };
 
+const assertUniqueArtistNameForUpdate = async (
+  artistId: number,
+  name: string,
+) => {
+  const existingArtist = await db
+    .select({ id: schema.artists.id })
+    .from(schema.artists)
+    .where(and(eq(schema.artists.name, name), ne(schema.artists.id, artistId)))
+    .limit(1);
+
+  if (existingArtist.length > 0) {
+    throw new Error("Artist already exists");
+  }
+};
+
 const assertUniquePlaylistName = async (name: string) => {
   const existingPlaylist = await db
     .select({ id: schema.playlists.id })
     .from(schema.playlists)
     .where(eq(schema.playlists.name, name))
+    .limit(1);
+
+  if (existingPlaylist.length > 0) {
+    throw new Error("Playlist already exists");
+  }
+};
+
+const assertUniquePlaylistNameForUpdate = async (
+  playlistId: number,
+  name: string,
+) => {
+  const existingPlaylist = await db
+    .select({ id: schema.playlists.id })
+    .from(schema.playlists)
+    .where(
+      and(
+        eq(schema.playlists.name, name),
+        ne(schema.playlists.id, playlistId),
+      ),
+    )
     .limit(1);
 
   if (existingPlaylist.length > 0) {
@@ -63,6 +98,39 @@ export const createLibraryArtist = async (name: string, image?: string) => {
   };
 };
 
+export const updateLibraryArtist = async ({
+  id,
+  name,
+  image,
+}: {
+  id: number;
+  name?: string;
+  image?: string;
+}) => {
+  const cleanName = name?.trim();
+  const profileImage = await saveCoverImage(image);
+
+  if (cleanName !== undefined && !cleanName) {
+    throw new Error("Artist name is required");
+  }
+
+  if (cleanName !== undefined) {
+    await assertUniqueArtistNameForUpdate(id, cleanName);
+  }
+
+  if (cleanName === undefined && profileImage === null) {
+    return;
+  }
+
+  await db
+    .update(schema.artists)
+    .set({
+      ...(cleanName !== undefined ? { name: cleanName } : {}),
+      ...(profileImage !== null ? { profileImage } : {}),
+    })
+    .where(eq(schema.artists.id, id));
+};
+
 export const createLibraryPlaylist = async (name: string, image?: string) => {
   const cleanName = name.trim();
 
@@ -85,6 +153,39 @@ export const createLibraryPlaylist = async (name: string, image?: string) => {
     id: createdPlaylist[0].id,
     name: cleanName,
   };
+};
+
+export const updateLibraryPlaylist = async ({
+  id,
+  name,
+  image,
+}: {
+  id: number;
+  name?: string;
+  image?: string;
+}) => {
+  const cleanName = name?.trim();
+  const coverImage = await saveCoverImage(image);
+
+  if (cleanName !== undefined && !cleanName) {
+    throw new Error("Name is required");
+  }
+
+  if (cleanName !== undefined) {
+    await assertUniquePlaylistNameForUpdate(id, cleanName);
+  }
+
+  if (cleanName === undefined && coverImage === null) {
+    return;
+  }
+
+  await db
+    .update(schema.playlists)
+    .set({
+      ...(cleanName !== undefined ? { name: cleanName } : {}),
+      ...(coverImage !== null ? { coverImage } : {}),
+    })
+    .where(eq(schema.playlists.id, id));
 };
 
 export const createLibraryAlbum = async (

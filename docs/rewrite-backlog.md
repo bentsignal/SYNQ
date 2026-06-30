@@ -83,6 +83,8 @@ feature-oriented packages.
      `PLAYLIST_SONG_COUNT_MODIFIED`, or `PLAYLIST_NAME_MODIFIED`.
    - Playlist edit now hydrates its form from `usePlaylistInfoQuery` instead
      of route-local `getPlaylistInfo` controller refresh.
+   - Playlist edit now writes name and cover changes through the Drizzle-backed
+     library entity repository instead of the legacy playlist controller.
    - Album library refresh has started. `Albums.tsx` now reads from
      `useLibraryAlbumsQuery` instead of listening for `ALBUM_CREATED`,
      `ALBUM_DELETED`, `ALBUM_MODIFIED`, or `PLAYLIST_SONGS_IMPORTED`.
@@ -106,6 +108,8 @@ feature-oriented packages.
      `PLAYLIST_SONGS_IMPORTED`.
    - Artist edit now hydrates its form from `useArtistInfoQuery` instead of
      route-local `getArtistInfo` controller refresh.
+   - Artist edit now writes name and cover changes through the Drizzle-backed
+     library entity repository instead of the legacy artist controller.
    - Album and artist row metadata now renders from props; `AlbumItem` no
      longer listens for `ALBUM_MODIFIED`, and `ArtistItem` no longer listens
      for `ARTIST_MODIFIED`.

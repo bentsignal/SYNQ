@@ -9,8 +9,8 @@ import { Styles } from "@/src/constants/Styles";
 import { CoverType, NotificationType } from "@/src/constants/Types";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { newCover } from "@/src/controllers/ImageController";
-import { updatePlaylist } from "@/src/controllers/PlaylistController";
 import { usePlaylistInfoQuery } from "@/src/features/library/hooks/use-playlist-info-query";
+import { updateLibraryPlaylist } from "@/src/features/library/repository/library-entity-repository";
 import { router } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -32,7 +32,11 @@ const EditPlaylist = ({ id }: { id: number }) => {
         throw new Error("Name is required");
       } else {
         setName(text);
-        await updatePlaylist(id, text === originalName ? undefined : text, image);
+        await updateLibraryPlaylist({
+          id,
+          name: text === originalName ? undefined : text,
+          image,
+        });
       }
     } catch (error) {
       const trace = error instanceof Error ? error.message : String(error);
@@ -51,7 +55,11 @@ const EditPlaylist = ({ id }: { id: number }) => {
     const cover = await newCover();
     if (cover) {
       setImage(cover);
-      await updatePlaylist(id, name === originalName ? undefined : name, cover);
+      await updateLibraryPlaylist({
+        id,
+        name: name === originalName ? undefined : name,
+        image: cover,
+      });
     }
   };
 

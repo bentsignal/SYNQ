@@ -3,7 +3,7 @@ import { Colors } from "@/src/constants/Colors";
 import { getAppIcon as getAppIconImage, getIcon } from "@/src/constants/Logos";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { adjustLightness } from "@/src/controllers/ColorController";
+import { adjustLightness } from "@/src/lib/color-utils";
 import { posthog } from "@/src/lib/posthog";
 import { getAppIcon, setAppIcon } from "expo-icon-handler";
 import { Image, StyleSheet, TouchableOpacity } from "react-native";

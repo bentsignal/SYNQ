@@ -11,7 +11,7 @@ import { Styles } from "@/src/constants/Styles";
 import { NotificationType } from "@/src/constants/Types";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { darkenColor } from "@/src/controllers/ColorController";
+import { darkenColor } from "@/src/lib/color-utils";
 import * as PurchaseManager from "@/src/controllers/PurchaseController";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { useHaptics } from "@/src/hooks/use-haptics";

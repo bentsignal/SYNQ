@@ -7,7 +7,7 @@ import { Styles } from "@/src/constants/Styles";
 import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { getDisabledColor } from "@/src/controllers/ColorController";
+import { getDisabledColor } from "@/src/lib/color-utils";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { removeImportSongs } from "@/src/features/import/lib/import-song-edits";

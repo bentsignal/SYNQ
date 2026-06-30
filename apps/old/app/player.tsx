@@ -16,7 +16,7 @@ import { useActionSheetContext } from "@/src/features/action-sheet/context/Actio
 import {
   getLuminanceFromImage,
   getPlayerGradientOpacity,
-} from "@/src/controllers/ColorController";
+} from "@/src/lib/color-utils";
 import { getLibrarySongById } from "@/src/features/library/repository/library-song-repository";
 import { getTrackArtwork } from "@/src/features/playback/lib/track-factory";
 import { useHaptics } from "@/src/hooks/use-haptics";

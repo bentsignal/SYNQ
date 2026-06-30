@@ -2,7 +2,7 @@ import { View, ScrollView, Animated, NativeSyntheticEvent, NativeScrollEvent, Ea
 import LinearGradient from 'react-native-linear-gradient';
 import { Colors } from '@/src/constants/Colors';
 import { useRef, useState } from 'react';
-import { hexToRGB } from '@/src/controllers/ColorController';
+import { hexToRGB } from '@/src/lib/color-utils';
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 

@@ -1,7 +1,7 @@
 import { Colors } from "@/src/constants/Colors";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { getDisabledColor } from "@/src/controllers/ColorController";
+import { getDisabledColor } from "@/src/lib/color-utils";
 import { Switch } from "react-native-gesture-handler";
 
 const PremiumToggle = () => {

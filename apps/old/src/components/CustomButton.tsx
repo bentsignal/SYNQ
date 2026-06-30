@@ -1,7 +1,7 @@
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Colors } from '@/src/constants/Colors';
 import { Styles } from '@/src/constants/Styles';
-import { getDisabledColor } from '@/src/controllers/ColorController';
+import { getDisabledColor } from '@/src/lib/color-utils';
 
 type MainButtonProps = {
   title?: string;

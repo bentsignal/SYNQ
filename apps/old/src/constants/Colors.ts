@@ -1,4 +1,4 @@
-import { darkenColor } from "@/src/controllers/ColorController";
+import { darkenColor } from "@/src/lib/color-utils";
 
 export const Themes = {
   blue: '#77adf8',

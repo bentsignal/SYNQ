@@ -1,7 +1,7 @@
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
-import { getDisabledColor } from "@/src/controllers/ColorController";
+import { getDisabledColor } from "@/src/lib/color-utils";
 import { LucideIcon } from "lucide-react-native";
 import {
   Image,

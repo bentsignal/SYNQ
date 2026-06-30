@@ -188,6 +188,8 @@ feature-oriented packages.
      repository instead of chaining through album and image controllers.
    - Song edit saves now call a feature-level library metadata repository
      batch update instead of `LibraryController.updateSongsInLibrary`.
+   - Color helpers now live in `src/lib/color-utils`, with UI/app imports moved
+     off `ColorController` and the old controller kept as a compatibility shim.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

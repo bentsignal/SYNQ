@@ -2,7 +2,7 @@ import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
-import { darkenColor } from "@/src/controllers/ColorController";
+import { darkenColor } from "@/src/lib/color-utils";
 import { posthog } from "@/src/lib/posthog";
 import { BlurView } from "expo-blur";
 import { router } from "expo-router";

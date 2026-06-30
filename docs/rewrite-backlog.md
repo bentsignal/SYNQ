@@ -268,8 +268,11 @@ feature-oriented packages.
      `apps/old/src/features/playback/hooks/use-playback-queue-display.ts`.
    - Done: queue footer playback controls now live in
      `apps/old/src/features/playback/components/QueueControls.tsx`.
-   - Next safe slice: split the queue song list panel into a playback feature
-     component so `app/queue.tsx` is mostly route composition.
+   - Done: queue song list panel now lives in
+     `apps/old/src/features/playback/components/QueueSongListPanel.tsx`, so
+     `app/queue.tsx` is mostly route composition.
+   - Next safe slice: move remaining queue route shell into a playback feature
+     screen component, or shift to the next high-value playback route.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

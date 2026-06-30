@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import PlayerCover from "@/src/features/cover/components/PlayerCover";
 import CrossfadeImage from "@/src/features/playback/components/CrossfadeImage";
 import Bar from "@/src/shared/components/modals/Bar";
@@ -11,147 +10,30 @@ import { SkipLeft, SkipRight } from "@/src/features/playback/components/Skip";
 import Time from "@/src/features/playback/components/Time";
 import SongInfo from "@/src/features/library/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
-import { PageType, SongType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import {
-  getLuminanceFromImage,
-  getPlayerGradientOpacity,
-} from "@/src/lib/color-utils";
-import { getLibrarySongById } from "@/src/features/library/repository/library-song-repository";
-import { getTrackArtwork } from "@/src/features/playback/lib/track-factory";
+import { usePlayerScreenState } from "@/src/features/playback/hooks/use-player-screen-state";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import colors from "@/src/lib/colors";
-import { getFileName } from "@/src/lib/util";
-import { useAssets } from "expo-asset";
 import { router } from "expo-router";
 import { CirclePlus, Ellipsis } from "lucide-react-native";
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
-import Animated, {
-  Easing,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
-import { useActiveTrack } from "react-native-track-player";
+import Animated from "react-native-reanimated";
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 const Player = () => {
   const { setEditSong } = useActionSheetContext();
-
   const { sendHaptic } = useHaptics();
-
-  const track = useActiveTrack();
-
-  const [assets, error] = useAssets([require("@/src/assets/images/popup.jpg")]);
-  const [emptyImage, setEmptyImage] = useState<string>("transparent");
-
-  const [song, setSong] = useState<SongType | null>(null);
-  const [name, setName] = useState<string>(getFileName(track?.url));
-  const [artist, setArtist] = useState<string>(track?.artist || "");
-  const [title, setTitle] = useState<string>(track?.title || "");
-
-  const containerOpacity = useSharedValue(0);
-  const gradientOpacity = useSharedValue(0.4);
-  const infoOpacity = useSharedValue(1);
-
-  const gradientStyle = useAnimatedStyle(() => ({
-    opacity: gradientOpacity.value,
-  }));
-  const infoStyle = useAnimatedStyle(() => ({
-    opacity: infoOpacity.value,
-    flex: 1,
-  }));
-
-  useEffect(() => {
-    if (error) {
-      return;
-    }
-    if (assets) {
-      setEmptyImage(assets[0].uri);
-    }
-  }, [assets]);
-
-  useEffect(() => {
-    containerOpacity.value = withTiming(1, {
-      duration: 200,
-      easing: Easing.inOut(Easing.quad),
-    });
-  }, []);
-
-  useEffect(() => {
-    infoOpacity.value = withTiming(
-      0,
-      { duration: 250, easing: Easing.inOut(Easing.quad) },
-      () => {
-        runOnJS(callUpdateInfo)();
-      },
-    );
-  }, [track]);
-
-  const callUpdateInfo = async () => {
-    await updateInfo();
-    infoOpacity.value = withTiming(1, {
-      duration: 250,
-      easing: Easing.inOut(Easing.quad),
-    });
-  };
-
-  const updateInfo = async () => {
-    return new Promise((resolve, reject) => {
-      setName(getFileName(track?.url));
-      setArtist(track?.artist || "");
-      setTitle(track?.title || "");
-      resolve(true);
-    });
-  };
-
-  useEffect(() => {
-    const setGradientOpacity = async () => {
-      try {
-        const newGradientOpacity = await getOpacity();
-        gradientOpacity.value = withTiming(newGradientOpacity, {
-          duration: 500,
-          easing: Easing.inOut(Easing.quad),
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    const getOpacity = async () => {
-      const base = 0.2;
-      if (!track) {
-        return base;
-      }
-      if (typeof track?.artwork !== "string") {
-        return 0;
-      }
-      try {
-        const luminance = await getLuminanceFromImage(track.artwork);
-        const newOpacity = getPlayerGradientOpacity(luminance);
-        return newOpacity;
-      } catch (error) {
-        console.log(error);
-        return base;
-      }
-    };
-
-    const getSong = async () => {
-      if (track === undefined) {
-        setSong(null);
-        return;
-      }
-
-      const currentSong = await getLibrarySongById(track.id, PageType.PLAYER);
-      setSong(currentSong);
-    };
-
-    getSong();
-    setGradientOpacity();
-  }, [track]);
+  const {
+    artworkUri,
+    backgroundImage,
+    containerStyle,
+    gradientStyle,
+    infoStyle,
+    song,
+    trackInfo,
+  } = usePlayerScreenState();
 
   const handleMore = () => {
     if (!song) {
@@ -161,14 +43,6 @@ const Player = () => {
     sendHaptic("light");
     setEditSong(song);
     router.push("/player/edit");
-  };
-
-  const getBackgroundImage = () => {
-    const artwork = getTrackArtwork(track);
-    if (artwork !== "transparent") {
-      return artwork;
-    }
-    return emptyImage;
   };
 
   const handleAddToPlaylist = () => {
@@ -181,9 +55,9 @@ const Player = () => {
   };
 
   return (
-    <Animated.View style={[{ opacity: containerOpacity }, Local.container]}>
+    <Animated.View style={[containerStyle, Local.container]}>
       <CrossfadeImage
-        source={{ uri: getBackgroundImage() }}
+        source={{ uri: backgroundImage }}
         blurRadius={100}
         duration={500}
         style={[
@@ -206,13 +80,13 @@ const Player = () => {
       />
       <View style={Local.container}>
         <Bar />
-        <PlayerCover uri={getTrackArtwork(track)} />
+        <PlayerCover uri={artworkUri} />
         <View style={Local.infoContainer}>
           <Animated.View style={infoStyle}>
             <SongInfo
-              fileName={getFileName(track?.url)}
-              title={title}
-              artist={artist}
+              fileName={trackInfo.fileName}
+              title={trackInfo.title}
+              artist={trackInfo.artist}
               color={Colors.text}
               titleStyles={[Local.title, Local.dropShadow]}
               artistStyles={[Local.artist, Local.dropShadow]}

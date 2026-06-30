@@ -502,6 +502,9 @@ feature-oriented packages.
    - Done: mini-player artwork loading now lives in
      `apps/old/src/features/playback/hooks/use-mini-player-artwork.ts`, and the
      time scrubber effects now carry explicit reactive dependencies.
+   - Done: player route artwork, song hydration, title fade, and gradient
+     opacity state now live in
+     `apps/old/src/features/playback/hooks/use-player-screen-state.ts`.
    - Done: player artwork crossfade UI now lives in
      `apps/old/src/features/playback/components/CrossfadeImage.tsx` instead of
      the generic `src/components/image` folder.

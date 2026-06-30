@@ -16,8 +16,9 @@ feature-oriented packages.
 - `pnpm --filter @synq/old typecheck` fails on pre-existing strict-null and
   third-party type issues. The playback nullability cluster around
   `PlaybackProvider`, `usePlayer`, `MiniPlayer`, `PausePlayButtons`,
-  `ShuffleButton`, and `PlayerController` has been reduced. Treat remaining
-  errors as a tracked cleanup lane, not a monorepo migration blocker.
+  `ShuffleButton`, and `PlayerController` has been reduced, and `SongList`
+  source metadata now has local defaults/guards. Treat remaining errors as a
+  tracked cleanup lane, not a monorepo migration blocker.
 
 ## Priority Lanes
 
@@ -269,8 +270,10 @@ feature-oriented packages.
    - Done: skip queue rebuilds until playback source metadata is available.
 
 2. Song lists:
-   - Next: normalize `SongList` source metadata defaults before calling
-     playback queue helpers.
+   - Done: normalize `SongList` source metadata defaults and guards before
+     calling playback queue helpers.
+   - Next: continue list component strict-null cleanup in album/artist rows and
+     query wrapper props.
 
 ## Guardrails
 

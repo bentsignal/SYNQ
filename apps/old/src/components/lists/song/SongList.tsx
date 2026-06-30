@@ -21,7 +21,6 @@ import { generateSongKey } from "@/src/controllers/SongController";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/hooks/usePlayer";
 import { posthog } from "@/src/lib/posthog";
-import { check } from "@/src/lib/util";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FlatList, TouchableOpacity } from "react-native";
 import DraggableFlatlist, {
@@ -98,9 +97,30 @@ const SongList = memo(
 
     const updateActiveIndex = async () => {
       const index = await TrackPlayer.getActiveTrackIndex();
-      if (check(index)) {
+      if (index !== undefined) {
         setActiveIndex(index);
       }
+    };
+
+    const selectedSort = sort ?? SortType.DATE;
+    const selectedOrder = order ?? SortOrder.DESC;
+    const selectedQuery = query ?? "";
+
+    const getSongSource = (song: SongType) => ({
+      id: sourceId ?? song.sourceId,
+      type: sourceType ?? song.sourceType,
+    });
+
+    const persistPlaybackSource = async (
+      source: { id: number; type: SourceType },
+    ) => {
+      setSourceType(source.type);
+      await AsyncStorage.setItem("sourceType", source.type.toString());
+      setSourceId(source.id);
+      await AsyncStorage.setItem("sourceId", source.id.toString());
+      setSort(selectedSort);
+      setOrder(selectedOrder);
+      setQuery(selectedQuery);
     };
 
     useEffect(() => {
@@ -111,28 +131,32 @@ const SongList = memo(
       async (song: SongType) => {
         sendHaptic("light");
         const id = activeTrack?.id ? activeTrack.id : -1;
+        const playbackSource = getSongSource(song);
+        const playbackSourceId = playbackSource.id;
+        const playbackSourceType = playbackSource.type;
+        const hasPlaybackSource =
+          playbackSourceType !== undefined && playbackSourceId !== undefined;
         // play ad if user is non premium and has passed ad threshold
         if (!premium && shouldPlayAd && !adPlaying) {
           posthog.capture("play_ad");
           setAdPlaying(true);
           await playAd(theme, adURL);
           const newTrack = await getTrackFromSong(song, theme);
-          await updateQueue(
-            song.id,
-            shuffle,
-            song.sourceType,
-            song.sourceId,
-            sort,
-            order,
-            query,
-          );
-          setSourceType(song.sourceType);
-          await AsyncStorage.setItem("sourceType", song.sourceType.toString());
-          setSourceId(song.sourceId);
-          await AsyncStorage.setItem("sourceId", song.sourceId.toString());
-          setSort(sort);
-          setOrder(order);
-          setQuery(query);
+          if (hasPlaybackSource) {
+            await updateQueue(
+              song.id,
+              shuffle,
+              playbackSourceType,
+              playbackSourceId,
+              selectedSort,
+              selectedOrder,
+              selectedQuery,
+            );
+            await persistPlaybackSource({
+              id: playbackSourceId,
+              type: playbackSourceType,
+            });
+          }
           if (newTrack) {
             await addToQueue(newTrack);
           }
@@ -145,25 +169,21 @@ const SongList = memo(
             const newTrack = await getTrackFromSong(song, theme);
             if (newTrack) {
               await playTrack(newTrack);
-              await updateQueue(
-                song.id,
-                shuffle,
-                song.sourceType,
-                song.sourceId,
-                sort,
-                order,
-                query,
-              );
-              setSourceType(song.sourceType);
-              await AsyncStorage.setItem(
-                "sourceType",
-                song.sourceType.toString(),
-              );
-              setSourceId(song.sourceId);
-              await AsyncStorage.setItem("sourceId", song.sourceId.toString());
-              setSort(sort);
-              setOrder(order);
-              setQuery(query);
+              if (hasPlaybackSource) {
+                await updateQueue(
+                  song.id,
+                  shuffle,
+                  playbackSourceType,
+                  playbackSourceId,
+                  selectedSort,
+                  selectedOrder,
+                  selectedQuery,
+                );
+                await persistPlaybackSource({
+                  id: playbackSourceId,
+                  type: playbackSourceType,
+                });
+              }
             }
           } catch (error) {
             console.log("error playing song: ", error);
@@ -180,9 +200,9 @@ const SongList = memo(
         setAdPlaying,
         setSourceType,
         setSourceId,
-        sort,
-        order,
-        query,
+        selectedSort,
+        selectedOrder,
+        selectedQuery,
       ],
     );
 
@@ -215,10 +235,11 @@ const SongList = memo(
         item.pageType = pageType;
         item.sourceId = sourceId;
         item.sourceType = sourceType;
+        const index = getIndex();
         let active, previous;
         if (pageType === PageType.QUEUE) {
-          active = activeTrack?.id === item.id && getIndex() === activeIndex;
-          previous = getIndex() < activeIndex;
+          active = activeTrack?.id === item.id && index === activeIndex;
+          previous = index !== undefined && index < activeIndex;
         } else {
           active = activeTrack?.id === item.id;
           previous = false;
@@ -227,7 +248,11 @@ const SongList = memo(
           <TouchableOpacity
             style={{ width: "100%" }}
             onLongPress={() => {
-              if (pageType === PageType.QUEUE && getIndex() <= activeIndex) {
+              if (
+                pageType === PageType.QUEUE &&
+                index !== undefined &&
+                index <= activeIndex
+              ) {
                 return;
               }
               sendHaptic("light");

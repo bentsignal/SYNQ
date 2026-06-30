@@ -12,7 +12,7 @@ import {
   SortType,
   SourceType,
 } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useLibrarySongsQuery } from "@/src/features/library/hooks/use-library-songs-query";
 import { usePlaylistInfoQuery } from "@/src/features/library/hooks/use-playlist-info-query";
@@ -21,7 +21,7 @@ import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { StyleSheet, View } from "react-native";
 
 const PlaylistView = ({ id }: { id: number }) => {
-  const { setEditPlaylist } = useGlobalContext();
+  const { setEditPlaylist } = useActionSheetContext();
   const { showOverlay } = useAppShellContext();
   const { sendHaptic } = useHaptics();
 

@@ -10,13 +10,13 @@ import PlaylistList from "@/src/components/lists/playlist";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import ModalStyles from "@/src/components/modals/Styles";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import QueryWrapper from "@/src/components/lists/query/Wrapper";
 import { useLibraryPlaylistsQuery } from "@/src/features/library/hooks/use-library-playlists-query";
 
 const AddToPlaylist = () => {
   const { theme } = useThemeContext();
-  const { editSong } = useGlobalContext();
+  const { editSong } = useActionSheetContext();
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState<string>("");
   const [sort, setSort] = useState<SortType>(SortType.DATE);

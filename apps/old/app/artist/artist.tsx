@@ -14,7 +14,7 @@ import {
   SortType,
   SourceType,
 } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useArtistAlbumsQuery } from "@/src/features/library/hooks/use-artist-albums-query";
 import { useArtistInfoQuery } from "@/src/features/library/hooks/use-artist-info-query";
@@ -24,7 +24,7 @@ import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { StyleSheet, Text, View } from "react-native";
 
 const ArtistView = ({ id }: { id: number }) => {
-  const { setEditArtist } = useGlobalContext();
+  const { setEditArtist } = useActionSheetContext();
   const { showOverlay } = useAppShellContext();
   const { sendHaptic } = useHaptics();
 

@@ -5,7 +5,7 @@ import { Colors } from "@/src/constants/Colors";
 import CFG from "@/src/constants/Config";
 import { Styles } from "@/src/constants/Styles";
 import { PageType } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import {
   darkenColor,
@@ -31,7 +31,7 @@ export default function ImportControls() {
     numModified,
     setEditSong,
     setNumModified,
-  } = useGlobalContext();
+  } = useActionSheetContext();
 
   const {
     results,
@@ -168,7 +168,7 @@ export default function ImportControls() {
   };
 
   const handleEdit = () => {
-    setEditSong({});
+    setEditSong({} as typeof editSong);
     router.push(`/song/edit/${editSong.id}`);
   };
 

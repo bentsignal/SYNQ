@@ -4,7 +4,7 @@ import Sheet from "@/src/components/sheet";
 import SheetStyles from "@/src/components/sheet/Styles";
 import SongInfo from "@/src/components/song/SongInfo";
 import { CoverType } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { getLibrarySongCover } from "@/src/controllers/SongController";
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import SongOptions from "./SongOptions";
@@ -14,7 +14,7 @@ type SongSheetProps = {
 };
 
 export default function ImportSongSheet({ name }: SongSheetProps) {
-  const { editSong } = useGlobalContext();
+  const { editSong } = useActionSheetContext();
   const [scrollEnabled, setScrollEnabled] = useState(false);
   const [coverImage, setCoverImage] = useState("");
   const [emptyCover, setEmptyCover] = useState(false);

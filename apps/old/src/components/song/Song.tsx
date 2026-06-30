@@ -5,7 +5,7 @@ import SongInfo from "@/src/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { PageType, SongType } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { getImportSongCover } from "@/src/controllers/SongController";
 import ListCover from "@/src/features/cover/components/list-cover";
@@ -54,7 +54,7 @@ export default function Song({
   const displayCover =
     song.pageType === PageType.IMPORT ? coverImage : song.artwork;
 
-  const { setEditSong } = useGlobalContext();
+  const { setEditSong } = useActionSheetContext();
   const { results } = useImportFlowContext();
   const { selectEnabled, selectedSongs, setSelectedSongs } =
     useSelectionContext();

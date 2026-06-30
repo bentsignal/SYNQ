@@ -10,13 +10,13 @@ import AlbumList from "@/src/components/lists/album";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import ModalStyles from "@/src/components/modals/Styles";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import QueryWrapper from "@/src/components/lists/query/Wrapper";
 import { useLibraryAlbumsQuery } from "@/src/features/library/hooks/use-library-albums-query";
 
 const AddAlbum = () => {
   const { theme } = useThemeContext();
-  const { editSong } = useGlobalContext();
+  const { editSong } = useActionSheetContext();
   const insets = useSafeAreaInsets();
 
   const [query, setQuery] = useState<string>("");

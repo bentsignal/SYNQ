@@ -13,7 +13,7 @@ import {
   SortType,
   SourceType,
 } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useAlbumInfoQuery } from "@/src/features/library/hooks/use-album-info-query";
 import { useAlbumSongsQuery } from "@/src/features/library/hooks/use-album-songs-query";
@@ -27,7 +27,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 const AlbumView = ({ id }: { id: number }) => {
-  const { setEditAlbum } = useGlobalContext();
+  const { setEditAlbum } = useActionSheetContext();
   const { showOverlay } = useAppShellContext();
 
   const { sendHaptic } = useHaptics();

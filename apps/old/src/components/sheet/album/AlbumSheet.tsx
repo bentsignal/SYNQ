@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Sheet from '@/src/components/sheet';
-import { useGlobalContext } from '@/src/context/GlobalProvider';
+import { useActionSheetContext } from '@/src/features/action-sheet/context/ActionSheetProvider';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import ListCover from '@/src/components/cover/ListCover';
 import SheetStyles from '@/src/components/sheet/Styles';
@@ -12,7 +12,7 @@ import { getAlbumCover } from '@/src/controllers/AlbumController';
 
 const AlbumSheet = ({name}: {name: string}) => {
 
-  const { editAlbum } = useGlobalContext();
+  const { editAlbum } = useActionSheetContext();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);
   const [coverImage, setCoverImage] = useState('');

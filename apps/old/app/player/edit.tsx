@@ -7,7 +7,7 @@ import SheetStyles from "@/src/components/sheet/Styles";
 import SongInfo from "@/src/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
 import { CoverType } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { getLibrarySongCover } from "@/src/controllers/SongController";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
@@ -16,7 +16,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 const PlayerSongEdit = () => {
   const name = "player-song-sheet";
 
-  const { editSong } = useGlobalContext();
+  const { editSong } = useActionSheetContext();
   const { sendHaptic } = useHaptics();
 
   const [scrollEnabled, setScrollEnabled] = useState(false);

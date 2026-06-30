@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import SheetOption from "@/src/components/sheet/SheetOption";
 import { PageType, SourceType } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { exportSongs } from "@/src/controllers/ImportExportController";
@@ -45,7 +45,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
     editSong,
     numModified,
     setNumModified,
-  } = useGlobalContext();
+  } = useActionSheetContext();
   const { results, setExportDisabled, setResults } = useImportFlowContext();
 
   const { setShowImportAd, setShowGlobalLoading } =
@@ -186,6 +186,9 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
     posthog.capture("remove_from_playlist");
     TrueSheet.dismiss(name);
     try {
+      if (editSong.sourceId === undefined) {
+        return;
+      }
       await removeFromPlaylist(editSong.sourceId, editSong.id);
     } catch (error) {
       console.log("error removing from playlist: ", error);

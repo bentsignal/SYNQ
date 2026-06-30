@@ -10,7 +10,7 @@ import {
   SongType,
   SourceType,
 } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import {
   addArtistToAlbum,
   isArtistOnAlbum,
@@ -48,7 +48,7 @@ const ArtistItem = ({ artist, allowInteraction, bg }: ArtistProps) => {
     setEditArtist,
     editAlbum,
     setEditAlbum,
-  } = useGlobalContext();
+  } = useActionSheetContext();
   const { setResults } = useImportFlowContext();
   const { sendHaptic } = useHaptics();
 

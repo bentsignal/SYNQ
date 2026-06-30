@@ -15,7 +15,7 @@ import ArtistList from "@/src/components/lists/artist";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import ModalStyles from "@/src/components/modals/Styles";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import QueryWrapper from "@/src/components/lists/query/Wrapper";
 import { useLibraryArtistsQuery } from "@/src/features/library/hooks/use-library-artists-query";
 
@@ -23,7 +23,7 @@ const AddArtist = () => {
   const { theme } = useThemeContext();
   const insets = useSafeAreaInsets();
   const { sourceType } = useLocalSearchParams();
-  const { editSong } = useGlobalContext();
+  const { editSong } = useActionSheetContext();
   const [query, setQuery] = useState<string>("");
   const [sort, setSort] = useState<SortType>(SortType.ARTIST);
   const [order, setOrder] = useState<SortOrder>(SortOrder.ASC);

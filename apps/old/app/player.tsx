@@ -12,7 +12,7 @@ import Time from "@/src/components/player/Time";
 import SongInfo from "@/src/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
 import { PageType, SongType } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import {
   getLuminanceFromImage,
   getPlayerGradientOpacity,
@@ -39,7 +39,7 @@ import { useActiveTrack } from "react-native-track-player";
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 const Player = () => {
-  const { setEditSong } = useGlobalContext();
+  const { setEditSong } = useActionSheetContext();
 
   const { sendHaptic } = useHaptics();
 

@@ -4,7 +4,7 @@ import Select from "@/src/components/Select";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType, PageType, PlaylistType } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import {
   addToPlaylist,
   getPlaylistCover,
@@ -24,7 +24,7 @@ type PlaylistProps = {
 };
 
 const PlaylistItem = ({ playlist, bg }: PlaylistProps) => {
-  const { editSong, setEditPlaylist } = useGlobalContext();
+  const { editSong, setEditPlaylist } = useActionSheetContext();
   const { sendHaptic } = useHaptics();
 
   const [selected, setSelected] = useState(false);

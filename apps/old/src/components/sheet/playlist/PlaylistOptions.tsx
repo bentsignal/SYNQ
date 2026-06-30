@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import SheetOption from "@/src/components/sheet/SheetOption";
 import { PageType } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { exportSongs } from "@/src/controllers/ImportExportController";
@@ -18,7 +18,7 @@ import { Share, SquarePen, Trash } from "lucide-react-native";
 import { Alert } from "react-native";
 
 const PlaylistOptions = ({ name }: { name: string }) => {
-  const { editPlaylist } = useGlobalContext();
+  const { editPlaylist } = useActionSheetContext();
   const { setShowGlobalLoading } = useGlobalProgressContext();
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();

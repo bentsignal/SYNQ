@@ -3,7 +3,6 @@ import Navigation from "@/app/navigation";
 import GlobalProgress from "@/src/components/GlobalProgress";
 import Sheets from "@/src/components/sheet/Sheets";
 import { PUBLIC_FACEBOOK_APP_ID } from "@/src/constants/Keys";
-import GlobalProvider from "@/src/context/GlobalProvider";
 import PlaybackProvider from "@/src/context/PlaybackProvider";
 import PremiumProvider from "@/src/context/PremiumProvider";
 import ThemeProvider from "@/src/context/ThemeProvider";
@@ -16,6 +15,7 @@ import "../globals.css";
 import { useInitDB } from "@synq/db";
 import { useFont } from "@/src/hooks/use-font";
 import { useHaptics } from "@/src/hooks/use-haptics";
+import { ActionSheetProvider } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { AppShellProvider } from "@/src/features/app-shell/context/AppShellProvider";
 import { GlobalProgressProvider } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { ImportFlowProvider } from "@/src/features/import/context/ImportFlowProvider";
@@ -76,7 +76,7 @@ const RootLayout = () => {
       <PremiumProvider>
         <PlaybackProvider>
           <PlaybackAdProvider initShouldPlayAd={shouldPlayAd}>
-            <GlobalProvider>
+            <ActionSheetProvider>
               <AppShellProvider>
                 <GlobalProgressProvider>
                   <ImportFlowProvider>
@@ -92,7 +92,7 @@ const RootLayout = () => {
                   </ImportFlowProvider>
                 </GlobalProgressProvider>
               </AppShellProvider>
-            </GlobalProvider>
+            </ActionSheetProvider>
           </PlaybackAdProvider>
         </PlaybackProvider>
       </PremiumProvider>

@@ -14,7 +14,7 @@ import {
   CoverType,
   PageType,
 } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { getAlbumsFromSong } from "@/src/controllers/AlbumController";
 import { getArtistsFromSong } from "@/src/controllers/ArtistController";
 import { newCover } from "@/src/controllers/ImageController";
@@ -41,7 +41,7 @@ const EditSong = ({ id }: { id: number }) => {
     editSong,
     setNumModified,
     numModified,
-  } = useGlobalContext();
+  } = useActionSheetContext();
   const { results, setResults } = useImportFlowContext();
   const { selectedSongs, setSelectedSongs, setSelectEnabled } =
     useSelectionContext();
@@ -125,9 +125,11 @@ const EditSong = ({ id }: { id: number }) => {
     newImage: string;
   }) => {
     try {
+      const editPageType = editSong.pageType;
       if (
+        editPageType &&
         [PageType.LIBRARY, PageType.ARTIST, PageType.ALBUM].includes(
-          editSong.pageType,
+          editPageType,
         )
       ) {
         await updateSongsInLibrary(
@@ -203,7 +205,7 @@ const EditSong = ({ id }: { id: number }) => {
             {editSong.fileName ?? ""}
           </Text>
           <Text style={Local.duration}>
-            {getDurationString(editSong.duration, true)}
+            {getDurationString(editSong.duration ?? 0, true)}
           </Text>
         </View>
         {selectedSongs.length === 0 && (

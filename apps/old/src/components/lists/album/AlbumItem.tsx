@@ -4,7 +4,7 @@ import Select from "@/src/components/Select";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { AlbumType, CoverType, PageType, SongType } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import {
   addAlbumToSong,
   getAlbumCover,
@@ -36,7 +36,7 @@ type AlbumProps = {
 };
 
 const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
-  const { editSong, setEditSong, setEditAlbum } = useGlobalContext();
+  const { editSong, setEditSong, setEditAlbum } = useActionSheetContext();
   const { setResults } = useImportFlowContext();
   const { sendHaptic } = useHaptics();
 

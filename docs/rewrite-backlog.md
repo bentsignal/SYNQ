@@ -202,6 +202,9 @@ feature-oriented packages.
    - Done: import session state (`results`, transfer progress, loading,
      export-disabled state, selected transfer row, and Wi-Fi transfer address)
      now lives in `ImportFlowProvider` instead of `GlobalProvider`.
+   - Done: edit/action-sheet state now lives in
+     `apps/old/src/features/action-sheet/context/ActionSheetProvider.tsx`, and
+     the legacy `GlobalProvider` has been removed.
    - In progress: playback orchestration is moving out of the home screen into
      feature hooks. Avoid import results and edit targets until their owning
      feature boundaries are clearer.

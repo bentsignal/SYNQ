@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useThemeContext } from "@/src/context/ThemeProvider"
 import { getAlbums, getAlbumsContainingSong, updateTrackNumber } from "@/src/controllers/AlbumController"
 import ModalStyles from "@/src/components/modals/Styles"
-import { useGlobalContext } from "@/src/context/GlobalProvider"
+import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider"
 import QueryWrapper from "@/src/components/lists/query/Wrapper"
 import SongList from "@/src/components/lists/song/SongList"
 import { getSongsFromAlbum } from "@/src/controllers/AlbumController"
@@ -21,7 +21,7 @@ import Animated, { useSharedValue, useAnimatedStyle,
 
 const AddAlbum = () => {
 
-  const { editAlbum } = useGlobalContext();
+  const { editAlbum } = useActionSheetContext();
   const insets = useSafeAreaInsets();
   const { theme } = useThemeContext();
   const [songs, setSongs] = useState<SongType[]>([]);

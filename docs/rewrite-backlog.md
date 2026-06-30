@@ -240,9 +240,11 @@ feature-oriented packages.
      `apps/old/src/features/playback/hooks/use-ad-gated-playback-command.ts`
      for skip buttons, remote next/previous, and song-row playback while
      preserving the song-row post-ad queue behavior.
-   - Next safe slice: fold the timing-driven ad start/reset path into a
-     narrower playback ad action, keeping command-driven and timing-driven
-     behavior separate.
+   - Done: command-driven and timing-driven ad side effects now share
+     `apps/old/src/features/playback/hooks/use-playback-ad-actions.ts`, while
+     timing decisions remain inside `use-playback-ad-timing-effects.ts`.
+   - Next safe slice: move song-row play/add commands behind playback feature
+     APIs so UI rows no longer import track factories or TrackPlayer commands.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

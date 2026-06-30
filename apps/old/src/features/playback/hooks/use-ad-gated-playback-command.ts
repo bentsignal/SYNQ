@@ -1,7 +1,6 @@
 import { usePremiumContext } from "@/src/context/PremiumProvider";
-import { useThemeContext } from "@/src/context/ThemeProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
-import { playAd } from "@/src/features/playback/lib/player-track-service";
+import { usePlaybackAdActions } from "@/src/features/playback/hooks/use-playback-ad-actions";
 
 type AdGatedPlaybackCommandParams = {
   command: () => Promise<void> | void;
@@ -14,10 +13,9 @@ export type AdGatedPlaybackCommandResult =
   | "ran-command";
 
 export const useAdGatedPlaybackCommand = () => {
-  const { adPlaying, adURL, setAdPlaying, shouldPlayAd } =
-    usePlaybackAdContext();
+  const { adPlaying, shouldPlayAd } = usePlaybackAdContext();
   const { premium } = usePremiumContext();
-  const { theme } = useThemeContext();
+  const { startAdPlayback } = usePlaybackAdActions();
 
   const runAdGatedPlaybackCommand = async ({
     command,
@@ -28,8 +26,7 @@ export const useAdGatedPlaybackCommand = () => {
     }
 
     if (!premium && shouldPlayAd) {
-      setAdPlaying(true);
-      await playAd(theme, adURL);
+      await startAdPlayback();
       await afterAdStarts?.();
       return "started-ad";
     }

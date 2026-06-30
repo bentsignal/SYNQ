@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useRef } from "react";
 import CFG from "@/src/constants/Config";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
-import { useThemeContext } from "@/src/context/ThemeProvider";
-import { playAd } from "@/src/features/playback/lib/player-track-service";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
+import { usePlaybackAdActions } from "@/src/features/playback/hooks/use-playback-ad-actions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import TrackPlayer, { type Track } from "react-native-track-player";
+import { type Track } from "react-native-track-player";
 
 const CHECK_FOR_AD_INTERVAL_SECONDS = 5;
 
@@ -20,10 +19,14 @@ export const usePlaybackAdTimingEffects = ({
   position,
   track,
 }: PlaybackAdTimingEffectsParams) => {
-  const { adPlaying, adURL, shouldPlayAd, setAdPlaying, setShouldPlayAd } =
+  const { adPlaying, shouldPlayAd, setAdPlaying, setShouldPlayAd } =
     usePlaybackAdContext();
-  const { theme } = useThemeContext();
   const { premium } = usePremiumContext();
+  const {
+    resetAdPlaybackProgress,
+    skipActiveAdForPremium,
+    startAdPlayback,
+  } = usePlaybackAdActions();
 
   const previousPosition = useRef(0);
   const timePlayed = useRef(0);
@@ -32,14 +35,12 @@ export const usePlaybackAdTimingEffects = ({
     if (track?.id === -2) {
       setAdPlaying(true);
       if (premium) {
-        setAdPlaying(false);
-        setShouldPlayAd(false);
-        TrackPlayer.skipToNext();
+        skipActiveAdForPremium();
       }
     } else {
       setAdPlaying(false);
     }
-  }, [premium, setAdPlaying, setShouldPlayAd, track]);
+  }, [premium, setAdPlaying, skipActiveAdForPremium, track]);
 
   const updateTimePlayed = useCallback(async () => {
     const previouslyPlayed = await AsyncStorage.getItem("timePlayed");
@@ -62,21 +63,17 @@ export const usePlaybackAdTimingEffects = ({
 
   useEffect(() => {
     if (premium && adPlaying) {
-      setAdPlaying(false);
-      setShouldPlayAd(false);
-      TrackPlayer.skipToNext();
+      skipActiveAdForPremium();
       return;
     } else if (premium) return;
 
     const timeToEnd = Math.floor(duration) - Math.floor(position);
     if (timeToEnd !== 0 && timeToEnd <= 1) {
       if (!premium && !adPlaying && shouldPlayAd) {
-        playAd(theme, adURL);
+        startAdPlayback();
       } else if (adPlaying) {
-        AsyncStorage.setItem("playAd", "false");
-        AsyncStorage.setItem("timePlayed", "0");
+        resetAdPlaybackProgress();
         timePlayed.current = 0;
-        setShouldPlayAd(false);
       }
     }
 
@@ -96,14 +93,13 @@ export const usePlaybackAdTimingEffects = ({
     previousPosition.current = current;
   }, [
     adPlaying,
-    adURL,
     duration,
     position,
     premium,
-    setAdPlaying,
-    setShouldPlayAd,
+    resetAdPlaybackProgress,
     shouldPlayAd,
-    theme,
+    skipActiveAdForPremium,
+    startAdPlayback,
     updateTimePlayed,
   ]);
 };

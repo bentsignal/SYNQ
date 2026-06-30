@@ -13,10 +13,7 @@ import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { getArtistsFromAlbum } from "@/src/controllers/AlbumController";
 import { getArtistsFromSong } from "@/src/controllers/ArtistController";
-import {
-  getImportSongCover,
-  getLibrarySongCover,
-} from "@/src/controllers/SongController";
+import { getImportSongCover } from "@/src/controllers/SongController";
 import albumBus from "@/src/events/album";
 import {
   AlbumBusEvent,
@@ -27,11 +24,6 @@ import {
   ArtistBusEvent,
   ArtistToggledOnSongEvent,
 } from "@/src/events/artist/Events";
-import songBus from "@/src/events/song";
-import {
-  SongBusEvent,
-  SongCoverModifiedEvent,
-} from "@/src/events/song/Events";
 import ListCover from "@/src/features/cover/components/list-cover";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
@@ -80,6 +72,8 @@ export default function Song({
           artist: song.artist ?? "",
           album: song.album ?? "",
         };
+  const displayCover =
+    song.pageType === PageType.IMPORT ? coverImage : song.artwork;
 
   const {
     selectEnabled,
@@ -140,21 +134,14 @@ export default function Song({
   }, [selectEnabled]);
 
   useEffect(() => {
-    loadCover();
+    if (song.pageType === PageType.IMPORT) {
+      loadCover();
+    }
     setFileName(song.fileName ?? "");
     setTitle(song.title ?? "");
     setArtist(song.artist ?? "");
     setAlbum(song.album ?? "");
   }, [song]);
-
-  useEffect(() => {
-    songBus.on(SongBusEvent.SONG_COVER_MODIFIED, updateSongCover);
-    albumBus.on(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, loadCover);
-    return () => {
-      songBus.off(SongBusEvent.SONG_COVER_MODIFIED, updateSongCover);
-      albumBus.off(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, loadCover);
-    };
-  }, []);
 
   useEffect(() => {
     if (song.pageType !== PageType.IMPORT) {
@@ -231,35 +218,12 @@ export default function Song({
     }
   };
 
-  const updateSongCover = async (data: SongCoverModifiedEvent) => {
-    if (song.id === data.id) {
-      if (data.cover) {
-        song.artwork = data.cover;
-        setCoverImage(data.cover);
-      } else {
-        await loadCover();
-      }
-    }
-  };
-
   const loadCover = async () => {
     try {
       if (song.pageType === PageType.IMPORT) {
         const cover = await getImportSongCover(song);
         if (cover) {
           setCoverImage(cover);
-          setEmptyCover(false);
-        } else {
-          setCoverImage("");
-          setEmptyCover(true);
-        }
-      } else {
-        const cover = await getLibrarySongCover(song.id, true);
-        if (cover) {
-          setCoverImage(cover);
-          setEmptyCover(false);
-        } else if (song.artwork) {
-          setCoverImage(song.artwork);
           setEmptyCover(false);
         } else {
           setCoverImage("");
@@ -306,7 +270,7 @@ export default function Song({
         onPress={() => handlePlay(song)}
       >
         <ListCover
-          image={coverImage}
+          image={displayCover}
           type="song"
           fadeOnLoad={fadeCover}
           size={50}

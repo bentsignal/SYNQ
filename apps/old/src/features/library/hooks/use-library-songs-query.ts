@@ -9,6 +9,7 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { getImagePathFromHash } from "@/src/lib/image-utils";
 
 type LibrarySongQueryOptions = {
   playlistId?: number;
@@ -22,6 +23,7 @@ type LibrarySongRow = {
   song: typeof schema.songs.$inferSelect;
   artistName: string | null;
   albumName: string | null;
+  albumCoverImage: string | null;
 };
 
 const compareText = (first?: string, second?: string) =>
@@ -66,10 +68,14 @@ const sortSongs = (
 const rowsToSongs = (rows: LibrarySongRow[], pageType: PageType) => {
   const songMap = new Map<
     number,
-    SongType & { artistNames: Set<string>; albumNames: Set<string> }
+    SongType & {
+      artistNames: Set<string>;
+      albumNames: Set<string>;
+      albumCoverImage?: string | null;
+    }
   >();
 
-  rows.forEach(({ song, artistName, albumName }) => {
+  rows.forEach(({ song, artistName, albumName, albumCoverImage }) => {
     const current =
       songMap.get(song.id) ??
       ({
@@ -80,12 +86,17 @@ const rowsToSongs = (rows: LibrarySongRow[], pageType: PageType) => {
         format: "id3v2.4",
         title: song.title ?? undefined,
         duration: song.duration ?? undefined,
+        artwork: song.coverImage
+          ? getImagePathFromHash(song.coverImage).pathToFullImage
+          : undefined,
         pageType,
         artistNames: new Set<string>(),
         albumNames: new Set<string>(),
+        albumCoverImage: undefined,
       } satisfies SongType & {
         artistNames: Set<string>;
         albumNames: Set<string>;
+        albumCoverImage?: string | null;
       });
 
     if (artistName) {
@@ -96,15 +107,20 @@ const rowsToSongs = (rows: LibrarySongRow[], pageType: PageType) => {
       current.albumNames.add(albumName);
     }
 
+    current.albumCoverImage = current.albumCoverImage ?? albumCoverImage;
+
     songMap.set(song.id, current);
   });
 
   return Array.from(songMap.values()).map((song) => {
-    const { artistNames, albumNames, ...result } = song;
+    const { artistNames, albumNames, albumCoverImage, ...result } = song;
     return {
       ...result,
       artist: Array.from(artistNames).join(", "),
       album: Array.from(albumNames).join(", "),
+      artwork: albumCoverImage
+        ? getImagePathFromHash(albumCoverImage).pathToFullImage
+        : result.artwork,
     };
   });
 };
@@ -122,6 +138,7 @@ export const useLibrarySongsQuery = ({
         song: schema.songs,
         artistName: schema.artists.name,
         albumName: schema.albums.name,
+        albumCoverImage: schema.albums.coverImage,
       })
       .from(schema.playlistSongs)
       .innerJoin(

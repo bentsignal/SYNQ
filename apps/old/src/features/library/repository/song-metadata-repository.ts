@@ -1,5 +1,6 @@
 import { getAlbumFromMetadata } from "@/src/controllers/AlbumController";
 import { getArtistsFromMetadata } from "@/src/controllers/ArtistController";
+import { saveCoverImage } from "@/src/lib/image-utils";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
@@ -67,4 +68,32 @@ export const updateLibrarySongMetadata = async ({
   if (album !== undefined) {
     await replaceSongAlbum(id, album);
   }
+};
+
+export const updateLibrarySongCover = async (songId: number, cover: string) => {
+  const coverImage = await saveCoverImage(cover);
+
+  if (!coverImage) {
+    return;
+  }
+
+  const albumsContainingSong = await db
+    .select({ albumId: schema.albumSongs.albumId })
+    .from(schema.albumSongs)
+    .where(eq(schema.albumSongs.songId, songId))
+    .limit(1);
+  const albumId = albumsContainingSong[0]?.albumId;
+
+  if (albumId) {
+    await db
+      .update(schema.albums)
+      .set({ coverImage })
+      .where(eq(schema.albums.id, albumId));
+    return;
+  }
+
+  await db
+    .update(schema.songs)
+    .set({ coverImage })
+    .where(eq(schema.songs.id, songId));
 };

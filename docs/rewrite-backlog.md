@@ -45,9 +45,12 @@ feature-oriented packages.
      filtered library data from `useLibrarySongsQuery`.
    - `SONG_INFO_MODIFIED` has been removed from the saved-library edit path;
      metadata edits now update `songs`, `artistSongs`, and `albumSongs`.
-   - Next target: remove remaining row-level cover and import-only metadata
-     listeners from `Song.tsx` by moving cover image state into database-backed
-     image references or a typed import edit store.
+   - Saved-library cover edits now update `songs.coverImage` or
+     `albums.coverImage`, and `Song.tsx` renders cover art from the
+     list-level live query instead of `SONG_COVER_MODIFIED` or
+     `ALBUM_IMAGE_MODIFIED`.
+   - Next target: remove import-only metadata listeners from `Song.tsx` with a
+     typed import edit store.
 
 4. Split ingest/media.
    - Current checkpoint files: `apps/old/src/hooks/use-ingest.ts`,
@@ -93,8 +96,11 @@ feature-oriented packages.
      `ALBUM_TOGGLED_ON_SONG`.
    - Done: saved library metadata edits write through a feature repository into
      the Drizzle-owned `songs`, `artistSongs`, and `albumSongs` tables.
-   - Next: remove `SONG_COVER_MODIFIED` and `ALBUM_IMAGE_MODIFIED` from
-     `apps/old/src/components/song/Song.tsx`.
+   - Done: saved library cover edits write through the same feature repository
+     into Drizzle image references, and saved library rows render cover art
+     from `useLibrarySongsQuery`.
+   - Next: remove import-only `ARTIST_TOGGLED_ON_SONG` and
+     `ALBUM_TOGGLED_ON_SONG` listeners from `apps/old/src/components/song/Song.tsx`.
    - Then remove `apps/old/src/events/song`.
 
 2. Playlist:

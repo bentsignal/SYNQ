@@ -1,6 +1,4 @@
-import { PageType, SongType } from "@/src/constants/Types";
-import songBus from "@/src/events/song/Bus";
-import { SongBusEvent } from "@/src/events/song/Events";
+import { SongType } from "@/src/constants/Types";
 import PlaylistModel from "@/src/models/PlaylistModel";
 import SongModel from "@/src/models/SongModel";
 import * as FileSystem from "expo-file-system";
@@ -18,9 +16,10 @@ import {
 } from "@/src/controllers/ImageController";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
-import albumBus from "@/src/events/album/Bus";
-import { AlbumBusEvent } from "@/src/events/album/Events";
-import { updateLibrarySongMetadata } from "@/src/features/library/repository/song-metadata-repository";
+import {
+  updateLibrarySongCover,
+  updateLibrarySongMetadata,
+} from "@/src/features/library/repository/song-metadata-repository";
 import { eq } from "drizzle-orm";
 import { flagSongAsEdited } from "./SongController";
 
@@ -40,6 +39,7 @@ export const updateSongsInLibrary = async (
         const album = albums[0];
         const albumDir = `${FileSystem.documentDirectory}albums/${album.id}`;
         await writeImageToLibrary(cover, albumDir);
+        await updateLibrarySongCover(ids[i], cover);
         await flagSongAsEdited(ids[i]);
         const albumSongs = await getSongsFromAlbum(album.id);
         albumSongs.forEach((song) => {
@@ -47,19 +47,13 @@ export const updateSongsInLibrary = async (
             flagSongAsEdited(song.id);
           }
         });
-        albumBus.emit(AlbumBusEvent.ALBUM_IMAGE_MODIFIED, {
-          id: album.id,
-        });
       }
       // if song doesn't have album, write to song dir
       else {
         await deleteImagesFromDirectory(dir);
         await writeImageToLibrary(cover, dir);
+        await updateLibrarySongCover(ids[i], cover);
         await flagSongAsEdited(ids[i]);
-        songBus.emit(SongBusEvent.SONG_COVER_MODIFIED, {
-          id: ids[i],
-          type: PageType.LIBRARY,
-        });
       }
     }
     if (title || artist || album) {

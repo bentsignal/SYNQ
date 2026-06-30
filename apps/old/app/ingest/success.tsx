@@ -1,4 +1,4 @@
-import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { darkenColor } from "@/src/lib/color-utils";
 import { replaceColor } from "lottie-colorify";
 import LottieView from "lottie-react-native";

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import HorizontalScrollView from '@/src/components/HorizontalScrollView';
 import { Colors } from '@/src/constants/Colors';
 import { Styles } from '@/src/constants/Styles';
-import { useThemeContext } from '@/src/context/ThemeProvider';
+import { useThemeContext } from '@/src/features/theme/context/ThemeProvider';
 import { darkenColor } from '@/src/lib/color-utils';
 
 type CategorySelectorProps = {

@@ -1,7 +1,7 @@
 import React from "react";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { posthog } from "@/src/lib/posthog";
 import { router } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";

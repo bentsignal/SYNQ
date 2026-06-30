@@ -4,7 +4,7 @@ import CFG from "@/src/constants/Config";
 import { Styles } from "@/src/constants/Styles";
 import { NotificationType } from "@/src/constants/Types";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
-import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import {
   Animated,

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { BlurView } from "expo-blur";
 import { router } from "expo-router";
 import { ChevronLeft, Ellipsis } from "lucide-react-native";

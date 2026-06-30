@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Colors } from "../constants/Colors";
 import { Styles } from "../constants/Styles";
-import { useThemeContext } from "../context/ThemeProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { darkenColor } from "../lib/color-utils";
 
 type TabSelectorProps = {

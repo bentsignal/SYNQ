@@ -6,7 +6,7 @@ import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { PageType, SongType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import { usePremiumContext } from "@/src/context/PremiumProvider";
+import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
 import ListCover from "@/src/features/cover/components/list-cover";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { getImportSongCover } from "@/src/features/import/lib/import-song-edits";

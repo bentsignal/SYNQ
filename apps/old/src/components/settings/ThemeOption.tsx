@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { Colors } from "@/src/constants/Colors";
-import { usePremiumContext } from "@/src/context/PremiumProvider";
-import { useThemeContext } from "@/src/context/ThemeProvider";
+import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { posthog } from "@/src/lib/posthog";
 import { StyleSheet, TouchableOpacity } from "react-native";
 

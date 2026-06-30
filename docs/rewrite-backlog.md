@@ -344,6 +344,9 @@ feature-oriented packages.
      `apps/old/src/features/privacy/context/PrivacyProvider.tsx` and is
      mounted in the root app shell instead of relying on an unmounted generic
      context default.
+   - Done: theme and premium state providers now live under
+     `apps/old/src/features/theme` and `apps/old/src/features/premium`
+     instead of the generic `src/context` folder.
    - Done: import flow state now lives in
      `apps/old/src/features/import/context/ImportFlowProvider.tsx` instead of
      `GlobalProvider`.

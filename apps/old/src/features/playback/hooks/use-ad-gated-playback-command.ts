@@ -1,4 +1,4 @@
-import { usePremiumContext } from "@/src/context/PremiumProvider";
+import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { usePlaybackAdActions } from "@/src/features/playback/hooks/use-playback-ad-actions";
 

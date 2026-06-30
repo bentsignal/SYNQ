@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
 import CFG from "@/src/constants/Config";
-import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import {
   connect,
   restorePurchases,
@@ -9,7 +9,7 @@ import {
 import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAppIcon, setAppIcon } from "expo-icon-handler";
-import { getIcon } from "../constants/Logos";
+import { getIcon } from "@/src/constants/Logos";
 
 type Props = {
   children?: React.ReactNode;
@@ -28,7 +28,7 @@ const PremiumContext = createContext<PremiumContextType>({
 export const usePremiumContext = () => useContext(PremiumContext);
 
 const PremiumProvider: React.FC<Props> = ({ children }) => {
-  const { theme, changeTheme } = useThemeContext();
+  const { changeTheme } = useThemeContext();
   const [premium, setPremium] = useState<boolean>(false);
 
   useEffect(() => {

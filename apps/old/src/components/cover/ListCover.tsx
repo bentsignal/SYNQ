@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, memo } from 'react';
 import FastImage from 'react-native-fast-image';
 import { getAppIcon } from '@/src/constants/Logos';
 import { CoverType } from '@/src/constants/Types';
-import { useThemeContext } from '@/src/context/ThemeProvider';
+import { useThemeContext } from '@/src/features/theme/context/ThemeProvider';
 import Animated, { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
 
 const ListCover = memo(({image, type, id, fade, size, empty, propOnLoad}: {

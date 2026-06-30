@@ -8,7 +8,7 @@ import InfoModal from "@/src/components/modals/InfoModal";
 import PageTitle from "@/src/components/PageTitle";
 import SettingsButton from "@/src/components/SettingsButton";
 
-import { usePremiumContext } from "@/src/context/PremiumProvider";
+import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 

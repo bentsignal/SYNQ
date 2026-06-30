@@ -7,7 +7,7 @@ import { useAppShellContext } from "@/src/features/app-shell/context/AppShellPro
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import InfoContainer from "./InfoContainer";
-import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 
 const InfoModal = () => {
 

@@ -2,7 +2,7 @@ import { View, StyleSheet, Dimensions, Text, Image } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Colors } from '@/src/constants/Colors';
 import Ad from '@/src/components/Ad';
-import { useThemeContext } from '@/src/context/ThemeProvider';
+import { useThemeContext } from '@/src/features/theme/context/ThemeProvider';
 import { usePlaybackAdContext } from '@/src/features/playback/context/PlaybackAdProvider';
 
 const PlayerCover = ({uri}: {uri: string}) => {

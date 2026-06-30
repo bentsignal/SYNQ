@@ -8,7 +8,7 @@ import InfoModal from '@/src/components/modals/InfoModal';
 import { Colors } from '@/src/constants/Colors';
 import Progress from '@/src/components/Progress';
 import { PageType } from '@/src/constants/Types';
-import { usePremiumContext } from '@/src/context/PremiumProvider';
+import { usePremiumContext } from '@/src/features/premium/context/PremiumProvider';
 import { useImportFlowContext } from '@/src/features/import/context/ImportFlowProvider';
 import CFG from '@/src/constants/Config';
 import SettingsButton from '@/src/components/SettingsButton';

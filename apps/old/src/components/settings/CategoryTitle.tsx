@@ -1,8 +1,8 @@
 import { Text, View, StyleSheet } from 'react-native';
 import { Styles } from '@/src/constants/Styles';
 import { Colors } from '@/src/constants/Colors';
-import { useThemeContext } from '@/src/context/ThemeProvider';
-import { usePremiumContext } from '@/src/context/PremiumProvider';
+import { useThemeContext } from '@/src/features/theme/context/ThemeProvider';
+import { usePremiumContext } from '@/src/features/premium/context/PremiumProvider';
 
 type CategoryTitleProps = {
   title: string;

@@ -2,7 +2,7 @@ import { View, ScrollView, Animated, Easing, NativeSyntheticEvent, NativeScrollE
 import { useRef, useState } from "react";
 import { Themes, Colors } from "@/src/constants/Colors";
 import { LinearGradient } from 'expo-linear-gradient';
-import { usePremiumContext } from "@/src/context/PremiumProvider";
+import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
 import AppIconOption from "./AppIconOption";
 import { getAppIcon } from "expo-icon-handler";
 import { getIcon } from "@/src/constants/Logos";

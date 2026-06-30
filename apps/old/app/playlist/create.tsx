@@ -8,7 +8,7 @@ import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType, NotificationType } from "@/src/constants/Types";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
-import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { pickCoverImage } from "@/src/features/images/repository/image-repository";
 import { createLibraryPlaylist } from "@/src/features/library/repository/library-entity-repository";
 import { useHaptics } from "@/src/hooks/use-haptics";

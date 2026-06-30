@@ -4,7 +4,7 @@ import ShuffleButton from "@/src/components/player/ShuffleButton";
 import { SkipLeft, SkipRight } from "@/src/components/player/Skip";
 import Time from "@/src/components/player/Time";
 import { Colors } from "@/src/constants/Colors";
-import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { Dimensions, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 

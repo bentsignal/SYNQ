@@ -3,7 +3,7 @@ import { Colors } from "@/src/constants/Colors";
 import { usePrivacyContext } from "@/src/features/privacy/context/PrivacyProvider";
 import { getDisabledColor } from "@/src/lib/color-utils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 
 export default function Analytics() {
 

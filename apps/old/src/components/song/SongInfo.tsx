@@ -2,7 +2,7 @@ import { Text, View, StyleSheet, StyleProp, TextStyle } from 'react-native';
 import { memo } from 'react';
 import { Colors, Themes } from '@/src/constants/Colors';
 import { Styles } from '@/src/constants/Styles';
-import { useThemeContext } from '@/src/context/ThemeProvider';
+import { useThemeContext } from '@/src/features/theme/context/ThemeProvider';
 import LottieView from 'lottie-react-native';
 import { replaceColor } from 'lottie-colorify';
 

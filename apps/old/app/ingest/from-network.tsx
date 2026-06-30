@@ -1,5 +1,5 @@
 import Button, { Label } from "@/src/components/button";
-import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { router } from "expo-router";
 import { Text, View } from "react-native";
 

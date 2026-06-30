@@ -8,7 +8,7 @@ import { router } from "expo-router";
 import { PageType, SortOrder, SortType } from "@/src/constants/Types";
 import AlbumList from "@/src/components/lists/album";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import ModalStyles from "@/src/components/modals/Styles";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import QueryWrapper from "@/src/components/lists/query/Wrapper";

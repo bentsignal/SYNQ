@@ -1,4 +1,4 @@
-import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { playAd } from "@/src/features/playback/lib/playback-ad-service";
 import { skipToNextQueueTrack } from "@/src/features/playback/lib/player-queue-actions-service";

@@ -4,7 +4,7 @@ import { Styles } from "@/src/constants/Styles";
 import { Themes, Colors } from "@/src/constants/Colors";
 import ThemeOption from "@/src/components/settings/ThemeOption";
 import { LinearGradient } from 'expo-linear-gradient';
-import { usePremiumContext } from "@/src/context/PremiumProvider";
+import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
 
 const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
 

@@ -4,7 +4,7 @@ import {
   SortType,
   SourceType,
 } from "@/src/constants/Types";
-import { useThemeContext } from "@/src/context/ThemeProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
 import {
   addTrackToQueue,

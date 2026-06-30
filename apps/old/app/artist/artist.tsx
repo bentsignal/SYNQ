@@ -9,26 +9,15 @@ import TabSelector from "@/src/components/TabSelector";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import {
-  AlbumType,
-  ArtistType,
   PageType,
-  SongType,
   SortOrder,
   SortType,
   SourceType,
 } from "@/src/constants/Types";
 import { useGlobalContext } from "@/src/context/GlobalProvider";
-import { getAlbumsFromArtist } from "@/src/controllers/AlbumController";
-import {
-  getArtistInfo,
-  getSongsFromArtist,
-} from "@/src/controllers/ArtistController";
-import albumBus from "@/src/events/album";
-import { AlbumBusEvent } from "@/src/events/album/Events";
-import artistBus from "@/src/events/artist";
-import { ArtistBusEvent } from "@/src/events/artist/Events";
-import playlistBus from "@/src/events/playlist";
-import { PlaylistBusEvent } from "@/src/events/playlist/Events";
+import { useArtistAlbumsQuery } from "@/src/features/library/hooks/use-artist-albums-query";
+import { useArtistInfoQuery } from "@/src/features/library/hooks/use-artist-info-query";
+import { useArtistSongsQuery } from "@/src/features/library/hooks/use-artist-songs-query";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { StyleSheet, Text, View } from "react-native";
@@ -37,75 +26,28 @@ const ArtistView = ({ id }: { id: number }) => {
   const { showOverlay, setEditArtist } = useGlobalContext();
   const { sendHaptic } = useHaptics();
 
-  const [songs, setSongs] = useState<SongType[]>([]);
-  const [albums, setAlbums] = useState<AlbumType[]>([]);
-  const [title, setTitle] = useState("");
   const [scrollPosition, setScrollPosition] = useState(0);
-  const [artist, setArtist] = useState<ArtistType | null>(null);
   const [tabIndex, setTabIndex] = useState(0);
-  const [showEmptyComponent, setShowEmptyComponent] = useState(false);
   const [songsQuery, setSongsQuery] = useState("");
   const [albumsQuery, setAlbumsQuery] = useState("");
   const [songSort, setSongSort] = useState<SortType>(SortType.ALBUM);
   const [songOrder, setSongOrder] = useState<SortOrder>(SortOrder.DESC);
   const [albumSort, setAlbumSort] = useState<SortType>(SortType.YEAR);
   const [albumOrder, setAlbumOrder] = useState<SortOrder>(SortOrder.DESC);
-
-  const refreshInfo = async () => {
-    if (id) {
-      try {
-        const result = await getArtistInfo(id);
-        result.pageType = PageType.ARTIST;
-        setArtist(result);
-        setTitle(result?.name || "");
-      } catch (error) {
-        console.log("error refreshing playlist info:", error);
-      }
-    }
-  };
-
-  const refreshSongs = async () => {
-    try {
-      const songs = await getSongsFromArtist(
-        id,
-        songSort,
-        songOrder,
-        songsQuery,
-      );
-      setSongs(songs);
-      setShowEmptyComponent(songs.length === 0);
-    } catch (error) {
-      console.log("error refreshing playlist songs:", error);
-    }
-  };
-
-  const refreshAlbums = async () => {
-    try {
-      const results = await getAlbumsFromArtist(
-        id,
-        albumSort,
-        albumOrder,
-        albumsQuery,
-      );
-      setAlbums(results);
-    } catch (error) {
-      console.log("error refreshing artist albums:", error);
-    }
-  };
-
-  const triggerRefresh = () => {
-    refreshSongs();
-    refreshInfo();
-    refreshAlbums();
-  };
-
-  useEffect(() => {
-    refreshSongs();
-  }, [songsQuery, songSort, songOrder]);
-
-  useEffect(() => {
-    refreshAlbums();
-  }, [albumsQuery, albumSort, albumOrder]);
+  const { artist } = useArtistInfoQuery(id);
+  const { songs, totalSongCount, isEmpty: songsEmpty } = useArtistSongsQuery({
+    artistId: id,
+    query: songsQuery,
+    sort: songSort,
+    order: songOrder,
+  });
+  const { albums, isEmpty: albumsEmpty } = useArtistAlbumsQuery({
+    artistId: id,
+    query: albumsQuery,
+    sort: albumSort,
+    order: albumOrder,
+  });
+  const title = artist?.name ?? "";
 
   useEffect(() => {
     if (tabIndex === 0) {
@@ -115,29 +57,11 @@ const ArtistView = ({ id }: { id: number }) => {
     }
   }, [tabIndex]);
 
-  // refresh song list and info when changes are are sent from emitter;
-  useEffect(() => {
-    artistBus.on(ArtistBusEvent.ARTIST_MODIFIED, refreshInfo);
-    artistBus.on(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, refreshSongs);
-    albumBus.on(AlbumBusEvent.ALBUM_CREATED, refreshAlbums);
-    albumBus.on(AlbumBusEvent.ALBUM_DELETED, refreshAlbums);
-    albumBus.on(AlbumBusEvent.ALBUM_MODIFIED, refreshAlbums);
-    playlistBus.on(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshAlbums);
-    return () => {
-      artistBus.off(ArtistBusEvent.ARTIST_MODIFIED, refreshInfo);
-      artistBus.off(ArtistBusEvent.ARTIST_TOGGLED_ON_SONG, refreshSongs);
-      albumBus.off(AlbumBusEvent.ALBUM_CREATED, refreshAlbums);
-      albumBus.off(AlbumBusEvent.ALBUM_DELETED, refreshAlbums);
-      albumBus.off(AlbumBusEvent.ALBUM_MODIFIED, refreshAlbums);
-      playlistBus.off(PlaylistBusEvent.PLAYLIST_SONGS_IMPORTED, refreshAlbums);
-    };
-  }, []);
-
-  useEffect(() => {
-    triggerRefresh();
-  }, [id]);
-
   const handleMore = () => {
+    if (!artist) {
+      return;
+    }
+
     sendHaptic("light");
     setEditArtist(artist);
     try {
@@ -166,7 +90,7 @@ const ArtistView = ({ id }: { id: number }) => {
             sort={songSort}
             order={songOrder}
             query={songsQuery}
-            showEmptyComponent={showEmptyComponent}
+            showEmptyComponent={songsEmpty}
             emptyComponent={
               <Text style={Local.emptyText}>No songs in library</Text>
             }
@@ -176,6 +100,7 @@ const ArtistView = ({ id }: { id: number }) => {
                   id={id}
                   title={title}
                   pageType={PageType.ARTIST}
+                  songCount={totalSongCount}
                 />
                 <TabSelector
                   tabs={["Songs", "Albums"]}
@@ -211,6 +136,7 @@ const ArtistView = ({ id }: { id: number }) => {
                   id={id}
                   title={title}
                   pageType={PageType.ARTIST}
+                  songCount={totalSongCount}
                 />
                 <TabSelector
                   tabs={["Songs", "Albums"]}
@@ -235,7 +161,7 @@ const ArtistView = ({ id }: { id: number }) => {
             emptyComponent={
               <Text style={Local.emptyText}>No albums in library</Text>
             }
-            showEmptyComponent={albums.length === 0}
+            showEmptyComponent={albumsEmpty}
           />
         )}
       </View>

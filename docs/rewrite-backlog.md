@@ -66,6 +66,11 @@ feature-oriented packages.
      info/artists from `useAlbumInfoQuery` and songs from `useAlbumSongsQuery`
      instead of listening for `ALBUM_MODIFIED`, `ALBUM_TOGGLED_ON_SONG`, or
      `ALBUM_REORDERED`.
+   - Artist detail content has started. `app/artist/artist.tsx` now reads
+     artist info, songs, and albums from `useArtistInfoQuery`,
+     `useArtistSongsQuery`, and `useArtistAlbumsQuery` instead of listening for
+     `ARTIST_MODIFIED`, `ARTIST_TOGGLED_ON_SONG`, album events, or
+     `PLAYLIST_SONGS_IMPORTED`.
    - Next target: remove import-only metadata listeners from `Song.tsx` with a
      typed import edit store.
 
@@ -141,8 +146,10 @@ feature-oriented packages.
 4. Artist:
    - Done: add `useLibraryArtistsQuery` for the list-level library artist
      screen.
-   - Add artist detail/relation/image queries over `artists`, `artistSongs`,
-     and `artistsAlbums`.
+   - Done: add `useArtistInfoQuery`, `useArtistSongsQuery`, and
+     `useArtistAlbumsQuery` for the artist detail screen.
+   - Add artist relation/image queries where add/edit/cover flows still need
+     Drizzle-backed state.
    - Replace artist edit/list/detail listeners.
 
 5. Import command bus:

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ListCover from "@/src/components/cover/ListCover";
 import CrossfadeImage from "@/src/components/image/CrossfadeImage";
-import { SkipLeft, SkipRight } from "@/src/components/player/Skip";
+import { SkipLeft, SkipRight } from "@/src/features/playback/components/Skip";
 import SongInfo from "@/src/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";

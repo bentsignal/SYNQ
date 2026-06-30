@@ -1,8 +1,8 @@
-import LoopButton from "@/src/components/player/LoopButton";
-import PausePlayButtons from "@/src/components/player/PausePlayButtons";
-import ShuffleButton from "@/src/components/player/ShuffleButton";
-import { SkipLeft, SkipRight } from "@/src/components/player/Skip";
-import Time from "@/src/components/player/Time";
+import LoopButton from "@/src/features/playback/components/LoopButton";
+import PausePlayButtons from "@/src/features/playback/components/PausePlayButtons";
+import ShuffleButton from "@/src/features/playback/components/ShuffleButton";
+import { SkipLeft, SkipRight } from "@/src/features/playback/components/Skip";
+import Time from "@/src/features/playback/components/Time";
 import { Colors } from "@/src/constants/Colors";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { Dimensions, StyleSheet, View } from "react-native";

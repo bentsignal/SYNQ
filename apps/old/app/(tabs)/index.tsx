@@ -2,7 +2,7 @@ import InfoModal from "@/src/components/modals/InfoModal";
 import Notifications from "@/src/components/notifications/Notifications";
 import Option from "@/src/components/Option";
 import PageTitle from "@/src/components/PageTitle";
-import MiniPlayer from "@/src/components/player/MiniPlayer";
+import MiniPlayer from "@/src/features/playback/components/MiniPlayer";
 import SettingsButton from "@/src/components/SettingsButton";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";

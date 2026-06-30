@@ -431,6 +431,9 @@ feature-oriented packages.
      `apps/old/src/features/playback/hooks/use-playback-queue-display.ts`.
    - Done: queue footer playback controls now live in
      `apps/old/src/features/playback/components/QueueControls.tsx`.
+   - Done: shared playback buttons, mini-player, skip controls, and time scrub
+     UI now live in `apps/old/src/features/playback/components`; the generic
+     `src/components/player` folder has been removed.
    - Done: queue song list panel now lives in
      `apps/old/src/features/playback/components/QueueSongListPanel.tsx`, so
      `app/queue.tsx` is mostly route composition.

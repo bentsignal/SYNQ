@@ -4,8 +4,8 @@ import SongList from "@/src/components/lists/song";
 import Progress from "@/src/components/Progress";
 import { Styles } from "@/src/constants/Styles";
 import { PageType } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
+import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { getCompletion } from "@/src/lib/util";
 import { Text, View } from "react-native";
 
@@ -16,7 +16,7 @@ const Files = () => {
     transferSize,
     transferProgress,
     loadAnimInProgress,
-  } = useGlobalContext();
+  } = useImportFlowContext();
 
   const { premium } = usePremiumContext();
 

@@ -3,8 +3,8 @@ import { Colors } from '@/src/constants/Colors';
 import { useRef, useEffect } from 'react';
 import Svg, { Circle } from 'react-native-svg';
 import Loading from './Loading';
-import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { useThemeContext } from '@/src/context/ThemeProvider';
+import { useImportFlowContext } from '@/src/features/import/context/ImportFlowProvider';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -21,7 +21,7 @@ const Progress = ({ completion, loading, showCircle, linear }: ProgressProps) =>
   let circleOpacityRef = useRef(new Animated.Value(0)).current;
   let globalOpacityRef = useRef(new Animated.Value(0)).current;
 
-  const { loadAnimInProgress, setLoadAnimInProgress } = useGlobalContext();
+  const { loadAnimInProgress, setLoadAnimInProgress } = useImportFlowContext();
 
   const { theme } = useThemeContext();
 

@@ -6,11 +6,11 @@ import MiniPlayer from "@/src/components/player/MiniPlayer";
 import SettingsButton from "@/src/components/SettingsButton";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
+import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { useIngestStore } from "@/src/features/ingest/hooks/use-ingest";
 import { useHomePlaybackEffects } from "@/src/features/playback/hooks/use-home-playback-effects";
 import { posthog } from "@/src/lib/posthog";
@@ -18,10 +18,7 @@ import { router } from "expo-router";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 
 const Home = () => {
-  const {
-    setLoading,
-    setResults,
-  } = useGlobalContext();
+  const { setLoading, setResults } = useImportFlowContext();
 
   const { setShowInfoModal } = useAppShellContext();
   const { setShowImportAd } = useGlobalProgressContext();

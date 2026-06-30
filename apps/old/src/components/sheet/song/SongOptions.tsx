@@ -17,6 +17,7 @@ import { removeSongs } from "@/src/controllers/SongController";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/hooks/usePlayer";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
+import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
@@ -43,12 +44,9 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
   const {
     editSong,
     numModified,
-    results,
-
-    setExportDisabled,
-    setResults,
     setNumModified,
   } = useGlobalContext();
+  const { results, setExportDisabled, setResults } = useImportFlowContext();
 
   const { setShowImportAd, setShowGlobalLoading } =
     useGlobalProgressContext();

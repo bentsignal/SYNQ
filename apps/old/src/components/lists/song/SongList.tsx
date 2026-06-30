@@ -8,7 +8,6 @@ import {
   SortType,
   SourceType,
 } from "@/src/constants/Types";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { usePlaybackContext } from "@/src/context/PlaybackProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
@@ -18,6 +17,7 @@ import {
   playTrack,
 } from "@/src/controllers/PlayerController";
 import { generateSongKey } from "@/src/controllers/SongController";
+import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/hooks/usePlayer";
@@ -84,7 +84,7 @@ const SongList = memo(
     draggable?: boolean;
     onDragEnd?: (params: DragEndParams<any>) => void;
   }) => {
-    const { selectedId } = useGlobalContext();
+    const { selectedId } = useImportFlowContext();
     const { adPlaying, setAdPlaying, shouldPlayAd, adURL } =
       usePlaybackAdContext();
     const { shuffle, setSourceType, setSourceId, setSort, setOrder, setQuery } =

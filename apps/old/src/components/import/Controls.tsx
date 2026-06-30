@@ -27,24 +27,26 @@ import TrackPlayer, { Track } from "react-native-track-player";
 
 export default function ImportControls() {
   const {
-    results,
     editSong,
     numModified,
+    setEditSong,
+    setNumModified,
+  } = useGlobalContext();
+
+  const {
+    results,
     loading,
     exportDisabled,
     homeState,
     ip,
     transferSize,
-
-    setEditSong,
     setResults,
-    setNumModified,
     setExportDisabled,
     setLoading,
     setTransferSize,
-  } = useGlobalContext();
-
-  const { setImportState, requestImportFinish } = useImportFlowContext();
+    setImportState,
+    requestImportFinish,
+  } = useImportFlowContext();
 
   const { showGlobalLoading } = useGlobalProgressContext();
   const { selectEnabled, selectedSongs, setSelectEnabled } =

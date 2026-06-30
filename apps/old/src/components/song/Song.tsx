@@ -9,6 +9,7 @@ import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { getImportSongCover } from "@/src/controllers/SongController";
 import ListCover from "@/src/features/cover/components/list-cover";
+import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
@@ -53,7 +54,8 @@ export default function Song({
   const displayCover =
     song.pageType === PageType.IMPORT ? coverImage : song.artwork;
 
-  const { results, setEditSong } = useGlobalContext();
+  const { setEditSong } = useGlobalContext();
+  const { results } = useImportFlowContext();
   const { selectEnabled, selectedSongs, setSelectedSongs } =
     useSelectionContext();
 

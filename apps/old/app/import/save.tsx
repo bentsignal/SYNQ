@@ -3,7 +3,6 @@ import Progress from "@/src/components/Progress";
 import { Colors } from "@/src/constants/Colors";
 import CFG from "@/src/constants/Config";
 import { Styles } from "@/src/constants/Styles";
-import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { deleteImportSongs } from "@/src/controllers/ImportExportController";
@@ -29,7 +28,7 @@ const SavePrompt = () => {
     setLoading,
     setTransferSize,
     setResults,
-  } = useGlobalContext();
+  } = useImportFlowContext();
 
   const {
     importState,

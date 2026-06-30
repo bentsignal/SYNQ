@@ -21,6 +21,7 @@ import {
   removeImportSongAlbum,
   replaceImportSong,
 } from "@/src/features/import/lib/import-song-edits";
+import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import colors from "@/src/lib/colors";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
@@ -35,7 +36,8 @@ type AlbumProps = {
 };
 
 const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
-  const { editSong, setEditSong, setEditAlbum, setResults } = useGlobalContext();
+  const { editSong, setEditSong, setEditAlbum } = useGlobalContext();
+  const { setResults } = useImportFlowContext();
   const { sendHaptic } = useHaptics();
 
   const [selected, setSelected] = useState(false);

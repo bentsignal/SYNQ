@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as Network from 'expo-network';
 import * as Device from 'expo-device';
-import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { getWifiTransferSong, createImportDir } from '@/src/controllers/ImportExportController';
 import Transfer from '@/src/assets/static/Transfer';
 import { NotificationType } from '@/src/constants/Types';
@@ -9,6 +8,7 @@ import { BridgeServer } from 'react-native-http-bridge-refurbished';
 import CFG from '@/src/constants/Config';
 import { usePathname } from 'expo-router';
 import { useAppShellContext } from '@/src/features/app-shell/context/AppShellProvider';
+import { useImportFlowContext } from '@/src/features/import/context/ImportFlowProvider';
 import { useNotificationsContext } from '@/src/features/notifications/context/NotificationsProvider';
 
 const getIP = async () => {
@@ -26,7 +26,7 @@ const Server = () => {
     setIP, setSelectedId, setTransferProgress,
     setLoadAnimInProgress,
 
-  } = useGlobalContext();
+  } = useImportFlowContext();
 
   const { setShowOverlay } = useAppShellContext();
   const { addNotification, setShowNotificationModal } =

@@ -199,6 +199,9 @@ feature-oriented packages.
    - Done: import flow state now lives in
      `apps/old/src/features/import/context/ImportFlowProvider.tsx` instead of
      `GlobalProvider`.
+   - Done: import session state (`results`, transfer progress, loading,
+     export-disabled state, selected transfer row, and Wi-Fi transfer address)
+     now lives in `ImportFlowProvider` instead of `GlobalProvider`.
    - In progress: playback orchestration is moving out of the home screen into
      feature hooks. Avoid import results and edit targets until their owning
      feature boundaries are clearer.

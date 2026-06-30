@@ -1,6 +1,5 @@
 import { Text, View, Dimensions, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
-import { useGlobalContext } from '@/src/context/GlobalProvider';
 import { Styles } from '@/src/constants/Styles';
 import SongList from '@/src/components/lists/song';
 import PageTitle from '@/src/components/PageTitle';
@@ -10,6 +9,7 @@ import { Colors } from '@/src/constants/Colors';
 import Progress from '@/src/components/Progress';
 import { PageType } from '@/src/constants/Types';
 import { usePremiumContext } from '@/src/context/PremiumProvider';
+import { useImportFlowContext } from '@/src/features/import/context/ImportFlowProvider';
 import CFG from '@/src/constants/Config';
 import SettingsButton from '@/src/components/SettingsButton';
 import ImportBlur from '@/src/components/import/Blur';
@@ -25,7 +25,7 @@ const WiFi = () => {
 
     setExportDisabled,
 
-  } = useGlobalContext();
+  } = useImportFlowContext();
 
   const { premium } = usePremiumContext();
   const insets = useSafeAreaInsets();

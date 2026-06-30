@@ -24,6 +24,7 @@ import {
   getLibrarySongCover,
   saveEdits,
 } from "@/src/controllers/SongController";
+import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { getDurationString } from "@/src/lib/util";
 import { router, useFocusEffect } from "expo-router";
@@ -38,11 +39,10 @@ const EditSong = ({ id }: { id: number }) => {
 
   const {
     editSong,
-    results,
-    setResults,
     setNumModified,
     numModified,
   } = useGlobalContext();
+  const { results, setResults } = useImportFlowContext();
   const { selectedSongs, setSelectedSongs, setSelectEnabled } =
     useSelectionContext();
 

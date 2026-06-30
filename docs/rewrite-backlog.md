@@ -160,6 +160,9 @@ feature-oriented packages.
    - Song edit relation refresh now keys off focus refresh and `editSong`
      context updates from the add/remove rows instead of
      `ARTIST_TOGGLED_ON_SONG` or `ALBUM_TOGGLED_ON_SONG` listeners.
+   - Song edit saved-library relation hydration now reads artists and albums
+     through the Drizzle-backed library song repository instead of legacy
+     artist/album controllers.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

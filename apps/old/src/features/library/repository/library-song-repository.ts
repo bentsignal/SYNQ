@@ -1,4 +1,6 @@
 import {
+  AlbumType,
+  ArtistType,
   PageType,
   SongType,
   SortOrder,
@@ -266,5 +268,54 @@ export const getLibraryArtistSongs = async ({
     query,
     sort,
     order,
+  });
+};
+
+export const getLibrarySongAlbums = async (songId: number) => {
+  const rows = await db
+    .select({
+      album: schema.albums,
+    })
+    .from(schema.albumSongs)
+    .innerJoin(schema.albums, eq(schema.albumSongs.albumId, schema.albums.id))
+    .where(eq(schema.albumSongs.songId, songId));
+
+  return rows.map(({ album }) => {
+    const imagePaths = album.coverImage
+      ? getImagePathFromHash(album.coverImage)
+      : null;
+
+    return {
+      id: album.id,
+      name: album.name ?? "",
+      year: album.year ?? undefined,
+      image: imagePaths?.pathToSmallImage,
+      fullImage: imagePaths?.pathToFullImage,
+      pageType: PageType.EDIT,
+    } satisfies AlbumType;
+  });
+};
+
+export const getLibrarySongArtists = async (songId: number) => {
+  const rows = await db
+    .select({
+      artist: schema.artists,
+    })
+    .from(schema.artistSongs)
+    .innerJoin(schema.artists, eq(schema.artistSongs.artistId, schema.artists.id))
+    .where(eq(schema.artistSongs.songId, songId));
+
+  return rows.map(({ artist }) => {
+    const imagePaths = artist.profileImage
+      ? getImagePathFromHash(artist.profileImage)
+      : null;
+
+    return {
+      id: artist.id,
+      name: artist.name ?? "",
+      image: imagePaths?.pathToSmallImage,
+      fullImage: imagePaths?.pathToFullImage,
+      pageType: PageType.EDIT,
+    } satisfies ArtistType;
   });
 };

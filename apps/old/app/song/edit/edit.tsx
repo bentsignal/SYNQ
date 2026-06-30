@@ -15,9 +15,11 @@ import {
   PageType,
 } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import { getAlbumsFromSong } from "@/src/controllers/AlbumController";
-import { getArtistsFromSong } from "@/src/controllers/ArtistController";
 import { pickCoverImage } from "@/src/features/images/repository/image-repository";
+import {
+  getLibrarySongAlbums,
+  getLibrarySongArtists,
+} from "@/src/features/library/repository/library-song-repository";
 import { updateSongsInLibrary } from "@/src/controllers/LibraryController";
 import {
   getImportSongCover,
@@ -57,7 +59,7 @@ const EditSong = ({ id }: { id: number }) => {
     if (editSong.pageType === PageType.IMPORT) {
       setArtists(editSong.importArtists ?? []);
     } else {
-      const artists = await getArtistsFromSong(id);
+      const artists = await getLibrarySongArtists(id);
       setArtists(artists);
     }
   }, [editSong, id]);
@@ -66,7 +68,7 @@ const EditSong = ({ id }: { id: number }) => {
     if (editSong.pageType === PageType.IMPORT) {
       setAlbums(editSong.importAlbums ?? []);
     } else {
-      const albums = await getAlbumsFromSong(id);
+      const albums = await getLibrarySongAlbums(id);
       setAlbums(albums);
     }
   }, [editSong, id]);

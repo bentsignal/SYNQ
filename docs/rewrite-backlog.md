@@ -359,6 +359,9 @@ feature-oriented packages.
    - Done: theme and premium state providers now live under
      `apps/old/src/features/theme` and `apps/old/src/features/premium`
      instead of the generic `src/context` folder.
+   - Done: settings screen UI components now live in
+     `apps/old/src/features/settings/components` instead of the generic
+     `src/components/settings` folder.
    - Done: import flow state now lives in
      `apps/old/src/features/import/context/ImportFlowProvider.tsx` instead of
      `GlobalProvider`.

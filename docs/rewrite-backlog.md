@@ -79,6 +79,8 @@ feature-oriented packages.
      `PLAYLIST_SONG_COUNT_MODIFIED`.
    - Add-to-playlist now reads from `useLibraryPlaylistsQuery` with
      membership prioritization instead of listening for `PLAYLIST_CREATED`.
+   - Add-to-album now reads from `useLibraryAlbumsQuery` with membership
+     prioritization instead of listening for `ALBUM_CREATED`.
    - Next target: remove import-only metadata listeners from `Song.tsx` with a
      typed import edit store.
 
@@ -148,6 +150,8 @@ feature-oriented packages.
 
 3. Album:
    - Done: add `useLibraryAlbumsQuery` for the list-level library album screen.
+   - Done: add membership prioritization to `useLibraryAlbumsQuery` and use it
+     in `app/album/add.tsx` instead of the `ALBUM_CREATED` listener.
    - Done: add `useAlbumInfoQuery` and `useAlbumSongsQuery` for the album
      detail screen.
    - Done: remove `ALBUM_MODIFIED` display listeners from album rows.

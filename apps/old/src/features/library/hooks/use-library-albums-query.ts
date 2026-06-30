@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 
 type LibraryAlbumsQueryOptions = {
+  prioritizeSongId?: number;
   query?: string;
   sort?: SortType;
   order?: SortOrder;
@@ -15,6 +16,10 @@ type AlbumRow = {
   album: typeof schema.albums.$inferSelect;
   artistName: string | null;
   songTitle: string | null;
+};
+
+type AlbumMembershipRow = {
+  albumId: number | null;
 };
 
 type AlbumSearchEntry = {
@@ -58,6 +63,17 @@ const sortAlbums = (
   });
 
   return order === SortOrder.DESC ? sorted.reverse() : sorted;
+};
+
+const prioritizeAlbums = (albums: AlbumType[], priorityIds: Set<number>) => {
+  if (priorityIds.size === 0) {
+    return albums;
+  }
+
+  const selected = albums.filter((album) => priorityIds.has(album.id));
+  const remaining = albums.filter((album) => !priorityIds.has(album.id));
+
+  return [...selected, ...remaining];
 };
 
 const matchesQuery = (entry: AlbumSearchEntry, query: string) => {
@@ -106,6 +122,7 @@ const rowsToEntries = (rows: AlbumRow[]) => {
 };
 
 export const useLibraryAlbumsQuery = ({
+  prioritizeSongId,
   query,
   sort = SortType.DATE,
   order = SortOrder.DESC,
@@ -132,16 +149,32 @@ export const useLibraryAlbumsQuery = ({
       )
       .leftJoin(schema.songs, eq(schema.albumSongs.songId, schema.songs.id)),
   );
+  const { data: membershipData } = useLiveQuery(
+    db
+      .select({
+        albumId: schema.albumSongs.albumId,
+      })
+      .from(schema.albumSongs)
+      .where(eq(schema.albumSongs.songId, prioritizeSongId ?? -1)),
+  );
 
   const albums = useMemo(() => {
     const normalizedQuery = normalizeQuery(query);
     const entries = rowsToEntries((data ?? []) as AlbumRow[]);
+    const priorityIds = new Set(
+      ((membershipData ?? []) as AlbumMembershipRow[])
+        .map((row) => row.albumId)
+        .filter((id): id is number => typeof id === "number"),
+    );
     const filteredAlbums = entries
       .filter((entry) => matchesQuery(entry, normalizedQuery))
       .map((entry) => entry.album);
 
-    return sortAlbums(filteredAlbums, sort, order);
-  }, [data, query, sort, order]);
+    return prioritizeAlbums(
+      sortAlbums(filteredAlbums, sort, order),
+      priorityIds,
+    );
+  }, [data, membershipData, query, sort, order]);
 
   return {
     albums,

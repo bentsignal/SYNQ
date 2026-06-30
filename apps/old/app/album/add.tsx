@@ -1,90 +1,61 @@
-import { View, Text, StyleSheet } from "react-native"
-import { useEffect, useState } from "react"
-import { Colors } from "@/src/constants/Colors"
-import { Styles } from "@/src/constants/Styles"
-import Bar from "@/src/components/modals/Bar"
-import CustomButton from "@/src/components/CustomButton"
-import { router } from "expo-router"
-import { PageType, AlbumType, SortOrder, SortType } from "@/src/constants/Types"
-import AlbumList from "@/src/components/lists/album"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useThemeContext } from "@/src/context/ThemeProvider"
-import { getAlbums, getAlbumsContainingSong } from "@/src/controllers/AlbumController"
-import { AlbumBusEvent } from "@/src/events/album/Events"
-import albumBus from "@/src/events/album/Bus"
-import ModalStyles from "@/src/components/modals/Styles"
-import { useGlobalContext } from "@/src/context/GlobalProvider"
-import QueryWrapper from "@/src/components/lists/query/Wrapper"
+import { StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Colors } from "@/src/constants/Colors";
+import { Styles } from "@/src/constants/Styles";
+import Bar from "@/src/components/modals/Bar";
+import CustomButton from "@/src/components/CustomButton";
+import { router } from "expo-router";
+import { PageType, SortOrder, SortType } from "@/src/constants/Types";
+import AlbumList from "@/src/components/lists/album";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useThemeContext } from "@/src/context/ThemeProvider";
+import ModalStyles from "@/src/components/modals/Styles";
+import { useGlobalContext } from "@/src/context/GlobalProvider";
+import QueryWrapper from "@/src/components/lists/query/Wrapper";
+import { useLibraryAlbumsQuery } from "@/src/features/library/hooks/use-library-albums-query";
 
 const AddAlbum = () => {
-
   const { theme } = useThemeContext();
   const { editSong } = useGlobalContext();
   const insets = useSafeAreaInsets();
 
-  const [albums, setAlbums] = useState<AlbumType[]>([]);
-  const [query, setQuery] = useState<string>('');
+  const [query, setQuery] = useState<string>("");
   const [sort, setSort] = useState<SortType>(SortType.DATE);
   const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
-
-  const refreshAlbums = async () => {
-    try {
-      const results = await getAlbums(query, sort, order);
-      if (editSong?.id) {
-        const albumsWithSong = await getAlbumsContainingSong(editSong.id);
-        for (let i = 0; i < results.length; i++) {
-          if (albumsWithSong.some(a => a.id === results[i].id)) {
-            const [item] = results.splice(i, 1);
-            results.unshift(item);
-          }
-        }
-      }
-      setAlbums(results);
-    }
-    catch (error) {
-      console.log('error refreshing albums:', error);
-    }
-  }
-
-  useEffect(() => {
-    refreshAlbums();
-    albumBus.on(AlbumBusEvent.ALBUM_CREATED, refreshAlbums);
-    return () => {
-      albumBus.off(AlbumBusEvent.ALBUM_CREATED, refreshAlbums);
-    }
-  }, []);
-
-  useEffect(() => {
-    refreshAlbums();
-  }, [query, sort, order]);
+  const { albums } = useLibraryAlbumsQuery({
+    prioritizeSongId: editSong?.id,
+    query,
+    sort,
+    order,
+  });
 
   return (
     <View style={Local.wrapper}>
       <Bar />
       <Text style={ModalStyles.header}>Add to Album</Text>
       <CustomButton
-        title={'New'}
+        title={"New"}
         background={theme}
         handlePress={() => {
-          router.push('/album/create');
+          router.push("/album/create");
         }}
         customStyles={{
           marginBottom: 20,
-        }}  
+        }}
       />
       <View style={Styles.divider} />
-      <AlbumList 
+      <AlbumList
         albums={albums}
         pageType={PageType.ADD}
-        gradientStart={'rgba(24, 24, 24, 1)'}
-        gradientEnd={'rgba(24, 24, 24, 0)'}
+        gradientStart={"rgba(24, 24, 24, 1)"}
+        gradientEnd={"rgba(24, 24, 24, 0)"}
         headerComponent={
-          <QueryWrapper 
-            query={query} 
-            setQuery={setQuery} 
-            sort={sort} 
-            setSort={setSort} 
-            order={order} 
+          <QueryWrapper
+            query={query}
+            setQuery={setQuery}
+            sort={sort}
+            setSort={setSort}
+            order={order}
             setOrder={setOrder}
             showSortTypes={{
               [SortType.ALBUM]: true,
@@ -94,9 +65,11 @@ const AddAlbum = () => {
           />
         }
       />
-      <View style={[Local.bottomButtonsWrapper, {paddingBottom: insets.bottom}]}>
+      <View
+        style={[Local.bottomButtonsWrapper, { paddingBottom: insets.bottom }]}
+      >
         <CustomButton
-          title={'Close'}
+          title={"Close"}
           handlePress={() => {
             router.back();
           }}
@@ -104,7 +77,7 @@ const AddAlbum = () => {
       </View>
     </View>
   );
-}
+};
 
 const Local = StyleSheet.create({
   wrapper: {
@@ -113,11 +86,11 @@ const Local = StyleSheet.create({
     ...ModalStyles.roundedTop,
   },
   bottomButtonsWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'center', 
+    flexDirection: "row",
+    justifyContent: "center",
     gap: 10,
-    width: '100%',
-  }
-})
+    width: "100%",
+  },
+});
 
 export default AddAlbum;

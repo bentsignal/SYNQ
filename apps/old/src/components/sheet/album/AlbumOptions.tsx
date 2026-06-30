@@ -9,8 +9,6 @@ import {
   getSongsFromAlbum,
 } from "@/src/controllers/AlbumController";
 import { exportSongs } from "@/src/controllers/ImportExportController";
-import albumBus from "@/src/events/album";
-import { AlbumBusEvent } from "@/src/events/album/Events";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
@@ -63,7 +61,6 @@ const AlbumOptions = ({ name }: { name: string }) => {
     try {
       posthog.capture("delete_album");
       await deleteAlbum(editAlbum.id);
-      albumBus.emit(AlbumBusEvent.ALBUM_DELETED);
     } catch (error) {
       console.log("error deleting album: ", error);
     }

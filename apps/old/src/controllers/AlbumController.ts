@@ -2,8 +2,6 @@ import { AlbumType, SongType, SortOrder, SortType } from "@/src/constants/Types"
 import AlbumModel from "@/src/models/AlbumModel";
 import { writeImageToLibrary } from "./ImageController";
 import * as FileSystem from 'expo-file-system';
-import { AlbumBusEvent } from "@/src/events/album/Events";
-import albumBus from "@/src/events/album";
 import { flagSongAsEdited, getSongByResult } from "./SongController";
 import { saveCoverImage } from "@/src/lib/image-utils";
 import { db } from "@synq/db";
@@ -98,11 +96,6 @@ export const getAlbumCover = async (albumId: number, full: boolean = false) => {
 export const updateAlbum = async (albumId: number, name: string, year?: number, image?: string) => {
   if (name || year !== undefined) {
     await AlbumModel.getInstance().updateAlbum(albumId, name, year);
-    albumBus.emit(AlbumBusEvent.ALBUM_MODIFIED, {
-      id: albumId,
-      name: name,
-      year: year,
-    });
   }
   if (image) {
     await writeImageToLibrary(image, `${FileSystem.documentDirectory}albums/${albumId}`);

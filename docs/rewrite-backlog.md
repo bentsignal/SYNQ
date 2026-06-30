@@ -109,6 +109,8 @@ feature-oriented packages.
      been removed; image refresh is driven by Drizzle writes plus live queries.
    - Now-unused `ALBUM_REORDERED` emit/types have been removed from the reorder
      flow; album song ordering is read from the live album-song query.
+   - Album bus has been removed after list, detail, row metadata, cover, delete,
+     and reorder refresh moved off album events.
    - Next target: remove remaining non-image playlist, album, and artist events
      once their last emitters are replaced by reactive state or local actions.
 
@@ -200,6 +202,7 @@ feature-oriented packages.
      of `ALBUM_IMAGE_MODIFIED`.
    - Done: remove now-unused `ALBUM_IMAGE_MODIFIED` emits and event types.
    - Done: remove now-unused `ALBUM_REORDERED` emits and event types.
+   - Done: remove the remaining emit-only album event bus module.
    - Add album order/image queries where the reorder and cover flows still
      need Drizzle-backed state.
    - Replace `ALBUM_*` events, including `ALBUM_TOGGLED_ON_SONG` and

@@ -25,8 +25,6 @@ import { getSongById } from "@/src/controllers/SongController";
 import { check } from "@/src/lib/util";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { v4 as uuidv4 } from "uuid";
-import playbackBus from "../events/playback";
-import { PlaybackBusEvent } from "../events/playback/Events";
 
 export const getTrackFromSong = async (
   song: SongType,

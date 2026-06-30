@@ -123,8 +123,10 @@ feature-oriented packages.
    - Import finish command no longer uses an event bus; the import footer now
      requests completion through a narrow GlobalProvider command consumed by
      the save screen.
-   - Next target: replace the playback queue event bus with queue state sourced
-     from TrackPlayer or a focused playback store.
+   - Playback queue refresh no longer uses an event bus; `PlaybackProvider`
+     exposes a queue revision signal that reloads queue UI from TrackPlayer.
+   - Next target: delete the now-unused playback event module after verifying
+     no references remain.
 
 4. Split ingest/media.
    - Current checkpoint files: `apps/old/src/hooks/use-ingest.ts`,
@@ -250,8 +252,8 @@ feature-oriented packages.
      request consumed by the save screen.
 
 6. Playback bus:
-   - Replace `QUEUE_UPDATED` with a TrackPlayer-backed queue hook/store rather
-     than Drizzle.
+   - Done: replace `QUEUE_UPDATED` with a PlaybackProvider queue revision
+     signal read by the queue screen.
 
 ## Guardrails
 

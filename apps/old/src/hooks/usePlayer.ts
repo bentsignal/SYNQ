@@ -16,8 +16,6 @@ import { getSongsFromAlbum } from "../controllers/AlbumController";
 import { getSongsFromArtist } from "../controllers/ArtistController";
 import { getTrackFromSong } from "../controllers/PlayerController";
 import { getPlaylistSongs } from "../controllers/PlaylistController";
-import playbackBus from "../events/playback";
-import { PlaybackBusEvent } from "../events/playback/Events";
 import { useHaptics } from "./use-haptics";
 
 export default function usePlayer() {
@@ -38,6 +36,7 @@ export default function usePlayer() {
     sort,
     order,
     query,
+    requestQueueRefresh,
   } = usePlaybackContext();
 
   const { theme } = useThemeContext();
@@ -210,7 +209,7 @@ export default function usePlayer() {
       }
     }
     await TrackPlayer.add(upcomingTracks);
-    playbackBus.emit(PlaybackBusEvent.QUEUE_UPDATED);
+    requestQueueRefresh();
     const queue = await TrackPlayer.getQueue();
     await AsyncStorage.setItem("queue", JSON.stringify(queue));
     await resetAddOffset();

@@ -28,6 +28,8 @@ interface PlaybackContextType {
   setOrder: (newValue: SortOrder) => void;
   query: string;
   setQuery: (newValue: string) => void;
+  queueRevision: number;
+  requestQueueRefresh: () => void;
 }
 
 
@@ -54,6 +56,8 @@ const PlaybackContext = createContext<PlaybackContextType>({
   setOrder: () => {},
   query: '',
   setQuery: () => {},
+  queueRevision: 0,
+  requestQueueRefresh: () => {},
 });
 
 
@@ -70,6 +74,7 @@ const PlaybackProvider: React.FC<Props> = ({ children }) => {
   const [sort, setSort] = useState<SortType | null>(null);
   const [order, setOrder] = useState<SortOrder | null>(null);
   const [query, setQuery] = useState<string>('');
+  const [queueRevision, setQueueRevision] = useState(0);
 
   const incrementAddOffset = async () => {
     const newOffset = addOffset+1;
@@ -90,6 +95,10 @@ const PlaybackProvider: React.FC<Props> = ({ children }) => {
     await AsyncStorage.setItem('addOffset', '0');
   }
 
+  const requestQueueRefresh = () => {
+    setQueueRevision((value) => value + 1);
+  }
+
   return (
     <PlaybackContext.Provider value={{ 
       sourceId, setSourceId, 
@@ -102,6 +111,7 @@ const PlaybackProvider: React.FC<Props> = ({ children }) => {
       sort, setSort,
       order, setOrder,
       query, setQuery,
+      queueRevision, requestQueueRefresh,
     }}>
       {children}
 

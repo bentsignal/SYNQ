@@ -14,8 +14,6 @@ import { PageType, SongType } from "@/src/constants/Types";
 import { usePlaybackContext } from "@/src/context/PlaybackProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { getSongById } from "@/src/controllers/SongController";
-import playbackBus from "@/src/events/playback";
-import { PlaybackBusEvent } from "@/src/events/playback/Events";
 import { check } from "@/src/lib/util";
 import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native";
 import { DragEndParams } from "react-native-draggable-flatlist";
@@ -29,7 +27,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import TrackPlayer, { useActiveTrack } from "react-native-track-player";
 
 const Queue = () => {
-  const { shuffle } = usePlaybackContext();
+  const { queueRevision, shuffle } = usePlaybackContext();
   const { theme } = useThemeContext();
 
   const track = useActiveTrack();
@@ -55,14 +53,7 @@ const Queue = () => {
 
   useEffect(() => {
     loadSongs();
-  }, [shuffle]);
-
-  useEffect(() => {
-    playbackBus.on(PlaybackBusEvent.QUEUE_UPDATED, loadSongs);
-    return () => {
-      playbackBus.off(PlaybackBusEvent.QUEUE_UPDATED, loadSongs);
-    };
-  }, []);
+  }, [queueRevision, shuffle]);
 
   const loadSongs = async () => {
     const results: SongType[] = [];

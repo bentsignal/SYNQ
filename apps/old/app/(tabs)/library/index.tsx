@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import CategorySelector from "@/src/components/CategorySelector";
-import Albums from "@/src/components/library/Albums";
-import Artists from "@/src/components/library/Artists";
-import Playlists from "@/src/components/library/Playlists";
-import Songs from "@/src/components/library/Songs";
+import Albums from "@/src/features/library/components/Albums";
+import Artists from "@/src/features/library/components/Artists";
+import Playlists from "@/src/features/library/components/Playlists";
+import Songs from "@/src/features/library/components/Songs";
 import PageTitle from "@/src/components/PageTitle";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";

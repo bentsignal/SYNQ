@@ -500,6 +500,9 @@ feature-oriented packages.
 1. Song/library:
    - Done: replace `apps/old/src/components/library/Songs.tsx` refresh
      listeners with a single `useLibrarySongsQuery({ query, sort, order })`.
+   - Done: library tab panels now live in
+     `apps/old/src/features/library/components` instead of the generic
+     `src/components/library` folder.
    - Done: saved library row metadata is now prop-derived from the list query,
      not patched by `SONG_INFO_MODIFIED`, `ARTIST_TOGGLED_ON_SONG`, or
      `ALBUM_TOGGLED_ON_SONG`.

@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useState } from "react";
 import EditCover from "@/src/components/cover/EditCover";
 import CustomButton from "@/src/components/CustomButton";
 import Bar from "@/src/components/modals/Bar";
@@ -11,8 +11,6 @@ import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { createAlbum } from "@/src/controllers/AlbumController";
 import { newCover } from "@/src/controllers/ImageController";
-import albumBus from "@/src/events/album";
-import { AlbumBusEvent } from "@/src/events/album/Events";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { router } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
@@ -44,7 +42,6 @@ const CreateAlbum = () => {
     try {
       await createAlbum(name, year, image);
       sendHaptic("success");
-      albumBus.emit(AlbumBusEvent.ALBUM_CREATED);
       setTimeout(() => {
         router.back();
       }, 100);

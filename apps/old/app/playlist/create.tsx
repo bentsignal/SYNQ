@@ -11,8 +11,6 @@ import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { newCover } from "@/src/controllers/ImageController";
 import { createPlaylist } from "@/src/controllers/PlaylistController";
-import playlistBus from "@/src/events/playlist";
-import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { router } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
@@ -45,7 +43,6 @@ const CreatePlaylist = () => {
       }
       await createPlaylist(name, image);
       sendHaptic("success");
-      playlistBus.emit(PlaylistBusEvent.PLAYLIST_CREATED);
       setTimeout(() => {
         router.back();
       }, 100);

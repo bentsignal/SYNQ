@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useState } from "react";
 import EditCover from "@/src/components/cover/EditCover";
 import CustomButton from "@/src/components/CustomButton";
 import Bar from "@/src/components/modals/Bar";
@@ -11,13 +11,7 @@ import { useGlobalContext } from "@/src/context/GlobalProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { createArtist } from "@/src/controllers/ArtistController";
 import { newCover } from "@/src/controllers/ImageController";
-import { createPlaylist } from "@/src/controllers/PlaylistController";
-import artistBus from "@/src/events/artist";
-import { ArtistBusEvent } from "@/src/events/artist/Events";
-import playlistBus from "@/src/events/playlist";
-import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import { useHaptics } from "@/src/hooks/use-haptics";
-import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -46,7 +40,6 @@ const CreateArtist = () => {
     try {
       await createArtist(name, image);
       sendHaptic("success");
-      artistBus.emit(ArtistBusEvent.ARTIST_CREATED);
       setTimeout(() => {
         router.back();
       }, 100);

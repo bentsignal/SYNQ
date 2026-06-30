@@ -84,6 +84,8 @@ feature-oriented packages.
    - Add-to-artist now reads from `useLibraryArtistsQuery` with membership
      prioritization and source tagging instead of listening for
      `ARTIST_CREATED`.
+   - Playlist, album, and artist create screens no longer emit now-unused
+     `PLAYLIST_CREATED`, `ALBUM_CREATED`, or `ARTIST_CREATED` events.
    - Next target: remove import-only metadata listeners from `Song.tsx` with a
      typed import edit store.
 
@@ -148,6 +150,8 @@ feature-oriented packages.
      `PLAYLIST_SONG_COUNT_MODIFIED` display listeners from playlist rows.
    - Done: add membership prioritization to `useLibraryPlaylistsQuery` and use
      it in `app/playlist/add.tsx` instead of the `PLAYLIST_CREATED` listener.
+   - Done: remove the now-unused `PLAYLIST_CREATED` emit from
+     `app/playlist/create.tsx`.
    - Replace count/name/image/content listeners and remove the broad
      `PLAYLIST_SONGS_IMPORTED` invalidation pattern.
 
@@ -155,6 +159,8 @@ feature-oriented packages.
    - Done: add `useLibraryAlbumsQuery` for the list-level library album screen.
    - Done: add membership prioritization to `useLibraryAlbumsQuery` and use it
      in `app/album/add.tsx` instead of the `ALBUM_CREATED` listener.
+   - Done: remove the now-unused `ALBUM_CREATED` emit from
+     `app/album/create.tsx`.
    - Done: add `useAlbumInfoQuery` and `useAlbumSongsQuery` for the album
      detail screen.
    - Done: remove `ALBUM_MODIFIED` display listeners from album rows.
@@ -169,6 +175,8 @@ feature-oriented packages.
    - Done: add membership prioritization and source tagging to
      `useLibraryArtistsQuery`, and use it in `app/artist/add.tsx` instead of
      the `ARTIST_CREATED` listener.
+   - Done: remove the now-unused `ARTIST_CREATED` emit from
+     `app/artist/create.tsx`.
    - Done: add `useArtistInfoQuery`, `useArtistSongsQuery`, and
      `useArtistAlbumsQuery` for the artist detail screen.
    - Done: remove `ARTIST_MODIFIED` display listeners from artist rows.

@@ -2,19 +2,16 @@ import {
   AlbumType,
   ArtistType,
   InfoType,
-  PageType,
   SongType,
 } from "@/src/constants/Types";
-import { checkForTrackNumber, getExportNumber, idgen } from "@/src/lib/util";
-import SongModel from "@/src/models/SongModel";
+import { checkForTrackNumber, idgen } from "@/src/lib/util";
 import { getAudioMetadata } from "@missingcore/audio-metadata";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
-import * as Sharing from "expo-sharing";
 import "react-native-get-random-values";
 import { getAlbumFromMetadata } from "@/src/controllers/AlbumController";
 import { getArtistsFromMetadata } from "@/src/controllers/ArtistController";
-import { isSongEdited, updateMetadata } from "@/src/controllers/SongController";
+import { exportSongs as exportSongsFromFeature } from "@/src/features/export/lib/export-songs";
 import { loadAudio } from "./AudioController";
 
 export const importFiles = async (
@@ -160,108 +157,7 @@ const processSong = async (
   };
 };
 
-export const exportSongs = async (songs: SongType[]) => {
-  const date = new Date();
-  const exportNumber = await getExportNumber();
-  const dir = `${FileSystem.documentDirectory}batch ${exportNumber}  -  ${date.getMonth()}.${date.getDate()}.${date.getFullYear()}`;
-  let destination;
-
-  await FileSystem.makeDirectoryAsync(dir);
-
-  // export single song
-  if (songs.length === 1) {
-    const song = songs[0];
-    if (song.pageType === PageType.IMPORT) {
-      if (!song.cacheUri) {
-        throw new Error("Import song is missing a cache URI");
-      }
-      const edited = await isSongEdited(song);
-      if (edited) {
-        await updateMetadata(song);
-        song.edited = false;
-      }
-      await Sharing.shareAsync(song.cacheUri);
-    } else {
-      try {
-        if (!song.fileName) {
-          throw new Error(`Library song ${song.id} has no fileName`);
-        }
-        const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
-        const edited = await isSongEdited(song);
-        if (edited) {
-          await updateMetadata(song);
-          if (!song.data) {
-            throw new Error(
-              `Library song ${song.id} has no audio data after metadata update`,
-            );
-          }
-          song.edited = false;
-          const db = SongModel.getInstance();
-          await db.songExported(song.id);
-          await FileSystem.writeAsStringAsync(audioPath, song.data, {
-            encoding: "base64",
-          });
-        }
-        await Sharing.shareAsync(audioPath);
-      } catch (error) {
-        console.log("error sharing song from library: ", error);
-        throw new Error("Error sharing song from library: " + error);
-      }
-    }
-  }
-  // export multiple songs
-  else if (songs.length > 1) {
-    const db = SongModel.getInstance();
-    for (let i = 0; i < songs.length; i++) {
-      const song = songs[i];
-      if (song.pageType === PageType.IMPORT) {
-        if (!song.cacheUri || !song.fileName) {
-          continue;
-        }
-        const edited = await isSongEdited(song);
-        if (edited) {
-          await updateMetadata(song);
-          song.edited = false;
-        }
-        destination = `${dir}/${song.fileName}`;
-        await FileSystem.copyAsync({
-          from: song.cacheUri,
-          to: destination,
-        });
-      } else {
-        try {
-          if (!song.fileName) {
-            continue;
-          }
-          const audioPath = `${FileSystem.documentDirectory}library/${song.id}/${song.fileName}`;
-          const edited = await isSongEdited(song);
-          if (edited) {
-            await updateMetadata(song);
-            if (!song.data) {
-              throw new Error(
-                `Library song ${song.id} has no audio data after metadata update`,
-              );
-            }
-            song.edited = false;
-            await db.songExported(song.id);
-            await FileSystem.writeAsStringAsync(audioPath, song.data, {
-              encoding: "base64",
-            });
-          }
-          await FileSystem.copyAsync({
-            from: audioPath,
-            to: `${dir}/${song.fileName}`,
-          });
-        } catch (error) {
-          console.log("error copying song from library: ", error);
-        }
-      }
-    }
-    await Sharing.shareAsync(dir);
-  }
-
-  await FileSystem.deleteAsync(dir);
-};
+export const exportSongs = exportSongsFromFeature;
 
 export const deleteImportSongs = async (songs: SongType[]) => {
   for (let i = 0; i < songs.length; i++) {

@@ -203,6 +203,8 @@ feature-oriented packages.
    - Export UI actions now import `exportSongs` from the export feature module
      instead of `ImportExportController`, leaving the metadata writer internals
      as the next export cleanup seam.
+   - `ImportExportController.exportSongs` is now a compatibility alias to the
+     export feature implementation instead of a duplicate export body.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

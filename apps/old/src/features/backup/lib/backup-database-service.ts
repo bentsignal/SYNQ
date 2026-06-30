@@ -1,6 +1,5 @@
-import Model from "@/src/models/Model";
+import { resetDatabaseConnection } from "@synq/db";
 
 export const resetBackupDatabaseConnection = async () => {
-  await Model.reconnect();
-  await Model.createTables();
+  await resetDatabaseConnection();
 };

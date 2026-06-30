@@ -46,8 +46,9 @@ feature-oriented packages.
 
 1. Stabilize database ownership.
    - `shared/db` now owns Drizzle schema, migrations, and database init.
-   - Retire legacy `Model.createTables()` / manual SQL setup after validating
-     backup and restore flows.
+   - Legacy `Model.createTables()` / manual SQL setup has been retired; backup
+     restore/erase now reopens the shared Drizzle database connection and runs
+     migrations.
    - Audit legacy models for writes to removed columns such as `artists`,
      `album`, `genre`, `fileName`, and `edited`.
 
@@ -244,8 +245,10 @@ feature-oriented packages.
    - Unreferenced legacy `AlbumModel`, `ArtistModel`, and `PlaylistModel`
      files have been removed.
    - Song edited/export compatibility now uses the Drizzle-backed library song
-     snapshot instead of legacy `SongModel`; remaining model compatibility is
-     limited to backup database reset/setup.
+     snapshot instead of legacy `SongModel`.
+   - Backup restore/erase database reset now uses the shared `@synq/db` reset
+     helper instead of the legacy `Model`; `apps/old/src/models` has been
+     removed.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

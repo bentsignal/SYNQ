@@ -199,15 +199,16 @@ feature-oriented packages.
    - Done: import flow state now lives in
      `apps/old/src/features/import/context/ImportFlowProvider.tsx` instead of
      `GlobalProvider`.
-   - Next safe slice: continue extracting playback orchestration from the home
-     screen. Avoid import results and edit targets until their owning feature
-     boundaries are clearer.
+   - In progress: playback orchestration is moving out of the home screen into
+     feature hooks. Avoid import results and edit targets until their owning
+     feature boundaries are clearer.
 
 6. Extract playback orchestration.
-   - `apps/old/app/(tabs)/index.tsx` still coordinates player setup, ad timing,
-     import entrypoints, and UI.
-   - Move playback and ad timing into hooks/services before rebuilding the home
-     screen in `apps/new`.
+   - Done: home playback side effects now live in
+     `apps/old/src/features/playback/hooks/use-home-playback-effects.ts`
+     instead of directly inside `apps/old/app/(tabs)/index.tsx`.
+   - Next safe slice: split `use-home-playback-effects.ts` into focused hooks
+     for player persistence, ad timing, and remote event handling.
 
 7. Build feature-first app structure.
    - Prefer `features/<domain>/{components,hooks,queries,repository,effects}`.

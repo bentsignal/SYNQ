@@ -60,6 +60,14 @@ export const resetPlaybackQueue = async () => {
   await TrackPlayer.reset();
 };
 
+export const playPlayback = async () => {
+  await TrackPlayer.play();
+};
+
+export const pausePlayback = async () => {
+  await TrackPlayer.pause();
+};
+
 export const seekToPlaybackPosition = async (position: number) => {
   await TrackPlayer.seekTo(position);
 };

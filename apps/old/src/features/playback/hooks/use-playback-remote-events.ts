@@ -5,11 +5,7 @@ import { useNotificationsContext } from "@/src/features/notifications/context/No
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { useAdGatedPlaybackCommand } from "@/src/features/playback/hooks/use-ad-gated-playback-command";
 import usePlayer from "@/src/features/playback/hooks/use-player";
-import TrackPlayer, {
-  Event,
-  type Track,
-  useTrackPlayerEvents,
-} from "react-native-track-player";
+import { Event, type Track, useTrackPlayerEvents } from "react-native-track-player";
 
 type PlaybackRemoteEventsParams = {
   track?: Track;
@@ -23,7 +19,15 @@ export const usePlaybackRemoteEvents = ({
     useNotificationsContext();
   const { adPlaying } = usePlaybackAdContext();
   const { runAdGatedPlaybackCommand } = useAdGatedPlaybackCommand();
-  const { skipLeft, skipRight, updateQueue } = usePlayer();
+  const {
+    pausePlayer,
+    playPlayer,
+    resetPlayer,
+    seekToPosition,
+    skipLeft,
+    skipRight,
+    updateQueue,
+  } = usePlayer();
 
   const { shuffle, loop, sourceType, sourceId, sort, order, query } =
     usePlaybackContext();
@@ -41,10 +45,10 @@ export const usePlaybackRemoteEvents = ({
     (event) => {
       switch (event.type) {
         case Event.RemotePlay:
-          TrackPlayer.play();
+          void playPlayer();
           break;
         case Event.RemotePause:
-          TrackPlayer.pause();
+          void pausePlayer();
           break;
         case Event.RemoteNext:
           runAdGatedPlaybackCommand({ command: skipRight });
@@ -54,7 +58,7 @@ export const usePlaybackRemoteEvents = ({
           break;
         case Event.RemoteSeek:
           if (!adPlaying) {
-            TrackPlayer.seekTo(event.position);
+            void seekToPosition(event.position);
           }
           break;
         case Event.PlaybackQueueEnded:
@@ -73,7 +77,7 @@ export const usePlaybackRemoteEvents = ({
           break;
         case Event.PlaybackError:
           console.log("playback error: ", event);
-          TrackPlayer.reset();
+          void resetPlayer();
           const name = track?.title || "Unknown Song";
           addNotification(
             NotificationType.ERROR,

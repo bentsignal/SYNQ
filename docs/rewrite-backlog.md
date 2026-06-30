@@ -282,6 +282,9 @@ feature-oriented packages.
      queue scans/removals.
    - Done: backup erase/reset now calls `usePlayer().resetPlayer`; no
      `app` or generic `components` files import TrackPlayer directly.
+   - Done: remote playback play/pause/seek/reset commands now call
+     `usePlayer()` actions instead of importing the concrete TrackPlayer
+     command object in the remote-event hook.
    - Next safe slice: continue moving remaining TrackPlayer calls in UI
      components behind playback feature APIs.
 

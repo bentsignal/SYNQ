@@ -59,6 +59,9 @@ feature-oriented packages.
    - Album library refresh has started. `Albums.tsx` now reads from
      `useLibraryAlbumsQuery` instead of listening for `ALBUM_CREATED`,
      `ALBUM_DELETED`, `ALBUM_MODIFIED`, or `PLAYLIST_SONGS_IMPORTED`.
+   - Artist library refresh has started. `Artists.tsx` now reads from
+     `useLibraryArtistsQuery` instead of listening for `ARTIST_CREATED`,
+     `ARTIST_DELETED`, `ARTIST_MODIFIED`, or `PLAYLIST_SONGS_IMPORTED`.
    - Next target: remove import-only metadata listeners from `Song.tsx` with a
      typed import edit store.
 
@@ -129,8 +132,10 @@ feature-oriented packages.
      `ALBUM_REORDERED`.
 
 4. Artist:
-   - Add artist list/detail/relation/image queries over `artists`,
-     `artistSongs`, and `artistsAlbums`.
+   - Done: add `useLibraryArtistsQuery` for the list-level library artist
+     screen.
+   - Add artist detail/relation/image queries over `artists`, `artistSongs`,
+     and `artistsAlbums`.
    - Replace artist edit/list/detail listeners.
 
 5. Import command bus:

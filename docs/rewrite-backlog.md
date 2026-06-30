@@ -165,6 +165,10 @@ feature-oriented packages.
      artist/album controllers.
    - Player and playback queue display song hydration now reads through the
      Drizzle-backed library song repository instead of `SongController`.
+   - Library song cover resolution now lives in the Drizzle-backed song
+     repository and is shared by playback track creation, mini player, player
+     edit, song edit, and song sheets instead of routing through
+     `SongController` cover helpers.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

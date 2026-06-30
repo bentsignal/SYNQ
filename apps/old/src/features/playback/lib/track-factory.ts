@@ -1,8 +1,7 @@
 import { getAppIcon } from "@/src/constants/Logos";
 import { SongType } from "@/src/constants/Types";
-import { getAlbumCoverFromSong } from "@/src/controllers/AlbumController";
-import { getSongCover } from "@/src/controllers/ImageController";
-import { getFileName, check } from "@/src/lib/util";
+import { getLibrarySongCoverPath } from "@/src/features/library/repository/library-song-repository";
+import { getFileName } from "@/src/lib/util";
 import * as FileSystem from "expo-file-system";
 import "react-native-get-random-values";
 import { Track } from "react-native-track-player";
@@ -18,13 +17,7 @@ export const getTrackFromSong = async (
     }
 
     const libraryPath = `${FileSystem.documentDirectory}library/${song.id}`;
-    let coverPath: string | null | undefined = await getAlbumCoverFromSong(
-      song.id,
-      true,
-    );
-    if (!check(coverPath)) {
-      coverPath = await getSongCover(song.id, true);
-    }
+    const coverPath = await getLibrarySongCoverPath(song.id, true);
     const audioPath = `${libraryPath}/${song.fileName}`;
     return {
       id: song.id,

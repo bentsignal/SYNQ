@@ -298,6 +298,42 @@ export const getLibrarySongById = async (
   return rowsToSongs(rows, pageType)[0] ?? null;
 };
 
+export const getLibrarySongCoverPath = async (
+  songId: number,
+  full: boolean = false,
+) => {
+  const albumRows = await db
+    .select({
+      coverImage: schema.albums.coverImage,
+    })
+    .from(schema.albumSongs)
+    .innerJoin(schema.albums, eq(schema.albumSongs.albumId, schema.albums.id))
+    .where(eq(schema.albumSongs.songId, songId));
+
+  const albumCoverHash = albumRows.find(
+    ({ coverImage }) => coverImage,
+  )?.coverImage;
+  if (albumCoverHash) {
+    const paths = getImagePathFromHash(albumCoverHash);
+    return full ? paths.pathToFullImage : paths.pathToSmallImage;
+  }
+
+  const songRows = await db
+    .select({
+      coverImage: schema.songs.coverImage,
+    })
+    .from(schema.songs)
+    .where(eq(schema.songs.id, songId));
+
+  const songCoverHash = songRows[0]?.coverImage;
+  if (!songCoverHash) {
+    return null;
+  }
+
+  const paths = getImagePathFromHash(songCoverHash);
+  return full ? paths.pathToFullImage : paths.pathToSmallImage;
+};
+
 export const getLibrarySongAlbums = async (songId: number) => {
   const rows = await db
     .select({

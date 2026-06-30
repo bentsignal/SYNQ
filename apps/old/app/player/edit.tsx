@@ -8,7 +8,7 @@ import SongInfo from "@/src/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
 import { CoverType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import { getLibrarySongCover } from "@/src/controllers/SongController";
+import { getLibrarySongCoverPath } from "@/src/features/library/repository/library-song-repository";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -26,7 +26,7 @@ const PlayerSongEdit = () => {
   const loadCover = async () => {
     try {
       if (editSong.id) {
-        const cover = await getLibrarySongCover(editSong.id);
+        const cover = await getLibrarySongCoverPath(editSong.id);
         if (cover) {
           setCoverImage(cover);
           setEmptyCover(false);

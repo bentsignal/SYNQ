@@ -5,7 +5,7 @@ import SheetStyles from "@/src/components/sheet/Styles";
 import SongInfo from "@/src/components/song/SongInfo";
 import { CoverType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import { getLibrarySongCover } from "@/src/controllers/SongController";
+import { getLibrarySongCoverPath } from "@/src/features/library/repository/library-song-repository";
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 import SongOptions from "./SongOptions";
 
@@ -35,7 +35,7 @@ export default function ImportSongSheet({ name }: SongSheetProps) {
         setCoverImage(editSong.artwork);
         setEmptyCover(false);
       } else {
-        const cover = await getLibrarySongCover(editSong.id);
+        const cover = await getLibrarySongCoverPath(editSong.id);
         if (cover) {
           setCoverImage(cover);
           setEmptyCover(false);

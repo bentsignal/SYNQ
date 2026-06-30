@@ -19,13 +19,10 @@ import { pickCoverImage } from "@/src/features/images/repository/image-repositor
 import {
   getLibrarySongAlbums,
   getLibrarySongArtists,
+  getLibrarySongCoverPath,
 } from "@/src/features/library/repository/library-song-repository";
 import { updateSongsInLibrary } from "@/src/controllers/LibraryController";
-import {
-  getImportSongCover,
-  getLibrarySongCover,
-  saveEdits,
-} from "@/src/controllers/SongController";
+import { getImportSongCover, saveEdits } from "@/src/controllers/SongController";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { getDurationString } from "@/src/lib/util";
@@ -78,7 +75,7 @@ const EditSong = ({ id }: { id: number }) => {
       const cover = await getImportSongCover(editSong);
       setImage(cover ?? "");
     } else {
-      const cover = await getLibrarySongCover(id, true);
+      const cover = await getLibrarySongCoverPath(id, true);
       setImage(cover ?? "");
     }
   }, [editSong, id]);

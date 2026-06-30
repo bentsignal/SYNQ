@@ -6,8 +6,8 @@ import SongInfo from "@/src/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType } from "@/src/constants/Types";
+import { getLibrarySongCoverPath } from "@/src/features/library/repository/library-song-repository";
 import { getTrackArtwork } from "@/src/features/playback/lib/track-factory";
-import { getLibrarySongCover } from "@/src/controllers/SongController";
 import { getFileName } from "@/src/lib/util";
 import { useAssets } from "expo-asset";
 import { router } from "expo-router";
@@ -44,7 +44,13 @@ const MiniPlayer = () => {
 
   const loadCover = async () => {
     try {
-      const cover = await getLibrarySongCover(track?.id);
+      if (track?.id === undefined) {
+        setCoverImage("");
+        setEmptyCover(true);
+        return;
+      }
+
+      const cover = await getLibrarySongCoverPath(Number(track.id));
       if (cover) {
         setCoverImage(cover);
         setEmptyCover(false);

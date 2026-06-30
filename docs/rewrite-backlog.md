@@ -175,6 +175,9 @@ feature-oriented packages.
    - Import song edit saves now run through the import feature helper with
      hash-backed album cover updates, removing the final app-level
      `SongController` import.
+   - Playlist membership checks and mutations now use the Drizzle-backed
+     library entity repository from song options, import controls, and playlist
+     rows instead of `PlaylistController`.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

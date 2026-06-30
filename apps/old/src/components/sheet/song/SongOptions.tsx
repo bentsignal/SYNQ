@@ -6,11 +6,11 @@ import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { exportSongs } from "@/src/controllers/ImportExportController";
 import { deleteFromLibrary } from "@/src/controllers/LibraryController";
 import {
-  addToPlaylist,
-  isSongInPlaylist,
-  removeFromAllPlaylists,
-  removeFromPlaylist,
-} from "@/src/controllers/PlaylistController";
+  addSongToLibraryPlaylist,
+  isSongInLibraryPlaylist,
+  removeSongFromAllLibraryPlaylists,
+  removeSongFromLibraryPlaylist,
+} from "@/src/features/library/repository/library-entity-repository";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import usePlayer from "@/src/features/playback/hooks/use-player";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
@@ -69,7 +69,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
   const actionDelay = 10;
 
   const refreshinLiked = async (songId: number) => {
-    const liked = await isSongInPlaylist(2, songId);
+    const liked = await isSongInLibraryPlaylist(2, songId);
     setinLiked(liked);
   };
 
@@ -121,7 +121,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
     }
     // remove from library
     else if (editSong.pageType === PageType.LIBRARY) {
-      await removeFromAllPlaylists(editSong.id);
+      await removeSongFromAllLibraryPlaylists(editSong.id);
       await deleteFromLibrary(editSong.id);
       await removeSongsFromQueue([editSong.id]);
       setNumModified(numModified + 1);
@@ -175,7 +175,7 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
       if (editSong.sourceId === undefined) {
         return;
       }
-      await removeFromPlaylist(editSong.sourceId, editSong.id);
+      await removeSongFromLibraryPlaylist(editSong.sourceId, editSong.id);
     } catch (error) {
       console.log("error removing from playlist: ", error);
     }
@@ -186,10 +186,10 @@ const SongOptions = ({ name, library = false }: SongOptionsProps) => {
     TrueSheet.dismiss(name);
     try {
       if (inLiked) {
-        await removeFromPlaylist(2, editSong.id);
+        await removeSongFromLibraryPlaylist(2, editSong.id);
         setinLiked(false);
       } else {
-        await addToPlaylist(2, editSong.id);
+        await addSongToLibraryPlaylist(2, editSong.id);
         setinLiked(true);
       }
     } catch (error) {

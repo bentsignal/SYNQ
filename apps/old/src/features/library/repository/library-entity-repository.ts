@@ -221,6 +221,73 @@ export const deleteLibraryPlaylist = async (id: number) => {
   await db.delete(schema.playlists).where(eq(schema.playlists.id, id));
 };
 
+export const addSongToLibraryPlaylist = async (
+  playlistId: number,
+  songId: number,
+) => {
+  await db.insert(schema.playlistSongs).values({
+    playlistId,
+    songId,
+  });
+};
+
+export const removeSongFromLibraryPlaylist = async (
+  playlistId: number,
+  songId: number,
+) => {
+  await db
+    .delete(schema.playlistSongs)
+    .where(
+      and(
+        eq(schema.playlistSongs.playlistId, playlistId),
+        eq(schema.playlistSongs.songId, songId),
+      ),
+    );
+};
+
+export const removeSongFromAllLibraryPlaylists = async (songId: number) => {
+  await db
+    .delete(schema.playlistSongs)
+    .where(eq(schema.playlistSongs.songId, songId));
+};
+
+export const isSongInLibraryPlaylist = async (
+  playlistId: number,
+  songId: number,
+) => {
+  const rows = await db
+    .select({ id: schema.playlistSongs.id })
+    .from(schema.playlistSongs)
+    .where(
+      and(
+        eq(schema.playlistSongs.playlistId, playlistId),
+        eq(schema.playlistSongs.songId, songId),
+      ),
+    )
+    .limit(1);
+
+  return rows.length > 0;
+};
+
+export const getLibraryPlaylistCoverPath = async (
+  playlistId: number,
+  full: boolean = false,
+) => {
+  const rows = await db
+    .select({ coverImage: schema.playlists.coverImage })
+    .from(schema.playlists)
+    .where(eq(schema.playlists.id, playlistId))
+    .limit(1);
+
+  const coverImage = rows[0]?.coverImage;
+  if (!coverImage) {
+    return null;
+  }
+
+  const paths = getImagePathFromHash(coverImage);
+  return full ? paths.pathToFullImage : paths.pathToSmallImage;
+};
+
 export const createLibraryAlbum = async (
   name: string,
   year?: number,

@@ -6,11 +6,11 @@ import { Styles } from "@/src/constants/Styles";
 import { CoverType, PageType, PlaylistType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import {
-  addToPlaylist,
-  getPlaylistCover,
-  isSongInPlaylist,
-  removeFromPlaylist,
-} from "@/src/controllers/PlaylistController";
+  addSongToLibraryPlaylist,
+  getLibraryPlaylistCoverPath,
+  isSongInLibraryPlaylist,
+  removeSongFromLibraryPlaylist,
+} from "@/src/features/library/repository/library-entity-repository";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import colors from "@/src/lib/colors";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
@@ -32,7 +32,7 @@ const PlaylistItem = ({ playlist, bg }: PlaylistProps) => {
 
   const loadFallbackCover = useCallback(async () => {
     try {
-      const cover = await getPlaylistCover(playlist.id);
+      const cover = await getLibraryPlaylistCoverPath(playlist.id);
       setFallbackCoverImage(cover ?? "");
     } catch (error) {
       console.log("error loading playlist cover:", error);
@@ -42,9 +42,9 @@ const PlaylistItem = ({ playlist, bg }: PlaylistProps) => {
   const playlistChangesMade = async (add: boolean) => {
     try {
       if (add) {
-        await addToPlaylist(playlist.id, editSong.id);
+        await addSongToLibraryPlaylist(playlist.id, editSong.id);
       } else {
-        await removeFromPlaylist(playlist.id, editSong.id);
+        await removeSongFromLibraryPlaylist(playlist.id, editSong.id);
       }
     } catch (error) {
       console.log("error saving playlist changes: ", error);
@@ -61,7 +61,7 @@ const PlaylistItem = ({ playlist, bg }: PlaylistProps) => {
 
   useEffect(() => {
     if (editSong.id && playlist.pageType === PageType.ADD) {
-      isSongInPlaylist(playlist.id, editSong.id)
+      isSongInLibraryPlaylist(playlist.id, editSong.id)
         .then((result) => {
           setSelected(result);
         })

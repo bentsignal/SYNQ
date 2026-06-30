@@ -16,8 +16,8 @@ import {
   deleteImagesFromDirectory,
   writeImageToLibrary,
 } from "@/src/controllers/ImageController";
-import { db } from "@/src/db";
-import * as schema from "@/src/db/schema";
+import { db } from "@synq/db";
+import * as schema from "@synq/db/schema";
 import albumBus from "@/src/events/album/Bus";
 import { AlbumBusEvent } from "@/src/events/album/Events";
 import { eq } from "drizzle-orm";

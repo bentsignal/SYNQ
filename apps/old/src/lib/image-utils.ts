@@ -4,8 +4,8 @@ import * as FileSystem from "expo-file-system";
 import { SaveFormat } from "expo-image-manipulator";
 import * as ImageManipulator from "expo-image-manipulator";
 import { Image } from "react-native";
-import { db } from "../db";
-import { images } from "../db/schema";
+import { db } from "@synq/db";
+import { images } from "@synq/db/schema";
 
 const imageDirectory = `${FileSystem.documentDirectory}images`;
 

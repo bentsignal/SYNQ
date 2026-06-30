@@ -4,8 +4,14 @@ import { Data, Effect } from "effect";
 import * as Crypto from "expo-crypto";
 import { DocumentPickerAsset } from "expo-document-picker";
 import * as DocumentPicker from "expo-document-picker";
-import { db } from "../db";
-import { albums, albumSongs, artists, artistSongs, songs } from "../db/schema";
+import { db } from "@synq/db";
+import {
+  albums,
+  albumSongs,
+  artists,
+  artistSongs,
+  songs,
+} from "@synq/db/schema";
 import { getAudioDurationFromFile } from "./audio-utils";
 import { saveCoverImage } from "./image-utils";
 

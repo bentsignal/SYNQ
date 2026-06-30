@@ -14,11 +14,12 @@
     "build-dev": "eas build -p ios --profile development --local",
     "build-dev-client": "eas build -p ios --profile development-client --local",
     "build-prod": "eas build -p ios --local",
-    "migrate": "drizzle-kit generate",
+    "migrate": "pnpm --filter @synq/db migrate",
     "android": "expo run:android",
     "ios": "expo run:ios"
   },
   "dependencies": {
+    "@synq/db": "workspace:*",
     "@babel/runtime": "^7.28.4",
     "@expo/vector-icons": "^14.0.4",
     "@killerwink/lottie-react-native-color": "^1.0.2",

@@ -22,8 +22,8 @@ import {
   getLibrarySongCover,
   isSongEdited,
 } from "@/src/controllers/SongController";
-import { db } from "@/src/db";
-import * as schema from "@/src/db/schema";
+import { db } from "@synq/db";
+import * as schema from "@synq/db/schema";
 import albumBus from "@/src/events/album";
 import {
   AlbumBusEvent,

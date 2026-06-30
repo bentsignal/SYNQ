@@ -9,8 +9,8 @@ import {
   SourceType,
 } from "@/src/constants/Types";
 import { getPlaylistSongs } from "@/src/controllers/PlaylistController";
-import { db } from "@/src/db";
-import * as schema from "@/src/db/schema";
+import { db } from "@synq/db";
+import * as schema from "@synq/db/schema";
 import playlistBus from "@/src/events/playlist/Bus";
 import { PlaylistBusEvent } from "@/src/events/playlist/Events";
 import songBus from "@/src/events/song/Bus";

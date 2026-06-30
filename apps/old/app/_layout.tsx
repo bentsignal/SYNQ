@@ -13,7 +13,7 @@ import { LogBox } from "react-native";
 import { Settings } from "react-native-fbsdk-next";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../globals.css";
-import { useInitDB } from "@/src/db";
+import { useInitDB } from "@synq/db";
 import { useFont } from "@/src/hooks/use-font";
 import { useHaptics } from "@/src/hooks/use-haptics";
 

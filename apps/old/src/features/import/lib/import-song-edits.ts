@@ -5,7 +5,7 @@ import {
   updateLibraryAlbum,
 } from "@/src/features/library/repository/library-entity-repository";
 import { getLibraryAlbumSongs } from "@/src/features/library/repository/library-song-repository";
-import SongModel from "@/src/models/SongModel";
+import { flagLibrarySongAsEdited } from "@/src/features/library/repository/song-metadata-repository";
 import * as FileSystem from "expo-file-system";
 
 const uniqueArtistsById = (artists: ArtistType[]) => {
@@ -154,13 +154,13 @@ export const saveImportSongEdits = async ({
         image: artwork,
       });
 
-      await SongModel.getInstance().flagSongAsEdited(song.id);
+      await flagLibrarySongAsEdited(song.id);
       const albumSongs = await getLibraryAlbumSongs({
         albumId: importAlbum.id,
       });
       for (const albumSong of albumSongs) {
         if (albumSong.id !== song.id) {
-          await SongModel.getInstance().flagSongAsEdited(albumSong.id);
+          await flagLibrarySongAsEdited(albumSong.id);
         }
       }
     } else {

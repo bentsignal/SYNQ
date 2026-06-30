@@ -1,5 +1,6 @@
 import { InfoType, PageType, SongType, TagsType } from "@/src/constants/Types";
 import { getSongByResult } from "@/src/features/library/lib/song-result-mapper";
+import { flagLibrarySongAsEdited } from "@/src/features/library/repository/song-metadata-repository";
 import SongModel from "@/src/models/SongModel";
 import * as FileSystem from "expo-file-system";
 import { fromByteArray, toByteArray } from "react-native-quick-base64";
@@ -275,7 +276,8 @@ export const getImportSongCover = async (song: SongType) => {
 };
 
 export const flagSongAsEdited = async (id: number) => {
-  return await SongModel.getInstance().flagSongAsEdited(id);
+  await flagLibrarySongAsEdited(id);
+  return true;
 };
 
 const checkField = (oldValue?: string, newValue?: string) => {

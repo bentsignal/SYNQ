@@ -3,6 +3,7 @@ import {
   getLibraryAlbumFromMetadata,
   getLibraryArtistsFromMetadata,
 } from "@/src/features/library/repository/library-entity-repository";
+import SongModel from "@/src/models/SongModel";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
@@ -106,6 +107,10 @@ export const updateLibrarySongCover = async (songId: number, cover: string) => {
     .update(schema.songs)
     .set({ coverImage })
     .where(eq(schema.songs.id, songId));
+};
+
+export const flagLibrarySongAsEdited = async (songId: number) => {
+  await SongModel.getInstance().flagSongAsEdited(songId);
 };
 
 export const updateLibrarySongs = async ({

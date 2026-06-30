@@ -1,9 +1,9 @@
 import { AlbumType, SongType, SortOrder, SortType } from "@/src/constants/Types";
 import { getSongByResult } from "@/src/features/library/lib/song-result-mapper";
+import { flagLibrarySongAsEdited } from "@/src/features/library/repository/song-metadata-repository";
 import AlbumModel from "@/src/models/AlbumModel";
 import { writeImageToLibrary } from "@/src/features/images/repository/image-repository";
 import * as FileSystem from 'expo-file-system';
-import { flagSongAsEdited } from "./SongController";
 import { saveCoverImage } from "@/src/lib/image-utils";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
@@ -114,7 +114,7 @@ export const updateAlbum = async (
     }
     const albumSongs = await getSongsFromAlbum(albumId);
     albumSongs.forEach(song => {
-      flagSongAsEdited(song.id);
+      flagLibrarySongAsEdited(song.id);
     });
   }
 }

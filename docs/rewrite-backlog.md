@@ -225,6 +225,9 @@ feature-oriented packages.
      library song repository instead of importing album/artist controllers.
    - Legacy song-result mapping now lives in the library feature layer instead
      of being exported from `SongController` for other controllers to reuse.
+   - Song edit-flag writes now go through a library metadata repository
+     compatibility helper, removing `AlbumController` and import edit helpers
+     from direct `SongController`/`SongModel` calls for that mutation.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

@@ -26,6 +26,14 @@ type MappedSong = SongType & {
   albumCoverImage?: string | null;
 };
 
+type CreateLibrarySongFromImportInput = {
+  title: string;
+  duration: number;
+  fileType: string;
+  originalFileName: string;
+  pathToFile: string;
+};
+
 const normalizeQuery = (query?: string) => query?.trim().toLowerCase() ?? "";
 
 const compareText = (first?: string, second?: string) =>
@@ -333,6 +341,35 @@ export const getLibrarySongCoverPath = async (
 
   const paths = getImagePathFromHash(songCoverHash);
   return full ? paths.pathToFullImage : paths.pathToSmallImage;
+};
+
+export const createLibrarySongFromImport = async ({
+  title,
+  duration,
+  fileType,
+  originalFileName,
+  pathToFile,
+}: CreateLibrarySongFromImportInput) => {
+  const insertResult = await db.insert(schema.songs).values({
+    title,
+    duration,
+    fileType,
+    originalFileName,
+    pathToFile,
+    ingestComplete: 1,
+  });
+
+  return insertResult.lastInsertRowId;
+};
+
+export const updateLibrarySongFilePath = async (
+  songId: number,
+  pathToFile: string,
+) => {
+  await db
+    .update(schema.songs)
+    .set({ pathToFile })
+    .where(eq(schema.songs.id, songId));
 };
 
 export const deleteLibrarySong = async (songId: number) => {

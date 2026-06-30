@@ -93,6 +93,8 @@ const assertUniqueAlbumNameForUpdate = async (
   }
 };
 
+export const LIBRARY_PLAYLIST_ID = 1;
+
 export const createLibraryArtist = async (name: string, image?: string) => {
   const cleanName = name.trim();
 
@@ -292,6 +294,11 @@ export const addSongToLibraryPlaylist = async (
   playlistId: number,
   songId: number,
 ) => {
+  const exists = await isSongInLibraryPlaylist(playlistId, songId);
+  if (exists) {
+    return;
+  }
+
   await db.insert(schema.playlistSongs).values({
     playlistId,
     songId,

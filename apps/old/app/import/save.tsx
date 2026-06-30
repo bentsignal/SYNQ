@@ -6,9 +6,9 @@ import { Styles } from "@/src/constants/Styles";
 import { usePremiumContext } from "@/src/context/PremiumProvider";
 import { useThemeContext } from "@/src/context/ThemeProvider";
 import { deleteImportSongs } from "@/src/controllers/ImportExportController";
-import { saveToLibrary } from "@/src/controllers/LibraryController";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
+import { saveImportSongsToLibrary } from "@/src/features/import/lib/save-import-to-library";
 import { useHaptics } from "@/src/hooks/use-haptics";
 import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -142,7 +142,7 @@ const SavePrompt = () => {
         // TODO: Implement progress
       };
       setTimeout(() => {
-        saveToLibrary(songs, progress)
+        saveImportSongsToLibrary(songs, progress)
           .then(() => {
             sendHaptic("success");
             router.replace("/import/success");

@@ -190,6 +190,9 @@ feature-oriented packages.
      batch update instead of `LibraryController.updateSongsInLibrary`.
    - Color helpers now live in `src/lib/color-utils`, with UI/app imports moved
      off `ColorController` and the old controller kept as a compatibility shim.
+   - Import save-to-library now runs through a feature-level import library
+     saver with Drizzle-backed song creation, playlist/album/artist joins, and
+     repository cover updates instead of `LibraryController.saveToLibrary`.
    - Album edit artist relation refresh now keys off focus refresh and
      `editAlbum` context updates from add/remove rows instead of
      `ARTIST_TOGGLED_ON_ALBUM`.

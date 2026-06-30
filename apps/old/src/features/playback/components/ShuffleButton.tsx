@@ -1,8 +1,7 @@
-import { View, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useState, useEffect } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { useActiveTrack } from "react-native-track-player";
-import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import usePlayer from "@/src/features/playback/hooks/use-player";
@@ -33,7 +32,7 @@ const ShuffleButton = ({ primary, useBG }: ShuffleButtonProps) => {
         await updateQueue(id, newValue, sourceType, sourceId);
       }
     } 
-    catch (error) {
+    catch {
       setShuffle(previous);
       setLocalState(previous);
       await AsyncStorage.setItem('shuffle', previous.toString());
@@ -44,7 +43,7 @@ const ShuffleButton = ({ primary, useBG }: ShuffleButtonProps) => {
     if (shuffle !== localState) {
       setLocalState(shuffle);
     }
-  }, [shuffle]);
+  }, [localState, shuffle]);
 
   return (
     <TouchableOpacity

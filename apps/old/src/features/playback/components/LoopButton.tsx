@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { TouchableOpacity, StyleSheet, Image } from "react-native";
 import { useState, useEffect } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
@@ -24,7 +24,7 @@ const LoopButton = ({ primary, useBG }: LoopButtonProps) => {
       setLocalState(newValue);
       setLoop(newValue);
       await AsyncStorage.setItem('loop', newValue.toString());
-    } catch (error) {
+    } catch {
       setLoop(previous);
       setLocalState(previous);
       await AsyncStorage.setItem('loop', previous.toString());

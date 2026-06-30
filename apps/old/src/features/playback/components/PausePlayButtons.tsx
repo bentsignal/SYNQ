@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
 import usePlayer from "@/src/features/playback/hooks/use-player";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
@@ -26,11 +26,13 @@ const PausePlayButtons = ({
   const [currentState, setCurrentState] = useState(
     playbackState.state ?? State.None,
   );
-  const [previousState, setPreviousState] = useState(State.Playing);
+  const previousState = useRef(State.Playing);
 
   useEffect(() => {
-    setPreviousState(currentState);
-    setCurrentState(playbackState.state ?? State.None);
+    setCurrentState((state) => {
+      previousState.current = state;
+      return playbackState.state ?? State.None;
+    });
   }, [playbackState.state]);
 
   const togglePlayback = async () => {
@@ -45,7 +47,7 @@ const PausePlayButtons = ({
   const getButton = () => {
     if (
       [State.Paused, State.Ready].includes(currentState) &&
-      ![State.Loading, State.Buffering].includes(previousState)
+      ![State.Loading, State.Buffering].includes(previousState.current)
     ) {
       return <PlayButton size={playSize} color={color} />;
     } else {

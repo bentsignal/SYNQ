@@ -1,4 +1,4 @@
-import { TouchableOpacity, View, StyleSheet, Text } from "react-native";
+import { TouchableOpacity, View, StyleSheet } from "react-native";
 import { Colors } from "@/src/constants/Colors";
 import { router } from "expo-router";
 

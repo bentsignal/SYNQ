@@ -496,6 +496,9 @@ feature-oriented packages.
    - Done: shared playback buttons, mini-player, skip controls, and time scrub
      UI now live in `apps/old/src/features/playback/components`; the generic
      `src/components/player` folder has been removed.
+   - Done: playback toggle buttons no longer carry stale imports or stale
+     state-effect dependencies; pause/play previous-state tracking now uses a
+     ref instead of extra render state.
    - Done: player artwork crossfade UI now lives in
      `apps/old/src/features/playback/components/CrossfadeImage.tsx` instead of
      the generic `src/components/image` folder.

@@ -157,7 +157,7 @@ feature-oriented packages.
 
 4. Split ingest/media.
    - Current checkpoint files: `apps/old/src/features/ingest`,
-     `apps/old/src/lib/image-utils.ts`, and `shared/audio`.
+     `apps/old/src/features/images`, and `shared/audio`.
    - `shared/audio` now owns reusable audio duration, metadata, supported file
      types, and track-number parsing used by the ingest workflow.
    - Done: move file-browser selection, Effect/Zustand ingest workflow, and
@@ -165,9 +165,12 @@ feature-oriented packages.
    - Done: keep `apps/old/src/lib/ingest.ts` and
      `apps/old/src/hooks/use-ingest.ts` as compatibility shims while callers
      migrate to the feature path.
-   - Keep image persistence in `apps/old/src/lib/image-utils.ts` until the
-     library hooks and legacy controllers have a shared image repository
-     boundary.
+   - Done: move hashed cover image persistence and path helpers into
+     `apps/old/src/features/images/repository/image-repository.ts`, with
+     `apps/old/src/lib/image-utils.ts` kept as a legacy controller shim.
+   - Keep legacy cover-folder writes in `ImageController` and the legacy
+     entity controllers until their filesystem/database writes can move behind
+     feature repositories.
    - Future target packages/folders: `shared/db` repositories and
      `apps/new/src/features/ingest`.
    - Keep Effect at workflow boundaries; keep UI state minimal and observable.
@@ -176,6 +179,10 @@ feature-oriented packages.
    - `apps/old/src/context/GlobalProvider.js` owns too many concerns.
    - Split into notifications, selections, sheets, ads, and ingest/import state.
    - Prefer typed hooks/stores with narrow ownership.
+   - Next safe slice: extract global loading/progress state
+     (`showGlobalLoading`, `showGlobalProgress`, `globalProgress`, and likely
+     `showImportAd`) into an app-shell/progress provider before touching
+     selected songs, import results, edit targets, or notifications.
 
 6. Extract playback orchestration.
    - `apps/old/app/(tabs)/index.tsx` still coordinates player setup, ad timing,

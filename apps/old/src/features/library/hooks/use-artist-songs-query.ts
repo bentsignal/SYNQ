@@ -5,7 +5,7 @@ import {
   SortOrder,
   SortType,
 } from "@/src/constants/Types";
-import { getImagePathFromHash } from "@/src/lib/image-utils";
+import { getImagePathFromHash } from "@/src/features/images/repository/image-repository";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";

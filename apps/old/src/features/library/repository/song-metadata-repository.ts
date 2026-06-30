@@ -1,6 +1,6 @@
 import { getAlbumFromMetadata } from "@/src/controllers/AlbumController";
 import { getArtistsFromMetadata } from "@/src/controllers/ArtistController";
-import { saveCoverImage } from "@/src/lib/image-utils";
+import { saveCoverImage } from "@/src/features/images/repository/image-repository";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";

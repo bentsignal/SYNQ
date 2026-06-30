@@ -9,7 +9,7 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { getImagePathFromHash } from "@/src/lib/image-utils";
+import { getImagePathFromHash } from "@/src/features/images/repository/image-repository";
 
 type LibrarySongQueryOptions = {
   playlistId?: number;

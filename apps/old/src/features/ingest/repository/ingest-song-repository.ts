@@ -14,7 +14,7 @@ import {
 import { eq, inArray } from "drizzle-orm";
 import * as Crypto from "expo-crypto";
 import { DocumentPickerAsset } from "expo-document-picker";
-import { saveCoverImage } from "@/src/lib/image-utils";
+import { saveCoverImage } from "@/src/features/images/repository/image-repository";
 
 export const createIngestedSongFromAsset = async (
   asset: DocumentPickerAsset,

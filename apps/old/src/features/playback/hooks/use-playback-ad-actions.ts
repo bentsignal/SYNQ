@@ -1,7 +1,10 @@
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { playAd } from "@/src/features/playback/lib/playback-ad-service";
-import { setPlaybackStorageItem } from "@/src/features/playback/lib/playback-storage-service";
+import {
+  setPlaybackStorageBoolean,
+  setPlaybackStorageNumber,
+} from "@/src/features/playback/lib/playback-storage-service";
 import { skipToNextQueueTrack } from "@/src/features/playback/lib/player-queue-actions-service";
 import { useCallback } from "react";
 
@@ -15,8 +18,8 @@ export const usePlaybackAdActions = () => {
   }, [adURL, setAdPlaying, theme]);
 
   const resetAdPlaybackProgress = useCallback(async () => {
-    await setPlaybackStorageItem("playAd", "false");
-    await setPlaybackStorageItem("timePlayed", "0");
+    await setPlaybackStorageBoolean("playAd", false);
+    await setPlaybackStorageNumber("timePlayed", 0);
     setShouldPlayAd(false);
   }, [setShouldPlayAd]);
 

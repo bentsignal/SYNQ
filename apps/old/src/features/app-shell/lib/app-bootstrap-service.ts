@@ -1,5 +1,5 @@
 import { PUBLIC_FACEBOOK_APP_ID } from "@/src/constants/Keys";
-import { getPlaybackStorageItem } from "@/src/features/playback/lib/playback-storage-service";
+import { getPlaybackStorageBoolean } from "@/src/features/playback/lib/playback-storage-service";
 import * as SplashScreen from "expo-splash-screen";
 import { Settings } from "react-native-fbsdk-next";
 
@@ -16,8 +16,7 @@ export const hideSplashScreenAfterDelay = (delay: number) => {
 
 export const loadShouldPlayAdPreference = async () => {
   try {
-    const playAd = await getPlaybackStorageItem("playAd");
-    return playAd === "true";
+    return (await getPlaybackStorageBoolean("playAd")) ?? false;
   } catch {
     return false;
   }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { usePlaybackModeContext } from "@/src/features/playback/context/PlaybackProvider";
-import { setPlaybackStorageItem } from "@/src/features/playback/lib/playback-storage-service";
+import { setPlaybackStorageBoolean } from "@/src/features/playback/lib/playback-storage-service";
 
 export const useLoopPlaybackMode = () => {
   const { loop, setLoop } = usePlaybackModeContext();
@@ -12,11 +12,11 @@ export const useLoopPlaybackMode = () => {
       const nextLoop = !previous;
       setLocalLoop(nextLoop);
       setLoop(nextLoop);
-      await setPlaybackStorageItem("loop", nextLoop.toString());
+      await setPlaybackStorageBoolean("loop", nextLoop);
     } catch {
       setLoop(previous);
       setLocalLoop(previous);
-      await setPlaybackStorageItem("loop", previous.toString());
+      await setPlaybackStorageBoolean("loop", previous);
     }
   }, [loop, setLoop]);
 

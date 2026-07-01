@@ -3,7 +3,7 @@ import {
   usePlaybackQueueFilterContext,
   usePlaybackSourceContext,
 } from "@/src/features/playback/context/PlaybackProvider";
-import { setPlaybackStorageItem } from "@/src/features/playback/lib/playback-storage-service";
+import { setPlaybackStorageNumber } from "@/src/features/playback/lib/playback-storage-service";
 
 type PlaybackSource = {
   id: number;
@@ -26,9 +26,9 @@ export const usePlaybackSourcePersistence = ({
 
   const persistPlaybackSource = async (source: PlaybackSource) => {
     setSourceType(source.type);
-    await setPlaybackStorageItem("sourceType", source.type.toString());
+    await setPlaybackStorageNumber("sourceType", source.type);
     setSourceId(source.id);
-    await setPlaybackStorageItem("sourceId", source.id.toString());
+    await setPlaybackStorageNumber("sourceId", source.id);
     setSort(sort);
     setOrder(order);
     setQuery(query);

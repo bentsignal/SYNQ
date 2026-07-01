@@ -4,8 +4,9 @@ import { usePremiumContext } from "@/src/features/premium/context/PremiumProvide
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { usePlaybackAdActions } from "@/src/features/playback/hooks/use-playback-ad-actions";
 import {
-  getPlaybackStorageItem,
-  setPlaybackStorageItem,
+  getPlaybackStorageNumber,
+  setPlaybackStorageBoolean,
+  setPlaybackStorageNumber,
 } from "@/src/features/playback/lib/playback-storage-service";
 import { type Track } from "react-native-track-player";
 
@@ -46,20 +47,19 @@ export const usePlaybackAdTimingEffects = ({
   }, [premium, setAdPlaying, skipActiveAdForPremium, track]);
 
   const updateTimePlayed = useCallback(async () => {
-    const previouslyPlayed = await getPlaybackStorageItem("timePlayed");
+    const previouslyPlayed = await getPlaybackStorageNumber("timePlayed");
     if (previouslyPlayed !== null) {
-      const previouslyPlayedInt = parseInt(previouslyPlayed);
       const newTimePlayed =
-        previouslyPlayedInt + CHECK_FOR_AD_INTERVAL_SECONDS;
+        previouslyPlayed + CHECK_FOR_AD_INTERVAL_SECONDS;
       if (newTimePlayed >= CFG.playAdAfter) {
-        await setPlaybackStorageItem("playAd", "true");
+        await setPlaybackStorageBoolean("playAd", true);
         setShouldPlayAd(true);
       }
-      await setPlaybackStorageItem("timePlayed", newTimePlayed.toString());
+      await setPlaybackStorageNumber("timePlayed", newTimePlayed);
     } else {
-      await setPlaybackStorageItem(
+      await setPlaybackStorageNumber(
         "timePlayed",
-        CHECK_FOR_AD_INTERVAL_SECONDS.toString(),
+        CHECK_FOR_AD_INTERVAL_SECONDS,
       );
     }
   }, [setShouldPlayAd]);

@@ -59,8 +59,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Backup/restore: feature-owned backup screen and command-state boundary
     exist; archive creation, document picking, restore, erase, and database
     reset services are next.
-  - Premium/settings: settings home and customization/backup routes exist;
-    entitlement and customization ports are next.
+  - Premium/settings: settings home, premium screen, and customization/backup
+    routes exist; entitlement and customization ports are next.
 - [ ] Move reusable feature logic from `apps/old` into shared app-local modules
   that `apps/new` can consume without copying UI spaghetti.
 - [ ] Build the `apps/new` screens against reactive Drizzle query hooks instead
@@ -104,8 +104,9 @@ session boundary plus queue/player screens, but it is not yet connected to
 native playback. Import now has a route-per-step session shell, but it is not
 yet connected to native file/cache/save commands. Backup now has a
 feature-owned command-state shell, but it is not yet connected to native
-archive/restore/reset services. It is not yet a replacement app. The next
-useful work should alternate between:
+archive/restore/reset services. Premium now has a feature-owned purchase
+session shell, but it is not yet connected to RevenueCat entitlements. It is
+not yet a replacement app. The next useful work should alternate between:
 
 - closing Phase 2 gaps that would otherwise be copied into the new app; and
 - defining/building `apps/new` feature surfaces so cleanup does not become an

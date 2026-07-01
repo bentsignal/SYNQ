@@ -1,12 +1,5 @@
-import { PlaceholderScreen } from "@/src/features/app-shell/components/PlaceholderScreen";
+import { PremiumScreen } from "@/src/features/premium/screens/PremiumScreen";
 
-export default function PremiumScreen() {
-  return (
-    <PlaceholderScreen
-      boundary="src/features/settings"
-      nextMilestone="Port entitlement, customization, privacy, haptics, and support flows."
-      reference="apps/old/src/features/premium"
-      title="Premium"
-    />
-  );
+export default function PremiumRoute() {
+  return <PremiumScreen />;
 }

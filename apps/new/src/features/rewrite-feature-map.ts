@@ -55,8 +55,8 @@ export const rewriteFeatures: RewriteFeature[] = [
     name: "Premium And Settings",
     status: "active",
     oldReference: "apps/old/src/features/premium",
-    targetBoundary: "src/features/settings",
-    nextMilestone: "Port entitlement, customization, privacy, haptics, and support flows behind settings routes.",
+    targetBoundary: "src/features/premium + src/features/settings",
+    nextMilestone: "Connect RevenueCat entitlement, customization, privacy, haptics, and support flows behind settings routes.",
   },
 ];
 

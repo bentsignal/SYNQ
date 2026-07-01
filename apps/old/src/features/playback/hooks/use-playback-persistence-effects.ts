@@ -13,7 +13,7 @@ import {
   persistActiveQueueTrackIndex,
   persistPlaybackPosition,
 } from "@/src/features/playback/lib/playback-progress-persistence-service";
-import { setupPlayer } from "@/src/features/playback/lib/player-setup-service";
+import { setupPlayerIfPossible } from "@/src/features/playback/lib/player-setup-service";
 import { type Track } from "react-native-track-player";
 
 type PlaybackPersistenceEffectsParams = {
@@ -40,19 +40,34 @@ export const usePlaybackPersistenceEffects = ({
     }
 
     setupStarted.current = true;
+    let cancelled = false;
 
-    try {
-      setupPlayer({
+    const initializePlayer = async () => {
+      const initialized = await setupPlayerIfPossible({
         setShuffle,
         setLoop,
         setSourceType,
         setSourceId,
         setAddOffset,
       });
-      setPlayerInitialized(true);
-    } catch (error) {
-      console.log("error setting up player: ", error);
-    }
+
+      if (cancelled) {
+        return;
+      }
+
+      if (initialized) {
+        setPlayerInitialized(true);
+        return;
+      }
+
+      setupStarted.current = false;
+    };
+
+    void initializePlayer();
+
+    return () => {
+      cancelled = true;
+    };
   }, [
     playerInitialized,
     setAddOffset,

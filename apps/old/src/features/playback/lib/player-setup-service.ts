@@ -92,3 +92,15 @@ export const setupPlayer = async (actions: RestorePlaybackStateActions) => {
   await TrackPlayer.pause();
   configureTrackPlayerOptions();
 };
+
+export const setupPlayerIfPossible = async (
+  actions: RestorePlaybackStateActions,
+) => {
+  try {
+    await setupPlayer(actions);
+
+    return true;
+  } catch {
+    return false;
+  }
+};

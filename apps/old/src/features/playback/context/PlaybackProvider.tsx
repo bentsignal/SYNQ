@@ -1,5 +1,5 @@
 import { SortOrder, SortType, SourceType } from "@/src/constants/Types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { usePlaybackAddOffset } from "@/src/features/playback/hooks/use-playback-add-offset";
 import React, { createContext, useContext, useState } from "react";
 
 type Props = {
@@ -65,30 +65,17 @@ const PlaybackProvider: React.FC<Props> = ({ children }) => {
   const [shuffle, setShuffle] = useState<boolean>(false);
   const [loop, setLoop] = useState<boolean>(false);
   const [playerInitialized, setPlayerInitialized] = useState<boolean>(false);
-  const [addOffset, setAddOffset] = useState<number>(0);
+  const {
+    addOffset,
+    decrementAddOffset,
+    incrementAddOffset,
+    resetAddOffset,
+    setAddOffset,
+  } = usePlaybackAddOffset();
   const [sort, setSort] = useState<SortType>(SortType.DATE);
   const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
   const [query, setQuery] = useState<string>("");
   const [queueRevision, setQueueRevision] = useState(0);
-
-  const incrementAddOffset = async () => {
-    const newOffset = addOffset + 1;
-    setAddOffset(newOffset);
-    await AsyncStorage.setItem("addOffset", newOffset.toString());
-  };
-
-  const decrementAddOffset = async () => {
-    if (addOffset > 0) {
-      const newOffset = addOffset - 1;
-      setAddOffset(newOffset);
-      await AsyncStorage.setItem("addOffset", newOffset.toString());
-    }
-  };
-
-  const resetAddOffset = async () => {
-    setAddOffset(0);
-    await AsyncStorage.setItem("addOffset", "0");
-  };
 
   const requestQueueRefresh = () => {
     setQueueRevision((value) => value + 1);

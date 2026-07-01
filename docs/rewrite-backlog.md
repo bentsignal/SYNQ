@@ -365,6 +365,9 @@ feature-oriented packages.
    - Settings index route UI now lives in a settings feature screen component,
      moving modal chrome, navigation options, review/support actions, social
      links, analytics events, and dev premium toggle out of the app route.
+   - Settings customization route UI now lives in a settings feature screen
+     component, moving premium upsell routing, theme/icon/haptic sections, and
+     modal chrome out of the app route.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

@@ -1,8 +1,8 @@
 import { SourceType } from "@/src/constants/Types";
 import {
   getPlaybackStorageBoolean,
-  getPlaybackStorageItem,
   getPlaybackStorageNumber,
+  getPlaybackStorageQueue,
 } from "@/src/features/playback/lib/playback-storage-service";
 import TrackPlayer, { Capability } from "react-native-track-player";
 
@@ -48,9 +48,9 @@ export const setupPlayer = async ({
   }
 
   // restore queue
-  const queue = await getPlaybackStorageItem("queue");
+  const queue = await getPlaybackStorageQueue();
   if (queue) {
-    await TrackPlayer.setQueue(JSON.parse(queue));
+    await TrackPlayer.setQueue(queue);
   }
 
   // jump to track

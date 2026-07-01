@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { type Track } from "react-native-track-player";
 
 import { playbackStorageKeys } from "@/src/features/playback/lib/playback-storage-keys";
 
@@ -57,4 +58,17 @@ export const setPlaybackStorageNumber = (
   value: number,
 ) => {
   return setPlaybackStorageItem(key, value.toString());
+};
+
+export const getPlaybackStorageQueue = async () => {
+  const value = await getPlaybackStorageItem("queue");
+  if (!value) {
+    return null;
+  }
+
+  return JSON.parse(value) as Track[];
+};
+
+export const setPlaybackStorageQueue = (queue: Track[]) => {
+  return setPlaybackStorageItem("queue", JSON.stringify(queue));
 };

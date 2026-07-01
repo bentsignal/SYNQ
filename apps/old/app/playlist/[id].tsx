@@ -1,11 +1,9 @@
 import { useLocalSearchParams } from "expo-router";
-import PlaylistView from "./playlist";
+import PlaylistDetailScreen from "@/src/features/library/components/detail/PlaylistDetailScreen";
 
 const PlaylistIndex = () => {
   const { id } = useLocalSearchParams();
-  return (
-    <PlaylistView id={Number(id)} />
-  )
-}
+  return <PlaylistDetailScreen id={Number(id)} />;
+};
 
 export default PlaylistIndex;

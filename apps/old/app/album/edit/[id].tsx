@@ -1,11 +1,9 @@
 import { useLocalSearchParams } from "expo-router";
-import EditAlbum from "./edit";
+import EditAlbumScreen from "@/src/features/library/components/edit/EditAlbumScreen";
 
 const EditAlbumIndex = () => {
   const { id } = useLocalSearchParams();
-  return (
-    <EditAlbum id={Number(id)} />
-  )
-}
+  return <EditAlbumScreen id={Number(id)} />;
+};
 
 export default EditAlbumIndex;

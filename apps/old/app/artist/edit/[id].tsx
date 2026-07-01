@@ -1,11 +1,9 @@
 import { useLocalSearchParams } from "expo-router";
-import EditArtist from "./edit";
+import EditArtistScreen from "@/src/features/library/components/edit/EditArtistScreen";
 
 const EditArtistIndex = () => {
   const { id } = useLocalSearchParams();
-  return (
-    <EditArtist id={Number(id)} />
-  )
-}
+  return <EditArtistScreen id={Number(id)} />;
+};
 
 export default EditArtistIndex;

@@ -437,6 +437,8 @@ feature-oriented packages.
    - Settings stack route layout now delegates to a settings feature shell
      component, keeping settings modal presentation options out of the app route
      layer.
+   - Dynamic library detail and edit route wrappers now render feature screens
+     directly instead of importing sibling route modules.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

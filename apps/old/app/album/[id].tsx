@@ -1,9 +1,9 @@
-import AlbumView from "./album";
+import AlbumDetailScreen from "@/src/features/library/components/detail/AlbumDetailScreen";
 import { useLocalSearchParams } from "expo-router";
 
 const AlbumIndex = () => {
   const { id } = useLocalSearchParams();
-  return <AlbumView id={Number(id)} />;
+  return <AlbumDetailScreen id={Number(id)} />;
 };
 
 export default AlbumIndex;

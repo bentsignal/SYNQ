@@ -2,7 +2,7 @@ import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { darkenColor } from "@/src/lib/color-utils";
 import { replaceColor } from "lottie-colorify";
 import LottieView from "lottie-react-native";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 export default function Success() {
   const { theme } = useThemeContext();

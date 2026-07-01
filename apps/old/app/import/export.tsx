@@ -1,91 +1,11 @@
-import { useEffect, useRef, useState } from "react";
 import CustomButton from "@/src/shared/components/CustomButton";
-import PageTitle from "@/src/shared/components/PageTitle";
-import SettingsButton from "@/src/shared/components/SettingsButton";
 import { Colors } from "@/src/constants/Colors";
-import CFG from "@/src/constants/Config";
 import { Styles } from "@/src/constants/Styles";
-import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
-import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import { exportSongs } from "@/src/features/export/lib/export-songs";
-import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
-import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
-import { posthog } from "@/src/lib/posthog";
-import { usePathname } from "expo-router";
+import { useImportExportFlow } from "@/src/features/import/hooks/use-import-export-flow";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const ExportPrompt = () => {
-  const { results } = useImportFlowContext();
-
-  const {
-    showImportAd,
-    showGlobalProgress,
-    setShowGlobalLoading,
-    setShowGlobalProgress,
-    setGlobalProgress,
-    setShowImportAd,
-  } = useGlobalProgressContext();
-
-  const { premium } = usePremiumContext();
-  const { theme } = useThemeContext();
-  const insets = useSafeAreaInsets();
-  const pathname = usePathname();
-  const currentPath = useRef(pathname);
-
-  useEffect(() => {
-    currentPath.current = pathname;
-  }, [pathname]);
-
-  const [disabled, setDisabled] = useState(false);
-
-  const checkForAd = async () => {
-    if (!premium && showImportAd) {
-      await new Promise((resolve) => {
-        let progress = 0;
-        const interval = setInterval(() => {
-          if (progress < CFG.importAdLength) {
-            if (progress >= 1 && !showGlobalProgress) {
-              setShowGlobalProgress(true);
-            }
-            progress += 1;
-            setGlobalProgress(Math.ceil((progress / CFG.importAdLength) * 100));
-          } else if (
-            progress >= CFG.importAdLength &&
-            currentPath.current === "/import/export"
-          ) {
-            clearInterval(interval);
-            setShowGlobalProgress(false);
-            setTimeout(() => {
-              resolve(void 0);
-            }, 1000);
-          }
-        }, 1000);
-      });
-    } else {
-      setShowImportAd(false);
-    }
-  };
-
-  const handleExport = async () => {
-    try {
-      posthog.capture("export_during_import");
-      setDisabled(true);
-      setShowGlobalLoading(true);
-      setShowGlobalProgress(false);
-      setGlobalProgress(0);
-      const songs = premium ? results : [results[0]];
-      await checkForAd();
-      await exportSongs(songs);
-      setShowGlobalLoading(false);
-      setDisabled(false);
-      setShowImportAd(false);
-    } catch (error) {
-      setShowGlobalLoading(false);
-      setDisabled(false);
-      console.log("Error exporting songs: ", error);
-    }
-  };
+  const { disabled, handleExport, theme } = useImportExportFlow();
 
   return (
     <>

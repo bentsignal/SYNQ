@@ -55,8 +55,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     next.
   - Import/ingest: route-per-step import shell, session state, file picker,
     cache staging, metadata/duration extraction, preview/save screens, and
-    Drizzle draft-to-library save/discard commands exist; audio file movement
-    into durable library storage is next.
+    Drizzle draft-to-library save/discard commands with durable audio file
+    movement exist; cover/artwork persistence, Wi-Fi import, and edit parity are
+    next.
   - Backup/restore: feature-owned backup screen and command-state boundary
     exist; archive creation, document picking, restore, erase, and database
     reset services are next.
@@ -104,7 +105,7 @@ customization, and premium route entry points. Playback now has a reducer-backed
 session boundary plus queue/player screens, but it is not yet connected to
 native playback. Import now has a route-per-step session shell, native file
 selection, cache staging, metadata/duration extraction, and Drizzle draft saves,
-but it does not yet move audio into durable library storage. Backup now has a
+including moving cached audio into durable library storage. Backup now has a
 feature-owned command-state shell, but it is not yet connected to native
 archive/restore/reset services. Premium now has a feature-owned purchase
 session shell, but it is not yet connected to RevenueCat entitlements. It is

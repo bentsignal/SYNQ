@@ -40,7 +40,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/import",
     targetBoundary: "src/features/import",
-    nextMilestone: "Move imported audio from cache into durable library storage.",
+    nextMilestone: "Add cover/artwork persistence, Wi-Fi import, and import edit parity.",
   },
   {
     key: "backup",

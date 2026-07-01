@@ -1,6 +1,7 @@
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
+import * as FileSystem from "expo-file-system";
 import type {
   ImportSaveSummary,
   ImportSongDraft,
@@ -9,6 +10,9 @@ import type {
 const libraryPlaylistId = 1;
 
 const unknownLabels = new Set(["", "unknown", "unknown artist", "unknown album"]);
+
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : String(error);
 
 const normalizeName = (name: string) => name.trim();
 
@@ -77,6 +81,69 @@ const insertSongDraft = async (song: ImportSongDraft) => {
   return inserted[0].id;
 };
 
+const deleteLibrarySong = async (songId: number) => {
+  await db.delete(schema.albumSongs).where(eq(schema.albumSongs.songId, songId));
+  await db.delete(schema.artistSongs).where(eq(schema.artistSongs.songId, songId));
+  await db
+    .delete(schema.playlistSongs)
+    .where(eq(schema.playlistSongs.songId, songId));
+  await db.delete(schema.songs).where(eq(schema.songs.id, songId));
+
+  if (FileSystem.documentDirectory) {
+    await FileSystem.deleteAsync(
+      `${FileSystem.documentDirectory}library/${songId}`,
+      { idempotent: true },
+    );
+  }
+};
+
+const ensureLibraryDirectory = async () => {
+  if (!FileSystem.documentDirectory) {
+    throw new Error("Document directory is unavailable.");
+  }
+
+  await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}library`, {
+    intermediates: true,
+  });
+};
+
+const moveImportAudioToLibrary = async ({
+  cacheUri,
+  fileName,
+  songId,
+}: {
+  cacheUri: string;
+  fileName: string;
+  songId: number;
+}) => {
+  await ensureLibraryDirectory();
+
+  const songDirectory = `${FileSystem.documentDirectory}library/${songId}`;
+  await FileSystem.makeDirectoryAsync(songDirectory, { intermediates: true });
+
+  const destination = `${songDirectory}/${fileName}`;
+  await FileSystem.copyAsync({
+    from: cacheUri,
+    to: destination,
+  });
+  await FileSystem.deleteAsync(cacheUri, { idempotent: true });
+
+  return destination;
+};
+
+const updateLibrarySongPath = async ({
+  pathToFile,
+  songId,
+}: {
+  pathToFile: string;
+  songId: number;
+}) => {
+  await db
+    .update(schema.songs)
+    .set({ pathToFile })
+    .where(eq(schema.songs.id, songId));
+};
+
 const linkSongToLibraryPlaylist = async (songId: number) => {
   await db.insert(schema.playlistSongs).values({
     playlistId: libraryPlaylistId,
@@ -137,6 +204,19 @@ const linkSongAlbum = async ({
 
 const saveOneImportSong = async (song: ImportSongDraft) => {
   const songId = await insertSongDraft(song);
+
+  try {
+    const libraryPath = await moveImportAudioToLibrary({
+      cacheUri: song.cacheUri,
+      fileName: song.fileName,
+      songId,
+    });
+    await updateLibrarySongPath({ pathToFile: libraryPath, songId });
+  } catch (error) {
+    await deleteLibrarySong(songId);
+    throw new Error(`Audio file could not be saved: ${getErrorMessage(error)}`);
+  }
+
   const artistIds = await linkSongArtists({
     artistNames: splitNames(song.artist),
     songId,

@@ -46,6 +46,7 @@ export const addTrackToQueue = async ({
 
 export const moveQueueTrack = async (from: number, to: number) => {
   await TrackPlayer.move(from, to);
+  await persistPlaybackQueue();
 };
 
 export const getActiveQueueTrackIndex = async () => {
@@ -69,6 +70,7 @@ export const playTrackNow = async (track: Track): Promise<void> => {
     await TrackPlayer.skipToNext();
   }
   await TrackPlayer.play();
+  await persistPlaybackQueue();
 };
 
 export const removeTracksBySongIds = async (songIds: number[]) => {
@@ -81,10 +83,12 @@ export const removeTracksBySongIds = async (songIds: number[]) => {
     .filter((index) => index !== -1);
 
   await TrackPlayer.remove(indicesToRemove);
+  await persistPlaybackQueue();
 };
 
 export const resetPlaybackQueue = async () => {
   await TrackPlayer.reset();
+  await persistPlaybackQueue();
 };
 
 export const playPlayback = async () => {

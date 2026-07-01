@@ -1,9 +1,20 @@
 import { StyleSheet, Text, View } from "react-native";
-import type { LibrarySongPreview } from "../hooks/use-library-song-preview-query";
+import type {
+  LibrarySongPreview,
+  LibrarySongPreviewOrder,
+  LibrarySongPreviewSort,
+} from "../hooks/use-library-song-preview-query";
+import { LibrarySongListControls } from "./LibrarySongListControls";
 
 type LibrarySongPreviewListProps = {
   isEmpty: boolean;
+  order: LibrarySongPreviewOrder;
+  query: string;
+  setOrder: (order: LibrarySongPreviewOrder) => void;
+  setQuery: (query: string) => void;
+  setSort: (sort: LibrarySongPreviewSort) => void;
   songs: LibrarySongPreview[];
+  sort: LibrarySongPreviewSort;
 };
 
 const formatDuration = (duration: number | null) => {
@@ -20,7 +31,13 @@ const formatDuration = (duration: number | null) => {
 
 export function LibrarySongPreviewList({
   isEmpty,
+  order,
+  query,
+  setOrder,
+  setQuery,
+  setSort,
   songs,
+  sort,
 }: LibrarySongPreviewListProps) {
   return (
     <View style={styles.section}>
@@ -28,6 +45,15 @@ export function LibrarySongPreviewList({
         <Text style={styles.sectionTitle}>Recent Songs</Text>
         <Text style={styles.sectionMeta}>{songs.length} shown</Text>
       </View>
+
+      <LibrarySongListControls
+        order={order}
+        query={query}
+        setOrder={setOrder}
+        setQuery={setQuery}
+        setSort={setSort}
+        sort={sort}
+      />
 
       {isEmpty ? (
         <View style={styles.emptyPanel}>

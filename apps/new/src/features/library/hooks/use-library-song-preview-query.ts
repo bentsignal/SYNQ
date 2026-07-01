@@ -28,6 +28,17 @@ export type LibrarySongPreview = {
   title: string;
 };
 
+export type LibrarySongPreviewSort = "album" | "artist" | "recent" | "title";
+
+export type LibrarySongPreviewOrder = "asc" | "desc";
+
+type LibrarySongPreviewQueryOptions = {
+  limit?: number;
+  order?: LibrarySongPreviewOrder;
+  query?: string;
+  sort?: LibrarySongPreviewSort;
+};
+
 const emptyLabel = "Unknown";
 
 const formatNames = (names: Set<string>) => {
@@ -40,8 +51,58 @@ const formatNames = (names: Set<string>) => {
   ).join(", ");
 };
 
-const rowsToSongPreviews = (rows: SongPreviewRow[]) => {
+const normalizeQuery = (query?: string) => query?.trim().toLowerCase() ?? "";
+
+const matchesQuery = (song: LibrarySongPreview, query: string) => {
+  if (!query) {
+    return true;
+  }
+
+  return [song.title, song.artist, song.album].some((value) =>
+    value.toLowerCase().includes(query),
+  );
+};
+
+const compareText = (first: string, second: string) =>
+  first.localeCompare(second, undefined, { sensitivity: "base" });
+
+const sortSongs = (
+  songs: LibrarySongPreview[],
+  sort: LibrarySongPreviewSort,
+  order: LibrarySongPreviewOrder,
+) => {
+  const sorted = [...songs].sort((first, second) => {
+    switch (sort) {
+      case "album":
+        return compareText(first.album, second.album) || second.id - first.id;
+      case "artist":
+        return compareText(first.artist, second.artist) || second.id - first.id;
+      case "title":
+        return compareText(first.title, second.title) || second.id - first.id;
+      case "recent":
+      default:
+        return second.id - first.id;
+    }
+  });
+
+  return order === "asc" ? sorted.reverse() : sorted;
+};
+
+const rowsToSongPreviews = ({
+  limit,
+  order,
+  query,
+  rows,
+  sort,
+}: {
+  limit: number;
+  order: LibrarySongPreviewOrder;
+  query?: string;
+  rows: SongPreviewRow[];
+  sort: LibrarySongPreviewSort;
+}) => {
   const songMap = new Map<number, SongPreviewAccumulator>();
+  const normalizedQuery = normalizeQuery(query);
 
   rows.forEach((row) => {
     const song =
@@ -65,7 +126,7 @@ const rowsToSongPreviews = (rows: SongPreviewRow[]) => {
     songMap.set(row.songId, song);
   });
 
-  return Array.from(songMap.values())
+  const songs = Array.from(songMap.values())
     .map<LibrarySongPreview>((song) => ({
       album: formatNames(song.albumNames),
       artist: formatNames(song.artistNames),
@@ -73,11 +134,17 @@ const rowsToSongPreviews = (rows: SongPreviewRow[]) => {
       id: song.songId,
       title: song.title,
     }))
-    .sort((first, second) => second.id - first.id)
-    .slice(0, 12);
+    .filter((song) => matchesQuery(song, normalizedQuery));
+
+  return sortSongs(songs, sort, order).slice(0, limit);
 };
 
-export function useLibrarySongPreviewQuery() {
+export function useLibrarySongPreviewQuery({
+  limit = 50,
+  order = "desc",
+  query,
+  sort = "recent",
+}: LibrarySongPreviewQueryOptions = {}) {
   const { data, error, updatedAt } = useLiveQuery(
     db
       .select({
@@ -104,8 +171,15 @@ export function useLibrarySongPreviewQuery() {
   );
 
   const songs = useMemo(
-    () => rowsToSongPreviews((data ?? []) as SongPreviewRow[]),
-    [data],
+    () =>
+      rowsToSongPreviews({
+        limit,
+        order,
+        query,
+        rows: (data ?? []) as SongPreviewRow[],
+        sort,
+      }),
+    [data, limit, order, query, sort],
   );
 
   return {

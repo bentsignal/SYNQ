@@ -1,12 +1,20 @@
+import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { LibrarySongPreviewList } from "../components/LibrarySongPreviewList";
 import { LibrarySummaryGrid } from "../components/LibrarySummaryGrid";
-import { useLibrarySongPreviewQuery } from "../hooks/use-library-song-preview-query";
+import {
+  useLibrarySongPreviewQuery,
+  type LibrarySongPreviewOrder,
+  type LibrarySongPreviewSort,
+} from "../hooks/use-library-song-preview-query";
 import { useLibrarySummaryQuery } from "../hooks/use-library-summary-query";
 
 export function LibraryHomeScreen() {
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<LibrarySongPreviewSort>("recent");
+  const [order, setOrder] = useState<LibrarySongPreviewOrder>("desc");
   const summary = useLibrarySummaryQuery();
-  const songPreview = useLibrarySongPreviewQuery();
+  const songPreview = useLibrarySongPreviewQuery({ order, query, sort });
   const hasErrors = summary.errors.length > 0 || Boolean(songPreview.error);
   const updatedLabel =
     summary.updatedAt > 0
@@ -27,7 +35,13 @@ export function LibraryHomeScreen() {
 
       <LibrarySongPreviewList
         isEmpty={songPreview.isEmpty}
+        order={order}
+        query={query}
+        setOrder={setOrder}
+        setQuery={setQuery}
+        setSort={setSort}
         songs={songPreview.songs}
+        sort={sort}
       />
 
       <View style={styles.panel}>

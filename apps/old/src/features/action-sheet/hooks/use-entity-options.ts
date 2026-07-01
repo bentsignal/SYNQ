@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
+import {
+  deleteAfterLeavingDetail,
+  dismissThen,
+  exportEntitySongs,
+  navigateToEntityEdit,
+} from "@/src/features/action-sheet/lib/entity-option-actions";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
-import { exportSongs } from "@/src/features/export/lib/export-songs";
 import {
   deleteLibraryAlbum,
   deleteLibraryArtist,
@@ -14,31 +19,8 @@ import {
   getLibraryPlaylistSongs,
 } from "@/src/features/library/repository/library-song-repository";
 import { posthog } from "@/src/lib/posthog";
-import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
 import { Alert } from "react-native";
-
-const actionDelay = 10;
-
-const dismissThen = (sheetName: string, action: () => void) => {
-  TrueSheet.dismiss(sheetName);
-  setTimeout(action, actionDelay);
-};
-
-const deleteAfterLeavingDetail = async (
-  isDetailPage: boolean,
-  executeDelete: () => Promise<void>,
-) => {
-  if (isDetailPage) {
-    router.back();
-    setTimeout(() => {
-      executeDelete();
-    }, 300);
-    return;
-  }
-
-  await executeDelete();
-};
 
 export function usePlaylistOptions(sheetName: string) {
   const { editPlaylist } = useActionSheetContext();
@@ -52,28 +34,24 @@ export function usePlaylistOptions(sheetName: string) {
   }, [editPlaylist]);
 
   const handleEdit = useCallback(() => {
-    TrueSheet.dismiss(sheetName);
-    posthog.capture("edit_playlist");
-    setTimeout(() => {
-      router.push(`/playlist/edit/${editPlaylist.id}`);
-    }, actionDelay);
+    navigateToEntityEdit({
+      sheetName,
+      eventName: "edit_playlist",
+      path: `/playlist/edit/${editPlaylist.id}`,
+    });
   }, [editPlaylist.id, sheetName]);
 
   const handleExport = useCallback(async () => {
-    try {
-      TrueSheet.dismiss(sheetName);
-      posthog.capture("export_playlist");
-      setShowGlobalLoading(true);
-      const songs = await getLibraryPlaylistSongs({
-        playlistId: editPlaylist.id,
-        pageType: PageType.PLAYLIST,
-      });
-      await exportSongs(songs);
-    } catch (error) {
-      console.log("error exporting song: ", error);
-    } finally {
-      setShowGlobalLoading(false);
-    }
+    await exportEntitySongs({
+      sheetName,
+      eventName: "export_playlist",
+      setShowGlobalLoading,
+      loadSongs: () =>
+        getLibraryPlaylistSongs({
+          playlistId: editPlaylist.id,
+          pageType: PageType.PLAYLIST,
+        }),
+    });
   }, [editPlaylist.id, setShowGlobalLoading, sheetName]);
 
   const executeDelete = useCallback(async () => {
@@ -128,25 +106,20 @@ export function useAlbumOptions(sheetName: string) {
   }, [editAlbum]);
 
   const handleEdit = useCallback(() => {
-    TrueSheet.dismiss(sheetName);
-    posthog.capture("edit_album");
-    setTimeout(() => {
-      router.push(`/album/edit/${editAlbum.id}`);
-    }, actionDelay);
+    navigateToEntityEdit({
+      sheetName,
+      eventName: "edit_album",
+      path: `/album/edit/${editAlbum.id}`,
+    });
   }, [editAlbum.id, sheetName]);
 
   const handleExport = useCallback(async () => {
-    try {
-      TrueSheet.dismiss(sheetName);
-      posthog.capture("export_album");
-      setShowGlobalLoading(true);
-      const songs = await getLibraryAlbumSongs({ albumId: editAlbum.id });
-      await exportSongs(songs);
-    } catch (error) {
-      console.log("error exporting song: ", error);
-    } finally {
-      setShowGlobalLoading(false);
-    }
+    await exportEntitySongs({
+      sheetName,
+      eventName: "export_album",
+      setShowGlobalLoading,
+      loadSongs: () => getLibraryAlbumSongs({ albumId: editAlbum.id }),
+    });
   }, [editAlbum.id, setShowGlobalLoading, sheetName]);
 
   const executeDelete = useCallback(async () => {
@@ -207,25 +180,20 @@ export function useArtistOptions(sheetName: string) {
   }, [editArtist]);
 
   const handleEdit = useCallback(() => {
-    TrueSheet.dismiss(sheetName);
-    posthog.capture("edit_artist");
-    setTimeout(() => {
-      router.push(`/artist/edit/${editArtist.id}`);
-    }, actionDelay);
+    navigateToEntityEdit({
+      sheetName,
+      eventName: "edit_artist",
+      path: `/artist/edit/${editArtist.id}`,
+    });
   }, [editArtist.id, sheetName]);
 
   const handleExport = useCallback(async () => {
-    try {
-      TrueSheet.dismiss(sheetName);
-      posthog.capture("export_artist");
-      setShowGlobalLoading(true);
-      const songs = await getLibraryArtistSongs({ artistId: editArtist.id });
-      await exportSongs(songs);
-    } catch (error) {
-      console.log("error exporting song: ", error);
-    } finally {
-      setShowGlobalLoading(false);
-    }
+    await exportEntitySongs({
+      sheetName,
+      eventName: "export_artist",
+      setShowGlobalLoading,
+      loadSongs: () => getLibraryArtistSongs({ artistId: editArtist.id }),
+    });
   }, [editArtist.id, setShowGlobalLoading, sheetName]);
 
   const executeDelete = useCallback(async () => {

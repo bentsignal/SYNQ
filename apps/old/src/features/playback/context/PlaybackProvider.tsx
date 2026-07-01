@@ -1,10 +1,11 @@
 import { SortOrder, SortType, SourceType } from "@/src/constants/Types";
 import { usePlaybackAddOffset } from "@/src/features/playback/hooks/use-playback-add-offset";
+import { usePlaybackLifecycleState } from "@/src/features/playback/hooks/use-playback-lifecycle-state";
 import { usePlaybackModeState } from "@/src/features/playback/hooks/use-playback-mode-state";
 import { usePlaybackQueueFilterState } from "@/src/features/playback/hooks/use-playback-queue-filter-state";
 import { usePlaybackQueueRefresh } from "@/src/features/playback/hooks/use-playback-queue-refresh";
 import { usePlaybackSourceState } from "@/src/features/playback/hooks/use-playback-source-state";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext } from "react";
 
 type Props = {
   children?: React.ReactNode;
@@ -67,7 +68,8 @@ const PlaybackProvider: React.FC<Props> = ({ children }) => {
   const { setSourceId, setSourceType, sourceId, sourceType } =
     usePlaybackSourceState();
   const { loop, setLoop, setShuffle, shuffle } = usePlaybackModeState();
-  const [playerInitialized, setPlayerInitialized] = useState<boolean>(false);
+  const { playerInitialized, setPlayerInitialized } =
+    usePlaybackLifecycleState();
   const {
     addOffset,
     decrementAddOffset,

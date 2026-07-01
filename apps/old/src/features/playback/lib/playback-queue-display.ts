@@ -4,27 +4,38 @@ import {
   getActiveQueueTrackIndex,
   getPlaybackQueue,
 } from "@/src/features/playback/lib/playback-queue-read-service";
+import { type Track } from "react-native-track-player";
 
-export const getPlaybackQueueDisplaySongs = async () => {
-  const results: SongType[] = [];
-  const queue = await getPlaybackQueue();
-
-  try {
-    for (let i = 0; i < queue.length; i++) {
-      if (queue[i].id !== -1) {
-        const result = await getLibrarySongById(queue[i].id, PageType.QUEUE);
-        if (!result) {
-          continue;
-        }
-        result.uuid = queue[i].description;
-        results.push(result);
-      }
-    }
-  } catch (error) {
-    console.log("error loading queue songs to display in list:", error);
+const getPlaybackQueueDisplaySong = async (
+  track: Track,
+): Promise<SongType | undefined> => {
+  if (track.id === -1) {
+    return undefined;
   }
 
-  return results;
+  const result = await getLibrarySongById(track.id, PageType.QUEUE);
+  if (!result) {
+    return undefined;
+  }
+
+  result.uuid = track.description;
+
+  return result;
+};
+
+export const getPlaybackQueueDisplaySongs = async () => {
+  const queue = await getPlaybackQueue();
+  const songs = await Promise.all(
+    queue.map(async (track) => {
+      try {
+        return await getPlaybackQueueDisplaySong(track);
+      } catch {
+        return undefined;
+      }
+    }),
+  );
+
+  return songs.filter((song): song is SongType => song !== undefined);
 };
 
 export const getPlaybackQueueDisplayState = async () => {

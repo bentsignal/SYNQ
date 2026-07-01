@@ -59,9 +59,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     save/discard commands with durable audio file movement and cover/artwork
     persistence exist; import polish and deeper manual smoke are next.
   - Backup/restore: feature-owned backup screen and command-state boundary
-    exist, and erase now clears local document storage before reopening and
-    migrating the shared database; archive creation, document picking, and
-    restore services are next.
+    exist, backup archive/share is connected, and erase clears local document
+    storage before reopening and migrating the shared database; document
+    picking and restore services are next.
   - Premium/settings: settings home, premium screen, and customization/backup
     routes exist; entitlement and customization ports are next.
 - [ ] Move reusable feature logic from `apps/old` into shared app-local modules
@@ -109,8 +109,8 @@ selection, a Wi-Fi transfer route/server, cache staging,
 metadata/duration extraction, and Drizzle draft saves, including moving cached
 audio into durable library storage, persisting artwork to shared image storage,
 and editing staged song metadata before save. Backup now has a
-feature-owned command-state shell with a real erase/reset command, but it is
-not yet connected to native archive or restore services. Premium now has a
+feature-owned command-state shell with real archive/share and erase/reset
+commands, but it is not yet connected to restore services. Premium now has a
 feature-owned purchase session shell, but it is not yet connected to RevenueCat
 entitlements. It is not yet a replacement app. The next useful work should
 alternate between:

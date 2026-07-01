@@ -6,9 +6,12 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '@/src/constants/Colors';
 import { getIcon, getLogo } from '@/src/constants/Logos';
+import {
+  getStoredTheme,
+  setStoredTheme,
+} from '@/src/features/theme/lib/theme-storage-service';
 import { setAppIcon } from 'expo-icon-handler';
 
 type Props = {
@@ -39,19 +42,19 @@ const ThemeProvider: React.FC<Props> = ({ children }) => {
       setTheme(newTheme);
       setLogo(getLogo(newTheme));
       if (changeIcon) setAppIcon(getIcon(newTheme));
-      AsyncStorage.setItem('theme', newTheme);
+      setStoredTheme(newTheme);
     }
     catch {
       setTheme(Colors.main);
       setLogo(getLogo(Colors.main));
       if (changeIcon) setAppIcon(getIcon(Colors.main)); 
-      AsyncStorage.setItem('theme', Colors.main);
+      setStoredTheme(Colors.main);
     }
   }, []);
 
   const loadTheme = useCallback(async () => {
     try {
-      const theme = await AsyncStorage.getItem('theme');
+      const theme = await getStoredTheme();
       if (theme !== null && theme !== Colors.main) changeTheme(theme, false);
     }
     catch {

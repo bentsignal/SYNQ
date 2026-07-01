@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import ListCover from "@/src/features/cover/components/ListCover";
 import CrossfadeImage from "@/src/features/playback/components/CrossfadeImage";
 import { SkipLeft, SkipRight } from "@/src/features/playback/components/Skip";
@@ -7,34 +6,17 @@ import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType } from "@/src/constants/Types";
 import { useMiniPlayerArtwork } from "@/src/features/playback/hooks/use-mini-player-artwork";
+import { useMiniPlayerCoverFade } from "@/src/features/playback/hooks/use-mini-player-cover-fade";
 import { getFileName } from "@/src/lib/util";
 import { router } from "expo-router";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import PausePlayButtons from "./PausePlayButtons";
 
 const MiniPlayer = () => {
   const { backgroundImage, coverImage, emptyCover, track } =
     useMiniPlayerArtwork();
-
-  const opacity = useSharedValue(0);
-  const coverStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      opacity.value = withTiming(track ? 1 : 0, { duration: 200 });
-    }, 200);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [opacity, track]);
+  const { coverStyle } = useMiniPlayerCoverFade(Boolean(track));
 
   const textColor = Colors.text;
 

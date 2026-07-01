@@ -439,6 +439,9 @@ feature-oriented packages.
      layer.
    - Dynamic library detail and edit route wrappers now render feature screens
      directly instead of importing sibling route modules.
+   - Replaced debug-red placeholder ingest screens with a reusable ingest step
+     panel that preserves current flow controls while making unfinished ingest
+     states explicit in feature-owned UI.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

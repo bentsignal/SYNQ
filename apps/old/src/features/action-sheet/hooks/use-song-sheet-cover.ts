@@ -17,8 +17,9 @@ export function useSongSheetCover(song: SongType) {
       const cover = await getLibrarySongCoverPath(song.id);
       setCoverImage(cover ?? "");
       setEmptyCover(!cover);
-    } catch (error) {
-      console.log("error loading song cover:", error);
+    } catch {
+      setCoverImage("");
+      setEmptyCover(true);
     }
   }, [song]);
 

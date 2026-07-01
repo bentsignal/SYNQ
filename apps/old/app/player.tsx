@@ -2,15 +2,14 @@ import PlayerCover from "@/src/features/cover/components/PlayerCover";
 import CrossfadeImage from "@/src/features/playback/components/CrossfadeImage";
 import Bar from "@/src/shared/components/modals/Bar";
 import ModalStyles from "@/src/shared/components/modals/Styles";
+import PlayerActionButtons from "@/src/features/playback/components/PlayerActionButtons";
 import PlayerControls from "@/src/features/playback/components/PlayerControls";
 import Time from "@/src/features/playback/components/Time";
 import SongInfo from "@/src/features/library/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
 import { usePlayerScreenActions } from "@/src/features/playback/hooks/use-player-screen-actions";
 import { usePlayerScreenState } from "@/src/features/playback/hooks/use-player-screen-state";
-import colors from "@/src/lib/colors";
-import { CirclePlus, Ellipsis } from "lucide-react-native";
-import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Animated from "react-native-reanimated";
 
@@ -66,15 +65,10 @@ const Player = () => {
               artistStyles={[Local.artist, Local.dropShadow]}
             />
           </Animated.View>
-          <TouchableOpacity
-            onPress={handleAddToPlaylist}
-            style={Local.addWrapper}
-          >
-            <CirclePlus size={25} style={Local.add} />
-          </TouchableOpacity>
-          <TouchableOpacity className="p-3" onPress={handleMore}>
-            <Ellipsis color={colors.foreground} />
-          </TouchableOpacity>
+          <PlayerActionButtons
+            onAddToPlaylist={handleAddToPlaylist}
+            onMore={handleMore}
+          />
         </View>
         <Time />
         <PlayerControls />
@@ -116,16 +110,6 @@ const Local = StyleSheet.create({
     fontWeight: "500",
     fontSize: 16,
     opacity: 0.5,
-  },
-  add: {
-    width: 25,
-    height: 25,
-    color: Colors.text,
-  },
-  addWrapper: {
-    paddingLeft: 10,
-    paddingRight: 5,
-    paddingVertical: 5,
   },
   dropShadow: {
     textShadowColor: "rgba(0, 0, 0, 0.15)",

@@ -4,6 +4,93 @@ This branch uses `apps/old` as the runnable reference app and `apps/new` as the
 rewrite target. Keep old working while moving behavior into smaller, typed,
 feature-oriented packages.
 
+## Finish-Line Checklist
+
+Use this checklist to track convergence. The detailed backlog below records the
+work already done; this section is the shorter "are we close yet?" dashboard.
+
+### Phase 1: Rewrite Foundation
+
+- [x] Create `rewrite-2` from the completed `rewrite-1` checkpoint.
+- [x] Move the project into a Turborepo workspace with `apps/*` and `shared/*`.
+- [x] Keep `apps/old` runnable as the reference implementation.
+- [x] Create `apps/new` as the rewrite target.
+- [x] Extract shared database ownership into `shared/db`.
+- [x] Extract reusable audio/metadata helpers into `shared/audio`.
+- [x] Keep root `pnpm typecheck`, `pnpm lint`, and old-app iOS export smoke
+  working as the normal validation gate.
+
+### Phase 2: Old-App Stabilization And De-Spaghetti
+
+- [x] Remove app-level event emitters and replace refresh flows with typed
+  feature actions or reactive Drizzle queries.
+- [x] Remove legacy controller/model layers from the main app path.
+- [x] Isolate AsyncStorage behind feature-level storage services.
+- [x] Move import, backup, premium, export, action-sheet, playback, and library
+  side effects out of large UI components/hooks where safe.
+- [ ] Finish slimming remaining large hooks and providers.
+  - Import/save flows are smaller but still contain orchestration and timers.
+  - Playback still needs a deeper pass around state ownership and queue/player
+    synchronization.
+  - Library query hooks are cleaner, but collection list helpers still need the
+    same treatment as song query helpers.
+- [ ] Finish repository/query coverage for all high-traffic library workflows.
+  - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
+  - Remaining gaps should be audited from screens/forms rather than assumed.
+- [ ] Add focused regression coverage or deterministic smoke helpers for the
+  highest-risk domains: import, save-to-library, backup restore, playback queue,
+  and library edits.
+
+### Phase 3: New App Build-Out
+
+- [ ] Define the `apps/new` feature map before moving more UI.
+  - App shell/navigation
+  - Library
+  - Playback
+  - Import/ingest
+  - Backup/restore
+  - Premium/settings
+- [ ] Move reusable feature logic from `apps/old` into shared app-local modules
+  that `apps/new` can consume without copying UI spaghetti.
+- [ ] Build the `apps/new` screens against reactive Drizzle query hooks instead
+  of event/callback refresh flows.
+- [ ] Rebuild playback as an explicit state machine/service boundary rather
+  than context-wide imperative state.
+- [ ] Rebuild import and ingest with Effect-style orchestration where it buys
+  clarity, cancellation, and typed errors.
+- [ ] Replace copied old UI with slim components plus feature hooks/services.
+- [ ] Make `apps/new` pass typecheck, lint, and iOS export smoke.
+
+### Phase 4: Cutover Readiness
+
+- [ ] Manually smoke the old reference app after every risky migration slice.
+- [ ] Manually smoke the new app feature-by-feature once screens exist:
+  - Library browsing/search/sort
+  - Album/artist/playlist detail and edit flows
+  - Import files and Wi-Fi import
+  - Save-to-library and discard import
+  - Playback, queue, shuffle/repeat, mini player, and player screen
+  - Backup restore/erase
+  - Premium purchase/restore state
+- [ ] Compare old and new behavior for the core user journeys.
+- [ ] Decide whether `apps/new` replaces `apps/old`, or whether `apps/old` is
+  kept as a legacy reference until a later branch.
+- [ ] Remove dead compatibility shims once the new app no longer depends on
+  them.
+- [ ] Final gate: root `pnpm typecheck`, root `pnpm lint`, old-app export smoke,
+  new-app export smoke, and a clean architectural scan for event emitters,
+  stray console calls, static `Dimensions.get`, and unisolated AsyncStorage.
+
+### Current Position
+
+We are solidly through Phase 1 and well into Phase 2. The project is not yet in
+the Phase 3 replacement-build stretch: `apps/new` exists, but it is not a full
+replacement app. The next useful work should alternate between:
+
+- closing Phase 2 gaps that would otherwise be copied into the new app; and
+- defining/building `apps/new` feature surfaces so cleanup does not become an
+endless old-app polishing loop.
+
 ## Current Verification
 
 - `pnpm install` succeeds for the workspace.

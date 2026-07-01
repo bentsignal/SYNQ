@@ -19,6 +19,7 @@ import { useAppShellContext } from "@/src/features/app-shell/context/AppShellPro
 import { useArtistAlbumsQuery } from "@/src/features/library/hooks/use-artist-albums-query";
 import { useArtistInfoQuery } from "@/src/features/library/hooks/use-artist-info-query";
 import { useArtistSongsQuery } from "@/src/features/library/hooks/use-artist-songs-query";
+import { useLibraryListQueryState } from "@/src/features/library/hooks/use-library-list-query-state";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { StyleSheet, Text, View } from "react-native";
@@ -30,12 +31,28 @@ const ArtistView = ({ id }: { id: number }) => {
 
   const [scrollPosition, setScrollPosition] = useState(0);
   const [tabIndex, setTabIndex] = useState(0);
-  const [songsQuery, setSongsQuery] = useState("");
-  const [albumsQuery, setAlbumsQuery] = useState("");
-  const [songSort, setSongSort] = useState<SortType>(SortType.ALBUM);
-  const [songOrder, setSongOrder] = useState<SortOrder>(SortOrder.DESC);
-  const [albumSort, setAlbumSort] = useState<SortType>(SortType.YEAR);
-  const [albumOrder, setAlbumOrder] = useState<SortOrder>(SortOrder.DESC);
+  const {
+    order: songOrder,
+    query: songsQuery,
+    setOrder: setSongOrder,
+    setQuery: setSongsQuery,
+    setSort: setSongSort,
+    sort: songSort,
+  } = useLibraryListQueryState({
+    initialOrder: SortOrder.DESC,
+    initialSort: SortType.ALBUM,
+  });
+  const {
+    order: albumOrder,
+    query: albumsQuery,
+    setOrder: setAlbumOrder,
+    setQuery: setAlbumsQuery,
+    setSort: setAlbumSort,
+    sort: albumSort,
+  } = useLibraryListQueryState({
+    initialOrder: SortOrder.DESC,
+    initialSort: SortType.YEAR,
+  });
   const { artist } = useArtistInfoQuery(id);
   const { songs, totalSongCount, isEmpty: songsEmpty } = useArtistSongsQuery({
     artistId: id,
@@ -57,7 +74,7 @@ const ArtistView = ({ id }: { id: number }) => {
     } else {
       setSongsQuery("");
     }
-  }, [tabIndex]);
+  }, [setAlbumsQuery, setSongsQuery, tabIndex]);
 
   const handleMore = () => {
     if (!artist) {

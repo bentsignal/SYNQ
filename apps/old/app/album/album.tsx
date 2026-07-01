@@ -17,6 +17,7 @@ import { useActionSheetContext } from "@/src/features/action-sheet/context/Actio
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useAlbumInfoQuery } from "@/src/features/library/hooks/use-album-info-query";
 import { useAlbumSongsQuery } from "@/src/features/library/hooks/use-album-songs-query";
+import { useLibraryListQueryState } from "@/src/features/library/hooks/use-library-list-query-state";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { StyleSheet, Text, View } from "react-native";
@@ -33,9 +34,11 @@ const AlbumView = ({ id }: { id: number }) => {
   const { sendHaptic } = useHaptics();
 
   const [scrollPosition, setScrollPosition] = useState(0);
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<SortType>(SortType.TRACK);
-  const [order, setOrder] = useState<SortOrder>(SortOrder.ASC);
+  const { order, query, setOrder, setQuery, setSort, sort } =
+    useLibraryListQueryState({
+      initialOrder: SortOrder.ASC,
+      initialSort: SortType.TRACK,
+    });
   const { album, artists } = useAlbumInfoQuery(id);
   const { songs, totalSongCount, totalDuration } = useAlbumSongsQuery({
     albumId: id,

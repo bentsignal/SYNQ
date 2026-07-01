@@ -14,6 +14,7 @@ import {
 } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
+import { useLibraryListQueryState } from "@/src/features/library/hooks/use-library-list-query-state";
 import { useLibrarySongsQuery } from "@/src/features/library/hooks/use-library-songs-query";
 import { usePlaylistInfoQuery } from "@/src/features/library/hooks/use-playlist-info-query";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
@@ -26,9 +27,11 @@ const PlaylistView = ({ id }: { id: number }) => {
   const { sendHaptic } = useHaptics();
 
   const [scrollPosition, setScrollPosition] = useState(0);
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<SortType>(SortType.DATE);
-  const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
+  const { order, query, setOrder, setQuery, setSort, sort } =
+    useLibraryListQueryState({
+      initialOrder: SortOrder.DESC,
+      initialSort: SortType.DATE,
+    });
   const { playlist } = usePlaylistInfoQuery(id);
   const { songs } = useLibrarySongsQuery({
     playlistId: id,

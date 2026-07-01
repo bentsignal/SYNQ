@@ -302,6 +302,9 @@ feature-oriented packages.
    - Library category list query/sort/order state now lives in a shared
      library feature hook, removing repeated state plumbing from the songs,
      albums, artists, and playlists category components.
+   - Album, artist, and playlist detail screens now reuse the shared library
+     query/sort/order state hook, keeping route-local state focused on detail
+     view concerns such as tabs and scroll position.
    - Song list page covers now receive playlist, album, and artist cover paths
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or

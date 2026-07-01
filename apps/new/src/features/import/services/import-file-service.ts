@@ -106,6 +106,7 @@ const processImportAsset = async ({
   return {
     album: metadata?.album?.trim() || fallbackLabel,
     artist: metadata?.artist?.trim() || fallbackLabel,
+    artwork: metadata?.artwork ?? null,
     cacheUri: destination,
     duration,
     fileName,

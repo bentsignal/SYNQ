@@ -40,7 +40,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/import",
     targetBoundary: "src/features/import",
-    nextMilestone: "Add cover/artwork persistence, Wi-Fi import, and import edit parity.",
+    nextMilestone: "Add Wi-Fi import and import edit parity.",
   },
   {
     key: "backup",

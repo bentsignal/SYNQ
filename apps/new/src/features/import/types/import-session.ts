@@ -13,6 +13,7 @@ export type ImportSource = "files" | "wifi";
 export type ImportSongDraft = {
   album: string;
   artist: string;
+  artwork: string | null;
   cacheUri: string;
   duration: number | null;
   fileName: string;

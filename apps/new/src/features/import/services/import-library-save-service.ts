@@ -2,6 +2,7 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
 import * as FileSystem from "expo-file-system";
+import { saveCoverImage } from "@/src/features/images/services/image-storage-service";
 import type {
   ImportSaveSummary,
   ImportSongDraft,
@@ -79,6 +80,44 @@ const insertSongDraft = async (song: ImportSongDraft) => {
     .returning({ id: schema.songs.id });
 
   return inserted[0].id;
+};
+
+const updateSongCover = async ({
+  artwork,
+  songId,
+}: {
+  artwork: string | null;
+  songId: number;
+}) => {
+  const coverImage = await saveCoverImage(artwork);
+
+  if (!coverImage) {
+    return;
+  }
+
+  await db
+    .update(schema.songs)
+    .set({ coverImage })
+    .where(eq(schema.songs.id, songId));
+};
+
+const updateAlbumCover = async ({
+  albumId,
+  artwork,
+}: {
+  albumId: number;
+  artwork: string | null;
+}) => {
+  const coverImage = await saveCoverImage(artwork);
+
+  if (!coverImage) {
+    return;
+  }
+
+  await db
+    .update(schema.albums)
+    .set({ coverImage })
+    .where(eq(schema.albums.id, albumId));
 };
 
 const deleteLibrarySong = async (songId: number) => {
@@ -184,7 +223,7 @@ const linkSongAlbum = async ({
   songId: number;
 }) => {
   if (!hasMeaningfulName(albumName)) {
-    return;
+    return false;
   }
 
   const albumId = await ensureAlbum(albumName);
@@ -193,6 +232,7 @@ const linkSongAlbum = async ({
     songId,
     track: song.track,
   });
+  await updateAlbumCover({ albumId, artwork: song.artwork });
 
   for (const artistId of artistIds) {
     await db.insert(schema.artistsAlbums).values({
@@ -200,6 +240,8 @@ const linkSongAlbum = async ({
       artistId,
     });
   }
+
+  return true;
 };
 
 const saveOneImportSong = async (song: ImportSongDraft) => {
@@ -222,12 +264,17 @@ const saveOneImportSong = async (song: ImportSongDraft) => {
     songId,
   });
 
-  await linkSongAlbum({
+  const linkedAlbum = await linkSongAlbum({
     albumName: song.album,
     artistIds,
     song,
     songId,
   });
+
+  if (!linkedAlbum) {
+    await updateSongCover({ artwork: song.artwork, songId });
+  }
+
   await linkSongToLibraryPlaylist(songId);
 
   return songId;

@@ -5,18 +5,18 @@ import AppIcon from "@/src/features/settings/components/AppIcon";
 import CategoryTitle from "@/src/features/settings/components/CategoryTitle";
 import Haptic from "@/src/features/settings/components/Haptic";
 import Theme from "@/src/features/settings/components/Theme";
-import { captureSettingsPremiumPress } from "@/src/features/settings/lib/settings-analytics";
+import { useSettingsCustomizationActions } from "@/src/features/settings/hooks/use-settings-customization-actions";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import Option from "@/src/shared/components/Option";
 import PageTitle from "@/src/shared/components/PageTitle";
 import Bar from "@/src/shared/components/modals/Bar";
 import ModalStyles from "@/src/shared/components/modals/Styles";
-import { router } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 const SettingsCustomizationScreen = () => {
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
+  const { openPremium } = useSettingsCustomizationActions(premium);
 
   return (
     <View style={[Styles.body, Local.container]}>
@@ -35,10 +35,7 @@ const SettingsCustomizationScreen = () => {
               icon={require("@/src/assets/icons/premium.png")}
               containerClass="bg-card"
               iconTint={theme}
-              handlePress={() => {
-                captureSettingsPremiumPress(premium);
-                router.push("/premium");
-              }}
+              handlePress={openPremium}
             />
           )}
           <View style={Local.contentContainer}>

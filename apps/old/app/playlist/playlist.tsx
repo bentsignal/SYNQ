@@ -1,11 +1,8 @@
 import { useMemo, useState } from "react";
-import Header from "@/src/features/library/components/Header";
+import LibraryDetailScreen from "@/src/features/library/components/detail/LibraryDetailScreen";
 import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
 import SongList from "@/src/features/library/components/lists/song";
 import SongListHeader from "@/src/features/library/components/lists/song/Header";
-import Overlay from "@/src/features/app-shell/components/Overlay";
-import { Colors } from "@/src/constants/Colors";
-import { Styles } from "@/src/constants/Styles";
 import {
   PageType,
   SortOrder,
@@ -13,14 +10,12 @@ import {
   SourceType,
 } from "@/src/constants/Types";
 import { useEntitySheetPresenter } from "@/src/features/action-sheet/hooks/use-entity-sheet-presenter";
-import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useLibraryListQueryState } from "@/src/features/library/hooks/use-library-list-query-state";
 import { useLibrarySongsQuery } from "@/src/features/library/hooks/use-library-songs-query";
 import { usePlaylistInfoQuery } from "@/src/features/library/hooks/use-playlist-info-query";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 
 const PlaylistView = ({ id }: { id: number }) => {
-  const { showOverlay } = useAppShellContext();
   const { presentPlaylistSheet } = useEntitySheetPresenter();
 
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -45,68 +40,51 @@ const PlaylistView = ({ id }: { id: number }) => {
   );
 
   return (
-    <View style={Local.wrapper}>
-      <View style={Local.container}>
-        <Header
-          scrollPosition={scrollPosition}
-          title={title}
-          showMore={true}
-          handleMore={() => presentPlaylistSheet(playlist)}
-        />
-        <Overlay show={showOverlay} activeOpacity={0.95} />
-        <SongList
-          songs={songs}
-          pageType={PageType.LIBRARY}
-          sourceId={id}
-          sourceType={SourceType.PLAYLIST}
-          sort={sort}
-          order={order}
-          query={query}
-          headerComponent={
-            <>
-              <SongListHeader
-                id={id}
-                title={title}
-                songCount={songCount}
-                pageType={PageType.PLAYLIST}
-                duration={duration}
-                image={playlist?.fullImage}
-              />
-              <QueryWrapper
-                setQuery={setQuery}
-                query={query}
-                setSort={setSort}
-                sort={sort}
-                order={order}
-                setOrder={setOrder}
-                songList
-                showSortTypes={{
-                  [SortType.TITLE]: true,
-                  [SortType.ARTIST]: true,
-                  [SortType.ALBUM]: true,
-                  [SortType.DATE]: true,
-                }}
-              />
-            </>
-          }
-          footerComponent={<View style={{ height: 1000 }} />}
-          setScrollPosition={setScrollPosition}
-        />
-      </View>
-    </View>
+    <LibraryDetailScreen
+      scrollPosition={scrollPosition}
+      title={title}
+      handleMore={() => presentPlaylistSheet(playlist)}
+    >
+      <SongList
+        songs={songs}
+        pageType={PageType.LIBRARY}
+        sourceId={id}
+        sourceType={SourceType.PLAYLIST}
+        sort={sort}
+        order={order}
+        query={query}
+        headerComponent={
+          <>
+            <SongListHeader
+              id={id}
+              title={title}
+              songCount={songCount}
+              pageType={PageType.PLAYLIST}
+              duration={duration}
+              image={playlist?.fullImage}
+            />
+            <QueryWrapper
+              setQuery={setQuery}
+              query={query}
+              setSort={setSort}
+              sort={sort}
+              order={order}
+              setOrder={setOrder}
+              songList
+              showSortTypes={{
+                [SortType.TITLE]: true,
+                [SortType.ARTIST]: true,
+                [SortType.ALBUM]: true,
+                [SortType.DATE]: true,
+              }}
+            />
+          </>
+        }
+        footerComponent={<View style={{ height: 1000 }} />}
+        setScrollPosition={setScrollPosition}
+      />
+    </LibraryDetailScreen>
   );
 };
-
-const Local = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: "black",
-  },
-  container: {
-    ...Styles.body,
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-});
 
 export default PlaylistView;

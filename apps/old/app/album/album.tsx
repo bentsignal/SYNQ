@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import Header from "@/src/features/library/components/Header";
 import AlbumHeader from "@/src/features/library/components/lists/album/Header";
 import ArtistItem from "@/src/features/library/components/lists/artist/ArtistItem";
+import LibraryDetailScreen from "@/src/features/library/components/detail/LibraryDetailScreen";
 import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
 import SongList from "@/src/features/library/components/lists/song";
-import Overlay from "@/src/features/app-shell/components/Overlay";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import {
@@ -14,11 +13,10 @@ import {
   SourceType,
 } from "@/src/constants/Types";
 import { useEntitySheetPresenter } from "@/src/features/action-sheet/hooks/use-entity-sheet-presenter";
-import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useAlbumInfoQuery } from "@/src/features/library/hooks/use-album-info-query";
 import { useAlbumSongsQuery } from "@/src/features/library/hooks/use-album-songs-query";
 import { useLibraryListQueryState } from "@/src/features/library/hooks/use-library-list-query-state";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -26,7 +24,6 @@ import Animated, {
 } from "react-native-reanimated";
 
 const AlbumView = ({ id }: { id: number }) => {
-  const { showOverlay } = useAppShellContext();
   const { presentAlbumSheet } = useEntitySheetPresenter();
 
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -58,81 +55,67 @@ const AlbumView = ({ id }: { id: number }) => {
   }, [artistListOpacity, artists.length, songs.length]);
 
   return (
-    <View style={Local.wrapper}>
-      <View style={Local.container}>
-        <Header
-          scrollPosition={scrollPosition}
-          title={title}
-          showMore={true}
-          handleMore={() => presentAlbumSheet(album)}
-        />
-        <Overlay show={showOverlay} activeOpacity={0.95} />
-        <SongList
-          songs={songs}
-          pageType={PageType.ALBUM}
-          sourceId={id}
-          sourceType={SourceType.ALBUM}
-          sort={sort}
-          order={order}
-          query={query}
-          headerComponent={
-            <>
-              <AlbumHeader
-                id={id}
-                title={title}
-                year={year}
-                leadArtist={artists[0]}
-                songCount={totalSongCount}
-                pageType={PageType.ALBUM}
-                duration={totalDuration}
-                image={album?.fullImage}
+    <LibraryDetailScreen
+      scrollPosition={scrollPosition}
+      title={title}
+      handleMore={() => presentAlbumSheet(album)}
+    >
+      <SongList
+        songs={songs}
+        pageType={PageType.ALBUM}
+        sourceId={id}
+        sourceType={SourceType.ALBUM}
+        sort={sort}
+        order={order}
+        query={query}
+        headerComponent={
+          <>
+            <AlbumHeader
+              id={id}
+              title={title}
+              year={year}
+              leadArtist={artists[0]}
+              songCount={totalSongCount}
+              pageType={PageType.ALBUM}
+              duration={totalDuration}
+              image={album?.fullImage}
+            />
+            <QueryWrapper
+              setQuery={setQuery}
+              query={query}
+              setSort={setSort}
+              sort={sort}
+              order={order}
+              setOrder={setOrder}
+              songList
+              showSortTypes={{
+                [SortType.TITLE]: true,
+                [SortType.TRACK]: true,
+              }}
+            />
+          </>
+        }
+        setScrollPosition={setScrollPosition}
+        footerComponent={
+          <Animated.View style={[Local.artistList, artistListAnimatedStyle]}>
+            {artists.length > 0 && (
+              <Text style={Local.artistListTitle}>Artists</Text>
+            )}
+            {artists.map((artist) => (
+              <ArtistItem
+                key={artist.id}
+                artist={artist}
+                allowInteraction={true}
               />
-              <QueryWrapper
-                setQuery={setQuery}
-                query={query}
-                setSort={setSort}
-                sort={sort}
-                order={order}
-                setOrder={setOrder}
-                songList
-                showSortTypes={{
-                  [SortType.TITLE]: true,
-                  [SortType.TRACK]: true,
-                }}
-              />
-            </>
-          }
-          setScrollPosition={setScrollPosition}
-          footerComponent={
-            <Animated.View style={[Local.artistList, artistListAnimatedStyle]}>
-              {artists.length > 0 && (
-                <Text style={Local.artistListTitle}>Artists</Text>
-              )}
-              {artists.map((artist) => (
-                <ArtistItem
-                  key={artist.id}
-                  artist={artist}
-                  allowInteraction={true}
-                />
-              ))}
-            </Animated.View>
-          }
-        />
-      </View>
-    </View>
+            ))}
+          </Animated.View>
+        }
+      />
+    </LibraryDetailScreen>
   );
 };
 
 const Local = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: "black",
-  },
-  container: {
-    ...Styles.body,
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
   artistList: {
     width: "100%",
     height: 1000,

@@ -339,6 +339,9 @@ feature-oriented packages.
    - Playlist, album, and artist edit routes now share a library feature edit
      screen for modal chrome, cover editing, text inputs, notifications, and
      close handling, while album still supplies its artist relation section.
+   - Playlist, album, and artist detail routes now share a library feature
+     detail shell for the screen container, sticky header, and global overlay,
+     leaving each route focused on its query/list content.
    - Song list page covers now receive playlist, album, and artist cover paths
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or

@@ -5,7 +5,13 @@ import {
   SourceType,
 } from "@/src/constants/Types";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
+import {
+  usePlaybackAddOffsetContext,
+  usePlaybackModeContext,
+  usePlaybackQueueFilterContext,
+  usePlaybackQueueRefreshContext,
+  usePlaybackSourceContext,
+} from "@/src/features/playback/context/PlaybackProvider";
 import {
   addTrackToQueue,
   moveQueueTrack,
@@ -26,25 +32,18 @@ import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { State, Track } from "react-native-track-player";
 
 export default function usePlayer() {
+  const { setLoop, setShuffle, loop, shuffle } = usePlaybackModeContext();
+  const { setSourceId, setSourceType, sourceId, sourceType } =
+    usePlaybackSourceContext();
   const {
-    setShuffle,
-    setLoop,
-    setSourceType,
-    setSourceId,
     addOffset,
-    setAddOffset,
-    sourceType,
-    sourceId,
-    shuffle,
-    loop,
-    incrementAddOffset,
     decrementAddOffset,
+    incrementAddOffset,
     resetAddOffset,
-    sort,
-    order,
-    query,
-    requestQueueRefresh,
-  } = usePlaybackContext();
+    setAddOffset,
+  } = usePlaybackAddOffsetContext();
+  const { order, query, sort } = usePlaybackQueueFilterContext();
+  const { requestQueueRefresh } = usePlaybackQueueRefreshContext();
 
   const { theme } = useThemeContext();
   const { sendHaptic } = useHaptics();

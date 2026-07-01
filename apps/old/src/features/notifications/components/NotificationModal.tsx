@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import CustomButton from "@/src/shared/components/CustomButton";
 import VerticalScrollView from "@/src/shared/components/VerticalScrollView";
 import CustomModal from "@/src/shared/components/modals/CustomModal";
@@ -22,6 +22,7 @@ const NotificationModal = () => {
   const { setShowOverlay } = useAppShellContext();
 
   const { theme } = useThemeContext();
+  const { height } = useWindowDimensions();
 
   const Local = StyleSheet.create({
     container: {
@@ -60,8 +61,8 @@ const NotificationModal = () => {
         <ModalTitle title={notificationTitle} />
         <VerticalScrollView
           backgroundColor={Colors.popup}
-          maxHeight={Dimensions.get("screen").height * 0.3}
-          minHeight={Dimensions.get("screen").height * 0.5}
+          maxHeight={height * 0.3}
+          minHeight={height * 0.5}
         >
           <View style={Local.contentContainer}>
             <Text style={Local.message}>{notificationMessage}</Text>

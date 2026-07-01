@@ -1,4 +1,4 @@
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import CustomButton from "@/src/shared/components/CustomButton";
 import VerticalScrollView from "@/src/shared/components/VerticalScrollView";
 import CustomModal from "@/src/shared/components/modals/CustomModal";
@@ -17,6 +17,7 @@ const InfoModal = () => {
   } = useAppShellContext();
 
   const { theme } = useThemeContext();
+  const { height } = useWindowDimensions();
 
   const Local = StyleSheet.create({
     wrapper: {
@@ -63,8 +64,8 @@ const InfoModal = () => {
         <ModalTitle title={'Instructions'} />
         <VerticalScrollView
           backgroundColor={Colors.popup}
-          maxHeight={Dimensions.get('screen').height * 0.58}
-          minHeight={Dimensions.get('screen').height * 0.58}
+          maxHeight={height * 0.58}
+          minHeight={height * 0.58}
         >
           <View style={Local.container}>
             <InfoContainer 

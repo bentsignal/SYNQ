@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
-import usePlayer from "@/src/features/playback/hooks/use-player";
-import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { usePausePlaybackButton } from "@/src/features/playback/hooks/use-pause-playback-button";
+import {
+  StyleSheet,
+  type StyleProp,
+  TouchableOpacity,
+  View,
+  type ViewStyle,
+} from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { State, usePlaybackState } from "react-native-track-player";
 
 const PausePlayButtons = ({
   playSize,
@@ -16,54 +19,22 @@ const PausePlayButtons = ({
   playSize: number;
   pauseHeight: number;
   pauseWidth: number;
-  style: object;
+  style: StyleProp<ViewStyle>;
   color?: string;
 }) => {
-  const { sendHaptic } = useHaptics();
-  const { togglePlayback: togglePlayerPlayback } = usePlayer();
-
-  const playbackState = usePlaybackState();
-  const [currentState, setCurrentState] = useState(
-    playbackState.state ?? State.None,
-  );
-  const previousState = useRef(State.Playing);
-
-  useEffect(() => {
-    setCurrentState((state) => {
-      previousState.current = state;
-      return playbackState.state ?? State.None;
-    });
-  }, [playbackState.state]);
-
-  const togglePlayback = async () => {
-    try {
-      sendHaptic("soft");
-      await togglePlayerPlayback(currentState);
-    } catch (error) {
-      console.error("Error toggling play/pause:", error);
-    }
-  };
-
-  const getButton = () => {
-    if (
-      [State.Paused, State.Ready].includes(currentState) &&
-      ![State.Loading, State.Buffering].includes(previousState.current)
-    ) {
-      return <PlayButton size={playSize} color={color} />;
-    } else {
-      return (
-        <PauseButton height={pauseHeight} width={pauseWidth} color={color} />
-      );
-    }
-  };
+  const { showPlayButton, togglePlayback } = usePausePlaybackButton();
 
   return (
     <TouchableOpacity
       onPress={togglePlayback}
-      style={{ ...style }}
+      style={style}
       activeOpacity={0.8}
     >
-      {getButton()}
+      {showPlayButton ? (
+        <PlayButton size={playSize} color={color} />
+      ) : (
+        <PauseButton height={pauseHeight} width={pauseWidth} color={color} />
+      )}
     </TouchableOpacity>
   );
 };

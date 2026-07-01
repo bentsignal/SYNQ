@@ -388,6 +388,9 @@ feature-oriented packages.
    - Import success and failure routes now delegate to import feature screen
      components, moving Lottie status presentation and failure navigation out
      of app route files.
+   - Artist detail route now delegates to a library feature screen component,
+     keeping artist detail queries, tab state, list headers, empty states, and
+     action-sheet presentation out of the app route.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

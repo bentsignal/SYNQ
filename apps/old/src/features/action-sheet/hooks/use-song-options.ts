@@ -13,8 +13,11 @@ import {
   removeSongFromLibraryPlaylist,
 } from "@/src/features/library/repository/library-entity-repository";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
-import usePlayer from "@/src/features/playback/hooks/use-player";
+import { usePlaybackAddOffsetContext } from "@/src/features/playback/context/PlaybackProvider";
+import { addSongToPlaybackQueue } from "@/src/features/playback/lib/playback-song-command-service";
+import { removeTracksBySongIds } from "@/src/features/playback/lib/player-queue-actions-service";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
@@ -28,9 +31,10 @@ export function useSongOptions(sheetName: string, library: boolean) {
   const { setShowImportAd, setShowGlobalLoading } =
     useGlobalProgressContext();
   const { selectedSongs } = useSelectionContext();
-  const { addSongToQueue, removeSongsFromQueue } = usePlayer();
+  const { addOffset, incrementAddOffset } = usePlaybackAddOffsetContext();
   const { premium } = usePremiumContext();
   const { sendHaptic } = useHaptics();
+  const { theme } = useThemeContext();
   const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
   const [inLiked, setInLiked] = useState(false);
 
@@ -54,9 +58,14 @@ export function useSongOptions(sheetName: string, library: boolean) {
     TrueSheet.dismiss(sheetName);
     sendHaptic("light");
     setTimeout(async () => {
-      await addSongToQueue(editSong);
+      await addSongToPlaybackQueue({
+        song: editSong,
+        theme,
+        addOffset,
+        incrementAddOffset,
+      });
     }, actionDelay);
-  }, [addSongToQueue, editSong, sendHaptic, sheetName]);
+  }, [addOffset, editSong, incrementAddOffset, sendHaptic, sheetName, theme]);
 
   const handleEditSong = useCallback(() => {
     TrueSheet.dismiss(sheetName);
@@ -98,7 +107,7 @@ export function useSongOptions(sheetName: string, library: boolean) {
       editSong,
       results,
       selectedSongIds: selectedSongs,
-      removeSongsFromQueue,
+      removeSongsFromQueue: removeTracksBySongIds,
       setExportDisabled,
       setResults,
       onLibrarySongDeleted: () => {
@@ -107,7 +116,6 @@ export function useSongOptions(sheetName: string, library: boolean) {
     });
   }, [
     editSong,
-    removeSongsFromQueue,
     results,
     selectedSongs,
     setExportDisabled,

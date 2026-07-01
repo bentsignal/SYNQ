@@ -305,6 +305,10 @@ feature-oriented packages.
    - Album, artist, and playlist detail screens now reuse the shared library
      query/sort/order state hook, keeping route-local state focused on detail
      view concerns such as tabs and scroll position.
+   - Album, artist, and playlist detail sheet presentation now lives in an
+     action-sheet feature hook, moving haptics, edit-entity context updates,
+     sheet presentation, and presenter error handling out of the route
+     components.
    - Song list page covers now receive playlist, album, and artist cover paths
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or

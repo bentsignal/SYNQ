@@ -13,13 +13,11 @@ import {
   SortType,
   SourceType,
 } from "@/src/constants/Types";
-import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
+import { useEntitySheetPresenter } from "@/src/features/action-sheet/hooks/use-entity-sheet-presenter";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useAlbumInfoQuery } from "@/src/features/library/hooks/use-album-info-query";
 import { useAlbumSongsQuery } from "@/src/features/library/hooks/use-album-songs-query";
 import { useLibraryListQueryState } from "@/src/features/library/hooks/use-library-list-query-state";
-import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
-import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { StyleSheet, Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -28,10 +26,8 @@ import Animated, {
 } from "react-native-reanimated";
 
 const AlbumView = ({ id }: { id: number }) => {
-  const { setEditAlbum } = useActionSheetContext();
   const { showOverlay } = useAppShellContext();
-
-  const { sendHaptic } = useHaptics();
+  const { presentAlbumSheet } = useEntitySheetPresenter();
 
   const [scrollPosition, setScrollPosition] = useState(0);
   const { order, query, setOrder, setQuery, setSort, sort } =
@@ -61,20 +57,6 @@ const AlbumView = ({ id }: { id: number }) => {
     }
   }, [artistListOpacity, artists.length, songs.length]);
 
-  const handleMore = () => {
-    if (!album) {
-      return;
-    }
-
-    sendHaptic("light");
-    setEditAlbum(album);
-    try {
-      TrueSheet.present("album-sheet");
-    } catch (error) {
-      console.log("error snapping to album sheet:", error);
-    }
-  };
-
   return (
     <View style={Local.wrapper}>
       <View style={Local.container}>
@@ -82,7 +64,7 @@ const AlbumView = ({ id }: { id: number }) => {
           scrollPosition={scrollPosition}
           title={title}
           showMore={true}
-          handleMore={handleMore}
+          handleMore={() => presentAlbumSheet(album)}
         />
         <Overlay show={showOverlay} activeOpacity={0.95} />
         <SongList

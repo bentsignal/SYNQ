@@ -14,20 +14,17 @@ import {
   SortType,
   SourceType,
 } from "@/src/constants/Types";
-import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
+import { useEntitySheetPresenter } from "@/src/features/action-sheet/hooks/use-entity-sheet-presenter";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useArtistAlbumsQuery } from "@/src/features/library/hooks/use-artist-albums-query";
 import { useArtistInfoQuery } from "@/src/features/library/hooks/use-artist-info-query";
 import { useArtistSongsQuery } from "@/src/features/library/hooks/use-artist-songs-query";
 import { useLibraryListQueryState } from "@/src/features/library/hooks/use-library-list-query-state";
-import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
-import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { StyleSheet, Text, View } from "react-native";
 
 const ArtistView = ({ id }: { id: number }) => {
-  const { setEditArtist } = useActionSheetContext();
   const { showOverlay } = useAppShellContext();
-  const { sendHaptic } = useHaptics();
+  const { presentArtistSheet } = useEntitySheetPresenter();
 
   const [scrollPosition, setScrollPosition] = useState(0);
   const [tabIndex, setTabIndex] = useState(0);
@@ -76,20 +73,6 @@ const ArtistView = ({ id }: { id: number }) => {
     }
   }, [setAlbumsQuery, setSongsQuery, tabIndex]);
 
-  const handleMore = () => {
-    if (!artist) {
-      return;
-    }
-
-    sendHaptic("light");
-    setEditArtist(artist);
-    try {
-      TrueSheet.present("artist-sheet");
-    } catch (error) {
-      console.log("error snapping to artist sheet:", error);
-    }
-  };
-
   return (
     <View style={Local.wrapper}>
       <View style={Local.container}>
@@ -97,7 +80,7 @@ const ArtistView = ({ id }: { id: number }) => {
           scrollPosition={scrollPosition}
           title={title}
           showMore={true}
-          handleMore={handleMore}
+          handleMore={() => presentArtistSheet(artist)}
         />
         <Overlay show={showOverlay} activeOpacity={0.95} />
         {tabIndex === 0 && (

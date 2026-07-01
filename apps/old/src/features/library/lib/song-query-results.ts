@@ -1,6 +1,16 @@
-import type { SongType } from "@/src/constants/Types";
+import { SortOrder, SortType, type SongType } from "@/src/constants/Types";
 
 type SongQueryField = "title" | "artist" | "album";
+type SongSortComparers = Partial<Record<SortType, SongSortComparer>>;
+type SongSortComparer = (first: SongType, second: SongType) => number;
+
+type SortSongResultsInput = {
+  comparers: SongSortComparers;
+  fallbackComparer: SongSortComparer;
+  order: SortOrder;
+  songs: SongType[];
+  sort: SortType;
+};
 
 export const normalizeLibraryQuery = (query?: string) =>
   query?.trim().toLowerCase() ?? "";
@@ -30,4 +40,17 @@ export const matchesSongQuery = (
   }
 
   return fields.some((field) => song[field]?.toLowerCase().includes(query));
+};
+
+export const sortSongResults = ({
+  comparers,
+  fallbackComparer,
+  order,
+  songs,
+  sort,
+}: SortSongResultsInput) => {
+  const comparer = comparers[sort] ?? fallbackComparer;
+  const sorted = [...songs].sort(comparer);
+
+  return order === SortOrder.DESC ? sorted.reverse() : sorted;
 };

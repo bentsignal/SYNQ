@@ -14,6 +14,7 @@ import {
   compareLibraryText,
   matchesSongQuery,
   normalizeLibraryQuery,
+  sortSongResults,
 } from "@/src/features/library/lib/song-query-results";
 
 type LibrarySongQueryOptions = {
@@ -36,23 +37,20 @@ const sortSongs = (
   sort: SortType,
   order: SortOrder,
 ) => {
-  const sorted = [...songs].sort((first, second) => {
-    if (sort === SortType.TITLE) {
-      return compareLibraryText(first.title, second.title);
-    }
-
-    if (sort === SortType.ARTIST) {
-      return compareLibraryText(first.artist, second.artist);
-    }
-
-    if (sort === SortType.ALBUM) {
-      return compareLibraryText(first.album, second.album);
-    }
-
-    return first.id - second.id;
+  return sortSongResults({
+    comparers: {
+      [SortType.TITLE]: (first, second) =>
+        compareLibraryText(first.title, second.title),
+      [SortType.ARTIST]: (first, second) =>
+        compareLibraryText(first.artist, second.artist),
+      [SortType.ALBUM]: (first, second) =>
+        compareLibraryText(first.album, second.album),
+    },
+    fallbackComparer: (first, second) => first.id - second.id,
+    order,
+    songs,
+    sort,
   });
-
-  return order === SortOrder.DESC ? sorted.reverse() : sorted;
 };
 
 const rowsToSongs = (rows: LibrarySongRow[], pageType: PageType) => {

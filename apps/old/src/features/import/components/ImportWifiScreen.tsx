@@ -10,7 +10,8 @@ import { useImportTransferCompletion } from "@/src/features/import/hooks/use-imp
 import SongList from "@/src/features/library/components/lists/song";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
 import { useEffect } from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import { useImportResponsiveSpacing } from "@/src/features/import/hooks/use-import-responsive-spacing";
 
 const ImportWifiScreen = () => {
   const {
@@ -29,6 +30,7 @@ const ImportWifiScreen = () => {
     transferProgress,
     transferSize,
   });
+  const { transferBottomPadding } = useImportResponsiveSpacing();
   const url = !wifiDisabled ? ip : "";
 
   useEffect(() => {
@@ -38,7 +40,13 @@ const ImportWifiScreen = () => {
   const renderBody = () => {
     if (wifiDisabled) {
       return (
-        <View style={[Styles.main, Local.container]}>
+        <View
+          style={[
+            Styles.main,
+            Local.container,
+            { paddingBottom: transferBottomPadding },
+          ]}
+        >
           <Text style={Styles.infoText}>Failed to start server</Text>
           <Text style={[Styles.sub, Local.message]}>Try restarting the app</Text>
         </View>
@@ -91,7 +99,6 @@ const ImportWifiScreen = () => {
 const Local = StyleSheet.create({
   container: {
     flexGrow: 1,
-    paddingBottom: Dimensions.get("screen").height < 700 ? 70 : 50,
   },
   message: {
     marginTop: 10,

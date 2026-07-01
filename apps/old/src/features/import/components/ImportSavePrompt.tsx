@@ -2,16 +2,26 @@ import Progress from "@/src/features/import/components/Progress";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { useImportSaveFlow } from "@/src/features/import/hooks/use-import-save-flow";
+import { useImportResponsiveSpacing } from "@/src/features/import/hooks/use-import-responsive-spacing";
 import ExpoCheckbox from "expo-checkbox";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 const ImportSavePrompt = () => {
   const { loading, saveCompletion, shouldSaveToLibrary, theme, toggleSave } =
     useImportSaveFlow();
+  const { promptBottomMargin } = useImportResponsiveSpacing();
 
   return (
     <>
-      <View style={[Local.body, { display: loading ? "none" : "flex" }]}>
+      <View
+        style={[
+          Local.body,
+          {
+            display: loading ? "none" : "flex",
+            marginBottom: promptBottomMargin,
+          },
+        ]}
+      >
         <Text style={Local.prompt}>Save to SYNQ library?</Text>
         <Text style={Local.info}>
           If you want to listen to your music in SYNQ, check the box below. Your
@@ -26,7 +36,15 @@ const ImportSavePrompt = () => {
           />
         </View>
       </View>
-      <View style={[Local.body, { display: loading ? "flex" : "none" }]}>
+      <View
+        style={[
+          Local.body,
+          {
+            display: loading ? "flex" : "none",
+            marginBottom: promptBottomMargin,
+          },
+        ]}
+      >
         <Progress
           completion={saveCompletion}
           loading={loading}
@@ -41,7 +59,6 @@ const Local = StyleSheet.create({
   body: {
     ...Styles.main,
     width: "90%",
-    marginBottom: Dimensions.get("screen").height < 700 ? 100 : 80,
   },
   prompt: {
     ...Styles.h3,

@@ -1,14 +1,16 @@
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { useImportExportFlow } from "@/src/features/import/hooks/use-import-export-flow";
+import { useImportResponsiveSpacing } from "@/src/features/import/hooks/use-import-responsive-spacing";
 import CustomButton from "@/src/shared/components/CustomButton";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 const ImportExportPrompt = () => {
   const { disabled, handleExport, theme } = useImportExportFlow();
+  const { promptBottomMargin } = useImportResponsiveSpacing();
 
   return (
-    <View style={Local.body}>
+    <View style={[Local.body, { marginBottom: promptBottomMargin }]}>
       <Text style={Local.prompt}>Export your edited songs?</Text>
       <Text style={Local.info}>
         To learn how to export your songs to Spotify, click the info icon at the
@@ -30,7 +32,6 @@ const Local = StyleSheet.create({
   body: {
     ...Styles.main,
     width: "90%",
-    marginBottom: Dimensions.get("screen").height < 700 ? 100 : 80,
   },
   prompt: {
     ...Styles.h3,

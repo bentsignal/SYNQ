@@ -10,6 +10,10 @@ import {
   createImportDir,
   getWifiTransferSong,
 } from "@/src/features/import/lib/import-song-processing";
+import {
+  isAcceptedWifiUpload,
+  parseWifiUploadRequest,
+} from "@/src/features/import/lib/wifi-upload-request";
 
 const getIP = async () => {
   return await Network.getIpAddressAsync();
@@ -127,25 +131,10 @@ export function useWifiTransferServer() {
 
     server.post("/fileUpload", async (req: any, res: any) => {
       try {
-        const body = req.postData;
-        const name = body.name ? body.name : "";
-        const type = body.type ? body.type : "";
-        const b64 = body.data ? body.data : "";
-        const id = body.id ? Number(body.id) : 0;
-
-        const acceptedTypes = [
-          "audio/mpeg",
-          "audio/flac",
-          "audio/wav",
-          "audio/mp4",
-          "audio/aac",
-          "audio/x-m4a",
-        ];
+        const { b64, id, name, type } = parseWifiUploadRequest(req.postData);
 
         if (
-          name &&
-          acceptedTypes.includes(type) &&
-          b64 &&
+          isAcceptedWifiUpload({ b64, id, name, type }) &&
           !receivedRequests.current.has(id)
         ) {
           const song = await getWifiTransferSong(name, id, type, b64);

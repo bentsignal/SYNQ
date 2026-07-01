@@ -30,7 +30,6 @@ const getLibrarySongAudioPath = (song: SongType) => {
 const loadSongAudioData = async (song: SongType) => {
   if (song.pageType === PageType.IMPORT) {
     if (!song.cacheUri) {
-      console.log("Import song missing cacheUri, skipping metadata update:", song.id);
       return;
     }
 
@@ -42,7 +41,6 @@ const loadSongAudioData = async (song: SongType) => {
 
   const audioPath = getLibrarySongAudioPath(song);
   if (!audioPath) {
-    console.log("Library song missing fileName, skipping audio read:", song.id);
     return;
   }
 
@@ -86,7 +84,6 @@ const buildMetadataTags = (song: SongType) => {
 
   const image = song.artwork ?? "";
   if (!image) {
-    console.log("no image for library song export");
     return tags;
   }
 
@@ -118,12 +115,11 @@ export const updateExportSongMetadata = async (song: SongType) => {
   try {
     await loadSongAudioData(song);
     await loadSongArtwork(song);
-  } catch (error) {
-    console.log("error loading song data for export metadata:", error);
+  } catch {
+    // Metadata refresh is best-effort; export can continue with current data.
   }
 
   if (!song.data) {
-    console.log("Song with no data, return");
     return;
   }
 
@@ -139,7 +135,6 @@ export const updateExportSongMetadata = async (song: SongType) => {
 
       if (song.pageType === PageType.IMPORT) {
         if (!song.cacheUri) {
-          console.log("Import song missing cacheUri, skipping metadata write:", song.id);
           return;
         }
 
@@ -151,18 +146,15 @@ export const updateExportSongMetadata = async (song: SongType) => {
 
       const audioPath = getLibrarySongAudioPath(song);
       if (!audioPath) {
-        console.log("Library song missing fileName, skipping metadata write:", song.id);
         return;
       }
 
       await FileSystem.writeAsStringAsync(audioPath, song.data, {
         encoding: "base64",
       });
-    } else {
-      console.log("no file type for song: ", song.title, song.fileType);
     }
-  } catch (error) {
-    console.log("error modifying audio file data", error);
+  } catch {
+    // Unsupported or malformed metadata should not block sharing the audio.
   }
 };
 

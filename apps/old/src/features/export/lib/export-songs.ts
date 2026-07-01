@@ -50,7 +50,6 @@ export const exportSongs = async (songs: SongType[]) => {
         }
         await Sharing.shareAsync(audioPath);
       } catch (error) {
-        console.log("error sharing song from library: ", error);
         throw new Error("Error sharing song from library: " + error);
       }
     }
@@ -95,8 +94,8 @@ export const exportSongs = async (songs: SongType[]) => {
             from: audioPath,
             to: `${dir}/${song.fileName}`,
           });
-        } catch (error) {
-          console.log("error copying song from library: ", error);
+        } catch {
+          // Keep batch export moving when one library song cannot be copied.
         }
       }
     }

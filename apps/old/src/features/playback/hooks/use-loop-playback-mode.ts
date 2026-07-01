@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
+import { usePlaybackModeContext } from "@/src/features/playback/context/PlaybackProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const useLoopPlaybackMode = () => {
-  const { loop, setLoop } = usePlaybackContext();
+  const { loop, setLoop } = usePlaybackModeContext();
   const [localLoop, setLocalLoop] = useState(loop);
 
   const toggleLoop = useCallback(async () => {

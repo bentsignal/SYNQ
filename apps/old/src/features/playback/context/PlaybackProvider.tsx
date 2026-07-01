@@ -36,6 +36,16 @@ interface PlaybackContextType {
   queueRevision: number;
   requestQueueRefresh: () => void;
 };
+
+type PlaybackModeContextType = Pick<
+  PlaybackContextType,
+  "loop" | "setLoop" | "setShuffle" | "shuffle"
+>;
+type PlaybackSourceContextType = Pick<
+  PlaybackContextType,
+  "setSourceId" | "setSourceType" | "sourceId" | "sourceType"
+>;
+
 const PlaybackContext = createContext<PlaybackContextType>({
   sourceId: null,
   setSourceId: () => {},
@@ -62,7 +72,22 @@ const PlaybackContext = createContext<PlaybackContextType>({
   requestQueueRefresh: () => {},
 });
 
+const PlaybackModeContext = createContext<PlaybackModeContextType>({
+  loop: false,
+  setLoop: () => {},
+  setShuffle: () => {},
+  shuffle: false,
+});
+const PlaybackSourceContext = createContext<PlaybackSourceContextType>({
+  setSourceId: () => {},
+  setSourceType: () => {},
+  sourceId: null,
+  sourceType: null,
+});
+
 export const usePlaybackContext = () => useContext(PlaybackContext);
+export const usePlaybackModeContext = () => useContext(PlaybackModeContext);
+export const usePlaybackSourceContext = () => useContext(PlaybackSourceContext);
 
 const PlaybackProvider: React.FC<Props> = ({ children }) => {
   const { setSourceId, setSourceType, sourceId, sourceType } =
@@ -82,35 +107,42 @@ const PlaybackProvider: React.FC<Props> = ({ children }) => {
   const { queueRevision, requestQueueRefresh } = usePlaybackQueueRefresh();
 
   return (
-    <PlaybackContext.Provider
-      value={{
-        sourceId,
-        setSourceId,
-        sourceType,
-        setSourceType,
-        shuffle,
-        setShuffle,
-        loop,
-        setLoop,
-        playerInitialized,
-        setPlayerInitialized,
-        addOffset,
-        setAddOffset,
-        incrementAddOffset,
-        decrementAddOffset,
-        resetAddOffset,
-        sort,
-        setSort,
-        order,
-        setOrder,
-        query,
-        setQuery,
-        queueRevision,
-        requestQueueRefresh,
-      }}
+    <PlaybackModeContext.Provider value={{ loop, setLoop, setShuffle, shuffle }}
     >
-      {children}
-    </PlaybackContext.Provider>
+      <PlaybackSourceContext.Provider
+        value={{ setSourceId, setSourceType, sourceId, sourceType }}
+      >
+        <PlaybackContext.Provider
+          value={{
+            sourceId,
+            setSourceId,
+            sourceType,
+            setSourceType,
+            shuffle,
+            setShuffle,
+            loop,
+            setLoop,
+            playerInitialized,
+            setPlayerInitialized,
+            addOffset,
+            setAddOffset,
+            incrementAddOffset,
+            decrementAddOffset,
+            resetAddOffset,
+            sort,
+            setSort,
+            order,
+            setOrder,
+            query,
+            setQuery,
+            queueRevision,
+            requestQueueRefresh,
+          }}
+        >
+          {children}
+        </PlaybackContext.Provider>
+      </PlaybackSourceContext.Provider>
+    </PlaybackModeContext.Provider>
   );
 };
 

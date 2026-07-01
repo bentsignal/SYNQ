@@ -1,4 +1,7 @@
-import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
+import {
+  usePlaybackModeContext,
+  usePlaybackQueueRefreshContext,
+} from "@/src/features/playback/context/PlaybackProvider";
 import usePlayer from "@/src/features/playback/hooks/use-player";
 import {
   getActiveQueueTrackIndex,
@@ -23,7 +26,8 @@ type PlaybackQueueDisplayParams = {
 export const usePlaybackQueueDisplay = ({
   listRef,
 }: PlaybackQueueDisplayParams) => {
-  const { queueRevision, shuffle } = usePlaybackContext();
+  const { shuffle } = usePlaybackModeContext();
+  const { queueRevision } = usePlaybackQueueRefreshContext();
   const { moveQueueSong } = usePlayer();
   const track = useActiveTrack();
 

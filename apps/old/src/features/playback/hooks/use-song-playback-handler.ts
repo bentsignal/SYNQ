@@ -4,7 +4,7 @@ import {
   SortType,
   SourceType,
 } from "@/src/constants/Types";
-import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
+import { usePlaybackModeContext } from "@/src/features/playback/context/PlaybackProvider";
 import { useAdGatedPlaybackCommand } from "@/src/features/playback/hooks/use-ad-gated-playback-command";
 import { usePlaybackSourcePersistence } from "@/src/features/playback/hooks/use-playback-source-persistence";
 import usePlayer from "@/src/features/playback/hooks/use-player";
@@ -30,7 +30,7 @@ export const useSongPlaybackHandler = ({
   order,
   query,
 }: SongPlaybackHandlerParams) => {
-  const { shuffle } = usePlaybackContext();
+  const { shuffle } = usePlaybackModeContext();
   const { sendHaptic } = useHaptics();
   const { addSongToQueue, playSong, updateQueue } = usePlayer();
   const { runAdGatedPlaybackCommand } = useAdGatedPlaybackCommand();

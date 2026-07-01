@@ -45,6 +45,14 @@ type PlaybackSourceContextType = Pick<
   PlaybackContextType,
   "setSourceId" | "setSourceType" | "sourceId" | "sourceType"
 >;
+type PlaybackQueueFilterContextType = Pick<
+  PlaybackContextType,
+  "order" | "query" | "setOrder" | "setQuery" | "setSort" | "sort"
+>;
+type PlaybackQueueRefreshContextType = Pick<
+  PlaybackContextType,
+  "queueRevision" | "requestQueueRefresh"
+>;
 
 const PlaybackContext = createContext<PlaybackContextType>({
   sourceId: null,
@@ -84,10 +92,29 @@ const PlaybackSourceContext = createContext<PlaybackSourceContextType>({
   sourceId: null,
   sourceType: null,
 });
+const PlaybackQueueFilterContext = createContext<PlaybackQueueFilterContextType>(
+  {
+    order: SortOrder.DESC,
+    query: "",
+    setOrder: () => {},
+    setQuery: () => {},
+    setSort: () => {},
+    sort: SortType.DATE,
+  },
+);
+const PlaybackQueueRefreshContext =
+  createContext<PlaybackQueueRefreshContextType>({
+    queueRevision: 0,
+    requestQueueRefresh: () => {},
+  });
 
 export const usePlaybackContext = () => useContext(PlaybackContext);
 export const usePlaybackModeContext = () => useContext(PlaybackModeContext);
 export const usePlaybackSourceContext = () => useContext(PlaybackSourceContext);
+export const usePlaybackQueueFilterContext = () =>
+  useContext(PlaybackQueueFilterContext);
+export const usePlaybackQueueRefreshContext = () =>
+  useContext(PlaybackQueueRefreshContext);
 
 const PlaybackProvider: React.FC<Props> = ({ children }) => {
   const { setSourceId, setSourceType, sourceId, sourceType } =
@@ -112,35 +139,43 @@ const PlaybackProvider: React.FC<Props> = ({ children }) => {
       <PlaybackSourceContext.Provider
         value={{ setSourceId, setSourceType, sourceId, sourceType }}
       >
-        <PlaybackContext.Provider
-          value={{
-            sourceId,
-            setSourceId,
-            sourceType,
-            setSourceType,
-            shuffle,
-            setShuffle,
-            loop,
-            setLoop,
-            playerInitialized,
-            setPlayerInitialized,
-            addOffset,
-            setAddOffset,
-            incrementAddOffset,
-            decrementAddOffset,
-            resetAddOffset,
-            sort,
-            setSort,
-            order,
-            setOrder,
-            query,
-            setQuery,
-            queueRevision,
-            requestQueueRefresh,
-          }}
+        <PlaybackQueueFilterContext.Provider
+          value={{ order, query, setOrder, setQuery, setSort, sort }}
         >
-          {children}
-        </PlaybackContext.Provider>
+          <PlaybackQueueRefreshContext.Provider
+            value={{ queueRevision, requestQueueRefresh }}
+          >
+            <PlaybackContext.Provider
+              value={{
+                sourceId,
+                setSourceId,
+                sourceType,
+                setSourceType,
+                shuffle,
+                setShuffle,
+                loop,
+                setLoop,
+                playerInitialized,
+                setPlayerInitialized,
+                addOffset,
+                setAddOffset,
+                incrementAddOffset,
+                decrementAddOffset,
+                resetAddOffset,
+                sort,
+                setSort,
+                order,
+                setOrder,
+                query,
+                setQuery,
+                queueRevision,
+                requestQueueRefresh,
+              }}
+            >
+              {children}
+            </PlaybackContext.Provider>
+          </PlaybackQueueRefreshContext.Provider>
+        </PlaybackQueueFilterContext.Provider>
       </PlaybackSourceContext.Provider>
     </PlaybackModeContext.Provider>
   );

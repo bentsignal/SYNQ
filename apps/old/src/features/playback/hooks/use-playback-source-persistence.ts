@@ -1,5 +1,8 @@
 import { SortOrder, SortType, SourceType } from "@/src/constants/Types";
-import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
+import {
+  usePlaybackQueueFilterContext,
+  usePlaybackSourceContext,
+} from "@/src/features/playback/context/PlaybackProvider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type PlaybackSource = {
@@ -18,8 +21,8 @@ export const usePlaybackSourcePersistence = ({
   order,
   query,
 }: PlaybackSourcePersistenceParams) => {
-  const { setSourceType, setSourceId, setSort, setOrder, setQuery } =
-    usePlaybackContext();
+  const { setSourceId, setSourceType } = usePlaybackSourceContext();
+  const { setOrder, setQuery, setSort } = usePlaybackQueueFilterContext();
 
   const persistPlaybackSource = async (source: PlaybackSource) => {
     setSourceType(source.type);

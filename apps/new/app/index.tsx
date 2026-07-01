@@ -1,3 +1,5 @@
-import { RewriteDashboardScreen } from "@/src/features/app-shell/screens/RewriteDashboardScreen";
+import { Redirect } from "expo-router";
 
-export default RewriteDashboardScreen;
+export default function IndexRoute() {
+  return <Redirect href="/(tabs)" />;
+}

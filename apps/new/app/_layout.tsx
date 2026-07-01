@@ -1,15 +1,5 @@
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+import { AppRoot } from "@/src/features/app-shell/components/AppRoot";
 
 export default function RootLayout() {
-  return (
-    <>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      />
-      <StatusBar style="auto" />
-    </>
-  );
+  return <AppRoot />;
 }

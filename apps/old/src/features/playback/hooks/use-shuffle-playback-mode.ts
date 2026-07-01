@@ -1,16 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 import {
+  usePlaybackAddOffsetContext,
   usePlaybackModeContext,
+  usePlaybackQueueRefreshContext,
   usePlaybackSourceContext,
 } from "@/src/features/playback/context/PlaybackProvider";
-import usePlayer from "@/src/features/playback/hooks/use-player";
 import { setPlaybackStorageBoolean } from "@/src/features/playback/lib/playback-storage-service";
+import { updateUpcomingQueue } from "@/src/features/playback/lib/playback-upcoming-queue-service";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { useActiveTrack } from "react-native-track-player";
 
 export const useShufflePlaybackMode = () => {
   const { shuffle, setShuffle } = usePlaybackModeContext();
   const { sourceId, sourceType } = usePlaybackSourceContext();
-  const { updateQueue } = usePlayer();
+  const { requestQueueRefresh } = usePlaybackQueueRefreshContext();
+  const { resetAddOffset } = usePlaybackAddOffsetContext();
+  const { theme } = useThemeContext();
   const track = useActiveTrack();
   const [localShuffle, setLocalShuffle] = useState(shuffle);
 
@@ -24,14 +29,31 @@ export const useShufflePlaybackMode = () => {
 
       const id = track?.id;
       if (id && sourceType !== null && sourceId !== null) {
-        await updateQueue(id, nextShuffle, sourceType, sourceId);
+        await updateUpcomingQueue({
+          currentId: id,
+          shuffleValue: nextShuffle,
+          sourceTypeValue: sourceType,
+          sourceIdValue: sourceId,
+          theme,
+          requestQueueRefresh,
+          resetAddOffset,
+        });
       }
     } catch {
       setShuffle(previous);
       setLocalShuffle(previous);
       await setPlaybackStorageBoolean("shuffle", previous);
     }
-  }, [setShuffle, shuffle, sourceId, sourceType, track?.id, updateQueue]);
+  }, [
+    requestQueueRefresh,
+    resetAddOffset,
+    setShuffle,
+    shuffle,
+    sourceId,
+    sourceType,
+    theme,
+    track?.id,
+  ]);
 
   useEffect(() => {
     if (shuffle !== localShuffle) {

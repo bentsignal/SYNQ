@@ -385,6 +385,9 @@ feature-oriented packages.
    - Import stack layout now delegates to an import feature shell component,
      keeping header, overlay, stack screen options, and import controls out of
      the Expo Router layout file.
+   - Import success and failure routes now delegate to import feature screen
+     components, moving Lottie status presentation and failure navigation out
+     of app route files.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocalSearchParams } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { LibraryCollectionSongList } from "../components/LibraryCollectionSongList";
@@ -5,6 +6,7 @@ import {
   useLibraryCollectionDetailQuery,
   type LibraryCollectionDetailKind,
 } from "../hooks/use-library-collection-detail-query";
+import { removeSongFromCollection } from "../repository/relationship-repository";
 
 type LibraryCollectionDetailScreenProps = {
   kind: LibraryCollectionDetailKind;
@@ -47,6 +49,8 @@ function LibraryCollectionDetailContent({
   kind: LibraryCollectionDetailKind;
 }) {
   const { detail, errors } = useLibraryCollectionDetailQuery({ id, kind });
+  const [removingSongId, setRemovingSongId] = useState<number | null>(null);
+  const [mutationError, setMutationError] = useState<string | null>(null);
   const hasErrors = errors.length > 0;
   const updatedLabel =
     detail.updatedAt > 0
@@ -80,11 +84,35 @@ function LibraryCollectionDetailContent({
         <Text style={styles.sectionMeta}>Reactive query</Text>
       </View>
 
-      <LibraryCollectionSongList songs={detail.songs} />
+      <LibraryCollectionSongList
+        onRemoveSong={async (songId) => {
+          setRemovingSongId(songId);
+          setMutationError(null);
+
+          try {
+            await removeSongFromCollection({
+              collectionId: id,
+              kind,
+              songId,
+            });
+          } catch (caughtError) {
+            setMutationError(
+              caughtError instanceof Error
+                ? caughtError.message
+                : "Song could not be removed.",
+            );
+          } finally {
+            setRemovingSongId(null);
+          }
+        }}
+        removingSongId={removingSongId}
+        songs={detail.songs}
+      />
 
       <View style={styles.panel}>
         <Text style={hasErrors ? styles.errorText : styles.panelText}>
-          {hasErrors ? "One or more detail queries failed." : updatedLabel}
+          {mutationError ??
+            (hasErrors ? "One or more detail queries failed." : updatedLabel)}
         </Text>
       </View>
 

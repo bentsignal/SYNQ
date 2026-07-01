@@ -1,4 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  useWindowDimensions,
+} from "react-native";
 import { Styles } from "@/src/constants/Styles";
 import { router } from "expo-router";
 import {
@@ -7,8 +13,18 @@ import {
 } from "@/src/features/app-shell/components/TabBarIcons";
 
 const TabBar = () => {
+  const { height } = useWindowDimensions();
+  const tabBarBottomPadding = height < 700 ? 15 : 30;
+
   return (
-    <View style={Local.container}>
+    <View
+      style={[
+        Local.container,
+        {
+          paddingBottom: tabBarBottomPadding,
+        },
+      ]}
+    >
       <TouchableOpacity 
         style={Local.icon}
         activeOpacity={1}

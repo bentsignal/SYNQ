@@ -11,10 +11,12 @@ import { useAppShellContext } from "@/src/features/app-shell/context/AppShellPro
 import Server from "@/src/features/import/components/Server";
 import { usePlaybackAdAsset } from "@/src/features/playback/hooks/use-playback-ad-asset";
 import { Tabs } from "expo-router";
-import { Easing } from "react-native";
+import { Easing, useWindowDimensions } from "react-native";
 
 const AppTabLayout = () => {
   const { showOverlay } = useAppShellContext();
+  const { height } = useWindowDimensions();
+  const tabBarBottomPadding = height < 700 ? 15 : 30;
 
   usePlaybackAdAsset();
 
@@ -28,7 +30,12 @@ const AppTabLayout = () => {
           headerShown: false,
           tabBarActiveTintColor: Colors.tabActive,
           tabBarInactiveTintColor: Colors.tabInactive,
-          tabBarStyle: Styles.tabBar,
+          tabBarStyle: [
+            Styles.tabBar,
+            {
+              paddingBottom: tabBarBottomPadding,
+            },
+          ],
           tabBarLabelStyle: Styles.h6,
           tabBarIconStyle: {
             marginBottom: 6,

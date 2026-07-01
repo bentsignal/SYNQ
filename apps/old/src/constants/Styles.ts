@@ -1,4 +1,4 @@
-import { Dimensions, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Colors } from '@/src/constants/Colors';
 
 export const Styles = StyleSheet.create({
@@ -61,7 +61,6 @@ export const Styles = StyleSheet.create({
     backgroundColor: Colors.background,
     height: '11%',
     paddingTop: 10,
-    paddingBottom: Dimensions.get('screen').height < 700 ? 15 : 30
   },
   tabBarLabel: {
     fontSize: 12,

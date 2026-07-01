@@ -1,4 +1,4 @@
-import { getActiveQueueTrackIndex } from "@/src/features/playback/lib/player-queue-actions-service";
+import { getActiveQueueTrackIndex } from "@/src/features/playback/lib/playback-queue-read-service";
 import { useEffect, useState } from "react";
 import { type Track, useActiveTrack } from "react-native-track-player";
 

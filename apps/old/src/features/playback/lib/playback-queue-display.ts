@@ -1,6 +1,6 @@
 import { PageType, SongType } from "@/src/constants/Types";
 import { getLibrarySongById } from "@/src/features/library/repository/library-song-repository";
-import { getPlaybackQueue } from "@/src/features/playback/lib/player-queue-actions-service";
+import { getPlaybackQueue } from "@/src/features/playback/lib/playback-queue-read-service";
 
 export const getPlaybackQueueDisplaySongs = async () => {
   const results: SongType[] = [];

@@ -44,14 +44,6 @@ export const moveQueueTrack = async (from: number, to: number) => {
   await persistPlaybackQueue();
 };
 
-export const getActiveQueueTrackIndex = async () => {
-  return TrackPlayer.getActiveTrackIndex();
-};
-
-export const getPlaybackQueue = async () => {
-  return TrackPlayer.getQueue();
-};
-
 export const playTrackNow = async (track: Track): Promise<void> => {
   const currentIndex = await TrackPlayer.getActiveTrackIndex();
   const queue = await TrackPlayer.getQueue();

@@ -3,9 +3,7 @@ import {
   usePlaybackQueueRefreshContext,
 } from "@/src/features/playback/context/PlaybackProvider";
 import usePlayer from "@/src/features/playback/hooks/use-player";
-import {
-  getActiveQueueTrackIndex,
-} from "@/src/features/playback/lib/player-queue-actions-service";
+import { getActiveQueueTrackIndex } from "@/src/features/playback/lib/playback-queue-read-service";
 import { getPlaybackQueueDisplaySongs } from "@/src/features/playback/lib/playback-queue-display";
 import { SongType } from "@/src/constants/Types";
 import { check } from "@/src/lib/util";

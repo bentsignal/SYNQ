@@ -1,9 +1,5 @@
 import { SourceType } from "@/src/constants/Types";
-import {
-  getPlaybackStorageBoolean,
-  getPlaybackStorageNumber,
-  getPlaybackStorageQueue,
-} from "@/src/features/playback/lib/playback-storage-service";
+import { getPersistedPlaybackState } from "@/src/features/playback/lib/playback-storage-service";
 import TrackPlayer, { Capability } from "react-native-track-player";
 
 type RestorePlaybackStateActions = {
@@ -22,58 +18,54 @@ export const setupPlayer = async ({
   setAddOffset,
 }: RestorePlaybackStateActions) => {
   await TrackPlayer.setupPlayer();
+  const persistedState = await getPersistedPlaybackState();
 
   // restore shuffle
-  const shuffle = await getPlaybackStorageBoolean("shuffle");
-  if (shuffle !== null) {
-    setShuffle(shuffle);
+  if (persistedState.shuffle !== null) {
+    setShuffle(persistedState.shuffle);
   }
 
   // restore loop
-  const loop = await getPlaybackStorageBoolean("loop");
-  if (loop !== null) {
-    setLoop(loop);
+  if (persistedState.loop !== null) {
+    setLoop(persistedState.loop);
   }
 
   // restore source type
-  const sourceType = await getPlaybackStorageNumber("sourceType");
-  if (sourceType !== null) {
-    setSourceType(sourceType as SourceType);
+  if (persistedState.sourceType !== null) {
+    setSourceType(persistedState.sourceType);
   }
 
   // restore source id
-  const sourceId = await getPlaybackStorageNumber("sourceId");
-  if (sourceId !== null) {
-    setSourceId(sourceId);
+  if (persistedState.sourceId !== null) {
+    setSourceId(persistedState.sourceId);
   }
 
   // restore queue
-  const queue = await getPlaybackStorageQueue();
-  if (queue) {
-    await TrackPlayer.setQueue(queue);
+  if (persistedState.queue) {
+    await TrackPlayer.setQueue(persistedState.queue);
   }
 
   // jump to track
-  const lastTrackIndex = await getPlaybackStorageNumber("lastTrackIndex");
-  if (lastTrackIndex !== null) {
-    await TrackPlayer.skip(lastTrackIndex);
-    if (lastTrackIndex > 10) {
+  if (persistedState.lastTrackIndex !== null) {
+    await TrackPlayer.skip(persistedState.lastTrackIndex);
+    if (persistedState.lastTrackIndex > 10) {
       await TrackPlayer.remove(
-        Array.from({ length: lastTrackIndex - 10 }, (_, i) => i + 1),
+        Array.from(
+          { length: persistedState.lastTrackIndex - 10 },
+          (_, i) => i + 1,
+        ),
       );
     }
   }
 
   // restore position
-  const position = await getPlaybackStorageNumber("position");
-  if (position !== null) {
-    await TrackPlayer.seekTo(position);
+  if (persistedState.position !== null) {
+    await TrackPlayer.seekTo(persistedState.position);
   }
 
   // restore add offset
-  const addOffset = await getPlaybackStorageNumber("addOffset");
-  if (addOffset !== null) {
-    setAddOffset(addOffset);
+  if (persistedState.addOffset !== null) {
+    setAddOffset(persistedState.addOffset);
   }
 
   await TrackPlayer.pause();

@@ -1,5 +1,7 @@
-import { getLibrarySongCoverPath } from "@/src/features/library/repository/library-song-repository";
-import { getTrackArtwork } from "@/src/features/playback/lib/track-factory";
+import {
+  getMiniPlayerBackgroundImage,
+  getMiniPlayerCoverState,
+} from "@/src/features/playback/lib/mini-player-artwork-service";
 import { useAssets } from "expo-asset";
 import { useEffect, useMemo, useState } from "react";
 import { useActiveTrack } from "react-native-track-player";
@@ -8,6 +10,7 @@ const EMPTY_IMAGE = "transparent";
 
 export const useMiniPlayerArtwork = () => {
   const track = useActiveTrack();
+  const trackId = track?.id;
   const [assets, error] = useAssets([require("@/src/assets/images/popup.jpg")]);
 
   const [coverImage, setCoverImage] = useState("");
@@ -27,21 +30,13 @@ export const useMiniPlayerArtwork = () => {
 
     const loadCover = async () => {
       try {
-        if (track?.id === undefined) {
-          if (!cancelled) {
-            setCoverImage("");
-            setEmptyCover(true);
-          }
-          return;
-        }
-
-        const cover = await getLibrarySongCoverPath(Number(track.id));
+        const coverState = await getMiniPlayerCoverState(trackId);
         if (cancelled) {
           return;
         }
 
-        setCoverImage(cover ?? "");
-        setEmptyCover(!cover);
+        setCoverImage(coverState.coverImage);
+        setEmptyCover(coverState.emptyCover);
       } catch (error) {
         console.log("error loading song cover:", error);
       }
@@ -52,19 +47,10 @@ export const useMiniPlayerArtwork = () => {
     return () => {
       cancelled = true;
     };
-  }, [track?.id]);
+  }, [trackId]);
 
   const backgroundImage = useMemo(() => {
-    if (!track) {
-      return emptyImage;
-    }
-
-    const artwork = getTrackArtwork(track);
-    if (artwork !== EMPTY_IMAGE) {
-      return artwork;
-    }
-
-    return emptyImage;
+    return getMiniPlayerBackgroundImage({ emptyImage, track });
   }, [emptyImage, track]);
 
   return {

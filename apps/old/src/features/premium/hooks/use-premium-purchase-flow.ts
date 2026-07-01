@@ -3,55 +3,17 @@ import { NotificationType } from "@/src/constants/Types";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
+import {
+  getPremiumProductName,
+  getPremiumRestoreMessage,
+  getSelectedPremiumTierFromProduct,
+} from "@/src/features/premium/lib/premium-products";
 import * as PurchaseManager from "@/src/features/premium/lib/purchase-service";
 import { posthog } from "@/src/lib/posthog";
 import { Alert } from "react-native";
 
 type PremiumStatus = Awaited<ReturnType<typeof PurchaseManager.checkStatus>>;
 type PremiumPrices = Awaited<ReturnType<typeof PurchaseManager.getPrices>>;
-
-const productNames = [
-  "Premium Monthly",
-  "Premium Yearly",
-  "Premium Lifetime",
-] as const;
-
-const getProductName = (selected: number) => {
-  const productName = productNames[selected];
-  if (!productName) {
-    throw new Error("Invalid purchase option");
-  }
-
-  return productName;
-};
-
-const getRestoreMessage = (name: string) => {
-  if (name === "SYNQPremiumMonthly") {
-    return "Successfully restored your monthly subscription.";
-  }
-  if (name === "SYNQPremiumYearly") {
-    return "Successfully restored your yearly subscription.";
-  }
-  if (name === "SYNQPremiumLifetime") {
-    return "Successfully restored your lifetime subscription.";
-  }
-
-  return "Successfully restored your purchase.";
-};
-
-const getSelectedTierFromProduct = (name: string) => {
-  if (name === "SYNQPremiumMonthly") {
-    return 0;
-  }
-  if (name === "SYNQPremiumYearly") {
-    return 1;
-  }
-  if (name === "SYNQPremiumLifetime") {
-    return 2;
-  }
-
-  return undefined;
-};
 
 export function usePremiumPurchaseFlow() {
   const { addNotification } = useNotificationsContext();
@@ -109,7 +71,7 @@ export function usePremiumPurchaseFlow() {
       setRenew(renewal);
       setEnd(end);
 
-      const selectedTier = getSelectedTierFromProduct(id);
+      const selectedTier = getSelectedPremiumTierFromProduct(id);
       if (selectedTier !== undefined) {
         setSelected(selectedTier);
       }
@@ -153,7 +115,7 @@ export function usePremiumPurchaseFlow() {
   const handlePurchase = useCallback(async () => {
     setLoading(true);
     try {
-      const id = getProductName(selected);
+      const id = getPremiumProductName(selected);
       posthog.capture("attempt_purchase_premium", {
         tier: id,
       });
@@ -192,13 +154,13 @@ export function usePremiumPurchaseFlow() {
         setPremium(true);
         setActive(true);
 
-        const selectedTier = getSelectedTierFromProduct(result.name);
+        const selectedTier = getSelectedPremiumTierFromProduct(result.name);
         if (selectedTier !== undefined) {
           setSelected(selectedTier);
         }
 
         sendHaptic("success");
-        Alert.alert("Success", getRestoreMessage(result.name), [
+        Alert.alert("Success", getPremiumRestoreMessage(result.name), [
           { text: "Ok" },
         ]);
       }

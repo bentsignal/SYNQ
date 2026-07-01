@@ -4,6 +4,7 @@ import {
   usePlaybackLifecycleContext,
 } from "@/src/features/playback/context/PlaybackProvider";
 import usePlayer from "@/src/features/playback/hooks/use-player";
+import { playbackStorageKeys } from "@/src/features/playback/lib/playback-storage-keys";
 import { getActiveQueueTrackIndex } from "@/src/features/playback/lib/player-queue-actions-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { type Track } from "react-native-track-player";
@@ -41,7 +42,7 @@ export const usePlaybackPersistenceEffects = ({
 
   useEffect(() => {
     if (position) {
-      AsyncStorage.setItem("position", position.toString());
+      AsyncStorage.setItem(playbackStorageKeys.position, position.toString());
     }
   }, [position]);
 
@@ -77,7 +78,10 @@ export const usePlaybackPersistenceEffects = ({
       if (track) {
         const activeIndex = await getActiveQueueTrackIndex();
         if (activeIndex !== undefined) {
-          await AsyncStorage.setItem("lastTrackIndex", activeIndex.toString());
+          await AsyncStorage.setItem(
+            playbackStorageKeys.lastTrackIndex,
+            activeIndex.toString(),
+          );
         }
       }
     };

@@ -15,10 +15,13 @@ import {
 import {
   addTrackToQueue,
   moveQueueTrack,
-  playTrackNow,
   removeTracksBySongIds,
   resetPlaybackQueue,
 } from "@/src/features/playback/lib/player-queue-actions-service";
+import {
+  addSongToPlaybackQueue,
+  playSongNow,
+} from "@/src/features/playback/lib/playback-song-command-service";
 import {
   skipToNextPlayableTrack,
   skipToPreviousPlayableTrack,
@@ -31,7 +34,6 @@ import {
   togglePlaybackState,
 } from "@/src/features/playback/lib/playback-transport-service";
 import { setupPlayer as setupTrackPlayer } from "@/src/features/playback/lib/player-setup-service";
-import { getTrackFromSong } from "@/src/features/playback/lib/track-factory";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { State, Track } from "react-native-track-player";
 
@@ -71,10 +73,12 @@ export default function usePlayer() {
   };
 
   const addSongToQueue = async (song: SongType) => {
-    const newTrack = await getTrackFromSong(song, theme);
-    if (newTrack) {
-      await addToQueue(newTrack);
-    }
+    await addSongToPlaybackQueue({
+      song,
+      theme,
+      addOffset,
+      incrementAddOffset,
+    });
   };
 
   const moveQueueSong = async (from: number, to: number) => {
@@ -106,13 +110,7 @@ export default function usePlayer() {
   };
 
   const playSong = async (song: SongType) => {
-    const newTrack = await getTrackFromSong(song, theme);
-    if (!newTrack) {
-      return false;
-    }
-
-    await playTrackNow(newTrack);
-    return true;
+    return playSongNow({ song, theme });
   };
 
   const skipRight = async () => {

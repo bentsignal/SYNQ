@@ -1,0 +1,198 @@
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useReducer,
+  type ReactNode,
+} from "react";
+import type {
+  ImportSaveSummary,
+  ImportSessionState,
+  ImportSongDraft,
+} from "../types/import-session";
+
+type ImportSessionAction =
+  | { type: "begin-file-pick" }
+  | { error: string; type: "fail" }
+  | { songs: ImportSongDraft[]; type: "review" }
+  | { songIds: number[]; type: "remove-songs" }
+  | { shouldSaveToLibrary: boolean; type: "set-save-to-library" }
+  | { summary: ImportSaveSummary; type: "finish" }
+  | { type: "discard" }
+  | { type: "reset" };
+
+type ImportSessionCommands = {
+  beginFilePick: () => void;
+  discardSession: () => void;
+  failSession: (error: string) => void;
+  finishSession: (summary: ImportSaveSummary) => void;
+  removeImportSongs: (songIds: number[]) => void;
+  resetSession: () => void;
+  reviewSongs: (songs: ImportSongDraft[]) => void;
+  setShouldSaveToLibrary: (shouldSaveToLibrary: boolean) => void;
+};
+
+type ImportSessionValue = ImportSessionCommands & {
+  state: ImportSessionState;
+};
+
+const initialImportSessionState: ImportSessionState = {
+  error: null,
+  phase: "idle",
+  progress: {
+    current: 0,
+    total: 0,
+  },
+  selectedSongId: null,
+  shouldSaveToLibrary: true,
+  songs: [],
+  source: "files",
+};
+
+const ImportSessionContext = createContext<ImportSessionValue | null>(null);
+
+const importSessionReducer = (
+  state: ImportSessionState,
+  action: ImportSessionAction,
+): ImportSessionState => {
+  switch (action.type) {
+    case "begin-file-pick":
+      return {
+        ...state,
+        error: null,
+        phase: "picking",
+        source: "files",
+      };
+    case "fail":
+      return {
+        ...state,
+        error: action.error,
+        phase: "failure",
+      };
+    case "review":
+      return {
+        ...state,
+        error: null,
+        phase: "reviewing",
+        progress: {
+          current: action.songs.length,
+          total: action.songs.length,
+        },
+        selectedSongId: action.songs[0]?.id ?? null,
+        songs: action.songs,
+      };
+    case "remove-songs": {
+      const songIdSet = new Set(action.songIds);
+      const songs = state.songs.filter((song) => !songIdSet.has(song.id));
+
+      return {
+        ...state,
+        progress: {
+          current: songs.length,
+          total: songs.length,
+        },
+        selectedSongId: songs[0]?.id ?? null,
+        songs,
+      };
+    }
+    case "set-save-to-library":
+      return {
+        ...state,
+        shouldSaveToLibrary: action.shouldSaveToLibrary,
+      };
+    case "finish":
+      return {
+        ...state,
+        error: null,
+        phase: "success",
+        progress: {
+          current: action.summary.saved + action.summary.discarded,
+          total: action.summary.saved + action.summary.discarded,
+        },
+      };
+    case "discard":
+      return {
+        ...initialImportSessionState,
+        phase: "idle",
+      };
+    case "reset":
+      return initialImportSessionState;
+  }
+};
+
+export function ImportSessionProvider({ children }: { children: ReactNode }) {
+  const [state, dispatch] = useReducer(
+    importSessionReducer,
+    initialImportSessionState,
+  );
+
+  const beginFilePick = useCallback(() => {
+    dispatch({ type: "begin-file-pick" });
+  }, []);
+  const failSession = useCallback((error: string) => {
+    dispatch({ error, type: "fail" });
+  }, []);
+  const reviewSongs = useCallback((songs: ImportSongDraft[]) => {
+    dispatch({ songs, type: "review" });
+  }, []);
+  const removeImportSongs = useCallback((songIds: number[]) => {
+    dispatch({ songIds, type: "remove-songs" });
+  }, []);
+  const setShouldSaveToLibrary = useCallback(
+    (shouldSaveToLibrary: boolean) => {
+      dispatch({ shouldSaveToLibrary, type: "set-save-to-library" });
+    },
+    [],
+  );
+  const finishSession = useCallback((summary: ImportSaveSummary) => {
+    dispatch({ summary, type: "finish" });
+  }, []);
+  const discardSession = useCallback(() => {
+    dispatch({ type: "discard" });
+  }, []);
+  const resetSession = useCallback(() => {
+    dispatch({ type: "reset" });
+  }, []);
+
+  const value = useMemo<ImportSessionValue>(
+    () => ({
+      beginFilePick,
+      discardSession,
+      failSession,
+      finishSession,
+      removeImportSongs,
+      resetSession,
+      reviewSongs,
+      setShouldSaveToLibrary,
+      state,
+    }),
+    [
+      beginFilePick,
+      discardSession,
+      failSession,
+      finishSession,
+      removeImportSongs,
+      resetSession,
+      reviewSongs,
+      setShouldSaveToLibrary,
+      state,
+    ],
+  );
+
+  return (
+    <ImportSessionContext.Provider value={value}>
+      {children}
+    </ImportSessionContext.Provider>
+  );
+}
+
+export function useImportSession() {
+  const value = useContext(ImportSessionContext);
+
+  if (!value) {
+    throw new Error("useImportSession must be used inside ImportSessionProvider.");
+  }
+
+  return value;
+}

@@ -37,10 +37,10 @@ export const rewriteFeatures: RewriteFeature[] = [
   {
     key: "import",
     name: "Import And Ingest",
-    status: "pending",
+    status: "active",
     oldReference: "apps/old/src/features/import",
     targetBoundary: "src/features/import",
-    nextMilestone: "Move file, Wi-Fi, metadata, save, and discard flows behind commands.",
+    nextMilestone: "Connect file picker, cache staging, metadata, save, and discard commands.",
   },
   {
     key: "backup",

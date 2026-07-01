@@ -53,8 +53,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Playback: explicit session state, queue/player screens, and a TrackPlayer
     adapter seam exist; native playback, persistence, and remote events are
     next.
-  - Import/ingest: import stack placeholder exists; command orchestration is
-    next.
+  - Import/ingest: route-per-step import shell, session state, and preview/save
+    screens exist; file picker, cache staging, metadata, save, and discard
+    commands are next.
   - Backup/restore: still pending as part of settings/backup build-out.
   - Premium/settings: settings home and customization/backup routes exist;
     entitlement and customization ports are next.
@@ -98,8 +99,9 @@ searchable/sortable songs, linked details, collection create/edit flows, and
 song add/remove. Settings now has a feature-owned home with backup,
 customization, and premium route entry points. Playback now has a reducer-backed
 session boundary plus queue/player screens, but it is not yet connected to
-native playback. It is not yet a replacement app. The next useful work should
-alternate between:
+native playback. Import now has a route-per-step session shell, but it is not
+yet connected to native file/cache/save commands. It is not yet a replacement
+app. The next useful work should alternate between:
 
 - closing Phase 2 gaps that would otherwise be copied into the new app; and
 - defining/building `apps/new` feature surfaces so cleanup does not become an

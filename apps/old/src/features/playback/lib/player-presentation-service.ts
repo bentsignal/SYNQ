@@ -6,7 +6,7 @@ import {
   getPlayerGradientOpacity,
 } from "@/src/lib/color-utils";
 import { getFileName } from "@/src/lib/util";
-import { Track } from "react-native-track-player";
+import { type Track } from "react-native-track-player";
 
 const EMPTY_IMAGE = "transparent";
 const BASE_GRADIENT_OPACITY = 0.2;
@@ -51,8 +51,7 @@ export const getPlayerGradientOpacityForTrack = async (track?: Track) => {
   try {
     const luminance = await getLuminanceFromImage(track.artwork);
     return getPlayerGradientOpacity(luminance);
-  } catch (error) {
-    console.log(error);
+  } catch {
     return BASE_GRADIENT_OPACITY;
   }
 };

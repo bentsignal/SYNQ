@@ -7,9 +7,7 @@ import {
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import {
   usePlaybackAddOffsetContext,
-  usePlaybackModeContext,
   usePlaybackQueueRefreshContext,
-  usePlaybackSourceContext,
 } from "@/src/features/playback/context/PlaybackProvider";
 import {
   removeTracksBySongIds,
@@ -26,27 +24,14 @@ import {
   seekToPlaybackPosition,
   togglePlaybackState,
 } from "@/src/features/playback/lib/playback-transport-service";
-import { setupPlayer as setupTrackPlayer } from "@/src/features/playback/lib/player-setup-service";
 import { State } from "react-native-track-player";
 
 export default function usePlayer() {
-  const { setLoop, setShuffle } = usePlaybackModeContext();
-  const { setSourceId, setSourceType } = usePlaybackSourceContext();
-  const { addOffset, incrementAddOffset, resetAddOffset, setAddOffset } =
+  const { addOffset, incrementAddOffset, resetAddOffset } =
     usePlaybackAddOffsetContext();
   const { requestQueueRefresh } = usePlaybackQueueRefreshContext();
 
   const { theme } = useThemeContext();
-
-  const setupPlayer = async () => {
-    await setupTrackPlayer({
-      setShuffle,
-      setLoop,
-      setSourceType,
-      setSourceId,
-      setAddOffset,
-    });
-  };
 
   const addSongToQueue = async (song: SongType) => {
     await addSongToPlaybackQueue({
@@ -109,7 +94,6 @@ export default function usePlayer() {
   };
 
   return {
-    setupPlayer,
     addSongToQueue,
     pausePlayer,
     playPlayer,

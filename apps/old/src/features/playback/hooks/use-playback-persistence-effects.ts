@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import {
   usePlaybackAddOffsetContext,
   usePlaybackLifecycleContext,
+  usePlaybackModeContext,
+  usePlaybackSourceContext,
 } from "@/src/features/playback/context/PlaybackProvider";
-import usePlayer from "@/src/features/playback/hooks/use-player";
 import { setPlaybackStorageNumber } from "@/src/features/playback/lib/playback-storage-service";
 import { getActiveQueueTrackIndex } from "@/src/features/playback/lib/playback-queue-read-service";
+import { setupPlayer } from "@/src/features/playback/lib/player-setup-service";
 import { type Track } from "react-native-track-player";
 
 type PlaybackPersistenceEffectsParams = {
@@ -17,10 +19,12 @@ export const usePlaybackPersistenceEffects = ({
   position,
   track,
 }: PlaybackPersistenceEffectsParams) => {
-  const { addOffset, decrementAddOffset } = usePlaybackAddOffsetContext();
+  const { addOffset, decrementAddOffset, setAddOffset } =
+    usePlaybackAddOffsetContext();
   const { playerInitialized, setPlayerInitialized } =
     usePlaybackLifecycleContext();
-  const { setupPlayer } = usePlayer();
+  const { setLoop, setShuffle } = usePlaybackModeContext();
+  const { setSourceId, setSourceType } = usePlaybackSourceContext();
   const setupStarted = useRef(false);
   const [index, setIndex] = useState(0);
 
@@ -32,12 +36,26 @@ export const usePlaybackPersistenceEffects = ({
     setupStarted.current = true;
 
     try {
-      setupPlayer();
+      setupPlayer({
+        setShuffle,
+        setLoop,
+        setSourceType,
+        setSourceId,
+        setAddOffset,
+      });
       setPlayerInitialized(true);
     } catch (error) {
       console.log("error setting up player: ", error);
     }
-  }, [playerInitialized, setPlayerInitialized, setupPlayer]);
+  }, [
+    playerInitialized,
+    setAddOffset,
+    setLoop,
+    setPlayerInitialized,
+    setShuffle,
+    setSourceId,
+    setSourceType,
+  ]);
 
   useEffect(() => {
     if (position) {

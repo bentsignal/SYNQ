@@ -54,8 +54,9 @@ const ThemeProvider: React.FC<Props> = ({ children }) => {
       const theme = await AsyncStorage.getItem('theme');
       if (theme !== null && theme !== Colors.main) changeTheme(theme, false);
     }
-    catch (error) {
-      console.log('Failed to load theme:', error);
+    catch {
+      setTheme(Colors.main);
+      setLogo(getLogo(Colors.main));
     }
   }, [changeTheme]);
 

@@ -5,7 +5,7 @@ import {
   usePlaybackQueueRefreshContext,
   usePlaybackSourceContext,
 } from "@/src/features/playback/context/PlaybackProvider";
-import { applyShufflePlaybackMode } from "@/src/features/playback/lib/playback-mode-command-service";
+import { commitShufflePlaybackModeChange } from "@/src/features/playback/lib/playback-mode-command-service";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { useActiveTrack } from "react-native-track-player";
 
@@ -20,33 +20,23 @@ export const useShufflePlaybackMode = () => {
 
   const toggleShuffle = useCallback(async () => {
     const previous = shuffle;
-    try {
-      const nextShuffle = !previous;
-      setLocalShuffle(nextShuffle);
-      setShuffle(nextShuffle);
-      await applyShufflePlaybackMode({
-        currentId: track?.id,
-        nextShuffle,
-        sourceId,
-        sourceType,
-        theme,
-        requestQueueRefresh,
-        resetAddOffset,
-      });
-    } catch {
-      setShuffle(previous);
-      setLocalShuffle(previous);
-      await applyShufflePlaybackMode({
-        currentId: track?.id,
-        nextShuffle: previous,
-        rebuildUpcomingQueue: false,
-        sourceId,
-        sourceType,
-        theme,
-        requestQueueRefresh,
-        resetAddOffset,
-      });
-    }
+    const nextShuffle = !previous;
+    setLocalShuffle(nextShuffle);
+    setShuffle(nextShuffle);
+
+    const committedShuffle = await commitShufflePlaybackModeChange({
+      currentId: track?.id,
+      nextShuffle,
+      previousShuffle: previous,
+      sourceId,
+      sourceType,
+      theme,
+      requestQueueRefresh,
+      resetAddOffset,
+    });
+
+    setShuffle(committedShuffle);
+    setLocalShuffle(committedShuffle);
   }, [
     requestQueueRefresh,
     resetAddOffset,

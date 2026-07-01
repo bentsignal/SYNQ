@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { usePlaybackModeContext } from "@/src/features/playback/context/PlaybackProvider";
-import { applyLoopPlaybackMode } from "@/src/features/playback/lib/playback-mode-command-service";
+import { commitLoopPlaybackModeChange } from "@/src/features/playback/lib/playback-mode-command-service";
 
 export const useLoopPlaybackMode = () => {
   const { loop, setLoop } = usePlaybackModeContext();
@@ -8,16 +8,17 @@ export const useLoopPlaybackMode = () => {
 
   const toggleLoop = useCallback(async () => {
     const previous = loop;
-    try {
-      const nextLoop = !previous;
-      setLocalLoop(nextLoop);
-      setLoop(nextLoop);
-      await applyLoopPlaybackMode(nextLoop);
-    } catch {
-      setLoop(previous);
-      setLocalLoop(previous);
-      await applyLoopPlaybackMode(previous);
-    }
+    const nextLoop = !previous;
+    setLocalLoop(nextLoop);
+    setLoop(nextLoop);
+
+    const committedLoop = await commitLoopPlaybackModeChange({
+      nextLoop,
+      previousLoop: previous,
+    });
+
+    setLoop(committedLoop);
+    setLocalLoop(committedLoop);
   }, [loop, setLoop]);
 
   useEffect(() => {

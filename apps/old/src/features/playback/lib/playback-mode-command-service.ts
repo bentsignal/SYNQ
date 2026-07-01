@@ -16,6 +16,20 @@ type ApplyShufflePlaybackModeArgs = QueueRefreshActions & {
   theme: string;
 };
 
+type CommitLoopPlaybackModeChangeArgs = {
+  nextLoop: boolean;
+  previousLoop: boolean;
+};
+
+type CommitShufflePlaybackModeChangeArgs = QueueRefreshActions & {
+  currentId?: number | string;
+  nextShuffle: boolean;
+  previousShuffle: boolean;
+  sourceId: number | null;
+  sourceType: SourceType | null;
+  theme: string;
+};
+
 export const applyLoopPlaybackMode = (nextLoop: boolean) => {
   return setPlaybackStorageBoolean("loop", nextLoop);
 };
@@ -47,5 +61,66 @@ export const applyShufflePlaybackMode = async ({
       requestQueueRefresh,
       resetAddOffset,
     });
+  }
+};
+
+export const commitLoopPlaybackModeChange = async ({
+  nextLoop,
+  previousLoop,
+}: CommitLoopPlaybackModeChangeArgs) => {
+  try {
+    await applyLoopPlaybackMode(nextLoop);
+
+    return nextLoop;
+  } catch {
+    try {
+      await applyLoopPlaybackMode(previousLoop);
+    } catch {
+      // The UI should still return to the last known state if persistence fails.
+    }
+
+    return previousLoop;
+  }
+};
+
+export const commitShufflePlaybackModeChange = async ({
+  currentId,
+  nextShuffle,
+  previousShuffle,
+  sourceId,
+  sourceType,
+  theme,
+  requestQueueRefresh,
+  resetAddOffset,
+}: CommitShufflePlaybackModeChangeArgs) => {
+  try {
+    await applyShufflePlaybackMode({
+      currentId,
+      nextShuffle,
+      sourceId,
+      sourceType,
+      theme,
+      requestQueueRefresh,
+      resetAddOffset,
+    });
+
+    return nextShuffle;
+  } catch {
+    try {
+      await applyShufflePlaybackMode({
+        currentId,
+        nextShuffle: previousShuffle,
+        rebuildUpcomingQueue: false,
+        sourceId,
+        sourceType,
+        theme,
+        requestQueueRefresh,
+        resetAddOffset,
+      });
+    } catch {
+      // The UI should still return to the last known state if persistence fails.
+    }
+
+    return previousShuffle;
   }
 };

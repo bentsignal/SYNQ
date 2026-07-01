@@ -14,6 +14,10 @@ import {
   isAcceptedWifiUpload,
   parseWifiUploadRequest,
 } from "@/src/features/import/lib/wifi-upload-request";
+import {
+  beginWifiTransfer,
+  finishWifiTransfer,
+} from "@/src/features/import/lib/wifi-transfer-state";
 
 const getIP = async () => {
   return await Network.getIpAddressAsync();
@@ -95,13 +99,14 @@ export function useWifiTransferServer() {
         req.postData.size !== 0
       ) {
         const size = req.postData.size;
-        if (size > 2) {
-          setLoadAnimInProgress(true);
-        }
-        setTransferSize(Number(size));
-        setTransferProgress(0);
-        setLoading(true);
-        setExportDisabled(true);
+        beginWifiTransfer({
+          setExportDisabled,
+          setLoadAnimInProgress,
+          setLoading,
+          setTransferProgress,
+          setTransferSize,
+          size,
+        });
         midTransfer.current = true;
         await createImportDir();
         return res.json({
@@ -117,11 +122,13 @@ export function useWifiTransferServer() {
     });
 
     server.post("/finishTransfer", async (req: any, res: any) => {
-      setLoading(false);
-      setExportDisabled(false);
-      setTransferSize(0);
-      setTransferProgress(0);
-      setLoadAnimInProgress(false);
+      finishWifiTransfer({
+        setExportDisabled,
+        setLoadAnimInProgress,
+        setLoading,
+        setTransferProgress,
+        setTransferSize,
+      });
       midTransfer.current = false;
       return res.json({
         status: 200,

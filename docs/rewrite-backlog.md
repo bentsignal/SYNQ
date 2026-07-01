@@ -326,6 +326,8 @@ feature-oriented packages.
    - Player screen edit and add-to-playlist commands now live in a playback
      feature hook, moving action-sheet context writes, haptics, and navigation
      out of the player route component.
+   - Player song edit sheet pull-dismiss behavior now lives in a playback
+     feature hook, moving TrueSheet dismissal and haptics out of the route.
    - Song list page covers now receive playlist, album, and artist cover paths
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or

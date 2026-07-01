@@ -1,6 +1,6 @@
 import Sheet from "@/src/features/action-sheet/components";
 import { useSheetScroll } from "@/src/features/action-sheet/hooks/use-sheet-scroll";
-import { Dimensions, ScrollView } from "react-native";
+import { ScrollView, useWindowDimensions } from "react-native";
 import SongSheetHeader from "./SongSheetHeader";
 import SongOptions from "./SongOptions";
 
@@ -14,6 +14,7 @@ export default function SongActionSheet({
   name,
 }: SongActionSheetProps) {
   const { handleSheetChange, scrollEnabled, scrollRef } = useSheetScroll();
+  const { height } = useWindowDimensions();
 
   return (
     <Sheet name={name} onChange={handleSheetChange}>
@@ -22,7 +23,7 @@ export default function SongActionSheet({
         ref={scrollRef}
         scrollEnabled={scrollEnabled}
         style={{
-          height: Dimensions.get("window").height,
+          height,
         }}
         contentContainerStyle={{
           paddingBottom: 300,

@@ -2,7 +2,7 @@ import Sheet from "@/src/features/action-sheet/components";
 import { useSheetScroll } from "@/src/features/action-sheet/hooks/use-sheet-scroll";
 import { type CoverType } from "@/src/constants/Types";
 import { type ReactNode } from "react";
-import { Dimensions, ScrollView } from "react-native";
+import { ScrollView, useWindowDimensions } from "react-native";
 import EntitySheetHeader from "./EntitySheetHeader";
 
 type EntityActionSheetProps = {
@@ -25,6 +25,7 @@ export default function EntityActionSheet({
   title,
 }: EntityActionSheetProps) {
   const { handleSheetChange, scrollEnabled, scrollRef } = useSheetScroll();
+  const { height } = useWindowDimensions();
 
   return (
     <Sheet name={name} onChange={handleSheetChange}>
@@ -39,7 +40,7 @@ export default function EntityActionSheet({
         ref={scrollRef}
         scrollEnabled={scrollEnabled}
         style={{
-          height: Dimensions.get("window").height,
+          height,
         }}
         contentContainerStyle={{
           paddingBottom: 300,

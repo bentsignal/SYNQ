@@ -3,6 +3,7 @@ import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType } from "@/src/constants/Types";
 import EditCover from "@/src/features/cover/components/EditCover";
+import EditSongRelationSection from "@/src/features/library/components/edit/EditSongRelationSection";
 import AlbumItem from "@/src/features/library/components/lists/album/AlbumItem";
 import ArtistItem from "@/src/features/library/components/lists/artist/ArtistItem";
 import { useEditSongForm } from "@/src/features/library/hooks/use-edit-song-form";
@@ -86,52 +87,40 @@ const EditSongScreen = ({ id }: EditSongScreenProps) => {
             />
           </>
         )}
-        <View style={ModalStyles.fieldWrapper}>
-          <Text style={ModalStyles.fieldLabel}>Albums</Text>
-          <View style={Local.albumWrapper}>
-            {albums.length === 0 && (
-              <Text style={ModalStyles.emptyListFiller}>No albums</Text>
-            )}
-            {albums.length > 0 &&
-              albums.map((album) => {
-                return (
-                  <AlbumItem
-                    key={album.id}
-                    album={album}
-                    allowInteraction={false}
-                  />
-                );
-              })}
-          </View>
-          <CustomButton
-            title={"Add to Albums"}
-            handlePress={handleAddAlbums}
-            buttonWidth={"90%"}
-          />
-        </View>
-        <View style={ModalStyles.fieldWrapper}>
-          <Text style={ModalStyles.fieldLabel}>Artists</Text>
-          <View style={Local.artistWrapper}>
-            {artists.length === 0 && (
-              <Text style={ModalStyles.emptyListFiller}>No artists</Text>
-            )}
-            {artists.length > 0 &&
-              artists.map((artist) => {
-                return (
-                  <ArtistItem
-                    key={artist.id}
-                    artist={artist}
-                    allowInteraction={false}
-                  />
-                );
-              })}
-          </View>
-          <CustomButton
-            title={"Add Artists"}
-            handlePress={handleAddArtists}
-            buttonWidth={"90%"}
-          />
-        </View>
+        <EditSongRelationSection
+          actionTitle={"Add to Albums"}
+          emptyLabel={"No albums"}
+          hasItems={albums.length > 0}
+          onAction={handleAddAlbums}
+          title={"Albums"}
+        >
+          {albums.map((album) => {
+            return (
+              <AlbumItem
+                key={album.id}
+                album={album}
+                allowInteraction={false}
+              />
+            );
+          })}
+        </EditSongRelationSection>
+        <EditSongRelationSection
+          actionTitle={"Add Artists"}
+          emptyLabel={"No artists"}
+          hasItems={artists.length > 0}
+          onAction={handleAddArtists}
+          title={"Artists"}
+        >
+          {artists.map((artist) => {
+            return (
+              <ArtistItem
+                key={artist.id}
+                artist={artist}
+                allowInteraction={false}
+              />
+            );
+          })}
+        </EditSongRelationSection>
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />
       <View
@@ -194,24 +183,6 @@ const Local = StyleSheet.create({
   notifications: {
     position: "absolute",
     bottom: 100,
-  },
-  artistWrapper: {
-    width: "100%",
-    marginTop: 20,
-    marginBottom: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    flexWrap: "wrap",
-  },
-  albumWrapper: {
-    width: "100%",
-    marginTop: 20,
-    marginBottom: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    flexWrap: "wrap",
   },
 });
 

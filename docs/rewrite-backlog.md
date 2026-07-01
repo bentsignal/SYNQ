@@ -351,6 +351,8 @@ feature-oriented packages.
    - Song edit route UI now lives in a library feature screen component,
      moving modal chrome, cover editing, metadata fields, relation previews,
      notifications, and close controls out of the app route.
+   - Song edit album and artist relation sections now share a library feature
+     component for field chrome, empty states, row wrapping, and add actions.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

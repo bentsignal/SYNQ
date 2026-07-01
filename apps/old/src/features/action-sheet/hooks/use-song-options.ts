@@ -45,12 +45,10 @@ export function useSongOptions(sheetName: string, library: boolean) {
 
   useEffect(() => {
     if (editSong.pageType) {
-      try {
-        setPageType(editSong.pageType);
-        refreshInLiked(editSong.id);
-      } catch (error) {
-        console.log("error getting options for new song: ", error);
-      }
+      setPageType(editSong.pageType);
+      void refreshInLiked(editSong.id).catch(() => {
+        setInLiked(false);
+      });
     }
   }, [editSong.id, editSong.pageType, refreshInLiked]);
 
@@ -87,8 +85,8 @@ export function useSongOptions(sheetName: string, library: boolean) {
       setShowGlobalLoading(true);
       await exportSongs([editSong]);
       setNumModified((modified) => modified + 1);
-    } catch (error) {
-      console.log("error exporting song: ", error);
+    } catch {
+      return;
     } finally {
       setShowGlobalLoading(false);
     }
@@ -159,8 +157,8 @@ export function useSongOptions(sheetName: string, library: boolean) {
         return;
       }
       await removeSongFromLibraryPlaylist(editSong.sourceId, editSong.id);
-    } catch (error) {
-      console.log("error removing from playlist: ", error);
+    } catch {
+      return;
     }
   }, [editSong.id, editSong.sourceId, sheetName]);
 
@@ -175,8 +173,8 @@ export function useSongOptions(sheetName: string, library: boolean) {
         await addSongToLibraryPlaylist(2, editSong.id);
         setInLiked(true);
       }
-    } catch (error) {
-      console.log("error toggling in favorites: ", error);
+    } catch {
+      return;
     }
   }, [editSong.id, inLiked, sheetName]);
 

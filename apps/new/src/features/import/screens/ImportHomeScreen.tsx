@@ -27,6 +27,19 @@ export function ImportHomeScreen() {
             <Text style={styles.rowMeta}>{state.songs.length} staged</Text>
           </Pressable>
         </Link>
+        <Link asChild href="/import/wifi">
+          <Pressable style={styles.row}>
+            <View style={styles.rowText}>
+              <Text style={styles.rowTitle}>Wi-Fi</Text>
+              <Text style={styles.rowDescription}>
+                Receive audio from a browser on the same network.
+              </Text>
+            </View>
+            <Text style={styles.rowMeta}>
+              {state.source === "wifi" ? state.progress.current : "Local"}
+            </Text>
+          </Pressable>
+        </Link>
         <Link asChild href="/import/save">
           <Pressable style={styles.row}>
             <View style={styles.rowText}>

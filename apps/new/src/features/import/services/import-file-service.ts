@@ -46,6 +46,28 @@ const copyAssetToImportCache = async ({
   };
 };
 
+const writeBase64AssetToImportCache = async ({
+  data,
+  id,
+  name,
+}: {
+  data: string;
+  id: number;
+  name: string;
+}) => {
+  const safeName = sanitizeFileName(name || `song-${id}`);
+  const destination = `${importCacheDirectory}/${id}-${safeName}`;
+
+  await FileSystem.writeAsStringAsync(destination, data, {
+    encoding: FileSystem.EncodingType.Base64,
+  });
+
+  return {
+    destination,
+    fileName: safeName,
+  };
+};
+
 const getTitleFromFileName = (fileName: string) => {
   const withoutExtension = fileName.replace(/\.[^.]+$/, "");
   const { strippedValue } = getTrackNumberFromString(withoutExtension);
@@ -74,28 +96,28 @@ const getTrackFromMetadata = ({
   return getTrackNumberFromString(fileName).trackNumber;
 };
 
-const processImportAsset = async ({
-  asset,
-  index,
+const processCachedImportFile = async ({
+  cacheUri,
+  fileName,
+  fileType,
+  id,
 }: {
-  asset: DocumentPicker.DocumentPickerAsset;
-  index: number;
+  cacheUri: string;
+  fileName: string;
+  fileType: string;
+  id: number;
 }): Promise<ImportSongDraft> => {
-  const { destination, fileName } = await copyAssetToImportCache({
-    asset,
-    index,
-  });
   let metadata: Awaited<ReturnType<typeof getMetadataFromFile>> | null = null;
 
   try {
-    metadata = await getMetadataFromFile(destination);
+    metadata = await getMetadataFromFile(cacheUri);
   } catch {
     metadata = null;
   }
 
   let duration: number | null = null;
   try {
-    duration = (await getAudioDurationFromFile(destination)) * 1000;
+    duration = (await getAudioDurationFromFile(cacheUri)) * 1000;
   } catch {
     duration = null;
   }
@@ -107,11 +129,11 @@ const processImportAsset = async ({
     album: metadata?.album?.trim() || fallbackLabel,
     artist: metadata?.artist?.trim() || fallbackLabel,
     artwork: metadata?.artwork ?? null,
-    cacheUri: destination,
+    cacheUri,
     duration,
     fileName,
-    fileType: asset.mimeType ?? fileName,
-    id: Date.now() + index,
+    fileType,
+    id,
     title: strippedValue.trim() || rawTitle,
     track: getTrackFromMetadata({
       fileName,
@@ -119,6 +141,26 @@ const processImportAsset = async ({
       title: rawTitle,
     }),
   };
+};
+
+const processImportAsset = async ({
+  asset,
+  index,
+}: {
+  asset: DocumentPicker.DocumentPickerAsset;
+  index: number;
+}): Promise<ImportSongDraft> => {
+  const { destination, fileName } = await copyAssetToImportCache({
+    asset,
+    index,
+  });
+
+  return processCachedImportFile({
+    cacheUri: destination,
+    fileName,
+    fileType: asset.mimeType ?? fileName,
+    id: Date.now() + index,
+  });
 };
 
 export async function selectImportFiles(): Promise<{
@@ -156,6 +198,35 @@ export async function selectImportFiles(): Promise<{
     drafts,
     skipped,
   };
+}
+
+export async function prepareWifiImportCache() {
+  await createImportCacheDirectory();
+}
+
+export async function stageWifiImportFile({
+  data,
+  id,
+  name,
+  type,
+}: {
+  data: string;
+  id: number;
+  name: string;
+  type: string;
+}) {
+  const { destination, fileName } = await writeBase64AssetToImportCache({
+    data,
+    id,
+    name,
+  });
+
+  return processCachedImportFile({
+    cacheUri: destination,
+    fileName,
+    fileType: type || fileName,
+    id,
+  });
 }
 
 export async function clearImportCache() {

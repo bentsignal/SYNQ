@@ -10,7 +10,11 @@ import {
   discardImportSession,
   saveImportSessionToLibrary,
 } from "../services/import-library-save-service";
-import { clearImportCache, selectImportFiles } from "../services/import-file-service";
+import {
+  clearImportCache,
+  prepareWifiImportCache,
+  selectImportFiles,
+} from "../services/import-file-service";
 import type {
   ImportSaveSummary,
   ImportSessionState,
@@ -19,8 +23,10 @@ import type {
 
 type ImportSessionAction =
   | { type: "begin-file-pick" }
+  | { total: number; type: "begin-wifi-transfer" }
   | { error: string; type: "fail" }
   | { songs: ImportSongDraft[]; type: "review" }
+  | { song: ImportSongDraft; type: "receive-wifi-song" }
   | { songIds: number[]; type: "remove-songs" }
   | { shouldSaveToLibrary: boolean; type: "set-save-to-library" }
   | { song: ImportSongDraft; type: "update-song" }
@@ -31,9 +37,12 @@ type ImportSessionAction =
 
 type ImportSessionCommands = {
   beginFilePick: () => void;
+  beginWifiTransfer: (total: number) => Promise<boolean>;
   discardSession: () => void;
   failSession: (error: string) => void;
   finishSession: (summary: ImportSaveSummary) => void;
+  finishWifiTransfer: () => void;
+  receiveWifiSong: (song: ImportSongDraft) => void;
   removeImportSongs: (songIds: number[]) => void;
   resetSession: () => void;
   reviewSongs: (songs: ImportSongDraft[]) => void;
@@ -75,12 +84,41 @@ const importSessionReducer = (
         phase: "picking",
         source: "files",
       };
+    case "begin-wifi-transfer":
+      return {
+        ...state,
+        error: null,
+        phase: "processing",
+        progress: {
+          current: 0,
+          total: action.total,
+        },
+        saveSummary: null,
+        selectedSongId: null,
+        songs: [],
+        source: "wifi",
+      };
     case "fail":
       return {
         ...state,
         error: action.error,
         phase: "failure",
       };
+    case "receive-wifi-song": {
+      const songs = state.songs.some((song) => song.id === action.song.id)
+        ? state.songs
+        : [...state.songs, action.song];
+
+      return {
+        ...state,
+        progress: {
+          current: songs.length,
+          total: Math.max(state.progress.total, songs.length),
+        },
+        selectedSongId: action.song.id,
+        songs,
+      };
+    }
     case "review":
       return {
         ...state,
@@ -161,6 +199,22 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
   const beginFilePick = useCallback(() => {
     dispatch({ type: "begin-file-pick" });
   }, []);
+  const beginWifiTransfer = useCallback(async (total: number) => {
+    try {
+      await prepareWifiImportCache();
+      dispatch({ total, type: "begin-wifi-transfer" });
+      return true;
+    } catch (caughtError) {
+      dispatch({
+        error:
+          caughtError instanceof Error
+            ? caughtError.message
+            : "Wi-Fi import cache could not be prepared.",
+        type: "fail",
+      });
+      return false;
+    }
+  }, []);
   const failSession = useCallback((error: string) => {
     dispatch({ error, type: "fail" });
   }, []);
@@ -200,6 +254,17 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
   const removeImportSongs = useCallback((songIds: number[]) => {
     dispatch({ songIds, type: "remove-songs" });
   }, []);
+  const receiveWifiSong = useCallback((song: ImportSongDraft) => {
+    dispatch({ song, type: "receive-wifi-song" });
+  }, []);
+  const finishWifiTransfer = useCallback(() => {
+    if (state.songs.length > 0) {
+      dispatch({ songs: state.songs, type: "review" });
+      return;
+    }
+
+    dispatch({ error: "No Wi-Fi songs were received.", type: "fail" });
+  }, [state.songs]);
   const setShouldSaveToLibrary = useCallback(
     (shouldSaveToLibrary: boolean) => {
       dispatch({ shouldSaveToLibrary, type: "set-save-to-library" });
@@ -244,9 +309,12 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
   const value = useMemo<ImportSessionValue>(
     () => ({
       beginFilePick,
+      beginWifiTransfer,
       discardSession,
       failSession,
       finishSession,
+      finishWifiTransfer,
+      receiveWifiSong,
       removeImportSongs,
       resetSession,
       reviewSongs,
@@ -258,9 +326,12 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
     }),
     [
       beginFilePick,
+      beginWifiTransfer,
       discardSession,
       failSession,
       finishSession,
+      finishWifiTransfer,
+      receiveWifiSong,
       removeImportSongs,
       resetSession,
       reviewSongs,

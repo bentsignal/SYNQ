@@ -54,10 +54,10 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     adapter seam exist; native playback, persistence, and remote events are
     next.
   - Import/ingest: route-per-step import shell, session state, file picker,
-    cache staging, metadata/duration extraction, preview/save screens, staged
-    metadata editing, and Drizzle draft-to-library save/discard commands with
-    durable audio file movement and cover/artwork persistence exist; Wi-Fi
-    import and remaining import polish are next.
+    Wi-Fi transfer route/server, cache staging, metadata/duration extraction,
+    preview/save screens, staged metadata editing, and Drizzle draft-to-library
+    save/discard commands with durable audio file movement and cover/artwork
+    persistence exist; import polish and deeper manual smoke are next.
   - Backup/restore: feature-owned backup screen and command-state boundary
     exist; archive creation, document picking, restore, erase, and database
     reset services are next.
@@ -104,10 +104,10 @@ song add/remove. Settings now has a feature-owned home with backup,
 customization, and premium route entry points. Playback now has a reducer-backed
 session boundary plus queue/player screens, but it is not yet connected to
 native playback. Import now has a route-per-step session shell, native file
-selection, cache staging, metadata/duration extraction, and Drizzle draft saves,
-including moving cached audio into durable library storage, persisting artwork
-to shared image storage, and editing staged song metadata before save. Backup
-now has a
+selection, a Wi-Fi transfer route/server, cache staging,
+metadata/duration extraction, and Drizzle draft saves, including moving cached
+audio into durable library storage, persisting artwork to shared image storage,
+and editing staged song metadata before save. Backup now has a
 feature-owned command-state shell, but it is not yet connected to native
 archive/restore/reset services. Premium now has a feature-owned purchase
 session shell, but it is not yet connected to RevenueCat entitlements. It is

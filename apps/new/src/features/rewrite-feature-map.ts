@@ -40,7 +40,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/import",
     targetBoundary: "src/features/import",
-    nextMilestone: "Add Wi-Fi import and remaining import polish.",
+    nextMilestone: "Manually smoke import files, Wi-Fi transfer, save, discard, and staged metadata editing.",
   },
   {
     key: "backup",

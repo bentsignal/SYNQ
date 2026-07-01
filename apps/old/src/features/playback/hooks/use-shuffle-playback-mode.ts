@@ -5,8 +5,7 @@ import {
   usePlaybackQueueRefreshContext,
   usePlaybackSourceContext,
 } from "@/src/features/playback/context/PlaybackProvider";
-import { setPlaybackStorageBoolean } from "@/src/features/playback/lib/playback-storage-service";
-import { updateUpcomingQueue } from "@/src/features/playback/lib/playback-upcoming-queue-service";
+import { applyShufflePlaybackMode } from "@/src/features/playback/lib/playback-mode-command-service";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { useActiveTrack } from "react-native-track-player";
 
@@ -25,24 +24,28 @@ export const useShufflePlaybackMode = () => {
       const nextShuffle = !previous;
       setLocalShuffle(nextShuffle);
       setShuffle(nextShuffle);
-      await setPlaybackStorageBoolean("shuffle", nextShuffle);
-
-      const id = track?.id;
-      if (id && sourceType !== null && sourceId !== null) {
-        await updateUpcomingQueue({
-          currentId: id,
-          shuffleValue: nextShuffle,
-          sourceTypeValue: sourceType,
-          sourceIdValue: sourceId,
-          theme,
-          requestQueueRefresh,
-          resetAddOffset,
-        });
-      }
+      await applyShufflePlaybackMode({
+        currentId: track?.id,
+        nextShuffle,
+        sourceId,
+        sourceType,
+        theme,
+        requestQueueRefresh,
+        resetAddOffset,
+      });
     } catch {
       setShuffle(previous);
       setLocalShuffle(previous);
-      await setPlaybackStorageBoolean("shuffle", previous);
+      await applyShufflePlaybackMode({
+        currentId: track?.id,
+        nextShuffle: previous,
+        rebuildUpcomingQueue: false,
+        sourceId,
+        sourceType,
+        theme,
+        requestQueueRefresh,
+        resetAddOffset,
+      });
     }
   }, [
     requestQueueRefresh,

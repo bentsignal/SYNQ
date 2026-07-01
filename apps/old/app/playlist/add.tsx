@@ -1,26 +1,16 @@
-import { StyleSheet, Text, View } from "react-native";
-import { useState } from "react";
-import { Colors } from "@/src/constants/Colors";
-import { Styles } from "@/src/constants/Styles";
-import Bar from "@/src/shared/components/modals/Bar";
-import CustomButton from "@/src/shared/components/CustomButton";
-import { router } from "expo-router";
-import { PageType, SortOrder, SortType } from "@/src/constants/Types";
+import { PageType, SortType } from "@/src/constants/Types";
 import PlaylistList from "@/src/features/library/components/lists/playlist";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import ModalStyles from "@/src/shared/components/modals/Styles";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
+import AddToLibraryEntityScreen from "@/src/features/library/components/add/AddToLibraryEntityScreen";
+import { useLibraryListQueryState } from "@/src/features/library/hooks/use-library-list-query-state";
 import { useLibraryPlaylistsQuery } from "@/src/features/library/hooks/use-library-playlists-query";
 
 const AddToPlaylist = () => {
-  const { theme } = useThemeContext();
   const { editSong } = useActionSheetContext();
-  const insets = useSafeAreaInsets();
-  const [query, setQuery] = useState<string>("");
-  const [sort, setSort] = useState<SortType>(SortType.DATE);
-  const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
+  const { order, query, setOrder, setQuery, setSort, sort } =
+    useLibraryListQueryState({
+      initialSort: SortType.DATE,
+    });
   const { playlists } = useLibraryPlaylistsQuery({
     prioritizeSongId: editSong?.id,
     query,
@@ -29,66 +19,30 @@ const AddToPlaylist = () => {
   });
 
   return (
-    <View style={Local.wrapper}>
-      <Bar />
-      <Text style={ModalStyles.header}>Add to Playlist</Text>
-      <CustomButton
-        title={"New"}
-        background={theme}
-        handlePress={() => {
-          router.push("/playlist/create");
-        }}
-        customStyles={{
-          marginBottom: 20,
-        }}
-      />
-      <View style={Styles.divider} />
-      <PlaylistList
-        playlists={playlists}
-        pageType={PageType.ADD}
-        gradientStart={"rgba(24, 24, 24, 1)"}
-        gradientEnd={"rgba(24, 24, 24, 0)"}
-        headerComponent={
-          <QueryWrapper
-            query={query}
-            setQuery={setQuery}
-            sort={sort}
-            setSort={setSort}
-            order={order}
-            setOrder={setOrder}
-            showSortTypes={{
-              [SortType.TITLE]: true,
-              [SortType.DATE]: true,
-            }}
-          />
-        }
-      />
-      <View
-        style={[Local.bottomButtonsWrapper, { paddingBottom: insets.bottom }]}
-      >
-        <CustomButton
-          title={"Close"}
-          handlePress={() => {
-            router.back();
-          }}
+    <AddToLibraryEntityScreen
+      createRoute="/playlist/create"
+      order={order}
+      query={query}
+      renderList={(headerComponent) => (
+        <PlaylistList
+          playlists={playlists}
+          pageType={PageType.ADD}
+          gradientStart={"rgba(24, 24, 24, 1)"}
+          gradientEnd={"rgba(24, 24, 24, 0)"}
+          headerComponent={headerComponent}
         />
-      </View>
-    </View>
+      )}
+      setOrder={setOrder}
+      setQuery={setQuery}
+      setSort={setSort}
+      showSortTypes={{
+        [SortType.TITLE]: true,
+        [SortType.DATE]: true,
+      }}
+      sort={sort}
+      title="Add to Playlist"
+    />
   );
 };
-
-const Local = StyleSheet.create({
-  wrapper: {
-    ...Styles.body,
-    backgroundColor: Colors.popup,
-    ...ModalStyles.roundedTop,
-  },
-  bottomButtonsWrapper: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 10,
-    width: "100%",
-  },
-});
 
 export default AddToPlaylist;

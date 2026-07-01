@@ -328,6 +328,9 @@ feature-oriented packages.
      out of the player route component.
    - Player song edit sheet pull-dismiss behavior now lives in a playback
      feature hook, moving TrueSheet dismissal and haptics out of the route.
+   - Add-to-playlist, add-to-album, and add-to-artist routes now share a
+     library feature screen shell for modal chrome, query controls, new/create
+     navigation, and close handling.
    - Song list page covers now receive playlist, album, and artist cover paths
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or

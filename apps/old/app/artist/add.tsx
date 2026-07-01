@@ -1,10 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
-import { useState } from "react";
-import { Colors } from "@/src/constants/Colors";
-import { Styles } from "@/src/constants/Styles";
-import Bar from "@/src/shared/components/modals/Bar";
-import CustomButton from "@/src/shared/components/CustomButton";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import {
   PageType,
   SourceType,
@@ -12,21 +6,19 @@ import {
   SortType,
 } from "@/src/constants/Types";
 import ArtistList from "@/src/features/library/components/lists/artist";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import ModalStyles from "@/src/shared/components/modals/Styles";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
+import AddToLibraryEntityScreen from "@/src/features/library/components/add/AddToLibraryEntityScreen";
 import { useLibraryArtistsQuery } from "@/src/features/library/hooks/use-library-artists-query";
+import { useLibraryListQueryState } from "@/src/features/library/hooks/use-library-list-query-state";
 
 const AddArtist = () => {
-  const { theme } = useThemeContext();
-  const insets = useSafeAreaInsets();
   const { sourceType } = useLocalSearchParams();
   const { editSong } = useActionSheetContext();
-  const [query, setQuery] = useState<string>("");
-  const [sort, setSort] = useState<SortType>(SortType.ARTIST);
-  const [order, setOrder] = useState<SortOrder>(SortOrder.ASC);
+  const { order, query, setOrder, setQuery, setSort, sort } =
+    useLibraryListQueryState({
+      initialOrder: SortOrder.ASC,
+      initialSort: SortType.ARTIST,
+    });
   const artistSourceType =
     sourceType === "song" ? SourceType.SONG : SourceType.ALBUM;
   const { artists } = useLibraryArtistsQuery({
@@ -38,66 +30,30 @@ const AddArtist = () => {
   });
 
   return (
-    <View style={Local.wrapper}>
-      <Bar />
-      <Text style={ModalStyles.header}>Add Artists</Text>
-      <CustomButton
-        title={"New"}
-        background={theme}
-        handlePress={() => {
-          router.push("/artist/create");
-        }}
-        customStyles={{
-          marginBottom: 20,
-        }}
-      />
-      <View style={Styles.divider} />
-      <ArtistList
-        artists={artists}
-        pageType={PageType.ADD}
-        gradientStart={"rgba(24, 24, 24, 1)"}
-        gradientEnd={"rgba(24, 24, 24, 0)"}
-        headerComponent={
-          <QueryWrapper
-            query={query}
-            setQuery={setQuery}
-            sort={sort}
-            setSort={setSort}
-            order={order}
-            setOrder={setOrder}
-            showSortTypes={{
-              [SortType.ARTIST]: true,
-              [SortType.DATE]: true,
-            }}
-          />
-        }
-      />
-      <View
-        style={[Local.bottomButtonsWrapper, { paddingBottom: insets.bottom }]}
-      >
-        <CustomButton
-          title={"Close"}
-          handlePress={() => {
-            router.back();
-          }}
+    <AddToLibraryEntityScreen
+      createRoute="/artist/create"
+      order={order}
+      query={query}
+      renderList={(headerComponent) => (
+        <ArtistList
+          artists={artists}
+          pageType={PageType.ADD}
+          gradientStart={"rgba(24, 24, 24, 1)"}
+          gradientEnd={"rgba(24, 24, 24, 0)"}
+          headerComponent={headerComponent}
         />
-      </View>
-    </View>
+      )}
+      setOrder={setOrder}
+      setQuery={setQuery}
+      setSort={setSort}
+      showSortTypes={{
+        [SortType.ARTIST]: true,
+        [SortType.DATE]: true,
+      }}
+      sort={sort}
+      title="Add Artists"
+    />
   );
 };
-
-const Local = StyleSheet.create({
-  wrapper: {
-    ...Styles.body,
-    backgroundColor: Colors.popup,
-    ...ModalStyles.roundedTop,
-  },
-  bottomButtonsWrapper: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 10,
-    width: "100%",
-  },
-});
 
 export default AddArtist;

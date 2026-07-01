@@ -8,9 +8,13 @@ import {
   getPremiumRestoreMessage,
   getSelectedPremiumTierFromProduct,
 } from "@/src/features/premium/lib/premium-products";
+import {
+  capturePremiumPurchaseAttempt,
+  capturePremiumPurchaseError,
+  capturePremiumPurchaseSuccess,
+} from "@/src/features/premium/lib/premium-purchase-events";
 import { getPremiumStatusViewState } from "@/src/features/premium/lib/premium-status-view-state";
 import * as PurchaseManager from "@/src/features/premium/lib/purchase-service";
-import { posthog } from "@/src/lib/posthog";
 import { Alert } from "react-native";
 
 type PremiumStatus = Awaited<ReturnType<typeof PurchaseManager.checkStatus>>;
@@ -121,25 +125,18 @@ export function usePremiumPurchaseFlow() {
     setLoading(true);
     try {
       const id = getPremiumProductName(selected);
-      posthog.capture("attempt_purchase_premium", {
-        tier: id,
-      });
+      capturePremiumPurchaseAttempt(id);
       await PurchaseManager.purchase(id);
       sendHaptic("success");
       setPremium(true);
       updateStatus(await PurchaseManager.checkStatus());
       setLoading(false);
-      posthog.capture("success_purchase_premium", {
-        tier: id,
-      });
+      capturePremiumPurchaseSuccess(id);
     } catch (error) {
       console.log("error purchasing premium:", error);
       const trace = error instanceof Error ? error.message : String(error);
-      posthog.capture("error_purchase_premium", {
-        error: trace,
-        cancelled: trace.includes("cancelled"),
-      });
-      if (!trace.includes("cancelled")) {
+      const { cancelled } = capturePremiumPurchaseError(trace);
+      if (!cancelled) {
         sendErrorNotification(
           "Premium Error",
           "We ran into an issue trying to complete your purchase, please try again later",

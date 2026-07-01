@@ -4,8 +4,10 @@ import { State } from "react-native-track-player";
 export const togglePlaybackForState = async (currentState: State) => {
   try {
     await togglePlaybackState(currentState);
-  } catch (error) {
-    console.error("Error toggling play/pause:", error);
+
+    return true;
+  } catch {
+    return false;
   }
 };
 

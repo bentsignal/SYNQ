@@ -114,8 +114,10 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
         await AsyncStorage.setItem("expiration", "null");
         await forceResetTheme();
       }
-    } catch (error) {
-      console.log("error checking purchases:", error);
+    } catch {
+      setPremium(false);
+      await AsyncStorage.setItem("expiration", "null");
+      await forceResetTheme();
     }
   }, [forceResetTheme]);
 

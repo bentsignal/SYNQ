@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { LibraryCollectionPreviewSection } from "../components/LibraryCollectionPreviewSection";
 import { LibrarySongPreviewList } from "../components/LibrarySongPreviewList";
 import { LibrarySummaryGrid } from "../components/LibrarySummaryGrid";
+import { useLibraryCollectionPreviewQuery } from "../hooks/use-library-collection-preview-query";
 import {
   useLibrarySongPreviewQuery,
   type LibrarySongPreviewOrder,
@@ -14,11 +16,20 @@ export function LibraryHomeScreen() {
   const [sort, setSort] = useState<LibrarySongPreviewSort>("recent");
   const [order, setOrder] = useState<LibrarySongPreviewOrder>("desc");
   const summary = useLibrarySummaryQuery();
+  const collectionPreview = useLibraryCollectionPreviewQuery();
   const songPreview = useLibrarySongPreviewQuery({ order, query, sort });
-  const hasErrors = summary.errors.length > 0 || Boolean(songPreview.error);
+  const hasErrors =
+    summary.errors.length > 0 ||
+    collectionPreview.errors.length > 0 ||
+    Boolean(songPreview.error);
+  const latestUpdate = Math.max(
+    summary.updatedAt,
+    collectionPreview.updatedAt,
+    songPreview.updatedAt?.getTime() ?? 0,
+  );
   const updatedLabel =
-    summary.updatedAt > 0
-      ? `Updated ${new Date(summary.updatedAt).toLocaleTimeString()}`
+    latestUpdate > 0
+      ? `Updated ${new Date(latestUpdate).toLocaleTimeString()}`
       : "Waiting for library data";
 
   return (
@@ -42,6 +53,11 @@ export function LibraryHomeScreen() {
         setSort={setSort}
         songs={songPreview.songs}
         sort={sort}
+      />
+
+      <LibraryCollectionPreviewSection
+        collections={collectionPreview.collections}
+        isEmpty={collectionPreview.isEmpty}
       />
 
       <View style={styles.panel}>

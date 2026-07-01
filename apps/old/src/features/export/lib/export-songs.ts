@@ -3,14 +3,14 @@ import {
   isExportSongEdited,
   updateExportSongMetadata,
 } from "@/src/features/export/lib/export-metadata";
+import { getNextExportNumber } from "@/src/features/export/lib/export-number-storage-service";
 import { markLibrarySongAsExported } from "@/src/features/library/repository/song-metadata-repository";
-import { getExportNumber } from "@/src/lib/util";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 
 export const exportSongs = async (songs: SongType[]) => {
   const date = new Date();
-  const exportNumber = await getExportNumber();
+  const exportNumber = await getNextExportNumber();
   const dir = `${FileSystem.documentDirectory}batch ${exportNumber}  -  ${date.getMonth()}.${date.getDate()}.${date.getFullYear()}`;
   let destination;
 

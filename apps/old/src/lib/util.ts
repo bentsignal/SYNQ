@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -20,10 +19,6 @@ export const idgen = (len: number) => {
     result += Math.floor(Math.random() * 10).toString();
   }
   return Number(result);
-};
-
-export const isValidNumString = (str: string) => {
-  return !isNaN(Number(str));
 };
 
 // get file name from global path
@@ -52,23 +47,6 @@ export const getCompletion = (size: number, progress: number) => {
     }
   } catch {
     return 0;
-  }
-};
-
-export const getExportNumber = async () => {
-  try {
-    const numberString = await AsyncStorage.getItem("exportNumber");
-    if (numberString && isValidNumString(numberString)) {
-      let num = Number(numberString);
-      num++;
-      await AsyncStorage.setItem("exportNumber", num.toString());
-      return num;
-    } else {
-      throw new Error("Bad data");
-    }
-  } catch {
-    await AsyncStorage.setItem("exportNumber", "1");
-    return 1;
   }
 };
 

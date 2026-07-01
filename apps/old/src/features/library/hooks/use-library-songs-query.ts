@@ -10,6 +10,11 @@ import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { getImagePathFromHash } from "@/src/features/images/repository/image-repository";
+import {
+  compareLibraryText,
+  matchesSongQuery,
+  normalizeLibraryQuery,
+} from "@/src/features/library/lib/song-query-results";
 
 type LibrarySongQueryOptions = {
   playlistId?: number;
@@ -26,21 +31,6 @@ type LibrarySongRow = {
   albumCoverImage: string | null;
 };
 
-const compareText = (first?: string, second?: string) =>
-  (first ?? "").localeCompare(second ?? "");
-
-const normalizeQuery = (query?: string) => query?.trim().toLowerCase() ?? "";
-
-const matchesQuery = (song: SongType, query: string) => {
-  if (!query) {
-    return true;
-  }
-
-  return [song.title, song.artist, song.album].some((value) =>
-    value?.toLowerCase().includes(query),
-  );
-};
-
 const sortSongs = (
   songs: SongType[],
   sort: SortType,
@@ -48,15 +38,15 @@ const sortSongs = (
 ) => {
   const sorted = [...songs].sort((first, second) => {
     if (sort === SortType.TITLE) {
-      return compareText(first.title, second.title);
+      return compareLibraryText(first.title, second.title);
     }
 
     if (sort === SortType.ARTIST) {
-      return compareText(first.artist, second.artist);
+      return compareLibraryText(first.artist, second.artist);
     }
 
     if (sort === SortType.ALBUM) {
-      return compareText(first.album, second.album);
+      return compareLibraryText(first.album, second.album);
     }
 
     return first.id - second.id;
@@ -168,10 +158,10 @@ export const useLibrarySongsQuery = ({
   );
 
   const songs = useMemo(() => {
-    const normalizedQuery = normalizeQuery(query);
+    const normalizedQuery = normalizeLibraryQuery(query);
     const mappedSongs = rowsToSongs((data ?? []) as LibrarySongRow[], pageType);
     return sortSongs(
-      mappedSongs.filter((song) => matchesQuery(song, normalizedQuery)),
+      mappedSongs.filter((song) => matchesSongQuery(song, normalizedQuery)),
       sort,
       order,
     );

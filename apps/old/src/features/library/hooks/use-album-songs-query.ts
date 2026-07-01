@@ -6,6 +6,12 @@ import {
   SortType,
 } from "@/src/constants/Types";
 import { getImagePathFromHash } from "@/src/features/images/repository/image-repository";
+import {
+  compareLibraryText,
+  compareOptionalTrack,
+  matchesSongQuery,
+  normalizeLibraryQuery,
+} from "@/src/features/library/lib/song-query-results";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";
@@ -32,33 +38,6 @@ type AlbumSong = SongType & {
   albumCoverImage?: string | null;
 };
 
-const normalizeQuery = (query?: string) => query?.trim().toLowerCase() ?? "";
-
-const compareText = (first?: string, second?: string) =>
-  (first ?? "").localeCompare(second ?? "");
-
-const compareTrack = (first?: number, second?: number) => {
-  if (!first) {
-    return 1;
-  }
-
-  if (!second) {
-    return -1;
-  }
-
-  return first - second;
-};
-
-const matchesQuery = (song: SongType, query: string) => {
-  if (!query) {
-    return true;
-  }
-
-  return [song.title, song.artist].some((value) =>
-    value?.toLowerCase().includes(query),
-  );
-};
-
 const sortSongs = (
   songs: SongType[],
   sort: SortType,
@@ -66,10 +45,10 @@ const sortSongs = (
 ) => {
   const sorted = [...songs].sort((first, second) => {
     if (sort === SortType.TITLE) {
-      return compareText(first.title, second.title);
+      return compareLibraryText(first.title, second.title);
     }
 
-    return compareTrack(first.track, second.track);
+    return compareOptionalTrack(first.track, second.track);
   });
 
   return order === SortOrder.DESC ? sorted.reverse() : sorted;
@@ -161,10 +140,10 @@ export const useAlbumSongsQuery = ({
   );
 
   const { songs, totalSongCount, totalDuration } = useMemo(() => {
-    const normalizedQuery = normalizeQuery(query);
+    const normalizedQuery = normalizeLibraryQuery(query);
     const mappedSongs = rowsToSongs((data ?? []) as AlbumSongRow[]);
     const filteredSongs = mappedSongs.filter((song) =>
-      matchesQuery(song, normalizedQuery),
+      matchesSongQuery(song, normalizedQuery, ["title", "artist"]),
     );
 
     return {

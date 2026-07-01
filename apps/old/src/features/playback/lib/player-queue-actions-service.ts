@@ -22,6 +22,11 @@ type UpdateQueueArgs = QueueRefreshActions & {
   query?: string;
 };
 
+export const persistPlaybackQueue = async () => {
+  const queue = await TrackPlayer.getQueue();
+  await AsyncStorage.setItem("queue", JSON.stringify(queue));
+};
+
 export const addTrackToQueue = async ({
   track,
   addOffset,
@@ -36,8 +41,7 @@ export const addTrackToQueue = async ({
     await TrackPlayer.add(track, currentIndex + addOffset + 1);
     await incrementAddOffset();
   }
-  const queue = await TrackPlayer.getQueue();
-  await AsyncStorage.setItem("queue", JSON.stringify(queue));
+  await persistPlaybackQueue();
 };
 
 export const moveQueueTrack = async (from: number, to: number) => {
@@ -239,7 +243,6 @@ export const updateUpcomingQueue = async ({
   }
   await TrackPlayer.add(upcomingTracks);
   requestQueueRefresh();
-  const queue = await TrackPlayer.getQueue();
-  await AsyncStorage.setItem("queue", JSON.stringify(queue));
+  await persistPlaybackQueue();
   await resetAddOffset();
 };

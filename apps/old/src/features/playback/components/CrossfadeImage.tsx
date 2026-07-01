@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCrossfadeImage } from "@/src/features/playback/hooks/use-crossfade-image";
 import {
   Animated,
-  Easing,
   ImageProps,
   ImageSourcePropType,
   StyleProp,
@@ -16,38 +15,13 @@ type CrossfadeImageProps = Omit<ImageProps, "source" | "style"> & {
   style?: StyleProp<ViewStyle>;
 };
 
-const sourceKey = (source: ImageSourcePropType) => JSON.stringify(source);
-
 export default function CrossfadeImage({
   source,
   duration = 500,
   style,
   ...props
 }: CrossfadeImageProps) {
-  const opacity = useRef(new Animated.Value(1)).current;
-  const [displaySource, setDisplaySource] = useState(source);
-  const sourceKeyRef = useRef(sourceKey(source));
-
-  const fadeIn = useCallback(() => {
-    opacity.setValue(0);
-    Animated.timing(opacity, {
-      toValue: 1,
-      duration,
-      easing: Easing.ease,
-      useNativeDriver: true,
-    }).start();
-  }, [duration, opacity]);
-
-  useEffect(() => {
-    const nextSourceKey = sourceKey(source);
-    if (nextSourceKey === sourceKeyRef.current) {
-      return;
-    }
-
-    sourceKeyRef.current = nextSourceKey;
-    setDisplaySource(source);
-    fadeIn();
-  }, [fadeIn, source]);
+  const { displaySource, opacity } = useCrossfadeImage(source, duration);
 
   return (
     <View style={[styles.root, style]}>

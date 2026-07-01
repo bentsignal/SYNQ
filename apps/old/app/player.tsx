@@ -1,8 +1,7 @@
 import PlayerCover from "@/src/features/cover/components/PlayerCover";
-import CrossfadeImage from "@/src/features/playback/components/CrossfadeImage";
 import Bar from "@/src/shared/components/modals/Bar";
-import ModalStyles from "@/src/shared/components/modals/Styles";
 import PlayerActionButtons from "@/src/features/playback/components/PlayerActionButtons";
+import PlayerBackground from "@/src/features/playback/components/PlayerBackground";
 import PlayerControls from "@/src/features/playback/components/PlayerControls";
 import Time from "@/src/features/playback/components/Time";
 import SongInfo from "@/src/features/library/components/song/SongInfo";
@@ -10,10 +9,7 @@ import { Colors } from "@/src/constants/Colors";
 import { usePlayerScreenActions } from "@/src/features/playback/hooks/use-player-screen-actions";
 import { usePlayerScreenState } from "@/src/features/playback/hooks/use-player-screen-state";
 import { Dimensions, StyleSheet, View } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
 import Animated from "react-native-reanimated";
-
-const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 const Player = () => {
   const {
@@ -29,27 +25,9 @@ const Player = () => {
 
   return (
     <Animated.View style={[containerStyle, Local.container]}>
-      <CrossfadeImage
-        source={{ uri: backgroundImage }}
-        blurRadius={100}
-        duration={500}
-        style={[
-          Local.bg,
-          {
-            zIndex: 0,
-            backgroundColor: Colors.popup,
-          },
-        ]}
-      />
-      <AnimatedLinearGradient
-        colors={["rgba(0, 0, 0, 0)", `rgb(0, 0, 0)`]}
-        style={[
-          Local.bg,
-          gradientStyle,
-          {
-            zIndex: 1,
-          },
-        ]}
+      <PlayerBackground
+        backgroundImage={backgroundImage}
+        gradientStyle={gradientStyle}
       />
       <View style={Local.container}>
         <Bar />
@@ -78,15 +56,6 @@ const Player = () => {
 };
 
 const Local = StyleSheet.create({
-  bg: {
-    ...ModalStyles.roundedTop,
-    position: "absolute",
-    height: Dimensions.get("screen").height,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
   container: {
     flex: 1,
     alignItems: "center",

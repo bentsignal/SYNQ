@@ -333,6 +333,9 @@ feature-oriented packages.
    - Player add-to-playlist and more-action buttons now live in a playback
      feature component, continuing to slim static presentation out of the
      player route.
+   - Player blurred artwork background and animated gradient now live in a
+     playback feature component, leaving the player route to compose state,
+     cover art, metadata, and controls.
    - Add-to-playlist, add-to-album, and add-to-artist routes now share a
      library feature screen shell for modal chrome, query controls, new/create
      navigation, and close handling.

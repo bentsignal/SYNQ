@@ -71,13 +71,12 @@ export function useImportExportFlow() {
       const songs = premium ? results : [results[0]];
       await checkForAd();
       await exportSongs(songs);
-      setShowGlobalLoading(false);
-      setDisabled(false);
       setShowImportAd(false);
-    } catch (error) {
+    } catch {
+      posthog.capture("export_during_import_failed");
+    } finally {
       setShowGlobalLoading(false);
       setDisabled(false);
-      console.log("Error exporting songs: ", error);
     }
   }, [
     checkForAd,

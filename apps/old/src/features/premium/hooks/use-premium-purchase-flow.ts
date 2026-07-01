@@ -130,10 +130,8 @@ export function usePremiumPurchaseFlow() {
       sendHaptic("success");
       setPremium(true);
       updateStatus(await PurchaseManager.checkStatus());
-      setLoading(false);
       capturePremiumPurchaseSuccess(id);
     } catch (error) {
-      console.log("error purchasing premium:", error);
       const trace = error instanceof Error ? error.message : String(error);
       const { cancelled } = capturePremiumPurchaseError(trace);
       if (!cancelled) {
@@ -144,6 +142,7 @@ export function usePremiumPurchaseFlow() {
           trace,
         );
       }
+    } finally {
       setLoading(false);
     }
   }, [selected, sendErrorNotification, sendHaptic, setPremium, updateStatus]);
@@ -166,8 +165,7 @@ export function usePremiumPurchaseFlow() {
           { text: "Ok" },
         ]);
       }
-    } catch (error) {
-      console.log(error);
+    } catch {
       sendHaptic("error");
       Alert.alert("ERROR", "Could not restore purchases", [
         {

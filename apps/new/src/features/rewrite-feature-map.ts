@@ -45,10 +45,10 @@ export const rewriteFeatures: RewriteFeature[] = [
   {
     key: "backup",
     name: "Backup",
-    status: "pending",
+    status: "active",
     oldReference: "apps/old/src/features/backup",
     targetBoundary: "src/features/backup",
-    nextMilestone: "Port restore, erase, archive pick, and database reset services.",
+    nextMilestone: "Connect archive creation, document picking, restore, erase, and database reset services.",
   },
   {
     key: "premium-settings",

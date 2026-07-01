@@ -1,16 +1,18 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "@/src/constants/Colors";
 import { PageType, SortOrder, SortType } from "@/src/constants/Types";
-import { useState } from "react";
 import ArtistList from "@/src/features/library/components/lists/artist";
 import { Styles as MainStyles } from "@/src/constants/Styles";
 import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
+import { useLibraryListQueryState } from "@/src/features/library/hooks/use-library-list-query-state";
 import { useLibraryArtistsQuery } from "@/src/features/library/hooks/use-library-artists-query";
 
 const Artists = () => {
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<SortType>(SortType.ARTIST);
-  const [order, setOrder] = useState<SortOrder>(SortOrder.ASC);
+  const { order, query, setOrder, setQuery, setSort, sort } =
+    useLibraryListQueryState({
+      initialOrder: SortOrder.ASC,
+      initialSort: SortType.ARTIST,
+    });
   const { artists, isEmpty } = useLibraryArtistsQuery({ query, sort, order });
 
   return (

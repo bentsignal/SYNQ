@@ -299,6 +299,9 @@ feature-oriented packages.
    - Playlist row interaction state now lives in a library feature hook,
      moving membership writes, fallback cover loading, sheet presentation,
      haptics, and navigation out of the row component.
+   - Library category list query/sort/order state now lives in a shared
+     library feature hook, removing repeated state plumbing from the songs,
+     albums, artists, and playlists category components.
    - Song list page covers now receive playlist, album, and artist cover paths
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or

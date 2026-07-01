@@ -1,14 +1,16 @@
 import { StyleSheet, View } from "react-native";
 import PlaylistList from "@/src/features/library/components/lists/playlist";
-import { useState } from "react";
 import { PageType, SortType, SortOrder } from "@/src/constants/Types";
 import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
+import { useLibraryListQueryState } from "@/src/features/library/hooks/use-library-list-query-state";
 import { useLibraryPlaylistsQuery } from "@/src/features/library/hooks/use-library-playlists-query";
 
 const Playlists = () => {
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<SortType>(SortType.DATE);
-  const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
+  const { order, query, setOrder, setQuery, setSort, sort } =
+    useLibraryListQueryState({
+      initialOrder: SortOrder.DESC,
+      initialSort: SortType.DATE,
+    });
   const { playlists } = useLibraryPlaylistsQuery({ query, sort, order });
 
   return (

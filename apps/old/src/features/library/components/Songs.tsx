@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Colors } from "@/src/constants/Colors";
 import { Styles as MainStyles } from "@/src/constants/Styles";
 import {
@@ -7,15 +6,18 @@ import {
   SortType,
   SourceType,
 } from "@/src/constants/Types";
+import { useLibraryListQueryState } from "@/src/features/library/hooks/use-library-list-query-state";
 import { useLibrarySongsQuery } from "@/src/features/library/hooks/use-library-songs-query";
 import { StyleSheet, Text, View } from "react-native";
 import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
 import SongList from "@/src/features/library/components/lists/song/SongList";
 
 export default function Songs() {
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<SortType>(SortType.DATE);
-  const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
+  const { order, query, setOrder, setQuery, setSort, sort } =
+    useLibraryListQueryState({
+      initialOrder: SortOrder.DESC,
+      initialSort: SortType.DATE,
+    });
   const { songs, isEmpty } = useLibrarySongsQuery({
     query,
     sort,

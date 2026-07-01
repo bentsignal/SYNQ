@@ -1,16 +1,18 @@
 import { StyleSheet, Text, View } from "react-native";
 import { Colors } from "@/src/constants/Colors";
 import { PageType, SortOrder, SortType } from "@/src/constants/Types";
-import { useState } from "react";
 import AlbumList from "@/src/features/library/components/lists/album";
 import { Styles as MainStyles } from "@/src/constants/Styles";
 import QueryWrapper from "@/src/features/library/components/lists/query/Wrapper";
+import { useLibraryListQueryState } from "@/src/features/library/hooks/use-library-list-query-state";
 import { useLibraryAlbumsQuery } from "@/src/features/library/hooks/use-library-albums-query";
 
 const Albums = () => {
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<SortType>(SortType.DATE);
-  const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
+  const { order, query, setOrder, setQuery, setSort, sort } =
+    useLibraryListQueryState({
+      initialOrder: SortOrder.DESC,
+      initialSort: SortType.DATE,
+    });
   const { albums, isEmpty } = useLibraryAlbumsQuery({ query, sort, order });
 
   return (

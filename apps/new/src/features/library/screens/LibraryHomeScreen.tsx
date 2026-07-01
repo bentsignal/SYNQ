@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { LibraryCollectionPreviewSection } from "../components/LibraryCollectionPreviewSection";
 import { LibrarySongPreviewList } from "../components/LibrarySongPreviewList";
@@ -40,6 +41,9 @@ export function LibraryHomeScreen() {
         <Text style={styles.subtitle}>
           Reactive Drizzle library surface wired to the shared SYNQ database.
         </Text>
+        <Link href="/(tabs)/library/playlist/create" style={styles.createLink}>
+          Create playlist
+        </Link>
       </View>
 
       <LibrarySummaryGrid counts={summary.counts} />
@@ -103,6 +107,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 460,
+  },
+  createLink: {
+    color: "#0f766e",
+    fontSize: 14,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
   },
   panel: {
     backgroundColor: "#ffffff",

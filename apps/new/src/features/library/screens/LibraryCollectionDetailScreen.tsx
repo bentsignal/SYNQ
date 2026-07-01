@@ -68,6 +68,13 @@ function LibraryCollectionDetailContent({
         </Text>
       </View>
 
+      <Link
+        href={`/(tabs)/library/${kind}/edit/${id}`}
+        style={styles.editLink}
+      >
+        Edit {detail.eyebrow.toLowerCase()}
+      </Link>
+
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Songs</Text>
         <Text style={styles.sectionMeta}>Reactive query</Text>
@@ -194,5 +201,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,
+  },
+  editLink: {
+    color: "#0f766e",
+    fontSize: 14,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
   },
 });

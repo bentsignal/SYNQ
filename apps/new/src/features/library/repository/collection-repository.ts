@@ -1,40 +1,68 @@
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
+import { and, eq, ne } from "drizzle-orm";
 
 const normalizeName = (name: string) => name.trim();
 
 const assertUniqueName = async ({
   entity,
+  excludeId,
   name,
 }: {
   entity: "album" | "artist" | "playlist";
+  excludeId?: number;
   name: string;
 }) => {
-  const lowerName = name.toLowerCase();
   const article = entity === "playlist" ? "A" : "An";
 
   switch (entity) {
     case "album": {
-      const albums = await db.select({ name: schema.albums.name }).from(schema.albums);
-      if (albums.some((album) => album.name?.toLowerCase() === lowerName)) {
+      const matchingAlbum = await db
+        .select({ id: schema.albums.id })
+        .from(schema.albums)
+        .where(
+          excludeId
+            ? and(eq(schema.albums.name, name), ne(schema.albums.id, excludeId))
+            : eq(schema.albums.name, name),
+        )
+        .limit(1);
+      if (matchingAlbum.length > 0) {
         throw new Error(`${article} album with this name already exists.`);
       }
       return;
     }
     case "artist": {
-      const artists = await db.select({ name: schema.artists.name }).from(schema.artists);
-      if (artists.some((artist) => artist.name?.toLowerCase() === lowerName)) {
+      const matchingArtist = await db
+        .select({ id: schema.artists.id })
+        .from(schema.artists)
+        .where(
+          excludeId
+            ? and(
+                eq(schema.artists.name, name),
+                ne(schema.artists.id, excludeId),
+              )
+            : eq(schema.artists.name, name),
+        )
+        .limit(1);
+      if (matchingArtist.length > 0) {
         throw new Error(`${article} artist with this name already exists.`);
       }
       return;
     }
     case "playlist": {
-      const playlists = await db
-        .select({ name: schema.playlists.name })
-        .from(schema.playlists);
-      if (
-        playlists.some((playlist) => playlist.name?.toLowerCase() === lowerName)
-      ) {
+      const matchingPlaylist = await db
+        .select({ id: schema.playlists.id })
+        .from(schema.playlists)
+        .where(
+          excludeId
+            ? and(
+                eq(schema.playlists.name, name),
+                ne(schema.playlists.id, excludeId),
+              )
+            : eq(schema.playlists.name, name),
+        )
+        .limit(1);
+      if (matchingPlaylist.length > 0) {
         throw new Error(`${article} playlist with this name already exists.`);
       }
     }
@@ -119,6 +147,85 @@ export async function createPlaylist(name: string) {
   if (!id) {
     throw new Error("Playlist could not be created.");
   }
+
+  return {
+    id,
+    name: cleanName,
+  };
+}
+
+export async function updateAlbum({
+  id,
+  name,
+  year,
+}: {
+  id: number;
+  name: string;
+  year?: number | null;
+}) {
+  const cleanName = normalizeName(name);
+
+  if (!cleanName) {
+    throw new Error("Album name is required.");
+  }
+
+  await assertUniqueName({ entity: "album", excludeId: id, name: cleanName });
+
+  await db
+    .update(schema.albums)
+    .set({ name: cleanName, year })
+    .where(eq(schema.albums.id, id));
+
+  return {
+    id,
+    name: cleanName,
+    year,
+  };
+}
+
+export async function updateArtist({ id, name }: { id: number; name: string }) {
+  const cleanName = normalizeName(name);
+
+  if (!cleanName) {
+    throw new Error("Artist name is required.");
+  }
+
+  await assertUniqueName({ entity: "artist", excludeId: id, name: cleanName });
+
+  await db
+    .update(schema.artists)
+    .set({ name: cleanName })
+    .where(eq(schema.artists.id, id));
+
+  return {
+    id,
+    name: cleanName,
+  };
+}
+
+export async function updatePlaylist({
+  id,
+  name,
+}: {
+  id: number;
+  name: string;
+}) {
+  const cleanName = normalizeName(name);
+
+  if (!cleanName) {
+    throw new Error("Playlist name is required.");
+  }
+
+  await assertUniqueName({
+    entity: "playlist",
+    excludeId: id,
+    name: cleanName,
+  });
+
+  await db
+    .update(schema.playlists)
+    .set({ name: cleanName })
+    .where(eq(schema.playlists.id, id));
 
   return {
     id,

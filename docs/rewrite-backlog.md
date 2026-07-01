@@ -368,6 +368,10 @@ feature-oriented packages.
    - Settings customization route UI now lives in a settings feature screen
      component, moving premium upsell routing, theme/icon/haptic sections, and
      modal chrome out of the app route.
+   - Backup settings route UI now lives in a backup feature screen component,
+     keeping backup/restore/erase actions in the backup hook while moving
+     premium gating, destructive action buttons, loading state, and modal
+     chrome out of the app route.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

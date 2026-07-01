@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Dimensions } from "react-native";
+import { useWindowDimensions } from "react-native";
 import { Gesture } from "react-native-gesture-handler";
 import {
   Easing,
@@ -31,6 +31,7 @@ export function usePlaybackTimeline() {
   const { adPlaying } = usePlaybackAdContext();
   const { position, duration } = useProgress(PROGRESS_INTERVAL);
   const playbackState = usePlaybackState();
+  const { width } = useWindowDimensions();
 
   const [elapsedSec, setElapsedSec] = useState(0);
   const [remainingSec, setRemainingSec] = useState(0);
@@ -42,7 +43,7 @@ export function usePlaybackTimeline() {
   const sharedDuration = useSharedValue(duration);
   const progressScale = useSharedValue(0);
   const sliderHeight = useSharedValue(1);
-  const windowWidth = useSharedValue(Dimensions.get("window").width);
+  const windowWidth = useSharedValue(width);
 
   const updateTimeline = useCallback(() => {
     progressScale.value = withTiming(
@@ -72,6 +73,10 @@ export function usePlaybackTimeline() {
   useEffect(() => {
     allowScrub.value = !adPlaying;
   }, [adPlaying, allowScrub]);
+
+  useEffect(() => {
+    windowWidth.value = width;
+  }, [width, windowWidth]);
 
   useEffect(() => {
     if (duration === 0) return;

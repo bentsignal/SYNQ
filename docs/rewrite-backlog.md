@@ -434,6 +434,9 @@ feature-oriented packages.
      global CSS import and rendering the app root.
    - Removed the fully commented legacy tracking route and its unused tracking
      transparency dependency from the old app package.
+   - Settings stack route layout now delegates to a settings feature shell
+     component, keeping settings modal presentation options out of the app route
+     layer.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

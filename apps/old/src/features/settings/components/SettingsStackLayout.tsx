@@ -1,0 +1,38 @@
+import { Stack } from "expo-router";
+
+const SettingsStackLayout = () => {
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: "transparent" },
+      }}
+    >
+      <Stack.Screen
+        name="index"
+        options={{
+          headerTitle: "Settings",
+          contentStyle: { backgroundColor: "transparent" },
+        }}
+      />
+      <Stack.Screen
+        name="backup"
+        options={{
+          headerShown: false,
+          contentStyle: { backgroundColor: "transparent" },
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="customization"
+        options={{
+          headerShown: false,
+          contentStyle: { backgroundColor: "transparent" },
+          presentation: "modal",
+        }}
+      />
+    </Stack>
+  );
+};
+
+export default SettingsStackLayout;

@@ -356,6 +356,9 @@ feature-oriented packages.
    - Premium route UI now lives in a premium feature screen component, moving
      purchase options, status copy, legal links, hero media, notifications, and
      modal chrome out of the app route.
+   - Premium purchase options and footer state now live in a focused premium
+     feature panel, separating purchase/status/legal actions from the screen
+     hero and modal shell.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

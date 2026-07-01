@@ -10,9 +10,9 @@ import {
 } from "@/src/features/playback/context/PlaybackProvider";
 import { useAdGatedPlaybackCommand } from "@/src/features/playback/hooks/use-ad-gated-playback-command";
 import {
-  skipToNextPlayableTrack,
-  skipToPreviousPlayableTrack,
-} from "@/src/features/playback/lib/playback-queue-navigation-service";
+  getSkipLeftCommand,
+  getSkipRightCommand,
+} from "@/src/features/playback/lib/playback-skip-command-service";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 
 type SkipPlaybackDirection = "left" | "right";
@@ -34,14 +34,14 @@ export const useSkipPlaybackButton = (direction: SkipPlaybackDirection) => {
         sendHaptic("light");
 
         if (direction === "left") {
-          await skipToPreviousPlayableTrack({
+          await getSkipLeftCommand({
             addOffset,
             incrementAddOffset,
-          });
+          })();
           return;
         }
 
-        await skipToNextPlayableTrack({
+        await getSkipRightCommand({
           loop,
           sourceType,
           sourceId,
@@ -54,7 +54,7 @@ export const useSkipPlaybackButton = (direction: SkipPlaybackDirection) => {
           decrementAddOffset,
           requestQueueRefresh,
           resetAddOffset,
-        });
+        })();
       },
     });
   }, [

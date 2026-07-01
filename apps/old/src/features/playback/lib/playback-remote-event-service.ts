@@ -5,9 +5,9 @@ import {
   SourceType,
 } from "@/src/constants/Types";
 import {
-  skipToNextPlayableTrack,
-  skipToPreviousPlayableTrack,
-} from "@/src/features/playback/lib/playback-queue-navigation-service";
+  getSkipLeftCommand,
+  getSkipRightCommand,
+} from "@/src/features/playback/lib/playback-skip-command-service";
 import {
   pausePlayback,
   playPlayback,
@@ -69,65 +69,6 @@ type PlaybackRemoteEventCommandArgs = {
   sourceType: SourceType | null;
   theme: string;
   track?: Track;
-};
-
-const getSkipRightCommand = ({
-  decrementAddOffset,
-  loop,
-  order,
-  query,
-  requestQueueRefresh,
-  resetAddOffset,
-  sendPlaybackError,
-  shuffle,
-  sort,
-  sourceId,
-  sourceType,
-  theme,
-}: Pick<
-  PlaybackRemoteEventCommandArgs,
-  | "decrementAddOffset"
-  | "loop"
-  | "order"
-  | "query"
-  | "requestQueueRefresh"
-  | "resetAddOffset"
-  | "sendPlaybackError"
-  | "shuffle"
-  | "sort"
-  | "sourceId"
-  | "sourceType"
-  | "theme"
->) => {
-  return () =>
-    skipToNextPlayableTrack({
-      loop,
-      sourceType,
-      sourceId,
-      shuffle,
-      sort,
-      order,
-      query,
-      theme,
-      sendPlaybackError,
-      decrementAddOffset,
-      requestQueueRefresh,
-      resetAddOffset,
-    });
-};
-
-const getSkipLeftCommand = ({
-  addOffset,
-  incrementAddOffset,
-}: Pick<
-  PlaybackRemoteEventCommandArgs,
-  "addOffset" | "incrementAddOffset"
->) => {
-  return () =>
-    skipToPreviousPlayableTrack({
-      addOffset,
-      incrementAddOffset,
-    });
 };
 
 const showPlaybackErrorNotification = ({

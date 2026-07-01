@@ -2,7 +2,6 @@ import { Colors } from "@/src/constants/Colors";
 import SongInfo from "@/src/features/library/components/song/SongInfo";
 import PlayerActionButtons from "@/src/features/playback/components/PlayerActionButtons";
 import {
-  Dimensions,
   StyleSheet,
   type StyleProp,
   View,
@@ -50,7 +49,7 @@ const PlayerTrackInfo = ({
 const Local = StyleSheet.create({
   infoContainer: {
     marginTop: 20,
-    width: Dimensions.get("screen").width * 0.9,
+    width: "90%",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",

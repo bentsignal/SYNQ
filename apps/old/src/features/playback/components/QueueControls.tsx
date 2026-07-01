@@ -5,7 +5,7 @@ import { SkipLeft, SkipRight } from "@/src/features/playback/components/Skip";
 import Time from "@/src/features/playback/components/Time";
 import { Colors } from "@/src/constants/Colors";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const QueueControls = () => {
@@ -52,7 +52,7 @@ const Local = StyleSheet.create({
   },
   controlsContainer: {
     flexDirection: "row",
-    width: Dimensions.get("window").width * 0.85,
+    width: "85%",
     gap: 15,
     justifyContent: "space-between",
     alignItems: "center",

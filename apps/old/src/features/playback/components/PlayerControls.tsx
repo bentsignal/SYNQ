@@ -3,7 +3,7 @@ import PausePlayButtons from "@/src/features/playback/components/PausePlayButton
 import QueueButton from "@/src/features/playback/components/QueueButton";
 import ShuffleButton from "@/src/features/playback/components/ShuffleButton";
 import { SkipLeft, SkipRight } from "@/src/features/playback/components/Skip";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 export default function PlayerControls() {
   return (
@@ -37,7 +37,7 @@ export default function PlayerControls() {
 
 const Local = StyleSheet.create({
   controlsContainer: {
-    width: Dimensions.get("screen").width * 0.85,
+    width: "85%",
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
@@ -53,7 +53,7 @@ const Local = StyleSheet.create({
     marginBottom: 10,
   },
   bottomControlsContainer: {
-    width: Dimensions.get("screen").width * 0.7,
+    width: "70%",
     gap: 30,
     marginTop: 20,
     justifyContent: "space-between",

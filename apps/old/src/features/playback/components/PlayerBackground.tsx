@@ -1,7 +1,11 @@
 import { Colors } from "@/src/constants/Colors";
 import CrossfadeImage from "@/src/features/playback/components/CrossfadeImage";
 import ModalStyles from "@/src/shared/components/modals/Styles";
-import { Dimensions, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
+import {
+  StyleSheet,
+  type StyleProp,
+  type ViewStyle,
+} from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import Animated from "react-native-reanimated";
 
@@ -46,13 +50,8 @@ const PlayerBackground = ({
 
 const Local = StyleSheet.create({
   bg: {
+    ...StyleSheet.absoluteFillObject,
     ...ModalStyles.roundedTop,
-    position: "absolute",
-    height: Dimensions.get("screen").height,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
   },
 });
 

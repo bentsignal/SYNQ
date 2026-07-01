@@ -1,7 +1,7 @@
 import { Colors } from "@/src/constants/Colors";
 import { usePlaybackTimeline } from "@/src/features/playback/hooks/use-playback-timeline";
 import { formatTime } from "@/src/lib/util";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { GestureDetector } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     height: 50,
   },
   timelineContainer: {
-    width: Dimensions.get("window").width * 0.85,
+    width: "85%",
     paddingTop: 10,
     paddingBottom: 10,
     marginBottom: 10,
@@ -56,14 +56,14 @@ const styles = StyleSheet.create({
   },
   progressBackground: {
     backgroundColor: "rgba(232, 232, 232, 0.3)",
-    width: Dimensions.get("window").width * 0.85,
+    width: "100%",
     position: "absolute",
     left: 0,
     top: 0,
     height: 8,
   },
   progress: {
-    width: Dimensions.get("window").width * 0.85,
+    width: "100%",
     position: "absolute",
     left: 0,
     top: 0,

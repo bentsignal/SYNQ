@@ -2,9 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { executeSongDeleteAction } from "@/src/features/action-sheet/lib/song-delete-action";
+import { executeSongExportAction } from "@/src/features/action-sheet/lib/song-export-action";
 import { getSongOptionVisibility } from "@/src/features/action-sheet/lib/song-option-visibility";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
-import { exportSongs } from "@/src/features/export/lib/export-songs";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import {
@@ -74,22 +74,15 @@ export function useSongOptions(sheetName: string, library: boolean) {
   }, [editSong.id, sheetName]);
 
   const handleExport = useCallback(async () => {
-    try {
-      posthog.capture("export_song");
-      TrueSheet.dismiss(sheetName);
-      if (pageType === PageType.IMPORT && !premium) {
-        setShowImportAd(true);
-      } else {
-        setShowImportAd(false);
-      }
-      setShowGlobalLoading(true);
-      await exportSongs([editSong]);
-      setNumModified((modified) => modified + 1);
-    } catch {
-      return;
-    } finally {
-      setShowGlobalLoading(false);
-    }
+    await executeSongExportAction({
+      pageType,
+      premium,
+      setNumModified,
+      setShowGlobalLoading,
+      setShowImportAd,
+      sheetName,
+      song: editSong,
+    });
   }, [
     editSong,
     pageType,

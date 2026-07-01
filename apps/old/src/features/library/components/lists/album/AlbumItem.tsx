@@ -1,31 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
 import ListCover from "@/src/features/cover/components/ListCover";
 import Select from "@/src/shared/components/Select";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { AlbumType, CoverType, PageType, SongType } from "@/src/constants/Types";
-import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import {
-  getLibraryAlbumArtists,
-  getLibraryAlbumCoverPath,
-} from "@/src/features/library/repository/library-entity-repository";
-import {
-  addAlbumToLibrarySong,
-  addArtistToLibrarySong,
-  isAlbumOnLibrarySong,
-  removeAlbumFromLibrarySong,
-  removeArtistFromLibrarySong,
-} from "@/src/features/library/repository/library-song-repository";
-import {
-  addImportSongAlbum,
-  removeImportSongAlbum,
-  replaceImportSong,
-} from "@/src/features/import/lib/import-song-edits";
-import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
-import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
+import { AlbumType, CoverType, PageType } from "@/src/constants/Types";
+import { useAlbumRow } from "@/src/features/library/hooks/use-album-row";
 import colors from "@/src/lib/colors";
-import { TrueSheet } from "@lodev09/react-native-true-sheet";
-import { router } from "expo-router";
 import { Ellipsis } from "lucide-react-native";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -36,95 +15,13 @@ type AlbumProps = {
 };
 
 const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
-  const { editSong, setEditSong, setEditAlbum } = useActionSheetContext();
-  const { setResults } = useImportFlowContext();
-  const { sendHaptic } = useHaptics();
-
-  const [selected, setSelected] = useState(false);
-  const [fallbackCoverImage, setFallbackCoverImage] = useState("");
-
-  const loadFallbackCover = useCallback(async () => {
-    try {
-      const cover = await getLibraryAlbumCoverPath(album.id);
-      setFallbackCoverImage(cover ?? "");
-    } catch (error) {
-      console.log("error loading album cover:", error);
-    }
-  }, [album.id]);
-
-  useEffect(() => {
-    if (album.image) {
-      setFallbackCoverImage("");
-    } else {
-      loadFallbackCover();
-    }
-  }, [album.id, album.image, loadFallbackCover]);
-
-  const selectionChanged = async (add: boolean) => {
-    try {
-      const artists = await getLibraryAlbumArtists(album.id);
-      if (editSong.pageType === PageType.IMPORT) {
-        if (add) {
-          addImportSongAlbum(editSong, album, artists);
-        } else {
-          removeImportSongAlbum(editSong, album.id, artists);
-        }
-        setEditSong({ ...editSong });
-        setResults((currentResults: SongType[]) =>
-          replaceImportSong(currentResults, editSong),
-        );
-      } else {
-        if (add) {
-          await addAlbumToLibrarySong(album.id, editSong.id);
-          await Promise.all(
-            artists.map((artist) =>
-              addArtistToLibrarySong(artist.id, editSong.id),
-            ),
-          );
-        } else {
-          await removeAlbumFromLibrarySong(album.id, editSong.id);
-          await Promise.all(
-            artists.map((artist) =>
-              removeArtistFromLibrarySong(artist.id, editSong.id),
-            ),
-          );
-        }
-        setEditSong({ ...editSong });
-      }
-    } catch (error) {
-      console.log("error saving album list changes: ", error);
-    }
-  };
-
-  const checkAlbumOnSong = useCallback(async () => {
-    let result = false;
-    if (editSong.pageType === PageType.IMPORT) {
-      result =
-        editSong.importAlbums?.some(
-          (importAlbum: AlbumType) => importAlbum.id === album.id,
-        ) ?? false;
-    } else {
-      result = await isAlbumOnLibrarySong(album.id, editSong.id);
-    }
-    setSelected(result);
-  }, [album.id, editSong]);
-
-  useEffect(() => {
-    if (editSong.id && album.pageType === PageType.ADD) {
-      checkAlbumOnSong();
-    }
-  }, [album.pageType, checkAlbumOnSong, editSong]);
-
-  const handleMore = async () => {
-    sendHaptic("light");
-    setEditAlbum(album);
-    TrueSheet.present("album-sheet");
-  };
-
-  const handleSelect = async () => {
-    setSelected(!selected);
-    await selectionChanged(!selected);
-  };
+  const {
+    fallbackCoverImage,
+    handleMore,
+    handlePress,
+    handleSelect,
+    selected,
+  } = useAlbumRow(album);
 
   return (
     <TouchableOpacity
@@ -133,13 +30,7 @@ const AlbumItem = ({ album, allowInteraction, bg }: AlbumProps) => {
       disabled={
         !allowInteraction || album.pageType !== PageType.LIBRARY
       }
-      onPress={async () => {
-        if (album.pageType === PageType.ADD) {
-          await handleSelect();
-        } else {
-          router.push(`/library/album/${album.id}`);
-        }
-      }}
+      onPress={handlePress}
     >
       <ListCover
         image={album.image ?? fallbackCoverImage}

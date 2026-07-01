@@ -32,8 +32,8 @@ export function useAlbumRow(album: AlbumType) {
     try {
       const cover = await getLibraryAlbumCoverPath(album.id);
       setFallbackCoverImage(cover ?? "");
-    } catch (error) {
-      console.log("error loading album cover:", error);
+    } catch {
+      setFallbackCoverImage("");
     }
   }, [album.id]);
 

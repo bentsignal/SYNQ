@@ -42,8 +42,8 @@ export function useArtistRow(artist: ArtistType) {
     try {
       const cover = await getLibraryArtistCoverPath(artist.id);
       setFallbackCoverImage(cover ?? "");
-    } catch (error) {
-      console.log("error loading artist cover:", error);
+    } catch {
+      setFallbackCoverImage("");
     }
   }, [artist.id]);
 

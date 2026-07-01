@@ -20,8 +20,8 @@ export function usePlaylistRow(playlist: PlaylistType) {
     try {
       const cover = await getLibraryPlaylistCoverPath(playlist.id);
       setFallbackCoverImage(cover ?? "");
-    } catch (error) {
-      console.log("error loading playlist cover:", error);
+    } catch {
+      setFallbackCoverImage("");
     }
   }, [playlist.id]);
 

@@ -13,7 +13,6 @@ import {
   usePlaybackSourceContext,
 } from "@/src/features/playback/context/PlaybackProvider";
 import {
-  addTrackToQueue,
   moveQueueTrack,
   removeTracksBySongIds,
   resetPlaybackQueue,
@@ -35,7 +34,7 @@ import {
 } from "@/src/features/playback/lib/playback-transport-service";
 import { setupPlayer as setupTrackPlayer } from "@/src/features/playback/lib/player-setup-service";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
-import { State, Track } from "react-native-track-player";
+import { State } from "react-native-track-player";
 
 export default function usePlayer() {
   const { setLoop, setShuffle, loop, shuffle } = usePlaybackModeContext();
@@ -61,14 +60,6 @@ export default function usePlayer() {
       setSourceType,
       setSourceId,
       setAddOffset,
-    });
-  };
-
-  const addToQueue = async (track: Track) => {
-    await addTrackToQueue({
-      track,
-      addOffset,
-      incrementAddOffset,
     });
   };
 
@@ -162,7 +153,6 @@ export default function usePlayer() {
 
   return {
     setupPlayer,
-    addToQueue,
     addSongToQueue,
     moveQueueSong,
     pausePlayer,

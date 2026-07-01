@@ -285,6 +285,9 @@ feature-oriented packages.
    - Song edit form orchestration now lives in a library feature hook, moving
      relation hydration, cover picking, import/library metadata saves,
      selection cleanup, and edit navigation out of the route component.
+   - Song row interaction state now lives in a library feature hook, moving
+     selection mutation, import cover fallback loading, sheet presentation,
+     haptics, and row animation state out of the row component.
    - Song list page covers now receive playlist, album, and artist cover paths
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or

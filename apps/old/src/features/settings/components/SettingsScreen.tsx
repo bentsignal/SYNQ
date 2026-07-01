@@ -8,16 +8,10 @@ import { Colors } from "@/src/constants/Colors";
 import CFG, { SOCIAL_LINKS } from "@/src/constants/Config";
 import { Styles } from "@/src/constants/Styles";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
-import {
-  captureSettingsPremiumPress,
-  captureSocialPress,
-} from "@/src/features/settings/lib/settings-analytics";
+import { useSettingsScreenActions } from "@/src/features/settings/hooks/use-settings-screen-actions";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import { router } from "expo-router";
-import * as StoreReview from "expo-store-review";
 import {
   Image,
-  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -28,18 +22,14 @@ import {
 const SettingsScreen = () => {
   const { premium } = usePremiumContext();
   const { theme } = useThemeContext();
-
-  const callReview = async () => {
-    const available = await StoreReview.isAvailableAsync();
-    if (available) {
-      await StoreReview.requestReview();
-    }
-  };
-
-  const handleSocialPress = (url: string) => {
-    captureSocialPress(url);
-    Linking.openURL(url);
-  };
+  const {
+    openBackup,
+    openCustomization,
+    openPremium,
+    openSocial,
+    openSupport,
+    requestReview,
+  } = useSettingsScreenActions(premium);
 
   return (
     <View style={[Styles.body, Local.container]}>
@@ -53,10 +43,7 @@ const SettingsScreen = () => {
           title="Premium"
           desc={premium ? "Manage your subcription" : "Unlock all features"}
           icon={require("@/src/assets/icons/premium.png")}
-          handlePress={() => {
-            captureSettingsPremiumPress(premium);
-            router.push("/premium");
-          }}
+          handlePress={openPremium}
           iconTint={theme}
           containerClass="bg-card"
         />
@@ -64,7 +51,7 @@ const SettingsScreen = () => {
           title="Customization"
           desc="Tailor your experience"
           icon={require("@/src/assets/icons/customize.png")}
-          handlePress={() => router.push("/settings/customization")}
+          handlePress={openCustomization}
           containerClass="bg-card"
         />
         <Option
@@ -72,7 +59,7 @@ const SettingsScreen = () => {
           desc="Backup or restore your library"
           icon={require("@/src/assets/icons/backup.png")}
           containerClass="bg-card"
-          handlePress={() => router.push("/settings/backup")}
+          handlePress={openBackup}
         />
         <View style={Local.buttonsContainer}>
           {/* <CustomButton
@@ -83,19 +70,15 @@ const SettingsScreen = () => {
           <CustomButton
             title="Leave a Review"
             buttonWidth={200}
-            handlePress={callReview}
+            handlePress={requestReview}
           />
-          <TouchableOpacity
-            onPress={() =>
-              Linking.openURL("https://directedbyshawn.com/synq-support")
-            }
-          >
+          <TouchableOpacity onPress={openSupport}>
             <Text style={Local.supportText}>Contact Support</Text>
           </TouchableOpacity>
         </View>
         <View style={Local.socialContainer}>
           <TouchableOpacity
-            onPress={() => handleSocialPress(SOCIAL_LINKS.x)}
+            onPress={() => openSocial(SOCIAL_LINKS.x)}
             style={[Local.socialLink]}
           >
             <Image
@@ -111,7 +94,7 @@ const SettingsScreen = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={Local.socialLink}
-            onPress={() => handleSocialPress(SOCIAL_LINKS.instagram)}
+            onPress={() => openSocial(SOCIAL_LINKS.instagram)}
           >
             <Image
               style={Local.socialIcon}
@@ -120,7 +103,7 @@ const SettingsScreen = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={Local.socialLink}
-            onPress={() => handleSocialPress(SOCIAL_LINKS.discord)}
+            onPress={() => openSocial(SOCIAL_LINKS.discord)}
           >
             <Image
               style={Local.socialIcon}

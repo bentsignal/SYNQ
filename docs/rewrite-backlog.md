@@ -292,6 +292,10 @@ feature-oriented packages.
      add/remove membership writes, import-result synchronization, fallback
      cover loading, sheet presentation, haptics, and navigation out of the row
      component.
+   - Artist row interaction state now lives in a library feature hook, moving
+     song/album membership writes, import-result synchronization, fallback
+     cover loading, sheet presentation, haptics, and navigation out of the row
+     component.
    - Song list page covers now receive playlist, album, and artist cover paths
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or

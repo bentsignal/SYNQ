@@ -19,8 +19,8 @@ export function useEntitySheetPresenter() {
       setEditAlbum(album);
       try {
         TrueSheet.present("album-sheet");
-      } catch (error) {
-        console.log("error snapping to album sheet:", error);
+      } catch {
+        return;
       }
     },
     [sendHaptic, setEditAlbum],
@@ -36,8 +36,8 @@ export function useEntitySheetPresenter() {
       setEditArtist(artist);
       try {
         TrueSheet.present("artist-sheet");
-      } catch (error) {
-        console.log("error snapping to artist sheet:", error);
+      } catch {
+        return;
       }
     },
     [sendHaptic, setEditArtist],
@@ -53,8 +53,8 @@ export function useEntitySheetPresenter() {
       setEditPlaylist({ ...playlist, pageType: PageType.PLAYLIST });
       try {
         TrueSheet.present("playlist-sheet");
-      } catch (error) {
-        console.log("error snapping to playlist sheet:", error);
+      } catch {
+        return;
       }
     },
     [sendHaptic, setEditPlaylist],

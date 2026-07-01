@@ -22,8 +22,8 @@ export function useSongSheetPresenter() {
             ? "import-song-sheet"
             : "song-sheet",
         );
-      } catch (error) {
-        console.log("error snapping to song sheet:", error);
+      } catch {
+        return;
       }
     },
     [sendHaptic, setEditSong],

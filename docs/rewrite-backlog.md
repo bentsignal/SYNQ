@@ -312,6 +312,9 @@ feature-oriented packages.
    - Album, artist, and playlist row hooks now reuse the shared entity sheet
      presenter instead of owning duplicate haptic, context, and TrueSheet
      presentation paths.
+   - Song row sheet presentation now lives in an action-sheet feature hook,
+     moving edit-song context updates, haptics, import-vs-library sheet
+     routing, and presenter error handling out of the row hook.
    - Song list page covers now receive playlist, album, and artist cover paths
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or

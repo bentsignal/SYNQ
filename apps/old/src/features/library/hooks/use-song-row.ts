@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { PageType, type SongType } from "@/src/constants/Types";
-import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
+import { useSongSheetPresenter } from "@/src/features/action-sheet/hooks/use-song-sheet-presenter";
 import { getImportSongCover } from "@/src/features/import/lib/import-song-edits";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
-import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import {
   Easing,
   useAnimatedStyle,
@@ -13,10 +11,9 @@ import {
 } from "react-native-reanimated";
 
 export function useSongRow(song: SongType, previous = false) {
-  const { setEditSong } = useActionSheetContext();
+  const { presentSongSheet } = useSongSheetPresenter();
   const { selectEnabled, selectedSongs, setSelectedSongs } =
     useSelectionContext();
-  const { sendHaptic } = useHaptics();
   const [coverImage, setCoverImage] = useState("");
 
   const selected = selectedSongs.includes(song.id);
@@ -83,14 +80,8 @@ export function useSongRow(song: SongType, previous = false) {
   }, [setSelectedSongs, song.id]);
 
   const handleMore = useCallback(async () => {
-    sendHaptic("light");
-    setEditSong(song);
-    if (song.pageType === PageType.IMPORT) {
-      TrueSheet.present("import-song-sheet");
-    } else {
-      TrueSheet.present("song-sheet");
-    }
-  }, [sendHaptic, setEditSong, song]);
+    presentSongSheet(song);
+  }, [presentSongSheet, song]);
 
   return {
     disablePlay,

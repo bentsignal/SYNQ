@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
 import { resetBackupDatabaseConnection } from "@/src/features/backup/lib/backup-database-service";
+import { clearStoredAppState } from "@/src/features/backup/lib/backup-storage-service";
 import { resetPlaybackQueue } from "@/src/features/playback/lib/player-queue-actions-service";
 import { posthog } from "@/src/lib/posthog";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { router } from "expo-router";
@@ -34,7 +34,7 @@ const clearDocumentDirectory = async () => {
 };
 
 const clearAsyncStorage = async () => {
-  await AsyncStorage.clear();
+  await clearStoredAppState();
 };
 
 const resetDB = async () => {

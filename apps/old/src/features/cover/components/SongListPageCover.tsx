@@ -1,4 +1,4 @@
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, useWindowDimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { PageType } from '@/src/constants/Types';
 
@@ -9,25 +9,9 @@ type SongListPageCoverProps = {
 };
 
 const SongListPageCover = ({id, type, image}: SongListPageCoverProps) => {
-
-  const coverPercent = 0.65;
-
-  const Local = StyleSheet.create({
-    container: {
-      backgroundColor: image ? 'transparent' : '#D2D2D2',
-      width: Dimensions.get('screen').width * coverPercent, 
-      minHeight: Dimensions.get('screen').width * coverPercent,
-      aspectRatio: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: type === PageType.ARTIST ? 1000 : 12,
-    },
-    artwork: {
-      aspectRatio: 1,
-      width: image ? Dimensions.get('screen').width * coverPercent : 60,
-      borderRadius: type === PageType.ARTIST ? 1000 : 12,
-    },
-  });
+  const { width } = useWindowDimensions();
+  const coverSize = width * COVER_SIZE_RATIO;
+  const borderRadius = type === PageType.ARTIST ? 1000 : 12;
 
   const getSource = () => {
     if (image) {
@@ -51,14 +35,43 @@ const SongListPageCover = ({id, type, image}: SongListPageCoverProps) => {
   }
 
   return (
-    <View style={Local.container}>
+    <View
+      style={[
+        Local.container,
+        {
+          backgroundColor: image ? 'transparent' : '#D2D2D2',
+          borderRadius,
+          width: coverSize,
+          minHeight: coverSize,
+        },
+      ]}
+    >
       <FastImage
         source={getSource()}
-        style={Local.artwork}
+        style={[
+          Local.artwork,
+          {
+            borderRadius,
+            width: image ? coverSize : 60,
+          },
+        ]}
       />
     </View>
   );
 
 }
+
+const COVER_SIZE_RATIO = 0.65;
+
+const Local = StyleSheet.create({
+  container: {
+    aspectRatio: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  artwork: {
+    aspectRatio: 1,
+  },
+});
 
 export default SongListPageCover;

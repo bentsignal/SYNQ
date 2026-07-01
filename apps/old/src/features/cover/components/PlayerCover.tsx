@@ -1,4 +1,4 @@
-import { View, StyleSheet, Dimensions, Text, Image } from 'react-native';
+import { View, StyleSheet, Text, Image, useWindowDimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Colors } from '@/src/constants/Colors';
 import Ad from '@/src/features/premium/components/Ad';
@@ -9,10 +9,19 @@ const PlayerCover = ({uri}: {uri: string}) => {
 
   const { adPlaying } = usePlaybackAdContext();
   const { theme } = useThemeContext();
+  const { width } = useWindowDimensions();
+  const coverSize = width * COVER_SIZE_RATIO;
+  const containerStyle = [
+    Local.container,
+    {
+      width: coverSize,
+      height: coverSize,
+    },
+  ];
 
   if (adPlaying) {
     return (
-      <View style={Local.container}>
+      <View style={containerStyle}>
         <View style={Local.adContainer}>
           <Ad message={
             <Text>
@@ -28,7 +37,7 @@ const PlayerCover = ({uri}: {uri: string}) => {
   }
   else if (uri && typeof uri === 'string' && uri !== 'transparent') {
     return (
-      <View style={Local.container}>
+      <View style={containerStyle}>
         <Image
           source={{uri: uri}}
           resizeMode='cover'
@@ -39,7 +48,7 @@ const PlayerCover = ({uri}: {uri: string}) => {
   }
   else {
     return (
-      <View style={[Local.container, Local.emptyContainer]}>
+      <View style={[...containerStyle, Local.emptyContainer]}>
         <FastImage
           source={require('@/src/assets/icons/music.png')}
           style={Local.empty}
@@ -50,10 +59,10 @@ const PlayerCover = ({uri}: {uri: string}) => {
 
 }
 
+const COVER_SIZE_RATIO = 0.85;
+
 const Local = StyleSheet.create({
   container: {
-    width: Dimensions.get('screen').width * 0.85,
-    height: Dimensions.get('screen').width * 0.85,
     aspectRatio: 1,
     justifyContent: 'center',
     alignItems: 'center',

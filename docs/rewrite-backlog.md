@@ -415,6 +415,9 @@ feature-oriented packages.
    - Library tab route now delegates to a library feature screen component,
      keeping category selection, create routing, settings navigation, and list
      composition out of the app route layer.
+   - Library stack route layout now delegates to a library feature shell
+     component, keeping stack screen options, top header, mini-player, and
+     notification overlay composition out of the app route layer.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

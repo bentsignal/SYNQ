@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Colors } from "@/src/constants/Colors";
 import CFG from "@/src/constants/Config";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
@@ -47,7 +54,15 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
     });
   }, [premium]);
 
-  const checkPurchases = async () => {
+  const forceResetTheme = useCallback(async () => {
+    changeTheme(Colors.main, false);
+    const current = await getAppIcon();
+    if (current !== "icon-blue" && current !== "default") {
+      setAppIcon(getIcon(Colors.main));
+    }
+  }, [changeTheme]);
+
+  const checkPurchases = useCallback(async () => {
     const premiumSubscriptions = [
       "SYNQPremiumLifetime",
       "SYNQPremiumMonthly",
@@ -102,22 +117,19 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
     } catch (error) {
       console.log("error checking purchases:", error);
     }
-  };
-
-  const forceResetTheme = async () => {
-    changeTheme(Colors.main, false);
-    const current = await getAppIcon();
-    if (current !== "icon-blue" && current !== "default") {
-      setAppIcon(getIcon(Colors.main));
-    }
-  };
+  }, [forceResetTheme]);
 
   useEffect(() => {
     checkPurchases();
-  }, []);
+  }, [checkPurchases]);
+
+  const value = useMemo(
+    () => ({ premium, setPremium }),
+    [premium],
+  );
 
   return (
-    <PremiumContext.Provider value={{ premium, setPremium }}>
+    <PremiumContext.Provider value={value}>
       {children}
     </PremiumContext.Provider>
   );

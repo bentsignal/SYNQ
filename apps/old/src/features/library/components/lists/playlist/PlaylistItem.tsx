@@ -69,7 +69,7 @@ const PlaylistItem = ({ playlist, bg }: PlaylistProps) => {
           console.log("error checking if song is in playlist:", error);
         });
     }
-  }, [editSong]);
+  }, [editSong.id, playlist.id, playlist.pageType]);
 
   const handleMore = async () => {
     sendHaptic("light");

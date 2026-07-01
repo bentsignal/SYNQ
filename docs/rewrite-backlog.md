@@ -401,6 +401,8 @@ feature-oriented packages.
    - Done: theme and premium state providers now live under
      `apps/old/src/features/theme` and `apps/old/src/features/premium`
      instead of the generic `src/context` folder.
+   - Done: theme and premium provider boot effects now use stable callbacks and
+     memoized context values.
    - Done: premium feature carousel UI now lives in
      `apps/old/src/features/premium/components` instead of the generic
      `src/components/premium` folder.
@@ -607,6 +609,8 @@ feature-oriented packages.
      `PLAYLIST_SONG_COUNT_MODIFIED` display listeners from playlist rows.
    - Done: add membership prioritization to `useLibraryPlaylistsQuery` and use
      it in `app/playlist/add.tsx` instead of the `PLAYLIST_CREATED` listener.
+   - Done: playlist membership row checks now depend on concrete song/playlist
+     IDs instead of broad object references.
    - Done: remove the now-unused `PLAYLIST_CREATED` emit from
      `app/playlist/create.tsx`.
    - Done: render playlist row cover art from live query props instead of

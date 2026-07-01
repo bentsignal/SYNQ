@@ -8,8 +8,11 @@ import { Colors } from "@/src/constants/Colors";
 import CFG, { SOCIAL_LINKS } from "@/src/constants/Config";
 import { Styles } from "@/src/constants/Styles";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
+import {
+  captureSettingsPremiumPress,
+  captureSocialPress,
+} from "@/src/features/settings/lib/settings-analytics";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import { posthog } from "@/src/lib/posthog";
 import { router } from "expo-router";
 import * as StoreReview from "expo-store-review";
 import {
@@ -34,9 +37,7 @@ const SettingsScreen = () => {
   };
 
   const handleSocialPress = (url: string) => {
-    posthog.capture("social_press", {
-      url,
-    });
+    captureSocialPress(url);
     Linking.openURL(url);
   };
 
@@ -53,9 +54,7 @@ const SettingsScreen = () => {
           desc={premium ? "Manage your subcription" : "Unlock all features"}
           icon={require("@/src/assets/icons/premium.png")}
           handlePress={() => {
-            posthog.capture("check_premium", {
-              premium: premium,
-            });
+            captureSettingsPremiumPress(premium);
             router.push("/premium");
           }}
           iconTint={theme}

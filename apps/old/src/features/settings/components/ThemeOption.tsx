@@ -1,7 +1,7 @@
 import { Colors } from "@/src/constants/Colors";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
+import { captureThemeChange } from "@/src/features/settings/lib/settings-analytics";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import { posthog } from "@/src/lib/posthog";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
 type ThemeOptionProps = {
@@ -17,9 +17,7 @@ const ThemeOption = ({ color, name }: ThemeOptionProps) => {
     if (!premium) {
       return;
     }
-    posthog.capture("theme_change", {
-      theme: name,
-    });
+    captureThemeChange(name);
     changeTheme(color);
   };
 

@@ -5,8 +5,8 @@ import AppIcon from "@/src/features/settings/components/AppIcon";
 import CategoryTitle from "@/src/features/settings/components/CategoryTitle";
 import Haptic from "@/src/features/settings/components/Haptic";
 import Theme from "@/src/features/settings/components/Theme";
+import { captureSettingsPremiumPress } from "@/src/features/settings/lib/settings-analytics";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import { posthog } from "@/src/lib/posthog";
 import Option from "@/src/shared/components/Option";
 import PageTitle from "@/src/shared/components/PageTitle";
 import Bar from "@/src/shared/components/modals/Bar";
@@ -36,9 +36,7 @@ const SettingsCustomizationScreen = () => {
               containerClass="bg-card"
               iconTint={theme}
               handlePress={() => {
-                posthog.capture("check_premium", {
-                  premium: premium,
-                });
+                captureSettingsPremiumPress(premium);
                 router.push("/premium");
               }}
             />

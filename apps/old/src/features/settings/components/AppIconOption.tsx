@@ -1,7 +1,7 @@
 import { Colors } from "@/src/constants/Colors";
 import { getAppIcon as getAppIconImage, getIcon } from "@/src/constants/Logos";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
-import { posthog } from "@/src/lib/posthog";
+import { captureAppIconChange } from "@/src/features/settings/lib/settings-analytics";
 import { setAppIcon } from "expo-icon-handler";
 import { Image, StyleSheet, TouchableOpacity } from "react-native";
 
@@ -22,11 +22,10 @@ export default function AppIconOption({
 
   const handlePress = () => {
     if (premium) {
-      posthog.capture("app_icon_change", {
-        icon: name,
-      });
-      setAppIcon(getIcon(color));
-      changeSelection(getIcon(color));
+      const icon = getIcon(color);
+      captureAppIconChange(name);
+      setAppIcon(icon);
+      changeSelection(icon);
     }
   };
 

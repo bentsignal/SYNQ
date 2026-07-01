@@ -406,6 +406,9 @@ feature-oriented packages.
    - Artist add, create, and edit routes now delegate to library feature screen
      components, keeping artist query/form wiring and source selection out of
      the app route layer.
+   - Home tab route now delegates to an app-shell feature screen component,
+     moving import entry actions, premium CTA, playback effects, mini-player,
+     info modal, and notifications out of the app route layer.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

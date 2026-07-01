@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Link } from "expo-router";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import type {
   LibrarySongPreview,
   LibrarySongPreviewOrder,
@@ -66,17 +67,25 @@ export function LibrarySongPreviewList({
       ) : (
         <View style={styles.list}>
           {songs.map((song) => (
-            <View key={song.id} style={styles.row}>
-              <View style={styles.rowText}>
-                <Text numberOfLines={1} style={styles.songTitle}>
-                  {song.title}
+            <Link
+              asChild
+              href={`/(tabs)/library/song/${song.id}`}
+              key={song.id}
+            >
+              <Pressable style={styles.row}>
+                <View style={styles.rowText}>
+                  <Text numberOfLines={1} style={styles.songTitle}>
+                    {song.title}
+                  </Text>
+                  <Text numberOfLines={1} style={styles.songMeta}>
+                    {song.artist} / {song.album}
+                  </Text>
+                </View>
+                <Text style={styles.duration}>
+                  {formatDuration(song.duration)}
                 </Text>
-                <Text numberOfLines={1} style={styles.songMeta}>
-                  {song.artist} / {song.album}
-                </Text>
-              </View>
-              <Text style={styles.duration}>{formatDuration(song.duration)}</Text>
-            </View>
+              </Pressable>
+            </Link>
           ))}
         </View>
       )}

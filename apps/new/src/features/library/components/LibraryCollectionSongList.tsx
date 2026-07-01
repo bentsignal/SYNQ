@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Link } from "expo-router";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { LibraryCollectionDetailSong } from "../hooks/use-library-collection-detail-query";
 
 type LibraryCollectionSongListProps = {
@@ -35,20 +36,22 @@ export function LibraryCollectionSongList({
   return (
     <View style={styles.list}>
       {songs.map((song) => (
-        <View key={song.id} style={styles.row}>
-          <Text style={styles.track}>
-            {song.track !== null ? song.track.toString() : ""}
-          </Text>
-          <View style={styles.rowText}>
-            <Text numberOfLines={1} style={styles.title}>
-              {song.title}
+        <Link asChild href={`/(tabs)/library/song/${song.id}`} key={song.id}>
+          <Pressable style={styles.row}>
+            <Text style={styles.track}>
+              {song.track !== null ? song.track.toString() : ""}
             </Text>
-            <Text numberOfLines={1} style={styles.meta}>
-              {song.artist} / {song.album}
-            </Text>
-          </View>
-          <Text style={styles.duration}>{formatDuration(song.duration)}</Text>
-        </View>
+            <View style={styles.rowText}>
+              <Text numberOfLines={1} style={styles.title}>
+                {song.title}
+              </Text>
+              <Text numberOfLines={1} style={styles.meta}>
+                {song.artist} / {song.album}
+              </Text>
+            </View>
+            <Text style={styles.duration}>{formatDuration(song.duration)}</Text>
+          </Pressable>
+        </Link>
       ))}
     </View>
   );

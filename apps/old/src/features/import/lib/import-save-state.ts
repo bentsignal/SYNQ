@@ -7,6 +7,11 @@ type ClearImportSaveStateInput = {
   setTransferSize: (size: number) => void;
 };
 
+type ClearImportSaveSessionInput = ClearImportSaveStateInput & {
+  importState: number;
+  resetResults: () => Promise<void>;
+};
+
 export function clearImportSaveState({
   setResults,
   setShowImportAd,
@@ -17,4 +22,24 @@ export function clearImportSaveState({
   setTransferProgress(0);
   setShowImportAd(false);
   setResults([]);
+}
+
+export function clearImportSaveSession({
+  importState,
+  resetResults,
+  setResults,
+  setShowImportAd,
+  setTransferProgress,
+  setTransferSize,
+}: ClearImportSaveSessionInput) {
+  clearImportSaveState({
+    setResults,
+    setShowImportAd,
+    setTransferProgress,
+    setTransferSize,
+  });
+
+  if (importState === 1) {
+    void resetResults();
+  }
 }

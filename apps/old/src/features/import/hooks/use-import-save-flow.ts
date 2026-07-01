@@ -6,7 +6,10 @@ import { useImportTransferCompletion } from "@/src/features/import/hooks/use-imp
 import { waitForImportAdCountdown } from "@/src/features/import/lib/import-ad-countdown";
 import { deleteImportSongs } from "@/src/features/import/lib/import-song-edits";
 import { requestImportReviewIfEligible } from "@/src/features/import/lib/import-review-request";
-import { clearImportSaveState } from "@/src/features/import/lib/import-save-state";
+import {
+  clearImportSaveSession,
+  clearImportSaveState,
+} from "@/src/features/import/lib/import-save-state";
 import { resetWifiTransferServer } from "@/src/features/import/lib/import-transfer-reset";
 import { saveImportSongsToLibrary } from "@/src/features/import/lib/save-import-to-library";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
@@ -85,15 +88,14 @@ export function useImportSaveFlow() {
   const handleSavedImport = useCallback(() => {
     sendHaptic("success");
     router.replace("/import/success");
-    clearImportSaveState({
+    clearImportSaveSession({
+      importState,
+      resetResults,
       setResults,
       setShowImportAd,
       setTransferProgress,
       setTransferSize,
     });
-    if (importState === 1) {
-      void resetResults();
-    }
     finishImport();
     setTimeout(() => {
       setLoading(false);
@@ -121,15 +123,14 @@ export function useImportSaveFlow() {
     setLoading(false);
     sendHaptic("error");
     router.push("/import/failure");
-    clearImportSaveState({
+    clearImportSaveSession({
+      importState,
+      resetResults,
       setResults,
       setShowImportAd,
       setTransferProgress,
       setTransferSize,
     });
-    if (importState === 1) {
-      void resetResults();
-    }
   }, [
     importState,
     resetResults,

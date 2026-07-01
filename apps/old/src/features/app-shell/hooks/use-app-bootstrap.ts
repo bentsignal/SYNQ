@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { PUBLIC_FACEBOOK_APP_ID } from "@/src/constants/Keys";
 import { useFont } from "@/src/features/app-shell/hooks/use-font";
+import {
+  hideSplashScreenAfterDelay,
+  initializeFacebookSdk,
+  loadShouldPlayAdPreference,
+} from "@/src/features/app-shell/lib/app-bootstrap-service";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useInitDB } from "@synq/db";
 import * as SplashScreen from "expo-splash-screen";
 import { LogBox } from "react-native";
-import { Settings } from "react-native-fbsdk-next";
 
 LogBox.ignoreLogs([
   "Require cycle:",
@@ -28,31 +30,15 @@ export const useAppBootstrap = () => {
   const { fontLoaded } = useFont();
 
   useEffect(() => {
-    setTimeout(() => {
-      SplashScreen.hideAsync();
-    }, 7000);
-
-    Settings.setAppID(PUBLIC_FACEBOOK_APP_ID);
-    Settings.initializeSDK();
-
-    const loadShouldPlayAd = async () => {
-      try {
-        const playAd = await AsyncStorage.getItem("playAd");
-        setShouldPlayAd(playAd === "true" ? true : false);
-      } catch {
-        setShouldPlayAd(false);
-      }
-    };
-
-    loadShouldPlayAd();
+    hideSplashScreenAfterDelay(7000);
+    initializeFacebookSdk();
+    void loadShouldPlayAdPreference().then(setShouldPlayAd);
     loadHapticFeedbackPreference();
   }, [loadHapticFeedbackPreference]);
 
   useEffect(() => {
     if (fontLoaded) {
-      setTimeout(() => {
-        SplashScreen.hideAsync();
-      }, 500);
+      hideSplashScreenAfterDelay(500);
     }
   }, [fontLoaded]);
 

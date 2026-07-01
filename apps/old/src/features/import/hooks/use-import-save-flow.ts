@@ -4,6 +4,7 @@ import { useGlobalProgressContext } from "@/src/features/app-shell/context/Globa
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { useImportTransferCompletion } from "@/src/features/import/hooks/use-import-transfer-completion";
+import { waitForImportAdCountdown } from "@/src/features/import/lib/import-ad-countdown";
 import { deleteImportSongs } from "@/src/features/import/lib/import-song-edits";
 import { requestImportReviewIfEligible } from "@/src/features/import/lib/import-review-request";
 import { saveImportSongsToLibrary } from "@/src/features/import/lib/save-import-to-library";
@@ -64,30 +65,11 @@ export function useImportSaveFlow() {
 
   const checkForAd = useCallback(async () => {
     if (!premium && showImportAd) {
-      setShowGlobalProgress(false);
-      setShowGlobalLoading(true);
-      setGlobalProgress(0);
-      await new Promise((resolve) => {
-        let progress = 0;
-        const interval = setInterval(() => {
-          if (progress < CFG.importAdLength) {
-            if (progress >= 1) {
-              setShowGlobalProgress(true);
-            }
-            progress += 1;
-            setGlobalProgress(Math.ceil((progress / CFG.importAdLength) * 100));
-          } else if (
-            progress >= CFG.importAdLength &&
-            currentPath.current === "/import/save"
-          ) {
-            clearInterval(interval);
-            setShowGlobalProgress(false);
-            setTimeout(() => {
-              setShowGlobalLoading(false);
-              resolve(void 0);
-            }, 1000);
-          }
-        }, 1000);
+      await waitForImportAdCountdown({
+        getCurrentPath: () => currentPath.current,
+        setGlobalProgress,
+        setShowGlobalLoading,
+        setShowGlobalProgress,
       });
     }
   }, [

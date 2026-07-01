@@ -391,6 +391,9 @@ feature-oriented packages.
    - Artist detail route now delegates to a library feature screen component,
      keeping artist detail queries, tab state, list headers, empty states, and
      action-sheet presentation out of the app route.
+   - Album detail route now delegates to a library feature screen component,
+     keeping album detail queries, header/query controls, animated artist
+     footer, and action-sheet presentation out of the app route.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

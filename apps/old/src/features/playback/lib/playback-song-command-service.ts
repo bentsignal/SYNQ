@@ -4,6 +4,22 @@ import {
   playTrackNow,
 } from "@/src/features/playback/lib/player-queue-actions-service";
 import { getTrackFromSong } from "@/src/features/playback/lib/track-factory";
+import { posthog } from "@/src/lib/posthog";
+
+type SongQueueCommandArgs = {
+  addOffset: number;
+  incrementAddOffset: () => Promise<void>;
+  persistSongPlaybackSource: () => Promise<void>;
+  song: SongType;
+  theme: string;
+};
+
+type PlaySongCommandArgs = {
+  activeTrackId?: number | string;
+  persistSongPlaybackSource: () => Promise<void>;
+  song: SongType;
+  theme: string;
+};
 
 export const addSongToPlaybackQueue = async ({
   song,
@@ -40,4 +56,43 @@ export const playSongNow = async ({
 
   await playTrackNow(track);
   return true;
+};
+
+export const addSongToPlaybackQueueAfterAdStarts = async ({
+  addOffset,
+  incrementAddOffset,
+  persistSongPlaybackSource,
+  song,
+  theme,
+}: SongQueueCommandArgs) => {
+  posthog.capture("play_ad");
+  await persistSongPlaybackSource();
+  await addSongToPlaybackQueue({
+    song,
+    theme,
+    addOffset,
+    incrementAddOffset,
+  });
+};
+
+export const playSongFromLibrary = async ({
+  activeTrackId,
+  persistSongPlaybackSource,
+  song,
+  theme,
+}: PlaySongCommandArgs) => {
+  const currentId = activeTrackId ? activeTrackId : -1;
+  if (currentId === song.id) {
+    return;
+  }
+
+  posthog.capture("play_song");
+  try {
+    const didPlaySong = await playSongNow({ song, theme });
+    if (didPlaySong) {
+      await persistSongPlaybackSource();
+    }
+  } catch (error) {
+    console.log("error playing song: ", error);
+  }
 };

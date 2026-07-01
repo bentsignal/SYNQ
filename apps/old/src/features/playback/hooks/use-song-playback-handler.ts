@@ -13,15 +13,14 @@ import {
 import { useAdGatedPlaybackCommand } from "@/src/features/playback/hooks/use-ad-gated-playback-command";
 import { usePlaybackSourcePersistence } from "@/src/features/playback/hooks/use-playback-source-persistence";
 import {
-  addSongToPlaybackQueue,
-  playSongNow,
+  addSongToPlaybackQueueAfterAdStarts,
+  playSongFromLibrary,
 } from "@/src/features/playback/lib/playback-song-command-service";
 import {
   persistSongPlaybackSource,
   resolveSongPlaybackSource,
 } from "@/src/features/playback/lib/song-playback-source-service";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import { posthog } from "@/src/lib/posthog";
 import { useCallback } from "react";
 import { type Track } from "react-native-track-player";
 
@@ -58,7 +57,6 @@ export const useSongPlaybackHandler = ({
   const handlePlay = useCallback(
     async (song: SongType) => {
       sendHaptic("light");
-      const id = activeTrack?.id ? activeTrack.id : -1;
       const playbackSource = resolveSongPlaybackSource({
         song,
         sourceId,
@@ -82,29 +80,21 @@ export const useSongPlaybackHandler = ({
 
       await runAdGatedPlaybackCommand({
         afterAdStarts: async () => {
-          posthog.capture("play_ad");
-          await persistCurrentSongPlaybackSource();
-          await addSongToPlaybackQueue({
+          await addSongToPlaybackQueueAfterAdStarts({
             song,
             theme,
             addOffset,
             incrementAddOffset,
+            persistSongPlaybackSource: persistCurrentSongPlaybackSource,
           });
         },
         command: async () => {
-          if (id === song.id) {
-            return;
-          }
-
-          posthog.capture("play_song");
-          try {
-            const didPlaySong = await playSongNow({ song, theme });
-            if (didPlaySong) {
-              await persistCurrentSongPlaybackSource();
-            }
-          } catch (error) {
-            console.log("error playing song: ", error);
-          }
+          await playSongFromLibrary({
+            activeTrackId: activeTrack?.id,
+            persistSongPlaybackSource: persistCurrentSongPlaybackSource,
+            song,
+            theme,
+          });
         },
       });
     },

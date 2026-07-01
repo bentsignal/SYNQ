@@ -3,13 +3,13 @@ import {
   createAndShareBackupArchive,
   restoreBackupArchive,
 } from "@/src/features/backup/lib/backup-file-service";
+import { pickBackupArchive } from "@/src/features/backup/lib/backup-document-picker-service";
 import {
   clearBackupLocalState,
   resetBackupLocalAndRuntimeState,
   resetBackupRuntimeState,
 } from "@/src/features/backup/lib/backup-reset-service";
 import { posthog } from "@/src/lib/posthog";
-import * as DocumentPicker from "expo-document-picker";
 import { router } from "expo-router";
 import { Alert, Linking } from "react-native";
 
@@ -72,19 +72,16 @@ export function useBackupActions({ premium }: { premium: boolean }) {
   const handleRestore = useCallback(async () => {
     try {
       setLoading(true);
-      const result = await DocumentPicker.getDocumentAsync({
-        type: "application/zip",
-        copyToCacheDirectory: true,
-      });
+      const backupArchiveUri = await pickBackupArchive();
 
-      if (result.canceled) {
+      if (!backupArchiveUri) {
         return;
       }
 
       await clearBackupLocalState();
 
       try {
-        await restoreBackupArchive(result.assets[0].uri);
+        await restoreBackupArchive(backupArchiveUri);
       } catch (error) {
         throw wrapRestoreError("Error unzipping backup:", error);
       }

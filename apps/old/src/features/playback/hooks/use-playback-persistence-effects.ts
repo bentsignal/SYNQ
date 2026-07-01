@@ -9,8 +9,10 @@ import {
   getCurrentActiveQueueIndex,
   reconcileAddOffsetAfterActiveIndexChange,
 } from "@/src/features/playback/lib/playback-add-offset-service";
-import { setPlaybackStorageNumber } from "@/src/features/playback/lib/playback-storage-service";
-import { getActiveQueueTrackIndex } from "@/src/features/playback/lib/playback-queue-read-service";
+import {
+  persistActiveQueueTrackIndex,
+  persistPlaybackPosition,
+} from "@/src/features/playback/lib/playback-progress-persistence-service";
 import { setupPlayer } from "@/src/features/playback/lib/player-setup-service";
 import { type Track } from "react-native-track-player";
 
@@ -63,7 +65,7 @@ export const usePlaybackPersistenceEffects = ({
 
   useEffect(() => {
     if (position) {
-      setPlaybackStorageNumber("position", position);
+      persistPlaybackPosition(position);
     }
   }, [position]);
 
@@ -95,10 +97,7 @@ export const usePlaybackPersistenceEffects = ({
   useEffect(() => {
     const updateLastTrackIndex = async () => {
       if (track) {
-        const activeIndex = await getActiveQueueTrackIndex();
-        if (activeIndex !== undefined) {
-          await setPlaybackStorageNumber("lastTrackIndex", activeIndex);
-        }
+        await persistActiveQueueTrackIndex();
       }
     };
     updateLastTrackIndex();

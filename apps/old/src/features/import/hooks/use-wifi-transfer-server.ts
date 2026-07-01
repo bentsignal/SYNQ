@@ -48,8 +48,8 @@ export function useWifiTransferServer() {
     const loadIP = async () => {
       try {
         setIP(await getIP());
-      } catch (error) {
-        console.log("error getting IP", error);
+      } catch {
+        setIP("");
       }
     };
 
@@ -165,10 +165,10 @@ export function useWifiTransferServer() {
           message: `ERROR - Bad data from ${name}`,
         });
       } catch (error) {
-        console.log("error uploading song:", error);
+        const message = error instanceof Error ? error.message : String(error);
         return res.json({
           status: 500,
-          message: `ERROR - Failed to upload song: ${error}`,
+          message: `ERROR - Failed to upload song: ${message}`,
         });
       }
     });

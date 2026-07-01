@@ -5,6 +5,10 @@ import {
   usePlaybackModeContext,
   usePlaybackSourceContext,
 } from "@/src/features/playback/context/PlaybackProvider";
+import {
+  getCurrentActiveQueueIndex,
+  reconcileAddOffsetAfterActiveIndexChange,
+} from "@/src/features/playback/lib/playback-add-offset-service";
 import { setPlaybackStorageNumber } from "@/src/features/playback/lib/playback-storage-service";
 import { getActiveQueueTrackIndex } from "@/src/features/playback/lib/playback-queue-read-service";
 import { setupPlayer } from "@/src/features/playback/lib/player-setup-service";
@@ -65,7 +69,7 @@ export const usePlaybackPersistenceEffects = ({
 
   useEffect(() => {
     const initIndex = async () => {
-      const activeIndex = await getActiveQueueTrackIndex();
+      const activeIndex = await getCurrentActiveQueueIndex();
       if (activeIndex !== undefined) {
         setIndex(activeIndex);
       }
@@ -75,15 +79,13 @@ export const usePlaybackPersistenceEffects = ({
 
   useEffect(() => {
     const checkNewIndex = async () => {
-      const newIndex = await getActiveQueueTrackIndex();
-      if (newIndex === undefined) {
-        return;
-      }
+      const newIndex = await reconcileAddOffsetAfterActiveIndexChange({
+        addOffset,
+        decrementAddOffset,
+        previousIndex: index,
+      });
 
-      if (newIndex !== index) {
-        if (newIndex - index === 1 && addOffset > 0) {
-          decrementAddOffset();
-        }
+      if (newIndex !== undefined && newIndex !== index) {
         setIndex(newIndex);
       }
     };

@@ -1,26 +1,30 @@
 import { useCallback, useState } from "react";
-import { setPlaybackStorageNumber } from "@/src/features/playback/lib/playback-storage-service";
+import {
+  getDecrementedAddOffset,
+  getIncrementedAddOffset,
+  persistPlaybackAddOffset,
+} from "@/src/features/playback/lib/playback-add-offset-service";
 
 export const usePlaybackAddOffset = () => {
   const [addOffset, setAddOffset] = useState<number>(0);
 
   const incrementAddOffset = useCallback(async () => {
-    const newOffset = addOffset + 1;
+    const newOffset = getIncrementedAddOffset(addOffset);
     setAddOffset(newOffset);
-    await setPlaybackStorageNumber("addOffset", newOffset);
+    await persistPlaybackAddOffset(newOffset);
   }, [addOffset]);
 
   const decrementAddOffset = useCallback(async () => {
-    if (addOffset > 0) {
-      const newOffset = addOffset - 1;
+    const newOffset = getDecrementedAddOffset(addOffset);
+    if (newOffset !== addOffset) {
       setAddOffset(newOffset);
-      await setPlaybackStorageNumber("addOffset", newOffset);
+      await persistPlaybackAddOffset(newOffset);
     }
   }, [addOffset]);
 
   const resetAddOffset = useCallback(async () => {
     setAddOffset(0);
-    await setPlaybackStorageNumber("addOffset", 0);
+    await persistPlaybackAddOffset(0);
   }, []);
 
   return {

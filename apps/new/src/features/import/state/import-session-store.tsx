@@ -6,6 +6,10 @@ import {
   useReducer,
   type ReactNode,
 } from "react";
+import {
+  discardImportSession,
+  saveImportSessionToLibrary,
+} from "../services/import-library-save-service";
 import type {
   ImportSaveSummary,
   ImportSessionState,
@@ -19,6 +23,7 @@ type ImportSessionAction =
   | { songIds: number[]; type: "remove-songs" }
   | { shouldSaveToLibrary: boolean; type: "set-save-to-library" }
   | { summary: ImportSaveSummary; type: "finish" }
+  | { type: "saving" }
   | { type: "discard" }
   | { type: "reset" };
 
@@ -30,6 +35,7 @@ type ImportSessionCommands = {
   removeImportSongs: (songIds: number[]) => void;
   resetSession: () => void;
   reviewSongs: (songs: ImportSongDraft[]) => void;
+  saveImportSession: () => Promise<boolean>;
   setShouldSaveToLibrary: (shouldSaveToLibrary: boolean) => void;
 };
 
@@ -44,6 +50,7 @@ const initialImportSessionState: ImportSessionState = {
     current: 0,
     total: 0,
   },
+  saveSummary: null,
   selectedSongId: null,
   shouldSaveToLibrary: true,
   songs: [],
@@ -79,6 +86,7 @@ const importSessionReducer = (
           current: action.songs.length,
           total: action.songs.length,
         },
+        saveSummary: null,
         selectedSongId: action.songs[0]?.id ?? null,
         songs: action.songs,
       };
@@ -101,6 +109,16 @@ const importSessionReducer = (
         ...state,
         shouldSaveToLibrary: action.shouldSaveToLibrary,
       };
+    case "saving":
+      return {
+        ...state,
+        error: null,
+        phase: state.shouldSaveToLibrary ? "saving" : "discarding",
+        progress: {
+          current: 0,
+          total: state.songs.length,
+        },
+      };
     case "finish":
       return {
         ...state,
@@ -110,6 +128,7 @@ const importSessionReducer = (
           current: action.summary.saved + action.summary.discarded,
           total: action.summary.saved + action.summary.discarded,
         },
+        saveSummary: action.summary,
       };
     case "discard":
       return {
@@ -148,6 +167,27 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
   const finishSession = useCallback((summary: ImportSaveSummary) => {
     dispatch({ summary, type: "finish" });
   }, []);
+  const saveImportSession = useCallback(async () => {
+    dispatch({ type: "saving" });
+
+    try {
+      const summary = state.shouldSaveToLibrary
+        ? await saveImportSessionToLibrary(state.songs)
+        : await discardImportSession(state.songs);
+
+      dispatch({ summary, type: "finish" });
+      return true;
+    } catch (caughtError) {
+      dispatch({
+        error:
+          caughtError instanceof Error
+            ? caughtError.message
+            : "Import session could not be saved.",
+        type: "fail",
+      });
+      return false;
+    }
+  }, [state.shouldSaveToLibrary, state.songs]);
   const discardSession = useCallback(() => {
     dispatch({ type: "discard" });
   }, []);
@@ -164,6 +204,7 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
       removeImportSongs,
       resetSession,
       reviewSongs,
+      saveImportSession,
       setShouldSaveToLibrary,
       state,
     }),
@@ -175,6 +216,7 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
       removeImportSongs,
       resetSession,
       reviewSongs,
+      saveImportSession,
       setShouldSaveToLibrary,
       state,
     ],

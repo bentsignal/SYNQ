@@ -4,6 +4,7 @@ import { useImportSession } from "../hooks/use-import-session";
 
 export function ImportSuccessScreen() {
   const { state } = useImportSession();
+  const savedIds = state.saveSummary?.savedSongIds ?? [];
 
   return (
     <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
@@ -18,8 +19,13 @@ export function ImportSuccessScreen() {
       <View style={styles.panel}>
         <Text style={styles.panelLabel}>Library save</Text>
         <Text style={styles.panelText}>
-          {state.shouldSaveToLibrary ? "Saved to library" : "Session discarded"}
+          {state.shouldSaveToLibrary
+            ? `${state.saveSummary?.saved ?? 0} saved to library`
+            : `${state.saveSummary?.discarded ?? 0} discarded`}
         </Text>
+        {savedIds.length > 0 ? (
+          <Text style={styles.pathText}>Song ids: {savedIds.join(", ")}</Text>
+        ) : null}
       </View>
 
       <Link href="/(tabs)/library" style={styles.backLink}>
@@ -81,6 +87,11 @@ const styles = StyleSheet.create({
     color: "#29322e",
     fontSize: 14,
     lineHeight: 20,
+  },
+  pathText: {
+    color: "#74807a",
+    fontSize: 12,
+    lineHeight: 17,
   },
   backLink: {
     color: "#0f766e",

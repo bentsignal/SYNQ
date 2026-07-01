@@ -4,9 +4,10 @@ import { ImportSongPreviewList } from "../components/ImportSongPreviewList";
 import { useImportSession } from "../hooks/use-import-session";
 
 export function ImportSaveScreen() {
-  const { discardSession, finishSession, setShouldSaveToLibrary, state } =
+  const { discardSession, saveImportSession, setShouldSaveToLibrary, state } =
     useImportSession();
   const canFinish = state.songs.length > 0;
+  const isWorking = state.phase === "saving" || state.phase === "discarding";
 
   return (
     <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
@@ -38,25 +39,28 @@ export function ImportSaveScreen() {
       <View style={styles.actionRow}>
         <Pressable
           accessibilityRole="button"
-          disabled={!canFinish}
-          onPress={() => {
-            finishSession({
-              discarded: state.shouldSaveToLibrary ? 0 : state.songs.length,
-              saved: state.shouldSaveToLibrary ? state.songs.length : 0,
-            });
-            router.push("/import/success");
+          disabled={!canFinish || isWorking}
+          onPress={async () => {
+            const succeeded = await saveImportSession();
+            router.push(succeeded ? "/import/success" : "/import/failure");
           }}
-          style={[styles.primaryButton, !canFinish ? styles.disabled : null]}
+          style={[
+            styles.primaryButton,
+            !canFinish || isWorking ? styles.disabled : null,
+          ]}
         >
-          <Text style={styles.primaryButtonText}>Finish</Text>
+          <Text style={styles.primaryButtonText}>
+            {isWorking ? "Finishing" : "Finish"}
+          </Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
+          disabled={isWorking}
           onPress={() => {
             discardSession();
             router.push("/import");
           }}
-          style={styles.secondaryButton}
+          style={[styles.secondaryButton, isWorking ? styles.disabled : null]}
         >
           <Text style={styles.secondaryButtonText}>Discard</Text>
         </Pressable>

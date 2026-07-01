@@ -40,7 +40,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/import",
     targetBoundary: "src/features/import",
-    nextMilestone: "Connect file picker, cache staging, metadata, save, and discard commands.",
+    nextMilestone: "Connect file picker, cache staging, metadata extraction, and audio file movement.",
   },
   {
     key: "backup",

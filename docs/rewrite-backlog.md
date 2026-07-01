@@ -53,9 +53,10 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Playback: explicit session state, queue/player screens, and a TrackPlayer
     adapter seam exist; native playback, persistence, and remote events are
     next.
-  - Import/ingest: route-per-step import shell, session state, and preview/save
-    screens exist; file picker, cache staging, metadata, save, and discard
-    commands are next.
+  - Import/ingest: route-per-step import shell, session state, preview/save
+    screens, and Drizzle draft-to-library save/discard commands exist; file
+    picker, cache staging, metadata extraction, and audio file movement are
+    next.
   - Backup/restore: feature-owned backup screen and command-state boundary
     exist; archive creation, document picking, restore, erase, and database
     reset services are next.
@@ -101,8 +102,9 @@ searchable/sortable songs, linked details, collection create/edit flows, and
 song add/remove. Settings now has a feature-owned home with backup,
 customization, and premium route entry points. Playback now has a reducer-backed
 session boundary plus queue/player screens, but it is not yet connected to
-native playback. Import now has a route-per-step session shell, but it is not
-yet connected to native file/cache/save commands. Backup now has a
+native playback. Import now has a route-per-step session shell and can save
+staged draft metadata into Drizzle, but it is not yet connected to native file
+pickers, cache staging, metadata extraction, or audio file movement. Backup now has a
 feature-owned command-state shell, but it is not yet connected to native
 archive/restore/reset services. Premium now has a feature-owned purchase
 session shell, but it is not yet connected to RevenueCat entitlements. It is

@@ -31,6 +31,7 @@ export type ImportSessionState = {
   error: string | null;
   phase: ImportPhase;
   progress: ImportProgress;
+  saveSummary: ImportSaveSummary | null;
   selectedSongId: number | null;
   shouldSaveToLibrary: boolean;
   songs: ImportSongDraft[];
@@ -40,4 +41,5 @@ export type ImportSessionState = {
 export type ImportSaveSummary = {
   discarded: number;
   saved: number;
+  savedSongIds: number[];
 };

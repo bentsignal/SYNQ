@@ -428,6 +428,9 @@ feature-oriented packages.
    - Done: import save orchestration now lives in
      `apps/old/src/features/import/hooks/use-import-save-flow.ts`, leaving the
      save route focused on prompt/progress UI.
+   - Done: Wi-Fi transfer server setup now lives in
+     `apps/old/src/features/import/hooks/use-wifi-transfer-server.ts`, and file
+     uploads append import results immutably through the import flow context.
    - Done: edit/action-sheet state now lives in
      `apps/old/src/features/action-sheet/context/ActionSheetProvider.tsx`, and
      the legacy `GlobalProvider` has been removed.

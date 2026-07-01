@@ -13,4 +13,6 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, "node_modules"),
 ];
 
+config.resolver.sourceExts.push("sql");
+
 module.exports = config;

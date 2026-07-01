@@ -372,6 +372,9 @@ feature-oriented packages.
      keeping backup/restore/erase actions in the backup hook while moving
      premium gating, destructive action buttons, loading state, and modal
      chrome out of the app route.
+   - Import save and export prompt routes now delegate to import feature
+     components, keeping save/export flow hooks and prompt presentation out of
+     app route files.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

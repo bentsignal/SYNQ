@@ -13,8 +13,13 @@ import {
   connect,
   restorePurchases,
 } from "@/src/features/premium/lib/purchase-service";
+import {
+  clearStoredPremiumExpiration,
+  getStoredPremiumExpiration,
+  setStoredLifetimePremiumExpiration,
+  setStoredPremiumExpiration,
+} from "@/src/features/premium/lib/premium-expiration-storage-service";
 import { posthog } from "@/src/lib/posthog";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAppIcon, setAppIcon } from "expo-icon-handler";
 import { getIcon } from "@/src/constants/Logos";
 
@@ -70,7 +75,7 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
     ];
 
     try {
-      const expiration = await AsyncStorage.getItem("expiration");
+      const expiration = await getStoredPremiumExpiration();
 
       if (expiration && !CFG.devTestFreeVersion) {
         if (expiration === "never") {
@@ -84,7 +89,7 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
             return;
           } else {
             setPremium(false);
-            await AsyncStorage.setItem("expiration", "null");
+            await clearStoredPremiumExpiration();
           }
         }
       }
@@ -102,21 +107,18 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
           purchase.expiration === null ||
           purchase.name === "SYNQPremiumLifetime"
         ) {
-          await AsyncStorage.setItem("expiration", "never");
+          await setStoredLifetimePremiumExpiration();
         } else {
-          await AsyncStorage.setItem(
-            "expiration",
-            purchase.expiration.toISOString(),
-          );
+          await setStoredPremiumExpiration(purchase.expiration);
         }
       } else {
         setPremium(false);
-        await AsyncStorage.setItem("expiration", "null");
+        await clearStoredPremiumExpiration();
         await forceResetTheme();
       }
     } catch {
       setPremium(false);
-      await AsyncStorage.setItem("expiration", "null");
+      await clearStoredPremiumExpiration();
       await forceResetTheme();
     }
   }, [forceResetTheme]);

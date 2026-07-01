@@ -11,7 +11,7 @@ import {
 import { State, usePlaybackState, useProgress } from "react-native-track-player";
 
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
-import usePlayer from "@/src/features/playback/hooks/use-player";
+import { seekToPlaybackPosition } from "@/src/features/playback/lib/playback-transport-service";
 
 const PROGRESS_INTERVAL = 50;
 const SCRUB_SCALE_MULTIPLIER = 1.2;
@@ -22,7 +22,6 @@ const SCRUB_ANIMATION_DURATION = 200;
 
 export function usePlaybackTimeline() {
   const { adPlaying } = usePlaybackAdContext();
-  const { seekToPosition } = usePlayer();
   const { position, duration } = useProgress(PROGRESS_INTERVAL);
   const playbackState = usePlaybackState();
 
@@ -71,12 +70,12 @@ export function usePlaybackTimeline() {
 
   const jump = useCallback(
     async (newPosition: number) => {
-      await seekToPosition(newPosition);
+      await seekToPlaybackPosition(newPosition);
       setTimeout(() => {
         scrubbing.value = false;
       }, PROGRESS_INTERVAL);
     },
-    [scrubbing, seekToPosition],
+    [scrubbing],
   );
 
   const updateTimes = useCallback((newElapsed: number, newRemaining: number) => {

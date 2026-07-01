@@ -1,6 +1,6 @@
-import { FlatList, Dimensions, Animated,
+import { FlatList, Animated,
    Easing, NativeSyntheticEvent, NativeScrollEvent, 
-   StyleSheet, ListRenderItem } from 'react-native';
+   StyleSheet, ListRenderItem, useWindowDimensions } from 'react-native';
 import React, { useRef, useEffect, useState, memo } from 'react';
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -65,6 +65,8 @@ const List = memo((
   const [atTop, setAtTop] = useState(true);
   const globalOpacityRef = useRef(new Animated.Value(0)).current;
   const topGradientOpacityRef = useRef(new Animated.Value(0)).current;
+  const { height } = useWindowDimensions();
+  const bottomPaddingOffset = height < 700 ? 70 : 50;
 
   useEffect(() => {
     Animated.timing(globalOpacityRef, {
@@ -103,7 +105,7 @@ const List = memo((
   const Local = StyleSheet.create({
     container: {
       ...Styles.main,
-      paddingBottom: bottomPadding ? (Dimensions.get('screen').height < 700 ? 70 : 50) : 0,
+      paddingBottom: bottomPadding ? bottomPaddingOffset : 0,
       opacity: globalOpacityRef,
     },
     list: {
@@ -124,7 +126,7 @@ const List = memo((
     },
     bottomGradient: {
       position: 'absolute', 
-      bottom: bottomPadding ? (Dimensions.get('screen').height < 700 ? 70 : 50) : 0, 
+      bottom: bottomPadding ? bottomPaddingOffset : 0,
       width: '100%', 
       height: 50,
       display: hideBottomGradient ? 'none' : 'flex',

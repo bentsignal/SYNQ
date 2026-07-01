@@ -353,6 +353,9 @@ feature-oriented packages.
      notifications, and close controls out of the app route.
    - Song edit album and artist relation sections now share a library feature
      component for field chrome, empty states, row wrapping, and add actions.
+   - Premium route UI now lives in a premium feature screen component, moving
+     purchase options, status copy, legal links, hero media, notifications, and
+     modal chrome out of the app route.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

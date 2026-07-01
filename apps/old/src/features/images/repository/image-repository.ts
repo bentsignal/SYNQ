@@ -152,11 +152,8 @@ export const getSongCover = async (id: number, full = false) => {
     if (contents.includes(fileName)) {
       return `${dir}/${fileName}?${info.modificationTime}`;
     }
-  } catch (error) {
-    const trace = error instanceof Error ? error.message : String(error);
-    if (!(trace.includes("folder") && trace.includes("doesn't exist"))) {
-      console.log("error getting cover image: ", error);
-    }
+  } catch {
+    return undefined;
   }
 };
 
@@ -169,8 +166,8 @@ export const deleteImagesFromDirectory = async (dir: string) => {
     if (contents.includes("cover_small.jpg")) {
       await FileSystem.deleteAsync(`${dir}/cover_small.jpg`);
     }
-  } catch (error) {
-    console.log("error deleting images from directory: ", error);
+  } catch {
+    // Cover cleanup is best-effort; callers can continue without blocking.
   }
 };
 

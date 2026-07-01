@@ -328,6 +328,8 @@ feature-oriented packages.
      out of the player route component.
    - Player song edit sheet pull-dismiss behavior now lives in a playback
      feature hook, moving TrueSheet dismissal and haptics out of the route.
+   - Player playback controls now live in a playback feature component,
+     removing static control layout and styling from the player route.
    - Add-to-playlist, add-to-album, and add-to-artist routes now share a
      library feature screen shell for modal chrome, query controls, new/create
      navigation, and close handling.

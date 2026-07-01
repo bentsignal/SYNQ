@@ -1,5 +1,6 @@
 import { SortOrder, SortType, SourceType } from "@/src/constants/Types";
 import { usePlaybackAddOffset } from "@/src/features/playback/hooks/use-playback-add-offset";
+import { usePlaybackQueueRefresh } from "@/src/features/playback/hooks/use-playback-queue-refresh";
 import React, { createContext, useContext, useState } from "react";
 
 type Props = {
@@ -75,11 +76,7 @@ const PlaybackProvider: React.FC<Props> = ({ children }) => {
   const [sort, setSort] = useState<SortType>(SortType.DATE);
   const [order, setOrder] = useState<SortOrder>(SortOrder.DESC);
   const [query, setQuery] = useState<string>("");
-  const [queueRevision, setQueueRevision] = useState(0);
-
-  const requestQueueRefresh = () => {
-    setQueueRevision((value) => value + 1);
-  };
+  const { queueRevision, requestQueueRefresh } = usePlaybackQueueRefresh();
 
   return (
     <PlaybackContext.Provider

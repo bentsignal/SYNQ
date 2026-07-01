@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useReducer } from "react";
-import { runUnavailableBackupCommand } from "../services/backup-command-service";
+import { runBackupCommand } from "../services/backup-command-service";
 import type {
   BackupCommandResult,
   BackupOperation,
@@ -15,6 +15,7 @@ type BackupSessionAction =
 const initialBackupSessionState: BackupSessionState = {
   error: null,
   lastOperation: null,
+  message: null,
   phase: "idle",
   requiresPremium: true,
 };
@@ -29,6 +30,7 @@ const backupSessionReducer = (
         ...state,
         error: null,
         lastOperation: action.operation,
+        message: null,
         phase: "running",
       };
     case "succeed":
@@ -36,6 +38,7 @@ const backupSessionReducer = (
         ...state,
         error: null,
         lastOperation: action.result.operation,
+        message: action.result.message,
         phase: "success",
       };
     case "fail":
@@ -43,6 +46,7 @@ const backupSessionReducer = (
         ...state,
         error: action.error,
         lastOperation: action.operation,
+        message: null,
         phase: "failure",
       };
     case "reset":
@@ -60,7 +64,7 @@ export function useBackupSession() {
     dispatch({ operation, type: "start" });
 
     try {
-      const result = await runUnavailableBackupCommand(operation);
+      const result = await runBackupCommand(operation);
       dispatch({ result, type: "succeed" });
     } catch (caughtError) {
       dispatch({

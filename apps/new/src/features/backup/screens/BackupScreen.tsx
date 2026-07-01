@@ -1,5 +1,12 @@
 import { Link } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useBackupSession } from "../hooks/use-backup-session";
 import type { BackupOperation } from "../types/backup-session";
 
@@ -36,6 +43,28 @@ const operationLabels = {
 export function BackupScreen() {
   const { reset, runOperation, state } = useBackupSession();
   const isRunning = state.phase === "running";
+  const runBackupOperation = (operation: BackupOperation) => {
+    if (operation !== "erase") {
+      void runOperation(operation);
+      return;
+    }
+
+    Alert.alert(
+      "Erase library",
+      "This removes local songs, collections, metadata, and library files from this device.",
+      [
+        {
+          style: "cancel",
+          text: "Cancel",
+        },
+        {
+          onPress: () => void runOperation(operation),
+          style: "destructive",
+          text: "Erase",
+        },
+      ],
+    );
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
@@ -62,7 +91,7 @@ export function BackupScreen() {
             <Pressable
               accessibilityRole="button"
               disabled={isRunning}
-              onPress={() => void runOperation(action.operation)}
+              onPress={() => runBackupOperation(action.operation)}
               style={[
                 action.operation === "erase"
                   ? styles.dangerButton
@@ -82,6 +111,7 @@ export function BackupScreen() {
         <Text style={styles.panelLabel}>Status</Text>
         <Text style={state.phase === "failure" ? styles.errorText : styles.panelText}>
           {state.error ??
+            state.message ??
             (state.lastOperation
               ? `${operationLabels[state.lastOperation]} ${state.phase}`
               : "No backup operation has run.")}

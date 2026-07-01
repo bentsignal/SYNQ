@@ -7,7 +7,7 @@ import { getImportControlState } from "@/src/features/import/lib/import-control-
 import { removeImportSongs } from "@/src/features/import/lib/import-song-edits";
 import { resetWifiTransferServer } from "@/src/features/import/lib/import-transfer-reset";
 import { deleteLibrarySong } from "@/src/features/library/repository/library-song-repository";
-import usePlayer from "@/src/features/playback/hooks/use-player";
+import { removeTracksBySongIds } from "@/src/features/playback/lib/player-queue-actions-service";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { posthog } from "@/src/lib/posthog";
 import { router, usePathname } from "expo-router";
@@ -31,7 +31,6 @@ export function useImportControls() {
   const { showGlobalLoading } = useGlobalProgressContext();
   const { selectEnabled, selectedSongs, setSelectEnabled } =
     useSelectionContext();
-  const { removeSongsFromQueue } = usePlayer();
   const pathname = usePathname();
 
   const controls = useMemo(
@@ -108,7 +107,7 @@ export function useImportControls() {
         setResults(newResults);
       } else if (editSong.pageType === PageType.LIBRARY) {
         await deleteLibrarySong(editSong.id);
-        await removeSongsFromQueue([editSong.id]);
+        await removeTracksBySongIds([editSong.id]);
         setNumModified((modified) => modified + 1);
       } else if (editSong.pageType === PageType.IMPORT) {
         const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id];
@@ -128,7 +127,6 @@ export function useImportControls() {
   }, [
     editSong.id,
     editSong.pageType,
-    removeSongsFromQueue,
     results,
     selectedSongs,
     setExportDisabled,

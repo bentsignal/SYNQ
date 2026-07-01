@@ -382,6 +382,9 @@ feature-oriented packages.
      moving server URL instructions, export-disable synchronization, transfer
      progress, result list rendering, and premium blur gating out of the app
      route.
+   - Import stack layout now delegates to an import feature shell component,
+     keeping header, overlay, stack screen options, and import controls out of
+     the Expo Router layout file.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

@@ -1,70 +1,7 @@
-import { Stack } from "expo-router";
+import ImportStackLayout from "@/src/features/import/components/ImportStackLayout";
 
-import { Colors } from "@/src/constants/Colors";
+const ImportLayout = () => {
+  return <ImportStackLayout />;
+};
 
-import ImportControls from "@/src/features/import/components/Controls";
-import ImportHeader from "@/src/features/import/components/Header";
-import Overlay from "@/src/features/app-shell/components/Overlay";
-
-import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
-
-export default function ImportLayout() {
-  const { showOverlay } = useAppShellContext();
-
-  return (
-    <>
-      <ImportHeader />
-      <Overlay show={showOverlay} activeOpacity={.9} />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: {
-            backgroundColor: Colors.background,
-            width: '100%',
-            justifyContent: 'center',
-            alignItems: 'center',
-          },
-        }}
-      >
-        <Stack.Screen
-          name="files"
-          options={{
-            gestureEnabled: false,
-          }}
-        />
-        <Stack.Screen
-          name="wifi"
-          options={{
-            gestureEnabled: false,
-          }}
-        />
-        <Stack.Screen
-          name="save"
-          options={{
-            gestureEnabled: false,
-          }}
-        />
-        <Stack.Screen
-          name="export"
-          options={{
-            gestureEnabled: false,
-          }}
-        />
-        <Stack.Screen
-          name="success"
-          options={{
-            gestureEnabled: false,
-          }}
-        />
-        <Stack.Screen
-          name="failure"
-          options={{
-            gestureEnabled: false,
-          }}
-        />
-      </Stack>
-      <ImportControls />
-    </>
-  );
-  
-}
+export default ImportLayout;

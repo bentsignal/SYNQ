@@ -1,12 +1,13 @@
 import { useCallback, useState } from "react";
-import { resetBackupDatabaseConnection } from "@/src/features/backup/lib/backup-database-service";
 import {
-  clearBackupDocumentDirectory,
   createAndShareBackupArchive,
   restoreBackupArchive,
 } from "@/src/features/backup/lib/backup-file-service";
-import { clearStoredAppState } from "@/src/features/backup/lib/backup-storage-service";
-import { resetPlaybackQueue } from "@/src/features/playback/lib/player-queue-actions-service";
+import {
+  clearBackupLocalState,
+  resetBackupLocalAndRuntimeState,
+  resetBackupRuntimeState,
+} from "@/src/features/backup/lib/backup-reset-service";
 import { posthog } from "@/src/lib/posthog";
 import * as DocumentPicker from "expo-document-picker";
 import { router } from "expo-router";
@@ -14,17 +15,9 @@ import { Alert, Linking } from "react-native";
 
 const supportUrl = "https://directedbyshawn.com/synq-support";
 
-const wrapError = (message: string, error: unknown) => {
+const wrapRestoreError = (message: string, error: unknown) => {
   const details = error instanceof Error ? error.message : String(error);
   return new Error(`${message} ${details}`);
-};
-
-const clearAsyncStorage = async () => {
-  await clearStoredAppState();
-};
-
-const resetDB = async () => {
-  await resetBackupDatabaseConnection();
 };
 
 const navigateToLibrary = () => {
@@ -55,37 +48,6 @@ export function useBackupActions({ premium }: { premium: boolean }) {
       },
     ]);
   }, []);
-
-  const clearLocalState = useCallback(async () => {
-    try {
-      await clearBackupDocumentDirectory();
-    } catch (error) {
-      throw wrapError("Error clearing document directory:", error);
-    }
-    try {
-      await clearAsyncStorage();
-    } catch (error) {
-      throw wrapError("Error clearing async storage:", error);
-    }
-  }, []);
-
-  const resetRuntimeState = useCallback(async () => {
-    try {
-      await resetDB();
-    } catch (error) {
-      throw wrapError("Error reconnecting to db:", error);
-    }
-    try {
-      await resetPlaybackQueue();
-    } catch (error) {
-      throw wrapError("Error resetting track player:", error);
-    }
-  }, []);
-
-  const resetLocalState = useCallback(async () => {
-    await clearLocalState();
-    await resetRuntimeState();
-  }, [clearLocalState, resetRuntimeState]);
 
   const handlePremiumPress = useCallback(() => {
     posthog.capture("check_premium", {
@@ -119,14 +81,14 @@ export function useBackupActions({ premium }: { premium: boolean }) {
         return;
       }
 
-      await clearLocalState();
+      await clearBackupLocalState();
 
       try {
         await restoreBackupArchive(result.assets[0].uri);
       } catch (error) {
-        throw wrapError("Error unzipping backup:", error);
+        throw wrapRestoreError("Error unzipping backup:", error);
       }
-      await resetRuntimeState();
+      await resetBackupRuntimeState();
 
       Alert.alert("Success", "Library restored successfully.");
       navigateToLibrary();
@@ -137,12 +99,12 @@ export function useBackupActions({ premium }: { premium: boolean }) {
     } finally {
       setLoading(false);
     }
-  }, [clearLocalState, resetRuntimeState, showErrorAlert]);
+  }, [showErrorAlert]);
 
   const confirmEraseLibrary = useCallback(async () => {
     setLoading(true);
     try {
-      await resetLocalState();
+      await resetBackupLocalAndRuntimeState();
       Alert.alert("Success", "Library erased successfully.");
       navigateToLibrary();
     } catch {
@@ -152,7 +114,7 @@ export function useBackupActions({ premium }: { premium: boolean }) {
     } finally {
       setLoading(false);
     }
-  }, [resetLocalState, showErrorAlert]);
+  }, [showErrorAlert]);
 
   const eraseLibrary = useCallback(() => {
     try {

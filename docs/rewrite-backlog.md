@@ -375,6 +375,9 @@ feature-oriented packages.
    - Import save and export prompt routes now delegate to import feature
      components, keeping save/export flow hooks and prompt presentation out of
      app route files.
+   - Import files route now delegates to an import feature screen component,
+     moving transfer progress, imported song list rendering, and premium blur
+     gating out of the app route.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

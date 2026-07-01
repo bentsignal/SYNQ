@@ -5,7 +5,7 @@ import { usePlaybackModeState } from "@/src/features/playback/hooks/use-playback
 import { usePlaybackQueueFilterState } from "@/src/features/playback/hooks/use-playback-queue-filter-state";
 import { usePlaybackQueueRefresh } from "@/src/features/playback/hooks/use-playback-queue-refresh";
 import { usePlaybackSourceState } from "@/src/features/playback/hooks/use-playback-source-state";
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useMemo } from "react";
 
 type Props = {
   children?: React.ReactNode;
@@ -160,57 +160,105 @@ const PlaybackProvider: React.FC<Props> = ({ children }) => {
     usePlaybackQueueFilterState();
   const { queueRevision, requestQueueRefresh } = usePlaybackQueueRefresh();
 
+  const playbackModeValue = useMemo(
+    () => ({ loop, setLoop, setShuffle, shuffle }),
+    [loop, setLoop, setShuffle, shuffle],
+  );
+  const playbackSourceValue = useMemo(
+    () => ({ setSourceId, setSourceType, sourceId, sourceType }),
+    [setSourceId, setSourceType, sourceId, sourceType],
+  );
+  const playbackQueueFilterValue = useMemo(
+    () => ({ order, query, setOrder, setQuery, setSort, sort }),
+    [order, query, setOrder, setQuery, setSort, sort],
+  );
+  const playbackAddOffsetValue = useMemo(
+    () => ({
+      addOffset,
+      decrementAddOffset,
+      incrementAddOffset,
+      resetAddOffset,
+      setAddOffset,
+    }),
+    [
+      addOffset,
+      decrementAddOffset,
+      incrementAddOffset,
+      resetAddOffset,
+      setAddOffset,
+    ],
+  );
+  const playbackLifecycleValue = useMemo(
+    () => ({ playerInitialized, setPlayerInitialized }),
+    [playerInitialized, setPlayerInitialized],
+  );
+  const playbackQueueRefreshValue = useMemo(
+    () => ({ queueRevision, requestQueueRefresh }),
+    [queueRevision, requestQueueRefresh],
+  );
+  const playbackValue = useMemo(
+    () => ({
+      sourceId,
+      setSourceId,
+      sourceType,
+      setSourceType,
+      shuffle,
+      setShuffle,
+      loop,
+      setLoop,
+      playerInitialized,
+      setPlayerInitialized,
+      addOffset,
+      setAddOffset,
+      incrementAddOffset,
+      decrementAddOffset,
+      resetAddOffset,
+      sort,
+      setSort,
+      order,
+      setOrder,
+      query,
+      setQuery,
+      queueRevision,
+      requestQueueRefresh,
+    }),
+    [
+      addOffset,
+      decrementAddOffset,
+      incrementAddOffset,
+      loop,
+      order,
+      playerInitialized,
+      query,
+      queueRevision,
+      requestQueueRefresh,
+      resetAddOffset,
+      setAddOffset,
+      setLoop,
+      setOrder,
+      setPlayerInitialized,
+      setQuery,
+      setShuffle,
+      setSort,
+      setSourceId,
+      setSourceType,
+      shuffle,
+      sort,
+      sourceId,
+      sourceType,
+    ],
+  );
+
   return (
-    <PlaybackModeContext.Provider value={{ loop, setLoop, setShuffle, shuffle }}
-    >
-      <PlaybackSourceContext.Provider
-        value={{ setSourceId, setSourceType, sourceId, sourceType }}
-      >
-        <PlaybackQueueFilterContext.Provider
-          value={{ order, query, setOrder, setQuery, setSort, sort }}
-        >
-          <PlaybackAddOffsetContext.Provider
-            value={{
-              addOffset,
-              decrementAddOffset,
-              incrementAddOffset,
-              resetAddOffset,
-              setAddOffset,
-            }}
-          >
-            <PlaybackLifecycleContext.Provider
-              value={{ playerInitialized, setPlayerInitialized }}
-            >
+    <PlaybackModeContext.Provider value={playbackModeValue}>
+      <PlaybackSourceContext.Provider value={playbackSourceValue}>
+        <PlaybackQueueFilterContext.Provider value={playbackQueueFilterValue}>
+          <PlaybackAddOffsetContext.Provider value={playbackAddOffsetValue}>
+            <PlaybackLifecycleContext.Provider value={playbackLifecycleValue}>
               <PlaybackQueueRefreshContext.Provider
-                value={{ queueRevision, requestQueueRefresh }}
+                value={playbackQueueRefreshValue}
               >
-                <PlaybackContext.Provider
-                  value={{
-                    sourceId,
-                    setSourceId,
-                    sourceType,
-                    setSourceType,
-                    shuffle,
-                    setShuffle,
-                    loop,
-                    setLoop,
-                    playerInitialized,
-                    setPlayerInitialized,
-                    addOffset,
-                    setAddOffset,
-                    incrementAddOffset,
-                    decrementAddOffset,
-                    resetAddOffset,
-                    sort,
-                    setSort,
-                    order,
-                    setOrder,
-                    query,
-                    setQuery,
-                    queueRevision,
-                    requestQueueRefresh,
-                  }}
-                >
+                <PlaybackContext.Provider value={playbackValue}>
                   {children}
                 </PlaybackContext.Provider>
               </PlaybackQueueRefreshContext.Provider>

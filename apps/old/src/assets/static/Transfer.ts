@@ -257,7 +257,6 @@ const Transfer = () => {
                       })
                     })
                     const startResponseJson = await startResponse.json();
-                    console.log('Server: ' + startResponseJson.message);
                     if (startResponseJson.status === 200) {
                       transferPopup.style.display = "none";
                       overlay.style.display = "flex";
@@ -279,7 +278,6 @@ const Transfer = () => {
                         }, ''));
                         const transferEndpoint = window.location.href + 'fileUpload'
                         try {
-                          console.log('Sending file ' + name);
                           const sendResponse = await fetch(transferEndpoint, {
                             method: 'POST',
                             headers: {
@@ -293,11 +291,9 @@ const Transfer = () => {
                               "data": b64
                             })
                           })
-                          const sendResponseJson = await sendResponse.json();
-                          console.log('Server: ' + sendResponseJson.message);
+                          await sendResponse.json();
                         }
                         catch (error) {
-                          console.log('Error: Could not send file. More info: ' + error)
                         }
                       }
                       
@@ -315,11 +311,9 @@ const Transfer = () => {
                             "size": event.target.files.length
                           })
                         });
-                        const finishResponseJson = await finishResponse.json();
-                        console.log('Server: ' + finishResponseJson.message);
+                        await finishResponse.json();
                       }
                       catch (error) {
-                        console.log('Server: ' + error)
                       }
                     }
                     else {
@@ -330,7 +324,6 @@ const Transfer = () => {
                     }
                   }
                   catch (error) {
-                    console.log('error requesting transfer:', error);
                     transferPopup.style.display = "none";
                     overlay.style.display = "flex";
                     errorPopup.style.display = "flex";
@@ -364,7 +357,6 @@ const Transfer = () => {
                 }
                 catch (error) {
                   setDisconnected(error);
-                  console.log('Failed to connect to server: ' + error)
                 }
                 runCheck();
               }

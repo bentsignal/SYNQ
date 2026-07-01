@@ -315,6 +315,9 @@ feature-oriented packages.
    - Song row sheet presentation now lives in an action-sheet feature hook,
      moving edit-song context updates, haptics, import-vs-library sheet
      routing, and presenter error handling out of the row hook.
+   - Library and import song sheets now share a song action-sheet presentation
+     component, keeping the two sheet wrappers focused on selecting option
+     mode instead of duplicating header, cover, scroll, and option layout.
    - Song list page covers now receive playlist, album, and artist cover paths
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or

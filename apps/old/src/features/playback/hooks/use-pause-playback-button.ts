@@ -2,7 +2,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { State, usePlaybackState } from "react-native-track-player";
 
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
-import { togglePlaybackState } from "@/src/features/playback/lib/playback-transport-service";
+import {
+  shouldShowPlayButton,
+  togglePlaybackForState,
+} from "@/src/features/playback/lib/playback-toggle-command-service";
 
 export const usePausePlaybackButton = () => {
   const { sendHaptic } = useHaptics();
@@ -21,17 +24,14 @@ export const usePausePlaybackButton = () => {
   }, [playbackState.state]);
 
   const togglePlayback = useCallback(async () => {
-    try {
-      sendHaptic("soft");
-      await togglePlaybackState(currentState);
-    } catch (error) {
-      console.error("Error toggling play/pause:", error);
-    }
+    sendHaptic("soft");
+    await togglePlaybackForState(currentState);
   }, [currentState, sendHaptic]);
 
-  const showPlayButton =
-    [State.Paused, State.Ready].includes(currentState) &&
-    ![State.Loading, State.Buffering].includes(previousState.current);
+  const showPlayButton = shouldShowPlayButton({
+    currentState,
+    previousState: previousState.current,
+  });
 
   return {
     showPlayButton,

@@ -1,5 +1,9 @@
 import { NotificationType } from "@/src/constants/Types";
-import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
+import {
+  usePlaybackModeContext,
+  usePlaybackQueueFilterContext,
+  usePlaybackSourceContext,
+} from "@/src/features/playback/context/PlaybackProvider";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
@@ -29,8 +33,9 @@ export const usePlaybackRemoteEvents = ({
     updateQueue,
   } = usePlayer();
 
-  const { shuffle, loop, sourceType, sourceId, sort, order, query } =
-    usePlaybackContext();
+  const { loop, shuffle } = usePlaybackModeContext();
+  const { sourceId, sourceType } = usePlaybackSourceContext();
+  const { order, query, sort } = usePlaybackQueueFilterContext();
 
   useTrackPlayerEvents(
     [

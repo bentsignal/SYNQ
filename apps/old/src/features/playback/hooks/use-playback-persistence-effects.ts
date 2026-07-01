@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { usePlaybackContext } from "@/src/features/playback/context/PlaybackProvider";
+import {
+  usePlaybackAddOffsetContext,
+  usePlaybackLifecycleContext,
+} from "@/src/features/playback/context/PlaybackProvider";
 import usePlayer from "@/src/features/playback/hooks/use-player";
 import { getActiveQueueTrackIndex } from "@/src/features/playback/lib/player-queue-actions-service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,12 +17,9 @@ export const usePlaybackPersistenceEffects = ({
   position,
   track,
 }: PlaybackPersistenceEffectsParams) => {
-  const {
-    addOffset,
-    playerInitialized,
-    setPlayerInitialized,
-    decrementAddOffset,
-  } = usePlaybackContext();
+  const { addOffset, decrementAddOffset } = usePlaybackAddOffsetContext();
+  const { playerInitialized, setPlayerInitialized } =
+    usePlaybackLifecycleContext();
   const { setupPlayer } = usePlayer();
   const setupStarted = useRef(false);
   const [index, setIndex] = useState(0);

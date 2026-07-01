@@ -46,8 +46,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
 - [x] Define the `apps/new` feature map before moving more UI.
   - App shell/navigation: route shell exists with root stack, tabs, feature
     stack placeholders, and thin route files.
-  - Library: first reactive Drizzle summary plus searchable/sortable song
-    surface exists; full collection lists and detail query ports are next.
+  - Library: first reactive Drizzle summary, searchable/sortable song surface,
+    and collection previews exist; detail query ports are next.
   - Playback: player and queue placeholders exist; explicit service boundary is
     next.
   - Import/ingest: import stack placeholder exists; command orchestration is
@@ -90,9 +90,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
 
 We are solidly through Phase 1, well into Phase 2, and starting Phase 3. The
 `apps/new` shell now has a root stack, tabs, modal placeholders, feature
-boundaries, database initialization, and a first reactive Library summary with
-searchable/sortable songs, but it is not yet a replacement app. The next useful
-work should alternate between:
+boundaries, database initialization, and a first reactive Library surface with
+searchable/sortable songs plus collection previews, but it is not yet a
+replacement app. The next useful work should alternate between:
 
 - closing Phase 2 gaps that would otherwise be copied into the new app; and
 - defining/building `apps/new` feature surfaces so cleanup does not become an

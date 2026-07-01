@@ -85,16 +85,25 @@ export const usePlaybackPersistenceEffects = ({
   }, [position]);
 
   useEffect(() => {
+    let cancelled = false;
+
     const initIndex = async () => {
       const activeIndex = await getCurrentActiveQueueIndex();
-      if (activeIndex !== undefined) {
+      if (!cancelled && activeIndex !== undefined) {
         setIndex(activeIndex);
       }
     };
-    initIndex();
+
+    void initIndex();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+
     const checkNewIndex = async () => {
       const newIndex = await reconcileAddOffsetAfterActiveIndexChange({
         addOffset,
@@ -102,11 +111,16 @@ export const usePlaybackPersistenceEffects = ({
         previousIndex: index,
       });
 
-      if (newIndex !== undefined && newIndex !== index) {
+      if (!cancelled && newIndex !== undefined && newIndex !== index) {
         setIndex(newIndex);
       }
     };
-    checkNewIndex();
+
+    void checkNewIndex();
+
+    return () => {
+      cancelled = true;
+    };
   }, [addOffset, decrementAddOffset, index, track]);
 
   useEffect(() => {
@@ -115,6 +129,7 @@ export const usePlaybackPersistenceEffects = ({
         await persistActiveQueueTrackIndex();
       }
     };
-    updateLastTrackIndex();
+
+    void updateLastTrackIndex();
   }, [track]);
 };

@@ -50,7 +50,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     collection previews, read-only song/playlist/album/artist detail routes,
     playlist/album/artist create/edit flows, and collection song add/remove
     flows exist; reorder relationship flows are next.
-  - Playback: player and queue placeholders exist; explicit service boundary is
+  - Playback: explicit session state, queue/player screens, and a TrackPlayer
+    adapter seam exist; native playback, persistence, and remote events are
     next.
   - Import/ingest: import stack placeholder exists; command orchestration is
     next.
@@ -95,8 +96,10 @@ We are solidly through Phase 1, well into Phase 2, and starting Phase 3. The
 boundaries, database initialization, and a first reactive Library surface with
 searchable/sortable songs, linked details, collection create/edit flows, and
 song add/remove. Settings now has a feature-owned home with backup,
-customization, and premium route entry points. It is not yet a replacement app.
-The next useful work should alternate between:
+customization, and premium route entry points. Playback now has a reducer-backed
+session boundary plus queue/player screens, but it is not yet connected to
+native playback. It is not yet a replacement app. The next useful work should
+alternate between:
 
 - closing Phase 2 gaps that would otherwise be copied into the new app; and
 - defining/building `apps/new` feature surfaces so cleanup does not become an

@@ -44,6 +44,11 @@ const formatDuration = (duration: number | null) => {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
+const formatNames = (names: string[]) =>
+  names.length === 0
+    ? "Unknown"
+    : [...names].sort((first, second) => first.localeCompare(second)).join(", ");
+
 const uniqueById = <T extends { id: number }>(rows: T[]) => {
   const map = new Map<number, T>();
   rows.forEach((row) => {
@@ -107,18 +112,27 @@ export function useLibrarySongDetailQuery(songId: number) {
     const artistRows = uniqueById((artists.data ?? []) as ArtistRow[]);
     const albumRows = uniqueById((albums.data ?? []) as AlbumRow[]);
     const playlistRows = uniqueById((playlists.data ?? []) as PlaylistRow[]);
+    const artistLabel = formatNames(
+      artistRows.flatMap((artist) => (artist.name ? [artist.name] : [])),
+    );
+    const albumLabel = formatNames(
+      albumRows.flatMap((album) => (album.name ? [album.name] : [])),
+    );
 
     return {
+      albumLabel,
       albums: albumRows.map((album) => ({
         detail: album.year ? album.year.toString() : "Album",
         id: album.id,
         title: album.name ?? "Untitled album",
         track: album.track,
       })),
+      artistLabel,
       artists: artistRows.map((artist) => ({
         id: artist.id,
         title: artist.name ?? "Untitled artist",
       })),
+      duration: songRow?.duration ?? null,
       durationLabel: formatDuration(songRow?.duration ?? null),
       fileType: songRow?.fileType ?? "Unknown file type",
       isMissing: !songRow,

@@ -1,5 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { useInitDB } from "@synq/db";
+import { PlaybackProvider } from "@/src/features/playback/context/PlaybackProvider";
 import { AppNavigation } from "./AppNavigation";
 import { DatabaseStateScreen } from "./DatabaseStateScreen";
 
@@ -33,7 +34,9 @@ export function AppRoot() {
 
   return (
     <>
-      <AppNavigation />
+      <PlaybackProvider>
+        <AppNavigation />
+      </PlaybackProvider>
       <StatusBar style="dark" />
     </>
   );

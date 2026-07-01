@@ -29,10 +29,10 @@ export const rewriteFeatures: RewriteFeature[] = [
   {
     key: "playback",
     name: "Playback",
-    status: "pending",
+    status: "active",
     oldReference: "apps/old/src/features/playback",
     targetBoundary: "src/features/playback",
-    nextMilestone: "Design explicit player, queue, and TrackPlayer service state.",
+    nextMilestone: "Connect the playback session boundary to TrackPlayer, persistence, and remote events.",
   },
   {
     key: "import",

@@ -1,5 +1,6 @@
-import { Link, useLocalSearchParams } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Link, router, useLocalSearchParams } from "expo-router";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import { useLibrarySongDetailQuery } from "../hooks/use-library-song-detail-query";
 
 const parseId = (value: string | string[] | undefined) => {
@@ -31,6 +32,7 @@ export function LibrarySongDetailScreen() {
 
 function LibrarySongDetailContent({ songId }: { songId: number }) {
   const { detail, errors } = useLibrarySongDetailQuery(songId);
+  const { addToQueue, playSong } = usePlaybackSession();
   const hasErrors = errors.length > 0;
   const updatedLabel =
     detail.updatedAt > 0
@@ -54,6 +56,42 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
           <Text style={styles.summaryValue}>{detail.fileType}</Text>
           <Text style={styles.summaryLabel}>File type</Text>
         </View>
+      </View>
+
+      <View style={styles.actionRow}>
+        <Pressable
+          accessibilityRole="button"
+          disabled={detail.isMissing}
+          onPress={() => {
+            playSong({
+              album: detail.albumLabel,
+              artist: detail.artistLabel,
+              duration: detail.duration,
+              id: songId,
+              title: detail.title,
+            });
+            router.push("/player");
+          }}
+          style={[styles.primaryButton, detail.isMissing ? styles.disabled : null]}
+        >
+          <Text style={styles.primaryButtonText}>Play</Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          disabled={detail.isMissing}
+          onPress={() => {
+            addToQueue({
+              album: detail.albumLabel,
+              artist: detail.artistLabel,
+              duration: detail.duration,
+              id: songId,
+              title: detail.title,
+            });
+          }}
+          style={[styles.secondaryButton, detail.isMissing ? styles.disabled : null]}
+        >
+          <Text style={styles.secondaryButtonText}>Add to queue</Text>
+        </Pressable>
       </View>
 
       <RelationshipSection
@@ -178,6 +216,50 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 12,
+  },
+  actionRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+  },
+  primaryButton: {
+    alignItems: "center",
+    backgroundColor: "#0f766e",
+    borderRadius: 8,
+    flexGrow: 1,
+    justifyContent: "center",
+    minHeight: 44,
+    minWidth: 112,
+    paddingHorizontal: 14,
+  },
+  secondaryButton: {
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+    borderColor: "#dbe3de",
+    borderRadius: 8,
+    borderWidth: 1,
+    flexGrow: 1,
+    justifyContent: "center",
+    minHeight: 44,
+    minWidth: 132,
+    paddingHorizontal: 14,
+  },
+  disabled: {
+    opacity: 0.45,
+  },
+  primaryButtonText: {
+    color: "#ffffff",
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
+  },
+  secondaryButtonText: {
+    color: "#0f766e",
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
   },
   summaryPanel: {
     backgroundColor: "#ffffff",

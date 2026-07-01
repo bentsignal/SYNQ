@@ -1,0 +1,251 @@
+import { Link } from "expo-router";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { usePlaybackSession } from "../hooks/use-playback-session";
+
+const formatDuration = (duration: number | null) => {
+  if (!duration) {
+    return "--:--";
+  }
+
+  const totalSeconds = Math.round(duration / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+};
+
+export function PlaybackQueueScreen() {
+  const { activeTrack, playSong, removeFromQueue, state } =
+    usePlaybackSession();
+
+  return (
+    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
+      <View style={styles.header}>
+        <Text style={styles.kicker}>Playback queue</Text>
+        <Text style={styles.title}>Now Playing</Text>
+        <Text style={styles.subtitle}>
+          Queue state is owned by the playback feature boundary.
+        </Text>
+      </View>
+
+      {state.queue.length === 0 ? (
+        <View style={styles.emptyPanel}>
+          <Text style={styles.emptyTitle}>Queue is empty</Text>
+          <Text style={styles.emptyBody}>
+            Open a song from Library to seed the rewrite playback session.
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.list}>
+          {state.queue.map((song, index) => {
+            const isActive = activeTrack?.id === song.id;
+
+            return (
+              <View key={song.id} style={styles.row}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => playSong(song)}
+                  style={styles.rowMain}
+                >
+                  <Text style={isActive ? styles.activeIndex : styles.index}>
+                    {index + 1}
+                  </Text>
+                  <View style={styles.rowText}>
+                    <Text numberOfLines={1} style={styles.songTitle}>
+                      {song.title}
+                    </Text>
+                    <Text numberOfLines={1} style={styles.songMeta}>
+                      {song.artist} / {song.album}
+                    </Text>
+                  </View>
+                  <Text style={styles.duration}>
+                    {formatDuration(song.duration)}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => removeFromQueue(song.id)}
+                  style={styles.removeButton}
+                >
+                  <Text style={styles.removeText}>Remove</Text>
+                </Pressable>
+              </View>
+            );
+          })}
+        </View>
+      )}
+
+      <View style={styles.panel}>
+        <Text style={styles.panelLabel}>Revision</Text>
+        <Text style={styles.panelText}>{state.queueRevision}</Text>
+      </View>
+
+      <Link href="/player" style={styles.backLink}>
+        Back to player
+      </Link>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  scroll: {
+    backgroundColor: "#f4f7f5",
+    flex: 1,
+  },
+  content: {
+    gap: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 56,
+  },
+  header: {
+    gap: 8,
+  },
+  kicker: {
+    color: "#0f766e",
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
+  },
+  title: {
+    color: "#121417",
+    fontSize: 34,
+    fontWeight: "800",
+    letterSpacing: 0,
+    lineHeight: 40,
+  },
+  subtitle: {
+    color: "#52605a",
+    fontSize: 15,
+    lineHeight: 22,
+    maxWidth: 520,
+  },
+  emptyPanel: {
+    backgroundColor: "#ffffff",
+    borderColor: "#dbe3de",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 8,
+    padding: 16,
+  },
+  emptyTitle: {
+    color: "#121417",
+    fontSize: 16,
+    fontWeight: "800",
+    letterSpacing: 0,
+    lineHeight: 21,
+  },
+  emptyBody: {
+    color: "#52605a",
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  list: {
+    backgroundColor: "#ffffff",
+    borderColor: "#dbe3de",
+    borderRadius: 8,
+    borderWidth: 1,
+    overflow: "hidden",
+  },
+  row: {
+    alignItems: "center",
+    borderBottomColor: "#edf2ef",
+    borderBottomWidth: 1,
+    flexDirection: "row",
+    gap: 12,
+    minHeight: 68,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  rowMain: {
+    alignItems: "center",
+    flex: 1,
+    flexDirection: "row",
+    gap: 12,
+    minWidth: 0,
+  },
+  index: {
+    color: "#74807a",
+    fontSize: 12,
+    fontWeight: "800",
+    letterSpacing: 0,
+    minWidth: 22,
+    textAlign: "right",
+  },
+  activeIndex: {
+    color: "#0f766e",
+    fontSize: 12,
+    fontWeight: "800",
+    letterSpacing: 0,
+    minWidth: 22,
+    textAlign: "right",
+  },
+  rowText: {
+    flex: 1,
+    gap: 4,
+    minWidth: 0,
+  },
+  songTitle: {
+    color: "#121417",
+    fontSize: 15,
+    fontWeight: "800",
+    letterSpacing: 0,
+    lineHeight: 20,
+  },
+  songMeta: {
+    color: "#52605a",
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  duration: {
+    color: "#29322e",
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: 0,
+    minWidth: 44,
+    textAlign: "right",
+  },
+  removeButton: {
+    alignItems: "center",
+    borderColor: "#dbe3de",
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: 34,
+    minWidth: 76,
+    paddingHorizontal: 10,
+  },
+  removeText: {
+    color: "#b42318",
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
+  },
+  panel: {
+    backgroundColor: "#ffffff",
+    borderColor: "#dbe3de",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 8,
+    padding: 16,
+  },
+  panelLabel: {
+    color: "#52605a",
+    fontSize: 12,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
+  },
+  panelText: {
+    color: "#52605a",
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  backLink: {
+    color: "#0f766e",
+    fontSize: 15,
+    fontWeight: "800",
+    letterSpacing: 0,
+  },
+});

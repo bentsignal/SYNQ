@@ -33,8 +33,9 @@ export function usePlaylistRow(playlist: PlaylistType) {
         } else {
           await removeSongFromLibraryPlaylist(playlist.id, editSong.id);
         }
-      } catch (error) {
-        console.log("error saving playlist changes: ", error);
+        return true;
+      } catch {
+        return false;
       }
     },
     [editSong.id, playlist.id],
@@ -54,8 +55,8 @@ export function usePlaylistRow(playlist: PlaylistType) {
         .then((result) => {
           setSelected(result);
         })
-        .catch((error) => {
-          console.log("error checking if song is in playlist:", error);
+        .catch(() => {
+          setSelected(false);
         });
     }
   }, [editSong.id, playlist.id, playlist.pageType]);
@@ -67,7 +68,10 @@ export function usePlaylistRow(playlist: PlaylistType) {
   const handleSelect = useCallback(async () => {
     const nextSelected = !selected;
     setSelected(nextSelected);
-    await playlistChangesMade(nextSelected);
+    const saved = await playlistChangesMade(nextSelected);
+    if (!saved) {
+      setSelected(selected);
+    }
   }, [playlistChangesMade, selected]);
 
   const handlePress = useCallback(async () => {

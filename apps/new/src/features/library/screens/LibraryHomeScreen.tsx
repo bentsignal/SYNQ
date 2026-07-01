@@ -1,60 +1,43 @@
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { LibrarySongPreviewList } from "../components/LibrarySongPreviewList";
+import { LibrarySummaryGrid } from "../components/LibrarySummaryGrid";
+import { useLibrarySongPreviewQuery } from "../hooks/use-library-song-preview-query";
 import { useLibrarySummaryQuery } from "../hooks/use-library-summary-query";
 
-const summaryItems = [
-  {
-    key: "songs",
-    label: "Songs",
-  },
-  {
-    key: "playlists",
-    label: "Playlists",
-  },
-  {
-    key: "albums",
-    label: "Albums",
-  },
-  {
-    key: "artists",
-    label: "Artists",
-  },
-] as const;
-
 export function LibraryHomeScreen() {
-  const { counts, errors, updatedAt } = useLibrarySummaryQuery();
-  const hasErrors = errors.length > 0;
+  const summary = useLibrarySummaryQuery();
+  const songPreview = useLibrarySongPreviewQuery();
+  const hasErrors = summary.errors.length > 0 || Boolean(songPreview.error);
   const updatedLabel =
-    updatedAt > 0
-      ? `Updated ${new Date(updatedAt).toLocaleTimeString()}`
+    summary.updatedAt > 0
+      ? `Updated ${new Date(summary.updatedAt).toLocaleTimeString()}`
       : "Waiting for library data";
 
   return (
-    <View style={styles.screen}>
+    <ScrollView contentContainerStyle={styles.content} style={styles.screen}>
       <View style={styles.header}>
         <Text style={styles.kicker}>src/features/library</Text>
         <Text style={styles.title}>Library</Text>
         <Text style={styles.subtitle}>
-          Reactive Drizzle summary wired to the shared SYNQ database.
+          Reactive Drizzle library surface wired to the shared SYNQ database.
         </Text>
       </View>
 
-      <View style={styles.grid}>
-        {summaryItems.map((item) => (
-          <View key={item.key} style={styles.card}>
-            <Text style={styles.count}>{counts[item.key]}</Text>
-            <Text style={styles.label}>{item.label}</Text>
-          </View>
-        ))}
-      </View>
+      <LibrarySummaryGrid counts={summary.counts} />
+
+      <LibrarySongPreviewList
+        isEmpty={songPreview.isEmpty}
+        songs={songPreview.songs}
+      />
 
       <View style={styles.panel}>
         <Text style={hasErrors ? styles.errorText : styles.panelText}>
           {hasErrors
-            ? "One or more library summary queries failed."
+            ? "One or more library queries failed."
             : updatedLabel}
         </Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -62,6 +45,8 @@ const styles = StyleSheet.create({
   screen: {
     backgroundColor: "#f4f7f5",
     flex: 1,
+  },
+  content: {
     gap: 20,
     paddingHorizontal: 20,
     paddingVertical: 56,
@@ -88,37 +73,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 460,
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  card: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
-    borderRadius: 8,
-    borderWidth: 1,
-    flexBasis: "47%",
-    flexGrow: 1,
-    gap: 6,
-    minHeight: 96,
-    minWidth: 140,
-    padding: 16,
-  },
-  count: {
-    color: "#121417",
-    fontSize: 30,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 36,
-  },
-  label: {
-    color: "#52605a",
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
   },
   panel: {
     backgroundColor: "#ffffff",

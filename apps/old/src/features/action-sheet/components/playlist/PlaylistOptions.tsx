@@ -1,93 +1,13 @@
-import { useEffect, useState } from "react";
 import SheetOption from "@/src/features/action-sheet/components/SheetOption";
 import { PageType } from "@/src/constants/Types";
-import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
+import { usePlaylistOptions } from "@/src/features/action-sheet/hooks/use-entity-options";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
-import { exportSongs } from "@/src/features/export/lib/export-songs";
-import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
-import { deleteLibraryPlaylist } from "@/src/features/library/repository/library-entity-repository";
-import { getLibraryPlaylistSongs } from "@/src/features/library/repository/library-song-repository";
-import { posthog } from "@/src/lib/posthog";
-import { TrueSheet } from "@lodev09/react-native-true-sheet";
-import { router } from "expo-router";
 import { Share, SquarePen, Trash } from "lucide-react-native";
-import { Alert } from "react-native";
 
 const PlaylistOptions = ({ name }: { name: string }) => {
-  const { editPlaylist } = useActionSheetContext();
-  const { setShowGlobalLoading } = useGlobalProgressContext();
   const { premium } = usePremiumContext();
-
-  const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
-
-  useEffect(() => {
-    if (editPlaylist.pageType) {
-      setPageType(editPlaylist.pageType);
-    }
-  }, [editPlaylist]);
-
-  const actionDelay = 10;
-
-  const handleEdit = () => {
-    TrueSheet.dismiss(name);
-    posthog.capture("edit_playlist");
-    setTimeout(() => {
-      router.push(`/playlist/edit/${editPlaylist.id}`);
-    }, actionDelay);
-  };
-
-  const handleExport = async () => {
-    try {
-      TrueSheet.dismiss(name);
-      posthog.capture("export_playlist");
-      setShowGlobalLoading(true);
-      const songs = await getLibraryPlaylistSongs({
-        playlistId: editPlaylist.id,
-        pageType: PageType.PLAYLIST,
-      });
-      await exportSongs(songs);
-      setShowGlobalLoading(false);
-    } catch (error) {
-      console.log("error exporting song: ", error);
-      setShowGlobalLoading(false);
-    }
-  };
-
-  const executeDelete = async () => {
-    try {
-      posthog.capture("delete_playlist");
-      await deleteLibraryPlaylist(editPlaylist.id);
-    } catch (error) {
-      console.log("error deleting playlist: ", error);
-    }
-  };
-
-  const handleDelete = () => {
-    TrueSheet.dismiss(name);
-    setTimeout(() => {
-      Alert.alert(
-        "Delete Playlist",
-        `Are you sure you want to delete ${editPlaylist.name ?? "this playlist"}?`,
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Delete",
-            style: "destructive",
-            onPress: () => {
-              if (pageType === PageType.PLAYLIST) {
-                router.back();
-                setTimeout(() => {
-                  executeDelete();
-                }, 300);
-              } else {
-                executeDelete();
-              }
-            },
-          },
-        ],
-      );
-    }, actionDelay);
-  };
+  const { canDelete, handleDelete, handleEdit, handleExport, pageType } =
+    usePlaylistOptions(name);
 
   return (
     <>
@@ -111,7 +31,7 @@ const PlaylistOptions = ({ name }: { name: string }) => {
         text={"Delete"}
         show={
           [PageType.LIBRARY, PageType.PLAYLIST].includes(pageType) &&
-          editPlaylist.id !== 2
+          canDelete
         }
         handler={handleDelete}
       />

@@ -457,6 +457,9 @@ feature-oriented packages.
    - Done: action sheet surfaces and entity sheet option components now live in
      `apps/old/src/features/action-sheet/components` instead of the generic
      `src/components/sheet` folder.
+   - Done: playlist, album, and artist sheet option side effects now live in
+     action-sheet feature hooks, moving export/delete/edit/reorder analytics,
+     alerts, global loading, and navigation out of the option row components.
    - Done: song action sheets now share
      `apps/old/src/features/action-sheet/hooks/use-song-sheet-cover.ts`
      instead of duplicating cover-loading state/effects in each sheet.

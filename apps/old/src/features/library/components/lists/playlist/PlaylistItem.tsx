@@ -1,20 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
 import ListCover from "@/src/features/cover/components/ListCover";
 import Select from "@/src/shared/components/Select";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { CoverType, PageType, PlaylistType } from "@/src/constants/Types";
-import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import {
-  addSongToLibraryPlaylist,
-  getLibraryPlaylistCoverPath,
-  isSongInLibraryPlaylist,
-  removeSongFromLibraryPlaylist,
-} from "@/src/features/library/repository/library-entity-repository";
-import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
+import { usePlaylistRow } from "@/src/features/library/hooks/use-playlist-row";
 import colors from "@/src/lib/colors";
-import { TrueSheet } from "@lodev09/react-native-true-sheet";
-import { router } from "expo-router";
 import { Ellipsis } from "lucide-react-native";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -24,75 +14,19 @@ type PlaylistProps = {
 };
 
 const PlaylistItem = ({ playlist, bg }: PlaylistProps) => {
-  const { editSong, setEditPlaylist } = useActionSheetContext();
-  const { sendHaptic } = useHaptics();
-
-  const [selected, setSelected] = useState(false);
-  const [fallbackCoverImage, setFallbackCoverImage] = useState("");
-
-  const loadFallbackCover = useCallback(async () => {
-    try {
-      const cover = await getLibraryPlaylistCoverPath(playlist.id);
-      setFallbackCoverImage(cover ?? "");
-    } catch (error) {
-      console.log("error loading playlist cover:", error);
-    }
-  }, [playlist.id]);
-
-  const playlistChangesMade = async (add: boolean) => {
-    try {
-      if (add) {
-        await addSongToLibraryPlaylist(playlist.id, editSong.id);
-      } else {
-        await removeSongFromLibraryPlaylist(playlist.id, editSong.id);
-      }
-    } catch (error) {
-      console.log("error saving playlist changes: ", error);
-    }
-  };
-
-  useEffect(() => {
-    if (playlist.image) {
-      setFallbackCoverImage("");
-    } else {
-      loadFallbackCover();
-    }
-  }, [loadFallbackCover, playlist.id, playlist.image]);
-
-  useEffect(() => {
-    if (editSong.id && playlist.pageType === PageType.ADD) {
-      isSongInLibraryPlaylist(playlist.id, editSong.id)
-        .then((result) => {
-          setSelected(result);
-        })
-        .catch((error) => {
-          console.log("error checking if song is in playlist:", error);
-        });
-    }
-  }, [editSong.id, playlist.id, playlist.pageType]);
-
-  const handleMore = async () => {
-    sendHaptic("light");
-    setEditPlaylist(playlist);
-    TrueSheet.present("playlist-sheet");
-  };
-
-  const handleSelect = async () => {
-    setSelected(!selected);
-    await playlistChangesMade(!selected);
-  };
+  const {
+    fallbackCoverImage,
+    handleMore,
+    handlePress,
+    handleSelect,
+    selected,
+  } = usePlaylistRow(playlist);
 
   return (
     <TouchableOpacity
       style={[Local.container, { backgroundColor: bg ?? Colors.song }]}
       activeOpacity={0.8}
-      onPress={async () => {
-        if (playlist.pageType === PageType.ADD) {
-          await handleSelect();
-        } else {
-          router.push(`/library/playlist/${playlist.id}`);
-        }
-      }}
+      onPress={handlePress}
     >
       <ListCover
         id={playlist.id}

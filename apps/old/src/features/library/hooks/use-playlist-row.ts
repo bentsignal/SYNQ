@@ -1,19 +1,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { PageType, PlaylistType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
+import { useEntitySheetPresenter } from "@/src/features/action-sheet/hooks/use-entity-sheet-presenter";
 import {
   addSongToLibraryPlaylist,
   getLibraryPlaylistCoverPath,
   isSongInLibraryPlaylist,
   removeSongFromLibraryPlaylist,
 } from "@/src/features/library/repository/library-entity-repository";
-import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
 
 export function usePlaylistRow(playlist: PlaylistType) {
-  const { editSong, setEditPlaylist } = useActionSheetContext();
-  const { sendHaptic } = useHaptics();
+  const { editSong } = useActionSheetContext();
+  const { presentPlaylistSheet } = useEntitySheetPresenter();
   const [selected, setSelected] = useState(false);
   const [fallbackCoverImage, setFallbackCoverImage] = useState("");
 
@@ -62,10 +61,8 @@ export function usePlaylistRow(playlist: PlaylistType) {
   }, [editSong.id, playlist.id, playlist.pageType]);
 
   const handleMore = useCallback(async () => {
-    sendHaptic("light");
-    setEditPlaylist(playlist);
-    TrueSheet.present("playlist-sheet");
-  }, [playlist, sendHaptic, setEditPlaylist]);
+    presentPlaylistSheet(playlist);
+  }, [playlist, presentPlaylistSheet]);
 
   const handleSelect = useCallback(async () => {
     const nextSelected = !selected;

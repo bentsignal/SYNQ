@@ -6,7 +6,7 @@ import {
   SourceType,
 } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
+import { useEntitySheetPresenter } from "@/src/features/action-sheet/hooks/use-entity-sheet-presenter";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import {
   addImportSongArtist,
@@ -24,7 +24,6 @@ import {
   isArtistOnLibrarySong,
   removeArtistFromLibrarySong,
 } from "@/src/features/library/repository/library-song-repository";
-import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router } from "expo-router";
 
 export function useArtistRow(artist: ArtistType) {
@@ -32,11 +31,10 @@ export function useArtistRow(artist: ArtistType) {
     editAlbum,
     editSong,
     setEditAlbum,
-    setEditArtist,
     setEditSong,
   } = useActionSheetContext();
   const { setResults } = useImportFlowContext();
-  const { sendHaptic } = useHaptics();
+  const { presentArtistSheet } = useEntitySheetPresenter();
   const [selected, setSelected] = useState(false);
   const [fallbackCoverImage, setFallbackCoverImage] = useState("");
 
@@ -127,10 +125,8 @@ export function useArtistRow(artist: ArtistType) {
   }, [artist.id, artist.image, loadFallbackCover]);
 
   const handleMore = useCallback(async () => {
-    sendHaptic("light");
-    setEditArtist(artist);
-    TrueSheet.present("artist-sheet");
-  }, [artist, sendHaptic, setEditArtist]);
+    presentArtistSheet(artist);
+  }, [artist, presentArtistSheet]);
 
   const handleSelect = useCallback(async () => {
     const nextSelected = !selected;

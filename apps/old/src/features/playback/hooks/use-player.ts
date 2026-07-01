@@ -20,8 +20,8 @@ import {
   resetPlaybackQueue,
   skipToNextPlayableTrack,
   skipToPreviousPlayableTrack,
-  updateUpcomingQueue,
 } from "@/src/features/playback/lib/player-queue-actions-service";
+import { updateUpcomingQueue } from "@/src/features/playback/lib/playback-upcoming-queue-service";
 import {
   pausePlayback,
   playPlayback,

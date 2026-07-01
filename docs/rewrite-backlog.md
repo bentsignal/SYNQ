@@ -365,6 +365,8 @@ feature-oriented packages.
      folder.
    - Done: shared list, skeleton, and legacy list-cover primitives now avoid
      stale animation dependencies and derived render state.
+   - Done: notification banner and info accordion animations now use explicit
+     stable dependencies.
    - Done: notification queue/modal state and actions now live in
      `apps/old/src/features/notifications/context/NotificationsProvider.tsx`
      instead of `GlobalProvider`.

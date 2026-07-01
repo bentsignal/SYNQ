@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Colors } from "@/src/constants/Colors";
 import CFG from "@/src/constants/Config";
 import { Styles } from "@/src/constants/Styles";
@@ -49,6 +49,18 @@ const Notification = ({
   const { theme } = useThemeContext();
   const { sendHaptic } = useHaptics();
 
+  const hideBanner = useCallback(() => {
+    Animated.timing(opacity, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+      easing: Easing.out(Easing.ease),
+    }).start(() => {
+      removeNotification(id);
+      setVisible(false);
+    });
+  }, [id, opacity, removeNotification]);
+
   useEffect(() => {
     if (type === NotificationType.ERROR) {
       sendHaptic("error");
@@ -65,19 +77,7 @@ const Notification = ({
         hideBanner();
       }, CFG.notificationDuration);
     });
-  }, []);
-
-  const hideBanner = () => {
-    Animated.timing(opacity, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-      easing: Easing.out(Easing.ease),
-    }).start(() => {
-      removeNotification(id);
-      setVisible(false);
-    });
-  };
+  }, [hideBanner, sendHaptic, translateX, type]);
 
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,

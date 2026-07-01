@@ -71,7 +71,7 @@ const InfoContainer = ({ title, contentHeight, children }: InfoContainerProps) =
       duration: 300,
       easing: Easing.out(Easing.ease),
     });
-  }, [open, contentHeight]);
+  }, [contentHeight, height, open, rotate]);
 
   const toggleOpen = () => {
     setOpen(!open);

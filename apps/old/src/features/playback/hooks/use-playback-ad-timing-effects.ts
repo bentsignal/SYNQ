@@ -3,8 +3,11 @@ import { usePremiumContext } from "@/src/features/premium/context/PremiumProvide
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { usePlaybackAdActions } from "@/src/features/playback/hooks/use-playback-ad-actions";
 import {
-  CHECK_FOR_AD_INTERVAL_SECONDS,
+  didAdvanceOneSecond,
   incrementPlaybackAdTimePlayed,
+  isAtPlaybackAdBoundary,
+  isPlaybackAdTrack,
+  shouldPersistPlaybackAdProgress,
 } from "@/src/features/playback/lib/playback-ad-progress-service";
 import { type Track } from "react-native-track-player";
 
@@ -32,7 +35,7 @@ export const usePlaybackAdTimingEffects = ({
   const timePlayed = useRef(0);
 
   useEffect(() => {
-    if (track?.id === -2) {
+    if (isPlaybackAdTrack(track)) {
       setAdPlaying(true);
       if (premium) {
         skipActiveAdForPremium();
@@ -55,8 +58,7 @@ export const usePlaybackAdTimingEffects = ({
       return;
     } else if (premium) return;
 
-    const timeToEnd = Math.floor(duration) - Math.floor(position);
-    if (timeToEnd !== 0 && timeToEnd <= 1) {
+    if (isAtPlaybackAdBoundary({ duration, position })) {
       if (!premium && !adPlaying && shouldPlayAd) {
         startAdPlayback();
       } else if (adPlaying) {
@@ -68,14 +70,15 @@ export const usePlaybackAdTimingEffects = ({
     if (adPlaying) return;
 
     const current = Math.floor(position);
-    const difference = Math.abs(current - previousPosition.current);
-    if (difference === 1) {
+    if (
+      didAdvanceOneSecond({
+        currentPosition: position,
+        previousPosition: previousPosition.current,
+      })
+    ) {
       timePlayed.current += 1;
     }
-    if (
-      timePlayed.current !== 0 &&
-      timePlayed.current % CHECK_FOR_AD_INTERVAL_SECONDS === 0
-    ) {
+    if (shouldPersistPlaybackAdProgress(timePlayed.current)) {
       updateTimePlayed();
     }
     previousPosition.current = current;

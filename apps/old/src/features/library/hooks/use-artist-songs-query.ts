@@ -5,12 +5,12 @@ import {
   SortOrder,
   SortType,
 } from "@/src/constants/Types";
-import { getImagePathFromHash } from "@/src/features/images/repository/image-repository";
 import {
   compareLibraryText,
   getSongResultSummary,
   matchesSongQuery,
   normalizeLibraryQuery,
+  rowsToSongResults,
   sortSongResults,
 } from "@/src/features/library/lib/song-query-results";
 import { db } from "@synq/db";
@@ -32,11 +32,6 @@ type ArtistSongRow = {
   albumCoverImage: string | null;
 };
 
-type ArtistSong = SongType & {
-  albumNames: Set<string>;
-  albumCoverImage?: string | null;
-};
-
 const sortSongs = (
   songs: SongType[],
   sort: SortType,
@@ -53,54 +48,6 @@ const sortSongs = (
     order,
     songs,
     sort,
-  });
-};
-
-const rowsToSongs = (rows: ArtistSongRow[]) => {
-  const songMap = new Map<number, ArtistSong>();
-
-  rows.forEach(({ song, artistName, albumName, albumCoverImage }) => {
-    const current =
-      songMap.get(song.id) ??
-      ({
-        id: song.id,
-        edited: false,
-        fileName: song.originalFileName ?? undefined,
-        fileType: song.fileType ?? undefined,
-        format: "id3v2.4",
-        title: song.title ?? undefined,
-        duration: song.duration ?? undefined,
-        artwork: song.coverImage
-          ? getImagePathFromHash(song.coverImage).pathToFullImage
-          : undefined,
-        pageType: PageType.ARTIST,
-        artist: artistName ?? undefined,
-        albumNames: new Set<string>(),
-        albumCoverImage: undefined,
-      } satisfies ArtistSong);
-
-    if (artistName && !current.artist) {
-      current.artist = artistName;
-    }
-
-    if (albumName) {
-      current.albumNames.add(albumName);
-    }
-
-    current.albumCoverImage = current.albumCoverImage ?? albumCoverImage;
-
-    songMap.set(song.id, current);
-  });
-
-  return Array.from(songMap.values()).map((song) => {
-    const { albumNames, albumCoverImage, ...result } = song;
-    return {
-      ...result,
-      album: Array.from(albumNames).join(", "),
-      artwork: albumCoverImage
-        ? getImagePathFromHash(albumCoverImage).pathToFullImage
-        : result.artwork,
-    };
   });
 };
 
@@ -140,7 +87,10 @@ export const useArtistSongsQuery = ({
 
   const { songs, totalSongCount } = useMemo(() => {
     const normalizedQuery = normalizeLibraryQuery(query);
-    const mappedSongs = rowsToSongs((data ?? []) as ArtistSongRow[]);
+    const mappedSongs = rowsToSongResults({
+      rows: (data ?? []) as ArtistSongRow[],
+      pageType: PageType.ARTIST,
+    });
     const summary = getSongResultSummary(mappedSongs);
 
     return {

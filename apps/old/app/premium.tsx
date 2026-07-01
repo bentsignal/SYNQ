@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CustomButton from "@/src/shared/components/CustomButton";
 import Loading from "@/src/shared/components/Loading";
 import Bar from "@/src/shared/components/modals/Bar";
@@ -17,7 +17,6 @@ import { useNotificationsContext } from "@/src/features/notifications/context/No
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { posthog } from "@/src/lib/posthog";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router";
 import {
   Alert,
   Image,
@@ -49,28 +48,77 @@ const Premium = () => {
   const [lifetimeCost, setLifetimeCost] = useState("$∞");
   const [error, setError] = useState(false);
 
-  const sendErrorNotification = (
-    title: string,
-    message: string,
-    brief: string,
-    trace: string,
-  ) => {
-    addNotification(
-      NotificationType.ERROR,
-      "Premium Error",
-      brief,
-      message,
-      trace,
-      () => {
-        // router.back();
-        // router.back();
-        // setTimeout(() => {
-        //   setShowOverlay(true);
-        //   setShowNotificationModal(true);
-        // }, 100);
-      },
-    );
-  };
+  const sendErrorNotification = useCallback(
+    (title: string, message: string, brief: string, trace: string) => {
+      addNotification(
+        NotificationType.ERROR,
+        title,
+        brief,
+        message,
+        trace,
+        () => {},
+      );
+    },
+    [addNotification],
+  );
+
+  const setPrices = useCallback(
+    ({
+      lifetime,
+      monthly,
+      yearly,
+    }: {
+      lifetime: string;
+      monthly: string;
+      yearly: string;
+    }) => {
+      setLifetimeCost(lifetime);
+      setMonthlyCost(monthly);
+      setYearlyCost(yearly);
+    },
+    [],
+  );
+
+  const updateStatus = useCallback(
+    ({
+      id,
+      renewal,
+      end,
+      trialAvailable,
+    }: {
+      id: string;
+      renewal: boolean;
+      end: string;
+      trialAvailable: boolean;
+    }) => {
+      if (id === "") {
+        setActive(false);
+        setSelected(1);
+        if (trialAvailable) {
+          setMonthlyText("Start 1 month free trial");
+          setYearlyText("Start 3 month free trial");
+          setPurchaseText("Start 3 month free trial");
+        }
+      } else {
+        setActive(true);
+        setPremium(true);
+        setRenew(renewal);
+        setEnd(end);
+        switch (id) {
+          case "SYNQPremiumMonthly":
+            setSelected(0);
+            break;
+          case "SYNQPremiumYearly":
+            setSelected(1);
+            break;
+          case "SYNQPremiumLifetime":
+            setSelected(2);
+            break;
+        }
+      }
+    },
+    [setPremium],
+  );
 
   useEffect(() => {
     const run = async () => {
@@ -93,7 +141,7 @@ const Premium = () => {
     };
 
     run();
-  }, []);
+  }, [sendErrorNotification, setPrices, updateStatus]);
 
   const openURL = (url: string) => {
     Linking.openURL(url).catch((err) =>
@@ -125,58 +173,6 @@ const Premium = () => {
     if (!loading && !active && !error) {
       setSelected(option);
       setPurchaseText(purchaseText);
-    }
-  };
-
-  const setPrices = ({
-    lifetime,
-    monthly,
-    yearly,
-  }: {
-    lifetime: string;
-    monthly: string;
-    yearly: string;
-  }) => {
-    setLifetimeCost(lifetime);
-    setMonthlyCost(monthly);
-    setYearlyCost(yearly);
-  };
-
-  const updateStatus = ({
-    id,
-    renewal,
-    end,
-    trialAvailable,
-  }: {
-    id: string;
-    renewal: boolean;
-    end: string;
-    trialAvailable: boolean;
-  }) => {
-    if (id === "") {
-      setActive(false);
-      setSelected(1);
-      if (trialAvailable) {
-        setMonthlyText("Start 1 month free trial");
-        setYearlyText("Start 3 month free trial");
-        setPurchaseText("Start 3 month free trial");
-      }
-    } else {
-      setActive(true);
-      setPremium(true);
-      setRenew(renewal);
-      setEnd(end);
-      switch (id) {
-        case "SYNQPremiumMonthly":
-          setSelected(0);
-          break;
-        case "SYNQPremiumYearly":
-          setSelected(1);
-          break;
-        case "SYNQPremiumLifetime":
-          setSelected(2);
-          break;
-      }
     }
   };
 

@@ -2,7 +2,6 @@ import Bar from "@/src/shared/components/modals/Bar";
 import ModalStyles from "@/src/shared/components/modals/Styles";
 import Option from "@/src/shared/components/Option";
 import PageTitle from "@/src/shared/components/PageTitle";
-import Analytics from "@/src/features/settings/components/Analytics";
 import AppIcon from "@/src/features/settings/components/AppIcon";
 import CategoryTitle from "@/src/features/settings/components/CategoryTitle";
 import Haptic from "@/src/features/settings/components/Haptic";
@@ -13,7 +12,7 @@ import { usePremiumContext } from "@/src/features/premium/context/PremiumProvide
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { posthog } from "@/src/lib/posthog";
 import { router } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 export default function Customization() {
   const { premium } = usePremiumContext();

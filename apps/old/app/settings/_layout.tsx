@@ -1,9 +1,6 @@
-import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { Stack } from "expo-router";
 
 const SettingsLayout = () => {
-  const { theme } = useThemeContext();
-
   return (
     <Stack
       screenOptions={{

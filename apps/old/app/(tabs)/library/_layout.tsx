@@ -1,6 +1,5 @@
 import { Stack } from "expo-router";
 
-import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
 
 import Top from "@/src/features/app-shell/components/Top";

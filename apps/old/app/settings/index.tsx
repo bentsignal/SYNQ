@@ -3,17 +3,14 @@ import Bar from "@/src/shared/components/modals/Bar";
 import ModalStyles from "@/src/shared/components/modals/Styles";
 import Option from "@/src/shared/components/Option";
 import CategoryTitle from "@/src/features/settings/components/CategoryTitle";
-import Haptic from "@/src/features/settings/components/Haptic";
 import PremiumToggle from "@/src/features/settings/components/PremiumToggle";
-import Theme from "@/src/features/settings/components/Theme";
 import { Colors } from "@/src/constants/Colors";
 import CFG, { SOCIAL_LINKS } from "@/src/constants/Config";
 import { Styles } from "@/src/constants/Styles";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import { darkenColor } from "@/src/lib/color-utils";
 import { posthog } from "@/src/lib/posthog";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import * as StoreReview from "expo-store-review";
 import {
   Image,

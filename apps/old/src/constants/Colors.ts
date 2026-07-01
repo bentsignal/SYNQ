@@ -1,5 +1,3 @@
-import { darkenColor } from "@/src/lib/color-utils";
-
 export const Themes = {
   blue: '#77adf8',
   purple: '#a888ec',
@@ -28,5 +26,4 @@ export const Colors = {
   error: '#FA5858',
   progress: '#e3e3e3',
 };
-
 

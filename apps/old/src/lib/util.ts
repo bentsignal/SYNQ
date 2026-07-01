@@ -67,7 +67,7 @@ export const getExportNumber = async () => {
     } else {
       throw new Error("Bad data");
     }
-  } catch (error) {
+  } catch {
     await AsyncStorage.setItem("exportNumber", "1");
     return 1;
   }

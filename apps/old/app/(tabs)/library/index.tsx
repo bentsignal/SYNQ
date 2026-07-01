@@ -5,12 +5,11 @@ import Artists from "@/src/features/library/components/Artists";
 import Playlists from "@/src/features/library/components/Playlists";
 import Songs from "@/src/features/library/components/Songs";
 import PageTitle from "@/src/shared/components/PageTitle";
-import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import colors from "@/src/lib/colors";
 import { router, useLocalSearchParams } from "expo-router";
 import { Cog, PlusIcon } from "lucide-react-native";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 const Library = () => {
   const { category, resetKey } = useLocalSearchParams<{

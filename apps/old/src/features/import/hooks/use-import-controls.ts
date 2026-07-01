@@ -3,7 +3,10 @@ import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
-import { getImportControlState } from "@/src/features/import/lib/import-control-state";
+import {
+  clearImportControlState,
+  getImportControlState,
+} from "@/src/features/import/lib/import-control-state";
 import { removeImportSongs } from "@/src/features/import/lib/import-song-edits";
 import { resetWifiTransferServer } from "@/src/features/import/lib/import-transfer-reset";
 import { deleteLibrarySong } from "@/src/features/library/repository/library-song-repository";
@@ -54,10 +57,12 @@ export function useImportControls() {
       router.back();
       posthog.capture("import_cancel");
       setTimeout(() => {
-        setLoading(false);
-        setTransferSize(0);
-        setResults([]);
-        setExportDisabled(true);
+        clearImportControlState({
+          setExportDisabled,
+          setLoading,
+          setResults,
+          setTransferSize,
+        });
         if (pathname === "/import/wifi") {
           void resetResults();
         }

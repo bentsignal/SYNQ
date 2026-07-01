@@ -1,3 +1,5 @@
+import type { SongType } from "@/src/constants/Types";
+
 type ImportControlStateInput = {
   exportDisabled: boolean;
   loading: boolean;
@@ -12,6 +14,13 @@ export type ImportControlState = {
   hideMainControls: boolean;
   mainDisabled: boolean;
   mainTitle: string;
+};
+
+type ClearImportControlStateInput = {
+  setExportDisabled: (disabled: boolean) => void;
+  setLoading: (loading: boolean) => void;
+  setResults: (songs: SongType[]) => void;
+  setTransferSize: (size: number) => void;
 };
 
 export function getImportControlState({
@@ -82,4 +91,16 @@ export function getImportControlState({
     mainDisabled: false,
     mainTitle: "Next",
   };
+}
+
+export function clearImportControlState({
+  setExportDisabled,
+  setLoading,
+  setResults,
+  setTransferSize,
+}: ClearImportControlStateInput) {
+  setLoading(false);
+  setTransferSize(0);
+  setResults([]);
+  setExportDisabled(true);
 }

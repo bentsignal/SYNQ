@@ -12,19 +12,14 @@ import {
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 
-export const createImportDir = async () => {
+export const createImportDir = async (): Promise<boolean> => {
   try {
     const importDir = `${FileSystem.cacheDirectory}import`;
-    const info = await FileSystem.getInfoAsync(importDir);
-    if (info.exists) {
-      await FileSystem.deleteAsync(importDir);
-    }
-    await FileSystem.makeDirectoryAsync(importDir);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    if (!message.includes("already exists")) {
-      console.log("error creating import directory: ", error);
-    }
+    await FileSystem.deleteAsync(importDir, { idempotent: true });
+    await FileSystem.makeDirectoryAsync(importDir, { intermediates: true });
+    return true;
+  } catch {
+    return false;
   }
 };
 
@@ -56,7 +51,11 @@ export const importFiles = async (
     return songs;
   }
 
-  await createImportDir();
+  const importDirReady = await createImportDir();
+  if (!importDirReady) {
+    return songs;
+  }
+
   updateSize(results.assets.length);
 
   for (let index = 0; index < results.assets.length; index += 1) {
@@ -78,8 +77,8 @@ export const importFiles = async (
           asset.mimeType ?? asset.name,
         ),
       );
-    } catch (error) {
-      console.log("error processing song:", asset.name, error);
+    } catch {
+      // Keep importing the remaining files when a single asset cannot be parsed.
     }
   }
 
@@ -96,8 +95,8 @@ export const processImportSongFromFile = async (
 
   try {
     info.metadata = await getMetadataFromFile(url);
-  } catch (error) {
-    console.log("error reading metadata:", name, error);
+  } catch {
+    // Metadata is optional; import the playable file with filename fallbacks.
   }
 
   let importArtists: ArtistType[] = [];
@@ -126,8 +125,8 @@ export const processImportSongFromFile = async (
   let duration = 0;
   try {
     duration = await getAudioDurationFromFile(url);
-  } catch (error) {
-    console.error("Error loading audio:", error);
+  } catch {
+    // Duration is optional; keep the imported song with the default duration.
   }
 
   let title = info.metadata?.name ?? "";

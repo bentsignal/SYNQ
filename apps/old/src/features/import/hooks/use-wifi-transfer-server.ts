@@ -108,7 +108,15 @@ export function useWifiTransferServer() {
           size,
         });
         midTransfer.current = true;
-        await createImportDir();
+        const importDirReady = await createImportDir();
+        if (!importDirReady) {
+          midTransfer.current = false;
+          return res.json({
+            status: 500,
+            message: "ERROR - Failed to prepare import directory",
+          });
+        }
+
         return res.json({
           status: 200,
           message: "OK - READY TO TRANSFER",

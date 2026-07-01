@@ -359,6 +359,9 @@ feature-oriented packages.
    - Premium purchase options and footer state now live in a focused premium
      feature panel, separating purchase/status/legal actions from the screen
      hero and modal shell.
+   - Premium hero media, feature pager placement, logo, and headline copy now
+     live in a premium feature component, leaving the premium screen focused on
+     modal shell and purchase-flow composition.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

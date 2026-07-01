@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { PageType, SourceType } from "@/src/constants/Types";
+import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
+import { getSongOptionVisibility } from "@/src/features/action-sheet/lib/song-option-visibility";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { exportSongs } from "@/src/features/export/lib/export-songs";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
@@ -21,38 +22,6 @@ import { router } from "expo-router";
 import { Alert } from "react-native";
 
 const actionDelay = 10;
-
-const librarySongPages = [
-  PageType.LIBRARY,
-  PageType.PLAYER,
-  PageType.ARTIST,
-  PageType.ALBUM,
-];
-
-const queuePages = [
-  PageType.LIBRARY,
-  PageType.QUEUE,
-  PageType.PLAYER,
-  PageType.ARTIST,
-  PageType.ALBUM,
-];
-
-const editPages = [
-  PageType.LIBRARY,
-  PageType.IMPORT,
-  PageType.ARTIST,
-  PageType.ALBUM,
-];
-
-const exportPages = [
-  PageType.LIBRARY,
-  PageType.PLAYER,
-  PageType.ARTIST,
-  PageType.ALBUM,
-  PageType.IMPORT,
-];
-
-const deletePages = [PageType.LIBRARY, PageType.IMPORT];
 
 export function useSongOptions(sheetName: string, library: boolean) {
   const { editSong, setNumModified } = useActionSheetContext();
@@ -218,8 +187,13 @@ export function useSongOptions(sheetName: string, library: boolean) {
     }
   }, [editSong.id, inLiked, sheetName]);
 
-  const canExportFromPage = exportPages.includes(pageType);
-  const canDeleteFromPage = deletePages.includes(pageType);
+  const visibility = getSongOptionVisibility({
+    library,
+    pageType,
+    premium,
+    sourceId: editSong.sourceId,
+    sourceType: editSong.sourceType,
+  });
 
   return {
     handleAddToPlaylist,
@@ -230,16 +204,6 @@ export function useSongOptions(sheetName: string, library: boolean) {
     handleRemoveFromPlaylist,
     handleToggleInLiked,
     inLiked,
-    showAddToPlaylist: librarySongPages.includes(pageType),
-    showAddToQueue: queuePages.includes(pageType),
-    showDelete: premium ? canDeleteFromPage : canDeleteFromPage && library,
-    showEdit: editPages.includes(pageType),
-    showExport: premium ? canExportFromPage : canExportFromPage && library,
-    showLikedToggle: librarySongPages.includes(pageType),
-    showRemoveFromPlaylist:
-      [PageType.LIBRARY, PageType.PLAYER].includes(pageType) &&
-      editSong.sourceId !== undefined &&
-      editSong.sourceId !== 1 &&
-      editSong.sourceType === SourceType.PLAYLIST,
+    ...visibility,
   };
 }

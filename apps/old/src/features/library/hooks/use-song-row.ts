@@ -58,8 +58,8 @@ export function useSongRow(song: SongType, previous = false) {
         const cover = await getImportSongCover(song);
         setCoverImage(cover ?? "");
       }
-    } catch (error) {
-      console.log("error loading song cover:", error);
+    } catch {
+      setCoverImage("");
     }
   }, [song]);
 

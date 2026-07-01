@@ -1,6 +1,5 @@
-import { Colors } from "@/src/constants/Colors";
+import PlaybackIconToggleButton from "@/src/features/playback/components/PlaybackIconToggleButton";
 import { useShufflePlaybackMode } from "@/src/features/playback/hooks/use-shuffle-playback-mode";
-import { Image, StyleSheet, TouchableOpacity } from "react-native";
 
 interface ShuffleButtonProps {
   primary?: string;
@@ -9,38 +8,16 @@ interface ShuffleButtonProps {
 
 const ShuffleButton = ({ primary, useBG }: ShuffleButtonProps) => {
   const { shuffle, toggleShuffle } = useShufflePlaybackMode();
-  const tint = primary ? primary : "rgba(20, 20, 20, 0.5)";
 
   return (
-    <TouchableOpacity
-      style={{
-        padding: useBG ? 5 : 0,
-        backgroundColor:
-          shuffle && useBG ? "rgba(255, 255, 255, 0.1)" : "transparent",
-        borderRadius: 5,
-      }}
-      activeOpacity={0.7}
+    <PlaybackIconToggleButton
+      active={shuffle}
+      icon={require("@/src/assets/icons/shuffle.png")}
       onPress={toggleShuffle}
-    >
-      <Image
-        source={require("@/src/assets/icons/shuffle.png")}
-        style={[
-          Local.image,
-          {
-            tintColor: shuffle ? tint : Colors.text,
-          },
-        ]}
-        resizeMode="contain"
-      />
-    </TouchableOpacity>
+      primary={primary}
+      useBG={useBG}
+    />
   );
 };
-
-const Local = StyleSheet.create({
-  image: {
-    width: 30,
-    height: 30,
-  },
-});
 
 export default ShuffleButton;

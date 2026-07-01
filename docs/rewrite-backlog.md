@@ -412,6 +412,9 @@ feature-oriented packages.
    - Album reorder route now delegates to a library feature screen component,
      keeping draggable ordering UI, reactive album-song query state, and
      Drizzle-backed order writes out of the app route layer.
+   - Library tab route now delegates to a library feature screen component,
+     keeping category selection, create routing, settings navigation, and list
+     composition out of the app route layer.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

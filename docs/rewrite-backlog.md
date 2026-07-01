@@ -418,6 +418,9 @@ feature-oriented packages.
    - Library stack route layout now delegates to a library feature shell
      component, keeping stack screen options, top header, mini-player, and
      notification overlay composition out of the app route layer.
+   - Player and player song-edit routes now delegate to playback feature screen
+     components, keeping modal player composition, track actions, and song
+     sheet presentation out of the app route layer.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

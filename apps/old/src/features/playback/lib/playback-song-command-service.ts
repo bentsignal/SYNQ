@@ -54,8 +54,13 @@ export const playSongNow = async ({
     return false;
   }
 
-  await playTrackNow(track);
-  return true;
+  try {
+    await playTrackNow(track);
+
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 export const addSongToPlaybackQueueAfterAdStarts = async ({
@@ -83,16 +88,17 @@ export const playSongFromLibrary = async ({
 }: PlaySongCommandArgs) => {
   const currentId = activeTrackId ? activeTrackId : -1;
   if (currentId === song.id) {
-    return;
+    return false;
   }
 
   posthog.capture("play_song");
-  try {
-    const didPlaySong = await playSongNow({ song, theme });
-    if (didPlaySong) {
-      await persistSongPlaybackSource();
-    }
-  } catch (error) {
-    console.log("error playing song: ", error);
+
+  const didPlaySong = await playSongNow({ song, theme });
+  if (!didPlaySong) {
+    return false;
   }
+
+  await persistSongPlaybackSource();
+
+  return true;
 };

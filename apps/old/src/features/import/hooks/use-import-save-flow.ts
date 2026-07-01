@@ -6,6 +6,7 @@ import { useImportTransferCompletion } from "@/src/features/import/hooks/use-imp
 import { waitForImportAdCountdown } from "@/src/features/import/lib/import-ad-countdown";
 import { deleteImportSongs } from "@/src/features/import/lib/import-song-edits";
 import { requestImportReviewIfEligible } from "@/src/features/import/lib/import-review-request";
+import { clearImportSaveState } from "@/src/features/import/lib/import-save-state";
 import { resetWifiTransferServer } from "@/src/features/import/lib/import-transfer-reset";
 import { saveImportSongsToLibrary } from "@/src/features/import/lib/save-import-to-library";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
@@ -84,10 +85,12 @@ export function useImportSaveFlow() {
   const handleSavedImport = useCallback(() => {
     sendHaptic("success");
     router.replace("/import/success");
-    setTransferSize(0);
-    setTransferProgress(0);
-    setShowImportAd(false);
-    setResults([]);
+    clearImportSaveState({
+      setResults,
+      setShowImportAd,
+      setTransferProgress,
+      setTransferSize,
+    });
     if (importState === 1) {
       void resetResults();
     }
@@ -118,10 +121,12 @@ export function useImportSaveFlow() {
     setLoading(false);
     sendHaptic("error");
     router.push("/import/failure");
-    setTransferSize(0);
-    setTransferProgress(0);
-    setShowImportAd(false);
-    setResults([]);
+    clearImportSaveState({
+      setResults,
+      setShowImportAd,
+      setTransferProgress,
+      setTransferSize,
+    });
     if (importState === 1) {
       void resetResults();
     }
@@ -164,10 +169,12 @@ export function useImportSaveFlow() {
     sendHaptic("success");
     router.push("/import/success");
     await deleteImportSongs(results);
-    setResults([]);
-    setTransferSize(0);
-    setTransferProgress(0);
-    setShowImportAd(false);
+    clearImportSaveState({
+      setResults,
+      setShowImportAd,
+      setTransferProgress,
+      setTransferSize,
+    });
     finishImport();
     setTimeout(() => {
       setLoading(false);

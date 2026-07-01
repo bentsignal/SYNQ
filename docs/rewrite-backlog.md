@@ -362,6 +362,9 @@ feature-oriented packages.
    - Premium hero media, feature pager placement, logo, and headline copy now
      live in a premium feature component, leaving the premium screen focused on
      modal shell and purchase-flow composition.
+   - Settings index route UI now lives in a settings feature screen component,
+     moving modal chrome, navigation options, review/support actions, social
+     links, analytics events, and dev premium toggle out of the app route.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

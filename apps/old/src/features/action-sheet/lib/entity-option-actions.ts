@@ -3,6 +3,7 @@ import { exportSongs } from "@/src/features/export/lib/export-songs";
 import { posthog } from "@/src/lib/posthog";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { router, type Href } from "expo-router";
+import { Alert } from "react-native";
 
 const ACTION_DELAY = 10;
 const DETAIL_DELETE_DELAY = 300;
@@ -65,4 +66,31 @@ export const deleteAfterLeavingDetail = async (
   }
 
   await executeDelete();
+};
+
+export const confirmEntityDelete = ({
+  sheetName,
+  title,
+  message,
+  isDetailPage,
+  executeDelete,
+}: {
+  sheetName: string;
+  title: string;
+  message: string;
+  isDetailPage: boolean;
+  executeDelete: () => Promise<void>;
+}) => {
+  dismissThen(sheetName, () => {
+    Alert.alert(title, message, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          deleteAfterLeavingDetail(isDetailPage, executeDelete);
+        },
+      },
+    ]);
+  });
 };

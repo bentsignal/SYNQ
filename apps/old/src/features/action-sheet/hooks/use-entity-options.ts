@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import {
-  deleteAfterLeavingDetail,
+  confirmEntityDelete,
   dismissThen,
   exportEntitySongs,
   navigateToEntityEdit,
@@ -20,7 +20,6 @@ import {
 } from "@/src/features/library/repository/library-song-repository";
 import { posthog } from "@/src/lib/posthog";
 import { router } from "expo-router";
-import { Alert } from "react-native";
 
 export function usePlaylistOptions(sheetName: string) {
   const { editPlaylist } = useActionSheetContext();
@@ -64,24 +63,12 @@ export function usePlaylistOptions(sheetName: string) {
   }, [editPlaylist.id]);
 
   const handleDelete = useCallback(() => {
-    dismissThen(sheetName, () => {
-      Alert.alert(
-        "Delete Playlist",
-        `Are you sure you want to delete ${editPlaylist.name ?? "this playlist"}?`,
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Delete",
-            style: "destructive",
-            onPress: () => {
-              deleteAfterLeavingDetail(
-                pageType === PageType.PLAYLIST,
-                executeDelete,
-              );
-            },
-          },
-        ],
-      );
+    confirmEntityDelete({
+      sheetName,
+      title: "Delete Playlist",
+      message: `Are you sure you want to delete ${editPlaylist.name ?? "this playlist"}?`,
+      isDetailPage: pageType === PageType.PLAYLIST,
+      executeDelete,
     });
   }, [editPlaylist.name, executeDelete, pageType, sheetName]);
 
@@ -132,24 +119,12 @@ export function useAlbumOptions(sheetName: string) {
   }, [editAlbum.id]);
 
   const handleDelete = useCallback(() => {
-    dismissThen(sheetName, () => {
-      Alert.alert(
-        "Delete Album",
-        `Are you sure you want to delete ${editAlbum.name ?? "this album"}? (Deleting an album will not remove its songs)`,
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Delete",
-            style: "destructive",
-            onPress: () => {
-              deleteAfterLeavingDetail(
-                pageType === PageType.ALBUM,
-                executeDelete,
-              );
-            },
-          },
-        ],
-      );
+    confirmEntityDelete({
+      sheetName,
+      title: "Delete Album",
+      message: `Are you sure you want to delete ${editAlbum.name ?? "this album"}? (Deleting an album will not remove its songs)`,
+      isDetailPage: pageType === PageType.ALBUM,
+      executeDelete,
     });
   }, [editAlbum.name, executeDelete, pageType, sheetName]);
 
@@ -206,24 +181,12 @@ export function useArtistOptions(sheetName: string) {
   }, [editArtist.id]);
 
   const handleDelete = useCallback(() => {
-    dismissThen(sheetName, () => {
-      Alert.alert(
-        "Delete Artist",
-        `Are you sure you want to delete ${editArtist.name ?? "this artist"}? (Deleting an artist will not remove their songs & albums)`,
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Delete",
-            style: "destructive",
-            onPress: () => {
-              deleteAfterLeavingDetail(
-                pageType === PageType.ARTIST,
-                executeDelete,
-              );
-            },
-          },
-        ],
-      );
+    confirmEntityDelete({
+      sheetName,
+      title: "Delete Artist",
+      message: `Are you sure you want to delete ${editArtist.name ?? "this artist"}? (Deleting an artist will not remove their songs & albums)`,
+      isDetailPage: pageType === PageType.ARTIST,
+      executeDelete,
     });
   }, [editArtist.name, executeDelete, pageType, sheetName]);
 

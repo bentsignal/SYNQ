@@ -1,15 +1,17 @@
 import CFG from "@/src/constants/Config";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  getStoredImportCount,
+  getStoredReviewAlreadyRequested,
+  setStoredImportCount,
+  setStoredReviewAlreadyRequested,
+} from "@/src/features/import/lib/import-review-storage-service";
 import * as StoreReview from "expo-store-review";
-
-const IMPORT_COUNT_KEY = "importCount";
-const REVIEW_ALREADY_REQUESTED_KEY = "reviewAlreadyRequested";
 
 const requestStoreReview = async (): Promise<boolean> => {
   const available = await StoreReview.isAvailableAsync();
   if (available) {
     await StoreReview.requestReview();
-    await AsyncStorage.setItem(REVIEW_ALREADY_REQUESTED_KEY, "true");
+    await setStoredReviewAlreadyRequested();
     return true;
   }
 
@@ -20,10 +22,8 @@ export async function requestImportReviewIfEligible(
   premium: boolean,
 ): Promise<boolean> {
   try {
-    const countStr = await AsyncStorage.getItem(IMPORT_COUNT_KEY);
-    const reviewAlreadyRequested = await AsyncStorage.getItem(
-      REVIEW_ALREADY_REQUESTED_KEY,
-    );
+    const countStr = await getStoredImportCount();
+    const reviewAlreadyRequested = await getStoredReviewAlreadyRequested();
     const requested = reviewAlreadyRequested === "true";
     if (requested) return false;
 
@@ -33,7 +33,7 @@ export async function requestImportReviewIfEligible(
 
     if (countStr) {
       const count = parseInt(countStr) + 1;
-      await AsyncStorage.setItem(IMPORT_COUNT_KEY, count.toString());
+      await setStoredImportCount(count);
       if (count >= CFG.showReviewAfter) {
         return requestStoreReview();
       }
@@ -41,7 +41,7 @@ export async function requestImportReviewIfEligible(
       return false;
     }
 
-    await AsyncStorage.setItem(IMPORT_COUNT_KEY, "1");
+    await setStoredImportCount(1);
     if (CFG.showReviewAfter <= 1) {
       return requestStoreReview();
     }

@@ -1,36 +1,22 @@
 import { useCallback, useState } from "react";
 import { resetBackupDatabaseConnection } from "@/src/features/backup/lib/backup-database-service";
+import {
+  clearBackupDocumentDirectory,
+  createAndShareBackupArchive,
+  restoreBackupArchive,
+} from "@/src/features/backup/lib/backup-file-service";
 import { clearStoredAppState } from "@/src/features/backup/lib/backup-storage-service";
 import { resetPlaybackQueue } from "@/src/features/playback/lib/player-queue-actions-service";
 import { posthog } from "@/src/lib/posthog";
 import * as DocumentPicker from "expo-document-picker";
-import * as FileSystem from "expo-file-system";
 import { router } from "expo-router";
-import * as Sharing from "expo-sharing";
 import { Alert, Linking } from "react-native";
-import { unzip, zip } from "react-native-zip-archive";
 
 const supportUrl = "https://directedbyshawn.com/synq-support";
-
-const getDocumentDirectory = () => {
-  if (!FileSystem.documentDirectory) {
-    throw new Error("Document directory is unavailable.");
-  }
-
-  return FileSystem.documentDirectory;
-};
 
 const wrapError = (message: string, error: unknown) => {
   const details = error instanceof Error ? error.message : String(error);
   return new Error(`${message} ${details}`);
-};
-
-const clearDocumentDirectory = async () => {
-  const documentDirectory = getDocumentDirectory();
-  const items = await FileSystem.readDirectoryAsync(documentDirectory);
-  for (const item of items) {
-    await FileSystem.deleteAsync(`${documentDirectory}${item}`);
-  }
 };
 
 const clearAsyncStorage = async () => {
@@ -72,7 +58,7 @@ export function useBackupActions({ premium }: { premium: boolean }) {
 
   const clearLocalState = useCallback(async () => {
     try {
-      await clearDocumentDirectory();
+      await clearBackupDocumentDirectory();
     } catch (error) {
       throw wrapError("Error clearing document directory:", error);
     }
@@ -111,12 +97,7 @@ export function useBackupActions({ premium }: { premium: boolean }) {
   const handleBackup = useCallback(async () => {
     try {
       setLoading(true);
-      const documentDirectory = getDocumentDirectory();
-      const pathToZip = await zip(
-        documentDirectory,
-        `${documentDirectory}backup.zip`,
-      );
-      await Sharing.shareAsync(pathToZip);
+      await createAndShareBackupArchive();
     } catch {
       showErrorAlert(
         "Failed to backup library. If the error persists, please contact support.",
@@ -141,7 +122,7 @@ export function useBackupActions({ premium }: { premium: boolean }) {
       await clearLocalState();
 
       try {
-        await unzip(result.assets[0].uri, getDocumentDirectory());
+        await restoreBackupArchive(result.assets[0].uri);
       } catch (error) {
         throw wrapError("Error unzipping backup:", error);
       }

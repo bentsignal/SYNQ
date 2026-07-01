@@ -8,6 +8,7 @@ import {
   getPremiumRestoreMessage,
   getSelectedPremiumTierFromProduct,
 } from "@/src/features/premium/lib/premium-products";
+import { getPremiumStatusViewState } from "@/src/features/premium/lib/premium-status-view-state";
 import * as PurchaseManager from "@/src/features/premium/lib/purchase-service";
 import { posthog } from "@/src/lib/posthog";
 import { Alert } from "react-native";
@@ -54,26 +55,30 @@ export function usePremiumPurchaseFlow() {
   }, []);
 
   const updateStatus = useCallback(
-    ({ id, renewal, end, trialAvailable }: PremiumStatus) => {
-      if (id === "") {
-        setActive(false);
-        setSelected(1);
-        if (trialAvailable) {
-          setMonthlyText("Start 1 month free trial");
-          setYearlyText("Start 3 month free trial");
-          setPurchaseText("Start 3 month free trial");
-        }
-        return;
+    (status: PremiumStatus) => {
+      const viewState = getPremiumStatusViewState(status);
+
+      setActive(viewState.active);
+      if (viewState.premium) {
+        setPremium(true);
       }
-
-      setActive(true);
-      setPremium(true);
-      setRenew(renewal);
-      setEnd(end);
-
-      const selectedTier = getSelectedPremiumTierFromProduct(id);
-      if (selectedTier !== undefined) {
-        setSelected(selectedTier);
+      if (viewState.renew !== undefined) {
+        setRenew(viewState.renew);
+      }
+      if (viewState.end !== undefined) {
+        setEnd(viewState.end);
+      }
+      if (viewState.selected !== undefined) {
+        setSelected(viewState.selected);
+      }
+      if (viewState.monthlyText !== undefined) {
+        setMonthlyText(viewState.monthlyText);
+      }
+      if (viewState.yearlyText !== undefined) {
+        setYearlyText(viewState.yearlyText);
+      }
+      if (viewState.purchaseText !== undefined) {
+        setPurchaseText(viewState.purchaseText);
       }
     },
     [setPremium],

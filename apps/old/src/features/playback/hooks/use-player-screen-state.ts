@@ -1,11 +1,11 @@
-import { PageType, SongType } from "@/src/constants/Types";
+import { SongType } from "@/src/constants/Types";
 import {
-  getLuminanceFromImage,
-  getPlayerGradientOpacity,
-} from "@/src/lib/color-utils";
-import { getLibrarySongById } from "@/src/features/library/repository/library-song-repository";
-import { getTrackArtwork } from "@/src/features/playback/lib/track-factory";
-import { getFileName } from "@/src/lib/util";
+  getPlayerArtworkUri,
+  getPlayerBackgroundImage,
+  getPlayerGradientOpacityForTrack,
+  getPlayerSong,
+  getPlayerTrackInfo,
+} from "@/src/features/playback/lib/player-presentation-service";
 import { useAssets } from "expo-asset";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -18,13 +18,6 @@ import {
 import { useActiveTrack } from "react-native-track-player";
 
 const EMPTY_IMAGE = "transparent";
-const BASE_GRADIENT_OPACITY = 0.2;
-
-const getTrackInfo = (track: ReturnType<typeof useActiveTrack>) => ({
-  artist: track?.artist || "",
-  fileName: getFileName(track?.url),
-  title: track?.title || "",
-});
 
 export const usePlayerScreenState = () => {
   const track = useActiveTrack();
@@ -32,7 +25,7 @@ export const usePlayerScreenState = () => {
 
   const [emptyImage, setEmptyImage] = useState<string>(EMPTY_IMAGE);
   const [song, setSong] = useState<SongType | null>(null);
-  const [trackInfo, setTrackInfo] = useState(() => getTrackInfo(track));
+  const [trackInfo, setTrackInfo] = useState(() => getPlayerTrackInfo(track));
 
   const containerOpacity = useSharedValue(0);
   const gradientOpacity = useSharedValue(0.4);
@@ -65,7 +58,7 @@ export const usePlayerScreenState = () => {
   }, [containerOpacity]);
 
   const updateTrackInfo = useCallback(() => {
-    setTrackInfo(getTrackInfo(track));
+    setTrackInfo(getPlayerTrackInfo(track));
     infoOpacity.value = withTiming(1, {
       duration: 250,
       easing: Easing.inOut(Easing.quad),
@@ -86,15 +79,7 @@ export const usePlayerScreenState = () => {
     let cancelled = false;
 
     const hydrateSong = async () => {
-      if (track === undefined) {
-        setSong(null);
-        return;
-      }
-
-      const currentSong = await getLibrarySongById(
-        Number(track.id),
-        PageType.PLAYER,
-      );
+      const currentSong = await getPlayerSong(track);
 
       if (!cancelled) {
         setSong(currentSong);
@@ -112,16 +97,7 @@ export const usePlayerScreenState = () => {
     let cancelled = false;
 
     const setGradientOpacity = async () => {
-      let newGradientOpacity = BASE_GRADIENT_OPACITY;
-
-      if (track && typeof track.artwork === "string") {
-        try {
-          const luminance = await getLuminanceFromImage(track.artwork);
-          newGradientOpacity = getPlayerGradientOpacity(luminance);
-        } catch (error) {
-          console.log(error);
-        }
-      }
+      const newGradientOpacity = await getPlayerGradientOpacityForTrack(track);
 
       if (!cancelled) {
         gradientOpacity.value = withTiming(newGradientOpacity, {
@@ -138,14 +114,10 @@ export const usePlayerScreenState = () => {
     };
   }, [gradientOpacity, track]);
 
-  const artworkUri = getTrackArtwork(track);
+  const artworkUri = getPlayerArtworkUri(track);
   const backgroundImage = useMemo(() => {
-    if (artworkUri !== EMPTY_IMAGE) {
-      return artworkUri;
-    }
-
-    return emptyImage;
-  }, [artworkUri, emptyImage]);
+    return getPlayerBackgroundImage({ emptyImage, track });
+  }, [emptyImage, track]);
 
   return {
     artworkUri,

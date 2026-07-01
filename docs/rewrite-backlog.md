@@ -43,13 +43,17 @@ work already done; this section is the shorter "are we close yet?" dashboard.
 
 ### Phase 3: New App Build-Out
 
-- [ ] Define the `apps/new` feature map before moving more UI.
-  - App shell/navigation
-  - Library
-  - Playback
-  - Import/ingest
-  - Backup/restore
-  - Premium/settings
+- [x] Define the `apps/new` feature map before moving more UI.
+  - App shell/navigation: route shell exists with root stack, tabs, feature
+    stack placeholders, and thin route files.
+  - Library: placeholder route exists; reactive query port is next.
+  - Playback: player and queue placeholders exist; explicit service boundary is
+    next.
+  - Import/ingest: import stack placeholder exists; command orchestration is
+    next.
+  - Backup/restore: still pending as part of settings/backup build-out.
+  - Premium/settings: settings and premium placeholders exist; entitlement and
+    customization ports are next.
 - [ ] Move reusable feature logic from `apps/old` into shared app-local modules
   that `apps/new` can consume without copying UI spaghetti.
 - [ ] Build the `apps/new` screens against reactive Drizzle query hooks instead
@@ -83,9 +87,10 @@ work already done; this section is the shorter "are we close yet?" dashboard.
 
 ### Current Position
 
-We are solidly through Phase 1 and well into Phase 2. The project is not yet in
-the Phase 3 replacement-build stretch: `apps/new` exists, but it is not a full
-replacement app. The next useful work should alternate between:
+We are solidly through Phase 1, well into Phase 2, and starting Phase 3. The
+`apps/new` shell now has a root stack, tabs, modal placeholders, and feature
+boundaries, but it is not yet a replacement app. The next useful work should
+alternate between:
 
 - closing Phase 2 gaps that would otherwise be copied into the new app; and
 - defining/building `apps/new` feature surfaces so cleanup does not become an

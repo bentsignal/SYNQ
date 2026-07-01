@@ -9,6 +9,33 @@ type QueueRefreshActions = {
   resetAddOffset: () => Promise<void>;
 };
 
+const getNextPlayableQueueIndex = async (
+  startIndex: number,
+  queueLength: number,
+) => {
+  let nextIndex = startIndex;
+  let nextTrack = await TrackPlayer.getTrack(nextIndex);
+
+  while (nextTrack?.id === -1 && nextIndex < queueLength) {
+    nextIndex++;
+    nextTrack = await TrackPlayer.getTrack(nextIndex);
+  }
+
+  return nextIndex;
+};
+
+const getPreviousPlayableQueueIndex = async (startIndex: number) => {
+  let nextIndex = startIndex;
+  let nextTrack = await TrackPlayer.getTrack(nextIndex);
+
+  while (nextTrack?.id === -1 && nextIndex >= 0) {
+    nextIndex--;
+    nextTrack = await TrackPlayer.getTrack(nextIndex);
+  }
+
+  return nextIndex;
+};
+
 export const skipToNextPlayableTrack = async ({
   loop,
   sourceType,
@@ -64,12 +91,10 @@ export const skipToNextPlayableTrack = async ({
           resetAddOffset,
         });
       }
-      let nextIndex = currentIndex + 1;
-      let nextTrack = await TrackPlayer.getTrack(nextIndex);
-      while (nextTrack?.id === -1 && nextIndex < queue.length) {
-        nextIndex++;
-        nextTrack = await TrackPlayer.getTrack(nextIndex);
-      }
+      const nextIndex = await getNextPlayableQueueIndex(
+        currentIndex + 1,
+        queue.length,
+      );
       await TrackPlayer.skip(nextIndex);
       await TrackPlayer.play();
     }
@@ -90,12 +115,7 @@ export const skipToPreviousPlayableTrack = async ({
     const progress = await TrackPlayer.getProgress();
     const index = await TrackPlayer.getActiveTrackIndex();
     if (progress.position < 3 && index !== 0 && index !== undefined) {
-      let nextIndex = index - 1;
-      let nextTrack = await TrackPlayer.getTrack(nextIndex);
-      while (nextTrack?.id === -1 && nextIndex >= 0) {
-        nextIndex--;
-        nextTrack = await TrackPlayer.getTrack(nextIndex);
-      }
+      const nextIndex = await getPreviousPlayableQueueIndex(index - 1);
       await TrackPlayer.skip(nextIndex);
       await TrackPlayer.play();
       if (addOffset > 0) await incrementAddOffset();

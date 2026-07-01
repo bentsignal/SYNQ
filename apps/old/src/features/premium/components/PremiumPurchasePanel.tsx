@@ -32,9 +32,7 @@ type PremiumPurchasePanelProps = {
 };
 
 const openURL = (url: string) => {
-  Linking.openURL(url).catch((err) =>
-    console.error("Failed to open URL:", err),
-  );
+  void Linking.openURL(url).catch(() => {});
 };
 
 const getHeart = (theme: string) => {

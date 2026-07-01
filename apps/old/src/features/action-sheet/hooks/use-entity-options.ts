@@ -57,8 +57,8 @@ export function usePlaylistOptions(sheetName: string) {
     try {
       posthog.capture("delete_playlist");
       await deleteLibraryPlaylist(editPlaylist.id);
-    } catch (error) {
-      console.log("error deleting playlist: ", error);
+    } catch {
+      return;
     }
   }, [editPlaylist.id]);
 
@@ -113,8 +113,8 @@ export function useAlbumOptions(sheetName: string) {
     try {
       posthog.capture("delete_album");
       await deleteLibraryAlbum(editAlbum.id);
-    } catch (error) {
-      console.log("error deleting album: ", error);
+    } catch {
+      return;
     }
   }, [editAlbum.id]);
 
@@ -175,8 +175,8 @@ export function useArtistOptions(sheetName: string) {
     try {
       posthog.capture("delete_artist");
       await deleteLibraryArtist(editArtist.id);
-    } catch (error) {
-      console.log("error deleting artist: ", error);
+    } catch {
+      return;
     }
   }, [editArtist.id]);
 

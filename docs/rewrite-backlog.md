@@ -318,6 +318,8 @@ feature-oriented packages.
    - Library and import song sheets now share a song action-sheet presentation
      component, keeping the two sheet wrappers focused on selecting option
      mode instead of duplicating header, cover, scroll, and option layout.
+   - Song sheet header rendering now lives in one action-sheet component shared
+     by the library/import sheets and the player edit sheet route.
    - Song list page covers now receive playlist, album, and artist cover paths
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or

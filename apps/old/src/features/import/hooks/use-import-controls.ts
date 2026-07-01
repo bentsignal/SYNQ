@@ -1,16 +1,15 @@
 import { useCallback, useMemo } from "react";
-import CFG from "@/src/constants/Config";
 import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { getImportControlState } from "@/src/features/import/lib/import-control-state";
 import { removeImportSongs } from "@/src/features/import/lib/import-song-edits";
+import { resetWifiTransferServer } from "@/src/features/import/lib/import-transfer-reset";
 import { deleteLibrarySong } from "@/src/features/library/repository/library-song-repository";
 import usePlayer from "@/src/features/playback/hooks/use-player";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { posthog } from "@/src/lib/posthog";
-import axios from "axios";
 import { router, usePathname } from "expo-router";
 import { Alert } from "react-native";
 
@@ -48,11 +47,7 @@ export function useImportControls() {
   );
 
   const resetResults = useCallback(async () => {
-    try {
-      await axios.get(`http://${ip}${CFG.PORT}/reset`);
-    } catch (error) {
-      console.log("error resetting results: ", error);
-    }
+    await resetWifiTransferServer(ip);
   }, [ip]);
 
   const handleAltPress = useCallback(() => {

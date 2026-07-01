@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef } from "react";
-import CFG from "@/src/constants/Config";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
@@ -7,11 +6,11 @@ import { useImportTransferCompletion } from "@/src/features/import/hooks/use-imp
 import { waitForImportAdCountdown } from "@/src/features/import/lib/import-ad-countdown";
 import { deleteImportSongs } from "@/src/features/import/lib/import-song-edits";
 import { requestImportReviewIfEligible } from "@/src/features/import/lib/import-review-request";
+import { resetWifiTransferServer } from "@/src/features/import/lib/import-transfer-reset";
 import { saveImportSongsToLibrary } from "@/src/features/import/lib/save-import-to-library";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { posthog } from "@/src/lib/posthog";
-import axios from "axios";
 import { router, usePathname } from "expo-router";
 
 export function useImportSaveFlow() {
@@ -56,11 +55,7 @@ export function useImportSaveFlow() {
   }, [pathname]);
 
   const resetResults = useCallback(async () => {
-    try {
-      await axios.get(`http://${ip}${CFG.PORT}/reset`);
-    } catch (error) {
-      console.log("error resetting results: ", error);
-    }
+    await resetWifiTransferServer(ip);
   }, [ip]);
 
   const checkForAd = useCallback(async () => {

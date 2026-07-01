@@ -323,6 +323,9 @@ feature-oriented packages.
    - Playlist, album, and artist action sheets now share an entity sheet
      presentation shell and header, leaving each concrete sheet to supply only
      its selected entity data and option list.
+   - Player screen edit and add-to-playlist commands now live in a playback
+     feature hook, moving action-sheet context writes, haptics, and navigation
+     out of the player route component.
    - Song list page covers now receive playlist, album, and artist cover paths
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or

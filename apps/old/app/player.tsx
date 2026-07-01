@@ -10,11 +10,9 @@ import { SkipLeft, SkipRight } from "@/src/features/playback/components/Skip";
 import Time from "@/src/features/playback/components/Time";
 import SongInfo from "@/src/features/library/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
-import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
+import { usePlayerScreenActions } from "@/src/features/playback/hooks/use-player-screen-actions";
 import { usePlayerScreenState } from "@/src/features/playback/hooks/use-player-screen-state";
-import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import colors from "@/src/lib/colors";
-import { router } from "expo-router";
 import { CirclePlus, Ellipsis } from "lucide-react-native";
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
@@ -23,8 +21,6 @@ import Animated from "react-native-reanimated";
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 const Player = () => {
-  const { setEditSong } = useActionSheetContext();
-  const { sendHaptic } = useHaptics();
   const {
     artworkUri,
     backgroundImage,
@@ -34,25 +30,7 @@ const Player = () => {
     song,
     trackInfo,
   } = usePlayerScreenState();
-
-  const handleMore = () => {
-    if (!song) {
-      return;
-    }
-
-    sendHaptic("light");
-    setEditSong(song);
-    router.push("/player/edit");
-  };
-
-  const handleAddToPlaylist = () => {
-    if (!song) {
-      return;
-    }
-
-    setEditSong(song);
-    router.push("/playlist/add");
-  };
+  const { handleAddToPlaylist, handleMore } = usePlayerScreenActions(song);
 
   return (
     <Animated.View style={[containerStyle, Local.container]}>

@@ -249,6 +249,9 @@ feature-oriented packages.
    - Backup restore/erase database reset now uses the shared `@synq/db` reset
      helper instead of the legacy `Model`; `apps/old/src/models` has been
      removed.
+   - Backup, restore, erase, support-alert, and premium navigation side
+     effects now live in a backup feature hook, leaving
+     `app/settings/backup.tsx` as a slimmer settings route.
    - The unused legacy `SongResultType` row shape and song result mapper have
      been removed after the model/controller callers disappeared.
    - Album edit artist relation refresh now keys off focus refresh and

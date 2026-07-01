@@ -1,4 +1,3 @@
-import { useState } from "react";
 import CustomButton from "@/src/shared/components/CustomButton";
 import Loading from "@/src/shared/components/Loading";
 import Bar from "@/src/shared/components/modals/Bar";
@@ -9,212 +8,19 @@ import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import { resetBackupDatabaseConnection } from "@/src/features/backup/lib/backup-database-service";
-import { posthog } from "@/src/lib/posthog";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as DocumentPicker from "expo-document-picker";
-import * as FileSystem from "expo-file-system";
-import { router } from "expo-router";
-import usePlayer from "@/src/features/playback/hooks/use-player";
-import * as Sharing from "expo-sharing";
-import {
-  Alert,
-  Linking,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { unzip, zip } from "react-native-zip-archive";
+import { useBackupActions } from "@/src/features/backup/hooks/use-backup-actions";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function Backup() {
   const { theme } = useThemeContext();
   const { premium } = usePremiumContext();
-  const { resetPlayer } = usePlayer();
-
-  const [loading, setLoading] = useState(false);
-
-  const getDocumentDirectory = () => {
-    if (!FileSystem.documentDirectory) {
-      throw new Error("Document directory is unavailable.");
-    }
-
-    return FileSystem.documentDirectory;
-  };
-
-  const wrapError = (message: string, error: unknown) => {
-    const details = error instanceof Error ? error.message : String(error);
-    return new Error(`${message} ${details}`);
-  };
-
-  const clearDocumentDirectory = async () => {
-    const documentDirectory = getDocumentDirectory();
-    const items = await FileSystem.readDirectoryAsync(documentDirectory);
-    for (const item of items) {
-      await FileSystem.deleteAsync(`${documentDirectory}${item}`);
-    }
-  };
-
-  const clearAsyncStorage = async () => {
-    await AsyncStorage.clear();
-  };
-
-  const resetDB = async () => {
-    await resetBackupDatabaseConnection();
-  };
-
-  const handleBackup = async () => {
-    try {
-      setLoading(true);
-      const documentDirectory = getDocumentDirectory();
-      const pathToZip = await zip(
-        documentDirectory,
-        `${documentDirectory}backup.zip`,
-      );
-      await Sharing.shareAsync(pathToZip);
-    } catch (error) {
-      console.log("Error backing up library:", error);
-      showErrorAlert(
-        `Failed to backup library. If the error persists, please contact support.`,
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRestore = async () => {
-    try {
-      setLoading(true);
-      const result = await DocumentPicker.getDocumentAsync({
-        type: "application/zip",
-        copyToCacheDirectory: true,
-      });
-      if (!result.canceled) {
-        try {
-          await clearDocumentDirectory();
-        } catch (error) {
-          throw wrapError("Error clearing document directory:", error);
-        }
-        try {
-          await clearAsyncStorage();
-        } catch (error) {
-          throw wrapError("Error clearing async storage:", error);
-        }
-        try {
-          await unzip(result.assets[0].uri, getDocumentDirectory());
-        } catch (error) {
-          throw wrapError("Error unzipping backup:", error);
-        }
-        try {
-          await resetDB();
-        } catch (error) {
-          throw wrapError("Error reconnecting to db:", error);
-        }
-        try {
-          await resetPlayer();
-        } catch (error) {
-          throw wrapError("Error resetting track player:", error);
-        }
-        Alert.alert("Success", "Library restored successfully.");
-        setLoading(false);
-        router.replace({
-          pathname: "/(tabs)/library",
-          params: {
-            category: "songs",
-            resetKey: Date.now().toString(),
-          },
-        });
-      }
-    } catch (error) {
-      console.log("Error restoring backup:", error);
-      showErrorAlert(
-        `Failed to restore backup. If the error persists, please contact support.`,
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const eraseLibrary = async () => {
-    try {
-      Alert.alert(
-        "Warning",
-        "Are you sure you want to erase your library? This action cannot be undone.",
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-          {
-            text: "Erase",
-            style: "destructive",
-            onPress: async () => {
-              setLoading(true);
-              try {
-                try {
-                  await clearDocumentDirectory();
-                } catch (error) {
-                  throw wrapError("Error clearing document directory:", error);
-                }
-                try {
-                  await clearAsyncStorage();
-                } catch (error) {
-                  throw wrapError("Error clearing async storage:", error);
-                }
-                try {
-                  await resetDB();
-                } catch (error) {
-                  throw wrapError("Error reconnecting to db:", error);
-                }
-                try {
-                  await resetPlayer();
-                } catch (error) {
-                  throw wrapError("Error resetting track player:", error);
-                }
-                Alert.alert("Success", "Library erased successfully.");
-                setLoading(false);
-                router.replace({
-                  pathname: "/(tabs)/library",
-                  params: {
-                    category: "songs",
-                    resetKey: Date.now().toString(),
-                  },
-                });
-              } catch (error) {
-                console.log("Error resetting app:", error);
-                showErrorAlert(
-                  `Failed to reset app. If the error persists, please contact support.`,
-                );
-              }
-            },
-          },
-        ],
-      );
-    } catch (error) {
-      console.log("Error erasing library:", error);
-      showErrorAlert(
-        `Failed to erase library. If the error persists, please contact support.`,
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const showErrorAlert = (message: string) => {
-    Alert.alert("Error", message, [
-      {
-        text: "Dismiss",
-        style: "cancel",
-      },
-      {
-        text: "Contact Support",
-        style: "default",
-        onPress: () => {
-          Linking.openURL("https://directedbyshawn.com/synq-support");
-        },
-      },
-    ]);
-  };
+  const {
+    eraseLibrary,
+    handleBackup,
+    handlePremiumPress,
+    handleRestore,
+    loading,
+  } = useBackupActions({ premium });
 
   return (
     <View style={[Styles.body, Local.container]}>
@@ -233,12 +39,7 @@ export default function Backup() {
               icon={require("@/src/assets/icons/premium.png")}
               containerClass="bg-card"
               iconTint={theme}
-              handlePress={() => {
-                posthog.capture("check_premium", {
-                  premium: premium,
-                });
-                router.push("/premium");
-              }}
+              handlePress={handlePremiumPress}
             />
           )}
           <View style={Local.contentContainer}>

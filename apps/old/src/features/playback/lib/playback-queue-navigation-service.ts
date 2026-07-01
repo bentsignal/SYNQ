@@ -66,16 +66,17 @@ export const skipToNextPlayableTrack = async ({
     const currentIndex = await TrackPlayer.getActiveTrackIndex();
     if (currentIndex === undefined) {
       sendPlaybackError("error");
-      return;
+      return false;
     }
 
     if (currentIndex >= queue.length - 1 && !loop) {
       sendPlaybackError("error");
+      return false;
     } else {
       if (currentIndex >= queue.length - 1 && loop) {
         if (sourceType === null || sourceId === null) {
           sendPlaybackError("error");
-          return;
+          return false;
         }
 
         await updateUpcomingQueue({
@@ -99,8 +100,9 @@ export const skipToNextPlayableTrack = async ({
       await TrackPlayer.play();
     }
     await decrementAddOffset();
-  } catch (error) {
-    console.log("error skipping right: ", error);
+    return true;
+  } catch {
+    return false;
   }
 };
 
@@ -122,7 +124,8 @@ export const skipToPreviousPlayableTrack = async ({
     } else {
       await TrackPlayer.seekTo(0);
     }
-  } catch (error) {
-    console.log("error skipping left: ", error);
+    return true;
+  } catch {
+    return false;
   }
 };

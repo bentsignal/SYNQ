@@ -106,6 +106,12 @@ export const handlePlaybackRemoteEvent = ({
 }: PlaybackRemoteEventCommandArgs) => {
   const skipRight = getSkipRightCommand(args);
   const skipLeft = getSkipLeftCommand(args);
+  const skipRightRemoteCommand = async () => {
+    await skipRight();
+  };
+  const skipLeftRemoteCommand = async () => {
+    await skipLeft();
+  };
 
   switch (event.type) {
     case Event.RemotePlay:
@@ -115,10 +121,10 @@ export const handlePlaybackRemoteEvent = ({
       void pausePlayback();
       break;
     case Event.RemoteNext:
-      void args.runAdGatedPlaybackCommand({ command: skipRight });
+      void args.runAdGatedPlaybackCommand({ command: skipRightRemoteCommand });
       break;
     case Event.RemotePrevious:
-      void args.runAdGatedPlaybackCommand({ command: skipLeft });
+      void args.runAdGatedPlaybackCommand({ command: skipLeftRemoteCommand });
       break;
     case Event.RemoteSeek:
       if (!args.adPlaying) {

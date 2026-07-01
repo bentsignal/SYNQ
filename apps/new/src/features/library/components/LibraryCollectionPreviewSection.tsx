@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Link } from "expo-router";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { LibraryCollectionPreview } from "../hooks/use-library-collection-preview-query";
 
 type LibraryCollectionPreviewSectionProps = {
@@ -27,6 +28,18 @@ const sections: {
     title: "Artists",
   },
 ];
+
+const getCollectionHref = (collection: LibraryCollectionPreview) => {
+  switch (collection.kind) {
+    case "albums":
+      return `/(tabs)/library/album/${collection.id}` as const;
+    case "artists":
+      return `/(tabs)/library/artist/${collection.id}` as const;
+    case "playlists":
+    default:
+      return `/(tabs)/library/playlist/${collection.id}` as const;
+  }
+};
 
 export function LibraryCollectionPreviewSection({
   collections,
@@ -57,20 +70,23 @@ export function LibraryCollectionPreviewSection({
                   <Text style={styles.placeholder}>None yet</Text>
                 ) : (
                   collections[section.key].map((collection) => (
-                    <View
+                    <Link
+                      asChild
+                      href={getCollectionHref(collection)}
                       key={`${collection.kind}-${collection.id}`}
-                      style={styles.row}
                     >
-                      <View style={styles.rowText}>
-                        <Text numberOfLines={1} style={styles.title}>
-                          {collection.title}
-                        </Text>
-                        <Text numberOfLines={1} style={styles.meta}>
-                          {collection.meta}
-                        </Text>
-                      </View>
-                      <Text style={styles.detail}>{collection.detail}</Text>
-                    </View>
+                      <Pressable style={styles.row}>
+                        <View style={styles.rowText}>
+                          <Text numberOfLines={1} style={styles.title}>
+                            {collection.title}
+                          </Text>
+                          <Text numberOfLines={1} style={styles.meta}>
+                            {collection.meta}
+                          </Text>
+                        </View>
+                        <Text style={styles.detail}>{collection.detail}</Text>
+                      </Pressable>
+                    </Link>
                   ))
                 )}
               </View>

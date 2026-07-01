@@ -2,7 +2,7 @@ import { SortOrder, SortType, SourceType } from "@/src/constants/Types";
 import { persistPlaybackQueue } from "@/src/features/playback/lib/playback-queue-persistence-service";
 import { getNextUp } from "@/src/features/playback/lib/playback-queue-service";
 import { getTrackFromSong } from "@/src/features/playback/lib/track-factory";
-import TrackPlayer, { State, Track } from "react-native-track-player";
+import TrackPlayer, { Track } from "react-native-track-player";
 
 type SendPlaybackError = (type: "error") => void;
 
@@ -84,30 +84,6 @@ export const removeTracksBySongIds = async (songIds: number[]) => {
 export const resetPlaybackQueue = async () => {
   await TrackPlayer.reset();
   await persistPlaybackQueue();
-};
-
-export const playPlayback = async () => {
-  await TrackPlayer.play();
-};
-
-export const pausePlayback = async () => {
-  await TrackPlayer.pause();
-};
-
-export const skipToNextQueueTrack = async () => {
-  await TrackPlayer.skipToNext();
-};
-
-export const seekToPlaybackPosition = async (position: number) => {
-  await TrackPlayer.seekTo(position);
-};
-
-export const togglePlaybackState = async (currentState: State) => {
-  if ([State.Paused, State.Ready].includes(currentState)) {
-    await TrackPlayer.play();
-  } else {
-    await TrackPlayer.pause();
-  }
 };
 
 export const skipToNextPlayableTrack = async ({

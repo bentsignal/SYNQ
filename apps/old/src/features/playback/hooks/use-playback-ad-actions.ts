@@ -5,7 +5,7 @@ import {
   setPlaybackStorageBoolean,
   setPlaybackStorageNumber,
 } from "@/src/features/playback/lib/playback-storage-service";
-import { skipToNextQueueTrack } from "@/src/features/playback/lib/player-queue-actions-service";
+import { skipToNextQueueTrack } from "@/src/features/playback/lib/playback-transport-service";
 import { useCallback } from "react";
 
 export const usePlaybackAdActions = () => {

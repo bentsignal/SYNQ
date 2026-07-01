@@ -15,17 +15,19 @@ import {
 import {
   addTrackToQueue,
   moveQueueTrack,
-  pausePlayback,
-  playPlayback,
   playTrackNow,
   removeTracksBySongIds,
   resetPlaybackQueue,
-  seekToPlaybackPosition,
   skipToNextPlayableTrack,
   skipToPreviousPlayableTrack,
-  togglePlaybackState,
   updateUpcomingQueue,
 } from "@/src/features/playback/lib/player-queue-actions-service";
+import {
+  pausePlayback,
+  playPlayback,
+  seekToPlaybackPosition,
+  togglePlaybackState,
+} from "@/src/features/playback/lib/playback-transport-service";
 import { setupPlayer as setupTrackPlayer } from "@/src/features/playback/lib/player-setup-service";
 import { getTrackFromSong } from "@/src/features/playback/lib/track-factory";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";

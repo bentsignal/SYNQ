@@ -2,9 +2,9 @@ import {
   usePlaybackModeContext,
   usePlaybackQueueRefreshContext,
 } from "@/src/features/playback/context/PlaybackProvider";
-import usePlayer from "@/src/features/playback/hooks/use-player";
 import { getActiveQueueTrackIndex } from "@/src/features/playback/lib/playback-queue-read-service";
 import { getPlaybackQueueDisplaySongs } from "@/src/features/playback/lib/playback-queue-display";
+import { moveQueueTrack } from "@/src/features/playback/lib/player-queue-actions-service";
 import { SongType } from "@/src/constants/Types";
 import { check } from "@/src/lib/util";
 import { type MutableRefObject, useCallback, useEffect, useState } from "react";
@@ -26,7 +26,6 @@ export const usePlaybackQueueDisplay = ({
 }: PlaybackQueueDisplayParams) => {
   const { shuffle } = usePlaybackModeContext();
   const { queueRevision } = usePlaybackQueueRefreshContext();
-  const { moveQueueSong } = usePlayer();
   const track = useActiveTrack();
 
   const [songs, setSongs] = useState<SongType[]>([]);
@@ -72,7 +71,7 @@ export const usePlaybackQueueDisplay = ({
 
   const onDragEnd = async ({ data, from, to }: DragEndParams<any>) => {
     setSongs(data);
-    await moveQueueSong(from, to);
+    await moveQueueTrack(from, to);
   };
 
   return {

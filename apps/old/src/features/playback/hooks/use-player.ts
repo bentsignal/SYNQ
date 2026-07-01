@@ -12,7 +12,6 @@ import {
   usePlaybackSourceContext,
 } from "@/src/features/playback/context/PlaybackProvider";
 import {
-  moveQueueTrack,
   removeTracksBySongIds,
   resetPlaybackQueue,
 } from "@/src/features/playback/lib/player-queue-actions-service";
@@ -56,10 +55,6 @@ export default function usePlayer() {
       addOffset,
       incrementAddOffset,
     });
-  };
-
-  const moveQueueSong = async (from: number, to: number) => {
-    await moveQueueTrack(from, to);
   };
 
   const removeSongsFromQueue = async (songIds: number[]) => {
@@ -116,7 +111,6 @@ export default function usePlayer() {
   return {
     setupPlayer,
     addSongToQueue,
-    moveQueueSong,
     pausePlayer,
     playPlayer,
     playSong,

@@ -5,14 +5,13 @@ import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
 import { useImportTransferCompletion } from "@/src/features/import/hooks/use-import-transfer-completion";
 import { deleteImportSongs } from "@/src/features/import/lib/import-song-edits";
+import { requestImportReviewIfEligible } from "@/src/features/import/lib/import-review-request";
 import { saveImportSongsToLibrary } from "@/src/features/import/lib/save-import-to-library";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { posthog } from "@/src/lib/posthog";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { router, usePathname } from "expo-router";
-import * as StoreReview from "expo-store-review";
 
 export function useImportSaveFlow() {
   const {
@@ -63,41 +62,6 @@ export function useImportSaveFlow() {
     }
   }, [ip]);
 
-  const callReview = useCallback(async () => {
-    const available = await StoreReview.isAvailableAsync();
-    if (available) {
-      await StoreReview.requestReview();
-      await AsyncStorage.setItem("reviewAlreadyRequested", "true");
-    }
-  }, []);
-
-  const checkForReview = useCallback(async () => {
-    try {
-      const countStr = await AsyncStorage.getItem("importCount");
-      const reviewAlreadyRequested = await AsyncStorage.getItem(
-        "reviewAlreadyRequested",
-      );
-      const requested = reviewAlreadyRequested === "true";
-      if (requested) return;
-      if (premium) {
-        await callReview();
-      } else if (countStr) {
-        const count = parseInt(countStr) + 1;
-        await AsyncStorage.setItem("importCount", count.toString());
-        if (count >= CFG.showReviewAfter) {
-          await callReview();
-        }
-      } else {
-        await AsyncStorage.setItem("importCount", "1");
-        if (CFG.showReviewAfter <= 1) {
-          await callReview();
-        }
-      }
-    } catch (error) {
-      console.log("Error requesting app store review:", error);
-    }
-  }, [callReview, premium]);
-
   const checkForAd = useCallback(async () => {
     if (!premium && showImportAd) {
       setShowGlobalProgress(false);
@@ -136,9 +100,9 @@ export function useImportSaveFlow() {
 
   const finishImport = useCallback(() => {
     setTimeout(() => {
-      void checkForReview();
+      void requestImportReviewIfEligible(premium);
     }, 500);
-  }, [checkForReview]);
+  }, [premium]);
 
   const handleSavedImport = useCallback(() => {
     sendHaptic("success");

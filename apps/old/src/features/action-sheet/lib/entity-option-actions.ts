@@ -46,8 +46,8 @@ export const exportEntitySongs = async ({
     setShowGlobalLoading(true);
     const songs = await loadSongs();
     await exportSongs(songs);
-  } catch (error) {
-    console.log("error exporting song: ", error);
+  } catch {
+    return;
   } finally {
     setShowGlobalLoading(false);
   }

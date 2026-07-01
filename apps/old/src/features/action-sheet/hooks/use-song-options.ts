@@ -1,18 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
+import { executeSongDeleteAction } from "@/src/features/action-sheet/lib/song-delete-action";
 import { getSongOptionVisibility } from "@/src/features/action-sheet/lib/song-option-visibility";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { exportSongs } from "@/src/features/export/lib/export-songs";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
-import { removeImportSongs } from "@/src/features/import/lib/import-song-edits";
 import {
   addSongToLibraryPlaylist,
   isSongInLibraryPlaylist,
   removeSongFromLibraryPlaylist,
 } from "@/src/features/library/repository/library-entity-repository";
-import { deleteLibrarySong } from "@/src/features/library/repository/library-song-repository";
 import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
 import usePlayer from "@/src/features/playback/hooks/use-player";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
@@ -95,33 +94,19 @@ export function useSongOptions(sheetName: string, library: boolean) {
   ]);
 
   const executeDelete = useCallback(async () => {
-    posthog.capture("delete_song");
-
-    if (selectedSongs.length > 0) {
-      const newResults = await removeImportSongs(results, selectedSongs);
-      if (newResults.length <= 0) {
-        setExportDisabled(true);
-        router.replace("/(tabs)");
-      }
-      setResults(newResults);
-    } else if (editSong.pageType === PageType.LIBRARY) {
-      await deleteLibrarySong(editSong.id);
-      await removeSongsFromQueue([editSong.id]);
-      setNumModified((modified) => modified + 1);
-    } else if (editSong.pageType === PageType.IMPORT) {
-      const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id];
-      const newResults = await removeImportSongs(results, ids);
-      if (newResults.length <= 0) {
-        setExportDisabled(true);
-      }
-      if (newResults.length === 0) {
-        router.replace("/(tabs)");
-      }
-      setResults(newResults);
-    }
+    await executeSongDeleteAction({
+      editSong,
+      results,
+      selectedSongIds: selectedSongs,
+      removeSongsFromQueue,
+      setExportDisabled,
+      setResults,
+      onLibrarySongDeleted: () => {
+        setNumModified((modified) => modified + 1);
+      },
+    });
   }, [
-    editSong.id,
-    editSong.pageType,
+    editSong,
     removeSongsFromQueue,
     results,
     selectedSongs,

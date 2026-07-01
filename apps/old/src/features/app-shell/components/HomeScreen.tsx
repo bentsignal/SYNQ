@@ -1,43 +1,30 @@
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
 import InfoModal from "@/src/features/app-shell/components/InfoModal";
-import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
-import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
-import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
-import { useIngestStore } from "@/src/features/ingest/hooks/use-ingest";
+import { useHomeScreenActions } from "@/src/features/app-shell/hooks/use-home-screen-actions";
 import Notifications from "@/src/features/notifications/components/Notifications";
 import MiniPlayer from "@/src/features/playback/components/MiniPlayer";
-import { useHomePlaybackEffects } from "@/src/features/playback/hooks/use-home-playback-effects";
-import { usePremiumContext } from "@/src/features/premium/context/PremiumProvider";
-import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import { posthog } from "@/src/lib/posthog";
 import Option from "@/src/shared/components/Option";
 import PageTitle from "@/src/shared/components/PageTitle";
 import SettingsButton from "@/src/shared/components/SettingsButton";
-import { router } from "expo-router";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 
 const HomeScreen = () => {
-  const { setLoading, setResults } = useImportFlowContext();
-
-  const { setShowInfoModal } = useAppShellContext();
-  const { setShowImportAd } = useGlobalProgressContext();
-
-  const { theme } = useThemeContext();
-  const { premium } = usePremiumContext();
-
-  const ingestFromFileBrowser = useIngestStore(
-    (state) => state.ingestFromFileBrowser,
-  );
-
-  useHomePlaybackEffects();
+  const {
+    importFromFiles,
+    importFromNetwork,
+    openPremium,
+    premium,
+    showInfo,
+    theme,
+  } = useHomeScreenActions();
 
   return (
     <View style={Styles.body}>
       <InfoModal />
       <PageTitle
         title="Home"
-        infoHandler={() => setShowInfoModal(true)}
+        infoHandler={showInfo}
         rightHandComponent={<SettingsButton />}
       />
       <ScrollView
@@ -57,12 +44,7 @@ const HomeScreen = () => {
               title="Premium"
               desc={premium ? "Manage your subcription" : "Unlock all features"}
               icon={require("@/src/assets/icons/premium.png")}
-              handlePress={() => {
-                posthog.capture("check_premium", {
-                  premium: premium,
-                });
-                router.push("/premium");
-              }}
+              handlePress={openPremium}
               iconTint={theme}
             />
           </>
@@ -80,23 +62,13 @@ const HomeScreen = () => {
           title="Files"
           desc="Import from your files"
           icon={require("@/src/assets/icons/folder.png")}
-          handlePress={() => {
-            ingestFromFileBrowser();
-          }}
+          handlePress={importFromFiles}
         />
         <Option
           title="Network"
           desc="Import from your computer"
           icon={require("@/src/assets/icons/wifi.png")}
-          handlePress={() => {
-            setLoading(true);
-            posthog.capture("import_wifi");
-            router.push("/import/wifi");
-            setTimeout(() => {
-              setResults([]);
-              setShowImportAd(true);
-            }, 10);
-          }}
+          handlePress={importFromNetwork}
         />
       </ScrollView>
       <MiniPlayer />

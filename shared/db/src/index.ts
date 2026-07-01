@@ -16,8 +16,8 @@ export let db = drizzle(expo);
 export const resetDatabaseConnection = async () => {
   try {
     await db.$client.closeAsync();
-  } catch (error) {
-    console.log("Error closing database before reset:", error);
+  } catch {
+    // Reset can continue if the previous SQLite handle was already closed.
   }
 
   expo = openSynqDatabase();

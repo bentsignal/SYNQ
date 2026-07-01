@@ -1,4 +1,4 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getStoredAnalyticsPreference } from "@/src/features/privacy/lib/analytics-preference-storage-service";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 type PrivacyContextValue = {
@@ -27,7 +27,7 @@ export const PrivacyProvider = ({ children }: PrivacyProviderProps) => {
 
   useEffect(() => {
     const loadAllowAnalytics = async () => {
-      const storedValue = await AsyncStorage.getItem("allowAnalytics");
+      const storedValue = await getStoredAnalyticsPreference();
 
       if (storedValue !== null) {
         setAllowAnalytics(storedValue === "true");

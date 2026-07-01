@@ -20,6 +20,8 @@ export const useEditCoverSource = ({
   type,
 }: UseEditCoverSourceOptions) => {
   const opacityRef = useRef(new Animated.Value(0)).current;
+  const mountedRef = useRef(true);
+  const loadVersionRef = useRef(0);
   const [src, setSrc] = useState(image ? image : transparentEditCoverSource);
   const [loaded, setLoaded] = useState(false);
 
@@ -31,38 +33,57 @@ export const useEditCoverSource = ({
     }).start();
   }, [opacityRef]);
 
-  const getImage = useCallback(async () => {
+  const showImage = useCallback(
+    (nextSource: string, loadVersion: number) => {
+      if (!mountedRef.current || loadVersion !== loadVersionRef.current) {
+        return;
+      }
+
+      setSrc(nextSource);
+      revealImage();
+    },
+    [revealImage],
+  );
+
+  const showFallbackImage = useCallback(
+    (loadVersion: number) => {
+      showImage(transparentEditCoverSource, loadVersion);
+    },
+    [showImage],
+  );
+
+  const getImage = useCallback(async (loadVersion: number) => {
     try {
       if (image) {
-        setSrc(image);
-        revealImage();
+        showImage(image, loadVersion);
         return;
       }
 
       if (id === undefined) {
-        setSrc(transparentEditCoverSource);
-        revealImage();
+        showFallbackImage(loadVersion);
         return;
       }
 
       if (type === CoverType.SONG) {
         const path = await getLibrarySongCoverPath(id);
-        setSrc(path ? path : transparentEditCoverSource);
+        showImage(path ? path : transparentEditCoverSource, loadVersion);
       } else {
-        setSrc(transparentEditCoverSource);
+        showFallbackImage(loadVersion);
       }
-      revealImage();
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      if (!message.includes("folder")) {
-        console.log("error getting cover image for edit cover:", message);
-      }
-      revealImage();
+    } catch {
+      showFallbackImage(loadVersion);
     }
-  }, [id, image, revealImage, type]);
+  }, [id, image, showFallbackImage, showImage, type]);
 
   useLayoutEffect(() => {
-    void getImage();
+    mountedRef.current = true;
+    loadVersionRef.current += 1;
+    const loadVersion = loadVersionRef.current;
+    void getImage(loadVersion);
+
+    return () => {
+      mountedRef.current = false;
+    };
   }, [getImage]);
 
   const handleLoad = useCallback(() => {

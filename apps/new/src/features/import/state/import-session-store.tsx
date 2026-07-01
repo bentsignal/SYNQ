@@ -10,6 +10,7 @@ import {
   discardImportSession,
   saveImportSessionToLibrary,
 } from "../services/import-library-save-service";
+import { clearImportCache, selectImportFiles } from "../services/import-file-service";
 import type {
   ImportSaveSummary,
   ImportSessionState,
@@ -36,6 +37,7 @@ type ImportSessionCommands = {
   resetSession: () => void;
   reviewSongs: (songs: ImportSongDraft[]) => void;
   saveImportSession: () => Promise<boolean>;
+  startFileImport: () => Promise<boolean>;
   setShouldSaveToLibrary: (shouldSaveToLibrary: boolean) => void;
 };
 
@@ -155,6 +157,36 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
   const reviewSongs = useCallback((songs: ImportSongDraft[]) => {
     dispatch({ songs, type: "review" });
   }, []);
+  const startFileImport = useCallback(async () => {
+    dispatch({ type: "begin-file-pick" });
+
+    try {
+      const { drafts, skipped } = await selectImportFiles();
+
+      if (drafts.length === 0) {
+        dispatch({
+          error:
+            skipped > 0
+              ? "No selected songs could be staged for import."
+              : "File selection was cancelled.",
+          type: "fail",
+        });
+        return false;
+      }
+
+      dispatch({ songs: drafts, type: "review" });
+      return true;
+    } catch (caughtError) {
+      dispatch({
+        error:
+          caughtError instanceof Error
+            ? caughtError.message
+            : "Files could not be selected.",
+        type: "fail",
+      });
+      return false;
+    }
+  }, []);
   const removeImportSongs = useCallback((songIds: number[]) => {
     dispatch({ songIds, type: "remove-songs" });
   }, []);
@@ -189,6 +221,7 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
     }
   }, [state.shouldSaveToLibrary, state.songs]);
   const discardSession = useCallback(() => {
+    void clearImportCache();
     dispatch({ type: "discard" });
   }, []);
   const resetSession = useCallback(() => {
@@ -205,6 +238,7 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
       resetSession,
       reviewSongs,
       saveImportSession,
+      startFileImport,
       setShouldSaveToLibrary,
       state,
     }),
@@ -217,6 +251,7 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
       resetSession,
       reviewSongs,
       saveImportSession,
+      startFileImport,
       setShouldSaveToLibrary,
       state,
     ],

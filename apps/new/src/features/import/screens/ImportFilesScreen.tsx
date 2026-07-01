@@ -3,12 +3,9 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { ImportSongPreviewList } from "../components/ImportSongPreviewList";
 import { useImportSession } from "../hooks/use-import-session";
 
-const unavailableFilePickerMessage =
-  "File selection is ready for native picker integration.";
-
 export function ImportFilesScreen() {
-  const { beginFilePick, failSession, removeImportSongs, state } =
-    useImportSession();
+  const { removeImportSongs, startFileImport, state } = useImportSession();
+  const isWorking = state.phase === "picking" || state.phase === "processing";
 
   return (
     <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
@@ -22,14 +19,16 @@ export function ImportFilesScreen() {
 
       <Pressable
         accessibilityRole="button"
-        onPress={() => {
-          beginFilePick();
-          failSession(unavailableFilePickerMessage);
-          router.push("/import/failure");
+        disabled={isWorking}
+        onPress={async () => {
+          const staged = await startFileImport();
+          router.push(staged ? "/import/save" : "/import/failure");
         }}
-        style={styles.primaryButton}
+        style={[styles.primaryButton, isWorking ? styles.disabled : null]}
       >
-        <Text style={styles.primaryButtonText}>Choose songs</Text>
+        <Text style={styles.primaryButtonText}>
+          {isWorking ? "Choosing" : "Choose songs"}
+        </Text>
       </Pressable>
 
       <ImportSongPreviewList
@@ -96,6 +95,9 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
+  },
+  disabled: {
+    opacity: 0.5,
   },
   actionRow: {
     flexDirection: "row",

@@ -252,6 +252,9 @@ feature-oriented packages.
    - Backup, restore, erase, support-alert, and premium navigation side
      effects now live in a backup feature hook, leaving
      `app/settings/backup.tsx` as a slimmer settings route.
+   - Premium screen purchase bootstrapping, RevenueCat purchase/restore
+     actions, notifications, haptics, and loading state now live in a premium
+     feature hook, leaving `app/premium.tsx` focused on rendering.
    - The unused legacy `SongResultType` row shape and song result mapper have
      been removed after the model/controller callers disappeared.
    - Album edit artist relation refresh now keys off focus refresh and

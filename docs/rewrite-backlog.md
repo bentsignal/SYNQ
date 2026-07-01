@@ -432,6 +432,8 @@ feature-oriented packages.
    - Root layout now delegates bootstrapping and provider composition to
      app-shell feature code, leaving the Expo route file responsible only for
      global CSS import and rendering the app root.
+   - Removed the fully commented legacy tracking route and its unused tracking
+     transparency dependency from the old app package.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

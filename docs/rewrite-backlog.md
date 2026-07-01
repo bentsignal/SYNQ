@@ -421,6 +421,8 @@ feature-oriented packages.
    - Player and player song-edit routes now delegate to playback feature screen
      components, keeping modal player composition, track actions, and song
      sheet presentation out of the app route layer.
+   - Root tab route layout now delegates to an app-shell feature shell
+     component, while playback ad asset loading moved into a playback hook.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

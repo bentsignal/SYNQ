@@ -426,6 +426,9 @@ feature-oriented packages.
    - Ingest stack layout and route screens now delegate to ingest feature
      components, removing the route-layout dependency on controls exported from
      sibling route files while preserving the current ingest flow behavior.
+   - Root navigation route now delegates to an app-shell navigation component,
+     keeping stack screen configuration and modal presentation options out of
+     the app route layer.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

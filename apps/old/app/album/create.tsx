@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo } from "react";
 import EditCover from "@/src/features/cover/components/EditCover";
 import CustomButton from "@/src/shared/components/CustomButton";
 import Bar from "@/src/shared/components/modals/Bar";
@@ -6,13 +6,9 @@ import ModalStyles from "@/src/shared/components/modals/Styles";
 import Notifications from "@/src/features/notifications/components/Notifications";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { CoverType, NotificationType } from "@/src/constants/Types";
-import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
+import { CoverType } from "@/src/constants/Types";
+import { useCreateAlbumForm } from "@/src/features/library/hooks/use-create-library-entity-form";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import { pickCoverImage } from "@/src/features/images/repository/image-repository";
-import { createLibraryAlbum } from "@/src/features/library/repository/library-entity-repository";
-import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
-import { router } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -20,43 +16,18 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const MemoTextInput = memo(TextInput);
 
 const CreateAlbum = () => {
-  const { addNotification } = useNotificationsContext();
-
-  const { sendHaptic } = useHaptics();
-
   const { theme } = useThemeContext();
-
-  const [name, setName] = useState("");
-  const [year, setYear] = useState<number | undefined>();
-  const [image, setImage] = useState<string | undefined>();
+  const {
+    handleCancel,
+    handleCreate,
+    handleUpdateImage,
+    image,
+    name,
+    setName,
+    setYearFromText,
+    year,
+  } = useCreateAlbumForm();
   const insets = useSafeAreaInsets();
-
-  const handleUpdateImage = async () => {
-    const cover = await pickCoverImage();
-    if (cover) {
-      setImage(cover);
-    }
-  };
-
-  const handleCreate = async () => {
-    try {
-      await createLibraryAlbum(name, year, image);
-      sendHaptic("success");
-      setTimeout(() => {
-        router.back();
-      }, 100);
-    } catch (error) {
-      const trace = error instanceof Error ? error.message : String(error);
-      addNotification(
-        NotificationType.ERROR,
-        "Error",
-        trace,
-        "Unable to create album",
-        trace,
-        () => {},
-      );
-    }
-  };
 
   return (
     <View style={Local.wrapper}>
@@ -72,7 +43,7 @@ const CreateAlbum = () => {
           <EditCover
             image={image}
             type={CoverType.ALBUM}
-            handlePress={() => handleUpdateImage()}
+            handlePress={handleUpdateImage}
             propOnLoad={() => {}}
           />
         </View>
@@ -97,14 +68,12 @@ const CreateAlbum = () => {
           placeholder={"Enter album year..."}
           placeholderTextColor={Colors.altDisabled}
           value={year?.toString() ?? ""}
-          onChangeText={(text) => {
-            setYear(text ? parseInt(text) : undefined);
-          }}
+          onChangeText={setYearFromText}
         />
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />
       <View style={[Local.buttonContainer, { paddingBottom: insets.bottom }]}>
-        <CustomButton title="Cancel" handlePress={() => router.back()} />
+        <CustomButton title="Cancel" handlePress={handleCancel} />
         <CustomButton
           title="Create"
           disabled={name === ""}

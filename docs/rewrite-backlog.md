@@ -154,6 +154,9 @@ feature-oriented packages.
    - Playlist and album create now share the same Drizzle-backed library entity
      repository and controlled form inputs instead of route-level legacy
      controller create calls.
+   - Playlist, album, and artist create form side effects now live in a shared
+     library feature hook, moving cover picking, repository writes, haptics,
+     notifications, and cancel/success navigation out of the create routes.
    - Import song rows now receive artist/album display metadata through
      immutable `results` updates when import relations are toggled, so
      `Song.tsx` no longer listens for `ARTIST_TOGGLED_ON_SONG` or

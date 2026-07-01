@@ -1,22 +1,9 @@
-import { memo } from "react";
-import EditCover from "@/src/features/cover/components/EditCover";
-import CustomButton from "@/src/shared/components/CustomButton";
-import Bar from "@/src/shared/components/modals/Bar";
-import ModalStyles from "@/src/shared/components/modals/Styles";
-import Notifications from "@/src/features/notifications/components";
-import { Colors } from "@/src/constants/Colors";
-import { Styles } from "@/src/constants/Styles";
 import { CoverType } from "@/src/constants/Types";
+import EditLibraryEntityScreen from "@/src/features/library/components/edit/EditLibraryEntityScreen";
 import { useEditPlaylistForm } from "@/src/features/library/hooks/use-edit-library-entity-form";
 import { usePlaylistInfoQuery } from "@/src/features/library/hooks/use-playlist-info-query";
-import { StyleSheet, Text, TextInput, View } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-const MemoTextInput = memo(TextInput);
 
 const EditPlaylist = ({ id }: { id: number }) => {
-  const insets = useSafeAreaInsets();
   const { playlist } = usePlaylistInfoQuery(id);
   const {
     handleClose,
@@ -28,94 +15,20 @@ const EditPlaylist = ({ id }: { id: number }) => {
   } = useEditPlaylistForm({ id, playlist });
 
   return (
-    <View style={Local.wrapper}>
-      <Bar />
-      <Text style={ModalStyles.header}>Edit Playlist</Text>
-      <View style={Styles.divider} />
-      <KeyboardAwareScrollView
-        style={Local.scrollView}
-        contentContainerStyle={Local.scrollViewContent}
-      >
-        <Text style={Styles.textboxLabel}>Cover Image</Text>
-        <View style={Local.coverWrapper}>
-          <EditCover
-            id={id}
-            image={image ?? playlist?.fullImage}
-            type={CoverType.PLAYLIST}
-            handlePress={handleUpdateImage}
-            propOnLoad={() => {}}
-          />
-        </View>
-        <Text style={Styles.textboxLabel}>Name</Text>
-        <MemoTextInput
-          style={Local.textBox}
-          autoCorrect={true}
-          editable
-          numberOfLines={1}
-          placeholder={"Enter playlist name..."}
-          placeholderTextColor={Colors.altDisabled}
-          value={name ?? ""}
-          onChangeText={setName}
-          onEndEditing={(evt) => validateName(evt.nativeEvent.text)}
-        />
-      </KeyboardAwareScrollView>
-      <Notifications customStyles={Local.notifications} />
-      <View
-        style={[Local.bottomButtonsWrapper, { paddingBottom: insets.bottom }]}
-      >
-        <CustomButton title="Close" handlePress={handleClose} />
-      </View>
-    </View>
+    <EditLibraryEntityScreen
+      coverId={id}
+      coverImage={image ?? playlist?.fullImage}
+      coverLabel="Cover Image"
+      coverType={CoverType.PLAYLIST}
+      handleClose={handleClose}
+      handleUpdateImage={handleUpdateImage}
+      name={name}
+      namePlaceholder="Enter playlist name..."
+      setName={setName}
+      title="Edit Playlist"
+      validateName={validateName}
+    />
   );
 };
-
-const Local = StyleSheet.create({
-  wrapper: {
-    ...Styles.body,
-    backgroundColor: Colors.popup,
-    ...ModalStyles.roundedTop,
-  },
-  scrollView: {
-    width: "100%",
-    paddingTop: 20,
-  },
-  scrollViewContent: {
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  header: {
-    ...Styles.h2,
-    color: Colors.text,
-    marginBottom: 20,
-  },
-  coverWrapper: {
-    width: "90%",
-    marginBottom: 20,
-  },
-  name: {
-    ...Styles.h3,
-    color: Colors.infoText,
-    width: "90%",
-    marginBottom: 20,
-  },
-  bottomButtonsWrapper: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 10,
-    width: "100%",
-  },
-  textBox: {
-    ...Styles.textbox,
-    ...Styles.roundedContainer,
-    fontSize: 16,
-    marginBottom: 20,
-    width: "90%",
-  },
-  notifications: {
-    position: "absolute",
-    bottom: 100,
-  },
-});
 
 export default EditPlaylist;

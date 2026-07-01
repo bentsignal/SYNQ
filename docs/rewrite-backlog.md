@@ -429,6 +429,9 @@ feature-oriented packages.
    - Root navigation route now delegates to an app-shell navigation component,
      keeping stack screen configuration and modal presentation options out of
      the app route layer.
+   - Root layout now delegates bootstrapping and provider composition to
+     app-shell feature code, leaving the Expo route file responsible only for
+     global CSS import and rendering the app root.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

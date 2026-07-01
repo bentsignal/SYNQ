@@ -1,6 +1,9 @@
 import { PageType, SongType } from "@/src/constants/Types";
 import { getLibrarySongById } from "@/src/features/library/repository/library-song-repository";
-import { getPlaybackQueue } from "@/src/features/playback/lib/playback-queue-read-service";
+import {
+  getActiveQueueTrackIndex,
+  getPlaybackQueue,
+} from "@/src/features/playback/lib/playback-queue-read-service";
 
 export const getPlaybackQueueDisplaySongs = async () => {
   const results: SongType[] = [];
@@ -22,4 +25,20 @@ export const getPlaybackQueueDisplaySongs = async () => {
   }
 
   return results;
+};
+
+export const getPlaybackQueueDisplayState = async () => {
+  const [activeIndex, songs] = await Promise.all([
+    getActiveQueueTrackIndex(),
+    getPlaybackQueueDisplaySongs(),
+  ]);
+
+  return {
+    activeIndex,
+    songs,
+  };
+};
+
+export const getPlaybackQueueDisplayActiveIndex = () => {
+  return getActiveQueueTrackIndex();
 };

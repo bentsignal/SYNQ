@@ -11,6 +11,13 @@ import {
 import { State, usePlaybackState, useProgress } from "react-native-track-player";
 
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
+import {
+  clampTimelineCompletion,
+  getPlaybackProgressCompletion,
+  getPlaybackTimelineSeconds,
+  getScrubbedTimelineTimes,
+  getTimelineSeekPosition,
+} from "@/src/features/playback/lib/playback-timeline-service";
 import { seekToPlaybackPosition } from "@/src/features/playback/lib/playback-transport-service";
 
 const PROGRESS_INTERVAL = 50;
@@ -38,10 +45,13 @@ export function usePlaybackTimeline() {
   const windowWidth = useSharedValue(Dimensions.get("window").width);
 
   const updateTimeline = useCallback(() => {
-    progressScale.value = withTiming(duration === 0 ? 0 : position / duration, {
-      duration: PROGRESS_INTERVAL,
-      easing: Easing.linear,
-    });
+    progressScale.value = withTiming(
+      getPlaybackProgressCompletion({ duration, position }),
+      {
+        duration: PROGRESS_INTERVAL,
+        easing: Easing.linear,
+      },
+    );
   }, [duration, position, progressScale]);
 
   useEffect(() => {
@@ -53,8 +63,9 @@ export function usePlaybackTimeline() {
       )
     )
       return;
-    setElapsedSec(Math.floor(position));
-    setRemainingSec(Math.floor(duration) - Math.floor(position));
+    const nextTimes = getPlaybackTimelineSeconds({ duration, position });
+    setElapsedSec(nextTimes.elapsedSec);
+    setRemainingSec(nextTimes.remainingSec);
     updateTimeline();
   }, [duration, playbackState.state, position, scrubbing, updateTimeline]);
 
@@ -97,25 +108,21 @@ export function usePlaybackTimeline() {
       const newCompletionRaw =
         preScrubCompletion.value +
         (dx / windowWidth.value) * SCRUB_SCALE_MULTIPLIER;
-      const newCompletion = Math.max(0, Math.min(newCompletionRaw, 1));
+      const newCompletion = clampTimelineCompletion(newCompletionRaw);
       progressScale.value = newCompletion;
-      const newElapsed = Math.max(
-        0,
-        Math.min(
-          Math.floor(newCompletion * sharedDuration.value),
-          sharedDuration.value,
-        ),
-      );
-      const newRemaining = Math.floor(sharedDuration.value) - newElapsed;
-      runOnJS(updateTimes)(newElapsed, newRemaining);
-      postScrubCompletion.value = Math.max(0, Math.min(newCompletion, 1));
+      const newTimes = getScrubbedTimelineTimes({
+        completion: newCompletion,
+        duration: sharedDuration.value,
+      });
+      runOnJS(updateTimes)(newTimes.elapsedSec, newTimes.remainingSec);
+      postScrubCompletion.value = clampTimelineCompletion(newCompletion);
     })
     .onEnd(() => {
       if (!allowScrub.value) return;
-      const newPosition = Math.min(
-        Math.max(0, postScrubCompletion.value * sharedDuration.value),
-        sharedDuration.value,
-      );
+      const newPosition = getTimelineSeekPosition({
+        completion: postScrubCompletion.value,
+        duration: sharedDuration.value,
+      });
       runOnJS(jump)(newPosition);
       sliderHeight.value = withTiming(1, {
         duration: SCRUB_ANIMATION_DURATION,

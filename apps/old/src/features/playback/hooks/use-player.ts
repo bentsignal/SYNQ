@@ -8,7 +8,6 @@ import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import {
   usePlaybackAddOffsetContext,
   usePlaybackModeContext,
-  usePlaybackQueueFilterContext,
   usePlaybackQueueRefreshContext,
   usePlaybackSourceContext,
 } from "@/src/features/playback/context/PlaybackProvider";
@@ -21,10 +20,6 @@ import {
   addSongToPlaybackQueue,
   playSongNow,
 } from "@/src/features/playback/lib/playback-song-command-service";
-import {
-  skipToNextPlayableTrack,
-  skipToPreviousPlayableTrack,
-} from "@/src/features/playback/lib/playback-queue-navigation-service";
 import { updateUpcomingQueue } from "@/src/features/playback/lib/playback-upcoming-queue-service";
 import {
   pausePlayback,
@@ -33,25 +28,16 @@ import {
   togglePlaybackState,
 } from "@/src/features/playback/lib/playback-transport-service";
 import { setupPlayer as setupTrackPlayer } from "@/src/features/playback/lib/player-setup-service";
-import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { State } from "react-native-track-player";
 
 export default function usePlayer() {
-  const { setLoop, setShuffle, loop, shuffle } = usePlaybackModeContext();
-  const { setSourceId, setSourceType, sourceId, sourceType } =
-    usePlaybackSourceContext();
-  const {
-    addOffset,
-    decrementAddOffset,
-    incrementAddOffset,
-    resetAddOffset,
-    setAddOffset,
-  } = usePlaybackAddOffsetContext();
-  const { order, query, sort } = usePlaybackQueueFilterContext();
+  const { setLoop, setShuffle } = usePlaybackModeContext();
+  const { setSourceId, setSourceType } = usePlaybackSourceContext();
+  const { addOffset, incrementAddOffset, resetAddOffset, setAddOffset } =
+    usePlaybackAddOffsetContext();
   const { requestQueueRefresh } = usePlaybackQueueRefreshContext();
 
   const { theme } = useThemeContext();
-  const { sendHaptic } = useHaptics();
 
   const setupPlayer = async () => {
     await setupTrackPlayer({
@@ -104,30 +90,6 @@ export default function usePlayer() {
     return playSongNow({ song, theme });
   };
 
-  const skipRight = async () => {
-    await skipToNextPlayableTrack({
-      loop,
-      sourceType,
-      sourceId,
-      shuffle,
-      sort,
-      order,
-      query,
-      theme,
-      sendPlaybackError: sendHaptic,
-      decrementAddOffset,
-      requestQueueRefresh,
-      resetAddOffset,
-    });
-  };
-
-  const skipLeft = async () => {
-    await skipToPreviousPlayableTrack({
-      addOffset,
-      incrementAddOffset,
-    });
-  };
-
   const updateQueue = async (
     currentId: number,
     shuffleValue: boolean,
@@ -161,8 +123,6 @@ export default function usePlayer() {
     removeSongsFromQueue,
     resetPlayer,
     seekToPosition,
-    skipRight,
-    skipLeft,
     togglePlayback,
     updateQueue,
   };

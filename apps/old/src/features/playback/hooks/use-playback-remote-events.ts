@@ -1,14 +1,28 @@
 import { NotificationType } from "@/src/constants/Types";
 import {
+  usePlaybackAddOffsetContext,
   usePlaybackModeContext,
   usePlaybackQueueFilterContext,
+  usePlaybackQueueRefreshContext,
   usePlaybackSourceContext,
 } from "@/src/features/playback/context/PlaybackProvider";
 import { useAppShellContext } from "@/src/features/app-shell/context/AppShellProvider";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
 import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { useAdGatedPlaybackCommand } from "@/src/features/playback/hooks/use-ad-gated-playback-command";
-import usePlayer from "@/src/features/playback/hooks/use-player";
+import {
+  skipToNextPlayableTrack,
+  skipToPreviousPlayableTrack,
+} from "@/src/features/playback/lib/playback-queue-navigation-service";
+import {
+  pausePlayback,
+  playPlayback,
+  seekToPlaybackPosition,
+} from "@/src/features/playback/lib/playback-transport-service";
+import { updateUpcomingQueue } from "@/src/features/playback/lib/playback-upcoming-queue-service";
+import { resetPlaybackQueue } from "@/src/features/playback/lib/player-queue-actions-service";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { Event, type Track, useTrackPlayerEvents } from "react-native-track-player";
 
 type PlaybackRemoteEventsParams = {
@@ -22,20 +36,40 @@ export const usePlaybackRemoteEvents = ({
   const { addNotification, setShowNotificationModal } =
     useNotificationsContext();
   const { adPlaying } = usePlaybackAdContext();
+  const { sendHaptic } = useHaptics();
+  const { theme } = useThemeContext();
   const { runAdGatedPlaybackCommand } = useAdGatedPlaybackCommand();
-  const {
-    pausePlayer,
-    playPlayer,
-    resetPlayer,
-    seekToPosition,
-    skipLeft,
-    skipRight,
-    updateQueue,
-  } = usePlayer();
 
   const { loop, shuffle } = usePlaybackModeContext();
   const { sourceId, sourceType } = usePlaybackSourceContext();
   const { order, query, sort } = usePlaybackQueueFilterContext();
+  const { requestQueueRefresh } = usePlaybackQueueRefreshContext();
+  const { addOffset, decrementAddOffset, incrementAddOffset, resetAddOffset } =
+    usePlaybackAddOffsetContext();
+
+  const skipRight = async () => {
+    await skipToNextPlayableTrack({
+      loop,
+      sourceType,
+      sourceId,
+      shuffle,
+      sort,
+      order,
+      query,
+      theme,
+      sendPlaybackError: sendHaptic,
+      decrementAddOffset,
+      requestQueueRefresh,
+      resetAddOffset,
+    });
+  };
+
+  const skipLeft = async () => {
+    await skipToPreviousPlayableTrack({
+      addOffset,
+      incrementAddOffset,
+    });
+  };
 
   useTrackPlayerEvents(
     [
@@ -50,10 +84,10 @@ export const usePlaybackRemoteEvents = ({
     (event) => {
       switch (event.type) {
         case Event.RemotePlay:
-          void playPlayer();
+          void playPlayback();
           break;
         case Event.RemotePause:
-          void pausePlayer();
+          void pausePlayback();
           break;
         case Event.RemoteNext:
           runAdGatedPlaybackCommand({ command: skipRight });
@@ -63,26 +97,29 @@ export const usePlaybackRemoteEvents = ({
           break;
         case Event.RemoteSeek:
           if (!adPlaying) {
-            void seekToPosition(event.position);
+            void seekToPlaybackPosition(event.position);
           }
           break;
         case Event.PlaybackQueueEnded:
           if (loop && track && sourceType !== null && sourceId !== null) {
-            updateQueue(
-              track.id,
-              shuffle,
-              sourceType,
-              sourceId,
+            updateUpcomingQueue({
+              currentId: track.id,
+              shuffleValue: shuffle,
+              sourceTypeValue: sourceType,
+              sourceIdValue: sourceId,
               sort,
               order,
               query,
-            );
+              theme,
+              requestQueueRefresh,
+              resetAddOffset,
+            });
             skipRight();
           }
           break;
         case Event.PlaybackError:
           console.log("playback error: ", event);
-          void resetPlayer();
+          void resetPlaybackQueue();
           const name = track?.title || "Unknown Song";
           addNotification(
             NotificationType.ERROR,

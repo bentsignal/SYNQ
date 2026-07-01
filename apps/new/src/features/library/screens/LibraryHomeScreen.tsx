@@ -41,9 +41,17 @@ export function LibraryHomeScreen() {
         <Text style={styles.subtitle}>
           Reactive Drizzle library surface wired to the shared SYNQ database.
         </Text>
-        <Link href="/(tabs)/library/playlist/create" style={styles.createLink}>
-          Create playlist
-        </Link>
+        <View style={styles.createLinks}>
+          <Link href="/(tabs)/library/playlist/create" style={styles.createLink}>
+            Create playlist
+          </Link>
+          <Link href="/(tabs)/library/album/create" style={styles.createLink}>
+            Create album
+          </Link>
+          <Link href="/(tabs)/library/artist/create" style={styles.createLink}>
+            Create artist
+          </Link>
+        </View>
       </View>
 
       <LibrarySummaryGrid counts={summary.counts} />
@@ -107,6 +115,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 460,
+  },
+  createLinks: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
   },
   createLink: {
     color: "#0f766e",

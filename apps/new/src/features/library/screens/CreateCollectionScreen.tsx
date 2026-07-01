@@ -8,18 +8,79 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { createPlaylist } from "../repository/playlist-repository";
+import {
+  createAlbum,
+  createArtist,
+  createPlaylist,
+} from "../repository/collection-repository";
 
-export function CreatePlaylistScreen() {
+type CreateCollectionKind = "album" | "artist" | "playlist";
+
+type CreateCollectionScreenProps = {
+  kind: CreateCollectionKind;
+};
+
+const labels: Record<
+  CreateCollectionKind,
+  {
+    createLabel: string;
+    duplicateNoun: string;
+    kicker: string;
+    namePlaceholder: string;
+    title: string;
+  }
+> = {
+  album: {
+    createLabel: "Create album",
+    duplicateNoun: "album",
+    kicker: "Album",
+    namePlaceholder: "Album name",
+    title: "Create album",
+  },
+  artist: {
+    createLabel: "Create artist",
+    duplicateNoun: "artist",
+    kicker: "Artist",
+    namePlaceholder: "Artist name",
+    title: "Create artist",
+  },
+  playlist: {
+    createLabel: "Create playlist",
+    duplicateNoun: "playlist",
+    kicker: "Playlist",
+    namePlaceholder: "Playlist name",
+    title: "Create playlist",
+  },
+};
+
+const parseYear = (value: string) => {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return undefined;
+  }
+
+  const year = Number(trimmed);
+
+  if (!Number.isInteger(year) || year < 0) {
+    throw new Error("Album year must be a positive whole number.");
+  }
+
+  return year;
+};
+
+export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
   const router = useRouter();
+  const copy = labels[kind];
   const [name, setName] = useState("");
+  const [year, setYear] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const canSave = name.trim().length > 0 && !isSaving;
 
   const handleCreate = async () => {
     if (!canSave) {
-      setError("Playlist name is required.");
+      setError(`${copy.kicker} name is required.`);
       return;
     }
 
@@ -27,13 +88,25 @@ export function CreatePlaylistScreen() {
     setError(null);
 
     try {
+      if (kind === "album") {
+        const album = await createAlbum({ name, year: parseYear(year) });
+        router.replace(`/(tabs)/library/album/${album.id}`);
+        return;
+      }
+
+      if (kind === "artist") {
+        const artist = await createArtist(name);
+        router.replace(`/(tabs)/library/artist/${artist.id}`);
+        return;
+      }
+
       const playlist = await createPlaylist(name);
       router.replace(`/(tabs)/library/playlist/${playlist.id}`);
     } catch (caughtError) {
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : "Playlist could not be created.",
+          : `${copy.kicker} could not be created.`,
       );
     } finally {
       setIsSaving(false);
@@ -43,11 +116,11 @@ export function CreatePlaylistScreen() {
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
-        <Text style={styles.kicker}>Playlist</Text>
-        <Text style={styles.title}>Create playlist</Text>
+        <Text style={styles.kicker}>{copy.kicker}</Text>
+        <Text style={styles.title}>{copy.title}</Text>
         <Text style={styles.subtitle}>
-          Creates a playlist row in the shared library database. The Library
-          screen updates through live queries.
+          Creates a {copy.duplicateNoun} row in the shared library database. The
+          Library screen updates through live queries.
         </Text>
       </View>
 
@@ -58,12 +131,29 @@ export function CreatePlaylistScreen() {
           autoCorrect={false}
           editable={!isSaving}
           onChangeText={setName}
-          placeholder="Playlist name"
+          placeholder={copy.namePlaceholder}
           placeholderTextColor="#74807a"
-          returnKeyType="done"
+          returnKeyType={kind === "album" ? "next" : "done"}
           style={styles.input}
           value={name}
         />
+
+        {kind === "album" ? (
+          <>
+            <Text style={styles.label}>Year</Text>
+            <TextInput
+              editable={!isSaving}
+              inputMode="numeric"
+              keyboardType="number-pad"
+              onChangeText={setYear}
+              placeholder="Album year"
+              placeholderTextColor="#74807a"
+              returnKeyType="done"
+              style={styles.input}
+              value={year}
+            />
+          </>
+        ) : null}
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
@@ -75,7 +165,7 @@ export function CreatePlaylistScreen() {
         >
           {isSaving ? <ActivityIndicator color="#ffffff" /> : null}
           <Text style={styles.saveText}>
-            {isSaving ? "Creating" : "Create playlist"}
+            {isSaving ? "Creating" : copy.createLabel}
           </Text>
         </Pressable>
       </View>

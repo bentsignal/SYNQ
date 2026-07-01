@@ -1,3 +1,5 @@
-import { CreatePlaylistScreen } from "@/src/features/library/screens/CreatePlaylistScreen";
+import { CreateCollectionScreen } from "@/src/features/library/screens/CreateCollectionScreen";
 
-export default CreatePlaylistScreen;
+export default function CreatePlaylistRoute() {
+  return <CreateCollectionScreen kind="playlist" />;
+}

@@ -157,6 +157,10 @@ feature-oriented packages.
    - Playlist, album, and artist create form side effects now live in a shared
      library feature hook, moving cover picking, repository writes, haptics,
      notifications, and cancel/success navigation out of the create routes.
+   - Playlist, album, and artist edit form side effects now live in a shared
+     library feature hook, moving name/year validation, cover picking,
+     repository updates, notifications, and close/add-artist navigation out of
+     the edit routes.
    - Import song rows now receive artist/album display metadata through
      immutable `results` updates when import relations are toggled, so
      `Song.tsx` no longer listens for `ARTIST_TOGGLED_ON_SONG` or

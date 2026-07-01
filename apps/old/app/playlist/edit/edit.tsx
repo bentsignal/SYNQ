@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo } from "react";
 import EditCover from "@/src/features/cover/components/EditCover";
 import CustomButton from "@/src/shared/components/CustomButton";
 import Bar from "@/src/shared/components/modals/Bar";
@@ -6,12 +6,9 @@ import ModalStyles from "@/src/shared/components/modals/Styles";
 import Notifications from "@/src/features/notifications/components";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { CoverType, NotificationType } from "@/src/constants/Types";
-import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
-import { pickCoverImage } from "@/src/features/images/repository/image-repository";
+import { CoverType } from "@/src/constants/Types";
+import { useEditPlaylistForm } from "@/src/features/library/hooks/use-edit-library-entity-form";
 import { usePlaylistInfoQuery } from "@/src/features/library/hooks/use-playlist-info-query";
-import { updateLibraryPlaylist } from "@/src/features/library/repository/library-entity-repository";
-import { router } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -20,53 +17,15 @@ const MemoTextInput = memo(TextInput);
 
 const EditPlaylist = ({ id }: { id: number }) => {
   const insets = useSafeAreaInsets();
-  const { addNotification } = useNotificationsContext();
   const { playlist } = usePlaylistInfoQuery(id);
-  const [image, setImage] = useState<string | undefined>();
-  const [name, setName] = useState<string | undefined>();
-  const [originalName, setOriginalName] = useState<string | undefined>();
-
-  const nameInputValidation = async (text: string) => {
-    try {
-      if (text === "") {
-        throw new Error("Name is required");
-      } else {
-        setName(text);
-        await updateLibraryPlaylist({
-          id,
-          name: text === originalName ? undefined : text,
-          image,
-        });
-      }
-    } catch (error) {
-      const trace = error instanceof Error ? error.message : String(error);
-      addNotification(
-        NotificationType.ERROR,
-        "Error",
-        trace,
-        "Unable to update playlist",
-        trace,
-        () => {},
-      );
-    }
-  };
-
-  const handleUpdateImage = async () => {
-    const cover = await pickCoverImage();
-    if (cover) {
-      setImage(cover);
-      await updateLibraryPlaylist({
-        id,
-        name: name === originalName ? undefined : name,
-        image: cover,
-      });
-    }
-  };
-
-  useEffect(() => {
-    setName(playlist?.name);
-    setOriginalName(playlist?.name);
-  }, [playlist]);
+  const {
+    handleClose,
+    handleUpdateImage,
+    image,
+    name,
+    setName,
+    validateName,
+  } = useEditPlaylistForm({ id, playlist });
 
   return (
     <View style={Local.wrapper}>
@@ -83,7 +42,7 @@ const EditPlaylist = ({ id }: { id: number }) => {
             id={id}
             image={image ?? playlist?.fullImage}
             type={CoverType.PLAYLIST}
-            handlePress={() => handleUpdateImage()}
+            handlePress={handleUpdateImage}
             propOnLoad={() => {}}
           />
         </View>
@@ -97,14 +56,14 @@ const EditPlaylist = ({ id }: { id: number }) => {
           placeholderTextColor={Colors.altDisabled}
           value={name ?? ""}
           onChangeText={setName}
-          onEndEditing={(evt) => nameInputValidation(evt.nativeEvent.text)}
+          onEndEditing={(evt) => validateName(evt.nativeEvent.text)}
         />
       </KeyboardAwareScrollView>
       <Notifications customStyles={Local.notifications} />
       <View
         style={[Local.bottomButtonsWrapper, { paddingBottom: insets.bottom }]}
       >
-        <CustomButton title="Close" handlePress={() => router.back()} />
+        <CustomButton title="Close" handlePress={handleClose} />
       </View>
     </View>
   );

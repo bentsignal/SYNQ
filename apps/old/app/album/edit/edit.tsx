@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo } from "react";
 import EditCover from "@/src/features/cover/components/EditCover";
 import CustomButton from "@/src/shared/components/CustomButton";
 import ArtistItem from "@/src/features/library/components/lists/artist/ArtistItem";
@@ -7,107 +7,30 @@ import ModalStyles from "@/src/shared/components/modals/Styles";
 import Notifications from "@/src/features/notifications/components";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import { CoverType, NotificationType } from "@/src/constants/Types";
-import { useNotificationsContext } from "@/src/features/notifications/context/NotificationsProvider";
-import { pickCoverImage } from "@/src/features/images/repository/image-repository";
+import { CoverType } from "@/src/constants/Types";
 import { useAlbumInfoQuery } from "@/src/features/library/hooks/use-album-info-query";
-import { updateLibraryAlbum } from "@/src/features/library/repository/library-entity-repository";
-import { router } from "expo-router";
+import { useEditAlbumForm } from "@/src/features/library/hooks/use-edit-library-entity-form";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const MemoTextInput = memo(TextInput);
 
-const getChangedYear = (
-  nextYear: number | undefined,
-  originalYear: number | undefined,
-) => {
-  return nextYear === originalYear ? undefined : nextYear ?? null;
-};
-
 const EditAlbum = ({ id }: { id: number }) => {
   const insets = useSafeAreaInsets();
-  const { addNotification } = useNotificationsContext();
-  const [image, setImage] = useState<string | undefined>();
-  const [name, setName] = useState<string | undefined>();
-  const [year, setYear] = useState<number | undefined>();
-  const [originalName, setOriginalName] = useState<string | undefined>();
-  const [originalYear, setOriginalYear] = useState<number | undefined>();
   const { album, artists } = useAlbumInfoQuery(id);
-
-  const nameInputValidation = async (text: string) => {
-    try {
-      if (text === "") {
-        throw new Error("Name is required");
-      } else {
-        setName(text);
-        await updateLibraryAlbum({
-          id,
-          name: text === originalName ? undefined : text,
-          year: getChangedYear(year, originalYear),
-          image,
-        });
-      }
-    } catch (error) {
-      const trace = error instanceof Error ? error.message : String(error);
-      addNotification(
-        NotificationType.ERROR,
-        "Error",
-        trace,
-        "Unable to update album",
-        trace,
-        () => {},
-      );
-    }
-  };
-
-  const yearInputValidation = async (text: string) => {
-    try {
-      const yearNum = text ? parseInt(text, 10) : undefined;
-      if (Number.isNaN(yearNum)) {
-        throw new Error("Year must be a number");
-      }
-
-      setYear(yearNum);
-      await updateLibraryAlbum({
-        id,
-        name: name === originalName ? undefined : name,
-        year: getChangedYear(yearNum, originalYear),
-        image,
-      });
-    } catch (error) {
-      const trace = error instanceof Error ? error.message : String(error);
-      addNotification(
-        NotificationType.ERROR,
-        "Error",
-        trace,
-        "Unable to update album",
-        trace,
-        () => {},
-      );
-    }
-  };
-
-  const handleUpdateImage = async () => {
-    const cover = await pickCoverImage();
-    if (cover) {
-      setImage(cover);
-      await updateLibraryAlbum({
-        id,
-        name: name === originalName ? undefined : name,
-        year: getChangedYear(year, originalYear),
-        image: cover,
-      });
-    }
-  };
-
-  useEffect(() => {
-    setName(album?.name);
-    setYear(album?.year);
-    setOriginalName(album?.name);
-    setOriginalYear(album?.year);
-  }, [album]);
+  const {
+    handleAddAlbumArtists,
+    handleClose,
+    handleUpdateImage,
+    image,
+    name,
+    setName,
+    setYearFromText,
+    validateName,
+    validateYear,
+    year,
+  } = useEditAlbumForm({ album, id });
 
   return (
     <View style={Local.wrapper}>
@@ -124,7 +47,7 @@ const EditAlbum = ({ id }: { id: number }) => {
             id={id}
             image={image ?? album?.fullImage}
             type={CoverType.ALBUM}
-            handlePress={() => handleUpdateImage()}
+            handlePress={handleUpdateImage}
             propOnLoad={() => {}}
           />
         </View>
@@ -138,7 +61,7 @@ const EditAlbum = ({ id }: { id: number }) => {
           placeholderTextColor={Colors.altDisabled}
           value={name ?? ""}
           onChangeText={setName}
-          onEndEditing={(evt) => nameInputValidation(evt.nativeEvent.text)}
+          onEndEditing={(evt) => validateName(evt.nativeEvent.text)}
         />
         <Text style={Styles.textboxLabel}>Year</Text>
         <MemoTextInput
@@ -150,10 +73,8 @@ const EditAlbum = ({ id }: { id: number }) => {
           placeholder={"Enter album year..."}
           placeholderTextColor={Colors.altDisabled}
           value={year?.toString() ?? ""}
-          onChangeText={(text) => {
-            setYear(text ? parseInt(text) : undefined);
-          }}
-          onEndEditing={(evt) => yearInputValidation(evt.nativeEvent.text)}
+          onChangeText={setYearFromText}
+          onEndEditing={(evt) => validateYear(evt.nativeEvent.text)}
         />
         <View style={[ModalStyles.fieldWrapper, { paddingBottom: 20 }]}>
           <Text style={ModalStyles.fieldLabel}>Artists</Text>
@@ -174,7 +95,7 @@ const EditAlbum = ({ id }: { id: number }) => {
           </View>
           <CustomButton
             title={"Add Artists"}
-            handlePress={() => router.push("/artist/add?sourceType=album")}
+            handlePress={handleAddAlbumArtists}
             buttonWidth={"90%"}
           />
         </View>
@@ -183,7 +104,7 @@ const EditAlbum = ({ id }: { id: number }) => {
       <View
         style={[Local.bottomButtonsWrapper, { paddingBottom: insets.bottom }]}
       >
-        <CustomButton title="Close" handlePress={() => router.back()} />
+        <CustomButton title="Close" handlePress={handleClose} />
       </View>
     </View>
   );

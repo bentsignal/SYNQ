@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from "react";
-import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
@@ -7,10 +6,8 @@ import {
   clearImportControlState,
   getImportControlState,
 } from "@/src/features/import/lib/import-control-state";
-import { removeImportSongs } from "@/src/features/import/lib/import-song-edits";
+import { executeImportDeleteAction } from "@/src/features/import/lib/import-delete-action";
 import { resetWifiTransferServer } from "@/src/features/import/lib/import-transfer-reset";
-import { deleteLibrarySong } from "@/src/features/library/repository/library-song-repository";
-import { removeTracksBySongIds } from "@/src/features/playback/lib/player-queue-actions-service";
 import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
 import { posthog } from "@/src/lib/posthog";
 import { router, usePathname } from "expo-router";
@@ -103,27 +100,26 @@ export function useImportControls() {
 
   const executeDelete = useCallback(async () => {
     try {
-      if (selectedSongs.length > 0) {
-        const newResults = await removeImportSongs(results, selectedSongs);
-        if (newResults.length <= 0) {
-          setExportDisabled(true);
-          router.replace("/(tabs)");
-        }
-        setResults(newResults);
-      } else if (editSong.pageType === PageType.LIBRARY) {
-        await deleteLibrarySong(editSong.id);
-        await removeTracksBySongIds([editSong.id]);
+      const deleteResult = await executeImportDeleteAction({
+        editSong,
+        results,
+        selectedSongs,
+      });
+
+      if (deleteResult.shouldDisableExport) {
+        setExportDisabled(true);
+      }
+
+      if (deleteResult.shouldLeaveImport) {
+        router.replace("/(tabs)");
+      }
+
+      if (deleteResult.nextResults) {
+        setResults(deleteResult.nextResults);
+      }
+
+      if (deleteResult.deletedLibrarySong) {
         setNumModified((modified) => modified + 1);
-      } else if (editSong.pageType === PageType.IMPORT) {
-        const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id];
-        const newResults = await removeImportSongs(results, ids);
-        if (newResults.length <= 0) {
-          setExportDisabled(true);
-        }
-        if (newResults.length === 0) {
-          router.replace("/(tabs)");
-        }
-        setResults(newResults);
       }
     } catch {
       posthog.capture("import_delete_failed");
@@ -131,8 +127,7 @@ export function useImportControls() {
       setSelectEnabled(false);
     }
   }, [
-    editSong.id,
-    editSong.pageType,
+    editSong,
     results,
     selectedSongs,
     setExportDisabled,

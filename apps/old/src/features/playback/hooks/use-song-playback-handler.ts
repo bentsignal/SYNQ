@@ -4,11 +4,20 @@ import {
   SortType,
   SourceType,
 } from "@/src/constants/Types";
-import { usePlaybackModeContext } from "@/src/features/playback/context/PlaybackProvider";
+import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
+import {
+  usePlaybackAddOffsetContext,
+  usePlaybackModeContext,
+  usePlaybackQueueRefreshContext,
+} from "@/src/features/playback/context/PlaybackProvider";
 import { useAdGatedPlaybackCommand } from "@/src/features/playback/hooks/use-ad-gated-playback-command";
 import { usePlaybackSourcePersistence } from "@/src/features/playback/hooks/use-playback-source-persistence";
-import usePlayer from "@/src/features/playback/hooks/use-player";
-import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
+import {
+  addSongToPlaybackQueue,
+  playSongNow,
+} from "@/src/features/playback/lib/playback-song-command-service";
+import { updateUpcomingQueue } from "@/src/features/playback/lib/playback-upcoming-queue-service";
+import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { posthog } from "@/src/lib/posthog";
 import { useCallback } from "react";
 import { type Track } from "react-native-track-player";
@@ -32,7 +41,10 @@ export const useSongPlaybackHandler = ({
 }: SongPlaybackHandlerParams) => {
   const { shuffle } = usePlaybackModeContext();
   const { sendHaptic } = useHaptics();
-  const { addSongToQueue, playSong, updateQueue } = usePlayer();
+  const { theme } = useThemeContext();
+  const { addOffset, incrementAddOffset, resetAddOffset } =
+    usePlaybackAddOffsetContext();
+  const { requestQueueRefresh } = usePlaybackQueueRefreshContext();
   const { runAdGatedPlaybackCommand } = useAdGatedPlaybackCommand();
   const { persistPlaybackSource } = usePlaybackSourcePersistence({
     sort,
@@ -54,15 +66,18 @@ export const useSongPlaybackHandler = ({
           return;
         }
 
-        await updateQueue(
-          song.id,
-          shuffle,
-          playbackSourceType,
-          playbackSourceId,
+        await updateUpcomingQueue({
+          currentId: song.id,
+          shuffleValue: shuffle,
+          sourceTypeValue: playbackSourceType,
+          sourceIdValue: playbackSourceId,
           sort,
           order,
           query,
-        );
+          theme,
+          requestQueueRefresh,
+          resetAddOffset,
+        });
         await persistPlaybackSource({
           id: playbackSourceId,
           type: playbackSourceType,
@@ -73,7 +88,12 @@ export const useSongPlaybackHandler = ({
         afterAdStarts: async () => {
           posthog.capture("play_ad");
           await persistSongPlaybackSource();
-          await addSongToQueue(song);
+          await addSongToPlaybackQueue({
+            song,
+            theme,
+            addOffset,
+            incrementAddOffset,
+          });
         },
         command: async () => {
           if (id === song.id) {
@@ -82,7 +102,7 @@ export const useSongPlaybackHandler = ({
 
           posthog.capture("play_song");
           try {
-            const didPlaySong = await playSong(song);
+            const didPlaySong = await playSongNow({ song, theme });
             if (didPlaySong) {
               await persistSongPlaybackSource();
             }
@@ -94,18 +114,20 @@ export const useSongPlaybackHandler = ({
     },
     [
       activeTrack?.id,
-      addSongToQueue,
+      addOffset,
+      incrementAddOffset,
       order,
       persistPlaybackSource,
-      playSong,
       query,
+      requestQueueRefresh,
+      resetAddOffset,
       runAdGatedPlaybackCommand,
       sendHaptic,
       shuffle,
       sort,
       sourceId,
       sourceType,
-      updateQueue,
+      theme,
     ],
   );
 

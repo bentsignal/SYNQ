@@ -279,6 +279,9 @@ feature-oriented packages.
      moving queue, edit, export, delete, playlist membership, liked-song,
      analytics, loading, and navigation actions out of the option row
      component.
+   - Import footer controls now route through an import feature hook, moving
+     cancel/next/finish navigation, Wi-Fi reset, batch edit/delete, selection
+     cleanup, and import-result mutation out of the footer component.
    - Song list page covers now receive playlist, album, and artist cover paths
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or

@@ -1,88 +1,30 @@
-import { useEffect, useState } from "react";
 import CustomButton from "@/src/shared/components/CustomButton";
 import Notifications from "@/src/features/notifications/components/Notifications";
 import { Colors } from "@/src/constants/Colors";
-import CFG from "@/src/constants/Config";
 import { Styles } from "@/src/constants/Styles";
-import { PageType } from "@/src/constants/Types";
-import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
+import { useImportControls } from "@/src/features/import/hooks/use-import-controls";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { getDisabledColor } from "@/src/lib/color-utils";
-import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
-import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
-import { removeImportSongs } from "@/src/features/import/lib/import-song-edits";
-import { deleteLibrarySong } from "@/src/features/library/repository/library-song-repository";
-import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
-import { posthog } from "@/src/lib/posthog";
-import axios from "axios";
-import { router, usePathname } from "expo-router";
 import { SquarePen, Trash } from "lucide-react-native";
-import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import usePlayer from "@/src/features/playback/hooks/use-player";
 
 export default function ImportControls() {
   const {
-    editSong,
-    numModified,
-    setEditSong,
-    setNumModified,
-  } = useActionSheetContext();
-
-  const {
-    results,
-    loading,
-    exportDisabled,
-    ip,
-    transferSize,
-    setResults,
-    setExportDisabled,
-    setLoading,
-    setTransferSize,
-    setImportState,
-    requestImportFinish,
-  } = useImportFlowContext();
-
-  const { showGlobalLoading } = useGlobalProgressContext();
-  const { selectEnabled, selectedSongs, setSelectEnabled } =
-    useSelectionContext();
-
+    altDisabled,
+    altTitle,
+    handleAltPress,
+    handleDelete,
+    handleEdit,
+    handleMainPress,
+    hideMainControls,
+    mainDisabled,
+    mainTitle,
+    selectEnabled,
+    showBatchActions,
+  } = useImportControls();
   const { theme } = useThemeContext();
-  const { removeSongsFromQueue } = usePlayer();
   const insets = useSafeAreaInsets();
-  const pathname = usePathname();
-
-  const [altTitle, setAltTitle] = useState("Cancel");
-  const [mainTitle, setMainTitle] = useState("Next");
-  const [altDisabled, setAltDisabled] = useState(false);
-  const [mainDisabled, setMainDisabled] = useState(false);
-
-  useEffect(() => {
-    if (pathname === "/import/files" || pathname === "/import/wifi") {
-      setAltTitle("Cancel");
-      setMainTitle("Next");
-      if (pathname === "/import/files") {
-        setAltDisabled(loading);
-        setMainDisabled(exportDisabled);
-      } else {
-        setAltDisabled(transferSize > 0);
-        setMainDisabled(exportDisabled);
-      }
-    } else if (pathname === "/import/export") {
-      setAltTitle("Back");
-      setMainTitle("Next");
-      setAltDisabled(showGlobalLoading);
-      setMainDisabled(showGlobalLoading);
-    } else if (pathname === "/import/save") {
-      setAltTitle("Back");
-      setMainTitle("Finish");
-      setAltDisabled(exportDisabled);
-      setMainDisabled(exportDisabled);
-    } else if (pathname === "/import/success") {
-      setAltDisabled(true);
-      setMainDisabled(true);
-    }
-  }, [pathname, loading, exportDisabled, showGlobalLoading, transferSize]);
 
   const Local = StyleSheet.create({
     container: {
@@ -93,7 +35,7 @@ export default function ImportControls() {
       alignItems: "center",
     },
     batchButtonContainer: {
-      display: selectEnabled && selectedSongs.length > 0 ? "flex" : "none",
+      display: showBatchActions ? "flex" : "none",
       flexDirection: "row",
       gap: 10,
     },
@@ -120,106 +62,6 @@ export default function ImportControls() {
       marginBottom: 10,
     },
   });
-
-  const resetResults = async () => {
-    try {
-      await axios.get(`http://${ip}${CFG.PORT}/reset`);
-    } catch (error) {
-      console.log("error resetting results: ", error);
-    }
-  };
-
-  const altHandle = () => {
-    if (pathname === "/import/files" || pathname === "/import/wifi") {
-      router.back();
-      posthog.capture("import_cancel");
-      setTimeout(() => {
-        setLoading(false);
-        setTransferSize(0);
-        setResults([]);
-        setExportDisabled(true);
-        if (pathname === "/import/wifi") {
-          resetResults();
-        }
-      }, 10);
-    } else if (pathname === "/import/export") {
-      router.back();
-      setLoading(false);
-    } else if (pathname === "/import/save") {
-      router.back();
-    }
-  };
-
-  const mainHandle = () => {
-    if (pathname === "/import/files" || pathname === "/import/wifi") {
-      setImportState(0);
-      router.push("/import/export");
-    } else if (pathname === "/import/export") {
-      router.push("/import/save");
-    } else if (pathname === "/import/save") {
-      requestImportFinish();
-      posthog.capture("import_finish", {
-        numberOfSongs: results.length,
-      });
-    }
-  };
-
-  const handleEdit = () => {
-    setEditSong({} as typeof editSong);
-    router.push(`/song/edit/${editSong.id}`);
-  };
-
-  const executeDelete = async () => {
-    try {
-      // handle bulk delete
-      if (selectedSongs.length > 0) {
-        const newResults = await removeImportSongs(results, selectedSongs);
-        if (newResults.length <= 0) {
-          setExportDisabled(true);
-          router.replace("/(tabs)");
-        }
-        setResults(newResults);
-      }
-      // remove from library
-      else if (editSong.pageType === PageType.LIBRARY) {
-        await deleteLibrarySong(editSong.id);
-        await removeSongsFromQueue([editSong.id]);
-        setNumModified(numModified + 1);
-      }
-      // remove from import
-      else if (editSong.pageType === PageType.IMPORT) {
-        const ids = selectedSongs.length > 0 ? selectedSongs : [editSong.id];
-        const newResults = await removeImportSongs(results, ids);
-        if (newResults.length <= 0) {
-          setExportDisabled(true);
-        }
-        if (newResults.length === 0) {
-          router.replace("/(tabs)");
-        }
-        setResults(newResults);
-      }
-    } catch (error) {
-      console.log("error deleting song: ", error);
-    }
-    setSelectEnabled(false);
-  };
-
-  const handleDelete = () => {
-    Alert.alert(
-      `${selectedSongs.length > 1 ? "Delete songs" : "Delete song"}`,
-      `Are you sure you want to delete ${selectedSongs.length > 1 ? "these songs" : "this song"}?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: () => {
-            executeDelete();
-          },
-        },
-      ],
-    );
-  };
 
   return (
     <View style={Local.container}>
@@ -253,17 +95,13 @@ export default function ImportControls() {
       <View
         style={[
           Local.mainButtonContainer,
-          {
-            display: ["/import/success", "/import/failure"].includes(pathname)
-              ? "none"
-              : "flex",
-          },
+          { display: hideMainControls ? "none" : "flex" },
         ]}
       >
         <CustomButton
           title={altTitle}
           background={Colors.altButton}
-          handlePress={altHandle}
+          handlePress={handleAltPress}
           disabled={altDisabled}
           disabledColor={Colors.altDisabled}
           customStyles={{ flex: 1 }}
@@ -271,7 +109,7 @@ export default function ImportControls() {
         <CustomButton
           title={mainTitle}
           background={theme}
-          handlePress={mainHandle}
+          handlePress={handleMainPress}
           disabled={mainDisabled}
           disabledColor={getDisabledColor(theme)}
           customStyles={{ flex: 1 }}

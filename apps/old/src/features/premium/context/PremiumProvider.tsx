@@ -6,7 +6,6 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { Colors } from "@/src/constants/Colors";
 import CFG from "@/src/constants/Config";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import {
@@ -19,9 +18,8 @@ import {
   setStoredLifetimePremiumExpiration,
   setStoredPremiumExpiration,
 } from "@/src/features/premium/lib/premium-expiration-storage-service";
+import { resetPremiumCustomization } from "@/src/features/theme/lib/premium-customization-reset-service";
 import { posthog } from "@/src/lib/posthog";
-import { getAppIcon, setAppIcon } from "expo-icon-handler";
-import { getIcon } from "@/src/constants/Logos";
 
 type Props = {
   children?: React.ReactNode;
@@ -60,11 +58,7 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
   }, [premium]);
 
   const forceResetTheme = useCallback(async () => {
-    changeTheme(Colors.main, false);
-    const current = await getAppIcon();
-    if (current !== "icon-blue" && current !== "default") {
-      setAppIcon(getIcon(Colors.main));
-    }
+    await resetPremiumCustomization(changeTheme);
   }, [changeTheme]);
 
   const checkPurchases = useCallback(async () => {

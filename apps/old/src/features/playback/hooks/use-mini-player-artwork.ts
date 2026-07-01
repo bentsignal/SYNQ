@@ -30,17 +30,13 @@ export const useMiniPlayerArtwork = () => {
     let cancelled = false;
 
     const loadCover = async () => {
-      try {
-        const coverState = await getMiniPlayerCoverState(trackId);
-        if (cancelled) {
-          return;
-        }
-
-        setCoverImage(coverState.coverImage);
-        setEmptyCover(coverState.emptyCover);
-      } catch (error) {
-        console.log("error loading song cover:", error);
+      const coverState = await getMiniPlayerCoverState(trackId);
+      if (cancelled) {
+        return;
       }
+
+      setCoverImage(coverState.coverImage);
+      setEmptyCover(coverState.emptyCover);
     };
 
     void loadCover();

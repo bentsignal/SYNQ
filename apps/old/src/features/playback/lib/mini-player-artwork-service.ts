@@ -1,24 +1,29 @@
 import { getLibrarySongCoverPath } from "@/src/features/library/repository/library-song-repository";
 import { getTrackArtwork } from "@/src/features/playback/lib/track-factory";
 import { getFileName } from "@/src/lib/util";
-import { Track } from "react-native-track-player";
+import { type Track } from "react-native-track-player";
 
 const EMPTY_IMAGE = "transparent";
+const EMPTY_COVER_STATE = {
+  coverImage: "",
+  emptyCover: true,
+};
 
 export const getMiniPlayerCoverState = async (trackId?: number | string) => {
   if (trackId === undefined) {
-    return {
-      coverImage: "",
-      emptyCover: true,
-    };
+    return EMPTY_COVER_STATE;
   }
 
-  const cover = await getLibrarySongCoverPath(Number(trackId));
+  try {
+    const cover = await getLibrarySongCoverPath(Number(trackId));
 
-  return {
-    coverImage: cover ?? "",
-    emptyCover: !cover,
-  };
+    return {
+      coverImage: cover ?? "",
+      emptyCover: !cover,
+    };
+  } catch {
+    return EMPTY_COVER_STATE;
+  }
 };
 
 export const getMiniPlayerBackgroundImage = ({

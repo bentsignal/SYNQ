@@ -4,6 +4,16 @@ const productNames = [
   "Premium Lifetime",
 ] as const;
 
+const premiumSubscriptionProductIds = [
+  "SYNQPremiumLifetime",
+  "SYNQPremiumMonthly",
+  "SYNQPremiumYearly",
+] as const;
+
+export const isPremiumSubscriptionProductId = (productId: string) => {
+  return premiumSubscriptionProductIds.some((id) => id === productId);
+};
+
 export const getPremiumProductName = (selected: number) => {
   const productName = productNames[selected];
   if (!productName) {

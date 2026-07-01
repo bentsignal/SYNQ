@@ -6,18 +6,9 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import CFG from "@/src/constants/Config";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
-import {
-  connect,
-  restorePurchases,
-} from "@/src/features/premium/lib/purchase-service";
-import {
-  clearStoredPremiumExpiration,
-  getStoredPremiumExpiration,
-  setStoredLifetimePremiumExpiration,
-  setStoredPremiumExpiration,
-} from "@/src/features/premium/lib/premium-expiration-storage-service";
+import { clearStoredPremiumExpiration } from "@/src/features/premium/lib/premium-expiration-storage-service";
+import { syncPremiumEntitlement } from "@/src/features/premium/lib/premium-entitlement-service";
 import { resetPremiumCustomization } from "@/src/features/theme/lib/premium-customization-reset-service";
 import { posthog } from "@/src/lib/posthog";
 
@@ -62,52 +53,11 @@ const PremiumProvider: React.FC<Props> = ({ children }) => {
   }, [changeTheme]);
 
   const checkPurchases = useCallback(async () => {
-    const premiumSubscriptions = [
-      "SYNQPremiumLifetime",
-      "SYNQPremiumMonthly",
-      "SYNQPremiumYearly",
-    ];
-
     try {
-      const expiration = await getStoredPremiumExpiration();
+      const hasPremiumEntitlement = await syncPremiumEntitlement();
+      setPremium(hasPremiumEntitlement);
 
-      if (expiration && !CFG.devTestFreeVersion) {
-        if (expiration === "never") {
-          setPremium(true);
-          return;
-        } else {
-          const expirationDate = new Date(expiration);
-          const currentDate = new Date();
-          if (expirationDate > currentDate) {
-            setPremium(true);
-            return;
-          } else {
-            setPremium(false);
-            await clearStoredPremiumExpiration();
-          }
-        }
-      }
-
-      // restore purchases
-      await connect();
-      const purchase = await restorePurchases();
-      if (
-        purchase &&
-        premiumSubscriptions.includes(purchase.name) &&
-        !CFG.devTestFreeVersion
-      ) {
-        setPremium(true);
-        if (
-          purchase.expiration === null ||
-          purchase.name === "SYNQPremiumLifetime"
-        ) {
-          await setStoredLifetimePremiumExpiration();
-        } else {
-          await setStoredPremiumExpiration(purchase.expiration);
-        }
-      } else {
-        setPremium(false);
-        await clearStoredPremiumExpiration();
+      if (!hasPremiumEntitlement) {
         await forceResetTheme();
       }
     } catch {

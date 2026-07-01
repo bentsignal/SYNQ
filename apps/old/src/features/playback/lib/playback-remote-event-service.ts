@@ -154,7 +154,6 @@ export const handlePlaybackRemoteEvent = ({
       }
       break;
     case Event.PlaybackError:
-      console.log("playback error: ", event);
       void resetPlaybackQueue();
       showPlaybackErrorNotification({
         addNotification: args.addNotification,

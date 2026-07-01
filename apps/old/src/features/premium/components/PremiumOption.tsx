@@ -1,8 +1,8 @@
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
+import { capturePremiumOptionPress } from "@/src/features/premium/lib/premium-purchase-events";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { darkenColor } from "@/src/lib/color-utils";
-import { posthog } from "@/src/lib/posthog";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Skeleton from "@/src/shared/components/Skeleton";
 
@@ -59,10 +59,7 @@ const PremiumOption = ({
         style={Local.subOption}
         activeOpacity={1}
         onPress={() => {
-          posthog.capture("premium_option_press", {
-            tier: tier,
-            price: price,
-          });
+          capturePremiumOptionPress(tier, price);
           handler();
         }}
       >

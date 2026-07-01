@@ -6,6 +6,13 @@ export const capturePremiumPurchaseAttempt = (tier: string) => {
   });
 };
 
+export const capturePremiumOptionPress = (tier: string, price: string) => {
+  posthog.capture("premium_option_press", {
+    price,
+    tier,
+  });
+};
+
 export const capturePremiumPurchaseSuccess = (tier: string) => {
   posthog.capture("success_purchase_premium", {
     tier,

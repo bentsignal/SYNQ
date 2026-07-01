@@ -1,13 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
 import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import {
-  confirmEntityDelete,
-  dismissThen,
-  exportEntitySongs,
-  navigateToEntityEdit,
-} from "@/src/features/action-sheet/lib/entity-option-actions";
-import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
+import { useEntityOptionActions } from "@/src/features/action-sheet/hooks/use-entity-option-actions";
+import { dismissThen } from "@/src/features/action-sheet/lib/entity-option-actions";
 import {
   deleteLibraryAlbum,
   deleteLibraryArtist,
@@ -18,115 +12,53 @@ import {
   getLibraryArtistSongs,
   getLibraryPlaylistSongs,
 } from "@/src/features/library/repository/library-song-repository";
-import { posthog } from "@/src/lib/posthog";
 import { router } from "expo-router";
+import { useCallback } from "react";
 
 export function usePlaylistOptions(sheetName: string) {
   const { editPlaylist } = useActionSheetContext();
-  const { setShowGlobalLoading } = useGlobalProgressContext();
-  const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
-
-  useEffect(() => {
-    if (editPlaylist.pageType) {
-      setPageType(editPlaylist.pageType);
-    }
-  }, [editPlaylist]);
-
-  const handleEdit = useCallback(() => {
-    navigateToEntityEdit({
-      sheetName,
-      eventName: "edit_playlist",
-      path: `/playlist/edit/${editPlaylist.id}`,
-    });
-  }, [editPlaylist.id, sheetName]);
-
-  const handleExport = useCallback(async () => {
-    await exportEntitySongs({
-      sheetName,
-      eventName: "export_playlist",
-      setShowGlobalLoading,
-      loadSongs: () =>
-        getLibraryPlaylistSongs({
-          playlistId: editPlaylist.id,
-          pageType: PageType.PLAYLIST,
-        }),
-    });
-  }, [editPlaylist.id, setShowGlobalLoading, sheetName]);
-
-  const executeDelete = useCallback(async () => {
-    try {
-      posthog.capture("delete_playlist");
-      await deleteLibraryPlaylist(editPlaylist.id);
-    } catch {
-      return;
-    }
-  }, [editPlaylist.id]);
-
-  const handleDelete = useCallback(() => {
-    confirmEntityDelete({
-      sheetName,
-      title: "Delete Playlist",
-      message: `Are you sure you want to delete ${editPlaylist.name ?? "this playlist"}?`,
-      isDetailPage: pageType === PageType.PLAYLIST,
-      executeDelete,
-    });
-  }, [editPlaylist.name, executeDelete, pageType, sheetName]);
+  const options = useEntityOptionActions({
+    deleteEntity: deleteLibraryPlaylist,
+    deleteEventName: "delete_playlist",
+    deleteFallbackName: "this playlist",
+    deleteMessage: (name) => `Are you sure you want to delete ${name}?`,
+    deleteTitle: "Delete Playlist",
+    detailPageType: PageType.PLAYLIST,
+    editEventName: "edit_playlist",
+    entity: editPlaylist,
+    exportEventName: "export_playlist",
+    getEditPath: (id) => `/playlist/edit/${id}`,
+    loadSongs: (playlist) =>
+      getLibraryPlaylistSongs({
+        playlistId: playlist.id,
+        pageType: PageType.PLAYLIST,
+      }),
+    sheetName,
+  });
 
   return {
     canDelete: editPlaylist.id !== 2,
-    handleDelete,
-    handleEdit,
-    handleExport,
-    pageType,
+    ...options,
   };
 }
 
 export function useAlbumOptions(sheetName: string) {
   const { editAlbum } = useActionSheetContext();
-  const { setShowGlobalLoading } = useGlobalProgressContext();
-  const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
-
-  useEffect(() => {
-    if (editAlbum.pageType) {
-      setPageType(editAlbum.pageType);
-    }
-  }, [editAlbum]);
-
-  const handleEdit = useCallback(() => {
-    navigateToEntityEdit({
-      sheetName,
-      eventName: "edit_album",
-      path: `/album/edit/${editAlbum.id}`,
-    });
-  }, [editAlbum.id, sheetName]);
-
-  const handleExport = useCallback(async () => {
-    await exportEntitySongs({
-      sheetName,
-      eventName: "export_album",
-      setShowGlobalLoading,
-      loadSongs: () => getLibraryAlbumSongs({ albumId: editAlbum.id }),
-    });
-  }, [editAlbum.id, setShowGlobalLoading, sheetName]);
-
-  const executeDelete = useCallback(async () => {
-    try {
-      posthog.capture("delete_album");
-      await deleteLibraryAlbum(editAlbum.id);
-    } catch {
-      return;
-    }
-  }, [editAlbum.id]);
-
-  const handleDelete = useCallback(() => {
-    confirmEntityDelete({
-      sheetName,
-      title: "Delete Album",
-      message: `Are you sure you want to delete ${editAlbum.name ?? "this album"}? (Deleting an album will not remove its songs)`,
-      isDetailPage: pageType === PageType.ALBUM,
-      executeDelete,
-    });
-  }, [editAlbum.name, executeDelete, pageType, sheetName]);
+  const options = useEntityOptionActions({
+    deleteEntity: deleteLibraryAlbum,
+    deleteEventName: "delete_album",
+    deleteFallbackName: "this album",
+    deleteMessage: (name) =>
+      `Are you sure you want to delete ${name}? (Deleting an album will not remove its songs)`,
+    deleteTitle: "Delete Album",
+    detailPageType: PageType.ALBUM,
+    editEventName: "edit_album",
+    entity: editAlbum,
+    exportEventName: "export_album",
+    getEditPath: (id) => `/album/edit/${id}`,
+    loadSongs: (album) => getLibraryAlbumSongs({ albumId: album.id }),
+    sheetName,
+  });
 
   const handleReorder = useCallback(() => {
     dismissThen(sheetName, () => {
@@ -135,65 +67,28 @@ export function useAlbumOptions(sheetName: string) {
   }, [sheetName]);
 
   return {
-    handleDelete,
-    handleEdit,
-    handleExport,
+    ...options,
     handleReorder,
-    pageType,
   };
 }
 
 export function useArtistOptions(sheetName: string) {
   const { editArtist } = useActionSheetContext();
-  const { setShowGlobalLoading } = useGlobalProgressContext();
-  const [pageType, setPageType] = useState<PageType>(PageType.IMPORT);
+  const options = useEntityOptionActions({
+    deleteEntity: deleteLibraryArtist,
+    deleteEventName: "delete_artist",
+    deleteFallbackName: "this artist",
+    deleteMessage: (name) =>
+      `Are you sure you want to delete ${name}? (Deleting an artist will not remove their songs & albums)`,
+    deleteTitle: "Delete Artist",
+    detailPageType: PageType.ARTIST,
+    editEventName: "edit_artist",
+    entity: editArtist,
+    exportEventName: "export_artist",
+    getEditPath: (id) => `/artist/edit/${id}`,
+    loadSongs: (artist) => getLibraryArtistSongs({ artistId: artist.id }),
+    sheetName,
+  });
 
-  useEffect(() => {
-    if (editArtist.pageType) {
-      setPageType(editArtist.pageType);
-    }
-  }, [editArtist]);
-
-  const handleEdit = useCallback(() => {
-    navigateToEntityEdit({
-      sheetName,
-      eventName: "edit_artist",
-      path: `/artist/edit/${editArtist.id}`,
-    });
-  }, [editArtist.id, sheetName]);
-
-  const handleExport = useCallback(async () => {
-    await exportEntitySongs({
-      sheetName,
-      eventName: "export_artist",
-      setShowGlobalLoading,
-      loadSongs: () => getLibraryArtistSongs({ artistId: editArtist.id }),
-    });
-  }, [editArtist.id, setShowGlobalLoading, sheetName]);
-
-  const executeDelete = useCallback(async () => {
-    try {
-      posthog.capture("delete_artist");
-      await deleteLibraryArtist(editArtist.id);
-    } catch {
-      return;
-    }
-  }, [editArtist.id]);
-
-  const handleDelete = useCallback(() => {
-    confirmEntityDelete({
-      sheetName,
-      title: "Delete Artist",
-      message: `Are you sure you want to delete ${editArtist.name ?? "this artist"}? (Deleting an artist will not remove their songs & albums)`,
-      isDetailPage: pageType === PageType.ARTIST,
-      executeDelete,
-    });
-  }, [editArtist.name, executeDelete, pageType, sheetName]);
-
-  return {
-    handleDelete,
-    handleEdit,
-    handleExport,
-    pageType,
-  };
+  return options;
 }

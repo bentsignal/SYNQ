@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { resetBackupDatabaseConnection } from "@/src/features/backup/lib/backup-database-service";
-import usePlayer from "@/src/features/playback/hooks/use-player";
+import { resetPlaybackQueue } from "@/src/features/playback/lib/player-queue-actions-service";
 import { posthog } from "@/src/lib/posthog";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as DocumentPicker from "expo-document-picker";
@@ -52,7 +52,6 @@ const navigateToLibrary = () => {
 };
 
 export function useBackupActions({ premium }: { premium: boolean }) {
-  const { resetPlayer } = usePlayer();
   const [loading, setLoading] = useState(false);
 
   const showErrorAlert = useCallback((message: string) => {
@@ -91,11 +90,11 @@ export function useBackupActions({ premium }: { premium: boolean }) {
       throw wrapError("Error reconnecting to db:", error);
     }
     try {
-      await resetPlayer();
+      await resetPlaybackQueue();
     } catch (error) {
       throw wrapError("Error resetting track player:", error);
     }
-  }, [resetPlayer]);
+  }, []);
 
   const resetLocalState = useCallback(async () => {
     await clearLocalState();

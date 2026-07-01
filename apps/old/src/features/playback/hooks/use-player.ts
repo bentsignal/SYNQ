@@ -11,7 +11,6 @@ import {
 } from "@/src/features/playback/context/PlaybackProvider";
 import {
   removeTracksBySongIds,
-  resetPlaybackQueue,
 } from "@/src/features/playback/lib/player-queue-actions-service";
 import {
   addSongToPlaybackQueue,
@@ -44,10 +43,6 @@ export default function usePlayer() {
 
   const removeSongsFromQueue = async (songIds: number[]) => {
     await removeTracksBySongIds(songIds);
-  };
-
-  const resetPlayer = async () => {
-    await resetPlaybackQueue();
   };
 
   const playPlayer = async () => {
@@ -99,7 +94,6 @@ export default function usePlayer() {
     playPlayer,
     playSong,
     removeSongsFromQueue,
-    resetPlayer,
     seekToPosition,
     togglePlayback,
     updateQueue,

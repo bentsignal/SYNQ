@@ -18,9 +18,11 @@ import {
   playTrackNow,
   removeTracksBySongIds,
   resetPlaybackQueue,
+} from "@/src/features/playback/lib/player-queue-actions-service";
+import {
   skipToNextPlayableTrack,
   skipToPreviousPlayableTrack,
-} from "@/src/features/playback/lib/player-queue-actions-service";
+} from "@/src/features/playback/lib/playback-queue-navigation-service";
 import { updateUpcomingQueue } from "@/src/features/playback/lib/playback-upcoming-queue-service";
 import {
   pausePlayback,

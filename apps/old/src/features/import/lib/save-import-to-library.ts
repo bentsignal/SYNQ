@@ -16,6 +16,14 @@ import {
 import { updateLibrarySongCover } from "@/src/features/library/repository/song-metadata-repository";
 import * as FileSystem from "expo-file-system";
 
+type SaveImportSongResult =
+  | { status: "saved"; songId: number }
+  | { status: "skipped"; reason: "missing-file-path"; songId: number }
+  | { status: "failed"; reason: "audio-write" | "insert"; message: string };
+
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : String(error);
+
 const getLibrarySongDirectory = (songId: number) => {
   return `${FileSystem.documentDirectory}library/${songId}`;
 };
@@ -84,13 +92,18 @@ const storeImportSongArtistRelations = async (
   }
 };
 
-const saveOneImportSongToLibrary = async (song: SongType) => {
+const saveOneImportSongToLibrary = async (
+  song: SongType,
+): Promise<SaveImportSongResult> => {
   const fileName = song.fileName;
   const cacheUri = song.cacheUri;
 
   if (!fileName || !cacheUri) {
-    console.log("Skipping import song with missing file path data:", song.id);
-    return;
+    return {
+      status: "skipped",
+      reason: "missing-file-path",
+      songId: song.id,
+    };
   }
 
   const librarySongId = await createLibrarySongFromImport({
@@ -109,9 +122,12 @@ const saveOneImportSongToLibrary = async (song: SongType) => {
     });
     await updateLibrarySongFilePath(librarySongId, libraryPath);
   } catch (error) {
-    console.log("error writing audio: ", error);
     await deleteLibrarySong(librarySongId);
-    return;
+    return {
+      status: "failed",
+      reason: "audio-write",
+      message: getErrorMessage(error),
+    };
   }
 
   await storeImportSongAlbumRelations(song, librarySongId);
@@ -122,24 +138,36 @@ const saveOneImportSongToLibrary = async (song: SongType) => {
 
   await addSongToLibraryPlaylist(LIBRARY_PLAYLIST_ID, librarySongId);
   await storeImportSongArtistRelations(song, librarySongId);
+
+  return {
+    status: "saved",
+    songId: librarySongId,
+  };
 };
 
 export const saveImportSongsToLibrary = async (
   songs: SongType[],
   progress: (value: number) => void,
 ) => {
+  const results: SaveImportSongResult[] = [];
+
   try {
     for (let index = 0; index < songs.length; index += 1) {
       try {
-        await saveOneImportSongToLibrary(songs[index]);
+        results.push(await saveOneImportSongToLibrary(songs[index]));
       } catch (error) {
-        console.error("Error inserting song: ", error);
+        results.push({
+          status: "failed",
+          reason: "insert",
+          message: getErrorMessage(error),
+        });
       } finally {
         progress(index + 1);
       }
     }
+
+    return results;
   } catch (error) {
-    const trace = error instanceof Error ? error.message : String(error);
-    throw new Error("Error saving to library: " + trace);
+    throw new Error("Error saving to library: " + getErrorMessage(error));
   }
 };

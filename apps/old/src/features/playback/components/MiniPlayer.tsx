@@ -7,8 +7,8 @@ import { Styles } from "@/src/constants/Styles";
 import { CoverType } from "@/src/constants/Types";
 import { useMiniPlayerArtwork } from "@/src/features/playback/hooks/use-mini-player-artwork";
 import { useMiniPlayerCoverFade } from "@/src/features/playback/hooks/use-mini-player-cover-fade";
+import { useOpenPlayer } from "@/src/features/playback/hooks/use-open-player";
 import { getFileName } from "@/src/lib/util";
-import { router } from "expo-router";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated from "react-native-reanimated";
 
@@ -16,6 +16,7 @@ const MiniPlayer = () => {
   const { backgroundImage, coverImage, emptyCover, track } =
     useMiniPlayerArtwork();
   const { coverStyle } = useMiniPlayerCoverFade(Boolean(track));
+  const { openPlayer } = useOpenPlayer();
 
   const textColor = Colors.text;
 
@@ -31,7 +32,7 @@ const MiniPlayer = () => {
           },
         ]}
         activeOpacity={1}
-        onPress={() => router.push("/player")}
+        onPress={openPlayer}
       >
         <CrossfadeImage
           source={{ uri: backgroundImage }}

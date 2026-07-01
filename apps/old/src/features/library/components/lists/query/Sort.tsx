@@ -1,10 +1,14 @@
 import { Text, StyleSheet } from "react-native";
 
-import { MenuView, NativeActionEvent, MenuAction } from '@react-native-menu/menu'
+import { MenuView, NativeActionEvent } from "@react-native-menu/menu";
 
 import { Styles } from "@/src/constants/Styles";
 import { Colors } from "@/src/constants/Colors";
 import { SortType, SortOrder, ShowSortTypes } from "@/src/constants/Types";
+import {
+  buildSortMenuActions,
+  parseSortMenuAction,
+} from "@/src/features/library/lib/sort-menu";
 
 type SortProps = {
   setSort: (sort: SortType) => void;
@@ -12,191 +16,19 @@ type SortProps = {
   order: SortOrder;
   setOrder: (order: SortOrder) => void;
   showSortTypes?: ShowSortTypes;
-}
+};
 
 export default function Sort({ setSort, sort, order, setOrder, showSortTypes }: SortProps) {
-  
   const handleChange = (nativeEvent: NativeActionEvent) => {
-    const event = nativeEvent.nativeEvent.event;
-    if (event === 'date-asc') {
-      setSort(SortType.DATE);
-      setOrder(SortOrder.ASC);
-    } else if (event === 'date-desc') {
-      setSort(SortType.DATE);
-      setOrder(SortOrder.DESC);
-    } else if (event === 'title-asc') {
-      setSort(SortType.TITLE);
-      setOrder(SortOrder.ASC);
-    } else if (event === 'title-desc') {
-      setSort(SortType.TITLE);
-      setOrder(SortOrder.DESC);
-    } else if (event === 'artist-asc') {
-      setSort(SortType.ARTIST);
-      setOrder(SortOrder.ASC);
-    } else if (event === 'artist-desc') {
-      setSort(SortType.ARTIST);
-      setOrder(SortOrder.DESC);
-    } else if (event === 'album-asc') {
-      setSort(SortType.ALBUM);
-      setOrder(SortOrder.ASC);
-    } else if (event === 'album-desc') {
-      setSort(SortType.ALBUM);
-      setOrder(SortOrder.DESC);
-    } else if (event === 'track-asc') {
-      setSort(SortType.TRACK);
-      setOrder(SortOrder.ASC);
-    } else if (event === 'track-desc') {
-      setSort(SortType.TRACK);
-      setOrder(SortOrder.DESC);
-    } else if (event === 'year-asc') {
-      setSort(SortType.YEAR);
-      setOrder(SortOrder.ASC);
-    } else if (event === 'year-desc') {
-      setSort(SortType.YEAR);
-      setOrder(SortOrder.DESC);
+    const selection = parseSortMenuAction(nativeEvent.nativeEvent.event);
+
+    if (selection) {
+      setSort(selection.sort);
+      setOrder(selection.order);
     }
-  }
+  };
 
-  const actions: MenuAction[] = [];
-
-  if (showSortTypes?.[SortType.DATE]) {
-    actions.push({
-      id: 'date',
-      title: 'Date Added',
-      titleColor: Colors.text,
-      subactions: [
-        {
-          id: 'date-asc',
-          title: 'Ascending',
-          subtitle: 'Oldest → Newest',
-          titleColor: Colors.text,
-          state: sort === SortType.DATE && order === SortOrder.ASC ? 'on' : 'off',
-        },
-        {
-          id: 'date-desc',
-          title: 'Descending',
-          subtitle: 'Newest → Oldest',
-          titleColor: Colors.text,
-          state: sort === SortType.DATE && order === SortOrder.DESC ? 'on' : 'off',
-        }
-      ],
-    });
-  }
-  if (showSortTypes?.[SortType.TITLE]) {
-    actions.push({
-      id: 'title',
-      title: 'Title',
-      titleColor: Colors.text,
-      subactions: [
-        {
-          id: 'title-asc',
-          title: 'Ascending',
-          subtitle: 'A-Z',
-          titleColor: Colors.text,
-          state: sort === SortType.TITLE && order === SortOrder.ASC ? 'on' : 'off',
-        },
-        {
-          id: 'title-desc',
-          title: 'Descending',
-          subtitle: 'Z-A',
-          titleColor: Colors.text,
-          state: sort === SortType.TITLE && order === SortOrder.DESC ? 'on' : 'off',
-        }
-      ],
-    });
-  }
-  if (showSortTypes?.[SortType.ARTIST]) {
-    actions.push({
-      id: 'artist',
-      title: 'Artist',
-      titleColor: Colors.text,
-      subactions: [
-        {
-          id: 'artist-asc',
-          title: 'Ascending',
-          subtitle: 'A-Z',
-          titleColor: Colors.text,
-          state: sort === SortType.ARTIST && order === SortOrder.ASC ? 'on' : 'off',
-        },
-        {
-          id: 'artist-desc',
-          title: 'Descending',
-          subtitle: 'Z-A',
-          titleColor: Colors.text,
-          state: sort === SortType.ARTIST && order === SortOrder.DESC ? 'on' : 'off',
-        }
-      ],
-    });
-  }
-  if (showSortTypes?.[SortType.ALBUM]) {
-    actions.push({
-      id: 'album',
-      title: 'Album',
-      titleColor: Colors.text,
-      subactions: [
-        {
-          id: 'album-asc',
-          title: 'Ascending',
-          subtitle: 'A-Z',
-          titleColor: Colors.text,
-          state: sort === SortType.ALBUM && order === SortOrder.ASC ? 'on' : 'off',
-        },
-        {
-          id: 'album-desc',
-          title: 'Descending',
-          subtitle: 'Z-A',
-          titleColor: Colors.text,
-          state: sort === SortType.ALBUM && order === SortOrder.DESC ? 'on' : 'off',
-        }
-      ],
-    });
-  }
-  if (showSortTypes?.[SortType.TRACK]) {
-    actions.push({
-      id: 'track',
-      title: 'Track',
-      titleColor: Colors.text,
-      subactions: [
-        {
-          id: 'track-asc',
-          title: 'Ascending',
-          subtitle: '1 → 999',
-          titleColor: Colors.text,
-          state: sort === SortType.TRACK && order === SortOrder.ASC ? 'on' : 'off',
-        },
-        {
-          id: 'track-desc',
-          title: 'Descending',
-          subtitle: '999 → 1',
-          titleColor: Colors.text,
-          state: sort === SortType.TRACK && order === SortOrder.DESC ? 'on' : 'off',
-        }
-      ],
-    });
-  }
-  if (showSortTypes?.[SortType.YEAR]) {
-    actions.push({
-      id: 'year',
-      title: 'Year',
-      titleColor: Colors.text,
-      subactions: [
-        {
-          id: 'year-asc',
-          title: 'Ascending',
-          subtitle: '2001 → 2025',
-          titleColor: Colors.text,
-          state: sort === SortType.YEAR && order === SortOrder.ASC ? 'on' : 'off',
-        },
-        {
-          id: 'year-desc',
-          title: 'Descending',
-          subtitle: '2025 → 2001',
-          titleColor: Colors.text,
-          state: sort === SortType.YEAR && order === SortOrder.DESC ? 'on' : 'off',
-        }
-      ],
-    });
-  }
+  const actions = buildSortMenuActions({ sort, order }, showSortTypes);
 
   return (
     <MenuView
@@ -217,8 +49,8 @@ const Local = StyleSheet.create({
     backgroundColor: Colors.song,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   text: {
     ...Styles.h6,

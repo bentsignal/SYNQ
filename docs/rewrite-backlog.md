@@ -423,6 +423,9 @@ feature-oriented packages.
      sheet presentation out of the app route layer.
    - Root tab route layout now delegates to an app-shell feature shell
      component, while playback ad asset loading moved into a playback hook.
+   - Ingest stack layout and route screens now delegate to ingest feature
+     components, removing the route-layout dependency on controls exported from
+     sibling route files while preserving the current ingest flow behavior.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

@@ -378,6 +378,10 @@ feature-oriented packages.
    - Import files route now delegates to an import feature screen component,
      moving transfer progress, imported song list rendering, and premium blur
      gating out of the app route.
+   - Import Wi-Fi route now delegates to an import feature screen component,
+     moving server URL instructions, export-disable synchronization, transfer
+     progress, result list rendering, and premium blur gating out of the app
+     route.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

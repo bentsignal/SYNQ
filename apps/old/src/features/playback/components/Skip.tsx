@@ -1,7 +1,11 @@
-import { useAdGatedPlaybackCommand } from "@/src/features/playback/hooks/use-ad-gated-playback-command";
-import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
-import usePlayer from "@/src/features/playback/hooks/use-player";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { useSkipPlaybackButton } from "@/src/features/playback/hooks/use-skip-playback-button";
+import {
+  StyleSheet,
+  type StyleProp,
+  TouchableOpacity,
+  View,
+  type ViewStyle,
+} from "react-native";
 import { PlayButton } from "./PausePlayButtons";
 
 const Shape = ({ size, color }: { size: number; color?: string }) => {
@@ -18,49 +22,41 @@ const Shape = ({ size, color }: { size: number; color?: string }) => {
 export const SkipRight = ({
   size,
   color,
+  style,
 }: {
   size: number;
   color?: string;
+  style?: StyleProp<ViewStyle>;
 }) => {
-  const { skipRight } = usePlayer();
-  const { sendHaptic } = useHaptics();
-  const { runAdGatedPlaybackCommand } = useAdGatedPlaybackCommand();
+  const { skip } = useSkipPlaybackButton("right");
 
   return (
     <TouchableOpacity
       activeOpacity={0.7}
-      style={Local.container}
-      onPress={async () => {
-        await runAdGatedPlaybackCommand({
-          command: async () => {
-            sendHaptic("light");
-            await skipRight();
-          },
-        });
-      }}
+      style={[Local.container, style]}
+      onPress={skip}
     >
       <Shape size={size} color={color} />
     </TouchableOpacity>
   );
 };
 
-export const SkipLeft = ({ size, color }: { size: number; color?: string }) => {
-  const { skipLeft } = usePlayer();
-  const { sendHaptic } = useHaptics();
-  const { runAdGatedPlaybackCommand } = useAdGatedPlaybackCommand();
+export const SkipLeft = ({
+  size,
+  color,
+  style,
+}: {
+  size: number;
+  color?: string;
+  style?: StyleProp<ViewStyle>;
+}) => {
+  const { skip } = useSkipPlaybackButton("left");
 
   return (
     <TouchableOpacity
       activeOpacity={0.7}
-      style={[Local.flipped, Local.container]}
-      onPress={async () => {
-        await runAdGatedPlaybackCommand({
-          command: async () => {
-            sendHaptic("light");
-            await skipLeft();
-          },
-        });
-      }}
+      style={[Local.flipped, Local.container, style]}
+      onPress={skip}
     >
       <Shape size={size} color={color} />
     </TouchableOpacity>

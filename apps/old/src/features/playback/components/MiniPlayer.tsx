@@ -1,6 +1,6 @@
 import ListCover from "@/src/features/cover/components/ListCover";
 import CrossfadeImage from "@/src/features/playback/components/CrossfadeImage";
-import { SkipLeft, SkipRight } from "@/src/features/playback/components/Skip";
+import MiniPlayerControls from "@/src/features/playback/components/MiniPlayerControls";
 import SongInfo from "@/src/features/library/components/song/SongInfo";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
@@ -11,7 +11,6 @@ import { getFileName } from "@/src/lib/util";
 import { router } from "expo-router";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated from "react-native-reanimated";
-import PausePlayButtons from "./PausePlayButtons";
 
 const MiniPlayer = () => {
   const { backgroundImage, coverImage, emptyCover, track } =
@@ -57,21 +56,7 @@ const MiniPlayer = () => {
           titleStyles={[Local.title, Local.dropShadow]}
           artistStyles={[Local.artist, Local.dropShadow]}
         />
-        <View style={Local.buttonContainer}>
-          <TouchableOpacity style={Local.buttonWrapper} onPress={() => {}}>
-            <SkipLeft size={16} color={textColor} />
-          </TouchableOpacity>
-          <PausePlayButtons
-            playSize={25}
-            pauseHeight={25}
-            pauseWidth={7}
-            style={Local.playPauseButtonWrapper}
-            color={textColor}
-          />
-          <TouchableOpacity style={Local.buttonWrapper} onPress={() => {}}>
-            <SkipRight size={16} color={textColor} />
-          </TouchableOpacity>
-        </View>
+        <MiniPlayerControls color={textColor} />
       </TouchableOpacity>
     </View>
   );
@@ -106,22 +91,6 @@ const Local = StyleSheet.create({
     width: 800,
     height: "100%",
     backgroundColor: Colors.popup,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 10,
-  },
-  playPauseButtonWrapper: {
-    width: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 5,
-  },
-  buttonWrapper: {
-    paddingTop: 5,
-    paddingBottom: 5,
   },
   title: {
     ...Styles.h5,

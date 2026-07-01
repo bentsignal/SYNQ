@@ -1,8 +1,34 @@
-import { SortOrder, SortType, type SongType } from "@/src/constants/Types";
+import {
+  PageType,
+  SortOrder,
+  SortType,
+  type SongType,
+} from "@/src/constants/Types";
+import { getImagePathFromHash } from "@/src/features/images/repository/image-repository";
 
 type SongQueryField = "title" | "artist" | "album";
 type SongSortComparers = Partial<Record<SortType, SongSortComparer>>;
 type SongSortComparer = (first: SongType, second: SongType) => number;
+type SongQueryResult = SongType & {
+  artistNames: Set<string>;
+  albumNames: Set<string>;
+  albumCoverImage?: string | null;
+};
+
+type SongQueryResultRow = {
+  song: {
+    id: number;
+    originalFileName: string | null;
+    fileType: string | null;
+    title: string | null;
+    duration: number | null;
+    coverImage: string | null;
+  };
+  artistName: string | null;
+  albumName: string | null;
+  albumCoverImage: string | null;
+  track?: number | null;
+};
 
 type SortSongResultsInput = {
   comparers: SongSortComparers;
@@ -10,6 +36,11 @@ type SortSongResultsInput = {
   order: SortOrder;
   songs: SongType[];
   sort: SortType;
+};
+
+type RowsToSongResultsInput<Row extends SongQueryResultRow> = {
+  pageType: PageType;
+  rows: Row[];
 };
 
 type SongResultSummary = {
@@ -65,4 +96,57 @@ export const getSongResultSummary = (songs: SongType[]): SongResultSummary => {
     totalSongCount: songs.length,
     totalDuration: songs.reduce((acc, song) => acc + (song.duration ?? 0), 0),
   };
+};
+
+export const rowsToSongResults = <Row extends SongQueryResultRow>({
+  pageType,
+  rows,
+}: RowsToSongResultsInput<Row>) => {
+  const songMap = new Map<number, SongQueryResult>();
+
+  rows.forEach(({ song, track, artistName, albumName, albumCoverImage }) => {
+    const current =
+      songMap.get(song.id) ??
+      ({
+        id: song.id,
+        edited: false,
+        fileName: song.originalFileName ?? undefined,
+        fileType: song.fileType ?? undefined,
+        format: "id3v2.4",
+        title: song.title ?? undefined,
+        duration: song.duration ?? undefined,
+        track: track ?? undefined,
+        artwork: song.coverImage
+          ? getImagePathFromHash(song.coverImage).pathToFullImage
+          : undefined,
+        pageType,
+        artistNames: new Set<string>(),
+        albumNames: new Set<string>(),
+        albumCoverImage: undefined,
+      } satisfies SongQueryResult);
+
+    if (artistName) {
+      current.artistNames.add(artistName);
+    }
+
+    if (albumName) {
+      current.albumNames.add(albumName);
+    }
+
+    current.albumCoverImage = current.albumCoverImage ?? albumCoverImage;
+
+    songMap.set(song.id, current);
+  });
+
+  return Array.from(songMap.values()).map((song) => {
+    const { artistNames, albumNames, albumCoverImage, ...result } = song;
+    return {
+      ...result,
+      artist: Array.from(artistNames).join(", "),
+      album: Array.from(albumNames).join(", "),
+      artwork: albumCoverImage
+        ? getImagePathFromHash(albumCoverImage).pathToFullImage
+        : result.artwork,
+    };
+  });
 };

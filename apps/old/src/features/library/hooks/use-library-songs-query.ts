@@ -9,11 +9,11 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { getImagePathFromHash } from "@/src/features/images/repository/image-repository";
 import {
   compareLibraryText,
   matchesSongQuery,
   normalizeLibraryQuery,
+  rowsToSongResults,
   sortSongResults,
 } from "@/src/features/library/lib/song-query-results";
 
@@ -50,66 +50,6 @@ const sortSongs = (
     order,
     songs,
     sort,
-  });
-};
-
-const rowsToSongs = (rows: LibrarySongRow[], pageType: PageType) => {
-  const songMap = new Map<
-    number,
-    SongType & {
-      artistNames: Set<string>;
-      albumNames: Set<string>;
-      albumCoverImage?: string | null;
-    }
-  >();
-
-  rows.forEach(({ song, artistName, albumName, albumCoverImage }) => {
-    const current =
-      songMap.get(song.id) ??
-      ({
-        id: song.id,
-        edited: false,
-        fileName: song.originalFileName ?? undefined,
-        fileType: song.fileType ?? undefined,
-        format: "id3v2.4",
-        title: song.title ?? undefined,
-        duration: song.duration ?? undefined,
-        artwork: song.coverImage
-          ? getImagePathFromHash(song.coverImage).pathToFullImage
-          : undefined,
-        pageType,
-        artistNames: new Set<string>(),
-        albumNames: new Set<string>(),
-        albumCoverImage: undefined,
-      } satisfies SongType & {
-        artistNames: Set<string>;
-        albumNames: Set<string>;
-        albumCoverImage?: string | null;
-      });
-
-    if (artistName) {
-      current.artistNames.add(artistName);
-    }
-
-    if (albumName) {
-      current.albumNames.add(albumName);
-    }
-
-    current.albumCoverImage = current.albumCoverImage ?? albumCoverImage;
-
-    songMap.set(song.id, current);
-  });
-
-  return Array.from(songMap.values()).map((song) => {
-    const { artistNames, albumNames, albumCoverImage, ...result } = song;
-    return {
-      ...result,
-      artist: Array.from(artistNames).join(", "),
-      album: Array.from(albumNames).join(", "),
-      artwork: albumCoverImage
-        ? getImagePathFromHash(albumCoverImage).pathToFullImage
-        : result.artwork,
-    };
   });
 };
 
@@ -157,7 +97,10 @@ export const useLibrarySongsQuery = ({
 
   const songs = useMemo(() => {
     const normalizedQuery = normalizeLibraryQuery(query);
-    const mappedSongs = rowsToSongs((data ?? []) as LibrarySongRow[], pageType);
+    const mappedSongs = rowsToSongResults({
+      rows: (data ?? []) as LibrarySongRow[],
+      pageType,
+    });
     return sortSongs(
       mappedSongs.filter((song) => matchesSongQuery(song, normalizedQuery)),
       sort,

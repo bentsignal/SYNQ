@@ -16,7 +16,10 @@ import {
   addSongToPlaybackQueue,
   playSongNow,
 } from "@/src/features/playback/lib/playback-song-command-service";
-import { updateUpcomingQueue } from "@/src/features/playback/lib/playback-upcoming-queue-service";
+import {
+  persistSongPlaybackSource,
+  resolveSongPlaybackSource,
+} from "@/src/features/playback/lib/song-playback-source-service";
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { posthog } from "@/src/lib/posthog";
 import { useCallback } from "react";
@@ -56,38 +59,31 @@ export const useSongPlaybackHandler = ({
     async (song: SongType) => {
       sendHaptic("light");
       const id = activeTrack?.id ? activeTrack.id : -1;
-      const playbackSourceId = sourceId ?? song.sourceId;
-      const playbackSourceType = sourceType ?? song.sourceType;
-      const hasPlaybackSource =
-        playbackSourceType !== undefined && playbackSourceId !== undefined;
+      const playbackSource = resolveSongPlaybackSource({
+        song,
+        sourceId,
+        sourceType,
+      });
 
-      const persistSongPlaybackSource = async () => {
-        if (!hasPlaybackSource) {
-          return;
-        }
-
-        await updateUpcomingQueue({
-          currentId: song.id,
-          shuffleValue: shuffle,
-          sourceTypeValue: playbackSourceType,
-          sourceIdValue: playbackSourceId,
+      const persistCurrentSongPlaybackSource = async () => {
+        await persistSongPlaybackSource({
+          song,
+          source: playbackSource,
+          shuffle,
           sort,
           order,
+          persistPlaybackSource,
           query,
           theme,
           requestQueueRefresh,
           resetAddOffset,
-        });
-        await persistPlaybackSource({
-          id: playbackSourceId,
-          type: playbackSourceType,
         });
       };
 
       await runAdGatedPlaybackCommand({
         afterAdStarts: async () => {
           posthog.capture("play_ad");
-          await persistSongPlaybackSource();
+          await persistCurrentSongPlaybackSource();
           await addSongToPlaybackQueue({
             song,
             theme,
@@ -104,7 +100,7 @@ export const useSongPlaybackHandler = ({
           try {
             const didPlaySong = await playSongNow({ song, theme });
             if (didPlaySong) {
-              await persistSongPlaybackSource();
+              await persistCurrentSongPlaybackSource();
             }
           } catch (error) {
             console.log("error playing song: ", error);

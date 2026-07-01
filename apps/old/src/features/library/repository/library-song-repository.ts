@@ -416,8 +416,8 @@ export const deleteLibrarySong = async (songId: number) => {
       `${FileSystem.documentDirectory}library/${songId}`,
       { idempotent: true },
     );
-  } catch (error) {
-    console.log("error deleting library song files: ", error);
+  } catch {
+    // The database row is already gone; stale file cleanup can be retried later.
   }
 };
 

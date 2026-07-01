@@ -131,8 +131,7 @@ export function useEditSongForm(id: number) {
           setNumModified((modified) => modified + 1);
         }
         setSelectEnabled(false);
-      } catch (error) {
-        console.log("error saving edits: ", error);
+      } catch {
         router.back();
       }
     },

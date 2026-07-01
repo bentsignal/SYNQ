@@ -1,5 +1,6 @@
 import { getLibrarySongCoverPath } from "@/src/features/library/repository/library-song-repository";
 import { getTrackArtwork } from "@/src/features/playback/lib/track-factory";
+import { getFileName } from "@/src/lib/util";
 import { Track } from "react-native-track-player";
 
 const EMPTY_IMAGE = "transparent";
@@ -37,4 +38,12 @@ export const getMiniPlayerBackgroundImage = ({
   }
 
   return emptyImage;
+};
+
+export const getMiniPlayerTrackInfo = (track?: Track) => {
+  return {
+    artist: track?.artist,
+    fileName: getFileName(track?.url),
+    title: track?.title,
+  };
 };

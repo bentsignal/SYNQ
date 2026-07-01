@@ -8,12 +8,11 @@ import { CoverType } from "@/src/constants/Types";
 import { useMiniPlayerArtwork } from "@/src/features/playback/hooks/use-mini-player-artwork";
 import { useMiniPlayerCoverFade } from "@/src/features/playback/hooks/use-mini-player-cover-fade";
 import { useOpenPlayer } from "@/src/features/playback/hooks/use-open-player";
-import { getFileName } from "@/src/lib/util";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated from "react-native-reanimated";
 
 const MiniPlayer = () => {
-  const { backgroundImage, coverImage, emptyCover, track } =
+  const { backgroundImage, coverImage, emptyCover, track, trackInfo } =
     useMiniPlayerArtwork();
   const { coverStyle } = useMiniPlayerCoverFade(Boolean(track));
   const { openPlayer } = useOpenPlayer();
@@ -49,9 +48,9 @@ const MiniPlayer = () => {
           />
         </Animated.View>
         <SongInfo
-          fileName={getFileName(track?.url)}
-          title={track?.title}
-          artist={track?.artist}
+          fileName={trackInfo.fileName}
+          title={trackInfo.title}
+          artist={trackInfo.artist}
           showAlbum={false}
           color={textColor}
           titleStyles={[Local.title, Local.dropShadow]}

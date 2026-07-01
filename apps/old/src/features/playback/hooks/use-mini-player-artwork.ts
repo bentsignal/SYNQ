@@ -1,6 +1,7 @@
 import {
   getMiniPlayerBackgroundImage,
   getMiniPlayerCoverState,
+  getMiniPlayerTrackInfo,
 } from "@/src/features/playback/lib/mini-player-artwork-service";
 import { useAssets } from "expo-asset";
 import { useEffect, useMemo, useState } from "react";
@@ -52,11 +53,13 @@ export const useMiniPlayerArtwork = () => {
   const backgroundImage = useMemo(() => {
     return getMiniPlayerBackgroundImage({ emptyImage, track });
   }, [emptyImage, track]);
+  const trackInfo = useMemo(() => getMiniPlayerTrackInfo(track), [track]);
 
   return {
     backgroundImage,
     coverImage,
     emptyCover,
     track,
+    trackInfo,
   };
 };

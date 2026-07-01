@@ -1,4 +1,4 @@
-import { Fragment, memo, useCallback, useEffect, useState } from "react";
+import { Fragment, memo } from "react";
 import EditCover from "@/src/features/cover/components/EditCover";
 import CustomButton from "@/src/shared/components/CustomButton";
 import AlbumItem from "@/src/features/library/components/lists/album/AlbumItem";
@@ -8,28 +8,9 @@ import ModalStyles from "@/src/shared/components/modals/Styles";
 import Notifications from "@/src/features/notifications/components/Notifications";
 import { Colors } from "@/src/constants/Colors";
 import { Styles } from "@/src/constants/Styles";
-import {
-  AlbumType,
-  ArtistType,
-  CoverType,
-  PageType,
-} from "@/src/constants/Types";
-import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
-import { pickCoverImage } from "@/src/features/images/repository/image-repository";
-import {
-  getLibrarySongAlbums,
-  getLibrarySongArtists,
-  getLibrarySongCoverPath,
-} from "@/src/features/library/repository/library-song-repository";
-import { updateLibrarySongs } from "@/src/features/library/repository/song-metadata-repository";
-import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
-import {
-  getImportSongCover,
-  saveImportSongEdits,
-} from "@/src/features/import/lib/import-song-edits";
-import { useSelectionContext } from "@/src/features/selection/context/SelectionProvider";
+import { CoverType } from "@/src/constants/Types";
+import { useEditSongForm } from "@/src/features/library/hooks/use-edit-song-form";
 import { getDurationString } from "@/src/lib/util";
-import { router, useFocusEffect } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -38,143 +19,19 @@ const MemoTextInput = memo(TextInput);
 
 const EditSong = ({ id }: { id: number }) => {
   const insets = useSafeAreaInsets();
-
   const {
+    albums,
+    artists,
     editSong,
-    setNumModified,
-    numModified,
-  } = useActionSheetContext();
-  const { results, setResults } = useImportFlowContext();
-  const { selectedSongs, setSelectedSongs, setSelectEnabled } =
-    useSelectionContext();
-
-  const [title, setTitle] = useState("");
-  const [artist, setArtist] = useState("");
-  const [album, setAlbum] = useState("");
-  const [image, setImage] = useState("");
-  const [artists, setArtists] = useState<ArtistType[]>([]);
-  const [albums, setAlbums] = useState<AlbumType[]>([]);
-
-  const loadArtists = useCallback(async () => {
-    if (editSong.pageType === PageType.IMPORT) {
-      setArtists(editSong.importArtists ?? []);
-    } else {
-      const artists = await getLibrarySongArtists(id);
-      setArtists(artists);
-    }
-  }, [editSong, id]);
-
-  const loadAlbums = useCallback(async () => {
-    if (editSong.pageType === PageType.IMPORT) {
-      setAlbums(editSong.importAlbums ?? []);
-    } else {
-      const albums = await getLibrarySongAlbums(id);
-      setAlbums(albums);
-    }
-  }, [editSong, id]);
-
-  const loadCover = useCallback(async () => {
-    if (editSong.pageType === PageType.IMPORT) {
-      const cover = await getImportSongCover(editSong);
-      setImage(cover ?? "");
-    } else {
-      const cover = await getLibrarySongCoverPath(id, true);
-      setImage(cover ?? "");
-    }
-  }, [editSong, id]);
-
-  const refreshRelations = useCallback(() => {
-    if (editSong) {
-      loadArtists();
-      loadAlbums();
-      loadCover();
-    }
-  }, [editSong, loadAlbums, loadArtists, loadCover]);
-
-  useEffect(() => {
-    if (editSong) {
-      setTitle(editSong.title ?? "");
-      setArtist(editSong.artist ?? "");
-      setAlbum(editSong.album ?? "");
-      refreshRelations();
-    }
-  }, [editSong, refreshRelations]);
-
-  useFocusEffect(
-    useCallback(() => {
-      refreshRelations();
-    }, [refreshRelations]),
-  );
-
-  const handleUpdateImage = async () => {
-    const cover = await pickCoverImage();
-    if (cover) {
-      setImage(cover);
-      await handleSave({ newTitle: title, newImage: cover });
-    }
-  };
-
-  const handleTitleUpdate = async (text: string) => {
-    setTitle(text);
-    await handleSave({ newTitle: text, newImage: image });
-  };
-
-  const handleSave = async ({
-    newTitle,
-    newImage,
-  }: {
-    newTitle: string;
-    newImage: string;
-  }) => {
-    try {
-      const editPageType = editSong.pageType;
-      if (
-        editPageType &&
-        [PageType.LIBRARY, PageType.ARTIST, PageType.ALBUM].includes(
-          editPageType,
-        )
-      ) {
-        await updateLibrarySongs({
-          ids: [editSong.id],
-          title: newTitle,
-          artist,
-          album,
-          cover: newImage,
-        });
-      } else if (editSong.pageType === PageType.IMPORT) {
-        const newResults = await saveImportSongEdits({
-          songs: results,
-          ids: [editSong.id],
-          title: newTitle,
-          artist,
-          album,
-          artwork: newImage,
-        });
-        setResults(newResults);
-        setNumModified(numModified + 1);
-      } else if (selectedSongs.length > 0) {
-        const newResults = await saveImportSongEdits({
-          songs: results,
-          ids: selectedSongs,
-          title: newTitle,
-          artist,
-          album,
-          artwork: newImage,
-        });
-        setResults(newResults);
-        setNumModified(numModified + 1);
-      }
-      setSelectEnabled(false);
-    } catch (error) {
-      console.log("error saving edits: ", error);
-      router.back();
-    }
-  };
-
-  const handleClose = () => {
-    router.back();
-    setSelectedSongs([]);
-  };
+    handleAddAlbums,
+    handleAddArtists,
+    handleClose,
+    handleTitleUpdate,
+    handleUpdateImage,
+    image,
+    selectedSongs,
+    title,
+  } = useEditSongForm(id);
 
   return (
     <View style={Local.wrapper}>
@@ -244,7 +101,7 @@ const EditSong = ({ id }: { id: number }) => {
           </View>
           <CustomButton
             title={"Add to Albums"}
-            handlePress={() => router.push("/album/add")}
+            handlePress={handleAddAlbums}
             buttonWidth={"90%"}
           />
         </View>
@@ -267,7 +124,7 @@ const EditSong = ({ id }: { id: number }) => {
           </View>
           <CustomButton
             title={"Add Artists"}
-            handlePress={() => router.push("/artist/add?sourceType=song")}
+            handlePress={handleAddArtists}
             buttonWidth={"90%"}
           />
         </View>

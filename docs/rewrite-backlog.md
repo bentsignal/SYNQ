@@ -282,6 +282,9 @@ feature-oriented packages.
    - Import footer controls now route through an import feature hook, moving
      cancel/next/finish navigation, Wi-Fi reset, batch edit/delete, selection
      cleanup, and import-result mutation out of the footer component.
+   - Song edit form orchestration now lives in a library feature hook, moving
+     relation hydration, cover picking, import/library metadata saves,
+     selection cleanup, and edit navigation out of the route component.
    - Song list page covers now receive playlist, album, and artist cover paths
      from their Drizzle-backed detail queries instead of listening for
      `PLAYLIST_IMAGE_MODIFIED`, `ALBUM_IMAGE_MODIFIED`, or

@@ -77,8 +77,9 @@ export function useAlbumRow(album: AlbumType) {
           }
           setEditSong({ ...editSong });
         }
-      } catch (error) {
-        console.log("error saving album list changes: ", error);
+        return true;
+      } catch {
+        return false;
       }
     },
     [album, editSong, setEditSong, setResults],
@@ -110,7 +111,10 @@ export function useAlbumRow(album: AlbumType) {
   const handleSelect = useCallback(async () => {
     const nextSelected = !selected;
     setSelected(nextSelected);
-    await selectionChanged(nextSelected);
+    const saved = await selectionChanged(nextSelected);
+    if (!saved) {
+      setSelected(selected);
+    }
   }, [selected, selectionChanged]);
 
   const handlePress = useCallback(async () => {

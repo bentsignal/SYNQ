@@ -77,8 +77,9 @@ export function useArtistRow(artist: ArtistType) {
             setEditSong({ ...editSong });
           }
         }
-      } catch (error) {
-        console.log("error saving artist list changes: ", error);
+        return true;
+      } catch {
+        return false;
       }
     },
     [artist, editAlbum, editSong, setEditAlbum, setEditSong, setResults],
@@ -131,7 +132,10 @@ export function useArtistRow(artist: ArtistType) {
   const handleSelect = useCallback(async () => {
     const nextSelected = !selected;
     setSelected(nextSelected);
-    await selectionChanged(nextSelected);
+    const saved = await selectionChanged(nextSelected);
+    if (!saved) {
+      setSelected(selected);
+    }
   }, [selected, selectionChanged]);
 
   const handlePress = useCallback(async () => {

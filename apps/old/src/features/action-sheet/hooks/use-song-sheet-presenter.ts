@@ -1,7 +1,7 @@
 import { PageType, type SongType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
+import { presentActionSheetItem } from "@/src/features/action-sheet/lib/present-action-sheet";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
-import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { useCallback } from "react";
 
 export function useSongSheetPresenter() {
@@ -10,21 +10,13 @@ export function useSongSheetPresenter() {
 
   const presentSongSheet = useCallback(
     (song: SongType | null | undefined) => {
-      if (!song) {
-        return;
-      }
-
-      sendHaptic("light");
-      setEditSong(song);
-      try {
-        TrueSheet.present(
-          song.pageType === PageType.IMPORT
-            ? "import-song-sheet"
-            : "song-sheet",
-        );
-      } catch {
-        return;
-      }
+      presentActionSheetItem({
+        getSheetName: (item) =>
+          item.pageType === PageType.IMPORT ? "import-song-sheet" : "song-sheet",
+        item: song,
+        sendHaptic,
+        setItem: setEditSong,
+      });
     },
     [sendHaptic, setEditSong],
   );

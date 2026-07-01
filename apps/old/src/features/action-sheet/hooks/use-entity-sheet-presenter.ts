@@ -1,7 +1,7 @@
 import { PageType, type AlbumType, type ArtistType, type PlaylistType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
+import { presentActionSheetItem } from "@/src/features/action-sheet/lib/present-action-sheet";
 import { useHaptics } from "@/src/features/haptics/hooks/use-haptics";
-import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { useCallback } from "react";
 
 export function useEntitySheetPresenter() {
@@ -11,51 +11,37 @@ export function useEntitySheetPresenter() {
 
   const presentAlbumSheet = useCallback(
     (album: AlbumType | null | undefined) => {
-      if (!album) {
-        return;
-      }
-
-      sendHaptic("light");
-      setEditAlbum(album);
-      try {
-        TrueSheet.present("album-sheet");
-      } catch {
-        return;
-      }
+      presentActionSheetItem({
+        getSheetName: () => "album-sheet",
+        item: album,
+        sendHaptic,
+        setItem: setEditAlbum,
+      });
     },
     [sendHaptic, setEditAlbum],
   );
 
   const presentArtistSheet = useCallback(
     (artist: ArtistType | null | undefined) => {
-      if (!artist) {
-        return;
-      }
-
-      sendHaptic("light");
-      setEditArtist(artist);
-      try {
-        TrueSheet.present("artist-sheet");
-      } catch {
-        return;
-      }
+      presentActionSheetItem({
+        getSheetName: () => "artist-sheet",
+        item: artist,
+        sendHaptic,
+        setItem: setEditArtist,
+      });
     },
     [sendHaptic, setEditArtist],
   );
 
   const presentPlaylistSheet = useCallback(
     (playlist: PlaylistType | null | undefined) => {
-      if (!playlist) {
-        return;
-      }
-
-      sendHaptic("light");
-      setEditPlaylist({ ...playlist, pageType: PageType.PLAYLIST });
-      try {
-        TrueSheet.present("playlist-sheet");
-      } catch {
-        return;
-      }
+      presentActionSheetItem({
+        getPayload: (item) => ({ ...item, pageType: PageType.PLAYLIST }),
+        getSheetName: () => "playlist-sheet",
+        item: playlist,
+        sendHaptic,
+        setItem: setEditPlaylist,
+      });
     },
     [sendHaptic, setEditPlaylist],
   );

@@ -32,6 +32,7 @@ export function ImportFilesScreen() {
       </Pressable>
 
       <ImportSongPreviewList
+        canEditSongs
         onRemoveSong={(songId) => removeImportSongs([songId])}
         songs={state.songs}
       />

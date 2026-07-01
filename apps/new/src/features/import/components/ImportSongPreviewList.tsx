@@ -1,7 +1,9 @@
+import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { ImportSongDraft } from "../types/import-session";
 
 type ImportSongPreviewListProps = {
+  canEditSongs?: boolean;
   onRemoveSong?: (songId: number) => void;
   songs: ImportSongDraft[];
 };
@@ -19,6 +21,7 @@ const formatDuration = (duration: number | null) => {
 };
 
 export function ImportSongPreviewList({
+  canEditSongs = false,
   onRemoveSong,
   songs,
 }: ImportSongPreviewListProps) {
@@ -49,14 +52,25 @@ export function ImportSongPreviewList({
             </Text>
           </View>
           <Text style={styles.duration}>{formatDuration(song.duration)}</Text>
-          {onRemoveSong ? (
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => onRemoveSong(song.id)}
-              style={styles.removeButton}
-            >
-              <Text style={styles.removeText}>Remove</Text>
-            </Pressable>
+          {canEditSongs || onRemoveSong ? (
+            <View style={styles.actionGroup}>
+              {canEditSongs ? (
+                <Link asChild href={`/import/edit/${song.id}`}>
+                  <Pressable accessibilityRole="button" style={styles.editButton}>
+                    <Text style={styles.editText}>Edit</Text>
+                  </Pressable>
+                </Link>
+              ) : null}
+              {onRemoveSong ? (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => onRemoveSong(song.id)}
+                  style={styles.removeButton}
+                >
+                  <Text style={styles.removeText}>Remove</Text>
+                </Pressable>
+              ) : null}
+            </View>
           ) : null}
         </View>
       ))}
@@ -131,6 +145,30 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     minWidth: 44,
     textAlign: "right",
+  },
+  actionGroup: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    justifyContent: "flex-end",
+    maxWidth: 168,
+  },
+  editButton: {
+    alignItems: "center",
+    borderColor: "#dbe3de",
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: 34,
+    minWidth: 58,
+    paddingHorizontal: 10,
+  },
+  editText: {
+    color: "#0f766e",
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
   },
   removeButton: {
     alignItems: "center",

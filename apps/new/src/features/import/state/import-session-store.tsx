@@ -23,6 +23,7 @@ type ImportSessionAction =
   | { songs: ImportSongDraft[]; type: "review" }
   | { songIds: number[]; type: "remove-songs" }
   | { shouldSaveToLibrary: boolean; type: "set-save-to-library" }
+  | { song: ImportSongDraft; type: "update-song" }
   | { summary: ImportSaveSummary; type: "finish" }
   | { type: "saving" }
   | { type: "discard" }
@@ -39,6 +40,7 @@ type ImportSessionCommands = {
   saveImportSession: () => Promise<boolean>;
   startFileImport: () => Promise<boolean>;
   setShouldSaveToLibrary: (shouldSaveToLibrary: boolean) => void;
+  updateImportSong: (song: ImportSongDraft) => void;
 };
 
 type ImportSessionValue = ImportSessionCommands & {
@@ -110,6 +112,14 @@ const importSessionReducer = (
       return {
         ...state,
         shouldSaveToLibrary: action.shouldSaveToLibrary,
+      };
+    case "update-song":
+      return {
+        ...state,
+        saveSummary: null,
+        songs: state.songs.map((song) =>
+          song.id === action.song.id ? action.song : song,
+        ),
       };
     case "saving":
       return {
@@ -196,6 +206,9 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
     },
     [],
   );
+  const updateImportSong = useCallback((song: ImportSongDraft) => {
+    dispatch({ song, type: "update-song" });
+  }, []);
   const finishSession = useCallback((summary: ImportSaveSummary) => {
     dispatch({ summary, type: "finish" });
   }, []);
@@ -241,6 +254,7 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
       startFileImport,
       setShouldSaveToLibrary,
       state,
+      updateImportSong,
     }),
     [
       beginFilePick,
@@ -254,6 +268,7 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
       startFileImport,
       setShouldSaveToLibrary,
       state,
+      updateImportSong,
     ],
   );
 

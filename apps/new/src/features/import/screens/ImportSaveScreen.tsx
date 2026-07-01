@@ -34,7 +34,7 @@ export function ImportSaveScreen() {
         <Text style={styles.toggleText}>Save to library</Text>
       </Pressable>
 
-      <ImportSongPreviewList songs={state.songs} />
+      <ImportSongPreviewList canEditSongs songs={state.songs} />
 
       <View style={styles.actionRow}>
         <Pressable

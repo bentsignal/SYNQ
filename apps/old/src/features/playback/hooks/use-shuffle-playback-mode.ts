@@ -4,8 +4,7 @@ import {
   usePlaybackSourceContext,
 } from "@/src/features/playback/context/PlaybackProvider";
 import usePlayer from "@/src/features/playback/hooks/use-player";
-import { playbackStorageKeys } from "@/src/features/playback/lib/playback-storage-keys";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setPlaybackStorageItem } from "@/src/features/playback/lib/playback-storage-service";
 import { useActiveTrack } from "react-native-track-player";
 
 export const useShufflePlaybackMode = () => {
@@ -21,10 +20,7 @@ export const useShufflePlaybackMode = () => {
       const nextShuffle = !previous;
       setLocalShuffle(nextShuffle);
       setShuffle(nextShuffle);
-      await AsyncStorage.setItem(
-        playbackStorageKeys.shuffle,
-        nextShuffle.toString(),
-      );
+      await setPlaybackStorageItem("shuffle", nextShuffle.toString());
 
       const id = track?.id;
       if (id && sourceType !== null && sourceId !== null) {
@@ -33,10 +29,7 @@ export const useShufflePlaybackMode = () => {
     } catch {
       setShuffle(previous);
       setLocalShuffle(previous);
-      await AsyncStorage.setItem(
-        playbackStorageKeys.shuffle,
-        previous.toString(),
-      );
+      await setPlaybackStorageItem("shuffle", previous.toString());
     }
   }, [setShuffle, shuffle, sourceId, sourceType, track?.id, updateQueue]);
 

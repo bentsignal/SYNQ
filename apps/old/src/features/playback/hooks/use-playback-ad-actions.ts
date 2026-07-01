@@ -1,9 +1,8 @@
 import { useThemeContext } from "@/src/features/theme/context/ThemeProvider";
 import { usePlaybackAdContext } from "@/src/features/playback/context/PlaybackAdProvider";
 import { playAd } from "@/src/features/playback/lib/playback-ad-service";
-import { playbackStorageKeys } from "@/src/features/playback/lib/playback-storage-keys";
+import { setPlaybackStorageItem } from "@/src/features/playback/lib/playback-storage-service";
 import { skipToNextQueueTrack } from "@/src/features/playback/lib/player-queue-actions-service";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback } from "react";
 
 export const usePlaybackAdActions = () => {
@@ -16,8 +15,8 @@ export const usePlaybackAdActions = () => {
   }, [adURL, setAdPlaying, theme]);
 
   const resetAdPlaybackProgress = useCallback(async () => {
-    await AsyncStorage.setItem(playbackStorageKeys.playAd, "false");
-    await AsyncStorage.setItem(playbackStorageKeys.timePlayed, "0");
+    await setPlaybackStorageItem("playAd", "false");
+    await setPlaybackStorageItem("timePlayed", "0");
     setShouldPlayAd(false);
   }, [setShouldPlayAd]);
 

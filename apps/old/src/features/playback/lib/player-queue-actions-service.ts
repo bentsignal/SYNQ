@@ -1,8 +1,7 @@
 import { SortOrder, SortType, SourceType } from "@/src/constants/Types";
 import { getNextUp } from "@/src/features/playback/lib/playback-queue-service";
-import { playbackStorageKeys } from "@/src/features/playback/lib/playback-storage-keys";
+import { setPlaybackStorageItem } from "@/src/features/playback/lib/playback-storage-service";
 import { getTrackFromSong } from "@/src/features/playback/lib/track-factory";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import TrackPlayer, { State, Track } from "react-native-track-player";
 
 type SendPlaybackError = (type: "error") => void;
@@ -25,7 +24,7 @@ type UpdateQueueArgs = QueueRefreshActions & {
 
 export const persistPlaybackQueue = async () => {
   const queue = await TrackPlayer.getQueue();
-  await AsyncStorage.setItem(playbackStorageKeys.queue, JSON.stringify(queue));
+  await setPlaybackStorageItem("queue", JSON.stringify(queue));
 };
 
 export const addTrackToQueue = async ({

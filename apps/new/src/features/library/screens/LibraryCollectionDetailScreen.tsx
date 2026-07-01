@@ -72,12 +72,20 @@ function LibraryCollectionDetailContent({
         </Text>
       </View>
 
-      <Link
-        href={`/(tabs)/library/${kind}/edit/${id}`}
-        style={styles.editLink}
-      >
-        Edit {detail.eyebrow.toLowerCase()}
-      </Link>
+      <View style={styles.actionRow}>
+        <Link
+          href={`/(tabs)/library/${kind}/edit/${id}`}
+          style={styles.editLink}
+        >
+          Edit {detail.eyebrow.toLowerCase()}
+        </Link>
+        <Link
+          href={`/(tabs)/library/${kind}/add/${id}`}
+          style={styles.editLink}
+        >
+          Add songs
+        </Link>
+      </View>
 
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Songs</Text>
@@ -205,6 +213,12 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     lineHeight: 17,
     textTransform: "uppercase",
+  },
+  actionRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 16,
   },
   panel: {
     backgroundColor: "#ffffff",

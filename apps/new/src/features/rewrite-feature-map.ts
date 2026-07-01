@@ -53,10 +53,10 @@ export const rewriteFeatures: RewriteFeature[] = [
   {
     key: "premium-settings",
     name: "Premium And Settings",
-    status: "pending",
+    status: "active",
     oldReference: "apps/old/src/features/premium",
     targetBoundary: "src/features/settings",
-    nextMilestone: "Port entitlement, customization, privacy, haptics, and support flows.",
+    nextMilestone: "Port entitlement, customization, privacy, haptics, and support flows behind settings routes.",
   },
 ];
 

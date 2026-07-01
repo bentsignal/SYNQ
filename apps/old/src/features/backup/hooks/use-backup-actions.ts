@@ -117,8 +117,7 @@ export function useBackupActions({ premium }: { premium: boolean }) {
         `${documentDirectory}backup.zip`,
       );
       await Sharing.shareAsync(pathToZip);
-    } catch (error) {
-      console.log("Error backing up library:", error);
+    } catch {
       showErrorAlert(
         "Failed to backup library. If the error persists, please contact support.",
       );
@@ -150,8 +149,7 @@ export function useBackupActions({ premium }: { premium: boolean }) {
 
       Alert.alert("Success", "Library restored successfully.");
       navigateToLibrary();
-    } catch (error) {
-      console.log("Error restoring backup:", error);
+    } catch {
       showErrorAlert(
         "Failed to restore backup. If the error persists, please contact support.",
       );
@@ -166,8 +164,7 @@ export function useBackupActions({ premium }: { premium: boolean }) {
       await resetLocalState();
       Alert.alert("Success", "Library erased successfully.");
       navigateToLibrary();
-    } catch (error) {
-      console.log("Error resetting app:", error);
+    } catch {
       showErrorAlert(
         "Failed to reset app. If the error persists, please contact support.",
       );
@@ -193,8 +190,7 @@ export function useBackupActions({ premium }: { premium: boolean }) {
           },
         ],
       );
-    } catch (error) {
-      console.log("Error erasing library:", error);
+    } catch {
       showErrorAlert(
         "Failed to erase library. If the error persists, please contact support.",
       );

@@ -1,4 +1,4 @@
-import { Cause, Effect, pipe } from "effect";
+import { Effect, pipe } from "effect";
 import { router } from "expo-router";
 import { create } from "zustand";
 import { posthog } from "@/src/lib/posthog";
@@ -61,9 +61,8 @@ export const useIngestStore = create<IngestStore>((set, get) => ({
           return Effect.succeed(0);
         },
       }),
-      Effect.catchAllCause((cause) => {
+      Effect.catchAllCause(() => {
         router.replace("/ingest/failure");
-        console.error("error ingesting files: ", Cause.pretty(cause));
         return Effect.succeed(0);
       }),
       Effect.withLogSpan("ingest-file-browser"),

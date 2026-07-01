@@ -403,6 +403,9 @@ feature-oriented packages.
    - Album add, create, and edit routes now delegate to library feature screen
      components, moving album query/form wiring and edit artist membership UI
      out of the app route layer.
+   - Artist add, create, and edit routes now delegate to library feature screen
+     components, keeping artist query/form wiring and source selection out of
+     the app route layer.
    - Playlist, album, and artist detail routes now share a library feature
      detail shell for the screen container, sticky header, and global overlay,
      leaving each route focused on its query/list content.

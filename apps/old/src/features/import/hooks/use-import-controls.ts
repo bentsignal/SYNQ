@@ -4,6 +4,7 @@ import { PageType } from "@/src/constants/Types";
 import { useActionSheetContext } from "@/src/features/action-sheet/context/ActionSheetProvider";
 import { useGlobalProgressContext } from "@/src/features/app-shell/context/GlobalProgressProvider";
 import { useImportFlowContext } from "@/src/features/import/context/ImportFlowProvider";
+import { getImportControlState } from "@/src/features/import/lib/import-control-state";
 import { removeImportSongs } from "@/src/features/import/lib/import-song-edits";
 import { deleteLibrarySong } from "@/src/features/library/repository/library-song-repository";
 import usePlayer from "@/src/features/playback/hooks/use-player";
@@ -34,59 +35,17 @@ export function useImportControls() {
   const { removeSongsFromQueue } = usePlayer();
   const pathname = usePathname();
 
-  const controls = useMemo(() => {
-    if (pathname === "/import/files" || pathname === "/import/wifi") {
-      if (pathname === "/import/files") {
-        return {
-          altDisabled: loading,
-          altTitle: "Cancel",
-          mainDisabled: exportDisabled,
-          mainTitle: "Next",
-        };
-      }
-
-      return {
-        altDisabled: transferSize > 0,
-        altTitle: "Cancel",
-        mainDisabled: exportDisabled,
-        mainTitle: "Next",
-      };
-    }
-
-    if (pathname === "/import/export") {
-      return {
-        altDisabled: showGlobalLoading,
-        altTitle: "Back",
-        mainDisabled: showGlobalLoading,
-        mainTitle: "Next",
-      };
-    }
-
-    if (pathname === "/import/save") {
-      return {
-        altDisabled: exportDisabled,
-        altTitle: "Back",
-        mainDisabled: exportDisabled,
-        mainTitle: "Finish",
-      };
-    }
-
-    if (pathname === "/import/success") {
-      return {
-        altDisabled: true,
-        altTitle: "Back",
-        mainDisabled: true,
-        mainTitle: "Next",
-      };
-    }
-
-    return {
-      altDisabled: false,
-      altTitle: "Cancel",
-      mainDisabled: false,
-      mainTitle: "Next",
-    };
-  }, [exportDisabled, loading, pathname, showGlobalLoading, transferSize]);
+  const controls = useMemo(
+    () =>
+      getImportControlState({
+        exportDisabled,
+        loading,
+        pathname,
+        showGlobalLoading,
+        transferSize,
+      }),
+    [exportDisabled, loading, pathname, showGlobalLoading, transferSize],
+  );
 
   const resetResults = useCallback(async () => {
     try {
@@ -207,9 +166,7 @@ export function useImportControls() {
     handleDelete,
     handleEdit,
     handleMainPress,
-    hideMainControls: ["/import/success", "/import/failure"].includes(
-      pathname,
-    ),
+    hideMainControls: controls.hideMainControls,
     mainDisabled: controls.mainDisabled,
     mainTitle: controls.mainTitle,
     selectEnabled,

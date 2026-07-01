@@ -8,6 +8,7 @@ import {
 import { getImagePathFromHash } from "@/src/features/images/repository/image-repository";
 import {
   compareLibraryText,
+  getSongResultSummary,
   matchesSongQuery,
   normalizeLibraryQuery,
   sortSongResults,
@@ -140,6 +141,7 @@ export const useArtistSongsQuery = ({
   const { songs, totalSongCount } = useMemo(() => {
     const normalizedQuery = normalizeLibraryQuery(query);
     const mappedSongs = rowsToSongs((data ?? []) as ArtistSongRow[]);
+    const summary = getSongResultSummary(mappedSongs);
 
     return {
       songs: sortSongs(
@@ -147,7 +149,7 @@ export const useArtistSongsQuery = ({
         sort,
         order,
       ),
-      totalSongCount: mappedSongs.length,
+      totalSongCount: summary.totalSongCount,
     };
   }, [data, query, sort, order]);
 

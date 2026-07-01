@@ -12,6 +12,11 @@ type SortSongResultsInput = {
   sort: SortType;
 };
 
+type SongResultSummary = {
+  totalDuration: number;
+  totalSongCount: number;
+};
+
 export const normalizeLibraryQuery = (query?: string) =>
   query?.trim().toLowerCase() ?? "";
 
@@ -53,4 +58,11 @@ export const sortSongResults = ({
   const sorted = [...songs].sort(comparer);
 
   return order === SortOrder.DESC ? sorted.reverse() : sorted;
+};
+
+export const getSongResultSummary = (songs: SongType[]): SongResultSummary => {
+  return {
+    totalSongCount: songs.length,
+    totalDuration: songs.reduce((acc, song) => acc + (song.duration ?? 0), 0),
+  };
 };

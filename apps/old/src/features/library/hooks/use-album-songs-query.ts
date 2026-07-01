@@ -9,6 +9,7 @@ import { getImagePathFromHash } from "@/src/features/images/repository/image-rep
 import {
   compareLibraryText,
   compareOptionalTrack,
+  getSongResultSummary,
   matchesSongQuery,
   normalizeLibraryQuery,
   sortSongResults,
@@ -148,14 +149,12 @@ export const useAlbumSongsQuery = ({
     const filteredSongs = mappedSongs.filter((song) =>
       matchesSongQuery(song, normalizedQuery, ["title", "artist"]),
     );
+    const summary = getSongResultSummary(mappedSongs);
 
     return {
       songs: sortSongs(filteredSongs, sort, order),
-      totalSongCount: mappedSongs.length,
-      totalDuration: mappedSongs.reduce(
-        (acc, song) => acc + (song.duration ?? 0),
-        0,
-      ),
+      totalSongCount: summary.totalSongCount,
+      totalDuration: summary.totalDuration,
     };
   }, [data, query, sort, order]);
 

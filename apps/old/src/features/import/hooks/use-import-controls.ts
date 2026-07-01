@@ -120,10 +120,11 @@ export function useImportControls() {
         }
         setResults(newResults);
       }
-    } catch (error) {
-      console.log("error deleting song: ", error);
+    } catch {
+      posthog.capture("import_delete_failed");
+    } finally {
+      setSelectEnabled(false);
     }
-    setSelectEnabled(false);
   }, [
     editSong.id,
     editSong.pageType,

@@ -101,11 +101,7 @@ export const removeImportSongs = async (songs: SongType[], ids: number[]) => {
     }
 
     if (song.cacheUri) {
-      try {
-        await FileSystem.deleteAsync(song.cacheUri);
-      } catch (error) {
-        console.log("error deleting cached song file: ", error);
-      }
+      await FileSystem.deleteAsync(song.cacheUri, { idempotent: true });
     }
   }
 

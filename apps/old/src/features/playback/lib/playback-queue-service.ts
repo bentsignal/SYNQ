@@ -134,9 +134,7 @@ export const getNextUp = async (
       shuffle: shuffleValue,
       songs,
     });
-  } catch (error) {
-    console.log(error);
+  } catch {
+    return [];
   }
-
-  return [];
 };

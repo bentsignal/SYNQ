@@ -10,6 +10,7 @@ import {
 } from "../repository/song-metadata-repository";
 import {
   getLibrarySongDetailActionState,
+  getLibrarySongDetailMutationErrorMessage,
   toLibrarySongDetailPlaybackItem,
   toLibrarySongExportItem,
   type LibrarySongDetail,
@@ -78,9 +79,10 @@ export function useLibrarySongDetailController({
     } catch (caughtError) {
       sendHaptic("error");
       setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Liked Songs could not be updated.",
+        getLibrarySongDetailMutationErrorMessage({
+          caughtError,
+          mutation: "toggle-liked",
+        }),
       );
     } finally {
       setIsTogglingLiked(false);
@@ -102,9 +104,10 @@ export function useLibrarySongDetailController({
     } catch (caughtError) {
       sendHaptic("error");
       setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Song could not be exported.",
+        getLibrarySongDetailMutationErrorMessage({
+          caughtError,
+          mutation: "export-song",
+        }),
       );
     } finally {
       setIsExporting(false);
@@ -132,9 +135,10 @@ export function useLibrarySongDetailController({
           } catch (caughtError) {
             sendHaptic("error");
             setError(
-              caughtError instanceof Error
-                ? caughtError.message
-                : "Song could not be deleted.",
+              getLibrarySongDetailMutationErrorMessage({
+                caughtError,
+                mutation: "delete-song",
+              }),
             );
           } finally {
             setIsDeleting(false);

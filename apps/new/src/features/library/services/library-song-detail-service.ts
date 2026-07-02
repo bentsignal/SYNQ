@@ -190,6 +190,32 @@ export type LibrarySongDetailActionState = ReturnType<
   typeof getLibrarySongDetailActionState
 >;
 
+export type LibrarySongDetailMutationKind =
+  | "delete-song"
+  | "export-song"
+  | "toggle-liked";
+
+export const getLibrarySongDetailMutationErrorMessage = ({
+  caughtError,
+  mutation,
+}: {
+  caughtError: unknown;
+  mutation: LibrarySongDetailMutationKind;
+}) => {
+  if (caughtError instanceof Error) {
+    return caughtError.message;
+  }
+
+  switch (mutation) {
+    case "delete-song":
+      return "Song could not be deleted.";
+    case "export-song":
+      return "Song could not be exported.";
+    case "toggle-liked":
+      return "Liked Songs could not be updated.";
+  }
+};
+
 export const toLibrarySongDetailPlaybackItem = ({
   detail,
   songId,

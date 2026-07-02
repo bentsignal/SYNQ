@@ -141,6 +141,7 @@ import {
 import {
   buildLibrarySongDetail,
   getLibrarySongDetailActionState,
+  getLibrarySongDetailMutationErrorMessage,
   getLibrarySongRelationshipHref,
   toLibrarySongDetailPlaybackItem,
   toLibrarySongExportItem,
@@ -2430,6 +2431,34 @@ function assertLibrarySongDetailSmoke() {
       exportLabel: "Exporting",
       likedLabel: "Unlike",
     },
+  );
+  assert.equal(
+    getLibrarySongDetailMutationErrorMessage({
+      caughtError: new Error("Share failed"),
+      mutation: "export-song",
+    }),
+    "Share failed",
+  );
+  assert.equal(
+    getLibrarySongDetailMutationErrorMessage({
+      caughtError: "unknown",
+      mutation: "export-song",
+    }),
+    "Song could not be exported.",
+  );
+  assert.equal(
+    getLibrarySongDetailMutationErrorMessage({
+      caughtError: null,
+      mutation: "toggle-liked",
+    }),
+    "Liked Songs could not be updated.",
+  );
+  assert.equal(
+    getLibrarySongDetailMutationErrorMessage({
+      caughtError: undefined,
+      mutation: "delete-song",
+    }),
+    "Song could not be deleted.",
   );
 
   const missing = buildLibrarySongDetail({

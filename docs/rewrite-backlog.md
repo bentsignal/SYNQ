@@ -367,6 +367,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     counts, Wi-Fi status labels, and route-selection haptics now split between
     an import session service, controller hook, and focused component instead
     of the route screen.
+  - Done: import files choose/remove haptics and navigation now live in a
+    controller hook, and the themed files UI now renders through a focused
+    component instead of the route screen.
   - Done: import save-to-library metadata planning now lives in a pure service
     with deterministic smoke coverage for unknown labels and multi-artist
     splitting.

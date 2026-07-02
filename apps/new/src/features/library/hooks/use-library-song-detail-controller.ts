@@ -162,3 +162,7 @@ export function useLibrarySongDetailController({
     toggleLiked,
   };
 }
+
+export type LibrarySongDetailController = ReturnType<
+  typeof useLibrarySongDetailController
+>;

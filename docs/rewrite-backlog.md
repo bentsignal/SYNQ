@@ -178,6 +178,10 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: backup operation confirmations, phase-transition side effects,
     runtime-session resets, status reset haptics, and Premium action-state
     wiring now live in a controller hook instead of the screen.
+  - Done: backup restore now unzips into a cache staging directory and rejects
+    empty archives before replacing the live document directory.
+  - Done: backup session reducer state transitions now live in a pure service
+    with deterministic smoke coverage.
   - Done: premium feature copy, selected-tier lookup, purchase/restore action
     state, and status presentation now live in a premium screen service.
   - Done: premium purchase, restore, reset, tier selection, and status

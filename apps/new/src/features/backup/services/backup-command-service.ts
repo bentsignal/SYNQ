@@ -27,6 +27,14 @@ const clearDocumentDirectory = async () => {
   }
 };
 
+const getBackupRestoreStagingDirectory = () => {
+  if (!FileSystem.cacheDirectory) {
+    throw new Error("Cache directory is unavailable.");
+  }
+
+  return `${FileSystem.cacheDirectory}synq-restore-${Date.now()}/`;
+};
+
 const getBackupArchivePath = () => {
   if (!FileSystem.cacheDirectory) {
     throw new Error("Cache directory is unavailable.");
@@ -68,6 +76,50 @@ const pickBackupArchive = async () => {
   return result.assets[0]?.uri ?? null;
 };
 
+const prepareRestoreStagingDirectory = async () => {
+  const stagingDirectory = getBackupRestoreStagingDirectory();
+  await FileSystem.deleteAsync(stagingDirectory, { idempotent: true });
+  await FileSystem.makeDirectoryAsync(stagingDirectory, { intermediates: true });
+
+  return stagingDirectory;
+};
+
+const cleanupRestoreStagingDirectory = async (stagingDirectory: string) => {
+  try {
+    await FileSystem.deleteAsync(stagingDirectory, { idempotent: true });
+  } catch {
+    // Cache cleanup should not hide the restore outcome.
+  }
+};
+
+const assertRestoreStagingDirectoryHasFiles = async (
+  stagingDirectory: string,
+) => {
+  const stagedItems = await FileSystem.readDirectoryAsync(stagingDirectory);
+
+  if (stagedItems.length === 0) {
+    throw new Error("Backup archive did not contain any library files.");
+  }
+
+  return stagedItems;
+};
+
+const replaceDocumentDirectoryWithStagedItems = async (
+  stagingDirectory: string,
+  stagedItems: string[],
+) => {
+  const documentDirectory = getDocumentDirectory();
+
+  await clearDocumentDirectory();
+
+  for (const item of stagedItems) {
+    await FileSystem.moveAsync({
+      from: `${stagingDirectory}${item}`,
+      to: `${documentDirectory}${item}`,
+    });
+  }
+};
+
 const runEraseLibraryCommand = async (): Promise<BackupCommandResult> => {
   await clearDocumentDirectory();
   await resetDatabaseConnection();
@@ -88,9 +140,17 @@ const runRestoreBackupCommand = async (): Promise<BackupCommandResult> => {
     };
   }
 
-  await clearDocumentDirectory();
-  await unzip(archiveUri, getDocumentDirectory());
-  await resetDatabaseConnection();
+  const stagingDirectory = await prepareRestoreStagingDirectory();
+
+  try {
+    await unzip(archiveUri, stagingDirectory);
+    const stagedItems =
+      await assertRestoreStagingDirectoryHasFiles(stagingDirectory);
+    await replaceDocumentDirectoryWithStagedItems(stagingDirectory, stagedItems);
+    await resetDatabaseConnection();
+  } finally {
+    await cleanupRestoreStagingDirectory(stagingDirectory);
+  }
 
   return {
     message: "Backup archive was restored into the local library.",

@@ -95,6 +95,10 @@ import {
   getBackupOperationLabel,
   getBackupStatusState,
 } from "../../../apps/new/src/features/backup/services/backup-screen-service";
+import {
+  backupSessionReducer,
+  initialBackupSessionState,
+} from "../../../apps/new/src/features/backup/services/backup-session-state-service";
 import type { BackupSessionState } from "../../../apps/new/src/features/backup/types/backup-session";
 import {
   getPremiumActionState,
@@ -2044,10 +2048,52 @@ function assertBackupScreenSmoke() {
     message: "Backup complete.",
     phase: "success",
   };
+  const startedBackupState = backupSessionReducer(
+    initialBackupSessionState,
+    {
+      operation: "backup",
+      type: "start",
+    },
+  );
 
   assert.deepEqual(
     backupActionCards.map((card) => card.operation),
     ["backup", "restore", "erase"],
+  );
+  assert.deepEqual(startedBackupState, {
+    error: null,
+    lastOperation: "backup",
+    message: null,
+    phase: "running",
+    requiresPremium: true,
+  });
+  assert.deepEqual(
+    backupSessionReducer(startedBackupState, {
+      result: {
+        message: "Backup complete.",
+        operation: "backup",
+      },
+      type: "succeed",
+    }),
+    successState,
+  );
+  assert.deepEqual(
+    backupSessionReducer(startedBackupState, {
+      error: "Backup failed.",
+      operation: "backup",
+      type: "fail",
+    }),
+    {
+      error: "Backup failed.",
+      lastOperation: "backup",
+      message: null,
+      phase: "failure",
+      requiresPremium: true,
+    },
+  );
+  assert.deepEqual(
+    backupSessionReducer(successState, { type: "reset" }),
+    initialBackupSessionState,
   );
   assert.equal(getBackupOperationLabel("backup"), "Backup");
   assert.equal(getBackupOperationLabel("erase"), "Erase");

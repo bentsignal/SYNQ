@@ -1,3 +1,3 @@
-import { RewriteDashboardScreen } from "@/src/features/app-shell/screens/RewriteDashboardScreen";
+import { HomeScreen } from "@/src/features/app-shell/screens/HomeScreen";
 
-export default RewriteDashboardScreen;
+export default HomeScreen;

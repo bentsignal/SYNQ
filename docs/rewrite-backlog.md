@@ -45,7 +45,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
 
 - [x] Define the `apps/new` feature map before moving more UI.
   - App shell/navigation: route shell exists with root stack, tabs, feature
-    stack placeholders, and thin route files.
+    stack placeholders, thin route files, and a replacement-oriented Home route
+    with live library/playback state plus import, settings, premium, player, and
+    queue entry points.
   - Library: first reactive Drizzle summary, searchable/sortable song surface,
     collection previews, read-only song/playlist/album/artist detail routes,
     playlist/album/artist create/edit flows, collection song add/remove flows,
@@ -128,7 +130,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
 ### Current Position
 
 We are solidly through Phase 1, well into Phase 2, and starting Phase 3. The
-`apps/new` shell now has a root stack, tabs, modal placeholders, feature
+`apps/new` shell now has a root stack, tabs, thin route files, a
+replacement-oriented Home route with live library/playback state, feature
 boundaries, database initialization, and a first reactive Library surface with
 searchable/sortable songs, linked details, collection create/edit flows, song
 add/remove, durable album/playlist/artist song reorder, and collection
@@ -176,7 +179,8 @@ customization, playback, queue, collection save paths, collection detail song
 mutations, backup command feedback, and import file-pick/remove actions, but
 broader feature coverage and native-device haptic smoke are still pending.
 Import save/discard/edit and Wi-Fi staged-song removal/review actions now also
-use the preference-aware haptics boundary. It is not yet a replacement app.
+use the preference-aware haptics boundary. It has a real replacement-app home,
+but it is not yet a replacement app overall.
 The next useful work should alternate between:
 
 - closing Phase 2 gaps that would otherwise be copied into the new app; and

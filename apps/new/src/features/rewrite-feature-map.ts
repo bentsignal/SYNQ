@@ -16,7 +16,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/app/_layout.tsx",
     targetBoundary: "src/features/app-shell",
-    nextMilestone: "Define tabs, stack groups, providers, and global loading.",
+    nextMilestone: "Manually smoke home/tab navigation, then replace remaining rewrite-only placeholders.",
   },
   {
     key: "library",

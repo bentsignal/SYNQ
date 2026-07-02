@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { AddableCollectionSong } from "../hooks/use-addable-collection-songs-query";
-import { getAddableSongRowState } from "../services/library-collection-interaction-service";
+import { getAddableSongRowState } from "../services/add-collection-songs-interaction-service";
 
 type AddableSongRowProps = {
   onAddSong: (songId: number) => void;

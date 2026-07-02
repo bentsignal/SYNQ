@@ -120,6 +120,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     now live in a library service instead of the add-songs screen.
   - Done: add-to-collection row selected/saving/disabled state now lives in the
     library interaction service instead of inline row rendering logic.
+  - Done: add-to-collection selection, search, mutation reducer, error copy,
+    and row interaction state now live in a focused add-collection interaction
+    service instead of the broader collection-detail interaction module.
   - Done: add-to-collection and edit-collection invalid id routes now share the
     focused library invalid-state component instead of duplicating themed route
     fallback UI.

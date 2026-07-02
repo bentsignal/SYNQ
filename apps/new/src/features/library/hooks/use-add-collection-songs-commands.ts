@@ -9,7 +9,7 @@ import {
   getAddCollectionSongsMutationErrorMessage,
   type AddableSongSelectionState,
   type AddCollectionSongsControllerAction,
-} from "../services/library-collection-interaction-service";
+} from "../services/add-collection-songs-interaction-service";
 
 type AddCollectionSongsControllerDispatch = (
   action: AddCollectionSongsControllerAction,

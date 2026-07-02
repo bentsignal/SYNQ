@@ -7,7 +7,7 @@ import {
   addCollectionSongsControllerReducer,
   getAddableSongSelectionState,
   initialAddCollectionSongsControllerState,
-} from "../services/library-collection-interaction-service";
+} from "../services/add-collection-songs-interaction-service";
 
 export function useAddCollectionSongsController({
   collectionId,

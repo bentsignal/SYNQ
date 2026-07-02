@@ -7,10 +7,10 @@ type SettingsRoute = {
   description: string;
   href:
     | "/premium"
-    | "/settings/backup"
-    | "/settings/customization"
-    | "/settings/privacy"
-    | "/settings/support";
+    | "/(tabs)/settings/backup"
+    | "/(tabs)/settings/customization"
+    | "/(tabs)/settings/privacy"
+    | "/(tabs)/settings/support";
   label: string;
 };
 
@@ -22,22 +22,22 @@ const settingsRoutes: SettingsRoute[] = [
   },
   {
     description: "Theme, app icon, haptics, and interface preferences.",
-    href: "/settings/customization",
+    href: "/(tabs)/settings/customization",
     label: "Customization",
   },
   {
     description: "Archive, restore, or reset the local music library.",
-    href: "/settings/backup",
+    href: "/(tabs)/settings/backup",
     label: "Backup & Restore",
   },
   {
     description: "Analytics and local privacy preferences.",
-    href: "/settings/privacy",
+    href: "/(tabs)/settings/privacy",
     label: "Privacy",
   },
   {
     description: "Help, feedback, and community links.",
-    href: "/settings/support",
+    href: "/(tabs)/settings/support",
     label: "Support",
   },
 ];

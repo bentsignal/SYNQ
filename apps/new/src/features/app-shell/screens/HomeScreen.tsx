@@ -99,8 +99,8 @@ export function HomeScreen() {
           href="/(tabs)/library"
           label="Library"
         />
-        <HomeAction detail="Files and Wi-Fi" href="/import" label="Import" />
-        <HomeAction detail="Theme and backup" href="/settings" label="Settings" />
+        <HomeAction detail="Files and Wi-Fi" href="/(tabs)/import" label="Import" />
+        <HomeAction detail="Theme and backup" href="/(tabs)/settings" label="Settings" />
         <HomeAction detail="Unlock listening" href="/premium" label="Premium" />
       </View>
 

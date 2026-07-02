@@ -108,7 +108,7 @@ export function SettingsSupportScreen() {
         </Text>
       </View>
 
-      <Link href="/settings" style={[styles.backLink, { color: theme.accent }]}>
+      <Link href="/(tabs)/settings" style={[styles.backLink, { color: theme.accent }]}>
         Back to Settings
       </Link>
     </ScrollView>

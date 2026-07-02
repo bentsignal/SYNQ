@@ -112,7 +112,7 @@ function ImportWifiContent() {
       />
 
       <View style={styles.actionRow}>
-        <Link asChild href="/import/save">
+        <Link asChild href="/(tabs)/import/save">
           <Pressable
             accessibilityRole="button"
             disabled={!hasSongs}
@@ -128,7 +128,7 @@ function ImportWifiContent() {
             </Text>
           </Pressable>
         </Link>
-        <Link href="/import" style={[styles.backLink, { color: theme.accent }]}>
+        <Link href="/(tabs)/import" style={[styles.backLink, { color: theme.accent }]}>
           Back to import
         </Link>
       </View>

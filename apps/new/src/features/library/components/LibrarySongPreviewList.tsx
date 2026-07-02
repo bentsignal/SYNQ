@@ -76,7 +76,7 @@ export function LibrarySongPreviewList({
           <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
             Import audio files to start building your song library.
           </Text>
-          <Link href="/import" style={[styles.emptyLink, { color: theme.accent }]}>
+          <Link href="/(tabs)/import" style={[styles.emptyLink, { color: theme.accent }]}>
             Import music
           </Link>
         </View>

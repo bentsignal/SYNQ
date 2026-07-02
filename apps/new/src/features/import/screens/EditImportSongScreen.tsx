@@ -53,7 +53,7 @@ export function EditImportSongScreen() {
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           This route needs a numeric id.
         </Text>
-        <Link href="/import/save" style={[styles.backLink, { color: theme.accent }]}>
+        <Link href="/(tabs)/import/save" style={[styles.backLink, { color: theme.accent }]}>
           Back to save
         </Link>
       </View>
@@ -85,13 +85,13 @@ function EditImportSongContent({ songId }: { songId: number }) {
         </Text>
         <View style={styles.linkRow}>
           <Link
-            href="/import/files"
+            href="/(tabs)/import/files"
             style={[styles.backLink, { color: theme.accent }]}
           >
             Back to files
           </Link>
           <Link
-            href="/import/save"
+            href="/(tabs)/import/save"
             style={[styles.backLink, { color: theme.accent }]}
           >
             Back to save
@@ -138,7 +138,7 @@ function EditImportSongForm({
         track: parseTrack(track),
       });
       sendHaptic("success");
-      router.replace("/import/save");
+      router.replace("/(tabs)/import/save");
     } catch (caughtError) {
       sendHaptic("error");
       setError(
@@ -296,11 +296,11 @@ function EditImportSongForm({
       </View>
 
       <View style={styles.linkRow}>
-        <Link href="/import/save" style={[styles.backLink, { color: theme.accent }]}>
+        <Link href="/(tabs)/import/save" style={[styles.backLink, { color: theme.accent }]}>
           Back to save
         </Link>
         <Link
-          href="/import/files"
+          href="/(tabs)/import/files"
           style={[styles.backLink, { color: theme.accent }]}
         >
           Back to files

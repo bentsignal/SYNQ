@@ -94,7 +94,7 @@ export function PremiumScreen() {
         ) : null}
       </View>
 
-      <Link href="/settings" style={styles.backLink}>
+      <Link href="/(tabs)/settings" style={styles.backLink}>
         Back to Settings
       </Link>
     </ScrollView>

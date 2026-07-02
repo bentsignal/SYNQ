@@ -45,9 +45,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
 
 - [x] Define the `apps/new` feature map before moving more UI.
   - App shell/navigation: route shell exists with root stack, tabs, feature
-    stack placeholders, thin route files, and a replacement-oriented Home route
-    with live library/playback state plus import, settings, premium, player, and
-    queue entry points.
+    stack placeholders, thin route files, Home/Library/Import/Settings primary
+    tabs, and a replacement-oriented Home route with live library/playback state
+    plus premium, player, and queue entry points.
   - Library: first reactive Drizzle summary, searchable/sortable song surface,
     collection previews, user-facing library home copy and empty states,
     song/playlist/album/artist detail routes with song and collection playback
@@ -138,7 +138,7 @@ work already done; this section is the shorter "are we close yet?" dashboard.
 ### Current Position
 
 We are solidly through Phase 1, well into Phase 2, and starting Phase 3. The
-`apps/new` shell now has a root stack, tabs, thin route files, a
+`apps/new` shell now has a root stack, Home/Library/Import/Settings tabs, thin route files, a
 replacement-oriented Home route with live library/playback state, feature
 boundaries, database initialization, and a first reactive Library surface with
 searchable/sortable songs, linked details, collection create/edit flows, song

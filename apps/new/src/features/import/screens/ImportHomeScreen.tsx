@@ -33,7 +33,7 @@ export function ImportHomeScreen() {
           { backgroundColor: theme.surface, borderColor: theme.border },
         ]}
       >
-        <Link asChild href={importLocked ? "/premium" : "/import/files"}>
+        <Link asChild href={importLocked ? "/premium" : "/(tabs)/import/files"}>
           <Pressable
             onPress={() => sendHaptic("light")}
             style={[styles.row, { borderBottomColor: theme.borderSubtle }]}
@@ -53,7 +53,7 @@ export function ImportHomeScreen() {
             </Text>
           </Pressable>
         </Link>
-        <Link asChild href={importLocked ? "/premium" : "/import/wifi"}>
+        <Link asChild href={importLocked ? "/premium" : "/(tabs)/import/wifi"}>
           <Pressable
             onPress={() => sendHaptic("light")}
             style={[styles.row, { borderBottomColor: theme.borderSubtle }]}
@@ -77,7 +77,7 @@ export function ImportHomeScreen() {
             </Text>
           </Pressable>
         </Link>
-        <Link asChild href={importLocked ? "/premium" : "/import/save"}>
+        <Link asChild href={importLocked ? "/premium" : "/(tabs)/import/save"}>
           <Pressable
             onPress={() => sendHaptic("light")}
             style={[styles.row, { borderBottomColor: theme.borderSubtle }]}

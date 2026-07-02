@@ -53,7 +53,7 @@ export function LibraryHomeScreen() {
         </Text>
         <View style={styles.createLinks}>
           <Link
-            href="/import"
+            href="/(tabs)/import"
             style={[styles.createLink, { color: theme.accent }]}
           >
             Import music

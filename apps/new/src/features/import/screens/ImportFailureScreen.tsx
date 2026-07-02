@@ -39,7 +39,7 @@ export function ImportFailureScreen() {
       </View>
 
       <Link
-        href="/import/files"
+        href="/(tabs)/import/files"
         style={[styles.backLink, { color: theme.accent }]}
       >
         Back to files

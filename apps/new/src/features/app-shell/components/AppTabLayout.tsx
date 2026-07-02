@@ -42,6 +42,18 @@ export function AppTabLayout() {
             title: "Library",
           }}
         />
+        <Tabs.Screen
+          name="import"
+          options={{
+            title: "Import",
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: "Settings",
+          }}
+        />
       </Tabs>
       <PlaybackMiniPlayer />
     </View>

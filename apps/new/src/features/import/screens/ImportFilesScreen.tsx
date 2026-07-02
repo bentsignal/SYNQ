@@ -35,7 +35,7 @@ export function ImportFilesScreen() {
             sendHaptic("light");
             const staged = await startFileImport();
             sendHaptic(staged ? "success" : "error");
-            router.push(staged ? "/import/save" : "/import/failure");
+            router.push(staged ? "/(tabs)/import/save" : "/(tabs)/import/failure");
           }}
           style={[
             styles.primaryButton,
@@ -61,12 +61,12 @@ export function ImportFilesScreen() {
 
       <View style={styles.actionRow}>
         <Link
-          href="/import/save"
+          href="/(tabs)/import/save"
           style={[styles.backLink, { color: theme.accent }]}
         >
           Review save
         </Link>
-        <Link href="/import" style={[styles.backLink, { color: theme.accent }]}>
+        <Link href="/(tabs)/import" style={[styles.backLink, { color: theme.accent }]}>
           Back to import
         </Link>
       </View>

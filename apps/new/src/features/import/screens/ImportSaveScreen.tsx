@@ -69,7 +69,7 @@ export function ImportSaveScreen() {
               sendHaptic("medium");
               const succeeded = await saveImportSession();
               sendHaptic(succeeded ? "success" : "error");
-              router.push(succeeded ? "/import/success" : "/import/failure");
+              router.push(succeeded ? "/(tabs)/import/success" : "/(tabs)/import/failure");
             }}
             style={[
               styles.primaryButton,
@@ -88,7 +88,7 @@ export function ImportSaveScreen() {
               sendHaptic("medium");
               const discarded = await discardSession();
               sendHaptic(discarded ? "success" : "error");
-              router.push(discarded ? "/import" : "/import/failure");
+              router.push(discarded ? "/(tabs)/import" : "/(tabs)/import/failure");
             }}
             style={[
               styles.secondaryButton,
@@ -103,7 +103,7 @@ export function ImportSaveScreen() {
         </View>
       </ImportPremiumGate>
 
-      <Link href="/import/files" style={[styles.backLink, { color: theme.accent }]}>
+      <Link href="/(tabs)/import/files" style={[styles.backLink, { color: theme.accent }]}>
         Back to files
       </Link>
     </ScrollView>

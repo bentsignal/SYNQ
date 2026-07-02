@@ -102,6 +102,7 @@ import {
   getImportSongDraftForEdit,
   getImportSongEditRequiredTitleMessage,
   getImportSongEditSaveHref,
+  importSongEditFormReducer,
   parseImportTrackInput,
 } from "../../../apps/new/src/features/import/services/import-song-form-service";
 import {
@@ -4063,6 +4064,7 @@ function assertImportSongFormSmoke() {
     {
       album: "Smoke Album",
       artist: "Smoke Artist",
+      error: null,
       title: "Smoke Title",
       track: "",
     },
@@ -4075,9 +4077,45 @@ function assertImportSongFormSmoke() {
     {
       album: "Smoke Album",
       artist: "Smoke Artist",
+      error: null,
       title: "Import 8",
       track: "7",
     },
+  );
+  const editFormState = getImportSongEditInitialState(importDraft(8));
+  assert.deepEqual(
+    importSongEditFormReducer(editFormState, {
+      field: "title",
+      type: "change-field",
+      value: "Changed",
+    }),
+    {
+      ...editFormState,
+      error: null,
+      title: "Changed",
+    },
+  );
+  assert.deepEqual(
+    importSongEditFormReducer(editFormState, {
+      error: "Title is required.",
+      type: "fail",
+    }),
+    {
+      ...editFormState,
+      error: "Title is required.",
+    },
+  );
+  assert.deepEqual(
+    importSongEditFormReducer(
+      {
+        ...editFormState,
+        error: "Title is required.",
+      },
+      {
+        type: "clear-error",
+      },
+    ),
+    editFormState,
   );
   assert.equal(getImportSongEditHref({ songId: 5 }), "/import/edit/5");
   assert.equal(getImportSongEditSaveHref(), "/(tabs)/import/save");

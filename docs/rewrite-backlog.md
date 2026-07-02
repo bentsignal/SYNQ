@@ -361,6 +361,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import staged-song edit field state, metadata draft building,
     validation errors, haptics, and save navigation now live in a controller
     hook instead of the edit screen.
+  - Done: import staged-song edit form field/error transitions now live in a
+    pure form-service reducer with smoke coverage instead of scattered
+    controller state setters.
   - Done: import staged-song edit form fields, source-file panel, error copy,
     save action, and navigation links now live in a focused component instead
     of the route screen.

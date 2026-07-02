@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useReducer } from "react";
 import { router } from "expo-router";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
@@ -8,6 +8,7 @@ import {
   getImportSongEditInitialState,
   getImportSongEditRequiredTitleMessage,
   getImportSongEditSaveHref,
+  importSongEditFormReducer,
 } from "../services/import-song-form-service";
 import type { ImportSongDraft } from "../types/import-session";
 
@@ -21,59 +22,66 @@ export function useEditImportSongController({
   updateImportSong,
 }: UseEditImportSongControllerParams) {
   const { sendHaptic } = useHapticFeedback();
-  const initialState = getImportSongEditInitialState(song);
-  const [album, setAlbum] = useState(initialState.album);
-  const [artist, setArtist] = useState(initialState.artist);
-  const [error, setError] = useState<string | null>(null);
-  const [title, setTitle] = useState(initialState.title);
-  const [track, setTrack] = useState(initialState.track);
-  const actionState = getImportSongEditActionState({ title });
+  const [formState, dispatchFormState] = useReducer(
+    importSongEditFormReducer,
+    song,
+    getImportSongEditInitialState,
+  );
+  const actionState = getImportSongEditActionState({
+    title: formState.title,
+  });
 
-  const updateTitle = (nextTitle: string) => {
-    setTitle(nextTitle);
-    setError(null);
-  };
+  const updateField =
+    (field: "album" | "artist" | "title" | "track") => (value: string) => {
+      dispatchFormState({ field, type: "change-field", value });
+    };
 
-  const updateTrack = (nextTrack: string) => {
-    setTrack(nextTrack);
-    setError(null);
-  };
+  const updateAlbum = updateField("album");
+  const updateArtist = updateField("artist");
+  const updateTitle = updateField("title");
+  const updateTrack = updateField("track");
 
   const save = () => {
     if (!actionState.canSave) {
       sendHaptic("error");
-      setError(getImportSongEditRequiredTitleMessage());
+      dispatchFormState({
+        error: getImportSongEditRequiredTitleMessage(),
+        type: "fail",
+      });
       return;
     }
 
     try {
       updateImportSong(
         buildEditedImportSongDraft({
-          album,
-          artist,
+          album: formState.album,
+          artist: formState.artist,
           song,
-          title,
-          track,
+          title: formState.title,
+          track: formState.track,
         }),
       );
       sendHaptic("success");
       router.replace(getImportSongEditSaveHref());
     } catch (caughtError) {
       sendHaptic("error");
-      setError(getImportSongEditErrorMessage(caughtError));
+      dispatchFormState({
+        error: getImportSongEditErrorMessage(caughtError),
+        type: "fail",
+      });
     }
   };
 
   return {
     actionState,
-    album,
-    artist,
-    error,
+    album: formState.album,
+    artist: formState.artist,
+    error: formState.error,
     save,
-    setAlbum,
-    setArtist,
-    title,
-    track,
+    setAlbum: updateAlbum,
+    setArtist: updateArtist,
+    title: formState.title,
+    track: formState.track,
     updateTitle,
     updateTrack,
   };

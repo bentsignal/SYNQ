@@ -42,6 +42,7 @@ import {
 import {
   canDeleteLibraryCollection,
   getAddableSongRowState,
+  getAddableSongSelectionState,
   getCollectionDetailActionState,
   getCollectionListHref,
   getCollectionSongListState,
@@ -965,6 +966,63 @@ function assertLibraryCollectionInteractionSmoke() {
     }),
     [1],
   );
+  assert.deepEqual(
+    getAddableSongSelectionState({
+      isAddingSelection: false,
+      savingSongId: null,
+      selectedSongIds: new Set(),
+      songs: addableSongs,
+    }),
+    {
+      bulkAddLabel: "Add selected",
+      canBulkAdd: false,
+      isMutating: false,
+      selectedAddableSongIds: [],
+      selectedCount: 0,
+      selectionLabel: "Select songs to add several at once.",
+    },
+  );
+  assert.deepEqual(
+    getAddableSongSelectionState({
+      isAddingSelection: false,
+      savingSongId: null,
+      selectedSongIds: new Set([1, 2, 3, 99]),
+      songs: addableSongs,
+    }),
+    {
+      bulkAddLabel: "Add selected",
+      canBulkAdd: true,
+      isMutating: false,
+      selectedAddableSongIds: [1, 3],
+      selectedCount: 2,
+      selectionLabel: "2 selected",
+    },
+  );
+  assert.deepEqual(
+    getAddableSongSelectionState({
+      isAddingSelection: true,
+      savingSongId: null,
+      selectedSongIds: new Set([1]),
+      songs: addableSongs,
+    }),
+    {
+      bulkAddLabel: "Adding",
+      canBulkAdd: false,
+      isMutating: true,
+      selectedAddableSongIds: [1],
+      selectedCount: 1,
+      selectionLabel: "1 selected",
+    },
+  );
+  assert.deepEqual(
+    getAddableSongSelectionState({
+      isAddingSelection: false,
+      savingSongId: 3,
+      selectedSongIds: new Set([1]),
+      songs: addableSongs,
+    }).canBulkAdd,
+    false,
+  );
 
   const selected = toggleSongIdSelection({
     selectedSongIds: new Set([1]),
@@ -989,7 +1047,7 @@ function assertLibraryCollectionInteractionSmoke() {
       selectedSongIds: new Set([1]),
       song: addableSongs[0]!,
     }),
-    { isDisabled: false, isSaving: false, isSelected: true },
+    { addLabel: "Add", isDisabled: false, isSaving: false, isSelected: true },
   );
   assert.deepEqual(
     getAddableSongRowState({
@@ -997,7 +1055,12 @@ function assertLibraryCollectionInteractionSmoke() {
       selectedSongIds: new Set([1]),
       song: addableSongs[0]!,
     }),
-    { isDisabled: true, isSaving: true, isSelected: true },
+    {
+      addLabel: "Adding",
+      isDisabled: true,
+      isSaving: true,
+      isSelected: true,
+    },
   );
   assert.deepEqual(
     getAddableSongRowState({
@@ -1005,7 +1068,12 @@ function assertLibraryCollectionInteractionSmoke() {
       selectedSongIds: new Set([2]),
       song: addableSongs[1]!,
     }),
-    { isDisabled: true, isSaving: false, isSelected: false },
+    {
+      addLabel: "Added",
+      isDisabled: true,
+      isSaving: false,
+      isSelected: false,
+    },
   );
 }
 

@@ -102,6 +102,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     screen service instead of settings screens.
   - Done: import save export/finish/discard labels now live with save action
     availability in the import session service instead of the save screen.
+  - Done: add-to-collection bulk selection count, mutation guards, and add row
+    labels now live in the library interaction service instead of the screen.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -185,6 +187,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     behavior.
   - Done: extend deterministic smoke coverage to import save export, finish,
     and discard labels across empty, ready, exporting, and saving states.
+  - Done: extend deterministic smoke coverage to add-to-collection bulk
+    selection labels, mutation guards, linked-song filtering, and row labels.
 
 ### Phase 3: New App Build-Out
 

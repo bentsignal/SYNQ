@@ -22,8 +22,8 @@ import {
   addSongsToCollection,
 } from "../repository/relationship-repository";
 import {
+  getAddableSongSelectionState,
   getAddableSongRowState,
-  getSelectedAddableSongIds,
   removeSongIdSelection,
   toggleSongIdSelection,
 } from "../services/library-collection-interaction-service";
@@ -90,12 +90,12 @@ function AddCollectionSongsContent({
     updatedAt > 0
       ? `Updated ${new Date(updatedAt).toLocaleTimeString()}`
       : "Waiting for library data";
-  const selectedAddableSongIds = getSelectedAddableSongIds({
-    selectedSongIds,
+  const selectionState = getAddableSongSelectionState({
+    isAddingSelection,
+    savingSongId,
     songs,
+    selectedSongIds,
   });
-  const selectedCount = selectedAddableSongIds.length;
-  const isMutating = isAddingSelection || savingSongId !== null;
 
   const toggleSongSelection = (songId: number) => {
     sendHaptic("light");
@@ -108,7 +108,7 @@ function AddCollectionSongsContent({
   };
 
   const addSelectedSongs = async () => {
-    if (selectedCount === 0) {
+    if (!selectionState.canBulkAdd) {
       sendHaptic("error");
       return;
     }
@@ -121,7 +121,7 @@ function AddCollectionSongsContent({
       await addSongsToCollection({
         collectionId: id,
         kind,
-        songIds: selectedAddableSongIds,
+        songIds: selectionState.selectedAddableSongIds,
       });
       setSelectedSongIds(new Set());
       sendHaptic("success");
@@ -185,22 +185,20 @@ function AddCollectionSongsContent({
         ]}
       >
         <Text style={[styles.selectionText, { color: theme.secondaryText }]}>
-          {selectedCount === 0
-            ? "Select songs to add several at once."
-            : `${selectedCount} selected`}
+          {selectionState.selectionLabel}
         </Text>
         <Pressable
           accessibilityRole="button"
-          disabled={selectedCount === 0 || isMutating}
+          disabled={!selectionState.canBulkAdd}
           onPress={addSelectedSongs}
           style={[
             styles.bulkAddButton,
             { backgroundColor: theme.accent },
-            selectedCount === 0 || isMutating ? styles.disabled : null,
+            !selectionState.canBulkAdd ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.bulkAddText, { color: theme.onAccent }]}>
-            {isAddingSelection ? "Adding" : "Add selected"}
+            {selectionState.bulkAddLabel}
           </Text>
         </Pressable>
       </View>
@@ -314,7 +312,7 @@ function AddableSongList({
       ]}
     >
       {songs.map((song) => {
-        const { isDisabled, isSaving, isSelected } = getAddableSongRowState({
+        const { addLabel, isDisabled, isSelected } = getAddableSongRowState({
           savingSongId,
           selectedSongIds,
           song,
@@ -380,7 +378,7 @@ function AddableSongList({
               ]}
             >
               <Text style={[styles.addButtonText, { color: theme.onAccent }]}>
-                {song.isLinked ? "Added" : isSaving ? "Adding" : "Add"}
+                {addLabel}
               </Text>
             </Pressable>
           </View>

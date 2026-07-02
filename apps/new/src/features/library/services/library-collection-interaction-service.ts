@@ -152,6 +152,37 @@ export const getSelectedAddableSongIds = ({
     songs.some((song) => song.id === songId && !song.isLinked),
   );
 
+export const getAddableSongSelectionState = ({
+  isAddingSelection,
+  savingSongId,
+  selectedSongIds,
+  songs,
+}: {
+  isAddingSelection: boolean;
+  savingSongId: number | null;
+  selectedSongIds: Set<number>;
+  songs: AddableCollectionSong[];
+}) => {
+  const selectedAddableSongIds = getSelectedAddableSongIds({
+    selectedSongIds,
+    songs,
+  });
+  const selectedCount = selectedAddableSongIds.length;
+  const isMutating = isAddingSelection || savingSongId !== null;
+
+  return {
+    bulkAddLabel: isAddingSelection ? "Adding" : "Add selected",
+    canBulkAdd: selectedCount > 0 && !isMutating,
+    isMutating,
+    selectedAddableSongIds,
+    selectedCount,
+    selectionLabel:
+      selectedCount === 0
+        ? "Select songs to add several at once."
+        : `${selectedCount} selected`,
+  };
+};
+
 export const toggleSongIdSelection = ({
   selectedSongIds,
   songId,
@@ -197,6 +228,7 @@ export const getAddableSongRowState = ({
   const isSelected = selectedSongIds.has(song.id) && !song.isLinked;
 
   return {
+    addLabel: song.isLinked ? "Added" : isSaving ? "Adding" : "Add",
     isDisabled,
     isSaving,
     isSelected,

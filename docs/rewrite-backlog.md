@@ -47,6 +47,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     library service with deterministic smoke coverage.
   - Done: edit-collection query state and singular collection kind typing now
     live in a library service instead of depending on the edit screen.
+  - Done: shared collection form year parsing now lives in a library service
+    instead of duplicated create/edit screen helpers.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -74,6 +76,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     fallbacks.
   - Done: extend deterministic smoke coverage to edit-collection query state,
     image resolution, year formatting, and loaded-missing fallbacks.
+  - Done: extend deterministic smoke coverage to collection form year parsing
+    for blank, valid, and invalid album year inputs.
 
 ### Phase 3: New App Build-Out
 

@@ -17,6 +17,7 @@ import {
   createPlaylist,
 } from "../repository/collection-repository";
 import { pickCollectionImage } from "../services/collection-image-picker-service";
+import { parseAlbumYearInput } from "../services/collection-form-service";
 
 type CreateCollectionKind = "album" | "artist" | "playlist";
 
@@ -55,22 +56,6 @@ const labels: Record<
     namePlaceholder: "Playlist name",
     title: "Create playlist",
   },
-};
-
-const parseYear = (value: string) => {
-  const trimmed = value.trim();
-
-  if (!trimmed) {
-    return undefined;
-  }
-
-  const year = Number(trimmed);
-
-  if (!Number.isInteger(year) || year < 0) {
-    throw new Error("Album year must be a positive whole number.");
-  }
-
-  return year;
 };
 
 export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
@@ -121,7 +106,7 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
         const album = await createAlbum({
           coverImage: image?.dataUrl,
           name,
-          year: parseYear(year),
+          year: parseAlbumYearInput(year),
         });
         sendHaptic("success");
         router.replace(`/(tabs)/library/album/${album.id}`);

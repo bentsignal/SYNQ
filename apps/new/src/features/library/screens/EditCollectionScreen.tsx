@@ -18,6 +18,7 @@ import {
   updatePlaylist,
 } from "../repository/collection-repository";
 import { pickCollectionImage } from "../services/collection-image-picker-service";
+import { parseAlbumYearInput } from "../services/collection-form-service";
 import type { EditCollectionKind } from "../services/edit-collection-query-service";
 
 export type CollectionKind = EditCollectionKind;
@@ -60,22 +61,6 @@ const parseId = (value: string | string[] | undefined) => {
   const id = Number(rawValue);
 
   return Number.isFinite(id) ? id : null;
-};
-
-const parseYear = (value: string) => {
-  const trimmed = value.trim();
-
-  if (!trimmed) {
-    return null;
-  }
-
-  const year = Number(trimmed);
-
-  if (!Number.isInteger(year) || year < 0) {
-    throw new Error("Album year must be a positive whole number.");
-  }
-
-  return year;
 };
 
 export function EditCollectionScreen({ kind }: EditCollectionScreenProps) {
@@ -175,7 +160,7 @@ function EditCollectionContent({
           coverImage: image?.dataUrl,
           id,
           name,
-          year: parseYear(year),
+          year: parseAlbumYearInput(year) ?? null,
         });
         sendHaptic("success");
         router.replace(`/(tabs)/library/album/${id}`);

@@ -22,6 +22,7 @@ import {
   artistRowsToPreview,
   playlistRowsToPreview,
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
+import { parseAlbumYearInput } from "../../../apps/new/src/features/library/services/collection-form-service";
 import { rowsToAddableCollectionSongs } from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
 import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
 import { buildLibrarySongDetail } from "../../../apps/new/src/features/library/services/library-song-detail-service";
@@ -680,6 +681,25 @@ function assertEditCollectionQuerySmoke() {
   assert.equal(playlist.name, "");
 }
 
+function assertCollectionFormSmoke() {
+  assert.equal(parseAlbumYearInput(""), undefined);
+  assert.equal(parseAlbumYearInput("   "), undefined);
+  assert.equal(parseAlbumYearInput("0"), 0);
+  assert.equal(parseAlbumYearInput(" 2026 "), 2026);
+  assert.throws(
+    () => parseAlbumYearInput("-1"),
+    /Album year must be a positive whole number/,
+  );
+  assert.throws(
+    () => parseAlbumYearInput("2026.5"),
+    /Album year must be a positive whole number/,
+  );
+  assert.throws(
+    () => parseAlbumYearInput("future-ish"),
+    /Album year must be a positive whole number/,
+  );
+}
+
 assertPlaybackSessionSmoke();
 assertImportSessionSmoke();
 assertLibraryCollectionDetailSmoke();
@@ -688,4 +708,5 @@ assertLibrarySongPreviewSmoke();
 assertAddableCollectionSongsSmoke();
 assertLibrarySongDetailSmoke();
 assertEditCollectionQuerySmoke();
+assertCollectionFormSmoke();
 console.log("Rewrite deterministic smoke checks passed.");

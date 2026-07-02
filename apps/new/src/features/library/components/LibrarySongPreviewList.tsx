@@ -74,9 +74,11 @@ export function LibrarySongPreviewList({
             No songs yet
           </Text>
           <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
-            Imported tracks will appear here once the shared library database has
-            rows to render.
+            Import audio files to start building your song library.
           </Text>
+          <Link href="/import" style={[styles.emptyLink, { color: theme.accent }]}>
+            Import music
+          </Link>
         </View>
       ) : (
         <View
@@ -159,6 +161,12 @@ const styles = StyleSheet.create({
   emptyBody: {
     fontSize: 14,
     lineHeight: 20,
+  },
+  emptyLink: {
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
   },
   list: {
     borderRadius: 8,

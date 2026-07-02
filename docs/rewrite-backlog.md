@@ -49,10 +49,11 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     with live library/playback state plus import, settings, premium, player, and
     queue entry points.
   - Library: first reactive Drizzle summary, searchable/sortable song surface,
-    collection previews, read-only song/playlist/album/artist detail routes,
-    playlist/album/artist create/edit flows, collection song add/remove flows,
-    durable album/playlist/artist song reorder flows, and collection
-    cover/profile image picking, persistence, and thumbnail rendering exist.
+    collection previews, user-facing library home copy and empty states,
+    read-only song/playlist/album/artist detail routes, playlist/album/artist
+    create/edit flows, collection song add/remove flows, durable
+    album/playlist/artist song reorder flows, and collection cover/profile image
+    picking, persistence, and thumbnail rendering exist.
   - Playback: explicit session state, queue/player screens, an Expo Audio
     adapter for play/pause/seek/skip, native status/progress sync,
     filesystem-backed session persistence, queue reordering, and player

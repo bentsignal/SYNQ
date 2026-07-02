@@ -55,7 +55,7 @@ export function LibraryCollectionPreviewSection({
           Collections
         </Text>
         <Text style={[styles.sectionMeta, { color: theme.secondaryText }]}>
-          Live database
+          Playlists, albums, artists
         </Text>
       </View>
 
@@ -70,8 +70,7 @@ export function LibraryCollectionPreviewSection({
             No collections yet
           </Text>
           <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
-            Playlists, albums, and artists will populate here as the shared
-            library database changes.
+            Create a playlist, album, or artist once you have songs to organize.
           </Text>
         </View>
       ) : (

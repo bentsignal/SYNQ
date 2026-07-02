@@ -42,15 +42,22 @@ export function LibraryHomeScreen() {
     >
       <View style={styles.header}>
         <Text style={[styles.kicker, { color: theme.accent }]}>
-          src/features/library
+          Music Library
         </Text>
         <Text style={[styles.title, { color: theme.primaryText }]}>
           Library
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          Reactive Drizzle library surface wired to the shared SYNQ database.
+          Browse your songs, playlists, albums, and artists as your collection
+          grows.
         </Text>
         <View style={styles.createLinks}>
+          <Link
+            href="/import"
+            style={[styles.createLink, { color: theme.accent }]}
+          >
+            Import music
+          </Link>
           <Link
             href="/(tabs)/library/playlist/create"
             style={[styles.createLink, { color: theme.accent }]}

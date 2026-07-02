@@ -257,6 +257,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: backup action cards, Premium badges, command buttons, status panel,
     and settings back-link rendering now live in a focused backup component
     instead of the route screen.
+  - Done: backup header, action list/cards, and status panel now render through
+    focused components instead of one large backup screen view.
   - Done: backup restore now unzips into a cache staging directory and rejects
     empty archives before replacing the live document directory.
   - Done: backup session reducer state transitions now live in a pure service

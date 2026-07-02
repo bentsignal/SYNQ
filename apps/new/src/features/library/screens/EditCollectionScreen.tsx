@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useEditCollectionQuery } from "../hooks/use-edit-collection-query";
 import {
   updateAlbum,
@@ -76,15 +77,25 @@ const parseYear = (value: string) => {
 
 export function EditCollectionScreen({ kind }: EditCollectionScreenProps) {
   const params = useLocalSearchParams<{ id?: string }>();
+  const theme = useCustomizationTheme();
   const id = parseId(params.id);
 
   if (id === null) {
     return (
-      <View style={styles.screen}>
-        <Text style={styles.kicker}>{labels[kind].kicker}</Text>
-        <Text style={styles.title}>Invalid collection</Text>
-        <Text style={styles.subtitle}>This route needs a numeric id.</Text>
-        <Link href="/(tabs)/library" style={styles.backLink}>
+      <View style={[styles.screen, { backgroundColor: theme.background }]}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          {labels[kind].kicker}
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          Invalid collection
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
+          This route needs a numeric id.
+        </Text>
+        <Link
+          href="/(tabs)/library"
+          style={[styles.backLink, { color: theme.accent }]}
+        >
           Back to Library
         </Link>
       </View>
@@ -103,6 +114,7 @@ function EditCollectionContent({
 }) {
   const router = useRouter();
   const { sendHaptic } = useHapticFeedback();
+  const theme = useCustomizationTheme();
   const copy = labels[kind];
   const collection = useEditCollectionQuery({ id, kind });
   const [name, setName] = useState("");
@@ -162,18 +174,27 @@ function EditCollectionContent({
   };
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { backgroundColor: theme.background }]}>
       <View style={styles.header}>
-        <Text style={styles.kicker}>{copy.kicker}</Text>
-        <Text style={styles.title}>{copy.title}</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          {copy.kicker}
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          {copy.title}
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           Updates the shared library database. Detail and Library screens update
           through live queries.
         </Text>
       </View>
 
-      <View style={styles.form}>
-        <Text style={styles.label}>Name</Text>
+      <View
+        style={[
+          styles.form,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.label, { color: theme.secondaryText }]}>Name</Text>
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
@@ -183,15 +204,20 @@ function EditCollectionContent({
             setName(nextName);
           }}
           placeholder={copy.namePlaceholder}
-          placeholderTextColor="#74807a"
+          placeholderTextColor={theme.mutedText}
           returnKeyType={kind === "album" ? "next" : "done"}
-          style={styles.input}
+          style={[
+            styles.input,
+            { borderColor: theme.border, color: theme.primaryText },
+          ]}
           value={name}
         />
 
         {kind === "album" ? (
           <>
-            <Text style={styles.label}>Year</Text>
+            <Text style={[styles.label, { color: theme.secondaryText }]}>
+              Year
+            </Text>
             <TextInput
               editable={!isSaving && !collection.isMissing}
               inputMode="numeric"
@@ -201,21 +227,32 @@ function EditCollectionContent({
                 setYear(nextYear);
               }}
               placeholder="Album year"
-              placeholderTextColor="#74807a"
+              placeholderTextColor={theme.mutedText}
               returnKeyType="done"
-              style={styles.input}
+              style={[
+                styles.input,
+                { borderColor: theme.border, color: theme.primaryText },
+              ]}
               value={year}
             />
           </>
         ) : null}
 
         {collection.isMissing ? (
-          <Text style={styles.errorText}>Collection not found.</Text>
+          <Text style={[styles.errorText, { color: theme.danger }]}>
+            Collection not found.
+          </Text>
         ) : null}
         {collection.error ? (
-          <Text style={styles.errorText}>Collection query failed.</Text>
+          <Text style={[styles.errorText, { color: theme.danger }]}>
+            Collection query failed.
+          </Text>
         ) : null}
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        {error ? (
+          <Text style={[styles.errorText, { color: theme.danger }]}>
+            {error}
+          </Text>
+        ) : null}
 
         <Pressable
           accessibilityRole="button"
@@ -223,17 +260,23 @@ function EditCollectionContent({
           onPress={handleUpdate}
           style={[
             styles.saveButton,
-            !canSave || collection.isMissing ? styles.disabledButton : null,
+            {
+              backgroundColor:
+                canSave && !collection.isMissing ? theme.accent : theme.inactive,
+            },
           ]}
         >
-          {isSaving ? <ActivityIndicator color="#ffffff" /> : null}
-          <Text style={styles.saveText}>
+          {isSaving ? <ActivityIndicator color={theme.onAccent} /> : null}
+          <Text style={[styles.saveText, { color: theme.onAccent }]}>
             {isSaving ? "Saving" : copy.editLabel}
           </Text>
         </Pressable>
       </View>
 
-      <Link href="/(tabs)/library" style={styles.backLink}>
+      <Link
+        href="/(tabs)/library"
+        style={[styles.backLink, { color: theme.accent }]}
+      >
         Back to Library
       </Link>
     </View>
@@ -242,7 +285,6 @@ function EditCollectionContent({
 
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
     gap: 20,
     paddingHorizontal: 20,
@@ -252,45 +294,37 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   kicker: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   title: {
-    color: "#121417",
     fontSize: 34,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 40,
   },
   subtitle: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
   },
   form: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 12,
     padding: 16,
   },
   label: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   input: {
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
-    color: "#121417",
     fontSize: 16,
     fontWeight: "700",
     letterSpacing: 0,
@@ -299,7 +333,6 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     alignItems: "center",
-    backgroundColor: "#0f766e",
     borderRadius: 8,
     flexDirection: "row",
     gap: 10,
@@ -307,24 +340,18 @@ const styles = StyleSheet.create({
     minHeight: 48,
     paddingHorizontal: 16,
   },
-  disabledButton: {
-    backgroundColor: "#8da39d",
-  },
   saveText: {
-    color: "#ffffff",
     fontSize: 14,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   errorText: {
-    color: "#b42318",
     fontSize: 14,
     fontWeight: "700",
     lineHeight: 20,
   },
   backLink: {
-    color: "#0f766e",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,

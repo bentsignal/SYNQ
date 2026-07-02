@@ -75,10 +75,11 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     routes, live RevenueCat pricing, purchase, restore commands, an app-wide
     entitlement provider, persisted customization preferences for theme,
     app icon, and haptics, and saved-theme consumption across navigation,
-    loading/placeholder states, settings, and the library home surface exist;
-    native app icon assets/config and a settings-owned native icon service are
-    wired; haptic feedback now flows through a preference-aware settings hook
-    for customization, playback, queue, and collection save actions. Deeper
+    loading/placeholder states, settings, library home, and library
+    create/edit/detail surfaces exist; native app icon assets/config and a
+    settings-owned native icon service are wired; haptic feedback now flows
+    through a preference-aware settings hook for customization, playback, queue,
+    collection save actions, and collection detail song mutations. Deeper
     feature-screen theming and native-build icon/haptics smoke are next.
 - [ ] Move reusable feature logic from `apps/old` into shared app-local modules
   that `apps/new` can consume without copying UI spaghetti.
@@ -144,16 +145,16 @@ erase/reset commands. Premium now has a feature-owned purchase session shell
 connected to RevenueCat pricing, purchase, restore commands, and an app-wide
 entitlement provider consumed by Settings, Backup, and Customization. Settings
 customization now owns persisted theme, app icon, and haptic preference state;
-the app shell, loading/placeholder states, settings screens, and library home
-surface consume saved theme state through a shared palette hook; deeper
-feature-screen theme application, native remote playback event ingestion, and
-manual playback smoke are still next. Native app icon assets/config now exist in
-`apps/new`, and app-icon preference changes flow through a settings-owned
-native service, but alternate icon behavior still needs a native prebuild/device
-smoke. Haptic preference state is now consumed by a settings-owned haptics hook
-in customization, playback, queue, and collection save paths, but broader
-feature coverage and native-device haptic smoke are still pending. It is not
-yet a replacement app.
+the app shell, loading/placeholder states, settings screens, library home, and
+library create/edit/detail surfaces consume saved theme state through a shared
+palette hook; deeper feature-screen theme application, native remote playback
+event ingestion, and manual playback smoke are still next. Native app icon
+assets/config now exist in `apps/new`, and app-icon preference changes flow
+through a settings-owned native service, but alternate icon behavior still needs
+a native prebuild/device smoke. Haptic preference state is now consumed by a
+settings-owned haptics hook in customization, playback, queue, collection save
+paths, and collection detail song mutations, but broader feature coverage and
+native-device haptic smoke are still pending. It is not yet a replacement app.
 The next useful work should alternate between:
 
 - closing Phase 2 gaps that would otherwise be copied into the new app; and

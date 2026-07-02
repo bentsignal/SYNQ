@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useLocalSearchParams } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { LibraryCollectionSongList } from "../components/LibraryCollectionSongList";
 import {
   useLibraryCollectionDetailQuery,
@@ -55,15 +57,25 @@ export function LibraryCollectionDetailScreen({
   kind,
 }: LibraryCollectionDetailScreenProps) {
   const params = useLocalSearchParams<{ id?: string }>();
+  const theme = useCustomizationTheme();
   const id = parseId(params.id);
 
   if (id === null) {
     return (
-      <View style={styles.screen}>
-        <Text style={styles.kicker}>src/features/library</Text>
-        <Text style={styles.title}>Invalid collection</Text>
-        <Text style={styles.subtitle}>This route needs a numeric id.</Text>
-        <Link href="/(tabs)/library" style={styles.backLink}>
+      <View style={[styles.screen, { backgroundColor: theme.background }]}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          src/features/library
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          Invalid collection
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
+          This route needs a numeric id.
+        </Text>
+        <Link
+          href="/(tabs)/library"
+          style={[styles.backLink, { color: theme.accent }]}
+        >
           Back to Library
         </Link>
       </View>
@@ -81,6 +93,8 @@ function LibraryCollectionDetailContent({
   kind: LibraryCollectionDetailKind;
 }) {
   const { detail, errors } = useLibraryCollectionDetailQuery({ id, kind });
+  const theme = useCustomizationTheme();
+  const { sendHaptic } = useHapticFeedback();
   const [movingSongId, setMovingSongId] = useState<number | null>(null);
   const [removingSongId, setRemovingSongId] = useState<number | null>(null);
   const [mutationError, setMutationError] = useState<string | null>(null);
@@ -91,16 +105,32 @@ function LibraryCollectionDetailContent({
       : "Waiting for collection data";
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      style={[styles.scroll, { backgroundColor: theme.background }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.kicker}>{detail.eyebrow}</Text>
-        <Text style={styles.title}>{detail.title}</Text>
-        <Text style={styles.subtitle}>{detail.meta}</Text>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          {detail.eyebrow}
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          {detail.title}
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
+          {detail.meta}
+        </Text>
       </View>
 
-      <View style={styles.summaryPanel}>
-        <Text style={styles.summaryValue}>{detail.detail}</Text>
-        <Text style={styles.summaryLabel}>
+      <View
+        style={[
+          styles.summaryPanel,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.summaryValue, { color: theme.primaryText }]}>
+          {detail.detail}
+        </Text>
+        <Text style={[styles.summaryLabel, { color: theme.secondaryText }]}>
           {detail.isMissing ? "Missing from database" : updatedLabel}
         </Text>
       </View>
@@ -108,21 +138,25 @@ function LibraryCollectionDetailContent({
       <View style={styles.actionRow}>
         <Link
           href={`/(tabs)/library/${kind}/edit/${id}`}
-          style={styles.editLink}
+          style={[styles.editLink, { color: theme.accent }]}
         >
           Edit {detail.eyebrow.toLowerCase()}
         </Link>
         <Link
           href={`/(tabs)/library/${kind}/add/${id}`}
-          style={styles.editLink}
+          style={[styles.editLink, { color: theme.accent }]}
         >
           Add songs
         </Link>
       </View>
 
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Songs</Text>
-        <Text style={styles.sectionMeta}>Reactive query</Text>
+        <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
+          Songs
+        </Text>
+        <Text style={[styles.sectionMeta, { color: theme.secondaryText }]}>
+          Reactive query
+        </Text>
       </View>
 
       <LibraryCollectionSongList
@@ -144,7 +178,9 @@ function LibraryCollectionDetailContent({
                     albumId: id,
                     songIds: reorderedSongs.map((song) => song.id),
                   });
+                  sendHaptic("light");
                 } catch (caughtError) {
+                  sendHaptic("error");
                   setMutationError(
                     caughtError instanceof Error
                       ? caughtError.message
@@ -166,7 +202,9 @@ function LibraryCollectionDetailContent({
               kind,
               songId,
             });
+            sendHaptic("medium");
           } catch (caughtError) {
+            sendHaptic("error");
             setMutationError(
               caughtError instanceof Error
                 ? caughtError.message
@@ -180,14 +218,30 @@ function LibraryCollectionDetailContent({
         songs={detail.songs}
       />
 
-      <View style={styles.panel}>
-        <Text style={hasErrors ? styles.errorText : styles.panelText}>
+      <View
+        style={[
+          styles.panel,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text
+          style={[
+            hasErrors || mutationError ? styles.errorText : styles.panelText,
+            {
+              color:
+                hasErrors || mutationError ? theme.danger : theme.secondaryText,
+            },
+          ]}
+        >
           {mutationError ??
             (hasErrors ? "One or more detail queries failed." : updatedLabel)}
         </Text>
       </View>
 
-      <Link href="/(tabs)/library" style={styles.backLink}>
+      <Link
+        href="/(tabs)/library"
+        style={[styles.backLink, { color: theme.accent }]}
+      >
         Back to Library
       </Link>
     </ScrollView>
@@ -196,11 +250,9 @@ function LibraryCollectionDetailContent({
 
 const styles = StyleSheet.create({
   scroll: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
   },
   screen: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
     gap: 10,
     paddingHorizontal: 20,
@@ -215,42 +267,35 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   kicker: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   title: {
-    color: "#121417",
     fontSize: 34,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 40,
   },
   subtitle: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
   },
   summaryPanel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 6,
     padding: 16,
   },
   summaryValue: {
-    color: "#121417",
     fontSize: 22,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 28,
   },
   summaryLabel: {
-    color: "#52605a",
     fontSize: 13,
     fontWeight: "700",
     lineHeight: 18,
@@ -262,7 +307,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   sectionTitle: {
-    color: "#121417",
     flex: 1,
     fontSize: 20,
     fontWeight: "800",
@@ -270,7 +314,6 @@ const styles = StyleSheet.create({
     lineHeight: 25,
   },
   sectionMeta: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
@@ -284,31 +327,25 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   panel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     padding: 16,
   },
   panelText: {
-    color: "#52605a",
     fontSize: 14,
     lineHeight: 20,
   },
   errorText: {
-    color: "#b42318",
     fontSize: 14,
     fontWeight: "700",
     lineHeight: 20,
   },
   backLink: {
-    color: "#0f766e",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,
   },
   editLink: {
-    color: "#0f766e",
     fontSize: 14,
     fontWeight: "800",
     letterSpacing: 0,

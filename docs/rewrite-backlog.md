@@ -203,6 +203,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: add-to-collection all-song and linked-song row subscriptions now live
     in a focused rows-query hook instead of the addable-song shaping hook
     owning every live query directly.
+  - Done: add-to-collection row-to-result shaping now lives in a focused result
+    hook instead of the kind-specific query hook owning subscription selection
+    and result assembly together.
   - Done: collection detail routes now mount kind-specific live query hooks so
     playlist, album, and artist detail screens do not subscribe to unrelated
     collection tables.

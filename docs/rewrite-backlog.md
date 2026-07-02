@@ -102,6 +102,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: library collection list query/filter orchestration now lives in a
     controller hook, and collection row rendering now lives in a dedicated
     component instead of the route screen.
+  - Done: library home summary, collection preview, song preview search/sort,
+    query status derivation, and screen layout now split between a controller
+    hook and focused component instead of the route screen.
   - Done: collection detail header, action bar, status panel, and invalid route
     state now live in focused components instead of the route screen.
   - Done: collection detail assembled layout, songs section header, list wiring,

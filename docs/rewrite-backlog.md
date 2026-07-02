@@ -361,6 +361,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import success/failure result labels now live in the import
     screen-state service with deterministic smoke coverage instead of being
     computed inline in route screens.
+  - Done: import success/failure result screens now share a focused result view
+    component instead of duplicating themed header, panel, and back-link UI.
   - Done: import home route metadata, Premium lockout destinations, staged
     counts, Wi-Fi status labels, and route-selection haptics now split between
     an import session service, controller hook, and focused component instead

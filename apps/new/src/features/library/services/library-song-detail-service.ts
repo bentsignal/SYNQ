@@ -174,6 +174,16 @@ export const getLibrarySongDetailPlayerHref = (): LibrarySongDetailHref =>
 export const getLibrarySongDetailBackHref = (): LibrarySongDetailHref =>
   "/(tabs)/library";
 
+export const getLibraryInvalidSongState = () => ({
+  backLink: {
+    href: getLibrarySongDetailBackHref(),
+    label: "Back to Library",
+  },
+  body: "This route needs a numeric id.",
+  kicker: "Song",
+  title: "Invalid song",
+});
+
 export const getLibrarySongDetailHref = ({
   songId,
 }: {

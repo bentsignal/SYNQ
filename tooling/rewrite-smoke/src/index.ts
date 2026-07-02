@@ -211,6 +211,7 @@ import {
   getLibrarySongDetailPlayerHref,
   getLibrarySongDetailStatusState,
   getLibrarySongDetailMutationErrorMessage,
+  getLibraryInvalidSongState,
   getLibrarySongDeleteConfirmationCopy,
   getLibrarySongDeleteSuccessHref,
   getLibrarySongEditHref,
@@ -2758,6 +2759,15 @@ function assertLibrarySongDetailSmoke() {
   );
   assert.equal(getLibrarySongDetailPlayerHref(), "/player");
   assert.equal(getLibrarySongDetailBackHref(), "/(tabs)/library");
+  assert.deepEqual(getLibraryInvalidSongState(), {
+    backLink: {
+      href: "/(tabs)/library",
+      label: "Back to Library",
+    },
+    body: "This route needs a numeric id.",
+    kicker: "Song",
+    title: "Invalid song",
+  });
   assert.equal(
     getLibrarySongDetailHref({ songId: 42 }),
     "/(tabs)/library/song/42",

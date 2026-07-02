@@ -1,25 +1,28 @@
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getLibrarySongDetailBackHref } from "../services/library-song-detail-service";
+import { getLibraryInvalidSongState } from "../services/library-song-detail-service";
 
 export function LibraryInvalidSongState() {
   const theme = useCustomizationTheme();
+  const state = getLibraryInvalidSongState();
 
   return (
     <View style={[styles.screen, { backgroundColor: theme.background }]}>
-      <Text style={[styles.kicker, { color: theme.accent }]}>Song</Text>
+      <Text style={[styles.kicker, { color: theme.accent }]}>
+        {state.kicker}
+      </Text>
       <Text style={[styles.title, { color: theme.primaryText }]}>
-        Invalid song
+        {state.title}
       </Text>
       <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-        This route needs a numeric id.
+        {state.body}
       </Text>
       <Link
-        href={getLibrarySongDetailBackHref()}
+        href={state.backLink.href}
         style={[styles.backLink, { color: theme.accent }]}
       >
-        Back to Library
+        {state.backLink.label}
       </Link>
     </View>
   );

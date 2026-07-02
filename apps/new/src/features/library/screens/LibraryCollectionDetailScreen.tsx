@@ -1,7 +1,5 @@
-import { useState } from "react";
-import { Link, router, useLocalSearchParams } from "expo-router";
+import { Link, useLocalSearchParams } from "expo-router";
 import {
-  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -9,28 +7,16 @@ import {
   Text,
   View,
 } from "react-native";
-import { shareLibrarySongs } from "@/src/features/export/services/library-export-service";
 import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
-import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { LibraryCollectionSongList } from "../components/LibraryCollectionSongList";
+import { useLibraryCollectionDetailController } from "../hooks/use-library-collection-detail-controller";
 import {
   useAlbumCollectionDetailQuery,
   useArtistCollectionDetailQuery,
   usePlaylistCollectionDetailQuery,
   type LibraryCollectionDetailKind,
 } from "../hooks/use-library-collection-detail-query";
-import { deleteCollection } from "../repository/collection-repository";
-import {
-  removeSongFromCollection,
-  updateCollectionSongOrder,
-} from "../repository/relationship-repository";
-import {
-  getCollectionDetailActionState,
-  getCollectionListHref,
-  reorderCollectionSongs,
-} from "../services/library-collection-interaction-service";
 
 type LibraryCollectionDetailScreenProps = {
   kind: LibraryCollectionDetailKind;
@@ -126,109 +112,28 @@ function LibraryCollectionDetailView({
   kind,
 }: LibraryCollectionDetailViewProps) {
   const { detail, errors } = collection;
-  const { addToQueue, playSong } = usePlaybackSession();
   const theme = useCustomizationTheme();
-  const { sendHaptic } = useHapticFeedback();
-  const [movingSongId, setMovingSongId] = useState<number | null>(null);
-  const [removingSongId, setRemovingSongId] = useState<number | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
-  const [mutationError, setMutationError] = useState<string | null>(null);
   const hasErrors = errors.length > 0;
   const updatedLabel =
     detail.updatedAt > 0
       ? `Updated ${new Date(detail.updatedAt).toLocaleTimeString()}`
       : "Waiting for collection data";
-  const actionState = getCollectionDetailActionState({
+  const {
+    actionState,
+    deleteCurrentCollection,
+    exportCollection,
+    moveSong,
+    movingSongId,
+    mutationError,
+    playCollection,
+    queueCollection,
+    removeSong,
+    removingSongId,
+  } = useLibraryCollectionDetailController({
+    detail,
     id,
-    isDeleting,
-    isExporting,
-    isMissing: detail.isMissing,
     kind,
-    songs: detail.songs,
   });
-  const playCollection = () => {
-    const [firstSong, ...queuedSongs] = actionState.playableSongs;
-
-    if (!firstSong) {
-      sendHaptic("error");
-      return;
-    }
-
-    sendHaptic("light");
-    playSong(firstSong);
-    queuedSongs.forEach(addToQueue);
-    router.push("/player");
-  };
-  const queueCollection = () => {
-    if (!actionState.canQueue) {
-      sendHaptic("error");
-      return;
-    }
-
-    sendHaptic("light");
-    actionState.playableSongs.forEach(addToQueue);
-  };
-  const exportCollection = async () => {
-    if (!actionState.canExport) {
-      sendHaptic("error");
-      return;
-    }
-
-    setIsExporting(true);
-    setMutationError(null);
-
-    try {
-      await shareLibrarySongs(actionState.playableSongs);
-      sendHaptic("success");
-    } catch (caughtError) {
-      sendHaptic("error");
-      setMutationError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Songs could not be exported.",
-      );
-    } finally {
-      setIsExporting(false);
-    }
-  };
-  const deleteCurrentCollection = () => {
-    if (!actionState.canDelete) {
-      sendHaptic("error");
-      return;
-    }
-
-    Alert.alert(
-      `Delete ${detail.eyebrow.toLowerCase()}`,
-      `Delete ${detail.title}? Songs will stay in your library.`,
-      [
-        { style: "cancel", text: "Cancel" },
-        {
-          onPress: async () => {
-            setIsDeleting(true);
-            setMutationError(null);
-
-            try {
-              await deleteCollection({ id, kind });
-              sendHaptic("success");
-              router.replace(getCollectionListHref(kind));
-            } catch (caughtError) {
-              sendHaptic("error");
-              setMutationError(
-                caughtError instanceof Error
-                  ? caughtError.message
-                  : "Collection could not be deleted.",
-              );
-            } finally {
-              setIsDeleting(false);
-            }
-          },
-          style: "destructive",
-          text: "Delete",
-        },
-      ],
-    );
-  };
 
   return (
     <ScrollView
@@ -357,56 +262,8 @@ function LibraryCollectionDetailView({
 
       <LibraryCollectionSongList
         movingSongId={movingSongId}
-        onMoveSong={async (songId, direction) => {
-          setMovingSongId(songId);
-          setMutationError(null);
-
-          try {
-            const reorderedSongs = reorderCollectionSongs({
-              direction,
-              songId,
-              songs: detail.songs,
-            });
-
-            await updateCollectionSongOrder({
-              collectionId: id,
-              kind,
-              songIds: reorderedSongs.map((song) => song.id),
-            });
-            sendHaptic("light");
-          } catch (caughtError) {
-            sendHaptic("error");
-            setMutationError(
-              caughtError instanceof Error
-                ? caughtError.message
-                : "Song order could not be saved.",
-            );
-          } finally {
-            setMovingSongId(null);
-          }
-        }}
-        onRemoveSong={async (songId) => {
-          setRemovingSongId(songId);
-          setMutationError(null);
-
-          try {
-            await removeSongFromCollection({
-              collectionId: id,
-              kind,
-              songId,
-            });
-            sendHaptic("medium");
-          } catch (caughtError) {
-            sendHaptic("error");
-            setMutationError(
-              caughtError instanceof Error
-                ? caughtError.message
-                : "Song could not be removed.",
-            );
-          } finally {
-            setRemovingSongId(null);
-          }
-        }}
+        onMoveSong={moveSong}
+        onRemoveSong={removeSong}
         removingSongId={removingSongId}
         songs={detail.songs}
       />

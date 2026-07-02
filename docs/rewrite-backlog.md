@@ -145,6 +145,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     service instead of the edit screen.
   - Done: collection detail play, queue, export, and delete action state now
     lives in the library interaction service instead of the detail screen.
+  - Done: collection detail play, queue, export, delete, reorder, remove, and
+    mutation-error workflows now live in a controller hook instead of the
+    screen.
   - Done: backup action cards, operation labels, confirmation copy, and status
     presentation now live in a backup screen service instead of the screen.
   - Done: backup phase-transition haptic and runtime-session reset decisions now

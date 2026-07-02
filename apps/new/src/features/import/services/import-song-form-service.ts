@@ -19,6 +19,17 @@ export const getImportSongEditSaveHref = (): ImportSongEditHref =>
 export const getImportSongEditFilesHref = (): ImportSongEditHref =>
   "/(tabs)/import/files";
 
+export const getImportSongEditBackLinks = () => [
+  {
+    href: getImportSongEditSaveHref(),
+    label: "Back to save",
+  },
+  {
+    href: getImportSongEditFilesHref(),
+    label: "Back to files",
+  },
+] as const;
+
 export const getImportSongEditInvalidState = (
   reason: ImportSongEditInvalidReason,
 ) => {

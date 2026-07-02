@@ -81,6 +81,7 @@ import {
 } from "../../../apps/new/src/features/import/services/import-session-state-service";
 import {
   buildEditedImportSongDraft,
+  getImportSongEditBackLinks,
   getImportSongEditActionState,
   getImportSongEditErrorMessage,
   getImportSongEditFieldState,
@@ -3692,6 +3693,16 @@ function assertImportSongFormSmoke() {
   assert.equal(getImportSongEditHref({ songId: 5 }), "/import/edit/5");
   assert.equal(getImportSongEditSaveHref(), "/(tabs)/import/save");
   assert.equal(getImportSongEditFilesHref(), "/(tabs)/import/files");
+  assert.deepEqual(getImportSongEditBackLinks(), [
+    {
+      href: "/(tabs)/import/save",
+      label: "Back to save",
+    },
+    {
+      href: "/(tabs)/import/files",
+      label: "Back to files",
+    },
+  ]);
   assert.deepEqual(getImportSongEditInvalidState("invalid-id"), {
     kicker: "Import edit",
     links: [

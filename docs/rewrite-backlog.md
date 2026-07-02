@@ -343,6 +343,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import staged-song edit invalid/not-staged copy and back-link state
     now lives in the import song form service with smoke coverage instead of
     component-local branching.
+  - Done: import staged-song edit form back-link labels and destinations now
+    live in the import song form service with smoke coverage instead of
+    component-local link assembly.
   - Done: import staged-song edit header, metadata fields, source-file panel,
     error/save actions, and navigation links now render through focused
     components instead of one large edit form view.

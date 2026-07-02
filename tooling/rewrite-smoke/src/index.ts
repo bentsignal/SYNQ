@@ -38,6 +38,7 @@ import {
   getImportWifiState,
 } from "../../../apps/new/src/features/import/services/import-screen-state-service";
 import {
+  getFinishWifiTransferAction,
   importSessionReducer,
   initialImportSessionState,
 } from "../../../apps/new/src/features/import/services/import-session-state-service";
@@ -819,6 +820,14 @@ function assertImportSessionSmoke() {
       isWorking: true,
     },
   );
+  assert.deepEqual(getFinishWifiTransferAction([]), {
+    error: "No Wi-Fi songs were received.",
+    type: "fail",
+  });
+  assert.deepEqual(getFinishWifiTransferAction([importDraft(77)]), {
+    songs: [importDraft(77)],
+    type: "review",
+  });
 
   state = importSessionReducer(state, {
     song: { ...second, title: "Edited Import 2" },

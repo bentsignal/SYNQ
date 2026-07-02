@@ -171,6 +171,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     not only feature implementation files.
   - Done: import files and Wi-Fi presentation/action state now lives in the
     import session service instead of entry screens.
+  - Done: Wi-Fi import finish-to-review/failure decision now lives in the import
+    session service with deterministic smoke coverage instead of the command
+    hook branching inline.
   - Done: shared collection create/edit form action state now lives in the
     collection form service instead of duplicated screen save/edit guards.
   - Done: collection repository name normalization, required-name errors, and

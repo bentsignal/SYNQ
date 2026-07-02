@@ -33,6 +33,13 @@ export const initialImportSessionState: ImportSessionState = {
   source: "files",
 };
 
+export const getFinishWifiTransferAction = (
+  songs: ImportSongDraft[],
+): ImportSessionAction =>
+  songs.length > 0
+    ? { songs, type: "review" }
+    : { error: "No Wi-Fi songs were received.", type: "fail" };
+
 export const importSessionReducer = (
   state: ImportSessionState,
   action: ImportSessionAction,

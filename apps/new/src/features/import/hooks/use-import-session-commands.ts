@@ -8,7 +8,10 @@ import {
   prepareWifiImportCache,
 } from "../services/import-file-service";
 import { clearPersistedImportSessionState } from "../services/import-session-persistence-service";
-import type { ImportSessionAction } from "../services/import-session-state-service";
+import {
+  getFinishWifiTransferAction,
+  type ImportSessionAction,
+} from "../services/import-session-state-service";
 import type {
   ImportSaveSummary,
   ImportSessionState,
@@ -64,12 +67,7 @@ export function useImportSessionCommands({
   }, [dispatch]);
 
   const finishWifiTransfer = useCallback(() => {
-    if (state.songs.length > 0) {
-      dispatch({ songs: state.songs, type: "review" });
-      return;
-    }
-
-    dispatch({ error: "No Wi-Fi songs were received.", type: "fail" });
+    dispatch(getFinishWifiTransferAction(state.songs));
   }, [dispatch, state.songs]);
 
   const setShouldSaveToLibrary = useCallback(

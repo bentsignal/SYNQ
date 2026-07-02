@@ -28,7 +28,10 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-detail-service";
 import {
   getPlayableCollectionSongs,
+  getSelectedAddableSongIds,
+  removeSongIdSelection,
   reorderCollectionSongs,
+  toggleSongIdSelection,
 } from "../../../apps/new/src/features/library/services/library-collection-interaction-service";
 import {
   albumRowsToPreview,
@@ -385,6 +388,58 @@ function assertLibraryCollectionInteractionSmoke() {
   assert.equal(
     reorderCollectionSongs({ direction: "down", songId: 99, songs }),
     songs,
+  );
+
+  const addableSongs = [
+    {
+      album: "Smoke Album",
+      artist: "Smoke Artist",
+      duration: 100_000,
+      id: 1,
+      isLinked: false,
+      title: "First",
+    },
+    {
+      album: "Smoke Album",
+      artist: "Smoke Artist",
+      duration: 100_000,
+      id: 2,
+      isLinked: true,
+      title: "Second",
+    },
+    {
+      album: "Smoke Album",
+      artist: "Smoke Artist",
+      duration: 100_000,
+      id: 3,
+      isLinked: false,
+      title: "Third",
+    },
+  ];
+  assert.deepEqual(
+    getSelectedAddableSongIds({
+      selectedSongIds: new Set([1, 2, 99]),
+      songs: addableSongs,
+    }),
+    [1],
+  );
+
+  const selected = toggleSongIdSelection({
+    selectedSongIds: new Set([1]),
+    songId: 3,
+  });
+  assert.deepEqual(Array.from(selected).sort(), [1, 3]);
+  assert.deepEqual(
+    Array.from(
+      toggleSongIdSelection({ selectedSongIds: selected, songId: 1 }),
+    ).sort(),
+    [3],
+  );
+  assert.deepEqual(
+    Array.from(
+      removeSongIdSelection({ selectedSongIds: new Set([1, 3]), songId: 3 }),
+    ),
+    [1],
   );
 }
 

@@ -21,6 +21,11 @@ import {
   addSongToCollection,
   addSongsToCollection,
 } from "../repository/relationship-repository";
+import {
+  getSelectedAddableSongIds,
+  removeSongIdSelection,
+  toggleSongIdSelection,
+} from "../services/library-collection-interaction-service";
 
 type AddCollectionSongsScreenProps = {
   kind: LibraryCollectionDetailKind;
@@ -84,24 +89,20 @@ function AddCollectionSongsContent({
     updatedAt > 0
       ? `Updated ${new Date(updatedAt).toLocaleTimeString()}`
       : "Waiting for library data";
-  const selectedAddableSongIds = Array.from(selectedSongIds).filter((songId) =>
-    songs.some((song) => song.id === songId && !song.isLinked),
-  );
+  const selectedAddableSongIds = getSelectedAddableSongIds({
+    selectedSongIds,
+    songs,
+  });
   const selectedCount = selectedAddableSongIds.length;
   const isMutating = isAddingSelection || savingSongId !== null;
 
   const toggleSongSelection = (songId: number) => {
     sendHaptic("light");
     setSelectedSongIds((currentSelection) => {
-      const nextSelection = new Set(currentSelection);
-
-      if (nextSelection.has(songId)) {
-        nextSelection.delete(songId);
-      } else {
-        nextSelection.add(songId);
-      }
-
-      return nextSelection;
+      return toggleSongIdSelection({
+        selectedSongIds: currentSelection,
+        songId,
+      });
     });
   };
 
@@ -216,10 +217,10 @@ function AddCollectionSongsContent({
               songId,
             });
             setSelectedSongIds((currentSelection) => {
-              const nextSelection = new Set(currentSelection);
-              nextSelection.delete(songId);
-
-              return nextSelection;
+              return removeSongIdSelection({
+                selectedSongIds: currentSelection,
+                songId,
+              });
             });
             sendHaptic("success");
           } catch (caughtError) {

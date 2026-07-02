@@ -59,6 +59,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     live in an import service instead of the edit screen.
   - Done: collection detail playable-song filtering and optimistic reorder
     helpers now live in a library service instead of the detail screen.
+  - Done: add-to-collection bulk selection derivation and selection set updates
+    now live in a library service instead of the add-songs screen.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -99,6 +101,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     track parsing, fallback labels, and trimmed metadata.
   - Done: extend deterministic smoke coverage to collection detail interaction
     helpers for playable filtering, adjacent reorder, and no-op boundaries.
+  - Done: extend deterministic smoke coverage to add-to-collection selection
+    helpers for linked-song exclusion, toggles, and post-add removal.
 
 ### Phase 3: New App Build-Out
 

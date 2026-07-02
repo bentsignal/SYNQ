@@ -65,6 +65,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     library interaction service instead of inline row rendering logic.
   - Done: collection detail list-route and protected-delete rules now live in
     the library interaction service instead of the detail screen.
+  - Done: player progress, seek target, and free-listening remaining-time math
+    now live in a playback service instead of the player screen.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -111,6 +113,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     for selected, saving, and already-linked songs.
   - Done: extend deterministic smoke coverage to collection detail route and
     deletion guard rules for protected playlists and missing collections.
+  - Done: extend deterministic smoke coverage to player progress, seek
+    clamping, and free-listening remaining-time calculations.
 
 ### Phase 3: New App Build-Out
 

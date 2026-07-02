@@ -10,6 +10,11 @@ import {
   initialPlaybackState,
   playbackReducer,
 } from "../../../apps/new/src/features/playback/services/playback-session-service";
+import {
+  getFreeListeningRemainingMs,
+  getPlaybackProgressPercent,
+  getSeekTargetPosition,
+} from "../../../apps/new/src/features/playback/services/playback-player-state-service";
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
   importSessionReducer,
@@ -166,6 +171,64 @@ function assertPlaybackSessionSmoke() {
   assert.equal(state.adGate.active, false);
   assert.equal(state.adGate.due, false);
   assert.equal(state.isPlaying, true);
+}
+
+function assertPlaybackPlayerStateSmoke() {
+  assert.equal(
+    getPlaybackProgressPercent({ duration: 0, position: 5_000 }),
+    0,
+  );
+  assert.equal(
+    getPlaybackProgressPercent({ duration: 100_000, position: -10_000 }),
+    0,
+  );
+  assert.equal(
+    getPlaybackProgressPercent({ duration: 100_000, position: 45_000 }),
+    45,
+  );
+  assert.equal(
+    getPlaybackProgressPercent({ duration: 100_000, position: 150_000 }),
+    100,
+  );
+  assert.equal(
+    getFreeListeningRemainingMs({
+      accumulatedMs: 120_000,
+      thresholdMs: 600_000,
+    }),
+    480_000,
+  );
+  assert.equal(
+    getFreeListeningRemainingMs({
+      accumulatedMs: 700_000,
+      thresholdMs: 600_000,
+    }),
+    0,
+  );
+  assert.equal(
+    getSeekTargetPosition({
+      direction: "backward",
+      duration: 120_000,
+      position: 5_000,
+    }),
+    0,
+  );
+  assert.equal(
+    getSeekTargetPosition({
+      direction: "forward",
+      duration: 120_000,
+      position: 110_000,
+    }),
+    120_000,
+  );
+  assert.equal(
+    getSeekTargetPosition({
+      direction: "forward",
+      duration: 120_000,
+      position: 60_000,
+      stepMs: 10_000,
+    }),
+    70_000,
+  );
 }
 
 function assertImportSessionSmoke() {
@@ -1009,6 +1072,7 @@ assertDurationFormatSmoke();
 assertRouteParamSmoke();
 assertImportSongFormSmoke();
 assertPlaybackSessionSmoke();
+assertPlaybackPlayerStateSmoke();
 assertImportSessionSmoke();
 assertLibraryCollectionDetailSmoke();
 assertLibraryCollectionInteractionSmoke();

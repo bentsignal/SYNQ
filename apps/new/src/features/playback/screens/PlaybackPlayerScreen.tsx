@@ -4,22 +4,11 @@ import { formatDurationMs } from "@/src/features/app-shell/services/duration-for
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { usePlaybackSession } from "../hooks/use-playback-session";
-
-const seekStep = 15_000;
-
-const getProgressPercent = ({
-  duration,
-  position,
-}: {
-  duration: number;
-  position: number;
-}) => {
-  if (!duration) {
-    return 0;
-  }
-
-  return Math.round(Math.min(1, Math.max(0, position / duration)) * 100);
-};
+import {
+  getFreeListeningRemainingMs,
+  getPlaybackProgressPercent,
+  getSeekTargetPosition,
+} from "../services/playback-player-state-service";
 
 export function PlaybackPlayerScreen() {
   const theme = useCustomizationTheme();
@@ -37,25 +26,37 @@ export function PlaybackPlayerScreen() {
   } = usePlaybackSession();
   const hasActiveTrack = !!activeTrack;
   const adBreakActive = state.adGate.active || state.adGate.due;
-  const adProgressPercent = getProgressPercent({
+  const adProgressPercent = getPlaybackProgressPercent({
     duration: state.adGate.playbackDuration,
     position: state.adGate.playbackPosition,
   });
-  const progressPercent = getProgressPercent({
+  const progressPercent = getPlaybackProgressPercent({
     duration: state.duration,
     position: state.position,
   });
-  const freeListeningRemainingMs = Math.max(
-    0,
-    state.adGate.thresholdMs - state.adGate.accumulatedMs,
-  );
+  const freeListeningRemainingMs = getFreeListeningRemainingMs({
+    accumulatedMs: state.adGate.accumulatedMs,
+    thresholdMs: state.adGate.thresholdMs,
+  });
   const rewind = () => {
     sendHaptic("light");
-    seekTo(Math.max(0, state.position - seekStep));
+    seekTo(
+      getSeekTargetPosition({
+        direction: "backward",
+        duration: state.duration,
+        position: state.position,
+      }),
+    );
   };
   const fastForward = () => {
     sendHaptic("light");
-    seekTo(Math.min(state.duration, state.position + seekStep));
+    seekTo(
+      getSeekTargetPosition({
+        direction: "forward",
+        duration: state.duration,
+        position: state.position,
+      }),
+    );
   };
   const handleSkipPrevious = () => {
     sendHaptic("light");

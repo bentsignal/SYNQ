@@ -1,14 +1,13 @@
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { usePremiumPurchaseSession } from "../hooks/use-premium-purchase-session";
+import {
+  getPremiumActionState,
+  getPremiumStatusState,
+  getSelectedPremiumTier,
+  premiumFeatureCopy,
+} from "../services/premium-screen-service";
 import type { PremiumTier } from "../types/premium-purchase";
-
-const featureCopy = [
-  "Unlimited library import",
-  "Backup and restore",
-  "Customization controls",
-  "Support future SYNQ development",
-];
 
 export function PremiumScreen() {
   const {
@@ -19,10 +18,9 @@ export function PremiumScreen() {
     selectTier,
     state,
   } = usePremiumPurchaseSession();
-  const isLoading = state.phase === "loading";
-  const selectedTier = premiumTiers.find(
-    (tier) => tier.id === state.selectedTierId,
-  );
+  const selectedTier = getSelectedPremiumTier({ state, tiers: premiumTiers });
+  const actionState = getPremiumActionState({ selectedTier, state });
+  const statusState = getPremiumStatusState(state);
 
   return (
     <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
@@ -35,7 +33,7 @@ export function PremiumScreen() {
       </View>
 
       <View style={styles.featureList}>
-        {featureCopy.map((feature) => (
+        {premiumFeatureCopy.map((feature) => (
           <Text key={feature} style={styles.featureText}>
             {feature}
           </Text>
@@ -56,19 +54,25 @@ export function PremiumScreen() {
       <View style={styles.actionRow}>
         <Pressable
           accessibilityRole="button"
-          disabled={isLoading}
+          disabled={!actionState.canPurchase}
           onPress={() => void purchaseSelectedTier()}
-          style={[styles.primaryButton, isLoading ? styles.disabled : null]}
+          style={[
+            styles.primaryButton,
+            !actionState.canPurchase ? styles.disabled : null,
+          ]}
         >
           <Text style={styles.primaryButtonText}>
-            {selectedTier ? `Choose ${selectedTier.label}` : "Choose plan"}
+            {actionState.purchaseLabel}
           </Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={isLoading}
+          disabled={!actionState.canRestore}
           onPress={() => void restorePurchase()}
-          style={[styles.secondaryButton, isLoading ? styles.disabled : null]}
+          style={[
+            styles.secondaryButton,
+            !actionState.canRestore ? styles.disabled : null,
+          ]}
         >
           <Text style={styles.secondaryButtonText}>Restore</Text>
         </Pressable>
@@ -76,14 +80,12 @@ export function PremiumScreen() {
 
       <View style={styles.panel}>
         <Text style={styles.panelLabel}>Status</Text>
-        <Text style={state.phase === "failure" ? styles.errorText : styles.panelText}>
-          {state.error ??
-            state.message ??
-            (state.active
-              ? "Premium is active."
-              : "Choose a plan or restore a previous purchase.")}
+        <Text
+          style={statusState.isFailure ? styles.errorText : styles.panelText}
+        >
+          {statusState.message}
         </Text>
-        {state.phase === "failure" ? (
+        {statusState.canReset ? (
           <Pressable
             accessibilityRole="button"
             onPress={reset}

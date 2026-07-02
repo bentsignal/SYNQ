@@ -87,6 +87,16 @@ import {
   getBackupStatusState,
 } from "../../../apps/new/src/features/backup/services/backup-screen-service";
 import type { BackupSessionState } from "../../../apps/new/src/features/backup/types/backup-session";
+import {
+  getPremiumActionState,
+  getPremiumStatusState,
+  getSelectedPremiumTier,
+  premiumFeatureCopy,
+} from "../../../apps/new/src/features/premium/services/premium-screen-service";
+import type {
+  PremiumPurchaseState,
+  PremiumTier,
+} from "../../../apps/new/src/features/premium/types/premium-purchase";
 
 const song = ({
   duration = 180_000,
@@ -1802,11 +1812,105 @@ function assertBackupScreenSmoke() {
   });
 }
 
+function assertPremiumScreenSmoke() {
+  const tiers: PremiumTier[] = [
+    {
+      description: "Monthly access.",
+      id: "monthly",
+      label: "Monthly",
+      price: "$1",
+    },
+    {
+      description: "Yearly access.",
+      id: "yearly",
+      label: "Yearly",
+      price: "$10",
+    },
+  ];
+  const idleState: PremiumPurchaseState = {
+    active: false,
+    error: null,
+    message: null,
+    phase: "idle",
+    selectedTierId: "yearly",
+  };
+  const loadingState: PremiumPurchaseState = {
+    ...idleState,
+    phase: "loading",
+  };
+  const activeState: PremiumPurchaseState = {
+    ...idleState,
+    active: true,
+    selectedTierId: "monthly",
+  };
+  const failureState: PremiumPurchaseState = {
+    ...idleState,
+    error: "Premium purchase failed.",
+    phase: "failure",
+  };
+
+  assert.deepEqual(premiumFeatureCopy, [
+    "Unlimited library import",
+    "Backup and restore",
+    "Customization controls",
+    "Support future SYNQ development",
+  ]);
+  assert.equal(
+    getSelectedPremiumTier({ state: idleState, tiers })?.label,
+    "Yearly",
+  );
+  assert.equal(
+    getSelectedPremiumTier({
+      state: { ...idleState, selectedTierId: "lifetime" },
+      tiers,
+    }),
+    null,
+  );
+  assert.deepEqual(
+    getPremiumActionState({
+      selectedTier: getSelectedPremiumTier({ state: idleState, tiers }),
+      state: idleState,
+    }),
+    {
+      canPurchase: true,
+      canRestore: true,
+      purchaseLabel: "Choose Yearly",
+    },
+  );
+  assert.deepEqual(
+    getPremiumActionState({
+      selectedTier: null,
+      state: loadingState,
+    }),
+    {
+      canPurchase: false,
+      canRestore: false,
+      purchaseLabel: "Choose plan",
+    },
+  );
+  assert.deepEqual(getPremiumStatusState(idleState), {
+    canReset: false,
+    isFailure: false,
+    message: "Choose a plan or restore a previous purchase.",
+  });
+  assert.deepEqual(getPremiumStatusState(activeState), {
+    canReset: false,
+    isFailure: false,
+    message: "Premium is active.",
+  });
+  assert.deepEqual(getPremiumStatusState(failureState), {
+    canReset: true,
+    isFailure: true,
+    message: "Premium purchase failed.",
+  });
+}
+
 assertDurationFormatSmoke();
 assertRouteParamSmoke();
 assertHomeScreenSmoke();
 assertImportSongFormSmoke();
 assertBackupScreenSmoke();
+assertPremiumScreenSmoke();
 assertPlaybackSessionSmoke();
 assertPlaybackPlayerStateSmoke();
 assertImportSessionSmoke();

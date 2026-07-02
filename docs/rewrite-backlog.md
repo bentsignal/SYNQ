@@ -348,6 +348,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: Wi-Fi import address/progress panels, staged-song preview, review
     action, and import back link now render from a focused component instead
     of the route screen.
+  - Done: Wi-Fi import header, address status, progress, and review/back
+    actions now render through focused components instead of one large Wi-Fi
+    screen view.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.

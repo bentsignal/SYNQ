@@ -266,6 +266,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     component.
   - Done: import save export/finish/discard labels now live with save action
     availability in the import session service instead of the save screen.
+  - Done: import save artist, album, playlist, and album-cover relationship
+    linking now lives in a dedicated import library link service instead of the
+    top-level library save orchestration.
   - Done: add-to-collection bulk selection count, mutation guards, and add row
     labels now live in the library interaction service instead of the screen.
   - Done: add-to-collection song list row rendering now lives in a dedicated

@@ -370,6 +370,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import staged-song edit invalid/not-staged copy and back-link state
     now lives in the import song form service with smoke coverage instead of
     component-local branching.
+  - Done: import staged-song edit lookup now lives behind a query hook and pure
+    form-service selector with smoke coverage instead of the route screen.
   - Done: import staged-song edit form back-link labels and destinations now
     live in the import song form service with smoke coverage instead of
     component-local link assembly.

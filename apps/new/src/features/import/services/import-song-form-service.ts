@@ -30,6 +30,14 @@ export const getImportSongEditBackLinks = () => [
   },
 ] as const;
 
+export const getImportSongDraftForEdit = ({
+  songId,
+  songs,
+}: {
+  songId: number;
+  songs: ImportSongDraft[];
+}) => songs.find((draft) => draft.id === songId) ?? null;
+
 export const getImportSongEditInvalidState = (
   reason: ImportSongEditInvalidReason,
 ) => {

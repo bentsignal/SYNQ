@@ -99,6 +99,7 @@ import {
   getImportSongEditHref,
   getImportSongEditInitialState,
   getImportSongEditInvalidState,
+  getImportSongDraftForEdit,
   getImportSongEditRequiredTitleMessage,
   getImportSongEditSaveHref,
   parseImportTrackInput,
@@ -4015,6 +4016,20 @@ function assertImportSongFormSmoke() {
   assert.deepEqual(getImportSongEditActionState({ title: "   " }), {
     canSave: false,
   });
+  assert.deepEqual(
+    getImportSongDraftForEdit({
+      songId: 8,
+      songs: [importDraft(7), importDraft(8)],
+    }),
+    importDraft(8),
+  );
+  assert.equal(
+    getImportSongDraftForEdit({
+      songId: 99,
+      songs: [importDraft(7), importDraft(8)],
+    }),
+    null,
+  );
   assert.deepEqual(getImportSongEditFieldState(), {
     album: {
       label: "Album",

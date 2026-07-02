@@ -1,9 +1,8 @@
 import { useLocalSearchParams } from "expo-router";
-import { useMemo } from "react";
 import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
 import { EditImportSongConnectedForm } from "../components/EditImportSongConnectedForm";
 import { EditImportSongInvalidState } from "../components/EditImportSongInvalidState";
-import { useImportSession } from "../hooks/use-import-session";
+import { useEditImportSongQuery } from "../hooks/use-edit-import-song-query";
 
 export function EditImportSongScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
@@ -17,11 +16,7 @@ export function EditImportSongScreen() {
 }
 
 function EditImportSongContent({ songId }: { songId: number }) {
-  const { state, updateImportSong } = useImportSession();
-  const song = useMemo(
-    () => state.songs.find((draft) => draft.id === songId) ?? null,
-    [songId, state.songs],
-  );
+  const { song, updateImportSong } = useEditImportSongQuery(songId);
 
   if (!song) {
     return <EditImportSongInvalidState reason="not-staged" />;

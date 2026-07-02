@@ -1,5 +1,6 @@
 import { Link } from "expo-router";
 import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
+import { useEffect, useRef } from "react";
 import {
   Alert,
   Pressable,
@@ -8,6 +9,8 @@ import {
   Text,
   View,
 } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useBackupSession } from "../hooks/use-backup-session";
 import type { BackupOperation } from "../types/backup-session";
 
@@ -43,9 +46,29 @@ const operationLabels = {
 
 export function BackupScreen() {
   const { reset, runOperation, state } = useBackupSession();
+  const theme = useCustomizationTheme();
+  const { sendHaptic } = useHapticFeedback();
   const { state: premiumState } = usePremiumEntitlement();
+  const previousPhaseRef = useRef(state.phase);
   const isRunning = state.phase === "running";
+
+  useEffect(() => {
+    if (previousPhaseRef.current !== state.phase) {
+      if (state.phase === "success") {
+        sendHaptic("success");
+      }
+
+      if (state.phase === "failure") {
+        sendHaptic("error");
+      }
+    }
+
+    previousPhaseRef.current = state.phase;
+  }, [sendHaptic, state.phase]);
+
   const runBackupOperation = (operation: BackupOperation) => {
+    sendHaptic(operation === "erase" ? "medium" : "light");
+
     if (operation === "backup") {
       void runOperation(operation);
       return;
@@ -64,7 +87,10 @@ export function BackupScreen() {
           text: "Cancel",
         },
         {
-          onPress: () => void runOperation(operation),
+          onPress: () => {
+            sendHaptic(operation === "erase" ? "heavy" : "medium");
+            void runOperation(operation);
+          },
           style: "destructive",
           text: isRestore ? "Restore" : "Erase",
         },
@@ -73,26 +99,50 @@ export function BackupScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      style={[styles.scroll, { backgroundColor: theme.background }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.kicker}>src/features/backup</Text>
-        <Text style={styles.title}>Backup & Restore</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          src/features/backup
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          Backup & Restore
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           Backup operations now have a feature-owned command boundary.
         </Text>
       </View>
 
       <View style={styles.list}>
         {actionCards.map((action) => (
-          <View key={action.operation} style={styles.card}>
+          <View
+            key={action.operation}
+            style={[
+              styles.card,
+              { backgroundColor: theme.surface, borderColor: theme.border },
+            ]}
+          >
             <View style={styles.cardText}>
               <View style={styles.cardTitleRow}>
-                <Text style={styles.cardTitle}>{action.title}</Text>
+                <Text style={[styles.cardTitle, { color: theme.primaryText }]}>
+                  {action.title}
+                </Text>
                 {state.requiresPremium && !premiumState.active ? (
-                  <Text style={styles.premiumPill}>Premium</Text>
+                  <Text
+                    style={[
+                      styles.premiumPill,
+                      { borderColor: theme.border, color: theme.accent },
+                    ]}
+                  >
+                    Premium
+                  </Text>
                 ) : null}
               </View>
-              <Text style={styles.cardBody}>{action.body}</Text>
+              <Text style={[styles.cardBody, { color: theme.secondaryText }]}>
+                {action.body}
+              </Text>
             </View>
             <Pressable
               accessibilityRole="button"
@@ -102,10 +152,14 @@ export function BackupScreen() {
                 action.operation === "erase"
                   ? styles.dangerButton
                   : styles.primaryButton,
+                {
+                  backgroundColor:
+                    action.operation === "erase" ? theme.danger : theme.accent,
+                },
                 isRunning ? styles.disabled : null,
               ]}
             >
-              <Text style={styles.buttonText}>
+              <Text style={[styles.buttonText, { color: theme.onAccent }]}>
                 {operationLabels[action.operation]}
               </Text>
             </Pressable>
@@ -113,9 +167,24 @@ export function BackupScreen() {
         ))}
       </View>
 
-      <View style={styles.panel}>
-        <Text style={styles.panelLabel}>Status</Text>
-        <Text style={state.phase === "failure" ? styles.errorText : styles.panelText}>
+      <View
+        style={[
+          styles.panel,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
+          Status
+        </Text>
+        <Text
+          style={[
+            state.phase === "failure" ? styles.errorText : styles.panelText,
+            {
+              color:
+                state.phase === "failure" ? theme.danger : theme.primaryText,
+            },
+          ]}
+        >
           {state.error ??
             state.message ??
             (state.lastOperation
@@ -125,15 +194,20 @@ export function BackupScreen() {
         {state.phase === "failure" ? (
           <Pressable
             accessibilityRole="button"
-            onPress={reset}
-            style={styles.resetButton}
+            onPress={() => {
+              sendHaptic("light");
+              reset();
+            }}
+            style={[styles.resetButton, { borderColor: theme.border }]}
           >
-            <Text style={styles.resetButtonText}>Reset status</Text>
+            <Text style={[styles.resetButtonText, { color: theme.accent }]}>
+              Reset status
+            </Text>
           </Pressable>
         ) : null}
       </View>
 
-      <Link href="/settings" style={styles.backLink}>
+      <Link href="/settings" style={[styles.backLink, { color: theme.accent }]}>
         Back to Settings
       </Link>
     </ScrollView>
@@ -142,7 +216,6 @@ export function BackupScreen() {
 
 const styles = StyleSheet.create({
   scroll: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
   },
   content: {
@@ -154,21 +227,18 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   kicker: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   title: {
-    color: "#121417",
     fontSize: 34,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 40,
   },
   subtitle: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
@@ -177,8 +247,6 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   card: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 14,
@@ -194,7 +262,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   cardTitle: {
-    color: "#121417",
     flexShrink: 1,
     fontSize: 18,
     fontWeight: "800",
@@ -203,10 +270,8 @@ const styles = StyleSheet.create({
   },
   premiumPill: {
     backgroundColor: "#e8f3ef",
-    borderColor: "#b9d6cc",
     borderRadius: 8,
     borderWidth: 1,
-    color: "#0f766e",
     fontSize: 11,
     fontWeight: "800",
     letterSpacing: 0,
@@ -216,13 +281,11 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   cardBody: {
-    color: "#52605a",
     fontSize: 14,
     lineHeight: 20,
   },
   primaryButton: {
     alignItems: "center",
-    backgroundColor: "#0f766e",
     borderRadius: 8,
     justifyContent: "center",
     minHeight: 44,
@@ -230,7 +293,6 @@ const styles = StyleSheet.create({
   },
   dangerButton: {
     alignItems: "center",
-    backgroundColor: "#b42318",
     borderRadius: 8,
     justifyContent: "center",
     minHeight: 44,
@@ -240,41 +302,34 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   buttonText: {
-    color: "#ffffff",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   panel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 10,
     padding: 16,
   },
   panelLabel: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   panelText: {
-    color: "#29322e",
     fontSize: 14,
     lineHeight: 20,
   },
   errorText: {
-    color: "#b42318",
     fontSize: 14,
     fontWeight: "700",
     lineHeight: 20,
   },
   resetButton: {
     alignItems: "center",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: "center",
@@ -282,14 +337,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   resetButtonText: {
-    color: "#0f766e",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   backLink: {
-    color: "#0f766e",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,

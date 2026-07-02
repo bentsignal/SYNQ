@@ -129,6 +129,7 @@ import {
   rowsToCollectionDetailSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-detail-service";
 import {
+  addCollectionSongsControllerReducer,
   canDeleteLibraryCollection,
   collectionDetailMutationReducer,
   getAddCollectionSongsMutationErrorMessage,
@@ -154,6 +155,7 @@ import {
   getLibraryCollectionSongEmptyState,
   getPlayableCollectionSongs,
   getSelectedAddableSongIds,
+  initialAddCollectionSongsControllerState,
   initialCollectionDetailMutationState,
   removeSongIdSelection,
   reorderCollectionSongs,
@@ -2345,6 +2347,84 @@ function assertLibraryCollectionInteractionSmoke() {
       songs: addableSongs,
     }).canBulkAdd,
     false,
+  );
+  assert.deepEqual(
+    {
+      ...initialAddCollectionSongsControllerState,
+      selectedSongIds: Array.from(
+        initialAddCollectionSongsControllerState.selectedSongIds,
+      ),
+    },
+    {
+      isAddingSelection: false,
+      mutationError: null,
+      savingSongId: null,
+      selectedSongIds: [],
+    },
+  );
+  const selectedAddControllerState = addCollectionSongsControllerReducer(
+    initialAddCollectionSongsControllerState,
+    { songId: 1, type: "toggle-selection" },
+  );
+  assert.deepEqual(Array.from(selectedAddControllerState.selectedSongIds), [1]);
+  assert.equal(selectedAddControllerState.mutationError, null);
+  assert.deepEqual(
+    addCollectionSongsControllerReducer(selectedAddControllerState, {
+      type: "begin-add-selection",
+    }),
+    {
+      ...selectedAddControllerState,
+      isAddingSelection: true,
+      mutationError: null,
+    },
+  );
+  assert.deepEqual(
+    addCollectionSongsControllerReducer(
+      {
+        ...selectedAddControllerState,
+        isAddingSelection: true,
+      },
+      { type: "finish-add-selection" },
+    ),
+    selectedAddControllerState,
+  );
+  assert.deepEqual(
+    addCollectionSongsControllerReducer(selectedAddControllerState, {
+      songId: 1,
+      type: "remove-selection",
+    }).selectedSongIds,
+    new Set(),
+  );
+  assert.deepEqual(
+    addCollectionSongsControllerReducer(selectedAddControllerState, {
+      songId: 3,
+      type: "begin-add-song",
+    }),
+    {
+      ...selectedAddControllerState,
+      mutationError: null,
+      savingSongId: 3,
+    },
+  );
+  assert.deepEqual(
+    addCollectionSongsControllerReducer(
+      {
+        ...selectedAddControllerState,
+        savingSongId: 3,
+      },
+      { type: "finish-add-song" },
+    ),
+    selectedAddControllerState,
+  );
+  assert.deepEqual(
+    addCollectionSongsControllerReducer(selectedAddControllerState, {
+      error: "Song could not be added.",
+      type: "fail",
+    }),
+    {
+      ...selectedAddControllerState,
+      mutationError: "Song could not be added.",
+    },
   );
   assert.equal(
     getAddCollectionSongsMutationErrorMessage({

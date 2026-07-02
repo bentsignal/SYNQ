@@ -461,6 +461,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     top-level library save orchestration.
   - Done: add-to-collection bulk selection count, mutation guards, and add row
     labels now live in the library interaction service instead of the screen.
+  - Done: add-to-collection selection, single-add, bulk-add, and mutation-error
+    transitions now live in the library interaction service reducer with smoke
+    coverage instead of scattered controller state setters.
   - Done: add-to-collection song list row rendering now lives in a dedicated
     component instead of the route screen.
   - Done: add-to-collection search, selection summary, bulk-add action, status,

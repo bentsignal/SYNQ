@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useReducer } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import type { AddableCollectionSong } from "../services/addable-collection-songs-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-detail-service";
@@ -7,10 +7,10 @@ import {
   addSongsToCollection,
 } from "../repository/relationship-repository";
 import {
+  addCollectionSongsControllerReducer,
   getAddCollectionSongsMutationErrorMessage,
   getAddableSongSelectionState,
-  removeSongIdSelection,
-  toggleSongIdSelection,
+  initialAddCollectionSongsControllerState,
 } from "../services/library-collection-interaction-service";
 
 export function useAddCollectionSongsController({
@@ -23,32 +23,21 @@ export function useAddCollectionSongsController({
   songs: AddableCollectionSong[];
 }) {
   const { sendHaptic } = useHapticFeedback();
-  const [savingSongId, setSavingSongId] = useState<number | null>(null);
-  const [selectedSongIds, setSelectedSongIds] = useState<Set<number>>(
-    () => new Set(),
+  const [controllerState, dispatchControllerState] = useReducer(
+    addCollectionSongsControllerReducer,
+    initialAddCollectionSongsControllerState,
   );
-  const [isAddingSelection, setIsAddingSelection] = useState(false);
-  const [mutationError, setMutationError] = useState<string | null>(null);
-  const selectionState = useMemo(
-    () =>
-      getAddableSongSelectionState({
-        isAddingSelection,
-        savingSongId,
-        songs,
-        selectedSongIds,
-      }),
-    [isAddingSelection, savingSongId, selectedSongIds, songs],
-  );
+  const selectionState = getAddableSongSelectionState({
+    isAddingSelection: controllerState.isAddingSelection,
+    savingSongId: controllerState.savingSongId,
+    songs,
+    selectedSongIds: controllerState.selectedSongIds,
+  });
 
   const toggleSongSelection = useCallback(
     (songId: number) => {
       sendHaptic("light");
-      setSelectedSongIds((currentSelection) =>
-        toggleSongIdSelection({
-          selectedSongIds: currentSelection,
-          songId,
-        }),
-      );
+      dispatchControllerState({ songId, type: "toggle-selection" });
     },
     [sendHaptic],
   );
@@ -60,8 +49,7 @@ export function useAddCollectionSongsController({
     }
 
     sendHaptic("medium");
-    setIsAddingSelection(true);
-    setMutationError(null);
+    dispatchControllerState({ type: "begin-add-selection" });
 
     try {
       await addSongsToCollection({
@@ -69,26 +57,26 @@ export function useAddCollectionSongsController({
         kind,
         songIds: selectionState.selectedAddableSongIds,
       });
-      setSelectedSongIds(new Set());
+      dispatchControllerState({ type: "clear-selection" });
       sendHaptic("success");
     } catch (caughtError) {
       sendHaptic("error");
-      setMutationError(
-        getAddCollectionSongsMutationErrorMessage({
+      dispatchControllerState({
+        error: getAddCollectionSongsMutationErrorMessage({
           caughtError,
           mutation: "add-selection",
         }),
-      );
+        type: "fail",
+      });
     } finally {
-      setIsAddingSelection(false);
+      dispatchControllerState({ type: "finish-add-selection" });
     }
   }, [collectionId, kind, selectionState, sendHaptic]);
 
   const addSong = useCallback(
     async (songId: number) => {
       sendHaptic("light");
-      setSavingSongId(songId);
-      setMutationError(null);
+      dispatchControllerState({ songId, type: "begin-add-song" });
 
       try {
         await addSongToCollection({
@@ -96,23 +84,19 @@ export function useAddCollectionSongsController({
           kind,
           songId,
         });
-        setSelectedSongIds((currentSelection) =>
-          removeSongIdSelection({
-            selectedSongIds: currentSelection,
-            songId,
-          }),
-        );
+        dispatchControllerState({ songId, type: "remove-selection" });
         sendHaptic("success");
       } catch (caughtError) {
         sendHaptic("error");
-        setMutationError(
-          getAddCollectionSongsMutationErrorMessage({
+        dispatchControllerState({
+          error: getAddCollectionSongsMutationErrorMessage({
             caughtError,
             mutation: "add-song",
           }),
-        );
+          type: "fail",
+        });
       } finally {
-        setSavingSongId(null);
+        dispatchControllerState({ type: "finish-add-song" });
       }
     },
     [collectionId, kind, sendHaptic],
@@ -121,9 +105,9 @@ export function useAddCollectionSongsController({
   return {
     addSelectedSongs,
     addSong,
-    mutationError,
-    savingSongId,
-    selectedSongIds,
+    mutationError: controllerState.mutationError,
+    savingSongId: controllerState.savingSongId,
+    selectedSongIds: controllerState.selectedSongIds,
     selectionState,
     toggleSongSelection,
   };

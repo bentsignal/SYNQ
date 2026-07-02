@@ -190,6 +190,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     instead of the route screen.
   - Done: collection detail playback/queue actions and mutation workflows now
     live in focused hooks instead of one controller owning every command path.
+  - Done: collection detail playback and queue command planning now lives in a
+    focused playback service instead of the broader collection interaction
+    module.
   - Done: collection detail collection-level export/delete workflows and
     per-song move/remove workflows now live in separate hooks instead of one
     mutation coordinator owning every command path.

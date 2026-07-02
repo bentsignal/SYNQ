@@ -157,10 +157,6 @@ import {
   getCollectionEditHref,
   getCollectionDetailMutationErrorMessage,
   getCollectionListHref,
-  getCollectionPlaybackCommandPlan,
-  getCollectionPlaybackPlan,
-  getCollectionQueueCommandPlan,
-  getCollectionQueuePlan,
   getCollectionSongListState,
   getCollectionSongOrderUpdate,
   getCollectionSongRowActionState,
@@ -172,6 +168,12 @@ import {
   initialCollectionDetailMutationState,
   reorderCollectionSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-interaction-service";
+import {
+  getCollectionPlaybackCommandPlan,
+  getCollectionPlaybackPlan,
+  getCollectionQueueCommandPlan,
+  getCollectionQueuePlan,
+} from "../../../apps/new/src/features/library/services/library-collection-playback-service";
 import {
   albumRowsToPreview,
   artistRowsToPreview,

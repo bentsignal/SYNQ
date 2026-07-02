@@ -4,8 +4,8 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import {
   getCollectionPlaybackCommandPlan,
   getCollectionQueueCommandPlan,
-  type CollectionDetailActionState,
-} from "../services/library-collection-interaction-service";
+} from "../services/library-collection-playback-service";
+import type { CollectionDetailActionState } from "../services/library-collection-interaction-service";
 
 type UseLibraryCollectionPlaybackActionsParams = {
   actionState: CollectionDetailActionState;

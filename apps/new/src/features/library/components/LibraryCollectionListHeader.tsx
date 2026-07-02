@@ -1,35 +1,39 @@
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import {
-  getLibraryCollectionListBackHref,
-  type LibraryCollectionListHref,
-} from "../services/library-collection-list-service";
+import type { LibraryCollectionListHref } from "../services/library-collection-list-service";
 
 type LibraryCollectionListHeaderProps = {
-  createHref: LibraryCollectionListHref;
+  backLink: {
+    href: LibraryCollectionListHref;
+    label: string;
+  };
+  createLink: {
+    href: LibraryCollectionListHref;
+    label: string;
+  };
   kicker: string;
   title: string;
 };
 
 export function LibraryCollectionListHeader({
-  createHref,
+  backLink,
+  createLink,
   kicker,
   title,
 }: LibraryCollectionListHeaderProps) {
   const theme = useCustomizationTheme();
-  const backHref = getLibraryCollectionListBackHref();
 
   return (
     <View style={styles.header}>
       <Text style={[styles.kicker, { color: theme.accent }]}>{kicker}</Text>
       <Text style={[styles.title, { color: theme.primaryText }]}>{title}</Text>
       <View style={styles.links}>
-        <Link href={backHref} style={[styles.link, { color: theme.accent }]}>
-          Library
+        <Link href={backLink.href} style={[styles.link, { color: theme.accent }]}>
+          {backLink.label}
         </Link>
-        <Link href={createHref} style={[styles.link, { color: theme.accent }]}>
-          Create
+        <Link href={createLink.href} style={[styles.link, { color: theme.accent }]}>
+          {createLink.label}
         </Link>
       </View>
     </View>

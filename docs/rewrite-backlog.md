@@ -51,6 +51,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     synchronization.
   - Library query hooks are cleaner, but collection list helpers still need the
     same treatment as song query helpers.
+  - Done: library collection list title/search/create/back copy now lives in
+    the collection list service with smoke coverage instead of route and header
+    components.
   - Done: collection detail row aggregation/detail shaping now lives in a pure
     library service with deterministic smoke coverage.
   - Done: collection preview aggregation for playlist, album, and artist

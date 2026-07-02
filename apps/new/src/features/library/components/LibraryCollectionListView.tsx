@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type {
-  LibraryCollectionListHref,
+  LibraryCollectionListCopy,
   LibraryCollectionListState,
 } from "../services/library-collection-list-service";
 import { LibraryCollectionList } from "./LibraryCollectionList";
@@ -10,12 +10,7 @@ import { LibraryCollectionListSearch } from "./LibraryCollectionListSearch";
 import { LibraryCollectionListStatus } from "./LibraryCollectionListStatus";
 
 type LibraryCollectionListViewProps = {
-  copy: {
-    createHref: LibraryCollectionListHref;
-    kicker: string;
-    placeholder: string;
-    title: string;
-  };
+  copy: LibraryCollectionListCopy;
   listState: LibraryCollectionListState;
   query: string;
   setQuery: (query: string) => void;
@@ -35,7 +30,8 @@ export function LibraryCollectionListView({
       style={[styles.screen, { backgroundColor: theme.background }]}
     >
       <LibraryCollectionListHeader
-        createHref={copy.createHref}
+        backLink={copy.backLink}
+        createLink={copy.createLink}
         kicker={copy.kicker}
         title={copy.title}
       />

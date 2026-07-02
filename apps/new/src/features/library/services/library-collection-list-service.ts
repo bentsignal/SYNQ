@@ -25,6 +25,51 @@ export const getLibraryCollectionCreateHref = (
   }
 };
 
+export const getLibraryCollectionListCopy = (
+  kind: LibraryCollectionListKind,
+) => {
+  const shared = {
+    backLink: {
+      href: getLibraryCollectionListBackHref(),
+      label: "Library",
+    },
+    createLink: {
+      href: getLibraryCollectionCreateHref(kind),
+      label: "Create",
+    },
+    kicker: "Library",
+  };
+
+  switch (kind) {
+    case "albums":
+      return {
+        ...shared,
+        empty: "No albums in library",
+        placeholder: "Search albums or artists",
+        title: "Albums",
+      };
+    case "artists":
+      return {
+        ...shared,
+        empty: "No artists in library",
+        placeholder: "Search artists",
+        title: "Artists",
+      };
+    case "playlists":
+    default:
+      return {
+        ...shared,
+        empty: "No playlists in library",
+        placeholder: "Search playlists",
+        title: "Playlists",
+      };
+  }
+};
+
+export type LibraryCollectionListCopy = ReturnType<
+  typeof getLibraryCollectionListCopy
+>;
+
 const normalizeQuery = (query?: string) => query?.trim().toLowerCase() ?? "";
 
 const collectionMatchesQuery = (

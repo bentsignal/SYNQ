@@ -198,6 +198,7 @@ import {
   filterCollectionPreviews,
   getLibraryCollectionCreateHref,
   getLibraryCollectionListBackHref,
+  getLibraryCollectionListCopy,
   getLibraryCollectionListState,
 } from "../../../apps/new/src/features/library/services/library-collection-list-service";
 import {
@@ -3483,6 +3484,48 @@ function assertLibraryCollectionListSmoke() {
     getLibraryCollectionCreateHref("playlists"),
     "/(tabs)/library/playlist/create",
   );
+  assert.deepEqual(getLibraryCollectionListCopy("albums"), {
+    backLink: {
+      href: "/(tabs)/library",
+      label: "Library",
+    },
+    createLink: {
+      href: "/(tabs)/library/album/create",
+      label: "Create",
+    },
+    empty: "No albums in library",
+    kicker: "Library",
+    placeholder: "Search albums or artists",
+    title: "Albums",
+  });
+  assert.deepEqual(getLibraryCollectionListCopy("artists"), {
+    backLink: {
+      href: "/(tabs)/library",
+      label: "Library",
+    },
+    createLink: {
+      href: "/(tabs)/library/artist/create",
+      label: "Create",
+    },
+    empty: "No artists in library",
+    kicker: "Library",
+    placeholder: "Search artists",
+    title: "Artists",
+  });
+  assert.deepEqual(getLibraryCollectionListCopy("playlists"), {
+    backLink: {
+      href: "/(tabs)/library",
+      label: "Library",
+    },
+    createLink: {
+      href: "/(tabs)/library/playlist/create",
+      label: "Create",
+    },
+    empty: "No playlists in library",
+    kicker: "Library",
+    placeholder: "Search playlists",
+    title: "Playlists",
+  });
 
   const collections = [
     {

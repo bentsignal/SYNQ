@@ -23,6 +23,7 @@ import {
   playlistRowsToPreview,
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import { rowsToAddableCollectionSongs } from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
+import { buildLibrarySongDetail } from "../../../apps/new/src/features/library/services/library-song-detail-service";
 import { rowsToSongPreviews } from "../../../apps/new/src/features/library/services/library-song-preview-service";
 
 const song = ({
@@ -583,10 +584,71 @@ function assertAddableCollectionSongsSmoke() {
   assert.equal(sorted[1]?.title, "Untitled song");
 }
 
+function assertLibrarySongDetailSmoke() {
+  const detail = buildLibrarySongDetail({
+    albumRows: [
+      { id: 2, name: "Beta Album", track: 2, year: null },
+      { id: 1, name: "Alpha Album", track: 1, year: 2026 },
+      { id: 1, name: "Alpha Album", track: 1, year: 2026 },
+    ],
+    artistRows: [
+      { id: 2, name: "Beta Artist" },
+      { id: 1, name: "Alpha Artist" },
+      { id: 1, name: "Alpha Artist" },
+    ],
+    likedRows: [{ id: 10 }],
+    playlistRows: [
+      { id: 5, name: "Smoke Playlist" },
+      { id: 5, name: "Smoke Playlist" },
+      { id: 6, name: null },
+    ],
+    songRow: {
+      duration: 125_000,
+      fileType: "audio/mpeg",
+      originalFileName: "alpha.mp3",
+      pathToFile: "/tmp/alpha.mp3",
+      title: "Alpha",
+    },
+    updatedAt: 42,
+  });
+
+  assert.equal(detail.title, "Alpha");
+  assert.equal(detail.durationLabel, "2:05");
+  assert.equal(detail.artistLabel, "Alpha Artist, Beta Artist");
+  assert.equal(detail.albumLabel, "Alpha Album, Beta Album");
+  assert.equal(detail.relationshipSummary, "2 artists / 2 albums / 2 playlists");
+  assert.equal(detail.isLiked, true);
+  assert.equal(detail.isMissing, false);
+  assert.deepEqual(
+    detail.albums.map((album) => `${album.id}:${album.detail}`),
+    ["2:Album", "1:2026"],
+  );
+  assert.deepEqual(
+    detail.playlists.map((playlist) => playlist.title),
+    ["Smoke Playlist", "Untitled playlist"],
+  );
+
+  const missing = buildLibrarySongDetail({
+    albumRows: [],
+    artistRows: [],
+    likedRows: [],
+    playlistRows: [],
+    songRow: null,
+    updatedAt: 0,
+  });
+  assert.equal(missing.title, "Song not found");
+  assert.equal(missing.durationLabel, "--:--");
+  assert.equal(missing.fileType, "Unknown file type");
+  assert.equal(missing.originalFileName, "Unknown source file");
+  assert.equal(missing.artistLabel, "Unknown");
+  assert.equal(missing.isMissing, true);
+}
+
 assertPlaybackSessionSmoke();
 assertImportSessionSmoke();
 assertLibraryCollectionDetailSmoke();
 assertLibraryCollectionPreviewSmoke();
 assertLibrarySongPreviewSmoke();
 assertAddableCollectionSongsSmoke();
+assertLibrarySongDetailSmoke();
 console.log("Rewrite deterministic smoke checks passed.");

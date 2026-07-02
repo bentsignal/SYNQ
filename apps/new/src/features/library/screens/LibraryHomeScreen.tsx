@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { LibraryCollectionPreviewSection } from "../components/LibraryCollectionPreviewSection";
 import { LibrarySongPreviewList } from "../components/LibrarySongPreviewList";
 import { LibrarySummaryGrid } from "../components/LibrarySummaryGrid";
@@ -13,6 +14,7 @@ import {
 import { useLibrarySummaryQuery } from "../hooks/use-library-summary-query";
 
 export function LibraryHomeScreen() {
+  const theme = useCustomizationTheme();
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<LibrarySongPreviewSort>("recent");
   const [order, setOrder] = useState<LibrarySongPreviewOrder>("desc");
@@ -34,21 +36,37 @@ export function LibraryHomeScreen() {
       : "Waiting for library data";
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.screen}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      style={[styles.screen, { backgroundColor: theme.background }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.kicker}>src/features/library</Text>
-        <Text style={styles.title}>Library</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          src/features/library
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          Library
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           Reactive Drizzle library surface wired to the shared SYNQ database.
         </Text>
         <View style={styles.createLinks}>
-          <Link href="/(tabs)/library/playlist/create" style={styles.createLink}>
+          <Link
+            href="/(tabs)/library/playlist/create"
+            style={[styles.createLink, { color: theme.accent }]}
+          >
             Create playlist
           </Link>
-          <Link href="/(tabs)/library/album/create" style={styles.createLink}>
+          <Link
+            href="/(tabs)/library/album/create"
+            style={[styles.createLink, { color: theme.accent }]}
+          >
             Create album
           </Link>
-          <Link href="/(tabs)/library/artist/create" style={styles.createLink}>
+          <Link
+            href="/(tabs)/library/artist/create"
+            style={[styles.createLink, { color: theme.accent }]}
+          >
             Create artist
           </Link>
         </View>
@@ -72,8 +90,18 @@ export function LibraryHomeScreen() {
         isEmpty={collectionPreview.isEmpty}
       />
 
-      <View style={styles.panel}>
-        <Text style={hasErrors ? styles.errorText : styles.panelText}>
+      <View
+        style={[
+          styles.panel,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text
+          style={[
+            hasErrors ? styles.errorText : styles.panelText,
+            { color: hasErrors ? theme.danger : theme.secondaryText },
+          ]}
+        >
           {hasErrors
             ? "One or more library queries failed."
             : updatedLabel}
@@ -85,7 +113,6 @@ export function LibraryHomeScreen() {
 
 const styles = StyleSheet.create({
   screen: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
   },
   content: {
@@ -97,21 +124,18 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   kicker: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   title: {
-    color: "#121417",
     fontSize: 34,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 40,
   },
   subtitle: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 460,
@@ -122,26 +146,21 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   createLink: {
-    color: "#0f766e",
     fontSize: 14,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   panel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     padding: 16,
   },
   panelText: {
-    color: "#52605a",
     fontSize: 14,
     lineHeight: 20,
   },
   errorText: {
-    color: "#b42318",
     fontSize: 14,
     fontWeight: "700",
     lineHeight: 20,

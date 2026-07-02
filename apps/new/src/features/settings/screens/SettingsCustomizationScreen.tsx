@@ -10,8 +10,11 @@ import {
 import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { useCustomizationSettingsContext } from "../context/CustomizationSettingsProvider";
 import {
+  useCustomizationTheme,
+  type CustomizationTheme,
+} from "../hooks/use-customization-theme";
+import {
   customizationOptions,
-  getCustomizationOption,
 } from "../services/customization-settings-service";
 import type { CustomizationColorKey } from "../types/customization-settings";
 
@@ -19,6 +22,7 @@ type ColorOptionRowProps = {
   disabled?: boolean;
   onSelect: (key: CustomizationColorKey) => void;
   selectedKey: CustomizationColorKey;
+  theme: CustomizationTheme;
   title: string;
 };
 
@@ -26,11 +30,14 @@ function ColorOptionRow({
   disabled = false,
   onSelect,
   selectedKey,
+  theme,
   title,
 }: ColorOptionRowProps) {
   return (
     <View style={[styles.optionGroup, disabled && styles.disabledGroup]}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
+        {title}
+      </Text>
       <View style={styles.swatchRow}>
         {customizationOptions.map((option) => {
           const isSelected = selectedKey === option.key;
@@ -44,13 +51,21 @@ function ColorOptionRow({
               onPress={() => onSelect(option.key)}
               style={[
                 styles.swatchButton,
-                isSelected && styles.swatchButtonSelected,
+                { borderColor: theme.border },
+                isSelected && {
+                  borderColor: theme.accent,
+                  borderWidth: 2,
+                },
               ]}
             >
               <View
                 style={[styles.swatch, { backgroundColor: option.color }]}
               />
-              <Text style={styles.swatchLabel}>{option.label}</Text>
+              <Text
+                style={[styles.swatchLabel, { color: theme.secondaryText }]}
+              >
+                {option.label}
+              </Text>
             </Pressable>
           );
         })}
@@ -67,29 +82,48 @@ export function SettingsCustomizationScreen() {
     setTheme,
     state: customizationState,
   } = useCustomizationSettingsContext();
-  const activeTheme = getCustomizationOption(customizationState.settings.theme);
+  const theme = useCustomizationTheme();
   const themeControlsDisabled =
     !premiumState.active || customizationState.status === "loading";
   const isSaving = customizationState.status === "saving";
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      style={[styles.scroll, { backgroundColor: theme.background }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.kicker}>src/features/settings</Text>
-        <Text style={styles.title}>Customization</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          src/features/settings
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          Customization
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           Make SYNQ feel a little more like yours.
         </Text>
-        <Text style={styles.statusText}>
+        <Text style={[styles.statusText, { color: theme.accent }]}>
           {isSaving ? "Saving" : "Preferences saved locally"}
         </Text>
       </View>
 
       {!premiumState.active && (
-        <View style={styles.premiumPanel}>
+        <View
+          style={[
+            styles.premiumPanel,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
           <View style={styles.premiumText}>
-            <Text style={styles.panelTitle}>Premium customization locked</Text>
-            <Text style={styles.panelDescription}>
+            <Text style={[styles.panelTitle, { color: theme.primaryText }]}>
+              Premium customization locked
+            </Text>
+            <Text
+              style={[
+                styles.panelDescription,
+                { color: theme.secondaryText },
+              ]}
+            >
               Unlock theme and app icon choices with Premium.
             </Text>
           </View>
@@ -97,48 +131,71 @@ export function SettingsCustomizationScreen() {
             <Pressable
               style={[
                 styles.premiumButton,
-                { backgroundColor: activeTheme.color },
+                { backgroundColor: theme.accent },
               ]}
             >
-              <Text style={styles.premiumButtonText}>Premium</Text>
+              <Text
+                style={[
+                  styles.premiumButtonText,
+                  { color: theme.onAccent },
+                ]}
+              >
+                Premium
+              </Text>
             </Pressable>
           </Link>
         </View>
       )}
 
-      <View style={styles.section}>
+      <View
+        style={[
+          styles.section,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
         <ColorOptionRow
           disabled={themeControlsDisabled}
           onSelect={setTheme}
           selectedKey={customizationState.settings.theme}
+          theme={theme}
           title="Theme"
         />
         <ColorOptionRow
           disabled={themeControlsDisabled}
           onSelect={setAppIcon}
           selectedKey={customizationState.settings.appIcon}
+          theme={theme}
           title="App Icon"
         />
       </View>
 
-      <View style={styles.preferenceRow}>
+      <View
+        style={[
+          styles.preferenceRow,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
         <View style={styles.preferenceText}>
-          <Text style={styles.rowTitle}>Haptic Feedback</Text>
-          <Text style={styles.rowDescription}>
+          <Text style={[styles.rowTitle, { color: theme.primaryText }]}>
+            Haptic Feedback
+          </Text>
+          <Text style={[styles.rowDescription, { color: theme.secondaryText }]}>
             Use a light tap response for supported controls.
           </Text>
         </View>
         <Switch
           disabled={customizationState.status === "loading"}
           onValueChange={setHapticsEnabled}
-          thumbColor="#ffffff"
-          trackColor={{ false: "#cfd8d3", true: activeTheme.color }}
+          thumbColor={theme.surface}
+          trackColor={{ false: "#cfd8d3", true: theme.accent }}
           value={customizationState.settings.hapticsEnabled}
         />
       </View>
 
       {customizationState.error && (
-        <Text style={styles.errorText}>{customizationState.error}</Text>
+        <Text style={[styles.errorText, { color: theme.danger }]}>
+          {customizationState.error}
+        </Text>
       )}
     </ScrollView>
   );
@@ -146,7 +203,6 @@ export function SettingsCustomizationScreen() {
 
 const styles = StyleSheet.create({
   scroll: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
   },
   content: {
@@ -158,27 +214,23 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   kicker: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   title: {
-    color: "#121417",
     fontSize: 34,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 40,
   },
   subtitle: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 560,
   },
   statusText: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
@@ -186,8 +238,6 @@ const styles = StyleSheet.create({
   },
   premiumPanel: {
     alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: "row",
@@ -200,35 +250,29 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   panelTitle: {
-    color: "#121417",
     fontSize: 16,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 22,
   },
   panelDescription: {
-    color: "#52605a",
     fontSize: 13,
     lineHeight: 19,
   },
   premiumButton: {
     alignItems: "center",
-    backgroundColor: "#0f766e",
     borderRadius: 8,
     justifyContent: "center",
     minHeight: 40,
     paddingHorizontal: 14,
   },
   premiumButtonText: {
-    color: "#ffffff",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   section: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 18,
@@ -241,7 +285,6 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   sectionTitle: {
-    color: "#121417",
     fontSize: 17,
     fontWeight: "800",
     letterSpacing: 0,
@@ -254,7 +297,6 @@ const styles = StyleSheet.create({
   },
   swatchButton: {
     alignItems: "center",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 8,
@@ -264,10 +306,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
   },
-  swatchButtonSelected: {
-    borderColor: "#0f766e",
-    borderWidth: 2,
-  },
   swatch: {
     borderColor: "rgba(18, 20, 23, 0.16)",
     borderRadius: 18,
@@ -276,7 +314,6 @@ const styles = StyleSheet.create({
     width: 36,
   },
   swatchLabel: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "700",
     letterSpacing: 0,
@@ -284,8 +321,6 @@ const styles = StyleSheet.create({
   },
   preferenceRow: {
     alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: "row",
@@ -300,19 +335,16 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   rowTitle: {
-    color: "#121417",
     fontSize: 16,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 21,
   },
   rowDescription: {
-    color: "#52605a",
     fontSize: 13,
     lineHeight: 19,
   },
   errorText: {
-    color: "#b91c1c",
     fontSize: 13,
     fontWeight: "700",
     lineHeight: 19,

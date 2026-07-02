@@ -1,11 +1,14 @@
 import { Stack } from "expo-router";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 
 export function AppNavigation() {
+  const theme = useCustomizationTheme();
+
   return (
     <Stack
       screenOptions={{
         contentStyle: {
-          backgroundColor: "#f4f7f5",
+          backgroundColor: theme.background,
         },
         headerShown: false,
       }}

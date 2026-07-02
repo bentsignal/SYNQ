@@ -1,28 +1,26 @@
 import { Tabs } from "expo-router";
-import { useCustomizationSettingsContext } from "@/src/features/settings/context/CustomizationSettingsProvider";
-import { getCustomizationOption } from "@/src/features/settings/services/customization-settings-service";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 
 export function AppTabLayout() {
-  const { state } = useCustomizationSettingsContext();
-  const activeTheme = getCustomizationOption(state.settings.theme);
+  const theme = useCustomizationTheme();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         sceneStyle: {
-          backgroundColor: "#f4f7f5",
+          backgroundColor: theme.background,
         },
-        tabBarActiveTintColor: activeTheme.color,
-        tabBarInactiveTintColor: "#5f6d66",
+        tabBarActiveTintColor: theme.accent,
+        tabBarInactiveTintColor: theme.inactive,
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: "700",
           letterSpacing: 0,
         },
         tabBarStyle: {
-          backgroundColor: "#ffffff",
-          borderTopColor: "#dbe3de",
+          backgroundColor: theme.surface,
+          borderTopColor: theme.border,
           minHeight: 74,
           paddingBottom: 18,
           paddingTop: 10,

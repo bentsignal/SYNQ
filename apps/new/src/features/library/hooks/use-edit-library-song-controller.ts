@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
 import { router } from "expo-router";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { updateLibrarySongMetadata } from "../repository/song-metadata-repository";
 import {
-  buildLibrarySongEditFormState,
   getLibrarySongEditActionState,
   getLibrarySongEditErrorMessage,
+  getInitialLibrarySongEditControllerState,
+  librarySongEditControllerReducer,
 } from "../services/library-song-form-service";
 import {
   getLibrarySongDetailHref,
@@ -22,29 +23,25 @@ export function useEditLibrarySongController({
   songId,
 }: UseEditLibrarySongControllerParams) {
   const { sendHaptic } = useHapticFeedback();
-  const [albumNames, setAlbumNames] = useState("");
-  const [artistNames, setArtistNames] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const [loadedSongId, setLoadedSongId] = useState<number | null>(null);
-  const [title, setTitle] = useState("");
+  const [formState, dispatchFormState] = useReducer(
+    librarySongEditControllerReducer,
+    undefined,
+    getInitialLibrarySongEditControllerState,
+  );
   const actionState = getLibrarySongEditActionState({
     detail,
-    isSaving,
-    title,
+    isSaving: formState.isSaving,
+    title: formState.title,
   });
 
   useEffect(() => {
-    if (detail.isMissing || loadedSongId === songId) {
-      return;
-    }
+    dispatchFormState({ detail, songId, type: "hydrate" });
+  }, [detail, songId]);
 
-    const formState = buildLibrarySongEditFormState(detail);
-    setTitle(formState.title);
-    setArtistNames(formState.artistNames);
-    setAlbumNames(formState.albumNames);
-    setLoadedSongId(songId);
-  }, [detail, loadedSongId, songId]);
+  const updateField =
+    (field: "albumNames" | "artistNames" | "title") => (value: string) => {
+      dispatchFormState({ field, type: "change-field", value });
+    };
 
   const save = async () => {
     if (!actionState.canSave) {
@@ -52,35 +49,37 @@ export function useEditLibrarySongController({
       return;
     }
 
-    setIsSaving(true);
-    setErrorMessage(null);
+    dispatchFormState({ type: "begin-save" });
 
     try {
       await updateLibrarySongMetadata({
-        albumNames,
-        artistNames,
+        albumNames: formState.albumNames,
+        artistNames: formState.artistNames,
         id: songId,
-        title,
+        title: formState.title,
       });
       sendHaptic("success");
       router.replace(getLibrarySongDetailHref({ songId }));
     } catch (caughtError) {
       sendHaptic("error");
-      setErrorMessage(getLibrarySongEditErrorMessage(caughtError));
+      dispatchFormState({
+        errorMessage: getLibrarySongEditErrorMessage(caughtError),
+        type: "fail",
+      });
     } finally {
-      setIsSaving(false);
+      dispatchFormState({ type: "finish-save" });
     }
   };
 
   return {
     actionState,
-    albumNames,
-    artistNames,
-    errorMessage,
+    albumNames: formState.albumNames,
+    artistNames: formState.artistNames,
+    errorMessage: formState.errorMessage,
     save,
-    setAlbumNames,
-    setArtistNames,
-    setTitle,
-    title,
+    setAlbumNames: updateField("albumNames"),
+    setArtistNames: updateField("artistNames"),
+    setTitle: updateField("title"),
+    title: formState.title,
   };
 }

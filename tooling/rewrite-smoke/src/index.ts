@@ -239,7 +239,9 @@ import {
   getLibrarySongEditActionState,
   getLibrarySongEditErrorMessage,
   getLibrarySongEditFieldState,
+  getInitialLibrarySongEditControllerState,
   getLibrarySongEditStatusState,
+  librarySongEditControllerReducer,
 } from "../../../apps/new/src/features/library/services/library-song-form-service";
 import {
   getLibrarySongListControlsState,
@@ -3054,6 +3056,87 @@ function assertLibrarySongDetailSmoke() {
     artistNames: "Alpha Artist, Beta Artist",
     title: "Alpha",
   });
+  const songEditState = getInitialLibrarySongEditControllerState();
+  assert.deepEqual(songEditState, {
+    albumNames: "",
+    artistNames: "",
+    errorMessage: null,
+    isSaving: false,
+    loadedSongId: null,
+    title: "",
+  });
+  assert.deepEqual(
+    librarySongEditControllerReducer(songEditState, {
+      detail,
+      songId: 42,
+      type: "hydrate",
+    }),
+    {
+      ...songEditState,
+      albumNames: "Alpha Album, Beta Album",
+      artistNames: "Alpha Artist, Beta Artist",
+      loadedSongId: 42,
+      title: "Alpha",
+    },
+  );
+  assert.deepEqual(
+    librarySongEditControllerReducer(
+      {
+        ...songEditState,
+        loadedSongId: 42,
+        title: "Local Edit",
+      },
+      {
+        detail,
+        songId: 42,
+        type: "hydrate",
+      },
+    ),
+    {
+      ...songEditState,
+      loadedSongId: 42,
+      title: "Local Edit",
+    },
+  );
+  assert.deepEqual(
+    librarySongEditControllerReducer(songEditState, {
+      field: "title",
+      type: "change-field",
+      value: "Updated",
+    }),
+    {
+      ...songEditState,
+      title: "Updated",
+    },
+  );
+  assert.deepEqual(
+    librarySongEditControllerReducer(songEditState, { type: "begin-save" }),
+    {
+      ...songEditState,
+      errorMessage: null,
+      isSaving: true,
+    },
+  );
+  assert.deepEqual(
+    librarySongEditControllerReducer(
+      {
+        ...songEditState,
+        isSaving: true,
+      },
+      { type: "finish-save" },
+    ),
+    songEditState,
+  );
+  assert.deepEqual(
+    librarySongEditControllerReducer(songEditState, {
+      errorMessage: "Song could not be saved.",
+      type: "fail",
+    }),
+    {
+      ...songEditState,
+      errorMessage: "Song could not be saved.",
+    },
+  );
   assert.deepEqual(getLibrarySongEditFieldState(), {
     albumNames: {
       label: "Albums",

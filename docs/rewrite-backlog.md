@@ -356,6 +356,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     form view.
   - Done: library song edit query/mutation/missing/help status now lives in the
     song form service with smoke coverage instead of status-panel branching.
+  - Done: library song edit hydration, field, saving, and mutation-error
+    transitions now live in a song form service reducer with smoke coverage
+    instead of scattered controller state setters.
   - Done: create collection form field/image/error/save transitions now live in
     a collection form service reducer with smoke coverage instead of scattered
     controller state setters.

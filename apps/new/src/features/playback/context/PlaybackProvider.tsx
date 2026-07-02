@@ -13,7 +13,10 @@ import {
   initialPlaybackState,
   upsertQueueItem,
 } from "../services/playback-session-service";
-import { createExpoAvTrackPlayerAdapter } from "../services/track-player-adapter";
+import {
+  createExpoAvTrackPlayerAdapter,
+  type TrackPlayerStatusSnapshot,
+} from "../services/track-player-adapter";
 import type {
   PlaybackQueueItem,
   PlaybackState,
@@ -29,6 +32,8 @@ type PlaybackAction =
   | { song: PlaybackQueueItem; type: "add-to-queue" }
   | { songId: number; type: "remove-from-queue" }
   | { error: string; type: "native-failure" }
+  | { status: TrackPlayerStatusSnapshot; type: "native-status" }
+  | { type: "native-finished" }
   | { type: "toggle-loop" }
   | { type: "toggle-shuffle" };
 
@@ -208,6 +213,40 @@ const playbackReducer = (
         error: action.error,
         isPlaying: false,
       };
+    case "native-status":
+      if (!action.status.isLoaded) {
+        return state;
+      }
+
+      return {
+        ...state,
+        duration: action.status.duration ?? state.duration,
+        isPlaying: action.status.isPlaying,
+        position: Math.max(0, action.status.position),
+      };
+    case "native-finished": {
+      const nextIndex =
+        state.activeQueueIndex === null ? null : state.activeQueueIndex + 1;
+      const nextTrack =
+        nextIndex === null ? null : state.queue[nextIndex] ?? null;
+
+      if (!nextTrack) {
+        return {
+          ...state,
+          isPlaying: false,
+          position: state.duration,
+        };
+      }
+
+      return {
+        ...state,
+        activeQueueIndex: nextIndex,
+        activeTrackId: nextTrack.id,
+        duration: nextTrack.duration ?? 0,
+        isPlaying: true,
+        position: 0,
+      };
+    }
     case "toggle-loop":
       return {
         ...state,
@@ -249,6 +288,28 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       dispatch({ error: getErrorMessage(error), type: "native-failure" });
     });
   }, []);
+
+  useEffect(() => {
+    const adapter = adapterRef.current;
+
+    adapter.setStatusListener((status) => {
+      if (status.didJustFinish) {
+        const nextTrack = getNextTrack(stateRef.current);
+
+        dispatch({ type: "native-finished" });
+        if (nextTrack) {
+          runNativeCommand(() => adapter.play(nextTrack));
+        }
+        return;
+      }
+
+      dispatch({ status, type: "native-status" });
+    });
+
+    return () => {
+      adapter.setStatusListener(null);
+    };
+  }, [runNativeCommand]);
 
   const playSong = useCallback((song: PlaybackQueueItem) => {
     dispatch({ song, type: "play-song" });

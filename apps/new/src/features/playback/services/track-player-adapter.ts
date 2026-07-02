@@ -1,8 +1,17 @@
-import { Audio } from "expo-av";
+import { Audio, type AVPlaybackStatus } from "expo-av";
 import type {
   PlaybackQueueItem,
   PlaybackState,
 } from "../types/playback-state";
+
+export type TrackPlayerStatusSnapshot = {
+  didJustFinish: boolean;
+  duration: number | null;
+  isLoaded: boolean;
+  isPlaying: boolean;
+  position: number;
+  songId: number | null;
+};
 
 export type TrackPlayerAdapter = {
   destroy: () => Promise<void>;
@@ -11,6 +20,9 @@ export type TrackPlayerAdapter = {
   restore: (state: PlaybackState) => Promise<void>;
   resume: () => Promise<void>;
   seekTo: (position: number) => Promise<void>;
+  setStatusListener: (
+    listener: ((status: TrackPlayerStatusSnapshot) => void) | null,
+  ) => void;
   stop: () => Promise<void>;
 };
 
@@ -21,12 +33,45 @@ export const createUnavailableTrackPlayerAdapter = (): TrackPlayerAdapter => ({
   restore: () => Promise.resolve(),
   resume: () => Promise.resolve(),
   seekTo: () => Promise.resolve(),
+  setStatusListener: () => {},
   stop: () => Promise.resolve(),
 });
 
 export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
   let sound: Audio.Sound | null = null;
   let loadedSongId: number | null = null;
+  let statusListener: ((status: TrackPlayerStatusSnapshot) => void) | null =
+    null;
+
+  const toStatusSnapshot = (
+    status: AVPlaybackStatus,
+  ): TrackPlayerStatusSnapshot => {
+    if (!status.isLoaded) {
+      return {
+        didJustFinish: false,
+        duration: null,
+        isLoaded: false,
+        isPlaying: false,
+        position: 0,
+        songId: loadedSongId,
+      };
+    }
+
+    return {
+      didJustFinish: status.didJustFinish,
+      duration: status.durationMillis ?? null,
+      isLoaded: true,
+      isPlaying: status.isPlaying,
+      position: status.positionMillis,
+      songId: loadedSongId,
+    };
+  };
+
+  const attachStatusListener = () => {
+    sound?.setOnPlaybackStatusUpdate((status) => {
+      statusListener?.(toStatusSnapshot(status));
+    });
+  };
 
   const configureAudio = async () => {
     await Audio.setAudioModeAsync({
@@ -71,6 +116,7 @@ export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
 
     sound = created.sound;
     loadedSongId = song.id;
+    attachStatusListener();
   };
 
   return {
@@ -100,6 +146,10 @@ export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
       if (sound) {
         await sound.setPositionAsync(position);
       }
+    },
+    setStatusListener: (listener) => {
+      statusListener = listener;
+      attachStatusListener();
     },
     stop: async () => {
       if (sound) {

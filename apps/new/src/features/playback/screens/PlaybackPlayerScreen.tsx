@@ -46,7 +46,9 @@ export function PlaybackPlayerScreen() {
             <Text numberOfLines={1} style={styles.trackMeta}>
               {activeTrack.artist} / {activeTrack.album}
             </Text>
-            <Text style={styles.duration}>{formatDuration(state.duration)}</Text>
+            <Text style={styles.duration}>
+              {formatDuration(state.position)} / {formatDuration(state.duration)}
+            </Text>
           </>
         ) : (
           <>

@@ -51,9 +51,10 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     playlist/album/artist create/edit flows, collection song add/remove flows,
     and album song reorder by track exist; playlist/artist ordering needs
     schema support before it can be durable.
-  - Playback: explicit session state, queue/player screens, and a native Expo
-    AV adapter for play/pause/seek/skip exist; persistence, progress sync, and
-    remote events are next.
+  - Playback: explicit session state, queue/player screens, a native Expo AV
+    adapter for play/pause/seek/skip, and native status/progress sync exist;
+    persistence, remote events, richer progress controls, and deeper queue
+    controls are next.
   - Import/ingest: route-per-step import shell, session state, file picker,
     Wi-Fi transfer route/server, cache staging, metadata/duration extraction,
     preview/save screens, staged metadata editing, and Drizzle draft-to-library
@@ -108,7 +109,8 @@ searchable/sortable songs, linked details, collection create/edit flows, song
 add/remove, and album song reorder. Settings now has a feature-owned home with
 backup, customization, and premium route entry points. Playback now has a
 reducer-backed session boundary plus queue/player screens connected to a native
-Expo AV adapter for saved library files. Import now has a route-per-step session shell, native file
+Expo AV adapter for saved library files with native progress/status sync. Import
+now has a route-per-step session shell, native file
 selection, a Wi-Fi transfer route/server, cache staging,
 metadata/duration extraction, and Drizzle draft saves, including moving cached
 audio into durable library storage, persisting artwork to shared image storage,

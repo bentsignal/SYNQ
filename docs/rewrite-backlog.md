@@ -253,6 +253,12 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: Wi-Fi import transfer-size validation, duplicate upload rejection,
     accepted upload responses, and error response copy now live in a pure
     request service with deterministic smoke coverage.
+  - Done: Wi-Fi import server/session status derivation, staged-song removal
+    haptics, and review-save haptics now live in a controller hook instead of
+    the route screen.
+  - Done: Wi-Fi import address/progress panels, staged-song preview, review
+    action, and import back link now render from a focused component instead
+    of the route screen.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.

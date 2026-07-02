@@ -6,6 +6,7 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import { usePlaybackSession } from "../hooks/use-playback-session";
 import {
   getFreeListeningRemainingMs,
+  getPlaybackPlayerActionState,
   getPlaybackProgressPercent,
   getSeekTargetPosition,
 } from "../services/playback-player-state-service";
@@ -24,8 +25,7 @@ export function PlaybackPlayerScreen() {
     toggleLoop,
     toggleShuffle,
   } = usePlaybackSession();
-  const hasActiveTrack = !!activeTrack;
-  const adBreakActive = state.adGate.active || state.adGate.due;
+  const actionState = getPlaybackPlayerActionState({ activeTrack, state });
   const adProgressPercent = getPlaybackProgressPercent({
     duration: state.adGate.playbackDuration,
     position: state.adGate.playbackPosition,
@@ -102,7 +102,7 @@ export function PlaybackPlayerScreen() {
         </Text>
       </View>
 
-      {adBreakActive ? (
+      {actionState.adBreakActive ? (
         <View style={styles.adPanel}>
           <Text style={styles.panelLabel}>Premium gate</Text>
           <Text style={styles.adTitle}>Ad break required</Text>
@@ -194,12 +194,12 @@ export function PlaybackPlayerScreen() {
       <View style={styles.controls}>
         <Pressable
           accessibilityRole="button"
-          disabled={!hasActiveTrack || adBreakActive}
+          disabled={!actionState.canSkipPrevious}
           onPress={handleSkipPrevious}
           style={[
             styles.controlButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
-            !hasActiveTrack || adBreakActive ? styles.disabled : null,
+            !actionState.canSkipPrevious ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.controlText, { color: theme.primaryText }]}>
@@ -208,26 +208,26 @@ export function PlaybackPlayerScreen() {
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={!hasActiveTrack || adBreakActive}
+          disabled={!actionState.canPlayPause}
           onPress={handlePlayPause}
           style={[
             styles.primaryButton,
             { backgroundColor: theme.accent },
-            !hasActiveTrack || adBreakActive ? styles.disabled : null,
+            !actionState.canPlayPause ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.primaryText, { color: theme.onAccent }]}>
-            {state.isPlaying ? "Pause" : "Play"}
+            {actionState.playPauseLabel}
           </Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={!hasActiveTrack || adBreakActive}
+          disabled={!actionState.canSkipNext}
           onPress={handleSkipNext}
           style={[
             styles.controlButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
-            !hasActiveTrack || adBreakActive ? styles.disabled : null,
+            !actionState.canSkipNext ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.controlText, { color: theme.primaryText }]}>
@@ -239,14 +239,12 @@ export function PlaybackPlayerScreen() {
       <View style={styles.controls}>
         <Pressable
           accessibilityRole="button"
-          disabled={!hasActiveTrack || adBreakActive || state.position <= 0}
+          disabled={!actionState.canRewind}
           onPress={rewind}
           style={[
             styles.controlButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
-            !hasActiveTrack || adBreakActive || state.position <= 0
-              ? styles.disabled
-              : null,
+            !actionState.canRewind ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.controlText, { color: theme.primaryText }]}>
@@ -255,16 +253,12 @@ export function PlaybackPlayerScreen() {
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={
-            !hasActiveTrack || adBreakActive || state.position >= state.duration
-          }
+          disabled={!actionState.canFastForward}
           onPress={fastForward}
           style={[
             styles.controlButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
-            !hasActiveTrack || adBreakActive || state.position >= state.duration
-              ? styles.disabled
-              : null,
+            !actionState.canFastForward ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.controlText, { color: theme.primaryText }]}>
@@ -283,7 +277,7 @@ export function PlaybackPlayerScreen() {
           ]}
         >
           <Text style={[styles.controlText, { color: theme.primaryText }]}>
-            Shuffle {state.mode.shuffle ? "On" : "Off"}
+            {actionState.shuffleLabel}
           </Text>
         </Pressable>
         <Pressable
@@ -295,7 +289,7 @@ export function PlaybackPlayerScreen() {
           ]}
         >
           <Text style={[styles.controlText, { color: theme.primaryText }]}>
-            Loop {state.mode.loop ? "On" : "Off"}
+            {actionState.loopLabel}
           </Text>
         </Pressable>
       </View>

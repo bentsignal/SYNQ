@@ -106,6 +106,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     labels now live in the library interaction service instead of the screen.
   - Done: song detail like, export, and delete labels now live with action
     availability in the song detail service instead of the detail screen.
+  - Done: playback player command availability and shuffle/loop/play labels now
+    live in the playback player-state service instead of the player screen.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -193,6 +195,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     selection labels, mutation guards, linked-song filtering, and row labels.
   - Done: extend deterministic smoke coverage to song detail like, export, and
     delete labels across ready, busy, liked, and missing states.
+  - Done: extend deterministic smoke coverage to playback player command
+    availability, seek boundaries, ad-break blocking, and mode labels.
 
 ### Phase 3: New App Build-Out
 

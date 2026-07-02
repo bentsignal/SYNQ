@@ -16,6 +16,7 @@ import {
 import {
   getFreeListeningRemainingMs,
   getPlaybackMiniPlayerState,
+  getPlaybackPlayerActionState,
   getPlaybackProgressPercent,
   getSeekTargetPosition,
 } from "../../../apps/new/src/features/playback/services/playback-player-state-service";
@@ -333,6 +334,82 @@ function assertPlaybackPlayerStateSmoke() {
       stepMs: 10_000,
     }),
     70_000,
+  );
+  assert.deepEqual(
+    getPlaybackPlayerActionState({
+      activeTrack: null,
+      state: initialPlaybackState,
+    }),
+    {
+      adBreakActive: false,
+      canFastForward: false,
+      canPlayPause: false,
+      canRewind: false,
+      canSkipNext: false,
+      canSkipPrevious: false,
+      loopLabel: "Loop Off",
+      playPauseLabel: "Play",
+      shuffleLabel: "Shuffle Off",
+    },
+  );
+  assert.deepEqual(
+    getPlaybackPlayerActionState({
+      activeTrack,
+      state: {
+        ...initialPlaybackState,
+        duration: 180_000,
+        isPlaying: true,
+        mode: { loop: true, shuffle: true },
+        position: 60_000,
+      },
+    }),
+    {
+      adBreakActive: false,
+      canFastForward: true,
+      canPlayPause: true,
+      canRewind: true,
+      canSkipNext: true,
+      canSkipPrevious: true,
+      loopLabel: "Loop On",
+      playPauseLabel: "Pause",
+      shuffleLabel: "Shuffle On",
+    },
+  );
+  assert.deepEqual(
+    getPlaybackPlayerActionState({
+      activeTrack,
+      state: {
+        ...initialPlaybackState,
+        duration: 180_000,
+        position: 180_000,
+      },
+    }).canFastForward,
+    false,
+  );
+  assert.deepEqual(
+    getPlaybackPlayerActionState({
+      activeTrack,
+      state: {
+        ...initialPlaybackState,
+        adGate: {
+          ...initialPlaybackState.adGate,
+          active: true,
+        },
+        duration: 180_000,
+        position: 60_000,
+      },
+    }),
+    {
+      adBreakActive: true,
+      canFastForward: false,
+      canPlayPause: false,
+      canRewind: false,
+      canSkipNext: false,
+      canSkipPrevious: false,
+      loopLabel: "Loop Off",
+      playPauseLabel: "Play",
+      shuffleLabel: "Shuffle Off",
+    },
   );
   assert.deepEqual(
     getPlaybackMiniPlayerState({

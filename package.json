@@ -11,7 +11,8 @@
     "format": "turbo run format --continue",
     "format:fix": "turbo run format --continue -- --write",
     "lint": "turbo run lint --continue",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "verify:rewrite": "bash scripts/verify-rewrite.sh"
   },
   "devDependencies": {
     "turbo": "^2.5.8"

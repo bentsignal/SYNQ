@@ -40,6 +40,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
 - [ ] Add focused regression coverage or deterministic smoke helpers for the
   highest-risk domains: import, save-to-library, backup restore, playback queue,
   and library edits.
+  - Done: add `pnpm verify:rewrite` to run the repeatable rewrite gate:
+    typecheck, lint, whitespace, architecture scans, and old/new iOS export
+    smokes with export-artifact cleanup.
 
 ### Phase 3: New App Build-Out
 
@@ -202,6 +205,8 @@ endless old-app polishing loop.
 
 - `pnpm install` succeeds for the workspace.
 - `pnpm lint` succeeds through Turbo with warnings only.
+- `pnpm verify:rewrite` succeeds and is the preferred repeatable guardrail for
+  rewrite checkpoints.
 - `pnpm --filter @synq/old exec expo export --platform ios --output-dir dist-export-smoke`
   succeeds, proving the old app still bundles from `apps/old`.
 - `pnpm --filter @synq/db lint` and `pnpm --filter @synq/db typecheck`

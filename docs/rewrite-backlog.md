@@ -159,6 +159,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import file-pick, finish, and discard result-route decisions now live
     in the import screen-state service with deterministic smoke coverage
     instead of inline controller branches.
+  - Done: import navigation/result-route decisions and save-export reducer
+    state now live in focused import services instead of the screen-state
+    presentation service owning routing and export transition concerns.
   - Done: import files/save/Wi-Fi/result back-links and staged-song edit
     destinations now live in import services with deterministic smoke coverage
     instead of inline component route strings.

@@ -3,7 +3,7 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import {
   getImportDiscardResultHref,
   getImportFinishResultHref,
-} from "../services/import-screen-state-service";
+} from "../services/import-navigation-service";
 import type { ImportSessionState } from "../types/import-session";
 
 type UseImportSaveSessionActionsParams = {

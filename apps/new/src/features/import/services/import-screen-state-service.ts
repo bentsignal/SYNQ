@@ -1,4 +1,12 @@
 import type { ImportSessionState } from "../types/import-session";
+import {
+  getImportFilesHref,
+  getImportHomeHref,
+  getImportPremiumHref,
+  getImportSaveHref,
+  getImportWifiHref,
+  type ImportNavigationHref,
+} from "./import-navigation-service";
 
 export type ImportHomeRoute = {
   description: string;
@@ -6,29 +14,6 @@ export type ImportHomeRoute = {
   label: string;
   metaLabel: string;
 };
-
-export type ImportNavigationHref =
-  | "/premium"
-  | "/(tabs)/import"
-  | "/(tabs)/import/files"
-  | "/(tabs)/import/wifi"
-  | "/(tabs)/import/save"
-  | "/(tabs)/import/success"
-  | "/(tabs)/import/failure"
-  | "/(tabs)/library";
-
-export const getImportHomeHref = (): ImportNavigationHref => "/(tabs)/import";
-
-export const getImportFilesHref = (): ImportNavigationHref =>
-  "/(tabs)/import/files";
-
-export const getImportSaveHref = (): ImportNavigationHref =>
-  "/(tabs)/import/save";
-
-export const getImportLibraryHref = (): ImportNavigationHref =>
-  "/(tabs)/library";
-
-export const getImportPremiumHref = (): ImportNavigationHref => "/premium";
 
 export const getImportHomeState = ({
   premiumActive,
@@ -50,7 +35,7 @@ export const getImportHomeState = ({
       },
       {
         description: "Receive audio from a browser on the same network.",
-        href: importLocked ? getImportPremiumHref() : "/(tabs)/import/wifi",
+        href: importLocked ? getImportPremiumHref() : getImportWifiHref(),
         label: "Wi-Fi",
         metaLabel: importLocked
           ? "Premium"
@@ -69,21 +54,6 @@ export const getImportHomeState = ({
 };
 
 export type ImportHomeState = ReturnType<typeof getImportHomeState>;
-
-export type ImportResultHref = ImportNavigationHref;
-
-export const getImportFilesResultHref = (staged: boolean): ImportResultHref =>
-  staged ? getImportSaveHref() : "/(tabs)/import/failure";
-
-export const getImportFinishResultHref = (
-  succeeded: boolean,
-): ImportResultHref =>
-  succeeded ? "/(tabs)/import/success" : "/(tabs)/import/failure";
-
-export const getImportDiscardResultHref = (
-  discarded: boolean,
-): ImportResultHref =>
-  discarded ? getImportHomeHref() : "/(tabs)/import/failure";
 
 export const getImportSaveActionState = ({
   isExporting,
@@ -112,52 +82,6 @@ export type ImportSaveActionState = ReturnType<
   typeof getImportSaveActionState
 >;
 
-export type ImportSaveExportState = {
-  error: string | null;
-  isExporting: boolean;
-};
-
-export type ImportSaveExportAction =
-  | {
-      type: "begin";
-    }
-  | {
-      type: "finish";
-    }
-  | {
-      error: string;
-      type: "fail";
-    };
-
-export const initialImportSaveExportState: ImportSaveExportState = {
-  error: null,
-  isExporting: false,
-};
-
-export const importSaveExportReducer = (
-  state: ImportSaveExportState,
-  action: ImportSaveExportAction,
-): ImportSaveExportState => {
-  switch (action.type) {
-    case "begin":
-      return {
-        ...state,
-        error: null,
-        isExporting: true,
-      };
-    case "finish":
-      return {
-        ...state,
-        isExporting: false,
-      };
-    case "fail":
-      return {
-        ...state,
-        error: action.error,
-      };
-  }
-};
-
 export const getImportSaveHeaderState = () => ({
   kicker: "Import review",
   subtitle: "Review staged songs before writing them to the library.",
@@ -177,11 +101,6 @@ export const getImportSongPreviewEmptyState = () => ({
   body: "Choose songs to review them before saving.",
   title: "No songs staged",
 });
-
-export const getImportSaveExportErrorMessage = (caughtError: unknown) =>
-  caughtError instanceof Error
-    ? caughtError.message
-    : "Staged songs could not be exported.";
 
 export const getImportSuccessState = (state: ImportSessionState) => {
   const savedCount = state.saveSummary?.saved ?? 0;

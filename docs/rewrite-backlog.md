@@ -67,6 +67,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: edit-collection hydration, dirty tracking, image picking, save,
     navigation, and mutation-error workflows now live in a controller hook
     instead of the screen.
+  - Done: edit-collection query result/controller/view wiring now lives in a
+    connected form component instead of the route screen owning form assembly.
   - Done: edit-collection form fields, image picker presentation, validation
     messages, and save action rendering now live in a focused component instead
     of the route screen.

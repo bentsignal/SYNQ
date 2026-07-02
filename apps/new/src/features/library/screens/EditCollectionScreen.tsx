@@ -1,8 +1,7 @@
 import { useLocalSearchParams } from "expo-router";
 import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
-import { EditCollectionFormView } from "../components/EditCollectionFormView";
+import { EditCollectionConnectedForm } from "../components/EditCollectionConnectedForm";
 import { LibraryInvalidCollectionState } from "../components/LibraryInvalidCollectionState";
-import { useEditCollectionFormController } from "../hooks/use-edit-collection-form-controller";
 import {
   useEditAlbumCollectionQuery,
   useEditArtistCollectionQuery,
@@ -77,72 +76,38 @@ function EditCollectionContent({
 function EditAlbumCollectionContent({ id }: { id: number }) {
   const collection = useEditAlbumCollectionQuery({ id });
 
-  return <EditCollectionForm id={id} kind="album" collection={collection} />;
+  return (
+    <EditCollectionConnectedForm
+      collection={collection}
+      copy={labels.album}
+      id={id}
+      kind="album"
+    />
+  );
 }
 
 function EditArtistCollectionContent({ id }: { id: number }) {
   const collection = useEditArtistCollectionQuery({ id });
 
-  return <EditCollectionForm id={id} kind="artist" collection={collection} />;
+  return (
+    <EditCollectionConnectedForm
+      collection={collection}
+      copy={labels.artist}
+      id={id}
+      kind="artist"
+    />
+  );
 }
 
 function EditPlaylistCollectionContent({ id }: { id: number }) {
   const collection = useEditPlaylistCollectionQuery({ id });
 
-  return <EditCollectionForm id={id} kind="playlist" collection={collection} />;
-}
-
-type EditCollectionFormProps = {
-  collection: ReturnType<typeof useEditAlbumCollectionQuery>;
-  id: number;
-  kind: CollectionKind;
-};
-
-function EditCollectionForm({
-  collection,
-  id,
-  kind,
-}: EditCollectionFormProps) {
-  const copy = labels[kind];
-  const {
-    actionState,
-    error,
-    image,
-    imageInitial,
-    isSaving,
-    name,
-    pickImage,
-    save,
-    saveLabel,
-    updateName,
-    updateYear,
-    year,
-  } = useEditCollectionFormController({
-    collection,
-    copy,
-    id,
-    kind,
-  });
-
   return (
-    <EditCollectionFormView
-      actionState={actionState}
-      collectionError={Boolean(collection.error)}
-      collectionImagePath={collection.imagePath}
-      collectionIsMissing={collection.isMissing}
-      copy={copy}
-      error={error}
-      image={image}
-      imageInitial={imageInitial}
-      isSaving={isSaving}
-      kind={kind}
-      name={name}
-      onChangeName={updateName}
-      onChangeYear={updateYear}
-      onPickImage={pickImage}
-      onSave={save}
-      saveLabel={saveLabel}
-      year={year}
+    <EditCollectionConnectedForm
+      collection={collection}
+      copy={labels.playlist}
+      id={id}
+      kind="playlist"
     />
   );
 }

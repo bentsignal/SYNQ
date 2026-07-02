@@ -112,3 +112,7 @@ export function useEditPlaylistCollectionQuery({ id }: { id: number }) {
 
   return mapPlaylistEditQuery(playlist);
 }
+
+export type EditCollectionQueryResult = ReturnType<
+  typeof useEditAlbumCollectionQuery
+>;

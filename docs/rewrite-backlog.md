@@ -96,6 +96,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     lives in a focused hook instead of the provider body.
   - Done: playback hydration, native restore trigger, and throttled persistence
     now live in a focused hook instead of the provider body.
+  - Done: playback Premium/ad-gate sync, ad-break trigger, and premium-resume
+    side effects now live in a focused hook instead of the provider body.
   - Done: rewrite verification hygiene scans now include new app route files,
     not only feature implementation files.
   - Done: import files and Wi-Fi presentation/action state now lives in the
@@ -184,6 +186,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     smoke coverage while moving file commands into a hook.
   - Done: keep playback reducer/persistence verification gates intact while
     slimming provider-owned persistence effects.
+  - Done: keep playback ad-gate reducer smoke coverage intact while moving
+    provider ad-gate orchestration into a hook.
   - Done: extend rewrite verification gates to route-file event, console,
     dimensions, and AsyncStorage scans.
   - Done: extend deterministic smoke coverage to collection form year parsing

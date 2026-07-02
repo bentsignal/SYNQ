@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
+import { usePlaybackAdGateController } from "../hooks/use-playback-ad-gate-controller";
 import {
   getActiveTrack,
   getNextQueueIndex,
@@ -65,18 +66,12 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const { state: premiumState } = usePremiumEntitlement();
   const [state, dispatch] = useReducer(playbackReducer, initialPlaybackState);
   const stateRef = useRef(state);
-  const premiumActiveRef = useRef(premiumState.active);
   const adapterRef = useRef(createExpoAudioTrackPlayerAdapter());
   const activeTrack = useMemo(() => getActiveTrack(state), [state]);
 
   useEffect(() => {
     stateRef.current = state;
   }, [state]);
-
-  useEffect(() => {
-    premiumActiveRef.current = premiumState.active;
-    dispatch({ premiumActive: premiumState.active, type: "sync-premium" });
-  }, [premiumState.active]);
 
   useEffect(
     () => () => {
@@ -104,33 +99,25 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     state,
   });
 
-  const canRunPlaybackCommand = useCallback(() => {
-    const adGate = stateRef.current.adGate;
-
-    return premiumActiveRef.current || (!adGate.active && !adGate.due);
-  }, []);
-
-  const beginAdBreak = useCallback(() => {
-    dispatch({ type: "begin-ad-break" });
+  const playNativeAdBreak = useCallback(() => {
     runNativeCommand(() => adapterRef.current.playAd());
   }, [runNativeCommand]);
-
-  useEffect(() => {
-    if (state.adGate.due && !state.adGate.active && !premiumState.active) {
-      beginAdBreak();
-    }
-  }, [
+  const resumeNativeLibraryAfterPremium = useCallback(() => {
+    runNativeCommand(() => adapterRef.current.resumeLibrary());
+  }, [runNativeCommand]);
+  const {
     beginAdBreak,
-    premiumState.active,
-    state.adGate.active,
-    state.adGate.due,
-  ]);
-
-  useEffect(() => {
-    if (premiumState.active && state.adGate.active && activeTrack) {
-      runNativeCommand(() => adapterRef.current.resumeLibrary());
-    }
-  }, [activeTrack, premiumState.active, runNativeCommand, state.adGate.active]);
+    canRunPlaybackCommand,
+    premiumActiveRef,
+  } = usePlaybackAdGateController({
+    activeTrack,
+    dispatch,
+    onBeginAdBreak: playNativeAdBreak,
+    onResumeLibraryAfterPremium: resumeNativeLibraryAfterPremium,
+    premiumActive: premiumState.active,
+    state,
+    stateRef,
+  });
 
   const runAdGatedCommand = useCallback(
     (command: () => void) => {
@@ -195,7 +182,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     return () => {
       adapter.setStatusListener(null);
     };
-  }, [finishActiveTrack, runNativeCommand]);
+  }, [finishActiveTrack, premiumActiveRef, runNativeCommand]);
 
   const playSong = useCallback(
     (song: PlaybackQueueItem) => {

@@ -50,7 +50,11 @@ import { parseAlbumYearInput } from "../../../apps/new/src/features/library/serv
 import { rowsToAddableCollectionSongs } from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
 import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
 import { filterCollectionPreviews } from "../../../apps/new/src/features/library/services/library-collection-list-service";
-import { buildLibrarySongDetail } from "../../../apps/new/src/features/library/services/library-song-detail-service";
+import {
+  buildLibrarySongDetail,
+  getLibrarySongDetailActionState,
+  getLibrarySongRelationshipHref,
+} from "../../../apps/new/src/features/library/services/library-song-detail-service";
 import { rowsToSongPreviews } from "../../../apps/new/src/features/library/services/library-song-preview-service";
 
 const song = ({
@@ -888,6 +892,41 @@ function assertLibrarySongDetailSmoke() {
     detail.playlists.map((playlist) => playlist.title),
     ["Smoke Playlist", "Untitled playlist"],
   );
+  assert.equal(
+    getLibrarySongRelationshipHref({ id: 1, kind: "album" }),
+    "/(tabs)/library/album/1",
+  );
+  assert.equal(
+    getLibrarySongRelationshipHref({ id: 2, kind: "artist" }),
+    "/(tabs)/library/artist/2",
+  );
+  assert.equal(
+    getLibrarySongRelationshipHref({ id: 3, kind: "playlist" }),
+    "/(tabs)/library/playlist/3",
+  );
+  assert.deepEqual(
+    getLibrarySongDetailActionState({
+      detail,
+      isDeleting: false,
+      isExporting: false,
+      isTogglingLiked: false,
+    }),
+    {
+      canDelete: true,
+      canExport: true,
+      canPlay: true,
+      canToggleLiked: true,
+    },
+  );
+  assert.equal(
+    getLibrarySongDetailActionState({
+      detail,
+      isDeleting: false,
+      isExporting: true,
+      isTogglingLiked: false,
+    }).canExport,
+    false,
+  );
 
   const missing = buildLibrarySongDetail({
     albumRows: [],
@@ -903,6 +942,20 @@ function assertLibrarySongDetailSmoke() {
   assert.equal(missing.originalFileName, "Unknown source file");
   assert.equal(missing.artistLabel, "Unknown");
   assert.equal(missing.isMissing, true);
+  assert.deepEqual(
+    getLibrarySongDetailActionState({
+      detail: missing,
+      isDeleting: false,
+      isExporting: false,
+      isTogglingLiked: false,
+    }),
+    {
+      canDelete: false,
+      canExport: false,
+      canPlay: false,
+      canToggleLiked: false,
+    },
+  );
 }
 
 function assertEditCollectionQuerySmoke() {

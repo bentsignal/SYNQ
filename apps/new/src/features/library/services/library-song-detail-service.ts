@@ -58,6 +58,13 @@ export type LibrarySongDetail = {
   updatedAt: number;
 };
 
+export type LibrarySongRelationshipKind = "album" | "artist" | "playlist";
+
+export type LibrarySongRelationshipHref =
+  | `/(tabs)/library/album/${number}`
+  | `/(tabs)/library/artist/${number}`
+  | `/(tabs)/library/playlist/${number}`;
+
 const formatCount = (count: number, singular: string, plural = `${singular}s`) =>
   `${count} ${count === 1 ? singular : plural}`;
 
@@ -131,5 +138,44 @@ export const buildLibrarySongDetail = ({
     ].join(" / "),
     title: songRow?.title ?? "Song not found",
     updatedAt,
+  };
+};
+
+export const getLibrarySongRelationshipHref = ({
+  id,
+  kind,
+}: {
+  id: number;
+  kind: LibrarySongRelationshipKind;
+}): LibrarySongRelationshipHref => {
+  switch (kind) {
+    case "album":
+      return `/(tabs)/library/album/${id}`;
+    case "artist":
+      return `/(tabs)/library/artist/${id}`;
+    case "playlist":
+    default:
+      return `/(tabs)/library/playlist/${id}`;
+  }
+};
+
+export const getLibrarySongDetailActionState = ({
+  detail,
+  isDeleting,
+  isExporting,
+  isTogglingLiked,
+}: {
+  detail: LibrarySongDetail;
+  isDeleting: boolean;
+  isExporting: boolean;
+  isTogglingLiked: boolean;
+}) => {
+  const canPlay = !detail.isMissing && detail.pathToFile !== null;
+
+  return {
+    canDelete: !detail.isMissing && !isDeleting,
+    canExport: canPlay && !isExporting,
+    canPlay,
+    canToggleLiked: !detail.isMissing && !isTogglingLiked,
   };
 };

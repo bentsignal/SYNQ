@@ -11,20 +11,11 @@ import {
   deleteLibrarySong,
   setLibrarySongLiked,
 } from "../repository/song-metadata-repository";
-
-type RelationshipKind = "album" | "artist" | "playlist";
-
-const getRelationshipHref = (kind: RelationshipKind, id: number) => {
-  switch (kind) {
-    case "album":
-      return `/(tabs)/library/album/${id}` as const;
-    case "artist":
-      return `/(tabs)/library/artist/${id}` as const;
-    case "playlist":
-    default:
-      return `/(tabs)/library/playlist/${id}` as const;
-  }
-};
+import {
+  getLibrarySongDetailActionState,
+  getLibrarySongRelationshipHref,
+  type LibrarySongRelationshipKind,
+} from "../services/library-song-detail-service";
 
 export function LibrarySongDetailScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
@@ -65,7 +56,13 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
   const [isExporting, setIsExporting] = useState(false);
   const [isTogglingLiked, setIsTogglingLiked] = useState(false);
   const hasErrors = errors.length > 0;
-  const canPlay = !detail.isMissing && detail.pathToFile !== null;
+  const { canDelete, canExport, canPlay, canToggleLiked } =
+    getLibrarySongDetailActionState({
+      detail,
+      isDeleting,
+      isExporting,
+      isTogglingLiked,
+    });
   const updatedLabel =
     detail.updatedAt > 0
       ? `Updated ${new Date(detail.updatedAt).toLocaleTimeString()}`
@@ -222,12 +219,12 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={detail.isMissing || isTogglingLiked}
+          disabled={!canToggleLiked}
           onPress={toggleLiked}
           style={[
             styles.secondaryButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
-            detail.isMissing || isTogglingLiked ? styles.disabled : null,
+            !canToggleLiked ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
@@ -249,7 +246,7 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         </Link>
         <Pressable
           accessibilityRole="button"
-          disabled={!canPlay || isExporting}
+          disabled={!canExport}
           onPress={async () => {
             setExportError(null);
             setIsExporting(true);
@@ -277,7 +274,7 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
           style={[
             styles.secondaryButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
-            !canPlay || isExporting ? styles.disabled : null,
+            !canExport ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
@@ -286,12 +283,12 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={detail.isMissing || isDeleting}
+          disabled={!canDelete}
           onPress={deleteSong}
           style={[
             styles.dangerButton,
             { backgroundColor: theme.surface, borderColor: theme.danger },
-            detail.isMissing || isDeleting ? styles.disabled : null,
+            !canDelete ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.secondaryButtonText, { color: theme.danger }]}>
@@ -388,7 +385,7 @@ function RelationshipSection({
 }: {
   emptyLabel: string;
   items: { detail?: string; id: number; title: string }[];
-  kind: RelationshipKind;
+  kind: LibrarySongRelationshipKind;
   title: string;
 }) {
   const theme = useCustomizationTheme();
@@ -412,7 +409,7 @@ function RelationshipSection({
           items.map((item) => (
             <Link
               asChild
-              href={getRelationshipHref(kind, item.id)}
+              href={getLibrarySongRelationshipHref({ id: item.id, kind })}
               key={item.id}
             >
               <Pressable

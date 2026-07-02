@@ -67,6 +67,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     the library interaction service instead of the detail screen.
   - Done: player progress, seek target, and free-listening remaining-time math
     now live in a playback service instead of the player screen.
+  - Done: song detail relationship routing and action disabled-state derivation
+    now live in the song detail service instead of the detail screen.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -115,6 +117,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     deletion guard rules for protected playlists and missing collections.
   - Done: extend deterministic smoke coverage to player progress, seek
     clamping, and free-listening remaining-time calculations.
+  - Done: extend deterministic smoke coverage to song detail relationship hrefs
+    and play/export/like/delete action availability.
 
 ### Phase 3: New App Build-Out
 

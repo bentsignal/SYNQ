@@ -1,5 +1,5 @@
-import { Link, router, useLocalSearchParams } from "expo-router";
-import { useMemo, useState } from "react";
+import { Link, useLocalSearchParams } from "expo-router";
+import { useMemo } from "react";
 import {
   Pressable,
   ScrollView,
@@ -10,12 +10,8 @@ import {
 } from "react-native";
 import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
+import { useEditImportSongController } from "../hooks/use-edit-import-song-controller";
 import { useImportSession } from "../hooks/use-import-session";
-import {
-  buildEditedImportSongDraft,
-  getImportSongEditActionState,
-} from "../services/import-song-form-service";
 import type { ImportSongDraft } from "../types/import-session";
 
 export function EditImportSongScreen() {
@@ -94,44 +90,19 @@ function EditImportSongForm({
   updateImportSong: (song: ImportSongDraft) => void;
 }) {
   const theme = useCustomizationTheme();
-  const { sendHaptic } = useHapticFeedback();
-  const [album, setAlbum] = useState(song.album);
-  const [artist, setArtist] = useState(song.artist);
-  const [error, setError] = useState<string | null>(null);
-  const [title, setTitle] = useState(song.title);
-  const [track, setTrack] = useState(
-    song.track === null ? "" : String(song.track),
-  );
-  const actionState = getImportSongEditActionState({ title });
-
-  const handleSave = () => {
-    if (!actionState.canSave) {
-      sendHaptic("error");
-      setError("Title is required.");
-      return;
-    }
-
-    try {
-      updateImportSong(
-        buildEditedImportSongDraft({
-          album,
-          artist,
-          song,
-          title,
-          track,
-        }),
-      );
-      sendHaptic("success");
-      router.replace("/(tabs)/import/save");
-    } catch (caughtError) {
-      sendHaptic("error");
-      setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Song could not be updated.",
-      );
-    }
-  };
+  const {
+    actionState,
+    album,
+    artist,
+    error,
+    save,
+    setAlbum,
+    setArtist,
+    title,
+    track,
+    updateTitle,
+    updateTrack,
+  } = useEditImportSongController({ song, updateImportSong });
 
   return (
     <ScrollView
@@ -160,10 +131,7 @@ function EditImportSongForm({
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
-          onChangeText={(nextTitle) => {
-            setTitle(nextTitle);
-            setError(null);
-          }}
+          onChangeText={updateTitle}
           placeholder="Song title"
           placeholderTextColor={theme.mutedText}
           returnKeyType="next"
@@ -222,10 +190,7 @@ function EditImportSongForm({
         <TextInput
           inputMode="numeric"
           keyboardType="number-pad"
-          onChangeText={(nextTrack) => {
-            setTrack(nextTrack);
-            setError(null);
-          }}
+          onChangeText={updateTrack}
           placeholder="Track number"
           placeholderTextColor={theme.mutedText}
           returnKeyType="done"
@@ -266,7 +231,7 @@ function EditImportSongForm({
         <Pressable
           accessibilityRole="button"
           disabled={!actionState.canSave}
-          onPress={handleSave}
+          onPress={save}
           style={[
             styles.saveButton,
             { backgroundColor: theme.accent },

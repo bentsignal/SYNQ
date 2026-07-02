@@ -152,6 +152,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     in a form service instead of the edit screen.
   - Done: import song edit save action state now lives in the import song form
     service instead of the edit screen.
+  - Done: import staged-song edit field state, metadata draft building,
+    validation errors, haptics, and save navigation now live in a controller
+    hook instead of the edit screen.
   - Done: collection detail play, queue, export, and delete action state now
     lives in the library interaction service instead of the detail screen.
   - Done: collection detail play, queue, export, delete, reorder, remove, and

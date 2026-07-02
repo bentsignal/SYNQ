@@ -34,6 +34,8 @@ export const getPremiumActionState = ({
   };
 };
 
+export type PremiumActionState = ReturnType<typeof getPremiumActionState>;
+
 export const getPremiumStatusState = (state: PremiumPurchaseState) => ({
   canReset: state.phase === "failure",
   isFailure: state.phase === "failure",
@@ -44,3 +46,5 @@ export const getPremiumStatusState = (state: PremiumPurchaseState) => ({
       ? "Premium is active."
       : "Choose a plan or restore a previous purchase."),
 });
+
+export type PremiumStatusState = ReturnType<typeof getPremiumStatusState>;

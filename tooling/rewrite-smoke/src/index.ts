@@ -90,11 +90,13 @@ import {
   getAddableSongRowState,
   getAddableSongSelectionState,
   getCollectionDetailActionState,
+  getCollectionDetailMutationErrorMessage,
   getCollectionListHref,
   getCollectionPlaybackPlan,
   getCollectionQueuePlan,
   getCollectionSongListState,
   getCollectionSongRowActionState,
+  getDeleteCollectionConfirmationCopy,
   getPlayableCollectionSongs,
   getSelectedAddableSongIds,
   removeSongIdSelection,
@@ -1625,6 +1627,51 @@ function assertLibraryCollectionInteractionSmoke() {
   assert.equal(getCollectionListHref("album"), "/(tabs)/library/albums");
   assert.equal(getCollectionListHref("artist"), "/(tabs)/library/artists");
   assert.equal(getCollectionListHref("playlist"), "/(tabs)/library/playlists");
+  assert.deepEqual(
+    getDeleteCollectionConfirmationCopy({
+      eyebrow: "Playlist",
+      title: "Smoke Mix",
+    }),
+    {
+      message: "Delete Smoke Mix? Songs will stay in your library.",
+      title: "Delete playlist",
+    },
+  );
+  assert.equal(
+    getCollectionDetailMutationErrorMessage({
+      caughtError: new Error("No permission"),
+      mutation: "delete-collection",
+    }),
+    "No permission",
+  );
+  assert.equal(
+    getCollectionDetailMutationErrorMessage({
+      caughtError: "unknown",
+      mutation: "export-collection",
+    }),
+    "Songs could not be exported.",
+  );
+  assert.equal(
+    getCollectionDetailMutationErrorMessage({
+      caughtError: null,
+      mutation: "move-song",
+    }),
+    "Song order could not be saved.",
+  );
+  assert.equal(
+    getCollectionDetailMutationErrorMessage({
+      caughtError: undefined,
+      mutation: "remove-song",
+    }),
+    "Song could not be removed.",
+  );
+  assert.equal(
+    getCollectionDetailMutationErrorMessage({
+      caughtError: false,
+      mutation: "delete-collection",
+    }),
+    "Collection could not be deleted.",
+  );
   assert.equal(
     canDeleteLibraryCollection({
       id: 3,

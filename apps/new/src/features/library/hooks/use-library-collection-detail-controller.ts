@@ -14,6 +14,8 @@ import {
   getCollectionListHref,
   getCollectionPlaybackPlan,
   getCollectionQueuePlan,
+  getCollectionDetailMutationErrorMessage,
+  getDeleteCollectionConfirmationCopy,
   reorderCollectionSongs,
 } from "../services/library-collection-interaction-service";
 import type {
@@ -98,9 +100,10 @@ export function useLibraryCollectionDetailController({
     } catch (caughtError) {
       sendHaptic("error");
       setMutationError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Songs could not be exported.",
+        getCollectionDetailMutationErrorMessage({
+          caughtError,
+          mutation: "export-collection",
+        }),
       );
     } finally {
       setIsExporting(false);
@@ -113,9 +116,14 @@ export function useLibraryCollectionDetailController({
       return;
     }
 
+    const confirmationCopy = getDeleteCollectionConfirmationCopy({
+      eyebrow: detail.eyebrow,
+      title: detail.title,
+    });
+
     Alert.alert(
-      `Delete ${detail.eyebrow.toLowerCase()}`,
-      `Delete ${detail.title}? Songs will stay in your library.`,
+      confirmationCopy.title,
+      confirmationCopy.message,
       [
         { style: "cancel", text: "Cancel" },
         {
@@ -130,9 +138,10 @@ export function useLibraryCollectionDetailController({
             } catch (caughtError) {
               sendHaptic("error");
               setMutationError(
-                caughtError instanceof Error
-                  ? caughtError.message
-                  : "Collection could not be deleted.",
+                getCollectionDetailMutationErrorMessage({
+                  caughtError,
+                  mutation: "delete-collection",
+                }),
               );
             } finally {
               setIsDeleting(false);
@@ -165,9 +174,10 @@ export function useLibraryCollectionDetailController({
     } catch (caughtError) {
       sendHaptic("error");
       setMutationError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Song order could not be saved.",
+        getCollectionDetailMutationErrorMessage({
+          caughtError,
+          mutation: "move-song",
+        }),
       );
     } finally {
       setMovingSongId(null);
@@ -188,9 +198,10 @@ export function useLibraryCollectionDetailController({
     } catch (caughtError) {
       sendHaptic("error");
       setMutationError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Song could not be removed.",
+        getCollectionDetailMutationErrorMessage({
+          caughtError,
+          mutation: "remove-song",
+        }),
       );
     } finally {
       setRemovingSongId(null);

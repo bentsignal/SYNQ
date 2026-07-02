@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useReducer } from "react";
 import { useRouter } from "expo-router";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
@@ -9,11 +9,13 @@ import {
 import { pickCollectionImage } from "../services/collection-image-picker-service";
 import { updateCollectionFromForm } from "../services/collection-form-mutation-service";
 import {
+  collectionFormReducer,
   getCollectionDetailHref,
   getCollectionFormActionState,
   getCollectionFormErrorMessage,
   getCollectionFormPreviewInitial,
   getCollectionFormSaveLabel,
+  getInitialCollectionFormState,
 } from "../services/collection-form-service";
 import type { EditCollectionKind } from "../services/edit-collection-query-service";
 
@@ -45,122 +47,115 @@ export function useEditCollectionFormController({
 }: UseEditCollectionFormControllerParams) {
   const router = useRouter();
   const { sendHaptic } = useHapticFeedback();
-  const [image, setImage] = useState<{
-    dataUrl: string;
-    fileName: string;
-  } | null>(null);
-  const [name, setName] = useState("");
-  const [year, setYear] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isDirty, setIsDirty] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const actionState = useMemo(
-    () =>
-      getCollectionFormActionState({
-        isMissing: collection.isMissing,
-        isSaving,
-        name,
-      }),
-    [collection.isMissing, isSaving, name],
+  const [formState, dispatchFormState] = useReducer(
+    collectionFormReducer,
+    undefined,
+    getInitialCollectionFormState,
   );
+  const actionState = getCollectionFormActionState({
+    isMissing: collection.isMissing,
+    isSaving: formState.isSaving,
+    name: formState.name,
+  });
   const imageInitial = getCollectionFormPreviewInitial({
     fallback: copy.kicker[0],
-    name,
+    name: formState.name,
   });
   const saveLabel = getCollectionFormSaveLabel({
     defaultLabel: copy.editLabel,
-    isSaving,
+    isSaving: formState.isSaving,
     savingLabel: "Saving",
   });
 
   useEffect(() => {
-    if (isDirty || !collection.updatedAt) {
+    if (!collection.updatedAt) {
       return;
     }
 
-    setName(collection.name);
-    setYear(collection.year);
-  }, [collection.name, collection.updatedAt, collection.year, isDirty]);
+    dispatchFormState({
+      name: collection.name,
+      type: "hydrate",
+      year: collection.year,
+    });
+  }, [collection.name, collection.updatedAt, collection.year]);
 
-  const updateName = (nextName: string) => {
-    setIsDirty(true);
-    setName(nextName);
-  };
-
-  const updateYear = (nextYear: string) => {
-    setIsDirty(true);
-    setYear(nextYear);
-  };
+  const updateField =
+    (field: "name" | "year") => (value: string) => {
+      dispatchFormState({ field, type: "change-field", value });
+    };
 
   const pickImage = async () => {
     try {
       sendHaptic("light");
       const pickedImage = await pickCollectionImage();
       if (pickedImage) {
-        setImage(pickedImage);
-        setIsDirty(true);
+        dispatchFormState({ image: pickedImage, type: "pick-image" });
       }
     } catch (caughtError) {
       sendHaptic("error");
-      setError(
-        getCollectionFormErrorMessage({
+      dispatchFormState({
+        error: getCollectionFormErrorMessage({
           caughtError,
           fallbackMessage: "Image could not be selected.",
         }),
-      );
+        type: "fail",
+      });
     }
   };
 
   const save = async () => {
     if (!actionState.canSave) {
       sendHaptic("error");
-      setError(`${copy.kicker} name is required.`);
+      dispatchFormState({
+        error: `${copy.kicker} name is required.`,
+        type: "fail",
+      });
       return;
     }
 
-    setIsSaving(true);
-    setError(null);
+    dispatchFormState({ type: "begin-save" });
 
     try {
       await updateCollectionFromForm({
         id,
-        imageDataUrl: image?.dataUrl,
+        imageDataUrl: formState.image?.dataUrl,
         kind,
-        name,
+        name: formState.name,
         repository: {
           updateAlbum,
           updateArtist,
           updatePlaylist,
         },
-        year,
+        year: formState.year,
       });
       sendHaptic("success");
       router.replace(getCollectionDetailHref({ id, kind }));
     } catch (caughtError) {
       sendHaptic("error");
-      setError(
-        getCollectionFormErrorMessage({
+      dispatchFormState({
+        error: getCollectionFormErrorMessage({
           caughtError,
           fallbackMessage: `${copy.kicker} could not be updated.`,
         }),
-      );
+        type: "fail",
+      });
     } finally {
-      setIsSaving(false);
+      dispatchFormState({ type: "finish-save" });
     }
   };
 
   return {
     actionState,
-    error,
-    image,
+    error: formState.error,
+    image: formState.image,
     imageInitial,
-    isSaving,
-    name,
+    isSaving: formState.isSaving,
+    name: formState.name,
     pickImage,
     save,
     saveLabel,
-    updateName,
-    updateYear,
-    year,
+    updateName: updateField("name"),
+    updateYear: updateField("year"),
+    year: formState.year,
   };
 }

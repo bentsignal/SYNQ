@@ -359,6 +359,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: create collection form field/image/error/save transitions now live in
     a collection form service reducer with smoke coverage instead of scattered
     controller state setters.
+  - Done: edit collection hydration, field/image/error/save transitions now use
+    the shared collection form service reducer with smoke coverage instead of
+    scattered controller state setters.
   - Done: import song edit save action state now lives in the import song form
     service instead of the edit screen.
   - Done: import staged-song edit field state, metadata draft building,

@@ -3500,6 +3500,37 @@ function assertCollectionFormSmoke() {
   });
   assert.deepEqual(
     collectionFormReducer(collectionFormState, {
+      name: "Hydrated Album",
+      type: "hydrate",
+      year: "2026",
+    }),
+    {
+      ...collectionFormState,
+      name: "Hydrated Album",
+      year: "2026",
+    },
+  );
+  assert.deepEqual(
+    collectionFormReducer(
+      {
+        ...collectionFormState,
+        isDirty: true,
+        name: "Local Edit",
+      },
+      {
+        name: "Hydrated Album",
+        type: "hydrate",
+        year: "2026",
+      },
+    ),
+    {
+      ...collectionFormState,
+      isDirty: true,
+      name: "Local Edit",
+    },
+  );
+  assert.deepEqual(
+    collectionFormReducer(collectionFormState, {
       field: "name",
       type: "change-field",
       value: "Smoke Album",

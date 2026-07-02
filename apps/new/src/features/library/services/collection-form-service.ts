@@ -16,6 +16,11 @@ export type CollectionFormState = {
 
 export type CollectionFormAction =
   | {
+      name: string;
+      type: "hydrate";
+      year: string;
+    }
+  | {
       field: "name" | "year";
       type: "change-field";
       value: string;
@@ -58,6 +63,16 @@ export const collectionFormReducer = (
   action: CollectionFormAction,
 ): CollectionFormState => {
   switch (action.type) {
+    case "hydrate":
+      if (state.isDirty) {
+        return state;
+      }
+
+      return {
+        ...state,
+        name: action.name,
+        year: action.year,
+      };
     case "change-field":
       return {
         ...state,

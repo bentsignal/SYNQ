@@ -115,6 +115,13 @@ export const getCollectionFormSaveLabel = ({
   savingLabel: string;
 }) => (isSaving ? savingLabel : defaultLabel);
 
+export const getCollectionFormImageLabel = (kind: CollectionFormKind) =>
+  kind === "artist" ? "Profile image" : "Cover image";
+
+export const getSavedCollectionFormImageLabel = (
+  kind: CollectionFormKind,
+) => `Saved ${getCollectionFormImageLabel(kind).toLowerCase()}`;
+
 export type CollectionDetailHref =
   | "/(tabs)/library"
   | `/(tabs)/library/album/${number}`

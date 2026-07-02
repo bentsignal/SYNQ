@@ -148,11 +148,13 @@ import {
   getCollectionFormBackHref,
   getCollectionFormActionState,
   getCollectionFormErrorMessage,
+  getCollectionFormImageLabel,
   getCreateCollectionFormCopy,
   getCreateCollectionFormSubtitle,
   getEditCollectionFormCopy,
   getCollectionFormPreviewInitial,
   getCollectionFormSaveLabel,
+  getSavedCollectionFormImageLabel,
   parseAlbumYearInput,
 } from "../../../apps/new/src/features/library/services/collection-form-service";
 import {
@@ -3054,6 +3056,18 @@ function assertCollectionFormSmoke() {
     namePlaceholder: "Playlist name",
     title: "Edit playlist",
   });
+  assert.equal(getCollectionFormImageLabel("album"), "Cover image");
+  assert.equal(getCollectionFormImageLabel("artist"), "Profile image");
+  assert.equal(getCollectionFormImageLabel("playlist"), "Cover image");
+  assert.equal(getSavedCollectionFormImageLabel("album"), "Saved cover image");
+  assert.equal(
+    getSavedCollectionFormImageLabel("artist"),
+    "Saved profile image",
+  );
+  assert.equal(
+    getSavedCollectionFormImageLabel("playlist"),
+    "Saved cover image",
+  );
   assert.equal(
     assertCollectionName({ kind: "playlist", name: "  Road Trip  " }),
     "Road Trip",

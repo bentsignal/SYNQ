@@ -1,4 +1,7 @@
-import type { CollectionFormActionState } from "../services/collection-form-service";
+import {
+  getSavedCollectionFormImageLabel,
+  type CollectionFormActionState,
+} from "../services/collection-form-service";
 import type { EditCollectionKind } from "../services/edit-collection-query-service";
 import { CollectionFormView } from "./CollectionFormView";
 import type { CollectionFormImage } from "./collection-form-types";
@@ -48,8 +51,6 @@ export function EditCollectionFormView({
   saveLabel,
   year,
 }: EditCollectionFormViewProps) {
-  const imageLabel = kind === "artist" ? "Profile image" : "Cover image";
-
   return (
     <CollectionFormView
       actionState={actionState}
@@ -61,7 +62,7 @@ export function EditCollectionFormView({
       ]}
       image={image}
       imageFallbackName={
-        collectionImagePath ? `Saved ${imageLabel.toLowerCase()}` : null
+        collectionImagePath ? getSavedCollectionFormImageLabel(kind) : null
       }
       imageFallbackUri={collectionImagePath}
       imageInitial={imageInitial}

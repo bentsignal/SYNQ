@@ -1,6 +1,9 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { CollectionFormActionState } from "../services/collection-form-service";
+import {
+  getCollectionFormImageLabel,
+  type CollectionFormActionState,
+} from "../services/collection-form-service";
 import type {
   CollectionFormImage,
   CollectionFormKind,
@@ -26,7 +29,7 @@ export function CollectionImageInput({
   onPickImage,
 }: CollectionImageInputProps) {
   const theme = useCustomizationTheme();
-  const imageLabel = kind === "artist" ? "Profile image" : "Cover image";
+  const imageLabel = getCollectionFormImageLabel(kind);
   const imageUri = image?.dataUrl ?? imageFallbackUri;
   const imageName =
     image?.fileName ??

@@ -47,8 +47,11 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-command-plan-service";
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
+  getImportDiscardResultHref,
   getImportFilesActionState,
+  getImportFilesResultHref,
   getImportFailureState,
+  getImportFinishResultHref,
   getImportHomeState,
   getImportPremiumGateState,
   getImportSaveActionState,
@@ -875,6 +878,12 @@ function assertImportSessionSmoke() {
     chooseLabel: "Choosing",
     isWorking: true,
   });
+  assert.equal(getImportFilesResultHref(true), "/(tabs)/import/save");
+  assert.equal(getImportFilesResultHref(false), "/(tabs)/import/failure");
+  assert.equal(getImportFinishResultHref(true), "/(tabs)/import/success");
+  assert.equal(getImportFinishResultHref(false), "/(tabs)/import/failure");
+  assert.equal(getImportDiscardResultHref(true), "/(tabs)/import");
+  assert.equal(getImportDiscardResultHref(false), "/(tabs)/import/failure");
   assert.deepEqual(
     getImportPremiumGateState({
       active: false,

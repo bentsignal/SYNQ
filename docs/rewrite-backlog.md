@@ -102,6 +102,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import home/save/files/Wi-Fi/Premium screen state selectors now live
     in a dedicated import screen-state service instead of the import session
     reducer service.
+  - Done: import file-pick, finish, and discard result-route decisions now live
+    in the import screen-state service with deterministic smoke coverage
+    instead of inline controller branches.
   - Done: collection preview detail-route generation now lives in the collection
     preview service instead of duplicated preview/list UI helpers.
   - Done: library collection preview empty state, columns, and row rendering now

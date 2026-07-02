@@ -3,6 +3,8 @@ import { router } from "expo-router";
 import { shareImportDraftSongs } from "@/src/features/export/services/import-draft-export-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
+  getImportDiscardResultHref,
+  getImportFinishResultHref,
   getImportSaveActionState,
   getImportSaveExportErrorMessage,
 } from "../services/import-screen-state-service";
@@ -53,14 +55,14 @@ export function useImportSaveController({
     sendHaptic("medium");
     const succeeded = await saveImportSession();
     sendHaptic(succeeded ? "success" : "error");
-    router.push(succeeded ? "/(tabs)/import/success" : "/(tabs)/import/failure");
+    router.push(getImportFinishResultHref(succeeded));
   };
 
   const discardImport = async () => {
     sendHaptic("medium");
     const discarded = await discardSession();
     sendHaptic(discarded ? "success" : "error");
-    router.push(discarded ? "/(tabs)/import" : "/(tabs)/import/failure");
+    router.push(getImportDiscardResultHref(discarded));
   };
 
   return {

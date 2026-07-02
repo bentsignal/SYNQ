@@ -1,7 +1,10 @@
 import { router } from "expo-router";
 import { useCallback } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { getImportFilesActionState } from "../services/import-screen-state-service";
+import {
+  getImportFilesActionState,
+  getImportFilesResultHref,
+} from "../services/import-screen-state-service";
 import { useImportSession } from "./use-import-session";
 
 export function useImportFilesController() {
@@ -14,7 +17,7 @@ export function useImportFilesController() {
     const staged = await startFileImport();
 
     sendHaptic(staged ? "success" : "error");
-    router.push(staged ? "/(tabs)/import/save" : "/(tabs)/import/failure");
+    router.push(getImportFilesResultHref(staged));
   }, [sendHaptic, startFileImport]);
 
   const removeSong = useCallback(

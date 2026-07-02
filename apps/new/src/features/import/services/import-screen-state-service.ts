@@ -51,6 +51,25 @@ export const getImportHomeState = ({
 
 export type ImportHomeState = ReturnType<typeof getImportHomeState>;
 
+export type ImportResultHref =
+  | "/(tabs)/import"
+  | "/(tabs)/import/save"
+  | "/(tabs)/import/success"
+  | "/(tabs)/import/failure";
+
+export const getImportFilesResultHref = (staged: boolean): ImportResultHref =>
+  staged ? "/(tabs)/import/save" : "/(tabs)/import/failure";
+
+export const getImportFinishResultHref = (
+  succeeded: boolean,
+): ImportResultHref =>
+  succeeded ? "/(tabs)/import/success" : "/(tabs)/import/failure";
+
+export const getImportDiscardResultHref = (
+  discarded: boolean,
+): ImportResultHref =>
+  discarded ? "/(tabs)/import" : "/(tabs)/import/failure";
+
 export const getImportSaveActionState = ({
   isExporting,
   state,

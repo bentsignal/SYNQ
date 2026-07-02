@@ -96,6 +96,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     fallback UI.
   - Done: collection detail list-route and protected-delete rules now live in
     the library interaction service instead of the detail screen.
+  - Done: collection detail destructive confirmation title, message, and button
+    labels now live in the library interaction service with deterministic smoke
+    coverage instead of inline controller copy.
   - Done: player progress, seek target, and free-listening remaining-time math
     now live in a playback service instead of the player screen.
   - Done: song detail relationship routing and action disabled-state derivation

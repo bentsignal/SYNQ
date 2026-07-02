@@ -125,7 +125,7 @@ export function useLibraryCollectionDetailController({
       confirmationCopy.title,
       confirmationCopy.message,
       [
-        { style: "cancel", text: "Cancel" },
+        { style: "cancel", text: confirmationCopy.cancelLabel },
         {
           onPress: async () => {
             setIsDeleting(true);
@@ -148,7 +148,7 @@ export function useLibraryCollectionDetailController({
             }
           },
           style: "destructive",
-          text: "Delete",
+          text: confirmationCopy.confirmLabel,
         },
       ],
     );

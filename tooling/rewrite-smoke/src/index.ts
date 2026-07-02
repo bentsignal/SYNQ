@@ -1811,6 +1811,8 @@ function assertLibraryCollectionInteractionSmoke() {
       title: "Smoke Mix",
     }),
     {
+      cancelLabel: "Cancel",
+      confirmLabel: "Delete",
       message: "Delete Smoke Mix? Songs will stay in your library.",
       title: "Delete playlist",
     },

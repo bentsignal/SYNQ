@@ -71,6 +71,7 @@ import {
   hasMeaningfulImportLibraryName,
   splitImportLibraryNames,
 } from "../../../apps/new/src/features/import/services/import-library-save-plan-service";
+import { getImportFileCommandErrorMessage } from "../../../apps/new/src/features/import/services/import-file-command-service";
 import {
   getWifiStartTransferDecision,
   getWifiTransferSize,
@@ -938,6 +939,27 @@ function assertImportSessionSmoke() {
     chooseLabel: "Choose songs",
     isWorking: false,
   });
+  assert.equal(
+    getImportFileCommandErrorMessage({
+      caughtError: new Error("Picker smoke failure"),
+      mutation: "select-files",
+    }),
+    "Picker smoke failure",
+  );
+  assert.equal(
+    getImportFileCommandErrorMessage({
+      caughtError: null,
+      mutation: "select-files",
+    }),
+    "Files could not be selected.",
+  );
+  assert.equal(
+    getImportFileCommandErrorMessage({
+      caughtError: undefined,
+      mutation: "remove-staged-songs",
+    }),
+    "Selected staged songs could not be removed.",
+  );
   assert.deepEqual(
     getImportSaveActionState({ isExporting: false, state }),
     {

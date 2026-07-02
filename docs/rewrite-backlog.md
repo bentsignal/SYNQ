@@ -185,6 +185,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import session command mutation fallback copy now lives in the import
     session service with deterministic smoke coverage instead of inline hook
     branches.
+  - Done: import file-pick and staged-song removal fallback copy now lives in a
+    pure import file command service with deterministic smoke coverage instead
+    of inline hook branches.
   - Done: shared collection create/edit form action state now lives in the
     collection form service instead of duplicated screen save/edit guards.
   - Done: collection repository name normalization, required-name errors, and

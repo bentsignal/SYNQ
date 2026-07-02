@@ -3,6 +3,7 @@ import {
   deleteImportDraftCacheFiles,
   selectImportFiles,
 } from "../services/import-file-service";
+import { getImportFileCommandErrorMessage } from "../services/import-file-command-service";
 import type { ImportSessionAction } from "../services/import-session-state-service";
 import type { ImportSongDraft } from "../types/import-session";
 
@@ -34,10 +35,10 @@ export function useImportFileCommands({
       return true;
     } catch (caughtError) {
       dispatch({
-        error:
-          caughtError instanceof Error
-            ? caughtError.message
-            : "Files could not be selected.",
+        error: getImportFileCommandErrorMessage({
+          caughtError,
+          mutation: "select-files",
+        }),
         type: "fail",
       });
       return false;
@@ -55,10 +56,10 @@ export function useImportFileCommands({
         return true;
       } catch (caughtError) {
         dispatch({
-          error:
-            caughtError instanceof Error
-              ? caughtError.message
-              : "Selected staged songs could not be removed.",
+          error: getImportFileCommandErrorMessage({
+            caughtError,
+            mutation: "remove-staged-songs",
+          }),
           type: "fail",
         });
         return false;

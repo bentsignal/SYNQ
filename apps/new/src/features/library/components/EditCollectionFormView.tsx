@@ -1,4 +1,5 @@
 import {
+  getEditCollectionFormSubtitle,
   getSavedCollectionFormImageLabel,
   type CollectionFormActionState,
 } from "../services/collection-form-service";
@@ -74,7 +75,7 @@ export function EditCollectionFormView({
       onPickImage={onPickImage}
       onSave={onSave}
       saveLabel={saveLabel}
-      subtitle="Update the name, artwork, and details shown across your library."
+      subtitle={getEditCollectionFormSubtitle()}
       year={year}
     />
   );

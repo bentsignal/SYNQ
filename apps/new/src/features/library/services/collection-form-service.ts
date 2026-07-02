@@ -53,6 +53,9 @@ export const getCreateCollectionFormSubtitle = ({
 }) =>
   `Name the ${duplicateNoun}, choose optional artwork, and start organizing your music.`;
 
+export const getEditCollectionFormSubtitle = () =>
+  "Update the name, artwork, and details shown across your library.";
+
 export const getEditCollectionFormCopy = (
   kind: CollectionFormKind,
 ): EditCollectionFormCopy => {

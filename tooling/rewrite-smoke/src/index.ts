@@ -170,6 +170,7 @@ import {
   getCreateCollectionFormCopy,
   getCreateCollectionFormSubtitle,
   getEditCollectionFormCopy,
+  getEditCollectionFormSubtitle,
   getCollectionFormPreviewInitial,
   getCollectionFormSaveLabel,
   getSavedCollectionFormImageLabel,
@@ -3286,6 +3287,10 @@ function assertCollectionFormSmoke() {
   assert.equal(
     getCreateCollectionFormSubtitle({ duplicateNoun: "playlist" }),
     "Name the playlist, choose optional artwork, and start organizing your music.",
+  );
+  assert.equal(
+    getEditCollectionFormSubtitle(),
+    "Update the name, artwork, and details shown across your library.",
   );
   assert.deepEqual(getEditCollectionFormCopy("album"), {
     editLabel: "Save album",

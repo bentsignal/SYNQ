@@ -1622,6 +1622,8 @@ endless old-app polishing loop.
    - Done: collection form image labels and saved-image fallback copy now live
      in the collection form service with smoke coverage instead of duplicated
      form component conditionals.
+   - Done: edit-collection form subtitle copy now lives in the collection form
+     service with smoke coverage instead of the edit form view.
    - Done: collection form field visibility and return-key state now live in
      the collection form service with smoke coverage instead of inline form
      component branching.

@@ -201,6 +201,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: playback queue haptics and command handlers now live in a controller
     hook, and queue row/list rendering now lives in a dedicated component
     instead of the queue screen.
+  - Done: playback queue empty state and queue row rendering now live in
+    focused components instead of the queue list owning every row control.
   - Done: playback queue header, ad-gate panel, queue list wiring, clear action,
     and player back link now render from a focused component instead of the
     route screen.

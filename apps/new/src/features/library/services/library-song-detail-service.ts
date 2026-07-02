@@ -185,3 +185,7 @@ export const getLibrarySongDetailActionState = ({
     likedLabel: detail.isLiked ? "Unlike" : "Like",
   };
 };
+
+export type LibrarySongDetailActionState = ReturnType<
+  typeof getLibrarySongDetailActionState
+>;

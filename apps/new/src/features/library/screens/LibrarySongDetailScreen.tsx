@@ -1,7 +1,13 @@
 import { Link, useLocalSearchParams } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { LibrarySongDetailActions } from "../components/LibrarySongDetailActions";
+import { LibrarySongDetailHeader } from "../components/LibrarySongDetailHeader";
+import {
+  LibrarySongSourcePanel,
+  LibrarySongStatusPanel,
+} from "../components/LibrarySongDetailPanels";
 import { LibrarySongRelationshipSection } from "../components/LibrarySongRelationshipSection";
 import { useLibrarySongDetailController } from "../hooks/use-library-song-detail-controller";
 import { useLibrarySongDetailQuery } from "../hooks/use-library-song-detail-query";
@@ -60,130 +66,17 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
       contentContainerStyle={styles.content}
       style={[styles.scroll, { backgroundColor: theme.background }]}
     >
-      <View style={styles.header}>
-        <Text style={[styles.kicker, { color: theme.accent }]}>Song</Text>
-        <Text style={[styles.title, { color: theme.primaryText }]}>
-          {detail.title}
-        </Text>
-        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          {detail.relationshipSummary}
-        </Text>
-      </View>
+      <LibrarySongDetailHeader detail={detail} />
 
-      <View style={styles.summaryGrid}>
-        <View
-          style={[
-            styles.summaryPanel,
-            { backgroundColor: theme.surface, borderColor: theme.border },
-          ]}
-        >
-          <Text style={[styles.summaryValue, { color: theme.primaryText }]}>
-            {detail.durationLabel}
-          </Text>
-          <Text style={[styles.summaryLabel, { color: theme.secondaryText }]}>
-            Duration
-          </Text>
-        </View>
-        <View
-          style={[
-            styles.summaryPanel,
-            { backgroundColor: theme.surface, borderColor: theme.border },
-          ]}
-        >
-          <Text style={[styles.summaryValue, { color: theme.primaryText }]}>
-            {detail.fileType}
-          </Text>
-          <Text style={[styles.summaryLabel, { color: theme.secondaryText }]}>
-            File type
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.actionRow}>
-        <Pressable
-          accessibilityRole="button"
-          disabled={!actionState.canPlay}
-          onPress={playCurrentSong}
-          style={[
-            styles.primaryButton,
-            { backgroundColor: theme.accent },
-            !actionState.canPlay ? styles.disabled : null,
-          ]}
-        >
-          <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
-            Play
-          </Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          disabled={!actionState.canPlay}
-          onPress={queueCurrentSong}
-          style={[
-            styles.secondaryButton,
-            { backgroundColor: theme.surface, borderColor: theme.border },
-            !actionState.canPlay ? styles.disabled : null,
-          ]}
-        >
-          <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
-            Add to queue
-          </Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          disabled={!actionState.canToggleLiked}
-          onPress={toggleLiked}
-          style={[
-            styles.secondaryButton,
-            { backgroundColor: theme.surface, borderColor: theme.border },
-            !actionState.canToggleLiked ? styles.disabled : null,
-          ]}
-        >
-          <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
-            {actionState.likedLabel}
-          </Text>
-        </Pressable>
-        <Link
-          href={`/(tabs)/library/song/edit/${songId}`}
-          style={[
-            styles.secondaryButton,
-            {
-              backgroundColor: theme.surface,
-              borderColor: theme.border,
-              color: theme.accent,
-            },
-          ]}
-        >
-          Edit
-        </Link>
-        <Pressable
-          accessibilityRole="button"
-          disabled={!actionState.canExport}
-          onPress={exportCurrentSong}
-          style={[
-            styles.secondaryButton,
-            { backgroundColor: theme.surface, borderColor: theme.border },
-            !actionState.canExport ? styles.disabled : null,
-          ]}
-        >
-          <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
-            {actionState.exportLabel}
-          </Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          disabled={!actionState.canDelete}
-          onPress={deleteCurrentSong}
-          style={[
-            styles.dangerButton,
-            { backgroundColor: theme.surface, borderColor: theme.danger },
-            !actionState.canDelete ? styles.disabled : null,
-          ]}
-        >
-          <Text style={[styles.secondaryButtonText, { color: theme.danger }]}>
-            {actionState.deleteLabel}
-          </Text>
-        </Pressable>
-      </View>
+      <LibrarySongDetailActions
+        actionState={actionState}
+        onDelete={deleteCurrentSong}
+        onExport={exportCurrentSong}
+        onPlay={playCurrentSong}
+        onQueue={queueCurrentSong}
+        onToggleLiked={toggleLiked}
+        songId={songId}
+      />
 
       <LibrarySongRelationshipSection
         emptyLabel="No artists linked"
@@ -211,49 +104,15 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         title="Playlists"
       />
 
-      <View
-        style={[
-          styles.panel,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-        ]}
-      >
-        <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
-          Source
-        </Text>
-        <Text style={[styles.panelText, { color: theme.secondaryText }]}>
-          {detail.originalFileName}
-        </Text>
-        <Text style={[styles.pathText, { color: theme.mutedText }]}>
-          {detail.pathToFile ?? "No file path recorded"}
-        </Text>
-      </View>
+      <LibrarySongSourcePanel detail={detail} />
 
-      <View
-        style={[
-          styles.panel,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-        ]}
-      >
-        <Text
-          style={[
-            hasErrors || error ? styles.errorText : styles.panelText,
-            {
-              color: hasErrors || error
-                ? theme.danger
-                : theme.secondaryText,
-            },
-          ]}
-        >
-          {error ??
-            (hasErrors
-              ? "One or more song detail queries failed."
-              : detail.isMissing
-                ? "Song missing from database."
-                : !actionState.canPlay
-                  ? "Song has no playable file path."
-                  : updatedLabel)}
-        </Text>
-      </View>
+      <LibrarySongStatusPanel
+        actionState={actionState}
+        detail={detail}
+        error={error}
+        hasErrors={hasErrors}
+        updatedLabel={updatedLabel}
+      />
 
       <Link
         href="/(tabs)/library"
@@ -280,9 +139,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 56,
   },
-  header: {
-    gap: 8,
-  },
   kicker: {
     fontSize: 13,
     fontWeight: "800",
@@ -299,106 +155,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
-  },
-  summaryGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  actionRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  primaryButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    flexGrow: 1,
-    justifyContent: "center",
-    minHeight: 44,
-    minWidth: 112,
-    paddingHorizontal: 14,
-  },
-  secondaryButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    flexGrow: 1,
-    justifyContent: "center",
-    minHeight: 44,
-    minWidth: 132,
-    paddingHorizontal: 14,
-  },
-  dangerButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    flexGrow: 1,
-    justifyContent: "center",
-    minHeight: 44,
-    minWidth: 112,
-    paddingHorizontal: 14,
-  },
-  disabled: {
-    opacity: 0.45,
-  },
-  primaryButtonText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  secondaryButtonText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  summaryPanel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    flexBasis: "47%",
-    flexGrow: 1,
-    gap: 6,
-    minHeight: 92,
-    minWidth: 140,
-    padding: 16,
-  },
-  summaryValue: {
-    fontSize: 22,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 28,
-  },
-  summaryLabel: {
-    fontSize: 13,
-    fontWeight: "700",
-    lineHeight: 18,
-  },
-  panel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 8,
-    padding: 16,
-  },
-  panelLabel: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  panelText: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  pathText: {
-    fontSize: 12,
-    lineHeight: 18,
-  },
-  errorText: {
-    fontSize: 14,
-    fontWeight: "700",
-    lineHeight: 20,
   },
   backLink: {
     fontSize: 15,

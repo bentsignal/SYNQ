@@ -206,6 +206,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     availability in the song detail service instead of the detail screen.
   - Done: song detail relationship list rendering now lives in a dedicated
     component instead of the route screen.
+  - Done: song detail header, summary cards, action row, source panel, and
+    status panel now live in focused components instead of the route screen.
   - Done: playback player command availability and shuffle/loop/play labels now
     live in the playback player-state service instead of the player screen.
   - Done: playback player command handlers, haptics, seek targets, and progress

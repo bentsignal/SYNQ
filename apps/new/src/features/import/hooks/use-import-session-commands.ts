@@ -10,6 +10,7 @@ import {
 import { clearPersistedImportSessionState } from "../services/import-session-persistence-service";
 import {
   getFinishWifiTransferAction,
+  getImportSessionCommandErrorMessage,
   type ImportSessionAction,
 } from "../services/import-session-state-service";
 import type {
@@ -44,10 +45,10 @@ export function useImportSessionCommands({
       return true;
     } catch (caughtError) {
       dispatch({
-        error:
-          caughtError instanceof Error
-            ? caughtError.message
-            : "Wi-Fi import cache could not be prepared.",
+        error: getImportSessionCommandErrorMessage({
+          caughtError,
+          mutation: "begin-wifi-transfer",
+        }),
         type: "fail",
       });
       return false;
@@ -98,10 +99,10 @@ export function useImportSessionCommands({
       return true;
     } catch (caughtError) {
       dispatch({
-        error:
-          caughtError instanceof Error
-            ? caughtError.message
-            : "Import session could not be saved.",
+        error: getImportSessionCommandErrorMessage({
+          caughtError,
+          mutation: "save-session",
+        }),
         type: "fail",
       });
       return false;
@@ -118,10 +119,10 @@ export function useImportSessionCommands({
       return true;
     } catch (caughtError) {
       dispatch({
-        error:
-          caughtError instanceof Error
-            ? caughtError.message
-            : "Import session could not be discarded.",
+        error: getImportSessionCommandErrorMessage({
+          caughtError,
+          mutation: "discard-session",
+        }),
         type: "fail",
       });
       return false;

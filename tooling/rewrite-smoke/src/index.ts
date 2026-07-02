@@ -57,6 +57,7 @@ import {
 } from "../../../apps/new/src/features/import/services/import-screen-state-service";
 import {
   getFinishWifiTransferAction,
+  getImportSessionCommandErrorMessage,
   importSessionReducer,
   initialImportSessionState,
 } from "../../../apps/new/src/features/import/services/import-session-state-service";
@@ -1038,6 +1039,34 @@ function assertImportSessionSmoke() {
     songs: [importDraft(77)],
     type: "review",
   });
+  assert.equal(
+    getImportSessionCommandErrorMessage({
+      caughtError: new Error("Import command failed"),
+      mutation: "save-session",
+    }),
+    "Import command failed",
+  );
+  assert.equal(
+    getImportSessionCommandErrorMessage({
+      caughtError: "unknown",
+      mutation: "begin-wifi-transfer",
+    }),
+    "Wi-Fi import cache could not be prepared.",
+  );
+  assert.equal(
+    getImportSessionCommandErrorMessage({
+      caughtError: null,
+      mutation: "save-session",
+    }),
+    "Import session could not be saved.",
+  );
+  assert.equal(
+    getImportSessionCommandErrorMessage({
+      caughtError: undefined,
+      mutation: "discard-session",
+    }),
+    "Import session could not be discarded.",
+  );
 
   state = importSessionReducer(state, {
     song: { ...second, title: "Edited Import 2" },

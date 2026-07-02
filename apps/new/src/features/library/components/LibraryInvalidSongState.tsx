@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getLibraryInvalidSongState } from "../services/library-song-detail-service";
+import { getLibraryInvalidSongState } from "../services/library-song-interaction-service";
 
 export function LibraryInvalidSongState() {
   const theme = useCustomizationTheme();

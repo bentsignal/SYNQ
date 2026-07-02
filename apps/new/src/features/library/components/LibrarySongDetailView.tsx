@@ -3,10 +3,10 @@ import { ScrollView, StyleSheet } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetailController } from "../hooks/use-library-song-detail-controller";
 import {
-  getLibrarySongDetailViewState,
   getLibrarySongDetailStatusState,
   type LibrarySongDetail,
 } from "../services/library-song-detail-service";
+import { getLibrarySongDetailViewState } from "../services/library-song-interaction-service";
 import { LibrarySongDetailActions } from "./LibrarySongDetailActions";
 import { LibrarySongDetailHeader } from "./LibrarySongDetailHeader";
 import {

@@ -244,19 +244,21 @@ import {
 import {
   buildLibrarySongDetail,
   getLibrarySongDetailActionState,
-  getLibrarySongDetailBackHref,
-  getLibrarySongDetailHref,
-  getLibrarySongDetailPlayerHref,
   getLibrarySongDetailStatusState,
-  getLibrarySongDetailViewState,
+} from "../../../apps/new/src/features/library/services/library-song-detail-service";
+import {
   getLibraryInvalidSongState,
   getLibrarySongDeleteConfirmationCopy,
   getLibrarySongDeleteSuccessHref,
+  getLibrarySongDetailBackHref,
+  getLibrarySongDetailHref,
+  getLibrarySongDetailPlayerHref,
+  getLibrarySongDetailViewState,
   getLibrarySongEditHref,
   getLibrarySongRelationshipHref,
   toLibrarySongDetailPlaybackItem,
   toLibrarySongExportItem,
-} from "../../../apps/new/src/features/library/services/library-song-detail-service";
+} from "../../../apps/new/src/features/library/services/library-song-interaction-service";
 import {
   getLibrarySongDetailMutationErrorMessage,
   initialLibrarySongDetailMutationState,

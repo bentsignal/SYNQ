@@ -145,6 +145,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     deterministic smoke coverage instead of inline playback route strings.
   - Done: song detail relationship routing and action disabled-state derivation
     now live in the song detail service instead of the detail screen.
+  - Done: song detail route/view-state helpers, delete confirmation copy, and
+    playback/export item shaping now live in a focused interaction service
+    instead of the read-model/detail shaping service.
   - Done: song detail play/delete destination routes and delete confirmation
     copy now live in the song detail service with deterministic smoke coverage
     instead of inline controller branches.

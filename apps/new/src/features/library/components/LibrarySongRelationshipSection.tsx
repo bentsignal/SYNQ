@@ -4,7 +4,7 @@ import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customi
 import {
   getLibrarySongRelationshipHref,
   type LibrarySongRelationshipKind,
-} from "../services/library-song-detail-service";
+} from "../services/library-song-interaction-service";
 
 type LibrarySongRelationshipSectionProps = {
   emptyLabel: string;

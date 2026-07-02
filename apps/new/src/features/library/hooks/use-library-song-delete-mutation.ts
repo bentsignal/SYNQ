@@ -4,11 +4,13 @@ import { router } from "expo-router";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { deleteLibrarySong } from "../repository/song-metadata-repository";
 import {
-  getLibrarySongDeleteConfirmationCopy,
-  getLibrarySongDeleteSuccessHref,
   type LibrarySongDetail,
   type LibrarySongDetailActionState,
 } from "../services/library-song-detail-service";
+import {
+  getLibrarySongDeleteConfirmationCopy,
+  getLibrarySongDeleteSuccessHref,
+} from "../services/library-song-interaction-service";
 import {
   getLibrarySongDetailMutationErrorMessage,
   type LibrarySongDetailMutationAction,

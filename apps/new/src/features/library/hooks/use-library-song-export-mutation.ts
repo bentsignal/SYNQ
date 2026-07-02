@@ -2,10 +2,10 @@ import { useCallback } from "react";
 import { shareLibrarySongs } from "@/src/features/export/services/library-export-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
-  toLibrarySongExportItem,
   type LibrarySongDetail,
   type LibrarySongDetailActionState,
 } from "../services/library-song-detail-service";
+import { toLibrarySongExportItem } from "../services/library-song-interaction-service";
 import {
   getLibrarySongDetailMutationErrorMessage,
   type LibrarySongDetailMutationAction,

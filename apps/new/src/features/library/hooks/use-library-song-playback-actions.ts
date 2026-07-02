@@ -3,11 +3,13 @@ import { router } from "expo-router";
 import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
-  getLibrarySongDetailPlayerHref,
-  toLibrarySongDetailPlaybackItem,
   type LibrarySongDetail,
   type LibrarySongDetailActionState,
 } from "../services/library-song-detail-service";
+import {
+  getLibrarySongDetailPlayerHref,
+  toLibrarySongDetailPlaybackItem,
+} from "../services/library-song-interaction-service";
 
 type UseLibrarySongPlaybackActionsParams = {
   actionState: LibrarySongDetailActionState;

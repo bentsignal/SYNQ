@@ -9,9 +9,9 @@ import {
   librarySongEditControllerReducer,
 } from "../services/library-song-form-service";
 import {
-  getLibrarySongDetailHref,
   type LibrarySongDetail,
 } from "../services/library-song-detail-service";
+import { getLibrarySongDetailHref } from "../services/library-song-interaction-service";
 
 type UseEditLibrarySongControllerParams = {
   detail: LibrarySongDetail;

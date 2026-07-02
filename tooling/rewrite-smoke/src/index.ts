@@ -205,6 +205,7 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-list-service";
 import {
   getLibraryHomeHeaderActions,
+  getLibraryHomeHeaderState,
   getLibraryHomeImportHref,
   getLibraryHomeStatusState,
 } from "../../../apps/new/src/features/library/services/library-home-service";
@@ -3727,6 +3728,30 @@ function assertLibraryHomeSmoke() {
       label: "Create artist",
     },
   ]);
+  assert.deepEqual(getLibraryHomeHeaderState(), {
+    actions: [
+      {
+        href: "/(tabs)/import",
+        label: "Import music",
+      },
+      {
+        href: "/(tabs)/library/playlist/create",
+        label: "Create playlist",
+      },
+      {
+        href: "/(tabs)/library/album/create",
+        label: "Create album",
+      },
+      {
+        href: "/(tabs)/library/artist/create",
+        label: "Create artist",
+      },
+    ],
+    kicker: "Music Library",
+    subtitle:
+      "Browse your songs, playlists, albums, and artists as your collection grows.",
+    title: "Library",
+  });
   assert.deepEqual(
     getLibraryHomeStatusState({
       collectionUpdatedAt: 20,

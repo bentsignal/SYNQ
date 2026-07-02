@@ -49,6 +49,14 @@ export const getLibraryHomeHeaderActions = (): LibraryHomeHeaderAction[] => [
   }),
 ];
 
+export const getLibraryHomeHeaderState = () => ({
+  actions: getLibraryHomeHeaderActions(),
+  kicker: "Music Library",
+  subtitle:
+    "Browse your songs, playlists, albums, and artists as your collection grows.",
+  title: "Library",
+});
+
 export const getLibraryHomeStatusState = ({
   collectionUpdatedAt,
   errors,

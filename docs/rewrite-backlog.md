@@ -1608,6 +1608,8 @@ endless old-app polishing loop.
      view/status-panel branching.
    - Done: library home header actions now come from a library home service
      with smoke coverage instead of hard-coded create/import links in the view.
+   - Done: library home header title/subtitle copy now comes from the library
+     home service with smoke coverage instead of view-local text.
    - Done: library home query error and updated-time status now lives in the
      library home service with smoke coverage instead of controller/view-local
      label branching.

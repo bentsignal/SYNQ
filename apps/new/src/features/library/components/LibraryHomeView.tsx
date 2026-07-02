@@ -2,7 +2,7 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryHomeController } from "../hooks/use-library-home-controller";
-import { getLibraryHomeHeaderActions } from "../services/library-home-service";
+import { getLibraryHomeHeaderState } from "../services/library-home-service";
 import { LibraryCollectionPreviewSection } from "./LibraryCollectionPreviewSection";
 import { LibrarySongPreviewList } from "./LibrarySongPreviewList";
 import { LibrarySummaryGrid } from "./LibrarySummaryGrid";
@@ -22,7 +22,7 @@ export function LibraryHomeView({
   summary,
 }: LibraryHomeViewProps) {
   const theme = useCustomizationTheme();
-  const headerActions = getLibraryHomeHeaderActions();
+  const headerState = getLibraryHomeHeaderState();
 
   return (
     <ScrollView
@@ -31,17 +31,16 @@ export function LibraryHomeView({
     >
       <View style={styles.header}>
         <Text style={[styles.kicker, { color: theme.accent }]}>
-          Music Library
+          {headerState.kicker}
         </Text>
         <Text style={[styles.title, { color: theme.primaryText }]}>
-          Library
+          {headerState.title}
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          Browse your songs, playlists, albums, and artists as your collection
-          grows.
+          {headerState.subtitle}
         </Text>
         <View style={styles.createLinks}>
-          {headerActions.map((action) => (
+          {headerState.actions.map((action) => (
             <Link
               href={action.href}
               key={action.href}

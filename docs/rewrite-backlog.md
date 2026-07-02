@@ -105,6 +105,10 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: collection detail destructive confirmation title, message, and button
     labels now live in the library interaction service with deterministic smoke
     coverage instead of inline controller copy.
+  - Done: collection detail edit/add/back destinations, collection form back
+    destination, and collection-list create/back destinations now live in
+    library services with deterministic smoke coverage instead of inline
+    component and route-screen strings.
   - Done: player progress, seek target, and free-listening remaining-time math
     now live in a playback service instead of the player screen.
   - Done: playback player, queue, mini-player, and Premium ad-gate

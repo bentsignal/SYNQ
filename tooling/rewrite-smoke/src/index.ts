@@ -116,7 +116,9 @@ import {
   getAddCollectionSongsMutationErrorMessage,
   getAddableSongRowState,
   getAddableSongSelectionState,
+  getCollectionAddSongsHref,
   getCollectionDetailActionState,
+  getCollectionEditHref,
   getCollectionDetailMutationErrorMessage,
   getCollectionListHref,
   getCollectionPlaybackCommandPlan,
@@ -127,6 +129,7 @@ import {
   getCollectionSongOrderUpdate,
   getCollectionSongRowActionState,
   getDeleteCollectionConfirmationCopy,
+  getLibraryCollectionBackHref,
   getPlayableCollectionSongs,
   getSelectedAddableSongIds,
   removeSongIdSelection,
@@ -141,6 +144,7 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import {
   getCollectionDetailHref,
+  getCollectionFormBackHref,
   getCollectionFormActionState,
   getCollectionFormErrorMessage,
   getCreateCollectionFormCopy,
@@ -164,6 +168,8 @@ import {
 import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
 import {
   filterCollectionPreviews,
+  getLibraryCollectionCreateHref,
+  getLibraryCollectionListBackHref,
   getLibraryCollectionListState,
 } from "../../../apps/new/src/features/library/services/library-collection-list-service";
 import {
@@ -1830,6 +1836,15 @@ function assertLibraryCollectionInteractionSmoke() {
   assert.equal(getCollectionListHref("album"), "/(tabs)/library/albums");
   assert.equal(getCollectionListHref("artist"), "/(tabs)/library/artists");
   assert.equal(getCollectionListHref("playlist"), "/(tabs)/library/playlists");
+  assert.equal(getLibraryCollectionBackHref(), "/(tabs)/library");
+  assert.equal(
+    getCollectionEditHref({ id: 7, kind: "album" }),
+    "/(tabs)/library/album/edit/7",
+  );
+  assert.equal(
+    getCollectionAddSongsHref({ id: 8, kind: "playlist" }),
+    "/(tabs)/library/playlist/add/8",
+  );
   assert.deepEqual(
     getDeleteCollectionConfirmationCopy({
       eyebrow: "Playlist",
@@ -2712,6 +2727,7 @@ function assertEditCollectionQuerySmoke() {
 }
 
 function assertCollectionFormSmoke() {
+  assert.equal(getCollectionFormBackHref(), "/(tabs)/library");
   assert.equal(normalizeCollectionName("  Smoke Album  "), "Smoke Album");
   assert.equal(
     getCollectionRequiredNameMessage("album"),
@@ -2912,6 +2928,20 @@ function assertCollectionFormSmoke() {
 }
 
 function assertLibraryCollectionListSmoke() {
+  assert.equal(getLibraryCollectionListBackHref(), "/(tabs)/library");
+  assert.equal(
+    getLibraryCollectionCreateHref("albums"),
+    "/(tabs)/library/album/create",
+  );
+  assert.equal(
+    getLibraryCollectionCreateHref("artists"),
+    "/(tabs)/library/artist/create",
+  );
+  assert.equal(
+    getLibraryCollectionCreateHref("playlists"),
+    "/(tabs)/library/playlist/create",
+  );
+
   const collections = [
     {
       detail: "2 songs",

@@ -116,9 +116,13 @@ export const getCollectionFormSaveLabel = ({
 }) => (isSaving ? savingLabel : defaultLabel);
 
 export type CollectionDetailHref =
+  | "/(tabs)/library"
   | `/(tabs)/library/album/${number}`
   | `/(tabs)/library/artist/${number}`
   | `/(tabs)/library/playlist/${number}`;
+
+export const getCollectionFormBackHref = (): CollectionDetailHref =>
+  "/(tabs)/library";
 
 export const getCollectionDetailHref = ({
   id,

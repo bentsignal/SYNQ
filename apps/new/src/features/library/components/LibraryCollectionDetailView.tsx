@@ -6,6 +6,7 @@ import type {
   LibraryCollectionDetail,
   LibraryCollectionDetailKind,
 } from "../services/library-collection-detail-service";
+import { getLibraryCollectionBackHref } from "../services/library-collection-interaction-service";
 import { LibraryCollectionDetailActions } from "./LibraryCollectionDetailActions";
 import { LibraryCollectionDetailHeader } from "./LibraryCollectionDetailHeader";
 import { LibraryCollectionDetailStatus } from "./LibraryCollectionDetailStatus";
@@ -29,6 +30,7 @@ export function LibraryCollectionDetailView({
 }: LibraryCollectionDetailViewProps) {
   const { detail, errors } = collection;
   const theme = useCustomizationTheme();
+  const backHref = getLibraryCollectionBackHref();
   const hasErrors = errors.length > 0;
   const updatedLabel =
     detail.updatedAt > 0
@@ -96,7 +98,7 @@ export function LibraryCollectionDetailView({
       />
 
       <Link
-        href="/(tabs)/library"
+        href={backHref}
         style={[styles.backLink, { color: theme.accent }]}
       >
         Back to Library

@@ -1,6 +1,7 @@
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { getLibraryCollectionBackHref } from "../services/library-collection-interaction-service";
 
 type LibraryInvalidCollectionStateProps = {
   kicker?: string;
@@ -10,6 +11,7 @@ export function LibraryInvalidCollectionState({
   kicker = "Library",
 }: LibraryInvalidCollectionStateProps) {
   const theme = useCustomizationTheme();
+  const backHref = getLibraryCollectionBackHref();
 
   return (
     <View style={[styles.screen, { backgroundColor: theme.background }]}>
@@ -21,7 +23,7 @@ export function LibraryInvalidCollectionState({
         This route needs a numeric id.
       </Text>
       <Link
-        href="/(tabs)/library"
+        href={backHref}
         style={[styles.backLink, { color: theme.accent }]}
       >
         Back to Library

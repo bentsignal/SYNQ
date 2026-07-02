@@ -1,7 +1,10 @@
-import type { Href } from "expo-router";
 import { LibraryCollectionListView } from "../components/LibraryCollectionListView";
 import { useLibraryCollectionListController } from "../hooks/use-library-collection-list-controller";
 import { type CollectionKind } from "../hooks/use-library-collection-preview-query";
+import {
+  getLibraryCollectionCreateHref,
+  type LibraryCollectionListHref,
+} from "../services/library-collection-list-service";
 
 type LibraryCollectionListScreenProps = {
   kind: CollectionKind;
@@ -9,21 +12,21 @@ type LibraryCollectionListScreenProps = {
 
 const copyByKind = {
   albums: {
-    createHref: "/(tabs)/library/album/create",
+    createHref: getLibraryCollectionCreateHref("albums"),
     empty: "No albums in library",
     kicker: "Library",
     placeholder: "Search albums or artists",
     title: "Albums",
   },
   artists: {
-    createHref: "/(tabs)/library/artist/create",
+    createHref: getLibraryCollectionCreateHref("artists"),
     empty: "No artists in library",
     kicker: "Library",
     placeholder: "Search artists",
     title: "Artists",
   },
   playlists: {
-    createHref: "/(tabs)/library/playlist/create",
+    createHref: getLibraryCollectionCreateHref("playlists"),
     empty: "No playlists in library",
     kicker: "Library",
     placeholder: "Search playlists",
@@ -32,7 +35,7 @@ const copyByKind = {
 } satisfies Record<
   CollectionKind,
   {
-    createHref: Href;
+    createHref: LibraryCollectionListHref;
     empty: string;
     kicker: string;
     placeholder: string;

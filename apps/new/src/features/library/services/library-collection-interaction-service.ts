@@ -6,9 +6,17 @@ import type {
 import { likedSongsPlaylistId } from "./library-playlist-constants-service";
 
 export type LibraryCollectionListHref =
+  | "/(tabs)/library"
   | "/(tabs)/library/albums"
   | "/(tabs)/library/artists"
   | "/(tabs)/library/playlists";
+
+export type LibraryCollectionActionHref =
+  | `/(tabs)/library/${LibraryCollectionDetailKind}/add/${number}`
+  | `/(tabs)/library/${LibraryCollectionDetailKind}/edit/${number}`;
+
+export const getLibraryCollectionBackHref = (): LibraryCollectionListHref =>
+  "/(tabs)/library";
 
 export const getCollectionListHref = (
   kind: LibraryCollectionDetailKind,
@@ -23,6 +31,22 @@ export const getCollectionListHref = (
       return "/(tabs)/library/playlists";
   }
 };
+
+export const getCollectionEditHref = ({
+  id,
+  kind,
+}: {
+  id: number;
+  kind: LibraryCollectionDetailKind;
+}): LibraryCollectionActionHref => `/(tabs)/library/${kind}/edit/${id}`;
+
+export const getCollectionAddSongsHref = ({
+  id,
+  kind,
+}: {
+  id: number;
+  kind: LibraryCollectionDetailKind;
+}): LibraryCollectionActionHref => `/(tabs)/library/${kind}/add/${id}`;
 
 export const canDeleteLibraryCollection = ({
   id,

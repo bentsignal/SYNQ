@@ -1,7 +1,9 @@
-import type { Href } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { LibraryCollectionListState } from "../services/library-collection-list-service";
+import type {
+  LibraryCollectionListHref,
+  LibraryCollectionListState,
+} from "../services/library-collection-list-service";
 import { LibraryCollectionList } from "./LibraryCollectionList";
 import { LibraryCollectionListHeader } from "./LibraryCollectionListHeader";
 import { LibraryCollectionListSearch } from "./LibraryCollectionListSearch";
@@ -9,7 +11,7 @@ import { LibraryCollectionListStatus } from "./LibraryCollectionListStatus";
 
 type LibraryCollectionListViewProps = {
   copy: {
-    createHref: Href;
+    createHref: LibraryCollectionListHref;
     kicker: string;
     placeholder: string;
     title: string;

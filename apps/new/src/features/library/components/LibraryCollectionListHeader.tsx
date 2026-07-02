@@ -1,9 +1,13 @@
-import { Link, type Href } from "expo-router";
+import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import {
+  getLibraryCollectionListBackHref,
+  type LibraryCollectionListHref,
+} from "../services/library-collection-list-service";
 
 type LibraryCollectionListHeaderProps = {
-  createHref: Href;
+  createHref: LibraryCollectionListHref;
   kicker: string;
   title: string;
 };
@@ -14,13 +18,14 @@ export function LibraryCollectionListHeader({
   title,
 }: LibraryCollectionListHeaderProps) {
   const theme = useCustomizationTheme();
+  const backHref = getLibraryCollectionListBackHref();
 
   return (
     <View style={styles.header}>
       <Text style={[styles.kicker, { color: theme.accent }]}>{kicker}</Text>
       <Text style={[styles.title, { color: theme.primaryText }]}>{title}</Text>
       <View style={styles.links}>
-        <Link href="/(tabs)/library" style={[styles.link, { color: theme.accent }]}>
+        <Link href={backHref} style={[styles.link, { color: theme.accent }]}>
           Library
         </Link>
         <Link href={createHref} style={[styles.link, { color: theme.accent }]}>

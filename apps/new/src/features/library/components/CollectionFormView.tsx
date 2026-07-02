@@ -6,6 +6,7 @@ import { CollectionFormFields } from "./CollectionFormFields";
 import { CollectionFormHeader } from "./CollectionFormHeader";
 import { CollectionImageInput } from "./CollectionImageInput";
 import type { CollectionFormViewProps } from "./collection-form-types";
+import { getCollectionFormBackHref } from "../services/collection-form-service";
 
 export function CollectionFormView({
   actionState,
@@ -27,6 +28,7 @@ export function CollectionFormView({
   year,
 }: CollectionFormViewProps) {
   const theme = useCustomizationTheme();
+  const backHref = getCollectionFormBackHref();
 
   return (
     <View style={[styles.screen, { backgroundColor: theme.background }]}>
@@ -66,7 +68,7 @@ export function CollectionFormView({
       </View>
 
       <Link
-        href="/(tabs)/library"
+        href={backHref}
         style={[styles.backLink, { color: theme.accent }]}
       >
         Back to Library

@@ -1,5 +1,30 @@
 import type { LibraryCollectionPreview } from "./library-collection-preview-service";
 
+export type LibraryCollectionListKind = "albums" | "artists" | "playlists";
+
+export type LibraryCollectionListHref =
+  | "/(tabs)/library"
+  | "/(tabs)/library/album/create"
+  | "/(tabs)/library/artist/create"
+  | "/(tabs)/library/playlist/create";
+
+export const getLibraryCollectionListBackHref =
+  (): LibraryCollectionListHref => "/(tabs)/library";
+
+export const getLibraryCollectionCreateHref = (
+  kind: LibraryCollectionListKind,
+): LibraryCollectionListHref => {
+  switch (kind) {
+    case "albums":
+      return "/(tabs)/library/album/create";
+    case "artists":
+      return "/(tabs)/library/artist/create";
+    case "playlists":
+    default:
+      return "/(tabs)/library/playlist/create";
+  }
+};
+
 const normalizeQuery = (query?: string) => query?.trim().toLowerCase() ?? "";
 
 const collectionMatchesQuery = (

@@ -5,7 +5,11 @@ import type {
   LibraryCollectionDetail,
   LibraryCollectionDetailKind,
 } from "../services/library-collection-detail-service";
-import type { CollectionDetailActionState } from "../services/library-collection-interaction-service";
+import {
+  getCollectionAddSongsHref,
+  getCollectionEditHref,
+  type CollectionDetailActionState,
+} from "../services/library-collection-interaction-service";
 
 type LibraryCollectionDetailActionsProps = {
   actionState: CollectionDetailActionState;
@@ -29,6 +33,8 @@ export function LibraryCollectionDetailActions({
   onQueue,
 }: LibraryCollectionDetailActionsProps) {
   const theme = useCustomizationTheme();
+  const editHref = getCollectionEditHref({ id, kind });
+  const addHref = getCollectionAddSongsHref({ id, kind });
 
   return (
     <View style={styles.actionRow}>
@@ -61,13 +67,13 @@ export function LibraryCollectionDetailActions({
         </Text>
       </Pressable>
       <Link
-        href={`/(tabs)/library/${kind}/edit/${id}`}
+        href={editHref}
         style={[styles.editLink, { color: theme.accent }]}
       >
         Edit {detail.eyebrow.toLowerCase()}
       </Link>
       <Link
-        href={`/(tabs)/library/${kind}/add/${id}`}
+        href={addHref}
         style={[styles.editLink, { color: theme.accent }]}
       >
         Add songs

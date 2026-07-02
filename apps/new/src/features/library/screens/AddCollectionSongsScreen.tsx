@@ -15,7 +15,10 @@ import {
   type AddableCollectionSong,
 } from "../hooks/use-addable-collection-songs-query";
 import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
-import { addSongToCollection } from "../repository/relationship-repository";
+import {
+  addSongToCollection,
+  addSongsToCollection,
+} from "../repository/relationship-repository";
 
 type AddCollectionSongsScreenProps = {
   kind: LibraryCollectionDetailKind;
@@ -83,6 +86,10 @@ function AddCollectionSongsContent({
   const { sendHaptic } = useHapticFeedback();
   const [query, setQuery] = useState("");
   const [savingSongId, setSavingSongId] = useState<number | null>(null);
+  const [selectedSongIds, setSelectedSongIds] = useState<Set<number>>(
+    () => new Set(),
+  );
+  const [isAddingSelection, setIsAddingSelection] = useState(false);
   const [mutationError, setMutationError] = useState<string | null>(null);
   const { errors, songs, updatedAt } = useAddableCollectionSongsQuery({
     collectionId: id,
@@ -94,6 +101,56 @@ function AddCollectionSongsContent({
     updatedAt > 0
       ? `Updated ${new Date(updatedAt).toLocaleTimeString()}`
       : "Waiting for library data";
+  const selectedAddableSongIds = Array.from(selectedSongIds).filter((songId) =>
+    songs.some((song) => song.id === songId && !song.isLinked),
+  );
+  const selectedCount = selectedAddableSongIds.length;
+  const isMutating = isAddingSelection || savingSongId !== null;
+
+  const toggleSongSelection = (songId: number) => {
+    sendHaptic("light");
+    setSelectedSongIds((currentSelection) => {
+      const nextSelection = new Set(currentSelection);
+
+      if (nextSelection.has(songId)) {
+        nextSelection.delete(songId);
+      } else {
+        nextSelection.add(songId);
+      }
+
+      return nextSelection;
+    });
+  };
+
+  const addSelectedSongs = async () => {
+    if (selectedCount === 0) {
+      sendHaptic("error");
+      return;
+    }
+
+    sendHaptic("medium");
+    setIsAddingSelection(true);
+    setMutationError(null);
+
+    try {
+      await addSongsToCollection({
+        collectionId: id,
+        kind,
+        songIds: selectedAddableSongIds,
+      });
+      setSelectedSongIds(new Set());
+      sendHaptic("success");
+    } catch (caughtError) {
+      sendHaptic("error");
+      setMutationError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Selected songs could not be added.",
+      );
+    } finally {
+      setIsAddingSelection(false);
+    }
+  };
 
   return (
     <ScrollView
@@ -136,6 +193,33 @@ function AddCollectionSongsContent({
         </Text>
       </View>
 
+      <View
+        style={[
+          styles.selectionPanel,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.selectionText, { color: theme.secondaryText }]}>
+          {selectedCount === 0
+            ? "Select songs to add several at once."
+            : `${selectedCount} selected`}
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          disabled={selectedCount === 0 || isMutating}
+          onPress={addSelectedSongs}
+          style={[
+            styles.bulkAddButton,
+            { backgroundColor: theme.accent },
+            selectedCount === 0 || isMutating ? styles.disabled : null,
+          ]}
+        >
+          <Text style={[styles.bulkAddText, { color: theme.onAccent }]}>
+            {isAddingSelection ? "Adding" : "Add selected"}
+          </Text>
+        </Pressable>
+      </View>
+
       <AddableSongList
         onAddSong={async (songId) => {
           sendHaptic("light");
@@ -147,6 +231,12 @@ function AddCollectionSongsContent({
               collectionId: id,
               kind,
               songId,
+            });
+            setSelectedSongIds((currentSelection) => {
+              const nextSelection = new Set(currentSelection);
+              nextSelection.delete(songId);
+
+              return nextSelection;
             });
             sendHaptic("success");
           } catch (caughtError) {
@@ -160,6 +250,8 @@ function AddCollectionSongsContent({
             setSavingSongId(null);
           }
         }}
+        onToggleSongSelection={toggleSongSelection}
+        selectedSongIds={selectedSongIds}
         savingSongId={savingSongId}
         songs={songs}
       />
@@ -198,10 +290,14 @@ function AddCollectionSongsContent({
 
 function AddableSongList({
   onAddSong,
+  onToggleSongSelection,
+  selectedSongIds,
   savingSongId,
   songs,
 }: {
   onAddSong: (songId: number) => void;
+  onToggleSongSelection: (songId: number) => void;
+  selectedSongIds: Set<number>;
   savingSongId: number | null;
   songs: AddableCollectionSong[];
 }) {
@@ -235,12 +331,39 @@ function AddableSongList({
       {songs.map((song) => {
         const isSaving = savingSongId === song.id;
         const isDisabled = song.isLinked || isSaving;
+        const isSelected = selectedSongIds.has(song.id) && !song.isLinked;
 
         return (
           <View
             key={song.id}
             style={[styles.row, { borderBottomColor: theme.borderSubtle }]}
           >
+            <Pressable
+              accessibilityRole="checkbox"
+              accessibilityState={{
+                checked: isSelected,
+                disabled: song.isLinked,
+              }}
+              disabled={song.isLinked}
+              onPress={() => onToggleSongSelection(song.id)}
+              style={[
+                styles.selectBox,
+                { borderColor: theme.border },
+                isSelected
+                  ? { backgroundColor: theme.accent, borderColor: theme.accent }
+                  : null,
+                song.isLinked ? styles.disabled : null,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.selectMark,
+                  { color: isSelected ? theme.onAccent : theme.mutedText },
+                ]}
+              >
+                {isSelected ? "x" : ""}
+              </Text>
+            </Pressable>
             <View style={styles.rowText}>
               <Text
                 numberOfLines={1}
@@ -343,6 +466,38 @@ const styles = StyleSheet.create({
     textAlign: "right",
     textTransform: "uppercase",
   },
+  selectionPanel: {
+    alignItems: "center",
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    justifyContent: "space-between",
+    minHeight: 58,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  selectionText: {
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 20,
+    minWidth: 150,
+  },
+  bulkAddButton: {
+    alignItems: "center",
+    borderRadius: 8,
+    justifyContent: "center",
+    minHeight: 38,
+    minWidth: 118,
+    paddingHorizontal: 12,
+  },
+  bulkAddText: {
+    fontSize: 12,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
+  },
   emptyPanel: {
     borderRadius: 8,
     borderWidth: 1,
@@ -378,6 +533,20 @@ const styles = StyleSheet.create({
     gap: 4,
     minWidth: 0,
   },
+  selectBox: {
+    alignItems: "center",
+    borderRadius: 8,
+    borderWidth: 2,
+    height: 30,
+    justifyContent: "center",
+    width: 30,
+  },
+  selectMark: {
+    fontSize: 15,
+    fontWeight: "800",
+    letterSpacing: 0,
+    lineHeight: 20,
+  },
   songTitle: {
     fontSize: 15,
     fontWeight: "800",
@@ -408,6 +577,9 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
+  },
+  disabled: {
+    opacity: 0.45,
   },
   panel: {
     borderRadius: 8,

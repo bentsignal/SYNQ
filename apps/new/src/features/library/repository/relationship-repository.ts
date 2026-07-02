@@ -119,6 +119,24 @@ export async function addSongToCollection({
   }
 }
 
+export async function addSongsToCollection({
+  collectionId,
+  kind,
+  songIds,
+}: {
+  collectionId: number;
+  kind: LibraryCollectionDetailKind;
+  songIds: number[];
+}) {
+  for (const songId of songIds) {
+    await addSongToCollection({
+      collectionId,
+      kind,
+      songId,
+    });
+  }
+}
+
 export async function updateCollectionSongOrder({
   collectionId,
   kind,

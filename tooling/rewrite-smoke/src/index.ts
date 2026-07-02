@@ -165,6 +165,7 @@ import {
   playlistRowsToPreview,
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import {
+  collectionFormReducer,
   getCollectionDetailHref,
   getCollectionFormBackHref,
   getCollectionFormBackLink,
@@ -176,6 +177,7 @@ import {
   getCreateCollectionFormSubtitle,
   getEditCollectionFormCopy,
   getEditCollectionFormSubtitle,
+  getInitialCollectionFormState,
   getCollectionFormPreviewInitial,
   getCollectionFormSaveLabel,
   getSavedCollectionFormImageLabel,
@@ -3485,6 +3487,74 @@ function assertCollectionFormSmoke() {
       canPickImage: false,
       canSave: false,
       hasName: true,
+    },
+  );
+  const collectionFormState = getInitialCollectionFormState();
+  assert.deepEqual(collectionFormState, {
+    error: null,
+    image: null,
+    isDirty: false,
+    isSaving: false,
+    name: "",
+    year: "",
+  });
+  assert.deepEqual(
+    collectionFormReducer(collectionFormState, {
+      field: "name",
+      type: "change-field",
+      value: "Smoke Album",
+    }),
+    {
+      ...collectionFormState,
+      error: null,
+      isDirty: true,
+      name: "Smoke Album",
+    },
+  );
+  assert.deepEqual(
+    collectionFormReducer(collectionFormState, {
+      image: {
+        dataUrl: "data:image/png;base64,smoke",
+        fileName: "smoke.png",
+      },
+      type: "pick-image",
+    }),
+    {
+      ...collectionFormState,
+      error: null,
+      image: {
+        dataUrl: "data:image/png;base64,smoke",
+        fileName: "smoke.png",
+      },
+      isDirty: true,
+    },
+  );
+  assert.deepEqual(
+    collectionFormReducer(collectionFormState, { type: "begin-save" }),
+    {
+      ...collectionFormState,
+      error: null,
+      isSaving: true,
+    },
+  );
+  assert.deepEqual(
+    collectionFormReducer(
+      {
+        ...collectionFormState,
+        isSaving: true,
+      },
+      { type: "finish-save" },
+    ),
+    collectionFormState,
+  );
+  assert.deepEqual(
+    collectionFormReducer(collectionFormState, {
+      error: "Album name is required.",
+      type: "fail",
+    }),
+    {
+      ...collectionFormState,
+      error: "Album name is required.",
     },
   );
   assert.equal(

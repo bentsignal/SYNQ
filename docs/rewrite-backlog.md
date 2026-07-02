@@ -356,6 +356,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     form view.
   - Done: library song edit query/mutation/missing/help status now lives in the
     song form service with smoke coverage instead of status-panel branching.
+  - Done: create collection form field/image/error/save transitions now live in
+    a collection form service reducer with smoke coverage instead of scattered
+    controller state setters.
   - Done: import song edit save action state now lives in the import song form
     service instead of the edit screen.
   - Done: import staged-song edit field state, metadata draft building,

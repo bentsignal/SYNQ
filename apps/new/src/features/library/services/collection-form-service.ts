@@ -1,5 +1,101 @@
 export type CollectionFormKind = "album" | "artist" | "playlist";
 
+export type CollectionFormImage = {
+  dataUrl: string;
+  fileName: string;
+};
+
+export type CollectionFormState = {
+  error: string | null;
+  image: CollectionFormImage | null;
+  isDirty: boolean;
+  isSaving: boolean;
+  name: string;
+  year: string;
+};
+
+export type CollectionFormAction =
+  | {
+      field: "name" | "year";
+      type: "change-field";
+      value: string;
+    }
+  | {
+      image: CollectionFormImage;
+      type: "pick-image";
+    }
+  | {
+      error: string;
+      type: "fail";
+    }
+  | {
+      type: "begin-save";
+    }
+  | {
+      type: "finish-save";
+    }
+  | {
+      type: "clear-error";
+    };
+
+export const getInitialCollectionFormState = ({
+  name = "",
+  year = "",
+}: {
+  name?: string;
+  year?: string;
+} = {}): CollectionFormState => ({
+  error: null,
+  image: null,
+  isDirty: false,
+  isSaving: false,
+  name,
+  year,
+});
+
+export const collectionFormReducer = (
+  state: CollectionFormState,
+  action: CollectionFormAction,
+): CollectionFormState => {
+  switch (action.type) {
+    case "change-field":
+      return {
+        ...state,
+        [action.field]: action.value,
+        error: null,
+        isDirty: true,
+      };
+    case "pick-image":
+      return {
+        ...state,
+        error: null,
+        image: action.image,
+        isDirty: true,
+      };
+    case "fail":
+      return {
+        ...state,
+        error: action.error,
+      };
+    case "begin-save":
+      return {
+        ...state,
+        error: null,
+        isSaving: true,
+      };
+    case "finish-save":
+      return {
+        ...state,
+        isSaving: false,
+      };
+    case "clear-error":
+      return {
+        ...state,
+        error: null,
+      };
+  }
+};
+
 export type EditCollectionFormCopy = {
   editLabel: string;
   kicker: string;

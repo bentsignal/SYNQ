@@ -1,6 +1,9 @@
 import { StyleSheet, Text, TextInput } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { CollectionFormActionState } from "../services/collection-form-service";
+import {
+  getCollectionFormFieldState,
+  type CollectionFormActionState,
+} from "../services/collection-form-service";
 import type {
   CollectionFormCopy,
   CollectionFormKind,
@@ -26,6 +29,7 @@ export function CollectionFormFields({
   year,
 }: CollectionFormFieldsProps) {
   const theme = useCustomizationTheme();
+  const fieldState = getCollectionFormFieldState(kind);
 
   return (
     <>
@@ -37,7 +41,7 @@ export function CollectionFormFields({
         onChangeText={onChangeName}
         placeholder={copy.namePlaceholder}
         placeholderTextColor={theme.mutedText}
-        returnKeyType={kind === "album" ? "next" : "done"}
+        returnKeyType={fieldState.nameReturnKeyType}
         style={[
           styles.input,
           { borderColor: theme.border, color: theme.primaryText },
@@ -45,7 +49,7 @@ export function CollectionFormFields({
         value={name}
       />
 
-      {kind === "album" ? (
+      {fieldState.showsYear ? (
         <>
           <Text style={[styles.label, { color: theme.secondaryText }]}>
             Year
@@ -55,9 +59,9 @@ export function CollectionFormFields({
             inputMode="numeric"
             keyboardType="number-pad"
             onChangeText={onChangeYear}
-            placeholder="Album year"
+            placeholder={fieldState.yearPlaceholder}
             placeholderTextColor={theme.mutedText}
-            returnKeyType="done"
+            returnKeyType={fieldState.yearReturnKeyType}
             style={[
               styles.input,
               { borderColor: theme.border, color: theme.primaryText },

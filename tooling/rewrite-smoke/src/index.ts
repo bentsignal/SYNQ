@@ -148,6 +148,7 @@ import {
   getCollectionFormBackHref,
   getCollectionFormActionState,
   getCollectionFormErrorMessage,
+  getCollectionFormFieldState,
   getCollectionFormImageLabel,
   getCreateCollectionFormCopy,
   getCreateCollectionFormSubtitle,
@@ -3059,6 +3060,24 @@ function assertCollectionFormSmoke() {
   assert.equal(getCollectionFormImageLabel("album"), "Cover image");
   assert.equal(getCollectionFormImageLabel("artist"), "Profile image");
   assert.equal(getCollectionFormImageLabel("playlist"), "Cover image");
+  assert.deepEqual(getCollectionFormFieldState("album"), {
+    nameReturnKeyType: "next",
+    showsYear: true,
+    yearPlaceholder: "Album year",
+    yearReturnKeyType: "done",
+  });
+  assert.deepEqual(getCollectionFormFieldState("artist"), {
+    nameReturnKeyType: "done",
+    showsYear: false,
+    yearPlaceholder: "Album year",
+    yearReturnKeyType: "done",
+  });
+  assert.deepEqual(getCollectionFormFieldState("playlist"), {
+    nameReturnKeyType: "done",
+    showsYear: false,
+    yearPlaceholder: "Album year",
+    yearReturnKeyType: "done",
+  });
   assert.equal(getSavedCollectionFormImageLabel("album"), "Saved cover image");
   assert.equal(
     getSavedCollectionFormImageLabel("artist"),

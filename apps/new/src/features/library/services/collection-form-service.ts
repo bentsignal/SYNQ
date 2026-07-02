@@ -122,6 +122,17 @@ export const getSavedCollectionFormImageLabel = (
   kind: CollectionFormKind,
 ) => `Saved ${getCollectionFormImageLabel(kind).toLowerCase()}`;
 
+export const getCollectionFormFieldState = (kind: CollectionFormKind) => {
+  const showsYear = kind === "album";
+
+  return {
+    nameReturnKeyType: showsYear ? "next" : "done",
+    showsYear,
+    yearPlaceholder: "Album year",
+    yearReturnKeyType: "done",
+  } as const;
+};
+
 export type CollectionDetailHref =
   | "/(tabs)/library"
   | `/(tabs)/library/album/${number}`

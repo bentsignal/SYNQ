@@ -1571,6 +1571,9 @@ endless old-app polishing loop.
    - Done: collection form image labels and saved-image fallback copy now live
      in the collection form service with smoke coverage instead of duplicated
      form component conditionals.
+   - Done: collection form field visibility and return-key state now live in
+     the collection form service with smoke coverage instead of inline form
+     component branching.
    - Done: add-to-collection query/mutation status and updated-time copy now
      live in the addable songs service with smoke coverage instead of
      connected-form/status-panel branching.

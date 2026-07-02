@@ -35,6 +35,7 @@ type PlaybackAction =
   | { type: "skip-next" }
   | { type: "skip-previous" }
   | { song: PlaybackQueueItem; type: "add-to-queue" }
+  | { type: "clear-queue" }
   | { songId: number; type: "remove-from-queue" }
   | { direction: "down" | "up"; songId: number; type: "move-queue-song" }
   | { state: PlaybackState; type: "hydrate" }
@@ -46,6 +47,7 @@ type PlaybackAction =
 
 type PlaybackCommands = {
   addToQueue: (song: PlaybackQueueItem) => void;
+  clearQueue: () => void;
   moveQueueSong: (songId: number, direction: "down" | "up") => void;
   pause: () => void;
   playSong: (song: PlaybackQueueItem) => void;
@@ -88,6 +90,24 @@ const getPreviousTrack = (state: PlaybackState) => {
       : Math.max(0, state.activeQueueIndex - 1);
 
   return previousIndex === null ? null : state.queue[previousIndex] ?? null;
+};
+
+const getReplacementTrackAfterRemoval = ({
+  songId,
+  state,
+}: {
+  songId: number;
+  state: PlaybackState;
+}) => {
+  const removeIndex = findQueueIndex({ queue: state.queue, songId });
+
+  if (removeIndex < 0) {
+    return null;
+  }
+
+  const queue = state.queue.filter((song) => song.id !== songId);
+
+  return queue[removeIndex] ?? queue[removeIndex - 1] ?? null;
 };
 
 const getErrorMessage = (error: unknown) =>
@@ -201,11 +221,30 @@ const playbackReducer = (
         ...state,
         queue: upsertQueueItem({ queue: state.queue, song: action.song }),
       });
+    case "clear-queue":
+      return bumpQueueRevision({
+        ...state,
+        activeQueueIndex: null,
+        activeTrackId: null,
+        duration: 0,
+        isPlaying: false,
+        position: 0,
+        queue: [],
+        source: null,
+      });
     case "remove-from-queue": {
+      const replacementTrack = state.isPlaying
+        ? getReplacementTrackAfterRemoval({
+            songId: action.songId,
+            state,
+          })
+        : null;
       const queue = state.queue.filter((song) => song.id !== action.songId);
       const activeQueueIndex =
         state.activeTrackId === action.songId
-          ? null
+          ? replacementTrack
+            ? findQueueIndex({ queue, songId: replacementTrack.id })
+            : null
           : findQueueIndex({ queue, songId: state.activeTrackId ?? -1 });
       const nextActiveTrack =
         activeQueueIndex === null || activeQueueIndex < 0
@@ -216,8 +255,9 @@ const playbackReducer = (
         ...state,
         activeQueueIndex: nextActiveTrack ? activeQueueIndex : null,
         activeTrackId: nextActiveTrack?.id ?? null,
-        duration: nextActiveTrack?.duration ?? state.duration,
+        duration: nextActiveTrack?.duration ?? 0,
         isPlaying: nextActiveTrack ? state.isPlaying : false,
+        position: state.activeTrackId === action.songId ? 0 : state.position,
         queue,
       });
     }
@@ -436,6 +476,10 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const addToQueue = useCallback((song: PlaybackQueueItem) => {
     dispatch({ song, type: "add-to-queue" });
   }, []);
+  const clearQueue = useCallback(() => {
+    dispatch({ type: "clear-queue" });
+    runNativeCommand(() => adapterRef.current.stop());
+  }, [runNativeCommand]);
   const moveQueueSong = useCallback(
     (songId: number, direction: "down" | "up") => {
       dispatch({ direction, songId, type: "move-queue-song" });
@@ -443,11 +487,20 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     [],
   );
   const removeFromQueue = useCallback((songId: number) => {
-    const activeTrackId = stateRef.current.activeTrackId;
+    const currentState = stateRef.current;
+    const activeTrackId = currentState.activeTrackId;
+    const replacementTrack = getReplacementTrackAfterRemoval({
+      songId,
+      state: currentState,
+    });
 
     dispatch({ songId, type: "remove-from-queue" });
     if (activeTrackId === songId) {
-      runNativeCommand(() => adapterRef.current.stop());
+      runNativeCommand(() =>
+        replacementTrack && currentState.isPlaying
+          ? adapterRef.current.play(replacementTrack)
+          : adapterRef.current.stop(),
+      );
     }
   }, [runNativeCommand]);
   const toggleLoop = useCallback(() => {
@@ -461,6 +514,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     () => ({
       activeTrack,
       addToQueue,
+      clearQueue,
       moveQueueSong,
       pause,
       playSong,
@@ -476,6 +530,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     [
       activeTrack,
       addToQueue,
+      clearQueue,
       moveQueueSong,
       pause,
       playSong,

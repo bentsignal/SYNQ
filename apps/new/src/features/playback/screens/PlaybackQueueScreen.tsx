@@ -15,8 +15,14 @@ const formatDuration = (duration: number | null) => {
 };
 
 export function PlaybackQueueScreen() {
-  const { activeTrack, moveQueueSong, playSong, removeFromQueue, state } =
-    usePlaybackSession();
+  const {
+    activeTrack,
+    clearQueue,
+    moveQueueSong,
+    playSong,
+    removeFromQueue,
+    state,
+  } = usePlaybackSession();
 
   return (
     <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
@@ -104,6 +110,17 @@ export function PlaybackQueueScreen() {
       <View style={styles.panel}>
         <Text style={styles.panelLabel}>Revision</Text>
         <Text style={styles.panelText}>{state.queueRevision}</Text>
+        <Pressable
+          accessibilityRole="button"
+          disabled={state.queue.length === 0}
+          onPress={clearQueue}
+          style={[
+            styles.clearButton,
+            state.queue.length === 0 ? styles.disabled : null,
+          ]}
+        >
+          <Text style={styles.removeText}>Clear queue</Text>
+        </Pressable>
       </View>
 
       <Link href="/player" style={styles.backLink}>
@@ -291,6 +308,16 @@ const styles = StyleSheet.create({
     color: "#52605a",
     fontSize: 14,
     lineHeight: 20,
+  },
+  clearButton: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    borderColor: "#dbe3de",
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: 36,
+    paddingHorizontal: 12,
   },
   backLink: {
     color: "#0f766e",

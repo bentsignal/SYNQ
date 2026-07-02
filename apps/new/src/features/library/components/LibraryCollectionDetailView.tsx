@@ -7,8 +7,8 @@ import type {
   LibraryCollectionDetailKind,
 } from "../services/library-collection-detail-service";
 import {
+  getCollectionDetailViewState,
   getCollectionDetailStatusState,
-  getLibraryCollectionBackHref,
 } from "../services/library-collection-interaction-service";
 import { LibraryCollectionDetailActions } from "./LibraryCollectionDetailActions";
 import { LibraryCollectionDetailHeader } from "./LibraryCollectionDetailHeader";
@@ -33,7 +33,7 @@ export function LibraryCollectionDetailView({
 }: LibraryCollectionDetailViewProps) {
   const { detail, errors } = collection;
   const theme = useCustomizationTheme();
-  const backHref = getLibraryCollectionBackHref();
+  const viewState = getCollectionDetailViewState({ songs: detail.songs });
   const {
     actionState,
     deleteCurrentCollection,
@@ -79,10 +79,10 @@ export function LibraryCollectionDetailView({
 
       <View style={styles.sectionHeader}>
         <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
-          Songs
+          {viewState.songSection.title}
         </Text>
         <Text style={[styles.sectionMeta, { color: theme.secondaryText }]}>
-          {detail.songs.length} songs
+          {viewState.songSection.meta}
         </Text>
       </View>
 
@@ -99,10 +99,10 @@ export function LibraryCollectionDetailView({
       />
 
       <Link
-        href={backHref}
+        href={viewState.backLink.href}
         style={[styles.backLink, { color: theme.accent }]}
       >
-        Back to Library
+        {viewState.backLink.label}
       </Link>
     </ScrollView>
   );

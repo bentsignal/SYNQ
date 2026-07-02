@@ -131,6 +131,7 @@ import {
   getCollectionAddSongsHref,
   getCollectionDetailActionState,
   getCollectionDetailStatusState,
+  getCollectionDetailViewState,
   getCollectionEditHref,
   getCollectionDetailMutationErrorMessage,
   getCollectionListHref,
@@ -1997,6 +1998,16 @@ function assertLibraryCollectionInteractionSmoke() {
   assert.equal(getCollectionListHref("artist"), "/(tabs)/library/artists");
   assert.equal(getCollectionListHref("playlist"), "/(tabs)/library/playlists");
   assert.equal(getLibraryCollectionBackHref(), "/(tabs)/library");
+  assert.deepEqual(getCollectionDetailViewState({ songs }), {
+    backLink: {
+      href: "/(tabs)/library",
+      label: "Back to Library",
+    },
+    songSection: {
+      meta: "3 songs",
+      title: "Songs",
+    },
+  });
   assert.equal(
     getCollectionEditHref({ id: 7, kind: "album" }),
     "/(tabs)/library/album/edit/7",

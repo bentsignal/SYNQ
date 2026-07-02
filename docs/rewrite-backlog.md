@@ -1609,6 +1609,9 @@ endless old-app polishing loop.
    - Done: collection detail query/mutation status and updated-time copy now
      live in the collection interaction service with smoke coverage instead of
      view/status-panel branching.
+   - Done: collection detail song-section copy and back-link presentation now
+     live in the collection interaction service with smoke coverage instead of
+     the detail view.
    - Done: collection form image labels and saved-image fallback copy now live
      in the collection form service with smoke coverage instead of duplicated
      form component conditionals.

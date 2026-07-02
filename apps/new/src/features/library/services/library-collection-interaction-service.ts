@@ -67,6 +67,21 @@ export const getLibraryInvalidCollectionState = ({
   title: "Invalid collection",
 });
 
+export const getCollectionDetailViewState = ({
+  songs,
+}: {
+  songs: LibraryCollectionDetailSong[];
+}) => ({
+  backLink: {
+    href: getLibraryCollectionBackHref(),
+    label: "Back to Library",
+  },
+  songSection: {
+    meta: `${songs.length} songs`,
+    title: "Songs",
+  },
+});
+
 export const canDeleteLibraryCollection = ({
   id,
   isMissing,

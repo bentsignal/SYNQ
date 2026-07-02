@@ -81,15 +81,16 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     entitlement provider, persisted customization preferences for theme,
     app icon, and haptics, and saved-theme consumption across navigation,
     loading/placeholder states, settings, library home/shared list components,
-    library create/edit/detail surfaces, playback player/queue surfaces, and
-    the backup command surface, import home/files, and import Premium gate
-    surfaces exist;
+    library create/edit/detail/add-song surfaces, playback player/queue
+    surfaces, and the backup command surface, import home/files, and import
+    Premium gate surfaces exist;
     native app icon assets/config and a settings-owned native icon service are
     wired; haptic feedback now flows through a preference-aware settings hook
     for customization, playback, queue, collection save actions, collection
-    detail song mutations, library song-list sort controls, backup command
-    feedback, and import file-pick/remove/save/discard/edit actions. Deeper
-    feature-screen theming and native-build icon/haptics smoke are next.
+    detail song mutations, library song-list sort controls, song detail
+    play/queue actions, add-to-collection mutations, backup command feedback,
+    and import file-pick/remove/save/discard/edit actions. Native-build
+    icon/haptics smoke and remaining non-theme feature polish are next.
 - [ ] Move reusable feature logic from `apps/old` into shared app-local modules
   that `apps/new` can consume without copying UI spaghetti.
 - [ ] Build the `apps/new` screens against reactive Drizzle query hooks instead
@@ -156,10 +157,10 @@ entitlement provider consumed by Settings, Backup, and Customization. Settings
 customization now owns persisted theme, app icon, and haptic preference state;
 the app shell, loading/placeholder states, settings screens, library home,
 library shared summary/search/sort/preview/list components, library
-create/edit/detail surfaces, playback player/queue surfaces, and the backup
-command surface, import home/files/save/result/Wi-Fi/edit, shared import preview
-lists, and import Premium gate surfaces consume saved theme state through a
-shared palette hook; deeper feature-screen theme application, native remote
+create/edit/detail/add-song surfaces, playback player/queue surfaces, and the
+backup command surface, import home/files/save/result/Wi-Fi/edit, shared import
+preview lists, and import Premium gate surfaces consume saved theme state
+through a shared palette hook; deeper non-theme feature polish, native remote
 playback event ingestion, and manual playback smoke are still next.
 Native app icon assets/config now exist in `apps/new`, and
 app-icon preference changes flow through a settings-owned native service, but

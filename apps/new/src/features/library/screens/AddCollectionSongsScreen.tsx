@@ -8,6 +8,8 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
   useAddableCollectionSongsQuery,
   type AddableCollectionSong,
@@ -42,15 +44,25 @@ export function AddCollectionSongsScreen({
   kind,
 }: AddCollectionSongsScreenProps) {
   const params = useLocalSearchParams<{ id?: string }>();
+  const theme = useCustomizationTheme();
   const id = parseId(params.id);
 
   if (id === null) {
     return (
-      <View style={styles.screen}>
-        <Text style={styles.kicker}>src/features/library</Text>
-        <Text style={styles.title}>Invalid collection</Text>
-        <Text style={styles.subtitle}>This route needs a numeric id.</Text>
-        <Link href="/(tabs)/library" style={styles.backLink}>
+      <View style={[styles.screen, { backgroundColor: theme.background }]}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          src/features/library
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          Invalid collection
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
+          This route needs a numeric id.
+        </Text>
+        <Link
+          href="/(tabs)/library"
+          style={[styles.backLink, { color: theme.accent }]}
+        >
           Back to Library
         </Link>
       </View>
@@ -67,6 +79,8 @@ function AddCollectionSongsContent({
   id: number;
   kind: LibraryCollectionDetailKind;
 }) {
+  const theme = useCustomizationTheme();
+  const { sendHaptic } = useHapticFeedback();
   const [query, setQuery] = useState("");
   const [savingSongId, setSavingSongId] = useState<number | null>(null);
   const [mutationError, setMutationError] = useState<string | null>(null);
@@ -82,11 +96,16 @@ function AddCollectionSongsContent({
       : "Waiting for library data";
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      style={[styles.scroll, { backgroundColor: theme.background }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.kicker}>Add songs</Text>
-        <Text style={styles.title}>Add to {kind}</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>Add songs</Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          Add to {kind}
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           Search the shared song library and attach songs without leaving this
           feature flow.
         </Text>
@@ -97,18 +116,30 @@ function AddCollectionSongsContent({
         clearButtonMode="while-editing"
         onChangeText={setQuery}
         placeholder="Search songs, artists, or albums"
-        placeholderTextColor="#74807a"
-        style={styles.searchInput}
+        placeholderTextColor={theme.mutedText}
+        style={[
+          styles.searchInput,
+          {
+            backgroundColor: theme.surface,
+            borderColor: theme.border,
+            color: theme.primaryText,
+          },
+        ]}
         value={query}
       />
 
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Songs</Text>
-        <Text style={styles.sectionMeta}>{updatedLabel}</Text>
+        <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
+          Songs
+        </Text>
+        <Text style={[styles.sectionMeta, { color: theme.secondaryText }]}>
+          {updatedLabel}
+        </Text>
       </View>
 
       <AddableSongList
         onAddSong={async (songId) => {
+          sendHaptic("light");
           setSavingSongId(songId);
           setMutationError(null);
 
@@ -118,7 +149,9 @@ function AddCollectionSongsContent({
               kind,
               songId,
             });
+            sendHaptic("success");
           } catch (caughtError) {
+            sendHaptic("error");
             setMutationError(
               caughtError instanceof Error
                 ? caughtError.message
@@ -132,14 +165,32 @@ function AddCollectionSongsContent({
         songs={songs}
       />
 
-      <View style={styles.panel}>
-        <Text style={hasErrors ? styles.errorText : styles.panelText}>
+      <View
+        style={[
+          styles.panel,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text
+          style={[
+            hasErrors || mutationError ? styles.errorText : styles.panelText,
+            {
+              color:
+                hasErrors || mutationError
+                  ? theme.danger
+                  : theme.secondaryText,
+            },
+          ]}
+        >
           {mutationError ??
             (hasErrors ? "One or more song queries failed." : updatedLabel)}
         </Text>
       </View>
 
-      <Link href={`/(tabs)/library/${kind}/${id}`} style={styles.backLink}>
+      <Link
+        href={`/(tabs)/library/${kind}/${id}`}
+        style={[styles.backLink, { color: theme.accent }]}
+      >
         Back to collection
       </Link>
     </ScrollView>
@@ -155,11 +206,20 @@ function AddableSongList({
   savingSongId: number | null;
   songs: AddableCollectionSong[];
 }) {
+  const theme = useCustomizationTheme();
+
   if (songs.length === 0) {
     return (
-      <View style={styles.emptyPanel}>
-        <Text style={styles.emptyTitle}>No matching songs</Text>
-        <Text style={styles.emptyBody}>
+      <View
+        style={[
+          styles.emptyPanel,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.emptyTitle, { color: theme.primaryText }]}>
+          No matching songs
+        </Text>
+        <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
           Try a different search term or import more music into the library.
         </Text>
       </View>
@@ -167,32 +227,50 @@ function AddableSongList({
   }
 
   return (
-    <View style={styles.list}>
+    <View
+      style={[
+        styles.list,
+        { backgroundColor: theme.surface, borderColor: theme.border },
+      ]}
+    >
       {songs.map((song) => {
         const isSaving = savingSongId === song.id;
         const isDisabled = song.isLinked || isSaving;
 
         return (
-          <View key={song.id} style={styles.row}>
+          <View
+            key={song.id}
+            style={[styles.row, { borderBottomColor: theme.borderSubtle }]}
+          >
             <View style={styles.rowText}>
-              <Text numberOfLines={1} style={styles.songTitle}>
+              <Text
+                numberOfLines={1}
+                style={[styles.songTitle, { color: theme.primaryText }]}
+              >
                 {song.title}
               </Text>
-              <Text numberOfLines={1} style={styles.songMeta}>
+              <Text
+                numberOfLines={1}
+                style={[styles.songMeta, { color: theme.secondaryText }]}
+              >
                 {song.artist} / {song.album}
               </Text>
             </View>
-            <Text style={styles.duration}>{formatDuration(song.duration)}</Text>
+            <Text style={[styles.duration, { color: theme.primaryText }]}>
+              {formatDuration(song.duration)}
+            </Text>
             <Pressable
               accessibilityRole="button"
               disabled={isDisabled}
               onPress={() => onAddSong(song.id)}
               style={[
                 styles.addButton,
-                isDisabled ? styles.disabledButton : null,
+                {
+                  backgroundColor: isDisabled ? theme.border : theme.accent,
+                },
               ]}
             >
-              <Text style={styles.addButtonText}>
+              <Text style={[styles.addButtonText, { color: theme.onAccent }]}>
                 {song.isLinked ? "Added" : isSaving ? "Adding" : "Add"}
               </Text>
             </Pressable>
@@ -205,11 +283,9 @@ function AddableSongList({
 
 const styles = StyleSheet.create({
   scroll: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
   },
   screen: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
     gap: 10,
     paddingHorizontal: 20,
@@ -224,31 +300,25 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   kicker: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   title: {
-    color: "#121417",
     fontSize: 34,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 40,
   },
   subtitle: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
   },
   searchInput: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
-    color: "#121417",
     fontSize: 16,
     minHeight: 48,
     paddingHorizontal: 14,
@@ -260,7 +330,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   sectionTitle: {
-    color: "#121417",
     flex: 1,
     fontSize: 20,
     fontWeight: "800",
@@ -268,7 +337,6 @@ const styles = StyleSheet.create({
     lineHeight: 25,
   },
   sectionMeta: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
@@ -277,35 +345,28 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   emptyPanel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 8,
     padding: 16,
   },
   emptyTitle: {
-    color: "#121417",
     fontSize: 16,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 21,
   },
   emptyBody: {
-    color: "#52605a",
     fontSize: 14,
     lineHeight: 20,
   },
   list: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     overflow: "hidden",
   },
   row: {
     alignItems: "center",
-    borderBottomColor: "#edf2ef",
     borderBottomWidth: 1,
     flexDirection: "row",
     gap: 12,
@@ -319,19 +380,16 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   songTitle: {
-    color: "#121417",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 20,
   },
   songMeta: {
-    color: "#52605a",
     fontSize: 13,
     lineHeight: 18,
   },
   duration: {
-    color: "#29322e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
@@ -340,43 +398,33 @@ const styles = StyleSheet.create({
   },
   addButton: {
     alignItems: "center",
-    backgroundColor: "#0f766e",
     borderRadius: 8,
     justifyContent: "center",
     minHeight: 34,
     minWidth: 66,
     paddingHorizontal: 10,
   },
-  disabledButton: {
-    backgroundColor: "#dbe3de",
-  },
   addButtonText: {
-    color: "#ffffff",
     fontSize: 11,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   panel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     padding: 16,
   },
   panelText: {
-    color: "#52605a",
     fontSize: 14,
     lineHeight: 20,
   },
   errorText: {
-    color: "#b42318",
     fontSize: 14,
     fontWeight: "700",
     lineHeight: 20,
   },
   backLink: {
-    color: "#0f766e",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,

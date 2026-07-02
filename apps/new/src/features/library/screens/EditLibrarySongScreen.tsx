@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Link, router, useLocalSearchParams } from "expo-router";
+import { Link, useLocalSearchParams } from "expo-router";
 import {
   Pressable,
   ScrollView,
@@ -10,13 +9,8 @@ import {
 } from "react-native";
 import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
+import { useEditLibrarySongController } from "../hooks/use-edit-library-song-controller";
 import { useLibrarySongDetailQuery } from "../hooks/use-library-song-detail-query";
-import { updateLibrarySongMetadata } from "../repository/song-metadata-repository";
-import {
-  buildLibrarySongEditFormState,
-  getLibrarySongEditActionState,
-} from "../services/library-song-form-service";
 
 export function EditLibrarySongScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
@@ -48,60 +42,22 @@ export function EditLibrarySongScreen() {
 
 function EditLibrarySongContent({ songId }: { songId: number }) {
   const theme = useCustomizationTheme();
-  const { sendHaptic } = useHapticFeedback();
   const { detail, errors } = useLibrarySongDetailQuery(songId);
-  const [albumNames, setAlbumNames] = useState("");
-  const [artistNames, setArtistNames] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const [loadedSongId, setLoadedSongId] = useState<number | null>(null);
-  const [title, setTitle] = useState("");
   const hasErrors = errors.length > 0;
-  const actionState = getLibrarySongEditActionState({
-    detail,
-    isSaving,
+  const {
+    actionState,
+    albumNames,
+    artistNames,
+    errorMessage,
+    save,
+    setAlbumNames,
+    setArtistNames,
+    setTitle,
     title,
+  } = useEditLibrarySongController({
+    detail,
+    songId,
   });
-
-  useEffect(() => {
-    if (detail.isMissing || loadedSongId === songId) {
-      return;
-    }
-
-    const formState = buildLibrarySongEditFormState(detail);
-    setTitle(formState.title);
-    setArtistNames(formState.artistNames);
-    setAlbumNames(formState.albumNames);
-    setLoadedSongId(songId);
-  }, [detail, loadedSongId, songId]);
-
-  const save = async () => {
-    if (!actionState.canSave) {
-      sendHaptic("error");
-      return;
-    }
-
-    setIsSaving(true);
-    setErrorMessage(null);
-
-    try {
-      await updateLibrarySongMetadata({
-        albumNames,
-        artistNames,
-        id: songId,
-        title,
-      });
-      sendHaptic("success");
-      router.replace(`/(tabs)/library/song/${songId}`);
-    } catch (error) {
-      sendHaptic("error");
-      setErrorMessage(
-        error instanceof Error ? error.message : "Song could not be saved.",
-      );
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   return (
     <ScrollView

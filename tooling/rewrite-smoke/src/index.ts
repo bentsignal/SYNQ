@@ -293,6 +293,12 @@ import {
   getSelectedPremiumTier,
   premiumFeatureCopy,
 } from "../../../apps/new/src/features/premium/services/premium-screen-service";
+import {
+  getInitialPremiumPurchaseState,
+  getInitialPremiumTierLoadState,
+  premiumPurchaseReducer,
+  premiumTierLoadReducer,
+} from "../../../apps/new/src/features/premium/services/premium-purchase-state-service";
 import type {
   PremiumPurchaseState,
   PremiumTier,
@@ -4913,6 +4919,89 @@ function assertPremiumScreenSmoke() {
       price: "$10",
     },
   ];
+  assert.deepEqual(
+    getInitialPremiumPurchaseState({
+      active: true,
+      tierId: "yearly",
+    }),
+    {
+      active: true,
+      error: null,
+      message: null,
+      phase: "idle",
+      selectedTierId: "yearly",
+    },
+  );
+  let reducerState = premiumPurchaseReducer(getInitialPremiumPurchaseState(), {
+    tierId: "lifetime",
+    type: "select",
+  });
+  assert.deepEqual(reducerState, {
+    active: false,
+    error: null,
+    message: null,
+    phase: "idle",
+    selectedTierId: "lifetime",
+  });
+  reducerState = premiumPurchaseReducer(reducerState, { type: "start" });
+  assert.equal(reducerState.phase, "loading");
+  assert.deepEqual(
+    premiumPurchaseReducer(reducerState, {
+      result: {
+        active: true,
+        message: "Premium smoke active.",
+        tierId: "yearly",
+      },
+      type: "succeed",
+    }),
+    {
+      active: true,
+      error: null,
+      message: "Premium smoke active.",
+      phase: "success",
+      selectedTierId: "yearly",
+    },
+  );
+  assert.deepEqual(
+    premiumPurchaseReducer(reducerState, {
+      error: "Premium failed.",
+      type: "fail",
+    }),
+    {
+      active: false,
+      error: "Premium failed.",
+      message: null,
+      phase: "failure",
+      selectedTierId: "lifetime",
+    },
+  );
+  assert.deepEqual(
+    premiumPurchaseReducer(getInitialPremiumPurchaseState(), {
+      active: true,
+      message: "Synced entitlement.",
+      tierId: "yearly",
+      type: "sync-entitlement",
+    }),
+    {
+      active: true,
+      error: null,
+      message: "Synced entitlement.",
+      phase: "idle",
+      selectedTierId: "yearly",
+    },
+  );
+  assert.deepEqual(getInitialPremiumTierLoadState(tiers), {
+    tiers,
+  });
+  assert.deepEqual(
+    premiumTierLoadReducer(getInitialPremiumTierLoadState([]), {
+      tiers,
+      type: "resolve",
+    }),
+    {
+      tiers,
+    },
+  );
   const idleState: PremiumPurchaseState = {
     active: false,
     error: null,

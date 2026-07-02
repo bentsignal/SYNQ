@@ -1,98 +1,34 @@
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
 import {
   loadPremiumTiers,
   premiumTiers,
   purchasePremiumTier,
   restorePremiumPurchase,
 } from "../services/premium-purchase-service";
+import {
+  getInitialPremiumPurchaseState,
+  getInitialPremiumTierLoadState,
+  premiumPurchaseReducer,
+  premiumTierLoadReducer,
+} from "../services/premium-purchase-state-service";
 import { getPremiumMutationErrorMessage } from "../services/premium-screen-service";
-import type {
-  PremiumPurchaseResult,
-  PremiumPurchaseState,
-  PremiumTier,
-  PremiumTierId,
-} from "../types/premium-purchase";
+import type { PremiumTierId } from "../types/premium-purchase";
 import { usePremiumEntitlement } from "../context/PremiumEntitlementProvider";
-
-type PremiumPurchaseAction =
-  | { tierId: PremiumTierId; type: "select" }
-  | { type: "start" }
-  | { result: PremiumPurchaseResult; type: "succeed" }
-  | {
-      active: boolean;
-      message: string | null;
-      tierId: PremiumTierId;
-      type: "sync-entitlement";
-    }
-  | { error: string; type: "fail" }
-  | { type: "reset" };
-
-const initialPremiumPurchaseState: PremiumPurchaseState = {
-  active: false,
-  error: null,
-  message: null,
-  phase: "idle",
-  selectedTierId: "monthly",
-};
-
-const premiumPurchaseReducer = (
-  state: PremiumPurchaseState,
-  action: PremiumPurchaseAction,
-): PremiumPurchaseState => {
-  switch (action.type) {
-    case "select":
-      return {
-        ...state,
-        error: null,
-        message: null,
-        selectedTierId: action.tierId,
-      };
-    case "start":
-      return {
-        ...state,
-        error: null,
-        message: null,
-        phase: "loading",
-      };
-    case "succeed":
-      return {
-        ...state,
-        active: action.result.active,
-        error: null,
-        message: action.result.message,
-        phase: "success",
-        selectedTierId: action.result.tierId,
-      };
-    case "sync-entitlement":
-      return {
-        ...state,
-        active: action.active,
-        message: state.phase === "idle" ? action.message : state.message,
-        selectedTierId: action.tierId,
-      };
-    case "fail":
-      return {
-        ...state,
-        error: action.error,
-        message: null,
-        phase: "failure",
-      };
-    case "reset":
-      return initialPremiumPurchaseState;
-  }
-};
 
 export function usePremiumPurchaseSession() {
   const { applyStatus, state: entitlementState } = usePremiumEntitlement();
   const [state, dispatch] = useReducer(
     premiumPurchaseReducer,
-    {
-      ...initialPremiumPurchaseState,
+    getInitialPremiumPurchaseState({
       active: entitlementState.active,
-      selectedTierId: entitlementState.tierId,
-    },
+      tierId: entitlementState.tierId,
+    }),
   );
-  const [tiers, setTiers] = useState<PremiumTier[]>(premiumTiers);
+  const [tierState, dispatchTierState] = useReducer(
+    premiumTierLoadReducer,
+    premiumTiers,
+    getInitialPremiumTierLoadState,
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -101,11 +37,17 @@ export function usePremiumPurchaseSession() {
       try {
         const nextTiers = await loadPremiumTiers();
         if (isMounted) {
-          setTiers(nextTiers);
+          dispatchTierState({
+            tiers: nextTiers,
+            type: "resolve",
+          });
         }
       } catch {
         if (isMounted) {
-          setTiers(premiumTiers);
+          dispatchTierState({
+            tiers: premiumTiers,
+            type: "resolve",
+          });
         }
       }
     };
@@ -172,7 +114,7 @@ export function usePremiumPurchaseSession() {
 
   return useMemo(
     () => ({
-      premiumTiers: tiers,
+      premiumTiers: tierState.tiers,
       purchaseSelectedTier,
       reset,
       restorePurchase,
@@ -187,7 +129,7 @@ export function usePremiumPurchaseSession() {
       restorePurchase,
       selectTier,
       state,
-      tiers,
+      tierState.tiers,
     ],
   );
 }

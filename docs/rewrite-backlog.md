@@ -431,6 +431,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: premium purchase, restore, reset, tier selection, and status
     aggregation now live in a controller hook, and the Premium screen now uses
     the shared customization theme instead of hardcoded screen colors.
+  - Done: premium purchase/session and tier-loading transitions now live in a
+    pure premium state service with smoke coverage instead of hook-local
+    reducer/setter state.
   - Done: privacy and customization status labels, control disabled state,
     swatch selection state, and haptic-toggle behavior now live in a settings
     screen service instead of settings screens.

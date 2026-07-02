@@ -17,9 +17,12 @@ export type SettingsRoute = {
 };
 
 export type SettingsHomeHref = "/(tabs)/settings";
+export type SettingsPremiumHref = "/premium";
 
 export const getSettingsHomeHref = (): SettingsHomeHref =>
   "/(tabs)/settings";
+
+export const getSettingsPremiumHref = (): SettingsPremiumHref => "/premium";
 
 export type SupportAction = {
   description: string;
@@ -30,7 +33,7 @@ export type SupportAction = {
 export const settingsRoutes: SettingsRoute[] = [
   {
     description: "Unlock and manage the full SYNQ experience.",
-    href: "/premium",
+    href: getSettingsPremiumHref(),
     label: "Premium",
   },
   {

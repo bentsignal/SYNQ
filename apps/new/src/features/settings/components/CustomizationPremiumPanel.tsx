@@ -1,6 +1,7 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { CustomizationTheme } from "../hooks/use-customization-theme";
+import { getSettingsPremiumHref } from "../services/settings-screen-service";
 
 type CustomizationPremiumPanelProps = {
   theme: CustomizationTheme;
@@ -24,7 +25,7 @@ export function CustomizationPremiumPanel({
           Unlock theme and app icon choices with Premium.
         </Text>
       </View>
-      <Link asChild href="/premium">
+      <Link asChild href={getSettingsPremiumHref()}>
         <Pressable
           style={[styles.premiumButton, { backgroundColor: theme.accent }]}
         >

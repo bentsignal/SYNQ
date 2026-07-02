@@ -3,7 +3,10 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { getImportPremiumGateState } from "../services/import-screen-state-service";
+import {
+  getImportPremiumGateState,
+  getImportPremiumHref,
+} from "../services/import-screen-state-service";
 
 type ImportPremiumGateProps = {
   children: React.ReactNode;
@@ -40,7 +43,7 @@ export function ImportPremiumGate({ children }: ImportPremiumGateProps) {
           {gateState.error}
         </Text>
       ) : null}
-      <Link asChild href="/premium">
+      <Link asChild href={getImportPremiumHref()}>
         <Pressable
           onPress={() => sendHaptic("light")}
           style={[styles.button, { backgroundColor: theme.accent }]}

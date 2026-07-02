@@ -234,6 +234,7 @@ import {
   getPrivacyScreenState,
   getPrivacySettingsErrorMessage,
   getSettingsHomeHref,
+  getSettingsPremiumHref,
   shouldSendHapticForHapticsToggle,
 } from "../../../apps/new/src/features/settings/services/settings-screen-service";
 
@@ -3556,6 +3557,7 @@ function assertPremiumScreenSmoke() {
 
 function assertSettingsScreenSmoke() {
   assert.equal(getSettingsHomeHref(), "/(tabs)/settings");
+  assert.equal(getSettingsPremiumHref(), "/premium");
   assert.deepEqual(getPrivacyScreenState({ status: "loading" }), {
     isAnalyticsDisabled: true,
     statusLabel: "Loading",

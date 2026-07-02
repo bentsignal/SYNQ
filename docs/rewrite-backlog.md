@@ -60,7 +60,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     entry points plus navigable song relationship rows, library song metadata
     editing, playlist/album/artist
     create/edit flows, collection song add/remove flows with bulk add selection,
-    song and collection file sharing/export actions,
+    song and collection file sharing/export actions with stale metadata tag
+    writeback and export snapshot tracking,
     Liked Songs toggles, library song deletion, and guarded collection deletion,
     durable
     album/playlist/artist song reorder flows, and collection cover/profile image
@@ -72,7 +73,10 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     next-track advancement for manual skip and native completion, a tab-shell
     mini player for active tracks, and
     persisted Premium/free-listening ad gate state with bundled ad audio
-    playback exist. Remote command semantics for play/pause/next/previous/seek,
+    playback exist. The playback reducer, queue transitions, selectors, and ad
+    gate state transitions now live in a feature service while the provider
+    focuses on native adapter orchestration, persistence, and commands. Remote
+    command semantics for play/pause/next/previous/seek,
     queue-ended, and error handling now exist behind the provider boundary;
     Expo Audio is installed/configured for background playback and is now the
     active playback adapter; player/queue screens now consume saved theme state
@@ -1128,3 +1132,9 @@ endless old-app polishing loop.
   restore/erase completes.
 - Done: add guarded new-app collection deletion for playlists, albums, and
   artists while preserving seeded Library/Liked Songs playlists.
+- Done: extract the new-app playback reducer, selectors, and queue transitions
+  into `playback-session-service`, leaving `PlaybackProvider` focused on native
+  orchestration.
+- Done: close new-app library export metadata parity by writing stale MP3/FLAC
+  tags through shared audio infrastructure and recording
+  `snapshotAtLastExport` after export preparation.

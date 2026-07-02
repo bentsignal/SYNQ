@@ -3,7 +3,7 @@ const expoConfig = require("eslint-config-expo/flat");
 
 module.exports = defineConfig([
   {
-    ignores: ["dist/**", ".cache/**"],
+    ignores: ["dist/**", ".cache/**", "src/vendor/**"],
   },
   expoConfig,
 ]);

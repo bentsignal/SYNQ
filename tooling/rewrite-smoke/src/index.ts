@@ -92,7 +92,9 @@ import {
   getCollectionDetailActionState,
   getCollectionDetailMutationErrorMessage,
   getCollectionListHref,
+  getCollectionPlaybackCommandPlan,
   getCollectionPlaybackPlan,
+  getCollectionQueueCommandPlan,
   getCollectionQueuePlan,
   getCollectionSongListState,
   getCollectionSongOrderUpdate,
@@ -1511,6 +1513,28 @@ function assertLibraryCollectionInteractionSmoke() {
     },
   );
   assert.deepEqual(
+    getCollectionPlaybackCommandPlan({
+      playableSongs: [],
+    }),
+    {
+      firstSong: null,
+      haptic: "error",
+      playerHref: null,
+      queuedSongs: [],
+    },
+  );
+  assert.deepEqual(
+    getCollectionPlaybackCommandPlan({
+      playableSongs: [songs[0]!, songs[2]!],
+    }),
+    {
+      firstSong: songs[0],
+      haptic: "light",
+      playerHref: "/player",
+      queuedSongs: [songs[2]],
+    },
+  );
+  assert.deepEqual(
     getCollectionQueuePlan({
       canQueue: false,
       playableSongs: [songs[0]!, songs[2]!],
@@ -1527,6 +1551,26 @@ function assertLibraryCollectionInteractionSmoke() {
     }),
     {
       canQueue: true,
+      queuedSongs: [songs[0], songs[2]],
+    },
+  );
+  assert.deepEqual(
+    getCollectionQueueCommandPlan({
+      canQueue: false,
+      playableSongs: [songs[0]!, songs[2]!],
+    }),
+    {
+      haptic: "error",
+      queuedSongs: [],
+    },
+  );
+  assert.deepEqual(
+    getCollectionQueueCommandPlan({
+      canQueue: true,
+      playableSongs: [songs[0]!, songs[2]!],
+    }),
+    {
+      haptic: "light",
       queuedSongs: [songs[0], songs[2]],
     },
   );

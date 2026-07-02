@@ -12,8 +12,8 @@ import {
 import {
   getCollectionDetailActionState,
   getCollectionListHref,
-  getCollectionPlaybackPlan,
-  getCollectionQueuePlan,
+  getCollectionPlaybackCommandPlan,
+  getCollectionQueueCommandPlan,
   getCollectionDetailMutationErrorMessage,
   getCollectionSongOrderUpdate,
   getDeleteCollectionConfirmationCopy,
@@ -55,33 +55,33 @@ export function useLibraryCollectionDetailController({
   );
 
   const playCollection = () => {
-    const playbackPlan = getCollectionPlaybackPlan({
+    const playbackPlan = getCollectionPlaybackCommandPlan({
       playableSongs: actionState.playableSongs,
     });
 
-    if (!playbackPlan.canStartPlayback || !playbackPlan.firstSong) {
-      sendHaptic("error");
+    sendHaptic(playbackPlan.haptic);
+
+    if (!playbackPlan.firstSong || !playbackPlan.playerHref) {
       return;
     }
 
-    sendHaptic("light");
     playSong(playbackPlan.firstSong);
     playbackPlan.queuedSongs.forEach(addToQueue);
-    router.push("/player");
+    router.push(playbackPlan.playerHref);
   };
 
   const queueCollection = () => {
-    const queuePlan = getCollectionQueuePlan({
+    const queuePlan = getCollectionQueueCommandPlan({
       canQueue: actionState.canQueue,
       playableSongs: actionState.playableSongs,
     });
 
-    if (!queuePlan.canQueue) {
-      sendHaptic("error");
+    sendHaptic(queuePlan.haptic);
+
+    if (queuePlan.queuedSongs.length === 0) {
       return;
     }
 
-    sendHaptic("light");
     queuePlan.queuedSongs.forEach(addToQueue);
   };
 

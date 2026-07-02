@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
   type ReactNode,
@@ -16,6 +17,11 @@ import {
   prepareWifiImportCache,
   selectImportFiles,
 } from "../services/import-file-service";
+import {
+  clearPersistedImportSessionState,
+  loadPersistedImportSessionState,
+  savePersistedImportSessionState,
+} from "../services/import-session-persistence-service";
 import type {
   ImportSaveSummary,
   ImportSessionState,
@@ -32,6 +38,7 @@ type ImportSessionAction =
   | { shouldSaveToLibrary: boolean; type: "set-save-to-library" }
   | { song: ImportSongDraft; type: "update-song" }
   | { summary: ImportSaveSummary; type: "finish" }
+  | { state: ImportSessionState; type: "hydrate" }
   | { type: "saving" }
   | { type: "discard" }
   | { type: "reset" };
@@ -181,6 +188,8 @@ const importSessionReducer = (
         },
         saveSummary: action.summary,
       };
+    case "hydrate":
+      return action.state;
     case "discard":
       return {
         ...initialImportSessionState,
@@ -196,6 +205,35 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
     importSessionReducer,
     initialImportSessionState,
   );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const hydrateImportSession = async () => {
+      const persistedState = await loadPersistedImportSessionState();
+
+      if (!cancelled && persistedState) {
+        dispatch({ state: persistedState, type: "hydrate" });
+      }
+    };
+
+    void hydrateImportSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (state.phase === "processing" || state.phase === "reviewing") {
+      void savePersistedImportSessionState(state);
+      return;
+    }
+
+    if (state.phase === "idle" && state.songs.length === 0) {
+      void clearPersistedImportSessionState();
+    }
+  }, [state]);
 
   const beginFilePick = useCallback(() => {
     dispatch({ type: "begin-file-pick" });
@@ -305,6 +343,7 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
         ? await saveImportSessionToLibrary(state.songs)
         : await discardImportSession(state.songs);
 
+      await clearPersistedImportSessionState();
       dispatch({ summary, type: "finish" });
       return true;
     } catch (caughtError) {
@@ -323,6 +362,7 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
 
     try {
       await clearImportCache();
+      await clearPersistedImportSessionState();
       dispatch({ type: "discard" });
       return true;
     } catch (caughtError) {
@@ -337,6 +377,7 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
     }
   }, []);
   const resetSession = useCallback(() => {
+    void clearPersistedImportSessionState();
     dispatch({ type: "reset" });
   }, []);
 

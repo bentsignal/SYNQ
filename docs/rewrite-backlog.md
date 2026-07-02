@@ -74,8 +74,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     shared staged-song preview lists, and Premium gate surfaces now consume
     saved theme state, file-pick/remove/save/discard/edit actions use
     preference-aware haptics, and staged-file cleanup now runs when songs are
-    removed or discarded. Import persistence, Wi-Fi port resilience, and deeper
-    manual smoke are next.
+    removed or discarded. Staged import sessions now persist a validated
+    manifest across route/provider remounts while keeping staged audio in cache.
+    Wi-Fi port resilience and deeper manual smoke are next.
   - Backup/restore: feature-owned backup screen and command-state boundary
     exist; backup archive/share, restore document picking/unzip/reset, and
     erase document cleanup/database reset are connected. The backup command

@@ -158,6 +158,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     availability in the import session service instead of the save screen.
   - Done: add-to-collection bulk selection count, mutation guards, and add row
     labels now live in the library interaction service instead of the screen.
+  - Done: add-to-collection song list row rendering now lives in a dedicated
+    component instead of the route screen.
   - Done: song detail like, export, and delete labels now live with action
     availability in the song detail service instead of the detail screen.
   - Done: playback player command availability and shuffle/loop/play labels now

@@ -11,6 +11,12 @@ import {
   initialImportSessionState,
 } from "../../../apps/new/src/features/import/services/import-session-state-service";
 import type { ImportSongDraft } from "../../../apps/new/src/features/import/types/import-session";
+import {
+  buildAlbumDetail,
+  buildArtistDetail,
+  buildPlaylistDetail,
+  rowsToCollectionDetailSongs,
+} from "../../../apps/new/src/features/library/services/library-collection-detail-service";
 
 const song = ({
   duration = 180_000,
@@ -207,6 +213,101 @@ function assertImportSessionSmoke() {
   assert.equal(state.songs.length, 0);
 }
 
+function assertLibraryCollectionDetailSmoke() {
+  const songs = rowsToCollectionDetailSongs([
+    {
+      albumName: "Smoke Album",
+      artistName: "Second Artist",
+      duration: 120_000,
+      pathToFile: "/tmp/second.mp3",
+      songId: 2,
+      title: "Second",
+      track: 2,
+    },
+    {
+      albumName: "Smoke Album",
+      artistName: "First Artist",
+      duration: 100_000,
+      pathToFile: "/tmp/first.mp3",
+      songId: 1,
+      title: "First",
+      track: 1,
+    },
+    {
+      albumName: "Smoke Album",
+      artistName: "Featured Artist",
+      duration: 100_000,
+      pathToFile: "/tmp/first.mp3",
+      songId: 1,
+      title: "First",
+      track: 1,
+    },
+  ]);
+
+  assert.deepEqual(
+    songs.map((item) => item.id),
+    [1, 2],
+  );
+  assert.equal(songs[0]?.artist, "Featured Artist, First Artist");
+  assert.equal(songs[0]?.album, "Smoke Album");
+
+  const playlist = buildPlaylistDetail({
+    playlistRows: [{ coverImage: null, name: "Smoke Playlist" }],
+    songRows: [
+      {
+        albumName: null,
+        artistName: null,
+        duration: null,
+        pathToFile: null,
+        songId: 5,
+        title: null,
+        track: null,
+      },
+    ],
+    updatedAt: 12,
+  });
+  assert.equal(playlist.title, "Smoke Playlist");
+  assert.equal(playlist.detail, "1 song");
+  assert.equal(playlist.songs[0]?.artist, "Unknown");
+  assert.equal(playlist.songs[0]?.title, "Untitled song");
+
+  const album = buildAlbumDetail({
+    albumRows: [
+      {
+        artistName: "Album Artist",
+        coverImage: null,
+        name: "Smoke Album",
+        year: 2026,
+      },
+    ],
+    songRows: [],
+    updatedAt: 20,
+  });
+  assert.equal(album.eyebrow, "Album");
+  assert.equal(album.meta, "Album Artist / 2026");
+
+  const artist = buildArtistDetail({
+    artistRows: [
+      { albumId: 1, name: "Smoke Artist", profileImage: null },
+      { albumId: 1, name: "Smoke Artist", profileImage: null },
+      { albumId: 2, name: "Smoke Artist", profileImage: null },
+    ],
+    songRows: songs.map((item) => ({
+      albumName: item.album,
+      artistName: item.artist,
+      duration: item.duration,
+      pathToFile: item.pathToFile,
+      songId: item.id,
+      title: item.title,
+      track: item.track,
+    })),
+    updatedAt: 30,
+  });
+  assert.equal(artist.title, "Smoke Artist");
+  assert.equal(artist.detail, "2 songs / 2 albums");
+}
+
 assertPlaybackSessionSmoke();
 assertImportSessionSmoke();
+assertLibraryCollectionDetailSmoke();
 console.log("Rewrite deterministic smoke checks passed.");

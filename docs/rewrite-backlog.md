@@ -34,6 +34,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     synchronization.
   - Library query hooks are cleaner, but collection list helpers still need the
     same treatment as song query helpers.
+  - Done: collection detail row aggregation/detail shaping now lives in a pure
+    library service with deterministic smoke coverage.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -47,6 +49,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     storage usage stays behind feature storage services.
   - Done: add deterministic reducer smoke coverage for playback queue/ad-gate
     behavior and import session transitions through `@synq/rewrite-smoke`.
+  - Done: extend deterministic smoke coverage to library collection detail row
+    aggregation for playlist, album, and artist detail surfaces.
 
 ### Phase 3: New App Build-Out
 

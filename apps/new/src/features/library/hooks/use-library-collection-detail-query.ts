@@ -4,223 +4,22 @@ import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
+import {
+  buildAlbumDetail,
+  buildArtistDetail,
+  buildPlaylistDetail,
+  type LibraryCollectionDetailKind,
+  type LibraryCollectionDetailSongRow,
+  type PlaylistDetailRow,
+} from "../services/library-collection-detail-service";
 
-export type LibraryCollectionDetailKind = "album" | "artist" | "playlist";
+export type {
+  LibraryCollectionDetailKind,
+  LibraryCollectionDetailSong,
+} from "../services/library-collection-detail-service";
 
-export type LibraryCollectionDetailSong = {
-  album: string;
-  artist: string;
-  duration: number | null;
-  id: number;
-  pathToFile: string | null;
-  title: string;
-  track: number | null;
-};
-
-type DetailSongRow = {
-  albumName: string | null;
-  artistName: string | null;
-  duration: number | null;
-  pathToFile: string | null;
-  songId: number;
-  title: string | null;
-  track: number | null;
-};
-
-const unknownLabel = "Unknown";
-
-const formatCount = (count: number, singular: string, plural = `${singular}s`) =>
-  `${count} ${count === 1 ? singular : plural}`;
-
-const formatNames = (names: Set<string>) => {
-  if (names.size === 0) {
-    return unknownLabel;
-  }
-
-  return Array.from(names).sort((first, second) =>
-    first.localeCompare(second),
-  ).join(", ");
-};
-
-const rowsToSongs = (rows: DetailSongRow[]) => {
-  const songMap = new Map<
-    number,
-    {
-      albumNames: Set<string>;
-      artistNames: Set<string>;
-      duration: number | null;
-      id: number;
-      pathToFile: string | null;
-      title: string;
-      track: number | null;
-    }
-  >();
-
-  rows.forEach((row) => {
-    const song =
-      songMap.get(row.songId) ??
-      {
-        albumNames: new Set<string>(),
-        artistNames: new Set<string>(),
-        duration: row.duration,
-        id: row.songId,
-        pathToFile: row.pathToFile,
-        title: row.title ?? "Untitled song",
-        track: row.track,
-      };
-
-    if (row.albumName) {
-      song.albumNames.add(row.albumName);
-    }
-
-    if (row.artistName) {
-      song.artistNames.add(row.artistName);
-    }
-
-    songMap.set(row.songId, song);
-  });
-
-  return Array.from(songMap.values())
-    .map<LibraryCollectionDetailSong>((song) => ({
-      album: formatNames(song.albumNames),
-      artist: formatNames(song.artistNames),
-      duration: song.duration,
-      id: song.id,
-      pathToFile: song.pathToFile,
-      title: song.title,
-      track: song.track,
-    }))
-    .sort((first, second) => {
-      if (first.track !== null || second.track !== null) {
-        return (
-          (first.track ?? Number.MAX_SAFE_INTEGER) -
-          (second.track ?? Number.MAX_SAFE_INTEGER)
-        );
-      }
-
-      return first.id - second.id;
-    });
-};
-
-type CollectionDetail = {
-  detail: string;
-  eyebrow: string;
-  imagePath: string | null;
-  isMissing: boolean;
-  kind: LibraryCollectionDetailKind;
-  meta: string;
-  songs: LibraryCollectionDetailSong[];
-  title: string;
-  updatedAt: number;
-};
-
-const buildPlaylistDetail = ({
-  playlistRows,
-  songRows,
-  updatedAt,
-}: {
-  playlistRows: { coverImage: string | null; name: string | null }[];
-  songRows: DetailSongRow[];
-  updatedAt: number;
-}): CollectionDetail => {
-  const songs = rowsToSongs(songRows);
-  const playlist = playlistRows[0];
-
-  return {
-    detail: formatCount(songs.length, "song"),
-    eyebrow: "Playlist",
-    imagePath: playlist?.coverImage
-      ? getImagePathFromHash(playlist.coverImage).pathToSmallImage
-      : null,
-    isMissing: !playlist,
-    kind: "playlist",
-    meta: "Manual collection",
-    songs,
-    title: playlist?.name ?? "Playlist not found",
-    updatedAt,
-  };
-};
-
-const buildAlbumDetail = ({
-  albumRows,
-  songRows,
-  updatedAt,
-}: {
-  albumRows: {
-    artistName: string | null;
-    coverImage: string | null;
-    name: string | null;
-    year: number | null;
-  }[];
-  songRows: DetailSongRow[];
-  updatedAt: number;
-}): CollectionDetail => {
-  const artists = new Set<string>();
-  albumRows.forEach((row) => {
-    if (row.artistName) {
-      artists.add(row.artistName);
-    }
-  });
-
-  const album = albumRows[0];
-  const songs = rowsToSongs(songRows);
-  const artistLabel = formatNames(artists);
-
-  return {
-    detail: formatCount(songs.length, "song"),
-    eyebrow: "Album",
-    imagePath: album?.coverImage
-      ? getImagePathFromHash(album.coverImage).pathToSmallImage
-      : null,
-    isMissing: !album,
-    kind: "album",
-    meta: album?.year ? `${artistLabel} / ${album.year}` : artistLabel,
-    songs,
-    title: album?.name ?? "Album not found",
-    updatedAt,
-  };
-};
-
-const buildArtistDetail = ({
-  artistRows,
-  songRows,
-  updatedAt,
-}: {
-  artistRows: {
-    albumId: number | null;
-    name: string | null;
-    profileImage: string | null;
-  }[];
-  songRows: DetailSongRow[];
-  updatedAt: number;
-}): CollectionDetail => {
-  const albumIds = new Set<number>();
-  artistRows.forEach((row) => {
-    if (row.albumId) {
-      albumIds.add(row.albumId);
-    }
-  });
-
-  const artist = artistRows[0];
-  const songs = rowsToSongs(songRows);
-
-  return {
-    detail: `${formatCount(songs.length, "song")} / ${formatCount(
-      albumIds.size,
-      "album",
-    )}`,
-    eyebrow: "Artist",
-    imagePath: artist?.profileImage
-      ? getImagePathFromHash(artist.profileImage).pathToSmallImage
-      : null,
-    isMissing: !artist,
-    kind: "artist",
-    meta: "Library artist",
-    songs,
-    title: artist?.name ?? "Artist not found",
-    updatedAt,
-  };
-};
+const getSmallImagePath = (imageHash: string) =>
+  getImagePathFromHash(imageHash).pathToSmallImage;
 
 export function useLibraryCollectionDetailQuery({
   id,
@@ -358,7 +157,8 @@ export function useLibraryCollectionDetailQuery({
     if (kind === "album") {
       return buildAlbumDetail({
         albumRows: album.data ?? [],
-        songRows: (albumSongs.data ?? []) as DetailSongRow[],
+        getImagePath: getSmallImagePath,
+        songRows: (albumSongs.data ?? []) as LibraryCollectionDetailSongRow[],
         updatedAt: Math.max(
           album.updatedAt?.getTime() ?? 0,
           albumSongs.updatedAt?.getTime() ?? 0,
@@ -369,7 +169,8 @@ export function useLibraryCollectionDetailQuery({
     if (kind === "artist") {
       return buildArtistDetail({
         artistRows: artist.data ?? [],
-        songRows: (artistSongs.data ?? []) as DetailSongRow[],
+        getImagePath: getSmallImagePath,
+        songRows: (artistSongs.data ?? []) as LibraryCollectionDetailSongRow[],
         updatedAt: Math.max(
           artist.updatedAt?.getTime() ?? 0,
           artistSongs.updatedAt?.getTime() ?? 0,
@@ -378,8 +179,9 @@ export function useLibraryCollectionDetailQuery({
     }
 
     return buildPlaylistDetail({
-      playlistRows: playlist.data ?? [],
-      songRows: (playlistSongs.data ?? []) as DetailSongRow[],
+      getImagePath: getSmallImagePath,
+      playlistRows: (playlist.data ?? []) as PlaylistDetailRow[],
+      songRows: (playlistSongs.data ?? []) as LibraryCollectionDetailSongRow[],
       updatedAt: Math.max(
         playlist.updatedAt?.getTime() ?? 0,
         playlistSongs.updatedAt?.getTime() ?? 0,

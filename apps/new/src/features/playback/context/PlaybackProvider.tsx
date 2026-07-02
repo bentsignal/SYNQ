@@ -19,9 +19,8 @@ import {
 } from "../services/playback-session-service";
 import {
   clearPersistedPlaybackState,
-  loadPersistedPlaybackState,
-  savePersistedPlaybackState,
 } from "../services/playback-persistence-service";
+import { usePersistedPlaybackSession } from "../hooks/use-persisted-playback-session";
 import {
   handlePlaybackRemoteCommand,
   type PlaybackRemoteCommand,
@@ -68,8 +67,6 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const stateRef = useRef(state);
   const premiumActiveRef = useRef(premiumState.active);
   const adapterRef = useRef(createExpoAudioTrackPlayerAdapter());
-  const hasHydratedRef = useRef(false);
-  const lastPersistedAtRef = useRef(0);
   const activeTrack = useMemo(() => getActiveTrack(state), [state]);
 
   useEffect(() => {
@@ -93,6 +90,19 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       dispatch({ error: getErrorMessage(error), type: "native-failure" });
     });
   }, []);
+
+  const restorePersistedPlaybackState = useCallback(
+    (persistedState: PlaybackState) => {
+      runNativeCommand(() => adapterRef.current.restore(persistedState));
+    },
+    [runNativeCommand],
+  );
+
+  usePersistedPlaybackSession({
+    dispatch,
+    onRestorePlayingState: restorePersistedPlaybackState,
+    state,
+  });
 
   const canRunPlaybackCommand = useCallback(() => {
     const adGate = stateRef.current.adGate;
@@ -159,47 +169,6 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       runNativeCommand(() => adapterRef.current.play(targetTrack));
     }
   }, [beginAdBreak, canRunPlaybackCommand, runNativeCommand]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const hydratePlaybackState = async () => {
-      const persistedState = await loadPersistedPlaybackState();
-      if (!isMounted) {
-        return;
-      }
-
-      hasHydratedRef.current = true;
-      dispatch({ state: persistedState, type: "hydrate" });
-
-      if (persistedState.isPlaying) {
-        runNativeCommand(() => adapterRef.current.restore(persistedState));
-      }
-    };
-
-    void hydratePlaybackState();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [runNativeCommand]);
-
-  useEffect(() => {
-    if (!hasHydratedRef.current) {
-      return;
-    }
-
-    const now = Date.now();
-    const shouldPersistImmediately = !state.isPlaying;
-    const shouldPersistProgress = now - lastPersistedAtRef.current > 5000;
-
-    if (!shouldPersistImmediately && !shouldPersistProgress) {
-      return;
-    }
-
-    lastPersistedAtRef.current = now;
-    void savePersistedPlaybackState(state);
-  }, [state]);
 
   useEffect(() => {
     const adapter = adapterRef.current;

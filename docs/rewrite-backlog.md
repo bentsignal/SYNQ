@@ -194,6 +194,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: collection detail routes now mount kind-specific live query hooks so
     playlist, album, and artist detail screens do not subscribe to unrelated
     collection tables.
+  - Done: collection detail row subscriptions now live in a focused rows-query
+    hook instead of the detail-shaping hook owning every live query directly.
   - Done: collection detail live query SQL builders now live in a repository
     boundary instead of the hook owning playlist, album, and artist query
     construction.

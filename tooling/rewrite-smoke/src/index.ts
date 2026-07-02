@@ -73,6 +73,8 @@ import {
   getAddableSongSelectionState,
   getCollectionDetailActionState,
   getCollectionListHref,
+  getCollectionPlaybackPlan,
+  getCollectionQueuePlan,
   getCollectionSongListState,
   getCollectionSongRowActionState,
   getPlayableCollectionSongs,
@@ -1290,6 +1292,41 @@ function assertLibraryCollectionInteractionSmoke() {
       deleteLabel: "Delete",
       exportLabel: "Export",
       playableSongs: [],
+    },
+  );
+  assert.deepEqual(getCollectionPlaybackPlan({ playableSongs: [] }), {
+    canStartPlayback: false,
+    firstSong: null,
+    queuedSongs: [],
+  });
+  assert.deepEqual(
+    getCollectionPlaybackPlan({
+      playableSongs: [songs[0]!, songs[2]!],
+    }),
+    {
+      canStartPlayback: true,
+      firstSong: songs[0],
+      queuedSongs: [songs[2]],
+    },
+  );
+  assert.deepEqual(
+    getCollectionQueuePlan({
+      canQueue: false,
+      playableSongs: [songs[0]!, songs[2]!],
+    }),
+    {
+      canQueue: false,
+      queuedSongs: [],
+    },
+  );
+  assert.deepEqual(
+    getCollectionQueuePlan({
+      canQueue: true,
+      playableSongs: [songs[0]!, songs[2]!],
+    }),
+    {
+      canQueue: true,
+      queuedSongs: [songs[0], songs[2]],
     },
   );
   assert.deepEqual(

@@ -77,6 +77,37 @@ export type CollectionDetailActionState = ReturnType<
   typeof getCollectionDetailActionState
 >;
 
+export const getCollectionPlaybackPlan = ({
+  playableSongs,
+}: {
+  playableSongs: LibraryCollectionDetailSong[];
+}) => {
+  const [firstSong, ...queuedSongs] = playableSongs;
+
+  return {
+    canStartPlayback: firstSong !== undefined,
+    firstSong: firstSong ?? null,
+    queuedSongs,
+  };
+};
+
+export type CollectionPlaybackPlan = ReturnType<
+  typeof getCollectionPlaybackPlan
+>;
+
+export const getCollectionQueuePlan = ({
+  canQueue,
+  playableSongs,
+}: {
+  canQueue: boolean;
+  playableSongs: LibraryCollectionDetailSong[];
+}) => ({
+  canQueue,
+  queuedSongs: canQueue ? playableSongs : [],
+});
+
+export type CollectionQueuePlan = ReturnType<typeof getCollectionQueuePlan>;
+
 export const reorderCollectionSongs = ({
   direction,
   songId,

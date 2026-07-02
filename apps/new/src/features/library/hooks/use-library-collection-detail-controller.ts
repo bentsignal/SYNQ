@@ -12,6 +12,8 @@ import {
 import {
   getCollectionDetailActionState,
   getCollectionListHref,
+  getCollectionPlaybackPlan,
+  getCollectionQueuePlan,
   reorderCollectionSongs,
 } from "../services/library-collection-interaction-service";
 import type {
@@ -51,27 +53,34 @@ export function useLibraryCollectionDetailController({
   );
 
   const playCollection = () => {
-    const [firstSong, ...queuedSongs] = actionState.playableSongs;
+    const playbackPlan = getCollectionPlaybackPlan({
+      playableSongs: actionState.playableSongs,
+    });
 
-    if (!firstSong) {
+    if (!playbackPlan.canStartPlayback || !playbackPlan.firstSong) {
       sendHaptic("error");
       return;
     }
 
     sendHaptic("light");
-    playSong(firstSong);
-    queuedSongs.forEach(addToQueue);
+    playSong(playbackPlan.firstSong);
+    playbackPlan.queuedSongs.forEach(addToQueue);
     router.push("/player");
   };
 
   const queueCollection = () => {
-    if (!actionState.canQueue) {
+    const queuePlan = getCollectionQueuePlan({
+      canQueue: actionState.canQueue,
+      playableSongs: actionState.playableSongs,
+    });
+
+    if (!queuePlan.canQueue) {
       sendHaptic("error");
       return;
     }
 
     sendHaptic("light");
-    actionState.playableSongs.forEach(addToQueue);
+    queuePlan.queuedSongs.forEach(addToQueue);
   };
 
   const exportCollection = async () => {

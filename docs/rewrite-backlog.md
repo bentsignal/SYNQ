@@ -266,6 +266,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     action.
   - Done: collection detail play, queue, export, and delete action state now
     lives in the library interaction service instead of the detail screen.
+  - Done: collection detail playback and queue command plans now live in the
+    library interaction service with deterministic smoke coverage instead of
+    being derived inline in the controller hook.
   - Done: collection detail play, queue, export, delete, reorder, remove, and
     mutation-error workflows now live in a controller hook instead of the
     screen.

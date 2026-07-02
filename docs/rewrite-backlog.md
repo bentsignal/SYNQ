@@ -162,6 +162,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: collection repository name normalization, required-name errors, and
     duplicate-name copy now live in a pure collection metadata service with
     deterministic smoke coverage.
+  - Done: collection repository duplicate-name queries now live in a focused
+    uniqueness repository instead of being embedded in create/update mutation
+    code.
   - Done: create-collection image picking, validation, create mutations,
     haptics, navigation, and mutation-error workflows now live in a controller
     hook instead of the screen.

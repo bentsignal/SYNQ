@@ -50,8 +50,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     queue entry points.
   - Library: first reactive Drizzle summary, searchable/sortable song surface,
     collection previews, user-facing library home copy and empty states,
-    read-only song/playlist/album/artist detail routes, playlist/album/artist
-    create/edit flows, collection song add/remove flows, durable
+    song/playlist/album/artist detail routes with song and collection playback
+    entry points, playlist/album/artist create/edit flows, collection song add/remove flows, durable
     album/playlist/artist song reorder flows, and collection cover/profile image
     picking, persistence, and thumbnail rendering exist.
   - Playback: explicit session state, queue/player screens, an Expo Audio

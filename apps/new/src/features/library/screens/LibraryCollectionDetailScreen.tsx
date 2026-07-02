@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link, useLocalSearchParams } from "expo-router";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Link, router, useLocalSearchParams } from "expo-router";
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { LibraryCollectionSongList } from "../components/LibraryCollectionSongList";
@@ -93,6 +94,7 @@ function LibraryCollectionDetailContent({
   kind: LibraryCollectionDetailKind;
 }) {
   const { detail, errors } = useLibraryCollectionDetailQuery({ id, kind });
+  const { addToQueue, playSong } = usePlaybackSession();
   const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();
   const [movingSongId, setMovingSongId] = useState<number | null>(null);
@@ -103,6 +105,30 @@ function LibraryCollectionDetailContent({
     detail.updatedAt > 0
       ? `Updated ${new Date(detail.updatedAt).toLocaleTimeString()}`
       : "Waiting for collection data";
+  const playableSongs = detail.songs.filter((song) => song.pathToFile !== null);
+  const canPlayCollection = playableSongs.length > 0;
+  const playCollection = () => {
+    const [firstSong, ...queuedSongs] = playableSongs;
+
+    if (!firstSong) {
+      sendHaptic("error");
+      return;
+    }
+
+    sendHaptic("light");
+    playSong(firstSong);
+    queuedSongs.forEach(addToQueue);
+    router.push("/player");
+  };
+  const queueCollection = () => {
+    if (playableSongs.length === 0) {
+      sendHaptic("error");
+      return;
+    }
+
+    sendHaptic("light");
+    playableSongs.forEach(addToQueue);
+  };
 
   return (
     <ScrollView
@@ -150,6 +176,34 @@ function LibraryCollectionDetailContent({
       </View>
 
       <View style={styles.actionRow}>
+        <Pressable
+          accessibilityRole="button"
+          disabled={!canPlayCollection}
+          onPress={playCollection}
+          style={[
+            styles.primaryButton,
+            { backgroundColor: theme.accent },
+            !canPlayCollection ? styles.disabled : null,
+          ]}
+        >
+          <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
+            Play
+          </Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          disabled={!canPlayCollection}
+          onPress={queueCollection}
+          style={[
+            styles.secondaryButton,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+            !canPlayCollection ? styles.disabled : null,
+          ]}
+        >
+          <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
+            Add to queue
+          </Text>
+        </Pressable>
         <Link
           href={`/(tabs)/library/${kind}/edit/${id}`}
           style={[styles.editLink, { color: theme.accent }]}
@@ -354,7 +408,39 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 16,
+    gap: 12,
+  },
+  primaryButton: {
+    alignItems: "center",
+    borderRadius: 8,
+    justifyContent: "center",
+    minHeight: 44,
+    minWidth: 112,
+    paddingHorizontal: 16,
+  },
+  primaryButtonText: {
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
+  },
+  secondaryButton: {
+    alignItems: "center",
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: 44,
+    minWidth: 132,
+    paddingHorizontal: 16,
+  },
+  secondaryButtonText: {
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
+  },
+  disabled: {
+    opacity: 0.45,
   },
   panel: {
     borderRadius: 8,

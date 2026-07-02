@@ -12,6 +12,7 @@ export type LibraryCollectionDetailSong = {
   artist: string;
   duration: number | null;
   id: number;
+  pathToFile: string | null;
   title: string;
   track: number | null;
 };
@@ -20,6 +21,7 @@ type DetailSongRow = {
   albumName: string | null;
   artistName: string | null;
   duration: number | null;
+  pathToFile: string | null;
   songId: number;
   title: string | null;
   track: number | null;
@@ -48,6 +50,7 @@ const rowsToSongs = (rows: DetailSongRow[]) => {
       artistNames: Set<string>;
       duration: number | null;
       id: number;
+      pathToFile: string | null;
       title: string;
       track: number | null;
     }
@@ -61,6 +64,7 @@ const rowsToSongs = (rows: DetailSongRow[]) => {
         artistNames: new Set<string>(),
         duration: row.duration,
         id: row.songId,
+        pathToFile: row.pathToFile,
         title: row.title ?? "Untitled song",
         track: row.track,
       };
@@ -82,6 +86,7 @@ const rowsToSongs = (rows: DetailSongRow[]) => {
       artist: formatNames(song.artistNames),
       duration: song.duration,
       id: song.id,
+      pathToFile: song.pathToFile,
       title: song.title,
       track: song.track,
     }))
@@ -239,6 +244,7 @@ export function useLibraryCollectionDetailQuery({
         albumName: schema.albums.name,
         artistName: schema.artists.name,
         duration: schema.songs.duration,
+        pathToFile: schema.songs.pathToFile,
         songId: schema.songs.id,
         title: schema.songs.title,
         track: schema.playlistSongs.position,
@@ -285,6 +291,7 @@ export function useLibraryCollectionDetailQuery({
         albumName: schema.albums.name,
         artistName: schema.artists.name,
         duration: schema.songs.duration,
+        pathToFile: schema.songs.pathToFile,
         songId: schema.songs.id,
         title: schema.songs.title,
         track: schema.albumSongs.track,
@@ -322,6 +329,7 @@ export function useLibraryCollectionDetailQuery({
         albumName: schema.albums.name,
         artistName: schema.artists.name,
         duration: schema.songs.duration,
+        pathToFile: schema.songs.pathToFile,
         songId: schema.songs.id,
         title: schema.songs.title,
         track: schema.artistSongs.position,

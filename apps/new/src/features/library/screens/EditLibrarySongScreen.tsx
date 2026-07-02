@@ -8,22 +8,16 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useLibrarySongDetailQuery } from "../hooks/use-library-song-detail-query";
 import { updateLibrarySongMetadata } from "../repository/song-metadata-repository";
 
-const parseId = (value: string | string[] | undefined) => {
-  const rawValue = Array.isArray(value) ? value[0] : value;
-  const id = Number(rawValue);
-
-  return Number.isFinite(id) ? id : null;
-};
-
 export function EditLibrarySongScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
   const theme = useCustomizationTheme();
-  const id = parseId(params.id);
+  const id = parseNumericRouteParam(params.id);
 
   if (id === null) {
     return (

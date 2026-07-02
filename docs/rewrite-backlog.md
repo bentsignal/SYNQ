@@ -53,6 +53,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     instead of the collection list screen.
   - Done: shared duration and remaining-duration formatting now lives in an
     app-shell service instead of repeated library/import/playback UI helpers.
+  - Done: shared numeric route param parsing now lives in an app-shell service
+    instead of repeated library/import screen helpers.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -87,6 +89,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     queries.
   - Done: extend deterministic smoke coverage to shared duration formatting for
     empty, rounded, long, and remaining-time labels.
+  - Done: extend deterministic smoke coverage to shared route param parsing for
+    scalar, array, missing, and invalid route values.
 
 ### Phase 3: New App Build-Out
 

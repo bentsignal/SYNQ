@@ -8,17 +8,11 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useImportSession } from "../hooks/use-import-session";
 import type { ImportSongDraft } from "../types/import-session";
-
-const parseId = (value: string | string[] | undefined) => {
-  const rawValue = Array.isArray(value) ? value[0] : value;
-  const id = Number(rawValue);
-
-  return Number.isFinite(id) ? id : null;
-};
 
 const parseTrack = (value: string) => {
   const trimmed = value.trim();
@@ -39,7 +33,7 @@ const parseTrack = (value: string) => {
 export function EditImportSongScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
   const theme = useCustomizationTheme();
-  const id = parseId(params.id);
+  const id = parseNumericRouteParam(params.id);
 
   if (id === null) {
     return (

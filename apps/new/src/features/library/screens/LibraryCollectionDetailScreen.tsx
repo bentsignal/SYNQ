@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { shareLibrarySongs } from "@/src/features/export/services/library-export-service";
+import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
 import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
@@ -27,13 +28,6 @@ import {
 
 type LibraryCollectionDetailScreenProps = {
   kind: LibraryCollectionDetailKind;
-};
-
-const parseId = (value: string | string[] | undefined) => {
-  const rawValue = Array.isArray(value) ? value[0] : value;
-  const id = Number(rawValue);
-
-  return Number.isFinite(id) ? id : null;
 };
 
 const reorderSongs = ({
@@ -81,7 +75,7 @@ export function LibraryCollectionDetailScreen({
 }: LibraryCollectionDetailScreenProps) {
   const params = useLocalSearchParams<{ id?: string }>();
   const theme = useCustomizationTheme();
-  const id = parseId(params.id);
+  const id = parseNumericRouteParam(params.id);
 
   if (id === null) {
     return (

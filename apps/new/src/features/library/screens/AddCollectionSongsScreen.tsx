@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
+import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
@@ -25,19 +26,12 @@ type AddCollectionSongsScreenProps = {
   kind: LibraryCollectionDetailKind;
 };
 
-const parseId = (value: string | string[] | undefined) => {
-  const rawValue = Array.isArray(value) ? value[0] : value;
-  const id = Number(rawValue);
-
-  return Number.isFinite(id) ? id : null;
-};
-
 export function AddCollectionSongsScreen({
   kind,
 }: AddCollectionSongsScreenProps) {
   const params = useLocalSearchParams<{ id?: string }>();
   const theme = useCustomizationTheme();
-  const id = parseId(params.id);
+  const id = parseNumericRouteParam(params.id);
 
   if (id === null) {
     return (

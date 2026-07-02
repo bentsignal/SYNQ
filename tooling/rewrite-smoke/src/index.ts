@@ -3,6 +3,7 @@ import {
   formatDurationMs,
   formatRemainingDurationMs,
 } from "../../../apps/new/src/features/app-shell/services/duration-format-service";
+import { parseNumericRouteParam } from "../../../apps/new/src/features/app-shell/services/route-param-service";
 import {
   getActiveTrack,
   getNextQueueIndex,
@@ -777,7 +778,17 @@ function assertDurationFormatSmoke() {
   );
 }
 
+function assertRouteParamSmoke() {
+  assert.equal(parseNumericRouteParam("42"), 42);
+  assert.equal(parseNumericRouteParam(["7", "8"]), 7);
+  assert.equal(parseNumericRouteParam("0"), 0);
+  assert.equal(parseNumericRouteParam(undefined), null);
+  assert.equal(parseNumericRouteParam("not-a-number"), null);
+  assert.equal(parseNumericRouteParam(["not-a-number"]), null);
+}
+
 assertDurationFormatSmoke();
+assertRouteParamSmoke();
 assertPlaybackSessionSmoke();
 assertImportSessionSmoke();
 assertLibraryCollectionDetailSmoke();

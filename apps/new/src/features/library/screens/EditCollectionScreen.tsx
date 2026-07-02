@@ -9,6 +9,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useEditCollectionQuery } from "../hooks/use-edit-collection-query";
@@ -56,17 +57,10 @@ const labels: Record<
   },
 };
 
-const parseId = (value: string | string[] | undefined) => {
-  const rawValue = Array.isArray(value) ? value[0] : value;
-  const id = Number(rawValue);
-
-  return Number.isFinite(id) ? id : null;
-};
-
 export function EditCollectionScreen({ kind }: EditCollectionScreenProps) {
   const params = useLocalSearchParams<{ id?: string }>();
   const theme = useCustomizationTheme();
-  const id = parseId(params.id);
+  const id = parseNumericRouteParam(params.id);
 
   if (id === null) {
     return (

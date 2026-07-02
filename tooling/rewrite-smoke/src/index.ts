@@ -118,6 +118,7 @@ import {
   getAddableSongSelectionState,
   getCollectionAddSongsHref,
   getCollectionDetailActionState,
+  getCollectionDetailStatusState,
   getCollectionEditHref,
   getCollectionDetailMutationErrorMessage,
   getCollectionListHref,
@@ -1645,6 +1646,57 @@ function assertLibraryCollectionInteractionSmoke() {
       deleteLabel: "Delete",
       exportLabel: "Export",
       playableSongs: [],
+    },
+  );
+  assert.deepEqual(
+    getCollectionDetailStatusState({
+      errors: [],
+      formatUpdatedAt: (updatedAt) => `time:${updatedAt}`,
+      mutationError: null,
+      updatedAt: 30,
+    }),
+    {
+      isError: false,
+      statusLabel: "Updated time:30",
+      updatedLabel: "Updated time:30",
+    },
+  );
+  assert.deepEqual(
+    getCollectionDetailStatusState({
+      errors: [],
+      mutationError: null,
+      updatedAt: 0,
+    }),
+    {
+      isError: false,
+      statusLabel: "Waiting for collection data",
+      updatedLabel: "Waiting for collection data",
+    },
+  );
+  assert.deepEqual(
+    getCollectionDetailStatusState({
+      errors: [new Error("query")],
+      formatUpdatedAt: (updatedAt) => `time:${updatedAt}`,
+      mutationError: null,
+      updatedAt: 30,
+    }),
+    {
+      isError: true,
+      statusLabel: "One or more detail queries failed.",
+      updatedLabel: "Updated time:30",
+    },
+  );
+  assert.deepEqual(
+    getCollectionDetailStatusState({
+      errors: [new Error("query")],
+      formatUpdatedAt: (updatedAt) => `time:${updatedAt}`,
+      mutationError: "Move failed.",
+      updatedAt: 30,
+    }),
+    {
+      isError: true,
+      statusLabel: "Move failed.",
+      updatedLabel: "Updated time:30",
     },
   );
   assert.deepEqual(getCollectionPlaybackPlan({ playableSongs: [] }), {

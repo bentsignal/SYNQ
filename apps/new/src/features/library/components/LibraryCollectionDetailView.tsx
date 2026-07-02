@@ -6,7 +6,10 @@ import type {
   LibraryCollectionDetail,
   LibraryCollectionDetailKind,
 } from "../services/library-collection-detail-service";
-import { getLibraryCollectionBackHref } from "../services/library-collection-interaction-service";
+import {
+  getCollectionDetailStatusState,
+  getLibraryCollectionBackHref,
+} from "../services/library-collection-interaction-service";
 import { LibraryCollectionDetailActions } from "./LibraryCollectionDetailActions";
 import { LibraryCollectionDetailHeader } from "./LibraryCollectionDetailHeader";
 import { LibraryCollectionDetailStatus } from "./LibraryCollectionDetailStatus";
@@ -31,11 +34,6 @@ export function LibraryCollectionDetailView({
   const { detail, errors } = collection;
   const theme = useCustomizationTheme();
   const backHref = getLibraryCollectionBackHref();
-  const hasErrors = errors.length > 0;
-  const updatedLabel =
-    detail.updatedAt > 0
-      ? `Updated ${new Date(detail.updatedAt).toLocaleTimeString()}`
-      : "Waiting for collection data";
   const {
     actionState,
     deleteCurrentCollection,
@@ -52,6 +50,11 @@ export function LibraryCollectionDetailView({
     id,
     kind,
   });
+  const statusState = getCollectionDetailStatusState({
+    errors,
+    mutationError,
+    updatedAt: detail.updatedAt,
+  });
 
   return (
     <ScrollView
@@ -60,7 +63,7 @@ export function LibraryCollectionDetailView({
     >
       <LibraryCollectionDetailHeader
         detail={detail}
-        updatedLabel={updatedLabel}
+        updatedLabel={statusState.updatedLabel}
       />
 
       <LibraryCollectionDetailActions
@@ -92,9 +95,7 @@ export function LibraryCollectionDetailView({
       />
 
       <LibraryCollectionDetailStatus
-        hasErrors={hasErrors}
-        mutationError={mutationError}
-        updatedLabel={updatedLabel}
+        statusState={statusState}
       />
 
       <Link

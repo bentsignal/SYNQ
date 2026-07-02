@@ -1,19 +1,15 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import type { CollectionDetailStatusState } from "../services/library-collection-interaction-service";
 
 type LibraryCollectionDetailStatusProps = {
-  hasErrors: boolean;
-  mutationError: string | null;
-  updatedLabel: string;
+  statusState: CollectionDetailStatusState;
 };
 
 export function LibraryCollectionDetailStatus({
-  hasErrors,
-  mutationError,
-  updatedLabel,
+  statusState,
 }: LibraryCollectionDetailStatusProps) {
   const theme = useCustomizationTheme();
-  const isError = hasErrors || mutationError !== null;
 
   return (
     <View
@@ -24,12 +20,13 @@ export function LibraryCollectionDetailStatus({
     >
       <Text
         style={[
-          isError ? styles.errorText : styles.panelText,
-          { color: isError ? theme.danger : theme.secondaryText },
+          statusState.isError ? styles.errorText : styles.panelText,
+          {
+            color: statusState.isError ? theme.danger : theme.secondaryText,
+          },
         ]}
       >
-        {mutationError ??
-          (hasErrors ? "One or more detail queries failed." : updatedLabel)}
+        {statusState.statusLabel}
       </Text>
     </View>
   );

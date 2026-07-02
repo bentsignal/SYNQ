@@ -1560,6 +1560,9 @@ endless old-app polishing loop.
    - Done: library home query error and updated-time status now lives in the
      library home service with smoke coverage instead of controller/view-local
      label branching.
+   - Done: collection detail query/mutation status and updated-time copy now
+     live in the collection interaction service with smoke coverage instead of
+     view/status-panel branching.
 
 2. Playlist:
    - Done: add `useLibraryPlaylistsQuery` for the list-level library playlist

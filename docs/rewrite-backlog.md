@@ -173,6 +173,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: collection detail assembled layout, songs section header, list wiring,
     mutation status, and library back link now live in a focused component
     instead of the route screen.
+  - Done: collection detail playback/queue actions and mutation workflows now
+    live in focused hooks instead of one controller owning every command path.
   - Done: edit collection routes now mount kind-specific live query hooks so
     album, artist, and playlist edits do not subscribe to unrelated tables.
   - Done: add-to-collection routes now mount kind-specific relationship live

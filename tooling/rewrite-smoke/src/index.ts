@@ -273,10 +273,13 @@ import {
   getCustomizationSettingsErrorMessage,
   getCustomizationOptionState,
   getCustomizationScreenState,
+  getPrivacyScreenViewState,
   getPrivacyScreenState,
   getPrivacySettingsErrorMessage,
+  getSettingsBackLink,
   getSettingsHomeHref,
   getSettingsPremiumHref,
+  getSupportScreenViewState,
   shouldSendHapticForHapticsToggle,
 } from "../../../apps/new/src/features/settings/services/settings-screen-service";
 
@@ -4380,6 +4383,47 @@ function assertPremiumScreenSmoke() {
 function assertSettingsScreenSmoke() {
   assert.equal(getSettingsHomeHref(), "/(tabs)/settings");
   assert.equal(getSettingsPremiumHref(), "/premium");
+  assert.deepEqual(getSettingsBackLink(), {
+    href: "/(tabs)/settings",
+    label: "Back to Settings",
+  });
+  assert.deepEqual(getPrivacyScreenViewState(), {
+    backLink: {
+      href: "/(tabs)/settings",
+      label: "Back to Settings",
+    },
+    header: {
+      kicker: "Preferences",
+      subtitle: "Control local preferences for analytics and diagnostics.",
+      title: "Privacy",
+    },
+    localFirstPanel: {
+      body:
+        "Your library, imports, backups, theme, and privacy preferences are stored on this device unless you choose to export or restore them.",
+      title: "Local-first by default",
+    },
+    preference: {
+      description:
+        "Allow anonymous usage signals to help prioritize reliability and feature work.",
+      title: "Analytics",
+    },
+  });
+  assert.deepEqual(getSupportScreenViewState(), {
+    backLink: {
+      href: "/(tabs)/settings",
+      label: "Back to Settings",
+    },
+    bugReportPanel: {
+      body:
+        "Include your device model, iOS or Android version, what you tapped before the issue, and whether the song file lives locally on-device.",
+      title: "Before you send a bug",
+    },
+    header: {
+      kicker: "Help",
+      subtitle: "Get help, send feedback, or follow along with the project.",
+      title: "Support",
+    },
+  });
   assert.deepEqual(getPrivacyScreenState({ status: "loading" }), {
     isAnalyticsDisabled: true,
     statusLabel: "Loading",

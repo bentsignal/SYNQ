@@ -24,6 +24,11 @@ export const getSettingsHomeHref = (): SettingsHomeHref =>
 
 export const getSettingsPremiumHref = (): SettingsPremiumHref => "/premium";
 
+export const getSettingsBackLink = () => ({
+  href: getSettingsHomeHref(),
+  label: "Back to Settings",
+});
+
 export type SupportAction = {
   description: string;
   label: string;
@@ -80,6 +85,39 @@ export const supportActions: SupportAction[] = [
     url: "https://discord.gg/KwC24St29g",
   },
 ];
+
+export const getPrivacyScreenViewState = () => ({
+  backLink: getSettingsBackLink(),
+  header: {
+    kicker: "Preferences",
+    subtitle: "Control local preferences for analytics and diagnostics.",
+    title: "Privacy",
+  },
+  localFirstPanel: {
+    body:
+      "Your library, imports, backups, theme, and privacy preferences are stored on this device unless you choose to export or restore them.",
+    title: "Local-first by default",
+  },
+  preference: {
+    description:
+      "Allow anonymous usage signals to help prioritize reliability and feature work.",
+    title: "Analytics",
+  },
+});
+
+export const getSupportScreenViewState = () => ({
+  backLink: getSettingsBackLink(),
+  bugReportPanel: {
+    body:
+      "Include your device model, iOS or Android version, what you tapped before the issue, and whether the song file lives locally on-device.",
+    title: "Before you send a bug",
+  },
+  header: {
+    kicker: "Help",
+    subtitle: "Get help, send feedback, or follow along with the project.",
+    title: "Support",
+  },
+});
 
 export const getPrivacyScreenState = ({
   status,

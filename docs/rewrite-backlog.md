@@ -414,6 +414,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: support action copy now lives in the settings screen service, support
     link haptics/external URL opening live in a controller hook, and the support
     route renders through a focused component.
+  - Done: privacy/support header copy, panel copy, preference copy, and settings
+    back-link presentation now live in the settings screen service with smoke
+    coverage instead of route view components.
   - Done: settings home route metadata and Premium status label now live in the
     settings screen service/controller, and the route renders through a focused
     component.

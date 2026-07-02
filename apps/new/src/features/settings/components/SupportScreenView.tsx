@@ -2,7 +2,7 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import type { SupportScreenController } from "../hooks/use-support-screen-controller";
 import { useCustomizationTheme } from "../hooks/use-customization-theme";
-import { getSettingsHomeHref } from "../services/settings-screen-service";
+import { getSupportScreenViewState } from "../services/settings-screen-service";
 
 type SupportScreenViewProps = SupportScreenController;
 
@@ -11,6 +11,7 @@ export function SupportScreenView({
   supportActions,
 }: SupportScreenViewProps) {
   const theme = useCustomizationTheme();
+  const viewState = getSupportScreenViewState();
 
   return (
     <ScrollView
@@ -18,12 +19,14 @@ export function SupportScreenView({
       style={[styles.scroll, { backgroundColor: theme.background }]}
     >
       <View style={styles.header}>
-        <Text style={[styles.kicker, { color: theme.accent }]}>Help</Text>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          {viewState.header.kicker}
+        </Text>
         <Text style={[styles.title, { color: theme.primaryText }]}>
-          Support
+          {viewState.header.title}
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          Get help, send feedback, or follow along with the project.
+          {viewState.header.subtitle}
         </Text>
       </View>
 
@@ -62,19 +65,18 @@ export function SupportScreenView({
         ]}
       >
         <Text style={[styles.panelTitle, { color: theme.primaryText }]}>
-          Before you send a bug
+          {viewState.bugReportPanel.title}
         </Text>
         <Text style={[styles.panelBody, { color: theme.secondaryText }]}>
-          Include your device model, iOS or Android version, what you tapped
-          before the issue, and whether the song file lives locally on-device.
+          {viewState.bugReportPanel.body}
         </Text>
       </View>
 
       <Link
-        href={getSettingsHomeHref()}
+        href={viewState.backLink.href}
         style={[styles.backLink, { color: theme.accent }]}
       >
-        Back to Settings
+        {viewState.backLink.label}
       </Link>
     </ScrollView>
   );

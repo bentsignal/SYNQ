@@ -2,7 +2,7 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import type { PrivacyScreenController } from "../hooks/use-privacy-screen-controller";
 import { useCustomizationTheme } from "../hooks/use-customization-theme";
-import { getSettingsHomeHref } from "../services/settings-screen-service";
+import { getPrivacyScreenViewState } from "../services/settings-screen-service";
 
 type PrivacyScreenViewProps = PrivacyScreenController;
 
@@ -12,6 +12,7 @@ export function PrivacyScreenView({
   updateAllowAnalytics,
 }: PrivacyScreenViewProps) {
   const theme = useCustomizationTheme();
+  const viewState = getPrivacyScreenViewState();
 
   return (
     <ScrollView
@@ -20,13 +21,13 @@ export function PrivacyScreenView({
     >
       <View style={styles.header}>
         <Text style={[styles.kicker, { color: theme.accent }]}>
-          Preferences
+          {viewState.header.kicker}
         </Text>
         <Text style={[styles.title, { color: theme.primaryText }]}>
-          Privacy
+          {viewState.header.title}
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          Control local preferences for analytics and diagnostics.
+          {viewState.header.subtitle}
         </Text>
         <Text style={[styles.statusText, { color: theme.accent }]}>
           {screenState.statusLabel}
@@ -41,11 +42,10 @@ export function PrivacyScreenView({
       >
         <View style={styles.preferenceText}>
           <Text style={[styles.rowTitle, { color: theme.primaryText }]}>
-            Analytics
+            {viewState.preference.title}
           </Text>
           <Text style={[styles.rowDescription, { color: theme.secondaryText }]}>
-            Allow anonymous usage signals to help prioritize reliability and
-            feature work.
+            {viewState.preference.description}
           </Text>
         </View>
         <Switch
@@ -64,11 +64,10 @@ export function PrivacyScreenView({
         ]}
       >
         <Text style={[styles.panelTitle, { color: theme.primaryText }]}>
-          Local-first by default
+          {viewState.localFirstPanel.title}
         </Text>
         <Text style={[styles.panelBody, { color: theme.secondaryText }]}>
-          Your library, imports, backups, theme, and privacy preferences are
-          stored on this device unless you choose to export or restore them.
+          {viewState.localFirstPanel.body}
         </Text>
       </View>
 
@@ -79,10 +78,10 @@ export function PrivacyScreenView({
       ) : null}
 
       <Link
-        href={getSettingsHomeHref()}
+        href={viewState.backLink.href}
         style={[styles.backLink, { color: theme.accent }]}
       >
-        Back to Settings
+        {viewState.backLink.label}
       </Link>
     </ScrollView>
   );

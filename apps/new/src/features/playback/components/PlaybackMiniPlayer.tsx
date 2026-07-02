@@ -2,7 +2,10 @@ import { Link, usePathname } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { usePlaybackSession } from "../hooks/use-playback-session";
-import { getPlaybackMiniPlayerState } from "../services/playback-player-state-service";
+import {
+  getPlaybackMiniPlayerState,
+  getPlaybackPlayerHref,
+} from "../services/playback-player-state-service";
 
 export function PlaybackMiniPlayer() {
   const theme = useCustomizationTheme();
@@ -13,6 +16,7 @@ export function PlaybackMiniPlayer() {
     pathname,
     state,
   });
+  const playerHref = getPlaybackPlayerHref();
 
   if (!miniPlayer.isVisible) {
     return null;
@@ -28,7 +32,7 @@ export function PlaybackMiniPlayer() {
         },
       ]}
     >
-      <Link asChild href="/player">
+      <Link asChild href={playerHref}>
         <Pressable style={styles.trackLink}>
           <Text
             numberOfLines={1}

@@ -107,6 +107,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     coverage instead of inline controller copy.
   - Done: player progress, seek target, and free-listening remaining-time math
     now live in a playback service instead of the player screen.
+  - Done: playback player, queue, mini-player, and Premium ad-gate
+    destinations now live in the playback player-state service with
+    deterministic smoke coverage instead of inline playback route strings.
   - Done: song detail relationship routing and action disabled-state derivation
     now live in the song detail service instead of the detail screen.
   - Done: song detail play/delete destination routes and delete confirmation

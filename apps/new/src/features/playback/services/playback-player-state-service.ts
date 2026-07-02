@@ -6,7 +6,18 @@ import type {
 
 export const playerSeekStepMs = 15_000;
 
-const hiddenMiniPlayerRoutes = new Set(["/player", "/queue"]);
+export type PlaybackHref = "/player" | "/premium" | "/queue";
+
+export const getPlaybackPlayerHref = (): PlaybackHref => "/player";
+
+export const getPlaybackPremiumHref = (): PlaybackHref => "/premium";
+
+export const getPlaybackQueueHref = (): PlaybackHref => "/queue";
+
+const hiddenMiniPlayerRoutes = new Set<string>([
+  getPlaybackPlayerHref(),
+  getPlaybackQueueHref(),
+]);
 
 export const getPlaybackProgressPercent = ({
   duration,

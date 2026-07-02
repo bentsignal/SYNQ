@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { getPlaybackPremiumHref } from "../services/playback-player-state-service";
 import type { PlaybackState } from "../types/playback-state";
 
 type PlaybackAdBreakPanelProps = {
@@ -14,6 +15,7 @@ export function PlaybackAdBreakPanel({
   state,
 }: PlaybackAdBreakPanelProps) {
   const theme = useCustomizationTheme();
+  const premiumHref = getPlaybackPremiumHref();
 
   return (
     <View style={styles.adPanel}>
@@ -37,7 +39,7 @@ export function PlaybackAdBreakPanel({
         />
       </View>
       <View style={styles.adActions}>
-        <Link asChild href="/premium">
+        <Link asChild href={premiumHref}>
           <Pressable
             accessibilityRole="button"
             style={[

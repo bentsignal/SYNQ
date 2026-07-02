@@ -2,6 +2,10 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { PlaybackQueueController } from "../hooks/use-playback-queue-controller";
+import {
+  getPlaybackPlayerHref,
+  getPlaybackPremiumHref,
+} from "../services/playback-player-state-service";
 import { PlaybackQueueList } from "./PlaybackQueueList";
 
 type PlaybackQueueScreenViewProps = PlaybackQueueController;
@@ -17,6 +21,8 @@ export function PlaybackQueueScreenView({
   state,
 }: PlaybackQueueScreenViewProps) {
   const theme = useCustomizationTheme();
+  const playerHref = getPlaybackPlayerHref();
+  const premiumHref = getPlaybackPremiumHref();
 
   return (
     <ScrollView
@@ -44,7 +50,7 @@ export function PlaybackQueueScreenView({
             song resumes automatically when the ad finishes.
           </Text>
           <View style={styles.adActions}>
-            <Link asChild href="/premium">
+            <Link asChild href={premiumHref}>
               <Pressable
                 accessibilityRole="button"
                 style={[
@@ -85,7 +91,7 @@ export function PlaybackQueueScreenView({
         </Pressable>
       </View>
 
-      <Link href="/player" style={[styles.backLink, { color: theme.accent }]}>
+      <Link href={playerHref} style={[styles.backLink, { color: theme.accent }]}>
         Back to player
       </Link>
     </ScrollView>

@@ -24,9 +24,12 @@ import {
 import {
   getFreeListeningRemainingMs,
   getPlaybackMiniPlayerState,
+  getPlaybackPlayerHref,
   getPlaybackPlayerActionState,
   getPlaybackPlayerViewState,
+  getPlaybackPremiumHref,
   getPlaybackProgressPercent,
+  getPlaybackQueueHref,
   getSeekTargetPosition,
 } from "../../../apps/new/src/features/playback/services/playback-player-state-service";
 import { audioStatusToTrackPlayerSnapshot } from "../../../apps/new/src/features/playback/services/playback-native-status-service";
@@ -643,6 +646,9 @@ function assertPlaybackNativeCommandPlanSmoke() {
 function assertPlaybackPlayerStateSmoke() {
   const activeTrack = song({ duration: 180_000, id: 10, title: "Mini Track" });
 
+  assert.equal(getPlaybackPlayerHref(), "/player");
+  assert.equal(getPlaybackQueueHref(), "/queue");
+  assert.equal(getPlaybackPremiumHref(), "/premium");
   assert.equal(
     getPlaybackProgressPercent({ duration: 0, position: 5_000 }),
     0,

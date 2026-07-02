@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { PlaybackPlayerController } from "../hooks/use-playback-player-controller";
+import { getPlaybackQueueHref } from "../services/playback-player-state-service";
 import { PlaybackAdBreakPanel } from "./PlaybackAdBreakPanel";
 import { PlaybackNowPlayingPanel } from "./PlaybackNowPlayingPanel";
 import { PlaybackPlayerControls } from "./PlaybackPlayerControls";
@@ -25,6 +26,7 @@ export function PlaybackPlayerScreenView({
   toggleShuffleMode,
 }: PlaybackPlayerScreenViewProps) {
   const theme = useCustomizationTheme();
+  const queueHref = getPlaybackQueueHref();
 
   return (
     <ScrollView
@@ -75,7 +77,7 @@ export function PlaybackPlayerScreenView({
 
       {state.error ? <PlaybackErrorPanel error={state.error} /> : null}
 
-      <Link href="/queue" style={[styles.backLink, { color: theme.accent }]}>
+      <Link href={queueHref} style={[styles.backLink, { color: theme.accent }]}>
         Open queue
       </Link>
     </ScrollView>

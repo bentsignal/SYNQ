@@ -1,3 +1,5 @@
+import type { SettingsPersistenceStatus } from "../services/settings-persistence-state-service";
+
 export type CustomizationColorKey =
   | "blue"
   | "mint"
@@ -19,8 +21,4 @@ export type CustomizationSettings = {
   theme: CustomizationColorKey;
 };
 
-export type CustomizationSettingsStatus =
-  | "error"
-  | "idle"
-  | "loading"
-  | "saving";
+export type CustomizationSettingsStatus = SettingsPersistenceStatus;

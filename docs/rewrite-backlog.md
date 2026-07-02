@@ -582,6 +582,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: Wi-Fi import header, address status, progress, and review/back
     actions now render through focused components instead of one large Wi-Fi
     screen view.
+  - Done: customization and privacy settings now share a typed persistence
+    reducer/loader boundary, and customization save/icon commands live in a
+    focused hook instead of the provider-facing settings hook.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -658,6 +661,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     for selected, saving, and already-linked songs.
   - Done: extend deterministic smoke coverage to collection detail route and
     deletion guard rules for protected playlists and missing collections.
+  - Done: extend deterministic smoke coverage to the shared settings
+    persistence reducer for load, save, success, failure, and rollback states.
   - Done: extend deterministic smoke coverage to player progress, seek
     clamping, and free-listening remaining-time calculations.
   - Done: extend deterministic smoke coverage to song detail relationship hrefs

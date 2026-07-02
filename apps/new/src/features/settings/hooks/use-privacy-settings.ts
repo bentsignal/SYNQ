@@ -1,109 +1,28 @@
-import { useCallback, useEffect, useMemo, useReducer } from "react";
+import { useCallback, useMemo, useReducer } from "react";
 import {
   defaultPrivacySettings,
   loadPrivacySettings,
   savePrivacySettings,
 } from "../services/privacy-settings-service";
 import { getPrivacySettingsErrorMessage } from "../services/settings-screen-service";
-import type {
-  PrivacySettings,
-  PrivacySettingsStatus,
-} from "../types/privacy-settings";
-
-type PrivacySettingsState = {
-  error: string | null;
-  settings: PrivacySettings;
-  status: PrivacySettingsStatus;
-};
-
-type PrivacySettingsAction =
-  | { type: "load" }
-  | { settings: PrivacySettings; type: "load-success" }
-  | { error: string; type: "load-failure" }
-  | { settings: PrivacySettings; type: "save" }
-  | { settings: PrivacySettings; type: "save-success" }
-  | { error: string; settings: PrivacySettings; type: "save-failure" };
-
-const initialState: PrivacySettingsState = {
-  error: null,
-  settings: defaultPrivacySettings,
-  status: "idle",
-};
-
-const privacySettingsReducer = (
-  state: PrivacySettingsState,
-  action: PrivacySettingsAction,
-): PrivacySettingsState => {
-  switch (action.type) {
-    case "load":
-      return {
-        ...state,
-        error: null,
-        status: "loading",
-      };
-    case "load-success":
-      return {
-        error: null,
-        settings: action.settings,
-        status: "idle",
-      };
-    case "load-failure":
-      return {
-        ...state,
-        error: action.error,
-        status: "error",
-      };
-    case "save":
-      return {
-        error: null,
-        settings: action.settings,
-        status: "saving",
-      };
-    case "save-success":
-      return {
-        error: null,
-        settings: action.settings,
-        status: "idle",
-      };
-    case "save-failure":
-      return {
-        error: action.error,
-        settings: action.settings,
-        status: "error",
-      };
-  }
-};
+import {
+  createInitialSettingsPersistenceState,
+  settingsPersistenceReducer,
+} from "../services/settings-persistence-state-service";
+import type { PrivacySettings } from "../types/privacy-settings";
+import { useSettingsPersistenceLoader } from "./use-settings-persistence-loader";
 
 export function usePrivacySettings() {
-  const [state, dispatch] = useReducer(privacySettingsReducer, initialState);
+  const [state, dispatch] = useReducer(
+    settingsPersistenceReducer<PrivacySettings>,
+    createInitialSettingsPersistenceState(defaultPrivacySettings),
+  );
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadSettings = async () => {
-      dispatch({ type: "load" });
-
-      try {
-        const settings = await loadPrivacySettings();
-        if (isMounted) {
-          dispatch({ settings, type: "load-success" });
-        }
-      } catch (error) {
-        if (isMounted) {
-          dispatch({
-            error: getPrivacySettingsErrorMessage(error),
-            type: "load-failure",
-          });
-        }
-      }
-    };
-
-    void loadSettings();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  useSettingsPersistenceLoader({
+    dispatch,
+    getErrorMessage: getPrivacySettingsErrorMessage,
+    loadSettings: loadPrivacySettings,
+  });
 
   const setAllowAnalytics = useCallback(
     async (allowAnalytics: boolean) => {

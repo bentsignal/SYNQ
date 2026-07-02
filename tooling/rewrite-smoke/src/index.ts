@@ -318,6 +318,10 @@ import {
   getSupportScreenViewState,
   shouldSendHapticForHapticsToggle,
 } from "../../../apps/new/src/features/settings/services/settings-screen-service";
+import {
+  createInitialSettingsPersistenceState,
+  settingsPersistenceReducer,
+} from "../../../apps/new/src/features/settings/services/settings-persistence-state-service";
 
 const song = ({
   duration = 180_000,
@@ -5134,6 +5138,85 @@ function assertPremiumScreenSmoke() {
 }
 
 function assertSettingsScreenSmoke() {
+  const initialSettings = { allowAnalytics: true };
+  const loadedSettings = { allowAnalytics: false };
+  const initialPersistenceState =
+    createInitialSettingsPersistenceState(initialSettings);
+
+  assert.deepEqual(initialPersistenceState, {
+    error: null,
+    settings: initialSettings,
+    status: "idle",
+  });
+
+  const loadingState = settingsPersistenceReducer(initialPersistenceState, {
+    type: "load",
+  });
+  assert.deepEqual(loadingState, {
+    error: null,
+    settings: initialSettings,
+    status: "loading",
+  });
+
+  assert.deepEqual(
+    settingsPersistenceReducer(loadingState, {
+      settings: loadedSettings,
+      type: "load-success",
+    }),
+    {
+      error: null,
+      settings: loadedSettings,
+      status: "idle",
+    },
+  );
+
+  assert.deepEqual(
+    settingsPersistenceReducer(loadingState, {
+      error: "Load failed",
+      type: "load-failure",
+    }),
+    {
+      error: "Load failed",
+      settings: initialSettings,
+      status: "error",
+    },
+  );
+
+  const savingState = settingsPersistenceReducer(initialPersistenceState, {
+    settings: loadedSettings,
+    type: "save",
+  });
+  assert.deepEqual(savingState, {
+    error: null,
+    settings: loadedSettings,
+    status: "saving",
+  });
+
+  assert.deepEqual(
+    settingsPersistenceReducer(savingState, {
+      settings: loadedSettings,
+      type: "save-success",
+    }),
+    {
+      error: null,
+      settings: loadedSettings,
+      status: "idle",
+    },
+  );
+
+  assert.deepEqual(
+    settingsPersistenceReducer(savingState, {
+      error: "Save failed",
+      settings: initialSettings,
+      type: "save-failure",
+    }),
+    {
+      error: "Save failed",
+      settings: initialSettings,
+      status: "error",
+    },
+  );
+
   assert.equal(getSettingsHomeHref(), "/(tabs)/settings");
   assert.equal(getSettingsPremiumHref(), "/premium");
   assert.deepEqual(getSettingsBackLink(), {
@@ -5257,10 +5340,15 @@ function assertSettingsScreenSmoke() {
     "Customization settings failed.",
   );
   assert.equal(
-    getPrivacySettingsErrorMessage(new Error("Privacy smoke failure")),
+    getPrivacySettingsErrorMessage(
+      new Error("Privacy smoke failure"),
+    ),
     "Privacy smoke failure",
   );
-  assert.equal(getPrivacySettingsErrorMessage(undefined), "Privacy settings failed.");
+  assert.equal(
+    getPrivacySettingsErrorMessage(undefined),
+    "Privacy settings failed.",
+  );
 }
 
 assertDurationFormatSmoke();

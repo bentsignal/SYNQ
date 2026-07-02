@@ -52,3 +52,29 @@ export const upsertQueueItem = ({
 
   return [...queue, song];
 };
+
+export const moveQueueItem = ({
+  fromIndex,
+  queue,
+  toIndex,
+}: {
+  fromIndex: number;
+  queue: PlaybackQueueItem[];
+  toIndex: number;
+}) => {
+  if (
+    fromIndex < 0 ||
+    fromIndex >= queue.length ||
+    toIndex < 0 ||
+    toIndex >= queue.length ||
+    fromIndex === toIndex
+  ) {
+    return queue;
+  }
+
+  const nextQueue = [...queue];
+  const [movedItem] = nextQueue.splice(fromIndex, 1);
+  nextQueue.splice(toIndex, 0, movedItem);
+
+  return nextQueue;
+};

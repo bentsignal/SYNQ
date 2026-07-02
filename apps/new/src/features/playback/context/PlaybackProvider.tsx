@@ -11,6 +11,7 @@ import {
 import {
   findQueueIndex,
   initialPlaybackState,
+  moveQueueItem,
   upsertQueueItem,
 } from "../services/playback-session-service";
 import {
@@ -35,6 +36,7 @@ type PlaybackAction =
   | { type: "skip-previous" }
   | { song: PlaybackQueueItem; type: "add-to-queue" }
   | { songId: number; type: "remove-from-queue" }
+  | { direction: "down" | "up"; songId: number; type: "move-queue-song" }
   | { state: PlaybackState; type: "hydrate" }
   | { error: string; type: "native-failure" }
   | { status: TrackPlayerStatusSnapshot; type: "native-status" }
@@ -44,6 +46,7 @@ type PlaybackAction =
 
 type PlaybackCommands = {
   addToQueue: (song: PlaybackQueueItem) => void;
+  moveQueueSong: (songId: number, direction: "down" | "up") => void;
   pause: () => void;
   playSong: (song: PlaybackQueueItem) => void;
   removeFromQueue: (songId: number) => void;
@@ -215,6 +218,33 @@ const playbackReducer = (
         activeTrackId: nextActiveTrack?.id ?? null,
         duration: nextActiveTrack?.duration ?? state.duration,
         isPlaying: nextActiveTrack ? state.isPlaying : false,
+        queue,
+      });
+    }
+    case "move-queue-song": {
+      const fromIndex = findQueueIndex({
+        queue: state.queue,
+        songId: action.songId,
+      });
+      const toIndex =
+        action.direction === "up" ? fromIndex - 1 : fromIndex + 1;
+      const queue = moveQueueItem({
+        fromIndex,
+        queue: state.queue,
+        toIndex,
+      });
+      const activeQueueIndex =
+        state.activeTrackId === null
+          ? null
+          : findQueueIndex({ queue, songId: state.activeTrackId });
+      const normalizedActiveQueueIndex =
+        activeQueueIndex !== null && activeQueueIndex >= 0
+          ? activeQueueIndex
+          : null;
+
+      return bumpQueueRevision({
+        ...state,
+        activeQueueIndex: normalizedActiveQueueIndex,
         queue,
       });
     }
@@ -406,6 +436,12 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const addToQueue = useCallback((song: PlaybackQueueItem) => {
     dispatch({ song, type: "add-to-queue" });
   }, []);
+  const moveQueueSong = useCallback(
+    (songId: number, direction: "down" | "up") => {
+      dispatch({ direction, songId, type: "move-queue-song" });
+    },
+    [],
+  );
   const removeFromQueue = useCallback((songId: number) => {
     const activeTrackId = stateRef.current.activeTrackId;
 
@@ -425,6 +461,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     () => ({
       activeTrack,
       addToQueue,
+      moveQueueSong,
       pause,
       playSong,
       removeFromQueue,
@@ -439,6 +476,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     [
       activeTrack,
       addToQueue,
+      moveQueueSong,
       pause,
       playSong,
       removeFromQueue,

@@ -15,7 +15,7 @@ const formatDuration = (duration: number | null) => {
 };
 
 export function PlaybackQueueScreen() {
-  const { activeTrack, playSong, removeFromQueue, state } =
+  const { activeTrack, moveQueueSong, playSong, removeFromQueue, state } =
     usePlaybackSession();
 
   return (
@@ -69,6 +69,32 @@ export function PlaybackQueueScreen() {
                 >
                   <Text style={styles.removeText}>Remove</Text>
                 </Pressable>
+                <View style={styles.moveButtons}>
+                  <Pressable
+                    accessibilityLabel={`Move ${song.title} up`}
+                    accessibilityRole="button"
+                    disabled={index === 0}
+                    onPress={() => moveQueueSong(song.id, "up")}
+                    style={[
+                      styles.moveButton,
+                      index === 0 ? styles.disabled : null,
+                    ]}
+                  >
+                    <Text style={styles.moveText}>Up</Text>
+                  </Pressable>
+                  <Pressable
+                    accessibilityLabel={`Move ${song.title} down`}
+                    accessibilityRole="button"
+                    disabled={index === state.queue.length - 1}
+                    onPress={() => moveQueueSong(song.id, "down")}
+                    style={[
+                      styles.moveButton,
+                      index === state.queue.length - 1 ? styles.disabled : null,
+                    ]}
+                  >
+                    <Text style={styles.moveText}>Down</Text>
+                  </Pressable>
+                </View>
               </View>
             );
           })}
@@ -214,6 +240,30 @@ const styles = StyleSheet.create({
     minHeight: 34,
     minWidth: 76,
     paddingHorizontal: 10,
+  },
+  moveButtons: {
+    flexDirection: "row",
+    gap: 6,
+  },
+  moveButton: {
+    alignItems: "center",
+    borderColor: "#dbe3de",
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: 34,
+    minWidth: 54,
+    paddingHorizontal: 8,
+  },
+  disabled: {
+    opacity: 0.45,
+  },
+  moveText: {
+    color: "#0f766e",
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
   },
   removeText: {
     color: "#b42318",

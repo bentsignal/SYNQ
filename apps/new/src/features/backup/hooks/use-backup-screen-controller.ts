@@ -88,3 +88,7 @@ export function useBackupScreenController() {
     statusState,
   };
 }
+
+export type BackupScreenController = ReturnType<
+  typeof useBackupScreenController
+>;

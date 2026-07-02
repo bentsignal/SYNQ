@@ -196,6 +196,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: backup operation confirmations, phase-transition side effects,
     runtime-session resets, status reset haptics, and Premium action-state
     wiring now live in a controller hook instead of the screen.
+  - Done: backup action cards, Premium badges, command buttons, status panel,
+    and settings back-link rendering now live in a focused backup component
+    instead of the route screen.
   - Done: backup restore now unzips into a cache staging directory and rejects
     empty archives before replacing the live document directory.
   - Done: backup session reducer state transitions now live in a pure service

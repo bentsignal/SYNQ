@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
-import { AddCollectionSongsFormView } from "../components/AddCollectionSongsFormView";
+import { AddCollectionSongsConnectedForm } from "../components/AddCollectionSongsConnectedForm";
 import { LibraryInvalidCollectionState } from "../components/LibraryInvalidCollectionState";
-import { useAddCollectionSongsController } from "../hooks/use-add-collection-songs-controller";
 import {
   useAddableAlbumCollectionSongsQuery,
   useAddableArtistCollectionSongsQuery,
@@ -54,12 +53,12 @@ function AddAlbumCollectionSongsContent({ id }: { id: number }) {
   });
 
   return (
-    <AddCollectionSongsForm
+    <AddCollectionSongsConnectedForm
       addable={addable}
-      id={id}
+      collectionId={id}
       kind="album"
+      onChangeQuery={setQuery}
       query={query}
-      setQuery={setQuery}
     />
   );
 }
@@ -72,12 +71,12 @@ function AddArtistCollectionSongsContent({ id }: { id: number }) {
   });
 
   return (
-    <AddCollectionSongsForm
+    <AddCollectionSongsConnectedForm
       addable={addable}
-      id={id}
+      collectionId={id}
       kind="artist"
+      onChangeQuery={setQuery}
       query={query}
-      setQuery={setQuery}
     />
   );
 }
@@ -90,67 +89,12 @@ function AddPlaylistCollectionSongsContent({ id }: { id: number }) {
   });
 
   return (
-    <AddCollectionSongsForm
+    <AddCollectionSongsConnectedForm
       addable={addable}
-      id={id}
-      kind="playlist"
-      query={query}
-      setQuery={setQuery}
-    />
-  );
-}
-
-type AddCollectionSongsFormProps = {
-  addable: ReturnType<typeof useAddableAlbumCollectionSongsQuery>;
-  id: number;
-  kind: LibraryCollectionDetailKind;
-  query: string;
-  setQuery: (query: string) => void;
-};
-
-function AddCollectionSongsForm({
-  addable,
-  id,
-  kind,
-  query,
-  setQuery,
-}: AddCollectionSongsFormProps) {
-  const { errors, songs, updatedAt } = addable;
-  const hasErrors = errors.length > 0;
-  const updatedLabel =
-    updatedAt > 0
-      ? `Updated ${new Date(updatedAt).toLocaleTimeString()}`
-      : "Waiting for library data";
-  const {
-    addSelectedSongs,
-    addSong,
-    mutationError,
-    savingSongId,
-    selectedSongIds,
-    selectionState,
-    toggleSongSelection,
-  } = useAddCollectionSongsController({
-    collectionId: id,
-    kind,
-    songs,
-  });
-
-  return (
-    <AddCollectionSongsFormView
       collectionId={id}
-      hasErrors={hasErrors}
-      kind={kind}
-      mutationError={mutationError}
-      onAddSelectedSongs={addSelectedSongs}
-      onAddSong={addSong}
+      kind="playlist"
       onChangeQuery={setQuery}
-      onToggleSongSelection={toggleSongSelection}
       query={query}
-      savingSongId={savingSongId}
-      selectedSongIds={selectedSongIds}
-      selectionState={selectionState}
-      songs={songs}
-      updatedLabel={updatedLabel}
     />
   );
 }

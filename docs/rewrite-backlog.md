@@ -139,6 +139,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: add-to-collection header/search, section header, selection controls,
     and status panel now render through focused components instead of one large
     add-songs form view.
+  - Done: add-to-collection query result/controller/view wiring now lives in a
+    connected form component instead of the route screen owning repeated
+    status and mutation-controller assembly.
   - Done: song detail play, queue, like, export, delete, mutation error, and
     busy-state workflows now live in a controller hook instead of the screen.
   - Done: edit-song form fields, save/cancel controls, query/mutation status

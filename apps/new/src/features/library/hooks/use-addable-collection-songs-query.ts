@@ -161,3 +161,7 @@ export function useAddablePlaylistCollectionSongsQuery({
     songRows,
   });
 }
+
+export type AddableCollectionSongsQueryResult = ReturnType<
+  typeof useAddableAlbumCollectionSongsQuery
+>;

@@ -14,6 +14,10 @@ import {
   upsertQueueItem,
 } from "../services/playback-session-service";
 import {
+  loadPersistedPlaybackState,
+  savePersistedPlaybackState,
+} from "../services/playback-persistence-service";
+import {
   createExpoAvTrackPlayerAdapter,
   type TrackPlayerStatusSnapshot,
 } from "../services/track-player-adapter";
@@ -31,6 +35,7 @@ type PlaybackAction =
   | { type: "skip-previous" }
   | { song: PlaybackQueueItem; type: "add-to-queue" }
   | { songId: number; type: "remove-from-queue" }
+  | { state: PlaybackState; type: "hydrate" }
   | { error: string; type: "native-failure" }
   | { status: TrackPlayerStatusSnapshot; type: "native-status" }
   | { type: "native-finished" }
@@ -95,6 +100,12 @@ const playbackReducer = (
   action: PlaybackAction,
 ): PlaybackState => {
   switch (action.type) {
+    case "hydrate":
+      return {
+        ...action.state,
+        error: null,
+        initialized: true,
+      };
     case "play-song": {
       const queue = upsertQueueItem({ queue: state.queue, song: action.song });
       const activeQueueIndex = findQueueIndex({
@@ -270,6 +281,8 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(playbackReducer, initialPlaybackState);
   const stateRef = useRef(state);
   const adapterRef = useRef(createExpoAvTrackPlayerAdapter());
+  const hasHydratedRef = useRef(false);
+  const lastPersistedAtRef = useRef(0);
   const activeTrack = useMemo(() => getActiveTrack(state), [state]);
 
   useEffect(() => {
@@ -288,6 +301,47 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       dispatch({ error: getErrorMessage(error), type: "native-failure" });
     });
   }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const hydratePlaybackState = async () => {
+      const persistedState = await loadPersistedPlaybackState();
+      if (!isMounted) {
+        return;
+      }
+
+      hasHydratedRef.current = true;
+      dispatch({ state: persistedState, type: "hydrate" });
+
+      if (persistedState.isPlaying) {
+        runNativeCommand(() => adapterRef.current.restore(persistedState));
+      }
+    };
+
+    void hydratePlaybackState();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [runNativeCommand]);
+
+  useEffect(() => {
+    if (!hasHydratedRef.current) {
+      return;
+    }
+
+    const now = Date.now();
+    const shouldPersistImmediately = !state.isPlaying;
+    const shouldPersistProgress = now - lastPersistedAtRef.current > 5000;
+
+    if (!shouldPersistImmediately && !shouldPersistProgress) {
+      return;
+    }
+
+    lastPersistedAtRef.current = now;
+    void savePersistedPlaybackState(state);
+  }, [state]);
 
   useEffect(() => {
     const adapter = adapterRef.current;

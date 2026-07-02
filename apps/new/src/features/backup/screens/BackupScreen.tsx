@@ -44,14 +44,18 @@ export function BackupScreen() {
   const { reset, runOperation, state } = useBackupSession();
   const isRunning = state.phase === "running";
   const runBackupOperation = (operation: BackupOperation) => {
-    if (operation !== "erase") {
+    if (operation === "backup") {
       void runOperation(operation);
       return;
     }
 
+    const isRestore = operation === "restore";
+
     Alert.alert(
-      "Erase library",
-      "This removes local songs, collections, metadata, and library files from this device.",
+      isRestore ? "Restore library" : "Erase library",
+      isRestore
+        ? "This replaces the current local library with the selected backup archive."
+        : "This removes local songs, collections, metadata, and library files from this device.",
       [
         {
           style: "cancel",
@@ -60,7 +64,7 @@ export function BackupScreen() {
         {
           onPress: () => void runOperation(operation),
           style: "destructive",
-          text: "Erase",
+          text: isRestore ? "Restore" : "Erase",
         },
       ],
     );

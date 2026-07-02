@@ -1,15 +1,12 @@
 import { resetDatabaseConnection } from "@synq/db";
+import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
-import { zip } from "react-native-zip-archive";
+import { unzip, zip } from "react-native-zip-archive";
 import type {
   BackupCommandResult,
   BackupOperation,
 } from "../types/backup-session";
-
-const unavailableMessages = {
-  restore: "Restore still needs document picking, unzip, and database reset services.",
-} satisfies Partial<Record<BackupOperation, string>>;
 
 const getDocumentDirectory = () => {
   if (!FileSystem.documentDirectory) {
@@ -58,6 +55,19 @@ const runCreateBackupCommand = async (): Promise<BackupCommandResult> => {
   };
 };
 
+const pickBackupArchive = async () => {
+  const result = await DocumentPicker.getDocumentAsync({
+    copyToCacheDirectory: true,
+    type: "application/zip",
+  });
+
+  if (result.canceled) {
+    return null;
+  }
+
+  return result.assets[0]?.uri ?? null;
+};
+
 const runEraseLibraryCommand = async (): Promise<BackupCommandResult> => {
   await clearDocumentDirectory();
   await resetDatabaseConnection();
@@ -65,6 +75,26 @@ const runEraseLibraryCommand = async (): Promise<BackupCommandResult> => {
   return {
     message: "Local library files and database rows were erased.",
     operation: "erase",
+  };
+};
+
+const runRestoreBackupCommand = async (): Promise<BackupCommandResult> => {
+  const archiveUri = await pickBackupArchive();
+
+  if (!archiveUri) {
+    return {
+      message: "Restore was cancelled.",
+      operation: "restore",
+    };
+  }
+
+  await clearDocumentDirectory();
+  await unzip(archiveUri, getDocumentDirectory());
+  await resetDatabaseConnection();
+
+  return {
+    message: "Backup archive was restored into the local library.",
+    operation: "restore",
   };
 };
 
@@ -79,5 +109,5 @@ export async function runBackupCommand(
     return runEraseLibraryCommand();
   }
 
-  return Promise.reject(new Error(unavailableMessages[operation]));
+  return runRestoreBackupCommand();
 }

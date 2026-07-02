@@ -48,7 +48,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/backup",
     targetBoundary: "src/features/backup",
-    nextMilestone: "Connect document picking and restore services.",
+    nextMilestone: "Manually smoke backup archive, restore, and erase flows.",
   },
   {
     key: "premium-settings",

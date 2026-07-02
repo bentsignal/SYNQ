@@ -99,6 +99,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     service instead of the save screen.
   - Done: collection preview detail-route generation now lives in the collection
     preview service instead of duplicated preview/list UI helpers.
+  - Done: library collection preview empty state, columns, and row rendering now
+    live in focused components instead of one large preview section.
   - Done: library collection list filtering, empty labels, and query status
     labels now live in the collection list service instead of screen-local
     state shaping.

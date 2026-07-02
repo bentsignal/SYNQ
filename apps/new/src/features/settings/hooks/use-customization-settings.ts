@@ -4,6 +4,7 @@ import {
   loadCustomizationSettings,
   saveCustomizationSettings,
 } from "../services/customization-settings-service";
+import { setNativeAppIcon } from "../services/native-app-icon-service";
 import type {
   CustomizationColorKey,
   CustomizationSettings,
@@ -109,11 +110,15 @@ export function useCustomizationSettings() {
   }, []);
 
   const updateSettings = useCallback(
-    async (settings: CustomizationSettings) => {
+    async (
+      settings: CustomizationSettings,
+      beforeSave?: () => void | Promise<void>,
+    ) => {
       const previousSettings = state.settings;
       dispatch({ settings, type: "save" });
 
       try {
+        await beforeSave?.();
         await saveCustomizationSettings(settings);
         dispatch({ settings, type: "save-success" });
       } catch (error) {
@@ -138,10 +143,13 @@ export function useCustomizationSettings() {
 
   const setAppIcon = useCallback(
     (appIcon: CustomizationColorKey) =>
-      updateSettings({
-        ...state.settings,
-        appIcon,
-      }),
+      updateSettings(
+        {
+          ...state.settings,
+          appIcon,
+        },
+        () => setNativeAppIcon(appIcon),
+      ),
     [state.settings, updateSettings],
   );
 

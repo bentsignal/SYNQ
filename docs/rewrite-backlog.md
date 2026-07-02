@@ -76,7 +76,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     entitlement provider, persisted customization preferences for theme,
     app icon, and haptics, and saved-theme consumption across navigation,
     loading/placeholder states, settings, and the library home surface exist;
-    deeper feature-screen theming and native icon handling are next.
+    native app icon assets/config and a settings-owned native icon service are
+    wired; deeper feature-screen theming and native-build icon smoke are next.
 - [ ] Move reusable feature logic from `apps/old` into shared app-local modules
   that `apps/new` can consume without copying UI spaghetti.
 - [ ] Build the `apps/new` screens against reactive Drizzle query hooks instead
@@ -143,9 +144,11 @@ entitlement provider consumed by Settings, Backup, and Customization. Settings
 customization now owns persisted theme, app icon, and haptic preference state;
 the app shell, loading/placeholder states, settings screens, and library home
 surface consume saved theme state through a shared palette hook; deeper
-feature-screen theme application, native icon handling, native remote playback
-event ingestion, and manual playback smoke are still next. It is not yet a
-replacement app.
+feature-screen theme application, native remote playback event ingestion, and
+manual playback smoke are still next. Native app icon assets/config now exist in
+`apps/new`, and app-icon preference changes flow through a settings-owned
+native service, but alternate icon behavior still needs a native prebuild/device
+smoke. It is not yet a replacement app.
 The next useful work should alternate between:
 
 - closing Phase 2 gaps that would otherwise be copied into the new app; and

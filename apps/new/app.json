@@ -4,6 +4,7 @@
     "slug": "synq-new",
     "version": "0.0.0",
     "orientation": "portrait",
+    "icon": "./src/assets/appIcons/icon-blue.png",
     "scheme": "synq-new",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,6 +14,41 @@
         "expo-audio",
         {
           "enableBackgroundPlayback": true
+        }
+      ],
+      [
+        "expo-icon-handler",
+        {
+          "icons": [
+            {
+              "name": "icon-blue",
+              "path": "./src/assets/appIcons/icon-blue.png"
+            },
+            {
+              "name": "icon-mint",
+              "path": "./src/assets/appIcons/icon-mint.png"
+            },
+            {
+              "name": "icon-orange",
+              "path": "./src/assets/appIcons/icon-orange.png"
+            },
+            {
+              "name": "icon-pink",
+              "path": "./src/assets/appIcons/icon-pink.png"
+            },
+            {
+              "name": "icon-purple",
+              "path": "./src/assets/appIcons/icon-purple.png"
+            },
+            {
+              "name": "icon-red",
+              "path": "./src/assets/appIcons/icon-red.png"
+            },
+            {
+              "name": "icon-yellow",
+              "path": "./src/assets/appIcons/icon-yellow.png"
+            }
+          ]
         }
       ]
     ],

@@ -486,6 +486,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: Wi-Fi import server readiness, port, address, and failure transitions
     now live in a service reducer with smoke coverage instead of hook-local
     lifecycle setters.
+  - Done: Wi-Fi import route callback refs and bridge-server port fallback
+    registration now live in focused hook/service boundaries instead of the
+    server lifecycle hook owning the bridge setup details.
   - Done: import save artist, album, playlist, and album-cover relationship
     linking now lives in a dedicated import library link service instead of the
     top-level library save orchestration.

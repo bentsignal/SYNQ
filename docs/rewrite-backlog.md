@@ -170,6 +170,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     duplicating route-screen presentation.
   - Done: collection create/edit preview initials and save button labels now
     live in the collection form service instead of screen-local formatting.
+  - Done: shared collection form header, fields, image picker, validation
+    errors, and save action now render through focused components instead of
+    one large collection form view.
   - Done: playback queue row/action state now lives in the playback service
     instead of queue screen boundary checks.
   - Done: playback queue indexing, active/previous/replacement-track lookup,

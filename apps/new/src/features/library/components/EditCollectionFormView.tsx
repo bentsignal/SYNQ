@@ -1,9 +1,7 @@
 import type { CollectionFormActionState } from "../services/collection-form-service";
 import type { EditCollectionKind } from "../services/edit-collection-query-service";
-import {
-  CollectionFormView,
-  type CollectionFormImage,
-} from "./CollectionFormView";
+import { CollectionFormView } from "./CollectionFormView";
+import type { CollectionFormImage } from "./collection-form-types";
 
 type EditCollectionFormCopy = {
   kicker: string;

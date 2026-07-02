@@ -495,6 +495,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: song detail like/export/delete mutation flags and errors now live in
     a song detail service reducer with smoke coverage instead of scattered
     controller state setters.
+  - Done: song detail playback/queue actions and like/export/delete workflows
+    now live in focused hooks instead of one controller owning every command
+    path.
   - Done: song detail relationship list rendering now lives in a dedicated
     component instead of the route screen.
   - Done: song detail header, summary cards, action row, source panel, and

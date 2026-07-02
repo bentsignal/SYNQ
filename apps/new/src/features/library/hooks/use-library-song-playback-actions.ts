@@ -1,0 +1,55 @@
+import { useCallback, useMemo } from "react";
+import { router } from "expo-router";
+import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
+import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
+import {
+  getLibrarySongDetailPlayerHref,
+  toLibrarySongDetailPlaybackItem,
+  type LibrarySongDetail,
+  type LibrarySongDetailActionState,
+} from "../services/library-song-detail-service";
+
+type UseLibrarySongPlaybackActionsParams = {
+  actionState: LibrarySongDetailActionState;
+  detail: LibrarySongDetail;
+  songId: number;
+};
+
+export function useLibrarySongPlaybackActions({
+  actionState,
+  detail,
+  songId,
+}: UseLibrarySongPlaybackActionsParams) {
+  const { addToQueue, playSong } = usePlaybackSession();
+  const { sendHaptic } = useHapticFeedback();
+  const playbackItem = useMemo(
+    () => toLibrarySongDetailPlaybackItem({ detail, songId }),
+    [detail, songId],
+  );
+
+  const playCurrentSong = useCallback(() => {
+    if (!actionState.canPlay) {
+      sendHaptic("error");
+      return;
+    }
+
+    sendHaptic("light");
+    playSong(playbackItem);
+    router.push(getLibrarySongDetailPlayerHref());
+  }, [actionState.canPlay, playSong, playbackItem, sendHaptic]);
+
+  const queueCurrentSong = useCallback(() => {
+    if (!actionState.canPlay) {
+      sendHaptic("error");
+      return;
+    }
+
+    sendHaptic("light");
+    addToQueue(playbackItem);
+  }, [actionState.canPlay, addToQueue, playbackItem, sendHaptic]);
+
+  return {
+    playCurrentSong,
+    queueCurrentSong,
+  };
+}

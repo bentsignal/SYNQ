@@ -1,8 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { getLibraryCollectionSongEmptyState } from "../services/library-collection-interaction-service";
 
 export function LibraryCollectionSongEmptyState() {
   const theme = useCustomizationTheme();
+  const emptyState = getLibraryCollectionSongEmptyState();
 
   return (
     <View
@@ -12,10 +14,10 @@ export function LibraryCollectionSongEmptyState() {
       ]}
     >
       <Text style={[styles.emptyTitle, { color: theme.primaryText }]}>
-        No songs here yet
+        {emptyState.title}
       </Text>
       <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
-        Add songs from your library to build this collection.
+        {emptyState.body}
       </Text>
     </View>
   );

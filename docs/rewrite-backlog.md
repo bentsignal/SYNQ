@@ -321,6 +321,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     lives in the library interaction service instead of the list component.
   - Done: collection song list empty state and row rendering now live in
     focused components instead of the list owning every row control.
+  - Done: collection song list empty-state copy now lives in the library
+    interaction service with smoke coverage instead of component-local copy.
   - Done: library song edit form initialization and save action state now live
     in a form service instead of the edit screen.
   - Done: library song edit save fallback copy now lives in the song form

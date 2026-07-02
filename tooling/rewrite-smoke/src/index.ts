@@ -143,6 +143,7 @@ import {
   getCollectionSongRowActionState,
   getDeleteCollectionConfirmationCopy,
   getLibraryCollectionBackHref,
+  getLibraryCollectionSongEmptyState,
   getPlayableCollectionSongs,
   getSelectedAddableSongIds,
   removeSongIdSelection,
@@ -1605,6 +1606,11 @@ function assertLibraryCollectionDetailSmoke() {
 }
 
 function assertLibraryCollectionInteractionSmoke() {
+  assert.deepEqual(getLibraryCollectionSongEmptyState(), {
+    body: "Add songs from your library to build this collection.",
+    title: "No songs here yet",
+  });
+
   const songs = rowsToCollectionDetailSongs([
     {
       albumName: "Smoke Album",

@@ -48,6 +48,11 @@ export const getCollectionAddSongsHref = ({
   kind: LibraryCollectionDetailKind;
 }): LibraryCollectionActionHref => `/(tabs)/library/${kind}/add/${id}`;
 
+export const getLibraryCollectionSongEmptyState = () => ({
+  body: "Add songs from your library to build this collection.",
+  title: "No songs here yet",
+});
+
 export const canDeleteLibraryCollection = ({
   id,
   isMissing,

@@ -191,6 +191,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: add-to-collection addable-song and linked-song live query builders
     now live in a repository boundary instead of the addable-song query hook
     owning SQL construction.
+  - Done: add-to-collection all-song and linked-song row subscriptions now live
+    in a focused rows-query hook instead of the addable-song shaping hook
+    owning every live query directly.
   - Done: collection detail routes now mount kind-specific live query hooks so
     playlist, album, and artist detail screens do not subscribe to unrelated
     collection tables.

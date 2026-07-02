@@ -1,35 +1,16 @@
 import { useMemo } from "react";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import {
-  buildAlbumLinkedSongRowsQuery,
-  buildAllAddableSongRowsQuery,
-  buildArtistLinkedSongRowsQuery,
-  buildPlaylistLinkedSongRowsQuery,
-} from "../repository/addable-collection-songs-query-repository";
+  useAlbumLinkedSongRowsQuery,
+  useAllAddableSongRowsQuery,
+  useArtistLinkedSongRowsQuery,
+  usePlaylistLinkedSongRowsQuery,
+} from "./use-addable-collection-song-rows-query";
 import {
   rowsToLinkedSongIds,
   rowsToAddableCollectionSongs,
-  type AddableCollectionLinkedSongRow,
-  type AddableCollectionSongRow,
 } from "../services/addable-collection-songs-service";
 
 export type { AddableCollectionSong } from "../services/addable-collection-songs-service";
-
-function useAllAddableSongRowsQuery() {
-  return useLiveQuery(buildAllAddableSongRowsQuery());
-}
-
-function usePlaylistLinkedSongRowsQuery(collectionId: number) {
-  return useLiveQuery(buildPlaylistLinkedSongRowsQuery(collectionId));
-}
-
-function useAlbumLinkedSongRowsQuery(collectionId: number) {
-  return useLiveQuery(buildAlbumLinkedSongRowsQuery(collectionId));
-}
-
-function useArtistLinkedSongRowsQuery(collectionId: number) {
-  return useLiveQuery(buildArtistLinkedSongRowsQuery(collectionId));
-}
 
 function useAddableCollectionSongsResult({
   linkedRows,
@@ -38,7 +19,7 @@ function useAddableCollectionSongsResult({
   query,
   songRows,
 }: {
-  linkedRows: AddableCollectionLinkedSongRow[] | undefined;
+  linkedRows: Parameters<typeof rowsToLinkedSongIds>[0];
   linkedRowsError: Error | undefined;
   linkedRowsUpdatedAt: Date | undefined;
   query?: string;
@@ -48,9 +29,9 @@ function useAddableCollectionSongsResult({
     return rowsToAddableCollectionSongs({
       linkedSongIds: rowsToLinkedSongIds(linkedRows),
       query,
-      rows: (songRows.data ?? []) as AddableCollectionSongRow[],
+      rows: songRows.rows,
     });
-  }, [linkedRows, query, songRows.data]);
+  }, [linkedRows, query, songRows.rows]);
 
   return {
     errors: [songRows.error, linkedRowsError].filter(Boolean),
@@ -73,7 +54,7 @@ export function useAddableAlbumCollectionSongsQuery({
   const linkedRows = useAlbumLinkedSongRowsQuery(collectionId);
 
   return useAddableCollectionSongsResult({
-    linkedRows: linkedRows.data,
+    linkedRows: linkedRows.rows,
     linkedRowsError: linkedRows.error,
     linkedRowsUpdatedAt: linkedRows.updatedAt,
     query,
@@ -92,7 +73,7 @@ export function useAddableArtistCollectionSongsQuery({
   const linkedRows = useArtistLinkedSongRowsQuery(collectionId);
 
   return useAddableCollectionSongsResult({
-    linkedRows: linkedRows.data,
+    linkedRows: linkedRows.rows,
     linkedRowsError: linkedRows.error,
     linkedRowsUpdatedAt: linkedRows.updatedAt,
     query,
@@ -111,7 +92,7 @@ export function useAddablePlaylistCollectionSongsQuery({
   const linkedRows = usePlaylistLinkedSongRowsQuery(collectionId);
 
   return useAddableCollectionSongsResult({
-    linkedRows: linkedRows.data,
+    linkedRows: linkedRows.rows,
     linkedRowsError: linkedRows.error,
     linkedRowsUpdatedAt: linkedRows.updatedAt,
     query,

@@ -215,6 +215,7 @@ import {
   getLibrarySongDetailPlayerHref,
   getLibrarySongDetailStatusState,
   getLibrarySongDetailMutationErrorMessage,
+  getLibrarySongDetailViewState,
   getLibraryInvalidSongState,
   getLibrarySongDeleteConfirmationCopy,
   getLibrarySongDeleteSuccessHref,
@@ -2833,6 +2834,49 @@ function assertLibrarySongDetailSmoke() {
     body: "This route needs a numeric id.",
     kicker: "Song",
     title: "Invalid song",
+  });
+  assert.deepEqual(getLibrarySongDetailViewState(detail), {
+    backLink: {
+      href: "/(tabs)/library",
+      label: "Back to Library",
+    },
+    relationshipSections: {
+      albums: {
+        emptyLabel: "No albums linked",
+        items: [
+          {
+            detail: "Album / track 2",
+            id: 2,
+            title: "Beta Album",
+          },
+          {
+            detail: "2026 / track 1",
+            id: 1,
+            title: "Alpha Album",
+          },
+        ],
+        kind: "album",
+        title: "Albums",
+      },
+      artists: {
+        emptyLabel: "No artists linked",
+        items: [
+          { id: 2, title: "Beta Artist" },
+          { id: 1, title: "Alpha Artist" },
+        ],
+        kind: "artist",
+        title: "Artists",
+      },
+      playlists: {
+        emptyLabel: "No playlists linked",
+        items: [
+          { id: 5, title: "Smoke Playlist" },
+          { id: 6, title: "Untitled playlist" },
+        ],
+        kind: "playlist",
+        title: "Playlists",
+      },
+    },
   });
   assert.equal(
     getLibrarySongDetailHref({ songId: 42 }),

@@ -1598,6 +1598,9 @@ endless old-app polishing loop.
      controller route strings.
    - Done: invalid song route copy and back link now live in the song detail
      service with smoke coverage instead of the UI fallback component.
+   - Done: song detail relationship-section copy, album row detail formatting,
+     and back-link presentation now live in the song detail service with smoke
+     coverage instead of the detail view.
    - Done: song detail query/mutation/missing/unplayable status and updated-time
      copy now live in the song detail service with smoke coverage instead of
      view/status-panel branching.

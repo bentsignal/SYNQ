@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetailController } from "../hooks/use-library-song-detail-controller";
 import {
-  getLibrarySongDetailBackHref,
+  getLibrarySongDetailViewState,
   getLibrarySongDetailStatusState,
   type LibrarySongDetail,
 } from "../services/library-song-detail-service";
@@ -34,6 +34,7 @@ export function LibrarySongDetailView({
   toggleLiked,
 }: LibrarySongDetailViewProps) {
   const theme = useCustomizationTheme();
+  const viewState = getLibrarySongDetailViewState(detail);
   const statusState = getLibrarySongDetailStatusState({
     actionState,
     detail,
@@ -59,29 +60,22 @@ export function LibrarySongDetailView({
       />
 
       <LibrarySongRelationshipSection
-        emptyLabel="No artists linked"
-        items={detail.artists}
-        kind="artist"
-        title="Artists"
+        emptyLabel={viewState.relationshipSections.artists.emptyLabel}
+        items={viewState.relationshipSections.artists.items}
+        kind={viewState.relationshipSections.artists.kind}
+        title={viewState.relationshipSections.artists.title}
       />
       <LibrarySongRelationshipSection
-        emptyLabel="No albums linked"
-        items={detail.albums.map((album) => ({
-          detail:
-            album.track !== null
-              ? `${album.detail} / track ${album.track}`
-              : album.detail,
-          id: album.id,
-          title: album.title,
-        }))}
-        kind="album"
-        title="Albums"
+        emptyLabel={viewState.relationshipSections.albums.emptyLabel}
+        items={viewState.relationshipSections.albums.items}
+        kind={viewState.relationshipSections.albums.kind}
+        title={viewState.relationshipSections.albums.title}
       />
       <LibrarySongRelationshipSection
-        emptyLabel="No playlists linked"
-        items={detail.playlists}
-        kind="playlist"
-        title="Playlists"
+        emptyLabel={viewState.relationshipSections.playlists.emptyLabel}
+        items={viewState.relationshipSections.playlists.items}
+        kind={viewState.relationshipSections.playlists.kind}
+        title={viewState.relationshipSections.playlists.title}
       />
 
       <LibrarySongSourcePanel detail={detail} />
@@ -91,10 +85,10 @@ export function LibrarySongDetailView({
       />
 
       <Link
-        href={getLibrarySongDetailBackHref()}
+        href={viewState.backLink.href}
         style={[styles.backLink, { color: theme.accent }]}
       >
-        Back to Library
+        {viewState.backLink.label}
       </Link>
     </ScrollView>
   );

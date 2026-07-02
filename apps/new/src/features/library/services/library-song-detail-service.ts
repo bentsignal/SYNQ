@@ -184,6 +184,42 @@ export const getLibraryInvalidSongState = () => ({
   title: "Invalid song",
 });
 
+export const getLibrarySongDetailViewState = (
+  detail: LibrarySongDetail,
+) => ({
+  backLink: {
+    href: getLibrarySongDetailBackHref(),
+    label: "Back to Library",
+  },
+  relationshipSections: {
+    albums: {
+      emptyLabel: "No albums linked",
+      items: detail.albums.map((album) => ({
+        detail:
+          album.track !== null
+            ? `${album.detail} / track ${album.track}`
+            : album.detail,
+        id: album.id,
+        title: album.title,
+      })),
+      kind: "album" as const,
+      title: "Albums",
+    },
+    artists: {
+      emptyLabel: "No artists linked",
+      items: detail.artists,
+      kind: "artist" as const,
+      title: "Artists",
+    },
+    playlists: {
+      emptyLabel: "No playlists linked",
+      items: detail.playlists,
+      kind: "playlist" as const,
+      title: "Playlists",
+    },
+  },
+});
+
 export const getLibrarySongDetailHref = ({
   songId,
 }: {

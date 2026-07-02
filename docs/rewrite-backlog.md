@@ -61,7 +61,7 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     editing, playlist/album/artist
     create/edit flows, collection song add/remove flows with bulk add selection,
     song and collection file sharing/export actions,
-    Liked Songs toggles and library song deletion,
+    Liked Songs toggles, library song deletion, and guarded collection deletion,
     durable
     album/playlist/artist song reorder flows, and collection cover/profile image
     picking, persistence, and thumbnail rendering exist.
@@ -1126,3 +1126,5 @@ endless old-app polishing loop.
   draft export service.
 - Done: reset live playback and staged import provider state after backup
   restore/erase completes.
+- Done: add guarded new-app collection deletion for playlists, albums, and
+  artists while preserving seeded Library/Liked Songs playlists.

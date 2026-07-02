@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { Link, router, useLocalSearchParams } from "expo-router";
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { shareLibrarySongs } from "@/src/features/export/services/library-export-service";
 import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
@@ -11,6 +19,7 @@ import {
   type LibraryCollectionDetailSong,
   type LibraryCollectionDetailKind,
 } from "../hooks/use-library-collection-detail-query";
+import { deleteCollection } from "../repository/collection-repository";
 import {
   removeSongFromCollection,
   updateCollectionSongOrder,
@@ -53,6 +62,18 @@ const reorderSongs = ({
   nextSongs.splice(toIndex, 0, movedSong);
 
   return nextSongs;
+};
+
+const getCollectionListHref = (kind: LibraryCollectionDetailKind) => {
+  switch (kind) {
+    case "album":
+      return "/(tabs)/library/albums" as const;
+    case "artist":
+      return "/(tabs)/library/artists" as const;
+    case "playlist":
+    default:
+      return "/(tabs)/library/playlists" as const;
+  }
 };
 
 export function LibraryCollectionDetailScreen({
@@ -100,6 +121,7 @@ function LibraryCollectionDetailContent({
   const { sendHaptic } = useHapticFeedback();
   const [movingSongId, setMovingSongId] = useState<number | null>(null);
   const [removingSongId, setRemovingSongId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [mutationError, setMutationError] = useState<string | null>(null);
   const hasErrors = errors.length > 0;
@@ -153,6 +175,45 @@ function LibraryCollectionDetailContent({
     } finally {
       setIsExporting(false);
     }
+  };
+  const canDeleteCollection =
+    !detail.isMissing && (kind !== "playlist" || (id !== 1 && id !== 2));
+  const deleteCurrentCollection = () => {
+    if (!canDeleteCollection) {
+      sendHaptic("error");
+      return;
+    }
+
+    Alert.alert(
+      `Delete ${detail.eyebrow.toLowerCase()}`,
+      `Delete ${detail.title}? Songs will stay in your library.`,
+      [
+        { style: "cancel", text: "Cancel" },
+        {
+          onPress: async () => {
+            setIsDeleting(true);
+            setMutationError(null);
+
+            try {
+              await deleteCollection({ id, kind });
+              sendHaptic("success");
+              router.replace(getCollectionListHref(kind));
+            } catch (caughtError) {
+              sendHaptic("error");
+              setMutationError(
+                caughtError instanceof Error
+                  ? caughtError.message
+                  : "Collection could not be deleted.",
+              );
+            } finally {
+              setIsDeleting(false);
+            }
+          },
+          style: "destructive",
+          text: "Delete",
+        },
+      ],
+    );
   };
 
   return (
@@ -253,6 +314,20 @@ function LibraryCollectionDetailContent({
         >
           <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
             {isExporting ? "Exporting" : "Export"}
+          </Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          disabled={!canDeleteCollection || isDeleting}
+          onPress={deleteCurrentCollection}
+          style={[
+            styles.dangerButton,
+            { backgroundColor: theme.surface, borderColor: theme.danger },
+            !canDeleteCollection || isDeleting ? styles.disabled : null,
+          ]}
+        >
+          <Text style={[styles.secondaryButtonText, { color: theme.danger }]}>
+            {isDeleting ? "Deleting" : "Delete"}
           </Text>
         </Pressable>
       </View>
@@ -464,6 +539,15 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   secondaryButton: {
+    alignItems: "center",
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: 44,
+    minWidth: 132,
+    paddingHorizontal: 16,
+  },
+  dangerButton: {
     alignItems: "center",
     borderRadius: 8,
     borderWidth: 1,

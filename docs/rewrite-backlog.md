@@ -308,6 +308,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: add-to-collection search, selection summary, bulk-add action, status,
     and navigation presentation now live in a focused form component instead of
     the route screen.
+  - Done: add-to-collection empty state and row rendering now live in focused
+    components instead of the addable song list owning selection/add controls.
   - Done: song detail like, export, and delete labels now live with action
     availability in the song detail service instead of the detail screen.
   - Done: song detail relationship list rendering now lives in a dedicated

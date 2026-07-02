@@ -231,6 +231,8 @@ import {
   getLibrarySongDeleteSuccessHref,
   getLibrarySongEditHref,
   getLibrarySongRelationshipHref,
+  initialLibrarySongDetailMutationState,
+  librarySongDetailMutationReducer,
   toLibrarySongDetailPlaybackItem,
   toLibrarySongExportItem,
 } from "../../../apps/new/src/features/library/services/library-song-detail-service";
@@ -3007,6 +3009,46 @@ function assertLibrarySongDetailSmoke() {
       deleteLabel: "Delete",
       exportLabel: "Export",
       likedLabel: "Unlike",
+    },
+  );
+  assert.deepEqual(initialLibrarySongDetailMutationState, {
+    error: null,
+    isDeleting: false,
+    isExporting: false,
+    isTogglingLiked: false,
+  });
+  assert.deepEqual(
+    librarySongDetailMutationReducer(initialLibrarySongDetailMutationState, {
+      mutation: "toggle-liked",
+      type: "begin",
+    }),
+    {
+      ...initialLibrarySongDetailMutationState,
+      error: null,
+      isTogglingLiked: true,
+    },
+  );
+  assert.deepEqual(
+    librarySongDetailMutationReducer(
+      {
+        ...initialLibrarySongDetailMutationState,
+        isExporting: true,
+      },
+      {
+        mutation: "export-song",
+        type: "finish",
+      },
+    ),
+    initialLibrarySongDetailMutationState,
+  );
+  assert.deepEqual(
+    librarySongDetailMutationReducer(initialLibrarySongDetailMutationState, {
+      error: "Song could not be deleted.",
+      type: "fail",
+    }),
+    {
+      ...initialLibrarySongDetailMutationState,
+      error: "Song could not be deleted.",
     },
   );
   assert.deepEqual(

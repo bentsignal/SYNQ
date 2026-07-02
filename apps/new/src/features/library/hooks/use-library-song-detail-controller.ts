@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useReducer } from "react";
 import { router } from "expo-router";
 import { Alert } from "react-native";
 import { shareLibrarySongs } from "@/src/features/export/services/library-export-service";
@@ -14,6 +14,8 @@ import {
   getLibrarySongDetailMutationErrorMessage,
   getLibrarySongDeleteConfirmationCopy,
   getLibrarySongDeleteSuccessHref,
+  initialLibrarySongDetailMutationState,
+  librarySongDetailMutationReducer,
   toLibrarySongDetailPlaybackItem,
   toLibrarySongExportItem,
   type LibrarySongDetail,
@@ -28,15 +30,15 @@ export function useLibrarySongDetailController({
 }) {
   const { addToQueue, playSong, removeFromQueue } = usePlaybackSession();
   const { sendHaptic } = useHapticFeedback();
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isExporting, setIsExporting] = useState(false);
-  const [isTogglingLiked, setIsTogglingLiked] = useState(false);
+  const [mutationState, dispatchMutation] = useReducer(
+    librarySongDetailMutationReducer,
+    initialLibrarySongDetailMutationState,
+  );
   const actionState = getLibrarySongDetailActionState({
     detail,
-    isDeleting,
-    isExporting,
-    isTogglingLiked,
+    isDeleting: mutationState.isDeleting,
+    isExporting: mutationState.isExporting,
+    isTogglingLiked: mutationState.isTogglingLiked,
   });
   const playbackItem = useMemo(
     () => toLibrarySongDetailPlaybackItem({ detail, songId }),
@@ -70,8 +72,7 @@ export function useLibrarySongDetailController({
       return;
     }
 
-    setIsTogglingLiked(true);
-    setError(null);
+    dispatchMutation({ mutation: "toggle-liked", type: "begin" });
 
     try {
       await setLibrarySongLiked({
@@ -81,14 +82,15 @@ export function useLibrarySongDetailController({
       sendHaptic("light");
     } catch (caughtError) {
       sendHaptic("error");
-      setError(
-        getLibrarySongDetailMutationErrorMessage({
+      dispatchMutation({
+        error: getLibrarySongDetailMutationErrorMessage({
           caughtError,
           mutation: "toggle-liked",
         }),
-      );
+        type: "fail",
+      });
     } finally {
-      setIsTogglingLiked(false);
+      dispatchMutation({ mutation: "toggle-liked", type: "finish" });
     }
   }, [actionState.canToggleLiked, detail.isLiked, sendHaptic, songId]);
 
@@ -98,22 +100,22 @@ export function useLibrarySongDetailController({
       return;
     }
 
-    setError(null);
-    setIsExporting(true);
+    dispatchMutation({ mutation: "export-song", type: "begin" });
 
     try {
       await shareLibrarySongs([toLibrarySongExportItem({ detail, songId })]);
       sendHaptic("success");
     } catch (caughtError) {
       sendHaptic("error");
-      setError(
-        getLibrarySongDetailMutationErrorMessage({
+      dispatchMutation({
+        error: getLibrarySongDetailMutationErrorMessage({
           caughtError,
           mutation: "export-song",
         }),
-      );
+        type: "fail",
+      });
     } finally {
-      setIsExporting(false);
+      dispatchMutation({ mutation: "export-song", type: "finish" });
     }
   }, [actionState.canExport, detail, sendHaptic, songId]);
 
@@ -129,8 +131,7 @@ export function useLibrarySongDetailController({
       { text: confirmation.cancelLabel, style: "cancel" },
       {
         onPress: async () => {
-          setIsDeleting(true);
-          setError(null);
+          dispatchMutation({ mutation: "delete-song", type: "begin" });
 
           try {
             await deleteLibrarySong(songId);
@@ -139,14 +140,15 @@ export function useLibrarySongDetailController({
             router.replace(getLibrarySongDeleteSuccessHref());
           } catch (caughtError) {
             sendHaptic("error");
-            setError(
-              getLibrarySongDetailMutationErrorMessage({
+            dispatchMutation({
+              error: getLibrarySongDetailMutationErrorMessage({
                 caughtError,
                 mutation: "delete-song",
               }),
-            );
+              type: "fail",
+            });
           } finally {
-            setIsDeleting(false);
+            dispatchMutation({ mutation: "delete-song", type: "finish" });
           }
         },
         style: "destructive",
@@ -164,7 +166,7 @@ export function useLibrarySongDetailController({
   return {
     actionState,
     deleteCurrentSong,
-    error,
+    error: mutationState.error,
     exportCurrentSong,
     playCurrentSong,
     queueCurrentSong,

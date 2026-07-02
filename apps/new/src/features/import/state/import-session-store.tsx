@@ -12,11 +12,10 @@ import {
 } from "../services/import-library-save-service";
 import {
   clearImportCache,
-  deleteImportDraftCacheFiles,
   prepareWifiImportCache,
-  selectImportFiles,
 } from "../services/import-file-service";
 import { clearPersistedImportSessionState } from "../services/import-session-persistence-service";
+import { useImportFileCommands } from "../hooks/use-import-file-commands";
 import { usePersistedImportSession } from "../hooks/use-persisted-import-session";
 import {
   importSessionReducer,
@@ -58,6 +57,10 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
   );
 
   usePersistedImportSession({ dispatch, state });
+  const { removeImportSongs, startFileImport } = useImportFileCommands({
+    dispatch,
+    songs: state.songs,
+  });
 
   const beginFilePick = useCallback(() => {
     dispatch({ type: "begin-file-pick" });
@@ -84,58 +87,6 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
   const reviewSongs = useCallback((songs: ImportSongDraft[]) => {
     dispatch({ songs, type: "review" });
   }, []);
-  const startFileImport = useCallback(async () => {
-    dispatch({ type: "begin-file-pick" });
-
-    try {
-      const { drafts, skipped } = await selectImportFiles();
-
-      if (drafts.length === 0) {
-        dispatch({
-          error:
-            skipped > 0
-              ? "No selected songs could be staged for import."
-              : "File selection was cancelled.",
-          type: "fail",
-        });
-        return false;
-      }
-
-      dispatch({ songs: drafts, type: "review" });
-      return true;
-    } catch (caughtError) {
-      dispatch({
-        error:
-          caughtError instanceof Error
-            ? caughtError.message
-            : "Files could not be selected.",
-        type: "fail",
-      });
-      return false;
-    }
-  }, []);
-  const removeImportSongs = useCallback(
-    async (songIds: number[]) => {
-      const songIdSet = new Set(songIds);
-      const songsToRemove = state.songs.filter((song) => songIdSet.has(song.id));
-
-      try {
-        await deleteImportDraftCacheFiles(songsToRemove);
-        dispatch({ songIds, type: "remove-songs" });
-        return true;
-      } catch (caughtError) {
-        dispatch({
-          error:
-            caughtError instanceof Error
-              ? caughtError.message
-              : "Selected staged songs could not be removed.",
-          type: "fail",
-        });
-        return false;
-      }
-    },
-    [state.songs],
-  );
   const receiveWifiSong = useCallback((song: ImportSongDraft) => {
     dispatch({ song, type: "receive-wifi-song" });
   }, []);

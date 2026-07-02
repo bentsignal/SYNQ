@@ -211,6 +211,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     collection tables.
   - Done: collection detail row subscriptions now live in a focused rows-query
     hook instead of the detail-shaping hook owning every live query directly.
+  - Done: collection detail row-to-result shaping now lives in a focused result
+    hook instead of the kind-specific query hook owning subscription selection
+    and detail assembly together.
   - Done: collection detail live query SQL builders now live in a repository
     boundary instead of the hook owning playlist, album, and artist query
     construction.

@@ -130,6 +130,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: add-to-collection single-add, bulk-add, selection, saving, mutation
     error, and haptic workflow state now lives in a controller hook instead of
     the screen.
+  - Done: add-to-collection header/search, section header, selection controls,
+    and status panel now render through focused components instead of one large
+    add-songs form view.
   - Done: song detail play, queue, like, export, delete, mutation error, and
     busy-state workflows now live in a controller hook instead of the screen.
   - Done: edit-song form fields, save/cancel controls, query/mutation status

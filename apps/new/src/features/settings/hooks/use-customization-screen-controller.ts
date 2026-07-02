@@ -51,3 +51,7 @@ export function useCustomizationScreenController() {
     updateTheme,
   };
 }
+
+export type CustomizationScreenController = ReturnType<
+  typeof useCustomizationScreenController
+>;

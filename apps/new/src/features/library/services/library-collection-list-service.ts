@@ -62,3 +62,7 @@ export const getLibraryCollectionListState = ({
     visibleCollections,
   };
 };
+
+export type LibraryCollectionListState = ReturnType<
+  typeof getLibraryCollectionListState
+>;

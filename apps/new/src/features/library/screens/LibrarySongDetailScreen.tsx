@@ -12,6 +12,20 @@ const parseId = (value: string | string[] | undefined) => {
   return Number.isFinite(id) ? id : null;
 };
 
+type RelationshipKind = "album" | "artist" | "playlist";
+
+const getRelationshipHref = (kind: RelationshipKind, id: number) => {
+  switch (kind) {
+    case "album":
+      return `/(tabs)/library/album/${id}` as const;
+    case "artist":
+      return `/(tabs)/library/artist/${id}` as const;
+    case "playlist":
+    default:
+      return `/(tabs)/library/playlist/${id}` as const;
+  }
+};
+
 export function LibrarySongDetailScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
   const theme = useCustomizationTheme();
@@ -151,6 +165,7 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
       <RelationshipSection
         emptyLabel="No artists linked"
         items={detail.artists}
+        kind="artist"
         title="Artists"
       />
       <RelationshipSection
@@ -163,11 +178,13 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
           id: album.id,
           title: album.title,
         }))}
+        kind="album"
         title="Albums"
       />
       <RelationshipSection
         emptyLabel="No playlists linked"
         items={detail.playlists}
+        kind="playlist"
         title="Playlists"
       />
 
@@ -223,10 +240,12 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
 function RelationshipSection({
   emptyLabel,
   items,
+  kind,
   title,
 }: {
   emptyLabel: string;
   items: { detail?: string; id: number; title: string }[];
+  kind: RelationshipKind;
   title: string;
 }) {
   const theme = useCustomizationTheme();
@@ -248,30 +267,38 @@ function RelationshipSection({
           </Text>
         ) : (
           items.map((item) => (
-            <View
+            <Link
+              asChild
+              href={getRelationshipHref(kind, item.id)}
               key={item.id}
-              style={[
-                styles.relationshipRow,
-                { borderBottomColor: theme.borderSubtle },
-              ]}
             >
-              <Text
-                numberOfLines={1}
-                style={[styles.relationshipTitle, { color: theme.primaryText }]}
+              <Pressable
+                style={[
+                  styles.relationshipRow,
+                  { borderBottomColor: theme.borderSubtle },
+                ]}
               >
-                {item.title}
-              </Text>
-              {item.detail ? (
                 <Text
+                  numberOfLines={1}
                   style={[
-                    styles.relationshipDetail,
-                    { color: theme.secondaryText },
+                    styles.relationshipTitle,
+                    { color: theme.primaryText },
                   ]}
                 >
-                  {item.detail}
+                  {item.title}
                 </Text>
-              ) : null}
-            </View>
+                {item.detail ? (
+                  <Text
+                    style={[
+                      styles.relationshipDetail,
+                      { color: theme.secondaryText },
+                    ]}
+                  >
+                    {item.detail}
+                  </Text>
+                ) : null}
+              </Pressable>
+            </Link>
           ))
         )}
       </View>

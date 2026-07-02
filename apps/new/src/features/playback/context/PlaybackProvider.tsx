@@ -27,6 +27,11 @@ import {
   savePersistedPlaybackState,
 } from "../services/playback-persistence-service";
 import {
+  handlePlaybackRemoteCommand,
+  type PlaybackRemoteCommand,
+  type PlaybackRemoteCommandResult,
+} from "../services/playback-remote-command-service";
+import {
   createExpoAvTrackPlayerAdapter,
   type TrackPlayerStatusSnapshot,
 } from "../services/track-player-adapter";
@@ -50,6 +55,7 @@ type PlaybackAction =
   | { type: "complete-ad-break" }
   | { state: PlaybackState; type: "hydrate" }
   | { error: string; type: "native-failure" }
+  | { error: string; type: "remote-failure" }
   | {
       premiumActive: boolean;
       status: TrackPlayerStatusSnapshot;
@@ -63,6 +69,9 @@ type PlaybackAction =
 type PlaybackCommands = {
   addToQueue: (song: PlaybackQueueItem) => void;
   clearQueue: () => void;
+  handleRemoteCommand: (
+    command: PlaybackRemoteCommand,
+  ) => PlaybackRemoteCommandResult;
   moveQueueSong: (songId: number, direction: "down" | "up") => void;
   pause: () => void;
   playSong: (song: PlaybackQueueItem) => void;
@@ -356,8 +365,12 @@ const playbackReducer = (
     case "native-finished": {
       const nextIndex =
         state.activeQueueIndex === null ? null : state.activeQueueIndex + 1;
+      const loopIndex =
+        state.mode.loop && state.queue.length > 0 ? 0 : null;
+      const targetIndex =
+        nextIndex !== null && state.queue[nextIndex] ? nextIndex : loopIndex;
       const nextTrack =
-        nextIndex === null ? null : state.queue[nextIndex] ?? null;
+        targetIndex === null ? null : state.queue[targetIndex] ?? null;
 
       if (!nextTrack) {
         return {
@@ -369,7 +382,7 @@ const playbackReducer = (
 
       return {
         ...state,
-        activeQueueIndex: nextIndex,
+        activeQueueIndex: targetIndex,
         activeTrackId: nextTrack.id,
         duration: nextTrack.duration ?? 0,
         isPlaying: true,
@@ -402,6 +415,12 @@ const playbackReducer = (
           ...state.mode,
           shuffle: !state.mode.shuffle,
         },
+      };
+    case "remote-failure":
+      return {
+        ...state,
+        error: action.error,
+        isPlaying: false,
       };
   }
 };
@@ -478,6 +497,29 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     [beginAdBreak, canRunPlaybackCommand],
   );
 
+  const failFromRemoteCommand = useCallback((message: string) => {
+    dispatch({ error: message, type: "remote-failure" });
+    runNativeCommand(() => adapterRef.current.stop());
+  }, [runNativeCommand]);
+
+  const finishActiveTrack = useCallback(() => {
+    if (!canRunPlaybackCommand()) {
+      beginAdBreak();
+      return;
+    }
+
+    const nextTrack = getNextTrack(stateRef.current);
+    const loopTrack = stateRef.current.mode.loop
+      ? stateRef.current.queue[0] ?? null
+      : null;
+    const targetTrack = nextTrack ?? loopTrack;
+
+    dispatch({ type: "native-finished" });
+    if (targetTrack) {
+      runNativeCommand(() => adapterRef.current.play(targetTrack));
+    }
+  }, [beginAdBreak, canRunPlaybackCommand, runNativeCommand]);
+
   useEffect(() => {
     let isMounted = true;
 
@@ -530,17 +572,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        if (!canRunPlaybackCommand()) {
-          beginAdBreak();
-          return;
-        }
-
-        const nextTrack = getNextTrack(stateRef.current);
-
-        dispatch({ type: "native-finished" });
-        if (nextTrack) {
-          runNativeCommand(() => adapter.play(nextTrack));
-        }
+        finishActiveTrack();
         return;
       }
 
@@ -554,7 +586,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     return () => {
       adapter.setStatusListener(null);
     };
-  }, [beginAdBreak, canRunPlaybackCommand, runNativeCommand]);
+  }, [finishActiveTrack, runNativeCommand]);
 
   const playSong = useCallback(
     (song: PlaybackQueueItem) => {
@@ -648,12 +680,41 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const toggleShuffle = useCallback(() => {
     dispatch({ type: "toggle-shuffle" });
   }, []);
+  const handleRemoteCommand = useCallback(
+    (command: PlaybackRemoteCommand) =>
+      handlePlaybackRemoteCommand({
+        command,
+        handlers: {
+          beginAdBreak,
+          canRunPlaybackCommand,
+          fail: failFromRemoteCommand,
+          pause,
+          queueEnded: finishActiveTrack,
+          resume,
+          seekTo,
+          skipNext,
+          skipPrevious,
+        },
+      }),
+    [
+      beginAdBreak,
+      canRunPlaybackCommand,
+      failFromRemoteCommand,
+      finishActiveTrack,
+      pause,
+      resume,
+      seekTo,
+      skipNext,
+      skipPrevious,
+    ],
+  );
 
   const value = useMemo<PlaybackSessionValue>(
     () => ({
       activeTrack,
       addToQueue,
       clearQueue,
+      handleRemoteCommand,
       moveQueueSong,
       pause,
       playSong,
@@ -670,6 +731,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       activeTrack,
       addToQueue,
       clearQueue,
+      handleRemoteCommand,
       moveQueueSong,
       pause,
       playSong,

@@ -32,7 +32,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/playback",
     targetBoundary: "src/features/playback",
-    nextMilestone: "Add remote playback events and manual playback/ad-gate smoke coverage.",
+    nextMilestone: "Choose the native-capable remote playback backend, wire it into the remote command service, and add manual playback/ad-gate smoke coverage.",
   },
   {
     key: "import",

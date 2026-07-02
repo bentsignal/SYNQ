@@ -232,6 +232,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: support action copy now lives in the settings screen service, support
     link haptics/external URL opening live in a controller hook, and the support
     route renders through a focused component.
+  - Done: settings home route metadata and Premium status label now live in the
+    settings screen service/controller, and the route renders through a focused
+    component.
   - Done: import save export/finish/discard labels now live with save action
     availability in the import session service instead of the save screen.
   - Done: add-to-collection bulk selection count, mutation guards, and add row

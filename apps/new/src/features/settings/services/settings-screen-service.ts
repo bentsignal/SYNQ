@@ -4,11 +4,50 @@ import type {
 } from "../types/customization-settings";
 import type { PrivacySettingsStatus } from "../types/privacy-settings";
 
+export type SettingsRoute = {
+  description: string;
+  href:
+    | "/premium"
+    | "/(tabs)/settings/backup"
+    | "/(tabs)/settings/customization"
+    | "/(tabs)/settings/privacy"
+    | "/(tabs)/settings/support";
+  label: string;
+};
+
 export type SupportAction = {
   description: string;
   label: string;
   url: string;
 };
+
+export const settingsRoutes: SettingsRoute[] = [
+  {
+    description: "Unlock and manage the full SYNQ experience.",
+    href: "/premium",
+    label: "Premium",
+  },
+  {
+    description: "Theme, app icon, haptics, and interface preferences.",
+    href: "/(tabs)/settings/customization",
+    label: "Customization",
+  },
+  {
+    description: "Archive, restore, or reset the local music library.",
+    href: "/(tabs)/settings/backup",
+    label: "Backup & Restore",
+  },
+  {
+    description: "Analytics and local privacy preferences.",
+    href: "/(tabs)/settings/privacy",
+    label: "Privacy",
+  },
+  {
+    description: "Help, feedback, and community links.",
+    href: "/(tabs)/settings/support",
+    label: "Support",
+  },
+];
 
 export const supportActions: SupportAction[] = [
   {
@@ -45,6 +84,14 @@ export const getPrivacyScreenState = ({
       : status === "saving"
         ? "Saving"
         : "Saved locally",
+});
+
+export const getSettingsHomeState = ({
+  premiumActive,
+}: {
+  premiumActive: boolean;
+}) => ({
+  premiumStatusLabel: premiumActive ? "Premium active" : "Premium inactive",
 });
 
 export const getCustomizationScreenState = ({

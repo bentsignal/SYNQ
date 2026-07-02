@@ -7,30 +7,28 @@ import {
   type Response,
 } from "react-native-http-bridge-refurbished";
 import { stageWifiImportFile } from "../services/import-file-service";
-import { getWifiTransferPage } from "../services/wifi-transfer-page";
 import {
-  isAcceptedWifiUpload,
-  parseWifiUploadRequest,
-} from "../services/wifi-upload-request";
+  getWifiStartTransferDecision,
+  getWifiUploadDecision,
+  getWifiUploadFailureResponse,
+  wifiImportFinishResponse,
+  wifiImportPrepareFailureResponse,
+  wifiImportResetResponse,
+} from "../services/wifi-import-request-service";
+import { getWifiTransferPage } from "../services/wifi-transfer-page";
 import { useImportSession } from "./use-import-session";
 
 const wifiImportPorts = [3000, 3001, 3002, 3003, 3004] as const;
 
-const getTransferSize = (postData: unknown) => {
-  if (!postData || typeof postData !== "object") {
-    return 0;
-  }
-
-  const size = (postData as { size?: unknown }).size;
-  const value = typeof size === "number" || typeof size === "string"
-    ? Number(size)
-    : 0;
-
-  return Number.isInteger(value) && value > 0 ? value : 0;
-};
-
 type BridgeRequest = Request<unknown>;
 type BridgeResponse = Response;
+
+const sendJson = (
+  response: BridgeResponse,
+  payload: { message: string; status: number },
+) => {
+  response.json(payload, payload.status);
+};
 
 export function useWifiImportServer() {
   const {
@@ -93,10 +91,7 @@ export function useWifiImportServer() {
     ) => {
       receivedIdsRef.current.clear();
       isMidTransferRef.current = false;
-      response.json({
-        message: "OK - RESET RESULTS",
-        status: 200,
-      }, 200);
+      sendJson(response, wifiImportResetResponse);
     };
 
     const handleConnection = async (
@@ -112,38 +107,25 @@ export function useWifiImportServer() {
       request: BridgeRequest,
       response: BridgeResponse,
     ) => {
-      if (isMidTransferRef.current) {
-        response.json({
-          message: "Transfer already in progress",
-          status: 400,
-        }, 400);
-        return;
-      }
+      const decision = getWifiStartTransferDecision({
+        isMidTransfer: isMidTransferRef.current,
+        postData: request.postData,
+      });
 
-      const transferSize = getTransferSize(request.postData);
-      if (transferSize <= 0) {
-        response.json({
-          message: "No data to transfer",
-          status: 400,
-        }, 400);
+      if (!decision.shouldStart) {
+        sendJson(response, decision.response);
         return;
       }
 
       receivedIdsRef.current.clear();
-      const canStart = await beginWifiTransferRef.current(transferSize);
+      const canStart = await beginWifiTransferRef.current(decision.transferSize);
       if (!canStart) {
-        response.json({
-          message: "Failed to prepare import cache",
-          status: 500,
-        }, 500);
+        sendJson(response, wifiImportPrepareFailureResponse);
         return;
       }
 
       isMidTransferRef.current = true;
-      response.json({
-        message: "OK - READY TO TRANSFER",
-        status: 200,
-      }, 200);
+      sendJson(response, decision.response);
     };
 
     const handleFinishTransfer = async (
@@ -152,10 +134,7 @@ export function useWifiImportServer() {
     ) => {
       isMidTransferRef.current = false;
       finishWifiTransferRef.current();
-      response.json({
-        message: "OK - FINISHED TRANSFER",
-        status: 200,
-      }, 200);
+      sendJson(response, wifiImportFinishResponse);
     };
 
     const handleFileUpload = async (
@@ -163,40 +142,31 @@ export function useWifiImportServer() {
       response: BridgeResponse,
     ) => {
       try {
-        const upload = parseWifiUploadRequest(request.postData);
+        const decision = getWifiUploadDecision({
+          postData: request.postData,
+          receivedIds: receivedIdsRef.current,
+        });
 
-        if (
-          !isAcceptedWifiUpload(upload) ||
-          receivedIdsRef.current.has(upload.id)
-        ) {
-          response.json({
-            message: `ERROR - Bad data from ${upload.name || "upload"}`,
-            status: 409,
-          }, 409);
+        if (!decision.shouldAccept) {
+          sendJson(response, decision.response);
           return;
         }
 
         const song = await stageWifiImportFile({
-          data: upload.b64,
-          id: upload.id,
-          name: upload.name,
-          type: upload.type,
+          data: decision.upload.b64,
+          id: decision.upload.id,
+          name: decision.upload.name,
+          type: decision.upload.type,
         });
 
-        receivedIdsRef.current.add(upload.id);
+        receivedIdsRef.current.add(decision.upload.id);
         receiveWifiSongRef.current(song);
-        response.json({
-          message: `OK - ${upload.name} RECEIVED`,
-          status: 200,
-        }, 200);
+        sendJson(response, decision.response);
       } catch (caughtError) {
         const message =
           caughtError instanceof Error ? caughtError.message : String(caughtError);
         failSessionRef.current(message);
-        response.json({
-          message: `ERROR - Failed to upload song: ${message}`,
-          status: 500,
-        }, 500);
+        sendJson(response, getWifiUploadFailureResponse(message));
       }
     };
 

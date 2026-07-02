@@ -39,6 +39,15 @@ import {
   hasMeaningfulImportLibraryName,
   splitImportLibraryNames,
 } from "../../../apps/new/src/features/import/services/import-library-save-plan-service";
+import {
+  getWifiStartTransferDecision,
+  getWifiTransferSize,
+  getWifiUploadDecision,
+  getWifiUploadFailureResponse,
+  wifiImportFinishResponse,
+  wifiImportPrepareFailureResponse,
+  wifiImportResetResponse,
+} from "../../../apps/new/src/features/import/services/wifi-import-request-service";
 import type { ImportSongDraft } from "../../../apps/new/src/features/import/types/import-session";
 import {
   buildAlbumDetail,
@@ -716,6 +725,118 @@ function assertImportSessionSmoke() {
   state = importSessionReducer(state, { type: "discard" });
   assert.equal(state.phase, "idle");
   assert.equal(state.songs.length, 0);
+}
+
+function assertWifiImportRequestSmoke() {
+  assert.equal(getWifiTransferSize(null), 0);
+  assert.equal(getWifiTransferSize({ size: "3" }), 3);
+  assert.equal(getWifiTransferSize({ size: 2.5 }), 0);
+  assert.deepEqual(
+    getWifiStartTransferDecision({
+      isMidTransfer: true,
+      postData: { size: 3 },
+    }),
+    {
+      response: {
+        message: "Transfer already in progress",
+        status: 400,
+      },
+      shouldStart: false,
+      transferSize: 0,
+    },
+  );
+  assert.deepEqual(
+    getWifiStartTransferDecision({
+      isMidTransfer: false,
+      postData: { size: 0 },
+    }),
+    {
+      response: {
+        message: "No data to transfer",
+        status: 400,
+      },
+      shouldStart: false,
+      transferSize: 0,
+    },
+  );
+  assert.deepEqual(
+    getWifiStartTransferDecision({
+      isMidTransfer: false,
+      postData: { size: "2" },
+    }),
+    {
+      response: {
+        message: "OK - READY TO TRANSFER",
+        status: 200,
+      },
+      shouldStart: true,
+      transferSize: 2,
+    },
+  );
+
+  const receivedIds = new Set<number>();
+  const accepted = getWifiUploadDecision({
+    postData: {
+      data: "YmFzZTY0",
+      id: "7",
+      name: "song.mp3",
+      type: "audio/mpeg",
+    },
+    receivedIds,
+  });
+  assert.equal(accepted.shouldAccept, true);
+  assert.equal(accepted.upload.id, 7);
+  assert.deepEqual(accepted.response, {
+    message: "OK - song.mp3 RECEIVED",
+    status: 200,
+  });
+  receivedIds.add(7);
+  assert.deepEqual(
+    getWifiUploadDecision({
+      postData: {
+        data: "YmFzZTY0",
+        id: 7,
+        name: "song.mp3",
+        type: "audio/mpeg",
+      },
+      receivedIds,
+    }).response,
+    {
+      message: "ERROR - Bad data from song.mp3",
+      status: 409,
+    },
+  );
+  assert.deepEqual(
+    getWifiUploadDecision({
+      postData: {
+        data: "YmFzZTY0",
+        id: 8,
+        name: "notes.txt",
+        type: "text/plain",
+      },
+      receivedIds,
+    }).response,
+    {
+      message: "ERROR - Bad data from notes.txt",
+      status: 409,
+    },
+  );
+  assert.deepEqual(wifiImportResetResponse, {
+    message: "OK - RESET RESULTS",
+    status: 200,
+  });
+  assert.deepEqual(wifiImportFinishResponse, {
+    message: "OK - FINISHED TRANSFER",
+    status: 200,
+  });
+  assert.deepEqual(wifiImportPrepareFailureResponse, {
+    message: "Failed to prepare import cache",
+    status: 500,
+  });
+  assert.deepEqual(getWifiUploadFailureResponse("Disk full"), {
+    message: "ERROR - Failed to upload song: Disk full",
+    status: 500,
+  });
 }
 
 function assertLibraryCollectionDetailSmoke() {
@@ -2403,6 +2524,7 @@ assertRouteParamSmoke();
 assertHomeScreenSmoke();
 assertImportSongFormSmoke();
 assertImportLibrarySavePlanSmoke();
+assertWifiImportRequestSmoke();
 assertBackupScreenSmoke();
 assertPremiumScreenSmoke();
 assertSettingsScreenSmoke();

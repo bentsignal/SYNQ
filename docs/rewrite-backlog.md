@@ -214,6 +214,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import save-to-library metadata planning now lives in a pure service
     with deterministic smoke coverage for unknown labels and multi-artist
     splitting.
+  - Done: Wi-Fi import transfer-size validation, duplicate upload rejection,
+    accepted upload responses, and error response copy now live in a pure
+    request service with deterministic smoke coverage.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.

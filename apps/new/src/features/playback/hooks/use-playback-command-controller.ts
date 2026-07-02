@@ -19,13 +19,9 @@ import {
   runPlaybackCommandPlan,
   type PlaybackCommandPlan,
 } from "../services/playback-command-plan-service";
-import {
-  runPlaybackNativeCommandPlan,
-  type PlaybackNativeCommandPlan,
-} from "../services/playback-native-command-plan-service";
+import type { PlaybackNativeCommandPlan } from "../services/playback-native-command-plan-service";
 import { clearPersistedPlaybackState } from "../services/playback-persistence-service";
 import type { PlaybackAction } from "../services/playback-session-service";
-import type { TrackPlayerAdapter } from "../services/track-player-adapter";
 import type {
   PlaybackQueueItem,
   PlaybackState,
@@ -51,31 +47,22 @@ export type PlaybackCommands = {
 };
 
 type UsePlaybackCommandControllerParams = {
-  adapter: TrackPlayerAdapter;
   beginAdBreak: () => void;
   canRunPlaybackCommand: () => boolean;
   dispatch: (action: PlaybackAction) => void;
   finishActiveTrack: () => void;
-  runNativeCommand: (command: () => Promise<void>) => void;
+  runNativeCommandPlan: (plan: PlaybackNativeCommandPlan) => void;
   stateRef: RefObject<PlaybackState>;
 };
 
 export function usePlaybackCommandController({
-  adapter,
   beginAdBreak,
   canRunPlaybackCommand,
   dispatch,
   finishActiveTrack,
-  runNativeCommand,
+  runNativeCommandPlan,
   stateRef,
 }: UsePlaybackCommandControllerParams): PlaybackCommands {
-  const runNativeCommandPlan = useCallback(
-    (plan: PlaybackNativeCommandPlan) => {
-      runPlaybackNativeCommandPlan({ adapter, plan, runNativeCommand });
-    },
-    [adapter, runNativeCommand],
-  );
-
   const runCommandPlan = useCallback(
     (plan: PlaybackCommandPlan) => {
       runPlaybackCommandPlan({ dispatch, plan, runNativeCommandPlan });

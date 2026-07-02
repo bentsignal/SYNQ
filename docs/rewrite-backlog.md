@@ -170,6 +170,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     dispatch now live in a focused hook instead of the provider body.
   - Done: playback command, queue mutation, remote command, and native adapter
     orchestration now lives in a controller hook instead of the provider body.
+  - Done: playback native command failure handling and provider-facing native
+    command callbacks now live in a focused hook/service boundary instead of
+    the provider body.
   - Done: playback active-track advancement after native finish or remote
     queue-ended events now lives in a focused hook instead of the provider body.
   - Done: rewrite verification hygiene scans now include new app route files,

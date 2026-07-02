@@ -25,6 +25,7 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-player-state-service";
 import { audioStatusToTrackPlayerSnapshot } from "../../../apps/new/src/features/playback/services/playback-native-status-service";
 import {
+  getPlaybackNativeCommandErrorMessage,
   getRemoveFromQueueNativeCommandPlan,
   getResumeNativeCommandPlan,
   getSkipNextNativeCommandPlan,
@@ -456,6 +457,14 @@ function assertPlaybackNativeCommandPlanSmoke() {
   assert.deepEqual(getResumeNativeCommandPlan(state), {
     type: "resume",
   });
+  assert.equal(
+    getPlaybackNativeCommandErrorMessage(new Error("Native smoke failure")),
+    "Native smoke failure",
+  );
+  assert.equal(
+    getPlaybackNativeCommandErrorMessage("unknown native failure"),
+    "Playback command failed.",
+  );
   assert.deepEqual(getSkipNextNativeCommandPlan(state), {
     command: { track: second, type: "play" },
     targetIndex: 1,

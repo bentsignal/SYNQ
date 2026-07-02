@@ -1,6 +1,5 @@
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -15,6 +14,7 @@ import {
   type PlaybackCommands,
 } from "../hooks/use-playback-command-controller";
 import { usePlaybackNativeStatusListener } from "../hooks/use-playback-native-status-listener";
+import { usePlaybackNativeCommandRunner } from "../hooks/use-playback-native-command-runner";
 import { usePlaybackTrackAdvancement } from "../hooks/use-playback-track-advancement";
 import { getActiveTrack } from "../services/playback-queue-service";
 import {
@@ -35,9 +35,6 @@ type PlaybackSessionValue = PlaybackCommands & {
 
 const PlaybackSessionContext = createContext<PlaybackSessionValue | null>(null);
 
-const getErrorMessage = (error: unknown) =>
-  error instanceof Error ? error.message : "Playback command failed.";
-
 export function PlaybackProvider({ children }: { children: ReactNode }) {
   const { state: premiumState } = usePremiumEntitlement();
   const [state, dispatch] = useReducer(playbackReducer, initialPlaybackState);
@@ -56,18 +53,16 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const runNativeCommand = useCallback((command: () => Promise<void>) => {
-    void command().catch((error) => {
-      dispatch({ error: getErrorMessage(error), type: "native-failure" });
-    });
-  }, []);
-
-  const restorePersistedPlaybackState = useCallback(
-    (persistedState: PlaybackState) => {
-      runNativeCommand(() => adapterRef.current.restore(persistedState));
-    },
-    [runNativeCommand],
-  );
+  const {
+    playNativeAdBreak,
+    restorePersistedPlaybackState,
+    resumeNativeLibraryAfterPremium,
+    runNativeCommand,
+    runNativeCommandPlan,
+  } = usePlaybackNativeCommandRunner({
+    adapter: adapterRef.current,
+    dispatch,
+  });
 
   usePersistedPlaybackSession({
     dispatch,
@@ -75,12 +70,6 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     state,
   });
 
-  const playNativeAdBreak = useCallback(() => {
-    runNativeCommand(() => adapterRef.current.playAd());
-  }, [runNativeCommand]);
-  const resumeNativeLibraryAfterPremium = useCallback(() => {
-    runNativeCommand(() => adapterRef.current.resumeLibrary());
-  }, [runNativeCommand]);
   const {
     beginAdBreak,
     canRunPlaybackCommand,
@@ -113,12 +102,11 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   });
 
   const commands = usePlaybackCommandController({
-    adapter: adapterRef.current,
     beginAdBreak,
     canRunPlaybackCommand,
     dispatch,
     finishActiveTrack,
-    runNativeCommand,
+    runNativeCommandPlan,
     stateRef,
   });
 

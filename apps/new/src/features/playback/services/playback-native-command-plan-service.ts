@@ -18,6 +18,9 @@ export type PlaybackNativeCommandPlan =
   | { position: number; type: "seek" }
   | { type: "stop" };
 
+export const getPlaybackNativeCommandErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Playback command failed.";
+
 export const runPlaybackNativeCommandPlan = ({
   adapter,
   plan,

@@ -14,17 +14,45 @@ const formatDuration = (duration: number) => {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
+const seekStep = 15_000;
+
+const getProgressPercent = ({
+  duration,
+  position,
+}: {
+  duration: number;
+  position: number;
+}) => {
+  if (!duration) {
+    return 0;
+  }
+
+  return Math.round(Math.min(1, Math.max(0, position / duration)) * 100);
+};
+
 export function PlaybackPlayerScreen() {
   const {
     activeTrack,
     pause,
     resume,
+    seekTo,
     skipNext,
     skipPrevious,
     state,
     toggleLoop,
     toggleShuffle,
   } = usePlaybackSession();
+  const hasActiveTrack = !!activeTrack;
+  const progressPercent = getProgressPercent({
+    duration: state.duration,
+    position: state.position,
+  });
+  const rewind = () => {
+    seekTo(Math.max(0, state.position - seekStep));
+  };
+  const fastForward = () => {
+    seekTo(Math.min(state.duration, state.position + seekStep));
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
@@ -49,6 +77,12 @@ export function PlaybackPlayerScreen() {
             <Text style={styles.duration}>
               {formatDuration(state.position)} / {formatDuration(state.duration)}
             </Text>
+            <View style={styles.progressTrack}>
+              <View
+                style={[styles.progressFill, { width: `${progressPercent}%` }]}
+              />
+            </View>
+            <Text style={styles.progressText}>{progressPercent}% complete</Text>
           </>
         ) : (
           <>
@@ -63,17 +97,17 @@ export function PlaybackPlayerScreen() {
       <View style={styles.controls}>
         <Pressable
           accessibilityRole="button"
-          disabled={!activeTrack}
+          disabled={!hasActiveTrack}
           onPress={skipPrevious}
-          style={[styles.controlButton, !activeTrack ? styles.disabled : null]}
+          style={[styles.controlButton, !hasActiveTrack ? styles.disabled : null]}
         >
           <Text style={styles.controlText}>Prev</Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={!activeTrack}
+          disabled={!hasActiveTrack}
           onPress={state.isPlaying ? pause : resume}
-          style={[styles.primaryButton, !activeTrack ? styles.disabled : null]}
+          style={[styles.primaryButton, !hasActiveTrack ? styles.disabled : null]}
         >
           <Text style={styles.primaryText}>
             {state.isPlaying ? "Pause" : "Play"}
@@ -81,11 +115,38 @@ export function PlaybackPlayerScreen() {
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={!activeTrack}
+          disabled={!hasActiveTrack}
           onPress={skipNext}
-          style={[styles.controlButton, !activeTrack ? styles.disabled : null]}
+          style={[styles.controlButton, !hasActiveTrack ? styles.disabled : null]}
         >
           <Text style={styles.controlText}>Next</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.controls}>
+        <Pressable
+          accessibilityRole="button"
+          disabled={!hasActiveTrack || state.position <= 0}
+          onPress={rewind}
+          style={[
+            styles.controlButton,
+            !hasActiveTrack || state.position <= 0 ? styles.disabled : null,
+          ]}
+        >
+          <Text style={styles.controlText}>-15s</Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          disabled={!hasActiveTrack || state.position >= state.duration}
+          onPress={fastForward}
+          style={[
+            styles.controlButton,
+            !hasActiveTrack || state.position >= state.duration
+              ? styles.disabled
+              : null,
+          ]}
+        >
+          <Text style={styles.controlText}>+15s</Text>
         </Pressable>
       </View>
 
@@ -198,6 +259,25 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 24,
+  },
+  progressTrack: {
+    backgroundColor: "#dbe3de",
+    borderRadius: 999,
+    height: 8,
+    overflow: "hidden",
+  },
+  progressFill: {
+    backgroundColor: "#0f766e",
+    borderRadius: 999,
+    height: "100%",
+  },
+  progressText: {
+    color: "#52605a",
+    fontSize: 12,
+    fontWeight: "800",
+    letterSpacing: 0,
+    lineHeight: 17,
+    textTransform: "uppercase",
   },
   controls: {
     flexDirection: "row",

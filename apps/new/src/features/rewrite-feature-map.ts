@@ -32,7 +32,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/playback",
     targetBoundary: "src/features/playback",
-    nextMilestone: "Add remote events, richer progress controls, queue removal polish, and manual playback smoke coverage.",
+    nextMilestone: "Add remote events, queue removal polish, and manual playback smoke coverage.",
   },
   {
     key: "import",

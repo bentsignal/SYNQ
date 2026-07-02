@@ -467,6 +467,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import save header copy, save-to-library toggle label, and back-link
     state now live in the import screen state service with smoke coverage
     instead of component-local copy.
+  - Done: import staged-song preview empty-state copy now lives in the import
+    screen state service with smoke coverage instead of component-local copy.
   - Done: import success/failure result labels now live in the import
     screen-state service with deterministic smoke coverage instead of being
     computed inline in route screens.

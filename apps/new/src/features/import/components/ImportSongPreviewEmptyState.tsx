@@ -1,8 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { getImportSongPreviewEmptyState } from "../services/import-screen-state-service";
 
 export function ImportSongPreviewEmptyState() {
   const theme = useCustomizationTheme();
+  const emptyState = getImportSongPreviewEmptyState();
 
   return (
     <View
@@ -12,10 +14,10 @@ export function ImportSongPreviewEmptyState() {
       ]}
     >
       <Text style={[styles.emptyTitle, { color: theme.primaryText }]}>
-        No songs staged
+        {emptyState.title}
       </Text>
       <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
-        Choose songs to review them before saving.
+        {emptyState.body}
       </Text>
     </View>
   );

@@ -75,6 +75,7 @@ import {
   getImportSaveHeaderState,
   getImportSaveLibraryToggleState,
   getImportSuccessState,
+  getImportSongPreviewEmptyState,
   getImportWifiActionState,
   getImportWifiState,
 } from "../../../apps/new/src/features/import/services/import-screen-state-service";
@@ -1024,6 +1025,10 @@ function assertImportSessionSmoke() {
   assert.deepEqual(getImportSaveBackLink(), {
     href: "/(tabs)/import/files",
     label: "Back to files",
+  });
+  assert.deepEqual(getImportSongPreviewEmptyState(), {
+    body: "Choose songs to review them before saving.",
+    title: "No songs staged",
   });
   assert.deepEqual(
     getImportHomeState({ premiumActive: false, state }).routes.map((route) => ({

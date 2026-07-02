@@ -127,6 +127,11 @@ export const getImportSaveBackLink = () => ({
   label: "Back to files",
 });
 
+export const getImportSongPreviewEmptyState = () => ({
+  body: "Choose songs to review them before saving.",
+  title: "No songs staged",
+});
+
 export const getImportSaveExportErrorMessage = (caughtError: unknown) =>
   caughtError instanceof Error
     ? caughtError.message

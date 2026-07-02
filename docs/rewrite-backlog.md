@@ -294,6 +294,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     controller branches.
   - Done: shared collection create/edit form action state now lives in the
     collection form service instead of duplicated screen save/edit guards.
+  - Done: shared collection create/edit reducer setup, edit hydration, preview
+    initials, save labels, and field updates now live in a shared form-state
+    controller hook instead of duplicated create/edit controller code.
   - Done: collection repository name normalization, required-name errors, and
     duplicate-name copy now live in a pure collection metadata service with
     deterministic smoke coverage.

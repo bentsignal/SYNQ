@@ -1,12 +1,5 @@
-import { useEffect, useReducer } from "react";
-import {
-  collectionFormReducer,
-  getCollectionFormActionState,
-  getCollectionFormPreviewInitial,
-  getCollectionFormSaveLabel,
-  getInitialCollectionFormState,
-} from "../services/collection-form-service";
 import type { EditCollectionKind } from "../services/edit-collection-query-service";
+import { useCollectionFormStateController } from "./use-collection-form-state-controller";
 import { useEditCollectionFormCommands } from "./use-edit-collection-form-commands";
 
 type EditCollectionFormCopy = {
@@ -35,42 +28,21 @@ export function useEditCollectionFormController({
   id,
   kind,
 }: UseEditCollectionFormControllerParams) {
-  const [formState, dispatchFormState] = useReducer(
-    collectionFormReducer,
-    undefined,
-    getInitialCollectionFormState,
-  );
-  const actionState = getCollectionFormActionState({
+  const {
+    actionState,
+    dispatchFormState,
+    formState,
+    imageInitial,
+    saveLabel,
+    updateName,
+    updateYear,
+  } = useCollectionFormStateController({
+    fallbackInitial: copy.kicker[0],
+    hydrateFrom: collection,
     isMissing: collection.isMissing,
-    isSaving: formState.isSaving,
-    name: formState.name,
-  });
-  const imageInitial = getCollectionFormPreviewInitial({
-    fallback: copy.kicker[0],
-    name: formState.name,
-  });
-  const saveLabel = getCollectionFormSaveLabel({
-    defaultLabel: copy.editLabel,
-    isSaving: formState.isSaving,
+    saveLabel: copy.editLabel,
     savingLabel: "Saving",
   });
-
-  useEffect(() => {
-    if (!collection.updatedAt) {
-      return;
-    }
-
-    dispatchFormState({
-      name: collection.name,
-      type: "hydrate",
-      year: collection.year,
-    });
-  }, [collection.name, collection.updatedAt, collection.year]);
-
-  const updateField =
-    (field: "name" | "year") => (value: string) => {
-      dispatchFormState({ field, type: "change-field", value });
-    };
 
   const { pickImage, save } = useEditCollectionFormCommands({
     canSave: actionState.canSave,
@@ -91,8 +63,8 @@ export function useEditCollectionFormController({
     pickImage,
     save,
     saveLabel,
-    updateName: updateField("name"),
-    updateYear: updateField("year"),
+    updateName,
+    updateYear,
     year: formState.year,
   };
 }

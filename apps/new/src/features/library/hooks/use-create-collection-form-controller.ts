@@ -1,13 +1,6 @@
-import { useReducer } from "react";
-import {
-  collectionFormReducer,
-  getCollectionFormActionState,
-  getCollectionFormPreviewInitial,
-  getCollectionFormSaveLabel,
-  getInitialCollectionFormState,
-  type CollectionFormKind,
-} from "../services/collection-form-service";
+import { type CollectionFormKind } from "../services/collection-form-service";
 import { useCreateCollectionFormCommands } from "./use-create-collection-form-commands";
+import { useCollectionFormStateController } from "./use-collection-form-state-controller";
 
 type CreateCollectionKind = CollectionFormKind;
 
@@ -25,28 +18,19 @@ export function useCreateCollectionFormController({
   copy,
   kind,
 }: UseCreateCollectionFormControllerParams) {
-  const [formState, dispatchFormState] = useReducer(
-    collectionFormReducer,
-    undefined,
-    getInitialCollectionFormState,
-  );
-  const actionState = getCollectionFormActionState({
-    isSaving: formState.isSaving,
-    name: formState.name,
-  });
-  const imageInitial = getCollectionFormPreviewInitial({
-    fallback: copy.kicker[0],
-    name: formState.name,
-  });
-  const saveLabel = getCollectionFormSaveLabel({
-    defaultLabel: copy.createLabel,
-    isSaving: formState.isSaving,
+  const {
+    actionState,
+    dispatchFormState,
+    formState,
+    imageInitial,
+    saveLabel,
+    updateName,
+    updateYear,
+  } = useCollectionFormStateController({
+    fallbackInitial: copy.kicker[0],
+    saveLabel: copy.createLabel,
     savingLabel: "Creating",
   });
-  const updateField =
-    (field: "name" | "year") => (value: string) => {
-      dispatchFormState({ field, type: "change-field", value });
-    };
 
   const { create, pickImage } = useCreateCollectionFormCommands({
     canSave: actionState.canSave,
@@ -66,8 +50,8 @@ export function useCreateCollectionFormController({
     name: formState.name,
     pickImage,
     saveLabel,
-    setName: updateField("name"),
-    setYear: updateField("year"),
+    setName: updateName,
+    setYear: updateYear,
     year: formState.year,
   };
 }

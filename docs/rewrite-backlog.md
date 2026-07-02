@@ -100,6 +100,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     lives in the library interaction service instead of the detail screen.
   - Done: backup action cards, operation labels, confirmation copy, and status
     presentation now live in a backup screen service instead of the screen.
+  - Done: backup phase-transition haptic and runtime-session reset decisions now
+    live in the backup screen service instead of screen-local branching.
   - Done: premium feature copy, selected-tier lookup, purchase/restore action
     state, and status presentation now live in a premium screen service.
   - Done: privacy and customization status labels, control disabled state,
@@ -195,6 +197,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     export, delete, busy-label, protected-playlist, and missing-state actions.
   - Done: extend deterministic smoke coverage to backup action-card order,
     premium badges, running disabled state, confirmation copy, and status text.
+  - Done: extend deterministic smoke coverage to backup phase-transition haptic
+    and runtime-session reset intents.
   - Done: extend deterministic smoke coverage to premium feature copy,
     selected-tier lookup, loading guards, action labels, and status text.
   - Done: extend deterministic smoke coverage to privacy/customization status

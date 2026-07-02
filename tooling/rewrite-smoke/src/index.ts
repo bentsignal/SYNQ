@@ -91,6 +91,7 @@ import {
   backupActionCards,
   getBackupActionState,
   getBackupConfirmationState,
+  getBackupPhaseTransitionEffects,
   getBackupOperationLabel,
   getBackupStatusState,
 } from "../../../apps/new/src/features/backup/services/backup-screen-service";
@@ -2090,6 +2091,46 @@ function assertBackupScreenSmoke() {
     isFailure: true,
     message: "Restore failed.",
   });
+  assert.deepEqual(
+    getBackupPhaseTransitionEffects({
+      currentState: idleState,
+      previousPhase: "idle",
+    }),
+    {
+      haptic: null,
+      shouldResetRuntimeSessions: false,
+    },
+  );
+  assert.deepEqual(
+    getBackupPhaseTransitionEffects({
+      currentState: successState,
+      previousPhase: "running",
+    }),
+    {
+      haptic: "success",
+      shouldResetRuntimeSessions: false,
+    },
+  );
+  assert.deepEqual(
+    getBackupPhaseTransitionEffects({
+      currentState: { ...successState, lastOperation: "restore" },
+      previousPhase: "running",
+    }),
+    {
+      haptic: "success",
+      shouldResetRuntimeSessions: true,
+    },
+  );
+  assert.deepEqual(
+    getBackupPhaseTransitionEffects({
+      currentState: failureState,
+      previousPhase: "running",
+    }),
+    {
+      haptic: "error",
+      shouldResetRuntimeSessions: false,
+    },
+  );
 }
 
 function assertPremiumScreenSmoke() {

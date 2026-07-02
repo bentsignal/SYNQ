@@ -18,6 +18,7 @@ import {
   backupActionCards,
   getBackupActionState,
   getBackupConfirmationState,
+  getBackupPhaseTransitionEffects,
   getBackupStatusState,
 } from "../services/backup-screen-service";
 import type { BackupOperation } from "../types/backup-session";
@@ -33,22 +34,18 @@ export function BackupScreen() {
   const statusState = getBackupStatusState(state);
 
   useEffect(() => {
-    if (previousPhaseRef.current !== state.phase) {
-      if (state.phase === "success") {
-        sendHaptic("success");
+    const effects = getBackupPhaseTransitionEffects({
+      currentState: state,
+      previousPhase: previousPhaseRef.current,
+    });
 
-        if (
-          state.lastOperation === "erase" ||
-          state.lastOperation === "restore"
-        ) {
-          resetSession();
-          resetPlaybackSession();
-        }
-      }
+    if (effects.haptic) {
+      sendHaptic(effects.haptic);
+    }
 
-      if (state.phase === "failure") {
-        sendHaptic("error");
-      }
+    if (effects.shouldResetRuntimeSessions) {
+      resetSession();
+      resetPlaybackSession();
     }
 
     previousPhaseRef.current = state.phase;
@@ -56,8 +53,7 @@ export function BackupScreen() {
     resetPlaybackSession,
     resetSession,
     sendHaptic,
-    state.lastOperation,
-    state.phase,
+    state,
   ]);
 
   const runBackupOperation = (operation: BackupOperation) => {

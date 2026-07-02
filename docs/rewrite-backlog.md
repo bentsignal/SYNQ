@@ -146,6 +146,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     now live in the playback player-state service instead of the mini-player UI.
   - Done: home now-playing summary labels now live in an app-shell service
     instead of the home screen.
+  - Done: home screen cross-feature summary/query/playback aggregation now
+    lives in an app-shell controller hook, and recent-song rendering now lives
+    in a focused component instead of the route screen.
   - Done: collection song list mutation and move/remove row action state now
     lives in the library interaction service instead of the list component.
   - Done: library song edit form initialization and save action state now live

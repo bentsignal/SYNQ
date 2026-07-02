@@ -51,9 +51,10 @@ export function ImportFilesScreen() {
 
       <ImportSongPreviewList
         canEditSongs
-        onRemoveSong={(songId) => {
+        onRemoveSong={async (songId) => {
           sendHaptic("medium");
-          removeImportSongs([songId]);
+          const removed = await removeImportSongs([songId]);
+          sendHaptic(removed ? "success" : "error");
         }}
         songs={state.songs}
       />

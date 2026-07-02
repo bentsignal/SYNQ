@@ -12,6 +12,7 @@ import {
 } from "../services/import-library-save-service";
 import {
   clearImportCache,
+  deleteImportDraftCacheFiles,
   prepareWifiImportCache,
   selectImportFiles,
 } from "../services/import-file-service";
@@ -38,12 +39,12 @@ type ImportSessionAction =
 type ImportSessionCommands = {
   beginFilePick: () => void;
   beginWifiTransfer: (total: number) => Promise<boolean>;
-  discardSession: () => void;
+  discardSession: () => Promise<boolean>;
   failSession: (error: string) => void;
   finishSession: (summary: ImportSaveSummary) => void;
   finishWifiTransfer: () => void;
   receiveWifiSong: (song: ImportSongDraft) => void;
-  removeImportSongs: (songIds: number[]) => void;
+  removeImportSongs: (songIds: number[]) => Promise<boolean>;
   resetSession: () => void;
   reviewSongs: (songs: ImportSongDraft[]) => void;
   saveImportSession: () => Promise<boolean>;
@@ -251,9 +252,28 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
       return false;
     }
   }, []);
-  const removeImportSongs = useCallback((songIds: number[]) => {
-    dispatch({ songIds, type: "remove-songs" });
-  }, []);
+  const removeImportSongs = useCallback(
+    async (songIds: number[]) => {
+      const songIdSet = new Set(songIds);
+      const songsToRemove = state.songs.filter((song) => songIdSet.has(song.id));
+
+      try {
+        await deleteImportDraftCacheFiles(songsToRemove);
+        dispatch({ songIds, type: "remove-songs" });
+        return true;
+      } catch (caughtError) {
+        dispatch({
+          error:
+            caughtError instanceof Error
+              ? caughtError.message
+              : "Selected staged songs could not be removed.",
+          type: "fail",
+        });
+        return false;
+      }
+    },
+    [state.songs],
+  );
   const receiveWifiSong = useCallback((song: ImportSongDraft) => {
     dispatch({ song, type: "receive-wifi-song" });
   }, []);
@@ -298,9 +318,23 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
       return false;
     }
   }, [state.shouldSaveToLibrary, state.songs]);
-  const discardSession = useCallback(() => {
-    void clearImportCache();
-    dispatch({ type: "discard" });
+  const discardSession = useCallback(async () => {
+    dispatch({ type: "saving" });
+
+    try {
+      await clearImportCache();
+      dispatch({ type: "discard" });
+      return true;
+    } catch (caughtError) {
+      dispatch({
+        error:
+          caughtError instanceof Error
+            ? caughtError.message
+            : "Import session could not be discarded.",
+        type: "fail",
+      });
+      return false;
+    }
   }, []);
   const resetSession = useCallback(() => {
     dispatch({ type: "reset" });

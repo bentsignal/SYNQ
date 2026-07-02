@@ -5,7 +5,7 @@ import type { ImportSongDraft } from "../types/import-session";
 
 type ImportSongPreviewListProps = {
   canEditSongs?: boolean;
-  onRemoveSong?: (songId: number) => void;
+  onRemoveSong?: (songId: number) => Promise<void> | void;
   songs: ImportSongDraft[];
 };
 

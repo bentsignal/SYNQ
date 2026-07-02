@@ -72,8 +72,10 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     save/discard commands with durable audio file movement and cover/artwork
     persistence exist behind Premium gates; import stack/home/files/save/result,
     shared staged-song preview lists, and Premium gate surfaces now consume
-    saved theme state, and file-pick/remove/save/discard/edit actions use
-    preference-aware haptics. Import polish and deeper manual smoke are next.
+    saved theme state, file-pick/remove/save/discard/edit actions use
+    preference-aware haptics, and staged-file cleanup now runs when songs are
+    removed or discarded. Import persistence, Wi-Fi port resilience, and deeper
+    manual smoke are next.
   - Backup/restore: feature-owned backup screen and command-state boundary
     exist; backup archive/share, restore document picking/unzip/reset, and
     erase document cleanup/database reset are connected. The backup command

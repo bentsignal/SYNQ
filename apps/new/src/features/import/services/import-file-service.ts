@@ -236,3 +236,15 @@ export async function clearImportCache() {
     throw new Error(`Import cache cleanup failed: ${getErrorMessage(error)}`);
   }
 }
+
+export async function deleteImportDraftCacheFiles(songs: ImportSongDraft[]) {
+  try {
+    await Promise.all(
+      songs.map((song) =>
+        FileSystem.deleteAsync(song.cacheUri, { idempotent: true }),
+      ),
+    );
+  } catch (error) {
+    throw new Error(`Import file cleanup failed: ${getErrorMessage(error)}`);
+  }
+}

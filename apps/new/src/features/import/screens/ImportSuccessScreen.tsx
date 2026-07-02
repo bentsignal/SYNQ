@@ -6,7 +6,8 @@ import { useImportSession } from "../hooks/use-import-session";
 export function ImportSuccessScreen() {
   const { state } = useImportSession();
   const theme = useCustomizationTheme();
-  const savedIds = state.saveSummary?.savedSongIds ?? [];
+  const savedCount = state.saveSummary?.saved ?? 0;
+  const discardedCount = state.saveSummary?.discarded ?? 0;
 
   return (
     <ScrollView
@@ -36,12 +37,12 @@ export function ImportSuccessScreen() {
         </Text>
         <Text style={[styles.panelText, { color: theme.primaryText }]}>
           {state.shouldSaveToLibrary
-            ? `${state.saveSummary?.saved ?? 0} saved to library`
-            : `${state.saveSummary?.discarded ?? 0} discarded`}
+            ? `${savedCount} saved to library`
+            : `${discardedCount} discarded`}
         </Text>
-        {savedIds.length > 0 ? (
+        {savedCount > 0 ? (
           <Text style={[styles.pathText, { color: theme.mutedText }]}>
-            Song ids: {savedIds.join(", ")}
+            Saved songs are ready in Library.
           </Text>
         ) : null}
       </View>

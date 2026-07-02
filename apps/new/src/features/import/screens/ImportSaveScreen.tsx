@@ -84,10 +84,11 @@ export function ImportSaveScreen() {
           <Pressable
             accessibilityRole="button"
             disabled={isWorking}
-            onPress={() => {
+            onPress={async () => {
               sendHaptic("medium");
-              discardSession();
-              router.push("/import");
+              const discarded = await discardSession();
+              sendHaptic(discarded ? "success" : "error");
+              router.push(discarded ? "/import" : "/import/failure");
             }}
             style={[
               styles.secondaryButton,

@@ -7,6 +7,7 @@ import type {
   ImportSaveSummary,
   ImportSongDraft,
 } from "../types/import-session";
+import { deleteImportDraftCacheFiles } from "./import-file-service";
 
 const libraryPlaylistId = 1;
 
@@ -299,6 +300,8 @@ export async function saveImportSessionToLibrary(
 export async function discardImportSession(
   songs: ImportSongDraft[],
 ): Promise<ImportSaveSummary> {
+  await deleteImportDraftCacheFiles(songs);
+
   return {
     discarded: songs.length,
     saved: 0,

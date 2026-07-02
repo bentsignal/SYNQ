@@ -51,6 +51,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     instead of duplicated create/edit screen helpers.
   - Done: collection list search filtering now lives in a pure library service
     instead of the collection list screen.
+  - Done: shared duration and remaining-duration formatting now lives in an
+    app-shell service instead of repeated library/import/playback UI helpers.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -83,6 +85,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: extend deterministic smoke coverage to collection list search
     filtering across title, meta, detail, whitespace, and case-insensitive
     queries.
+  - Done: extend deterministic smoke coverage to shared duration formatting for
+    empty, rounded, long, and remaining-time labels.
 
 ### Phase 3: New App Build-Out
 

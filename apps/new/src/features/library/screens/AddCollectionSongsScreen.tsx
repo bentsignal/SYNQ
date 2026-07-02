@@ -8,6 +8,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
@@ -29,18 +30,6 @@ const parseId = (value: string | string[] | undefined) => {
   const id = Number(rawValue);
 
   return Number.isFinite(id) ? id : null;
-};
-
-const formatDuration = (duration: number | null) => {
-  if (!duration) {
-    return "--:--";
-  }
-
-  const totalSeconds = Math.round(duration / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
 export function AddCollectionSongsScreen({
@@ -379,7 +368,7 @@ function AddableSongList({
               </Text>
             </View>
             <Text style={[styles.duration, { color: theme.primaryText }]}>
-              {formatDuration(song.duration)}
+              {formatDurationMs(song.duration)}
             </Text>
             <Pressable
               accessibilityRole="button"

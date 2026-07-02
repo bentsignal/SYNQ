@@ -1,20 +1,9 @@
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { usePlaybackSession } from "../hooks/use-playback-session";
-
-const formatDuration = (duration: number) => {
-  if (!duration) {
-    return "--:--";
-  }
-
-  const totalSeconds = Math.round(duration / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-};
 
 const seekStep = 15_000;
 
@@ -122,8 +111,8 @@ export function PlaybackPlayerScreen() {
             ad-free listening.
           </Text>
           <Text style={[styles.panelText, { color: theme.secondaryText }]}>
-            {formatDuration(state.adGate.playbackPosition)} /{" "}
-            {formatDuration(state.adGate.playbackDuration)}
+            {formatDurationMs(state.adGate.playbackPosition)} /{" "}
+            {formatDurationMs(state.adGate.playbackDuration)}
           </Text>
           <View style={[styles.progressTrack, { backgroundColor: theme.border }]}>
             <View
@@ -175,7 +164,7 @@ export function PlaybackPlayerScreen() {
               {activeTrack.artist} / {activeTrack.album}
             </Text>
             <Text style={[styles.duration, { color: theme.primaryText }]}>
-              {formatDuration(state.position)} / {formatDuration(state.duration)}
+              {formatDurationMs(state.position)} / {formatDurationMs(state.duration)}
             </Text>
             <View style={[styles.progressTrack, { backgroundColor: theme.border }]}>
               <View
@@ -324,7 +313,7 @@ export function PlaybackPlayerScreen() {
         </Text>
         <Text style={[styles.panelText, { color: theme.secondaryText }]}>
           Free listening before ad break:{" "}
-          {formatDuration(freeListeningRemainingMs)}
+          {formatDurationMs(freeListeningRemainingMs)}
         </Text>
       </View>
 

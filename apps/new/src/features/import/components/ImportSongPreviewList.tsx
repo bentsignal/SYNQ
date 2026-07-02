@@ -1,5 +1,6 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportSongDraft } from "../types/import-session";
 
@@ -7,18 +8,6 @@ type ImportSongPreviewListProps = {
   canEditSongs?: boolean;
   onRemoveSong?: (songId: number) => Promise<void> | void;
   songs: ImportSongDraft[];
-};
-
-const formatDuration = (duration: number | null) => {
-  if (!duration) {
-    return "--:--";
-  }
-
-  const totalSeconds = Math.round(duration / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
 export function ImportSongPreviewList({
@@ -79,7 +68,7 @@ export function ImportSongPreviewList({
             </Text>
           </View>
           <Text style={[styles.duration, { color: theme.primaryText }]}>
-            {formatDuration(song.duration)}
+            {formatDurationMs(song.duration)}
           </Text>
           {canEditSongs || onRemoveSong ? (
             <View style={styles.actionGroup}>

@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
 import {
+  formatDurationMs,
+  formatRemainingDurationMs,
+} from "../../../apps/new/src/features/app-shell/services/duration-format-service";
+import {
   getActiveTrack,
   getNextQueueIndex,
   initialPlaybackState,
@@ -753,6 +757,27 @@ function assertLibraryCollectionListSmoke() {
   );
 }
 
+function assertDurationFormatSmoke() {
+  assert.equal(formatDurationMs(null), "--:--");
+  assert.equal(formatDurationMs(undefined), "--:--");
+  assert.equal(formatDurationMs(0), "--:--");
+  assert.equal(formatDurationMs(61_400), "1:01");
+  assert.equal(formatDurationMs(3_665_000), "61:05");
+  assert.equal(
+    formatRemainingDurationMs({ duration: 180_000, position: 70_000 }),
+    "-1:50",
+  );
+  assert.equal(
+    formatRemainingDurationMs({ duration: 180_000, position: 200_000 }),
+    "-0:00",
+  );
+  assert.equal(
+    formatRemainingDurationMs({ duration: 0, position: 0 }),
+    "--:--",
+  );
+}
+
+assertDurationFormatSmoke();
 assertPlaybackSessionSmoke();
 assertImportSessionSmoke();
 assertLibraryCollectionDetailSmoke();

@@ -1,5 +1,6 @@
 import { Link, router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
@@ -19,18 +20,6 @@ type LibrarySongPreviewListProps = {
   setSort: (sort: LibrarySongPreviewSort) => void;
   songs: LibrarySongPreview[];
   sort: LibrarySongPreviewSort;
-};
-
-const formatDuration = (duration: number | null) => {
-  if (!duration) {
-    return "--:--";
-  }
-
-  const totalSeconds = Math.round(duration / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
 export function LibrarySongPreviewList({
@@ -131,7 +120,7 @@ export function LibrarySongPreviewList({
                   </Pressable>
                 </Link>
                 <Text style={[styles.duration, { color: theme.primaryText }]}>
-                  {formatDuration(song.duration)}
+                  {formatDurationMs(song.duration)}
                 </Text>
                 <View style={styles.actionGroup}>
                   <Pressable

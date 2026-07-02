@@ -1,21 +1,10 @@
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useLibrarySongPreviewQuery } from "@/src/features/library/hooks/use-library-song-preview-query";
 import { useLibrarySummaryQuery } from "@/src/features/library/hooks/use-library-summary-query";
 import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-
-const formatDuration = (duration: number | null) => {
-  if (!duration || duration <= 0) {
-    return "--:--";
-  }
-
-  const totalSeconds = Math.round(duration / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-};
 
 export function HomeScreen() {
   const theme = useCustomizationTheme();
@@ -61,7 +50,7 @@ export function HomeScreen() {
           </Text>
           <Text style={[styles.bodyText, { color: theme.secondaryText }]}>
             {activeTrack
-              ? `${activeTrack.artist} - ${formatDuration(activeTrack.duration)}`
+              ? `${activeTrack.artist} - ${formatDurationMs(activeTrack.duration)}`
               : `${queueCount} songs in queue`}
           </Text>
         </View>
@@ -147,7 +136,7 @@ export function HomeScreen() {
                   </Text>
                 </View>
                 <Text style={[styles.duration, { color: theme.mutedText }]}>
-                  {formatDuration(song.duration)}
+                  {formatDurationMs(song.duration)}
                 </Text>
               </Pressable>
             </Link>

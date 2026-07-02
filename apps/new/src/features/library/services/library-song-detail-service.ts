@@ -1,3 +1,5 @@
+import { formatDurationMs } from "../../app-shell/services/duration-format-service";
+
 export type LibrarySongDetailSongRow = {
   duration: number | null;
   fileType: string | null;
@@ -59,18 +61,6 @@ export type LibrarySongDetail = {
 const formatCount = (count: number, singular: string, plural = `${singular}s`) =>
   `${count} ${count === 1 ? singular : plural}`;
 
-const formatDuration = (duration: number | null) => {
-  if (!duration) {
-    return "--:--";
-  }
-
-  const totalSeconds = Math.round(duration / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-};
-
 const formatNames = (names: string[]) =>
   names.length === 0
     ? "Unknown"
@@ -124,7 +114,7 @@ export const buildLibrarySongDetail = ({
       title: artist.name ?? "Untitled artist",
     })),
     duration: songRow?.duration ?? null,
-    durationLabel: formatDuration(songRow?.duration ?? null),
+    durationLabel: formatDurationMs(songRow?.duration ?? null),
     fileType: songRow?.fileType ?? "Unknown file type",
     isLiked: likedRows.length > 0,
     isMissing: !songRow,

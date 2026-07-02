@@ -1,28 +1,10 @@
 import { Link, usePathname } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { formatRemainingDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { usePlaybackSession } from "../hooks/use-playback-session";
 
 const hiddenRoutes = new Set(["/player", "/queue"]);
-
-const formatDuration = ({
-  duration,
-  position,
-}: {
-  duration: number;
-  position: number;
-}) => {
-  if (!duration) {
-    return "--:--";
-  }
-
-  const remainingMs = Math.max(0, duration - position);
-  const totalSeconds = Math.round(remainingMs / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-
-  return `-${minutes}:${seconds.toString().padStart(2, "0")}`;
-};
 
 export function PlaybackMiniPlayer() {
   const theme = useCustomizationTheme();
@@ -60,7 +42,7 @@ export function PlaybackMiniPlayer() {
           >
             {blockedByAd
               ? "Ad break ready"
-              : `${activeTrack.artist} - ${formatDuration({
+              : `${activeTrack.artist} - ${formatRemainingDurationMs({
                   duration: state.duration,
                   position: state.position,
                 })}`}

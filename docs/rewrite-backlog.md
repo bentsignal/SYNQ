@@ -213,6 +213,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: add-to-collection single-add, bulk-add, selection, saving, mutation
     error, and haptic workflow state now lives in a controller hook instead of
     the screen.
+  - Done: add-to-collection single-add and bulk-add mutation side effects now
+    live in a focused command hook instead of the controller owning repository
+    calls, reducer transitions, and haptics together.
   - Done: add-to-collection single-add and bulk-add fallback copy now lives in
     the library interaction service with deterministic smoke coverage instead
     of inline controller branches.

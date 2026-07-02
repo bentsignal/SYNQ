@@ -162,6 +162,7 @@ import {
 import {
   getCollectionDetailHref,
   getCollectionFormBackHref,
+  getCollectionFormBackLink,
   getCollectionFormActionState,
   getCollectionFormErrorMessage,
   getCollectionFormFieldState,
@@ -3226,6 +3227,10 @@ function assertEditCollectionQuerySmoke() {
 
 function assertCollectionFormSmoke() {
   assert.equal(getCollectionFormBackHref(), "/(tabs)/library");
+  assert.deepEqual(getCollectionFormBackLink(), {
+    href: "/(tabs)/library",
+    label: "Back to Library",
+  });
   assert.equal(normalizeCollectionName("  Smoke Album  "), "Smoke Album");
   assert.equal(
     getCollectionRequiredNameMessage("album"),

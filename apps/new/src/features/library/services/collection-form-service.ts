@@ -142,6 +142,11 @@ export type CollectionDetailHref =
 export const getCollectionFormBackHref = (): CollectionDetailHref =>
   "/(tabs)/library";
 
+export const getCollectionFormBackLink = () => ({
+  href: getCollectionFormBackHref(),
+  label: "Back to Library",
+});
+
 export const getCollectionDetailHref = ({
   id,
   kind,

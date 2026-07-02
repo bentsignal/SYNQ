@@ -26,3 +26,7 @@ export const getLibrarySongEditActionState = ({
   canSave: !detail.isMissing && title.trim().length > 0 && !isSaving,
   saveLabel: isSaving ? "Saving" : "Save",
 });
+
+export type LibrarySongEditActionState = ReturnType<
+  typeof getLibrarySongEditActionState
+>;

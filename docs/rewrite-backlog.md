@@ -118,6 +118,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     the screen.
   - Done: song detail play, queue, like, export, delete, mutation error, and
     busy-state workflows now live in a controller hook instead of the screen.
+  - Done: edit-song form fields, save/cancel controls, query/mutation status
+    copy, and error rendering now live in a focused component instead of the
+    route screen.
   - Done: import session hydration and persistence policy now lives in a
     focused hook instead of the provider body.
   - Done: import file-pick and staged-song removal command orchestration now

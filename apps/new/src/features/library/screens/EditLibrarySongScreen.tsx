@@ -1,14 +1,8 @@
 import { Link, useLocalSearchParams } from "expo-router";
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { EditLibrarySongFormView } from "../components/EditLibrarySongFormView";
 import { useEditLibrarySongController } from "../hooks/use-edit-library-song-controller";
 import { useLibrarySongDetailQuery } from "../hooks/use-library-song-detail-query";
 
@@ -41,7 +35,6 @@ export function EditLibrarySongScreen() {
 }
 
 function EditLibrarySongContent({ songId }: { songId: number }) {
-  const theme = useCustomizationTheme();
   const { detail, errors } = useLibrarySongDetailQuery(songId);
   const hasErrors = errors.length > 0;
   const {
@@ -60,156 +53,26 @@ function EditLibrarySongContent({ songId }: { songId: number }) {
   });
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.content}
-      style={[styles.screen, { backgroundColor: theme.background }]}
-    >
-      <View style={styles.header}>
-        <Text style={[styles.kicker, { color: theme.accent }]}>Edit song</Text>
-        <Text style={[styles.title, { color: theme.primaryText }]}>
-          {detail.title}
-        </Text>
-        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          {detail.originalFileName}
-        </Text>
-      </View>
-
-      <View style={styles.form}>
-        <View style={styles.field}>
-          <Text style={[styles.label, { color: theme.secondaryText }]}>
-            Title
-          </Text>
-          <TextInput
-            onChangeText={setTitle}
-            placeholder="Song title"
-            placeholderTextColor={theme.mutedText}
-            returnKeyType="next"
-            style={[
-              styles.input,
-              {
-                backgroundColor: theme.surface,
-                borderColor: theme.border,
-                color: theme.primaryText,
-              },
-            ]}
-            value={title}
-          />
-        </View>
-
-        <View style={styles.field}>
-          <Text style={[styles.label, { color: theme.secondaryText }]}>
-            Artists
-          </Text>
-          <TextInput
-            autoCapitalize="words"
-            onChangeText={setArtistNames}
-            placeholder="Artist names"
-            placeholderTextColor={theme.mutedText}
-            returnKeyType="next"
-            style={[
-              styles.input,
-              {
-                backgroundColor: theme.surface,
-                borderColor: theme.border,
-                color: theme.primaryText,
-              },
-            ]}
-            value={artistNames}
-          />
-        </View>
-
-        <View style={styles.field}>
-          <Text style={[styles.label, { color: theme.secondaryText }]}>
-            Albums
-          </Text>
-          <TextInput
-            autoCapitalize="words"
-            onChangeText={setAlbumNames}
-            placeholder="Album names"
-            placeholderTextColor={theme.mutedText}
-            returnKeyType="done"
-            style={[
-              styles.input,
-              {
-                backgroundColor: theme.surface,
-                borderColor: theme.border,
-                color: theme.primaryText,
-              },
-            ]}
-            value={albumNames}
-          />
-        </View>
-      </View>
-
-      <View style={styles.actionRow}>
-        <Pressable
-          accessibilityRole="button"
-          disabled={!actionState.canSave}
-          onPress={save}
-          style={[
-            styles.primaryButton,
-            { backgroundColor: theme.accent },
-            !actionState.canSave ? styles.disabled : null,
-          ]}
-        >
-          <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
-            {actionState.saveLabel}
-          </Text>
-        </Pressable>
-        <Link
-          href={`/(tabs)/library/song/${songId}`}
-          style={[
-            styles.secondaryButton,
-            {
-              backgroundColor: theme.surface,
-              borderColor: theme.border,
-              color: theme.accent,
-            },
-          ]}
-        >
-          Cancel
-        </Link>
-      </View>
-
-      <View
-        style={[
-          styles.panel,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-        ]}
-      >
-        <Text
-          style={[
-            hasErrors || errorMessage ? styles.errorText : styles.panelText,
-            {
-              color: hasErrors || errorMessage
-                ? theme.danger
-                : theme.secondaryText,
-            },
-          ]}
-        >
-          {errorMessage ??
-            (hasErrors
-              ? "One or more song edit queries failed."
-              : detail.isMissing
-                ? "Song missing from database."
-                : "Separate multiple artists or albums with commas.")}
-        </Text>
-      </View>
-    </ScrollView>
+    <EditLibrarySongFormView
+      actionState={actionState}
+      albumNames={albumNames}
+      artistNames={artistNames}
+      detail={detail}
+      errorMessage={errorMessage}
+      hasErrors={hasErrors}
+      onChangeAlbumNames={setAlbumNames}
+      onChangeArtistNames={setArtistNames}
+      onChangeTitle={setTitle}
+      onSave={save}
+      songId={songId}
+      title={title}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-  },
-  content: {
-    gap: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-  header: {
-    gap: 8,
   },
   kicker: {
     fontSize: 13,
@@ -227,77 +90,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
-  },
-  form: {
-    gap: 14,
-  },
-  field: {
-    gap: 8,
-  },
-  label: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  input: {
-    borderRadius: 8,
-    borderWidth: 1,
-    fontSize: 15,
-    minHeight: 46,
-    paddingHorizontal: 14,
-  },
-  actionRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  primaryButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    flexGrow: 1,
-    justifyContent: "center",
-    minHeight: 44,
-    minWidth: 112,
-    paddingHorizontal: 14,
-  },
-  secondaryButton: {
-    borderRadius: 8,
-    borderWidth: 1,
-    flexGrow: 1,
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 42,
-    minHeight: 44,
-    minWidth: 112,
-    overflow: "hidden",
-    paddingHorizontal: 14,
-    textAlign: "center",
-    textTransform: "uppercase",
-  },
-  disabled: {
-    opacity: 0.45,
-  },
-  primaryButtonText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  panel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    padding: 16,
-  },
-  panelText: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  errorText: {
-    fontSize: 14,
-    fontWeight: "700",
-    lineHeight: 20,
   },
   backLink: {
     fontSize: 15,

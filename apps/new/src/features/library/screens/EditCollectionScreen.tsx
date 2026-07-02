@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -16,6 +17,7 @@ import {
   updateArtist,
   updatePlaylist,
 } from "../repository/collection-repository";
+import { pickCollectionImage } from "../services/collection-image-picker-service";
 
 export type CollectionKind = "album" | "artist" | "playlist";
 
@@ -116,7 +118,12 @@ function EditCollectionContent({
   const { sendHaptic } = useHapticFeedback();
   const theme = useCustomizationTheme();
   const copy = labels[kind];
+  const imageLabel = kind === "artist" ? "Profile image" : "Cover image";
   const collection = useEditCollectionQuery({ id, kind });
+  const [image, setImage] = useState<{
+    dataUrl: string;
+    fileName: string;
+  } | null>(null);
   const [name, setName] = useState("");
   const [year, setYear] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -133,6 +140,24 @@ function EditCollectionContent({
     setYear(collection.year);
   }, [collection.name, collection.updatedAt, collection.year, isDirty]);
 
+  const handlePickImage = async () => {
+    try {
+      sendHaptic("light");
+      const pickedImage = await pickCollectionImage();
+      if (pickedImage) {
+        setImage(pickedImage);
+        setIsDirty(true);
+      }
+    } catch (caughtError) {
+      sendHaptic("error");
+      setError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Image could not be selected.",
+      );
+    }
+  };
+
   const handleUpdate = async () => {
     if (!canSave) {
       sendHaptic("error");
@@ -145,20 +170,33 @@ function EditCollectionContent({
 
     try {
       if (kind === "album") {
-        await updateAlbum({ id, name, year: parseYear(year) });
+        await updateAlbum({
+          coverImage: image?.dataUrl,
+          id,
+          name,
+          year: parseYear(year),
+        });
         sendHaptic("success");
         router.replace(`/(tabs)/library/album/${id}`);
         return;
       }
 
       if (kind === "artist") {
-        await updateArtist({ id, name });
+        await updateArtist({
+          id,
+          name,
+          profileImage: image?.dataUrl,
+        });
         sendHaptic("success");
         router.replace(`/(tabs)/library/artist/${id}`);
         return;
       }
 
-      await updatePlaylist({ id, name });
+      await updatePlaylist({
+        coverImage: image?.dataUrl,
+        id,
+        name,
+      });
       sendHaptic("success");
       router.replace(`/(tabs)/library/playlist/${id}`);
     } catch (caughtError) {
@@ -237,6 +275,47 @@ function EditCollectionContent({
             />
           </>
         ) : null}
+
+        <Text style={[styles.label, { color: theme.secondaryText }]}>
+          {imageLabel}
+        </Text>
+        <View style={styles.imageRow}>
+          {image || collection.imagePath ? (
+            <Image
+              source={{ uri: image?.dataUrl ?? collection.imagePath ?? "" }}
+              style={styles.imagePreview}
+            />
+          ) : (
+            <View
+              style={[
+                styles.imagePlaceholder,
+                { backgroundColor: theme.background, borderColor: theme.border },
+              ]}
+            >
+              <Text style={[styles.imageInitial, { color: theme.accent }]}>
+                {name.trim().slice(0, 1).toUpperCase() || copy.kicker[0]}
+              </Text>
+            </View>
+          )}
+          <View style={styles.imageText}>
+            <Text style={[styles.imageName, { color: theme.primaryText }]}>
+              {image?.fileName ??
+                (collection.imagePath
+                  ? `Saved ${imageLabel.toLowerCase()}`
+                  : `No ${imageLabel.toLowerCase()} selected`)}
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              disabled={isSaving || collection.isMissing}
+              onPress={handlePickImage}
+              style={[styles.imageButton, { borderColor: theme.border }]}
+            >
+              <Text style={[styles.imageButtonText, { color: theme.accent }]}>
+                Choose image
+              </Text>
+            </Pressable>
+          </View>
+        </View>
 
         {collection.isMissing ? (
           <Text style={[styles.errorText, { color: theme.danger }]}>
@@ -330,6 +409,55 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     minHeight: 50,
     paddingHorizontal: 14,
+  },
+  imageRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 12,
+  },
+  imagePreview: {
+    borderRadius: 8,
+    height: 72,
+    width: 72,
+  },
+  imagePlaceholder: {
+    alignItems: "center",
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 72,
+    justifyContent: "center",
+    width: 72,
+  },
+  imageInitial: {
+    fontSize: 24,
+    fontWeight: "800",
+    letterSpacing: 0,
+    lineHeight: 30,
+  },
+  imageText: {
+    flex: 1,
+    gap: 8,
+    minWidth: 0,
+  },
+  imageName: {
+    fontSize: 13,
+    fontWeight: "700",
+    lineHeight: 18,
+  },
+  imageButton: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: 34,
+    paddingHorizontal: 10,
+  },
+  imageButtonText: {
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
   },
   saveButton: {
     alignItems: "center",

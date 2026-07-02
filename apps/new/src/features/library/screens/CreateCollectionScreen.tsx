@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useRouter } from "expo-router";
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -12,9 +13,10 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import {
   createAlbum,
-  createArtist,
+  createArtistWithImage,
   createPlaylist,
 } from "../repository/collection-repository";
+import { pickCollectionImage } from "../services/collection-image-picker-service";
 
 type CreateCollectionKind = "album" | "artist" | "playlist";
 
@@ -76,11 +78,33 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
   const { sendHaptic } = useHapticFeedback();
   const theme = useCustomizationTheme();
   const copy = labels[kind];
+  const imageLabel = kind === "artist" ? "Profile image" : "Cover image";
   const [name, setName] = useState("");
   const [year, setYear] = useState("");
+  const [image, setImage] = useState<{
+    dataUrl: string;
+    fileName: string;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const canSave = name.trim().length > 0 && !isSaving;
+
+  const handlePickImage = async () => {
+    try {
+      sendHaptic("light");
+      const pickedImage = await pickCollectionImage();
+      if (pickedImage) {
+        setImage(pickedImage);
+      }
+    } catch (caughtError) {
+      sendHaptic("error");
+      setError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Image could not be selected.",
+      );
+    }
+  };
 
   const handleCreate = async () => {
     if (!canSave) {
@@ -94,20 +118,30 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
 
     try {
       if (kind === "album") {
-        const album = await createAlbum({ name, year: parseYear(year) });
+        const album = await createAlbum({
+          coverImage: image?.dataUrl,
+          name,
+          year: parseYear(year),
+        });
         sendHaptic("success");
         router.replace(`/(tabs)/library/album/${album.id}`);
         return;
       }
 
       if (kind === "artist") {
-        const artist = await createArtist(name);
+        const artist = await createArtistWithImage({
+          name,
+          profileImage: image?.dataUrl,
+        });
         sendHaptic("success");
         router.replace(`/(tabs)/library/artist/${artist.id}`);
         return;
       }
 
-      const playlist = await createPlaylist(name);
+      const playlist = await createPlaylist({
+        coverImage: image?.dataUrl,
+        name,
+      });
       sendHaptic("success");
       router.replace(`/(tabs)/library/playlist/${playlist.id}`);
     } catch (caughtError) {
@@ -180,6 +214,41 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
             />
           </>
         ) : null}
+
+        <Text style={[styles.label, { color: theme.secondaryText }]}>
+          {imageLabel}
+        </Text>
+        <View style={styles.imageRow}>
+          {image ? (
+            <Image source={{ uri: image.dataUrl }} style={styles.imagePreview} />
+          ) : (
+            <View
+              style={[
+                styles.imagePlaceholder,
+                { backgroundColor: theme.background, borderColor: theme.border },
+              ]}
+            >
+              <Text style={[styles.imageInitial, { color: theme.accent }]}>
+                {name.trim().slice(0, 1).toUpperCase() || copy.kicker[0]}
+              </Text>
+            </View>
+          )}
+          <View style={styles.imageText}>
+            <Text style={[styles.imageName, { color: theme.primaryText }]}>
+              {image?.fileName ?? `No ${imageLabel.toLowerCase()} selected`}
+            </Text>
+            <Pressable
+              accessibilityRole="button"
+              disabled={isSaving}
+              onPress={handlePickImage}
+              style={[styles.imageButton, { borderColor: theme.border }]}
+            >
+              <Text style={[styles.imageButtonText, { color: theme.accent }]}>
+                Choose image
+              </Text>
+            </Pressable>
+          </View>
+        </View>
 
         {error ? (
           <Text style={[styles.errorText, { color: theme.danger }]}>
@@ -262,6 +331,55 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     minHeight: 50,
     paddingHorizontal: 14,
+  },
+  imageRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 12,
+  },
+  imagePreview: {
+    borderRadius: 8,
+    height: 72,
+    width: 72,
+  },
+  imagePlaceholder: {
+    alignItems: "center",
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 72,
+    justifyContent: "center",
+    width: 72,
+  },
+  imageInitial: {
+    fontSize: 24,
+    fontWeight: "800",
+    letterSpacing: 0,
+    lineHeight: 30,
+  },
+  imageText: {
+    flex: 1,
+    gap: 8,
+    minWidth: 0,
+  },
+  imageName: {
+    fontSize: 13,
+    fontWeight: "700",
+    lineHeight: 18,
+  },
+  imageButton: {
+    alignItems: "center",
+    alignSelf: "flex-start",
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: 34,
+    paddingHorizontal: 10,
+  },
+  imageButtonText: {
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
   },
   saveButton: {
     alignItems: "center",

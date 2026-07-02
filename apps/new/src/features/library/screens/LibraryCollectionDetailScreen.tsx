@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocalSearchParams } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { LibraryCollectionSongList } from "../components/LibraryCollectionSongList";
@@ -110,6 +110,20 @@ function LibraryCollectionDetailContent({
       style={[styles.scroll, { backgroundColor: theme.background }]}
     >
       <View style={styles.header}>
+        {detail.imagePath ? (
+          <Image source={{ uri: detail.imagePath }} style={styles.heroImage} />
+        ) : (
+          <View
+            style={[
+              styles.heroPlaceholder,
+              { backgroundColor: theme.surface, borderColor: theme.border },
+            ]}
+          >
+            <Text style={[styles.heroInitial, { color: theme.accent }]}>
+              {detail.title.slice(0, 1).toUpperCase()}
+            </Text>
+          </View>
+        )}
         <Text style={[styles.kicker, { color: theme.accent }]}>
           {detail.eyebrow}
         </Text>
@@ -262,6 +276,25 @@ const styles = StyleSheet.create({
   },
   header: {
     gap: 8,
+  },
+  heroImage: {
+    borderRadius: 8,
+    height: 132,
+    width: 132,
+  },
+  heroPlaceholder: {
+    alignItems: "center",
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 132,
+    justifyContent: "center",
+    width: 132,
+  },
+  heroInitial: {
+    fontSize: 44,
+    fontWeight: "800",
+    letterSpacing: 0,
+    lineHeight: 52,
   },
   kicker: {
     fontSize: 13,

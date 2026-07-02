@@ -1,6 +1,7 @@
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq, ne } from "drizzle-orm";
+import { saveCoverImage } from "@/src/features/images/services/image-storage-service";
 
 const normalizeName = (name: string) => name.trim();
 
@@ -70,9 +71,11 @@ const assertUniqueName = async ({
 };
 
 export async function createAlbum({
+  coverImage,
   name,
   year,
 }: {
+  coverImage?: string | null;
   name: string;
   year?: number;
 }) {
@@ -86,7 +89,11 @@ export async function createAlbum({
 
   const createdAlbum = await db
     .insert(schema.albums)
-    .values({ name: cleanName, year })
+    .values({
+      coverImage: await saveCoverImage(coverImage),
+      name: cleanName,
+      year,
+    })
     .returning({ id: schema.albums.id });
 
   const id = createdAlbum[0]?.id;
@@ -128,7 +135,48 @@ export async function createArtist(name: string) {
   };
 }
 
-export async function createPlaylist(name: string) {
+export async function createArtistWithImage({
+  name,
+  profileImage,
+}: {
+  name: string;
+  profileImage?: string | null;
+}) {
+  const cleanName = normalizeName(name);
+
+  if (!cleanName) {
+    throw new Error("Artist name is required.");
+  }
+
+  await assertUniqueName({ entity: "artist", name: cleanName });
+
+  const createdArtist = await db
+    .insert(schema.artists)
+    .values({
+      name: cleanName,
+      profileImage: await saveCoverImage(profileImage),
+    })
+    .returning({ id: schema.artists.id });
+
+  const id = createdArtist[0]?.id;
+
+  if (!id) {
+    throw new Error("Artist could not be created.");
+  }
+
+  return {
+    id,
+    name: cleanName,
+  };
+}
+
+export async function createPlaylist({
+  coverImage,
+  name,
+}: {
+  coverImage?: string | null;
+  name: string;
+}) {
   const cleanName = normalizeName(name);
 
   if (!cleanName) {
@@ -139,7 +187,10 @@ export async function createPlaylist(name: string) {
 
   const createdPlaylist = await db
     .insert(schema.playlists)
-    .values({ name: cleanName })
+    .values({
+      coverImage: await saveCoverImage(coverImage),
+      name: cleanName,
+    })
     .returning({ id: schema.playlists.id });
 
   const id = createdPlaylist[0]?.id;
@@ -155,10 +206,12 @@ export async function createPlaylist(name: string) {
 }
 
 export async function updateAlbum({
+  coverImage,
   id,
   name,
   year,
 }: {
+  coverImage?: string | null;
   id: number;
   name: string;
   year?: number | null;
@@ -173,7 +226,13 @@ export async function updateAlbum({
 
   await db
     .update(schema.albums)
-    .set({ name: cleanName, year })
+    .set({
+      ...(coverImage !== undefined
+        ? { coverImage: await saveCoverImage(coverImage) }
+        : {}),
+      name: cleanName,
+      year,
+    })
     .where(eq(schema.albums.id, id));
 
   return {
@@ -183,7 +242,15 @@ export async function updateAlbum({
   };
 }
 
-export async function updateArtist({ id, name }: { id: number; name: string }) {
+export async function updateArtist({
+  id,
+  name,
+  profileImage,
+}: {
+  id: number;
+  name: string;
+  profileImage?: string | null;
+}) {
   const cleanName = normalizeName(name);
 
   if (!cleanName) {
@@ -194,7 +261,12 @@ export async function updateArtist({ id, name }: { id: number; name: string }) {
 
   await db
     .update(schema.artists)
-    .set({ name: cleanName })
+    .set({
+      ...(profileImage !== undefined
+        ? { profileImage: await saveCoverImage(profileImage) }
+        : {}),
+      name: cleanName,
+    })
     .where(eq(schema.artists.id, id));
 
   return {
@@ -204,9 +276,11 @@ export async function updateArtist({ id, name }: { id: number; name: string }) {
 }
 
 export async function updatePlaylist({
+  coverImage,
   id,
   name,
 }: {
+  coverImage?: string | null;
   id: number;
   name: string;
 }) {
@@ -224,7 +298,12 @@ export async function updatePlaylist({
 
   await db
     .update(schema.playlists)
-    .set({ name: cleanName })
+    .set({
+      ...(coverImage !== undefined
+        ? { coverImage: await saveCoverImage(coverImage) }
+        : {}),
+      name: cleanName,
+    })
     .where(eq(schema.playlists.id, id));
 
   return {

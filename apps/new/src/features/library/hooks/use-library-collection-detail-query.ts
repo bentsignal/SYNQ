@@ -3,6 +3,7 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
 
 export type LibraryCollectionDetailKind = "album" | "artist" | "playlist";
 
@@ -99,6 +100,7 @@ const rowsToSongs = (rows: DetailSongRow[]) => {
 type CollectionDetail = {
   detail: string;
   eyebrow: string;
+  imagePath: string | null;
   isMissing: boolean;
   kind: LibraryCollectionDetailKind;
   meta: string;
@@ -112,7 +114,7 @@ const buildPlaylistDetail = ({
   songRows,
   updatedAt,
 }: {
-  playlistRows: { name: string | null }[];
+  playlistRows: { coverImage: string | null; name: string | null }[];
   songRows: DetailSongRow[];
   updatedAt: number;
 }): CollectionDetail => {
@@ -122,6 +124,9 @@ const buildPlaylistDetail = ({
   return {
     detail: formatCount(songs.length, "song"),
     eyebrow: "Playlist",
+    imagePath: playlist?.coverImage
+      ? getImagePathFromHash(playlist.coverImage).pathToSmallImage
+      : null,
     isMissing: !playlist,
     kind: "playlist",
     meta: "Manual collection",
@@ -138,6 +143,7 @@ const buildAlbumDetail = ({
 }: {
   albumRows: {
     artistName: string | null;
+    coverImage: string | null;
     name: string | null;
     year: number | null;
   }[];
@@ -158,6 +164,9 @@ const buildAlbumDetail = ({
   return {
     detail: formatCount(songs.length, "song"),
     eyebrow: "Album",
+    imagePath: album?.coverImage
+      ? getImagePathFromHash(album.coverImage).pathToSmallImage
+      : null,
     isMissing: !album,
     kind: "album",
     meta: album?.year ? `${artistLabel} / ${album.year}` : artistLabel,
@@ -172,7 +181,11 @@ const buildArtistDetail = ({
   songRows,
   updatedAt,
 }: {
-  artistRows: { albumId: number | null; name: string | null }[];
+  artistRows: {
+    albumId: number | null;
+    name: string | null;
+    profileImage: string | null;
+  }[];
   songRows: DetailSongRow[];
   updatedAt: number;
 }): CollectionDetail => {
@@ -192,6 +205,9 @@ const buildArtistDetail = ({
       "album",
     )}`,
     eyebrow: "Artist",
+    imagePath: artist?.profileImage
+      ? getImagePathFromHash(artist.profileImage).pathToSmallImage
+      : null,
     isMissing: !artist,
     kind: "artist",
     meta: "Library artist",
@@ -210,7 +226,10 @@ export function useLibraryCollectionDetailQuery({
 }) {
   const playlist = useLiveQuery(
     db
-      .select({ name: schema.playlists.name })
+      .select({
+        coverImage: schema.playlists.coverImage,
+        name: schema.playlists.name,
+      })
       .from(schema.playlists)
       .where(eq(schema.playlists.id, id)),
   );
@@ -245,6 +264,7 @@ export function useLibraryCollectionDetailQuery({
     db
       .select({
         artistName: schema.artists.name,
+        coverImage: schema.albums.coverImage,
         name: schema.albums.name,
         year: schema.albums.year,
       })
@@ -287,6 +307,7 @@ export function useLibraryCollectionDetailQuery({
       .select({
         albumId: schema.artistsAlbums.albumId,
         name: schema.artists.name,
+        profileImage: schema.artists.profileImage,
       })
       .from(schema.artists)
       .leftJoin(

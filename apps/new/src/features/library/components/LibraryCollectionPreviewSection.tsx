@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionPreview } from "../hooks/use-library-collection-preview-query";
 
@@ -104,6 +104,28 @@ export function LibraryCollectionPreviewSection({
                           { borderBottomColor: theme.borderSubtle },
                         ]}
                       >
+                        {collection.imagePath ? (
+                          <Image
+                            source={{ uri: collection.imagePath }}
+                            style={styles.thumbnail}
+                          />
+                        ) : (
+                          <View
+                            style={[
+                              styles.thumbnailPlaceholder,
+                              { backgroundColor: theme.background },
+                            ]}
+                          >
+                            <Text
+                              style={[
+                                styles.thumbnailInitial,
+                                { color: theme.accent },
+                              ]}
+                            >
+                              {collection.title.slice(0, 1).toUpperCase()}
+                            </Text>
+                          </View>
+                        )}
                         <View style={styles.rowText}>
                           <Text
                             numberOfLines={1}
@@ -204,6 +226,24 @@ const styles = StyleSheet.create({
     minHeight: 62,
     paddingHorizontal: 14,
     paddingVertical: 10,
+  },
+  thumbnail: {
+    borderRadius: 6,
+    height: 42,
+    width: 42,
+  },
+  thumbnailPlaceholder: {
+    alignItems: "center",
+    borderRadius: 6,
+    height: 42,
+    justifyContent: "center",
+    width: 42,
+  },
+  thumbnailInitial: {
+    fontSize: 16,
+    fontWeight: "800",
+    letterSpacing: 0,
+    lineHeight: 21,
   },
   rowText: {
     flex: 1,

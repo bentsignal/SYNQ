@@ -49,7 +49,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Library: first reactive Drizzle summary, searchable/sortable song surface,
     collection previews, read-only song/playlist/album/artist detail routes,
     playlist/album/artist create/edit flows, collection song add/remove flows,
-    and durable album/playlist/artist song reorder flows exist.
+    durable album/playlist/artist song reorder flows, and collection
+    cover/profile image picking, persistence, and thumbnail rendering exist.
   - Playback: explicit session state, queue/player screens, an Expo Audio
     adapter for play/pause/seek/skip, native status/progress sync,
     filesystem-backed session persistence, queue reordering, and player
@@ -130,9 +131,10 @@ We are solidly through Phase 1, well into Phase 2, and starting Phase 3. The
 `apps/new` shell now has a root stack, tabs, modal placeholders, feature
 boundaries, database initialization, and a first reactive Library surface with
 searchable/sortable songs, linked details, collection create/edit flows, song
-add/remove, and durable album/playlist/artist song reorder. Settings now has a
-feature-owned home with backup, customization, and premium route entry points.
-Playback now has a
+add/remove, durable album/playlist/artist song reorder, and collection
+cover/profile image persistence/rendering. Settings now has a feature-owned
+home with backup, customization, and premium route entry points. Playback now
+has a
 reducer-backed session boundary plus queue/player screens connected to a native
 Expo Audio adapter for saved library files with native progress/status sync,
 persisted session restore, queue reordering, player progress controls, and

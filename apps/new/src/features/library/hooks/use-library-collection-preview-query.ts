@@ -3,18 +3,21 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
 
 type CollectionKind = "albums" | "artists" | "playlists";
 
 export type LibraryCollectionPreview = {
   detail: string;
   id: number;
+  imagePath: string | null;
   kind: CollectionKind;
   meta: string;
   title: string;
 };
 
 type PlaylistRow = {
+  coverImage: string | null;
   playlistId: number;
   playlistName: string | null;
   songId: number | null;
@@ -22,6 +25,7 @@ type PlaylistRow = {
 
 type AlbumRow = {
   albumId: number;
+  albumCoverImage: string | null;
   albumName: string | null;
   artistName: string | null;
   songId: number | null;
@@ -32,6 +36,7 @@ type ArtistRow = {
   albumId: number | null;
   artistId: number;
   artistName: string | null;
+  profileImage: string | null;
   songId: number | null;
 };
 
@@ -53,6 +58,7 @@ const playlistRowsToPreview = (rows: PlaylistRow[]) => {
     number,
     {
       name: string;
+      coverImage: string | null;
       songIds: Set<number>;
     }
   >();
@@ -62,6 +68,7 @@ const playlistRowsToPreview = (rows: PlaylistRow[]) => {
       playlistMap.get(row.playlistId) ??
       {
         name: row.playlistName ?? "Untitled playlist",
+        coverImage: row.coverImage,
         songIds: new Set<number>(),
       };
 
@@ -76,6 +83,9 @@ const playlistRowsToPreview = (rows: PlaylistRow[]) => {
     .map<LibraryCollectionPreview>(([id, playlist]) => ({
       detail: formatCount(playlist.songIds.size, "song"),
       id,
+      imagePath: playlist.coverImage
+        ? getImagePathFromHash(playlist.coverImage).pathToSmallImage
+        : null,
       kind: "playlists",
       meta: "Playlist",
       title: playlist.name,
@@ -89,6 +99,7 @@ const albumRowsToPreview = (rows: AlbumRow[]) => {
     number,
     {
       artistNames: Set<string>;
+      coverImage: string | null;
       name: string;
       songIds: Set<number>;
       year: number | null;
@@ -100,6 +111,7 @@ const albumRowsToPreview = (rows: AlbumRow[]) => {
       albumMap.get(row.albumId) ??
       {
         artistNames: new Set<string>(),
+        coverImage: row.albumCoverImage,
         name: row.albumName ?? "Untitled album",
         songIds: new Set<number>(),
         year: row.year,
@@ -120,8 +132,13 @@ const albumRowsToPreview = (rows: AlbumRow[]) => {
     .map<LibraryCollectionPreview>(([id, album]) => ({
       detail: formatCount(album.songIds.size, "song"),
       id,
+      imagePath: album.coverImage
+        ? getImagePathFromHash(album.coverImage).pathToSmallImage
+        : null,
       kind: "albums",
-      meta: album.year ? `${formatArtists(album.artistNames)} / ${album.year}` : formatArtists(album.artistNames),
+      meta: album.year
+        ? `${formatArtists(album.artistNames)} / ${album.year}`
+        : formatArtists(album.artistNames),
       title: album.name,
     }))
     .sort((first, second) => first.title.localeCompare(second.title))
@@ -134,6 +151,7 @@ const artistRowsToPreview = (rows: ArtistRow[]) => {
     {
       albumIds: Set<number>;
       name: string;
+      profileImage: string | null;
       songIds: Set<number>;
     }
   >();
@@ -144,6 +162,7 @@ const artistRowsToPreview = (rows: ArtistRow[]) => {
       {
         albumIds: new Set<number>(),
         name: row.artistName ?? "Untitled artist",
+        profileImage: row.profileImage,
         songIds: new Set<number>(),
       };
 
@@ -165,6 +184,9 @@ const artistRowsToPreview = (rows: ArtistRow[]) => {
         "album",
       )}`,
       id,
+      imagePath: artist.profileImage
+        ? getImagePathFromHash(artist.profileImage).pathToSmallImage
+        : null,
       kind: "artists",
       meta: "Artist",
       title: artist.name,
@@ -177,6 +199,7 @@ export function useLibraryCollectionPreviewQuery() {
   const playlists = useLiveQuery(
     db
       .select({
+        coverImage: schema.playlists.coverImage,
         playlistId: schema.playlists.id,
         playlistName: schema.playlists.name,
         songId: schema.playlistSongs.songId,
@@ -190,6 +213,7 @@ export function useLibraryCollectionPreviewQuery() {
   const albums = useLiveQuery(
     db
       .select({
+        albumCoverImage: schema.albums.coverImage,
         albumId: schema.albums.id,
         albumName: schema.albums.name,
         artistName: schema.artists.name,
@@ -216,6 +240,7 @@ export function useLibraryCollectionPreviewQuery() {
         albumId: schema.artistsAlbums.albumId,
         artistId: schema.artists.id,
         artistName: schema.artists.name,
+        profileImage: schema.artists.profileImage,
         songId: schema.artistSongs.songId,
       })
       .from(schema.artists)

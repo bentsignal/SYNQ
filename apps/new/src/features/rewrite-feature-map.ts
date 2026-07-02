@@ -24,7 +24,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/library",
     targetBoundary: "src/features/library",
-    nextMilestone: "Add collection cover/image flows and remaining high-traffic library edit polish.",
+    nextMilestone: "Manually smoke collection cover/profile images, then continue high-traffic library edit polish.",
   },
   {
     key: "playback",

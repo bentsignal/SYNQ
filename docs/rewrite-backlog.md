@@ -173,6 +173,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: collection repository duplicate-name queries now live in a focused
     uniqueness repository instead of being embedded in create/update mutation
     code.
+  - Done: collection delete relationship cleanup and protected playlist guards
+    now live in a focused delete repository instead of the create/update
+    collection repository.
   - Done: create-collection image picking, validation, create mutations,
     haptics, navigation, and mutation-error workflows now live in a controller
     hook instead of the screen.

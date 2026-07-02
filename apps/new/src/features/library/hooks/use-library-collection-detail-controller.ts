@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import { shareLibrarySongs } from "@/src/features/export/services/library-export-service";
 import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { deleteCollection } from "../repository/collection-repository";
+import { deleteCollection } from "../repository/collection-delete-repository";
 import {
   removeSongFromCollection,
   updateCollectionSongOrder,

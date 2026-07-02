@@ -14,6 +14,7 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-session-service";
 import {
   getFreeListeningRemainingMs,
+  getPlaybackMiniPlayerState,
   getPlaybackProgressPercent,
   getSeekTargetPosition,
 } from "../../../apps/new/src/features/playback/services/playback-player-state-service";
@@ -242,6 +243,8 @@ function assertPlaybackSessionSmoke() {
 }
 
 function assertPlaybackPlayerStateSmoke() {
+  const activeTrack = song({ duration: 180_000, id: 10, title: "Mini Track" });
+
   assert.equal(
     getPlaybackProgressPercent({ duration: 0, position: 5_000 }),
     0,
@@ -296,6 +299,73 @@ function assertPlaybackPlayerStateSmoke() {
       stepMs: 10_000,
     }),
     70_000,
+  );
+  assert.deepEqual(
+    getPlaybackMiniPlayerState({
+      activeTrack: null,
+      pathname: "/(tabs)",
+      state: initialPlaybackState,
+    }),
+    {
+      blockedByAd: false,
+      canTogglePlayback: false,
+      isVisible: false,
+      metaLabel: "",
+      playLabel: "Play",
+      title: "",
+    },
+  );
+  assert.equal(
+    getPlaybackMiniPlayerState({
+      activeTrack,
+      pathname: "/player",
+      state: initialPlaybackState,
+    }).isVisible,
+    false,
+  );
+  assert.deepEqual(
+    getPlaybackMiniPlayerState({
+      activeTrack,
+      pathname: "/(tabs)",
+      state: {
+        ...initialPlaybackState,
+        duration: 180_000,
+        isPlaying: false,
+        position: 60_000,
+      },
+    }),
+    {
+      blockedByAd: false,
+      canTogglePlayback: true,
+      isVisible: true,
+      metaLabel: "Smoke Artist - -2:00",
+      playLabel: "Play",
+      title: "Mini Track",
+    },
+  );
+  assert.deepEqual(
+    getPlaybackMiniPlayerState({
+      activeTrack,
+      pathname: "/(tabs)",
+      state: {
+        ...initialPlaybackState,
+        adGate: {
+          ...initialPlaybackState.adGate,
+          due: true,
+        },
+        duration: 180_000,
+        isPlaying: true,
+        position: 60_000,
+      },
+    }),
+    {
+      blockedByAd: true,
+      canTogglePlayback: false,
+      isVisible: true,
+      metaLabel: "Ad break ready",
+      playLabel: "Pause",
+      title: "Mini Track",
+    },
   );
 }
 

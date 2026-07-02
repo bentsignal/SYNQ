@@ -81,6 +81,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     instead of queue screen boundary checks.
   - Done: song preview row state and playback item conversion now live in the
     song preview service instead of the preview list component.
+  - Done: mini-player visibility, labels, metadata, and ad-blocked command state
+    now live in the playback player-state service instead of the mini-player UI.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -143,6 +145,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     move boundaries, ad-break play disabling, and clear-queue availability.
   - Done: extend deterministic smoke coverage to song preview playable/active
     row state and playback item conversion.
+  - Done: extend deterministic smoke coverage to mini-player hidden routes,
+    remaining-time metadata, play/pause labels, and ad-break blocking.
 
 ### Phase 3: New App Build-Out
 

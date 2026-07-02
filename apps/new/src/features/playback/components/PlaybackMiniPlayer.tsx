@@ -1,22 +1,22 @@
 import { Link, usePathname } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { formatRemainingDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { usePlaybackSession } from "../hooks/use-playback-session";
-
-const hiddenRoutes = new Set(["/player", "/queue"]);
+import { getPlaybackMiniPlayerState } from "../services/playback-player-state-service";
 
 export function PlaybackMiniPlayer() {
   const theme = useCustomizationTheme();
   const pathname = usePathname();
   const { activeTrack, pause, resume, state } = usePlaybackSession();
+  const miniPlayer = getPlaybackMiniPlayerState({
+    activeTrack,
+    pathname,
+    state,
+  });
 
-  if (!activeTrack || hiddenRoutes.has(pathname)) {
+  if (!miniPlayer.isVisible) {
     return null;
   }
-
-  const blockedByAd = state.adGate.active || state.adGate.due;
-  const playLabel = state.isPlaying ? "Pause" : "Play";
 
   return (
     <View
@@ -24,7 +24,7 @@ export function PlaybackMiniPlayer() {
         styles.container,
         {
           backgroundColor: theme.surface,
-          borderColor: blockedByAd ? theme.danger : theme.border,
+          borderColor: miniPlayer.blockedByAd ? theme.danger : theme.border,
         },
       ]}
     >
@@ -34,38 +34,37 @@ export function PlaybackMiniPlayer() {
             numberOfLines={1}
             style={[styles.title, { color: theme.primaryText }]}
           >
-            {activeTrack.title}
+            {miniPlayer.title}
           </Text>
           <Text
             numberOfLines={1}
             style={[styles.meta, { color: theme.secondaryText }]}
           >
-            {blockedByAd
-              ? "Ad break ready"
-              : `${activeTrack.artist} - ${formatRemainingDurationMs({
-                  duration: state.duration,
-                  position: state.position,
-                })}`}
+            {miniPlayer.metaLabel}
           </Text>
         </Pressable>
       </Link>
       <Pressable
-        disabled={blockedByAd}
+        disabled={!miniPlayer.canTogglePlayback}
         onPress={state.isPlaying ? pause : resume}
         style={[
           styles.command,
           {
-            backgroundColor: blockedByAd ? theme.borderSubtle : theme.accent,
+            backgroundColor: miniPlayer.blockedByAd
+              ? theme.borderSubtle
+              : theme.accent,
           },
         ]}
       >
         <Text
           style={[
             styles.commandText,
-            { color: blockedByAd ? theme.mutedText : theme.onAccent },
+            {
+              color: miniPlayer.blockedByAd ? theme.mutedText : theme.onAccent,
+            },
           ]}
         >
-          {playLabel}
+          {miniPlayer.playLabel}
         </Text>
       </Pressable>
     </View>

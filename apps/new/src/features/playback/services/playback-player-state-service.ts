@@ -1,4 +1,12 @@
+import { formatRemainingDurationMs } from "../../app-shell/services/duration-format-service";
+import type {
+  PlaybackQueueItem,
+  PlaybackState,
+} from "../types/playback-state";
+
 export const playerSeekStepMs = 15_000;
+
+const hiddenMiniPlayerRoutes = new Set(["/player", "/queue"]);
 
 export const getPlaybackProgressPercent = ({
   duration,
@@ -36,4 +44,41 @@ export const getSeekTargetPosition = ({
   const offset = direction === "backward" ? -stepMs : stepMs;
 
   return Math.max(0, Math.min(duration, position + offset));
+};
+
+export const getPlaybackMiniPlayerState = ({
+  activeTrack,
+  pathname,
+  state,
+}: {
+  activeTrack: PlaybackQueueItem | null;
+  pathname: string;
+  state: PlaybackState;
+}) => {
+  if (!activeTrack || hiddenMiniPlayerRoutes.has(pathname)) {
+    return {
+      blockedByAd: false,
+      canTogglePlayback: false,
+      isVisible: false,
+      metaLabel: "",
+      playLabel: "Play",
+      title: "",
+    };
+  }
+
+  const blockedByAd = state.adGate.active || state.adGate.due;
+
+  return {
+    blockedByAd,
+    canTogglePlayback: !blockedByAd,
+    isVisible: true,
+    metaLabel: blockedByAd
+      ? "Ad break ready"
+      : `${activeTrack.artist} - ${formatRemainingDurationMs({
+          duration: state.duration,
+          position: state.position,
+        })}`,
+    playLabel: state.isPlaying ? "Pause" : "Play",
+    title: activeTrack.title,
+  };
 };

@@ -6,6 +6,7 @@ import { ImportPremiumGate } from "../components/ImportPremiumGate";
 import { ImportSongPreviewList } from "../components/ImportSongPreviewList";
 import { useImportSession } from "../hooks/use-import-session";
 import { useWifiImportServer } from "../hooks/use-wifi-import-server";
+import { getImportWifiState } from "../services/import-session-state-service";
 
 export function ImportWifiScreen() {
   return (
@@ -20,12 +21,11 @@ function ImportWifiContent() {
   const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();
   const { address, error, isReady, port } = useWifiImportServer();
-  const hasSongs = state.songs.length > 0;
-  const isTransferring = state.source === "wifi" && state.phase === "processing";
-  const progressLabel =
-    state.progress.total > 0
-      ? `${state.progress.current}/${state.progress.total} received`
-      : "Waiting";
+  const { canReviewSave, progressLabel, statusLabel } = getImportWifiState({
+    error,
+    isReady,
+    state,
+  });
 
   return (
     <ScrollView
@@ -67,13 +67,7 @@ function ImportWifiContent() {
         <Text
           style={[styles.statusText, { color: error ? theme.danger : theme.accent }]}
         >
-          {error
-            ? "Server failed"
-            : isReady
-              ? isTransferring
-                ? "Receiving files"
-                : "Server ready"
-              : "Starting server"}
+          {statusLabel}
         </Text>
         {port ? (
           <Text style={[styles.portText, { color: theme.secondaryText }]}>
@@ -115,12 +109,12 @@ function ImportWifiContent() {
         <Link asChild href="/(tabs)/import/save">
           <Pressable
             accessibilityRole="button"
-            disabled={!hasSongs}
+            disabled={!canReviewSave}
             onPress={() => sendHaptic("light")}
             style={[
               styles.primaryButton,
               { backgroundColor: theme.accent },
-              !hasSongs ? styles.disabled : null,
+              !canReviewSave ? styles.disabled : null,
             ]}
           >
             <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>

@@ -5,12 +5,13 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import { ImportPremiumGate } from "../components/ImportPremiumGate";
 import { ImportSongPreviewList } from "../components/ImportSongPreviewList";
 import { useImportSession } from "../hooks/use-import-session";
+import { getImportFilesActionState } from "../services/import-session-state-service";
 
 export function ImportFilesScreen() {
   const { removeImportSongs, startFileImport, state } = useImportSession();
   const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();
-  const isWorking = state.phase === "picking" || state.phase === "processing";
+  const { canChooseFiles, chooseLabel } = getImportFilesActionState(state);
 
   return (
     <ScrollView
@@ -30,7 +31,7 @@ export function ImportFilesScreen() {
       <ImportPremiumGate>
         <Pressable
           accessibilityRole="button"
-          disabled={isWorking}
+          disabled={!canChooseFiles}
           onPress={async () => {
             sendHaptic("light");
             const staged = await startFileImport();
@@ -40,11 +41,11 @@ export function ImportFilesScreen() {
           style={[
             styles.primaryButton,
             { backgroundColor: theme.accent },
-            isWorking ? styles.disabled : null,
+            !canChooseFiles ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
-            {isWorking ? "Choosing" : "Choose songs"}
+            {chooseLabel}
           </Text>
         </Pressable>
       </ImportPremiumGate>

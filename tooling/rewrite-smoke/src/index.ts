@@ -17,7 +17,9 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-player-state-service";
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
+  getImportFilesActionState,
   getImportSaveActionState,
+  getImportWifiState,
   importSessionReducer,
   initialImportSessionState,
 } from "../../../apps/new/src/features/import/services/import-session-state-service";
@@ -246,6 +248,11 @@ function assertImportSessionSmoke() {
   });
   assert.equal(state.phase, "picking");
   assert.equal(state.source, "files");
+  assert.deepEqual(getImportFilesActionState(state), {
+    canChooseFiles: false,
+    chooseLabel: "Choosing",
+    isWorking: true,
+  });
   assert.deepEqual(
     getImportSaveActionState({ isExporting: false, state }),
     {
@@ -264,6 +271,11 @@ function assertImportSessionSmoke() {
   assert.equal(state.phase, "reviewing");
   assert.equal(state.selectedSongId, first.id);
   assert.deepEqual(state.progress, { current: 2, total: 2 });
+  assert.deepEqual(getImportFilesActionState(state), {
+    canChooseFiles: true,
+    chooseLabel: "Choose songs",
+    isWorking: false,
+  });
   assert.deepEqual(
     getImportSaveActionState({ isExporting: false, state }),
     {
@@ -332,6 +344,28 @@ function assertImportSessionSmoke() {
   assert.equal(state.phase, "processing");
   assert.equal(state.source, "wifi");
   assert.equal(state.songs.length, 0);
+  assert.deepEqual(
+    getImportWifiState({
+      error: null,
+      isReady: true,
+      state,
+    }),
+    {
+      canReviewSave: false,
+      hasSongs: false,
+      isTransferring: true,
+      progressLabel: "0/2 received",
+      statusLabel: "Receiving files",
+    },
+  );
+  assert.equal(
+    getImportWifiState({
+      error: "Port unavailable",
+      isReady: false,
+      state,
+    }).statusLabel,
+    "Server failed",
+  );
 
   state = importSessionReducer(state, {
     song: first,
@@ -346,6 +380,33 @@ function assertImportSessionSmoke() {
     [first.id],
   );
   assert.deepEqual(state.progress, { current: 1, total: 2 });
+  assert.deepEqual(
+    getImportWifiState({
+      error: null,
+      isReady: true,
+      state,
+    }),
+    {
+      canReviewSave: true,
+      hasSongs: true,
+      isTransferring: true,
+      progressLabel: "1/2 received",
+      statusLabel: "Receiving files",
+    },
+  );
+
+  const readyState = {
+    ...state,
+    phase: "reviewing" as const,
+  };
+  assert.equal(
+    getImportWifiState({
+      error: null,
+      isReady: true,
+      state: readyState,
+    }).statusLabel,
+    "Server ready",
+  );
 
   state = importSessionReducer(state, { type: "discard" });
   assert.equal(state.phase, "idle");

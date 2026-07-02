@@ -53,6 +53,49 @@ export const getImportSaveActionState = ({
   };
 };
 
+export const getImportFilesActionState = (state: ImportSessionState) => {
+  const isWorking = state.phase === "picking" || state.phase === "processing";
+
+  return {
+    chooseLabel: isWorking ? "Choosing" : "Choose songs",
+    canChooseFiles: !isWorking,
+    isWorking,
+  };
+};
+
+export const getImportWifiState = ({
+  error,
+  isReady,
+  state,
+}: {
+  error: string | null;
+  isReady: boolean;
+  state: ImportSessionState;
+}) => {
+  const hasSongs = state.songs.length > 0;
+  const isTransferring =
+    state.source === "wifi" && state.phase === "processing";
+  const progressLabel =
+    state.progress.total > 0
+      ? `${state.progress.current}/${state.progress.total} received`
+      : "Waiting";
+  const statusLabel = error
+    ? "Server failed"
+    : isReady
+      ? isTransferring
+        ? "Receiving files"
+        : "Server ready"
+      : "Starting server";
+
+  return {
+    canReviewSave: hasSongs,
+    hasSongs,
+    isTransferring,
+    progressLabel,
+    statusLabel,
+  };
+};
+
 export const importSessionReducer = (
   state: ImportSessionState,
   action: ImportSessionAction,

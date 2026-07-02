@@ -222,6 +222,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     lives in the library interaction service instead of the list component.
   - Done: library song edit form initialization and save action state now live
     in a form service instead of the edit screen.
+  - Done: library song export snapshot hashing/staleness/mark-exported logic
+    now lives in a dedicated export snapshot repository instead of the song
+    metadata edit repository.
   - Done: library song edit hydration, field state, save mutation, haptics,
     navigation, and mutation-error workflows now live in a controller hook
     instead of the edit screen.

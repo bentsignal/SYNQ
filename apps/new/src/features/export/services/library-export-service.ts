@@ -8,7 +8,7 @@ import { getImagePathFromHash } from "@/src/features/images/services/image-stora
 import {
   isLibrarySongSnapshotStale,
   markLibrarySongAsExported,
-} from "@/src/features/library/repository/song-metadata-repository";
+} from "@/src/features/library/repository/library-song-export-snapshot-repository";
 import {
   assertSharingAvailable,
   getExportFileNameFromPath,

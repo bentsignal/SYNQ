@@ -92,6 +92,7 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-detail-service";
 import {
   canDeleteLibraryCollection,
+  getAddCollectionSongsMutationErrorMessage,
   getAddableSongRowState,
   getAddableSongSelectionState,
   getCollectionDetailActionState,
@@ -1951,6 +1952,27 @@ function assertLibraryCollectionInteractionSmoke() {
       songs: addableSongs,
     }).canBulkAdd,
     false,
+  );
+  assert.equal(
+    getAddCollectionSongsMutationErrorMessage({
+      caughtError: new Error("Add smoke failure"),
+      mutation: "add-song",
+    }),
+    "Add smoke failure",
+  );
+  assert.equal(
+    getAddCollectionSongsMutationErrorMessage({
+      caughtError: null,
+      mutation: "add-selection",
+    }),
+    "Selected songs could not be added.",
+  );
+  assert.equal(
+    getAddCollectionSongsMutationErrorMessage({
+      caughtError: undefined,
+      mutation: "add-song",
+    }),
+    "Song could not be added.",
   );
 
   const selected = toggleSongIdSelection({

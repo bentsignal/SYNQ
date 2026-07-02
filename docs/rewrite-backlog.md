@@ -138,6 +138,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: add-to-collection single-add, bulk-add, selection, saving, mutation
     error, and haptic workflow state now lives in a controller hook instead of
     the screen.
+  - Done: add-to-collection single-add and bulk-add fallback copy now lives in
+    the library interaction service with deterministic smoke coverage instead
+    of inline controller branches.
   - Done: add-to-collection header/search, section header, selection controls,
     and status panel now render through focused components instead of one large
     add-songs form view.

@@ -329,6 +329,27 @@ export type AddableSongSelectionState = ReturnType<
   typeof getAddableSongSelectionState
 >;
 
+export type AddCollectionSongsMutationKind = "add-selection" | "add-song";
+
+export const getAddCollectionSongsMutationErrorMessage = ({
+  caughtError,
+  mutation,
+}: {
+  caughtError: unknown;
+  mutation: AddCollectionSongsMutationKind;
+}) => {
+  if (caughtError instanceof Error) {
+    return caughtError.message;
+  }
+
+  switch (mutation) {
+    case "add-selection":
+      return "Selected songs could not be added.";
+    case "add-song":
+      return "Song could not be added.";
+  }
+};
+
 export const toggleSongIdSelection = ({
   selectedSongIds,
   songId,

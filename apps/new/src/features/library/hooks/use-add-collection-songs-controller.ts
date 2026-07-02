@@ -7,6 +7,7 @@ import {
   addSongsToCollection,
 } from "../repository/relationship-repository";
 import {
+  getAddCollectionSongsMutationErrorMessage,
   getAddableSongSelectionState,
   removeSongIdSelection,
   toggleSongIdSelection,
@@ -73,9 +74,10 @@ export function useAddCollectionSongsController({
     } catch (caughtError) {
       sendHaptic("error");
       setMutationError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Selected songs could not be added.",
+        getAddCollectionSongsMutationErrorMessage({
+          caughtError,
+          mutation: "add-selection",
+        }),
       );
     } finally {
       setIsAddingSelection(false);
@@ -104,9 +106,10 @@ export function useAddCollectionSongsController({
       } catch (caughtError) {
         sendHaptic("error");
         setMutationError(
-          caughtError instanceof Error
-            ? caughtError.message
-            : "Song could not be added.",
+          getAddCollectionSongsMutationErrorMessage({
+            caughtError,
+            mutation: "add-song",
+          }),
         );
       } finally {
         setSavingSongId(null);

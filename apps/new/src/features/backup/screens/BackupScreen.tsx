@@ -1,6 +1,8 @@
 import { Link } from "expo-router";
 import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { useEffect, useRef } from "react";
+import { useImportSession } from "@/src/features/import/hooks/use-import-session";
+import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import {
   Alert,
   Pressable,
@@ -48,6 +50,8 @@ export function BackupScreen() {
   const { reset, runOperation, state } = useBackupSession();
   const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();
+  const { resetSession } = useImportSession();
+  const { resetPlaybackSession } = usePlaybackSession();
   const { state: premiumState } = usePremiumEntitlement();
   const previousPhaseRef = useRef(state.phase);
   const isRunning = state.phase === "running";
@@ -56,6 +60,14 @@ export function BackupScreen() {
     if (previousPhaseRef.current !== state.phase) {
       if (state.phase === "success") {
         sendHaptic("success");
+
+        if (
+          state.lastOperation === "erase" ||
+          state.lastOperation === "restore"
+        ) {
+          resetSession();
+          resetPlaybackSession();
+        }
       }
 
       if (state.phase === "failure") {
@@ -64,7 +76,13 @@ export function BackupScreen() {
     }
 
     previousPhaseRef.current = state.phase;
-  }, [sendHaptic, state.phase]);
+  }, [
+    resetPlaybackSession,
+    resetSession,
+    sendHaptic,
+    state.lastOperation,
+    state.phase,
+  ]);
 
   const runBackupOperation = (operation: BackupOperation) => {
     sendHaptic(operation === "erase" ? "medium" : "light");

@@ -238,3 +238,7 @@ export async function savePersistedPlaybackState(state: PlaybackState) {
     JSON.stringify(toPersistedPlaybackState(state)),
   );
 }
+
+export async function clearPersistedPlaybackState() {
+  await FileSystem.deleteAsync(playbackStateFile, { idempotent: true });
+}

@@ -24,6 +24,7 @@ import {
   upsertQueueItem,
 } from "../services/playback-session-service";
 import {
+  clearPersistedPlaybackState,
   loadPersistedPlaybackState,
   savePersistedPlaybackState,
 } from "../services/playback-persistence-service";
@@ -55,6 +56,7 @@ type PlaybackAction =
   | { type: "begin-ad-break" }
   | { type: "complete-ad-break" }
   | { state: PlaybackState; type: "hydrate" }
+  | { type: "reset" }
   | { error: string; type: "native-failure" }
   | { error: string; type: "remote-failure" }
   | {
@@ -77,6 +79,7 @@ type PlaybackCommands = {
   pause: () => void;
   playSong: (song: PlaybackQueueItem) => void;
   removeFromQueue: (songId: number) => void;
+  resetPlaybackSession: () => void;
   resume: () => void;
   seekTo: (position: number) => void;
   skipNext: () => void;
@@ -147,6 +150,8 @@ const playbackReducer = (
         error: null,
         initialized: true,
       };
+    case "reset":
+      return initialPlaybackState;
     case "play-song": {
       const queue = upsertQueueItem({ queue: state.queue, song: action.song });
       const activeQueueIndex = findQueueIndex({
@@ -652,6 +657,11 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "clear-queue" });
     runNativeCommand(() => adapterRef.current.stop());
   }, [runNativeCommand]);
+  const resetPlaybackSession = useCallback(() => {
+    void clearPersistedPlaybackState();
+    dispatch({ type: "reset" });
+    runNativeCommand(() => adapterRef.current.stop());
+  }, [runNativeCommand]);
   const moveQueueSong = useCallback(
     (songId: number, direction: "down" | "up") => {
       dispatch({ direction, songId, type: "move-queue-song" });
@@ -720,6 +730,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       pause,
       playSong,
       removeFromQueue,
+      resetPlaybackSession,
       resume,
       seekTo,
       skipNext,
@@ -737,6 +748,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       pause,
       playSong,
       removeFromQueue,
+      resetPlaybackSession,
       resume,
       seekTo,
       skipNext,

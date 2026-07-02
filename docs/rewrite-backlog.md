@@ -95,8 +95,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     exist; backup archive/share, restore document picking/unzip/reset, and
     erase document cleanup/database reset are connected. The backup command
     screen now consumes saved theme state and preference-aware haptics for
-    command start/success/failure/reset feedback. Manual restore smoke and
-    edge-case hardening are next.
+    command start/success/failure/reset feedback; successful restore/erase now
+    resets live playback and staged import runtime state. Manual restore smoke
+    and edge-case hardening are next.
   - Premium/settings: settings home, premium screen, customization/backup
     routes, privacy/support routes, live RevenueCat pricing, purchase, restore
     commands, an app-wide entitlement provider, persisted customization
@@ -1123,3 +1124,5 @@ endless old-app polishing loop.
   library song through feature-owned repository commands.
 - Done: add import-review export for staged draft files through a feature-owned
   draft export service.
+- Done: reset live playback and staged import provider state after backup
+  restore/erase completes.

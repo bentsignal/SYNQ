@@ -42,6 +42,8 @@ import {
   canDeleteLibraryCollection,
   getAddableSongRowState,
   getCollectionListHref,
+  getCollectionSongListState,
+  getCollectionSongRowActionState,
   getPlayableCollectionSongs,
   getSelectedAddableSongIds,
   removeSongIdSelection,
@@ -692,6 +694,81 @@ function assertLibraryCollectionInteractionSmoke() {
   assert.equal(
     reorderCollectionSongs({ direction: "down", songId: 99, songs }),
     songs,
+  );
+  assert.deepEqual(
+    getCollectionSongListState({ movingSongId: null, removingSongId: null }),
+    { isMutating: false },
+  );
+  assert.deepEqual(
+    getCollectionSongListState({ movingSongId: 2, removingSongId: null }),
+    { isMutating: true },
+  );
+  assert.deepEqual(
+    getCollectionSongRowActionState({
+      index: 0,
+      movingSongId: null,
+      removingSongId: null,
+      songId: 1,
+      totalSongs: songs.length,
+    }),
+    {
+      canMoveDown: true,
+      canMoveUp: false,
+      canRemove: true,
+      downLabel: "Down",
+      isMoving: false,
+      isRemoving: false,
+      removeLabel: "Remove",
+      upLabel: "Up",
+    },
+  );
+  assert.deepEqual(
+    getCollectionSongRowActionState({
+      index: 1,
+      movingSongId: 2,
+      removingSongId: null,
+      songId: 2,
+      totalSongs: songs.length,
+    }),
+    {
+      canMoveDown: false,
+      canMoveUp: false,
+      canRemove: false,
+      downLabel: "Moving",
+      isMoving: true,
+      isRemoving: false,
+      removeLabel: "Remove",
+      upLabel: "Moving",
+    },
+  );
+  assert.deepEqual(
+    getCollectionSongRowActionState({
+      index: 2,
+      movingSongId: null,
+      removingSongId: 3,
+      songId: 3,
+      totalSongs: songs.length,
+    }),
+    {
+      canMoveDown: false,
+      canMoveUp: false,
+      canRemove: false,
+      downLabel: "Down",
+      isMoving: false,
+      isRemoving: true,
+      removeLabel: "Removing",
+      upLabel: "Up",
+    },
+  );
+  assert.equal(
+    getCollectionSongRowActionState({
+      index: 2,
+      movingSongId: null,
+      removingSongId: null,
+      songId: 3,
+      totalSongs: songs.length,
+    }).canMoveDown,
+    false,
   );
   assert.equal(getCollectionListHref("album"), "/(tabs)/library/albums");
   assert.equal(getCollectionListHref("artist"), "/(tabs)/library/artists");

@@ -85,6 +85,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     now live in the playback player-state service instead of the mini-player UI.
   - Done: home now-playing summary labels now live in an app-shell service
     instead of the home screen.
+  - Done: collection song list mutation and move/remove row action state now
+    lives in the library interaction service instead of the list component.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -151,6 +153,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     remaining-time metadata, play/pause labels, and ad-break blocking.
   - Done: extend deterministic smoke coverage to home now-playing labels for
     empty, paused, and playing playback states.
+  - Done: extend deterministic smoke coverage to collection song list
+    move/remove labels, mutation guards, and boundary states.
 
 ### Phase 3: New App Build-Out
 

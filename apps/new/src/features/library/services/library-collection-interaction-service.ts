@@ -65,6 +65,48 @@ export const reorderCollectionSongs = ({
   return nextSongs;
 };
 
+export const getCollectionSongListState = ({
+  movingSongId,
+  removingSongId,
+}: {
+  movingSongId: number | null;
+  removingSongId: number | null;
+}) => ({
+  isMutating: movingSongId !== null || removingSongId !== null,
+});
+
+export const getCollectionSongRowActionState = ({
+  index,
+  movingSongId,
+  removingSongId,
+  songId,
+  totalSongs,
+}: {
+  index: number;
+  movingSongId: number | null;
+  removingSongId: number | null;
+  songId: number;
+  totalSongs: number;
+}) => {
+  const { isMutating } = getCollectionSongListState({
+    movingSongId,
+    removingSongId,
+  });
+  const isMoving = movingSongId === songId;
+  const isRemoving = removingSongId === songId;
+
+  return {
+    canMoveDown: !isMutating && index < totalSongs - 1,
+    canMoveUp: !isMutating && index > 0,
+    canRemove: !isMutating,
+    downLabel: isMoving ? "Moving" : "Down",
+    isMoving,
+    isRemoving,
+    removeLabel: isRemoving ? "Removing" : "Remove",
+    upLabel: isMoving ? "Moving" : "Up",
+  };
+};
+
 export const getSelectedAddableSongIds = ({
   selectedSongIds,
   songs,

@@ -45,6 +45,7 @@ import {
 import {
   albumRowsToPreview,
   artistRowsToPreview,
+  getLibraryCollectionPreviewHref,
   playlistRowsToPreview,
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import { parseAlbumYearInput } from "../../../apps/new/src/features/library/services/collection-form-service";
@@ -652,6 +653,13 @@ function assertLibraryCollectionPreviewSmoke() {
   assert.equal(playlists[0]?.id, 2);
   assert.equal(playlists[0]?.title, "Untitled playlist");
   assert.equal(playlists[0]?.detail, "0 songs");
+  assert.equal(
+    getLibraryCollectionPreviewHref({
+      id: 2,
+      kind: "playlists",
+    }),
+    "/(tabs)/library/playlist/2",
+  );
 
   const albums = albumRowsToPreview({
     getImagePath,
@@ -690,6 +698,13 @@ function assertLibraryCollectionPreviewSmoke() {
   assert.equal(albums[0]?.detail, "1 song");
   assert.equal(albums[0]?.imagePath, "/images/alpha-cover-small.jpg");
   assert.equal(albums[0]?.meta, "Alpha Artist, Featured Artist / 2026");
+  assert.equal(
+    getLibraryCollectionPreviewHref({
+      id: 1,
+      kind: "albums",
+    }),
+    "/(tabs)/library/album/1",
+  );
 
   const artists = artistRowsToPreview({
     limit: null,
@@ -724,6 +739,13 @@ function assertLibraryCollectionPreviewSmoke() {
   );
   assert.equal(artists[0]?.detail, "1 song / 1 album");
   assert.equal(artists[0]?.imagePath, "/images/artist-profile-small.jpg");
+  assert.equal(
+    getLibraryCollectionPreviewHref({
+      id: 1,
+      kind: "artists",
+    }),
+    "/(tabs)/library/artist/1",
+  );
 }
 
 function assertLibrarySongPreviewSmoke() {

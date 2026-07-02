@@ -9,6 +9,11 @@ export type LibraryCollectionPreview = {
   title: string;
 };
 
+export type LibraryCollectionPreviewHref =
+  | `/(tabs)/library/album/${number}`
+  | `/(tabs)/library/artist/${number}`
+  | `/(tabs)/library/playlist/${number}`;
+
 export type CollectionPreviewImagePathResolver = (
   imageHash: string,
 ) => string | null;
@@ -54,6 +59,20 @@ const limitCollectionPreviews = (
   previews: LibraryCollectionPreview[],
   limit: number | null,
 ) => (limit === null ? previews : previews.slice(0, limit));
+
+export const getLibraryCollectionPreviewHref = (
+  collection: Pick<LibraryCollectionPreview, "id" | "kind">,
+): LibraryCollectionPreviewHref => {
+  switch (collection.kind) {
+    case "albums":
+      return `/(tabs)/library/album/${collection.id}`;
+    case "artists":
+      return `/(tabs)/library/artist/${collection.id}`;
+    case "playlists":
+    default:
+      return `/(tabs)/library/playlist/${collection.id}`;
+  }
+};
 
 export const playlistRowsToPreview = ({
   getImagePath,

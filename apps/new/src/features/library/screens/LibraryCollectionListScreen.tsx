@@ -12,10 +12,10 @@ import {
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import {
   type CollectionKind,
-  type LibraryCollectionPreview,
   useLibraryCollectionPreviewQuery,
 } from "../hooks/use-library-collection-preview-query";
 import { filterCollectionPreviews } from "../services/library-collection-list-service";
+import { getLibraryCollectionPreviewHref } from "../services/library-collection-preview-service";
 
 type LibraryCollectionListScreenProps = {
   kind: CollectionKind;
@@ -53,18 +53,6 @@ const copyByKind = {
     title: string;
   }
 >;
-
-const getCollectionHref = (collection: LibraryCollectionPreview) => {
-  switch (collection.kind) {
-    case "albums":
-      return `/(tabs)/library/album/${collection.id}` as const;
-    case "artists":
-      return `/(tabs)/library/artist/${collection.id}` as const;
-    case "playlists":
-    default:
-      return `/(tabs)/library/playlist/${collection.id}` as const;
-  }
-};
 
 export function LibraryCollectionListScreen({
   kind,
@@ -142,7 +130,7 @@ export function LibraryCollectionListScreen({
           visibleCollections.map((collection) => (
             <Link
               asChild
-              href={getCollectionHref(collection)}
+              href={getLibraryCollectionPreviewHref(collection)}
               key={`${collection.kind}-${collection.id}`}
             >
               <Pressable

@@ -1,6 +1,11 @@
 import * as FileSystem from "expo-file-system";
+import {
+  initialPlaybackAdGateState,
+  resetPlaybackAdGate,
+} from "./playback-ad-gate-service";
 import { initialPlaybackState } from "./playback-session-service";
 import type {
+  PlaybackAdGateState,
   PlaybackMode,
   PlaybackQueueFilter,
   PlaybackQueueItem,
@@ -16,6 +21,7 @@ type PersistedPlaybackState = Pick<
   | "activeQueueIndex"
   | "activeTrackId"
   | "addOffset"
+  | "adGate"
   | "duration"
   | "isPlaying"
   | "mode"
@@ -65,6 +71,38 @@ const normalizeMode = (value: unknown): PlaybackMode => {
   };
 };
 
+const normalizeAdGate = (value: unknown): PlaybackAdGateState => {
+  if (!isRecord(value)) {
+    return initialPlaybackAdGateState;
+  }
+
+  const thresholdMs = finiteNumber(
+    value.thresholdMs,
+    initialPlaybackAdGateState.thresholdMs,
+  );
+  const accumulatedMs = Math.min(
+    thresholdMs,
+    Math.max(0, finiteNumber(value.accumulatedMs, 0)),
+  );
+  const active = typeof value.active === "boolean" ? value.active : false;
+  const due =
+    typeof value.due === "boolean"
+      ? value.due
+      : accumulatedMs >= thresholdMs;
+  const lastTrackedPosition = numberOrNull(value.lastTrackedPosition);
+
+  return {
+    accumulatedMs,
+    active,
+    due,
+    lastTrackedPosition:
+      lastTrackedPosition !== null && lastTrackedPosition >= 0
+        ? lastTrackedPosition
+        : null,
+    thresholdMs,
+  };
+};
+
 const normalizeQueueFilter = (value: unknown): PlaybackQueueFilter => {
   if (!isRecord(value)) {
     return initialPlaybackState.queueFilter;
@@ -111,6 +149,7 @@ const toPersistedPlaybackState = (
   activeQueueIndex: state.activeQueueIndex,
   activeTrackId: state.activeTrackId,
   addOffset: state.addOffset,
+  adGate: state.adGate,
   duration: state.duration,
   isPlaying: state.isPlaying,
   mode: state.mode,
@@ -133,6 +172,7 @@ const normalizePlaybackState = (value: unknown): PlaybackState => {
     : [];
   const activeQueueIndex = numberOrNull(value.activeQueueIndex);
   const activeTrackId = numberOrNull(value.activeTrackId);
+  const adGate = normalizeAdGate(value.adGate);
 
   return {
     ...initialPlaybackState,
@@ -144,6 +184,7 @@ const normalizePlaybackState = (value: unknown): PlaybackState => {
         : null,
     activeTrackId,
     addOffset: finiteNumber(value.addOffset, initialPlaybackState.addOffset),
+    adGate: adGate.active ? resetPlaybackAdGate(adGate) : adGate,
     duration: finiteNumber(value.duration, initialPlaybackState.duration),
     error: null,
     isPlaying: typeof value.isPlaying === "boolean" ? value.isPlaying : false,

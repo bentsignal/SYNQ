@@ -26,10 +26,19 @@ export type PlaybackMode = {
   shuffle: boolean;
 };
 
+export type PlaybackAdGateState = {
+  accumulatedMs: number;
+  active: boolean;
+  due: boolean;
+  lastTrackedPosition: number | null;
+  thresholdMs: number;
+};
+
 export type PlaybackState = {
   activeQueueIndex: number | null;
   activeTrackId: number | null;
   addOffset: number;
+  adGate: PlaybackAdGateState;
   duration: number;
   error: string | null;
   initialized: boolean;

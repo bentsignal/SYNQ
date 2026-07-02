@@ -32,7 +32,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/playback",
     targetBoundary: "src/features/playback",
-    nextMilestone: "Add remote events and manual playback smoke coverage.",
+    nextMilestone: "Replace placeholder ad-break completion with bundled ad audio playback, then add remote events and manual playback smoke coverage.",
   },
   {
     key: "import",

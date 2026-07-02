@@ -18,11 +18,13 @@ export function PlaybackQueueScreen() {
   const {
     activeTrack,
     clearQueue,
+    completeAdBreak,
     moveQueueSong,
     playSong,
     removeFromQueue,
     state,
   } = usePlaybackSession();
+  const adBreakActive = state.adGate.active || state.adGate.due;
 
   return (
     <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
@@ -33,6 +35,31 @@ export function PlaybackQueueScreen() {
           Queue state is owned by the playback feature boundary.
         </Text>
       </View>
+
+      {adBreakActive ? (
+        <View style={styles.adPanel}>
+          <Text style={styles.panelLabel}>Premium gate</Text>
+          <Text style={styles.adTitle}>Ad break required</Text>
+          <Text style={styles.panelText}>
+            Queue playback commands are paused for free users until the ad break
+            is complete.
+          </Text>
+          <View style={styles.adActions}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={completeAdBreak}
+              style={styles.completeButton}
+            >
+              <Text style={styles.completeText}>Complete Break</Text>
+            </Pressable>
+            <Link asChild href="/premium">
+              <Pressable accessibilityRole="button" style={styles.premiumButton}>
+                <Text style={styles.premiumText}>Open Premium</Text>
+              </Pressable>
+            </Link>
+          </View>
+        </View>
+      ) : null}
 
       {state.queue.length === 0 ? (
         <View style={styles.emptyPanel}>
@@ -50,8 +77,9 @@ export function PlaybackQueueScreen() {
               <View key={song.id} style={styles.row}>
                 <Pressable
                   accessibilityRole="button"
+                  disabled={adBreakActive}
                   onPress={() => playSong(song)}
-                  style={styles.rowMain}
+                  style={[styles.rowMain, adBreakActive ? styles.disabled : null]}
                 >
                   <Text style={isActive ? styles.activeIndex : styles.index}>
                     {index + 1}
@@ -183,6 +211,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
+  adPanel: {
+    backgroundColor: "#fff7ed",
+    borderColor: "#fed7aa",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 10,
+    padding: 16,
+  },
+  adTitle: {
+    color: "#9a3412",
+    fontSize: 18,
+    fontWeight: "800",
+    letterSpacing: 0,
+    lineHeight: 24,
+  },
+  adActions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+  },
   list: {
     backgroundColor: "#ffffff",
     borderColor: "#dbe3de",
@@ -284,6 +332,38 @@ const styles = StyleSheet.create({
   },
   removeText: {
     color: "#b42318",
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
+  },
+  completeButton: {
+    alignItems: "center",
+    backgroundColor: "#0f766e",
+    borderRadius: 8,
+    justifyContent: "center",
+    minHeight: 38,
+    paddingHorizontal: 12,
+  },
+  completeText: {
+    color: "#ffffff",
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
+  },
+  premiumButton: {
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+    borderColor: "#fed7aa",
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: 38,
+    paddingHorizontal: 12,
+  },
+  premiumText: {
+    color: "#9a3412",
     fontSize: 11,
     fontWeight: "800",
     letterSpacing: 0,

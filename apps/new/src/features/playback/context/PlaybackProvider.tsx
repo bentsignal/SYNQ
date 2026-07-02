@@ -8,6 +8,13 @@ import {
   useRef,
   type ReactNode,
 } from "react";
+import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
+import {
+  beginPlaybackAdBreak,
+  completePlaybackAdBreak,
+  resetPlaybackAdGate,
+  trackPlaybackAdProgress,
+} from "../services/playback-ad-gate-service";
 import {
   findQueueIndex,
   initialPlaybackState,
@@ -38,16 +45,24 @@ type PlaybackAction =
   | { type: "clear-queue" }
   | { songId: number; type: "remove-from-queue" }
   | { direction: "down" | "up"; songId: number; type: "move-queue-song" }
+  | { type: "begin-ad-break" }
+  | { type: "complete-ad-break" }
   | { state: PlaybackState; type: "hydrate" }
   | { error: string; type: "native-failure" }
-  | { status: TrackPlayerStatusSnapshot; type: "native-status" }
+  | {
+      premiumActive: boolean;
+      status: TrackPlayerStatusSnapshot;
+      type: "native-status";
+    }
   | { type: "native-finished" }
+  | { premiumActive: boolean; type: "sync-premium" }
   | { type: "toggle-loop" }
   | { type: "toggle-shuffle" };
 
 type PlaybackCommands = {
   addToQueue: (song: PlaybackQueueItem) => void;
   clearQueue: () => void;
+  completeAdBreak: () => void;
   moveQueueSong: (songId: number, direction: "down" | "up") => void;
   pause: () => void;
   playSong: (song: PlaybackQueueItem) => void;
@@ -226,6 +241,7 @@ const playbackReducer = (
         ...state,
         activeQueueIndex: null,
         activeTrackId: null,
+        adGate: resetPlaybackAdGate(state.adGate),
         duration: 0,
         isPlaying: false,
         position: 0,
@@ -288,6 +304,18 @@ const playbackReducer = (
         queue,
       });
     }
+    case "begin-ad-break":
+      return {
+        ...state,
+        adGate: beginPlaybackAdBreak(state.adGate),
+        isPlaying: false,
+      };
+    case "complete-ad-break":
+      return {
+        ...state,
+        adGate: completePlaybackAdBreak(state.adGate),
+        error: null,
+      };
     case "native-failure":
       return {
         ...state,
@@ -301,6 +329,13 @@ const playbackReducer = (
 
       return {
         ...state,
+        adGate: action.status.isPlaying
+          ? trackPlaybackAdProgress({
+              currentPosition: action.status.position,
+              gate: state.adGate,
+              premiumActive: action.premiumActive,
+            })
+          : state.adGate,
         duration: action.status.duration ?? state.duration,
         isPlaying: action.status.isPlaying,
         position: Math.max(0, action.status.position),
@@ -328,6 +363,13 @@ const playbackReducer = (
         position: 0,
       };
     }
+    case "sync-premium":
+      return {
+        ...state,
+        adGate: action.premiumActive
+          ? resetPlaybackAdGate(state.adGate)
+          : state.adGate,
+      };
     case "toggle-loop":
       return {
         ...state,
@@ -348,8 +390,10 @@ const playbackReducer = (
 };
 
 export function PlaybackProvider({ children }: { children: ReactNode }) {
+  const { state: premiumState } = usePremiumEntitlement();
   const [state, dispatch] = useReducer(playbackReducer, initialPlaybackState);
   const stateRef = useRef(state);
+  const premiumActiveRef = useRef(premiumState.active);
   const adapterRef = useRef(createExpoAvTrackPlayerAdapter());
   const hasHydratedRef = useRef(false);
   const lastPersistedAtRef = useRef(0);
@@ -358,6 +402,11 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     stateRef.current = state;
   }, [state]);
+
+  useEffect(() => {
+    premiumActiveRef.current = premiumState.active;
+    dispatch({ premiumActive: premiumState.active, type: "sync-premium" });
+  }, [premiumState.active]);
 
   useEffect(
     () => () => {
@@ -371,6 +420,46 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       dispatch({ error: getErrorMessage(error), type: "native-failure" });
     });
   }, []);
+
+  const canRunPlaybackCommand = useCallback(() => {
+    const adGate = stateRef.current.adGate;
+
+    return premiumActiveRef.current || (!adGate.active && !adGate.due);
+  }, []);
+
+  const beginAdBreak = useCallback(() => {
+    dispatch({ type: "begin-ad-break" });
+    runNativeCommand(() => adapterRef.current.pause());
+  }, [runNativeCommand]);
+
+  useEffect(() => {
+    if (state.adGate.due && !state.adGate.active && !premiumState.active) {
+      beginAdBreak();
+    }
+  }, [
+    beginAdBreak,
+    premiumState.active,
+    state.adGate.active,
+    state.adGate.due,
+  ]);
+
+  useEffect(() => {
+    if (premiumState.active && state.adGate.active && activeTrack) {
+      runNativeCommand(() => adapterRef.current.resume());
+    }
+  }, [activeTrack, premiumState.active, runNativeCommand, state.adGate.active]);
+
+  const runAdGatedCommand = useCallback(
+    (command: () => void) => {
+      if (canRunPlaybackCommand()) {
+        command();
+        return;
+      }
+
+      beginAdBreak();
+    },
+    [beginAdBreak, canRunPlaybackCommand],
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -418,6 +507,11 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
 
     adapter.setStatusListener((status) => {
       if (status.didJustFinish) {
+        if (!canRunPlaybackCommand()) {
+          beginAdBreak();
+          return;
+        }
+
         const nextTrack = getNextTrack(stateRef.current);
 
         dispatch({ type: "native-finished" });
@@ -427,52 +521,74 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      dispatch({ status, type: "native-status" });
+      dispatch({
+        premiumActive: premiumActiveRef.current,
+        status,
+        type: "native-status",
+      });
     });
 
     return () => {
       adapter.setStatusListener(null);
     };
-  }, [runNativeCommand]);
+  }, [beginAdBreak, canRunPlaybackCommand, runNativeCommand]);
 
-  const playSong = useCallback((song: PlaybackQueueItem) => {
-    dispatch({ song, type: "play-song" });
-    runNativeCommand(() => adapterRef.current.play(song));
-  }, [runNativeCommand]);
+  const playSong = useCallback(
+    (song: PlaybackQueueItem) => {
+      runAdGatedCommand(() => {
+        dispatch({ song, type: "play-song" });
+        runNativeCommand(() => adapterRef.current.play(song));
+      });
+    },
+    [runAdGatedCommand, runNativeCommand],
+  );
   const pause = useCallback(() => {
     dispatch({ type: "pause" });
     runNativeCommand(() => adapterRef.current.pause());
   }, [runNativeCommand]);
   const resume = useCallback(() => {
-    const activeSong = getActiveTrack(stateRef.current);
+    runAdGatedCommand(() => {
+      const activeSong = getActiveTrack(stateRef.current);
 
-    dispatch({ type: "resume" });
-    runNativeCommand(() =>
-      activeSong ? adapterRef.current.resume() : Promise.resolve(),
-    );
-  }, [runNativeCommand]);
-  const seekTo = useCallback((position: number) => {
-    dispatch({ position, type: "seek-to" });
-    runNativeCommand(() => adapterRef.current.seekTo(position));
-  }, [runNativeCommand]);
+      dispatch({ type: "resume" });
+      runNativeCommand(() =>
+        activeSong ? adapterRef.current.resume() : Promise.resolve(),
+      );
+    });
+  }, [runAdGatedCommand, runNativeCommand]);
+  const seekTo = useCallback(
+    (position: number) => {
+      runAdGatedCommand(() => {
+        dispatch({ position, type: "seek-to" });
+        runNativeCommand(() => adapterRef.current.seekTo(position));
+      });
+    },
+    [runAdGatedCommand, runNativeCommand],
+  );
   const skipNext = useCallback(() => {
-    const nextTrack = getNextTrack(stateRef.current);
+    runAdGatedCommand(() => {
+      const nextTrack = getNextTrack(stateRef.current);
 
-    dispatch({ type: "skip-next" });
-    runNativeCommand(() =>
-      nextTrack ? adapterRef.current.play(nextTrack) : adapterRef.current.stop(),
-    );
-  }, [runNativeCommand]);
+      dispatch({ type: "skip-next" });
+      runNativeCommand(() =>
+        nextTrack
+          ? adapterRef.current.play(nextTrack)
+          : adapterRef.current.stop(),
+      );
+    });
+  }, [runAdGatedCommand, runNativeCommand]);
   const skipPrevious = useCallback(() => {
-    const previousTrack = getPreviousTrack(stateRef.current);
+    runAdGatedCommand(() => {
+      const previousTrack = getPreviousTrack(stateRef.current);
 
-    dispatch({ type: "skip-previous" });
-    runNativeCommand(() =>
-      previousTrack
-        ? adapterRef.current.play(previousTrack)
-        : adapterRef.current.seekTo(0),
-    );
-  }, [runNativeCommand]);
+      dispatch({ type: "skip-previous" });
+      runNativeCommand(() =>
+        previousTrack
+          ? adapterRef.current.play(previousTrack)
+          : adapterRef.current.seekTo(0),
+      );
+    });
+  }, [runAdGatedCommand, runNativeCommand]);
   const addToQueue = useCallback((song: PlaybackQueueItem) => {
     dispatch({ song, type: "add-to-queue" });
   }, []);
@@ -480,6 +596,9 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "clear-queue" });
     runNativeCommand(() => adapterRef.current.stop());
   }, [runNativeCommand]);
+  const completeAdBreak = useCallback(() => {
+    dispatch({ type: "complete-ad-break" });
+  }, []);
   const moveQueueSong = useCallback(
     (songId: number, direction: "down" | "up") => {
       dispatch({ direction, songId, type: "move-queue-song" });
@@ -515,6 +634,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       activeTrack,
       addToQueue,
       clearQueue,
+      completeAdBreak,
       moveQueueSong,
       pause,
       playSong,
@@ -531,6 +651,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       activeTrack,
       addToQueue,
       clearQueue,
+      completeAdBreak,
       moveQueueSong,
       pause,
       playSong,

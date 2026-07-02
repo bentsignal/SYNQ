@@ -54,8 +54,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Playback: explicit session state, queue/player screens, a native Expo AV
     adapter for play/pause/seek/skip, native status/progress sync,
     filesystem-backed session persistence, queue reordering, and player
-    progress controls, active-track removal handling, and queue clearing exist;
-    remote events and manual smoke coverage are next.
+    progress controls, active-track removal handling, queue clearing, and
+    persisted Premium/free-listening ad gate state exist; bundled ad audio
+    playback, remote events, and manual smoke coverage are next.
   - Import/ingest: route-per-step import shell, session state, file picker,
     Wi-Fi transfer route/server, cache staging, metadata/duration extraction,
     preview/save screens, staged metadata editing, and Drizzle draft-to-library
@@ -113,7 +114,10 @@ backup, customization, and premium route entry points. Playback now has a
 reducer-backed session boundary plus queue/player screens connected to a native
 Expo AV adapter for saved library files with native progress/status sync,
 persisted session restore, queue reordering, player progress controls, and
-queue removal that advances active playback when possible. Import now has a
+queue removal that advances active playback when possible. Free playback now
+tracks the old 10-minute ad threshold in persisted session state, pauses
+playback commands at an ad break, and lets Premium bypass/reset the gate;
+bundled ad audio playback is still next. Import now has a
 route-per-step session shell, native file selection, Premium-gated file/Wi-Fi
 entry, a Wi-Fi transfer route/server, cache staging,
 metadata/duration extraction, and Drizzle draft saves, including moving cached
@@ -125,8 +129,8 @@ connected to RevenueCat pricing, purchase, restore commands, and an app-wide
 entitlement provider consumed by Settings, Backup, and Customization. Settings
 customization now owns persisted theme, app icon, and haptic preference state;
 the app shell consumes saved theme state for navigation chrome; deeper screen
-theme application, native icon handling, and playback gates are still
-next. It is not yet a replacement app.
+theme application, native icon handling, bundled playback ad audio, and remote
+playback events are still next. It is not yet a replacement app.
 The next useful work should alternate between:
 
 - closing Phase 2 gaps that would otherwise be copied into the new app; and

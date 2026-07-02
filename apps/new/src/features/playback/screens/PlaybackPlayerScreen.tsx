@@ -33,6 +33,7 @@ const getProgressPercent = ({
 export function PlaybackPlayerScreen() {
   const {
     activeTrack,
+    completeAdBreak,
     pause,
     resume,
     seekTo,
@@ -43,10 +44,15 @@ export function PlaybackPlayerScreen() {
     toggleShuffle,
   } = usePlaybackSession();
   const hasActiveTrack = !!activeTrack;
+  const adBreakActive = state.adGate.active || state.adGate.due;
   const progressPercent = getProgressPercent({
     duration: state.duration,
     position: state.position,
   });
+  const freeListeningRemainingMs = Math.max(
+    0,
+    state.adGate.thresholdMs - state.adGate.accumulatedMs,
+  );
   const rewind = () => {
     seekTo(Math.max(0, state.position - seekStep));
   };
@@ -63,6 +69,31 @@ export function PlaybackPlayerScreen() {
           Explicit playback session state is now available to the rewrite app.
         </Text>
       </View>
+
+      {adBreakActive ? (
+        <View style={styles.adPanel}>
+          <Text style={styles.panelLabel}>Premium gate</Text>
+          <Text style={styles.adTitle}>Ad break required</Text>
+          <Text style={styles.panelText}>
+            Free playback pauses after 10 minutes of listening. Complete the ad
+            break to keep playing, or open Premium for ad-free listening.
+          </Text>
+          <View style={styles.adActions}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={completeAdBreak}
+              style={styles.primaryButton}
+            >
+              <Text style={styles.primaryText}>Complete Break</Text>
+            </Pressable>
+            <Link asChild href="/premium">
+              <Pressable accessibilityRole="button" style={styles.controlButton}>
+                <Text style={styles.controlText}>Open Premium</Text>
+              </Pressable>
+            </Link>
+          </View>
+        </View>
+      ) : null}
 
       <View style={styles.nowPlayingPanel}>
         <Text style={styles.panelLabel}>Now playing</Text>
@@ -97,17 +128,23 @@ export function PlaybackPlayerScreen() {
       <View style={styles.controls}>
         <Pressable
           accessibilityRole="button"
-          disabled={!hasActiveTrack}
+          disabled={!hasActiveTrack || adBreakActive}
           onPress={skipPrevious}
-          style={[styles.controlButton, !hasActiveTrack ? styles.disabled : null]}
+          style={[
+            styles.controlButton,
+            !hasActiveTrack || adBreakActive ? styles.disabled : null,
+          ]}
         >
           <Text style={styles.controlText}>Prev</Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={!hasActiveTrack}
+          disabled={!hasActiveTrack || adBreakActive}
           onPress={state.isPlaying ? pause : resume}
-          style={[styles.primaryButton, !hasActiveTrack ? styles.disabled : null]}
+          style={[
+            styles.primaryButton,
+            !hasActiveTrack || adBreakActive ? styles.disabled : null,
+          ]}
         >
           <Text style={styles.primaryText}>
             {state.isPlaying ? "Pause" : "Play"}
@@ -115,9 +152,12 @@ export function PlaybackPlayerScreen() {
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={!hasActiveTrack}
+          disabled={!hasActiveTrack || adBreakActive}
           onPress={skipNext}
-          style={[styles.controlButton, !hasActiveTrack ? styles.disabled : null]}
+          style={[
+            styles.controlButton,
+            !hasActiveTrack || adBreakActive ? styles.disabled : null,
+          ]}
         >
           <Text style={styles.controlText}>Next</Text>
         </Pressable>
@@ -126,22 +166,26 @@ export function PlaybackPlayerScreen() {
       <View style={styles.controls}>
         <Pressable
           accessibilityRole="button"
-          disabled={!hasActiveTrack || state.position <= 0}
+          disabled={!hasActiveTrack || adBreakActive || state.position <= 0}
           onPress={rewind}
           style={[
             styles.controlButton,
-            !hasActiveTrack || state.position <= 0 ? styles.disabled : null,
+            !hasActiveTrack || adBreakActive || state.position <= 0
+              ? styles.disabled
+              : null,
           ]}
         >
           <Text style={styles.controlText}>-15s</Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={!hasActiveTrack || state.position >= state.duration}
+          disabled={
+            !hasActiveTrack || adBreakActive || state.position >= state.duration
+          }
           onPress={fastForward}
           style={[
             styles.controlButton,
-            !hasActiveTrack || state.position >= state.duration
+            !hasActiveTrack || adBreakActive || state.position >= state.duration
               ? styles.disabled
               : null,
           ]}
@@ -175,6 +219,10 @@ export function PlaybackPlayerScreen() {
         <Text style={styles.panelLabel}>Session</Text>
         <Text style={styles.panelText}>
           {state.queue.length} queued / revision {state.queueRevision}
+        </Text>
+        <Text style={styles.panelText}>
+          Free listening before ad break:{" "}
+          {formatDuration(freeListeningRemainingMs)}
         </Text>
       </View>
 
@@ -233,6 +281,26 @@ const styles = StyleSheet.create({
     gap: 8,
     minHeight: 180,
     padding: 18,
+  },
+  adPanel: {
+    backgroundColor: "#fff7ed",
+    borderColor: "#fed7aa",
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 10,
+    padding: 16,
+  },
+  adTitle: {
+    color: "#9a3412",
+    fontSize: 20,
+    fontWeight: "800",
+    letterSpacing: 0,
+    lineHeight: 26,
+  },
+  adActions: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
   },
   panelLabel: {
     color: "#52605a",

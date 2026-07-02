@@ -3,6 +3,7 @@ import type {
   PlaybackQueueItem,
   PlaybackState,
 } from "../types/playback-state";
+import { initialPlaybackAdGateState } from "./playback-ad-gate-service";
 
 export const initialPlaybackQueueFilter: PlaybackQueueFilter = {
   order: "desc",
@@ -14,6 +15,7 @@ export const initialPlaybackState: PlaybackState = {
   activeQueueIndex: null,
   activeTrackId: null,
   addOffset: 0,
+  adGate: initialPlaybackAdGateState,
   duration: 0,
   error: null,
   initialized: true,

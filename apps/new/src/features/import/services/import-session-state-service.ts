@@ -56,6 +56,10 @@ export const getImportSaveActionState = ({
   };
 };
 
+export type ImportSaveActionState = ReturnType<
+  typeof getImportSaveActionState
+>;
+
 export const getImportFilesActionState = (state: ImportSessionState) => {
   const isWorking = state.phase === "picking" || state.phase === "processing";
 

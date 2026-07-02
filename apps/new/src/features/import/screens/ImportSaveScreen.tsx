@@ -1,23 +1,26 @@
-import { useState } from "react";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { shareImportDraftSongs } from "@/src/features/export/services/import-draft-export-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { ImportPremiumGate } from "../components/ImportPremiumGate";
 import { ImportSongPreviewList } from "../components/ImportSongPreviewList";
+import { useImportSaveController } from "../hooks/use-import-save-controller";
 import { useImportSession } from "../hooks/use-import-session";
-import { getImportSaveActionState } from "../services/import-session-state-service";
 
 export function ImportSaveScreen() {
   const { discardSession, saveImportSession, setShouldSaveToLibrary, state } =
     useImportSession();
   const theme = useCustomizationTheme();
-  const { sendHaptic } = useHapticFeedback();
-  const [exportError, setExportError] = useState<string | null>(null);
-  const [isExporting, setIsExporting] = useState(false);
-  const actionState = getImportSaveActionState({
-    isExporting,
+  const {
+    actionState,
+    discardImport,
+    exportError,
+    exportSongs,
+    finishImport,
+    toggleShouldSaveToLibrary,
+  } = useImportSaveController({
+    discardSession,
+    saveImportSession,
+    setShouldSaveToLibrary,
     state,
   });
 
@@ -40,10 +43,7 @@ export function ImportSaveScreen() {
         <Pressable
           accessibilityRole="checkbox"
           accessibilityState={{ checked: state.shouldSaveToLibrary }}
-          onPress={() => {
-            sendHaptic("light");
-            setShouldSaveToLibrary(!state.shouldSaveToLibrary);
-          }}
+          onPress={toggleShouldSaveToLibrary}
           style={[
             styles.toggleRow,
             { backgroundColor: theme.surface, borderColor: theme.border },
@@ -72,24 +72,7 @@ export function ImportSaveScreen() {
           <Pressable
             accessibilityRole="button"
             disabled={!actionState.canExport}
-            onPress={async () => {
-              setExportError(null);
-              setIsExporting(true);
-
-              try {
-                await shareImportDraftSongs(state.songs);
-                sendHaptic("success");
-              } catch (error) {
-                sendHaptic("error");
-                setExportError(
-                  error instanceof Error
-                    ? error.message
-                    : "Staged songs could not be exported.",
-                );
-              } finally {
-                setIsExporting(false);
-              }
-            }}
+            onPress={exportSongs}
             style={[
               styles.secondaryButton,
               { backgroundColor: theme.surface, borderColor: theme.border },
@@ -103,12 +86,7 @@ export function ImportSaveScreen() {
           <Pressable
             accessibilityRole="button"
             disabled={!actionState.canFinish}
-            onPress={async () => {
-              sendHaptic("medium");
-              const succeeded = await saveImportSession();
-              sendHaptic(succeeded ? "success" : "error");
-              router.push(succeeded ? "/(tabs)/import/success" : "/(tabs)/import/failure");
-            }}
+            onPress={finishImport}
             style={[
               styles.primaryButton,
               { backgroundColor: theme.accent },
@@ -122,12 +100,7 @@ export function ImportSaveScreen() {
           <Pressable
             accessibilityRole="button"
             disabled={!actionState.canDiscard}
-            onPress={async () => {
-              sendHaptic("medium");
-              const discarded = await discardSession();
-              sendHaptic(discarded ? "success" : "error");
-              router.push(discarded ? "/(tabs)/import" : "/(tabs)/import/failure");
-            }}
+            onPress={discardImport}
             style={[
               styles.secondaryButton,
               { backgroundColor: theme.surface, borderColor: theme.border },

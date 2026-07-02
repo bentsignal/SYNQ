@@ -51,15 +51,15 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     playlist/album/artist create/edit flows, collection song add/remove flows,
     and album song reorder by track exist; playlist/artist ordering needs
     schema support before it can be durable.
-  - Playback: explicit session state, queue/player screens, a native Expo AV
+  - Playback: explicit session state, queue/player screens, an Expo Audio
     adapter for play/pause/seek/skip, native status/progress sync,
     filesystem-backed session persistence, queue reordering, and player
     progress controls, active-track removal handling, queue clearing, and
     persisted Premium/free-listening ad gate state with bundled ad audio
     playback exist. Remote command semantics for play/pause/next/previous/seek,
     queue-ended, and error handling now exist behind the provider boundary;
-    Expo Audio is installed/configured for background playback as the native
-    backend target, and migrating the active adapter plus manual smoke coverage
+    Expo Audio is installed/configured for background playback and is now the
+    active playback adapter; lock-screen event wiring and manual smoke coverage
     are next.
   - Import/ingest: route-per-step import shell, session state, file picker,
     Wi-Fi transfer route/server, cache staging, metadata/duration extraction,
@@ -116,7 +116,7 @@ searchable/sortable songs, linked details, collection create/edit flows, song
 add/remove, and album song reorder. Settings now has a feature-owned home with
 backup, customization, and premium route entry points. Playback now has a
 reducer-backed session boundary plus queue/player screens connected to a native
-Expo AV adapter for saved library files with native progress/status sync,
+Expo Audio adapter for saved library files with native progress/status sync,
 persisted session restore, queue reordering, player progress controls, and
 queue removal that advances active playback when possible. Free playback now
 tracks the old 10-minute ad threshold in persisted session state, pauses
@@ -124,11 +124,12 @@ playback commands at an ad break, and lets Premium bypass/reset the gate;
 the bundled ad asset now plays during the break and resumes the library track
 when it finishes. Playback remote command semantics now have a typed service
 boundary that shares the same ad-gated commands and loop-at-queue-end behavior
-as native playback completion, but the current Expo AV adapter still needs a
+as native playback completion, but the current Expo Audio adapter still needs a
 native-capable remote event source before lock-screen/headphone controls can be
-considered done. Expo Audio has been added to `apps/new` and configured for
-background playback so the next playback slice can migrate the active adapter
-and wire lock-screen controls into the remote command service. Import now has a
+considered done. Expo Audio has been added to `apps/new`, configured for
+background playback, and made the active adapter; this SDK 53 API does not yet
+expose the newer lock-screen methods, so that wiring remains a future native
+backend/API step. Import now has a
 route-per-step session shell, native file selection, Premium-gated file/Wi-Fi
 entry, a Wi-Fi transfer route/server, cache staging,
 metadata/duration extraction, and Drizzle draft saves, including moving cached
@@ -141,8 +142,7 @@ entitlement provider consumed by Settings, Backup, and Customization. Settings
 customization now owns persisted theme, app icon, and haptic preference state;
 the app shell consumes saved theme state for navigation chrome; deeper screen
 theme application, native icon handling, native remote playback event ingestion,
-the Expo AV to Expo Audio adapter migration, and manual playback smoke are still
-next. It is not yet a replacement app.
+and manual playback smoke are still next. It is not yet a replacement app.
 The next useful work should alternate between:
 
 - closing Phase 2 gaps that would otherwise be copied into the new app; and

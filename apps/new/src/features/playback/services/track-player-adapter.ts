@@ -1,4 +1,10 @@
-import { Audio, type AVPlaybackStatus } from "expo-av";
+import {
+  createAudioPlayer,
+  PLAYBACK_STATUS_UPDATE,
+  setAudioModeAsync,
+  type AudioPlayer,
+  type AudioStatus,
+} from "expo-audio";
 import type {
   PlaybackQueueItem,
   PlaybackState,
@@ -46,16 +52,20 @@ export const createUnavailableTrackPlayerAdapter = (): TrackPlayerAdapter => ({
   stop: () => Promise.resolve(),
 });
 
-export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
-  let adSound: Audio.Sound | null = null;
-  let librarySound: Audio.Sound | null = null;
+type AudioPlayerSubscription = ReturnType<AudioPlayer["addListener"]>;
+
+export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
+  let adPlayer: AudioPlayer | null = null;
+  let adStatusSubscription: AudioPlayerSubscription | null = null;
+  let libraryPlayer: AudioPlayer | null = null;
+  let libraryStatusSubscription: AudioPlayerSubscription | null = null;
   let loadedSongId: number | null = null;
   let activeSource: TrackPlayerSource | null = null;
   let statusListener: ((status: TrackPlayerStatusSnapshot) => void) | null =
     null;
 
   const toStatusSnapshot = (
-    status: AVPlaybackStatus,
+    status: AudioStatus,
     source: TrackPlayerSource,
   ): TrackPlayerStatusSnapshot => {
     if (!status.isLoaded) {
@@ -72,39 +82,58 @@ export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
 
     return {
       didJustFinish: status.didJustFinish,
-      duration: status.durationMillis ?? null,
+      duration: Number.isFinite(status.duration) ? status.duration * 1000 : null,
       isLoaded: true,
-      isPlaying: status.isPlaying,
-      position: status.positionMillis,
+      isPlaying: status.playing,
+      position: status.currentTime * 1000,
       songId: loadedSongId,
       source,
     };
   };
 
   const attachStatusListener = (
-    sound: Audio.Sound | null,
+    player: AudioPlayer | null,
     source: TrackPlayerSource,
   ) => {
-    sound?.setOnPlaybackStatusUpdate((status) => {
+    const subscription = player?.addListener(PLAYBACK_STATUS_UPDATE, (status) => {
       statusListener?.(toStatusSnapshot(status, source));
     });
+
+    if (source === "ad") {
+      adStatusSubscription?.remove();
+      adStatusSubscription = subscription ?? null;
+      return;
+    }
+
+    libraryStatusSubscription?.remove();
+    libraryStatusSubscription = subscription ?? null;
+  };
+
+  const removeStatusListeners = () => {
+    adStatusSubscription?.remove();
+    adStatusSubscription = null;
+    libraryStatusSubscription?.remove();
+    libraryStatusSubscription = null;
   };
 
   const configureAudio = async () => {
-    await Audio.setAudioModeAsync({
-      allowsRecordingIOS: false,
-      interruptionModeAndroid: 1,
-      interruptionModeIOS: 1,
-      playsInSilentModeIOS: true,
-      shouldDuckAndroid: true,
-      staysActiveInBackground: true,
+    await setAudioModeAsync({
+      allowsRecording: false,
+      interruptionMode: "doNotMix",
+      interruptionModeAndroid: "duckOthers",
+      playsInSilentMode: true,
+      shouldPlayInBackground: true,
+      shouldRouteThroughEarpiece: false,
     });
   };
 
-  const unloadAdSound = async () => {
-    if (adSound) {
-      await adSound.unloadAsync();
-      adSound = null;
+  const removeAdPlayer = () => {
+    adStatusSubscription?.remove();
+    adStatusSubscription = null;
+
+    if (adPlayer) {
+      adPlayer.remove();
+      adPlayer = null;
     }
 
     if (activeSource === "ad") {
@@ -112,10 +141,13 @@ export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
     }
   };
 
-  const unloadLibrarySound = async () => {
-    if (librarySound) {
-      await librarySound.unloadAsync();
-      librarySound = null;
+  const removeLibraryPlayer = () => {
+    libraryStatusSubscription?.remove();
+    libraryStatusSubscription = null;
+
+    if (libraryPlayer) {
+      libraryPlayer.remove();
+      libraryPlayer = null;
       loadedSongId = null;
     }
 
@@ -125,8 +157,8 @@ export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
   };
 
   const unloadAllSounds = async () => {
-    await unloadAdSound();
-    await unloadLibrarySound();
+    removeAdPlayer();
+    removeLibraryPlayer();
   };
 
   const playSong = async (song: PlaybackQueueItem) => {
@@ -135,68 +167,58 @@ export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
     }
 
     await configureAudio();
-    await unloadAdSound();
+    removeAdPlayer();
 
-    if (librarySound && loadedSongId === song.id) {
+    if (libraryPlayer && loadedSongId === song.id) {
       activeSource = "library";
-      await librarySound.replayAsync();
+      await libraryPlayer.seekTo(0);
+      libraryPlayer.play();
       return;
     }
 
-    await unloadLibrarySound();
+    removeLibraryPlayer();
 
-    const created = await Audio.Sound.createAsync(
-      { uri: song.pathToFile },
-      {
-        positionMillis: 0,
-        shouldPlay: true,
-      },
-    );
-
-    librarySound = created.sound;
+    libraryPlayer = createAudioPlayer({ uri: song.pathToFile });
     loadedSongId = song.id;
     activeSource = "library";
-    attachStatusListener(librarySound, "library");
+    attachStatusListener(libraryPlayer, "library");
+    libraryPlayer.play();
   };
 
   const playAd = async () => {
     await configureAudio();
 
-    if (librarySound) {
-      await librarySound.pauseAsync();
+    if (libraryPlayer) {
+      libraryPlayer.pause();
     }
 
-    await unloadAdSound();
+    removeAdPlayer();
 
-    const created = await Audio.Sound.createAsync(playbackAdAudio, {
-      positionMillis: 0,
-      shouldPlay: true,
-    });
-
-    adSound = created.sound;
+    adPlayer = createAudioPlayer(playbackAdAudio);
     activeSource = "ad";
-    attachStatusListener(adSound, "ad");
+    attachStatusListener(adPlayer, "ad");
+    adPlayer.play();
   };
 
   const resumeLibrary = async () => {
-    await unloadAdSound();
+    removeAdPlayer();
 
-    if (librarySound) {
+    if (libraryPlayer) {
       activeSource = "library";
-      await librarySound.playAsync();
+      libraryPlayer.play();
     }
   };
 
   return {
     destroy: unloadAllSounds,
     pause: async () => {
-      if (activeSource === "ad" && adSound) {
-        await adSound.pauseAsync();
+      if (activeSource === "ad" && adPlayer) {
+        adPlayer.pause();
         return;
       }
 
-      if (librarySound) {
-        await librarySound.pauseAsync();
+      if (libraryPlayer) {
+        libraryPlayer.pause();
       }
     },
     play: playSong,
@@ -212,34 +234,42 @@ export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
       }
     },
     resume: async () => {
-      if (activeSource === "ad" && adSound) {
-        await adSound.playAsync();
+      if (activeSource === "ad" && adPlayer) {
+        adPlayer.play();
         return;
       }
 
-      if (librarySound) {
+      if (libraryPlayer) {
         activeSource = "library";
-        await librarySound.playAsync();
+        libraryPlayer.play();
       }
     },
     resumeLibrary,
     seekTo: async (position) => {
-      if (librarySound) {
-        await librarySound.setPositionAsync(position);
+      if (libraryPlayer) {
+        await libraryPlayer.seekTo(position / 1000);
       }
     },
     setStatusListener: (listener) => {
       statusListener = listener;
-      attachStatusListener(librarySound, "library");
-      attachStatusListener(adSound, "ad");
-    },
-    stop: async () => {
-      if (adSound) {
-        await adSound.stopAsync();
+
+      if (!listener) {
+        removeStatusListeners();
+        return;
       }
 
-      if (librarySound) {
-        await librarySound.stopAsync();
+      attachStatusListener(libraryPlayer, "library");
+      attachStatusListener(adPlayer, "ad");
+    },
+    stop: async () => {
+      if (adPlayer) {
+        adPlayer.pause();
+        await adPlayer.seekTo(0);
+      }
+
+      if (libraryPlayer) {
+        libraryPlayer.pause();
+        await libraryPlayer.seekTo(0);
       }
       activeSource = null;
     },

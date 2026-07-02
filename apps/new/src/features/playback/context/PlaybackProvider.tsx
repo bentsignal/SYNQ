@@ -32,7 +32,7 @@ import {
   type PlaybackRemoteCommandResult,
 } from "../services/playback-remote-command-service";
 import {
-  createExpoAvTrackPlayerAdapter,
+  createExpoAudioTrackPlayerAdapter,
   type TrackPlayerStatusSnapshot,
 } from "../services/track-player-adapter";
 import type {
@@ -430,7 +430,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(playbackReducer, initialPlaybackState);
   const stateRef = useRef(state);
   const premiumActiveRef = useRef(premiumState.active);
-  const adapterRef = useRef(createExpoAvTrackPlayerAdapter());
+  const adapterRef = useRef(createExpoAudioTrackPlayerAdapter());
   const hasHydratedRef = useRef(false);
   const lastPersistedAtRef = useRef(0);
   const activeTrack = useMemo(() => getActiveTrack(state), [state]);

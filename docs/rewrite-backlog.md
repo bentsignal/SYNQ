@@ -78,6 +78,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     state shaping.
   - Done: edit collection routes now mount kind-specific live query hooks so
     album, artist, and playlist edits do not subscribe to unrelated tables.
+  - Done: add-to-collection routes now mount kind-specific relationship live
+    queries so adding songs only subscribes to the active collection kind.
   - Done: import files and Wi-Fi presentation/action state now lives in the
     import session service instead of entry screens.
   - Done: shared collection create/edit form action state now lives in the
@@ -148,6 +150,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     image resolution, year formatting, and loaded-missing fallbacks.
   - Done: preserve edit-collection query shaping smoke coverage while reducing
     the live query fan-out at the route component boundary.
+  - Done: preserve addable-song shaping smoke coverage while reducing
+    add-to-collection relationship query fan-out.
   - Done: extend deterministic smoke coverage to collection form year parsing
     for blank, valid, and invalid album year inputs.
   - Done: extend deterministic smoke coverage to collection list search

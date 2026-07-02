@@ -13,7 +13,9 @@ import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
-  useAddableCollectionSongsQuery,
+  useAddableAlbumCollectionSongsQuery,
+  useAddableArtistCollectionSongsQuery,
+  useAddablePlaylistCollectionSongsQuery,
   type AddableCollectionSong,
 } from "../hooks/use-addable-collection-songs-query";
 import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
@@ -71,20 +73,95 @@ function AddCollectionSongsContent({
   id: number;
   kind: LibraryCollectionDetailKind;
 }) {
+  if (kind === "album") {
+    return <AddAlbumCollectionSongsContent id={id} />;
+  }
+
+  if (kind === "artist") {
+    return <AddArtistCollectionSongsContent id={id} />;
+  }
+
+  return <AddPlaylistCollectionSongsContent id={id} />;
+}
+
+function AddAlbumCollectionSongsContent({ id }: { id: number }) {
+  const [query, setQuery] = useState("");
+  const addable = useAddableAlbumCollectionSongsQuery({
+    collectionId: id,
+    query,
+  });
+
+  return (
+    <AddCollectionSongsForm
+      addable={addable}
+      id={id}
+      kind="album"
+      query={query}
+      setQuery={setQuery}
+    />
+  );
+}
+
+function AddArtistCollectionSongsContent({ id }: { id: number }) {
+  const [query, setQuery] = useState("");
+  const addable = useAddableArtistCollectionSongsQuery({
+    collectionId: id,
+    query,
+  });
+
+  return (
+    <AddCollectionSongsForm
+      addable={addable}
+      id={id}
+      kind="artist"
+      query={query}
+      setQuery={setQuery}
+    />
+  );
+}
+
+function AddPlaylistCollectionSongsContent({ id }: { id: number }) {
+  const [query, setQuery] = useState("");
+  const addable = useAddablePlaylistCollectionSongsQuery({
+    collectionId: id,
+    query,
+  });
+
+  return (
+    <AddCollectionSongsForm
+      addable={addable}
+      id={id}
+      kind="playlist"
+      query={query}
+      setQuery={setQuery}
+    />
+  );
+}
+
+type AddCollectionSongsFormProps = {
+  addable: ReturnType<typeof useAddableAlbumCollectionSongsQuery>;
+  id: number;
+  kind: LibraryCollectionDetailKind;
+  query: string;
+  setQuery: (query: string) => void;
+};
+
+function AddCollectionSongsForm({
+  addable,
+  id,
+  kind,
+  query,
+  setQuery,
+}: AddCollectionSongsFormProps) {
   const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();
-  const [query, setQuery] = useState("");
   const [savingSongId, setSavingSongId] = useState<number | null>(null);
   const [selectedSongIds, setSelectedSongIds] = useState<Set<number>>(
     () => new Set(),
   );
   const [isAddingSelection, setIsAddingSelection] = useState(false);
   const [mutationError, setMutationError] = useState<string | null>(null);
-  const { errors, songs, updatedAt } = useAddableCollectionSongsQuery({
-    collectionId: id,
-    kind,
-    query,
-  });
+  const { errors, songs, updatedAt } = addable;
   const hasErrors = errors.length > 0;
   const updatedLabel =
     updatedAt > 0

@@ -3,7 +3,6 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import type { LibraryCollectionDetailKind } from "./use-library-collection-detail-query";
 import {
   rowsToAddableCollectionSongs,
   type AddableCollectionSongRow,
@@ -11,16 +10,12 @@ import {
 
 export type { AddableCollectionSong } from "../services/addable-collection-songs-service";
 
-export function useAddableCollectionSongsQuery({
-  collectionId,
-  kind,
-  query,
-}: {
-  collectionId: number;
-  kind: LibraryCollectionDetailKind;
-  query?: string;
-}) {
-  const songs = useLiveQuery(
+type LinkedSongRow = {
+  songId: number | null;
+};
+
+function useAllAddableSongRowsQuery() {
+  return useLiveQuery(
     db
       .select({
         albumName: schema.albums.name,
@@ -44,32 +39,48 @@ export function useAddableCollectionSongsQuery({
       )
       .leftJoin(schema.albums, eq(schema.albumSongs.albumId, schema.albums.id)),
   );
-  const playlistSongs = useLiveQuery(
+}
+
+function usePlaylistLinkedSongRowsQuery(collectionId: number) {
+  return useLiveQuery(
     db
       .select({ songId: schema.playlistSongs.songId })
       .from(schema.playlistSongs)
       .where(eq(schema.playlistSongs.playlistId, collectionId)),
   );
-  const albumSongs = useLiveQuery(
+}
+
+function useAlbumLinkedSongRowsQuery(collectionId: number) {
+  return useLiveQuery(
     db
       .select({ songId: schema.albumSongs.songId })
       .from(schema.albumSongs)
       .where(eq(schema.albumSongs.albumId, collectionId)),
   );
-  const artistSongs = useLiveQuery(
+}
+
+function useArtistLinkedSongRowsQuery(collectionId: number) {
+  return useLiveQuery(
     db
       .select({ songId: schema.artistSongs.songId })
       .from(schema.artistSongs)
       .where(eq(schema.artistSongs.artistId, collectionId)),
   );
+}
 
-  const linkedRows =
-    kind === "album"
-      ? albumSongs.data
-      : kind === "artist"
-        ? artistSongs.data
-        : playlistSongs.data;
-
+function useAddableCollectionSongsResult({
+  linkedRows,
+  linkedRowsError,
+  linkedRowsUpdatedAt,
+  query,
+  songRows,
+}: {
+  linkedRows: LinkedSongRow[] | undefined;
+  linkedRowsError: Error | undefined;
+  linkedRowsUpdatedAt: Date | undefined;
+  query?: string;
+  songRows: ReturnType<typeof useAllAddableSongRowsQuery>;
+}) {
   const addableSongs = useMemo(() => {
     const linkedSongIds = new Set(
       (linkedRows ?? []).flatMap((row) =>
@@ -80,23 +91,73 @@ export function useAddableCollectionSongsQuery({
     return rowsToAddableCollectionSongs({
       linkedSongIds,
       query,
-      rows: (songs.data ?? []) as AddableCollectionSongRow[],
+      rows: (songRows.data ?? []) as AddableCollectionSongRow[],
     });
-  }, [linkedRows, query, songs.data]);
+  }, [linkedRows, query, songRows.data]);
 
   return {
-    errors: [
-      songs.error,
-      playlistSongs.error,
-      albumSongs.error,
-      artistSongs.error,
-    ].filter(Boolean),
+    errors: [songRows.error, linkedRowsError].filter(Boolean),
     songs: addableSongs,
     updatedAt: Math.max(
-      songs.updatedAt?.getTime() ?? 0,
-      playlistSongs.updatedAt?.getTime() ?? 0,
-      albumSongs.updatedAt?.getTime() ?? 0,
-      artistSongs.updatedAt?.getTime() ?? 0,
+      songRows.updatedAt?.getTime() ?? 0,
+      linkedRowsUpdatedAt?.getTime() ?? 0,
     ),
   };
+}
+
+export function useAddableAlbumCollectionSongsQuery({
+  collectionId,
+  query,
+}: {
+  collectionId: number;
+  query?: string;
+}) {
+  const songRows = useAllAddableSongRowsQuery();
+  const linkedRows = useAlbumLinkedSongRowsQuery(collectionId);
+
+  return useAddableCollectionSongsResult({
+    linkedRows: linkedRows.data,
+    linkedRowsError: linkedRows.error,
+    linkedRowsUpdatedAt: linkedRows.updatedAt,
+    query,
+    songRows,
+  });
+}
+
+export function useAddableArtistCollectionSongsQuery({
+  collectionId,
+  query,
+}: {
+  collectionId: number;
+  query?: string;
+}) {
+  const songRows = useAllAddableSongRowsQuery();
+  const linkedRows = useArtistLinkedSongRowsQuery(collectionId);
+
+  return useAddableCollectionSongsResult({
+    linkedRows: linkedRows.data,
+    linkedRowsError: linkedRows.error,
+    linkedRowsUpdatedAt: linkedRows.updatedAt,
+    query,
+    songRows,
+  });
+}
+
+export function useAddablePlaylistCollectionSongsQuery({
+  collectionId,
+  query,
+}: {
+  collectionId: number;
+  query?: string;
+}) {
+  const songRows = useAllAddableSongRowsQuery();
+  const linkedRows = usePlaylistLinkedSongRowsQuery(collectionId);
+
+  return useAddableCollectionSongsResult({
+    linkedRows: linkedRows.data,
+    linkedRowsError: linkedRows.error,
+    linkedRowsUpdatedAt: linkedRows.updatedAt,
+    query,
+    songRows,
+  });
 }

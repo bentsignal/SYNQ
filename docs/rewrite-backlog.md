@@ -358,6 +358,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     smoke coverage instead of being embedded in the command hook.
   - Done: playback player ad gate, now-playing, controls, session, and error
     panels now live in focused components instead of the route screen.
+  - Done: playback player assembled layout now renders through a focused
+    screen view component instead of the route screen owning the full player UI.
   - Done: import Premium gate access state, checking copy, and error
     presentation now live in the import session service instead of the gate UI.
   - Done: import save export, finish, discard, haptics, and navigation

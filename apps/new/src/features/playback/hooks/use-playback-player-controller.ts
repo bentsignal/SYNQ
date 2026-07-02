@@ -94,3 +94,7 @@ export function usePlaybackPlayerController() {
     toggleShuffleMode,
   };
 }
+
+export type PlaybackPlayerController = ReturnType<
+  typeof usePlaybackPlayerController
+>;

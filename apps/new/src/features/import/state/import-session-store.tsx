@@ -2,7 +2,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useReducer,
   type ReactNode,
@@ -17,11 +16,8 @@ import {
   prepareWifiImportCache,
   selectImportFiles,
 } from "../services/import-file-service";
-import {
-  clearPersistedImportSessionState,
-  loadPersistedImportSessionState,
-  savePersistedImportSessionState,
-} from "../services/import-session-persistence-service";
+import { clearPersistedImportSessionState } from "../services/import-session-persistence-service";
+import { usePersistedImportSession } from "../hooks/use-persisted-import-session";
 import {
   importSessionReducer,
   initialImportSessionState,
@@ -61,34 +57,7 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
     initialImportSessionState,
   );
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const hydrateImportSession = async () => {
-      const persistedState = await loadPersistedImportSessionState();
-
-      if (!cancelled && persistedState) {
-        dispatch({ state: persistedState, type: "hydrate" });
-      }
-    };
-
-    void hydrateImportSession();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (state.phase === "processing" || state.phase === "reviewing") {
-      void savePersistedImportSessionState(state);
-      return;
-    }
-
-    if (state.phase === "idle" && state.songs.length === 0) {
-      void clearPersistedImportSessionState();
-    }
-  }, [state]);
+  usePersistedImportSession({ dispatch, state });
 
   const beginFilePick = useCallback(() => {
     dispatch({ type: "begin-file-pick" });

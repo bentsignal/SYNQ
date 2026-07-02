@@ -90,6 +90,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     the screen.
   - Done: song detail play, queue, like, export, delete, mutation error, and
     busy-state workflows now live in a controller hook instead of the screen.
+  - Done: import session hydration and persistence policy now lives in a
+    focused hook instead of the provider body.
   - Done: rewrite verification hygiene scans now include new app route files,
     not only feature implementation files.
   - Done: import files and Wi-Fi presentation/action state now lives in the
@@ -172,6 +174,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     async command coordination into a feature hook.
   - Done: keep song detail action-state smoke coverage while moving async
     command coordination into a feature hook.
+  - Done: keep import reducer/persistence verification gates intact while
+    slimming provider-owned persistence effects.
   - Done: extend rewrite verification gates to route-file event, console,
     dimensions, and AsyncStorage scans.
   - Done: extend deterministic smoke coverage to collection form year parsing

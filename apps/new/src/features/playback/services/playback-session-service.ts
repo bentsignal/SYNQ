@@ -192,6 +192,33 @@ export const getReplacementTrackAfterRemoval = ({
   return queue[removeIndex] ?? queue[removeIndex - 1] ?? null;
 };
 
+export const getPlaybackQueueRowState = ({
+  activeTrackId,
+  adBreakActive,
+  index,
+  queueLength,
+  songId,
+}: {
+  activeTrackId: number | null;
+  adBreakActive: boolean;
+  index: number;
+  queueLength: number;
+  songId: number;
+}) => ({
+  canMoveDown: index < queueLength - 1,
+  canMoveUp: index > 0,
+  canPlay: !adBreakActive,
+  isActive: activeTrackId === songId,
+});
+
+export const getPlaybackQueueActionState = ({
+  queueLength,
+}: {
+  queueLength: number;
+}) => ({
+  canClearQueue: queueLength > 0,
+});
+
 const bumpQueueRevision = (state: PlaybackState) => ({
   ...state,
   queueRevision: state.queueRevision + 1,

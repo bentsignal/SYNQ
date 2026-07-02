@@ -7,6 +7,8 @@ import { parseNumericRouteParam } from "../../../apps/new/src/features/app-shell
 import {
   getActiveTrack,
   getNextQueueIndex,
+  getPlaybackQueueActionState,
+  getPlaybackQueueRowState,
   initialPlaybackState,
   playbackReducer,
 } from "../../../apps/new/src/features/playback/services/playback-session-service";
@@ -107,6 +109,12 @@ function assertPlaybackSessionSmoke() {
   assert.equal(getActiveTrack(state)?.title, "First");
   assert.equal(state.isPlaying, true);
   assert.equal(state.queueRevision, 1);
+  assert.deepEqual(getPlaybackQueueActionState({ queueLength: 1 }), {
+    canClearQueue: true,
+  });
+  assert.deepEqual(getPlaybackQueueActionState({ queueLength: 0 }), {
+    canClearQueue: false,
+  });
 
   state = playbackReducer(state, { song: second, type: "add-to-queue" });
   state = playbackReducer(state, { song: third, type: "add-to-queue" });
@@ -115,6 +123,51 @@ function assertPlaybackSessionSmoke() {
     [1, 2, 3],
   );
   assert.equal(state.queueRevision, 3);
+  assert.deepEqual(
+    getPlaybackQueueRowState({
+      activeTrackId: first.id,
+      adBreakActive: false,
+      index: 0,
+      queueLength: state.queue.length,
+      songId: first.id,
+    }),
+    {
+      canMoveDown: true,
+      canMoveUp: false,
+      canPlay: true,
+      isActive: true,
+    },
+  );
+  assert.deepEqual(
+    getPlaybackQueueRowState({
+      activeTrackId: first.id,
+      adBreakActive: false,
+      index: 1,
+      queueLength: state.queue.length,
+      songId: second.id,
+    }),
+    {
+      canMoveDown: true,
+      canMoveUp: true,
+      canPlay: true,
+      isActive: false,
+    },
+  );
+  assert.deepEqual(
+    getPlaybackQueueRowState({
+      activeTrackId: first.id,
+      adBreakActive: true,
+      index: 2,
+      queueLength: state.queue.length,
+      songId: third.id,
+    }),
+    {
+      canMoveDown: false,
+      canMoveUp: true,
+      canPlay: false,
+      isActive: false,
+    },
+  );
 
   state = playbackReducer(state, {
     direction: "up",

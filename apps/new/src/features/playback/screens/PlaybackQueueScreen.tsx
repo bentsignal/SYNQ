@@ -4,6 +4,10 @@ import { formatDurationMs } from "@/src/features/app-shell/services/duration-for
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { usePlaybackSession } from "../hooks/use-playback-session";
+import {
+  getPlaybackQueueActionState,
+  getPlaybackQueueRowState,
+} from "../services/playback-session-service";
 
 export function PlaybackQueueScreen() {
   const theme = useCustomizationTheme();
@@ -17,6 +21,9 @@ export function PlaybackQueueScreen() {
     state,
   } = usePlaybackSession();
   const adBreakActive = state.adGate.active || state.adGate.due;
+  const { canClearQueue } = getPlaybackQueueActionState({
+    queueLength: state.queue.length,
+  });
   const handlePlaySong = (song: Parameters<typeof playSong>[0]) => {
     sendHaptic("light");
     playSong(song);
@@ -97,7 +104,14 @@ export function PlaybackQueueScreen() {
           ]}
         >
           {state.queue.map((song, index) => {
-            const isActive = activeTrack?.id === song.id;
+            const { canMoveDown, canMoveUp, canPlay, isActive } =
+              getPlaybackQueueRowState({
+                activeTrackId: activeTrack?.id ?? null,
+                adBreakActive,
+                index,
+                queueLength: state.queue.length,
+                songId: song.id,
+              });
 
             return (
               <View
@@ -106,9 +120,9 @@ export function PlaybackQueueScreen() {
               >
                 <Pressable
                   accessibilityRole="button"
-                  disabled={adBreakActive}
+                  disabled={!canPlay}
                   onPress={() => handlePlaySong(song)}
-                  style={[styles.rowMain, adBreakActive ? styles.disabled : null]}
+                  style={[styles.rowMain, !canPlay ? styles.disabled : null]}
                 >
                   <Text
                     style={[
@@ -149,12 +163,12 @@ export function PlaybackQueueScreen() {
                   <Pressable
                     accessibilityLabel={`Move ${song.title} up`}
                     accessibilityRole="button"
-                    disabled={index === 0}
+                    disabled={!canMoveUp}
                     onPress={() => handleMoveQueueSong(song.id, "up")}
                     style={[
                       styles.moveButton,
                       { borderColor: theme.border },
-                      index === 0 ? styles.disabled : null,
+                      !canMoveUp ? styles.disabled : null,
                     ]}
                   >
                     <Text style={[styles.moveText, { color: theme.accent }]}>
@@ -164,12 +178,12 @@ export function PlaybackQueueScreen() {
                   <Pressable
                     accessibilityLabel={`Move ${song.title} down`}
                     accessibilityRole="button"
-                    disabled={index === state.queue.length - 1}
+                    disabled={!canMoveDown}
                     onPress={() => handleMoveQueueSong(song.id, "down")}
                     style={[
                       styles.moveButton,
                       { borderColor: theme.border },
-                      index === state.queue.length - 1 ? styles.disabled : null,
+                      !canMoveDown ? styles.disabled : null,
                     ]}
                   >
                     <Text style={[styles.moveText, { color: theme.accent }]}>
@@ -186,12 +200,12 @@ export function PlaybackQueueScreen() {
       <View style={styles.actionRow}>
         <Pressable
           accessibilityRole="button"
-          disabled={state.queue.length === 0}
+          disabled={!canClearQueue}
           onPress={handleClearQueue}
           style={[
             styles.clearButton,
             { borderColor: theme.border },
-            state.queue.length === 0 ? styles.disabled : null,
+            !canClearQueue ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.removeText, { color: theme.danger }]}>

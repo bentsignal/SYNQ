@@ -77,6 +77,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     import session service instead of entry screens.
   - Done: shared collection create/edit form action state now lives in the
     collection form service instead of duplicated screen save/edit guards.
+  - Done: playback queue row/action state now lives in the playback service
+    instead of queue screen boundary checks.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -135,6 +137,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     and Wi-Fi ready, receiving, error, progress, and review-save states.
   - Done: extend deterministic smoke coverage to collection form editable,
     image-pick, save, blank-name, saving, and missing-collection states.
+  - Done: extend deterministic smoke coverage to playback queue active rows,
+    move boundaries, ad-break play disabling, and clear-queue availability.
 
 ### Phase 3: New App Build-Out
 

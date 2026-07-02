@@ -318,6 +318,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: library song edit header, metadata fields, save/cancel actions, and
     status copy now render through focused components instead of one large edit
     form view.
+  - Done: library song edit query/mutation/missing/help status now lives in the
+    song form service with smoke coverage instead of status-panel branching.
   - Done: import song edit save action state now lives in the import song form
     service instead of the edit screen.
   - Done: import staged-song edit field state, metadata draft building,

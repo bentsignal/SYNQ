@@ -198,6 +198,7 @@ import {
   buildLibrarySongEditFormState,
   getLibrarySongEditActionState,
   getLibrarySongEditErrorMessage,
+  getLibrarySongEditStatusState,
 } from "../../../apps/new/src/features/library/services/library-song-form-service";
 import {
   getLibrarySongPreviewDetailHref,
@@ -2758,6 +2759,39 @@ function assertLibrarySongDetailSmoke() {
     }),
     { canSave: false, saveLabel: "Saving" },
   );
+  assert.deepEqual(
+    getLibrarySongEditStatusState({
+      detail,
+      errors: [],
+      mutationError: null,
+    }),
+    {
+      isError: false,
+      statusLabel: "Separate multiple artists or albums with commas.",
+    },
+  );
+  assert.deepEqual(
+    getLibrarySongEditStatusState({
+      detail,
+      errors: [new Error("query")],
+      mutationError: null,
+    }),
+    {
+      isError: true,
+      statusLabel: "One or more song edit queries failed.",
+    },
+  );
+  assert.deepEqual(
+    getLibrarySongEditStatusState({
+      detail,
+      errors: [new Error("query")],
+      mutationError: "Song save failed.",
+    }),
+    {
+      isError: true,
+      statusLabel: "Song save failed.",
+    },
+  );
   assert.equal(
     getLibrarySongEditErrorMessage(new Error("Song edit smoke failure")),
     "Song edit smoke failure",
@@ -2850,6 +2884,17 @@ function assertLibrarySongDetailSmoke() {
     artistNames: "",
     title: "",
   });
+  assert.deepEqual(
+    getLibrarySongEditStatusState({
+      detail: missing,
+      errors: [],
+      mutationError: null,
+    }),
+    {
+      isError: false,
+      statusLabel: "Song missing from database.",
+    },
+  );
   assert.deepEqual(
     getLibrarySongEditActionState({
       detail: missing,

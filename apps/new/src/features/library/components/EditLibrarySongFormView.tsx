@@ -1,7 +1,10 @@
 import { ScrollView, StyleSheet } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetail } from "../hooks/use-library-song-detail-query";
-import type { LibrarySongEditActionState } from "../services/library-song-form-service";
+import {
+  getLibrarySongEditStatusState,
+  type LibrarySongEditActionState,
+} from "../services/library-song-form-service";
 import { EditLibrarySongActions } from "./EditLibrarySongActions";
 import { EditLibrarySongFields } from "./EditLibrarySongFields";
 import { EditLibrarySongHeader } from "./EditLibrarySongHeader";
@@ -12,7 +15,7 @@ type EditLibrarySongFormViewProps = {
   albumNames: string;
   artistNames: string;
   errorMessage: string | null;
-  hasErrors: boolean;
+  errors: readonly unknown[];
   detail: LibrarySongDetail;
   onChangeAlbumNames: (albumNames: string) => void;
   onChangeArtistNames: (artistNames: string) => void;
@@ -28,7 +31,7 @@ export function EditLibrarySongFormView({
   artistNames,
   detail,
   errorMessage,
-  hasErrors,
+  errors,
   onChangeAlbumNames,
   onChangeArtistNames,
   onChangeTitle,
@@ -37,6 +40,11 @@ export function EditLibrarySongFormView({
   title,
 }: EditLibrarySongFormViewProps) {
   const theme = useCustomizationTheme();
+  const statusState = getLibrarySongEditStatusState({
+    detail,
+    errors,
+    mutationError: errorMessage,
+  });
 
   return (
     <ScrollView
@@ -58,9 +66,7 @@ export function EditLibrarySongFormView({
         songId={songId}
       />
       <EditLibrarySongStatusPanel
-        detail={detail}
-        errorMessage={errorMessage}
-        hasErrors={hasErrors}
+        statusState={statusState}
       />
     </ScrollView>
   );

@@ -18,7 +18,6 @@ export function EditLibrarySongScreen() {
 
 function EditLibrarySongContent({ songId }: { songId: number }) {
   const { detail, errors } = useLibrarySongDetailQuery(songId);
-  const hasErrors = errors.length > 0;
   const {
     actionState,
     albumNames,
@@ -41,7 +40,7 @@ function EditLibrarySongContent({ songId }: { songId: number }) {
       artistNames={artistNames}
       detail={detail}
       errorMessage={errorMessage}
-      hasErrors={hasErrors}
+      errors={errors}
       onChangeAlbumNames={setAlbumNames}
       onChangeArtistNames={setArtistNames}
       onChangeTitle={setTitle}

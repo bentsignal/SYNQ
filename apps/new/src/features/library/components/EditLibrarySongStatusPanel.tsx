@@ -1,20 +1,15 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { LibrarySongDetail } from "../hooks/use-library-song-detail-query";
+import type { LibrarySongEditStatusState } from "../services/library-song-form-service";
 
 type EditLibrarySongStatusPanelProps = {
-  detail: LibrarySongDetail;
-  errorMessage: string | null;
-  hasErrors: boolean;
+  statusState: LibrarySongEditStatusState;
 };
 
 export function EditLibrarySongStatusPanel({
-  detail,
-  errorMessage,
-  hasErrors,
+  statusState,
 }: EditLibrarySongStatusPanelProps) {
   const theme = useCustomizationTheme();
-  const isError = hasErrors || errorMessage !== null;
 
   return (
     <View
@@ -25,16 +20,13 @@ export function EditLibrarySongStatusPanel({
     >
       <Text
         style={[
-          isError ? styles.errorText : styles.panelText,
-          { color: isError ? theme.danger : theme.secondaryText },
+          statusState.isError ? styles.errorText : styles.panelText,
+          {
+            color: statusState.isError ? theme.danger : theme.secondaryText,
+          },
         ]}
       >
-        {errorMessage ??
-          (hasErrors
-            ? "One or more song edit queries failed."
-            : detail.isMissing
-              ? "Song missing from database."
-              : "Separate multiple artists or albums with commas.")}
+        {statusState.statusLabel}
       </Text>
     </View>
   );

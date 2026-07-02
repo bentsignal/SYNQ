@@ -12,23 +12,8 @@ import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useImportSession } from "../hooks/use-import-session";
+import { buildEditedImportSongDraft } from "../services/import-song-form-service";
 import type { ImportSongDraft } from "../types/import-session";
-
-const parseTrack = (value: string) => {
-  const trimmed = value.trim();
-
-  if (!trimmed) {
-    return null;
-  }
-
-  const track = Number(trimmed);
-
-  if (!Number.isInteger(track) || track < 1) {
-    throw new Error("Track must be a positive whole number.");
-  }
-
-  return track;
-};
 
 export function EditImportSongScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
@@ -124,13 +109,15 @@ function EditImportSongForm({
     }
 
     try {
-      updateImportSong({
-        ...song,
-        album: album.trim() || "Unknown",
-        artist: artist.trim() || "Unknown",
-        title: title.trim(),
-        track: parseTrack(track),
-      });
+      updateImportSong(
+        buildEditedImportSongDraft({
+          album,
+          artist,
+          song,
+          title,
+          track,
+        }),
+      );
       sendHaptic("success");
       router.replace("/(tabs)/import/save");
     } catch (caughtError) {

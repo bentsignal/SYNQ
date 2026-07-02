@@ -55,6 +55,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     app-shell service instead of repeated library/import/playback UI helpers.
   - Done: shared numeric route param parsing now lives in an app-shell service
     instead of repeated library/import screen helpers.
+  - Done: import staged-song edit track parsing and metadata normalization now
+    live in an import service instead of the edit screen.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -91,6 +93,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     empty, rounded, long, and remaining-time labels.
   - Done: extend deterministic smoke coverage to shared route param parsing for
     scalar, array, missing, and invalid route values.
+  - Done: extend deterministic smoke coverage to import staged-song edit form
+    track parsing, fallback labels, and trimmed metadata.
 
 ### Phase 3: New App Build-Out
 

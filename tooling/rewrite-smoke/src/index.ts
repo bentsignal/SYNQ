@@ -15,6 +15,10 @@ import {
   importSessionReducer,
   initialImportSessionState,
 } from "../../../apps/new/src/features/import/services/import-session-state-service";
+import {
+  buildEditedImportSongDraft,
+  parseImportTrackInput,
+} from "../../../apps/new/src/features/import/services/import-song-form-service";
 import type { ImportSongDraft } from "../../../apps/new/src/features/import/types/import-session";
 import {
   buildAlbumDetail,
@@ -787,8 +791,37 @@ function assertRouteParamSmoke() {
   assert.equal(parseNumericRouteParam(["not-a-number"]), null);
 }
 
+function assertImportSongFormSmoke() {
+  assert.equal(parseImportTrackInput(""), null);
+  assert.equal(parseImportTrackInput("  "), null);
+  assert.equal(parseImportTrackInput("1"), 1);
+  assert.equal(parseImportTrackInput(" 12 "), 12);
+  assert.throws(
+    () => parseImportTrackInput("0"),
+    /Track must be a positive whole number/,
+  );
+  assert.throws(
+    () => parseImportTrackInput("2.5"),
+    /Track must be a positive whole number/,
+  );
+
+  const edited = buildEditedImportSongDraft({
+    album: "  ",
+    artist: "  Featured Artist ",
+    song: importDraft(9),
+    title: "  Edited Title ",
+    track: " 4 ",
+  });
+  assert.equal(edited.album, "Unknown");
+  assert.equal(edited.artist, "Featured Artist");
+  assert.equal(edited.title, "Edited Title");
+  assert.equal(edited.track, 4);
+  assert.equal(edited.id, 9);
+}
+
 assertDurationFormatSmoke();
 assertRouteParamSmoke();
+assertImportSongFormSmoke();
 assertPlaybackSessionSmoke();
 assertImportSessionSmoke();
 assertLibraryCollectionDetailSmoke();

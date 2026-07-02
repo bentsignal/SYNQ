@@ -3,12 +3,23 @@ import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
-import type { CollectionKind } from "../screens/EditCollectionScreen";
+import {
+  buildEditCollectionState,
+  type EditCollectionAlbumRow,
+  type EditCollectionArtistRow,
+  type EditCollectionKind,
+  type EditCollectionPlaylistRow,
+} from "../services/edit-collection-query-service";
 
 type EditCollectionQueryOptions = {
   id: number;
-  kind: CollectionKind;
+  kind: EditCollectionKind;
 };
+
+export type { EditCollectionKind } from "../services/edit-collection-query-service";
+
+const getSmallImagePath = (imageHash: string) =>
+  getImagePathFromHash(imageHash).pathToSmallImage;
 
 export function useEditCollectionQuery({
   id,
@@ -44,42 +55,39 @@ export function useEditCollectionQuery({
   );
 
   if (kind === "album") {
-    const row = album.data?.[0];
     return {
       error: album.error,
-      imagePath: row?.coverImage
-        ? getImagePathFromHash(row.coverImage).pathToSmallImage
-        : null,
-      isMissing: Boolean(album.updatedAt) && !row,
-      name: row?.name ?? "",
+      ...buildEditCollectionState({
+        albumRow: album.data?.[0] as EditCollectionAlbumRow | undefined,
+        getImagePath: getSmallImagePath,
+        hasLoaded: Boolean(album.updatedAt),
+        kind,
+      }),
       updatedAt: album.updatedAt,
-      year: row?.year?.toString() ?? "",
     };
   }
 
   if (kind === "artist") {
-    const row = artist.data?.[0];
     return {
       error: artist.error,
-      imagePath: row?.profileImage
-        ? getImagePathFromHash(row.profileImage).pathToSmallImage
-        : null,
-      isMissing: Boolean(artist.updatedAt) && !row,
-      name: row?.name ?? "",
+      ...buildEditCollectionState({
+        artistRow: artist.data?.[0] as EditCollectionArtistRow | undefined,
+        getImagePath: getSmallImagePath,
+        hasLoaded: Boolean(artist.updatedAt),
+        kind,
+      }),
       updatedAt: artist.updatedAt,
-      year: "",
     };
   }
 
-  const row = playlist.data?.[0];
   return {
     error: playlist.error,
-    imagePath: row?.coverImage
-      ? getImagePathFromHash(row.coverImage).pathToSmallImage
-      : null,
-    isMissing: Boolean(playlist.updatedAt) && !row,
-    name: row?.name ?? "",
+    ...buildEditCollectionState({
+      getImagePath: getSmallImagePath,
+      hasLoaded: Boolean(playlist.updatedAt),
+      kind,
+      playlistRow: playlist.data?.[0] as EditCollectionPlaylistRow | undefined,
+    }),
     updatedAt: playlist.updatedAt,
-    year: "",
   };
 }

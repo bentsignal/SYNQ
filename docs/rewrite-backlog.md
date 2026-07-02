@@ -45,6 +45,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     now lives in a pure library service with deterministic smoke coverage.
   - Done: song detail label/relationship/duration shaping now lives in a pure
     library service with deterministic smoke coverage.
+  - Done: edit-collection query state and singular collection kind typing now
+    live in a library service instead of depending on the edit screen.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -70,6 +72,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: extend deterministic smoke coverage to library song detail shaping,
     relationship dedupe, duration formatting, liked state, and missing-song
     fallbacks.
+  - Done: extend deterministic smoke coverage to edit-collection query state,
+    image resolution, year formatting, and loaded-missing fallbacks.
 
 ### Phase 3: New App Build-Out
 

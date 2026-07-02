@@ -18,8 +18,9 @@ import {
   updatePlaylist,
 } from "../repository/collection-repository";
 import { pickCollectionImage } from "../services/collection-image-picker-service";
+import type { EditCollectionKind } from "../services/edit-collection-query-service";
 
-export type CollectionKind = "album" | "artist" | "playlist";
+export type CollectionKind = EditCollectionKind;
 
 type EditCollectionScreenProps = {
   kind: CollectionKind;

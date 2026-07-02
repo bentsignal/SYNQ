@@ -23,6 +23,7 @@ import {
   playlistRowsToPreview,
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import { rowsToAddableCollectionSongs } from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
+import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
 import { buildLibrarySongDetail } from "../../../apps/new/src/features/library/services/library-song-detail-service";
 import { rowsToSongPreviews } from "../../../apps/new/src/features/library/services/library-song-preview-service";
 
@@ -644,6 +645,41 @@ function assertLibrarySongDetailSmoke() {
   assert.equal(missing.isMissing, true);
 }
 
+function assertEditCollectionQuerySmoke() {
+  const getImagePath = (hash: string) => `/images/${hash}-small.jpg`;
+
+  const album = buildEditCollectionState({
+    albumRow: { coverImage: "album-cover", name: "Smoke Album", year: 2026 },
+    getImagePath,
+    hasLoaded: true,
+    kind: "album",
+  });
+  assert.equal(album.name, "Smoke Album");
+  assert.equal(album.year, "2026");
+  assert.equal(album.imagePath, "/images/album-cover-small.jpg");
+  assert.equal(album.isMissing, false);
+
+  const artist = buildEditCollectionState({
+    artistRow: { name: null, profileImage: "artist-profile" },
+    getImagePath,
+    hasLoaded: true,
+    kind: "artist",
+  });
+  assert.equal(artist.name, "");
+  assert.equal(artist.year, "");
+  assert.equal(artist.imagePath, "/images/artist-profile-small.jpg");
+
+  const playlist = buildEditCollectionState({
+    getImagePath,
+    hasLoaded: true,
+    kind: "playlist",
+    playlistRow: undefined,
+  });
+  assert.equal(playlist.isMissing, true);
+  assert.equal(playlist.imagePath, null);
+  assert.equal(playlist.name, "");
+}
+
 assertPlaybackSessionSmoke();
 assertImportSessionSmoke();
 assertLibraryCollectionDetailSmoke();
@@ -651,4 +687,5 @@ assertLibraryCollectionPreviewSmoke();
 assertLibrarySongPreviewSmoke();
 assertAddableCollectionSongsSmoke();
 assertLibrarySongDetailSmoke();
+assertEditCollectionQuerySmoke();
 console.log("Rewrite deterministic smoke checks passed.");

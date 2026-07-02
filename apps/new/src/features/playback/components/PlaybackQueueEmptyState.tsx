@@ -1,8 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { getPlaybackQueueEmptyState } from "../services/playback-player-state-service";
 
 export function PlaybackQueueEmptyState() {
   const theme = useCustomizationTheme();
+  const emptyState = getPlaybackQueueEmptyState();
 
   return (
     <View
@@ -12,10 +14,10 @@ export function PlaybackQueueEmptyState() {
       ]}
     >
       <Text style={[styles.emptyTitle, { color: theme.primaryText }]}>
-        Queue is empty
+        {emptyState.title}
       </Text>
       <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
-        Open a song from Library to start listening.
+        {emptyState.body}
       </Text>
     </View>
   );

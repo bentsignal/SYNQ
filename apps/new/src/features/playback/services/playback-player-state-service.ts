@@ -14,6 +14,11 @@ export const getPlaybackPremiumHref = (): PlaybackHref => "/premium";
 
 export const getPlaybackQueueHref = (): PlaybackHref => "/queue";
 
+export const getPlaybackQueueEmptyState = () => ({
+  body: "Open a song from Library to start listening.",
+  title: "Queue is empty",
+});
+
 const hiddenMiniPlayerRoutes = new Set<string>([
   getPlaybackPlayerHref(),
   getPlaybackQueueHref(),

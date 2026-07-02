@@ -280,6 +280,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     instead of the queue screen.
   - Done: playback queue empty state and queue row rendering now live in
     focused components instead of the queue list owning every row control.
+  - Done: playback queue empty-state copy now lives in the playback player
+    state service with smoke coverage instead of component-local copy.
   - Done: playback queue header, ad-gate panel, queue list wiring, clear action,
     and player back link now render from a focused component instead of the
     route screen.

@@ -29,6 +29,7 @@ import {
   getPlaybackPlayerViewState,
   getPlaybackPremiumHref,
   getPlaybackProgressPercent,
+  getPlaybackQueueEmptyState,
   getPlaybackQueueHref,
   getSeekTargetPosition,
 } from "../../../apps/new/src/features/playback/services/playback-player-state-service";
@@ -697,6 +698,10 @@ function assertPlaybackPlayerStateSmoke() {
   assert.equal(getPlaybackPlayerHref(), "/player");
   assert.equal(getPlaybackQueueHref(), "/queue");
   assert.equal(getPlaybackPremiumHref(), "/premium");
+  assert.deepEqual(getPlaybackQueueEmptyState(), {
+    body: "Open a song from Library to start listening.",
+    title: "Queue is empty",
+  });
   assert.equal(
     getPlaybackProgressPercent({ duration: 0, position: 5_000 }),
     0,

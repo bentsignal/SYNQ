@@ -211,6 +211,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     presentation now live in the import session service instead of the gate UI.
   - Done: import save export, finish, discard, haptics, and navigation
     orchestration now lives in a controller hook instead of the save screen.
+  - Done: import save-to-library metadata planning now lives in a pure service
+    with deterministic smoke coverage for unknown labels and multi-artist
+    splitting.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.

@@ -34,6 +34,11 @@ import {
   getImportSongEditActionState,
   parseImportTrackInput,
 } from "../../../apps/new/src/features/import/services/import-song-form-service";
+import {
+  buildImportLibrarySongSavePlan,
+  hasMeaningfulImportLibraryName,
+  splitImportLibraryNames,
+} from "../../../apps/new/src/features/import/services/import-library-save-plan-service";
 import type { ImportSongDraft } from "../../../apps/new/src/features/import/types/import-session";
 import {
   buildAlbumDetail,
@@ -2023,6 +2028,38 @@ function assertImportSongFormSmoke() {
   assert.equal(edited.id, 9);
 }
 
+function assertImportLibrarySavePlanSmoke() {
+  assert.equal(hasMeaningfulImportLibraryName("Unknown"), false);
+  assert.equal(hasMeaningfulImportLibraryName("Unknown Artist"), false);
+  assert.equal(hasMeaningfulImportLibraryName("  Album Name  "), true);
+  assert.deepEqual(splitImportLibraryNames(" Alice, Unknown Artist, Bob "), [
+    "Alice",
+    "Bob",
+  ]);
+  assert.deepEqual(
+    buildImportLibrarySongSavePlan({
+      ...importDraft(10),
+      album: " Unknown Album ",
+      artist: " Alice, Bob, Unknown ",
+    }),
+    {
+      albumName: null,
+      artistNames: ["Alice", "Bob"],
+    },
+  );
+  assert.deepEqual(
+    buildImportLibrarySongSavePlan({
+      ...importDraft(11),
+      album: "  Smoke Album  ",
+      artist: " Unknown Artist ",
+    }),
+    {
+      albumName: "Smoke Album",
+      artistNames: [],
+    },
+  );
+}
+
 function assertBackupScreenSmoke() {
   const idleState: BackupSessionState = {
     error: null,
@@ -2365,6 +2402,7 @@ assertDurationFormatSmoke();
 assertRouteParamSmoke();
 assertHomeScreenSmoke();
 assertImportSongFormSmoke();
+assertImportLibrarySavePlanSmoke();
 assertBackupScreenSmoke();
 assertPremiumScreenSmoke();
 assertSettingsScreenSmoke();

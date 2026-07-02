@@ -8,27 +8,18 @@ import type {
   ImportSongDraft,
 } from "../types/import-session";
 import { deleteImportDraftCacheFiles } from "./import-file-service";
+import {
+  buildImportLibrarySongSavePlan,
+  normalizeImportLibraryName,
+} from "./import-library-save-plan-service";
 
 const libraryPlaylistId = 1;
-
-const unknownLabels = new Set(["", "unknown", "unknown artist", "unknown album"]);
 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : String(error);
 
-const normalizeName = (name: string) => name.trim();
-
-const hasMeaningfulName = (name: string) =>
-  !unknownLabels.has(normalizeName(name).toLowerCase());
-
-const splitNames = (value: string) =>
-  value
-    .split(",")
-    .map(normalizeName)
-    .filter(hasMeaningfulName);
-
 const ensureArtist = async (name: string) => {
-  const cleanName = normalizeName(name);
+  const cleanName = normalizeImportLibraryName(name);
   const existing = await db
     .select({ id: schema.artists.id })
     .from(schema.artists)
@@ -48,7 +39,7 @@ const ensureArtist = async (name: string) => {
 };
 
 const ensureAlbum = async (name: string) => {
-  const cleanName = normalizeName(name);
+  const cleanName = normalizeImportLibraryName(name);
   const existing = await db
     .select({ id: schema.albums.id })
     .from(schema.albums)
@@ -223,10 +214,6 @@ const linkSongAlbum = async ({
   song: ImportSongDraft;
   songId: number;
 }) => {
-  if (!hasMeaningfulName(albumName)) {
-    return false;
-  }
-
   const albumId = await ensureAlbum(albumName);
   await db.insert(schema.albumSongs).values({
     albumId,
@@ -247,6 +234,7 @@ const linkSongAlbum = async ({
 
 const saveOneImportSong = async (song: ImportSongDraft) => {
   const songId = await insertSongDraft(song);
+  const savePlan = buildImportLibrarySongSavePlan(song);
 
   try {
     const libraryPath = await moveImportAudioToLibrary({
@@ -261,16 +249,18 @@ const saveOneImportSong = async (song: ImportSongDraft) => {
   }
 
   const artistIds = await linkSongArtists({
-    artistNames: splitNames(song.artist),
+    artistNames: savePlan.artistNames,
     songId,
   });
 
-  const linkedAlbum = await linkSongAlbum({
-    albumName: song.album,
-    artistIds,
-    song,
-    songId,
-  });
+  const linkedAlbum = savePlan.albumName
+    ? await linkSongAlbum({
+        albumName: savePlan.albumName,
+        artistIds,
+        song,
+        songId,
+      })
+    : false;
 
   if (!linkedAlbum) {
     await updateSongCover({ artwork: song.artwork, songId });

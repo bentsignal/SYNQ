@@ -2,12 +2,9 @@ import { Link, useLocalSearchParams } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { LibrarySongRelationshipSection } from "../components/LibrarySongRelationshipSection";
 import { useLibrarySongDetailController } from "../hooks/use-library-song-detail-controller";
 import { useLibrarySongDetailQuery } from "../hooks/use-library-song-detail-query";
-import {
-  getLibrarySongRelationshipHref,
-  type LibrarySongRelationshipKind,
-} from "../services/library-song-detail-service";
 
 export function LibrarySongDetailScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
@@ -188,13 +185,13 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         </Pressable>
       </View>
 
-      <RelationshipSection
+      <LibrarySongRelationshipSection
         emptyLabel="No artists linked"
         items={detail.artists}
         kind="artist"
         title="Artists"
       />
-      <RelationshipSection
+      <LibrarySongRelationshipSection
         emptyLabel="No albums linked"
         items={detail.albums.map((album) => ({
           detail:
@@ -207,7 +204,7 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         kind="album"
         title="Albums"
       />
-      <RelationshipSection
+      <LibrarySongRelationshipSection
         emptyLabel="No playlists linked"
         items={detail.playlists}
         kind="playlist"
@@ -265,75 +262,6 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         Back to Library
       </Link>
     </ScrollView>
-  );
-}
-
-function RelationshipSection({
-  emptyLabel,
-  items,
-  kind,
-  title,
-}: {
-  emptyLabel: string;
-  items: { detail?: string; id: number; title: string }[];
-  kind: LibrarySongRelationshipKind;
-  title: string;
-}) {
-  const theme = useCustomizationTheme();
-
-  return (
-    <View style={styles.relationshipSection}>
-      <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
-        {title}
-      </Text>
-      <View
-        style={[
-          styles.relationshipList,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-        ]}
-      >
-        {items.length === 0 ? (
-          <Text style={[styles.emptyRelationship, { color: theme.mutedText }]}>
-            {emptyLabel}
-          </Text>
-        ) : (
-          items.map((item) => (
-            <Link
-              asChild
-              href={getLibrarySongRelationshipHref({ id: item.id, kind })}
-              key={item.id}
-            >
-              <Pressable
-                style={[
-                  styles.relationshipRow,
-                  { borderBottomColor: theme.borderSubtle },
-                ]}
-              >
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    styles.relationshipTitle,
-                    { color: theme.primaryText },
-                  ]}
-                >
-                  {item.title}
-                </Text>
-                {item.detail ? (
-                  <Text
-                    style={[
-                      styles.relationshipDetail,
-                      { color: theme.secondaryText },
-                    ]}
-                  >
-                    {item.detail}
-                  </Text>
-                ) : null}
-              </Pressable>
-            </Link>
-          ))
-        )}
-      </View>
-    </View>
   );
 }
 
@@ -446,49 +374,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "700",
     lineHeight: 18,
-  },
-  relationshipSection: {
-    gap: 10,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 25,
-  },
-  relationshipList: {
-    borderRadius: 8,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-  relationshipRow: {
-    alignItems: "center",
-    borderBottomWidth: 1,
-    flexDirection: "row",
-    gap: 12,
-    minHeight: 54,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  relationshipTitle: {
-    flex: 1,
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 20,
-  },
-  relationshipDetail: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    maxWidth: 140,
-    textAlign: "right",
-  },
-  emptyRelationship: {
-    fontSize: 14,
-    fontStyle: "italic",
-    lineHeight: 20,
-    padding: 14,
   },
   panel: {
     borderRadius: 8,

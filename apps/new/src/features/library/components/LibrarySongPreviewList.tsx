@@ -1,6 +1,8 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import type {
   LibrarySongPreview,
   LibrarySongPreviewOrder,
@@ -42,6 +44,8 @@ export function LibrarySongPreviewList({
   sort,
 }: LibrarySongPreviewListProps) {
   const theme = useCustomizationTheme();
+  const { activeTrack, addToQueue, playSong } = usePlaybackSession();
+  const { sendHaptic } = useHapticFeedback();
 
   return (
     <View style={styles.section}>
@@ -87,35 +91,106 @@ export function LibrarySongPreviewList({
             { backgroundColor: theme.surface, borderColor: theme.border },
           ]}
         >
-          {songs.map((song) => (
-            <Link
-              asChild
-              href={`/(tabs)/library/song/${song.id}`}
-              key={song.id}
-            >
-              <Pressable
-                style={[styles.row, { borderBottomColor: theme.borderSubtle }]}
+          {songs.map((song) => {
+            const canPlay = song.pathToFile !== null;
+            const isActive = activeTrack?.id === song.id;
+            const playbackItem = {
+              album: song.album,
+              artist: song.artist,
+              duration: song.duration,
+              id: song.id,
+              pathToFile: song.pathToFile,
+              title: song.title,
+            };
+
+            return (
+              <View
+                key={song.id}
+                style={[
+                  styles.row,
+                  { borderBottomColor: theme.borderSubtle },
+                  isActive
+                    ? { backgroundColor: theme.borderSubtle }
+                    : null,
+                ]}
               >
-                <View style={styles.rowText}>
-                  <Text
-                    numberOfLines={1}
-                    style={[styles.songTitle, { color: theme.primaryText }]}
-                  >
-                    {song.title}
-                  </Text>
-                  <Text
-                    numberOfLines={1}
-                    style={[styles.songMeta, { color: theme.secondaryText }]}
-                  >
-                    {song.artist} / {song.album}
-                  </Text>
-                </View>
+                <Link asChild href={`/(tabs)/library/song/${song.id}`}>
+                  <Pressable style={styles.rowText}>
+                    <Text
+                      numberOfLines={1}
+                      style={[styles.songTitle, { color: theme.primaryText }]}
+                    >
+                      {song.title}
+                    </Text>
+                    <Text
+                      numberOfLines={1}
+                      style={[styles.songMeta, { color: theme.secondaryText }]}
+                    >
+                      {song.artist} / {song.album}
+                    </Text>
+                  </Pressable>
+                </Link>
                 <Text style={[styles.duration, { color: theme.primaryText }]}>
                   {formatDuration(song.duration)}
                 </Text>
-              </Pressable>
-            </Link>
-          ))}
+                <View style={styles.actionGroup}>
+                  <Pressable
+                    accessibilityLabel={`Play ${song.title}`}
+                    accessibilityRole="button"
+                    disabled={!canPlay}
+                    onPress={() => {
+                      sendHaptic("light");
+                      playSong(playbackItem);
+                      router.push("/player");
+                    }}
+                    style={[
+                      styles.actionButton,
+                      {
+                        backgroundColor: theme.accent,
+                        borderColor: theme.accent,
+                      },
+                      !canPlay ? styles.disabled : null,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.primaryActionText,
+                        { color: theme.onAccent },
+                      ]}
+                    >
+                      Play
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    accessibilityLabel={`Add ${song.title} to queue`}
+                    accessibilityRole="button"
+                    disabled={!canPlay}
+                    onPress={() => {
+                      sendHaptic("light");
+                      addToQueue(playbackItem);
+                    }}
+                    style={[
+                      styles.actionButton,
+                      {
+                        backgroundColor: theme.surface,
+                        borderColor: theme.border,
+                      },
+                      !canPlay ? styles.disabled : null,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.secondaryActionText,
+                        { color: theme.accent },
+                      ]}
+                    >
+                      Queue
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+            );
+          })}
         </View>
       )}
     </View>
@@ -185,6 +260,8 @@ const styles = StyleSheet.create({
   rowText: {
     flex: 1,
     gap: 4,
+    justifyContent: "center",
+    minHeight: 46,
     minWidth: 0,
   },
   songTitle: {
@@ -203,5 +280,33 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     minWidth: 44,
     textAlign: "right",
+  },
+  actionGroup: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  actionButton: {
+    alignItems: "center",
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: 36,
+    minWidth: 58,
+    paddingHorizontal: 10,
+  },
+  disabled: {
+    opacity: 0.45,
+  },
+  primaryActionText: {
+    fontSize: 12,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
+  },
+  secondaryActionText: {
+    fontSize: 12,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
   },
 });

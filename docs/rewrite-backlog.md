@@ -1095,3 +1095,8 @@ endless old-app polishing loop.
 - Run an old-app Expo export or native build smoke after path/config changes.
 - Do not introduce Convex or Ruby product dependencies.
 - Do not remove `apps/old` until `apps/new` has equivalent verified behavior.
+
+## Recent Rewrite Checkpoints
+
+- Done: add direct play and queue actions to the new app library song preview
+  list, backed by reactive song file-path data.

@@ -10,12 +10,14 @@ type SongPreviewRow = {
   artistName: string | null;
   albumName: string | null;
   duration: number | null;
+  pathToFile: string | null;
 };
 
 type SongPreviewAccumulator = {
   albumNames: Set<string>;
   artistNames: Set<string>;
   duration: number | null;
+  pathToFile: string | null;
   songId: number;
   title: string;
 };
@@ -25,6 +27,7 @@ export type LibrarySongPreview = {
   artist: string;
   duration: number | null;
   id: number;
+  pathToFile: string | null;
   title: string;
 };
 
@@ -111,6 +114,7 @@ const rowsToSongPreviews = ({
         albumNames: new Set<string>(),
         artistNames: new Set<string>(),
         duration: row.duration,
+        pathToFile: row.pathToFile,
         songId: row.songId,
         title: row.title,
       };
@@ -132,6 +136,7 @@ const rowsToSongPreviews = ({
       artist: formatNames(song.artistNames),
       duration: song.duration,
       id: song.songId,
+      pathToFile: song.pathToFile,
       title: song.title,
     }))
     .filter((song) => matchesQuery(song, normalizedQuery));
@@ -151,6 +156,7 @@ export function useLibrarySongPreviewQuery({
         albumName: schema.albums.name,
         artistName: schema.artists.name,
         duration: schema.songs.duration,
+        pathToFile: schema.songs.pathToFile,
         songId: schema.songs.id,
         title: schema.songs.title,
       })

@@ -12,7 +12,10 @@ import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useImportSession } from "../hooks/use-import-session";
-import { buildEditedImportSongDraft } from "../services/import-song-form-service";
+import {
+  buildEditedImportSongDraft,
+  getImportSongEditActionState,
+} from "../services/import-song-form-service";
 import type { ImportSongDraft } from "../types/import-session";
 
 export function EditImportSongScreen() {
@@ -99,10 +102,10 @@ function EditImportSongForm({
   const [track, setTrack] = useState(
     song.track === null ? "" : String(song.track),
   );
-  const canSave = title.trim().length > 0;
+  const actionState = getImportSongEditActionState({ title });
 
   const handleSave = () => {
-    if (!canSave) {
+    if (!actionState.canSave) {
       sendHaptic("error");
       setError("Title is required.");
       return;
@@ -262,12 +265,12 @@ function EditImportSongForm({
 
         <Pressable
           accessibilityRole="button"
-          disabled={!canSave}
+          disabled={!actionState.canSave}
           onPress={handleSave}
           style={[
             styles.saveButton,
             { backgroundColor: theme.accent },
-            !canSave ? styles.disabledButton : null,
+            !actionState.canSave ? styles.disabledButton : null,
           ]}
         >
           <Text style={[styles.saveButtonText, { color: theme.onAccent }]}>

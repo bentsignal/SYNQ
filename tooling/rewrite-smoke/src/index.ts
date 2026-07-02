@@ -29,6 +29,7 @@ import {
 } from "../../../apps/new/src/features/import/services/import-session-state-service";
 import {
   buildEditedImportSongDraft,
+  getImportSongEditActionState,
   parseImportTrackInput,
 } from "../../../apps/new/src/features/import/services/import-song-form-service";
 import type { ImportSongDraft } from "../../../apps/new/src/features/import/types/import-session";
@@ -1604,6 +1605,12 @@ function assertImportSongFormSmoke() {
     () => parseImportTrackInput("2.5"),
     /Track must be a positive whole number/,
   );
+  assert.deepEqual(getImportSongEditActionState({ title: "  Edited " }), {
+    canSave: true,
+  });
+  assert.deepEqual(getImportSongEditActionState({ title: "   " }), {
+    canSave: false,
+  });
 
   const edited = buildEditedImportSongDraft({
     album: "  ",

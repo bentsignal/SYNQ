@@ -89,6 +89,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     lives in the library interaction service instead of the list component.
   - Done: library song edit form initialization and save action state now live
     in a form service instead of the edit screen.
+  - Done: import song edit save action state now lives in the import song form
+    service instead of the edit screen.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -159,6 +161,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     move/remove labels, mutation guards, and boundary states.
   - Done: extend deterministic smoke coverage to library song edit form
     initialization, blank-title guards, saving labels, and missing-song guards.
+  - Done: extend deterministic smoke coverage to import song edit save
+    availability for populated and blank titles.
 
 ### Phase 3: New App Build-Out
 

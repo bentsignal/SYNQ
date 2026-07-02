@@ -35,3 +35,7 @@ export const buildEditedImportSongDraft = ({
   title: title.trim(),
   track: parseImportTrackInput(track),
 });
+
+export const getImportSongEditActionState = ({ title }: { title: string }) => ({
+  canSave: title.trim().length > 0,
+});

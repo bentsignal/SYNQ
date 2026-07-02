@@ -53,6 +53,13 @@ export const buildEditedImportSongDraft = ({
   track: parseImportTrackInput(track),
 });
 
+export const getImportSongEditInitialState = (song: ImportSongDraft) => ({
+  album: song.album,
+  artist: song.artist,
+  title: song.title,
+  track: song.track === null ? "" : String(song.track),
+});
+
 export const getImportSongEditActionState = ({ title }: { title: string }) => ({
   canSave: title.trim().length > 0,
 });
@@ -65,3 +72,5 @@ export const getImportSongEditErrorMessage = (caughtError: unknown) =>
   caughtError instanceof Error
     ? caughtError.message
     : "Song could not be updated.";
+
+export const getImportSongEditRequiredTitleMessage = () => "Title is required.";

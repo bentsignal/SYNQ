@@ -5,6 +5,8 @@ import {
   buildEditedImportSongDraft,
   getImportSongEditActionState,
   getImportSongEditErrorMessage,
+  getImportSongEditInitialState,
+  getImportSongEditRequiredTitleMessage,
   getImportSongEditSaveHref,
 } from "../services/import-song-form-service";
 import type { ImportSongDraft } from "../types/import-session";
@@ -19,13 +21,12 @@ export function useEditImportSongController({
   updateImportSong,
 }: UseEditImportSongControllerParams) {
   const { sendHaptic } = useHapticFeedback();
-  const [album, setAlbum] = useState(song.album);
-  const [artist, setArtist] = useState(song.artist);
+  const initialState = getImportSongEditInitialState(song);
+  const [album, setAlbum] = useState(initialState.album);
+  const [artist, setArtist] = useState(initialState.artist);
   const [error, setError] = useState<string | null>(null);
-  const [title, setTitle] = useState(song.title);
-  const [track, setTrack] = useState(
-    song.track === null ? "" : String(song.track),
-  );
+  const [title, setTitle] = useState(initialState.title);
+  const [track, setTrack] = useState(initialState.track);
   const actionState = getImportSongEditActionState({ title });
 
   const updateTitle = (nextTitle: string) => {
@@ -41,7 +42,7 @@ export function useEditImportSongController({
   const save = () => {
     if (!actionState.canSave) {
       sendHaptic("error");
-      setError("Title is required.");
+      setError(getImportSongEditRequiredTitleMessage());
       return;
     }
 

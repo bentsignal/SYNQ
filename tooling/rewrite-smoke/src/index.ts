@@ -85,6 +85,8 @@ import {
   getImportSongEditErrorMessage,
   getImportSongEditFilesHref,
   getImportSongEditHref,
+  getImportSongEditInitialState,
+  getImportSongEditRequiredTitleMessage,
   getImportSongEditSaveHref,
   parseImportTrackInput,
 } from "../../../apps/new/src/features/import/services/import-song-form-service";
@@ -3618,9 +3620,37 @@ function assertImportSongFormSmoke() {
   assert.deepEqual(getImportSongEditActionState({ title: "   " }), {
     canSave: false,
   });
+  assert.deepEqual(
+    getImportSongEditInitialState({
+      ...importDraft(8),
+      album: "Smoke Album",
+      artist: "Smoke Artist",
+      title: "Smoke Title",
+      track: null,
+    }),
+    {
+      album: "Smoke Album",
+      artist: "Smoke Artist",
+      title: "Smoke Title",
+      track: "",
+    },
+  );
+  assert.deepEqual(
+    getImportSongEditInitialState({
+      ...importDraft(8),
+      track: 7,
+    }),
+    {
+      album: "Smoke Album",
+      artist: "Smoke Artist",
+      title: "Import 8",
+      track: "7",
+    },
+  );
   assert.equal(getImportSongEditHref({ songId: 5 }), "/import/edit/5");
   assert.equal(getImportSongEditSaveHref(), "/(tabs)/import/save");
   assert.equal(getImportSongEditFilesHref(), "/(tabs)/import/files");
+  assert.equal(getImportSongEditRequiredTitleMessage(), "Title is required.");
   assert.equal(
     getImportSongEditErrorMessage(new Error("Edit import smoke failure")),
     "Edit import smoke failure",

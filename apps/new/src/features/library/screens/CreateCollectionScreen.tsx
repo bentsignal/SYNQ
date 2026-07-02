@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link, useRouter } from "expo-router";
+import { Link } from "expo-router";
 import {
   ActivityIndicator,
   Image,
@@ -9,20 +8,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import {
-  createAlbum,
-  createArtistWithImage,
-  createPlaylist,
-} from "../repository/collection-repository";
-import { pickCollectionImage } from "../services/collection-image-picker-service";
-import {
-  getCollectionFormActionState,
-  getCollectionFormPreviewInitial,
-  getCollectionFormSaveLabel,
-  parseAlbumYearInput,
-} from "../services/collection-form-service";
+import { useCreateCollectionFormController } from "../hooks/use-create-collection-form-controller";
 
 type CreateCollectionKind = "album" | "artist" | "playlist";
 
@@ -64,99 +51,23 @@ const labels: Record<
 };
 
 export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
-  const router = useRouter();
-  const { sendHaptic } = useHapticFeedback();
   const theme = useCustomizationTheme();
   const copy = labels[kind];
   const imageLabel = kind === "artist" ? "Profile image" : "Cover image";
-  const [name, setName] = useState("");
-  const [year, setYear] = useState("");
-  const [image, setImage] = useState<{
-    dataUrl: string;
-    fileName: string;
-  } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const { canEdit, canPickImage, canSave } = getCollectionFormActionState({
+  const {
+    actionState,
+    create,
+    error,
+    image,
+    imageInitial,
     isSaving,
     name,
-  });
-  const imageInitial = getCollectionFormPreviewInitial({
-    fallback: copy.kicker[0],
-    name,
-  });
-  const saveLabel = getCollectionFormSaveLabel({
-    defaultLabel: copy.createLabel,
-    isSaving,
-    savingLabel: "Creating",
-  });
-
-  const handlePickImage = async () => {
-    try {
-      sendHaptic("light");
-      const pickedImage = await pickCollectionImage();
-      if (pickedImage) {
-        setImage(pickedImage);
-      }
-    } catch (caughtError) {
-      sendHaptic("error");
-      setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Image could not be selected.",
-      );
-    }
-  };
-
-  const handleCreate = async () => {
-    if (!canSave) {
-      sendHaptic("error");
-      setError(`${copy.kicker} name is required.`);
-      return;
-    }
-
-    setIsSaving(true);
-    setError(null);
-
-    try {
-      if (kind === "album") {
-        const album = await createAlbum({
-          coverImage: image?.dataUrl,
-          name,
-          year: parseAlbumYearInput(year),
-        });
-        sendHaptic("success");
-        router.replace(`/(tabs)/library/album/${album.id}`);
-        return;
-      }
-
-      if (kind === "artist") {
-        const artist = await createArtistWithImage({
-          name,
-          profileImage: image?.dataUrl,
-        });
-        sendHaptic("success");
-        router.replace(`/(tabs)/library/artist/${artist.id}`);
-        return;
-      }
-
-      const playlist = await createPlaylist({
-        coverImage: image?.dataUrl,
-        name,
-      });
-      sendHaptic("success");
-      router.replace(`/(tabs)/library/playlist/${playlist.id}`);
-    } catch (caughtError) {
-      sendHaptic("error");
-      setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : `${copy.kicker} could not be created.`,
-      );
-    } finally {
-      setIsSaving(false);
-    }
-  };
+    pickImage,
+    saveLabel,
+    setName,
+    setYear,
+    year,
+  } = useCreateCollectionFormController({ copy, kind });
 
   return (
     <View style={[styles.screen, { backgroundColor: theme.background }]}>
@@ -183,7 +94,7 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
-          editable={canEdit}
+          editable={actionState.canEdit}
           onChangeText={setName}
           placeholder={copy.namePlaceholder}
           placeholderTextColor={theme.mutedText}
@@ -201,7 +112,7 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
               Year
             </Text>
             <TextInput
-              editable={canEdit}
+              editable={actionState.canEdit}
               inputMode="numeric"
               keyboardType="number-pad"
               onChangeText={setYear}
@@ -241,8 +152,8 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
             </Text>
             <Pressable
               accessibilityRole="button"
-              disabled={!canPickImage}
-              onPress={handlePickImage}
+              disabled={!actionState.canPickImage}
+              onPress={pickImage}
               style={[styles.imageButton, { borderColor: theme.border }]}
             >
               <Text style={[styles.imageButtonText, { color: theme.accent }]}>
@@ -260,12 +171,14 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
 
         <Pressable
           accessibilityRole="button"
-          disabled={!canSave}
-          onPress={handleCreate}
+          disabled={!actionState.canSave}
+          onPress={create}
           style={[
             styles.saveButton,
             {
-              backgroundColor: canSave ? theme.accent : theme.inactive,
+              backgroundColor: actionState.canSave
+                ? theme.accent
+                : theme.inactive,
             },
           ]}
         >

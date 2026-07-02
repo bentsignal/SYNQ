@@ -78,9 +78,10 @@ export function PremiumScreen() {
         <Text style={styles.panelLabel}>Status</Text>
         <Text style={state.phase === "failure" ? styles.errorText : styles.panelText}>
           {state.error ??
+            state.message ??
             (state.active
               ? "Premium is active."
-              : "RevenueCat integration is the next service step.")}
+              : "Choose a plan or restore a previous purchase.")}
         </Text>
         {state.phase === "failure" ? (
           <Pressable

@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useReducer } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import {
+  loadPremiumTiers,
   premiumTiers,
   purchasePremiumTier,
   restorePremiumPurchase,
@@ -7,6 +8,7 @@ import {
 import type {
   PremiumPurchaseResult,
   PremiumPurchaseState,
+  PremiumTier,
   PremiumTierId,
 } from "../types/premium-purchase";
 
@@ -20,6 +22,7 @@ type PremiumPurchaseAction =
 const initialPremiumPurchaseState: PremiumPurchaseState = {
   active: false,
   error: null,
+  message: null,
   phase: "idle",
   selectedTierId: "monthly",
 };
@@ -33,19 +36,22 @@ const premiumPurchaseReducer = (
       return {
         ...state,
         error: null,
+        message: null,
         selectedTierId: action.tierId,
       };
     case "start":
       return {
         ...state,
         error: null,
+        message: null,
         phase: "loading",
       };
     case "succeed":
       return {
         ...state,
-        active: true,
+        active: action.result.active,
         error: null,
+        message: action.result.message,
         phase: "success",
         selectedTierId: action.result.tierId,
       };
@@ -53,6 +59,7 @@ const premiumPurchaseReducer = (
       return {
         ...state,
         error: action.error,
+        message: null,
         phase: "failure",
       };
     case "reset":
@@ -65,6 +72,30 @@ export function usePremiumPurchaseSession() {
     premiumPurchaseReducer,
     initialPremiumPurchaseState,
   );
+  const [tiers, setTiers] = useState<PremiumTier[]>(premiumTiers);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadTiers = async () => {
+      try {
+        const nextTiers = await loadPremiumTiers();
+        if (isMounted) {
+          setTiers(nextTiers);
+        }
+      } catch {
+        if (isMounted) {
+          setTiers(premiumTiers);
+        }
+      }
+    };
+
+    void loadTiers();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const selectTier = useCallback((tierId: PremiumTierId) => {
     dispatch({ tierId, type: "select" });
@@ -110,13 +141,13 @@ export function usePremiumPurchaseSession() {
 
   return useMemo(
     () => ({
-      premiumTiers,
+      premiumTiers: tiers,
       purchaseSelectedTier,
       reset,
       restorePurchase,
       selectTier,
       state,
     }),
-    [purchaseSelectedTier, reset, restorePurchase, selectTier, state],
+    [purchaseSelectedTier, reset, restorePurchase, selectTier, state, tiers],
   );
 }

@@ -337,6 +337,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import staged-song edit invalid/not-staged route states and
     controller-to-form wiring now live in focused components instead of the
     route screen owning fallback UI and form assembly.
+  - Done: import staged-song edit invalid/not-staged copy and back-link state
+    now lives in the import song form service with smoke coverage instead of
+    component-local branching.
   - Done: import staged-song edit header, metadata fields, source-file panel,
     error/save actions, and navigation links now render through focused
     components instead of one large edit form view.

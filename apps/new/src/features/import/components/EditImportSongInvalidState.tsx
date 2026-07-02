@@ -2,56 +2,43 @@ import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import {
-  getImportSongEditFilesHref,
-  getImportSongEditSaveHref,
+  getImportSongEditInvalidState,
+  type ImportSongEditInvalidReason,
 } from "../services/import-song-form-service";
 
 type EditImportSongInvalidStateProps = {
-  reason: "invalid-id" | "not-staged";
+  reason: ImportSongEditInvalidReason;
 };
 
 export function EditImportSongInvalidState({
   reason,
 }: EditImportSongInvalidStateProps) {
   const theme = useCustomizationTheme();
-  const isInvalidId = reason === "invalid-id";
-  const saveHref = getImportSongEditSaveHref();
-  const filesHref = getImportSongEditFilesHref();
+  const invalidState = getImportSongEditInvalidState(reason);
 
   return (
     <View style={[styles.screen, { backgroundColor: theme.background }]}>
-      <Text style={[styles.kicker, { color: theme.accent }]}>Import edit</Text>
+      <Text style={[styles.kicker, { color: theme.accent }]}>
+        {invalidState.kicker}
+      </Text>
       <Text style={[styles.title, { color: theme.primaryText }]}>
-        {isInvalidId ? "Invalid song" : "Song not staged"}
+        {invalidState.title}
       </Text>
       <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-        {isInvalidId
-          ? "This route needs a numeric id."
-          : "Choose songs again or return to the current review."}
+        {invalidState.subtitle}
       </Text>
-      {isInvalidId ? (
-        <Link
-          href={saveHref}
-          style={[styles.backLink, { color: theme.accent }]}
-        >
-          Back to save
-        </Link>
-      ) : (
-        <View style={styles.linkRow}>
+
+      <View style={styles.linkRow}>
+        {invalidState.links.map((link) => (
           <Link
-            href={filesHref}
+            href={link.href}
+            key={link.href}
             style={[styles.backLink, { color: theme.accent }]}
           >
-            Back to files
+            {link.label}
           </Link>
-          <Link
-            href={saveHref}
-            style={[styles.backLink, { color: theme.accent }]}
-          >
-            Back to save
-          </Link>
-        </View>
-      )}
+        ))}
+      </View>
     </View>
   );
 }

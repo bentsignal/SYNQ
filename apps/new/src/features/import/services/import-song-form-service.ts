@@ -5,6 +5,8 @@ export type ImportSongEditHref =
   | "/(tabs)/import/files"
   | "/(tabs)/import/save";
 
+export type ImportSongEditInvalidReason = "invalid-id" | "not-staged";
+
 export const getImportSongEditHref = ({
   songId,
 }: {
@@ -16,6 +18,41 @@ export const getImportSongEditSaveHref = (): ImportSongEditHref =>
 
 export const getImportSongEditFilesHref = (): ImportSongEditHref =>
   "/(tabs)/import/files";
+
+export const getImportSongEditInvalidState = (
+  reason: ImportSongEditInvalidReason,
+) => {
+  switch (reason) {
+    case "invalid-id":
+      return {
+        kicker: "Import edit",
+        links: [
+          {
+            href: getImportSongEditSaveHref(),
+            label: "Back to save",
+          },
+        ],
+        subtitle: "This route needs a numeric id.",
+        title: "Invalid song",
+      };
+    case "not-staged":
+      return {
+        kicker: "Import edit",
+        links: [
+          {
+            href: getImportSongEditFilesHref(),
+            label: "Back to files",
+          },
+          {
+            href: getImportSongEditSaveHref(),
+            label: "Back to save",
+          },
+        ],
+        subtitle: "Choose songs again or return to the current review.",
+        title: "Song not staged",
+      };
+  }
+};
 
 export const parseImportTrackInput = (value: string) => {
   const trimmed = value.trim();

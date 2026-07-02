@@ -87,6 +87,7 @@ import {
   getImportSongEditFilesHref,
   getImportSongEditHref,
   getImportSongEditInitialState,
+  getImportSongEditInvalidState,
   getImportSongEditRequiredTitleMessage,
   getImportSongEditSaveHref,
   parseImportTrackInput,
@@ -3673,6 +3674,32 @@ function assertImportSongFormSmoke() {
   assert.equal(getImportSongEditHref({ songId: 5 }), "/import/edit/5");
   assert.equal(getImportSongEditSaveHref(), "/(tabs)/import/save");
   assert.equal(getImportSongEditFilesHref(), "/(tabs)/import/files");
+  assert.deepEqual(getImportSongEditInvalidState("invalid-id"), {
+    kicker: "Import edit",
+    links: [
+      {
+        href: "/(tabs)/import/save",
+        label: "Back to save",
+      },
+    ],
+    subtitle: "This route needs a numeric id.",
+    title: "Invalid song",
+  });
+  assert.deepEqual(getImportSongEditInvalidState("not-staged"), {
+    kicker: "Import edit",
+    links: [
+      {
+        href: "/(tabs)/import/files",
+        label: "Back to files",
+      },
+      {
+        href: "/(tabs)/import/save",
+        label: "Back to save",
+      },
+    ],
+    subtitle: "Choose songs again or return to the current review.",
+    title: "Song not staged",
+  });
   assert.equal(getImportSongEditRequiredTitleMessage(), "Title is required.");
   assert.equal(
     getImportSongEditErrorMessage(new Error("Edit import smoke failure")),

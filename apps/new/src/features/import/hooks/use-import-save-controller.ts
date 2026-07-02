@@ -2,7 +2,7 @@ import { useState } from "react";
 import { router } from "expo-router";
 import { shareImportDraftSongs } from "@/src/features/export/services/import-draft-export-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { getImportSaveActionState } from "../services/import-session-state-service";
+import { getImportSaveActionState } from "../services/import-screen-state-service";
 import type { ImportSessionState } from "../types/import-session";
 
 type UseImportSaveControllerParams = {

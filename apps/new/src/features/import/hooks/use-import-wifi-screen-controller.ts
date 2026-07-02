@@ -1,5 +1,5 @@
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { getImportWifiState } from "../services/import-session-state-service";
+import { getImportWifiState } from "../services/import-screen-state-service";
 import { useImportSession } from "./use-import-session";
 import { useWifiImportServer } from "./use-wifi-import-server";
 

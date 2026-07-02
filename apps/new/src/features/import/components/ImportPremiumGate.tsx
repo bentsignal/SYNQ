@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { getImportPremiumGateState } from "../services/import-session-state-service";
+import { getImportPremiumGateState } from "../services/import-screen-state-service";
 
 type ImportPremiumGateProps = {
   children: React.ReactNode;

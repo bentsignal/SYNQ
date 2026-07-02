@@ -5,7 +5,7 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import { ImportPremiumGate } from "../components/ImportPremiumGate";
 import { ImportSongPreviewList } from "../components/ImportSongPreviewList";
 import { useImportSession } from "../hooks/use-import-session";
-import { getImportFilesActionState } from "../services/import-session-state-service";
+import { getImportFilesActionState } from "../services/import-screen-state-service";
 
 export function ImportFilesScreen() {
   const { removeImportSongs, startFileImport, state } = useImportSession();

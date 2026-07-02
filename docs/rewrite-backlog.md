@@ -97,6 +97,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     now live in the song detail service instead of the detail screen.
   - Done: import save action availability now lives in the import session
     service instead of the save screen.
+  - Done: import home/save/files/Wi-Fi/Premium screen state selectors now live
+    in a dedicated import screen-state service instead of the import session
+    reducer service.
   - Done: collection preview detail-route generation now lives in the collection
     preview service instead of duplicated preview/list UI helpers.
   - Done: library collection preview empty state, columns, and row rendering now

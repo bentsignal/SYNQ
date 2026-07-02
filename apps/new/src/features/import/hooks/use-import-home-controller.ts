@@ -1,6 +1,6 @@
 import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { getImportHomeState } from "../services/import-session-state-service";
+import { getImportHomeState } from "../services/import-screen-state-service";
 import { useImportSession } from "./use-import-session";
 
 export function useImportHomeController() {

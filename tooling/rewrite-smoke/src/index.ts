@@ -27,6 +27,10 @@ import {
   rowsToCollectionDetailSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-detail-service";
 import {
+  getPlayableCollectionSongs,
+  reorderCollectionSongs,
+} from "../../../apps/new/src/features/library/services/library-collection-interaction-service";
+import {
   albumRowsToPreview,
   artistRowsToPreview,
   playlistRowsToPreview,
@@ -325,6 +329,63 @@ function assertLibraryCollectionDetailSmoke() {
   });
   assert.equal(artist.title, "Smoke Artist");
   assert.equal(artist.detail, "2 songs / 2 albums");
+}
+
+function assertLibraryCollectionInteractionSmoke() {
+  const songs = rowsToCollectionDetailSongs([
+    {
+      albumName: "Smoke Album",
+      artistName: "Smoke Artist",
+      duration: 100_000,
+      pathToFile: "/tmp/first.mp3",
+      songId: 1,
+      title: "First",
+      track: 1,
+    },
+    {
+      albumName: "Smoke Album",
+      artistName: "Smoke Artist",
+      duration: 100_000,
+      pathToFile: null,
+      songId: 2,
+      title: "Second",
+      track: 2,
+    },
+    {
+      albumName: "Smoke Album",
+      artistName: "Smoke Artist",
+      duration: 100_000,
+      pathToFile: "/tmp/third.mp3",
+      songId: 3,
+      title: "Third",
+      track: 3,
+    },
+  ]);
+
+  assert.deepEqual(
+    getPlayableCollectionSongs(songs).map((song) => song.id),
+    [1, 3],
+  );
+  assert.deepEqual(
+    reorderCollectionSongs({ direction: "down", songId: 1, songs }).map(
+      (song) => song.id,
+    ),
+    [2, 1, 3],
+  );
+  assert.deepEqual(
+    reorderCollectionSongs({ direction: "up", songId: 3, songs }).map(
+      (song) => song.id,
+    ),
+    [1, 3, 2],
+  );
+  assert.equal(
+    reorderCollectionSongs({ direction: "up", songId: 1, songs }),
+    songs,
+  );
+  assert.equal(
+    reorderCollectionSongs({ direction: "down", songId: 99, songs }),
+    songs,
+  );
 }
 
 function assertLibraryCollectionPreviewSmoke() {
@@ -825,6 +886,7 @@ assertImportSongFormSmoke();
 assertPlaybackSessionSmoke();
 assertImportSessionSmoke();
 assertLibraryCollectionDetailSmoke();
+assertLibraryCollectionInteractionSmoke();
 assertLibraryCollectionPreviewSmoke();
 assertLibrarySongPreviewSmoke();
 assertAddableCollectionSongsSmoke();

@@ -57,6 +57,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     instead of repeated library/import screen helpers.
   - Done: import staged-song edit track parsing and metadata normalization now
     live in an import service instead of the edit screen.
+  - Done: collection detail playable-song filtering and optimistic reorder
+    helpers now live in a library service instead of the detail screen.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -95,6 +97,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     scalar, array, missing, and invalid route values.
   - Done: extend deterministic smoke coverage to import staged-song edit form
     track parsing, fallback labels, and trimmed metadata.
+  - Done: extend deterministic smoke coverage to collection detail interaction
+    helpers for playable filtering, adjacent reorder, and no-op boundaries.
 
 ### Phase 3: New App Build-Out
 

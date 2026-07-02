@@ -17,7 +17,6 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import { LibraryCollectionSongList } from "../components/LibraryCollectionSongList";
 import {
   useLibraryCollectionDetailQuery,
-  type LibraryCollectionDetailSong,
   type LibraryCollectionDetailKind,
 } from "../hooks/use-library-collection-detail-query";
 import { deleteCollection } from "../repository/collection-repository";
@@ -25,37 +24,13 @@ import {
   removeSongFromCollection,
   updateCollectionSongOrder,
 } from "../repository/relationship-repository";
+import {
+  getPlayableCollectionSongs,
+  reorderCollectionSongs,
+} from "../services/library-collection-interaction-service";
 
 type LibraryCollectionDetailScreenProps = {
   kind: LibraryCollectionDetailKind;
-};
-
-const reorderSongs = ({
-  direction,
-  songId,
-  songs,
-}: {
-  direction: "down" | "up";
-  songId: number;
-  songs: LibraryCollectionDetailSong[];
-}) => {
-  const fromIndex = songs.findIndex((song) => song.id === songId);
-
-  if (fromIndex < 0) {
-    return songs;
-  }
-
-  const toIndex = direction === "up" ? fromIndex - 1 : fromIndex + 1;
-
-  if (toIndex < 0 || toIndex >= songs.length) {
-    return songs;
-  }
-
-  const nextSongs = [...songs];
-  const [movedSong] = nextSongs.splice(fromIndex, 1);
-  nextSongs.splice(toIndex, 0, movedSong);
-
-  return nextSongs;
 };
 
 const getCollectionListHref = (kind: LibraryCollectionDetailKind) => {
@@ -123,7 +98,7 @@ function LibraryCollectionDetailContent({
     detail.updatedAt > 0
       ? `Updated ${new Date(detail.updatedAt).toLocaleTimeString()}`
       : "Waiting for collection data";
-  const playableSongs = detail.songs.filter((song) => song.pathToFile !== null);
+  const playableSongs = getPlayableCollectionSongs(detail.songs);
   const canPlayCollection = playableSongs.length > 0;
   const playCollection = () => {
     const [firstSong, ...queuedSongs] = playableSongs;
@@ -342,7 +317,7 @@ function LibraryCollectionDetailContent({
           setMutationError(null);
 
           try {
-            const reorderedSongs = reorderSongs({
+            const reorderedSongs = reorderCollectionSongs({
               direction,
               songId,
               songs: detail.songs,

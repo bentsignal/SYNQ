@@ -32,7 +32,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/playback",
     targetBoundary: "src/features/playback",
-    nextMilestone: "Choose the native-capable remote playback backend, wire it into the remote command service, and add manual playback/ad-gate smoke coverage.",
+    nextMilestone: "Migrate the playback adapter from Expo AV to Expo Audio, wire lock-screen controls into the remote command service, and add manual playback/ad-gate smoke coverage.",
   },
   {
     key: "import",

@@ -8,6 +8,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useEditCollectionQuery } from "../hooks/use-edit-collection-query";
 import {
   updateAlbum,
@@ -101,6 +102,7 @@ function EditCollectionContent({
   kind: CollectionKind;
 }) {
   const router = useRouter();
+  const { sendHaptic } = useHapticFeedback();
   const copy = labels[kind];
   const collection = useEditCollectionQuery({ id, kind });
   const [name, setName] = useState("");
@@ -121,6 +123,7 @@ function EditCollectionContent({
 
   const handleUpdate = async () => {
     if (!canSave) {
+      sendHaptic("error");
       setError(`${copy.kicker} name is required.`);
       return;
     }
@@ -131,19 +134,23 @@ function EditCollectionContent({
     try {
       if (kind === "album") {
         await updateAlbum({ id, name, year: parseYear(year) });
+        sendHaptic("success");
         router.replace(`/(tabs)/library/album/${id}`);
         return;
       }
 
       if (kind === "artist") {
         await updateArtist({ id, name });
+        sendHaptic("success");
         router.replace(`/(tabs)/library/artist/${id}`);
         return;
       }
 
       await updatePlaylist({ id, name });
+      sendHaptic("success");
       router.replace(`/(tabs)/library/playlist/${id}`);
     } catch (caughtError) {
+      sendHaptic("error");
       setError(
         caughtError instanceof Error
           ? caughtError.message

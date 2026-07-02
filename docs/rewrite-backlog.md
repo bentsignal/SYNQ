@@ -77,7 +77,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     app icon, and haptics, and saved-theme consumption across navigation,
     loading/placeholder states, settings, and the library home surface exist;
     native app icon assets/config and a settings-owned native icon service are
-    wired; deeper feature-screen theming and native-build icon smoke are next.
+    wired; haptic feedback now flows through a preference-aware settings hook
+    for customization, playback, queue, and collection save actions. Deeper
+    feature-screen theming and native-build icon/haptics smoke are next.
 - [ ] Move reusable feature logic from `apps/old` into shared app-local modules
   that `apps/new` can consume without copying UI spaghetti.
 - [ ] Build the `apps/new` screens against reactive Drizzle query hooks instead
@@ -148,7 +150,10 @@ feature-screen theme application, native remote playback event ingestion, and
 manual playback smoke are still next. Native app icon assets/config now exist in
 `apps/new`, and app-icon preference changes flow through a settings-owned
 native service, but alternate icon behavior still needs a native prebuild/device
-smoke. It is not yet a replacement app.
+smoke. Haptic preference state is now consumed by a settings-owned haptics hook
+in customization, playback, queue, and collection save paths, but broader
+feature coverage and native-device haptic smoke are still pending. It is not
+yet a replacement app.
 The next useful work should alternate between:
 
 - closing Phase 2 gaps that would otherwise be copied into the new app; and

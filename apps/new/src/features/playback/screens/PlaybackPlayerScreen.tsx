@@ -1,5 +1,6 @@
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { usePlaybackSession } from "../hooks/use-playback-session";
 
 const formatDuration = (duration: number) => {
@@ -31,6 +32,7 @@ const getProgressPercent = ({
 };
 
 export function PlaybackPlayerScreen() {
+  const { sendHaptic } = useHapticFeedback();
   const {
     activeTrack,
     pause,
@@ -57,10 +59,37 @@ export function PlaybackPlayerScreen() {
     state.adGate.thresholdMs - state.adGate.accumulatedMs,
   );
   const rewind = () => {
+    sendHaptic("light");
     seekTo(Math.max(0, state.position - seekStep));
   };
   const fastForward = () => {
+    sendHaptic("light");
     seekTo(Math.min(state.duration, state.position + seekStep));
+  };
+  const handleSkipPrevious = () => {
+    sendHaptic("light");
+    skipPrevious();
+  };
+  const handlePlayPause = () => {
+    sendHaptic(state.isPlaying ? "soft" : "light");
+    if (state.isPlaying) {
+      pause();
+      return;
+    }
+
+    resume();
+  };
+  const handleSkipNext = () => {
+    sendHaptic("light");
+    skipNext();
+  };
+  const handleToggleShuffle = () => {
+    sendHaptic("light");
+    toggleShuffle();
+  };
+  const handleToggleLoop = () => {
+    sendHaptic("light");
+    toggleLoop();
   };
 
   return (
@@ -135,7 +164,7 @@ export function PlaybackPlayerScreen() {
         <Pressable
           accessibilityRole="button"
           disabled={!hasActiveTrack || adBreakActive}
-          onPress={skipPrevious}
+          onPress={handleSkipPrevious}
           style={[
             styles.controlButton,
             !hasActiveTrack || adBreakActive ? styles.disabled : null,
@@ -146,7 +175,7 @@ export function PlaybackPlayerScreen() {
         <Pressable
           accessibilityRole="button"
           disabled={!hasActiveTrack || adBreakActive}
-          onPress={state.isPlaying ? pause : resume}
+          onPress={handlePlayPause}
           style={[
             styles.primaryButton,
             !hasActiveTrack || adBreakActive ? styles.disabled : null,
@@ -159,7 +188,7 @@ export function PlaybackPlayerScreen() {
         <Pressable
           accessibilityRole="button"
           disabled={!hasActiveTrack || adBreakActive}
-          onPress={skipNext}
+          onPress={handleSkipNext}
           style={[
             styles.controlButton,
             !hasActiveTrack || adBreakActive ? styles.disabled : null,
@@ -203,7 +232,7 @@ export function PlaybackPlayerScreen() {
       <View style={styles.controls}>
         <Pressable
           accessibilityRole="button"
-          onPress={toggleShuffle}
+          onPress={handleToggleShuffle}
           style={styles.controlButton}
         >
           <Text style={styles.controlText}>
@@ -212,7 +241,7 @@ export function PlaybackPlayerScreen() {
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          onPress={toggleLoop}
+          onPress={handleToggleLoop}
           style={styles.controlButton}
         >
           <Text style={styles.controlText}>

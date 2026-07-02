@@ -13,6 +13,7 @@ import {
   useCustomizationTheme,
   type CustomizationTheme,
 } from "../hooks/use-customization-theme";
+import { useHapticFeedback } from "../hooks/use-haptic-feedback";
 import {
   customizationOptions,
 } from "../services/customization-settings-service";
@@ -82,10 +83,26 @@ export function SettingsCustomizationScreen() {
     setTheme,
     state: customizationState,
   } = useCustomizationSettingsContext();
+  const { sendHaptic } = useHapticFeedback();
   const theme = useCustomizationTheme();
   const themeControlsDisabled =
     !premiumState.active || customizationState.status === "loading";
   const isSaving = customizationState.status === "saving";
+  const handleSetTheme = (themeKey: CustomizationColorKey) => {
+    sendHaptic("light");
+    void setTheme(themeKey);
+  };
+  const handleSetAppIcon = (appIcon: CustomizationColorKey) => {
+    sendHaptic("light");
+    void setAppIcon(appIcon);
+  };
+  const handleSetHapticsEnabled = (hapticsEnabled: boolean) => {
+    if (customizationState.settings.hapticsEnabled) {
+      sendHaptic("light");
+    }
+
+    void setHapticsEnabled(hapticsEnabled);
+  };
 
   return (
     <ScrollView
@@ -155,14 +172,14 @@ export function SettingsCustomizationScreen() {
       >
         <ColorOptionRow
           disabled={themeControlsDisabled}
-          onSelect={setTheme}
+          onSelect={handleSetTheme}
           selectedKey={customizationState.settings.theme}
           theme={theme}
           title="Theme"
         />
         <ColorOptionRow
           disabled={themeControlsDisabled}
-          onSelect={setAppIcon}
+          onSelect={handleSetAppIcon}
           selectedKey={customizationState.settings.appIcon}
           theme={theme}
           title="App Icon"
@@ -185,7 +202,7 @@ export function SettingsCustomizationScreen() {
         </View>
         <Switch
           disabled={customizationState.status === "loading"}
-          onValueChange={setHapticsEnabled}
+          onValueChange={handleSetHapticsEnabled}
           thumbColor={theme.surface}
           trackColor={{ false: "#cfd8d3", true: theme.accent }}
           value={customizationState.settings.hapticsEnabled}

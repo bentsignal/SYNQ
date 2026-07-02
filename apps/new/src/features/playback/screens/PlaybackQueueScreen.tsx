@@ -1,5 +1,6 @@
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { usePlaybackSession } from "../hooks/use-playback-session";
 
 const formatDuration = (duration: number | null) => {
@@ -15,6 +16,7 @@ const formatDuration = (duration: number | null) => {
 };
 
 export function PlaybackQueueScreen() {
+  const { sendHaptic } = useHapticFeedback();
   const {
     activeTrack,
     clearQueue,
@@ -24,6 +26,22 @@ export function PlaybackQueueScreen() {
     state,
   } = usePlaybackSession();
   const adBreakActive = state.adGate.active || state.adGate.due;
+  const handlePlaySong = (song: Parameters<typeof playSong>[0]) => {
+    sendHaptic("light");
+    playSong(song);
+  };
+  const handleRemoveFromQueue = (songId: number) => {
+    sendHaptic("medium");
+    removeFromQueue(songId);
+  };
+  const handleMoveQueueSong = (songId: number, direction: "down" | "up") => {
+    sendHaptic("light");
+    moveQueueSong(songId, direction);
+  };
+  const handleClearQueue = () => {
+    sendHaptic("medium");
+    clearQueue();
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
@@ -70,7 +88,7 @@ export function PlaybackQueueScreen() {
                 <Pressable
                   accessibilityRole="button"
                   disabled={adBreakActive}
-                  onPress={() => playSong(song)}
+                  onPress={() => handlePlaySong(song)}
                   style={[styles.rowMain, adBreakActive ? styles.disabled : null]}
                 >
                   <Text style={isActive ? styles.activeIndex : styles.index}>
@@ -90,7 +108,7 @@ export function PlaybackQueueScreen() {
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
-                  onPress={() => removeFromQueue(song.id)}
+                  onPress={() => handleRemoveFromQueue(song.id)}
                   style={styles.removeButton}
                 >
                   <Text style={styles.removeText}>Remove</Text>
@@ -100,7 +118,7 @@ export function PlaybackQueueScreen() {
                     accessibilityLabel={`Move ${song.title} up`}
                     accessibilityRole="button"
                     disabled={index === 0}
-                    onPress={() => moveQueueSong(song.id, "up")}
+                    onPress={() => handleMoveQueueSong(song.id, "up")}
                     style={[
                       styles.moveButton,
                       index === 0 ? styles.disabled : null,
@@ -112,7 +130,7 @@ export function PlaybackQueueScreen() {
                     accessibilityLabel={`Move ${song.title} down`}
                     accessibilityRole="button"
                     disabled={index === state.queue.length - 1}
-                    onPress={() => moveQueueSong(song.id, "down")}
+                    onPress={() => handleMoveQueueSong(song.id, "down")}
                     style={[
                       styles.moveButton,
                       index === state.queue.length - 1 ? styles.disabled : null,
@@ -133,7 +151,7 @@ export function PlaybackQueueScreen() {
         <Pressable
           accessibilityRole="button"
           disabled={state.queue.length === 0}
-          onPress={clearQueue}
+          onPress={handleClearQueue}
           style={[
             styles.clearButton,
             state.queue.length === 0 ? styles.disabled : null,

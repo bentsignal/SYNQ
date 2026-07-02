@@ -8,6 +8,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
   createAlbum,
   createArtist,
@@ -71,6 +72,7 @@ const parseYear = (value: string) => {
 
 export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
   const router = useRouter();
+  const { sendHaptic } = useHapticFeedback();
   const copy = labels[kind];
   const [name, setName] = useState("");
   const [year, setYear] = useState("");
@@ -80,6 +82,7 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
 
   const handleCreate = async () => {
     if (!canSave) {
+      sendHaptic("error");
       setError(`${copy.kicker} name is required.`);
       return;
     }
@@ -90,19 +93,23 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
     try {
       if (kind === "album") {
         const album = await createAlbum({ name, year: parseYear(year) });
+        sendHaptic("success");
         router.replace(`/(tabs)/library/album/${album.id}`);
         return;
       }
 
       if (kind === "artist") {
         const artist = await createArtist(name);
+        sendHaptic("success");
         router.replace(`/(tabs)/library/artist/${artist.id}`);
         return;
       }
 
       const playlist = await createPlaylist(name);
+      sendHaptic("success");
       router.replace(`/(tabs)/library/playlist/${playlist.id}`);
     } catch (caughtError) {
+      sendHaptic("error");
       setError(
         caughtError instanceof Error
           ? caughtError.message

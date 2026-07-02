@@ -56,7 +56,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/premium",
     targetBoundary: "src/features/premium + src/features/settings",
-    nextMilestone: "Continue saved-theme propagation through remaining feature screens, smoke native icon changes in a native build, then add playback gates, privacy, haptics, and support flows.",
+    nextMilestone: "Continue saved-theme and haptic propagation through remaining feature screens, smoke native icon changes in a native build, then add playback gates, privacy, and support flows.",
   },
 ];
 

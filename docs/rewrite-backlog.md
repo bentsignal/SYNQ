@@ -218,6 +218,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: home hero, now-playing actions, quick links, recent-song header, and
     themed layout now render from a focused app-shell component instead of the
     route screen.
+  - Done: home hero, now-playing panel, quick actions, and recent-song section
+    header now render through focused app-shell components instead of one large
+    home screen view.
   - Done: collection song list mutation and move/remove row action state now
     lives in the library interaction service instead of the list component.
   - Done: library song edit form initialization and save action state now live

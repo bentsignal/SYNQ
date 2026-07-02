@@ -80,6 +80,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     album, artist, and playlist edits do not subscribe to unrelated tables.
   - Done: add-to-collection routes now mount kind-specific relationship live
     queries so adding songs only subscribes to the active collection kind.
+  - Done: rewrite verification hygiene scans now include new app route files,
+    not only feature implementation files.
   - Done: import files and Wi-Fi presentation/action state now lives in the
     import session service instead of entry screens.
   - Done: shared collection create/edit form action state now lives in the
@@ -152,6 +154,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     the live query fan-out at the route component boundary.
   - Done: preserve addable-song shaping smoke coverage while reducing
     add-to-collection relationship query fan-out.
+  - Done: extend rewrite verification gates to route-file event, console,
+    dimensions, and AsyncStorage scans.
   - Done: extend deterministic smoke coverage to collection form year parsing
     for blank, valid, and invalid album year inputs.
   - Done: extend deterministic smoke coverage to collection list search

@@ -24,7 +24,7 @@ scan_async_storage_boundaries() {
 
   matches="$(
     rg -n "AsyncStorage|@react-native-async-storage/async-storage" \
-      apps/old/src apps/new/src shared -g "*.ts" -g "*.tsx" || true
+      apps/old/src apps/new/app apps/new/src shared -g "*.ts" -g "*.tsx" || true
   )"
 
   if [[ -z "$matches" ]]; then
@@ -58,12 +58,12 @@ git diff --check
 echo "==> Event emitter scan"
 scan_for_forbidden_matches "event emitter scan" \
   rg -n "usePlaybackContext\\(\\)|EventEmitter|DeviceEventEmitter|NativeEventEmitter|\\.emit\\(" \
-  apps/old/src apps/new/src shared -g "*.ts" -g "*.tsx"
+  apps/old/src apps/new/app apps/new/src shared -g "*.ts" -g "*.tsx"
 
-echo "==> New app feature hygiene scan"
-scan_for_forbidden_matches "feature hygiene scan" \
+echo "==> New app hygiene scan"
+scan_for_forbidden_matches "new app hygiene scan" \
   rg -n "console\\.log|console\\.error|Dimensions\\.get" \
-  apps/new/src/features -g "*.ts" -g "*.tsx"
+  apps/new/app apps/new/src/features -g "*.ts" -g "*.tsx"
 
 echo "==> AsyncStorage boundary scan"
 scan_async_storage_boundaries

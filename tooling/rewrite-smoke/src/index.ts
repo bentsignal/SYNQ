@@ -155,6 +155,7 @@ import {
 import {
   buildLibrarySongEditFormState,
   getLibrarySongEditActionState,
+  getLibrarySongEditErrorMessage,
 } from "../../../apps/new/src/features/library/services/library-song-form-service";
 import {
   getLibrarySongPreviewRowState,
@@ -2507,6 +2508,14 @@ function assertLibrarySongDetailSmoke() {
       title: "Alpha",
     }),
     { canSave: false, saveLabel: "Saving" },
+  );
+  assert.equal(
+    getLibrarySongEditErrorMessage(new Error("Song edit smoke failure")),
+    "Song edit smoke failure",
+  );
+  assert.equal(
+    getLibrarySongEditErrorMessage(null),
+    "Song could not be saved.",
   );
   assert.deepEqual(
     getLibrarySongDetailActionState({

@@ -5,6 +5,7 @@ import { updateLibrarySongMetadata } from "../repository/song-metadata-repositor
 import {
   buildLibrarySongEditFormState,
   getLibrarySongEditActionState,
+  getLibrarySongEditErrorMessage,
 } from "../services/library-song-form-service";
 import type { LibrarySongDetail } from "../services/library-song-detail-service";
 
@@ -60,11 +61,9 @@ export function useEditLibrarySongController({
       });
       sendHaptic("success");
       router.replace(`/(tabs)/library/song/${songId}`);
-    } catch (error) {
+    } catch (caughtError) {
       sendHaptic("error");
-      setErrorMessage(
-        error instanceof Error ? error.message : "Song could not be saved.",
-      );
+      setErrorMessage(getLibrarySongEditErrorMessage(caughtError));
     } finally {
       setIsSaving(false);
     }

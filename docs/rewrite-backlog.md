@@ -267,6 +267,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     focused components instead of the list owning every row control.
   - Done: library song edit form initialization and save action state now live
     in a form service instead of the edit screen.
+  - Done: library song edit save fallback copy now lives in the song form
+    service with deterministic smoke coverage instead of an inline controller
+    branch.
   - Done: library song export snapshot hashing/staleness/mark-exported logic
     now lives in a dedicated export snapshot repository instead of the song
     metadata edit repository.

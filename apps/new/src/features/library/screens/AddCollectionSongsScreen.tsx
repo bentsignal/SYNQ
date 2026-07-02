@@ -11,7 +11,7 @@ import {
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
+import { useAddCollectionSongsController } from "../hooks/use-add-collection-songs-controller";
 import {
   useAddableAlbumCollectionSongsQuery,
   useAddableArtistCollectionSongsQuery,
@@ -20,14 +20,7 @@ import {
 } from "../hooks/use-addable-collection-songs-query";
 import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
 import {
-  addSongToCollection,
-  addSongsToCollection,
-} from "../repository/relationship-repository";
-import {
-  getAddableSongSelectionState,
   getAddableSongRowState,
-  removeSongIdSelection,
-  toggleSongIdSelection,
 } from "../services/library-collection-interaction-service";
 
 type AddCollectionSongsScreenProps = {
@@ -154,65 +147,25 @@ function AddCollectionSongsForm({
   setQuery,
 }: AddCollectionSongsFormProps) {
   const theme = useCustomizationTheme();
-  const { sendHaptic } = useHapticFeedback();
-  const [savingSongId, setSavingSongId] = useState<number | null>(null);
-  const [selectedSongIds, setSelectedSongIds] = useState<Set<number>>(
-    () => new Set(),
-  );
-  const [isAddingSelection, setIsAddingSelection] = useState(false);
-  const [mutationError, setMutationError] = useState<string | null>(null);
   const { errors, songs, updatedAt } = addable;
   const hasErrors = errors.length > 0;
   const updatedLabel =
     updatedAt > 0
       ? `Updated ${new Date(updatedAt).toLocaleTimeString()}`
       : "Waiting for library data";
-  const selectionState = getAddableSongSelectionState({
-    isAddingSelection,
+  const {
+    addSelectedSongs,
+    addSong,
+    mutationError,
     savingSongId,
-    songs,
     selectedSongIds,
+    selectionState,
+    toggleSongSelection,
+  } = useAddCollectionSongsController({
+    collectionId: id,
+    kind,
+    songs,
   });
-
-  const toggleSongSelection = (songId: number) => {
-    sendHaptic("light");
-    setSelectedSongIds((currentSelection) => {
-      return toggleSongIdSelection({
-        selectedSongIds: currentSelection,
-        songId,
-      });
-    });
-  };
-
-  const addSelectedSongs = async () => {
-    if (!selectionState.canBulkAdd) {
-      sendHaptic("error");
-      return;
-    }
-
-    sendHaptic("medium");
-    setIsAddingSelection(true);
-    setMutationError(null);
-
-    try {
-      await addSongsToCollection({
-        collectionId: id,
-        kind,
-        songIds: selectionState.selectedAddableSongIds,
-      });
-      setSelectedSongIds(new Set());
-      sendHaptic("success");
-    } catch (caughtError) {
-      sendHaptic("error");
-      setMutationError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Selected songs could not be added.",
-      );
-    } finally {
-      setIsAddingSelection(false);
-    }
-  };
 
   return (
     <ScrollView
@@ -281,35 +234,7 @@ function AddCollectionSongsForm({
       </View>
 
       <AddableSongList
-        onAddSong={async (songId) => {
-          sendHaptic("light");
-          setSavingSongId(songId);
-          setMutationError(null);
-
-          try {
-            await addSongToCollection({
-              collectionId: id,
-              kind,
-              songId,
-            });
-            setSelectedSongIds((currentSelection) => {
-              return removeSongIdSelection({
-                selectedSongIds: currentSelection,
-                songId,
-              });
-            });
-            sendHaptic("success");
-          } catch (caughtError) {
-            sendHaptic("error");
-            setMutationError(
-              caughtError instanceof Error
-                ? caughtError.message
-                : "Song could not be added.",
-            );
-          } finally {
-            setSavingSongId(null);
-          }
-        }}
+        onAddSong={addSong}
         onToggleSongSelection={toggleSongSelection}
         selectedSongIds={selectedSongIds}
         savingSongId={savingSongId}

@@ -85,6 +85,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     collection tables.
   - Done: song detail derives liked state from playlist membership rows and no
     longer opens a duplicate liked-song live query.
+  - Done: add-to-collection single-add, bulk-add, selection, saving, mutation
+    error, and haptic workflow state now lives in a controller hook instead of
+    the screen.
   - Done: rewrite verification hygiene scans now include new app route files,
     not only feature implementation files.
   - Done: import files and Wi-Fi presentation/action state now lives in the
@@ -163,6 +166,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     collection detail route live query fan-out.
   - Done: extend song detail smoke coverage to liked-state derivation from the
     shared Liked Songs playlist membership.
+  - Done: keep add-to-collection selection helper smoke coverage while moving
+    async command coordination into a feature hook.
   - Done: extend rewrite verification gates to route-file event, console,
     dimensions, and AsyncStorage scans.
   - Done: extend deterministic smoke coverage to collection form year parsing

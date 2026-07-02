@@ -1,5 +1,6 @@
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { usePlaybackSession } from "../hooks/use-playback-session";
 
@@ -16,6 +17,7 @@ const formatDuration = (duration: number | null) => {
 };
 
 export function PlaybackQueueScreen() {
+  const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();
   const {
     activeTrack,
@@ -44,11 +46,18 @@ export function PlaybackQueueScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      style={[styles.scroll, { backgroundColor: theme.background }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.kicker}>Playback queue</Text>
-        <Text style={styles.title}>Now Playing</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          Playback queue
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          Now Playing
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           Queue state is owned by the playback feature boundary.
         </Text>
       </View>
@@ -57,13 +66,19 @@ export function PlaybackQueueScreen() {
         <View style={styles.adPanel}>
           <Text style={styles.panelLabel}>Premium gate</Text>
           <Text style={styles.adTitle}>Ad break required</Text>
-          <Text style={styles.panelText}>
+          <Text style={[styles.panelText, { color: theme.secondaryText }]}>
             Queue playback commands are paused while the bundled ad plays. Your
             song resumes automatically when the ad finishes.
           </Text>
           <View style={styles.adActions}>
             <Link asChild href="/premium">
-              <Pressable accessibilityRole="button" style={styles.premiumButton}>
+              <Pressable
+                accessibilityRole="button"
+                style={[
+                  styles.premiumButton,
+                  { backgroundColor: theme.surface },
+                ]}
+              >
                 <Text style={styles.premiumText}>Open Premium</Text>
               </Pressable>
             </Link>
@@ -72,46 +87,74 @@ export function PlaybackQueueScreen() {
       ) : null}
 
       {state.queue.length === 0 ? (
-        <View style={styles.emptyPanel}>
-          <Text style={styles.emptyTitle}>Queue is empty</Text>
-          <Text style={styles.emptyBody}>
+        <View
+          style={[
+            styles.emptyPanel,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
+          <Text style={[styles.emptyTitle, { color: theme.primaryText }]}>
+            Queue is empty
+          </Text>
+          <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
             Open a song from Library to seed the rewrite playback session.
           </Text>
         </View>
       ) : (
-        <View style={styles.list}>
+        <View
+          style={[
+            styles.list,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
           {state.queue.map((song, index) => {
             const isActive = activeTrack?.id === song.id;
 
             return (
-              <View key={song.id} style={styles.row}>
+              <View
+                key={song.id}
+                style={[styles.row, { borderBottomColor: theme.borderSubtle }]}
+              >
                 <Pressable
                   accessibilityRole="button"
                   disabled={adBreakActive}
                   onPress={() => handlePlaySong(song)}
                   style={[styles.rowMain, adBreakActive ? styles.disabled : null]}
                 >
-                  <Text style={isActive ? styles.activeIndex : styles.index}>
+                  <Text
+                    style={[
+                      isActive ? styles.activeIndex : styles.index,
+                      { color: isActive ? theme.accent : theme.mutedText },
+                    ]}
+                  >
                     {index + 1}
                   </Text>
                   <View style={styles.rowText}>
-                    <Text numberOfLines={1} style={styles.songTitle}>
+                    <Text
+                      numberOfLines={1}
+                      style={[styles.songTitle, { color: theme.primaryText }]}
+                    >
                       {song.title}
                     </Text>
-                    <Text numberOfLines={1} style={styles.songMeta}>
+                    <Text
+                      numberOfLines={1}
+                      style={[styles.songMeta, { color: theme.secondaryText }]}
+                    >
                       {song.artist} / {song.album}
                     </Text>
                   </View>
-                  <Text style={styles.duration}>
+                  <Text style={[styles.duration, { color: theme.primaryText }]}>
                     {formatDuration(song.duration)}
                   </Text>
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
                   onPress={() => handleRemoveFromQueue(song.id)}
-                  style={styles.removeButton}
+                  style={[styles.removeButton, { borderColor: theme.border }]}
                 >
-                  <Text style={styles.removeText}>Remove</Text>
+                  <Text style={[styles.removeText, { color: theme.danger }]}>
+                    Remove
+                  </Text>
                 </Pressable>
                 <View style={styles.moveButtons}>
                   <Pressable
@@ -121,10 +164,13 @@ export function PlaybackQueueScreen() {
                     onPress={() => handleMoveQueueSong(song.id, "up")}
                     style={[
                       styles.moveButton,
+                      { borderColor: theme.border },
                       index === 0 ? styles.disabled : null,
                     ]}
                   >
-                    <Text style={styles.moveText}>Up</Text>
+                    <Text style={[styles.moveText, { color: theme.accent }]}>
+                      Up
+                    </Text>
                   </Pressable>
                   <Pressable
                     accessibilityLabel={`Move ${song.title} down`}
@@ -133,10 +179,13 @@ export function PlaybackQueueScreen() {
                     onPress={() => handleMoveQueueSong(song.id, "down")}
                     style={[
                       styles.moveButton,
+                      { borderColor: theme.border },
                       index === state.queue.length - 1 ? styles.disabled : null,
                     ]}
                   >
-                    <Text style={styles.moveText}>Down</Text>
+                    <Text style={[styles.moveText, { color: theme.accent }]}>
+                      Down
+                    </Text>
                   </Pressable>
                 </View>
               </View>
@@ -145,23 +194,35 @@ export function PlaybackQueueScreen() {
         </View>
       )}
 
-      <View style={styles.panel}>
-        <Text style={styles.panelLabel}>Revision</Text>
-        <Text style={styles.panelText}>{state.queueRevision}</Text>
+      <View
+        style={[
+          styles.panel,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
+          Revision
+        </Text>
+        <Text style={[styles.panelText, { color: theme.secondaryText }]}>
+          {state.queueRevision}
+        </Text>
         <Pressable
           accessibilityRole="button"
           disabled={state.queue.length === 0}
           onPress={handleClearQueue}
           style={[
             styles.clearButton,
+            { borderColor: theme.border },
             state.queue.length === 0 ? styles.disabled : null,
           ]}
         >
-          <Text style={styles.removeText}>Clear queue</Text>
+          <Text style={[styles.removeText, { color: theme.danger }]}>
+            Clear queue
+          </Text>
         </Pressable>
       </View>
 
-      <Link href="/player" style={styles.backLink}>
+      <Link href="/player" style={[styles.backLink, { color: theme.accent }]}>
         Back to player
       </Link>
     </ScrollView>
@@ -170,7 +231,6 @@ export function PlaybackQueueScreen() {
 
 const styles = StyleSheet.create({
   scroll: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
   },
   content: {
@@ -182,42 +242,35 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   kicker: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   title: {
-    color: "#121417",
     fontSize: 34,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 40,
   },
   subtitle: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
   },
   emptyPanel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 8,
     padding: 16,
   },
   emptyTitle: {
-    color: "#121417",
     fontSize: 16,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 21,
   },
   emptyBody: {
-    color: "#52605a",
     fontSize: 14,
     lineHeight: 20,
   },
@@ -242,15 +295,12 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   list: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     overflow: "hidden",
   },
   row: {
     alignItems: "center",
-    borderBottomColor: "#edf2ef",
     borderBottomWidth: 1,
     flexDirection: "row",
     gap: 12,
@@ -266,7 +316,6 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   index: {
-    color: "#74807a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
@@ -274,7 +323,6 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   activeIndex: {
-    color: "#0f766e",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
@@ -287,19 +335,16 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   songTitle: {
-    color: "#121417",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 20,
   },
   songMeta: {
-    color: "#52605a",
     fontSize: 13,
     lineHeight: 18,
   },
   duration: {
-    color: "#29322e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
@@ -308,7 +353,6 @@ const styles = StyleSheet.create({
   },
   removeButton: {
     alignItems: "center",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: "center",
@@ -322,7 +366,6 @@ const styles = StyleSheet.create({
   },
   moveButton: {
     alignItems: "center",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: "center",
@@ -334,14 +377,12 @@ const styles = StyleSheet.create({
     opacity: 0.45,
   },
   moveText: {
-    color: "#0f766e",
     fontSize: 11,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   removeText: {
-    color: "#b42318",
     fontSize: 11,
     fontWeight: "800",
     letterSpacing: 0,
@@ -365,29 +406,24 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   panel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 8,
     padding: 16,
   },
   panelLabel: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   panelText: {
-    color: "#52605a",
     fontSize: 14,
     lineHeight: 20,
   },
   clearButton: {
     alignItems: "center",
     alignSelf: "flex-start",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: "center",
@@ -395,7 +431,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   backLink: {
-    color: "#0f766e",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,

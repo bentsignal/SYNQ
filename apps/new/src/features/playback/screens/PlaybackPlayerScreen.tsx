@@ -1,5 +1,6 @@
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { usePlaybackSession } from "../hooks/use-playback-session";
 
@@ -32,6 +33,7 @@ const getProgressPercent = ({
 };
 
 export function PlaybackPlayerScreen() {
+  const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();
   const {
     activeTrack,
@@ -93,11 +95,18 @@ export function PlaybackPlayerScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      style={[styles.scroll, { backgroundColor: theme.background }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.kicker}>src/features/playback</Text>
-        <Text style={styles.title}>Player</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          src/features/playback
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          Player
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           Explicit playback session state is now available to the rewrite app.
         </Text>
       </View>
@@ -106,54 +115,85 @@ export function PlaybackPlayerScreen() {
         <View style={styles.adPanel}>
           <Text style={styles.panelLabel}>Premium gate</Text>
           <Text style={styles.adTitle}>Ad break required</Text>
-          <Text style={styles.panelText}>
+          <Text style={[styles.panelText, { color: theme.secondaryText }]}>
             Free playback pauses after 10 minutes of listening. The ad will
             resume your song when it finishes, or you can open Premium for
             ad-free listening.
           </Text>
-          <Text style={styles.panelText}>
+          <Text style={[styles.panelText, { color: theme.secondaryText }]}>
             {formatDuration(state.adGate.playbackPosition)} /{" "}
             {formatDuration(state.adGate.playbackDuration)}
           </Text>
-          <View style={styles.progressTrack}>
+          <View style={[styles.progressTrack, { backgroundColor: theme.border }]}>
             <View
-              style={[styles.progressFill, { width: `${adProgressPercent}%` }]}
+              style={[
+                styles.progressFill,
+                { backgroundColor: theme.accent, width: `${adProgressPercent}%` },
+              ]}
             />
           </View>
           <View style={styles.adActions}>
             <Link asChild href="/premium">
-              <Pressable accessibilityRole="button" style={styles.controlButton}>
-                <Text style={styles.controlText}>Open Premium</Text>
+              <Pressable
+                accessibilityRole="button"
+                style={[
+                  styles.controlButton,
+                  { backgroundColor: theme.surface, borderColor: theme.border },
+                ]}
+              >
+                <Text style={[styles.controlText, { color: theme.primaryText }]}>
+                  Open Premium
+                </Text>
               </Pressable>
             </Link>
           </View>
         </View>
       ) : null}
 
-      <View style={styles.nowPlayingPanel}>
-        <Text style={styles.panelLabel}>Now playing</Text>
+      <View
+        style={[
+          styles.nowPlayingPanel,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
+          Now playing
+        </Text>
         {activeTrack ? (
           <>
-            <Text numberOfLines={2} style={styles.trackTitle}>
+            <Text
+              numberOfLines={2}
+              style={[styles.trackTitle, { color: theme.primaryText }]}
+            >
               {activeTrack.title}
             </Text>
-            <Text numberOfLines={1} style={styles.trackMeta}>
+            <Text
+              numberOfLines={1}
+              style={[styles.trackMeta, { color: theme.secondaryText }]}
+            >
               {activeTrack.artist} / {activeTrack.album}
             </Text>
-            <Text style={styles.duration}>
+            <Text style={[styles.duration, { color: theme.primaryText }]}>
               {formatDuration(state.position)} / {formatDuration(state.duration)}
             </Text>
-            <View style={styles.progressTrack}>
+            <View style={[styles.progressTrack, { backgroundColor: theme.border }]}>
               <View
-                style={[styles.progressFill, { width: `${progressPercent}%` }]}
+                style={[
+                  styles.progressFill,
+                  { backgroundColor: theme.accent, width: `${progressPercent}%` },
+                ]}
               />
             </View>
-            <Text style={styles.progressText}>{progressPercent}% complete</Text>
+            <Text style={[styles.progressText, { color: theme.secondaryText }]}>
+              {progressPercent}% complete
+            </Text>
           </>
         ) : (
           <>
-            <Text style={styles.trackTitle}>Nothing selected</Text>
-            <Text style={styles.trackMeta}>
+            <Text style={[styles.trackTitle, { color: theme.primaryText }]}>
+              Nothing selected
+            </Text>
+            <Text style={[styles.trackMeta, { color: theme.secondaryText }]}>
               Open a song in Library and start a playback session.
             </Text>
           </>
@@ -167,10 +207,13 @@ export function PlaybackPlayerScreen() {
           onPress={handleSkipPrevious}
           style={[
             styles.controlButton,
+            { backgroundColor: theme.surface, borderColor: theme.border },
             !hasActiveTrack || adBreakActive ? styles.disabled : null,
           ]}
         >
-          <Text style={styles.controlText}>Prev</Text>
+          <Text style={[styles.controlText, { color: theme.primaryText }]}>
+            Prev
+          </Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -178,10 +221,11 @@ export function PlaybackPlayerScreen() {
           onPress={handlePlayPause}
           style={[
             styles.primaryButton,
+            { backgroundColor: theme.accent },
             !hasActiveTrack || adBreakActive ? styles.disabled : null,
           ]}
         >
-          <Text style={styles.primaryText}>
+          <Text style={[styles.primaryText, { color: theme.onAccent }]}>
             {state.isPlaying ? "Pause" : "Play"}
           </Text>
         </Pressable>
@@ -191,10 +235,13 @@ export function PlaybackPlayerScreen() {
           onPress={handleSkipNext}
           style={[
             styles.controlButton,
+            { backgroundColor: theme.surface, borderColor: theme.border },
             !hasActiveTrack || adBreakActive ? styles.disabled : null,
           ]}
         >
-          <Text style={styles.controlText}>Next</Text>
+          <Text style={[styles.controlText, { color: theme.primaryText }]}>
+            Next
+          </Text>
         </Pressable>
       </View>
 
@@ -205,12 +252,15 @@ export function PlaybackPlayerScreen() {
           onPress={rewind}
           style={[
             styles.controlButton,
+            { backgroundColor: theme.surface, borderColor: theme.border },
             !hasActiveTrack || adBreakActive || state.position <= 0
               ? styles.disabled
               : null,
           ]}
         >
-          <Text style={styles.controlText}>-15s</Text>
+          <Text style={[styles.controlText, { color: theme.primaryText }]}>
+            -15s
+          </Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
@@ -220,12 +270,15 @@ export function PlaybackPlayerScreen() {
           onPress={fastForward}
           style={[
             styles.controlButton,
+            { backgroundColor: theme.surface, borderColor: theme.border },
             !hasActiveTrack || adBreakActive || state.position >= state.duration
               ? styles.disabled
               : null,
           ]}
         >
-          <Text style={styles.controlText}>+15s</Text>
+          <Text style={[styles.controlText, { color: theme.primaryText }]}>
+            +15s
+          </Text>
         </Pressable>
       </View>
 
@@ -233,42 +286,64 @@ export function PlaybackPlayerScreen() {
         <Pressable
           accessibilityRole="button"
           onPress={handleToggleShuffle}
-          style={styles.controlButton}
+          style={[
+            styles.controlButton,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
         >
-          <Text style={styles.controlText}>
+          <Text style={[styles.controlText, { color: theme.primaryText }]}>
             Shuffle {state.mode.shuffle ? "On" : "Off"}
           </Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
           onPress={handleToggleLoop}
-          style={styles.controlButton}
+          style={[
+            styles.controlButton,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
         >
-          <Text style={styles.controlText}>
+          <Text style={[styles.controlText, { color: theme.primaryText }]}>
             Loop {state.mode.loop ? "On" : "Off"}
           </Text>
         </Pressable>
       </View>
 
-      <View style={styles.panel}>
-        <Text style={styles.panelLabel}>Session</Text>
-        <Text style={styles.panelText}>
+      <View
+        style={[
+          styles.panel,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
+          Session
+        </Text>
+        <Text style={[styles.panelText, { color: theme.secondaryText }]}>
           {state.queue.length} queued / revision {state.queueRevision}
         </Text>
-        <Text style={styles.panelText}>
+        <Text style={[styles.panelText, { color: theme.secondaryText }]}>
           Free listening before ad break:{" "}
           {formatDuration(freeListeningRemainingMs)}
         </Text>
       </View>
 
       {state.error ? (
-        <View style={styles.panel}>
-          <Text style={styles.panelLabel}>Playback Error</Text>
-          <Text style={styles.errorText}>{state.error}</Text>
+        <View
+          style={[
+            styles.panel,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
+          <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
+            Playback Error
+          </Text>
+          <Text style={[styles.errorText, { color: theme.danger }]}>
+            {state.error}
+          </Text>
         </View>
       ) : null}
 
-      <Link href="/queue" style={styles.backLink}>
+      <Link href="/queue" style={[styles.backLink, { color: theme.accent }]}>
         Open queue
       </Link>
     </ScrollView>
@@ -277,7 +352,6 @@ export function PlaybackPlayerScreen() {
 
 const styles = StyleSheet.create({
   scroll: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
   },
   content: {
@@ -289,28 +363,23 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   kicker: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   title: {
-    color: "#121417",
     fontSize: 34,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 40,
   },
   subtitle: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
   },
   nowPlayingPanel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 8,
@@ -338,44 +407,37 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   panelLabel: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   trackTitle: {
-    color: "#121417",
     fontSize: 28,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 34,
   },
   trackMeta: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
   },
   duration: {
-    color: "#29322e",
     fontSize: 18,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 24,
   },
   progressTrack: {
-    backgroundColor: "#dbe3de",
     borderRadius: 999,
     height: 8,
     overflow: "hidden",
   },
   progressFill: {
-    backgroundColor: "#0f766e",
     borderRadius: 999,
     height: "100%",
   },
   progressText: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
@@ -389,8 +451,6 @@ const styles = StyleSheet.create({
   },
   controlButton: {
     alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     flexGrow: 1,
@@ -401,7 +461,6 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     alignItems: "center",
-    backgroundColor: "#0f766e",
     borderRadius: 8,
     flexGrow: 1,
     justifyContent: "center",
@@ -413,40 +472,33 @@ const styles = StyleSheet.create({
     opacity: 0.45,
   },
   controlText: {
-    color: "#29322e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   primaryText: {
-    color: "#ffffff",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   panel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 8,
     padding: 16,
   },
   panelText: {
-    color: "#52605a",
     fontSize: 14,
     lineHeight: 20,
   },
   errorText: {
-    color: "#b42318",
     fontSize: 14,
     fontWeight: "700",
     lineHeight: 20,
   },
   backLink: {
-    color: "#0f766e",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,

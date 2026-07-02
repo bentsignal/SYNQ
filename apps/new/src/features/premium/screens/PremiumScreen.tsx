@@ -1,40 +1,53 @@
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { usePremiumPurchaseSession } from "../hooks/use-premium-purchase-session";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { usePremiumScreenController } from "../hooks/use-premium-screen-controller";
 import {
-  getPremiumActionState,
-  getPremiumStatusState,
-  getSelectedPremiumTier,
   premiumFeatureCopy,
 } from "../services/premium-screen-service";
 import type { PremiumTier } from "../types/premium-purchase";
 
 export function PremiumScreen() {
+  const theme = useCustomizationTheme();
   const {
+    actionState,
     premiumTiers,
-    purchaseSelectedTier,
+    purchase,
     reset,
-    restorePurchase,
+    restore,
     selectTier,
     state,
-  } = usePremiumPurchaseSession();
-  const selectedTier = getSelectedPremiumTier({ state, tiers: premiumTiers });
-  const actionState = getPremiumActionState({ selectedTier, state });
-  const statusState = getPremiumStatusState(state);
+    statusState,
+  } = usePremiumScreenController();
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      style={[styles.scroll, { backgroundColor: theme.background }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.kicker}>SYNQ Premium</Text>
-        <Text style={styles.title}>Premium</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          SYNQ Premium
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          Premium
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           Unlock the full library workflow and keep the app sustainable.
         </Text>
       </View>
 
-      <View style={styles.featureList}>
+      <View
+        style={[
+          styles.featureList,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
         {premiumFeatureCopy.map((feature) => (
-          <Text key={feature} style={styles.featureText}>
+          <Text
+            key={feature}
+            style={[styles.featureText, { color: theme.primaryText }]}
+          >
             {feature}
           </Text>
         ))}
@@ -47,6 +60,7 @@ export function PremiumScreen() {
             key={tier.id}
             onSelect={() => selectTier(tier.id)}
             tier={tier}
+            theme={theme}
           />
         ))}
       </View>
@@ -55,33 +69,49 @@ export function PremiumScreen() {
         <Pressable
           accessibilityRole="button"
           disabled={!actionState.canPurchase}
-          onPress={() => void purchaseSelectedTier()}
+          onPress={purchase}
           style={[
             styles.primaryButton,
+            { backgroundColor: theme.accent },
             !actionState.canPurchase ? styles.disabled : null,
           ]}
         >
-          <Text style={styles.primaryButtonText}>
+          <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
             {actionState.purchaseLabel}
           </Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
           disabled={!actionState.canRestore}
-          onPress={() => void restorePurchase()}
+          onPress={restore}
           style={[
             styles.secondaryButton,
+            { backgroundColor: theme.surface, borderColor: theme.border },
             !actionState.canRestore ? styles.disabled : null,
           ]}
         >
-          <Text style={styles.secondaryButtonText}>Restore</Text>
+          <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
+            Restore
+          </Text>
         </Pressable>
       </View>
 
-      <View style={styles.panel}>
-        <Text style={styles.panelLabel}>Status</Text>
+      <View
+        style={[
+          styles.panel,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
+          Status
+        </Text>
         <Text
-          style={statusState.isFailure ? styles.errorText : styles.panelText}
+          style={[
+            statusState.isFailure ? styles.errorText : styles.panelText,
+            {
+              color: statusState.isFailure ? theme.danger : theme.primaryText,
+            },
+          ]}
         >
           {statusState.message}
         </Text>
@@ -89,14 +119,16 @@ export function PremiumScreen() {
           <Pressable
             accessibilityRole="button"
             onPress={reset}
-            style={styles.resetButton}
+            style={[styles.resetButton, { borderColor: theme.border }]}
           >
-            <Text style={styles.resetButtonText}>Reset status</Text>
+            <Text style={[styles.resetButtonText, { color: theme.accent }]}>
+              Reset status
+            </Text>
           </Pressable>
         ) : null}
       </View>
 
-      <Link href="/(tabs)/settings" style={styles.backLink}>
+      <Link href="/(tabs)/settings" style={[styles.backLink, { color: theme.accent }]}>
         Back to Settings
       </Link>
     </ScrollView>
@@ -107,29 +139,40 @@ function PremiumTierCard({
   isSelected,
   onSelect,
   tier,
+  theme,
 }: {
   isSelected: boolean;
   onSelect: () => void;
   tier: PremiumTier;
+  theme: ReturnType<typeof useCustomizationTheme>;
 }) {
   return (
     <Pressable
       accessibilityRole="button"
       onPress={onSelect}
-      style={[styles.tierCard, isSelected ? styles.selectedTierCard : null]}
+      style={[
+        styles.tierCard,
+        { backgroundColor: theme.surface, borderColor: theme.border },
+        isSelected ? { borderColor: theme.accent, borderWidth: 2 } : null,
+      ]}
     >
       <View style={styles.tierText}>
-        <Text style={styles.tierTitle}>{tier.label}</Text>
-        <Text style={styles.tierDescription}>{tier.description}</Text>
+        <Text style={[styles.tierTitle, { color: theme.primaryText }]}>
+          {tier.label}
+        </Text>
+        <Text style={[styles.tierDescription, { color: theme.secondaryText }]}>
+          {tier.description}
+        </Text>
       </View>
-      <Text style={styles.tierPrice}>{tier.price}</Text>
+      <Text style={[styles.tierPrice, { color: theme.accent }]}>
+        {tier.price}
+      </Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   scroll: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
   },
   content: {
@@ -141,35 +184,29 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   kicker: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   title: {
-    color: "#121417",
     fontSize: 34,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 40,
   },
   subtitle: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
   },
   featureList: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 10,
     padding: 16,
   },
   featureText: {
-    color: "#29322e",
     fontSize: 14,
     fontWeight: "700",
     lineHeight: 20,
@@ -179,8 +216,6 @@ const styles = StyleSheet.create({
   },
   tierCard: {
     alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: "row",
@@ -188,29 +223,22 @@ const styles = StyleSheet.create({
     minHeight: 82,
     padding: 16,
   },
-  selectedTierCard: {
-    borderColor: "#0f766e",
-    borderWidth: 2,
-  },
   tierText: {
     flex: 1,
     gap: 5,
     minWidth: 0,
   },
   tierTitle: {
-    color: "#121417",
     fontSize: 18,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 24,
   },
   tierDescription: {
-    color: "#52605a",
     fontSize: 13,
     lineHeight: 19,
   },
   tierPrice: {
-    color: "#0f766e",
     fontSize: 18,
     fontWeight: "800",
     letterSpacing: 0,
@@ -224,7 +252,6 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     alignItems: "center",
-    backgroundColor: "#0f766e",
     borderRadius: 8,
     flexGrow: 1,
     justifyContent: "center",
@@ -234,8 +261,6 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     flexGrow: 1,
@@ -248,48 +273,40 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   primaryButtonText: {
-    color: "#ffffff",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   secondaryButtonText: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   panel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 10,
     padding: 16,
   },
   panelLabel: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   panelText: {
-    color: "#29322e",
     fontSize: 14,
     lineHeight: 20,
   },
   errorText: {
-    color: "#b42318",
     fontSize: 14,
     fontWeight: "700",
     lineHeight: 20,
   },
   resetButton: {
     alignItems: "center",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: "center",
@@ -297,14 +314,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   resetButtonText: {
-    color: "#0f766e",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   backLink: {
-    color: "#0f766e",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,

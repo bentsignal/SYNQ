@@ -175,6 +175,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     wiring now live in a controller hook instead of the screen.
   - Done: premium feature copy, selected-tier lookup, purchase/restore action
     state, and status presentation now live in a premium screen service.
+  - Done: premium purchase, restore, reset, tier selection, and status
+    aggregation now live in a controller hook, and the Premium screen now uses
+    the shared customization theme instead of hardcoded screen colors.
   - Done: privacy and customization status labels, control disabled state,
     swatch selection state, and haptic-toggle behavior now live in a settings
     screen service instead of settings screens.

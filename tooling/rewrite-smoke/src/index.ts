@@ -175,10 +175,13 @@ import {
 import {
   buildLibrarySongDetail,
   getLibrarySongDetailActionState,
+  getLibrarySongDetailBackHref,
+  getLibrarySongDetailHref,
   getLibrarySongDetailPlayerHref,
   getLibrarySongDetailMutationErrorMessage,
   getLibrarySongDeleteConfirmationCopy,
   getLibrarySongDeleteSuccessHref,
+  getLibrarySongEditHref,
   getLibrarySongRelationshipHref,
   toLibrarySongDetailPlaybackItem,
   toLibrarySongExportItem,
@@ -2538,6 +2541,15 @@ function assertLibrarySongDetailSmoke() {
     "/(tabs)/library/playlist/3",
   );
   assert.equal(getLibrarySongDetailPlayerHref(), "/player");
+  assert.equal(getLibrarySongDetailBackHref(), "/(tabs)/library");
+  assert.equal(
+    getLibrarySongDetailHref({ songId: 42 }),
+    "/(tabs)/library/song/42",
+  );
+  assert.equal(
+    getLibrarySongEditHref({ songId: 42 }),
+    "/(tabs)/library/song/edit/42",
+  );
   assert.equal(getLibrarySongDeleteSuccessHref(), "/(tabs)/library");
   assert.deepEqual(getLibrarySongDeleteConfirmationCopy(detail), {
     body: "Delete Alpha?",

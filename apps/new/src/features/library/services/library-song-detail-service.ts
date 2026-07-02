@@ -66,7 +66,11 @@ export type LibrarySongRelationshipHref =
   | `/(tabs)/library/artist/${number}`
   | `/(tabs)/library/playlist/${number}`;
 
-export type LibrarySongDetailHref = "/player" | "/(tabs)/library";
+export type LibrarySongDetailHref =
+  | "/player"
+  | "/(tabs)/library"
+  | `/(tabs)/library/song/${number}`
+  | `/(tabs)/library/song/edit/${number}`;
 
 const formatCount = (count: number, singular: string, plural = `${singular}s`) =>
   `${count} ${count === 1 ? singular : plural}`;
@@ -167,8 +171,23 @@ export const getLibrarySongRelationshipHref = ({
 export const getLibrarySongDetailPlayerHref = (): LibrarySongDetailHref =>
   "/player";
 
-export const getLibrarySongDeleteSuccessHref = (): LibrarySongDetailHref =>
+export const getLibrarySongDetailBackHref = (): LibrarySongDetailHref =>
   "/(tabs)/library";
+
+export const getLibrarySongDetailHref = ({
+  songId,
+}: {
+  songId: number;
+}): LibrarySongDetailHref => `/(tabs)/library/song/${songId}`;
+
+export const getLibrarySongEditHref = ({
+  songId,
+}: {
+  songId: number;
+}): LibrarySongDetailHref => `/(tabs)/library/song/edit/${songId}`;
+
+export const getLibrarySongDeleteSuccessHref = (): LibrarySongDetailHref =>
+  getLibrarySongDetailBackHref();
 
 export const getLibrarySongDeleteConfirmationCopy = (
   detail: LibrarySongDetail,

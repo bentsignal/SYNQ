@@ -1,6 +1,7 @@
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { getLibrarySongDetailBackHref } from "../services/library-song-detail-service";
 
 export function LibraryInvalidSongState() {
   const theme = useCustomizationTheme();
@@ -15,7 +16,7 @@ export function LibraryInvalidSongState() {
         This route needs a numeric id.
       </Text>
       <Link
-        href="/(tabs)/library"
+        href={getLibrarySongDetailBackHref()}
         style={[styles.backLink, { color: theme.accent }]}
       >
         Back to Library

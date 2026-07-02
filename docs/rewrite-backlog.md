@@ -1547,6 +1547,9 @@ endless old-app polishing loop.
    - Done: move `app/song/edit/edit.tsx` relation refresh to focus refresh
      plus `editSong` context updates from relation list rows.
    - Done: remove the remaining emit-only song event bus module.
+   - Done: song detail, edit, and back destinations now live in the song detail
+     service with smoke coverage instead of inline song component and edit
+     controller route strings.
 
 2. Playlist:
    - Done: add `useLibraryPlaylistsQuery` for the list-level library playlist

@@ -2,7 +2,10 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetailController } from "../hooks/use-library-song-detail-controller";
-import type { LibrarySongDetail } from "../services/library-song-detail-service";
+import {
+  getLibrarySongDetailBackHref,
+  type LibrarySongDetail,
+} from "../services/library-song-detail-service";
 import { LibrarySongDetailActions } from "./LibrarySongDetailActions";
 import { LibrarySongDetailHeader } from "./LibrarySongDetailHeader";
 import {
@@ -90,7 +93,7 @@ export function LibrarySongDetailView({
       />
 
       <Link
-        href="/(tabs)/library"
+        href={getLibrarySongDetailBackHref()}
         style={[styles.backLink, { color: theme.accent }]}
       >
         Back to Library

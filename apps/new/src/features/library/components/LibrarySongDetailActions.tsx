@@ -1,7 +1,10 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { LibrarySongDetailActionState } from "../services/library-song-detail-service";
+import {
+  getLibrarySongEditHref,
+  type LibrarySongDetailActionState,
+} from "../services/library-song-detail-service";
 
 type LibrarySongDetailActionsProps = {
   actionState: LibrarySongDetailActionState;
@@ -69,7 +72,7 @@ export function LibrarySongDetailActions({
         </Text>
       </Pressable>
       <Link
-        href={`/(tabs)/library/song/edit/${songId}`}
+        href={getLibrarySongEditHref({ songId })}
         style={[
           styles.secondaryButton,
           {

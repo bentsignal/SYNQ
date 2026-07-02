@@ -7,7 +7,10 @@ import {
   getLibrarySongEditActionState,
   getLibrarySongEditErrorMessage,
 } from "../services/library-song-form-service";
-import type { LibrarySongDetail } from "../services/library-song-detail-service";
+import {
+  getLibrarySongDetailHref,
+  type LibrarySongDetail,
+} from "../services/library-song-detail-service";
 
 type UseEditLibrarySongControllerParams = {
   detail: LibrarySongDetail;
@@ -60,7 +63,7 @@ export function useEditLibrarySongController({
         title,
       });
       sendHaptic("success");
-      router.replace(`/(tabs)/library/song/${songId}`);
+      router.replace(getLibrarySongDetailHref({ songId }));
     } catch (caughtError) {
       sendHaptic("error");
       setErrorMessage(getLibrarySongEditErrorMessage(caughtError));

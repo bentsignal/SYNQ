@@ -4,6 +4,7 @@ import { formatDurationMs } from "@/src/features/app-shell/services/duration-for
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionDetailSong } from "../hooks/use-library-collection-detail-query";
 import { getCollectionSongRowActionState } from "../services/library-collection-interaction-service";
+import { getLibrarySongDetailHref } from "../services/library-song-detail-service";
 
 type LibraryCollectionSongRowProps = {
   index: number;
@@ -35,7 +36,7 @@ export function LibraryCollectionSongRow({
 
   return (
     <View style={[styles.row, { borderBottomColor: theme.borderSubtle }]}>
-      <Link asChild href={`/(tabs)/library/song/${song.id}`}>
+      <Link asChild href={getLibrarySongDetailHref({ songId: song.id })}>
         <Pressable style={styles.rowLink}>
           <Text style={[styles.track, { color: theme.mutedText }]}>
             {song.track !== null ? song.track.toString() : ""}

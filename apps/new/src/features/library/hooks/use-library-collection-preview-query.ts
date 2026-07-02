@@ -1,9 +1,11 @@
 import { useMemo } from "react";
-import { db } from "@synq/db";
-import * as schema from "@synq/db/schema";
-import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
+import {
+  buildAlbumPreviewRowsQuery,
+  buildArtistPreviewRowsQuery,
+  buildPlaylistPreviewRowsQuery,
+} from "../repository/collection-preview-query-repository";
 import {
   albumRowsToPreview,
   artistRowsToPreview,
@@ -28,63 +30,9 @@ type LibraryCollectionPreviewQueryOptions = {
 export function useLibraryCollectionPreviewQuery({
   limit = 6,
 }: LibraryCollectionPreviewQueryOptions = {}) {
-  const playlists = useLiveQuery(
-    db
-      .select({
-        coverImage: schema.playlists.coverImage,
-        playlistId: schema.playlists.id,
-        playlistName: schema.playlists.name,
-        songId: schema.playlistSongs.songId,
-      })
-      .from(schema.playlists)
-      .leftJoin(
-        schema.playlistSongs,
-        eq(schema.playlists.id, schema.playlistSongs.playlistId),
-      ),
-  );
-  const albums = useLiveQuery(
-    db
-      .select({
-        albumCoverImage: schema.albums.coverImage,
-        albumId: schema.albums.id,
-        albumName: schema.albums.name,
-        artistName: schema.artists.name,
-        songId: schema.albumSongs.songId,
-        year: schema.albums.year,
-      })
-      .from(schema.albums)
-      .leftJoin(
-        schema.albumSongs,
-        eq(schema.albums.id, schema.albumSongs.albumId),
-      )
-      .leftJoin(
-        schema.artistsAlbums,
-        eq(schema.albums.id, schema.artistsAlbums.albumId),
-      )
-      .leftJoin(
-        schema.artists,
-        eq(schema.artistsAlbums.artistId, schema.artists.id),
-      ),
-  );
-  const artists = useLiveQuery(
-    db
-      .select({
-        albumId: schema.artistsAlbums.albumId,
-        artistId: schema.artists.id,
-        artistName: schema.artists.name,
-        profileImage: schema.artists.profileImage,
-        songId: schema.artistSongs.songId,
-      })
-      .from(schema.artists)
-      .leftJoin(
-        schema.artistSongs,
-        eq(schema.artists.id, schema.artistSongs.artistId),
-      )
-      .leftJoin(
-        schema.artistsAlbums,
-        eq(schema.artists.id, schema.artistsAlbums.artistId),
-      ),
-  );
+  const playlists = useLiveQuery(buildPlaylistPreviewRowsQuery());
+  const albums = useLiveQuery(buildAlbumPreviewRowsQuery());
+  const artists = useLiveQuery(buildArtistPreviewRowsQuery());
 
   const collections = useMemo(
     () => ({

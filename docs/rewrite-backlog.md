@@ -152,6 +152,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     instead of inline component route strings.
   - Done: collection preview detail-route generation now lives in the collection
     preview service instead of duplicated preview/list UI helpers.
+  - Done: collection preview playlist, album, and artist live query builders
+    now live in a repository boundary instead of the preview query hook owning
+    SQL construction.
   - Done: library collection preview empty state, columns, and row rendering now
     live in focused components instead of one large preview section.
   - Done: library collection preview empty-state copy now lives in the

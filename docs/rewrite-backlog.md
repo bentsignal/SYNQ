@@ -231,6 +231,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     home screen view.
   - Done: collection song list mutation and move/remove row action state now
     lives in the library interaction service instead of the list component.
+  - Done: collection song list empty state and row rendering now live in
+    focused components instead of the list owning every row control.
   - Done: library song edit form initialization and save action state now live
     in a form service instead of the edit screen.
   - Done: library song export snapshot hashing/staleness/mark-exported logic

@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { useInitDB } from "@synq/db";
 import { PlaybackProvider } from "@/src/features/playback/context/PlaybackProvider";
 import { PremiumEntitlementProvider } from "@/src/features/premium/context/PremiumEntitlementProvider";
+import { CustomizationSettingsProvider } from "@/src/features/settings/context/CustomizationSettingsProvider";
 import { AppNavigation } from "./AppNavigation";
 import { DatabaseStateScreen } from "./DatabaseStateScreen";
 
@@ -36,9 +37,11 @@ export function AppRoot() {
   return (
     <>
       <PremiumEntitlementProvider>
-        <PlaybackProvider>
-          <AppNavigation />
-        </PlaybackProvider>
+        <CustomizationSettingsProvider>
+          <PlaybackProvider>
+            <AppNavigation />
+          </PlaybackProvider>
+        </CustomizationSettingsProvider>
       </PremiumEntitlementProvider>
       <StatusBar style="dark" />
     </>

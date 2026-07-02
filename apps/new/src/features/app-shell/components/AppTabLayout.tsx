@@ -1,6 +1,11 @@
 import { Tabs } from "expo-router";
+import { useCustomizationSettingsContext } from "@/src/features/settings/context/CustomizationSettingsProvider";
+import { getCustomizationOption } from "@/src/features/settings/services/customization-settings-service";
 
 export function AppTabLayout() {
+  const { state } = useCustomizationSettingsContext();
+  const activeTheme = getCustomizationOption(state.settings.theme);
+
   return (
     <Tabs
       screenOptions={{
@@ -8,7 +13,7 @@ export function AppTabLayout() {
         sceneStyle: {
           backgroundColor: "#f4f7f5",
         },
-        tabBarActiveTintColor: "#0f766e",
+        tabBarActiveTintColor: activeTheme.color,
         tabBarInactiveTintColor: "#5f6d66",
         tabBarLabelStyle: {
           fontSize: 12,

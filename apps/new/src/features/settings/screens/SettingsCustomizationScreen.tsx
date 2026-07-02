@@ -8,8 +8,11 @@ import {
   View,
 } from "react-native";
 import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
-import { useCustomizationSettings } from "../hooks/use-customization-settings";
-import { customizationOptions } from "../services/customization-settings-service";
+import { useCustomizationSettingsContext } from "../context/CustomizationSettingsProvider";
+import {
+  customizationOptions,
+  getCustomizationOption,
+} from "../services/customization-settings-service";
 import type { CustomizationColorKey } from "../types/customization-settings";
 
 type ColorOptionRowProps = {
@@ -63,7 +66,8 @@ export function SettingsCustomizationScreen() {
     setHapticsEnabled,
     setTheme,
     state: customizationState,
-  } = useCustomizationSettings();
+  } = useCustomizationSettingsContext();
+  const activeTheme = getCustomizationOption(customizationState.settings.theme);
   const themeControlsDisabled =
     !premiumState.active || customizationState.status === "loading";
   const isSaving = customizationState.status === "saving";
@@ -90,7 +94,12 @@ export function SettingsCustomizationScreen() {
             </Text>
           </View>
           <Link asChild href="/premium">
-            <Pressable style={styles.premiumButton}>
+            <Pressable
+              style={[
+                styles.premiumButton,
+                { backgroundColor: activeTheme.color },
+              ]}
+            >
               <Text style={styles.premiumButtonText}>Premium</Text>
             </Pressable>
           </Link>
@@ -123,7 +132,7 @@ export function SettingsCustomizationScreen() {
           disabled={customizationState.status === "loading"}
           onValueChange={setHapticsEnabled}
           thumbColor="#ffffff"
-          trackColor={{ false: "#cfd8d3", true: "#0f766e" }}
+          trackColor={{ false: "#cfd8d3", true: activeTheme.color }}
           value={customizationState.settings.hapticsEnabled}
         />
       </View>

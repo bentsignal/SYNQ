@@ -18,6 +18,10 @@ export const customizationOptions: CustomizationOption[] = [
   { color: "#eddd92", key: "yellow", label: "Yellow" },
 ];
 
+export const getCustomizationOption = (key: CustomizationColorKey) =>
+  customizationOptions.find((option) => option.key === key) ??
+  customizationOptions[0];
+
 export const defaultCustomizationSettings: CustomizationSettings = {
   appIcon: "blue",
   hapticsEnabled: true,

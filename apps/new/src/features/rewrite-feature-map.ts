@@ -56,7 +56,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/premium",
     targetBoundary: "src/features/premium + src/features/settings",
-    nextMilestone: "Apply saved customization state to the app shell, native icon handling, import/playback gates, privacy, haptics, and support flows.",
+    nextMilestone: "Apply customization deeper across feature screens, native icon handling, import/playback gates, privacy, haptics, and support flows.",
   },
 ];
 

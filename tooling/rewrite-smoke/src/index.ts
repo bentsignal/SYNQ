@@ -95,6 +95,7 @@ import {
   getCollectionPlaybackPlan,
   getCollectionQueuePlan,
   getCollectionSongListState,
+  getCollectionSongOrderUpdate,
   getCollectionSongRowActionState,
   getDeleteCollectionConfirmationCopy,
   getPlayableCollectionSongs,
@@ -1548,6 +1549,30 @@ function assertLibraryCollectionInteractionSmoke() {
   assert.equal(
     reorderCollectionSongs({ direction: "down", songId: 99, songs }),
     songs,
+  );
+  assert.deepEqual(
+    getCollectionSongOrderUpdate({
+      direction: "down",
+      songId: 1,
+      songs,
+    }),
+    { songIds: [2, 1, 3] },
+  );
+  assert.deepEqual(
+    getCollectionSongOrderUpdate({
+      direction: "up",
+      songId: 1,
+      songs,
+    }),
+    { songIds: [1, 2, 3] },
+  );
+  assert.deepEqual(
+    getCollectionSongOrderUpdate({
+      direction: "down",
+      songId: 99,
+      songs,
+    }),
+    { songIds: [1, 2, 3] },
   );
   assert.deepEqual(
     getCollectionSongListState({ movingSongId: null, removingSongId: null }),

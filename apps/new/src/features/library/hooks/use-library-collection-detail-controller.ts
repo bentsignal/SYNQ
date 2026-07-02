@@ -15,8 +15,8 @@ import {
   getCollectionPlaybackPlan,
   getCollectionQueuePlan,
   getCollectionDetailMutationErrorMessage,
+  getCollectionSongOrderUpdate,
   getDeleteCollectionConfirmationCopy,
-  reorderCollectionSongs,
 } from "../services/library-collection-interaction-service";
 import type {
   LibraryCollectionDetail,
@@ -159,7 +159,7 @@ export function useLibraryCollectionDetailController({
     setMutationError(null);
 
     try {
-      const reorderedSongs = reorderCollectionSongs({
+      const orderUpdate = getCollectionSongOrderUpdate({
         direction,
         songId,
         songs: detail.songs,
@@ -168,7 +168,7 @@ export function useLibraryCollectionDetailController({
       await updateCollectionSongOrder({
         collectionId: id,
         kind,
-        songIds: reorderedSongs.map((song) => song.id),
+        songIds: orderUpdate.songIds,
       });
       sendHaptic("light");
     } catch (caughtError) {

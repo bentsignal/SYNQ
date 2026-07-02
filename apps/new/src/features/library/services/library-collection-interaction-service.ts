@@ -176,6 +176,20 @@ export const reorderCollectionSongs = ({
   return nextSongs;
 };
 
+export const getCollectionSongOrderUpdate = ({
+  direction,
+  songId,
+  songs,
+}: {
+  direction: "down" | "up";
+  songId: number;
+  songs: LibraryCollectionDetailSong[];
+}) => ({
+  songIds: reorderCollectionSongs({ direction, songId, songs }).map(
+    (song) => song.id,
+  ),
+});
+
 export const getCollectionSongListState = ({
   movingSongId,
   removingSongId,

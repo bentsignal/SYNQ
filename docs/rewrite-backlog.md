@@ -141,6 +141,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: create-collection image picking, validation, create mutations,
     haptics, navigation, and mutation-error workflows now live in a controller
     hook instead of the screen.
+  - Done: collection create/edit field, artwork, validation, save, and library
+    back-link rendering now share one focused form component instead of
+    duplicating route-screen presentation.
   - Done: collection create/edit preview initials and save button labels now
     live in the collection form service instead of screen-local formatting.
   - Done: playback queue row/action state now lives in the playback service

@@ -6,10 +6,12 @@ import type {
   LibraryCollectionDetailKind,
 } from "../services/library-collection-detail-service";
 import {
-  collectionDetailMutationReducer,
   getCollectionDetailActionState,
-  initialCollectionDetailMutationState,
 } from "../services/library-collection-interaction-service";
+import {
+  collectionDetailMutationReducer,
+  initialCollectionDetailMutationState,
+} from "../services/library-collection-mutation-service";
 
 type UseLibraryCollectionDetailMutationsParams = {
   detail: LibraryCollectionDetail;

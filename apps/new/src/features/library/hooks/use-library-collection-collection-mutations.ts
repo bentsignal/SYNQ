@@ -6,10 +6,12 @@ import type {
   LibraryCollectionDetailKind,
 } from "../services/library-collection-detail-service";
 import {
-  getCollectionDetailMutationErrorMessage,
   type CollectionDetailActionState,
-  type CollectionDetailMutationAction,
 } from "../services/library-collection-interaction-service";
+import {
+  getCollectionDetailMutationErrorMessage,
+  type CollectionDetailMutationAction,
+} from "../services/library-collection-mutation-service";
 
 type CollectionDetailMutationDispatch = (
   action: CollectionDetailMutationAction,

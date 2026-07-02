@@ -149,25 +149,27 @@ import {
 } from "../../../apps/new/src/features/library/services/add-collection-songs-interaction-service";
 import {
   canDeleteLibraryCollection,
-  collectionDetailMutationReducer,
   getCollectionAddSongsHref,
   getCollectionDetailActionState,
   getCollectionDetailStatusState,
   getCollectionDetailViewState,
   getCollectionEditHref,
-  getCollectionDetailMutationErrorMessage,
   getCollectionListHref,
-  getCollectionSongListState,
-  getCollectionSongOrderUpdate,
-  getCollectionSongRowActionState,
   getDeleteCollectionConfirmationCopy,
   getLibraryCollectionBackHref,
   getLibraryInvalidCollectionState,
   getLibraryCollectionSongEmptyState,
   getPlayableCollectionSongs,
+} from "../../../apps/new/src/features/library/services/library-collection-interaction-service";
+import {
+  collectionDetailMutationReducer,
+  getCollectionDetailMutationErrorMessage,
+  getCollectionSongListState,
+  getCollectionSongOrderUpdate,
+  getCollectionSongRowActionState,
   initialCollectionDetailMutationState,
   reorderCollectionSongs,
-} from "../../../apps/new/src/features/library/services/library-collection-interaction-service";
+} from "../../../apps/new/src/features/library/services/library-collection-mutation-service";
 import {
   getCollectionPlaybackCommandPlan,
   getCollectionPlaybackPlan,

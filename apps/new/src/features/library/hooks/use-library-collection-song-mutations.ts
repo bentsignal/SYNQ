@@ -11,7 +11,7 @@ import {
   getCollectionDetailMutationErrorMessage,
   getCollectionSongOrderUpdate,
   type CollectionDetailMutationAction,
-} from "../services/library-collection-interaction-service";
+} from "../services/library-collection-mutation-service";
 
 type CollectionDetailMutationDispatch = (
   action: CollectionDetailMutationAction,

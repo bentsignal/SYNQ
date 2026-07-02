@@ -196,6 +196,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: collection detail collection-level export/delete workflows and
     per-song move/remove workflows now live in separate hooks instead of one
     mutation coordinator owning every command path.
+  - Done: collection detail mutation reducer, fallback mutation copy, song
+    reorder math, and row mutation state now live in a focused mutation service
+    instead of the broader collection interaction module.
   - Done: collection detail destructive delete confirmation, repository call,
     haptics, mutation state, and post-delete navigation now live in a focused
     delete command hook instead of the collection mutation hook.

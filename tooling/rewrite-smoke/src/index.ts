@@ -214,6 +214,7 @@ import {
   getAddCollectionSongsHeaderState,
   getAddCollectionSongsStatusState,
   getAddCollectionSongsUpdatedLabel,
+  rowsToLinkedSongIds,
   rowsToAddableCollectionSongs,
 } from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
 import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
@@ -3077,6 +3078,12 @@ function assertAddableCollectionSongsSmoke() {
   );
   assert.equal(sorted[1]?.artist, "Unknown");
   assert.equal(sorted[1]?.title, "Untitled song");
+  assert.deepEqual(
+    Array.from(
+      rowsToLinkedSongIds([{ songId: 7 }, { songId: null }, { songId: 9 }]),
+    ),
+    [7, 9],
+  );
 }
 
 function assertLibrarySongDetailSmoke() {

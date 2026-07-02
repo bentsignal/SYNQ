@@ -182,6 +182,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     album, artist, and playlist edits do not subscribe to unrelated tables.
   - Done: add-to-collection routes now mount kind-specific relationship live
     queries so adding songs only subscribes to the active collection kind.
+  - Done: add-to-collection addable-song and linked-song live query builders
+    now live in a repository boundary instead of the addable-song query hook
+    owning SQL construction.
   - Done: collection detail routes now mount kind-specific live query hooks so
     playlist, album, and artist detail screens do not subscribe to unrelated
     collection tables.
@@ -619,6 +622,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     the live query fan-out at the route component boundary.
   - Done: preserve addable-song shaping smoke coverage while reducing
     add-to-collection relationship query fan-out.
+  - Done: extend addable-song smoke coverage to linked relationship row
+    normalization for null-safe linked song IDs.
   - Done: preserve collection detail shaping smoke coverage while reducing
     collection detail route live query fan-out.
   - Done: extend song detail smoke coverage to liked-state derivation from the

@@ -15,6 +15,10 @@ export type AddableCollectionSongRow = {
   title: string | null;
 };
 
+export type AddableCollectionLinkedSongRow = {
+  songId: number | null;
+};
+
 export type AddCollectionSongsCollectionKind = "album" | "artist" | "playlist";
 
 export type AddCollectionSongsStatusState = {
@@ -137,6 +141,13 @@ export const getAddCollectionSongsBackLink = ({
   href: getAddCollectionSongsBackHref({ collectionId, kind }),
   label: "Back to collection",
 });
+
+export const rowsToLinkedSongIds = (
+  rows: readonly AddableCollectionLinkedSongRow[] = [],
+) =>
+  new Set(
+    rows.flatMap((row) => (row.songId === null ? [] : [row.songId])),
+  );
 
 export const rowsToAddableCollectionSongs = ({
   linkedSongIds,

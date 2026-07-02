@@ -97,6 +97,12 @@ import type {
   PremiumPurchaseState,
   PremiumTier,
 } from "../../../apps/new/src/features/premium/types/premium-purchase";
+import {
+  getCustomizationOptionState,
+  getCustomizationScreenState,
+  getPrivacyScreenState,
+  shouldSendHapticForHapticsToggle,
+} from "../../../apps/new/src/features/settings/services/settings-screen-service";
 
 const song = ({
   duration = 180_000,
@@ -1905,12 +1911,85 @@ function assertPremiumScreenSmoke() {
   });
 }
 
+function assertSettingsScreenSmoke() {
+  assert.deepEqual(getPrivacyScreenState({ status: "loading" }), {
+    isAnalyticsDisabled: true,
+    statusLabel: "Loading",
+  });
+  assert.deepEqual(getPrivacyScreenState({ status: "saving" }), {
+    isAnalyticsDisabled: false,
+    statusLabel: "Saving",
+  });
+  assert.deepEqual(getPrivacyScreenState({ status: "idle" }), {
+    isAnalyticsDisabled: false,
+    statusLabel: "Saved locally",
+  });
+  assert.deepEqual(
+    getCustomizationScreenState({ premiumActive: false, status: "idle" }),
+    {
+      hapticsDisabled: false,
+      showPremiumPanel: true,
+      statusLabel: "Preferences saved locally",
+      themeControlsDisabled: true,
+    },
+  );
+  assert.deepEqual(
+    getCustomizationScreenState({ premiumActive: true, status: "loading" }),
+    {
+      hapticsDisabled: true,
+      showPremiumPanel: false,
+      statusLabel: "Preferences saved locally",
+      themeControlsDisabled: true,
+    },
+  );
+  assert.deepEqual(
+    getCustomizationScreenState({ premiumActive: true, status: "saving" }),
+    {
+      hapticsDisabled: false,
+      showPremiumPanel: false,
+      statusLabel: "Saving",
+      themeControlsDisabled: false,
+    },
+  );
+  assert.deepEqual(
+    getCustomizationOptionState({
+      disabled: false,
+      optionKey: "blue",
+      selectedKey: "blue",
+    }),
+    {
+      accessibilityState: { disabled: false, selected: true },
+      isSelected: true,
+    },
+  );
+  assert.deepEqual(
+    getCustomizationOptionState({
+      disabled: true,
+      optionKey: "mint",
+      selectedKey: "blue",
+    }),
+    {
+      accessibilityState: { disabled: true, selected: false },
+      isSelected: false,
+    },
+  );
+  assert.equal(
+    shouldSendHapticForHapticsToggle({ hapticsEnabled: true }),
+    true,
+  );
+  assert.equal(
+    shouldSendHapticForHapticsToggle({ hapticsEnabled: false }),
+    false,
+  );
+}
+
 assertDurationFormatSmoke();
 assertRouteParamSmoke();
 assertHomeScreenSmoke();
 assertImportSongFormSmoke();
 assertBackupScreenSmoke();
 assertPremiumScreenSmoke();
+assertSettingsScreenSmoke();
 assertPlaybackSessionSmoke();
 assertPlaybackPlayerStateSmoke();
 assertImportSessionSmoke();

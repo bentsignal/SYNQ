@@ -17,6 +17,11 @@ import { useHapticFeedback } from "../hooks/use-haptic-feedback";
 import {
   customizationOptions,
 } from "../services/customization-settings-service";
+import {
+  getCustomizationOptionState,
+  getCustomizationScreenState,
+  shouldSendHapticForHapticsToggle,
+} from "../services/settings-screen-service";
 import type { CustomizationColorKey } from "../types/customization-settings";
 
 type ColorOptionRowProps = {
@@ -41,19 +46,23 @@ function ColorOptionRow({
       </Text>
       <View style={styles.swatchRow}>
         {customizationOptions.map((option) => {
-          const isSelected = selectedKey === option.key;
+          const optionState = getCustomizationOptionState({
+            disabled,
+            optionKey: option.key,
+            selectedKey,
+          });
 
           return (
             <Pressable
               accessibilityRole="button"
-              accessibilityState={{ disabled, selected: isSelected }}
+              accessibilityState={optionState.accessibilityState}
               disabled={disabled}
               key={option.key}
               onPress={() => onSelect(option.key)}
               style={[
                 styles.swatchButton,
                 { borderColor: theme.border },
-                isSelected && {
+                optionState.isSelected && {
                   borderColor: theme.accent,
                   borderWidth: 2,
                 },
@@ -85,9 +94,10 @@ export function SettingsCustomizationScreen() {
   } = useCustomizationSettingsContext();
   const { sendHaptic } = useHapticFeedback();
   const theme = useCustomizationTheme();
-  const themeControlsDisabled =
-    !premiumState.active || customizationState.status === "loading";
-  const isSaving = customizationState.status === "saving";
+  const screenState = getCustomizationScreenState({
+    premiumActive: premiumState.active,
+    status: customizationState.status,
+  });
   const handleSetTheme = (themeKey: CustomizationColorKey) => {
     sendHaptic("light");
     void setTheme(themeKey);
@@ -97,7 +107,11 @@ export function SettingsCustomizationScreen() {
     void setAppIcon(appIcon);
   };
   const handleSetHapticsEnabled = (hapticsEnabled: boolean) => {
-    if (customizationState.settings.hapticsEnabled) {
+    if (
+      shouldSendHapticForHapticsToggle({
+        hapticsEnabled: customizationState.settings.hapticsEnabled,
+      })
+    ) {
       sendHaptic("light");
     }
 
@@ -120,11 +134,11 @@ export function SettingsCustomizationScreen() {
           Make SYNQ feel a little more like yours.
         </Text>
         <Text style={[styles.statusText, { color: theme.accent }]}>
-          {isSaving ? "Saving" : "Preferences saved locally"}
+          {screenState.statusLabel}
         </Text>
       </View>
 
-      {!premiumState.active && (
+      {screenState.showPremiumPanel && (
         <View
           style={[
             styles.premiumPanel,
@@ -171,14 +185,14 @@ export function SettingsCustomizationScreen() {
         ]}
       >
         <ColorOptionRow
-          disabled={themeControlsDisabled}
+          disabled={screenState.themeControlsDisabled}
           onSelect={handleSetTheme}
           selectedKey={customizationState.settings.theme}
           theme={theme}
           title="Theme"
         />
         <ColorOptionRow
-          disabled={themeControlsDisabled}
+          disabled={screenState.themeControlsDisabled}
           onSelect={handleSetAppIcon}
           selectedKey={customizationState.settings.appIcon}
           theme={theme}
@@ -201,7 +215,7 @@ export function SettingsCustomizationScreen() {
           </Text>
         </View>
         <Switch
-          disabled={customizationState.status === "loading"}
+          disabled={screenState.hapticsDisabled}
           onValueChange={handleSetHapticsEnabled}
           thumbColor={theme.surface}
           trackColor={{ false: "#cfd8d3", true: theme.accent }}

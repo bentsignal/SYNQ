@@ -9,13 +9,13 @@ import {
 import { useCustomizationTheme } from "../hooks/use-customization-theme";
 import { useHapticFeedback } from "../hooks/use-haptic-feedback";
 import { usePrivacySettings } from "../hooks/use-privacy-settings";
+import { getPrivacyScreenState } from "../services/settings-screen-service";
 
 export function SettingsPrivacyScreen() {
   const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();
   const { setAllowAnalytics, state } = usePrivacySettings();
-  const isLoading = state.status === "loading";
-  const isSaving = state.status === "saving";
+  const screenState = getPrivacyScreenState({ status: state.status });
 
   return (
     <ScrollView
@@ -33,7 +33,7 @@ export function SettingsPrivacyScreen() {
           Control local preferences for analytics and diagnostics.
         </Text>
         <Text style={[styles.statusText, { color: theme.accent }]}>
-          {isLoading ? "Loading" : isSaving ? "Saving" : "Saved locally"}
+          {screenState.statusLabel}
         </Text>
       </View>
 
@@ -53,7 +53,7 @@ export function SettingsPrivacyScreen() {
           </Text>
         </View>
         <Switch
-          disabled={isLoading}
+          disabled={screenState.isAnalyticsDisabled}
           onValueChange={(allowAnalytics) => {
             sendHaptic("light");
             void setAllowAnalytics(allowAnalytics);

@@ -97,6 +97,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     presentation now live in a backup screen service instead of the screen.
   - Done: premium feature copy, selected-tier lookup, purchase/restore action
     state, and status presentation now live in a premium screen service.
+  - Done: privacy and customization status labels, control disabled state,
+    swatch selection state, and haptic-toggle behavior now live in a settings
+    screen service instead of settings screens.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -175,6 +178,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     premium badges, running disabled state, confirmation copy, and status text.
   - Done: extend deterministic smoke coverage to premium feature copy,
     selected-tier lookup, loading guards, action labels, and status text.
+  - Done: extend deterministic smoke coverage to privacy/customization status
+    labels, Premium locks, loading guards, swatch state, and haptic-toggle
+    behavior.
 
 ### Phase 3: New App Build-Out
 

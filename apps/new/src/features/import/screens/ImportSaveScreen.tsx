@@ -16,11 +16,10 @@ export function ImportSaveScreen() {
   const { sendHaptic } = useHapticFeedback();
   const [exportError, setExportError] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
-  const { canDiscard, canExport, canFinish, isWorking } =
-    getImportSaveActionState({
-      isExporting,
-      state,
-    });
+  const actionState = getImportSaveActionState({
+    isExporting,
+    state,
+  });
 
   return (
     <ScrollView
@@ -72,7 +71,7 @@ export function ImportSaveScreen() {
         <View style={styles.actionRow}>
           <Pressable
             accessibilityRole="button"
-            disabled={!canExport}
+            disabled={!actionState.canExport}
             onPress={async () => {
               setExportError(null);
               setIsExporting(true);
@@ -94,16 +93,16 @@ export function ImportSaveScreen() {
             style={[
               styles.secondaryButton,
               { backgroundColor: theme.surface, borderColor: theme.border },
-              !canExport ? styles.disabled : null,
+              !actionState.canExport ? styles.disabled : null,
             ]}
           >
             <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
-              {isExporting ? "Exporting" : "Export"}
+              {actionState.exportLabel}
             </Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            disabled={!canFinish}
+            disabled={!actionState.canFinish}
             onPress={async () => {
               sendHaptic("medium");
               const succeeded = await saveImportSession();
@@ -113,16 +112,16 @@ export function ImportSaveScreen() {
             style={[
               styles.primaryButton,
               { backgroundColor: theme.accent },
-              !canFinish ? styles.disabled : null,
+              !actionState.canFinish ? styles.disabled : null,
             ]}
           >
             <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
-              {isWorking ? "Finishing" : "Finish"}
+              {actionState.finishLabel}
             </Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            disabled={!canDiscard}
+            disabled={!actionState.canDiscard}
             onPress={async () => {
               sendHaptic("medium");
               const discarded = await discardSession();
@@ -132,11 +131,11 @@ export function ImportSaveScreen() {
             style={[
               styles.secondaryButton,
               { backgroundColor: theme.surface, borderColor: theme.border },
-              !canDiscard ? styles.disabled : null,
+              !actionState.canDiscard ? styles.disabled : null,
             ]}
           >
             <Text style={[styles.secondaryButtonText, { color: theme.danger }]}>
-              Discard
+              {actionState.discardLabel}
             </Text>
           </Pressable>
         </View>

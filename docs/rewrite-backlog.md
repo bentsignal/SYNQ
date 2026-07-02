@@ -100,6 +100,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: privacy and customization status labels, control disabled state,
     swatch selection state, and haptic-toggle behavior now live in a settings
     screen service instead of settings screens.
+  - Done: import save export/finish/discard labels now live with save action
+    availability in the import session service instead of the save screen.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -181,6 +183,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: extend deterministic smoke coverage to privacy/customization status
     labels, Premium locks, loading guards, swatch state, and haptic-toggle
     behavior.
+  - Done: extend deterministic smoke coverage to import save export, finish,
+    and discard labels across empty, ready, exporting, and saving states.
 
 ### Phase 3: New App Build-Out
 

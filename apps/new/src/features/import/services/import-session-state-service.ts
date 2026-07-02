@@ -48,6 +48,9 @@ export const getImportSaveActionState = ({
     canDiscard: !isWorking,
     canExport: hasSongs && !isWorking,
     canFinish: hasSongs && !isWorking,
+    discardLabel: "Discard",
+    exportLabel: isExporting ? "Exporting" : "Export",
+    finishLabel: isWorking ? "Finishing" : "Finish",
     hasSongs,
     isWorking,
   };

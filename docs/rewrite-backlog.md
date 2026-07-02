@@ -89,7 +89,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     removed or discarded. Staged import sessions now persist a validated
     manifest across route/provider remounts while keeping staged audio in cache.
     Wi-Fi transfer now falls back across a small local port range and reports
-    the active port. Deeper manual smoke is next.
+    the active port. Import review can also export staged draft files before
+    save/discard. Deeper manual smoke is next.
   - Backup/restore: feature-owned backup screen and command-state boundary
     exist; backup archive/share, restore document picking/unzip/reset, and
     erase document cleanup/database reset are connected. The backup command
@@ -1120,3 +1121,5 @@ endless old-app polishing loop.
   playable songs in a collection, backed by a feature-owned export service.
 - Done: add new-app song detail actions for toggling Liked Songs and deleting a
   library song through feature-owned repository commands.
+- Done: add import-review export for staged draft files through a feature-owned
+  draft export service.

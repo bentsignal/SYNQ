@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Link, router } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { shareImportDraftSongs } from "@/src/features/export/services/import-draft-export-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { ImportPremiumGate } from "../components/ImportPremiumGate";
@@ -11,8 +13,11 @@ export function ImportSaveScreen() {
     useImportSession();
   const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
   const canFinish = state.songs.length > 0;
-  const isWorking = state.phase === "saving" || state.phase === "discarding";
+  const isWorking =
+    state.phase === "saving" || state.phase === "discarding" || isExporting;
 
   return (
     <ScrollView
@@ -66,6 +71,37 @@ export function ImportSaveScreen() {
             accessibilityRole="button"
             disabled={!canFinish || isWorking}
             onPress={async () => {
+              setExportError(null);
+              setIsExporting(true);
+
+              try {
+                await shareImportDraftSongs(state.songs);
+                sendHaptic("success");
+              } catch (error) {
+                sendHaptic("error");
+                setExportError(
+                  error instanceof Error
+                    ? error.message
+                    : "Staged songs could not be exported.",
+                );
+              } finally {
+                setIsExporting(false);
+              }
+            }}
+            style={[
+              styles.secondaryButton,
+              { backgroundColor: theme.surface, borderColor: theme.border },
+              !canFinish || isWorking ? styles.disabled : null,
+            ]}
+          >
+            <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
+              {isExporting ? "Exporting" : "Export"}
+            </Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            disabled={!canFinish || isWorking}
+            onPress={async () => {
               sendHaptic("medium");
               const succeeded = await saveImportSession();
               sendHaptic(succeeded ? "success" : "error");
@@ -101,6 +137,19 @@ export function ImportSaveScreen() {
             </Text>
           </Pressable>
         </View>
+
+        {exportError ? (
+          <View
+            style={[
+              styles.errorPanel,
+              { backgroundColor: theme.surface, borderColor: theme.border },
+            ]}
+          >
+            <Text style={[styles.errorText, { color: theme.danger }]}>
+              {exportError}
+            </Text>
+          </View>
+        ) : null}
       </ImportPremiumGate>
 
       <Link href="/(tabs)/import/files" style={[styles.backLink, { color: theme.accent }]}>
@@ -202,5 +251,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,
+  },
+  errorPanel: {
+    borderRadius: 8,
+    borderWidth: 1,
+    padding: 14,
+  },
+  errorText: {
+    fontSize: 14,
+    fontWeight: "700",
+    lineHeight: 20,
   },
 });

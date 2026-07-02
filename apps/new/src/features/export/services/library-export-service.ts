@@ -1,27 +1,14 @@
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
+import {
+  assertSharingAvailable,
+  getExportFileNameFromPath,
+} from "./export-file-service";
 
 export type ExportableLibrarySong = {
   id: number;
   pathToFile: string | null;
   title: string;
-};
-
-const sanitizeFileName = (value: string) =>
-  value.replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "") || "song";
-
-const getFileNameFromPath = (path: string, fallback: string) => {
-  const rawName = decodeURIComponent(path.split("/").filter(Boolean).at(-1) ?? "");
-
-  return sanitizeFileName(rawName || fallback);
-};
-
-const assertSharingAvailable = async () => {
-  const available = await Sharing.isAvailableAsync();
-
-  if (!available) {
-    throw new Error("Sharing is unavailable on this device.");
-  }
 };
 
 const getPlayableSongs = (songs: ExportableLibrarySong[]) =>
@@ -56,7 +43,7 @@ export async function shareLibrarySongs(songs: ExportableLibrarySong[]) {
   try {
     for (let index = 0; index < playableSongs.length; index += 1) {
       const song = playableSongs[index];
-      const fileName = getFileNameFromPath(
+      const fileName = getExportFileNameFromPath(
         song.pathToFile,
         `${index + 1}-${song.title}`,
       );

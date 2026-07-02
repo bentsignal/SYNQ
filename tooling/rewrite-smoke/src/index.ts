@@ -27,6 +27,7 @@ import {
   rowsToCollectionDetailSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-detail-service";
 import {
+  getAddableSongRowState,
   getPlayableCollectionSongs,
   getSelectedAddableSongIds,
   removeSongIdSelection,
@@ -440,6 +441,30 @@ function assertLibraryCollectionInteractionSmoke() {
       removeSongIdSelection({ selectedSongIds: new Set([1, 3]), songId: 3 }),
     ),
     [1],
+  );
+  assert.deepEqual(
+    getAddableSongRowState({
+      savingSongId: null,
+      selectedSongIds: new Set([1]),
+      song: addableSongs[0]!,
+    }),
+    { isDisabled: false, isSaving: false, isSelected: true },
+  );
+  assert.deepEqual(
+    getAddableSongRowState({
+      savingSongId: 1,
+      selectedSongIds: new Set([1]),
+      song: addableSongs[0]!,
+    }),
+    { isDisabled: true, isSaving: true, isSelected: true },
+  );
+  assert.deepEqual(
+    getAddableSongRowState({
+      savingSongId: null,
+      selectedSongIds: new Set([2]),
+      song: addableSongs[1]!,
+    }),
+    { isDisabled: true, isSaving: false, isSelected: false },
   );
 }
 

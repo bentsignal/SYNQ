@@ -74,3 +74,23 @@ export const removeSongIdSelection = ({
 
   return nextSelection;
 };
+
+export const getAddableSongRowState = ({
+  savingSongId,
+  selectedSongIds,
+  song,
+}: {
+  savingSongId: number | null;
+  selectedSongIds: Set<number>;
+  song: AddableCollectionSong;
+}) => {
+  const isSaving = savingSongId === song.id;
+  const isDisabled = song.isLinked || isSaving;
+  const isSelected = selectedSongIds.has(song.id) && !song.isLinked;
+
+  return {
+    isDisabled,
+    isSaving,
+    isSelected,
+  };
+};

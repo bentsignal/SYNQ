@@ -22,6 +22,7 @@ import {
   addSongsToCollection,
 } from "../repository/relationship-repository";
 import {
+  getAddableSongRowState,
   getSelectedAddableSongIds,
   removeSongIdSelection,
   toggleSongIdSelection,
@@ -313,9 +314,11 @@ function AddableSongList({
       ]}
     >
       {songs.map((song) => {
-        const isSaving = savingSongId === song.id;
-        const isDisabled = song.isLinked || isSaving;
-        const isSelected = selectedSongIds.has(song.id) && !song.isLinked;
+        const { isDisabled, isSaving, isSelected } = getAddableSongRowState({
+          savingSongId,
+          selectedSongIds,
+          song,
+        });
 
         return (
           <View

@@ -94,6 +94,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import staged-song edit initial field state and required-title copy
     now live in the import song form service with deterministic smoke coverage
     instead of controller-local formatting.
+  - Done: import staged-song edit field labels, placeholders, and return-key
+    state now live in the import song form service with deterministic smoke
+    coverage instead of component-local form copy.
   - Done: collection detail playable-song filtering and optimistic reorder
     helpers now live in a library service instead of the detail screen.
   - Done: add-to-collection bulk selection derivation and selection set updates

@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TextInput } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { getImportSongEditFieldState } from "../services/import-song-form-service";
 
 type EditImportSongFieldsProps = {
   album: string;
@@ -23,6 +24,7 @@ export function EditImportSongFields({
   track,
 }: EditImportSongFieldsProps) {
   const theme = useCustomizationTheme();
+  const fieldState = getImportSongEditFieldState();
   const inputStyle = [
     styles.input,
     {
@@ -34,50 +36,58 @@ export function EditImportSongFields({
 
   return (
     <>
-      <Text style={[styles.label, { color: theme.primaryText }]}>Title</Text>
+      <Text style={[styles.label, { color: theme.primaryText }]}>
+        {fieldState.title.label}
+      </Text>
       <TextInput
         autoCapitalize="words"
         autoCorrect={false}
         onChangeText={onChangeTitle}
-        placeholder="Song title"
+        placeholder={fieldState.title.placeholder}
         placeholderTextColor={theme.mutedText}
-        returnKeyType="next"
+        returnKeyType={fieldState.title.returnKeyType}
         style={inputStyle}
         value={title}
       />
 
-      <Text style={[styles.label, { color: theme.primaryText }]}>Artist</Text>
+      <Text style={[styles.label, { color: theme.primaryText }]}>
+        {fieldState.artist.label}
+      </Text>
       <TextInput
         autoCapitalize="words"
         autoCorrect={false}
         onChangeText={onChangeArtist}
-        placeholder="Artist"
+        placeholder={fieldState.artist.placeholder}
         placeholderTextColor={theme.mutedText}
-        returnKeyType="next"
+        returnKeyType={fieldState.artist.returnKeyType}
         style={inputStyle}
         value={artist}
       />
 
-      <Text style={[styles.label, { color: theme.primaryText }]}>Album</Text>
+      <Text style={[styles.label, { color: theme.primaryText }]}>
+        {fieldState.album.label}
+      </Text>
       <TextInput
         autoCapitalize="words"
         autoCorrect={false}
         onChangeText={onChangeAlbum}
-        placeholder="Album"
+        placeholder={fieldState.album.placeholder}
         placeholderTextColor={theme.mutedText}
-        returnKeyType="next"
+        returnKeyType={fieldState.album.returnKeyType}
         style={inputStyle}
         value={album}
       />
 
-      <Text style={[styles.label, { color: theme.primaryText }]}>Track</Text>
+      <Text style={[styles.label, { color: theme.primaryText }]}>
+        {fieldState.track.label}
+      </Text>
       <TextInput
         inputMode="numeric"
         keyboardType="number-pad"
         onChangeText={onChangeTrack}
-        placeholder="Track number"
+        placeholder={fieldState.track.placeholder}
         placeholderTextColor={theme.mutedText}
-        returnKeyType="done"
+        returnKeyType={fieldState.track.returnKeyType}
         style={inputStyle}
         value={track}
       />

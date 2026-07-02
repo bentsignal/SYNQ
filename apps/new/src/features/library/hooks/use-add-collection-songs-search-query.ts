@@ -1,10 +1,21 @@
-import { useState } from "react";
+import { useReducer } from "react";
+import {
+  addCollectionSongsSearchReducer,
+  initialAddCollectionSongsSearchState,
+} from "../services/library-collection-interaction-service";
 
 export function useAddCollectionSongsSearchQuery() {
-  const [query, setQuery] = useState("");
+  const [state, dispatch] = useReducer(
+    addCollectionSongsSearchReducer,
+    initialAddCollectionSongsSearchState,
+  );
+
+  const setQuery = (query: string) => {
+    dispatch({ query, type: "set-query" });
+  };
 
   return {
-    query,
+    query: state.query,
     setQuery,
   };
 }

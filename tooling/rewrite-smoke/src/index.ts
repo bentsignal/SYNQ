@@ -137,6 +137,7 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-detail-service";
 import {
   addCollectionSongsControllerReducer,
+  addCollectionSongsSearchReducer,
   canDeleteLibraryCollection,
   collectionDetailMutationReducer,
   getAddCollectionSongsMutationErrorMessage,
@@ -163,6 +164,7 @@ import {
   getPlayableCollectionSongs,
   getSelectedAddableSongIds,
   initialAddCollectionSongsControllerState,
+  initialAddCollectionSongsSearchState,
   initialCollectionDetailMutationState,
   removeSongIdSelection,
   reorderCollectionSongs,
@@ -2459,6 +2461,18 @@ function assertLibraryCollectionInteractionSmoke() {
       mutationError: null,
       savingSongId: null,
       selectedSongIds: [],
+    },
+  );
+  assert.deepEqual(initialAddCollectionSongsSearchState, {
+    query: "",
+  });
+  assert.deepEqual(
+    addCollectionSongsSearchReducer(initialAddCollectionSongsSearchState, {
+      query: "ambient",
+      type: "set-query",
+    }),
+    {
+      query: "ambient",
     },
   );
   const selectedAddControllerState = addCollectionSongsControllerReducer(

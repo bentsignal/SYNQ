@@ -56,7 +56,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Playback: explicit session state, queue/player screens, an Expo Audio
     adapter for play/pause/seek/skip, native status/progress sync,
     filesystem-backed session persistence, queue reordering, and player
-    progress controls, active-track removal handling, queue clearing, and
+    progress controls, active-track removal handling, queue clearing, a
+    tab-shell mini player for active tracks, and
     persisted Premium/free-listening ad gate state with bundled ad audio
     playback exist. Remote command semantics for play/pause/next/previous/seek,
     queue-ended, and error handling now exist behind the provider boundary;
@@ -164,7 +165,7 @@ connected to RevenueCat pricing, purchase, restore commands, and an app-wide
 entitlement provider consumed by Settings, Backup, and Customization. Settings
 now owns persisted theme, app icon, haptic, and privacy analytics preference
 state, plus support/contact routes;
-the app shell, loading/placeholder states, settings screens, library home,
+the app shell, loading states, settings screens, library home,
 library shared summary/search/sort/preview/list components, library
 create/edit/detail/add-song surfaces, playback player/queue surfaces, and the
 backup command surface, import home/files/save/result/Wi-Fi/edit, shared import

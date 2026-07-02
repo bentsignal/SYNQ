@@ -125,7 +125,11 @@ import {
   getCollectionRequiredNameMessage,
   normalizeCollectionName,
 } from "../../../apps/new/src/features/library/services/collection-metadata-service";
-import { rowsToAddableCollectionSongs } from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
+import {
+  getAddCollectionSongsBackHref,
+  getAddCollectionSongsUpdatedLabel,
+  rowsToAddableCollectionSongs,
+} from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
 import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
 import {
   filterCollectionPreviews,
@@ -2168,6 +2172,25 @@ function assertLibrarySongPreviewSmoke() {
 }
 
 function assertAddableCollectionSongsSmoke() {
+  assert.equal(
+    getAddCollectionSongsUpdatedLabel({ updatedAt: 0 }),
+    "Waiting for library data",
+  );
+  assert.equal(
+    getAddCollectionSongsUpdatedLabel({
+      formatTime: (updatedAt) => `smoke-${updatedAt}`,
+      updatedAt: 123,
+    }),
+    "Updated smoke-123",
+  );
+  assert.equal(
+    getAddCollectionSongsBackHref({
+      collectionId: 7,
+      kind: "playlist",
+    }),
+    "/(tabs)/library/playlist/7",
+  );
+
   const songs = rowsToAddableCollectionSongs({
     linkedSongIds: new Set([2]),
     query: "featured",

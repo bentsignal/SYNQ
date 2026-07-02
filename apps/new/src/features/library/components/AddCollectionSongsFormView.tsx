@@ -1,7 +1,10 @@
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { AddableCollectionSong } from "../services/addable-collection-songs-service";
+import {
+  getAddCollectionSongsBackHref,
+  type AddableCollectionSong,
+} from "../services/addable-collection-songs-service";
 import type { AddableSongSelectionState } from "../services/library-collection-interaction-service";
 import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
 import { AddCollectionSongsHeader } from "./AddCollectionSongsHeader";
@@ -78,7 +81,7 @@ export function AddCollectionSongsFormView({
       />
 
       <Link
-        href={`/(tabs)/library/${kind}/${collectionId}`}
+        href={getAddCollectionSongsBackHref({ collectionId, kind })}
         style={[styles.backLink, { color: theme.accent }]}
       >
         Back to collection

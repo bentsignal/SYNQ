@@ -3,6 +3,7 @@ import type {
 } from "../hooks/use-addable-collection-songs-query";
 import { useAddCollectionSongsController } from "../hooks/use-add-collection-songs-controller";
 import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
+import { getAddCollectionSongsUpdatedLabel } from "../services/addable-collection-songs-service";
 import { AddCollectionSongsFormView } from "./AddCollectionSongsFormView";
 
 type AddCollectionSongsConnectedFormProps = {
@@ -22,10 +23,7 @@ export function AddCollectionSongsConnectedForm({
 }: AddCollectionSongsConnectedFormProps) {
   const { errors, songs, updatedAt } = addable;
   const hasErrors = errors.length > 0;
-  const updatedLabel =
-    updatedAt > 0
-      ? `Updated ${new Date(updatedAt).toLocaleTimeString()}`
-      : "Waiting for library data";
+  const updatedLabel = getAddCollectionSongsUpdatedLabel({ updatedAt });
   const {
     addSelectedSongs,
     addSong,

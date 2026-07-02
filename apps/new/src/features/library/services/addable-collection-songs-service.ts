@@ -15,6 +15,8 @@ export type AddableCollectionSongRow = {
   title: string | null;
 };
 
+export type AddCollectionSongsCollectionKind = "album" | "artist" | "playlist";
+
 type AddableSongAccumulator = {
   albumNames: Set<string>;
   artistNames: Set<string>;
@@ -46,6 +48,25 @@ const matchesQuery = (song: AddableCollectionSong, query: string) => {
     value.toLowerCase().includes(query),
   );
 };
+
+export const getAddCollectionSongsUpdatedLabel = ({
+  formatTime = (updatedAt) => new Date(updatedAt).toLocaleTimeString(),
+  updatedAt,
+}: {
+  formatTime?: (updatedAt: number) => string;
+  updatedAt: number;
+}) =>
+  updatedAt > 0
+    ? `Updated ${formatTime(updatedAt)}`
+    : "Waiting for library data";
+
+export const getAddCollectionSongsBackHref = ({
+  collectionId,
+  kind,
+}: {
+  collectionId: number;
+  kind: AddCollectionSongsCollectionKind;
+}) => `/(tabs)/library/${kind}/${collectionId}` as const;
 
 export const rowsToAddableCollectionSongs = ({
   linkedSongIds,

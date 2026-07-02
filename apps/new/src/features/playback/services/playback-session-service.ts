@@ -1,13 +1,16 @@
 import type { PlaybackQueueItem, PlaybackState } from "../types/playback-state";
 import {
-  beginPlaybackAdBreak,
-  completePlaybackAdBreak,
   initialPlaybackAdGateState,
   resetPlaybackAdGate,
-  trackPlaybackAdProgress,
-  updatePlaybackAdBreakProgress,
 } from "./playback-ad-gate-service";
 import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
+import {
+  applyPlaybackNativeStatus,
+  beginPlaybackAdBreakTransition,
+  completePlaybackAdBreakTransition,
+  finishPlaybackNativeTrack,
+  syncPlaybackPremiumState,
+} from "./playback-native-transition-service";
 import {
   findQueueIndex,
   getReplacementTrackAfterRemoval,
@@ -243,18 +246,9 @@ export const playbackReducer = (
       });
     }
     case "begin-ad-break":
-      return {
-        ...state,
-        adGate: beginPlaybackAdBreak(state.adGate),
-        isPlaying: false,
-      };
+      return beginPlaybackAdBreakTransition(state);
     case "complete-ad-break":
-      return {
-        ...state,
-        adGate: completePlaybackAdBreak(state.adGate),
-        error: null,
-        isPlaying: state.activeTrackId !== null,
-      };
+      return completePlaybackAdBreakTransition(state);
     case "native-failure":
       return {
         ...state,
@@ -262,69 +256,21 @@ export const playbackReducer = (
         isPlaying: false,
       };
     case "native-status":
-      if (!action.status.isLoaded) {
-        return state;
-      }
-
-      if (action.status.source === "ad") {
-        return {
-          ...state,
-          adGate: updatePlaybackAdBreakProgress({
-            duration: action.status.duration,
-            position: action.status.position,
-            state: state.adGate,
-          }),
-          isPlaying: false,
-        };
-      }
-
-      return {
-        ...state,
-        adGate: action.status.isPlaying
-          ? trackPlaybackAdProgress({
-              currentPosition: action.status.position,
-              gate: state.adGate,
-              premiumActive: action.premiumActive,
-            })
-          : state.adGate,
-        duration: action.status.duration ?? state.duration,
-        isPlaying: action.status.isPlaying,
-        position: Math.max(0, action.status.position),
-      };
-    case "native-finished": {
-      const nextTrack =
-        action.targetIndex === null
-          ? null
-          : state.queue[action.targetIndex] ?? null;
-
-      if (!nextTrack) {
-        return {
-          ...state,
-          isPlaying: false,
-          position: state.duration,
-        };
-      }
-
-      return {
-        ...state,
-        activeQueueIndex: action.targetIndex,
-        activeTrackId: nextTrack.id,
-        duration: nextTrack.duration ?? 0,
-        isPlaying: true,
-        position: 0,
-      };
-    }
+      return applyPlaybackNativeStatus({
+        premiumActive: action.premiumActive,
+        state,
+        status: action.status,
+      });
+    case "native-finished":
+      return finishPlaybackNativeTrack({
+        state,
+        targetIndex: action.targetIndex,
+      });
     case "sync-premium":
-      return {
-        ...state,
-        adGate: action.premiumActive
-          ? resetPlaybackAdGate(state.adGate)
-          : state.adGate,
-        isPlaying:
-          action.premiumActive && state.adGate.active
-            ? state.activeTrackId !== null
-            : state.isPlaying,
-      };
+      return syncPlaybackPremiumState({
+        premiumActive: action.premiumActive,
+        state,
+      });
     case "toggle-loop":
       return {
         ...state,

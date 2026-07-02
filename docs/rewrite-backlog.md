@@ -76,6 +76,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: library collection list filtering, empty labels, and query status
     labels now live in the collection list service instead of screen-local
     state shaping.
+  - Done: edit collection routes now mount kind-specific live query hooks so
+    album, artist, and playlist edits do not subscribe to unrelated tables.
   - Done: import files and Wi-Fi presentation/action state now lives in the
     import session service instead of entry screens.
   - Done: shared collection create/edit form action state now lives in the
@@ -144,6 +146,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     fallbacks.
   - Done: extend deterministic smoke coverage to edit-collection query state,
     image resolution, year formatting, and loaded-missing fallbacks.
+  - Done: preserve edit-collection query shaping smoke coverage while reducing
+    the live query fan-out at the route component boundary.
   - Done: extend deterministic smoke coverage to collection form year parsing
     for blank, valid, and invalid album year inputs.
   - Done: extend deterministic smoke coverage to collection list search

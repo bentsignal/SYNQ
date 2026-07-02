@@ -7,33 +7,52 @@ import {
   buildEditCollectionState,
   type EditCollectionAlbumRow,
   type EditCollectionArtistRow,
-  type EditCollectionKind,
   type EditCollectionPlaylistRow,
 } from "../services/edit-collection-query-service";
-
-type EditCollectionQueryOptions = {
-  id: number;
-  kind: EditCollectionKind;
-};
 
 export type { EditCollectionKind } from "../services/edit-collection-query-service";
 
 const getSmallImagePath = (imageHash: string) =>
   getImagePathFromHash(imageHash).pathToSmallImage;
 
-export function useEditCollectionQuery({
-  id,
-  kind,
-}: EditCollectionQueryOptions) {
-  const playlist = useLiveQuery(
-    db
-      .select({
-        coverImage: schema.playlists.coverImage,
-        name: schema.playlists.name,
-      })
-      .from(schema.playlists)
-      .where(eq(schema.playlists.id, id)),
-  );
+const mapAlbumEditQuery = (album: ReturnType<typeof useEditAlbumRowQuery>) => ({
+  error: album.error,
+  ...buildEditCollectionState({
+    albumRow: album.data?.[0] as EditCollectionAlbumRow | undefined,
+    getImagePath: getSmallImagePath,
+    hasLoaded: Boolean(album.updatedAt),
+    kind: "album" as const,
+  }),
+  updatedAt: album.updatedAt,
+});
+
+const mapArtistEditQuery = (
+  artist: ReturnType<typeof useEditArtistRowQuery>,
+) => ({
+  error: artist.error,
+  ...buildEditCollectionState({
+    artistRow: artist.data?.[0] as EditCollectionArtistRow | undefined,
+    getImagePath: getSmallImagePath,
+    hasLoaded: Boolean(artist.updatedAt),
+    kind: "artist" as const,
+  }),
+  updatedAt: artist.updatedAt,
+});
+
+const mapPlaylistEditQuery = (
+  playlist: ReturnType<typeof useEditPlaylistRowQuery>,
+) => ({
+  error: playlist.error,
+  ...buildEditCollectionState({
+    getImagePath: getSmallImagePath,
+    hasLoaded: Boolean(playlist.updatedAt),
+    kind: "playlist" as const,
+    playlistRow: playlist.data?.[0] as EditCollectionPlaylistRow | undefined,
+  }),
+  updatedAt: playlist.updatedAt,
+});
+
+function useEditAlbumRowQuery(id: number) {
   const album = useLiveQuery(
     db
       .select({
@@ -44,6 +63,11 @@ export function useEditCollectionQuery({
       .from(schema.albums)
       .where(eq(schema.albums.id, id)),
   );
+
+  return album;
+}
+
+function useEditArtistRowQuery(id: number) {
   const artist = useLiveQuery(
     db
       .select({
@@ -54,40 +78,37 @@ export function useEditCollectionQuery({
       .where(eq(schema.artists.id, id)),
   );
 
-  if (kind === "album") {
-    return {
-      error: album.error,
-      ...buildEditCollectionState({
-        albumRow: album.data?.[0] as EditCollectionAlbumRow | undefined,
-        getImagePath: getSmallImagePath,
-        hasLoaded: Boolean(album.updatedAt),
-        kind,
-      }),
-      updatedAt: album.updatedAt,
-    };
-  }
+  return artist;
+}
 
-  if (kind === "artist") {
-    return {
-      error: artist.error,
-      ...buildEditCollectionState({
-        artistRow: artist.data?.[0] as EditCollectionArtistRow | undefined,
-        getImagePath: getSmallImagePath,
-        hasLoaded: Boolean(artist.updatedAt),
-        kind,
-      }),
-      updatedAt: artist.updatedAt,
-    };
-  }
+function useEditPlaylistRowQuery(id: number) {
+  const playlist = useLiveQuery(
+    db
+      .select({
+        coverImage: schema.playlists.coverImage,
+        name: schema.playlists.name,
+      })
+      .from(schema.playlists)
+      .where(eq(schema.playlists.id, id)),
+  );
 
-  return {
-    error: playlist.error,
-    ...buildEditCollectionState({
-      getImagePath: getSmallImagePath,
-      hasLoaded: Boolean(playlist.updatedAt),
-      kind,
-      playlistRow: playlist.data?.[0] as EditCollectionPlaylistRow | undefined,
-    }),
-    updatedAt: playlist.updatedAt,
-  };
+  return playlist;
+}
+
+export function useEditAlbumCollectionQuery({ id }: { id: number }) {
+  const album = useEditAlbumRowQuery(id);
+
+  return mapAlbumEditQuery(album);
+}
+
+export function useEditArtistCollectionQuery({ id }: { id: number }) {
+  const artist = useEditArtistRowQuery(id);
+
+  return mapArtistEditQuery(artist);
+}
+
+export function useEditPlaylistCollectionQuery({ id }: { id: number }) {
+  const playlist = useEditPlaylistRowQuery(id);
+
+  return mapPlaylistEditQuery(playlist);
 }

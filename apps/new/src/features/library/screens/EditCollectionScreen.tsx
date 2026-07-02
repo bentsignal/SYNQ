@@ -12,7 +12,11 @@ import {
 import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { useEditCollectionQuery } from "../hooks/use-edit-collection-query";
+import {
+  useEditAlbumCollectionQuery,
+  useEditArtistCollectionQuery,
+  useEditPlaylistCollectionQuery,
+} from "../hooks/use-edit-collection-query";
 import {
   updateAlbum,
   updateArtist,
@@ -99,12 +103,51 @@ function EditCollectionContent({
   id: number;
   kind: CollectionKind;
 }) {
+  if (kind === "album") {
+    return <EditAlbumCollectionContent id={id} />;
+  }
+
+  if (kind === "artist") {
+    return <EditArtistCollectionContent id={id} />;
+  }
+
+  return <EditPlaylistCollectionContent id={id} />;
+}
+
+function EditAlbumCollectionContent({ id }: { id: number }) {
+  const collection = useEditAlbumCollectionQuery({ id });
+
+  return <EditCollectionForm id={id} kind="album" collection={collection} />;
+}
+
+function EditArtistCollectionContent({ id }: { id: number }) {
+  const collection = useEditArtistCollectionQuery({ id });
+
+  return <EditCollectionForm id={id} kind="artist" collection={collection} />;
+}
+
+function EditPlaylistCollectionContent({ id }: { id: number }) {
+  const collection = useEditPlaylistCollectionQuery({ id });
+
+  return <EditCollectionForm id={id} kind="playlist" collection={collection} />;
+}
+
+type EditCollectionFormProps = {
+  collection: ReturnType<typeof useEditAlbumCollectionQuery>;
+  id: number;
+  kind: CollectionKind;
+};
+
+function EditCollectionForm({
+  collection,
+  id,
+  kind,
+}: EditCollectionFormProps) {
   const router = useRouter();
   const { sendHaptic } = useHapticFeedback();
   const theme = useCustomizationTheme();
   const copy = labels[kind];
   const imageLabel = kind === "artist" ? "Profile image" : "Cover image";
-  const collection = useEditCollectionQuery({ id, kind });
   const [image, setImage] = useState<{
     dataUrl: string;
     fileName: string;

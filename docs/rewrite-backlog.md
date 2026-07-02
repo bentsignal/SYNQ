@@ -117,6 +117,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     side effects now live in a focused hook instead of the provider body.
   - Done: playback native status listener, ad completion, and native status
     dispatch now live in a focused hook instead of the provider body.
+  - Done: playback command, queue mutation, remote command, and native adapter
+    orchestration now lives in a controller hook instead of the provider body.
   - Done: rewrite verification hygiene scans now include new app route files,
     not only feature implementation files.
   - Done: import files and Wi-Fi presentation/action state now lives in the
@@ -209,6 +211,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     provider ad-gate orchestration into a hook.
   - Done: keep playback reducer native-status and ad-completion coverage intact
     while moving native listener wiring into a hook.
+  - Done: keep playback reducer queue/ad-gate smoke coverage intact while
+    moving playback command orchestration into a hook.
   - Done: extend rewrite verification gates to route-file event, console,
     dimensions, and AsyncStorage scans.
   - Done: extend deterministic smoke coverage to collection form year parsing

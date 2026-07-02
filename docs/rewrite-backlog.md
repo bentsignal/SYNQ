@@ -76,7 +76,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     preference-aware haptics, and staged-file cleanup now runs when songs are
     removed or discarded. Staged import sessions now persist a validated
     manifest across route/provider remounts while keeping staged audio in cache.
-    Wi-Fi port resilience and deeper manual smoke are next.
+    Wi-Fi transfer now falls back across a small local port range and reports
+    the active port. Deeper manual smoke is next.
   - Backup/restore: feature-owned backup screen and command-state boundary
     exist; backup archive/share, restore document picking/unzip/reset, and
     erase document cleanup/database reset are connected. The backup command

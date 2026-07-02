@@ -14,7 +14,7 @@ import {
 } from "../services/wifi-upload-request";
 import { useImportSession } from "./use-import-session";
 
-const wifiImportPort = 3000;
+const wifiImportPorts = [3000, 3001, 3002, 3003, 3004] as const;
 
 const getTransferSize = (postData: unknown) => {
   if (!postData || typeof postData !== "object") {
@@ -42,6 +42,7 @@ export function useWifiImportServer() {
   const [error, setError] = useState<string | null>(null);
   const [ipAddress, setIpAddress] = useState("");
   const [isReady, setIsReady] = useState(false);
+  const [port, setPort] = useState<number | null>(null);
   const beginWifiTransferRef = useRef(beginWifiTransfer);
   const failSessionRef = useRef(failSession);
   const finishWifiTransferRef = useRef(finishWifiTransfer);
@@ -80,7 +81,7 @@ export function useWifiImportServer() {
   }, []);
 
   useEffect(() => {
-    const server = new BridgeServer("synq_import_service", true);
+    let activeServer: BridgeServer | null = null;
 
     const handleRoot = async (_request: BridgeRequest, response: BridgeResponse) => {
       response.html(getWifiTransferPage());
@@ -199,14 +200,36 @@ export function useWifiImportServer() {
       }
     };
 
-    try {
-      server.listen(wifiImportPort);
+    const registerRoutes = (server: BridgeServer) => {
       server.get("/", handleRoot);
       server.get("/reset", handleReset);
       server.get("/checkConnection", handleConnection);
       server.post("/startTransfer", handleStartTransfer);
       server.post("/finishTransfer", handleFinishTransfer);
       server.post("/fileUpload", handleFileUpload);
+    };
+
+    try {
+      for (const nextPort of wifiImportPorts) {
+        const server = new BridgeServer("synq_import_service", true);
+
+        try {
+          server.listen(nextPort);
+          registerRoutes(server);
+          activeServer = server;
+          setPort(nextPort);
+          break;
+        } catch {
+          server.stop();
+        }
+      }
+
+      if (!activeServer) {
+        throw new Error(
+          `Wi-Fi transfer server could not start on ports ${wifiImportPorts.join(", ")}.`,
+        );
+      }
+
       setError(null);
       setIsReady(true);
     } catch (caughtError) {
@@ -216,17 +239,20 @@ export function useWifiImportServer() {
           : "Wi-Fi transfer server could not start.",
       );
       setIsReady(false);
+      setPort(null);
     }
 
     return () => {
       setIsReady(false);
-      server.stop();
+      setPort(null);
+      activeServer?.stop();
     };
   }, []);
 
   return {
-    address: ipAddress ? `http://${ipAddress}:${wifiImportPort}` : "",
+    address: ipAddress && port ? `http://${ipAddress}:${port}` : "",
     error,
     isReady,
+    port,
   };
 }

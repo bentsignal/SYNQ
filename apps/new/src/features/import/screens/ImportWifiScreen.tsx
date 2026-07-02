@@ -19,7 +19,7 @@ function ImportWifiContent() {
   const { removeImportSongs, state } = useImportSession();
   const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();
-  const { address, error, isReady } = useWifiImportServer();
+  const { address, error, isReady, port } = useWifiImportServer();
   const hasSongs = state.songs.length > 0;
   const isTransferring = state.source === "wifi" && state.phase === "processing";
   const progressLabel =
@@ -75,6 +75,11 @@ function ImportWifiContent() {
                 : "Server ready"
               : "Starting server"}
         </Text>
+        {port ? (
+          <Text style={[styles.portText, { color: theme.secondaryText }]}>
+            Listening on port {port}
+          </Text>
+        ) : null}
         {error ? (
           <Text style={[styles.errorText, { color: theme.danger }]}>
             {error}
@@ -191,6 +196,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "800",
     lineHeight: 18,
+  },
+  portText: {
+    fontSize: 12,
+    lineHeight: 17,
   },
   progressPanel: {
     alignItems: "center",

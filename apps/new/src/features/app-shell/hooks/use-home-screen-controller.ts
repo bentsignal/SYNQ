@@ -17,3 +17,5 @@ export function useHomeScreenController() {
     summary,
   };
 }
+
+export type HomeScreenController = ReturnType<typeof useHomeScreenController>;

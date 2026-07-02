@@ -264,6 +264,7 @@ import type { BackupSessionState } from "../../../apps/new/src/features/backup/t
 import {
   getPremiumActionState,
   getPremiumMutationErrorMessage,
+  getPremiumScreenState,
   getPremiumStatusState,
   getSelectedPremiumTier,
   premiumFeatureCopy,
@@ -4363,6 +4364,17 @@ function assertPremiumScreenSmoke() {
     "Customization controls",
     "Support future SYNQ development",
   ]);
+  assert.deepEqual(getPremiumScreenState(), {
+    backLink: {
+      href: "/(tabs)/settings",
+      label: "Back to Settings",
+    },
+    header: {
+      kicker: "SYNQ Premium",
+      subtitle: "Unlock the full library workflow and keep the app sustainable.",
+      title: "Premium",
+    },
+  });
   assert.equal(
     getSelectedPremiumTier({ state: idleState, tiers })?.label,
     "Yearly",

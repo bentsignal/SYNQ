@@ -1,8 +1,8 @@
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getSettingsHomeHref } from "@/src/features/settings/services/settings-screen-service";
 import type { PremiumScreenController } from "../hooks/use-premium-screen-controller";
+import { getPremiumScreenState } from "../services/premium-screen-service";
 import { PremiumActionRow } from "./PremiumActionRow";
 import { PremiumFeatureList } from "./PremiumFeatureList";
 import { PremiumStatusPanel } from "./PremiumStatusPanel";
@@ -21,6 +21,7 @@ export function PremiumScreenView({
   statusState,
 }: PremiumScreenViewProps) {
   const theme = useCustomizationTheme();
+  const screenState = getPremiumScreenState();
 
   return (
     <ScrollView
@@ -29,13 +30,13 @@ export function PremiumScreenView({
     >
       <View style={styles.header}>
         <Text style={[styles.kicker, { color: theme.accent }]}>
-          SYNQ Premium
+          {screenState.header.kicker}
         </Text>
         <Text style={[styles.title, { color: theme.primaryText }]}>
-          Premium
+          {screenState.header.title}
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          Unlock the full library workflow and keep the app sustainable.
+          {screenState.header.subtitle}
         </Text>
       </View>
 
@@ -62,10 +63,10 @@ export function PremiumScreenView({
       />
 
       <Link
-        href={getSettingsHomeHref()}
+        href={screenState.backLink.href}
         style={[styles.backLink, { color: theme.accent }]}
       >
-        Back to Settings
+        {screenState.backLink.label}
       </Link>
     </ScrollView>
   );

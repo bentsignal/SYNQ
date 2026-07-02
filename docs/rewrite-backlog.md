@@ -405,6 +405,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     with deterministic smoke coverage.
   - Done: premium feature copy, selected-tier lookup, purchase/restore action
     state, and status presentation now live in a premium screen service.
+  - Done: premium screen header copy and settings back-link presentation now
+    live in the premium screen service with smoke coverage instead of the view.
   - Done: premium purchase, restore, reset, tier selection, and status
     aggregation now live in a controller hook, and the Premium screen now uses
     the shared customization theme instead of hardcoded screen colors.

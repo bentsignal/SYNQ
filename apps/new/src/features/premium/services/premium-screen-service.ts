@@ -2,6 +2,7 @@ import type {
   PremiumPurchaseState,
   PremiumTier,
 } from "../types/premium-purchase";
+import { getSettingsBackLink } from "../../settings/services/settings-screen-service";
 
 export const premiumFeatureCopy = [
   "Unlimited library import",
@@ -9,6 +10,15 @@ export const premiumFeatureCopy = [
   "Customization controls",
   "Support future SYNQ development",
 ];
+
+export const getPremiumScreenState = () => ({
+  backLink: getSettingsBackLink(),
+  header: {
+    kicker: "SYNQ Premium",
+    subtitle: "Unlock the full library workflow and keep the app sustainable.",
+    title: "Premium",
+  },
+});
 
 export const getSelectedPremiumTier = ({
   state,

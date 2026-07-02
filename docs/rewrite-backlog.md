@@ -325,6 +325,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     derivation now live in a controller hook instead of the player screen.
   - Done: Expo Audio native status-to-playback snapshot translation now lives
     in a pure playback service with deterministic smoke coverage.
+  - Done: playback native command planning for resume, skip next/previous, and
+    active-track removal now lives in a pure playback service with deterministic
+    smoke coverage instead of being embedded in the command hook.
   - Done: playback player ad gate, now-playing, controls, session, and error
     panels now live in focused components instead of the route screen.
   - Done: import Premium gate access state, checking copy, and error

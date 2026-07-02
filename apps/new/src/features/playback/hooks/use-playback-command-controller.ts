@@ -4,13 +4,14 @@ import {
   type PlaybackRemoteCommand,
   type PlaybackRemoteCommandResult,
 } from "../services/playback-remote-command-service";
-import { clearPersistedPlaybackState } from "../services/playback-persistence-service";
 import {
-  getActiveTrack,
-  getNextQueueIndex,
-  getPreviousTrack,
-  getReplacementTrackAfterRemoval,
-} from "../services/playback-queue-service";
+  getRemoveFromQueueNativeCommandPlan,
+  getResumeNativeCommandPlan,
+  getSkipNextNativeCommandPlan,
+  getSkipPreviousNativeCommandPlan,
+  type PlaybackNativeCommandPlan,
+} from "../services/playback-native-command-plan-service";
+import { clearPersistedPlaybackState } from "../services/playback-persistence-service";
 import type { PlaybackAction } from "../services/playback-session-service";
 import type { TrackPlayerAdapter } from "../services/track-player-adapter";
 import type {
@@ -56,6 +57,31 @@ export function usePlaybackCommandController({
   runNativeCommand,
   stateRef,
 }: UsePlaybackCommandControllerParams): PlaybackCommands {
+  const runNativeCommandPlan = useCallback(
+    (plan: PlaybackNativeCommandPlan) => {
+      switch (plan.type) {
+        case "noop":
+          return;
+        case "pause":
+          runNativeCommand(() => adapter.pause());
+          return;
+        case "play":
+          runNativeCommand(() => adapter.play(plan.track));
+          return;
+        case "resume":
+          runNativeCommand(() => adapter.resume());
+          return;
+        case "seek":
+          runNativeCommand(() => adapter.seekTo(plan.position));
+          return;
+        case "stop":
+          runNativeCommand(() => adapter.stop());
+          return;
+      }
+    },
+    [adapter, runNativeCommand],
+  );
+
   const runAdGatedCommand = useCallback(
     (command: () => void) => {
       if (canRunPlaybackCommand()) {
@@ -85,54 +111,43 @@ export function usePlaybackCommandController({
 
   const pause = useCallback(() => {
     dispatch({ type: "pause" });
-    runNativeCommand(() => adapter.pause());
-  }, [adapter, dispatch, runNativeCommand]);
+    runNativeCommandPlan({ type: "pause" });
+  }, [dispatch, runNativeCommandPlan]);
 
   const resume = useCallback(() => {
     runAdGatedCommand(() => {
-      const activeSong = getActiveTrack(stateRef.current);
-
       dispatch({ type: "resume" });
-      runNativeCommand(() => (activeSong ? adapter.resume() : Promise.resolve()));
+      runNativeCommandPlan(getResumeNativeCommandPlan(stateRef.current));
     });
-  }, [adapter, dispatch, runAdGatedCommand, runNativeCommand, stateRef]);
+  }, [dispatch, runAdGatedCommand, runNativeCommandPlan, stateRef]);
 
   const seekTo = useCallback(
     (position: number) => {
       runAdGatedCommand(() => {
         dispatch({ position, type: "seek-to" });
-        runNativeCommand(() => adapter.seekTo(position));
+        runNativeCommandPlan({ position, type: "seek" });
       });
     },
-    [adapter, dispatch, runAdGatedCommand, runNativeCommand],
+    [dispatch, runAdGatedCommand, runNativeCommandPlan],
   );
 
   const skipNext = useCallback(() => {
     runAdGatedCommand(() => {
-      const targetIndex = getNextQueueIndex({
-        activeQueueIndex: stateRef.current.activeQueueIndex,
-        loop: stateRef.current.mode.loop,
-        queue: stateRef.current.queue,
-        shuffle: stateRef.current.mode.shuffle,
-      });
-      const nextTrack =
-        targetIndex === null ? null : stateRef.current.queue[targetIndex] ?? null;
+      const { command, targetIndex } = getSkipNextNativeCommandPlan(
+        stateRef.current,
+      );
 
       dispatch({ targetIndex, type: "skip-next" });
-      runNativeCommand(() => (nextTrack ? adapter.play(nextTrack) : adapter.stop()));
+      runNativeCommandPlan(command);
     });
-  }, [adapter, dispatch, runAdGatedCommand, runNativeCommand, stateRef]);
+  }, [dispatch, runAdGatedCommand, runNativeCommandPlan, stateRef]);
 
   const skipPrevious = useCallback(() => {
     runAdGatedCommand(() => {
-      const previousTrack = getPreviousTrack(stateRef.current);
-
       dispatch({ type: "skip-previous" });
-      runNativeCommand(() =>
-        previousTrack ? adapter.play(previousTrack) : adapter.seekTo(0),
-      );
+      runNativeCommandPlan(getSkipPreviousNativeCommandPlan(stateRef.current));
     });
-  }, [adapter, dispatch, runAdGatedCommand, runNativeCommand, stateRef]);
+  }, [dispatch, runAdGatedCommand, runNativeCommandPlan, stateRef]);
 
   const addToQueue = useCallback((song: PlaybackQueueItem) => {
     dispatch({ song, type: "add-to-queue" });
@@ -158,21 +173,14 @@ export function usePlaybackCommandController({
 
   const removeFromQueue = useCallback((songId: number) => {
     const currentState = stateRef.current;
-    const activeTrackId = currentState.activeTrackId;
-    const replacementTrack = getReplacementTrackAfterRemoval({
+    const command = getRemoveFromQueueNativeCommandPlan({
       songId,
       state: currentState,
     });
 
     dispatch({ songId, type: "remove-from-queue" });
-    if (activeTrackId === songId) {
-      runNativeCommand(() =>
-        replacementTrack && currentState.isPlaying
-          ? adapter.play(replacementTrack)
-          : adapter.stop(),
-      );
-    }
-  }, [adapter, dispatch, runNativeCommand, stateRef]);
+    runNativeCommandPlan(command);
+  }, [dispatch, runNativeCommandPlan, stateRef]);
 
   const toggleLoop = useCallback(() => {
     dispatch({ type: "toggle-loop" });

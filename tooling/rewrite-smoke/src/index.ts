@@ -23,6 +23,12 @@ import {
   getSeekTargetPosition,
 } from "../../../apps/new/src/features/playback/services/playback-player-state-service";
 import { audioStatusToTrackPlayerSnapshot } from "../../../apps/new/src/features/playback/services/playback-native-status-service";
+import {
+  getRemoveFromQueueNativeCommandPlan,
+  getResumeNativeCommandPlan,
+  getSkipNextNativeCommandPlan,
+  getSkipPreviousNativeCommandPlan,
+} from "../../../apps/new/src/features/playback/services/playback-native-command-plan-service";
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
   getImportFilesActionState,
@@ -393,6 +399,82 @@ function assertPlaybackNativeStatusSmoke() {
       songId: null,
       source: "ad",
     },
+  );
+}
+
+function assertPlaybackNativeCommandPlanSmoke() {
+  const first = song({ id: 10, title: "First" });
+  const second = song({ id: 11, title: "Second" });
+  const state = {
+    ...initialPlaybackState,
+    activeQueueIndex: 0,
+    activeTrackId: first.id,
+    duration: first.duration ?? 0,
+    isPlaying: true,
+    queue: [first, second],
+  };
+
+  assert.deepEqual(getResumeNativeCommandPlan(initialPlaybackState), {
+    type: "noop",
+  });
+  assert.deepEqual(getResumeNativeCommandPlan(state), {
+    type: "resume",
+  });
+  assert.deepEqual(getSkipNextNativeCommandPlan(state), {
+    command: { track: second, type: "play" },
+    targetIndex: 1,
+  });
+  assert.deepEqual(
+    getSkipNextNativeCommandPlan({
+      ...state,
+      activeQueueIndex: 1,
+      activeTrackId: second.id,
+      mode: { loop: false, shuffle: false },
+    }),
+    {
+      command: { type: "stop" },
+      targetIndex: null,
+    },
+  );
+  assert.deepEqual(
+    getSkipPreviousNativeCommandPlan({
+      ...state,
+      position: 3_000,
+    }),
+    { track: first, type: "play" },
+  );
+  assert.deepEqual(
+    getSkipPreviousNativeCommandPlan({
+      ...state,
+      activeQueueIndex: null,
+      activeTrackId: null,
+      position: 0,
+    }),
+    { position: 0, type: "seek" },
+  );
+  assert.deepEqual(
+    getRemoveFromQueueNativeCommandPlan({
+      songId: second.id,
+      state,
+    }),
+    { type: "noop" },
+  );
+  assert.deepEqual(
+    getRemoveFromQueueNativeCommandPlan({
+      songId: first.id,
+      state,
+    }),
+    { track: second, type: "play" },
+  );
+  assert.deepEqual(
+    getRemoveFromQueueNativeCommandPlan({
+      songId: first.id,
+      state: {
+        ...state,
+        isPlaying: false,
+      },
+    }),
+    { type: "stop" },
   );
 }
 
@@ -2729,6 +2811,7 @@ assertPremiumScreenSmoke();
 assertSettingsScreenSmoke();
 assertPlaybackSessionSmoke();
 assertPlaybackNativeStatusSmoke();
+assertPlaybackNativeCommandPlanSmoke();
 assertPlaybackPlayerStateSmoke();
 assertImportSessionSmoke();
 assertLibraryCollectionDetailSmoke();

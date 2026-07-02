@@ -1,5 +1,9 @@
 import type { LibraryCollectionListKind } from "./library-collection-list-service";
 import { getLibraryCollectionCreateHref } from "./library-collection-list-service";
+import type {
+  LibrarySongPreviewOrder,
+  LibrarySongPreviewSort,
+} from "./library-song-preview-service";
 
 export type LibraryHomeHref =
   | "/(tabs)/import"
@@ -14,6 +18,55 @@ export type LibraryHomeStatusState = {
   hasErrors: boolean;
   isError: boolean;
   statusLabel: string;
+};
+
+export type LibraryHomeControlState = {
+  order: LibrarySongPreviewOrder;
+  query: string;
+  sort: LibrarySongPreviewSort;
+};
+
+export type LibraryHomeControlAction =
+  | {
+      query: string;
+      type: "set-query";
+    }
+  | {
+      sort: LibrarySongPreviewSort;
+      type: "set-sort";
+    }
+  | {
+      order: LibrarySongPreviewOrder;
+      type: "set-order";
+    };
+
+export const initialLibraryHomeControlState: LibraryHomeControlState = {
+  order: "desc",
+  query: "",
+  sort: "recent",
+};
+
+export const libraryHomeControlReducer = (
+  state: LibraryHomeControlState,
+  action: LibraryHomeControlAction,
+): LibraryHomeControlState => {
+  switch (action.type) {
+    case "set-query":
+      return {
+        ...state,
+        query: action.query,
+      };
+    case "set-sort":
+      return {
+        ...state,
+        sort: action.sort,
+      };
+    case "set-order":
+      return {
+        ...state,
+        order: action.order,
+      };
+  }
 };
 
 const createCollectionAction = ({

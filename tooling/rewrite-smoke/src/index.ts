@@ -221,12 +221,16 @@ import {
   getLibraryCollectionListBackHref,
   getLibraryCollectionListCopy,
   getLibraryCollectionListState,
+  initialLibraryCollectionListControlState,
+  libraryCollectionListControlReducer,
 } from "../../../apps/new/src/features/library/services/library-collection-list-service";
 import {
   getLibraryHomeHeaderActions,
   getLibraryHomeHeaderState,
   getLibraryHomeImportHref,
   getLibraryHomeStatusState,
+  initialLibraryHomeControlState,
+  libraryHomeControlReducer,
 } from "../../../apps/new/src/features/library/services/library-home-service";
 import {
   buildLibrarySongDetail,
@@ -4247,9 +4251,54 @@ function assertLibraryCollectionListSmoke() {
       visibleCollections: collections,
     },
   );
+
+  assert.deepEqual(initialLibraryCollectionListControlState, {
+    query: "",
+  });
+  assert.deepEqual(
+    libraryCollectionListControlReducer(
+      initialLibraryCollectionListControlState,
+      {
+        query: "jazz",
+        type: "set-query",
+      },
+    ),
+    {
+      query: "jazz",
+    },
+  );
 }
 
 function assertLibraryHomeSmoke() {
+  let controls = libraryHomeControlReducer(initialLibraryHomeControlState, {
+    query: "pulse",
+    type: "set-query",
+  });
+  assert.deepEqual(controls, {
+    order: "desc",
+    query: "pulse",
+    sort: "recent",
+  });
+  controls = libraryHomeControlReducer(controls, {
+    sort: "title",
+    type: "set-sort",
+  });
+  assert.deepEqual(controls, {
+    order: "desc",
+    query: "pulse",
+    sort: "title",
+  });
+  assert.deepEqual(
+    libraryHomeControlReducer(controls, {
+      order: "asc",
+      type: "set-order",
+    }),
+    {
+      order: "asc",
+      query: "pulse",
+      sort: "title",
+    },
+  );
   assert.equal(getLibraryHomeImportHref(), "/(tabs)/import");
   assert.deepEqual(getLibraryHomeHeaderActions(), [
     {

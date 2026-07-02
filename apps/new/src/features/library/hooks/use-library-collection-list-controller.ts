@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useReducer } from "react";
 import {
   type CollectionKind,
   useLibraryCollectionPreviewQuery,
 } from "./use-library-collection-preview-query";
-import { getLibraryCollectionListState } from "../services/library-collection-list-service";
+import {
+  getLibraryCollectionListState,
+  initialLibraryCollectionListControlState,
+  libraryCollectionListControlReducer,
+} from "../services/library-collection-list-service";
 
 type UseLibraryCollectionListControllerParams = {
   emptyLabel: string;
@@ -14,7 +18,10 @@ export function useLibraryCollectionListController({
   emptyLabel,
   kind,
 }: UseLibraryCollectionListControllerParams) {
-  const [query, setQuery] = useState("");
+  const [controls, dispatchControls] = useReducer(
+    libraryCollectionListControlReducer,
+    initialLibraryCollectionListControlState,
+  );
   const { collections, errors, updatedAt } = useLibraryCollectionPreviewQuery({
     limit: null,
   });
@@ -22,13 +29,17 @@ export function useLibraryCollectionListController({
     collections: collections[kind],
     emptyLabel,
     errors,
-    query,
+    query: controls.query,
     updatedAt,
   });
 
+  const setQuery = (query: string) => {
+    dispatchControls({ query, type: "set-query" });
+  };
+
   return {
     listState,
-    query,
+    query: controls.query,
     setQuery,
   };
 }

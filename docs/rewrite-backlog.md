@@ -166,6 +166,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: library home summary, collection preview, song preview search/sort,
     query status derivation, and screen layout now split between a controller
     hook and focused component instead of the route screen.
+  - Done: library home and collection list query/sort controls now use service
+    reducers with smoke coverage instead of controller-local state setters.
   - Done: collection detail header, action bar, status panel, and invalid route
     state now live in focused components instead of the route screen.
   - Done: collection detail assembled layout, songs section header, list wiring,

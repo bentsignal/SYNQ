@@ -8,6 +8,33 @@ export type LibraryCollectionListHref =
   | "/(tabs)/library/artist/create"
   | "/(tabs)/library/playlist/create";
 
+export type LibraryCollectionListControlState = {
+  query: string;
+};
+
+export type LibraryCollectionListControlAction = {
+  query: string;
+  type: "set-query";
+};
+
+export const initialLibraryCollectionListControlState: LibraryCollectionListControlState =
+  {
+    query: "",
+  };
+
+export const libraryCollectionListControlReducer = (
+  state: LibraryCollectionListControlState,
+  action: LibraryCollectionListControlAction,
+): LibraryCollectionListControlState => {
+  switch (action.type) {
+    case "set-query":
+      return {
+        ...state,
+        query: action.query,
+      };
+  }
+};
+
 export const getLibraryCollectionListBackHref =
   (): LibraryCollectionListHref => "/(tabs)/library";
 

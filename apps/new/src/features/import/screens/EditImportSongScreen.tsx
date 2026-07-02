@@ -8,6 +8,8 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useImportSession } from "../hooks/use-import-session";
 import type { ImportSongDraft } from "../types/import-session";
 
@@ -36,15 +38,22 @@ const parseTrack = (value: string) => {
 
 export function EditImportSongScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
+  const theme = useCustomizationTheme();
   const id = parseId(params.id);
 
   if (id === null) {
     return (
-      <View style={styles.screen}>
-        <Text style={styles.kicker}>Import edit</Text>
-        <Text style={styles.title}>Invalid song</Text>
-        <Text style={styles.subtitle}>This route needs a numeric id.</Text>
-        <Link href="/import/save" style={styles.backLink}>
+      <View style={[styles.screen, { backgroundColor: theme.background }]}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          Import edit
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          Invalid song
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
+          This route needs a numeric id.
+        </Text>
+        <Link href="/import/save" style={[styles.backLink, { color: theme.accent }]}>
           Back to save
         </Link>
       </View>
@@ -56,6 +65,7 @@ export function EditImportSongScreen() {
 
 function EditImportSongContent({ songId }: { songId: number }) {
   const { state, updateImportSong } = useImportSession();
+  const theme = useCustomizationTheme();
   const song = useMemo(
     () => state.songs.find((draft) => draft.id === songId) ?? null,
     [songId, state.songs],
@@ -63,17 +73,27 @@ function EditImportSongContent({ songId }: { songId: number }) {
 
   if (!song) {
     return (
-      <View style={styles.screen}>
-        <Text style={styles.kicker}>Import edit</Text>
-        <Text style={styles.title}>Song not staged</Text>
-        <Text style={styles.subtitle}>
+      <View style={[styles.screen, { backgroundColor: theme.background }]}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          Import edit
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          Song not staged
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           Choose songs again or return to the current review.
         </Text>
         <View style={styles.linkRow}>
-          <Link href="/import/files" style={styles.backLink}>
+          <Link
+            href="/import/files"
+            style={[styles.backLink, { color: theme.accent }]}
+          >
             Back to files
           </Link>
-          <Link href="/import/save" style={styles.backLink}>
+          <Link
+            href="/import/save"
+            style={[styles.backLink, { color: theme.accent }]}
+          >
             Back to save
           </Link>
         </View>
@@ -91,6 +111,8 @@ function EditImportSongForm({
   song: ImportSongDraft;
   updateImportSong: (song: ImportSongDraft) => void;
 }) {
+  const theme = useCustomizationTheme();
+  const { sendHaptic } = useHapticFeedback();
   const [album, setAlbum] = useState(song.album);
   const [artist, setArtist] = useState(song.artist);
   const [error, setError] = useState<string | null>(null);
@@ -102,6 +124,7 @@ function EditImportSongForm({
 
   const handleSave = () => {
     if (!canSave) {
+      sendHaptic("error");
       setError("Title is required.");
       return;
     }
@@ -114,8 +137,10 @@ function EditImportSongForm({
         title: title.trim(),
         track: parseTrack(track),
       });
+      sendHaptic("success");
       router.replace("/import/save");
     } catch (caughtError) {
+      sendHaptic("error");
       setError(
         caughtError instanceof Error
           ? caughtError.message
@@ -125,17 +150,29 @@ function EditImportSongForm({
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      style={[styles.scroll, { backgroundColor: theme.background }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.kicker}>Import edit</Text>
-        <Text style={styles.title}>Edit song</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          Import edit
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          Edit song
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           Update staged metadata before writing this song to the library.
         </Text>
       </View>
 
-      <View style={styles.form}>
-        <Text style={styles.label}>Title</Text>
+      <View
+        style={[
+          styles.form,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.label, { color: theme.primaryText }]}>Title</Text>
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
@@ -144,37 +181,60 @@ function EditImportSongForm({
             setError(null);
           }}
           placeholder="Song title"
-          placeholderTextColor="#74807a"
+          placeholderTextColor={theme.mutedText}
           returnKeyType="next"
-          style={styles.input}
+          style={[
+            styles.input,
+            {
+              backgroundColor: theme.background,
+              borderColor: theme.border,
+              color: theme.primaryText,
+            },
+          ]}
           value={title}
         />
 
-        <Text style={styles.label}>Artist</Text>
+        <Text style={[styles.label, { color: theme.primaryText }]}>
+          Artist
+        </Text>
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
           onChangeText={setArtist}
           placeholder="Artist"
-          placeholderTextColor="#74807a"
+          placeholderTextColor={theme.mutedText}
           returnKeyType="next"
-          style={styles.input}
+          style={[
+            styles.input,
+            {
+              backgroundColor: theme.background,
+              borderColor: theme.border,
+              color: theme.primaryText,
+            },
+          ]}
           value={artist}
         />
 
-        <Text style={styles.label}>Album</Text>
+        <Text style={[styles.label, { color: theme.primaryText }]}>Album</Text>
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
           onChangeText={setAlbum}
           placeholder="Album"
-          placeholderTextColor="#74807a"
+          placeholderTextColor={theme.mutedText}
           returnKeyType="next"
-          style={styles.input}
+          style={[
+            styles.input,
+            {
+              backgroundColor: theme.background,
+              borderColor: theme.border,
+              color: theme.primaryText,
+            },
+          ]}
           value={album}
         />
 
-        <Text style={styles.label}>Track</Text>
+        <Text style={[styles.label, { color: theme.primaryText }]}>Track</Text>
         <TextInput
           inputMode="numeric"
           keyboardType="number-pad"
@@ -183,36 +243,66 @@ function EditImportSongForm({
             setError(null);
           }}
           placeholder="Track number"
-          placeholderTextColor="#74807a"
+          placeholderTextColor={theme.mutedText}
           returnKeyType="done"
-          style={styles.input}
+          style={[
+            styles.input,
+            {
+              backgroundColor: theme.background,
+              borderColor: theme.border,
+              color: theme.primaryText,
+            },
+          ]}
           value={track}
         />
 
-        <View style={styles.filePanel}>
-          <Text style={styles.fileLabel}>Source file</Text>
-          <Text numberOfLines={2} style={styles.fileName}>
+        <View
+          style={[
+            styles.filePanel,
+            { backgroundColor: theme.background, borderColor: theme.border },
+          ]}
+        >
+          <Text style={[styles.fileLabel, { color: theme.secondaryText }]}>
+            Source file
+          </Text>
+          <Text
+            numberOfLines={2}
+            style={[styles.fileName, { color: theme.primaryText }]}
+          >
             {song.fileName}
           </Text>
         </View>
 
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        {error ? (
+          <Text style={[styles.errorText, { color: theme.danger }]}>
+            {error}
+          </Text>
+        ) : null}
 
         <Pressable
           accessibilityRole="button"
           disabled={!canSave}
           onPress={handleSave}
-          style={[styles.saveButton, !canSave ? styles.disabledButton : null]}
+          style={[
+            styles.saveButton,
+            { backgroundColor: theme.accent },
+            !canSave ? styles.disabledButton : null,
+          ]}
         >
-          <Text style={styles.saveButtonText}>Save song</Text>
+          <Text style={[styles.saveButtonText, { color: theme.onAccent }]}>
+            Save song
+          </Text>
         </Pressable>
       </View>
 
       <View style={styles.linkRow}>
-        <Link href="/import/save" style={styles.backLink}>
+        <Link href="/import/save" style={[styles.backLink, { color: theme.accent }]}>
           Back to save
         </Link>
-        <Link href="/import/files" style={styles.backLink}>
+        <Link
+          href="/import/files"
+          style={[styles.backLink, { color: theme.accent }]}
+        >
           Back to files
         </Link>
       </View>
@@ -222,7 +312,6 @@ function EditImportSongForm({
 
 const styles = StyleSheet.create({
   scroll: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
   },
   content: {
@@ -231,7 +320,6 @@ const styles = StyleSheet.create({
     paddingVertical: 56,
   },
   screen: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
     gap: 12,
     paddingHorizontal: 20,
@@ -241,52 +329,41 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   kicker: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   title: {
-    color: "#121417",
     fontSize: 34,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 40,
   },
   subtitle: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
   },
   form: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 10,
     padding: 16,
   },
   label: {
-    color: "#29322e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
   },
   input: {
-    backgroundColor: "#f8faf9",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
-    color: "#121417",
     fontSize: 16,
     minHeight: 46,
     paddingHorizontal: 12,
   },
   filePanel: {
-    backgroundColor: "#f8faf9",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 4,
@@ -294,26 +371,22 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   fileLabel: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   fileName: {
-    color: "#29322e",
     fontSize: 14,
     lineHeight: 20,
   },
   errorText: {
-    color: "#b42318",
     fontSize: 13,
     fontWeight: "800",
     lineHeight: 18,
   },
   saveButton: {
     alignItems: "center",
-    backgroundColor: "#0f766e",
     borderRadius: 8,
     justifyContent: "center",
     minHeight: 46,
@@ -323,7 +396,6 @@ const styles = StyleSheet.create({
     opacity: 0.45,
   },
   saveButtonText: {
-    color: "#ffffff",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
@@ -335,7 +407,6 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   backLink: {
-    color: "#0f766e",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,

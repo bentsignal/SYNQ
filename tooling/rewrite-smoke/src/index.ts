@@ -236,6 +236,7 @@ import {
   getLibrarySongListControlsState,
   getLibrarySongPreviewDetailHref,
   getLibrarySongPreviewEmptyState,
+  getLibrarySongPreviewListState,
   getLibrarySongPreviewPlayerHref,
   getLibrarySongPreviewRowState,
   rowsToSongPreviews,
@@ -2471,6 +2472,10 @@ function assertLibrarySongPreviewSmoke() {
       label: "Import music",
     },
     title: "No songs yet",
+  });
+  assert.deepEqual(getLibrarySongPreviewListState({ songs: previews }), {
+    meta: "1 shown",
+    title: "Recent Songs",
   });
   assert.deepEqual(
     getLibrarySongListControlsState({ order: "asc", sort: "artist" }),

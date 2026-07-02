@@ -119,6 +119,15 @@ export const getLibrarySongPreviewEmptyState = () => ({
   title: "No songs yet",
 });
 
+export const getLibrarySongPreviewListState = ({
+  songs,
+}: {
+  songs: LibrarySongPreview[];
+}) => ({
+  meta: `${songs.length} shown`,
+  title: "Recent Songs",
+});
+
 export const getLibrarySongListControlsState = ({
   order,
   sort,

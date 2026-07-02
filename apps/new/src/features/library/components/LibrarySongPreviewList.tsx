@@ -6,6 +6,7 @@ import type {
   LibrarySongPreviewOrder,
   LibrarySongPreviewSort,
 } from "../hooks/use-library-song-preview-query";
+import { getLibrarySongPreviewListState } from "../services/library-song-preview-service";
 import { LibrarySongListControls } from "./LibrarySongListControls";
 import { LibrarySongPreviewEmptyState } from "./LibrarySongPreviewEmptyState";
 import { LibrarySongPreviewRow } from "./LibrarySongPreviewRow";
@@ -33,15 +34,16 @@ export function LibrarySongPreviewList({
 }: LibrarySongPreviewListProps) {
   const theme = useCustomizationTheme();
   const { activeTrack, addToQueue, playSong } = usePlaybackSession();
+  const listState = getLibrarySongPreviewListState({ songs });
 
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
-          Recent Songs
+          {listState.title}
         </Text>
         <Text style={[styles.sectionMeta, { color: theme.secondaryText }]}>
-          {songs.length} shown
+          {listState.meta}
         </Text>
       </View>
 

@@ -5,6 +5,7 @@ import {
   saveCustomizationSettings,
 } from "../services/customization-settings-service";
 import { setNativeAppIcon } from "../services/native-app-icon-service";
+import { getCustomizationSettingsErrorMessage } from "../services/settings-screen-service";
 import type {
   CustomizationColorKey,
   CustomizationSettings,
@@ -30,9 +31,6 @@ const initialState: CustomizationSettingsState = {
   settings: defaultCustomizationSettings,
   status: "idle",
 };
-
-const getErrorMessage = (error: unknown) =>
-  error instanceof Error ? error.message : "Customization settings failed.";
 
 const customizationSettingsReducer = (
   state: CustomizationSettingsState,
@@ -97,7 +95,10 @@ export function useCustomizationSettings() {
         }
       } catch (error) {
         if (isMounted) {
-          dispatch({ error: getErrorMessage(error), type: "load-failure" });
+          dispatch({
+            error: getCustomizationSettingsErrorMessage(error),
+            type: "load-failure",
+          });
         }
       }
     };
@@ -123,7 +124,7 @@ export function useCustomizationSettings() {
         dispatch({ settings, type: "save-success" });
       } catch (error) {
         dispatch({
-          error: getErrorMessage(error),
+          error: getCustomizationSettingsErrorMessage(error),
           settings: previousSettings,
           type: "save-failure",
         });

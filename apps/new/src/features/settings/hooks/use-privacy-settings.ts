@@ -4,6 +4,7 @@ import {
   loadPrivacySettings,
   savePrivacySettings,
 } from "../services/privacy-settings-service";
+import { getPrivacySettingsErrorMessage } from "../services/settings-screen-service";
 import type {
   PrivacySettings,
   PrivacySettingsStatus,
@@ -28,9 +29,6 @@ const initialState: PrivacySettingsState = {
   settings: defaultPrivacySettings,
   status: "idle",
 };
-
-const getErrorMessage = (error: unknown) =>
-  error instanceof Error ? error.message : "Privacy settings failed.";
 
 const privacySettingsReducer = (
   state: PrivacySettingsState,
@@ -92,7 +90,10 @@ export function usePrivacySettings() {
         }
       } catch (error) {
         if (isMounted) {
-          dispatch({ error: getErrorMessage(error), type: "load-failure" });
+          dispatch({
+            error: getPrivacySettingsErrorMessage(error),
+            type: "load-failure",
+          });
         }
       }
     };
@@ -118,7 +119,7 @@ export function usePrivacySettings() {
         dispatch({ settings, type: "save-success" });
       } catch (error) {
         dispatch({
-          error: getErrorMessage(error),
+          error: getPrivacySettingsErrorMessage(error),
           settings: previousSettings,
           type: "save-failure",
         });

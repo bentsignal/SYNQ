@@ -188,9 +188,11 @@ import type {
   PremiumTier,
 } from "../../../apps/new/src/features/premium/types/premium-purchase";
 import {
+  getCustomizationSettingsErrorMessage,
   getCustomizationOptionState,
   getCustomizationScreenState,
   getPrivacyScreenState,
+  getPrivacySettingsErrorMessage,
   shouldSendHapticForHapticsToggle,
 } from "../../../apps/new/src/features/settings/services/settings-screen-service";
 
@@ -3434,6 +3436,21 @@ function assertSettingsScreenSmoke() {
     shouldSendHapticForHapticsToggle({ hapticsEnabled: false }),
     false,
   );
+  assert.equal(
+    getCustomizationSettingsErrorMessage(
+      new Error("Customization smoke failure"),
+    ),
+    "Customization smoke failure",
+  );
+  assert.equal(
+    getCustomizationSettingsErrorMessage(null),
+    "Customization settings failed.",
+  );
+  assert.equal(
+    getPrivacySettingsErrorMessage(new Error("Privacy smoke failure")),
+    "Privacy smoke failure",
+  );
+  assert.equal(getPrivacySettingsErrorMessage(undefined), "Privacy settings failed.");
 }
 
 assertDurationFormatSmoke();

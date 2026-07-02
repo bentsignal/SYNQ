@@ -1,19 +1,15 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import type { AddCollectionSongsStatusState } from "../services/addable-collection-songs-service";
 
 type AddCollectionSongsStatusPanelProps = {
-  hasErrors: boolean;
-  mutationError: string | null;
-  updatedLabel: string;
+  statusState: AddCollectionSongsStatusState;
 };
 
 export function AddCollectionSongsStatusPanel({
-  hasErrors,
-  mutationError,
-  updatedLabel,
+  statusState,
 }: AddCollectionSongsStatusPanelProps) {
   const theme = useCustomizationTheme();
-  const isError = hasErrors || mutationError !== null;
 
   return (
     <View
@@ -24,12 +20,13 @@ export function AddCollectionSongsStatusPanel({
     >
       <Text
         style={[
-          isError ? styles.errorText : styles.panelText,
-          { color: isError ? theme.danger : theme.secondaryText },
+          statusState.isError ? styles.errorText : styles.panelText,
+          {
+            color: statusState.isError ? theme.danger : theme.secondaryText,
+          },
         ]}
       >
-        {mutationError ??
-          (hasErrors ? "One or more song queries failed." : updatedLabel)}
+        {statusState.statusLabel}
       </Text>
     </View>
   );

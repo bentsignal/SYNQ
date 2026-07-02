@@ -1566,6 +1566,9 @@ endless old-app polishing loop.
    - Done: collection detail query/mutation status and updated-time copy now
      live in the collection interaction service with smoke coverage instead of
      view/status-panel branching.
+   - Done: add-to-collection query/mutation status and updated-time copy now
+     live in the addable songs service with smoke coverage instead of
+     connected-form/status-panel branching.
 
 2. Playlist:
    - Done: add `useLibraryPlaylistsQuery` for the list-level library playlist

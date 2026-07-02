@@ -163,6 +163,7 @@ import {
 } from "../../../apps/new/src/features/library/services/collection-metadata-service";
 import {
   getAddCollectionSongsBackHref,
+  getAddCollectionSongsStatusState,
   getAddCollectionSongsUpdatedLabel,
   rowsToAddableCollectionSongs,
 } from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
@@ -2417,6 +2418,57 @@ function assertAddableCollectionSongsSmoke() {
       updatedAt: 123,
     }),
     "Updated smoke-123",
+  );
+  assert.deepEqual(
+    getAddCollectionSongsStatusState({
+      errors: [],
+      formatTime: (updatedAt) => `smoke-${updatedAt}`,
+      mutationError: null,
+      updatedAt: 123,
+    }),
+    {
+      isError: false,
+      statusLabel: "Updated smoke-123",
+      updatedLabel: "Updated smoke-123",
+    },
+  );
+  assert.deepEqual(
+    getAddCollectionSongsStatusState({
+      errors: [],
+      mutationError: null,
+      updatedAt: 0,
+    }),
+    {
+      isError: false,
+      statusLabel: "Waiting for library data",
+      updatedLabel: "Waiting for library data",
+    },
+  );
+  assert.deepEqual(
+    getAddCollectionSongsStatusState({
+      errors: [new Error("query")],
+      formatTime: (updatedAt) => `smoke-${updatedAt}`,
+      mutationError: null,
+      updatedAt: 123,
+    }),
+    {
+      isError: true,
+      statusLabel: "One or more song queries failed.",
+      updatedLabel: "Updated smoke-123",
+    },
+  );
+  assert.deepEqual(
+    getAddCollectionSongsStatusState({
+      errors: [new Error("query")],
+      formatTime: (updatedAt) => `smoke-${updatedAt}`,
+      mutationError: "Add failed.",
+      updatedAt: 123,
+    }),
+    {
+      isError: true,
+      statusLabel: "Add failed.",
+      updatedLabel: "Updated smoke-123",
+    },
   );
   assert.equal(
     getAddCollectionSongsBackHref({

@@ -3,7 +3,7 @@ import type {
 } from "../hooks/use-addable-collection-songs-query";
 import { useAddCollectionSongsController } from "../hooks/use-add-collection-songs-controller";
 import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
-import { getAddCollectionSongsUpdatedLabel } from "../services/addable-collection-songs-service";
+import { getAddCollectionSongsStatusState } from "../services/addable-collection-songs-service";
 import { AddCollectionSongsFormView } from "./AddCollectionSongsFormView";
 
 type AddCollectionSongsConnectedFormProps = {
@@ -22,8 +22,6 @@ export function AddCollectionSongsConnectedForm({
   query,
 }: AddCollectionSongsConnectedFormProps) {
   const { errors, songs, updatedAt } = addable;
-  const hasErrors = errors.length > 0;
-  const updatedLabel = getAddCollectionSongsUpdatedLabel({ updatedAt });
   const {
     addSelectedSongs,
     addSong,
@@ -37,13 +35,16 @@ export function AddCollectionSongsConnectedForm({
     kind,
     songs,
   });
+  const statusState = getAddCollectionSongsStatusState({
+    errors,
+    mutationError,
+    updatedAt,
+  });
 
   return (
     <AddCollectionSongsFormView
       collectionId={collectionId}
-      hasErrors={hasErrors}
       kind={kind}
-      mutationError={mutationError}
       onAddSelectedSongs={addSelectedSongs}
       onAddSong={addSong}
       onChangeQuery={onChangeQuery}
@@ -53,7 +54,8 @@ export function AddCollectionSongsConnectedForm({
       selectedSongIds={selectedSongIds}
       selectionState={selectionState}
       songs={songs}
-      updatedLabel={updatedLabel}
+      statusState={statusState}
+      updatedLabel={statusState.updatedLabel}
     />
   );
 }

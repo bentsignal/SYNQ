@@ -4,6 +4,7 @@ import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customi
 import {
   getAddCollectionSongsBackHref,
   type AddableCollectionSong,
+  type AddCollectionSongsStatusState,
 } from "../services/addable-collection-songs-service";
 import type { AddableSongSelectionState } from "../services/library-collection-interaction-service";
 import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
@@ -15,9 +16,7 @@ import { AddableSongList } from "./AddableSongList";
 
 type AddCollectionSongsFormViewProps = {
   collectionId: number;
-  hasErrors: boolean;
   kind: LibraryCollectionDetailKind;
-  mutationError: string | null;
   onAddSelectedSongs: () => void;
   onAddSong: (songId: number) => void;
   onChangeQuery: (query: string) => void;
@@ -27,14 +26,13 @@ type AddCollectionSongsFormViewProps = {
   selectedSongIds: Set<number>;
   selectionState: AddableSongSelectionState;
   songs: AddableCollectionSong[];
+  statusState: AddCollectionSongsStatusState;
   updatedLabel: string;
 };
 
 export function AddCollectionSongsFormView({
   collectionId,
-  hasErrors,
   kind,
-  mutationError,
   onAddSelectedSongs,
   onAddSong,
   onChangeQuery,
@@ -44,6 +42,7 @@ export function AddCollectionSongsFormView({
   selectedSongIds,
   selectionState,
   songs,
+  statusState,
   updatedLabel,
 }: AddCollectionSongsFormViewProps) {
   const theme = useCustomizationTheme();
@@ -75,9 +74,7 @@ export function AddCollectionSongsFormView({
       />
 
       <AddCollectionSongsStatusPanel
-        hasErrors={hasErrors}
-        mutationError={mutationError}
-        updatedLabel={updatedLabel}
+        statusState={statusState}
       />
 
       <Link

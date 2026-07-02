@@ -49,7 +49,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     tabs, and a replacement-oriented Home route with live library/playback state
     plus premium, player, and queue entry points.
   - Library: first reactive Drizzle summary, searchable/sortable song surface,
-    collection previews, user-facing library home copy and empty states,
+    collection previews with all-collection browse routes, user-facing library
+    home copy and empty states,
     song/playlist/album/artist detail routes with song and collection playback
     entry points plus navigable song relationship rows, playlist/album/artist
     create/edit flows, collection song add/remove flows with bulk add selection,
@@ -1100,3 +1101,5 @@ endless old-app polishing loop.
 
 - Done: add direct play and queue actions to the new app library song preview
   list, backed by reactive song file-path data.
+- Done: add all-playlists, all-albums, and all-artists browse routes for the
+  new app library collection previews.

@@ -95,6 +95,7 @@ export function LibraryHomeScreen() {
       <LibraryCollectionPreviewSection
         collections={collectionPreview.collections}
         isEmpty={collectionPreview.isEmpty}
+        totals={collectionPreview.totals}
       />
 
       <View

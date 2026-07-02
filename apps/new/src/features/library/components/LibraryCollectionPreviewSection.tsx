@@ -10,23 +10,32 @@ type LibraryCollectionPreviewSectionProps = {
     playlists: LibraryCollectionPreview[];
   };
   isEmpty: boolean;
+  totals: {
+    albums: number;
+    artists: number;
+    playlists: number;
+  };
 };
 
 const sections: {
   key: keyof LibraryCollectionPreviewSectionProps["collections"];
   title: string;
+  viewAllHref: "/(tabs)/library/albums" | "/(tabs)/library/artists" | "/(tabs)/library/playlists";
 }[] = [
   {
     key: "playlists",
     title: "Playlists",
+    viewAllHref: "/(tabs)/library/playlists",
   },
   {
     key: "albums",
     title: "Albums",
+    viewAllHref: "/(tabs)/library/albums",
   },
   {
     key: "artists",
     title: "Artists",
+    viewAllHref: "/(tabs)/library/artists",
   },
 ];
 
@@ -45,6 +54,7 @@ const getCollectionHref = (collection: LibraryCollectionPreview) => {
 export function LibraryCollectionPreviewSection({
   collections,
   isEmpty,
+  totals,
 }: LibraryCollectionPreviewSectionProps) {
   const theme = useCustomizationTheme();
 
@@ -77,9 +87,19 @@ export function LibraryCollectionPreviewSection({
         <View style={styles.columns}>
           {sections.map((section) => (
             <View key={section.key} style={styles.column}>
-              <Text style={[styles.columnTitle, { color: theme.secondaryText }]}>
-                {section.title}
-              </Text>
+              <View style={styles.columnHeader}>
+                <Text style={[styles.columnTitle, { color: theme.secondaryText }]}>
+                  {section.title}
+                </Text>
+                {totals[section.key] > collections[section.key].length ? (
+                  <Link
+                    href={section.viewAllHref}
+                    style={[styles.viewAllLink, { color: theme.accent }]}
+                  >
+                    View all
+                  </Link>
+                ) : null}
+              </View>
               <View
                 style={[
                   styles.list,
@@ -206,7 +226,19 @@ const styles = StyleSheet.create({
   column: {
     gap: 8,
   },
+  columnHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 12,
+    justifyContent: "space-between",
+  },
   columnTitle: {
+    fontSize: 12,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
+  },
+  viewAllLink: {
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,

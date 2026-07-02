@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
 
-type CollectionKind = "albums" | "artists" | "playlists";
+export type CollectionKind = "albums" | "artists" | "playlists";
 
 export type LibraryCollectionPreview = {
   detail: string;
@@ -53,7 +53,12 @@ const formatArtists = (artists: Set<string>) => {
   ).join(", ");
 };
 
-const playlistRowsToPreview = (rows: PlaylistRow[]) => {
+const limitCollectionPreviews = (
+  previews: LibraryCollectionPreview[],
+  limit: number | null,
+) => (limit === null ? previews : previews.slice(0, limit));
+
+const playlistRowsToPreview = (rows: PlaylistRow[], limit: number | null) => {
   const playlistMap = new Map<
     number,
     {
@@ -79,7 +84,7 @@ const playlistRowsToPreview = (rows: PlaylistRow[]) => {
     playlistMap.set(row.playlistId, playlist);
   });
 
-  return Array.from(playlistMap.entries())
+  const previews = Array.from(playlistMap.entries())
     .map<LibraryCollectionPreview>(([id, playlist]) => ({
       detail: formatCount(playlist.songIds.size, "song"),
       id,
@@ -90,11 +95,12 @@ const playlistRowsToPreview = (rows: PlaylistRow[]) => {
       meta: "Playlist",
       title: playlist.name,
     }))
-    .sort((first, second) => second.id - first.id)
-    .slice(0, 6);
+    .sort((first, second) => second.id - first.id);
+
+  return limitCollectionPreviews(previews, limit);
 };
 
-const albumRowsToPreview = (rows: AlbumRow[]) => {
+const albumRowsToPreview = (rows: AlbumRow[], limit: number | null) => {
   const albumMap = new Map<
     number,
     {
@@ -128,7 +134,7 @@ const albumRowsToPreview = (rows: AlbumRow[]) => {
     albumMap.set(row.albumId, album);
   });
 
-  return Array.from(albumMap.entries())
+  const previews = Array.from(albumMap.entries())
     .map<LibraryCollectionPreview>(([id, album]) => ({
       detail: formatCount(album.songIds.size, "song"),
       id,
@@ -141,11 +147,12 @@ const albumRowsToPreview = (rows: AlbumRow[]) => {
         : formatArtists(album.artistNames),
       title: album.name,
     }))
-    .sort((first, second) => first.title.localeCompare(second.title))
-    .slice(0, 6);
+    .sort((first, second) => first.title.localeCompare(second.title));
+
+  return limitCollectionPreviews(previews, limit);
 };
 
-const artistRowsToPreview = (rows: ArtistRow[]) => {
+const artistRowsToPreview = (rows: ArtistRow[], limit: number | null) => {
   const artistMap = new Map<
     number,
     {
@@ -177,7 +184,7 @@ const artistRowsToPreview = (rows: ArtistRow[]) => {
     artistMap.set(row.artistId, artist);
   });
 
-  return Array.from(artistMap.entries())
+  const previews = Array.from(artistMap.entries())
     .map<LibraryCollectionPreview>(([id, artist]) => ({
       detail: `${formatCount(artist.songIds.size, "song")} / ${formatCount(
         artist.albumIds.size,
@@ -191,11 +198,18 @@ const artistRowsToPreview = (rows: ArtistRow[]) => {
       meta: "Artist",
       title: artist.name,
     }))
-    .sort((first, second) => first.title.localeCompare(second.title))
-    .slice(0, 6);
+    .sort((first, second) => first.title.localeCompare(second.title));
+
+  return limitCollectionPreviews(previews, limit);
 };
 
-export function useLibraryCollectionPreviewQuery() {
+type LibraryCollectionPreviewQueryOptions = {
+  limit?: number | null;
+};
+
+export function useLibraryCollectionPreviewQuery({
+  limit = 6,
+}: LibraryCollectionPreviewQueryOptions = {}) {
   const playlists = useLiveQuery(
     db
       .select({
@@ -256,12 +270,24 @@ export function useLibraryCollectionPreviewQuery() {
 
   const collections = useMemo(
     () => ({
-      albums: albumRowsToPreview((albums.data ?? []) as AlbumRow[]),
-      artists: artistRowsToPreview((artists.data ?? []) as ArtistRow[]),
-      playlists: playlistRowsToPreview((playlists.data ?? []) as PlaylistRow[]),
+      albums: albumRowsToPreview((albums.data ?? []) as AlbumRow[], limit),
+      artists: artistRowsToPreview((artists.data ?? []) as ArtistRow[], limit),
+      playlists: playlistRowsToPreview(
+        (playlists.data ?? []) as PlaylistRow[],
+        limit,
+      ),
     }),
-    [albums.data, artists.data, playlists.data],
+    [albums.data, artists.data, limit, playlists.data],
   );
+  const totals = {
+    albums: albumRowsToPreview((albums.data ?? []) as AlbumRow[], null).length,
+    artists: artistRowsToPreview((artists.data ?? []) as ArtistRow[], null)
+      .length,
+    playlists: playlistRowsToPreview(
+      (playlists.data ?? []) as PlaylistRow[],
+      null,
+    ).length,
+  };
 
   return {
     collections,
@@ -275,5 +301,6 @@ export function useLibraryCollectionPreviewQuery() {
       albums.updatedAt?.getTime() ?? 0,
       artists.updatedAt?.getTime() ?? 0,
     ),
+    totals,
   };
 }

@@ -5,6 +5,7 @@ import {
   type PlaybackRemoteCommandResult,
 } from "../services/playback-remote-command-service";
 import { runAdGatedPlaybackCommand } from "../services/playback-command-gate-service";
+import { getRemoteFailurePlaybackCommandPlan } from "../services/playback-command-plan-service";
 import {
   getRemoveFromQueueNativeCommandPlan,
   getResumeNativeCommandPlan,
@@ -78,9 +79,12 @@ export function usePlaybackCommandController({
   );
 
   const failFromRemoteCommand = useCallback((message: string) => {
-    dispatch({ error: message, type: "remote-failure" });
-    runNativeCommand(() => adapter.stop());
-  }, [adapter, dispatch, runNativeCommand]);
+    const { action, nativeCommand } =
+      getRemoteFailurePlaybackCommandPlan(message);
+
+    dispatch(action);
+    runNativeCommandPlan(nativeCommand);
+  }, [dispatch, runNativeCommandPlan]);
 
   const playSong = useCallback(
     (song: PlaybackQueueItem) => {

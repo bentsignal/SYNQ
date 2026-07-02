@@ -362,6 +362,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: playback ad-gated command branching now lives in a pure command-gate
     service with deterministic smoke coverage instead of being hand-rolled in
     the command hook.
+  - Done: playback remote failure action/native-stop planning now lives in a
+    pure command-plan service with deterministic smoke coverage instead of the
+    command hook dispatching and stopping inline.
   - Done: playback player ad gate, now-playing, controls, session, and error
     panels now live in focused components instead of the route screen.
   - Done: playback player assembled layout now renders through a focused

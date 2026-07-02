@@ -31,6 +31,7 @@ import {
   getSkipPreviousNativeCommandPlan,
 } from "../../../apps/new/src/features/playback/services/playback-native-command-plan-service";
 import { runAdGatedPlaybackCommand } from "../../../apps/new/src/features/playback/services/playback-command-gate-service";
+import { getRemoteFailurePlaybackCommandPlan } from "../../../apps/new/src/features/playback/services/playback-command-plan-service";
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
   getImportFilesActionState,
@@ -505,6 +506,13 @@ function assertPlaybackNativeCommandPlanSmoke() {
     "started-ad",
   );
   assert.deepEqual(gatedEvents, ["command", "ad"]);
+  assert.deepEqual(getRemoteFailurePlaybackCommandPlan("Remote smoke failure"), {
+    action: {
+      error: "Remote smoke failure",
+      type: "remote-failure",
+    },
+    nativeCommand: { type: "stop" },
+  });
 }
 
 function assertPlaybackPlayerStateSmoke() {

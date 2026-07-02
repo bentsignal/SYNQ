@@ -37,6 +37,40 @@ export const getPlayableCollectionSongs = (
   songs: LibraryCollectionDetailSong[],
 ) => songs.filter((song) => song.pathToFile !== null);
 
+export const getCollectionDetailActionState = ({
+  id,
+  isDeleting,
+  isExporting,
+  isMissing,
+  kind,
+  songs,
+}: {
+  id: number;
+  isDeleting: boolean;
+  isExporting: boolean;
+  isMissing: boolean;
+  kind: LibraryCollectionDetailKind;
+  songs: LibraryCollectionDetailSong[];
+}) => {
+  const playableSongs = getPlayableCollectionSongs(songs);
+  const hasPlayableSongs = playableSongs.length > 0;
+  const canDeleteCollection = canDeleteLibraryCollection({
+    id,
+    isMissing,
+    kind,
+  });
+
+  return {
+    canDelete: canDeleteCollection && !isDeleting,
+    canExport: hasPlayableSongs && !isExporting,
+    canPlay: hasPlayableSongs,
+    canQueue: hasPlayableSongs,
+    deleteLabel: isDeleting ? "Deleting" : "Delete",
+    exportLabel: isExporting ? "Exporting" : "Export",
+    playableSongs,
+  };
+};
+
 export const reorderCollectionSongs = ({
   direction,
   songId,

@@ -25,9 +25,8 @@ import {
   updateCollectionSongOrder,
 } from "../repository/relationship-repository";
 import {
-  canDeleteLibraryCollection,
+  getCollectionDetailActionState,
   getCollectionListHref,
-  getPlayableCollectionSongs,
   reorderCollectionSongs,
 } from "../services/library-collection-interaction-service";
 
@@ -88,10 +87,16 @@ function LibraryCollectionDetailContent({
     detail.updatedAt > 0
       ? `Updated ${new Date(detail.updatedAt).toLocaleTimeString()}`
       : "Waiting for collection data";
-  const playableSongs = getPlayableCollectionSongs(detail.songs);
-  const canPlayCollection = playableSongs.length > 0;
+  const actionState = getCollectionDetailActionState({
+    id,
+    isDeleting,
+    isExporting,
+    isMissing: detail.isMissing,
+    kind,
+    songs: detail.songs,
+  });
   const playCollection = () => {
-    const [firstSong, ...queuedSongs] = playableSongs;
+    const [firstSong, ...queuedSongs] = actionState.playableSongs;
 
     if (!firstSong) {
       sendHaptic("error");
@@ -104,16 +109,16 @@ function LibraryCollectionDetailContent({
     router.push("/player");
   };
   const queueCollection = () => {
-    if (playableSongs.length === 0) {
+    if (!actionState.canQueue) {
       sendHaptic("error");
       return;
     }
 
     sendHaptic("light");
-    playableSongs.forEach(addToQueue);
+    actionState.playableSongs.forEach(addToQueue);
   };
   const exportCollection = async () => {
-    if (playableSongs.length === 0) {
+    if (!actionState.canExport) {
       sendHaptic("error");
       return;
     }
@@ -122,7 +127,7 @@ function LibraryCollectionDetailContent({
     setMutationError(null);
 
     try {
-      await shareLibrarySongs(playableSongs);
+      await shareLibrarySongs(actionState.playableSongs);
       sendHaptic("success");
     } catch (caughtError) {
       sendHaptic("error");
@@ -135,13 +140,8 @@ function LibraryCollectionDetailContent({
       setIsExporting(false);
     }
   };
-  const canDeleteCollection = canDeleteLibraryCollection({
-    id,
-    isMissing: detail.isMissing,
-    kind,
-  });
   const deleteCurrentCollection = () => {
-    if (!canDeleteCollection) {
+    if (!actionState.canDelete) {
       sendHaptic("error");
       return;
     }
@@ -226,12 +226,12 @@ function LibraryCollectionDetailContent({
       <View style={styles.actionRow}>
         <Pressable
           accessibilityRole="button"
-          disabled={!canPlayCollection}
+          disabled={!actionState.canPlay}
           onPress={playCollection}
           style={[
             styles.primaryButton,
             { backgroundColor: theme.accent },
-            !canPlayCollection ? styles.disabled : null,
+            !actionState.canPlay ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
@@ -240,12 +240,12 @@ function LibraryCollectionDetailContent({
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={!canPlayCollection}
+          disabled={!actionState.canQueue}
           onPress={queueCollection}
           style={[
             styles.secondaryButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
-            !canPlayCollection ? styles.disabled : null,
+            !actionState.canQueue ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
@@ -266,30 +266,30 @@ function LibraryCollectionDetailContent({
         </Link>
         <Pressable
           accessibilityRole="button"
-          disabled={!canPlayCollection || isExporting}
+          disabled={!actionState.canExport}
           onPress={exportCollection}
           style={[
             styles.secondaryButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
-            !canPlayCollection || isExporting ? styles.disabled : null,
+            !actionState.canExport ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
-            {isExporting ? "Exporting" : "Export"}
+            {actionState.exportLabel}
           </Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={!canDeleteCollection || isDeleting}
+          disabled={!actionState.canDelete}
           onPress={deleteCurrentCollection}
           style={[
             styles.dangerButton,
             { backgroundColor: theme.surface, borderColor: theme.danger },
-            !canDeleteCollection || isDeleting ? styles.disabled : null,
+            !actionState.canDelete ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.secondaryButtonText, { color: theme.danger }]}>
-            {isDeleting ? "Deleting" : "Delete"}
+            {actionState.deleteLabel}
           </Text>
         </Pressable>
       </View>

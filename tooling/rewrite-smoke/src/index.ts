@@ -42,6 +42,7 @@ import {
 import {
   canDeleteLibraryCollection,
   getAddableSongRowState,
+  getCollectionDetailActionState,
   getCollectionListHref,
   getCollectionSongListState,
   getCollectionSongRowActionState,
@@ -679,6 +680,82 @@ function assertLibraryCollectionInteractionSmoke() {
   assert.deepEqual(
     getPlayableCollectionSongs(songs).map((song) => song.id),
     [1, 3],
+  );
+  assert.deepEqual(
+    getCollectionDetailActionState({
+      id: 3,
+      isDeleting: false,
+      isExporting: false,
+      isMissing: false,
+      kind: "playlist",
+      songs,
+    }),
+    {
+      canDelete: true,
+      canExport: true,
+      canPlay: true,
+      canQueue: true,
+      deleteLabel: "Delete",
+      exportLabel: "Export",
+      playableSongs: [songs[0], songs[2]],
+    },
+  );
+  assert.deepEqual(
+    getCollectionDetailActionState({
+      id: 3,
+      isDeleting: true,
+      isExporting: true,
+      isMissing: false,
+      kind: "playlist",
+      songs,
+    }),
+    {
+      canDelete: false,
+      canExport: false,
+      canPlay: true,
+      canQueue: true,
+      deleteLabel: "Deleting",
+      exportLabel: "Exporting",
+      playableSongs: [songs[0], songs[2]],
+    },
+  );
+  assert.deepEqual(
+    getCollectionDetailActionState({
+      id: 1,
+      isDeleting: false,
+      isExporting: false,
+      isMissing: false,
+      kind: "playlist",
+      songs,
+    }),
+    {
+      canDelete: false,
+      canExport: true,
+      canPlay: true,
+      canQueue: true,
+      deleteLabel: "Delete",
+      exportLabel: "Export",
+      playableSongs: [songs[0], songs[2]],
+    },
+  );
+  assert.deepEqual(
+    getCollectionDetailActionState({
+      id: 7,
+      isDeleting: false,
+      isExporting: false,
+      isMissing: true,
+      kind: "album",
+      songs: [],
+    }),
+    {
+      canDelete: false,
+      canExport: false,
+      canPlay: false,
+      canQueue: false,
+      deleteLabel: "Delete",
+      exportLabel: "Export",
+      playableSongs: [],
+    },
   );
   assert.deepEqual(
     reorderCollectionSongs({ direction: "down", songId: 1, songs }).map(

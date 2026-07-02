@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { shareLibrarySongs } from "@/src/features/export/services/library-export-service";
 import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
@@ -99,6 +100,7 @@ function LibraryCollectionDetailContent({
   const { sendHaptic } = useHapticFeedback();
   const [movingSongId, setMovingSongId] = useState<number | null>(null);
   const [removingSongId, setRemovingSongId] = useState<number | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
   const [mutationError, setMutationError] = useState<string | null>(null);
   const hasErrors = errors.length > 0;
   const updatedLabel =
@@ -128,6 +130,29 @@ function LibraryCollectionDetailContent({
 
     sendHaptic("light");
     playableSongs.forEach(addToQueue);
+  };
+  const exportCollection = async () => {
+    if (playableSongs.length === 0) {
+      sendHaptic("error");
+      return;
+    }
+
+    setIsExporting(true);
+    setMutationError(null);
+
+    try {
+      await shareLibrarySongs(playableSongs);
+      sendHaptic("success");
+    } catch (caughtError) {
+      sendHaptic("error");
+      setMutationError(
+        caughtError instanceof Error
+          ? caughtError.message
+          : "Songs could not be exported.",
+      );
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -216,6 +241,20 @@ function LibraryCollectionDetailContent({
         >
           Add songs
         </Link>
+        <Pressable
+          accessibilityRole="button"
+          disabled={!canPlayCollection || isExporting}
+          onPress={exportCollection}
+          style={[
+            styles.secondaryButton,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+            !canPlayCollection || isExporting ? styles.disabled : null,
+          ]}
+        >
+          <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
+            {isExporting ? "Exporting" : "Export"}
+          </Text>
+        </Pressable>
       </View>
 
       <View style={styles.sectionHeader}>

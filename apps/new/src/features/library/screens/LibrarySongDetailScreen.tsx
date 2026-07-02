@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { shareLibrarySongs } from "@/src/features/export/services/library-export-service";
 import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
@@ -59,6 +61,8 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
   const { addToQueue, playSong } = usePlaybackSession();
   const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
   const hasErrors = errors.length > 0;
   const canPlay = !detail.isMissing && detail.pathToFile !== null;
   const updatedLabel =
@@ -173,6 +177,43 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         >
           Edit
         </Link>
+        <Pressable
+          accessibilityRole="button"
+          disabled={!canPlay || isExporting}
+          onPress={async () => {
+            setExportError(null);
+            setIsExporting(true);
+
+            try {
+              await shareLibrarySongs([
+                {
+                  id: songId,
+                  pathToFile: detail.pathToFile,
+                  title: detail.title,
+                },
+              ]);
+              sendHaptic("success");
+            } catch (error) {
+              sendHaptic("error");
+              setExportError(
+                error instanceof Error
+                  ? error.message
+                  : "Song could not be exported.",
+              );
+            } finally {
+              setIsExporting(false);
+            }
+          }}
+          style={[
+            styles.secondaryButton,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+            !canPlay || isExporting ? styles.disabled : null,
+          ]}
+        >
+          <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
+            {isExporting ? "Exporting" : "Export"}
+          </Text>
+        </Pressable>
       </View>
 
       <RelationshipSection
@@ -226,17 +267,22 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
       >
         <Text
           style={[
-            hasErrors ? styles.errorText : styles.panelText,
-            { color: hasErrors ? theme.danger : theme.secondaryText },
+            hasErrors || exportError ? styles.errorText : styles.panelText,
+            {
+              color: hasErrors || exportError
+                ? theme.danger
+                : theme.secondaryText,
+            },
           ]}
         >
-          {hasErrors
-            ? "One or more song detail queries failed."
-            : detail.isMissing
-              ? "Song missing from database."
-              : !canPlay
-                ? "Song has no playable file path."
-              : updatedLabel}
+          {exportError ??
+            (hasErrors
+              ? "One or more song detail queries failed."
+              : detail.isMissing
+                ? "Song missing from database."
+                : !canPlay
+                  ? "Song has no playable file path."
+                  : updatedLabel)}
         </Text>
       </View>
 

@@ -60,6 +60,7 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     entry points plus navigable song relationship rows, library song metadata
     editing, playlist/album/artist
     create/edit flows, collection song add/remove flows with bulk add selection,
+    song and collection file sharing/export actions,
     durable
     album/playlist/artist song reorder flows, and collection cover/profile image
     picking, persistence, and thumbnail rendering exist.
@@ -1114,3 +1115,5 @@ endless old-app polishing loop.
   new app library collection previews.
 - Done: add a slim new-app library song edit route for title and comma-separated
   artist/album metadata updates.
+- Done: add first-pass new-app library export actions for individual songs and
+  playable songs in a collection, backed by a feature-owned export service.

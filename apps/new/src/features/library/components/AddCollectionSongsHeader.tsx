@@ -1,6 +1,7 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
+import { getAddCollectionSongsHeaderState } from "../services/addable-collection-songs-service";
 
 type AddCollectionSongsHeaderProps = {
   kind: LibraryCollectionDetailKind;
@@ -14,16 +15,19 @@ export function AddCollectionSongsHeader({
   query,
 }: AddCollectionSongsHeaderProps) {
   const theme = useCustomizationTheme();
+  const state = getAddCollectionSongsHeaderState({ kind });
 
   return (
     <>
       <View style={styles.header}>
-        <Text style={[styles.kicker, { color: theme.accent }]}>Add songs</Text>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          {state.kicker}
+        </Text>
         <Text style={[styles.title, { color: theme.primaryText }]}>
-          Add to {kind}
+          {state.title}
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          Search your songs and add them to this collection.
+          {state.subtitle}
         </Text>
       </View>
 
@@ -31,8 +35,9 @@ export function AddCollectionSongsHeader({
         autoCapitalize="none"
         clearButtonMode="while-editing"
         onChangeText={onChangeQuery}
-        placeholder="Search songs, artists, or albums"
+        placeholder={state.searchInput.placeholder}
         placeholderTextColor={theme.mutedText}
+        returnKeyType={state.searchInput.returnKeyType}
         style={[
           styles.searchInput,
           {

@@ -113,6 +113,31 @@ export const getAddCollectionSongsBackHref = ({
   kind: AddCollectionSongsCollectionKind;
 }) => `/(tabs)/library/${kind}/${collectionId}` as const;
 
+export const getAddCollectionSongsHeaderState = ({
+  kind,
+}: {
+  kind: AddCollectionSongsCollectionKind;
+}) => ({
+  kicker: "Add songs",
+  searchInput: {
+    placeholder: "Search songs, artists, or albums",
+    returnKeyType: "search" as const,
+  },
+  subtitle: "Search your songs and add them to this collection.",
+  title: `Add to ${kind}`,
+});
+
+export const getAddCollectionSongsBackLink = ({
+  collectionId,
+  kind,
+}: {
+  collectionId: number;
+  kind: AddCollectionSongsCollectionKind;
+}) => ({
+  href: getAddCollectionSongsBackHref({ collectionId, kind }),
+  label: "Back to collection",
+});
+
 export const rowsToAddableCollectionSongs = ({
   linkedSongIds,
   limit = 100,

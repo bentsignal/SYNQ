@@ -1615,6 +1615,9 @@ endless old-app polishing loop.
    - Done: add-to-collection query/mutation status and updated-time copy now
      live in the addable songs service with smoke coverage instead of
      connected-form/status-panel branching.
+   - Done: add-to-collection header/search copy and back-link presentation now
+     live in the addable songs service with smoke coverage instead of form
+     components.
    - Done: invalid collection route copy and back link now live in the
      collection interaction service with smoke coverage instead of the UI
      fallback component.

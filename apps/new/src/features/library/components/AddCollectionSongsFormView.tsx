@@ -2,7 +2,7 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import {
-  getAddCollectionSongsBackHref,
+  getAddCollectionSongsBackLink,
   type AddableCollectionSong,
   type AddCollectionSongsStatusState,
 } from "../services/addable-collection-songs-service";
@@ -46,6 +46,7 @@ export function AddCollectionSongsFormView({
   updatedLabel,
 }: AddCollectionSongsFormViewProps) {
   const theme = useCustomizationTheme();
+  const backLink = getAddCollectionSongsBackLink({ collectionId, kind });
 
   return (
     <ScrollView
@@ -78,10 +79,10 @@ export function AddCollectionSongsFormView({
       />
 
       <Link
-        href={getAddCollectionSongsBackHref({ collectionId, kind })}
+        href={backLink.href}
         style={[styles.backLink, { color: theme.accent }]}
       >
-        Back to collection
+        {backLink.label}
       </Link>
     </ScrollView>
   );

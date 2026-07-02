@@ -187,6 +187,8 @@ import {
 } from "../../../apps/new/src/features/library/services/collection-metadata-service";
 import {
   getAddCollectionSongsBackHref,
+  getAddCollectionSongsBackLink,
+  getAddCollectionSongsHeaderState,
   getAddCollectionSongsStatusState,
   getAddCollectionSongsUpdatedLabel,
   rowsToAddableCollectionSongs,
@@ -2582,6 +2584,25 @@ function assertAddableCollectionSongsSmoke() {
     }),
     "/(tabs)/library/playlist/7",
   );
+  assert.deepEqual(
+    getAddCollectionSongsBackLink({
+      collectionId: 7,
+      kind: "playlist",
+    }),
+    {
+      href: "/(tabs)/library/playlist/7",
+      label: "Back to collection",
+    },
+  );
+  assert.deepEqual(getAddCollectionSongsHeaderState({ kind: "album" }), {
+    kicker: "Add songs",
+    searchInput: {
+      placeholder: "Search songs, artists, or albums",
+      returnKeyType: "search",
+    },
+    subtitle: "Search your songs and add them to this collection.",
+    title: "Add to album",
+  });
 
   const songs = rowsToAddableCollectionSongs({
     linkedSongIds: new Set([2]),

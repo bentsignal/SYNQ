@@ -166,6 +166,8 @@ import {
   getLibrarySongEditErrorMessage,
 } from "../../../apps/new/src/features/library/services/library-song-form-service";
 import {
+  getLibrarySongPreviewDetailHref,
+  getLibrarySongPreviewPlayerHref,
   getLibrarySongPreviewRowState,
   rowsToSongPreviews,
   toLibrarySongPlaybackItem,
@@ -2237,6 +2239,11 @@ function assertLibrarySongPreviewSmoke() {
       isActive: true,
     },
   );
+  assert.equal(
+    getLibrarySongPreviewDetailHref(previews[0]!),
+    "/(tabs)/library/song/1",
+  );
+  assert.equal(getLibrarySongPreviewPlayerHref(), "/player");
   assert.deepEqual(toLibrarySongPlaybackItem(previews[0]!), {
     album: "Alpha Album",
     artist: "Alpha Artist, Featured Artist",

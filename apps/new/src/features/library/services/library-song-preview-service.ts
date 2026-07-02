@@ -20,6 +20,10 @@ export type LibrarySongPreviewSort = "album" | "artist" | "recent" | "title";
 
 export type LibrarySongPreviewOrder = "asc" | "desc";
 
+export type LibrarySongPreviewHref =
+  | "/player"
+  | `/(tabs)/library/song/${number}`;
+
 export type LibrarySongPreviewRow = {
   albumName: string | null;
   artistName: string | null;
@@ -97,6 +101,13 @@ export const getLibrarySongPreviewRowState = ({
   canPlay: song.pathToFile !== null,
   isActive: activeTrackId === song.id,
 });
+
+export const getLibrarySongPreviewDetailHref = (
+  song: LibrarySongPreview,
+): LibrarySongPreviewHref => `/(tabs)/library/song/${song.id}`;
+
+export const getLibrarySongPreviewPlayerHref = (): LibrarySongPreviewHref =>
+  "/player";
 
 export const toLibrarySongPlaybackItem = (
   song: LibrarySongPreview,

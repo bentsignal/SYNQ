@@ -5,6 +5,8 @@ import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customi
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import type { LibrarySongPreview } from "../hooks/use-library-song-preview-query";
 import {
+  getLibrarySongPreviewDetailHref,
+  getLibrarySongPreviewPlayerHref,
   getLibrarySongPreviewRowState,
   toLibrarySongPlaybackItem,
 } from "../services/library-song-preview-service";
@@ -29,6 +31,7 @@ export function LibrarySongPreviewRow({
     song,
   });
   const playbackItem = toLibrarySongPlaybackItem(song);
+  const detailHref = getLibrarySongPreviewDetailHref(song);
 
   return (
     <View
@@ -38,7 +41,7 @@ export function LibrarySongPreviewRow({
         isActive ? { backgroundColor: theme.borderSubtle } : null,
       ]}
     >
-      <Link asChild href={`/(tabs)/library/song/${song.id}`}>
+      <Link asChild href={detailHref}>
         <Pressable style={styles.rowText}>
           <Text
             numberOfLines={1}
@@ -65,7 +68,7 @@ export function LibrarySongPreviewRow({
           onPress={() => {
             sendHaptic("light");
             playSong(playbackItem);
-            router.push("/player");
+            router.push(getLibrarySongPreviewPlayerHref());
           }}
           style={[
             styles.actionButton,

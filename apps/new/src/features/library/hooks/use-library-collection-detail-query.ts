@@ -86,7 +86,10 @@ const rowsToSongs = (rows: DetailSongRow[]) => {
     }))
     .sort((first, second) => {
       if (first.track !== null || second.track !== null) {
-        return (first.track ?? Number.MAX_SAFE_INTEGER) - (second.track ?? Number.MAX_SAFE_INTEGER);
+        return (
+          (first.track ?? Number.MAX_SAFE_INTEGER) -
+          (second.track ?? Number.MAX_SAFE_INTEGER)
+        );
       }
 
       return first.id - second.id;
@@ -219,7 +222,7 @@ export function useLibraryCollectionDetailQuery({
         duration: schema.songs.duration,
         songId: schema.songs.id,
         title: schema.songs.title,
-        track: schema.albumSongs.track,
+        track: schema.playlistSongs.position,
       })
       .from(schema.playlistSongs)
       .innerJoin(schema.songs, eq(schema.playlistSongs.songId, schema.songs.id))
@@ -300,11 +303,14 @@ export function useLibraryCollectionDetailQuery({
         duration: schema.songs.duration,
         songId: schema.songs.id,
         title: schema.songs.title,
-        track: schema.albumSongs.track,
+        track: schema.artistSongs.position,
       })
       .from(schema.artistSongs)
       .innerJoin(schema.songs, eq(schema.artistSongs.songId, schema.songs.id))
-      .innerJoin(schema.artists, eq(schema.artistSongs.artistId, schema.artists.id))
+      .innerJoin(
+        schema.artists,
+        eq(schema.artistSongs.artistId, schema.artists.id),
+      )
       .leftJoin(
         schema.albumSongs,
         eq(schema.songs.id, schema.albumSongs.songId),

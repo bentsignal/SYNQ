@@ -36,6 +36,7 @@ export const playlistSongs = sqliteTable("playlistSongs", {
   id: int("id").primaryKey({ autoIncrement: true }),
   playlistId: int("playlistId"),
   songId: int("songId"),
+  position: int("position"),
 });
 
 export const albums = sqliteTable("albums", {
@@ -68,6 +69,7 @@ export const artistSongs = sqliteTable("artistSongs", {
   id: int("id").primaryKey({ autoIncrement: true }),
   artistId: int("artistId"),
   songId: int("songId"),
+  position: int("position"),
 });
 
 export const artistsAlbums = sqliteTable("artistsAlbums", {

@@ -11,7 +11,7 @@ import {
 } from "../hooks/use-library-collection-detail-query";
 import {
   removeSongFromCollection,
-  updateAlbumSongOrder,
+  updateCollectionSongOrder,
 } from "../repository/relationship-repository";
 
 type LibraryCollectionDetailScreenProps = {
@@ -161,37 +161,34 @@ function LibraryCollectionDetailContent({
 
       <LibraryCollectionSongList
         movingSongId={movingSongId}
-        onMoveSong={
-          kind === "album"
-            ? async (songId, direction) => {
-                setMovingSongId(songId);
-                setMutationError(null);
+        onMoveSong={async (songId, direction) => {
+          setMovingSongId(songId);
+          setMutationError(null);
 
-                try {
-                  const reorderedSongs = reorderSongs({
-                    direction,
-                    songId,
-                    songs: detail.songs,
-                  });
+          try {
+            const reorderedSongs = reorderSongs({
+              direction,
+              songId,
+              songs: detail.songs,
+            });
 
-                  await updateAlbumSongOrder({
-                    albumId: id,
-                    songIds: reorderedSongs.map((song) => song.id),
-                  });
-                  sendHaptic("light");
-                } catch (caughtError) {
-                  sendHaptic("error");
-                  setMutationError(
-                    caughtError instanceof Error
-                      ? caughtError.message
-                      : "Song order could not be saved.",
-                  );
-                } finally {
-                  setMovingSongId(null);
-                }
-              }
-            : undefined
-        }
+            await updateCollectionSongOrder({
+              collectionId: id,
+              kind,
+              songIds: reorderedSongs.map((song) => song.id),
+            });
+            sendHaptic("light");
+          } catch (caughtError) {
+            sendHaptic("error");
+            setMutationError(
+              caughtError instanceof Error
+                ? caughtError.message
+                : "Song order could not be saved.",
+            );
+          } finally {
+            setMovingSongId(null);
+          }
+        }}
         onRemoveSong={async (songId) => {
           setRemovingSongId(songId);
           setMutationError(null);

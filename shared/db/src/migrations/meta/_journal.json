@@ -43,6 +43,13 @@
       "when": 1758658851336,
       "tag": "0005_same_thena",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1782990558980,
+      "tag": "0006_majestic_titanium_man",
+      "breakpoints": true
     }
   ]
 }

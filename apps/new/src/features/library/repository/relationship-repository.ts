@@ -16,6 +16,32 @@ const getNextAlbumTrack = async (albumId: number) => {
   return highestTrack + 1;
 };
 
+const getNextArtistPosition = async (artistId: number) => {
+  const rows = await db
+    .select({ position: schema.artistSongs.position })
+    .from(schema.artistSongs)
+    .where(eq(schema.artistSongs.artistId, artistId));
+  const highestPosition = rows.reduce(
+    (highest, row) => Math.max(highest, row.position ?? 0),
+    0,
+  );
+
+  return highestPosition + 1;
+};
+
+const getNextPlaylistPosition = async (playlistId: number) => {
+  const rows = await db
+    .select({ position: schema.playlistSongs.position })
+    .from(schema.playlistSongs)
+    .where(eq(schema.playlistSongs.playlistId, playlistId));
+  const highestPosition = rows.reduce(
+    (highest, row) => Math.max(highest, row.position ?? 0),
+    0,
+  );
+
+  return highestPosition + 1;
+};
+
 export async function addSongToCollection({
   collectionId,
   kind,
@@ -63,6 +89,7 @@ export async function addSongToCollection({
       if (existing.length === 0) {
         await db.insert(schema.artistSongs).values({
           artistId: collectionId,
+          position: await getNextArtistPosition(collectionId),
           songId,
         });
       }
@@ -84,6 +111,7 @@ export async function addSongToCollection({
       if (existing.length === 0) {
         await db.insert(schema.playlistSongs).values({
           playlistId: collectionId,
+          position: await getNextPlaylistPosition(collectionId),
           songId,
         });
       }
@@ -91,25 +119,53 @@ export async function addSongToCollection({
   }
 }
 
-export async function updateAlbumSongOrder({
-  albumId,
+export async function updateCollectionSongOrder({
+  collectionId,
+  kind,
   songIds,
 }: {
-  albumId: number;
+  collectionId: number;
+  kind: LibraryCollectionDetailKind;
   songIds: number[];
 }) {
   for (let index = 0; index < songIds.length; index += 1) {
     const songId = songIds[index];
 
-    await db
-      .update(schema.albumSongs)
-      .set({ track: index + 1 })
-      .where(
-        and(
-          eq(schema.albumSongs.albumId, albumId),
-          eq(schema.albumSongs.songId, songId),
-        ),
-      );
+    switch (kind) {
+      case "album":
+        await db
+          .update(schema.albumSongs)
+          .set({ track: index + 1 })
+          .where(
+            and(
+              eq(schema.albumSongs.albumId, collectionId),
+              eq(schema.albumSongs.songId, songId),
+            ),
+          );
+        break;
+      case "artist":
+        await db
+          .update(schema.artistSongs)
+          .set({ position: index + 1 })
+          .where(
+            and(
+              eq(schema.artistSongs.artistId, collectionId),
+              eq(schema.artistSongs.songId, songId),
+            ),
+          );
+        break;
+      case "playlist":
+        await db
+          .update(schema.playlistSongs)
+          .set({ position: index + 1 })
+          .where(
+            and(
+              eq(schema.playlistSongs.playlistId, collectionId),
+              eq(schema.playlistSongs.songId, songId),
+            ),
+          );
+        break;
+    }
   }
 }
 

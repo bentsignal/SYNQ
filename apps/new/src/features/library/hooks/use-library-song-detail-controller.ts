@@ -10,6 +10,8 @@ import {
 } from "../repository/song-metadata-repository";
 import {
   getLibrarySongDetailActionState,
+  toLibrarySongDetailPlaybackItem,
+  toLibrarySongExportItem,
   type LibrarySongDetail,
 } from "../services/library-song-detail-service";
 
@@ -33,22 +35,8 @@ export function useLibrarySongDetailController({
     isTogglingLiked,
   });
   const playbackItem = useMemo(
-    () => ({
-      album: detail.albumLabel,
-      artist: detail.artistLabel,
-      duration: detail.duration,
-      id: songId,
-      pathToFile: detail.pathToFile,
-      title: detail.title,
-    }),
-    [
-      detail.albumLabel,
-      detail.artistLabel,
-      detail.duration,
-      detail.pathToFile,
-      detail.title,
-      songId,
-    ],
+    () => toLibrarySongDetailPlaybackItem({ detail, songId }),
+    [detail, songId],
   );
 
   const playCurrentSong = useCallback(() => {
@@ -109,13 +97,7 @@ export function useLibrarySongDetailController({
     setIsExporting(true);
 
     try {
-      await shareLibrarySongs([
-        {
-          id: songId,
-          pathToFile: detail.pathToFile,
-          title: detail.title,
-        },
-      ]);
+      await shareLibrarySongs([toLibrarySongExportItem({ detail, songId })]);
       sendHaptic("success");
     } catch (caughtError) {
       sendHaptic("error");
@@ -127,13 +109,7 @@ export function useLibrarySongDetailController({
     } finally {
       setIsExporting(false);
     }
-  }, [
-    actionState.canExport,
-    detail.pathToFile,
-    detail.title,
-    sendHaptic,
-    songId,
-  ]);
+  }, [actionState.canExport, detail, sendHaptic, songId]);
 
   const deleteCurrentSong = useCallback(() => {
     if (!actionState.canDelete) {

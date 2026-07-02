@@ -111,6 +111,8 @@ import {
   buildLibrarySongDetail,
   getLibrarySongDetailActionState,
   getLibrarySongRelationshipHref,
+  toLibrarySongDetailPlaybackItem,
+  toLibrarySongExportItem,
 } from "../../../apps/new/src/features/library/services/library-song-detail-service";
 import {
   buildLibrarySongEditFormState,
@@ -1965,6 +1967,31 @@ function assertLibrarySongDetailSmoke() {
   assert.equal(detail.relationshipSummary, "2 artists / 2 albums / 2 playlists");
   assert.equal(detail.isLiked, true);
   assert.equal(detail.isMissing, false);
+  assert.deepEqual(
+    toLibrarySongDetailPlaybackItem({
+      detail,
+      songId: 42,
+    }),
+    {
+      album: "Alpha Album, Beta Album",
+      artist: "Alpha Artist, Beta Artist",
+      duration: 125_000,
+      id: 42,
+      pathToFile: "/tmp/alpha.mp3",
+      title: "Alpha",
+    },
+  );
+  assert.deepEqual(
+    toLibrarySongExportItem({
+      detail,
+      songId: 42,
+    }),
+    {
+      id: 42,
+      pathToFile: "/tmp/alpha.mp3",
+      title: "Alpha",
+    },
+  );
   assert.equal(
     buildLibrarySongDetail({
       albumRows: [],

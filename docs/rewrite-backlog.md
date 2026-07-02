@@ -324,6 +324,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     components instead of the addable song list owning selection/add controls.
   - Done: song detail like, export, and delete labels now live with action
     availability in the song detail service instead of the detail screen.
+  - Done: song detail playback and export payload shaping now lives in the song
+    detail service with deterministic smoke coverage instead of the controller
+    hook building those objects inline.
   - Done: song detail relationship list rendering now lives in a dedicated
     component instead of the route screen.
   - Done: song detail header, summary cards, action row, source panel, and

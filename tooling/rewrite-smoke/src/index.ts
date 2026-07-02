@@ -27,7 +27,9 @@ import {
   rowsToCollectionDetailSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-detail-service";
 import {
+  canDeleteLibraryCollection,
   getAddableSongRowState,
+  getCollectionListHref,
   getPlayableCollectionSongs,
   getSelectedAddableSongIds,
   removeSongIdSelection,
@@ -389,6 +391,49 @@ function assertLibraryCollectionInteractionSmoke() {
   assert.equal(
     reorderCollectionSongs({ direction: "down", songId: 99, songs }),
     songs,
+  );
+  assert.equal(getCollectionListHref("album"), "/(tabs)/library/albums");
+  assert.equal(getCollectionListHref("artist"), "/(tabs)/library/artists");
+  assert.equal(getCollectionListHref("playlist"), "/(tabs)/library/playlists");
+  assert.equal(
+    canDeleteLibraryCollection({
+      id: 3,
+      isMissing: false,
+      kind: "playlist",
+    }),
+    true,
+  );
+  assert.equal(
+    canDeleteLibraryCollection({
+      id: 1,
+      isMissing: false,
+      kind: "playlist",
+    }),
+    false,
+  );
+  assert.equal(
+    canDeleteLibraryCollection({
+      id: 2,
+      isMissing: false,
+      kind: "playlist",
+    }),
+    false,
+  );
+  assert.equal(
+    canDeleteLibraryCollection({
+      id: 1,
+      isMissing: false,
+      kind: "album",
+    }),
+    true,
+  );
+  assert.equal(
+    canDeleteLibraryCollection({
+      id: 3,
+      isMissing: true,
+      kind: "artist",
+    }),
+    false,
   );
 
   const addableSongs = [

@@ -25,24 +25,14 @@ import {
   updateCollectionSongOrder,
 } from "../repository/relationship-repository";
 import {
+  canDeleteLibraryCollection,
+  getCollectionListHref,
   getPlayableCollectionSongs,
   reorderCollectionSongs,
 } from "../services/library-collection-interaction-service";
 
 type LibraryCollectionDetailScreenProps = {
   kind: LibraryCollectionDetailKind;
-};
-
-const getCollectionListHref = (kind: LibraryCollectionDetailKind) => {
-  switch (kind) {
-    case "album":
-      return "/(tabs)/library/albums" as const;
-    case "artist":
-      return "/(tabs)/library/artists" as const;
-    case "playlist":
-    default:
-      return "/(tabs)/library/playlists" as const;
-  }
 };
 
 export function LibraryCollectionDetailScreen({
@@ -145,8 +135,11 @@ function LibraryCollectionDetailContent({
       setIsExporting(false);
     }
   };
-  const canDeleteCollection =
-    !detail.isMissing && (kind !== "playlist" || (id !== 1 && id !== 2));
+  const canDeleteCollection = canDeleteLibraryCollection({
+    id,
+    isMissing: detail.isMissing,
+    kind,
+  });
   const deleteCurrentCollection = () => {
     if (!canDeleteCollection) {
       sendHaptic("error");

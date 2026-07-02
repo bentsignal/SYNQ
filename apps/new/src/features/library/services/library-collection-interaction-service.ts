@@ -1,5 +1,37 @@
 import type { AddableCollectionSong } from "./addable-collection-songs-service";
-import type { LibraryCollectionDetailSong } from "./library-collection-detail-service";
+import type {
+  LibraryCollectionDetailKind,
+  LibraryCollectionDetailSong,
+} from "./library-collection-detail-service";
+
+export type LibraryCollectionListHref =
+  | "/(tabs)/library/albums"
+  | "/(tabs)/library/artists"
+  | "/(tabs)/library/playlists";
+
+export const getCollectionListHref = (
+  kind: LibraryCollectionDetailKind,
+): LibraryCollectionListHref => {
+  switch (kind) {
+    case "album":
+      return "/(tabs)/library/albums";
+    case "artist":
+      return "/(tabs)/library/artists";
+    case "playlist":
+    default:
+      return "/(tabs)/library/playlists";
+  }
+};
+
+export const canDeleteLibraryCollection = ({
+  id,
+  isMissing,
+  kind,
+}: {
+  id: number;
+  isMissing: boolean;
+  kind: LibraryCollectionDetailKind;
+}) => !isMissing && (kind !== "playlist" || (id !== 1 && id !== 2));
 
 export const getPlayableCollectionSongs = (
   songs: LibraryCollectionDetailSong[],

@@ -173,6 +173,7 @@ import {
 import type { BackupSessionState } from "../../../apps/new/src/features/backup/types/backup-session";
 import {
   getPremiumActionState,
+  getPremiumMutationErrorMessage,
   getPremiumStatusState,
   getSelectedPremiumTier,
   premiumFeatureCopy,
@@ -3275,6 +3276,34 @@ function assertPremiumScreenSmoke() {
     isFailure: true,
     message: "Premium purchase failed.",
   });
+  assert.equal(
+    getPremiumMutationErrorMessage({
+      caughtError: new Error("Premium smoke failure"),
+      mutation: "purchase-tier",
+    }),
+    "Premium smoke failure",
+  );
+  assert.equal(
+    getPremiumMutationErrorMessage({
+      caughtError: null,
+      mutation: "purchase-tier",
+    }),
+    "Premium purchase failed.",
+  );
+  assert.equal(
+    getPremiumMutationErrorMessage({
+      caughtError: "unknown",
+      mutation: "restore-purchase",
+    }),
+    "Premium restore failed.",
+  );
+  assert.equal(
+    getPremiumMutationErrorMessage({
+      caughtError: undefined,
+      mutation: "check-entitlement",
+    }),
+    "Premium entitlement could not be checked.",
+  );
 }
 
 function assertSettingsScreenSmoke() {

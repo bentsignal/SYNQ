@@ -235,6 +235,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: Premium feature list, tier cards, purchase/restore actions, and
     status panel now render through focused components instead of one large
     Premium screen view.
+  - Done: Premium purchase, restore, and entitlement fallback copy now lives in
+    the Premium screen service with deterministic smoke coverage instead of
+    inline provider/hook branches.
   - Done: song preview row state and playback item conversion now live in the
     song preview service instead of the preview list component.
   - Done: library song preview empty state and playback row rendering now live

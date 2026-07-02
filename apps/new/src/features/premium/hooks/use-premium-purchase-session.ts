@@ -5,6 +5,7 @@ import {
   purchasePremiumTier,
   restorePremiumPurchase,
 } from "../services/premium-purchase-service";
+import { getPremiumMutationErrorMessage } from "../services/premium-screen-service";
 import type {
   PremiumPurchaseResult,
   PremiumPurchaseState,
@@ -138,10 +139,10 @@ export function usePremiumPurchaseSession() {
       dispatch({ result, type: "succeed" });
     } catch (caughtError) {
       dispatch({
-        error:
-          caughtError instanceof Error
-            ? caughtError.message
-            : "Premium purchase failed.",
+        error: getPremiumMutationErrorMessage({
+          caughtError,
+          mutation: "purchase-tier",
+        }),
         type: "fail",
       });
     }
@@ -156,10 +157,10 @@ export function usePremiumPurchaseSession() {
       dispatch({ result, type: "succeed" });
     } catch (caughtError) {
       dispatch({
-        error:
-          caughtError instanceof Error
-            ? caughtError.message
-            : "Premium restore failed.",
+        error: getPremiumMutationErrorMessage({
+          caughtError,
+          mutation: "restore-purchase",
+        }),
         type: "fail",
       });
     }

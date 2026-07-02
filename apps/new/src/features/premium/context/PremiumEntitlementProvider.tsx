@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { checkPremiumEntitlement } from "../services/premium-purchase-service";
+import { getPremiumMutationErrorMessage } from "../services/premium-screen-service";
 import type {
   PremiumEntitlementStatus,
   PremiumTierId,
@@ -97,10 +98,10 @@ export function PremiumEntitlementProvider({
       });
     } catch (caughtError) {
       dispatch({
-        error:
-          caughtError instanceof Error
-            ? caughtError.message
-            : "Premium entitlement could not be checked.",
+        error: getPremiumMutationErrorMessage({
+          caughtError,
+          mutation: "check-entitlement",
+        }),
         type: "fail",
       });
     }

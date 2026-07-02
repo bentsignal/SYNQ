@@ -8,7 +8,8 @@ import {
   buildAlbumDetail,
   buildArtistDetail,
   buildPlaylistDetail,
-  type LibraryCollectionDetailKind,
+  type AlbumDetailRow,
+  type ArtistDetailRow,
   type LibraryCollectionDetailSongRow,
   type PlaylistDetailRow,
 } from "../services/library-collection-detail-service";
@@ -21,14 +22,8 @@ export type {
 const getSmallImagePath = (imageHash: string) =>
   getImagePathFromHash(imageHash).pathToSmallImage;
 
-export function useLibraryCollectionDetailQuery({
-  id,
-  kind,
-}: {
-  id: number;
-  kind: LibraryCollectionDetailKind;
-}) {
-  const playlist = useLiveQuery(
+function usePlaylistRowsQuery(id: number) {
+  return useLiveQuery(
     db
       .select({
         coverImage: schema.playlists.coverImage,
@@ -37,7 +32,10 @@ export function useLibraryCollectionDetailQuery({
       .from(schema.playlists)
       .where(eq(schema.playlists.id, id)),
   );
-  const playlistSongs = useLiveQuery(
+}
+
+function usePlaylistSongRowsQuery(id: number) {
+  return useLiveQuery(
     db
       .select({
         albumName: schema.albums.name,
@@ -65,7 +63,10 @@ export function useLibraryCollectionDetailQuery({
       .leftJoin(schema.albums, eq(schema.albumSongs.albumId, schema.albums.id))
       .where(eq(schema.playlistSongs.playlistId, id)),
   );
-  const album = useLiveQuery(
+}
+
+function useAlbumRowsQuery(id: number) {
+  return useLiveQuery(
     db
       .select({
         artistName: schema.artists.name,
@@ -84,7 +85,10 @@ export function useLibraryCollectionDetailQuery({
       )
       .where(eq(schema.albums.id, id)),
   );
-  const albumSongs = useLiveQuery(
+}
+
+function useAlbumSongRowsQuery(id: number) {
+  return useLiveQuery(
     db
       .select({
         albumName: schema.albums.name,
@@ -108,7 +112,10 @@ export function useLibraryCollectionDetailQuery({
       )
       .where(eq(schema.albumSongs.albumId, id)),
   );
-  const artist = useLiveQuery(
+}
+
+function useArtistRowsQuery(id: number) {
+  return useLiveQuery(
     db
       .select({
         albumId: schema.artistsAlbums.albumId,
@@ -122,7 +129,10 @@ export function useLibraryCollectionDetailQuery({
       )
       .where(eq(schema.artists.id, id)),
   );
-  const artistSongs = useLiveQuery(
+}
+
+function useArtistSongRowsQuery(id: number) {
+  return useLiveQuery(
     db
       .select({
         albumName: schema.albums.name,
@@ -152,66 +162,78 @@ export function useLibraryCollectionDetailQuery({
       )
       .where(eq(schema.artistSongs.artistId, id)),
   );
+}
 
-  const detail = useMemo(() => {
-    if (kind === "album") {
-      return buildAlbumDetail({
-        albumRows: album.data ?? [],
+export function usePlaylistCollectionDetailQuery({ id }: { id: number }) {
+  const playlist = usePlaylistRowsQuery(id);
+  const playlistSongs = usePlaylistSongRowsQuery(id);
+  const detail = useMemo(
+    () =>
+      buildPlaylistDetail({
+        getImagePath: getSmallImagePath,
+        playlistRows: (playlist.data ?? []) as PlaylistDetailRow[],
+        songRows: (playlistSongs.data ?? []) as LibraryCollectionDetailSongRow[],
+        updatedAt: Math.max(
+          playlist.updatedAt?.getTime() ?? 0,
+          playlistSongs.updatedAt?.getTime() ?? 0,
+        ),
+      }),
+    [
+      playlist.data,
+      playlist.updatedAt,
+      playlistSongs.data,
+      playlistSongs.updatedAt,
+    ],
+  );
+
+  return {
+    detail,
+    errors: [playlist.error, playlistSongs.error].filter(Boolean),
+  };
+}
+
+export function useAlbumCollectionDetailQuery({ id }: { id: number }) {
+  const album = useAlbumRowsQuery(id);
+  const albumSongs = useAlbumSongRowsQuery(id);
+  const detail = useMemo(
+    () =>
+      buildAlbumDetail({
+        albumRows: (album.data ?? []) as AlbumDetailRow[],
         getImagePath: getSmallImagePath,
         songRows: (albumSongs.data ?? []) as LibraryCollectionDetailSongRow[],
         updatedAt: Math.max(
           album.updatedAt?.getTime() ?? 0,
           albumSongs.updatedAt?.getTime() ?? 0,
         ),
-      });
-    }
+      }),
+    [album.data, album.updatedAt, albumSongs.data, albumSongs.updatedAt],
+  );
 
-    if (kind === "artist") {
-      return buildArtistDetail({
-        artistRows: artist.data ?? [],
+  return {
+    detail,
+    errors: [album.error, albumSongs.error].filter(Boolean),
+  };
+}
+
+export function useArtistCollectionDetailQuery({ id }: { id: number }) {
+  const artist = useArtistRowsQuery(id);
+  const artistSongs = useArtistSongRowsQuery(id);
+  const detail = useMemo(
+    () =>
+      buildArtistDetail({
+        artistRows: (artist.data ?? []) as ArtistDetailRow[],
         getImagePath: getSmallImagePath,
         songRows: (artistSongs.data ?? []) as LibraryCollectionDetailSongRow[],
         updatedAt: Math.max(
           artist.updatedAt?.getTime() ?? 0,
           artistSongs.updatedAt?.getTime() ?? 0,
         ),
-      });
-    }
-
-    return buildPlaylistDetail({
-      getImagePath: getSmallImagePath,
-      playlistRows: (playlist.data ?? []) as PlaylistDetailRow[],
-      songRows: (playlistSongs.data ?? []) as LibraryCollectionDetailSongRow[],
-      updatedAt: Math.max(
-        playlist.updatedAt?.getTime() ?? 0,
-        playlistSongs.updatedAt?.getTime() ?? 0,
-      ),
-    });
-  }, [
-    album.data,
-    album.updatedAt,
-    albumSongs.data,
-    albumSongs.updatedAt,
-    artist.data,
-    artist.updatedAt,
-    artistSongs.data,
-    artistSongs.updatedAt,
-    kind,
-    playlist.data,
-    playlist.updatedAt,
-    playlistSongs.data,
-    playlistSongs.updatedAt,
-  ]);
+      }),
+    [artist.data, artist.updatedAt, artistSongs.data, artistSongs.updatedAt],
+  );
 
   return {
     detail,
-    errors: [
-      playlist.error,
-      playlistSongs.error,
-      album.error,
-      albumSongs.error,
-      artist.error,
-      artistSongs.error,
-    ].filter(Boolean),
+    errors: [artist.error, artistSongs.error].filter(Boolean),
   };
 }

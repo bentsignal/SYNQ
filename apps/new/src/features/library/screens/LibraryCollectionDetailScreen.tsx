@@ -16,7 +16,9 @@ import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customi
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { LibraryCollectionSongList } from "../components/LibraryCollectionSongList";
 import {
-  useLibraryCollectionDetailQuery,
+  useAlbumCollectionDetailQuery,
+  useArtistCollectionDetailQuery,
+  usePlaylistCollectionDetailQuery,
   type LibraryCollectionDetailKind,
 } from "../hooks/use-library-collection-detail-query";
 import { deleteCollection } from "../repository/collection-repository";
@@ -73,7 +75,57 @@ function LibraryCollectionDetailContent({
   id: number;
   kind: LibraryCollectionDetailKind;
 }) {
-  const { detail, errors } = useLibraryCollectionDetailQuery({ id, kind });
+  if (kind === "album") {
+    return <AlbumCollectionDetailContent id={id} />;
+  }
+
+  if (kind === "artist") {
+    return <ArtistCollectionDetailContent id={id} />;
+  }
+
+  return <PlaylistCollectionDetailContent id={id} />;
+}
+
+function AlbumCollectionDetailContent({ id }: { id: number }) {
+  const collection = useAlbumCollectionDetailQuery({ id });
+
+  return (
+    <LibraryCollectionDetailView collection={collection} id={id} kind="album" />
+  );
+}
+
+function ArtistCollectionDetailContent({ id }: { id: number }) {
+  const collection = useArtistCollectionDetailQuery({ id });
+
+  return (
+    <LibraryCollectionDetailView collection={collection} id={id} kind="artist" />
+  );
+}
+
+function PlaylistCollectionDetailContent({ id }: { id: number }) {
+  const collection = usePlaylistCollectionDetailQuery({ id });
+
+  return (
+    <LibraryCollectionDetailView
+      collection={collection}
+      id={id}
+      kind="playlist"
+    />
+  );
+}
+
+type LibraryCollectionDetailViewProps = {
+  collection: ReturnType<typeof useAlbumCollectionDetailQuery>;
+  id: number;
+  kind: LibraryCollectionDetailKind;
+};
+
+function LibraryCollectionDetailView({
+  collection,
+  id,
+  kind,
+}: LibraryCollectionDetailViewProps) {
+  const { detail, errors } = collection;
   const { addToQueue, playSong } = usePlaybackSession();
   const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();

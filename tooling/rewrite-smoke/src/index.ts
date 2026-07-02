@@ -17,6 +17,11 @@ import {
   buildPlaylistDetail,
   rowsToCollectionDetailSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-detail-service";
+import {
+  albumRowsToPreview,
+  artistRowsToPreview,
+  playlistRowsToPreview,
+} from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 
 const song = ({
   duration = 180_000,
@@ -307,7 +312,113 @@ function assertLibraryCollectionDetailSmoke() {
   assert.equal(artist.detail, "2 songs / 2 albums");
 }
 
+function assertLibraryCollectionPreviewSmoke() {
+  const getImagePath = (hash: string) => `/images/${hash}-small.jpg`;
+
+  const playlists = playlistRowsToPreview({
+    getImagePath,
+    limit: 1,
+    rows: [
+      {
+        coverImage: "playlist-cover",
+        playlistId: 1,
+        playlistName: "First Playlist",
+        songId: 10,
+      },
+      {
+        coverImage: "playlist-cover",
+        playlistId: 1,
+        playlistName: "First Playlist",
+        songId: 11,
+      },
+      {
+        coverImage: null,
+        playlistId: 2,
+        playlistName: null,
+        songId: null,
+      },
+    ],
+  });
+  assert.equal(playlists.length, 1);
+  assert.equal(playlists[0]?.id, 2);
+  assert.equal(playlists[0]?.title, "Untitled playlist");
+  assert.equal(playlists[0]?.detail, "0 songs");
+
+  const albums = albumRowsToPreview({
+    getImagePath,
+    limit: null,
+    rows: [
+      {
+        albumCoverImage: "alpha-cover",
+        albumId: 2,
+        albumName: "Beta Album",
+        artistName: "Beta Artist",
+        songId: 21,
+        year: null,
+      },
+      {
+        albumCoverImage: "alpha-cover",
+        albumId: 1,
+        albumName: "Alpha Album",
+        artistName: "Alpha Artist",
+        songId: 20,
+        year: 2026,
+      },
+      {
+        albumCoverImage: "alpha-cover",
+        albumId: 1,
+        albumName: "Alpha Album",
+        artistName: "Featured Artist",
+        songId: 20,
+        year: 2026,
+      },
+    ],
+  });
+  assert.deepEqual(
+    albums.map((album) => album.title),
+    ["Alpha Album", "Beta Album"],
+  );
+  assert.equal(albums[0]?.detail, "1 song");
+  assert.equal(albums[0]?.imagePath, "/images/alpha-cover-small.jpg");
+  assert.equal(albums[0]?.meta, "Alpha Artist, Featured Artist / 2026");
+
+  const artists = artistRowsToPreview({
+    limit: null,
+    rows: [
+      {
+        albumId: 2,
+        artistId: 2,
+        artistName: "Beta Artist",
+        profileImage: null,
+        songId: 31,
+      },
+      {
+        albumId: 1,
+        artistId: 1,
+        artistName: "Alpha Artist",
+        profileImage: "artist-profile",
+        songId: 30,
+      },
+      {
+        albumId: 1,
+        artistId: 1,
+        artistName: "Alpha Artist",
+        profileImage: "artist-profile",
+        songId: 30,
+      },
+    ],
+    getImagePath,
+  });
+  assert.deepEqual(
+    artists.map((artist) => artist.title),
+    ["Alpha Artist", "Beta Artist"],
+  );
+  assert.equal(artists[0]?.detail, "1 song / 1 album");
+  assert.equal(artists[0]?.imagePath, "/images/artist-profile-small.jpg");
+}
+
 assertPlaybackSessionSmoke();
 assertImportSessionSmoke();
 assertLibraryCollectionDetailSmoke();
+assertLibraryCollectionPreviewSmoke();
 console.log("Rewrite deterministic smoke checks passed.");

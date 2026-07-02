@@ -59,6 +59,7 @@ import {
   getImportDiscardResultHref,
   getImportFilesHref,
   getImportFilesActionState,
+  getImportFilesActionLinks,
   getImportFilesResultHref,
   getImportFailureState,
   getImportFinishResultHref,
@@ -71,6 +72,7 @@ import {
   getImportSaveExportErrorMessage,
   getImportSaveHref,
   getImportSuccessState,
+  getImportWifiActionState,
   getImportWifiState,
 } from "../../../apps/new/src/features/import/services/import-screen-state-service";
 import {
@@ -943,6 +945,16 @@ function assertImportSessionSmoke() {
     chooseLabel: "Choosing",
     isWorking: true,
   });
+  assert.deepEqual(getImportFilesActionLinks(), [
+    {
+      href: "/(tabs)/import/save",
+      label: "Review save",
+    },
+    {
+      href: "/(tabs)/import",
+      label: "Back to import",
+    },
+  ]);
   assert.equal(getImportFilesResultHref(true), "/(tabs)/import/save");
   assert.equal(getImportFilesResultHref(false), "/(tabs)/import/failure");
   assert.equal(getImportFinishResultHref(true), "/(tabs)/import/success");
@@ -1246,6 +1258,16 @@ function assertImportSessionSmoke() {
       statusLabel: "Receiving files",
     },
   );
+  assert.deepEqual(getImportWifiActionState(), {
+    backLink: {
+      href: "/(tabs)/import",
+      label: "Back to import",
+    },
+    reviewSave: {
+      href: "/(tabs)/import/save",
+      label: "Review save",
+    },
+  });
   assert.deepEqual(
     getImportHomeState({ premiumActive: true, state }).routes.map((route) => ({
       href: route.href,

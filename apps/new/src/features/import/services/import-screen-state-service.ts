@@ -145,6 +145,17 @@ export const getImportFilesActionState = (state: ImportSessionState) => {
   };
 };
 
+export const getImportFilesActionLinks = () => [
+  {
+    href: getImportSaveHref(),
+    label: "Review save",
+  },
+  {
+    href: getImportHomeHref(),
+    label: "Back to import",
+  },
+] as const;
+
 export const getImportWifiState = ({
   error,
   isReady,
@@ -177,6 +188,17 @@ export const getImportWifiState = ({
     statusLabel,
   };
 };
+
+export const getImportWifiActionState = () => ({
+  backLink: {
+    href: getImportHomeHref(),
+    label: "Back to import",
+  },
+  reviewSave: {
+    href: getImportSaveHref(),
+    label: "Review save",
+  },
+});
 
 export const getImportPremiumGateState = ({
   active,

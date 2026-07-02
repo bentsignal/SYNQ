@@ -221,6 +221,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     not only feature implementation files.
   - Done: import files and Wi-Fi presentation/action state now lives in the
     import session service instead of entry screens.
+  - Done: import files and Wi-Fi review/back action labels and destinations now
+    live in the import screen state service with smoke coverage instead of
+    component-local link assembly.
   - Done: Wi-Fi import finish-to-review/failure decision now lives in the import
     session service with deterministic smoke coverage instead of the command
     hook branching inline.

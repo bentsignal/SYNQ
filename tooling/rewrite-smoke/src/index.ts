@@ -120,6 +120,7 @@ import {
   playlistRowsToPreview,
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import {
+  getCollectionDetailHref,
   getCollectionFormActionState,
   getCollectionFormErrorMessage,
   getCreateCollectionFormCopy,
@@ -2815,6 +2816,18 @@ function assertCollectionFormSmoke() {
       savingLabel: "Saving",
     }),
     "Saving",
+  );
+  assert.equal(
+    getCollectionDetailHref({ id: 42, kind: "album" }),
+    "/(tabs)/library/album/42",
+  );
+  assert.equal(
+    getCollectionDetailHref({ id: 43, kind: "artist" }),
+    "/(tabs)/library/artist/43",
+  );
+  assert.equal(
+    getCollectionDetailHref({ id: 44, kind: "playlist" }),
+    "/(tabs)/library/playlist/44",
   );
   assert.equal(
     getCollectionFormErrorMessage({

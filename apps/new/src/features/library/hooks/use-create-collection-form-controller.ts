@@ -8,6 +8,7 @@ import {
 } from "../repository/collection-repository";
 import { pickCollectionImage } from "../services/collection-image-picker-service";
 import {
+  getCollectionDetailHref,
   getCollectionFormActionState,
   getCollectionFormErrorMessage,
   getCollectionFormPreviewInitial,
@@ -95,7 +96,7 @@ export function useCreateCollectionFormController({
           year: parseAlbumYearInput(year),
         });
         sendHaptic("success");
-        router.replace(`/(tabs)/library/album/${album.id}`);
+        router.replace(getCollectionDetailHref({ id: album.id, kind }));
         return;
       }
 
@@ -105,7 +106,7 @@ export function useCreateCollectionFormController({
           profileImage: image?.dataUrl,
         });
         sendHaptic("success");
-        router.replace(`/(tabs)/library/artist/${artist.id}`);
+        router.replace(getCollectionDetailHref({ id: artist.id, kind }));
         return;
       }
 
@@ -114,7 +115,7 @@ export function useCreateCollectionFormController({
         name,
       });
       sendHaptic("success");
-      router.replace(`/(tabs)/library/playlist/${playlist.id}`);
+      router.replace(getCollectionDetailHref({ id: playlist.id, kind }));
     } catch (caughtError) {
       sendHaptic("error");
       setError(

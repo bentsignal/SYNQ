@@ -115,6 +115,28 @@ export const getCollectionFormSaveLabel = ({
   savingLabel: string;
 }) => (isSaving ? savingLabel : defaultLabel);
 
+export type CollectionDetailHref =
+  | `/(tabs)/library/album/${number}`
+  | `/(tabs)/library/artist/${number}`
+  | `/(tabs)/library/playlist/${number}`;
+
+export const getCollectionDetailHref = ({
+  id,
+  kind,
+}: {
+  id: number;
+  kind: CollectionFormKind;
+}): CollectionDetailHref => {
+  switch (kind) {
+    case "album":
+      return `/(tabs)/library/album/${id}`;
+    case "artist":
+      return `/(tabs)/library/artist/${id}`;
+    case "playlist":
+      return `/(tabs)/library/playlist/${id}`;
+  }
+};
+
 export const getCollectionFormErrorMessage = ({
   caughtError,
   fallbackMessage,

@@ -4,6 +4,7 @@ import {
   type PlaybackRemoteCommand,
   type PlaybackRemoteCommandResult,
 } from "../services/playback-remote-command-service";
+import { runAdGatedPlaybackCommand } from "../services/playback-command-gate-service";
 import {
   getRemoveFromQueueNativeCommandPlan,
   getResumeNativeCommandPlan,
@@ -67,12 +68,11 @@ export function usePlaybackCommandController({
 
   const runAdGatedCommand = useCallback(
     (command: () => void) => {
-      if (canRunPlaybackCommand()) {
-        command();
-        return;
-      }
-
-      beginAdBreak();
+      runAdGatedPlaybackCommand({
+        beginAdBreak,
+        canRunPlaybackCommand,
+        command,
+      });
     },
     [beginAdBreak, canRunPlaybackCommand],
   );

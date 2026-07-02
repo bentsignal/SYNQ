@@ -30,6 +30,7 @@ import {
   getSkipNextNativeCommandPlan,
   getSkipPreviousNativeCommandPlan,
 } from "../../../apps/new/src/features/playback/services/playback-native-command-plan-service";
+import { runAdGatedPlaybackCommand } from "../../../apps/new/src/features/playback/services/playback-command-gate-service";
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
   getImportFilesActionState,
@@ -484,6 +485,26 @@ function assertPlaybackNativeCommandPlanSmoke() {
     }),
     { type: "stop" },
   );
+
+  const gatedEvents: string[] = [];
+  assert.equal(
+    runAdGatedPlaybackCommand({
+      beginAdBreak: () => gatedEvents.push("ad"),
+      canRunPlaybackCommand: () => true,
+      command: () => gatedEvents.push("command"),
+    }),
+    "handled",
+  );
+  assert.deepEqual(gatedEvents, ["command"]);
+  assert.equal(
+    runAdGatedPlaybackCommand({
+      beginAdBreak: () => gatedEvents.push("ad"),
+      canRunPlaybackCommand: () => false,
+      command: () => gatedEvents.push("blocked-command"),
+    }),
+    "started-ad",
+  );
+  assert.deepEqual(gatedEvents, ["command", "ad"]);
 }
 
 function assertPlaybackPlayerStateSmoke() {

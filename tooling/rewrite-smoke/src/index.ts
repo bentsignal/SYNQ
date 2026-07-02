@@ -114,6 +114,7 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import {
   getCollectionFormActionState,
+  getCollectionFormErrorMessage,
   getCreateCollectionFormCopy,
   getCreateCollectionFormSubtitle,
   getEditCollectionFormCopy,
@@ -2671,6 +2672,20 @@ function assertCollectionFormSmoke() {
       savingLabel: "Saving",
     }),
     "Saving",
+  );
+  assert.equal(
+    getCollectionFormErrorMessage({
+      caughtError: new Error("Image picker failed"),
+      fallbackMessage: "Image could not be selected.",
+    }),
+    "Image picker failed",
+  );
+  assert.equal(
+    getCollectionFormErrorMessage({
+      caughtError: "unknown",
+      fallbackMessage: "Album could not be created.",
+    }),
+    "Album could not be created.",
   );
   assert.throws(
     () => parseAlbumYearInput("-1"),

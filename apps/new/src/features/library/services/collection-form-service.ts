@@ -115,6 +115,14 @@ export const getCollectionFormSaveLabel = ({
   savingLabel: string;
 }) => (isSaving ? savingLabel : defaultLabel);
 
+export const getCollectionFormErrorMessage = ({
+  caughtError,
+  fallbackMessage,
+}: {
+  caughtError: unknown;
+  fallbackMessage: string;
+}) => (caughtError instanceof Error ? caughtError.message : fallbackMessage);
+
 export const getCollectionFormActionState = ({
   isMissing = false,
   isSaving,

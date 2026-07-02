@@ -9,6 +9,7 @@ import {
 import { pickCollectionImage } from "../services/collection-image-picker-service";
 import {
   getCollectionFormActionState,
+  getCollectionFormErrorMessage,
   getCollectionFormPreviewInitial,
   getCollectionFormSaveLabel,
   parseAlbumYearInput,
@@ -68,9 +69,10 @@ export function useCreateCollectionFormController({
     } catch (caughtError) {
       sendHaptic("error");
       setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Image could not be selected.",
+        getCollectionFormErrorMessage({
+          caughtError,
+          fallbackMessage: "Image could not be selected.",
+        }),
       );
     }
   };
@@ -116,9 +118,10 @@ export function useCreateCollectionFormController({
     } catch (caughtError) {
       sendHaptic("error");
       setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : `${copy.kicker} could not be created.`,
+        getCollectionFormErrorMessage({
+          caughtError,
+          fallbackMessage: `${copy.kicker} could not be created.`,
+        }),
       );
     } finally {
       setIsSaving(false);

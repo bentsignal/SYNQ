@@ -7,13 +7,13 @@ import {
   createPlaylist,
 } from "../repository/collection-repository";
 import { pickCollectionImage } from "../services/collection-image-picker-service";
+import { createCollectionFromForm } from "../services/collection-form-mutation-service";
 import {
   getCollectionDetailHref,
   getCollectionFormActionState,
   getCollectionFormErrorMessage,
   getCollectionFormPreviewInitial,
   getCollectionFormSaveLabel,
-  parseAlbumYearInput,
 } from "../services/collection-form-service";
 
 type CreateCollectionKind = "album" | "artist" | "playlist";
@@ -89,33 +89,19 @@ export function useCreateCollectionFormController({
     setError(null);
 
     try {
-      if (kind === "album") {
-        const album = await createAlbum({
-          coverImage: image?.dataUrl,
-          name,
-          year: parseAlbumYearInput(year),
-        });
-        sendHaptic("success");
-        router.replace(getCollectionDetailHref({ id: album.id, kind }));
-        return;
-      }
-
-      if (kind === "artist") {
-        const artist = await createArtistWithImage({
-          name,
-          profileImage: image?.dataUrl,
-        });
-        sendHaptic("success");
-        router.replace(getCollectionDetailHref({ id: artist.id, kind }));
-        return;
-      }
-
-      const playlist = await createPlaylist({
-        coverImage: image?.dataUrl,
+      const collection = await createCollectionFromForm({
+        imageDataUrl: image?.dataUrl,
+        kind,
         name,
+        repository: {
+          createAlbum,
+          createArtistWithImage,
+          createPlaylist,
+        },
+        year,
       });
       sendHaptic("success");
-      router.replace(getCollectionDetailHref({ id: playlist.id, kind }));
+      router.replace(getCollectionDetailHref({ id: collection.id, kind }));
     } catch (caughtError) {
       sendHaptic("error");
       setError(

@@ -159,6 +159,12 @@ import {
   parseAlbumYearInput,
 } from "../../../apps/new/src/features/library/services/collection-form-service";
 import {
+  createCollectionFromForm,
+  updateCollectionFromForm,
+  type CollectionFormCreateRepository,
+  type CollectionFormUpdateRepository,
+} from "../../../apps/new/src/features/library/services/collection-form-mutation-service";
+import {
   assertCollectionName,
   getCollectionDuplicateNameMessage,
   getCollectionRequiredNameMessage,
@@ -3218,6 +3224,109 @@ function assertCollectionFormSmoke() {
   );
 }
 
+async function assertCollectionFormMutationSmoke() {
+  const createCalls: unknown[] = [];
+  const createRepository: CollectionFormCreateRepository = {
+    createAlbum: async (params) => {
+      createCalls.push(["album", params]);
+      return { id: 11 };
+    },
+    createArtistWithImage: async (params) => {
+      createCalls.push(["artist", params]);
+      return { id: 12 };
+    },
+    createPlaylist: async (params) => {
+      createCalls.push(["playlist", params]);
+      return { id: 13 };
+    },
+  };
+
+  assert.deepEqual(
+    await createCollectionFromForm({
+      imageDataUrl: "album-image",
+      kind: "album",
+      name: "Smoke Album",
+      repository: createRepository,
+      year: "2026",
+    }),
+    { id: 11 },
+  );
+  await createCollectionFromForm({
+    imageDataUrl: "artist-image",
+    kind: "artist",
+    name: "Smoke Artist",
+    repository: createRepository,
+    year: "",
+  });
+  await createCollectionFromForm({
+    imageDataUrl: "playlist-image",
+    kind: "playlist",
+    name: "Smoke Playlist",
+    repository: createRepository,
+    year: "",
+  });
+  assert.deepEqual(createCalls, [
+    [
+      "album",
+      { coverImage: "album-image", name: "Smoke Album", year: 2026 },
+    ],
+    ["artist", { name: "Smoke Artist", profileImage: "artist-image" }],
+    [
+      "playlist",
+      { coverImage: "playlist-image", name: "Smoke Playlist" },
+    ],
+  ]);
+
+  const updateCalls: unknown[] = [];
+  const updateRepository: CollectionFormUpdateRepository = {
+    updateAlbum: async (params) => {
+      updateCalls.push(["album", params]);
+    },
+    updateArtist: async (params) => {
+      updateCalls.push(["artist", params]);
+    },
+    updatePlaylist: async (params) => {
+      updateCalls.push(["playlist", params]);
+    },
+  };
+
+  await updateCollectionFromForm({
+    id: 21,
+    imageDataUrl: "album-image",
+    kind: "album",
+    name: "Smoke Album",
+    repository: updateRepository,
+    year: "",
+  });
+  await updateCollectionFromForm({
+    id: 22,
+    imageDataUrl: "artist-image",
+    kind: "artist",
+    name: "Smoke Artist",
+    repository: updateRepository,
+    year: "",
+  });
+  await updateCollectionFromForm({
+    id: 23,
+    imageDataUrl: "playlist-image",
+    kind: "playlist",
+    name: "Smoke Playlist",
+    repository: updateRepository,
+    year: "",
+  });
+  assert.deepEqual(updateCalls, [
+    [
+      "album",
+      { coverImage: "album-image", id: 21, name: "Smoke Album", year: null },
+    ],
+    ["artist", { id: 22, name: "Smoke Artist", profileImage: "artist-image" }],
+    [
+      "playlist",
+      { coverImage: "playlist-image", id: 23, name: "Smoke Playlist" },
+    ],
+  ]);
+}
+
 function assertLibraryCollectionListSmoke() {
   assert.equal(getLibraryCollectionListBackHref(), "/(tabs)/library");
   assert.equal(
@@ -3980,6 +4089,8 @@ assertAddableCollectionSongsSmoke();
 assertLibrarySongDetailSmoke();
 assertEditCollectionQuerySmoke();
 assertCollectionFormSmoke();
-assertLibraryCollectionListSmoke();
-assertLibraryHomeSmoke();
-console.log("Rewrite deterministic smoke checks passed.");
+void assertCollectionFormMutationSmoke().then(() => {
+  assertLibraryCollectionListSmoke();
+  assertLibraryHomeSmoke();
+  console.log("Rewrite deterministic smoke checks passed.");
+});

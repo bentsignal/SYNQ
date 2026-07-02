@@ -7,13 +7,13 @@ import {
   updatePlaylist,
 } from "../repository/collection-repository";
 import { pickCollectionImage } from "../services/collection-image-picker-service";
+import { updateCollectionFromForm } from "../services/collection-form-mutation-service";
 import {
   getCollectionDetailHref,
   getCollectionFormActionState,
   getCollectionFormErrorMessage,
   getCollectionFormPreviewInitial,
   getCollectionFormSaveLabel,
-  parseAlbumYearInput,
 } from "../services/collection-form-service";
 import type { EditCollectionKind } from "../services/edit-collection-query-service";
 
@@ -122,33 +122,17 @@ export function useEditCollectionFormController({
     setError(null);
 
     try {
-      if (kind === "album") {
-        await updateAlbum({
-          coverImage: image?.dataUrl,
-          id,
-          name,
-          year: parseAlbumYearInput(year) ?? null,
-        });
-        sendHaptic("success");
-        router.replace(getCollectionDetailHref({ id, kind }));
-        return;
-      }
-
-      if (kind === "artist") {
-        await updateArtist({
-          id,
-          name,
-          profileImage: image?.dataUrl,
-        });
-        sendHaptic("success");
-        router.replace(getCollectionDetailHref({ id, kind }));
-        return;
-      }
-
-      await updatePlaylist({
-        coverImage: image?.dataUrl,
+      await updateCollectionFromForm({
         id,
+        imageDataUrl: image?.dataUrl,
+        kind,
         name,
+        repository: {
+          updateAlbum,
+          updateArtist,
+          updatePlaylist,
+        },
+        year,
       });
       sendHaptic("success");
       router.replace(getCollectionDetailHref({ id, kind }));

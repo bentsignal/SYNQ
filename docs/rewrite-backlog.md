@@ -1574,6 +1574,9 @@ endless old-app polishing loop.
    - Done: collection form field visibility and return-key state now live in
      the collection form service with smoke coverage instead of inline form
      component branching.
+   - Done: collection create/edit persistence branching now lives in a
+     collection form mutation service with fake-repository smoke coverage
+     instead of controller-local mutation switches.
    - Done: add-to-collection query/mutation status and updated-time copy now
      live in the addable songs service with smoke coverage instead of
      connected-form/status-panel branching.

@@ -140,6 +140,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: customization screen theme/icon/haptics controls, Premium lockout
     panel, status, and error rendering now live in a focused settings component
     instead of the route screen.
+  - Done: customization Premium lockout, theme/app-icon swatches, and haptics
+    preference row now render through focused components instead of one large
+    customization screen view.
   - Done: playback hydration, native restore trigger, and throttled persistence
     now live in a focused hook instead of the provider body.
   - Done: playback Premium/ad-gate sync, ad-break trigger, and premium-resume

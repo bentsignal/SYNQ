@@ -15,9 +15,9 @@ import {
   type PlaybackCommands,
 } from "../hooks/use-playback-command-controller";
 import { usePlaybackNativeStatusListener } from "../hooks/use-playback-native-status-listener";
+import { usePlaybackTrackAdvancement } from "../hooks/use-playback-track-advancement";
 import {
   getActiveTrack,
-  getNextQueueIndex,
   initialPlaybackState,
   playbackReducer,
 } from "../services/playback-session-service";
@@ -95,26 +95,14 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     stateRef,
   });
 
-  const finishActiveTrack = useCallback(() => {
-    if (!canRunPlaybackCommand()) {
-      beginAdBreak();
-      return;
-    }
-
-    const targetIndex = getNextQueueIndex({
-      activeQueueIndex: stateRef.current.activeQueueIndex,
-      loop: stateRef.current.mode.loop,
-      queue: stateRef.current.queue,
-      shuffle: stateRef.current.mode.shuffle,
-    });
-    const targetTrack =
-      targetIndex === null ? null : stateRef.current.queue[targetIndex] ?? null;
-
-    dispatch({ targetIndex, type: "native-finished" });
-    if (targetTrack) {
-      runNativeCommand(() => adapterRef.current.play(targetTrack));
-    }
-  }, [beginAdBreak, canRunPlaybackCommand, runNativeCommand]);
+  const finishActiveTrack = usePlaybackTrackAdvancement({
+    adapter: adapterRef.current,
+    beginAdBreak,
+    canRunPlaybackCommand,
+    dispatch,
+    runNativeCommand,
+    stateRef,
+  });
 
   usePlaybackNativeStatusListener({
     adapter: adapterRef.current,

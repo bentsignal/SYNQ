@@ -114,6 +114,7 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import {
   getCollectionFormActionState,
+  getEditCollectionFormCopy,
   getCollectionFormPreviewInitial,
   getCollectionFormSaveLabel,
   parseAlbumYearInput,
@@ -2512,6 +2513,24 @@ function assertCollectionFormSmoke() {
     getCollectionDuplicateNameMessage("playlist"),
     "A playlist with this name already exists.",
   );
+  assert.deepEqual(getEditCollectionFormCopy("album"), {
+    editLabel: "Save album",
+    kicker: "Album",
+    namePlaceholder: "Album name",
+    title: "Edit album",
+  });
+  assert.deepEqual(getEditCollectionFormCopy("artist"), {
+    editLabel: "Save artist",
+    kicker: "Artist",
+    namePlaceholder: "Artist name",
+    title: "Edit artist",
+  });
+  assert.deepEqual(getEditCollectionFormCopy("playlist"), {
+    editLabel: "Save playlist",
+    kicker: "Playlist",
+    namePlaceholder: "Playlist name",
+    title: "Edit playlist",
+  });
   assert.equal(
     assertCollectionName({ kind: "playlist", name: "  Road Trip  " }),
     "Road Trip",

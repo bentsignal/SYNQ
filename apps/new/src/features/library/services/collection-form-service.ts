@@ -1,3 +1,40 @@
+export type CollectionFormKind = "album" | "artist" | "playlist";
+
+export type EditCollectionFormCopy = {
+  editLabel: string;
+  kicker: string;
+  namePlaceholder: string;
+  title: string;
+};
+
+export const getEditCollectionFormCopy = (
+  kind: CollectionFormKind,
+): EditCollectionFormCopy => {
+  switch (kind) {
+    case "album":
+      return {
+        editLabel: "Save album",
+        kicker: "Album",
+        namePlaceholder: "Album name",
+        title: "Edit album",
+      };
+    case "artist":
+      return {
+        editLabel: "Save artist",
+        kicker: "Artist",
+        namePlaceholder: "Artist name",
+        title: "Edit artist",
+      };
+    case "playlist":
+      return {
+        editLabel: "Save playlist",
+        kicker: "Playlist",
+        namePlaceholder: "Playlist name",
+        title: "Edit playlist",
+      };
+  }
+};
+
 export const parseAlbumYearInput = (value: string) => {
   const trimmed = value.trim();
 

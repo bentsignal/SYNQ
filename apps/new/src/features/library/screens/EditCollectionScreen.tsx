@@ -7,6 +7,7 @@ import {
   useEditArtistCollectionQuery,
   useEditPlaylistCollectionQuery,
 } from "../hooks/use-edit-collection-query";
+import { getEditCollectionFormCopy } from "../services/collection-form-service";
 import type { EditCollectionKind } from "../services/edit-collection-query-service";
 
 export type CollectionKind = EditCollectionKind;
@@ -15,41 +16,13 @@ type EditCollectionScreenProps = {
   kind: CollectionKind;
 };
 
-const labels: Record<
-  CollectionKind,
-  {
-    editLabel: string;
-    kicker: string;
-    namePlaceholder: string;
-    title: string;
-  }
-> = {
-  album: {
-    editLabel: "Save album",
-    kicker: "Album",
-    namePlaceholder: "Album name",
-    title: "Edit album",
-  },
-  artist: {
-    editLabel: "Save artist",
-    kicker: "Artist",
-    namePlaceholder: "Artist name",
-    title: "Edit artist",
-  },
-  playlist: {
-    editLabel: "Save playlist",
-    kicker: "Playlist",
-    namePlaceholder: "Playlist name",
-    title: "Edit playlist",
-  },
-};
-
 export function EditCollectionScreen({ kind }: EditCollectionScreenProps) {
   const params = useLocalSearchParams<{ id?: string }>();
   const id = parseNumericRouteParam(params.id);
+  const copy = getEditCollectionFormCopy(kind);
 
   if (id === null) {
-    return <LibraryInvalidCollectionState kicker={labels[kind].kicker} />;
+    return <LibraryInvalidCollectionState kicker={copy.kicker} />;
   }
 
   return <EditCollectionContent id={id} kind={kind} />;
@@ -79,7 +52,7 @@ function EditAlbumCollectionContent({ id }: { id: number }) {
   return (
     <EditCollectionConnectedForm
       collection={collection}
-      copy={labels.album}
+      copy={getEditCollectionFormCopy("album")}
       id={id}
       kind="album"
     />
@@ -92,7 +65,7 @@ function EditArtistCollectionContent({ id }: { id: number }) {
   return (
     <EditCollectionConnectedForm
       collection={collection}
-      copy={labels.artist}
+      copy={getEditCollectionFormCopy("artist")}
       id={id}
       kind="artist"
     />
@@ -105,7 +78,7 @@ function EditPlaylistCollectionContent({ id }: { id: number }) {
   return (
     <EditCollectionConnectedForm
       collection={collection}
-      copy={labels.playlist}
+      copy={getEditCollectionFormCopy("playlist")}
       id={id}
       kind="playlist"
     />

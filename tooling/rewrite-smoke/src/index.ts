@@ -69,6 +69,10 @@ import {
   getLibrarySongRelationshipHref,
 } from "../../../apps/new/src/features/library/services/library-song-detail-service";
 import {
+  buildLibrarySongEditFormState,
+  getLibrarySongEditActionState,
+} from "../../../apps/new/src/features/library/services/library-song-form-service";
+import {
   getLibrarySongPreviewRowState,
   rowsToSongPreviews,
   toLibrarySongPlaybackItem,
@@ -1278,6 +1282,35 @@ function assertLibrarySongDetailSmoke() {
       canToggleLiked: true,
     },
   );
+  assert.deepEqual(buildLibrarySongEditFormState(detail), {
+    albumNames: "Alpha Album, Beta Album",
+    artistNames: "Alpha Artist, Beta Artist",
+    title: "Alpha",
+  });
+  assert.deepEqual(
+    getLibrarySongEditActionState({
+      detail,
+      isSaving: false,
+      title: " Alpha ",
+    }),
+    { canSave: true, saveLabel: "Save" },
+  );
+  assert.deepEqual(
+    getLibrarySongEditActionState({
+      detail,
+      isSaving: false,
+      title: "   ",
+    }),
+    { canSave: false, saveLabel: "Save" },
+  );
+  assert.deepEqual(
+    getLibrarySongEditActionState({
+      detail,
+      isSaving: true,
+      title: "Alpha",
+    }),
+    { canSave: false, saveLabel: "Saving" },
+  );
   assert.equal(
     getLibrarySongDetailActionState({
       detail,
@@ -1302,6 +1335,19 @@ function assertLibrarySongDetailSmoke() {
   assert.equal(missing.originalFileName, "Unknown source file");
   assert.equal(missing.artistLabel, "Unknown");
   assert.equal(missing.isMissing, true);
+  assert.deepEqual(buildLibrarySongEditFormState(missing), {
+    albumNames: "",
+    artistNames: "",
+    title: "",
+  });
+  assert.deepEqual(
+    getLibrarySongEditActionState({
+      detail: missing,
+      isSaving: false,
+      title: "Recovered title",
+    }),
+    { canSave: false, saveLabel: "Save" },
+  );
   assert.deepEqual(
     getLibrarySongDetailActionState({
       detail: missing,

@@ -13,6 +13,10 @@ import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customi
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useLibrarySongDetailQuery } from "../hooks/use-library-song-detail-query";
 import { updateLibrarySongMetadata } from "../repository/song-metadata-repository";
+import {
+  buildLibrarySongEditFormState,
+  getLibrarySongEditActionState,
+} from "../services/library-song-form-service";
 
 export function EditLibrarySongScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
@@ -53,21 +57,26 @@ function EditLibrarySongContent({ songId }: { songId: number }) {
   const [loadedSongId, setLoadedSongId] = useState<number | null>(null);
   const [title, setTitle] = useState("");
   const hasErrors = errors.length > 0;
-  const canSave = !detail.isMissing && title.trim().length > 0 && !isSaving;
+  const actionState = getLibrarySongEditActionState({
+    detail,
+    isSaving,
+    title,
+  });
 
   useEffect(() => {
     if (detail.isMissing || loadedSongId === songId) {
       return;
     }
 
-    setTitle(detail.title);
-    setArtistNames(detail.artistLabel === "Unknown" ? "" : detail.artistLabel);
-    setAlbumNames(detail.albumLabel === "Unknown" ? "" : detail.albumLabel);
+    const formState = buildLibrarySongEditFormState(detail);
+    setTitle(formState.title);
+    setArtistNames(formState.artistNames);
+    setAlbumNames(formState.albumNames);
     setLoadedSongId(songId);
   }, [detail, loadedSongId, songId]);
 
   const save = async () => {
-    if (!canSave) {
+    if (!actionState.canSave) {
       sendHaptic("error");
       return;
     }
@@ -179,16 +188,16 @@ function EditLibrarySongContent({ songId }: { songId: number }) {
       <View style={styles.actionRow}>
         <Pressable
           accessibilityRole="button"
-          disabled={!canSave}
+          disabled={!actionState.canSave}
           onPress={save}
           style={[
             styles.primaryButton,
             { backgroundColor: theme.accent },
-            !canSave ? styles.disabled : null,
+            !actionState.canSave ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
-            {isSaving ? "Saving" : "Save"}
+            {actionState.saveLabel}
           </Text>
         </Pressable>
         <Link

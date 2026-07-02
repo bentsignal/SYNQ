@@ -42,6 +42,7 @@ import {
   getSeekToPlaybackCommandPlan,
   getSkipNextPlaybackCommandPlan,
   getSkipPreviousPlaybackCommandPlan,
+  runPlaybackCommandPlan,
 } from "../../../apps/new/src/features/playback/services/playback-command-plan-service";
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
@@ -560,13 +561,25 @@ function assertPlaybackNativeCommandPlanSmoke() {
     action: { type: "reset" },
     nativeCommand: { type: "stop" },
   });
-  assert.deepEqual(getRemoveFromQueuePlaybackCommandPlan({
-    songId: first.id,
-    state,
-  }), {
-    action: { songId: first.id, type: "remove-from-queue" },
-    nativeCommand: { track: second, type: "play" },
+  assert.deepEqual(
+    getRemoveFromQueuePlaybackCommandPlan({
+      songId: first.id,
+      state,
+    }),
+    {
+      action: { songId: first.id, type: "remove-from-queue" },
+      nativeCommand: { track: second, type: "play" },
+    },
+  );
+  const plannedActions: unknown[] = [];
+  const plannedNativeCommands: unknown[] = [];
+  runPlaybackCommandPlan({
+    dispatch: (action) => plannedActions.push(action),
+    plan: getPausePlaybackCommandPlan(),
+    runNativeCommandPlan: (plan) => plannedNativeCommands.push(plan),
   });
+  assert.deepEqual(plannedActions, [{ type: "pause" }]);
+  assert.deepEqual(plannedNativeCommands, [{ type: "pause" }]);
   assert.deepEqual(getRemoteFailurePlaybackCommandPlan("Remote smoke failure"), {
     action: {
       error: "Remote smoke failure",

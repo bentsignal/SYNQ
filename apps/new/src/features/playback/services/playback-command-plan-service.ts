@@ -16,6 +16,19 @@ export type PlaybackCommandPlan = {
   nativeCommand: PlaybackNativeCommandPlan;
 };
 
+export const runPlaybackCommandPlan = ({
+  dispatch,
+  plan,
+  runNativeCommandPlan,
+}: {
+  dispatch: (action: PlaybackAction) => void;
+  plan: PlaybackCommandPlan;
+  runNativeCommandPlan: (plan: PlaybackNativeCommandPlan) => void;
+}) => {
+  dispatch(plan.action);
+  runNativeCommandPlan(plan.nativeCommand);
+};
+
 export const getPlaySongPlaybackCommandPlan = (
   song: PlaybackQueueItem,
 ): PlaybackCommandPlan => ({

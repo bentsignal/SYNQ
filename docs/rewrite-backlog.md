@@ -448,6 +448,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: premium purchase/session and tier-loading transitions now live in a
     pure premium state service with smoke coverage instead of hook-local
     reducer/setter state.
+  - Done: Premium tier loading and purchase/restore/reset commands now live in
+    focused hooks instead of the purchase session hook owning every side effect.
   - Done: privacy and customization status labels, control disabled state,
     swatch selection state, and haptic-toggle behavior now live in a settings
     screen service instead of settings screens.

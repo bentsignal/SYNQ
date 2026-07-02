@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useReducer } from "react";
 import { Alert } from "react-native";
 import { router } from "expo-router";
 import { shareLibrarySongs } from "@/src/features/export/services/library-export-service";
@@ -10,6 +10,7 @@ import {
   updateCollectionSongOrder,
 } from "../repository/relationship-repository";
 import {
+  collectionDetailMutationReducer,
   getCollectionDetailActionState,
   getCollectionListHref,
   getCollectionPlaybackCommandPlan,
@@ -17,6 +18,7 @@ import {
   getCollectionDetailMutationErrorMessage,
   getCollectionSongOrderUpdate,
   getDeleteCollectionConfirmationCopy,
+  initialCollectionDetailMutationState,
 } from "../services/library-collection-interaction-service";
 import type {
   LibraryCollectionDetail,
@@ -36,22 +38,28 @@ export function useLibraryCollectionDetailController({
 }: UseLibraryCollectionDetailControllerParams) {
   const { addToQueue, playSong } = usePlaybackSession();
   const { sendHaptic } = useHapticFeedback();
-  const [movingSongId, setMovingSongId] = useState<number | null>(null);
-  const [removingSongId, setRemovingSongId] = useState<number | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
-  const [mutationError, setMutationError] = useState<string | null>(null);
+  const [mutationState, dispatchMutation] = useReducer(
+    collectionDetailMutationReducer,
+    initialCollectionDetailMutationState,
+  );
   const actionState = useMemo(
     () =>
       getCollectionDetailActionState({
         id,
-        isDeleting,
-        isExporting,
+        isDeleting: mutationState.isDeleting,
+        isExporting: mutationState.isExporting,
         isMissing: detail.isMissing,
         kind,
         songs: detail.songs,
       }),
-    [detail.isMissing, detail.songs, id, isDeleting, isExporting, kind],
+    [
+      detail.isMissing,
+      detail.songs,
+      id,
+      kind,
+      mutationState.isDeleting,
+      mutationState.isExporting,
+    ],
   );
 
   const playCollection = () => {
@@ -91,22 +99,22 @@ export function useLibraryCollectionDetailController({
       return;
     }
 
-    setIsExporting(true);
-    setMutationError(null);
+    dispatchMutation({ mutation: "export-collection", type: "begin" });
 
     try {
       await shareLibrarySongs(actionState.playableSongs);
       sendHaptic("success");
     } catch (caughtError) {
       sendHaptic("error");
-      setMutationError(
-        getCollectionDetailMutationErrorMessage({
+      dispatchMutation({
+        error: getCollectionDetailMutationErrorMessage({
           caughtError,
           mutation: "export-collection",
         }),
-      );
+        type: "fail",
+      });
     } finally {
-      setIsExporting(false);
+      dispatchMutation({ mutation: "export-collection", type: "finish" });
     }
   };
 
@@ -128,8 +136,7 @@ export function useLibraryCollectionDetailController({
         { style: "cancel", text: confirmationCopy.cancelLabel },
         {
           onPress: async () => {
-            setIsDeleting(true);
-            setMutationError(null);
+            dispatchMutation({ mutation: "delete-collection", type: "begin" });
 
             try {
               await deleteCollection({ id, kind });
@@ -137,14 +144,18 @@ export function useLibraryCollectionDetailController({
               router.replace(getCollectionListHref(kind));
             } catch (caughtError) {
               sendHaptic("error");
-              setMutationError(
-                getCollectionDetailMutationErrorMessage({
+              dispatchMutation({
+                error: getCollectionDetailMutationErrorMessage({
                   caughtError,
                   mutation: "delete-collection",
                 }),
-              );
+                type: "fail",
+              });
             } finally {
-              setIsDeleting(false);
+              dispatchMutation({
+                mutation: "delete-collection",
+                type: "finish",
+              });
             }
           },
           style: "destructive",
@@ -155,8 +166,7 @@ export function useLibraryCollectionDetailController({
   };
 
   const moveSong = async (songId: number, direction: "down" | "up") => {
-    setMovingSongId(songId);
-    setMutationError(null);
+    dispatchMutation({ mutation: "move-song", songId, type: "begin" });
 
     try {
       const orderUpdate = getCollectionSongOrderUpdate({
@@ -173,20 +183,20 @@ export function useLibraryCollectionDetailController({
       sendHaptic("light");
     } catch (caughtError) {
       sendHaptic("error");
-      setMutationError(
-        getCollectionDetailMutationErrorMessage({
+      dispatchMutation({
+        error: getCollectionDetailMutationErrorMessage({
           caughtError,
           mutation: "move-song",
         }),
-      );
+        type: "fail",
+      });
     } finally {
-      setMovingSongId(null);
+      dispatchMutation({ mutation: "move-song", type: "finish" });
     }
   };
 
   const removeSong = async (songId: number) => {
-    setRemovingSongId(songId);
-    setMutationError(null);
+    dispatchMutation({ mutation: "remove-song", songId, type: "begin" });
 
     try {
       await removeSongFromCollection({
@@ -197,14 +207,15 @@ export function useLibraryCollectionDetailController({
       sendHaptic("medium");
     } catch (caughtError) {
       sendHaptic("error");
-      setMutationError(
-        getCollectionDetailMutationErrorMessage({
+      dispatchMutation({
+        error: getCollectionDetailMutationErrorMessage({
           caughtError,
           mutation: "remove-song",
         }),
-      );
+        type: "fail",
+      });
     } finally {
-      setRemovingSongId(null);
+      dispatchMutation({ mutation: "remove-song", type: "finish" });
     }
   };
 
@@ -213,11 +224,11 @@ export function useLibraryCollectionDetailController({
     deleteCurrentCollection,
     exportCollection,
     moveSong,
-    movingSongId,
-    mutationError,
+    movingSongId: mutationState.movingSongId,
+    mutationError: mutationState.mutationError,
     playCollection,
     queueCollection,
     removeSong,
-    removingSongId,
+    removingSongId: mutationState.removingSongId,
   };
 }

@@ -130,6 +130,7 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-detail-service";
 import {
   canDeleteLibraryCollection,
+  collectionDetailMutationReducer,
   getAddCollectionSongsMutationErrorMessage,
   getAddableSongRowState,
   getAddableSongSelectionState,
@@ -153,6 +154,7 @@ import {
   getLibraryCollectionSongEmptyState,
   getPlayableCollectionSongs,
   getSelectedAddableSongIds,
+  initialCollectionDetailMutationState,
   removeSongIdSelection,
   reorderCollectionSongs,
   toggleSongIdSelection,
@@ -1842,6 +1844,59 @@ function assertLibraryCollectionInteractionSmoke() {
       deleteLabel: "Delete",
       exportLabel: "Export",
       playableSongs: [],
+    },
+  );
+  assert.deepEqual(initialCollectionDetailMutationState, {
+    isDeleting: false,
+    isExporting: false,
+    movingSongId: null,
+    mutationError: null,
+    removingSongId: null,
+  });
+  assert.deepEqual(
+    collectionDetailMutationReducer(initialCollectionDetailMutationState, {
+      mutation: "delete-collection",
+      type: "begin",
+    }),
+    {
+      ...initialCollectionDetailMutationState,
+      isDeleting: true,
+      mutationError: null,
+    },
+  );
+  assert.deepEqual(
+    collectionDetailMutationReducer(initialCollectionDetailMutationState, {
+      mutation: "move-song",
+      songId: 2,
+      type: "begin",
+    }),
+    {
+      ...initialCollectionDetailMutationState,
+      movingSongId: 2,
+      mutationError: null,
+    },
+  );
+  assert.deepEqual(
+    collectionDetailMutationReducer(
+      {
+        ...initialCollectionDetailMutationState,
+        removingSongId: 3,
+      },
+      {
+        mutation: "remove-song",
+        type: "finish",
+      },
+    ),
+    initialCollectionDetailMutationState,
+  );
+  assert.deepEqual(
+    collectionDetailMutationReducer(initialCollectionDetailMutationState, {
+      error: "Song order could not be saved.",
+      type: "fail",
+    }),
+    {
+      ...initialCollectionDetailMutationState,
+      mutationError: "Song order could not be saved.",
     },
   );
   assert.deepEqual(

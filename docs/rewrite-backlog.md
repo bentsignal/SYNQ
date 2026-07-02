@@ -401,6 +401,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: collection detail play, queue, export, delete, reorder, remove, and
     mutation-error workflows now live in a controller hook instead of the
     screen.
+  - Done: collection detail export/delete/move/remove mutation flags and errors
+    now live in the collection interaction service reducer with smoke coverage
+    instead of scattered controller state setters.
   - Done: backup action cards, operation labels, confirmation copy, and status
     presentation now live in a backup screen service instead of the screen.
   - Done: backup phase-transition haptic and runtime-session reset decisions now

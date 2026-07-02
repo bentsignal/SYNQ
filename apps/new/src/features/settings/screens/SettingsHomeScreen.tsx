@@ -53,7 +53,7 @@ export function SettingsHomeScreen() {
     >
       <View style={styles.header}>
         <Text style={[styles.kicker, { color: theme.accent }]}>
-          src/features/settings
+          Preferences
         </Text>
         <Text style={[styles.title, { color: theme.primaryText }]}>
           Settings

@@ -97,7 +97,7 @@ export function PlaybackQueueScreen() {
             Queue is empty
           </Text>
           <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
-            Open a song from Library to seed the rewrite playback session.
+            Open a song from Library to start listening.
           </Text>
         </View>
       ) : (

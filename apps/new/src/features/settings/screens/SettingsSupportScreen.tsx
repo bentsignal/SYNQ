@@ -55,7 +55,7 @@ export function SettingsSupportScreen() {
     >
       <View style={styles.header}>
         <Text style={[styles.kicker, { color: theme.accent }]}>
-          src/features/settings
+          Help
         </Text>
         <Text style={[styles.title, { color: theme.primaryText }]}>
           Support

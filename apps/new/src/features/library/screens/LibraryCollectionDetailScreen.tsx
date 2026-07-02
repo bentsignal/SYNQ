@@ -64,7 +64,7 @@ export function LibraryCollectionDetailScreen({
     return (
       <View style={[styles.screen, { backgroundColor: theme.background }]}>
         <Text style={[styles.kicker, { color: theme.accent }]}>
-          src/features/library
+          Library
         </Text>
         <Text style={[styles.title, { color: theme.primaryText }]}>
           Invalid collection
@@ -145,7 +145,7 @@ function LibraryCollectionDetailContent({
           {detail.detail}
         </Text>
         <Text style={[styles.summaryLabel, { color: theme.secondaryText }]}>
-          {detail.isMissing ? "Missing from database" : updatedLabel}
+          {detail.isMissing ? "Collection not found" : updatedLabel}
         </Text>
       </View>
 
@@ -169,7 +169,7 @@ function LibraryCollectionDetailContent({
           Songs
         </Text>
         <Text style={[styles.sectionMeta, { color: theme.secondaryText }]}>
-          Reactive query
+          {detail.songs.length} songs
         </Text>
       </View>
 

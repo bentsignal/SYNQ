@@ -101,13 +101,14 @@ export function PlaybackPlayerScreen() {
     >
       <View style={styles.header}>
         <Text style={[styles.kicker, { color: theme.accent }]}>
-          src/features/playback
+          Now Playing
         </Text>
         <Text style={[styles.title, { color: theme.primaryText }]}>
           Player
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          Explicit playback session state is now available to the rewrite app.
+          Control playback, queue movement, shuffle, repeat, and free-listening
+          ad breaks.
         </Text>
       </View>
 

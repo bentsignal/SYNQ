@@ -45,8 +45,7 @@ export function LibraryCollectionSongList({
           No songs here yet
         </Text>
         <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
-          This detail view is live and will update when matching songs are added
-          to the shared library database.
+          Add songs from your library to build this collection.
         </Text>
       </View>
     );

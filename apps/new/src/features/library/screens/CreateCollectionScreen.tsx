@@ -166,8 +166,8 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
           {copy.title}
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          Creates a {copy.duplicateNoun} row in the shared library database. The
-          Library screen updates through live queries.
+          Name the {copy.duplicateNoun}, choose optional artwork, and start
+          organizing your music.
         </Text>
       </View>
 

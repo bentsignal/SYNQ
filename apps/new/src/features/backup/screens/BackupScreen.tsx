@@ -105,13 +105,14 @@ export function BackupScreen() {
     >
       <View style={styles.header}>
         <Text style={[styles.kicker, { color: theme.accent }]}>
-          src/features/backup
+          Library Safety
         </Text>
         <Text style={[styles.title, { color: theme.primaryText }]}>
           Backup & Restore
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          Backup operations now have a feature-owned command boundary.
+          Save a copy of your local library, restore from an archive, or clear
+          this device.
         </Text>
       </View>
 

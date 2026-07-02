@@ -51,7 +51,7 @@ export function AddCollectionSongsScreen({
     return (
       <View style={[styles.screen, { backgroundColor: theme.background }]}>
         <Text style={[styles.kicker, { color: theme.accent }]}>
-          src/features/library
+          Library
         </Text>
         <Text style={[styles.title, { color: theme.primaryText }]}>
           Invalid collection
@@ -106,8 +106,7 @@ function AddCollectionSongsContent({
           Add to {kind}
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          Search the shared song library and attach songs without leaving this
-          feature flow.
+          Search your songs and add them to this collection.
         </Text>
       </View>
 

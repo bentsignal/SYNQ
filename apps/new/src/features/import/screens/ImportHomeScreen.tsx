@@ -19,7 +19,7 @@ export function ImportHomeScreen() {
     >
       <View style={styles.header}>
         <Text style={[styles.kicker, { color: theme.accent }]}>
-          src/features/import
+          Add Music
         </Text>
         <Text style={[styles.title, { color: theme.primaryText }]}>Import</Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>

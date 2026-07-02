@@ -221,8 +221,7 @@ function EditCollectionContent({
           {copy.title}
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          Updates the shared library database. Detail and Library screens update
-          through live queries.
+          Update the name, artwork, and details shown across your library.
         </Text>
       </View>
 

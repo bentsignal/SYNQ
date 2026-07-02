@@ -1,10 +1,19 @@
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ImportPremiumGate } from "../components/ImportPremiumGate";
 import { ImportSongPreviewList } from "../components/ImportSongPreviewList";
 import { useImportSession } from "../hooks/use-import-session";
 import { useWifiImportServer } from "../hooks/use-wifi-import-server";
 
 export function ImportWifiScreen() {
+  return (
+    <ImportPremiumGate>
+      <ImportWifiContent />
+    </ImportPremiumGate>
+  );
+}
+
+function ImportWifiContent() {
   const { removeImportSongs, state } = useImportSession();
   const { address, error, isReady } = useWifiImportServer();
   const hasSongs = state.songs.length > 0;

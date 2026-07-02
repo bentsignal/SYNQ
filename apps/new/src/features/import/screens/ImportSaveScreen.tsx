@@ -1,5 +1,6 @@
 import { Link, router } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ImportPremiumGate } from "../components/ImportPremiumGate";
 import { ImportSongPreviewList } from "../components/ImportSongPreviewList";
 import { useImportSession } from "../hooks/use-import-session";
 
@@ -19,52 +20,54 @@ export function ImportSaveScreen() {
         </Text>
       </View>
 
-      <Pressable
-        accessibilityRole="checkbox"
-        accessibilityState={{ checked: state.shouldSaveToLibrary }}
-        onPress={() => setShouldSaveToLibrary(!state.shouldSaveToLibrary)}
-        style={styles.toggleRow}
-      >
-        <View
-          style={[
-            styles.toggleBox,
-            state.shouldSaveToLibrary ? styles.toggleBoxActive : null,
-          ]}
-        />
-        <Text style={styles.toggleText}>Save to library</Text>
-      </Pressable>
-
-      <ImportSongPreviewList canEditSongs songs={state.songs} />
-
-      <View style={styles.actionRow}>
+      <ImportPremiumGate>
         <Pressable
-          accessibilityRole="button"
-          disabled={!canFinish || isWorking}
-          onPress={async () => {
-            const succeeded = await saveImportSession();
-            router.push(succeeded ? "/import/success" : "/import/failure");
-          }}
-          style={[
-            styles.primaryButton,
-            !canFinish || isWorking ? styles.disabled : null,
-          ]}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: state.shouldSaveToLibrary }}
+          onPress={() => setShouldSaveToLibrary(!state.shouldSaveToLibrary)}
+          style={styles.toggleRow}
         >
-          <Text style={styles.primaryButtonText}>
-            {isWorking ? "Finishing" : "Finish"}
-          </Text>
+          <View
+            style={[
+              styles.toggleBox,
+              state.shouldSaveToLibrary ? styles.toggleBoxActive : null,
+            ]}
+          />
+          <Text style={styles.toggleText}>Save to library</Text>
         </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          disabled={isWorking}
-          onPress={() => {
-            discardSession();
-            router.push("/import");
-          }}
-          style={[styles.secondaryButton, isWorking ? styles.disabled : null]}
-        >
-          <Text style={styles.secondaryButtonText}>Discard</Text>
-        </Pressable>
-      </View>
+
+        <ImportSongPreviewList canEditSongs songs={state.songs} />
+
+        <View style={styles.actionRow}>
+          <Pressable
+            accessibilityRole="button"
+            disabled={!canFinish || isWorking}
+            onPress={async () => {
+              const succeeded = await saveImportSession();
+              router.push(succeeded ? "/import/success" : "/import/failure");
+            }}
+            style={[
+              styles.primaryButton,
+              !canFinish || isWorking ? styles.disabled : null,
+            ]}
+          >
+            <Text style={styles.primaryButtonText}>
+              {isWorking ? "Finishing" : "Finish"}
+            </Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            disabled={isWorking}
+            onPress={() => {
+              discardSession();
+              router.push("/import");
+            }}
+            style={[styles.secondaryButton, isWorking ? styles.disabled : null]}
+          >
+            <Text style={styles.secondaryButtonText}>Discard</Text>
+          </Pressable>
+        </View>
+      </ImportPremiumGate>
 
       <Link href="/import/files" style={styles.backLink}>
         Back to files

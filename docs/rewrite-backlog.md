@@ -60,7 +60,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     Wi-Fi transfer route/server, cache staging, metadata/duration extraction,
     preview/save screens, staged metadata editing, and Drizzle draft-to-library
     save/discard commands with durable audio file movement and cover/artwork
-    persistence exist; import polish and deeper manual smoke are next.
+    persistence exist behind Premium gates; import polish and deeper manual
+    smoke are next.
   - Backup/restore: feature-owned backup screen and command-state boundary
     exist; backup archive/share, restore document picking/unzip/reset, and
     erase document cleanup/database reset are connected. Manual restore smoke
@@ -113,8 +114,8 @@ reducer-backed session boundary plus queue/player screens connected to a native
 Expo AV adapter for saved library files with native progress/status sync,
 persisted session restore, queue reordering, player progress controls, and
 queue removal that advances active playback when possible. Import now has a
-route-per-step session shell, native file
-selection, a Wi-Fi transfer route/server, cache staging,
+route-per-step session shell, native file selection, Premium-gated file/Wi-Fi
+entry, a Wi-Fi transfer route/server, cache staging,
 metadata/duration extraction, and Drizzle draft saves, including moving cached
 audio into durable library storage, persisting artwork to shared image storage,
 and editing staged song metadata before save. Backup now has a
@@ -124,7 +125,7 @@ connected to RevenueCat pricing, purchase, restore commands, and an app-wide
 entitlement provider consumed by Settings, Backup, and Customization. Settings
 customization now owns persisted theme, app icon, and haptic preference state;
 the app shell consumes saved theme state for navigation chrome; deeper screen
-theme application, native icon handling, and import/playback gates are still
+theme application, native icon handling, and playback gates are still
 next. It is not yet a replacement app.
 The next useful work should alternate between:
 

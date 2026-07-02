@@ -1,9 +1,12 @@
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { useImportSession } from "../hooks/use-import-session";
 
 export function ImportHomeScreen() {
   const { state } = useImportSession();
+  const { state: premiumState } = usePremiumEntitlement();
+  const importLocked = !premiumState.active;
 
   return (
     <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
@@ -16,7 +19,7 @@ export function ImportHomeScreen() {
       </View>
 
       <View style={styles.list}>
-        <Link asChild href="/import/files">
+        <Link asChild href={importLocked ? "/premium" : "/import/files"}>
           <Pressable style={styles.row}>
             <View style={styles.rowText}>
               <Text style={styles.rowTitle}>Files</Text>
@@ -24,10 +27,12 @@ export function ImportHomeScreen() {
                 Select local audio and review staged songs.
               </Text>
             </View>
-            <Text style={styles.rowMeta}>{state.songs.length} staged</Text>
+            <Text style={styles.rowMeta}>
+              {importLocked ? "Premium" : `${state.songs.length} staged`}
+            </Text>
           </Pressable>
         </Link>
-        <Link asChild href="/import/wifi">
+        <Link asChild href={importLocked ? "/premium" : "/import/wifi"}>
           <Pressable style={styles.row}>
             <View style={styles.rowText}>
               <Text style={styles.rowTitle}>Wi-Fi</Text>
@@ -36,11 +41,15 @@ export function ImportHomeScreen() {
               </Text>
             </View>
             <Text style={styles.rowMeta}>
-              {state.source === "wifi" ? state.progress.current : "Local"}
+              {importLocked
+                ? "Premium"
+                : state.source === "wifi"
+                  ? state.progress.current
+                  : "Local"}
             </Text>
           </Pressable>
         </Link>
-        <Link asChild href="/import/save">
+        <Link asChild href={importLocked ? "/premium" : "/import/save"}>
           <Pressable style={styles.row}>
             <View style={styles.rowText}>
               <Text style={styles.rowTitle}>Save</Text>
@@ -48,7 +57,9 @@ export function ImportHomeScreen() {
                 Finish or discard the current import session.
               </Text>
             </View>
-            <Text style={styles.rowMeta}>{state.phase}</Text>
+            <Text style={styles.rowMeta}>
+              {importLocked ? "Premium" : state.phase}
+            </Text>
           </Pressable>
         </Link>
       </View>

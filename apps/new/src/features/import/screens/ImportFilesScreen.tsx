@@ -1,5 +1,6 @@
 import { Link, router } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ImportPremiumGate } from "../components/ImportPremiumGate";
 import { ImportSongPreviewList } from "../components/ImportSongPreviewList";
 import { useImportSession } from "../hooks/use-import-session";
 
@@ -17,19 +18,21 @@ export function ImportFilesScreen() {
         </Text>
       </View>
 
-      <Pressable
-        accessibilityRole="button"
-        disabled={isWorking}
-        onPress={async () => {
-          const staged = await startFileImport();
-          router.push(staged ? "/import/save" : "/import/failure");
-        }}
-        style={[styles.primaryButton, isWorking ? styles.disabled : null]}
-      >
-        <Text style={styles.primaryButtonText}>
-          {isWorking ? "Choosing" : "Choose songs"}
-        </Text>
-      </Pressable>
+      <ImportPremiumGate>
+        <Pressable
+          accessibilityRole="button"
+          disabled={isWorking}
+          onPress={async () => {
+            const staged = await startFileImport();
+            router.push(staged ? "/import/save" : "/import/failure");
+          }}
+          style={[styles.primaryButton, isWorking ? styles.disabled : null]}
+        >
+          <Text style={styles.primaryButtonText}>
+            {isWorking ? "Choosing" : "Choose songs"}
+          </Text>
+        </Pressable>
+      </ImportPremiumGate>
 
       <ImportSongPreviewList
         canEditSongs

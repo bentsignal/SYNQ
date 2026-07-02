@@ -40,7 +40,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/import",
     targetBoundary: "src/features/import",
-    nextMilestone: "Manually smoke import files, Wi-Fi transfer, save, discard, and staged metadata editing.",
+    nextMilestone: "Manually smoke premium-gated import files, Wi-Fi transfer, save, discard, and staged metadata editing.",
   },
   {
     key: "backup",
@@ -56,7 +56,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/premium",
     targetBoundary: "src/features/premium + src/features/settings",
-    nextMilestone: "Apply customization deeper across feature screens, native icon handling, import/playback gates, privacy, haptics, and support flows.",
+    nextMilestone: "Apply customization deeper across feature screens, native icon handling, playback gates, privacy, haptics, and support flows.",
   },
 ];
 

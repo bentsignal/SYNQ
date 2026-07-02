@@ -153,6 +153,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     import session service instead of entry screens.
   - Done: shared collection create/edit form action state now lives in the
     collection form service instead of duplicated screen save/edit guards.
+  - Done: collection repository name normalization, required-name errors, and
+    duplicate-name copy now live in a pure collection metadata service with
+    deterministic smoke coverage.
   - Done: create-collection image picking, validation, create mutations,
     haptics, navigation, and mutation-error workflows now live in a controller
     hook instead of the screen.

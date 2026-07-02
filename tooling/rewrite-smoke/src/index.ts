@@ -85,6 +85,12 @@ import {
   getCollectionFormSaveLabel,
   parseAlbumYearInput,
 } from "../../../apps/new/src/features/library/services/collection-form-service";
+import {
+  assertCollectionName,
+  getCollectionDuplicateNameMessage,
+  getCollectionRequiredNameMessage,
+  normalizeCollectionName,
+} from "../../../apps/new/src/features/library/services/collection-metadata-service";
 import { rowsToAddableCollectionSongs } from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
 import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
 import {
@@ -2004,6 +2010,39 @@ function assertEditCollectionQuerySmoke() {
 }
 
 function assertCollectionFormSmoke() {
+  assert.equal(normalizeCollectionName("  Smoke Album  "), "Smoke Album");
+  assert.equal(
+    getCollectionRequiredNameMessage("album"),
+    "Album name is required.",
+  );
+  assert.equal(
+    getCollectionRequiredNameMessage("artist"),
+    "Artist name is required.",
+  );
+  assert.equal(
+    getCollectionRequiredNameMessage("playlist"),
+    "Playlist name is required.",
+  );
+  assert.equal(
+    getCollectionDuplicateNameMessage("album"),
+    "An album with this name already exists.",
+  );
+  assert.equal(
+    getCollectionDuplicateNameMessage("artist"),
+    "An artist with this name already exists.",
+  );
+  assert.equal(
+    getCollectionDuplicateNameMessage("playlist"),
+    "A playlist with this name already exists.",
+  );
+  assert.equal(
+    assertCollectionName({ kind: "playlist", name: "  Road Trip  " }),
+    "Road Trip",
+  );
+  assert.throws(
+    () => assertCollectionName({ kind: "artist", name: "   " }),
+    /Artist name is required/,
+  );
   assert.equal(parseAlbumYearInput(""), undefined);
   assert.equal(parseAlbumYearInput("   "), undefined);
   assert.equal(parseAlbumYearInput("0"), 0);

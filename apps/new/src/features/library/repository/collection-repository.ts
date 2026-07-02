@@ -2,10 +2,13 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq, ne } from "drizzle-orm";
 import { saveCoverImage } from "@/src/features/images/services/image-storage-service";
+import {
+  assertCollectionName,
+  getCollectionDuplicateNameMessage,
+  type CollectionMetadataKind,
+} from "../services/collection-metadata-service";
 
-type DeletableCollectionKind = "album" | "artist" | "playlist";
-
-const normalizeName = (name: string) => name.trim();
+type DeletableCollectionKind = CollectionMetadataKind;
 
 const assertUniqueName = async ({
   entity,
@@ -16,8 +19,6 @@ const assertUniqueName = async ({
   excludeId?: number;
   name: string;
 }) => {
-  const article = entity === "playlist" ? "A" : "An";
-
   switch (entity) {
     case "album": {
       const matchingAlbum = await db
@@ -30,7 +31,7 @@ const assertUniqueName = async ({
         )
         .limit(1);
       if (matchingAlbum.length > 0) {
-        throw new Error(`${article} album with this name already exists.`);
+        throw new Error(getCollectionDuplicateNameMessage(entity));
       }
       return;
     }
@@ -48,7 +49,7 @@ const assertUniqueName = async ({
         )
         .limit(1);
       if (matchingArtist.length > 0) {
-        throw new Error(`${article} artist with this name already exists.`);
+        throw new Error(getCollectionDuplicateNameMessage(entity));
       }
       return;
     }
@@ -66,7 +67,7 @@ const assertUniqueName = async ({
         )
         .limit(1);
       if (matchingPlaylist.length > 0) {
-        throw new Error(`${article} playlist with this name already exists.`);
+        throw new Error(getCollectionDuplicateNameMessage(entity));
       }
     }
   }
@@ -81,11 +82,7 @@ export async function createAlbum({
   name: string;
   year?: number;
 }) {
-  const cleanName = normalizeName(name);
-
-  if (!cleanName) {
-    throw new Error("Album name is required.");
-  }
+  const cleanName = assertCollectionName({ kind: "album", name });
 
   await assertUniqueName({ entity: "album", name: cleanName });
 
@@ -112,11 +109,7 @@ export async function createAlbum({
 }
 
 export async function createArtist(name: string) {
-  const cleanName = normalizeName(name);
-
-  if (!cleanName) {
-    throw new Error("Artist name is required.");
-  }
+  const cleanName = assertCollectionName({ kind: "artist", name });
 
   await assertUniqueName({ entity: "artist", name: cleanName });
 
@@ -144,11 +137,7 @@ export async function createArtistWithImage({
   name: string;
   profileImage?: string | null;
 }) {
-  const cleanName = normalizeName(name);
-
-  if (!cleanName) {
-    throw new Error("Artist name is required.");
-  }
+  const cleanName = assertCollectionName({ kind: "artist", name });
 
   await assertUniqueName({ entity: "artist", name: cleanName });
 
@@ -179,11 +168,7 @@ export async function createPlaylist({
   coverImage?: string | null;
   name: string;
 }) {
-  const cleanName = normalizeName(name);
-
-  if (!cleanName) {
-    throw new Error("Playlist name is required.");
-  }
+  const cleanName = assertCollectionName({ kind: "playlist", name });
 
   await assertUniqueName({ entity: "playlist", name: cleanName });
 
@@ -218,11 +203,7 @@ export async function updateAlbum({
   name: string;
   year?: number | null;
 }) {
-  const cleanName = normalizeName(name);
-
-  if (!cleanName) {
-    throw new Error("Album name is required.");
-  }
+  const cleanName = assertCollectionName({ kind: "album", name });
 
   await assertUniqueName({ entity: "album", excludeId: id, name: cleanName });
 
@@ -253,11 +234,7 @@ export async function updateArtist({
   name: string;
   profileImage?: string | null;
 }) {
-  const cleanName = normalizeName(name);
-
-  if (!cleanName) {
-    throw new Error("Artist name is required.");
-  }
+  const cleanName = assertCollectionName({ kind: "artist", name });
 
   await assertUniqueName({ entity: "artist", excludeId: id, name: cleanName });
 
@@ -286,11 +263,7 @@ export async function updatePlaylist({
   id: number;
   name: string;
 }) {
-  const cleanName = normalizeName(name);
-
-  if (!cleanName) {
-    throw new Error("Playlist name is required.");
-  }
+  const cleanName = assertCollectionName({ kind: "playlist", name });
 
   await assertUniqueName({
     entity: "playlist",

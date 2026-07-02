@@ -198,6 +198,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     Premium screen view.
   - Done: song preview row state and playback item conversion now live in the
     song preview service instead of the preview list component.
+  - Done: library song preview empty state and playback row rendering now live
+    in focused components instead of the preview list owning all row JSX.
   - Done: mini-player visibility, labels, metadata, and ad-blocked command state
     now live in the playback player-state service instead of the mini-player UI.
   - Done: home now-playing summary labels now live in an app-shell service

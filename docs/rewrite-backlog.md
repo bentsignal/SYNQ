@@ -49,6 +49,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     live in a library service instead of depending on the edit screen.
   - Done: shared collection form year parsing now lives in a library service
     instead of duplicated create/edit screen helpers.
+  - Done: collection list search filtering now lives in a pure library service
+    instead of the collection list screen.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -78,6 +80,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     image resolution, year formatting, and loaded-missing fallbacks.
   - Done: extend deterministic smoke coverage to collection form year parsing
     for blank, valid, and invalid album year inputs.
+  - Done: extend deterministic smoke coverage to collection list search
+    filtering across title, meta, detail, whitespace, and case-insensitive
+    queries.
 
 ### Phase 3: New App Build-Out
 

@@ -15,6 +15,7 @@ import {
   type LibraryCollectionPreview,
   useLibraryCollectionPreviewQuery,
 } from "../hooks/use-library-collection-preview-query";
+import { filterCollectionPreviews } from "../services/library-collection-list-service";
 
 type LibraryCollectionListScreenProps = {
   kind: CollectionKind;
@@ -65,18 +66,6 @@ const getCollectionHref = (collection: LibraryCollectionPreview) => {
   }
 };
 
-const matchesQuery = (collection: LibraryCollectionPreview, query: string) => {
-  const normalizedQuery = query.trim().toLowerCase();
-
-  if (!normalizedQuery) {
-    return true;
-  }
-
-  return [collection.title, collection.meta, collection.detail].some((value) =>
-    value.toLowerCase().includes(normalizedQuery),
-  );
-};
-
 export function LibraryCollectionListScreen({
   kind,
 }: LibraryCollectionListScreenProps) {
@@ -87,10 +76,7 @@ export function LibraryCollectionListScreen({
   });
   const copy = copyByKind[kind];
   const visibleCollections = useMemo(
-    () =>
-      collections[kind].filter((collection) =>
-        matchesQuery(collection, query),
-      ),
+    () => filterCollectionPreviews({ collections: collections[kind], query }),
     [collections, kind, query],
   );
   const hasErrors = errors.length > 0;

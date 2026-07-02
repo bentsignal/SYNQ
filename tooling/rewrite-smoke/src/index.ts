@@ -25,6 +25,7 @@ import {
 import { parseAlbumYearInput } from "../../../apps/new/src/features/library/services/collection-form-service";
 import { rowsToAddableCollectionSongs } from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
 import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
+import { filterCollectionPreviews } from "../../../apps/new/src/features/library/services/library-collection-list-service";
 import { buildLibrarySongDetail } from "../../../apps/new/src/features/library/services/library-song-detail-service";
 import { rowsToSongPreviews } from "../../../apps/new/src/features/library/services/library-song-preview-service";
 
@@ -700,6 +701,58 @@ function assertCollectionFormSmoke() {
   );
 }
 
+function assertLibraryCollectionListSmoke() {
+  const collections = [
+    {
+      detail: "2 songs",
+      id: 1,
+      imagePath: null,
+      kind: "albums" as const,
+      meta: "Alpha Artist / 2026",
+      title: "Alpha Album",
+    },
+    {
+      detail: "5 songs",
+      id: 2,
+      imagePath: null,
+      kind: "artists" as const,
+      meta: "Artist",
+      title: "Beta Artist",
+    },
+    {
+      detail: "12 songs",
+      id: 3,
+      imagePath: null,
+      kind: "playlists" as const,
+      meta: "Playlist",
+      title: "Road Mix",
+    },
+  ];
+
+  assert.deepEqual(
+    filterCollectionPreviews({ collections, query: "" }).map(
+      (collection) => collection.id,
+    ),
+    [1, 2, 3],
+  );
+  assert.deepEqual(
+    filterCollectionPreviews({ collections, query: " alpha artist " }).map(
+      (collection) => collection.id,
+    ),
+    [1],
+  );
+  assert.deepEqual(
+    filterCollectionPreviews({ collections, query: "12 SONGS" }).map(
+      (collection) => collection.id,
+    ),
+    [3],
+  );
+  assert.deepEqual(
+    filterCollectionPreviews({ collections, query: "missing" }),
+    [],
+  );
+}
+
 assertPlaybackSessionSmoke();
 assertImportSessionSmoke();
 assertLibraryCollectionDetailSmoke();
@@ -709,4 +762,5 @@ assertAddableCollectionSongsSmoke();
 assertLibrarySongDetailSmoke();
 assertEditCollectionQuerySmoke();
 assertCollectionFormSmoke();
+assertLibraryCollectionListSmoke();
 console.log("Rewrite deterministic smoke checks passed.");

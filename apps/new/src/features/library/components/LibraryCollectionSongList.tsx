@@ -1,5 +1,6 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionDetailSong } from "../hooks/use-library-collection-detail-query";
 
 type LibraryCollectionSongListProps = {
@@ -29,13 +30,21 @@ export function LibraryCollectionSongList({
   removingSongId,
   songs,
 }: LibraryCollectionSongListProps) {
+  const theme = useCustomizationTheme();
   const isMutating = movingSongId !== null || removingSongId !== null;
 
   if (songs.length === 0) {
     return (
-      <View style={styles.emptyPanel}>
-        <Text style={styles.emptyTitle}>No songs here yet</Text>
-        <Text style={styles.emptyBody}>
+      <View
+        style={[
+          styles.emptyPanel,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.emptyTitle, { color: theme.primaryText }]}>
+          No songs here yet
+        </Text>
+        <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
           This detail view is live and will update when matching songs are added
           to the shared library database.
         </Text>
@@ -44,23 +53,39 @@ export function LibraryCollectionSongList({
   }
 
   return (
-    <View style={styles.list}>
+    <View
+      style={[
+        styles.list,
+        { backgroundColor: theme.surface, borderColor: theme.border },
+      ]}
+    >
       {songs.map((song, index) => (
-        <View key={song.id} style={styles.row}>
+        <View
+          key={song.id}
+          style={[styles.row, { borderBottomColor: theme.borderSubtle }]}
+        >
           <Link asChild href={`/(tabs)/library/song/${song.id}`}>
             <Pressable style={styles.rowLink}>
-              <Text style={styles.track}>
+              <Text style={[styles.track, { color: theme.mutedText }]}>
                 {song.track !== null ? song.track.toString() : ""}
               </Text>
               <View style={styles.rowText}>
-                <Text numberOfLines={1} style={styles.title}>
+                <Text
+                  numberOfLines={1}
+                  style={[styles.title, { color: theme.primaryText }]}
+                >
                   {song.title}
                 </Text>
-                <Text numberOfLines={1} style={styles.meta}>
+                <Text
+                  numberOfLines={1}
+                  style={[styles.meta, { color: theme.secondaryText }]}
+                >
                   {song.artist} / {song.album}
                 </Text>
               </View>
-              <Text style={styles.duration}>{formatDuration(song.duration)}</Text>
+              <Text style={[styles.duration, { color: theme.primaryText }]}>
+                {formatDuration(song.duration)}
+              </Text>
             </Pressable>
           </Link>
           {onMoveSong ? (
@@ -72,10 +97,13 @@ export function LibraryCollectionSongList({
                 onPress={() => onMoveSong(song.id, "up")}
                 style={[
                   styles.moveButton,
+                  { borderColor: theme.border },
                   index === 0 || isMutating ? styles.disabledButton : null,
                 ]}
               >
-                <Text style={styles.moveText}>Up</Text>
+                <Text style={[styles.moveText, { color: theme.accent }]}>
+                  Up
+                </Text>
               </Pressable>
               <Pressable
                 accessibilityLabel={`Move ${song.title} down`}
@@ -84,12 +112,15 @@ export function LibraryCollectionSongList({
                 onPress={() => onMoveSong(song.id, "down")}
                 style={[
                   styles.moveButton,
+                  { borderColor: theme.border },
                   index === songs.length - 1 || isMutating
                     ? styles.disabledButton
                     : null,
                 ]}
               >
-                <Text style={styles.moveText}>Down</Text>
+                <Text style={[styles.moveText, { color: theme.accent }]}>
+                  Down
+                </Text>
               </Pressable>
             </View>
           ) : null}
@@ -100,10 +131,11 @@ export function LibraryCollectionSongList({
               onPress={() => onRemoveSong(song.id)}
               style={[
                 styles.removeButton,
+                { borderColor: theme.border },
                 isMutating ? styles.disabledButton : null,
               ]}
             >
-              <Text style={styles.removeText}>
+              <Text style={[styles.removeText, { color: theme.danger }]}>
                 {removingSongId === song.id ? "Removing" : "Remove"}
               </Text>
             </Pressable>
@@ -116,35 +148,28 @@ export function LibraryCollectionSongList({
 
 const styles = StyleSheet.create({
   emptyPanel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 8,
     padding: 16,
   },
   emptyTitle: {
-    color: "#121417",
     fontSize: 16,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 21,
   },
   emptyBody: {
-    color: "#52605a",
     fontSize: 14,
     lineHeight: 20,
   },
   list: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     overflow: "hidden",
   },
   row: {
     alignItems: "center",
-    borderBottomColor: "#edf2ef",
     borderBottomWidth: 1,
     flexDirection: "row",
     gap: 12,
@@ -160,7 +185,6 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   track: {
-    color: "#74807a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
@@ -173,19 +197,16 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   title: {
-    color: "#121417",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 20,
   },
   meta: {
-    color: "#52605a",
     fontSize: 13,
     lineHeight: 18,
   },
   duration: {
-    color: "#29322e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
@@ -194,7 +215,6 @@ const styles = StyleSheet.create({
   },
   removeButton: {
     alignItems: "center",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: "center",
@@ -208,7 +228,6 @@ const styles = StyleSheet.create({
   },
   moveButton: {
     alignItems: "center",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: "center",
@@ -220,14 +239,12 @@ const styles = StyleSheet.create({
     opacity: 0.55,
   },
   moveText: {
-    color: "#0f766e",
     fontSize: 11,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   removeText: {
-    color: "#b42318",
     fontSize: 11,
     fontWeight: "800",
     letterSpacing: 0,

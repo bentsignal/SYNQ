@@ -1,5 +1,6 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type {
   LibrarySongPreview,
   LibrarySongPreviewOrder,
@@ -40,11 +41,17 @@ export function LibrarySongPreviewList({
   songs,
   sort,
 }: LibrarySongPreviewListProps) {
+  const theme = useCustomizationTheme();
+
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Recent Songs</Text>
-        <Text style={styles.sectionMeta}>{songs.length} shown</Text>
+        <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
+          Recent Songs
+        </Text>
+        <Text style={[styles.sectionMeta, { color: theme.secondaryText }]}>
+          {songs.length} shown
+        </Text>
       </View>
 
       <LibrarySongListControls
@@ -57,31 +64,51 @@ export function LibrarySongPreviewList({
       />
 
       {isEmpty ? (
-        <View style={styles.emptyPanel}>
-          <Text style={styles.emptyTitle}>No songs yet</Text>
-          <Text style={styles.emptyBody}>
+        <View
+          style={[
+            styles.emptyPanel,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
+          <Text style={[styles.emptyTitle, { color: theme.primaryText }]}>
+            No songs yet
+          </Text>
+          <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
             Imported tracks will appear here once the shared library database has
             rows to render.
           </Text>
         </View>
       ) : (
-        <View style={styles.list}>
+        <View
+          style={[
+            styles.list,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
           {songs.map((song) => (
             <Link
               asChild
               href={`/(tabs)/library/song/${song.id}`}
               key={song.id}
             >
-              <Pressable style={styles.row}>
+              <Pressable
+                style={[styles.row, { borderBottomColor: theme.borderSubtle }]}
+              >
                 <View style={styles.rowText}>
-                  <Text numberOfLines={1} style={styles.songTitle}>
+                  <Text
+                    numberOfLines={1}
+                    style={[styles.songTitle, { color: theme.primaryText }]}
+                  >
                     {song.title}
                   </Text>
-                  <Text numberOfLines={1} style={styles.songMeta}>
+                  <Text
+                    numberOfLines={1}
+                    style={[styles.songMeta, { color: theme.secondaryText }]}
+                  >
                     {song.artist} / {song.album}
                   </Text>
                 </View>
-                <Text style={styles.duration}>
+                <Text style={[styles.duration, { color: theme.primaryText }]}>
                   {formatDuration(song.duration)}
                 </Text>
               </Pressable>
@@ -104,7 +131,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   sectionTitle: {
-    color: "#121417",
     flex: 1,
     fontSize: 20,
     fontWeight: "800",
@@ -112,7 +138,6 @@ const styles = StyleSheet.create({
     lineHeight: 25,
   },
   sectionMeta: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
@@ -120,35 +145,28 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   emptyPanel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 8,
     padding: 16,
   },
   emptyTitle: {
-    color: "#121417",
     fontSize: 16,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 21,
   },
   emptyBody: {
-    color: "#52605a",
     fontSize: 14,
     lineHeight: 20,
   },
   list: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     overflow: "hidden",
   },
   row: {
     alignItems: "center",
-    borderBottomColor: "#edf2ef",
     borderBottomWidth: 1,
     flexDirection: "row",
     gap: 12,
@@ -162,19 +180,16 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   songTitle: {
-    color: "#121417",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 20,
   },
   songMeta: {
-    color: "#52605a",
     fontSize: 13,
     lineHeight: 18,
   },
   duration: {
-    color: "#29322e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,

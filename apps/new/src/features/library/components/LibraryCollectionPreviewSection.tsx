@@ -1,5 +1,6 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionPreview } from "../hooks/use-library-collection-preview-query";
 
 type LibraryCollectionPreviewSectionProps = {
@@ -45,17 +46,30 @@ export function LibraryCollectionPreviewSection({
   collections,
   isEmpty,
 }: LibraryCollectionPreviewSectionProps) {
+  const theme = useCustomizationTheme();
+
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Collections</Text>
-        <Text style={styles.sectionMeta}>Live database</Text>
+        <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
+          Collections
+        </Text>
+        <Text style={[styles.sectionMeta, { color: theme.secondaryText }]}>
+          Live database
+        </Text>
       </View>
 
       {isEmpty ? (
-        <View style={styles.emptyPanel}>
-          <Text style={styles.emptyTitle}>No collections yet</Text>
-          <Text style={styles.emptyBody}>
+        <View
+          style={[
+            styles.emptyPanel,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
+          <Text style={[styles.emptyTitle, { color: theme.primaryText }]}>
+            No collections yet
+          </Text>
+          <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
             Playlists, albums, and artists will populate here as the shared
             library database changes.
           </Text>
@@ -64,10 +78,19 @@ export function LibraryCollectionPreviewSection({
         <View style={styles.columns}>
           {sections.map((section) => (
             <View key={section.key} style={styles.column}>
-              <Text style={styles.columnTitle}>{section.title}</Text>
-              <View style={styles.list}>
+              <Text style={[styles.columnTitle, { color: theme.secondaryText }]}>
+                {section.title}
+              </Text>
+              <View
+                style={[
+                  styles.list,
+                  { backgroundColor: theme.surface, borderColor: theme.border },
+                ]}
+              >
                 {collections[section.key].length === 0 ? (
-                  <Text style={styles.placeholder}>None yet</Text>
+                  <Text style={[styles.placeholder, { color: theme.mutedText }]}>
+                    None yet
+                  </Text>
                 ) : (
                   collections[section.key].map((collection) => (
                     <Link
@@ -75,16 +98,34 @@ export function LibraryCollectionPreviewSection({
                       href={getCollectionHref(collection)}
                       key={`${collection.kind}-${collection.id}`}
                     >
-                      <Pressable style={styles.row}>
+                      <Pressable
+                        style={[
+                          styles.row,
+                          { borderBottomColor: theme.borderSubtle },
+                        ]}
+                      >
                         <View style={styles.rowText}>
-                          <Text numberOfLines={1} style={styles.title}>
+                          <Text
+                            numberOfLines={1}
+                            style={[styles.title, { color: theme.primaryText }]}
+                          >
                             {collection.title}
                           </Text>
-                          <Text numberOfLines={1} style={styles.meta}>
+                          <Text
+                            numberOfLines={1}
+                            style={[
+                              styles.meta,
+                              { color: theme.secondaryText },
+                            ]}
+                          >
                             {collection.meta}
                           </Text>
                         </View>
-                        <Text style={styles.detail}>{collection.detail}</Text>
+                        <Text
+                          style={[styles.detail, { color: theme.primaryText }]}
+                        >
+                          {collection.detail}
+                        </Text>
                       </Pressable>
                     </Link>
                   ))
@@ -109,7 +150,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   sectionTitle: {
-    color: "#121417",
     flex: 1,
     fontSize: 20,
     fontWeight: "800",
@@ -117,7 +157,6 @@ const styles = StyleSheet.create({
     lineHeight: 25,
   },
   sectionMeta: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
@@ -125,22 +164,18 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   emptyPanel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 8,
     padding: 16,
   },
   emptyTitle: {
-    color: "#121417",
     fontSize: 16,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 21,
   },
   emptyBody: {
-    color: "#52605a",
     fontSize: 14,
     lineHeight: 20,
   },
@@ -151,22 +186,18 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   columnTitle: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   list: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     overflow: "hidden",
   },
   row: {
     alignItems: "center",
-    borderBottomColor: "#edf2ef",
     borderBottomWidth: 1,
     flexDirection: "row",
     gap: 12,
@@ -180,19 +211,16 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   title: {
-    color: "#121417",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 20,
   },
   meta: {
-    color: "#52605a",
     fontSize: 13,
     lineHeight: 18,
   },
   detail: {
-    color: "#29322e",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
@@ -200,7 +228,6 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   placeholder: {
-    color: "#74807a",
     fontSize: 14,
     fontStyle: "italic",
     lineHeight: 20,

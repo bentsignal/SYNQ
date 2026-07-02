@@ -1,4 +1,6 @@
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import type {
   LibrarySongPreviewOrder,
   LibrarySongPreviewSort,
@@ -43,6 +45,8 @@ export function LibrarySongListControls({
   setSort,
   sort,
 }: LibrarySongListControlsProps) {
+  const theme = useCustomizationTheme();
+  const { sendHaptic } = useHapticFeedback();
   const nextOrder = order === "asc" ? "desc" : "asc";
 
   return (
@@ -52,8 +56,15 @@ export function LibrarySongListControls({
         autoCorrect={false}
         onChangeText={setQuery}
         placeholder="Search songs, artists, albums"
-        placeholderTextColor="#74807a"
-        style={styles.searchInput}
+        placeholderTextColor={theme.mutedText}
+        style={[
+          styles.searchInput,
+          {
+            backgroundColor: theme.surface,
+            borderColor: theme.border,
+            color: theme.primaryText,
+          },
+        ]}
         value={query}
       />
 
@@ -66,13 +77,22 @@ export function LibrarySongListControls({
               key={option.value}
               accessibilityRole="button"
               accessibilityState={{ selected: isActive }}
-              onPress={() => setSort(option.value)}
-              style={[styles.sortOption, isActive ? styles.activeOption : null]}
+              onPress={() => {
+                sendHaptic("light");
+                setSort(option.value);
+              }}
+              style={[
+                styles.sortOption,
+                {
+                  backgroundColor: isActive ? theme.accent : theme.surface,
+                  borderColor: isActive ? theme.accent : theme.border,
+                },
+              ]}
             >
               <Text
                 style={[
                   styles.sortOptionText,
-                  isActive ? styles.activeOptionText : null,
+                  { color: isActive ? theme.onAccent : theme.secondaryText },
                 ]}
               >
                 {option.label}
@@ -83,10 +103,18 @@ export function LibrarySongListControls({
 
         <Pressable
           accessibilityRole="button"
-          onPress={() => setOrder(nextOrder)}
-          style={styles.orderButton}
+          onPress={() => {
+            sendHaptic("light");
+            setOrder(nextOrder);
+          }}
+          style={[
+            styles.orderButton,
+            { backgroundColor: theme.primaryText, borderColor: theme.primaryText },
+          ]}
         >
-          <Text style={styles.orderText}>{order === "asc" ? "Asc" : "Desc"}</Text>
+          <Text style={[styles.orderText, { color: theme.surface }]}>
+            {order === "asc" ? "Asc" : "Desc"}
+          </Text>
         </Pressable>
       </View>
     </View>
@@ -98,11 +126,8 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   searchInput: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
-    color: "#121417",
     fontSize: 15,
     fontWeight: "600",
     letterSpacing: 0,
@@ -116,8 +141,6 @@ const styles = StyleSheet.create({
   },
   sortOption: {
     alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: "center",
@@ -125,24 +148,14 @@ const styles = StyleSheet.create({
     minWidth: 72,
     paddingHorizontal: 12,
   },
-  activeOption: {
-    backgroundColor: "#0f766e",
-    borderColor: "#0f766e",
-  },
   sortOptionText: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
-  activeOptionText: {
-    color: "#ffffff",
-  },
   orderButton: {
     alignItems: "center",
-    backgroundColor: "#17211c",
-    borderColor: "#17211c",
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: "center",
@@ -151,7 +164,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   orderText: {
-    color: "#ffffff",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,

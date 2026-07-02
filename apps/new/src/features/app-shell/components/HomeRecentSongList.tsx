@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { useLibrarySongPreviewQuery } from "@/src/features/library/hooks/use-library-song-preview-query";
+import { getHomeRecentSongHref } from "../services/home-screen-service";
 
 type HomeRecentSongListProps = {
   hasLibrary: boolean;
@@ -24,7 +25,11 @@ export function HomeRecentSongList({
     >
       {hasLibrary && !recentSongs.isEmpty ? (
         recentSongs.songs.map((song) => (
-          <Link asChild href={`/(tabs)/library/song/${song.id}`} key={song.id}>
+          <Link
+            asChild
+            href={getHomeRecentSongHref({ songId: song.id })}
+            key={song.id}
+          >
             <Pressable
               style={[
                 styles.songRow,

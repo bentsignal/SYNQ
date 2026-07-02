@@ -3,7 +3,13 @@ import {
   formatDurationMs,
   formatRemainingDurationMs,
 } from "../../../apps/new/src/features/app-shell/services/duration-format-service";
-import { getHomeNowPlayingState } from "../../../apps/new/src/features/app-shell/services/home-screen-service";
+import {
+  getHomeLibraryHref,
+  getHomeNowPlayingActions,
+  getHomeNowPlayingState,
+  getHomeQuickActions,
+  getHomeRecentSongHref,
+} from "../../../apps/new/src/features/app-shell/services/home-screen-service";
 import { parseNumericRouteParam } from "../../../apps/new/src/features/app-shell/services/route-param-service";
 import {
   getActiveTrack,
@@ -3002,6 +3008,46 @@ function assertRouteParamSmoke() {
 
 function assertHomeScreenSmoke() {
   const activeTrack = song({ duration: 125_000, id: 1, title: "Home Track" });
+
+  assert.deepEqual(getHomeQuickActions({ songCount: 3 }), [
+    {
+      detail: "3 songs",
+      href: "/(tabs)/library",
+      label: "Library",
+    },
+    {
+      detail: "Files and Wi-Fi",
+      href: "/(tabs)/import",
+      label: "Import",
+    },
+    {
+      detail: "Theme and backup",
+      href: "/(tabs)/settings",
+      label: "Settings",
+    },
+    {
+      detail: "Unlock listening",
+      href: "/premium",
+      label: "Premium",
+    },
+  ]);
+  assert.deepEqual(getHomeNowPlayingActions(), [
+    {
+      detail: "Open current song",
+      href: "/player",
+      label: "Player",
+    },
+    {
+      detail: "Review queued songs",
+      href: "/queue",
+      label: "Queue",
+    },
+  ]);
+  assert.equal(getHomeLibraryHref(), "/(tabs)/library");
+  assert.equal(
+    getHomeRecentSongHref({ songId: 9 }),
+    "/(tabs)/library/song/9",
+  );
 
   assert.deepEqual(
     getHomeNowPlayingState({

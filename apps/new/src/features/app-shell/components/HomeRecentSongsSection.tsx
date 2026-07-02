@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { HomeScreenController } from "../hooks/use-home-screen-controller";
+import { getHomeLibraryHref } from "../services/home-screen-service";
 import { HomeRecentSongList } from "./HomeRecentSongList";
 
 type HomeRecentSongsSectionProps = Pick<
@@ -14,6 +15,7 @@ export function HomeRecentSongsSection({
   recentSongs,
 }: HomeRecentSongsSectionProps) {
   const theme = useCustomizationTheme();
+  const libraryHref = getHomeLibraryHref();
 
   return (
     <>
@@ -22,7 +24,7 @@ export function HomeRecentSongsSection({
           Recent Songs
         </Text>
         <Link
-          href="/(tabs)/library"
+          href={libraryHref}
           style={[styles.sectionLink, { color: theme.accent }]}
         >
           View library

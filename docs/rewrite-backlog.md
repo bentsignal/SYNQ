@@ -83,6 +83,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     app-shell service instead of repeated library/import/playback UI helpers.
   - Done: shared numeric route param parsing now lives in an app-shell service
     instead of repeated library/import screen helpers.
+  - Done: home quick-action, now-playing, library, and recent-song destinations
+    now live in the app-shell home service with deterministic smoke coverage
+    instead of inline home component route strings.
   - Done: import staged-song edit track parsing and metadata normalization now
     live in an import service instead of the edit screen.
   - Done: import staged-song edit save/files destinations now live in the

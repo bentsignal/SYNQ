@@ -2,45 +2,36 @@ import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { HomeScreenController } from "../hooks/use-home-screen-controller";
+import {
+  getHomeQuickActions,
+  type HomeAction as HomeActionState,
+} from "../services/home-screen-service";
 
 type HomeQuickActionsProps = {
   summary: HomeScreenController["summary"];
 };
 
 export function HomeQuickActions({ summary }: HomeQuickActionsProps) {
+  const actions = getHomeQuickActions({ songCount: summary.counts.songs });
+
   return (
     <View style={styles.quickActions}>
-      <HomeAction
-        detail={`${summary.counts.songs} songs`}
-        href="/(tabs)/library"
-        label="Library"
-      />
-      <HomeAction
-        detail="Files and Wi-Fi"
-        href="/(tabs)/import"
-        label="Import"
-      />
-      <HomeAction
-        detail="Theme and backup"
-        href="/(tabs)/settings"
-        label="Settings"
-      />
-      <HomeAction detail="Unlock listening" href="/premium" label="Premium" />
+      {actions.map((action) => (
+        <HomeAction action={action} key={action.href} />
+      ))}
     </View>
   );
 }
 
 type HomeActionProps = {
-  detail: string;
-  href: string;
-  label: string;
+  action: HomeActionState;
 };
 
-function HomeAction({ detail, href, label }: HomeActionProps) {
+function HomeAction({ action }: HomeActionProps) {
   const theme = useCustomizationTheme();
 
   return (
-    <Link asChild href={href}>
+    <Link asChild href={action.href}>
       <Pressable
         style={[
           styles.actionCard,
@@ -48,10 +39,10 @@ function HomeAction({ detail, href, label }: HomeActionProps) {
         ]}
       >
         <Text style={[styles.actionTitle, { color: theme.primaryText }]}>
-          {label}
+          {action.label}
         </Text>
         <Text style={[styles.actionDetail, { color: theme.secondaryText }]}>
-          {detail}
+          {action.detail}
         </Text>
       </Pressable>
     </Link>

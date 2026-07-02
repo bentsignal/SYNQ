@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { HomeScreenController } from "../hooks/use-home-screen-controller";
+import { getHomeNowPlayingActions } from "../services/home-screen-service";
 
 type HomeNowPlayingPanelProps = {
   nowPlaying: HomeScreenController["nowPlaying"];
@@ -11,6 +12,8 @@ export function HomeNowPlayingPanel({
   nowPlaying,
 }: HomeNowPlayingPanelProps) {
   const theme = useCustomizationTheme();
+  const actions = getHomeNowPlayingActions();
+  const [playerAction, queueAction] = actions;
 
   return (
     <View
@@ -31,27 +34,38 @@ export function HomeNowPlayingPanel({
         </Text>
       </View>
       <View style={styles.nowPlayingActions}>
-        <Link asChild href="/player">
-          <Pressable
-            style={[styles.primaryButton, { backgroundColor: theme.accent }]}
-          >
-            <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
-              Player
-            </Text>
-          </Pressable>
-        </Link>
-        <Link asChild href="/queue">
-          <Pressable
-            style={[
-              styles.secondaryButton,
-              { borderColor: theme.border, backgroundColor: theme.background },
-            ]}
-          >
-            <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
-              Queue
-            </Text>
-          </Pressable>
-        </Link>
+        {playerAction ? (
+          <Link asChild href={playerAction.href}>
+            <Pressable
+              style={[styles.primaryButton, { backgroundColor: theme.accent }]}
+            >
+              <Text
+                style={[styles.primaryButtonText, { color: theme.onAccent }]}
+              >
+                {playerAction.label}
+              </Text>
+            </Pressable>
+          </Link>
+        ) : null}
+        {queueAction ? (
+          <Link asChild href={queueAction.href}>
+            <Pressable
+              style={[
+                styles.secondaryButton,
+                {
+                  borderColor: theme.border,
+                  backgroundColor: theme.background,
+                },
+              ]}
+            >
+              <Text
+                style={[styles.secondaryButtonText, { color: theme.accent }]}
+              >
+                {queueAction.label}
+              </Text>
+            </Pressable>
+          </Link>
+        ) : null}
       </View>
     </View>
   );

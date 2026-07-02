@@ -52,3 +52,7 @@ export const getCollectionFormActionState = ({
     hasName,
   };
 };
+
+export type CollectionFormActionState = ReturnType<
+  typeof getCollectionFormActionState
+>;

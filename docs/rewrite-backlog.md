@@ -64,6 +64,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     library service with deterministic smoke coverage.
   - Done: edit-collection query state and singular collection kind typing now
     live in a library service instead of depending on the edit screen.
+  - Done: edit-collection hydration, dirty tracking, image picking, save,
+    navigation, and mutation-error workflows now live in a controller hook
+    instead of the screen.
   - Done: shared collection form year parsing now lives in a library service
     instead of duplicated create/edit screen helpers.
   - Done: collection list search filtering now lives in a pure library service

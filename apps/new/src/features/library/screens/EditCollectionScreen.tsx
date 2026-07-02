@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { Link, useLocalSearchParams } from "expo-router";
 import {
   ActivityIndicator,
   Image,
@@ -10,25 +9,13 @@ import {
   View,
 } from "react-native";
 import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { useEditCollectionFormController } from "../hooks/use-edit-collection-form-controller";
 import {
   useEditAlbumCollectionQuery,
   useEditArtistCollectionQuery,
   useEditPlaylistCollectionQuery,
 } from "../hooks/use-edit-collection-query";
-import {
-  updateAlbum,
-  updateArtist,
-  updatePlaylist,
-} from "../repository/collection-repository";
-import { pickCollectionImage } from "../services/collection-image-picker-service";
-import {
-  getCollectionFormActionState,
-  getCollectionFormPreviewInitial,
-  getCollectionFormSaveLabel,
-  parseAlbumYearInput,
-} from "../services/collection-form-service";
 import type { EditCollectionKind } from "../services/edit-collection-query-service";
 
 export type CollectionKind = EditCollectionKind;
@@ -143,114 +130,28 @@ function EditCollectionForm({
   id,
   kind,
 }: EditCollectionFormProps) {
-  const router = useRouter();
-  const { sendHaptic } = useHapticFeedback();
   const theme = useCustomizationTheme();
   const copy = labels[kind];
   const imageLabel = kind === "artist" ? "Profile image" : "Cover image";
-  const [image, setImage] = useState<{
-    dataUrl: string;
-    fileName: string;
-  } | null>(null);
-  const [name, setName] = useState("");
-  const [year, setYear] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [isDirty, setIsDirty] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const { canEdit, canPickImage, canSave } = getCollectionFormActionState({
-    isMissing: collection.isMissing,
+  const {
+    actionState,
+    error,
+    image,
+    imageInitial,
     isSaving,
     name,
+    pickImage,
+    save,
+    saveLabel,
+    updateName,
+    updateYear,
+    year,
+  } = useEditCollectionFormController({
+    collection,
+    copy,
+    id,
+    kind,
   });
-  const imageInitial = getCollectionFormPreviewInitial({
-    fallback: copy.kicker[0],
-    name,
-  });
-  const saveLabel = getCollectionFormSaveLabel({
-    defaultLabel: copy.editLabel,
-    isSaving,
-    savingLabel: "Saving",
-  });
-
-  useEffect(() => {
-    if (isDirty || !collection.updatedAt) {
-      return;
-    }
-
-    setName(collection.name);
-    setYear(collection.year);
-  }, [collection.name, collection.updatedAt, collection.year, isDirty]);
-
-  const handlePickImage = async () => {
-    try {
-      sendHaptic("light");
-      const pickedImage = await pickCollectionImage();
-      if (pickedImage) {
-        setImage(pickedImage);
-        setIsDirty(true);
-      }
-    } catch (caughtError) {
-      sendHaptic("error");
-      setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Image could not be selected.",
-      );
-    }
-  };
-
-  const handleUpdate = async () => {
-    if (!canSave) {
-      sendHaptic("error");
-      setError(`${copy.kicker} name is required.`);
-      return;
-    }
-
-    setIsSaving(true);
-    setError(null);
-
-    try {
-      if (kind === "album") {
-        await updateAlbum({
-          coverImage: image?.dataUrl,
-          id,
-          name,
-          year: parseAlbumYearInput(year) ?? null,
-        });
-        sendHaptic("success");
-        router.replace(`/(tabs)/library/album/${id}`);
-        return;
-      }
-
-      if (kind === "artist") {
-        await updateArtist({
-          id,
-          name,
-          profileImage: image?.dataUrl,
-        });
-        sendHaptic("success");
-        router.replace(`/(tabs)/library/artist/${id}`);
-        return;
-      }
-
-      await updatePlaylist({
-        coverImage: image?.dataUrl,
-        id,
-        name,
-      });
-      sendHaptic("success");
-      router.replace(`/(tabs)/library/playlist/${id}`);
-    } catch (caughtError) {
-      sendHaptic("error");
-      setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : `${copy.kicker} could not be updated.`,
-      );
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   return (
     <View style={[styles.screen, { backgroundColor: theme.background }]}>
@@ -276,11 +177,8 @@ function EditCollectionForm({
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
-          editable={canEdit}
-          onChangeText={(nextName) => {
-            setIsDirty(true);
-            setName(nextName);
-          }}
+          editable={actionState.canEdit}
+          onChangeText={updateName}
           placeholder={copy.namePlaceholder}
           placeholderTextColor={theme.mutedText}
           returnKeyType={kind === "album" ? "next" : "done"}
@@ -297,13 +195,10 @@ function EditCollectionForm({
               Year
             </Text>
             <TextInput
-              editable={canEdit}
+              editable={actionState.canEdit}
               inputMode="numeric"
               keyboardType="number-pad"
-              onChangeText={(nextYear) => {
-                setIsDirty(true);
-                setYear(nextYear);
-              }}
+              onChangeText={updateYear}
               placeholder="Album year"
               placeholderTextColor={theme.mutedText}
               returnKeyType="done"
@@ -346,8 +241,8 @@ function EditCollectionForm({
             </Text>
             <Pressable
               accessibilityRole="button"
-              disabled={!canPickImage}
-              onPress={handlePickImage}
+              disabled={!actionState.canPickImage}
+              onPress={pickImage}
               style={[styles.imageButton, { borderColor: theme.border }]}
             >
               <Text style={[styles.imageButtonText, { color: theme.accent }]}>
@@ -375,12 +270,14 @@ function EditCollectionForm({
 
         <Pressable
           accessibilityRole="button"
-          disabled={!canSave}
-          onPress={handleUpdate}
+          disabled={!actionState.canSave}
+          onPress={save}
           style={[
             styles.saveButton,
             {
-              backgroundColor: canSave ? theme.accent : theme.inactive,
+              backgroundColor: actionState.canSave
+                ? theme.accent
+                : theme.inactive,
             },
           ]}
         >

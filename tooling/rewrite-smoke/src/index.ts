@@ -143,6 +143,7 @@ import {
   getCollectionSongRowActionState,
   getDeleteCollectionConfirmationCopy,
   getLibraryCollectionBackHref,
+  getLibraryInvalidCollectionState,
   getLibraryCollectionSongEmptyState,
   getPlayableCollectionSongs,
   getSelectedAddableSongIds,
@@ -1606,6 +1607,25 @@ function assertLibraryCollectionDetailSmoke() {
 }
 
 function assertLibraryCollectionInteractionSmoke() {
+  assert.deepEqual(getLibraryInvalidCollectionState(), {
+    backLink: {
+      href: "/(tabs)/library",
+      label: "Back to Library",
+    },
+    body: "This route needs a numeric id.",
+    kicker: "Library",
+    title: "Invalid collection",
+  });
+  assert.deepEqual(getLibraryInvalidCollectionState({ kicker: "Edit album" }), {
+    backLink: {
+      href: "/(tabs)/library",
+      label: "Back to Library",
+    },
+    body: "This route needs a numeric id.",
+    kicker: "Edit album",
+    title: "Invalid collection",
+  });
+
   assert.deepEqual(getLibraryCollectionSongEmptyState(), {
     body: "Add songs from your library to build this collection.",
     title: "No songs here yet",

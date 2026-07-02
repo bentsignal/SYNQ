@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getLibraryCollectionBackHref } from "../services/library-collection-interaction-service";
+import { getLibraryInvalidCollectionState } from "../services/library-collection-interaction-service";
 
 type LibraryInvalidCollectionStateProps = {
   kicker?: string;
@@ -11,22 +11,24 @@ export function LibraryInvalidCollectionState({
   kicker = "Library",
 }: LibraryInvalidCollectionStateProps) {
   const theme = useCustomizationTheme();
-  const backHref = getLibraryCollectionBackHref();
+  const state = getLibraryInvalidCollectionState({ kicker });
 
   return (
     <View style={[styles.screen, { backgroundColor: theme.background }]}>
-      <Text style={[styles.kicker, { color: theme.accent }]}>{kicker}</Text>
+      <Text style={[styles.kicker, { color: theme.accent }]}>
+        {state.kicker}
+      </Text>
       <Text style={[styles.title, { color: theme.primaryText }]}>
-        Invalid collection
+        {state.title}
       </Text>
       <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-        This route needs a numeric id.
+        {state.body}
       </Text>
       <Link
-        href={backHref}
+        href={state.backLink.href}
         style={[styles.backLink, { color: theme.accent }]}
       >
-        Back to Library
+        {state.backLink.label}
       </Link>
     </View>
   );

@@ -53,6 +53,20 @@ export const getLibraryCollectionSongEmptyState = () => ({
   title: "No songs here yet",
 });
 
+export const getLibraryInvalidCollectionState = ({
+  kicker = "Library",
+}: {
+  kicker?: string;
+} = {}) => ({
+  backLink: {
+    href: getLibraryCollectionBackHref(),
+    label: "Back to Library",
+  },
+  body: "This route needs a numeric id.",
+  kicker,
+  title: "Invalid collection",
+});
+
 export const canDeleteLibraryCollection = ({
   id,
   isMissing,

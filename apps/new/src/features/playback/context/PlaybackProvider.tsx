@@ -10,6 +10,7 @@ import {
 } from "react";
 import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { usePlaybackAdGateController } from "../hooks/use-playback-ad-gate-controller";
+import { usePlaybackNativeStatusListener } from "../hooks/use-playback-native-status-listener";
 import {
   getActiveTrack,
   getNextQueueIndex,
@@ -157,32 +158,13 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     }
   }, [beginAdBreak, canRunPlaybackCommand, runNativeCommand]);
 
-  useEffect(() => {
-    const adapter = adapterRef.current;
-
-    adapter.setStatusListener((status) => {
-      if (status.didJustFinish) {
-        if (status.source === "ad") {
-          dispatch({ type: "complete-ad-break" });
-          runNativeCommand(() => adapter.resumeLibrary());
-          return;
-        }
-
-        finishActiveTrack();
-        return;
-      }
-
-      dispatch({
-        premiumActive: premiumActiveRef.current,
-        status,
-        type: "native-status",
-      });
-    });
-
-    return () => {
-      adapter.setStatusListener(null);
-    };
-  }, [finishActiveTrack, premiumActiveRef, runNativeCommand]);
+  usePlaybackNativeStatusListener({
+    adapter: adapterRef.current,
+    dispatch,
+    finishActiveTrack,
+    premiumActiveRef,
+    runNativeCommand,
+  });
 
   const playSong = useCallback(
     (song: PlaybackQueueItem) => {

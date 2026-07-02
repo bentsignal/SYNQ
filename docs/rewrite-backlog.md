@@ -9,6 +9,23 @@ feature-oriented packages.
 Use this checklist to track convergence. The detailed backlog below records the
 work already done; this section is the shorter "are we close yet?" dashboard.
 
+### Done Criteria
+
+- [ ] `apps/old` remains runnable as the reference app until the new app reaches
+  parity.
+- [ ] `apps/new` implements the core import, library, collection, playback,
+  backup, premium, and settings flows with feature-first modules.
+- [ ] High-traffic state flows use reactive Drizzle queries, reducers, or typed
+  hooks instead of event emitters, direct storage calls, or screen-local
+  orchestration.
+- [ ] Large providers, screens, and hooks are slim enough to read without
+  hiding business rules inside JSX.
+- [ ] Deterministic smoke coverage exists for the riskiest rewrite domains:
+  import, save-to-library, playback queue/ad gate, library edits, and backup.
+- [ ] `pnpm verify:rewrite` passes at every checkpoint, including old/new mobile
+  export smokes.
+- [ ] A final parity audit against `apps/old` has no blocking gaps.
+
 ### Phase 1: Rewrite Foundation
 
 - [x] Create `rewrite-2` from the completed `rewrite-1` checkpoint.
@@ -98,6 +115,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     now live in a focused hook instead of the provider body.
   - Done: playback Premium/ad-gate sync, ad-break trigger, and premium-resume
     side effects now live in a focused hook instead of the provider body.
+  - Done: playback native status listener, ad completion, and native status
+    dispatch now live in a focused hook instead of the provider body.
   - Done: rewrite verification hygiene scans now include new app route files,
     not only feature implementation files.
   - Done: import files and Wi-Fi presentation/action state now lives in the
@@ -188,6 +207,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     slimming provider-owned persistence effects.
   - Done: keep playback ad-gate reducer smoke coverage intact while moving
     provider ad-gate orchestration into a hook.
+  - Done: keep playback reducer native-status and ad-completion coverage intact
+    while moving native listener wiring into a hook.
   - Done: extend rewrite verification gates to route-file event, console,
     dimensions, and AsyncStorage scans.
   - Done: extend deterministic smoke coverage to collection form year parsing

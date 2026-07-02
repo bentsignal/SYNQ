@@ -21,6 +21,7 @@ export type LibrarySongPreviewSort = "album" | "artist" | "recent" | "title";
 export type LibrarySongPreviewOrder = "asc" | "desc";
 
 export type LibrarySongPreviewHref =
+  | "/(tabs)/import"
   | "/player"
   | `/(tabs)/library/song/${number}`;
 
@@ -108,6 +109,15 @@ export const getLibrarySongPreviewDetailHref = (
 
 export const getLibrarySongPreviewPlayerHref = (): LibrarySongPreviewHref =>
   "/player";
+
+export const getLibrarySongPreviewEmptyState = () => ({
+  body: "Import audio files to start building your song library.",
+  link: {
+    href: "/(tabs)/import" as LibrarySongPreviewHref,
+    label: "Import music",
+  },
+  title: "No songs yet",
+});
 
 export const toLibrarySongPlaybackItem = (
   song: LibrarySongPreview,

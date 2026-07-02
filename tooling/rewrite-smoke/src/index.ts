@@ -223,6 +223,7 @@ import {
 } from "../../../apps/new/src/features/library/services/library-song-form-service";
 import {
   getLibrarySongPreviewDetailHref,
+  getLibrarySongPreviewEmptyState,
   getLibrarySongPreviewPlayerHref,
   getLibrarySongPreviewRowState,
   rowsToSongPreviews,
@@ -2408,6 +2409,14 @@ function assertLibrarySongPreviewSmoke() {
     "/(tabs)/library/song/1",
   );
   assert.equal(getLibrarySongPreviewPlayerHref(), "/player");
+  assert.deepEqual(getLibrarySongPreviewEmptyState(), {
+    body: "Import audio files to start building your song library.",
+    link: {
+      href: "/(tabs)/import",
+      label: "Import music",
+    },
+    title: "No songs yet",
+  });
   assert.deepEqual(toLibrarySongPlaybackItem(previews[0]!), {
     album: "Alpha Album",
     artist: "Alpha Artist, Featured Artist",

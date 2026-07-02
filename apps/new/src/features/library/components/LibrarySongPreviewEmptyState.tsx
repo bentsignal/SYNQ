@@ -1,9 +1,11 @@
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { getLibrarySongPreviewEmptyState } from "../services/library-song-preview-service";
 
 export function LibrarySongPreviewEmptyState() {
   const theme = useCustomizationTheme();
+  const emptyState = getLibrarySongPreviewEmptyState();
 
   return (
     <View
@@ -13,16 +15,16 @@ export function LibrarySongPreviewEmptyState() {
       ]}
     >
       <Text style={[styles.emptyTitle, { color: theme.primaryText }]}>
-        No songs yet
+        {emptyState.title}
       </Text>
       <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
-        Import audio files to start building your song library.
+        {emptyState.body}
       </Text>
       <Link
-        href="/(tabs)/import"
+        href={emptyState.link.href}
         style={[styles.emptyLink, { color: theme.accent }]}
       >
-        Import music
+        {emptyState.link.label}
       </Link>
     </View>
   );

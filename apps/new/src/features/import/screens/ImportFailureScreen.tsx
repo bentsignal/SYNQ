@@ -2,10 +2,12 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useImportSession } from "../hooks/use-import-session";
+import { getImportFailureState } from "../services/import-screen-state-service";
 
 export function ImportFailureScreen() {
   const { state } = useImportSession();
   const theme = useCustomizationTheme();
+  const resultState = getImportFailureState(state);
 
   return (
     <ScrollView
@@ -20,7 +22,7 @@ export function ImportFailureScreen() {
           Failure
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          {state.error ?? "The import session could not continue."}
+          {resultState.errorLabel}
         </Text>
       </View>
 
@@ -34,7 +36,7 @@ export function ImportFailureScreen() {
           Phase
         </Text>
         <Text style={[styles.panelText, { color: theme.primaryText }]}>
-          {state.phase}
+          {resultState.phaseLabel}
         </Text>
       </View>
 

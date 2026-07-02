@@ -358,6 +358,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import save header, save-to-library toggle, export/finish/discard
     actions, and export error panel now render through focused components
     instead of one large save screen view.
+  - Done: import success/failure result labels now live in the import
+    screen-state service with deterministic smoke coverage instead of being
+    computed inline in route screens.
   - Done: import home route metadata, Premium lockout destinations, staged
     counts, Wi-Fi status labels, and route-selection haptics now split between
     an import session service, controller hook, and focused component instead

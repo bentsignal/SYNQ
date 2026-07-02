@@ -33,9 +33,11 @@ import {
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
   getImportFilesActionState,
+  getImportFailureState,
   getImportHomeState,
   getImportPremiumGateState,
   getImportSaveActionState,
+  getImportSuccessState,
   getImportWifiState,
 } from "../../../apps/new/src/features/import/services/import-screen-state-service";
 import {
@@ -854,6 +856,53 @@ function assertImportSessionSmoke() {
       hasSongs: true,
       isWorking: true,
     },
+  );
+  assert.deepEqual(
+    getImportSuccessState({
+      ...state,
+      phase: "success",
+      progress: { current: 3, total: 4 },
+      saveSummary: { discarded: 1, saved: 2, savedSongIds: [1, 2] },
+      shouldSaveToLibrary: true,
+    }),
+    {
+      librarySaveLabel: "2 saved to library",
+      processedLabel: "3 of 4 songs processed.",
+      showLibraryHint: true,
+    },
+  );
+  assert.deepEqual(
+    getImportSuccessState({
+      ...state,
+      phase: "success",
+      progress: { current: 2, total: 2 },
+      saveSummary: { discarded: 2, saved: 0, savedSongIds: [] },
+      shouldSaveToLibrary: false,
+    }),
+    {
+      librarySaveLabel: "2 discarded",
+      processedLabel: "2 of 2 songs processed.",
+      showLibraryHint: false,
+    },
+  );
+  assert.deepEqual(
+    getImportFailureState({
+      ...state,
+      error: "Import smoke failure",
+      phase: "failure",
+    }),
+    {
+      errorLabel: "Import smoke failure",
+      phaseLabel: "failure",
+    },
+  );
+  assert.deepEqual(
+    getImportFailureState({
+      ...state,
+      error: null,
+      phase: "failure",
+    }).errorLabel,
+    "The import session could not continue.",
   );
   assert.deepEqual(getFinishWifiTransferAction([]), {
     error: "No Wi-Fi songs were received.",

@@ -2,12 +2,12 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useImportSession } from "../hooks/use-import-session";
+import { getImportSuccessState } from "../services/import-screen-state-service";
 
 export function ImportSuccessScreen() {
   const { state } = useImportSession();
   const theme = useCustomizationTheme();
-  const savedCount = state.saveSummary?.saved ?? 0;
-  const discardedCount = state.saveSummary?.discarded ?? 0;
+  const resultState = getImportSuccessState(state);
 
   return (
     <ScrollView
@@ -22,7 +22,7 @@ export function ImportSuccessScreen() {
           Success
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          {state.progress.current} of {state.progress.total} songs processed.
+          {resultState.processedLabel}
         </Text>
       </View>
 
@@ -36,11 +36,9 @@ export function ImportSuccessScreen() {
           Library save
         </Text>
         <Text style={[styles.panelText, { color: theme.primaryText }]}>
-          {state.shouldSaveToLibrary
-            ? `${savedCount} saved to library`
-            : `${discardedCount} discarded`}
+          {resultState.librarySaveLabel}
         </Text>
-        {savedCount > 0 ? (
+        {resultState.showLibraryHint ? (
           <Text style={[styles.pathText, { color: theme.mutedText }]}>
             Saved songs are ready in Library.
           </Text>

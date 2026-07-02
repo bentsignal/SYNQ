@@ -1058,9 +1058,15 @@ function assertImportSessionSmoke() {
       phase: "checking",
     }),
     {
+      action: {
+        href: "/premium",
+        label: "Open Premium",
+      },
+      body: "Unlock file and Wi-Fi import before staging new songs.",
       canAccessImport: false,
       error: null,
       kicker: "Checking premium",
+      title: "Import is a Premium feature",
     },
   );
   assert.deepEqual(
@@ -1070,9 +1076,15 @@ function assertImportSessionSmoke() {
       phase: "failure",
     }),
     {
+      action: {
+        href: "/premium",
+        label: "Open Premium",
+      },
+      body: "Unlock file and Wi-Fi import before staging new songs.",
       canAccessImport: false,
       error: "Premium check failed.",
       kicker: "Premium import",
+      title: "Import is a Premium feature",
     },
   );
   assert.deepEqual(
@@ -1082,9 +1094,15 @@ function assertImportSessionSmoke() {
       phase: "ready",
     }),
     {
+      action: {
+        href: "/premium",
+        label: "Open Premium",
+      },
+      body: "Unlock file and Wi-Fi import before staging new songs.",
       canAccessImport: true,
       error: null,
       kicker: "Premium import",
+      title: "Import is a Premium feature",
     },
   );
   assert.deepEqual(

@@ -435,6 +435,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     of duplicating route literals.
   - Done: Premium gate destinations now come from import/settings navigation
     services instead of hard-coded Premium links in gate components.
+  - Done: import Premium gate title/body/action presentation now lives in the
+    import screen state service with smoke coverage instead of the component.
   - Done: import save export/finish/discard labels now live with save action
     availability in the import session service instead of the save screen.
   - Done: import save artist, album, playlist, and album-cover relationship

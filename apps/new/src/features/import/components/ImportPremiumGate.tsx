@@ -3,10 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import {
-  getImportPremiumGateState,
-  getImportPremiumHref,
-} from "../services/import-screen-state-service";
+import { getImportPremiumGateState } from "../services/import-screen-state-service";
 
 type ImportPremiumGateProps = {
   children: React.ReactNode;
@@ -33,23 +30,23 @@ export function ImportPremiumGate({ children }: ImportPremiumGateProps) {
         {gateState.kicker}
       </Text>
       <Text style={[styles.title, { color: theme.primaryText }]}>
-        Import is a Premium feature
+        {gateState.title}
       </Text>
       <Text style={[styles.body, { color: theme.secondaryText }]}>
-        Unlock file and Wi-Fi import before staging new songs.
+        {gateState.body}
       </Text>
       {gateState.error ? (
         <Text style={[styles.errorText, { color: theme.danger }]}>
           {gateState.error}
         </Text>
       ) : null}
-      <Link asChild href={getImportPremiumHref()}>
+      <Link asChild href={gateState.action.href}>
         <Pressable
           onPress={() => sendHaptic("light")}
           style={[styles.button, { backgroundColor: theme.accent }]}
         >
           <Text style={[styles.buttonText, { color: theme.onAccent }]}>
-            Open Premium
+            {gateState.action.label}
           </Text>
         </Pressable>
       </Link>

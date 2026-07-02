@@ -56,7 +56,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/premium",
     targetBoundary: "src/features/premium + src/features/settings",
-    nextMilestone: "Smoke native icon and haptic changes in a native build; then add privacy/support flows and continue non-theme feature polish.",
+    nextMilestone: "Smoke native icon and haptic changes in a native build, then continue non-theme feature polish.",
   },
 ];
 

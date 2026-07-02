@@ -77,10 +77,11 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     command start/success/failure/reset feedback. Manual restore smoke and
     edge-case hardening are next.
   - Premium/settings: settings home, premium screen, customization/backup
-    routes, live RevenueCat pricing, purchase, restore commands, an app-wide
-    entitlement provider, persisted customization preferences for theme,
-    app icon, and haptics, and saved-theme consumption across navigation,
-    loading/placeholder states, settings, library home/shared list components,
+    routes, privacy/support routes, live RevenueCat pricing, purchase, restore
+    commands, an app-wide entitlement provider, persisted customization
+    preferences for theme, app icon, haptics, and analytics, and saved-theme
+    consumption across navigation, loading/placeholder states, settings,
+    library home/shared list components,
     library create/edit/detail/add-song surfaces, playback player/queue
     surfaces, and the backup command surface, import home/files, and import
     Premium gate surfaces exist;
@@ -89,8 +90,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     for customization, playback, queue, collection save actions, collection
     detail song mutations, library song-list sort controls, song detail
     play/queue actions, add-to-collection mutations, backup command feedback,
-    and import file-pick/remove/save/discard/edit actions. Native-build
-    icon/haptics smoke and remaining non-theme feature polish are next.
+    privacy/support actions, and import file-pick/remove/save/discard/edit
+    actions. Native-build icon/haptics smoke and remaining non-theme feature
+    polish are next.
 - [ ] Move reusable feature logic from `apps/old` into shared app-local modules
   that `apps/new` can consume without copying UI spaghetti.
 - [ ] Build the `apps/new` screens against reactive Drizzle query hooks instead
@@ -113,6 +115,7 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Playback, queue, shuffle/repeat, mini player, and player screen
   - Backup restore/erase
   - Premium purchase/restore state
+  - Settings customization, privacy, support, app icon, and haptic preferences
 - [ ] Compare old and new behavior for the core user journeys.
 - [ ] Decide whether `apps/new` replaces `apps/old`, or whether `apps/old` is
   kept as a legacy reference until a later branch.
@@ -154,7 +157,8 @@ feature-owned command-state shell with real archive/share, restore, and
 erase/reset commands. Premium now has a feature-owned purchase session shell
 connected to RevenueCat pricing, purchase, restore commands, and an app-wide
 entitlement provider consumed by Settings, Backup, and Customization. Settings
-customization now owns persisted theme, app icon, and haptic preference state;
+now owns persisted theme, app icon, haptic, and privacy analytics preference
+state, plus support/contact routes;
 the app shell, loading/placeholder states, settings screens, library home,
 library shared summary/search/sort/preview/list components, library
 create/edit/detail/add-song surfaces, playback player/queue surfaces, and the

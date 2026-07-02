@@ -5,7 +5,12 @@ import { useCustomizationTheme } from "../hooks/use-customization-theme";
 
 type SettingsRoute = {
   description: string;
-  href: "/premium" | "/settings/backup" | "/settings/customization";
+  href:
+    | "/premium"
+    | "/settings/backup"
+    | "/settings/customization"
+    | "/settings/privacy"
+    | "/settings/support";
   label: string;
 };
 
@@ -24,6 +29,16 @@ const settingsRoutes: SettingsRoute[] = [
     description: "Archive, restore, or reset the local music library.",
     href: "/settings/backup",
     label: "Backup & Restore",
+  },
+  {
+    description: "Analytics and local privacy preferences.",
+    href: "/settings/privacy",
+    label: "Privacy",
+  },
+  {
+    description: "Help, feedback, and community links.",
+    href: "/settings/support",
+    label: "Support",
   },
 ];
 

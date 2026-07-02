@@ -519,6 +519,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: playback native command-plan execution now lives in the native
     command-plan service instead of the command hook interpreting every adapter
     operation inline.
+  - Done: playback transport, queue/session, command-runner, and remote-command
+    wiring now live in focused hooks instead of one command controller owning
+    every playback command path.
   - Done: playback ad-gated command branching now lives in a pure command-gate
     service with deterministic smoke coverage instead of being hand-rolled in
     the command hook.

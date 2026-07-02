@@ -1,10 +1,5 @@
 import { Link } from "expo-router";
-import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
-import { useEffect, useRef } from "react";
-import { useImportSession } from "@/src/features/import/hooks/use-import-session";
-import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import {
-  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,82 +7,19 @@ import {
   View,
 } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { useBackupSession } from "../hooks/use-backup-session";
+import { useBackupScreenController } from "../hooks/use-backup-screen-controller";
 import {
   backupActionCards,
-  getBackupActionState,
-  getBackupConfirmationState,
-  getBackupPhaseTransitionEffects,
-  getBackupStatusState,
 } from "../services/backup-screen-service";
-import type { BackupOperation } from "../types/backup-session";
 
 export function BackupScreen() {
-  const { reset, runOperation, state } = useBackupSession();
   const theme = useCustomizationTheme();
-  const { sendHaptic } = useHapticFeedback();
-  const { resetSession } = useImportSession();
-  const { resetPlaybackSession } = usePlaybackSession();
-  const { state: premiumState } = usePremiumEntitlement();
-  const previousPhaseRef = useRef(state.phase);
-  const statusState = getBackupStatusState(state);
-
-  useEffect(() => {
-    const effects = getBackupPhaseTransitionEffects({
-      currentState: state,
-      previousPhase: previousPhaseRef.current,
-    });
-
-    if (effects.haptic) {
-      sendHaptic(effects.haptic);
-    }
-
-    if (effects.shouldResetRuntimeSessions) {
-      resetSession();
-      resetPlaybackSession();
-    }
-
-    previousPhaseRef.current = state.phase;
-  }, [
-    resetPlaybackSession,
-    resetSession,
-    sendHaptic,
-    state,
-  ]);
-
-  const runBackupOperation = (operation: BackupOperation) => {
-    sendHaptic(operation === "erase" ? "medium" : "light");
-
-    if (operation === "backup") {
-      void runOperation(operation);
-      return;
-    }
-
-    const confirmation = getBackupConfirmationState(operation);
-    if (!confirmation) {
-      return;
-    }
-
-    Alert.alert(
-      confirmation.title,
-      confirmation.body,
-      [
-        {
-          style: "cancel",
-          text: "Cancel",
-        },
-        {
-          onPress: () => {
-            sendHaptic(operation === "erase" ? "heavy" : "medium");
-            void runOperation(operation);
-          },
-          style: "destructive",
-          text: confirmation.confirmLabel,
-        },
-      ],
-    );
-  };
+  const {
+    getActionState,
+    resetStatus,
+    runBackupOperation,
+    statusState,
+  } = useBackupScreenController();
 
   return (
     <ScrollView
@@ -109,11 +41,7 @@ export function BackupScreen() {
 
       <View style={styles.list}>
         {backupActionCards.map((action) => {
-          const actionState = getBackupActionState({
-            operation: action.operation,
-            premiumActive: premiumState.active,
-            state,
-          });
+          const actionState = getActionState(action.operation);
 
           return (
             <View
@@ -192,10 +120,7 @@ export function BackupScreen() {
         {statusState.canReset ? (
           <Pressable
             accessibilityRole="button"
-            onPress={() => {
-              sendHaptic("light");
-              reset();
-            }}
+            onPress={resetStatus}
             style={[styles.resetButton, { borderColor: theme.border }]}
           >
             <Text style={[styles.resetButtonText, { color: theme.accent }]}>

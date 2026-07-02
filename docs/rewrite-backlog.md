@@ -157,6 +157,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: playback queue haptics and command handlers now live in a controller
     hook, and queue row/list rendering now lives in a dedicated component
     instead of the queue screen.
+  - Done: playback queue header, ad-gate panel, queue list wiring, clear action,
+    and player back link now render from a focused component instead of the
+    route screen.
   - Done: Premium screen feature copy, tier selection cards, purchase/restore
     actions, status reset panel, and settings back link now render from a
     focused component instead of the route screen.

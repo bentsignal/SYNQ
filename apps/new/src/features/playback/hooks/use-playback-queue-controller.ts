@@ -53,3 +53,7 @@ export function usePlaybackQueueController() {
     state,
   };
 }
+
+export type PlaybackQueueController = ReturnType<
+  typeof usePlaybackQueueController
+>;

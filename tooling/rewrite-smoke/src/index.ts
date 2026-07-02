@@ -230,6 +230,7 @@ import {
   getLibrarySongEditStatusState,
 } from "../../../apps/new/src/features/library/services/library-song-form-service";
 import {
+  getLibrarySongListControlsState,
   getLibrarySongPreviewDetailHref,
   getLibrarySongPreviewEmptyState,
   getLibrarySongPreviewPlayerHref,
@@ -2458,6 +2459,38 @@ function assertLibrarySongPreviewSmoke() {
     },
     title: "No songs yet",
   });
+  assert.deepEqual(
+    getLibrarySongListControlsState({ order: "asc", sort: "artist" }),
+    {
+      nextOrder: "desc",
+      orderLabel: "Asc",
+      searchInput: {
+        placeholder: "Search songs, artists, albums",
+      },
+      sortOptions: [
+        { isActive: false, label: "Recent", value: "recent" },
+        { isActive: false, label: "Title", value: "title" },
+        { isActive: true, label: "Artist", value: "artist" },
+        { isActive: false, label: "Album", value: "album" },
+      ],
+    },
+  );
+  assert.deepEqual(
+    getLibrarySongListControlsState({ order: "desc", sort: "recent" }),
+    {
+      nextOrder: "asc",
+      orderLabel: "Desc",
+      searchInput: {
+        placeholder: "Search songs, artists, albums",
+      },
+      sortOptions: [
+        { isActive: true, label: "Recent", value: "recent" },
+        { isActive: false, label: "Title", value: "title" },
+        { isActive: false, label: "Artist", value: "artist" },
+        { isActive: false, label: "Album", value: "album" },
+      ],
+    },
+  );
   assert.deepEqual(toLibrarySongPlaybackItem(previews[0]!), {
     album: "Alpha Album",
     artist: "Alpha Artist, Featured Artist",

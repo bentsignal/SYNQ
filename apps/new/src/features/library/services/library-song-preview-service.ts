@@ -119,6 +119,42 @@ export const getLibrarySongPreviewEmptyState = () => ({
   title: "No songs yet",
 });
 
+export const getLibrarySongListControlsState = ({
+  order,
+  sort,
+}: {
+  order: LibrarySongPreviewOrder;
+  sort: LibrarySongPreviewSort;
+}) => ({
+  nextOrder: order === "asc" ? "desc" as const : "asc" as const,
+  orderLabel: order === "asc" ? "Asc" : "Desc",
+  searchInput: {
+    placeholder: "Search songs, artists, albums",
+  },
+  sortOptions: [
+    {
+      isActive: sort === "recent",
+      label: "Recent",
+      value: "recent" as const,
+    },
+    {
+      isActive: sort === "title",
+      label: "Title",
+      value: "title" as const,
+    },
+    {
+      isActive: sort === "artist",
+      label: "Artist",
+      value: "artist" as const,
+    },
+    {
+      isActive: sort === "album",
+      label: "Album",
+      value: "album" as const,
+    },
+  ],
+});
+
 export const toLibrarySongPlaybackItem = (
   song: LibrarySongPreview,
 ): LibrarySongPreviewPlaybackItem => ({

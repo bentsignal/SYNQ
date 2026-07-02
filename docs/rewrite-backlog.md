@@ -64,6 +64,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: song preview row detail/play destinations now live in the song
     preview service with deterministic smoke coverage instead of inline row
     route strings.
+  - Done: song preview list search placeholder, sort option labels, active
+    state, and order-toggle presentation now live in the song preview service
+    with smoke coverage instead of control component constants.
   - Done: add-to-collection song picker aggregation/search/linked-state sorting
     now lives in a pure library service with deterministic smoke coverage.
   - Done: song detail label/relationship/duration shaping now lives in a pure

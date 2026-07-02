@@ -5,28 +5,7 @@ import type {
   LibrarySongPreviewOrder,
   LibrarySongPreviewSort,
 } from "../hooks/use-library-song-preview-query";
-
-const sortOptions: {
-  label: string;
-  value: LibrarySongPreviewSort;
-}[] = [
-  {
-    label: "Recent",
-    value: "recent",
-  },
-  {
-    label: "Title",
-    value: "title",
-  },
-  {
-    label: "Artist",
-    value: "artist",
-  },
-  {
-    label: "Album",
-    value: "album",
-  },
-];
+import { getLibrarySongListControlsState } from "../services/library-song-preview-service";
 
 type LibrarySongListControlsProps = {
   order: LibrarySongPreviewOrder;
@@ -47,7 +26,7 @@ export function LibrarySongListControls({
 }: LibrarySongListControlsProps) {
   const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();
-  const nextOrder = order === "asc" ? "desc" : "asc";
+  const controlsState = getLibrarySongListControlsState({ order, sort });
 
   return (
     <View style={styles.controls}>
@@ -55,7 +34,7 @@ export function LibrarySongListControls({
         autoCapitalize="none"
         autoCorrect={false}
         onChangeText={setQuery}
-        placeholder="Search songs, artists, albums"
+        placeholder={controlsState.searchInput.placeholder}
         placeholderTextColor={theme.mutedText}
         style={[
           styles.searchInput,
@@ -69,14 +48,12 @@ export function LibrarySongListControls({
       />
 
       <View style={styles.sortRow}>
-        {sortOptions.map((option) => {
-          const isActive = option.value === sort;
-
+        {controlsState.sortOptions.map((option) => {
           return (
             <Pressable
               key={option.value}
               accessibilityRole="button"
-              accessibilityState={{ selected: isActive }}
+              accessibilityState={{ selected: option.isActive }}
               onPress={() => {
                 sendHaptic("light");
                 setSort(option.value);
@@ -84,15 +61,21 @@ export function LibrarySongListControls({
               style={[
                 styles.sortOption,
                 {
-                  backgroundColor: isActive ? theme.accent : theme.surface,
-                  borderColor: isActive ? theme.accent : theme.border,
+                  backgroundColor: option.isActive
+                    ? theme.accent
+                    : theme.surface,
+                  borderColor: option.isActive ? theme.accent : theme.border,
                 },
               ]}
             >
               <Text
                 style={[
                   styles.sortOptionText,
-                  { color: isActive ? theme.onAccent : theme.secondaryText },
+                  {
+                    color: option.isActive
+                      ? theme.onAccent
+                      : theme.secondaryText,
+                  },
                 ]}
               >
                 {option.label}
@@ -105,7 +88,7 @@ export function LibrarySongListControls({
           accessibilityRole="button"
           onPress={() => {
             sendHaptic("light");
-            setOrder(nextOrder);
+            setOrder(controlsState.nextOrder);
           }}
           style={[
             styles.orderButton,
@@ -113,7 +96,7 @@ export function LibrarySongListControls({
           ]}
         >
           <Text style={[styles.orderText, { color: theme.surface }]}>
-            {order === "asc" ? "Asc" : "Desc"}
+            {controlsState.orderLabel}
           </Text>
         </Pressable>
       </View>

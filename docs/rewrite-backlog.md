@@ -296,6 +296,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: playback queue header, ad-gate panel, queue list wiring, clear action,
     and player back link now render from a focused component instead of the
     route screen.
+  - Done: playback queue header, ad-gate panel, clear action, Premium link, and
+    player back-link presentation now live in the playback player-state service
+    with smoke coverage instead of component-local copy.
   - Done: Premium screen feature copy, tier selection cards, purchase/restore
     actions, status reset panel, and settings back link now render from a
     focused component instead of the route screen.

@@ -31,6 +31,7 @@ import {
   getPlaybackProgressPercent,
   getPlaybackQueueEmptyState,
   getPlaybackQueueHref,
+  getPlaybackQueueScreenState,
   getSeekTargetPosition,
 } from "../../../apps/new/src/features/playback/services/playback-player-state-service";
 import { audioStatusToTrackPlayerSnapshot } from "../../../apps/new/src/features/playback/services/playback-native-status-service";
@@ -718,6 +719,29 @@ function assertPlaybackPlayerStateSmoke() {
   assert.deepEqual(getPlaybackQueueEmptyState(), {
     body: "Open a song from Library to start listening.",
     title: "Queue is empty",
+  });
+  assert.deepEqual(getPlaybackQueueScreenState(), {
+    adBreakPanel: {
+      action: {
+        href: "/premium",
+        label: "Open Premium",
+      },
+      body:
+        "Queue playback commands are paused while the bundled ad plays. Your song resumes automatically when the ad finishes.",
+      kicker: "Premium gate",
+      title: "Ad break required",
+    },
+    backLink: {
+      href: "/player",
+      label: "Back to player",
+    },
+    clearQueueLabel: "Clear queue",
+    header: {
+      kicker: "Playback queue",
+      subtitle:
+        "Reorder upcoming songs, remove tracks, or jump to a different song.",
+      title: "Now Playing",
+    },
   });
   assert.equal(
     getPlaybackProgressPercent({ duration: 0, position: 5_000 }),

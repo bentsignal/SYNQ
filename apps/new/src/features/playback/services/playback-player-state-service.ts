@@ -19,6 +19,30 @@ export const getPlaybackQueueEmptyState = () => ({
   title: "Queue is empty",
 });
 
+export const getPlaybackQueueScreenState = () => ({
+  adBreakPanel: {
+    action: {
+      href: getPlaybackPremiumHref(),
+      label: "Open Premium",
+    },
+    body:
+      "Queue playback commands are paused while the bundled ad plays. Your song resumes automatically when the ad finishes.",
+    kicker: "Premium gate",
+    title: "Ad break required",
+  },
+  backLink: {
+    href: getPlaybackPlayerHref(),
+    label: "Back to player",
+  },
+  clearQueueLabel: "Clear queue",
+  header: {
+    kicker: "Playback queue",
+    subtitle:
+      "Reorder upcoming songs, remove tracks, or jump to a different song.",
+    title: "Now Playing",
+  },
+});
+
 const hiddenMiniPlayerRoutes = new Set<string>([
   getPlaybackPlayerHref(),
   getPlaybackQueueHref(),

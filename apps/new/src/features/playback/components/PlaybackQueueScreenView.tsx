@@ -2,10 +2,7 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { PlaybackQueueController } from "../hooks/use-playback-queue-controller";
-import {
-  getPlaybackPlayerHref,
-  getPlaybackPremiumHref,
-} from "../services/playback-player-state-service";
+import { getPlaybackQueueScreenState } from "../services/playback-player-state-service";
 import { PlaybackQueueList } from "./PlaybackQueueList";
 
 type PlaybackQueueScreenViewProps = PlaybackQueueController;
@@ -21,8 +18,7 @@ export function PlaybackQueueScreenView({
   state,
 }: PlaybackQueueScreenViewProps) {
   const theme = useCustomizationTheme();
-  const playerHref = getPlaybackPlayerHref();
-  const premiumHref = getPlaybackPremiumHref();
+  const screenState = getPlaybackQueueScreenState();
 
   return (
     <ScrollView
@@ -31,26 +27,25 @@ export function PlaybackQueueScreenView({
     >
       <View style={styles.header}>
         <Text style={[styles.kicker, { color: theme.accent }]}>
-          Playback queue
+          {screenState.header.kicker}
         </Text>
         <Text style={[styles.title, { color: theme.primaryText }]}>
-          Now Playing
+          {screenState.header.title}
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          Reorder upcoming songs, remove tracks, or jump to a different song.
+          {screenState.header.subtitle}
         </Text>
       </View>
 
       {adBreakActive ? (
         <View style={styles.adPanel}>
-          <Text style={styles.panelLabel}>Premium gate</Text>
-          <Text style={styles.adTitle}>Ad break required</Text>
+          <Text style={styles.panelLabel}>{screenState.adBreakPanel.kicker}</Text>
+          <Text style={styles.adTitle}>{screenState.adBreakPanel.title}</Text>
           <Text style={[styles.panelText, { color: theme.secondaryText }]}>
-            Queue playback commands are paused while the bundled ad plays. Your
-            song resumes automatically when the ad finishes.
+            {screenState.adBreakPanel.body}
           </Text>
           <View style={styles.adActions}>
-            <Link asChild href={premiumHref}>
+            <Link asChild href={screenState.adBreakPanel.action.href}>
               <Pressable
                 accessibilityRole="button"
                 style={[
@@ -58,7 +53,9 @@ export function PlaybackQueueScreenView({
                   { backgroundColor: theme.surface },
                 ]}
               >
-                <Text style={styles.premiumText}>Open Premium</Text>
+                <Text style={styles.premiumText}>
+                  {screenState.adBreakPanel.action.label}
+                </Text>
               </Pressable>
             </Link>
           </View>
@@ -86,13 +83,16 @@ export function PlaybackQueueScreenView({
           ]}
         >
           <Text style={[styles.removeText, { color: theme.danger }]}>
-            Clear queue
+            {screenState.clearQueueLabel}
           </Text>
         </Pressable>
       </View>
 
-      <Link href={playerHref} style={[styles.backLink, { color: theme.accent }]}>
-        Back to player
+      <Link
+        href={screenState.backLink.href}
+        style={[styles.backLink, { color: theme.accent }]}
+      >
+        {screenState.backLink.label}
       </Link>
     </ScrollView>
   );

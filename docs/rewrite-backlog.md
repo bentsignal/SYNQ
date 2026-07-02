@@ -184,6 +184,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: playback native status, native-finished, ad-break, and Premium sync
     transitions now live in a dedicated native transition service instead of
     the session reducer body.
+  - Done: playback play, pause, resume, seek, next-skip, and previous-skip
+    transitions now live in a dedicated transport service with deterministic
+    smoke coverage.
   - Done: playback queue haptics and command handlers now live in a controller
     hook, and queue row/list rendering now lives in a dedicated component
     instead of the queue screen.

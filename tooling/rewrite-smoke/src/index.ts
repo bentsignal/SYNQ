@@ -198,6 +198,23 @@ function assertPlaybackSessionSmoke() {
     [1, 2, 3],
   );
   assert.equal(state.queueRevision, 3);
+
+  state = playbackReducer(state, { type: "pause" });
+  assert.equal(state.isPlaying, false);
+  state = playbackReducer(state, { type: "resume" });
+  assert.equal(state.isPlaying, true);
+  state = playbackReducer(state, { position: 999_999, type: "seek-to" });
+  assert.equal(state.position, first.duration);
+  state = playbackReducer(state, { position: -10, type: "seek-to" });
+  assert.equal(state.position, 0);
+  state = playbackReducer(state, { targetIndex: 1, type: "skip-next" });
+  assert.equal(state.activeTrackId, second.id);
+  assert.equal(state.activeQueueIndex, 1);
+  assert.equal(state.position, 0);
+  state = playbackReducer(state, { type: "skip-previous" });
+  assert.equal(state.activeTrackId, first.id);
+  assert.equal(state.activeQueueIndex, 0);
+
   assert.deepEqual(
     getPlaybackQueueRowState({
       activeTrackId: first.id,

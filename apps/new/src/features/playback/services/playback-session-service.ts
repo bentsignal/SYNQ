@@ -12,12 +12,20 @@ import {
   syncPlaybackPremiumState,
 } from "./playback-native-transition-service";
 import {
-  findQueueIndex,
   getReplacementTrackAfterRemoval,
   initialPlaybackQueueFilter,
+  findQueueIndex,
   moveQueueItem,
   upsertQueueItem,
 } from "./playback-queue-service";
+import {
+  pausePlayback,
+  playPlaybackSong,
+  resumePlayback,
+  seekPlayback,
+  skipToNextPlaybackTrack,
+  skipToPreviousPlaybackTrack,
+} from "./playback-transport-service";
 
 export type PlaybackAction =
   | { song: PlaybackQueueItem; type: "play-song" }
@@ -85,93 +93,23 @@ export const playbackReducer = (
     case "reset":
       return initialPlaybackState;
     case "play-song": {
-      const queue = upsertQueueItem({ queue: state.queue, song: action.song });
-      const activeQueueIndex = findQueueIndex({
-        queue,
-        songId: action.song.id,
-      });
-
-      return bumpQueueRevision({
-        ...state,
-        activeQueueIndex,
-        activeTrackId: action.song.id,
-        duration: action.song.duration ?? 0,
-        error: null,
-        isPlaying: true,
-        position: 0,
-        queue,
-        source: { type: "library" },
-      });
+      return bumpQueueRevision(
+        playPlaybackSong({ song: action.song, state }),
+      );
     }
     case "pause":
-      return {
-        ...state,
-        isPlaying: false,
-      };
+      return pausePlayback(state);
     case "resume":
-      return {
-        ...state,
-        isPlaying: state.activeTrackId !== null,
-      };
+      return resumePlayback(state);
     case "seek-to":
-      return {
-        ...state,
-        position: Math.max(0, Math.min(action.position, state.duration)),
-      };
-    case "skip-next": {
-      const nextTrack =
-        action.targetIndex === null
-          ? null
-          : state.queue[action.targetIndex] ?? null;
-
-      if (!nextTrack) {
-        return {
-          ...state,
-          isPlaying: false,
-          position: state.duration,
-        };
-      }
-
-      return {
-        ...state,
-        activeQueueIndex: action.targetIndex,
-        activeTrackId: nextTrack.id,
-        duration: nextTrack.duration ?? 0,
-        isPlaying: true,
-        position: 0,
-      };
-    }
-    case "skip-previous": {
-      if (state.position >= 3000) {
-        return {
-          ...state,
-          position: 0,
-        };
-      }
-
-      const previousIndex =
-        state.activeQueueIndex === null
-          ? null
-          : Math.max(0, state.activeQueueIndex - 1);
-      const previousTrack =
-        previousIndex === null ? null : state.queue[previousIndex] ?? null;
-
-      if (!previousTrack) {
-        return {
-          ...state,
-          position: 0,
-        };
-      }
-
-      return {
-        ...state,
-        activeQueueIndex: previousIndex,
-        activeTrackId: previousTrack.id,
-        duration: previousTrack.duration ?? 0,
-        isPlaying: true,
-        position: 0,
-      };
-    }
+      return seekPlayback({ position: action.position, state });
+    case "skip-next":
+      return skipToNextPlaybackTrack({
+        state,
+        targetIndex: action.targetIndex,
+      });
+    case "skip-previous":
+      return skipToPreviousPlaybackTrack(state);
     case "add-to-queue":
       return bumpQueueRevision({
         ...state,

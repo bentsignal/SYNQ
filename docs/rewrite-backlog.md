@@ -93,6 +93,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     service instead of the edit screen.
   - Done: collection detail play, queue, export, and delete action state now
     lives in the library interaction service instead of the detail screen.
+  - Done: backup action cards, operation labels, confirmation copy, and status
+    presentation now live in a backup screen service instead of the screen.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -167,6 +169,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     availability for populated and blank titles.
   - Done: extend deterministic smoke coverage to collection detail play, queue,
     export, delete, busy-label, protected-playlist, and missing-state actions.
+  - Done: extend deterministic smoke coverage to backup action-card order,
+    premium badges, running disabled state, confirmation copy, and status text.
 
 ### Phase 3: New App Build-Out
 

@@ -79,6 +79,14 @@ import {
   rowsToSongPreviews,
   toLibrarySongPlaybackItem,
 } from "../../../apps/new/src/features/library/services/library-song-preview-service";
+import {
+  backupActionCards,
+  getBackupActionState,
+  getBackupConfirmationState,
+  getBackupOperationLabel,
+  getBackupStatusState,
+} from "../../../apps/new/src/features/backup/services/backup-screen-service";
+import type { BackupSessionState } from "../../../apps/new/src/features/backup/types/backup-session";
 
 const song = ({
   duration = 180_000,
@@ -1703,10 +1711,102 @@ function assertImportSongFormSmoke() {
   assert.equal(edited.id, 9);
 }
 
+function assertBackupScreenSmoke() {
+  const idleState: BackupSessionState = {
+    error: null,
+    lastOperation: null,
+    message: null,
+    phase: "idle",
+    requiresPremium: true,
+  };
+  const runningState: BackupSessionState = {
+    ...idleState,
+    lastOperation: "restore",
+    phase: "running",
+  };
+  const failureState: BackupSessionState = {
+    ...idleState,
+    error: "Restore failed.",
+    lastOperation: "restore",
+    phase: "failure",
+  };
+  const successState: BackupSessionState = {
+    ...idleState,
+    lastOperation: "backup",
+    message: "Backup complete.",
+    phase: "success",
+  };
+
+  assert.deepEqual(
+    backupActionCards.map((card) => card.operation),
+    ["backup", "restore", "erase"],
+  );
+  assert.equal(getBackupOperationLabel("backup"), "Backup");
+  assert.equal(getBackupOperationLabel("erase"), "Erase");
+  assert.deepEqual(
+    getBackupActionState({
+      operation: "backup",
+      premiumActive: false,
+      state: idleState,
+    }),
+    {
+      buttonLabel: "Backup",
+      isDanger: false,
+      isDisabled: false,
+      showPremiumBadge: true,
+    },
+  );
+  assert.deepEqual(
+    getBackupActionState({
+      operation: "erase",
+      premiumActive: true,
+      state: runningState,
+    }),
+    {
+      buttonLabel: "Erase",
+      isDanger: true,
+      isDisabled: true,
+      showPremiumBadge: false,
+    },
+  );
+  assert.equal(getBackupConfirmationState("backup"), null);
+  assert.deepEqual(getBackupConfirmationState("restore"), {
+    body: "This replaces the current local library with the selected backup archive.",
+    confirmLabel: "Restore",
+    title: "Restore library",
+  });
+  assert.deepEqual(getBackupConfirmationState("erase"), {
+    body: "This removes local songs, collections, metadata, and library files from this device.",
+    confirmLabel: "Erase",
+    title: "Erase library",
+  });
+  assert.deepEqual(getBackupStatusState(idleState), {
+    canReset: false,
+    isFailure: false,
+    message: "No backup operation has run.",
+  });
+  assert.deepEqual(getBackupStatusState(runningState), {
+    canReset: false,
+    isFailure: false,
+    message: "Restore running",
+  });
+  assert.deepEqual(getBackupStatusState(successState), {
+    canReset: false,
+    isFailure: false,
+    message: "Backup complete.",
+  });
+  assert.deepEqual(getBackupStatusState(failureState), {
+    canReset: true,
+    isFailure: true,
+    message: "Restore failed.",
+  });
+}
+
 assertDurationFormatSmoke();
 assertRouteParamSmoke();
 assertHomeScreenSmoke();
 assertImportSongFormSmoke();
+assertBackupScreenSmoke();
 assertPlaybackSessionSmoke();
 assertPlaybackPlayerStateSmoke();
 assertImportSessionSmoke();

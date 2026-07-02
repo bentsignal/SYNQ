@@ -14,37 +14,13 @@ import {
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useBackupSession } from "../hooks/use-backup-session";
+import {
+  backupActionCards,
+  getBackupActionState,
+  getBackupConfirmationState,
+  getBackupStatusState,
+} from "../services/backup-screen-service";
 import type { BackupOperation } from "../types/backup-session";
-
-type BackupActionCard = {
-  body: string;
-  operation: BackupOperation;
-  title: string;
-};
-
-const actionCards: BackupActionCard[] = [
-  {
-    body: "Create a shareable archive of the local library database and media.",
-    operation: "backup",
-    title: "Backup your library",
-  },
-  {
-    body: "Pick a saved archive and replace the current local library.",
-    operation: "restore",
-    title: "Restore your library",
-  },
-  {
-    body: "Remove local songs, collections, metadata, and runtime library state.",
-    operation: "erase",
-    title: "Erase your library",
-  },
-];
-
-const operationLabels = {
-  backup: "Backup",
-  erase: "Erase",
-  restore: "Restore",
-} satisfies Record<BackupOperation, string>;
 
 export function BackupScreen() {
   const { reset, runOperation, state } = useBackupSession();
@@ -54,7 +30,7 @@ export function BackupScreen() {
   const { resetPlaybackSession } = usePlaybackSession();
   const { state: premiumState } = usePremiumEntitlement();
   const previousPhaseRef = useRef(state.phase);
-  const isRunning = state.phase === "running";
+  const statusState = getBackupStatusState(state);
 
   useEffect(() => {
     if (previousPhaseRef.current !== state.phase) {
@@ -92,13 +68,14 @@ export function BackupScreen() {
       return;
     }
 
-    const isRestore = operation === "restore";
+    const confirmation = getBackupConfirmationState(operation);
+    if (!confirmation) {
+      return;
+    }
 
     Alert.alert(
-      isRestore ? "Restore library" : "Erase library",
-      isRestore
-        ? "This replaces the current local library with the selected backup archive."
-        : "This removes local songs, collections, metadata, and library files from this device.",
+      confirmation.title,
+      confirmation.body,
       [
         {
           style: "cancel",
@@ -110,7 +87,7 @@ export function BackupScreen() {
             void runOperation(operation);
           },
           style: "destructive",
-          text: isRestore ? "Restore" : "Erase",
+          text: confirmation.confirmLabel,
         },
       ],
     );
@@ -135,55 +112,66 @@ export function BackupScreen() {
       </View>
 
       <View style={styles.list}>
-        {actionCards.map((action) => (
-          <View
-            key={action.operation}
-            style={[
-              styles.card,
-              { backgroundColor: theme.surface, borderColor: theme.border },
-            ]}
-          >
-            <View style={styles.cardText}>
-              <View style={styles.cardTitleRow}>
-                <Text style={[styles.cardTitle, { color: theme.primaryText }]}>
-                  {action.title}
-                </Text>
-                {state.requiresPremium && !premiumState.active ? (
-                  <Text
-                    style={[
-                      styles.premiumPill,
-                      { borderColor: theme.border, color: theme.accent },
-                    ]}
-                  >
-                    Premium
-                  </Text>
-                ) : null}
-              </View>
-              <Text style={[styles.cardBody, { color: theme.secondaryText }]}>
-                {action.body}
-              </Text>
-            </View>
-            <Pressable
-              accessibilityRole="button"
-              disabled={isRunning}
-              onPress={() => runBackupOperation(action.operation)}
+        {backupActionCards.map((action) => {
+          const actionState = getBackupActionState({
+            operation: action.operation,
+            premiumActive: premiumState.active,
+            state,
+          });
+
+          return (
+            <View
+              key={action.operation}
               style={[
-                action.operation === "erase"
-                  ? styles.dangerButton
-                  : styles.primaryButton,
-                {
-                  backgroundColor:
-                    action.operation === "erase" ? theme.danger : theme.accent,
-                },
-                isRunning ? styles.disabled : null,
+                styles.card,
+                { backgroundColor: theme.surface, borderColor: theme.border },
               ]}
             >
-              <Text style={[styles.buttonText, { color: theme.onAccent }]}>
-                {operationLabels[action.operation]}
-              </Text>
-            </Pressable>
-          </View>
-        ))}
+              <View style={styles.cardText}>
+                <View style={styles.cardTitleRow}>
+                  <Text
+                    style={[styles.cardTitle, { color: theme.primaryText }]}
+                  >
+                    {action.title}
+                  </Text>
+                  {actionState.showPremiumBadge ? (
+                    <Text
+                      style={[
+                        styles.premiumPill,
+                        { borderColor: theme.border, color: theme.accent },
+                      ]}
+                    >
+                      Premium
+                    </Text>
+                  ) : null}
+                </View>
+                <Text style={[styles.cardBody, { color: theme.secondaryText }]}>
+                  {action.body}
+                </Text>
+              </View>
+              <Pressable
+                accessibilityRole="button"
+                disabled={actionState.isDisabled}
+                onPress={() => runBackupOperation(action.operation)}
+                style={[
+                  actionState.isDanger
+                    ? styles.dangerButton
+                    : styles.primaryButton,
+                  {
+                    backgroundColor: actionState.isDanger
+                      ? theme.danger
+                      : theme.accent,
+                  },
+                  actionState.isDisabled ? styles.disabled : null,
+                ]}
+              >
+                <Text style={[styles.buttonText, { color: theme.onAccent }]}>
+                  {actionState.buttonLabel}
+                </Text>
+              </Pressable>
+            </View>
+          );
+        })}
       </View>
 
       <View
@@ -197,20 +185,15 @@ export function BackupScreen() {
         </Text>
         <Text
           style={[
-            state.phase === "failure" ? styles.errorText : styles.panelText,
+            statusState.isFailure ? styles.errorText : styles.panelText,
             {
-              color:
-                state.phase === "failure" ? theme.danger : theme.primaryText,
+              color: statusState.isFailure ? theme.danger : theme.primaryText,
             },
           ]}
         >
-          {state.error ??
-            state.message ??
-            (state.lastOperation
-              ? `${operationLabels[state.lastOperation]} ${state.phase}`
-              : "No backup operation has run.")}
+          {statusState.message}
         </Text>
-        {state.phase === "failure" ? (
+        {statusState.canReset ? (
           <Pressable
             accessibilityRole="button"
             onPress={() => {

@@ -547,6 +547,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     live in the playback player-state service instead of the player screen.
   - Done: playback player command handlers, haptics, seek targets, and progress
     derivation now live in a controller hook instead of the player screen.
+  - Done: playback player button command callbacks now live in a focused
+    player command hook instead of the player controller mixing command wiring
+    with view-state derivation.
   - Done: playback player aggregate view state now lives in the player-state
     service with deterministic smoke coverage instead of being assembled in the
     controller hook.

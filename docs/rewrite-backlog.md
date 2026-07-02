@@ -77,6 +77,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     import session service instead of entry screens.
   - Done: shared collection create/edit form action state now lives in the
     collection form service instead of duplicated screen save/edit guards.
+  - Done: collection create/edit preview initials and save button labels now
+    live in the collection form service instead of screen-local formatting.
   - Done: playback queue row/action state now lives in the playback service
     instead of queue screen boundary checks.
   - Done: song preview row state and playback item conversion now live in the
@@ -168,6 +170,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     and Wi-Fi ready, receiving, error, progress, and review-save states.
   - Done: extend deterministic smoke coverage to collection form editable,
     image-pick, save, blank-name, saving, and missing-collection states.
+  - Done: extend deterministic smoke coverage to collection form preview
+    initials and saving/default button labels.
   - Done: extend deterministic smoke coverage to playback queue active rows,
     move boundaries, ad-break play disabling, and clear-queue availability.
   - Done: extend deterministic smoke coverage to song preview playable/active

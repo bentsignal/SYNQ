@@ -21,6 +21,8 @@ import {
 import { pickCollectionImage } from "../services/collection-image-picker-service";
 import {
   getCollectionFormActionState,
+  getCollectionFormPreviewInitial,
+  getCollectionFormSaveLabel,
   parseAlbumYearInput,
 } from "../services/collection-form-service";
 import type { EditCollectionKind } from "../services/edit-collection-query-service";
@@ -116,6 +118,15 @@ function EditCollectionContent({
     isMissing: collection.isMissing,
     isSaving,
     name,
+  });
+  const imageInitial = getCollectionFormPreviewInitial({
+    fallback: copy.kicker[0],
+    name,
+  });
+  const saveLabel = getCollectionFormSaveLabel({
+    defaultLabel: copy.editLabel,
+    isSaving,
+    savingLabel: "Saving",
   });
 
   useEffect(() => {
@@ -279,7 +290,7 @@ function EditCollectionContent({
               ]}
             >
               <Text style={[styles.imageInitial, { color: theme.accent }]}>
-                {name.trim().slice(0, 1).toUpperCase() || copy.kicker[0]}
+                {imageInitial}
               </Text>
             </View>
           )}
@@ -332,7 +343,7 @@ function EditCollectionContent({
         >
           {isSaving ? <ActivityIndicator color={theme.onAccent} /> : null}
           <Text style={[styles.saveText, { color: theme.onAccent }]}>
-            {isSaving ? "Saving" : copy.editLabel}
+            {saveLabel}
           </Text>
         </Pressable>
       </View>

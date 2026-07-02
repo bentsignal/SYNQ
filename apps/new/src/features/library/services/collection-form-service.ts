@@ -14,6 +14,24 @@ export const parseAlbumYearInput = (value: string) => {
   return year;
 };
 
+export const getCollectionFormPreviewInitial = ({
+  fallback,
+  name,
+}: {
+  fallback: string;
+  name: string;
+}) => name.trim().slice(0, 1).toUpperCase() || fallback;
+
+export const getCollectionFormSaveLabel = ({
+  defaultLabel,
+  isSaving,
+  savingLabel,
+}: {
+  defaultLabel: string;
+  isSaving: boolean;
+  savingLabel: string;
+}) => (isSaving ? savingLabel : defaultLabel);
+
 export const getCollectionFormActionState = ({
   isMissing = false,
   isSaving,

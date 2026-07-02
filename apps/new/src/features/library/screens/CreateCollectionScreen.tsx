@@ -19,6 +19,8 @@ import {
 import { pickCollectionImage } from "../services/collection-image-picker-service";
 import {
   getCollectionFormActionState,
+  getCollectionFormPreviewInitial,
+  getCollectionFormSaveLabel,
   parseAlbumYearInput,
 } from "../services/collection-form-service";
 
@@ -78,6 +80,15 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
   const { canEdit, canPickImage, canSave } = getCollectionFormActionState({
     isSaving,
     name,
+  });
+  const imageInitial = getCollectionFormPreviewInitial({
+    fallback: copy.kicker[0],
+    name,
+  });
+  const saveLabel = getCollectionFormSaveLabel({
+    defaultLabel: copy.createLabel,
+    isSaving,
+    savingLabel: "Creating",
   });
 
   const handlePickImage = async () => {
@@ -220,7 +231,7 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
               ]}
             >
               <Text style={[styles.imageInitial, { color: theme.accent }]}>
-                {name.trim().slice(0, 1).toUpperCase() || copy.kicker[0]}
+                {imageInitial}
               </Text>
             </View>
           )}
@@ -260,7 +271,7 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
         >
           {isSaving ? <ActivityIndicator color={theme.onAccent} /> : null}
           <Text style={[styles.saveText, { color: theme.onAccent }]}>
-            {isSaving ? "Creating" : copy.createLabel}
+            {saveLabel}
           </Text>
         </Pressable>
       </View>

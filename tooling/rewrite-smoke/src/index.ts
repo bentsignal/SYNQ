@@ -63,6 +63,8 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import {
   getCollectionFormActionState,
+  getCollectionFormPreviewInitial,
+  getCollectionFormSaveLabel,
   parseAlbumYearInput,
 } from "../../../apps/new/src/features/library/services/collection-form-service";
 import { rowsToAddableCollectionSongs } from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
@@ -1762,6 +1764,36 @@ function assertCollectionFormSmoke() {
       canSave: false,
       hasName: true,
     },
+  );
+  assert.equal(
+    getCollectionFormPreviewInitial({
+      fallback: "A",
+      name: "",
+    }),
+    "A",
+  );
+  assert.equal(
+    getCollectionFormPreviewInitial({
+      fallback: "A",
+      name: "  smoke album",
+    }),
+    "S",
+  );
+  assert.equal(
+    getCollectionFormSaveLabel({
+      defaultLabel: "Create album",
+      isSaving: false,
+      savingLabel: "Creating",
+    }),
+    "Create album",
+  );
+  assert.equal(
+    getCollectionFormSaveLabel({
+      defaultLabel: "Save album",
+      isSaving: true,
+      savingLabel: "Saving",
+    }),
+    "Saving",
   );
   assert.throws(
     () => parseAlbumYearInput("-1"),

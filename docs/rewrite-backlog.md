@@ -125,6 +125,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     inline component and route-screen strings.
   - Done: player progress, seek target, and free-listening remaining-time math
     now live in a playback service instead of the player screen.
+  - Done: playback player header, queue link, and ad-break panel copy/progress
+    presentation now live in the playback player-state service with smoke
+    coverage instead of player components.
   - Done: playback player, queue, mini-player, and Premium ad-gate
     destinations now live in the playback player-state service with
     deterministic smoke coverage instead of inline playback route strings.

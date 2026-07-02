@@ -23,9 +23,11 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-session-service";
 import {
   getFreeListeningRemainingMs,
+  getPlaybackAdBreakPanelState,
   getPlaybackMiniPlayerState,
   getPlaybackPlayerHref,
   getPlaybackPlayerActionState,
+  getPlaybackPlayerScreenState,
   getPlaybackPlayerViewState,
   getPlaybackPremiumHref,
   getPlaybackProgressPercent,
@@ -716,6 +718,18 @@ function assertPlaybackPlayerStateSmoke() {
   assert.equal(getPlaybackPlayerHref(), "/player");
   assert.equal(getPlaybackQueueHref(), "/queue");
   assert.equal(getPlaybackPremiumHref(), "/premium");
+  assert.deepEqual(getPlaybackPlayerScreenState(), {
+    header: {
+      kicker: "Now Playing",
+      subtitle:
+        "Control playback, queue movement, shuffle, repeat, and free-listening ad breaks.",
+      title: "Player",
+    },
+    queueLink: {
+      href: "/queue",
+      label: "Open queue",
+    },
+  });
   assert.deepEqual(getPlaybackQueueEmptyState(), {
     body: "Open a song from Library to start listening.",
     title: "Queue is empty",
@@ -743,6 +757,29 @@ function assertPlaybackPlayerStateSmoke() {
       title: "Now Playing",
     },
   });
+  assert.deepEqual(
+    getPlaybackAdBreakPanelState({
+      state: {
+        ...initialPlaybackState,
+        adGate: {
+          ...initialPlaybackState.adGate,
+          playbackDuration: 30_000,
+          playbackPosition: 15_000,
+        },
+      },
+    }),
+    {
+      action: {
+        href: "/premium",
+        label: "Open Premium",
+      },
+      body:
+        "Free playback pauses after 10 minutes of listening. The ad will resume your song when it finishes, or you can open Premium for ad-free listening.",
+      kicker: "Premium gate",
+      progressLabel: "0:15 / 0:30",
+      title: "Ad break required",
+    },
+  );
   assert.equal(
     getPlaybackProgressPercent({ duration: 0, position: 5_000 }),
     0,

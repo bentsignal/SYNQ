@@ -1,4 +1,7 @@
-import { formatRemainingDurationMs } from "../../app-shell/services/duration-format-service";
+import {
+  formatDurationMs,
+  formatRemainingDurationMs,
+} from "../../app-shell/services/duration-format-service";
 import type {
   PlaybackQueueItem,
   PlaybackState,
@@ -41,6 +44,37 @@ export const getPlaybackQueueScreenState = () => ({
       "Reorder upcoming songs, remove tracks, or jump to a different song.",
     title: "Now Playing",
   },
+});
+
+export const getPlaybackPlayerScreenState = () => ({
+  header: {
+    kicker: "Now Playing",
+    subtitle:
+      "Control playback, queue movement, shuffle, repeat, and free-listening ad breaks.",
+    title: "Player",
+  },
+  queueLink: {
+    href: getPlaybackQueueHref(),
+    label: "Open queue",
+  },
+});
+
+export const getPlaybackAdBreakPanelState = ({
+  state,
+}: {
+  state: PlaybackState;
+}) => ({
+  action: {
+    href: getPlaybackPremiumHref(),
+    label: "Open Premium",
+  },
+  body:
+    "Free playback pauses after 10 minutes of listening. The ad will resume your song when it finishes, or you can open Premium for ad-free listening.",
+  kicker: "Premium gate",
+  progressLabel: `${formatDurationMs(state.adGate.playbackPosition)} / ${formatDurationMs(
+    state.adGate.playbackDuration,
+  )}`,
+  title: "Ad break required",
 });
 
 const hiddenMiniPlayerRoutes = new Set<string>([

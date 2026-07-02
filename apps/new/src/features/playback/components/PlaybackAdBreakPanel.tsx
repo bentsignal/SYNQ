@@ -1,8 +1,7 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getPlaybackPremiumHref } from "../services/playback-player-state-service";
+import { getPlaybackAdBreakPanelState } from "../services/playback-player-state-service";
 import type { PlaybackState } from "../types/playback-state";
 
 type PlaybackAdBreakPanelProps = {
@@ -15,20 +14,17 @@ export function PlaybackAdBreakPanel({
   state,
 }: PlaybackAdBreakPanelProps) {
   const theme = useCustomizationTheme();
-  const premiumHref = getPlaybackPremiumHref();
+  const panelState = getPlaybackAdBreakPanelState({ state });
 
   return (
     <View style={styles.adPanel}>
-      <Text style={styles.panelLabel}>Premium gate</Text>
-      <Text style={styles.adTitle}>Ad break required</Text>
+      <Text style={styles.panelLabel}>{panelState.kicker}</Text>
+      <Text style={styles.adTitle}>{panelState.title}</Text>
       <Text style={[styles.panelText, { color: theme.secondaryText }]}>
-        Free playback pauses after 10 minutes of listening. The ad will resume
-        your song when it finishes, or you can open Premium for ad-free
-        listening.
+        {panelState.body}
       </Text>
       <Text style={[styles.panelText, { color: theme.secondaryText }]}>
-        {formatDurationMs(state.adGate.playbackPosition)} /{" "}
-        {formatDurationMs(state.adGate.playbackDuration)}
+        {panelState.progressLabel}
       </Text>
       <View style={[styles.progressTrack, { backgroundColor: theme.border }]}>
         <View
@@ -39,7 +35,7 @@ export function PlaybackAdBreakPanel({
         />
       </View>
       <View style={styles.adActions}>
-        <Link asChild href={premiumHref}>
+        <Link asChild href={panelState.action.href}>
           <Pressable
             accessibilityRole="button"
             style={[
@@ -48,7 +44,7 @@ export function PlaybackAdBreakPanel({
             ]}
           >
             <Text style={[styles.controlText, { color: theme.primaryText }]}>
-              Open Premium
+              {panelState.action.label}
             </Text>
           </Pressable>
         </Link>

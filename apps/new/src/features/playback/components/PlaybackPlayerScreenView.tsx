@@ -2,7 +2,7 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { PlaybackPlayerController } from "../hooks/use-playback-player-controller";
-import { getPlaybackQueueHref } from "../services/playback-player-state-service";
+import { getPlaybackPlayerScreenState } from "../services/playback-player-state-service";
 import { PlaybackAdBreakPanel } from "./PlaybackAdBreakPanel";
 import { PlaybackNowPlayingPanel } from "./PlaybackNowPlayingPanel";
 import { PlaybackPlayerControls } from "./PlaybackPlayerControls";
@@ -26,7 +26,7 @@ export function PlaybackPlayerScreenView({
   toggleShuffleMode,
 }: PlaybackPlayerScreenViewProps) {
   const theme = useCustomizationTheme();
-  const queueHref = getPlaybackQueueHref();
+  const screenState = getPlaybackPlayerScreenState();
 
   return (
     <ScrollView
@@ -35,14 +35,13 @@ export function PlaybackPlayerScreenView({
     >
       <View style={styles.header}>
         <Text style={[styles.kicker, { color: theme.accent }]}>
-          Now Playing
+          {screenState.header.kicker}
         </Text>
         <Text style={[styles.title, { color: theme.primaryText }]}>
-          Player
+          {screenState.header.title}
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          Control playback, queue movement, shuffle, repeat, and free-listening
-          ad breaks.
+          {screenState.header.subtitle}
         </Text>
       </View>
 
@@ -77,8 +76,11 @@ export function PlaybackPlayerScreenView({
 
       {state.error ? <PlaybackErrorPanel error={state.error} /> : null}
 
-      <Link href={queueHref} style={[styles.backLink, { color: theme.accent }]}>
-        Open queue
+      <Link
+        href={screenState.queueLink.href}
+        style={[styles.backLink, { color: theme.accent }]}
+      >
+        {screenState.queueLink.label}
       </Link>
     </ScrollView>
   );

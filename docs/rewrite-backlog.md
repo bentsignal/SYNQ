@@ -187,6 +187,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: collection detail collection-level export/delete workflows and
     per-song move/remove workflows now live in separate hooks instead of one
     mutation coordinator owning every command path.
+  - Done: collection detail destructive delete confirmation, repository call,
+    haptics, mutation state, and post-delete navigation now live in a focused
+    delete command hook instead of the collection mutation hook.
   - Done: edit collection routes now mount kind-specific live query hooks so
     album, artist, and playlist edits do not subscribe to unrelated tables.
   - Done: add-to-collection routes now mount kind-specific relationship live

@@ -1,9 +1,8 @@
-import { useCallback, useMemo, type RefObject } from "react";
+import { useMemo, type RefObject } from "react";
 import {
   type PlaybackRemoteCommand,
   type PlaybackRemoteCommandResult,
 } from "../services/playback-remote-command-service";
-import { getRemoteFailurePlaybackCommandPlan } from "../services/playback-command-plan-service";
 import type { PlaybackNativeCommandPlan } from "../services/playback-native-command-plan-service";
 import type { PlaybackAction } from "../services/playback-session-service";
 import type {
@@ -58,10 +57,6 @@ export function usePlaybackCommandController({
     runNativeCommandPlan,
   });
 
-  const failFromRemoteCommand = useCallback((message: string) => {
-    runCommandPlan(getRemoteFailurePlaybackCommandPlan(message));
-  }, [runCommandPlan]);
-
   const transportCommands = usePlaybackTransportCommands({
     runAdGatedCommand,
     runCommandPlan,
@@ -75,9 +70,9 @@ export function usePlaybackCommandController({
   const handleRemoteCommand = usePlaybackRemoteCommandController({
     beginAdBreak,
     canRunPlaybackCommand,
-    failFromRemoteCommand,
     finishActiveTrack,
     pause: transportCommands.pause,
+    runCommandPlan,
     resume: transportCommands.resume,
     seekTo: transportCommands.seekTo,
     skipNext: transportCommands.skipNext,

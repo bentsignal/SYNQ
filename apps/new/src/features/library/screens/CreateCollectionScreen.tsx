@@ -17,7 +17,10 @@ import {
   createPlaylist,
 } from "../repository/collection-repository";
 import { pickCollectionImage } from "../services/collection-image-picker-service";
-import { parseAlbumYearInput } from "../services/collection-form-service";
+import {
+  getCollectionFormActionState,
+  parseAlbumYearInput,
+} from "../services/collection-form-service";
 
 type CreateCollectionKind = "album" | "artist" | "playlist";
 
@@ -72,7 +75,10 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const canSave = name.trim().length > 0 && !isSaving;
+  const { canEdit, canPickImage, canSave } = getCollectionFormActionState({
+    isSaving,
+    name,
+  });
 
   const handlePickImage = async () => {
     try {
@@ -166,7 +172,7 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
-          editable={!isSaving}
+          editable={canEdit}
           onChangeText={setName}
           placeholder={copy.namePlaceholder}
           placeholderTextColor={theme.mutedText}
@@ -184,7 +190,7 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
               Year
             </Text>
             <TextInput
-              editable={!isSaving}
+              editable={canEdit}
               inputMode="numeric"
               keyboardType="number-pad"
               onChangeText={setYear}
@@ -224,7 +230,7 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
             </Text>
             <Pressable
               accessibilityRole="button"
-              disabled={isSaving}
+              disabled={!canPickImage}
               onPress={handlePickImage}
               style={[styles.imageButton, { borderColor: theme.border }]}
             >

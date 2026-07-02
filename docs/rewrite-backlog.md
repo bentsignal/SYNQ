@@ -75,6 +75,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     preview service instead of duplicated preview/list UI helpers.
   - Done: import files and Wi-Fi presentation/action state now lives in the
     import session service instead of entry screens.
+  - Done: shared collection create/edit form action state now lives in the
+    collection form service instead of duplicated screen save/edit guards.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -131,6 +133,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     collection preview href generation.
   - Done: extend deterministic smoke coverage to import files working labels
     and Wi-Fi ready, receiving, error, progress, and review-save states.
+  - Done: extend deterministic smoke coverage to collection form editable,
+    image-pick, save, blank-name, saving, and missing-collection states.
 
 ### Phase 3: New App Build-Out
 

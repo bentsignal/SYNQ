@@ -19,7 +19,10 @@ import {
   updatePlaylist,
 } from "../repository/collection-repository";
 import { pickCollectionImage } from "../services/collection-image-picker-service";
-import { parseAlbumYearInput } from "../services/collection-form-service";
+import {
+  getCollectionFormActionState,
+  parseAlbumYearInput,
+} from "../services/collection-form-service";
 import type { EditCollectionKind } from "../services/edit-collection-query-service";
 
 export type CollectionKind = EditCollectionKind;
@@ -109,7 +112,11 @@ function EditCollectionContent({
   const [error, setError] = useState<string | null>(null);
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const canSave = name.trim().length > 0 && !isSaving;
+  const { canEdit, canPickImage, canSave } = getCollectionFormActionState({
+    isMissing: collection.isMissing,
+    isSaving,
+    name,
+  });
 
   useEffect(() => {
     if (isDirty || !collection.updatedAt) {
@@ -215,7 +222,7 @@ function EditCollectionContent({
         <TextInput
           autoCapitalize="words"
           autoCorrect={false}
-          editable={!isSaving && !collection.isMissing}
+          editable={canEdit}
           onChangeText={(nextName) => {
             setIsDirty(true);
             setName(nextName);
@@ -236,7 +243,7 @@ function EditCollectionContent({
               Year
             </Text>
             <TextInput
-              editable={!isSaving && !collection.isMissing}
+              editable={canEdit}
               inputMode="numeric"
               keyboardType="number-pad"
               onChangeText={(nextYear) => {
@@ -285,7 +292,7 @@ function EditCollectionContent({
             </Text>
             <Pressable
               accessibilityRole="button"
-              disabled={isSaving || collection.isMissing}
+              disabled={!canPickImage}
               onPress={handlePickImage}
               style={[styles.imageButton, { borderColor: theme.border }]}
             >
@@ -314,13 +321,12 @@ function EditCollectionContent({
 
         <Pressable
           accessibilityRole="button"
-          disabled={!canSave || collection.isMissing}
+          disabled={!canSave}
           onPress={handleUpdate}
           style={[
             styles.saveButton,
             {
-              backgroundColor:
-                canSave && !collection.isMissing ? theme.accent : theme.inactive,
+              backgroundColor: canSave ? theme.accent : theme.inactive,
             },
           ]}
         >

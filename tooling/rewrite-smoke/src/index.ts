@@ -50,7 +50,10 @@ import {
   getLibraryCollectionPreviewHref,
   playlistRowsToPreview,
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
-import { parseAlbumYearInput } from "../../../apps/new/src/features/library/services/collection-form-service";
+import {
+  getCollectionFormActionState,
+  parseAlbumYearInput,
+} from "../../../apps/new/src/features/library/services/collection-form-service";
 import { rowsToAddableCollectionSongs } from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
 import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
 import { filterCollectionPreviews } from "../../../apps/new/src/features/library/services/library-collection-list-service";
@@ -1122,6 +1125,55 @@ function assertCollectionFormSmoke() {
   assert.equal(parseAlbumYearInput("   "), undefined);
   assert.equal(parseAlbumYearInput("0"), 0);
   assert.equal(parseAlbumYearInput(" 2026 "), 2026);
+  assert.deepEqual(
+    getCollectionFormActionState({
+      isSaving: false,
+      name: "",
+    }),
+    {
+      canEdit: true,
+      canPickImage: true,
+      canSave: false,
+      hasName: false,
+    },
+  );
+  assert.deepEqual(
+    getCollectionFormActionState({
+      isSaving: false,
+      name: "  Smoke Album  ",
+    }),
+    {
+      canEdit: true,
+      canPickImage: true,
+      canSave: true,
+      hasName: true,
+    },
+  );
+  assert.deepEqual(
+    getCollectionFormActionState({
+      isSaving: true,
+      name: "Smoke Album",
+    }),
+    {
+      canEdit: false,
+      canPickImage: false,
+      canSave: false,
+      hasName: true,
+    },
+  );
+  assert.deepEqual(
+    getCollectionFormActionState({
+      isMissing: true,
+      isSaving: false,
+      name: "Smoke Album",
+    }),
+    {
+      canEdit: false,
+      canPickImage: false,
+      canSave: false,
+      hasName: true,
+    },
+  );
   assert.throws(
     () => parseAlbumYearInput("-1"),
     /Album year must be a positive whole number/,

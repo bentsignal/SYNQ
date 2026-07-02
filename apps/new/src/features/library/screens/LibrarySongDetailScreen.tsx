@@ -56,13 +56,12 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
   const [isExporting, setIsExporting] = useState(false);
   const [isTogglingLiked, setIsTogglingLiked] = useState(false);
   const hasErrors = errors.length > 0;
-  const { canDelete, canExport, canPlay, canToggleLiked } =
-    getLibrarySongDetailActionState({
-      detail,
-      isDeleting,
-      isExporting,
-      isTogglingLiked,
-    });
+  const actionState = getLibrarySongDetailActionState({
+    detail,
+    isDeleting,
+    isExporting,
+    isTogglingLiked,
+  });
   const updatedLabel =
     detail.updatedAt > 0
       ? `Updated ${new Date(detail.updatedAt).toLocaleTimeString()}`
@@ -170,7 +169,7 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
       <View style={styles.actionRow}>
         <Pressable
           accessibilityRole="button"
-          disabled={!canPlay}
+          disabled={!actionState.canPlay}
           onPress={() => {
             sendHaptic("light");
             playSong({
@@ -186,7 +185,7 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
           style={[
             styles.primaryButton,
             { backgroundColor: theme.accent },
-            !canPlay ? styles.disabled : null,
+            !actionState.canPlay ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
@@ -195,7 +194,7 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={!canPlay}
+          disabled={!actionState.canPlay}
           onPress={() => {
             sendHaptic("light");
             addToQueue({
@@ -210,7 +209,7 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
           style={[
             styles.secondaryButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
-            !canPlay ? styles.disabled : null,
+            !actionState.canPlay ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
@@ -219,16 +218,16 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={!canToggleLiked}
+          disabled={!actionState.canToggleLiked}
           onPress={toggleLiked}
           style={[
             styles.secondaryButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
-            !canToggleLiked ? styles.disabled : null,
+            !actionState.canToggleLiked ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
-            {detail.isLiked ? "Unlike" : "Like"}
+            {actionState.likedLabel}
           </Text>
         </Pressable>
         <Link
@@ -246,7 +245,7 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         </Link>
         <Pressable
           accessibilityRole="button"
-          disabled={!canExport}
+          disabled={!actionState.canExport}
           onPress={async () => {
             setExportError(null);
             setIsExporting(true);
@@ -274,25 +273,25 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
           style={[
             styles.secondaryButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
-            !canExport ? styles.disabled : null,
+            !actionState.canExport ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
-            {isExporting ? "Exporting" : "Export"}
+            {actionState.exportLabel}
           </Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={!canDelete}
+          disabled={!actionState.canDelete}
           onPress={deleteSong}
           style={[
             styles.dangerButton,
             { backgroundColor: theme.surface, borderColor: theme.danger },
-            !canDelete ? styles.disabled : null,
+            !actionState.canDelete ? styles.disabled : null,
           ]}
         >
           <Text style={[styles.secondaryButtonText, { color: theme.danger }]}>
-            {isDeleting ? "Deleting" : "Delete"}
+            {actionState.deleteLabel}
           </Text>
         </Pressable>
       </View>
@@ -361,7 +360,7 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
               ? "One or more song detail queries failed."
               : detail.isMissing
                 ? "Song missing from database."
-                : !canPlay
+                : !actionState.canPlay
                   ? "Song has no playable file path."
                   : updatedLabel)}
         </Text>

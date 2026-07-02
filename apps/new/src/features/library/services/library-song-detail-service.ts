@@ -177,5 +177,8 @@ export const getLibrarySongDetailActionState = ({
     canExport: canPlay && !isExporting,
     canPlay,
     canToggleLiked: !detail.isMissing && !isTogglingLiked,
+    deleteLabel: isDeleting ? "Deleting" : "Delete",
+    exportLabel: isExporting ? "Exporting" : "Export",
+    likedLabel: detail.isLiked ? "Unlike" : "Like",
   };
 };

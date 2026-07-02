@@ -1462,6 +1462,9 @@ function assertLibrarySongDetailSmoke() {
       canExport: true,
       canPlay: true,
       canToggleLiked: true,
+      deleteLabel: "Delete",
+      exportLabel: "Export",
+      likedLabel: "Unlike",
     },
   );
   assert.deepEqual(buildLibrarySongEditFormState(detail), {
@@ -1493,14 +1496,22 @@ function assertLibrarySongDetailSmoke() {
     }),
     { canSave: false, saveLabel: "Saving" },
   );
-  assert.equal(
+  assert.deepEqual(
     getLibrarySongDetailActionState({
       detail,
-      isDeleting: false,
+      isDeleting: true,
       isExporting: true,
-      isTogglingLiked: false,
-    }).canExport,
-    false,
+      isTogglingLiked: true,
+    }),
+    {
+      canDelete: false,
+      canExport: false,
+      canPlay: true,
+      canToggleLiked: false,
+      deleteLabel: "Deleting",
+      exportLabel: "Exporting",
+      likedLabel: "Unlike",
+    },
   );
 
   const missing = buildLibrarySongDetail({
@@ -1542,6 +1553,9 @@ function assertLibrarySongDetailSmoke() {
       canExport: false,
       canPlay: false,
       canToggleLiked: false,
+      deleteLabel: "Delete",
+      exportLabel: "Export",
+      likedLabel: "Like",
     },
   );
 }

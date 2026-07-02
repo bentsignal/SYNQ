@@ -449,6 +449,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: add-to-collection search, selection summary, bulk-add action, status,
     and navigation presentation now live in a focused form component instead of
     the route screen.
+  - Done: add-to-collection search query state now lives in a focused hook
+    instead of the route screen owning raw local state.
   - Done: add-to-collection empty state and row rendering now live in focused
     components instead of the addable song list owning selection/add controls.
   - Done: song detail like, export, and delete labels now live with action

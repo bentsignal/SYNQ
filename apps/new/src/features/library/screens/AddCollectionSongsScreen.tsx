@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
 import { AddCollectionSongsConnectedForm } from "../components/AddCollectionSongsConnectedForm";
 import { LibraryInvalidCollectionState } from "../components/LibraryInvalidCollectionState";
+import { useAddCollectionSongsSearchQuery } from "../hooks/use-add-collection-songs-search-query";
 import {
   useAddableAlbumCollectionSongsQuery,
   useAddableArtistCollectionSongsQuery,
@@ -46,7 +46,7 @@ function AddCollectionSongsContent({
 }
 
 function AddAlbumCollectionSongsContent({ id }: { id: number }) {
-  const [query, setQuery] = useState("");
+  const { query, setQuery } = useAddCollectionSongsSearchQuery();
   const addable = useAddableAlbumCollectionSongsQuery({
     collectionId: id,
     query,
@@ -64,7 +64,7 @@ function AddAlbumCollectionSongsContent({ id }: { id: number }) {
 }
 
 function AddArtistCollectionSongsContent({ id }: { id: number }) {
-  const [query, setQuery] = useState("");
+  const { query, setQuery } = useAddCollectionSongsSearchQuery();
   const addable = useAddableArtistCollectionSongsQuery({
     collectionId: id,
     query,
@@ -82,7 +82,7 @@ function AddArtistCollectionSongsContent({ id }: { id: number }) {
 }
 
 function AddPlaylistCollectionSongsContent({ id }: { id: number }) {
-  const [query, setQuery] = useState("");
+  const { query, setQuery } = useAddCollectionSongsSearchQuery();
   const addable = useAddablePlaylistCollectionSongsQuery({
     collectionId: id,
     query,

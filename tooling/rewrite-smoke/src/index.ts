@@ -123,6 +123,11 @@ import {
   wifiImportPrepareFailureResponse,
   wifiImportResetResponse,
 } from "../../../apps/new/src/features/import/services/wifi-import-request-service";
+import {
+  getWifiImportServerAddress,
+  initialWifiImportServerState,
+  wifiImportServerReducer,
+} from "../../../apps/new/src/features/import/services/wifi-import-server-state-service";
 import type { ImportSongDraft } from "../../../apps/new/src/features/import/types/import-session";
 import {
   buildAlbumDetail,
@@ -1533,6 +1538,57 @@ function assertImportSessionSmoke() {
 }
 
 function assertWifiImportRequestSmoke() {
+  let serverState = wifiImportServerReducer(initialWifiImportServerState, {
+    ipAddress: "192.168.1.4",
+    type: "resolve-address",
+  });
+  assert.deepEqual(serverState, {
+    error: null,
+    ipAddress: "192.168.1.4",
+    isReady: false,
+    port: null,
+  });
+  assert.equal(getWifiImportServerAddress(serverState), "");
+
+  serverState = wifiImportServerReducer(serverState, {
+    port: 3002,
+    type: "start",
+  });
+  assert.deepEqual(serverState, {
+    error: null,
+    ipAddress: "192.168.1.4",
+    isReady: true,
+    port: 3002,
+  });
+  assert.equal(
+    getWifiImportServerAddress(serverState),
+    "http://192.168.1.4:3002",
+  );
+
+  assert.deepEqual(wifiImportServerReducer(serverState, { type: "stop" }), {
+    error: null,
+    ipAddress: "192.168.1.4",
+    isReady: false,
+    port: null,
+  });
+  assert.deepEqual(
+    wifiImportServerReducer(serverState, {
+      error: "Port busy",
+      type: "fail",
+    }),
+    {
+      error: "Port busy",
+      ipAddress: "192.168.1.4",
+      isReady: false,
+      port: null,
+    },
+  );
+  assert.deepEqual(wifiImportServerReducer(serverState, { type: "clear-address" }), {
+    error: null,
+    ipAddress: "",
+    isReady: true,
+    port: 3002,
+  });
   assert.equal(getWifiTransferSize(null), 0);
   assert.equal(getWifiTransferSize({ size: "3" }), 3);
   assert.equal(getWifiTransferSize({ size: 2.5 }), 0);

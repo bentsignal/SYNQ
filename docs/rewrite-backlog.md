@@ -459,6 +459,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import save staged-song export loading/error transitions now live in
     the import screen state service reducer with smoke coverage instead of
     controller-local state setters.
+  - Done: Wi-Fi import server readiness, port, address, and failure transitions
+    now live in a service reducer with smoke coverage instead of hook-local
+    lifecycle setters.
   - Done: import save artist, album, playlist, and album-cover relationship
     linking now lives in a dedicated import library link service instead of the
     top-level library save orchestration.

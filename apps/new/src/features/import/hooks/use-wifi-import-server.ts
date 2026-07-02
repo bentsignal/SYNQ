@@ -1,10 +1,15 @@
 import * as Network from "expo-network";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import { BridgeServer } from "react-native-http-bridge-refurbished";
 import {
   createWifiImportRouteHandlers,
   createWifiImportRouteRuntimeState,
 } from "../services/wifi-import-server-route-service";
+import {
+  getWifiImportServerAddress,
+  initialWifiImportServerState,
+  wifiImportServerReducer,
+} from "../services/wifi-import-server-state-service";
 import { getWifiImportServerStartErrorMessage } from "../services/wifi-import-request-service";
 import { useImportSession } from "./use-import-session";
 
@@ -17,10 +22,10 @@ export function useWifiImportServer() {
     finishWifiTransfer,
     receiveWifiSong,
   } = useImportSession();
-  const [error, setError] = useState<string | null>(null);
-  const [ipAddress, setIpAddress] = useState("");
-  const [isReady, setIsReady] = useState(false);
-  const [port, setPort] = useState<number | null>(null);
+  const [serverState, dispatchServerState] = useReducer(
+    wifiImportServerReducer,
+    initialWifiImportServerState,
+  );
   const beginWifiTransferRef = useRef(beginWifiTransfer);
   const failSessionRef = useRef(failSession);
   const finishWifiTransferRef = useRef(finishWifiTransfer);
@@ -40,11 +45,14 @@ export function useWifiImportServer() {
       try {
         const nextAddress = await Network.getIpAddressAsync();
         if (isMounted) {
-          setIpAddress(nextAddress);
+          dispatchServerState({
+            ipAddress: nextAddress,
+            type: "resolve-address",
+          });
         }
       } catch {
         if (isMounted) {
-          setIpAddress("");
+          dispatchServerState({ type: "clear-address" });
         }
       }
     };
@@ -85,7 +93,10 @@ export function useWifiImportServer() {
           server.listen(nextPort);
           registerRoutes(server);
           activeServer = server;
-          setPort(nextPort);
+          dispatchServerState({
+            port: nextPort,
+            type: "start",
+          });
           break;
         } catch {
           server.stop();
@@ -98,25 +109,21 @@ export function useWifiImportServer() {
         );
       }
 
-      setError(null);
-      setIsReady(true);
     } catch (caughtError) {
-      setError(getWifiImportServerStartErrorMessage(caughtError));
-      setIsReady(false);
-      setPort(null);
+      dispatchServerState({
+        error: getWifiImportServerStartErrorMessage(caughtError),
+        type: "fail",
+      });
     }
 
     return () => {
-      setIsReady(false);
-      setPort(null);
+      dispatchServerState({ type: "stop" });
       activeServer?.stop();
     };
   }, []);
 
   return {
-    address: ipAddress && port ? `http://${ipAddress}:${port}` : "",
-    error,
-    isReady,
-    port,
+    ...serverState,
+    address: getWifiImportServerAddress(serverState),
   };
 }

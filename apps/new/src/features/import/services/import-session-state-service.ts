@@ -99,6 +99,20 @@ export const getImportWifiState = ({
   };
 };
 
+export const getImportPremiumGateState = ({
+  active,
+  error,
+  phase,
+}: {
+  active: boolean;
+  error: string | null;
+  phase: "checking" | "failure" | "ready";
+}) => ({
+  canAccessImport: active,
+  error,
+  kicker: phase === "checking" ? "Checking premium" : "Premium import",
+});
+
 export const importSessionReducer = (
   state: ImportSessionState,
   action: ImportSessionAction,

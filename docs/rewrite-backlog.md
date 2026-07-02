@@ -108,6 +108,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     availability in the song detail service instead of the detail screen.
   - Done: playback player command availability and shuffle/loop/play labels now
     live in the playback player-state service instead of the player screen.
+  - Done: import Premium gate access state, checking copy, and error
+    presentation now live in the import session service instead of the gate UI.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -197,6 +199,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     delete labels across ready, busy, liked, and missing states.
   - Done: extend deterministic smoke coverage to playback player command
     availability, seek boundaries, ad-break blocking, and mode labels.
+  - Done: extend deterministic smoke coverage to import Premium gate active,
+    checking, and failure states.
 
 ### Phase 3: New App Build-Out
 

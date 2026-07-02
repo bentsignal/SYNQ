@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
+import { getImportPremiumGateState } from "../services/import-session-state-service";
 
 type ImportPremiumGateProps = {
   children: React.ReactNode;
@@ -12,8 +13,9 @@ export function ImportPremiumGate({ children }: ImportPremiumGateProps) {
   const { state } = usePremiumEntitlement();
   const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();
+  const gateState = getImportPremiumGateState(state);
 
-  if (state.active) {
+  if (gateState.canAccessImport) {
     return children;
   }
 
@@ -25,7 +27,7 @@ export function ImportPremiumGate({ children }: ImportPremiumGateProps) {
       ]}
     >
       <Text style={[styles.kicker, { color: theme.accent }]}>
-        {state.phase === "checking" ? "Checking premium" : "Premium import"}
+        {gateState.kicker}
       </Text>
       <Text style={[styles.title, { color: theme.primaryText }]}>
         Import is a Premium feature
@@ -33,9 +35,9 @@ export function ImportPremiumGate({ children }: ImportPremiumGateProps) {
       <Text style={[styles.body, { color: theme.secondaryText }]}>
         Unlock file and Wi-Fi import before staging new songs.
       </Text>
-      {state.error ? (
+      {gateState.error ? (
         <Text style={[styles.errorText, { color: theme.danger }]}>
-          {state.error}
+          {gateState.error}
         </Text>
       ) : null}
       <Link asChild href="/premium">

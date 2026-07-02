@@ -23,6 +23,7 @@ import {
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
   getImportFilesActionState,
+  getImportPremiumGateState,
   getImportSaveActionState,
   getImportWifiState,
   importSessionReducer,
@@ -494,6 +495,42 @@ function assertImportSessionSmoke() {
     chooseLabel: "Choosing",
     isWorking: true,
   });
+  assert.deepEqual(
+    getImportPremiumGateState({
+      active: false,
+      error: null,
+      phase: "checking",
+    }),
+    {
+      canAccessImport: false,
+      error: null,
+      kicker: "Checking premium",
+    },
+  );
+  assert.deepEqual(
+    getImportPremiumGateState({
+      active: false,
+      error: "Premium check failed.",
+      phase: "failure",
+    }),
+    {
+      canAccessImport: false,
+      error: "Premium check failed.",
+      kicker: "Premium import",
+    },
+  );
+  assert.deepEqual(
+    getImportPremiumGateState({
+      active: true,
+      error: null,
+      phase: "ready",
+    }),
+    {
+      canAccessImport: true,
+      error: null,
+      kicker: "Premium import",
+    },
+  );
   assert.deepEqual(
     getImportSaveActionState({ isExporting: false, state }),
     {

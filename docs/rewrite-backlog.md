@@ -66,8 +66,10 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     Wi-Fi transfer route/server, cache staging, metadata/duration extraction,
     preview/save screens, staged metadata editing, and Drizzle draft-to-library
     save/discard commands with durable audio file movement and cover/artwork
-    persistence exist behind Premium gates; import polish and deeper manual
-    smoke are next.
+    persistence exist behind Premium gates; import stack/home/files and Premium
+    gate surfaces now consume saved theme state, and file-pick/remove actions
+    use preference-aware haptics. Import save/Wi-Fi/edit/result theming,
+    import polish, and deeper manual smoke are next.
   - Backup/restore: feature-owned backup screen and command-state boundary
     exist; backup archive/share, restore document picking/unzip/reset, and
     erase document cleanup/database reset are connected. The backup command
@@ -80,12 +82,13 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     app icon, and haptics, and saved-theme consumption across navigation,
     loading/placeholder states, settings, library home, library
     create/edit/detail surfaces, playback player/queue surfaces, and the backup
-    command surface exist; native app icon assets/config and a settings-owned
-    native icon service are wired; haptic feedback now flows through a
-    preference-aware settings hook for customization, playback, queue,
-    collection save actions, collection detail song mutations, and backup
-    command feedback. Deeper feature-screen theming and native-build
-    icon/haptics smoke are next.
+    command surface, import home/files, and import Premium gate surfaces exist;
+    native app icon assets/config and a settings-owned native icon service are
+    wired; haptic feedback now flows through a preference-aware settings hook
+    for customization, playback, queue, collection save actions, collection
+    detail song mutations, backup command feedback, and import file-pick/remove
+    actions. Deeper feature-screen theming and native-build icon/haptics smoke
+    are next.
 - [ ] Move reusable feature logic from `apps/old` into shared app-local modules
   that `apps/new` can consume without copying UI spaghetti.
 - [ ] Build the `apps/new` screens against reactive Drizzle query hooks instead
@@ -152,14 +155,15 @@ entitlement provider consumed by Settings, Backup, and Customization. Settings
 customization now owns persisted theme, app icon, and haptic preference state;
 the app shell, loading/placeholder states, settings screens, library home,
 library create/edit/detail surfaces, playback player/queue surfaces, and the
-backup command surface consume saved theme state through a shared palette hook;
-deeper feature-screen theme application, native remote playback event
-ingestion, and manual playback smoke are still next. Native app icon
-assets/config now exist in `apps/new`, and app-icon preference changes flow
-through a settings-owned native service, but alternate icon behavior still needs
-a native prebuild/device smoke. Haptic preference state is now consumed by a
-settings-owned haptics hook in customization, playback, queue, collection save
-paths, collection detail song mutations, and backup command feedback, but
+backup command surface, import home/files, and import Premium gate surfaces
+consume saved theme state through a shared palette hook; deeper feature-screen
+theme application, native remote playback event ingestion, and manual playback
+smoke are still next. Native app icon assets/config now exist in `apps/new`, and
+app-icon preference changes flow through a settings-owned native service, but
+alternate icon behavior still needs a native prebuild/device smoke. Haptic
+preference state is now consumed by a settings-owned haptics hook in
+customization, playback, queue, collection save paths, collection detail song
+mutations, backup command feedback, and import file-pick/remove actions, but
 broader feature coverage and native-device haptic smoke are still pending. It
 is not yet a replacement app.
 The next useful work should alternate between:

@@ -1,19 +1,28 @@
 import { Link, router } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { ImportPremiumGate } from "../components/ImportPremiumGate";
 import { ImportSongPreviewList } from "../components/ImportSongPreviewList";
 import { useImportSession } from "../hooks/use-import-session";
 
 export function ImportFilesScreen() {
   const { removeImportSongs, startFileImport, state } = useImportSession();
+  const theme = useCustomizationTheme();
+  const { sendHaptic } = useHapticFeedback();
   const isWorking = state.phase === "picking" || state.phase === "processing";
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      style={[styles.scroll, { backgroundColor: theme.background }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.kicker}>Import files</Text>
-        <Text style={styles.title}>Files</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          Import files
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>Files</Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           Stage songs here before choosing whether to save them.
         </Text>
       </View>
@@ -23,12 +32,18 @@ export function ImportFilesScreen() {
           accessibilityRole="button"
           disabled={isWorking}
           onPress={async () => {
+            sendHaptic("light");
             const staged = await startFileImport();
+            sendHaptic(staged ? "success" : "error");
             router.push(staged ? "/import/save" : "/import/failure");
           }}
-          style={[styles.primaryButton, isWorking ? styles.disabled : null]}
+          style={[
+            styles.primaryButton,
+            { backgroundColor: theme.accent },
+            isWorking ? styles.disabled : null,
+          ]}
         >
-          <Text style={styles.primaryButtonText}>
+          <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
             {isWorking ? "Choosing" : "Choose songs"}
           </Text>
         </Pressable>
@@ -36,15 +51,21 @@ export function ImportFilesScreen() {
 
       <ImportSongPreviewList
         canEditSongs
-        onRemoveSong={(songId) => removeImportSongs([songId])}
+        onRemoveSong={(songId) => {
+          sendHaptic("medium");
+          removeImportSongs([songId]);
+        }}
         songs={state.songs}
       />
 
       <View style={styles.actionRow}>
-        <Link href="/import/save" style={styles.backLink}>
+        <Link
+          href="/import/save"
+          style={[styles.backLink, { color: theme.accent }]}
+        >
           Review save
         </Link>
-        <Link href="/import" style={styles.backLink}>
+        <Link href="/import" style={[styles.backLink, { color: theme.accent }]}>
           Back to import
         </Link>
       </View>
@@ -54,7 +75,6 @@ export function ImportFilesScreen() {
 
 const styles = StyleSheet.create({
   scroll: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
   },
   content: {
@@ -66,35 +86,30 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   kicker: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   title: {
-    color: "#121417",
     fontSize: 34,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 40,
   },
   subtitle: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
   },
   primaryButton: {
     alignItems: "center",
-    backgroundColor: "#0f766e",
     borderRadius: 8,
     justifyContent: "center",
     minHeight: 46,
     paddingHorizontal: 16,
   },
   primaryButtonText: {
-    color: "#ffffff",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
@@ -109,7 +124,6 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   backLink: {
-    color: "#0f766e",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,

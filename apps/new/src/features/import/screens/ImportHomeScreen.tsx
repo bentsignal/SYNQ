@@ -1,46 +1,74 @@
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useImportSession } from "../hooks/use-import-session";
 
 export function ImportHomeScreen() {
   const { state } = useImportSession();
+  const theme = useCustomizationTheme();
+  const { sendHaptic } = useHapticFeedback();
   const { state: premiumState } = usePremiumEntitlement();
   const importLocked = !premiumState.active;
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      style={[styles.scroll, { backgroundColor: theme.background }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.kicker}>src/features/import</Text>
-        <Text style={styles.title}>Import</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          src/features/import
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>Import</Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           Bring songs into SYNQ with a review step before saving.
         </Text>
       </View>
 
-      <View style={styles.list}>
+      <View
+        style={[
+          styles.list,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
         <Link asChild href={importLocked ? "/premium" : "/import/files"}>
-          <Pressable style={styles.row}>
+          <Pressable
+            onPress={() => sendHaptic("light")}
+            style={[styles.row, { borderBottomColor: theme.borderSubtle }]}
+          >
             <View style={styles.rowText}>
-              <Text style={styles.rowTitle}>Files</Text>
-              <Text style={styles.rowDescription}>
+              <Text style={[styles.rowTitle, { color: theme.primaryText }]}>
+                Files
+              </Text>
+              <Text
+                style={[styles.rowDescription, { color: theme.secondaryText }]}
+              >
                 Select local audio and review staged songs.
               </Text>
             </View>
-            <Text style={styles.rowMeta}>
+            <Text style={[styles.rowMeta, { color: theme.accent }]}>
               {importLocked ? "Premium" : `${state.songs.length} staged`}
             </Text>
           </Pressable>
         </Link>
         <Link asChild href={importLocked ? "/premium" : "/import/wifi"}>
-          <Pressable style={styles.row}>
+          <Pressable
+            onPress={() => sendHaptic("light")}
+            style={[styles.row, { borderBottomColor: theme.borderSubtle }]}
+          >
             <View style={styles.rowText}>
-              <Text style={styles.rowTitle}>Wi-Fi</Text>
-              <Text style={styles.rowDescription}>
+              <Text style={[styles.rowTitle, { color: theme.primaryText }]}>
+                Wi-Fi
+              </Text>
+              <Text
+                style={[styles.rowDescription, { color: theme.secondaryText }]}
+              >
                 Receive audio from a browser on the same network.
               </Text>
             </View>
-            <Text style={styles.rowMeta}>
+            <Text style={[styles.rowMeta, { color: theme.accent }]}>
               {importLocked
                 ? "Premium"
                 : state.source === "wifi"
@@ -50,14 +78,21 @@ export function ImportHomeScreen() {
           </Pressable>
         </Link>
         <Link asChild href={importLocked ? "/premium" : "/import/save"}>
-          <Pressable style={styles.row}>
+          <Pressable
+            onPress={() => sendHaptic("light")}
+            style={[styles.row, { borderBottomColor: theme.borderSubtle }]}
+          >
             <View style={styles.rowText}>
-              <Text style={styles.rowTitle}>Save</Text>
-              <Text style={styles.rowDescription}>
+              <Text style={[styles.rowTitle, { color: theme.primaryText }]}>
+                Save
+              </Text>
+              <Text
+                style={[styles.rowDescription, { color: theme.secondaryText }]}
+              >
                 Finish or discard the current import session.
               </Text>
             </View>
-            <Text style={styles.rowMeta}>
+            <Text style={[styles.rowMeta, { color: theme.accent }]}>
               {importLocked ? "Premium" : state.phase}
             </Text>
           </Pressable>
@@ -69,7 +104,6 @@ export function ImportHomeScreen() {
 
 const styles = StyleSheet.create({
   scroll: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
   },
   content: {
@@ -81,35 +115,29 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   kicker: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   title: {
-    color: "#121417",
     fontSize: 34,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 40,
   },
   subtitle: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
   },
   list: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     overflow: "hidden",
   },
   row: {
     alignItems: "center",
-    borderBottomColor: "#edf2ef",
     borderBottomWidth: 1,
     flexDirection: "row",
     gap: 14,
@@ -123,19 +151,16 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   rowTitle: {
-    color: "#121417",
     fontSize: 16,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 21,
   },
   rowDescription: {
-    color: "#52605a",
     fontSize: 13,
     lineHeight: 19,
   },
   rowMeta: {
-    color: "#0f766e",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,

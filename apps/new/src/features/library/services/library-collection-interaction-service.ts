@@ -73,6 +73,10 @@ export const getCollectionDetailActionState = ({
   };
 };
 
+export type CollectionDetailActionState = ReturnType<
+  typeof getCollectionDetailActionState
+>;
+
 export const reorderCollectionSongs = ({
   direction,
   songId,

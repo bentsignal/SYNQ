@@ -33,9 +33,15 @@ import {
 import { runAdGatedPlaybackCommand } from "../../../apps/new/src/features/playback/services/playback-command-gate-service";
 import {
   getClearQueuePlaybackCommandPlan,
+  getPausePlaybackCommandPlan,
   getPlaySongPlaybackCommandPlan,
+  getRemoveFromQueuePlaybackCommandPlan,
   getRemoteFailurePlaybackCommandPlan,
   getResetPlaybackCommandPlan,
+  getResumePlaybackCommandPlan,
+  getSeekToPlaybackCommandPlan,
+  getSkipNextPlaybackCommandPlan,
+  getSkipPreviousPlaybackCommandPlan,
 } from "../../../apps/new/src/features/playback/services/playback-command-plan-service";
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
@@ -518,6 +524,34 @@ function assertPlaybackNativeCommandPlanSmoke() {
     },
     nativeCommand: { track: first, type: "play" },
   });
+  assert.deepEqual(getPausePlaybackCommandPlan(), {
+    action: { type: "pause" },
+    nativeCommand: { type: "pause" },
+  });
+  assert.deepEqual(getResumePlaybackCommandPlan(state), {
+    action: { type: "resume" },
+    nativeCommand: { type: "resume" },
+  });
+  assert.deepEqual(getSeekToPlaybackCommandPlan(42_000), {
+    action: { position: 42_000, type: "seek-to" },
+    nativeCommand: { position: 42_000, type: "seek" },
+  });
+  assert.deepEqual(getSkipNextPlaybackCommandPlan(state), {
+    action: { targetIndex: 1, type: "skip-next" },
+    nativeCommand: { track: second, type: "play" },
+  });
+  assert.deepEqual(
+    getSkipPreviousPlaybackCommandPlan({
+      ...state,
+      activeQueueIndex: null,
+      activeTrackId: null,
+      position: 0,
+    }),
+    {
+      action: { type: "skip-previous" },
+      nativeCommand: { position: 0, type: "seek" },
+    },
+  );
   assert.deepEqual(getClearQueuePlaybackCommandPlan(), {
     action: { type: "clear-queue" },
     nativeCommand: { type: "stop" },
@@ -525,6 +559,13 @@ function assertPlaybackNativeCommandPlanSmoke() {
   assert.deepEqual(getResetPlaybackCommandPlan(), {
     action: { type: "reset" },
     nativeCommand: { type: "stop" },
+  });
+  assert.deepEqual(getRemoveFromQueuePlaybackCommandPlan({
+    songId: first.id,
+    state,
+  }), {
+    action: { songId: first.id, type: "remove-from-queue" },
+    nativeCommand: { track: second, type: "play" },
   });
   assert.deepEqual(getRemoteFailurePlaybackCommandPlan("Remote smoke failure"), {
     action: {

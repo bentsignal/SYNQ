@@ -175,6 +175,7 @@ import {
 import {
   getLibraryHomeHeaderActions,
   getLibraryHomeImportHref,
+  getLibraryHomeStatusState,
 } from "../../../apps/new/src/features/library/services/library-home-service";
 import {
   buildLibrarySongDetail,
@@ -3062,6 +3063,47 @@ function assertLibraryHomeSmoke() {
       label: "Create artist",
     },
   ]);
+  assert.deepEqual(
+    getLibraryHomeStatusState({
+      collectionUpdatedAt: 20,
+      errors: [],
+      formatUpdatedAt: (updatedAt) => `time:${updatedAt}`,
+      songUpdatedAt: new Date(30),
+      summaryUpdatedAt: 10,
+    }),
+    {
+      hasErrors: false,
+      isError: false,
+      statusLabel: "Updated time:30",
+    },
+  );
+  assert.deepEqual(
+    getLibraryHomeStatusState({
+      collectionUpdatedAt: 0,
+      errors: [],
+      songUpdatedAt: null,
+      summaryUpdatedAt: 0,
+    }),
+    {
+      hasErrors: false,
+      isError: false,
+      statusLabel: "Waiting for library data",
+    },
+  );
+  assert.deepEqual(
+    getLibraryHomeStatusState({
+      collectionUpdatedAt: 20,
+      errors: [new Error("boom")],
+      formatUpdatedAt: (updatedAt) => `time:${updatedAt}`,
+      songUpdatedAt: new Date(30),
+      summaryUpdatedAt: 10,
+    }),
+    {
+      hasErrors: true,
+      isError: true,
+      statusLabel: "One or more library queries failed.",
+    },
+  );
 }
 
 function assertDurationFormatSmoke() {

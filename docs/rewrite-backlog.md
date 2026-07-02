@@ -1557,6 +1557,9 @@ endless old-app polishing loop.
      controller route strings.
    - Done: library home header actions now come from a library home service
      with smoke coverage instead of hard-coded create/import links in the view.
+   - Done: library home query error and updated-time status now lives in the
+     library home service with smoke coverage instead of controller/view-local
+     label branching.
 
 2. Playlist:
    - Done: add `useLibraryPlaylistsQuery` for the list-level library playlist

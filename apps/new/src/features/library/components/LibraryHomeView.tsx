@@ -11,7 +11,6 @@ type LibraryHomeViewProps = LibraryHomeController;
 
 export function LibraryHomeView({
   collectionPreview,
-  hasErrors,
   order,
   query,
   setOrder,
@@ -19,8 +18,8 @@ export function LibraryHomeView({
   setSort,
   songPreview,
   sort,
+  statusState,
   summary,
-  updatedLabel,
 }: LibraryHomeViewProps) {
   const theme = useCustomizationTheme();
   const headerActions = getLibraryHomeHeaderActions();
@@ -81,11 +80,13 @@ export function LibraryHomeView({
       >
         <Text
           style={[
-            hasErrors ? styles.errorText : styles.panelText,
-            { color: hasErrors ? theme.danger : theme.secondaryText },
+            statusState.isError ? styles.errorText : styles.panelText,
+            {
+              color: statusState.isError ? theme.danger : theme.secondaryText,
+            },
           ]}
         >
-          {hasErrors ? "One or more library queries failed." : updatedLabel}
+          {statusState.statusLabel}
         </Text>
       </View>
     </ScrollView>

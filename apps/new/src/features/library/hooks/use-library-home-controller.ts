@@ -6,6 +6,7 @@ import {
   type LibrarySongPreviewSort,
 } from "./use-library-song-preview-query";
 import { useLibrarySummaryQuery } from "./use-library-summary-query";
+import { getLibraryHomeStatusState } from "../services/library-home-service";
 
 export function useLibraryHomeController() {
   const [query, setQuery] = useState("");
@@ -14,23 +15,19 @@ export function useLibraryHomeController() {
   const summary = useLibrarySummaryQuery();
   const collectionPreview = useLibraryCollectionPreviewQuery();
   const songPreview = useLibrarySongPreviewQuery({ order, query, sort });
-  const hasErrors =
-    summary.errors.length > 0 ||
-    collectionPreview.errors.length > 0 ||
-    Boolean(songPreview.error);
-  const latestUpdate = Math.max(
-    summary.updatedAt,
-    collectionPreview.updatedAt,
-    songPreview.updatedAt?.getTime() ?? 0,
-  );
-  const updatedLabel =
-    latestUpdate > 0
-      ? `Updated ${new Date(latestUpdate).toLocaleTimeString()}`
-      : "Waiting for library data";
+  const statusState = getLibraryHomeStatusState({
+    collectionUpdatedAt: collectionPreview.updatedAt,
+    errors: [
+      ...summary.errors,
+      ...collectionPreview.errors,
+      ...(songPreview.error ? [songPreview.error] : []),
+    ],
+    songUpdatedAt: songPreview.updatedAt,
+    summaryUpdatedAt: summary.updatedAt,
+  });
 
   return {
     collectionPreview,
-    hasErrors,
     order,
     query,
     setOrder,
@@ -38,8 +35,8 @@ export function useLibraryHomeController() {
     setSort,
     songPreview,
     sort,
+    statusState,
     summary,
-    updatedLabel,
   };
 }
 

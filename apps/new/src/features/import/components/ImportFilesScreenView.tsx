@@ -2,6 +2,10 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportFilesController } from "../hooks/use-import-files-controller";
+import {
+  getImportHomeHref,
+  getImportSaveHref,
+} from "../services/import-screen-state-service";
 import { ImportPremiumGate } from "./ImportPremiumGate";
 import { ImportSongPreviewList } from "./ImportSongPreviewList";
 
@@ -14,6 +18,8 @@ export function ImportFilesScreenView({
   state,
 }: ImportFilesScreenViewProps) {
   const theme = useCustomizationTheme();
+  const homeHref = getImportHomeHref();
+  const saveHref = getImportSaveHref();
 
   return (
     <ScrollView
@@ -55,13 +61,13 @@ export function ImportFilesScreenView({
 
       <View style={styles.actionRow}>
         <Link
-          href="/(tabs)/import/save"
+          href={saveHref}
           style={[styles.backLink, { color: theme.accent }]}
         >
           Review save
         </Link>
         <Link
-          href="/(tabs)/import"
+          href={homeHref}
           style={[styles.backLink, { color: theme.accent }]}
         >
           Back to import

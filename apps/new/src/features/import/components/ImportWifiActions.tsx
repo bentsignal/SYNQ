@@ -1,6 +1,10 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import {
+  getImportHomeHref,
+  getImportSaveHref,
+} from "../services/import-screen-state-service";
 
 type ImportWifiActionsProps = {
   canReviewSave: boolean;
@@ -12,10 +16,12 @@ export function ImportWifiActions({
   reviewSave,
 }: ImportWifiActionsProps) {
   const theme = useCustomizationTheme();
+  const homeHref = getImportHomeHref();
+  const saveHref = getImportSaveHref();
 
   return (
     <View style={styles.actionRow}>
-      <Link asChild href="/(tabs)/import/save">
+      <Link asChild href={saveHref}>
         <Pressable
           accessibilityRole="button"
           disabled={!canReviewSave}
@@ -32,7 +38,7 @@ export function ImportWifiActions({
         </Pressable>
       </Link>
       <Link
-        href="/(tabs)/import"
+        href={homeHref}
         style={[styles.backLink, { color: theme.accent }]}
       >
         Back to import

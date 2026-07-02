@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { getImportSongEditHref } from "../services/import-song-form-service";
 import type { ImportSongDraft } from "../types/import-session";
 
 type ImportSongPreviewRowProps = {
@@ -17,6 +18,7 @@ export function ImportSongPreviewRow({
 }: ImportSongPreviewRowProps) {
   const theme = useCustomizationTheme();
   const showActions = canEditSongs || onRemoveSong !== undefined;
+  const editHref = getImportSongEditHref({ songId: song.id });
 
   return (
     <View style={[styles.row, { borderBottomColor: theme.borderSubtle }]}>
@@ -46,7 +48,7 @@ export function ImportSongPreviewRow({
       {showActions ? (
         <View style={styles.actionGroup}>
           {canEditSongs ? (
-            <Link asChild href={`/import/edit/${song.id}`}>
+            <Link asChild href={editHref}>
               <Pressable
                 accessibilityRole="button"
                 style={[styles.editButton, { borderColor: theme.border }]}

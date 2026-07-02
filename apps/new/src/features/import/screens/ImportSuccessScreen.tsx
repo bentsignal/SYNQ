@@ -1,6 +1,9 @@
 import { ImportResultScreenView } from "../components/ImportResultScreenView";
 import { useImportSession } from "../hooks/use-import-session";
-import { getImportSuccessState } from "../services/import-screen-state-service";
+import {
+  getImportLibraryHref,
+  getImportSuccessState,
+} from "../services/import-screen-state-service";
 
 export function ImportSuccessScreen() {
   const { state } = useImportSession();
@@ -8,7 +11,7 @@ export function ImportSuccessScreen() {
 
   return (
     <ImportResultScreenView
-      backHref="/(tabs)/library"
+      backHref={getImportLibraryHref()}
       backLabel="Open Library"
       kicker="Import complete"
       panelHint={

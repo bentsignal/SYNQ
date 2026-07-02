@@ -1,8 +1,15 @@
 import type { ImportSongDraft } from "../types/import-session";
 
 export type ImportSongEditHref =
+  | `/import/edit/${number}`
   | "/(tabs)/import/files"
   | "/(tabs)/import/save";
+
+export const getImportSongEditHref = ({
+  songId,
+}: {
+  songId: number;
+}): ImportSongEditHref => `/import/edit/${songId}`;
 
 export const getImportSongEditSaveHref = (): ImportSongEditHref =>
   "/(tabs)/import/save";

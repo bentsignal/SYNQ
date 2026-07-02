@@ -57,14 +57,19 @@ import {
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
   getImportDiscardResultHref,
+  getImportFilesHref,
   getImportFilesActionState,
   getImportFilesResultHref,
   getImportFailureState,
   getImportFinishResultHref,
+  getImportHomeHref,
   getImportHomeState,
+  getImportLibraryHref,
   getImportPremiumGateState,
+  getImportPremiumHref,
   getImportSaveActionState,
   getImportSaveExportErrorMessage,
+  getImportSaveHref,
   getImportSuccessState,
   getImportWifiState,
 } from "../../../apps/new/src/features/import/services/import-screen-state-service";
@@ -79,6 +84,7 @@ import {
   getImportSongEditActionState,
   getImportSongEditErrorMessage,
   getImportSongEditFilesHref,
+  getImportSongEditHref,
   getImportSongEditSaveHref,
   parseImportTrackInput,
 } from "../../../apps/new/src/features/import/services/import-song-form-service";
@@ -892,6 +898,11 @@ function assertImportSessionSmoke() {
   });
   assert.equal(state.phase, "picking");
   assert.equal(state.source, "files");
+  assert.equal(getImportHomeHref(), "/(tabs)/import");
+  assert.equal(getImportFilesHref(), "/(tabs)/import/files");
+  assert.equal(getImportSaveHref(), "/(tabs)/import/save");
+  assert.equal(getImportLibraryHref(), "/(tabs)/library");
+  assert.equal(getImportPremiumHref(), "/premium");
   assert.deepEqual(getImportFilesActionState(state), {
     canChooseFiles: false,
     chooseLabel: "Choosing",
@@ -3114,6 +3125,7 @@ function assertImportSongFormSmoke() {
   assert.deepEqual(getImportSongEditActionState({ title: "   " }), {
     canSave: false,
   });
+  assert.equal(getImportSongEditHref({ songId: 5 }), "/import/edit/5");
   assert.equal(getImportSongEditSaveHref(), "/(tabs)/import/save");
   assert.equal(getImportSongEditFilesHref(), "/(tabs)/import/files");
   assert.equal(

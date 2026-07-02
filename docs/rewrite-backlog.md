@@ -123,6 +123,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import file-pick, finish, and discard result-route decisions now live
     in the import screen-state service with deterministic smoke coverage
     instead of inline controller branches.
+  - Done: import files/save/Wi-Fi/result back-links and staged-song edit
+    destinations now live in import services with deterministic smoke coverage
+    instead of inline component route strings.
   - Done: collection preview detail-route generation now lives in the collection
     preview service instead of duplicated preview/list UI helpers.
   - Done: library collection preview empty state, columns, and row rendering now

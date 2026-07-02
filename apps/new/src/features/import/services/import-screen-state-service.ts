@@ -2,14 +2,33 @@ import type { ImportSessionState } from "../types/import-session";
 
 export type ImportHomeRoute = {
   description: string;
-  href:
-    | "/premium"
-    | "/(tabs)/import/files"
-    | "/(tabs)/import/wifi"
-    | "/(tabs)/import/save";
+  href: ImportNavigationHref;
   label: string;
   metaLabel: string;
 };
+
+export type ImportNavigationHref =
+  | "/premium"
+  | "/(tabs)/import"
+  | "/(tabs)/import/files"
+  | "/(tabs)/import/wifi"
+  | "/(tabs)/import/save"
+  | "/(tabs)/import/success"
+  | "/(tabs)/import/failure"
+  | "/(tabs)/library";
+
+export const getImportHomeHref = (): ImportNavigationHref => "/(tabs)/import";
+
+export const getImportFilesHref = (): ImportNavigationHref =>
+  "/(tabs)/import/files";
+
+export const getImportSaveHref = (): ImportNavigationHref =>
+  "/(tabs)/import/save";
+
+export const getImportLibraryHref = (): ImportNavigationHref =>
+  "/(tabs)/library";
+
+export const getImportPremiumHref = (): ImportNavigationHref => "/premium";
 
 export const getImportHomeState = ({
   premiumActive,
@@ -25,13 +44,13 @@ export const getImportHomeState = ({
     routes: [
       {
         description: "Select local audio and review staged songs.",
-        href: importLocked ? "/premium" : "/(tabs)/import/files",
+        href: importLocked ? getImportPremiumHref() : getImportFilesHref(),
         label: "Files",
         metaLabel: importLocked ? "Premium" : `${state.songs.length} staged`,
       },
       {
         description: "Receive audio from a browser on the same network.",
-        href: importLocked ? "/premium" : "/(tabs)/import/wifi",
+        href: importLocked ? getImportPremiumHref() : "/(tabs)/import/wifi",
         label: "Wi-Fi",
         metaLabel: importLocked
           ? "Premium"
@@ -41,7 +60,7 @@ export const getImportHomeState = ({
       },
       {
         description: "Finish or discard the current import session.",
-        href: importLocked ? "/premium" : "/(tabs)/import/save",
+        href: importLocked ? getImportPremiumHref() : getImportSaveHref(),
         label: "Save",
         metaLabel: importLocked ? "Premium" : state.phase,
       },
@@ -51,14 +70,10 @@ export const getImportHomeState = ({
 
 export type ImportHomeState = ReturnType<typeof getImportHomeState>;
 
-export type ImportResultHref =
-  | "/(tabs)/import"
-  | "/(tabs)/import/save"
-  | "/(tabs)/import/success"
-  | "/(tabs)/import/failure";
+export type ImportResultHref = ImportNavigationHref;
 
 export const getImportFilesResultHref = (staged: boolean): ImportResultHref =>
-  staged ? "/(tabs)/import/save" : "/(tabs)/import/failure";
+  staged ? getImportSaveHref() : "/(tabs)/import/failure";
 
 export const getImportFinishResultHref = (
   succeeded: boolean,
@@ -68,7 +83,7 @@ export const getImportFinishResultHref = (
 export const getImportDiscardResultHref = (
   discarded: boolean,
 ): ImportResultHref =>
-  discarded ? "/(tabs)/import" : "/(tabs)/import/failure";
+  discarded ? getImportHomeHref() : "/(tabs)/import/failure";
 
 export const getImportSaveActionState = ({
   isExporting,

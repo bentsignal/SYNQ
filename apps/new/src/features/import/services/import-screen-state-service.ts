@@ -78,6 +78,11 @@ export type ImportSaveActionState = ReturnType<
   typeof getImportSaveActionState
 >;
 
+export const getImportSaveExportErrorMessage = (caughtError: unknown) =>
+  caughtError instanceof Error
+    ? caughtError.message
+    : "Staged songs could not be exported.";
+
 export const getImportSuccessState = (state: ImportSessionState) => {
   const savedCount = state.saveSummary?.saved ?? 0;
   const discardedCount = state.saveSummary?.discarded ?? 0;

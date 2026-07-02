@@ -4,6 +4,7 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import {
   buildEditedImportSongDraft,
   getImportSongEditActionState,
+  getImportSongEditErrorMessage,
 } from "../services/import-song-form-service";
 import type { ImportSongDraft } from "../types/import-session";
 
@@ -57,11 +58,7 @@ export function useEditImportSongController({
       router.replace("/(tabs)/import/save");
     } catch (caughtError) {
       sendHaptic("error");
-      setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Song could not be updated.",
-      );
+      setError(getImportSongEditErrorMessage(caughtError));
     }
   };
 

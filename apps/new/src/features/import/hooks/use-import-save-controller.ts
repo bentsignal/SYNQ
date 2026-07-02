@@ -2,7 +2,10 @@ import { useState } from "react";
 import { router } from "expo-router";
 import { shareImportDraftSongs } from "@/src/features/export/services/import-draft-export-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { getImportSaveActionState } from "../services/import-screen-state-service";
+import {
+  getImportSaveActionState,
+  getImportSaveExportErrorMessage,
+} from "../services/import-screen-state-service";
 import type { ImportSessionState } from "../types/import-session";
 
 type UseImportSaveControllerParams = {
@@ -40,11 +43,7 @@ export function useImportSaveController({
       sendHaptic("success");
     } catch (caughtError) {
       sendHaptic("error");
-      setExportError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Staged songs could not be exported.",
-      );
+      setExportError(getImportSaveExportErrorMessage(caughtError));
     } finally {
       setIsExporting(false);
     }

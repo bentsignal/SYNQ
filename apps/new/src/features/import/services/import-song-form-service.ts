@@ -43,3 +43,8 @@ export const getImportSongEditActionState = ({ title }: { title: string }) => ({
 export type ImportSongEditActionState = ReturnType<
   typeof getImportSongEditActionState
 >;
+
+export const getImportSongEditErrorMessage = (caughtError: unknown) =>
+  caughtError instanceof Error
+    ? caughtError.message
+    : "Song could not be updated.";

@@ -52,6 +52,7 @@ import {
   getImportHomeState,
   getImportPremiumGateState,
   getImportSaveActionState,
+  getImportSaveExportErrorMessage,
   getImportSuccessState,
   getImportWifiState,
 } from "../../../apps/new/src/features/import/services/import-screen-state-service";
@@ -64,6 +65,7 @@ import {
 import {
   buildEditedImportSongDraft,
   getImportSongEditActionState,
+  getImportSongEditErrorMessage,
   parseImportTrackInput,
 } from "../../../apps/new/src/features/import/services/import-song-form-service";
 import {
@@ -1006,6 +1008,14 @@ function assertImportSessionSmoke() {
       hasSongs: true,
       isWorking: true,
     },
+  );
+  assert.equal(
+    getImportSaveExportErrorMessage(new Error("Export smoke failure")),
+    "Export smoke failure",
+  );
+  assert.equal(
+    getImportSaveExportErrorMessage(undefined),
+    "Staged songs could not be exported.",
   );
   assert.deepEqual(
     getImportSuccessState({
@@ -2965,6 +2975,14 @@ function assertImportSongFormSmoke() {
   assert.deepEqual(getImportSongEditActionState({ title: "   " }), {
     canSave: false,
   });
+  assert.equal(
+    getImportSongEditErrorMessage(new Error("Edit import smoke failure")),
+    "Edit import smoke failure",
+  );
+  assert.equal(
+    getImportSongEditErrorMessage(null),
+    "Song could not be updated.",
+  );
 
   const edited = buildEditedImportSongDraft({
     album: "  ",

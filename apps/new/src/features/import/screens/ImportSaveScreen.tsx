@@ -1,5 +1,7 @@
 import { Link, router } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { ImportPremiumGate } from "../components/ImportPremiumGate";
 import { ImportSongPreviewList } from "../components/ImportSongPreviewList";
 import { useImportSession } from "../hooks/use-import-session";
@@ -7,15 +9,22 @@ import { useImportSession } from "../hooks/use-import-session";
 export function ImportSaveScreen() {
   const { discardSession, saveImportSession, setShouldSaveToLibrary, state } =
     useImportSession();
+  const theme = useCustomizationTheme();
+  const { sendHaptic } = useHapticFeedback();
   const canFinish = state.songs.length > 0;
   const isWorking = state.phase === "saving" || state.phase === "discarding";
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      style={[styles.scroll, { backgroundColor: theme.background }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.kicker}>Import review</Text>
-        <Text style={styles.title}>Save</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          Import review
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>Save</Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           Review staged songs before writing them to the library.
         </Text>
       </View>
@@ -24,16 +33,30 @@ export function ImportSaveScreen() {
         <Pressable
           accessibilityRole="checkbox"
           accessibilityState={{ checked: state.shouldSaveToLibrary }}
-          onPress={() => setShouldSaveToLibrary(!state.shouldSaveToLibrary)}
-          style={styles.toggleRow}
+          onPress={() => {
+            sendHaptic("light");
+            setShouldSaveToLibrary(!state.shouldSaveToLibrary);
+          }}
+          style={[
+            styles.toggleRow,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
         >
           <View
             style={[
               styles.toggleBox,
-              state.shouldSaveToLibrary ? styles.toggleBoxActive : null,
+              { borderColor: theme.inactive },
+              state.shouldSaveToLibrary
+                ? {
+                    backgroundColor: theme.accent,
+                    borderColor: theme.accent,
+                  }
+                : null,
             ]}
           />
-          <Text style={styles.toggleText}>Save to library</Text>
+          <Text style={[styles.toggleText, { color: theme.primaryText }]}>
+            Save to library
+          </Text>
         </Pressable>
 
         <ImportSongPreviewList canEditSongs songs={state.songs} />
@@ -43,15 +66,18 @@ export function ImportSaveScreen() {
             accessibilityRole="button"
             disabled={!canFinish || isWorking}
             onPress={async () => {
+              sendHaptic("medium");
               const succeeded = await saveImportSession();
+              sendHaptic(succeeded ? "success" : "error");
               router.push(succeeded ? "/import/success" : "/import/failure");
             }}
             style={[
               styles.primaryButton,
+              { backgroundColor: theme.accent },
               !canFinish || isWorking ? styles.disabled : null,
             ]}
           >
-            <Text style={styles.primaryButtonText}>
+            <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
               {isWorking ? "Finishing" : "Finish"}
             </Text>
           </Pressable>
@@ -59,17 +85,24 @@ export function ImportSaveScreen() {
             accessibilityRole="button"
             disabled={isWorking}
             onPress={() => {
+              sendHaptic("medium");
               discardSession();
               router.push("/import");
             }}
-            style={[styles.secondaryButton, isWorking ? styles.disabled : null]}
+            style={[
+              styles.secondaryButton,
+              { backgroundColor: theme.surface, borderColor: theme.border },
+              isWorking ? styles.disabled : null,
+            ]}
           >
-            <Text style={styles.secondaryButtonText}>Discard</Text>
+            <Text style={[styles.secondaryButtonText, { color: theme.danger }]}>
+              Discard
+            </Text>
           </Pressable>
         </View>
       </ImportPremiumGate>
 
-      <Link href="/import/files" style={styles.backLink}>
+      <Link href="/import/files" style={[styles.backLink, { color: theme.accent }]}>
         Back to files
       </Link>
     </ScrollView>
@@ -78,7 +111,6 @@ export function ImportSaveScreen() {
 
 const styles = StyleSheet.create({
   scroll: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
   },
   content: {
@@ -90,29 +122,24 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   kicker: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   title: {
-    color: "#121417",
     fontSize: 34,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 40,
   },
   subtitle: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
   },
   toggleRow: {
     alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: "row",
@@ -121,18 +148,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   toggleBox: {
-    borderColor: "#9aa6a0",
     borderRadius: 6,
     borderWidth: 2,
     height: 22,
     width: 22,
   },
-  toggleBoxActive: {
-    backgroundColor: "#0f766e",
-    borderColor: "#0f766e",
-  },
   toggleText: {
-    color: "#121417",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,
@@ -144,7 +165,6 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     alignItems: "center",
-    backgroundColor: "#0f766e",
     borderRadius: 8,
     flexGrow: 1,
     justifyContent: "center",
@@ -154,8 +174,6 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     flexGrow: 1,
@@ -168,21 +186,18 @@ const styles = StyleSheet.create({
     opacity: 0.45,
   },
   primaryButtonText: {
-    color: "#ffffff",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   secondaryButtonText: {
-    color: "#b42318",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   backLink: {
-    color: "#0f766e",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,

@@ -66,10 +66,11 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     Wi-Fi transfer route/server, cache staging, metadata/duration extraction,
     preview/save screens, staged metadata editing, and Drizzle draft-to-library
     save/discard commands with durable audio file movement and cover/artwork
-    persistence exist behind Premium gates; import stack/home/files and Premium
-    gate surfaces now consume saved theme state, and file-pick/remove actions
-    use preference-aware haptics. Import save/Wi-Fi/edit/result theming,
-    import polish, and deeper manual smoke are next.
+    persistence exist behind Premium gates; import stack/home/files/save/result,
+    shared staged-song preview lists, and Premium gate surfaces now consume
+    saved theme state, and file-pick/remove/save/discard actions use
+    preference-aware haptics. Import Wi-Fi/edit theming, import polish, and
+    deeper manual smoke are next.
   - Backup/restore: feature-owned backup screen and command-state boundary
     exist; backup archive/share, restore document picking/unzip/reset, and
     erase document cleanup/database reset are connected. The backup command
@@ -86,9 +87,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     native app icon assets/config and a settings-owned native icon service are
     wired; haptic feedback now flows through a preference-aware settings hook
     for customization, playback, queue, collection save actions, collection
-    detail song mutations, backup command feedback, and import file-pick/remove
-    actions. Deeper feature-screen theming and native-build icon/haptics smoke
-    are next.
+    detail song mutations, backup command feedback, and import
+    file-pick/remove/save/discard actions. Deeper feature-screen theming and
+    native-build icon/haptics smoke are next.
 - [ ] Move reusable feature logic from `apps/old` into shared app-local modules
   that `apps/new` can consume without copying UI spaghetti.
 - [ ] Build the `apps/new` screens against reactive Drizzle query hooks instead
@@ -155,17 +156,19 @@ entitlement provider consumed by Settings, Backup, and Customization. Settings
 customization now owns persisted theme, app icon, and haptic preference state;
 the app shell, loading/placeholder states, settings screens, library home,
 library create/edit/detail surfaces, playback player/queue surfaces, and the
-backup command surface, import home/files, and import Premium gate surfaces
-consume saved theme state through a shared palette hook; deeper feature-screen
-theme application, native remote playback event ingestion, and manual playback
-smoke are still next. Native app icon assets/config now exist in `apps/new`, and
+backup command surface, import home/files/save/result, shared import preview
+lists, and import Premium gate surfaces consume saved theme state through a
+shared palette hook; deeper feature-screen theme application, native remote
+playback event ingestion, and manual playback smoke are still next. Native app
+icon assets/config now exist in `apps/new`, and
 app-icon preference changes flow through a settings-owned native service, but
 alternate icon behavior still needs a native prebuild/device smoke. Haptic
 preference state is now consumed by a settings-owned haptics hook in
 customization, playback, queue, collection save paths, collection detail song
 mutations, backup command feedback, and import file-pick/remove actions, but
-broader feature coverage and native-device haptic smoke are still pending. It
-is not yet a replacement app.
+broader feature coverage and native-device haptic smoke are still pending.
+Import save/discard now also uses the preference-aware haptics boundary. It is
+not yet a replacement app.
 The next useful work should alternate between:
 
 - closing Phase 2 gaps that would otherwise be copied into the new app; and

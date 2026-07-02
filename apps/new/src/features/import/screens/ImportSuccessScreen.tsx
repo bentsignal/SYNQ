@@ -1,34 +1,55 @@
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useImportSession } from "../hooks/use-import-session";
 
 export function ImportSuccessScreen() {
   const { state } = useImportSession();
+  const theme = useCustomizationTheme();
   const savedIds = state.saveSummary?.savedSongIds ?? [];
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      style={[styles.scroll, { backgroundColor: theme.background }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.kicker}>Import complete</Text>
-        <Text style={styles.title}>Success</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.kicker, { color: theme.accent }]}>
+          Import complete
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          Success
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           {state.progress.current} of {state.progress.total} songs processed.
         </Text>
       </View>
 
-      <View style={styles.panel}>
-        <Text style={styles.panelLabel}>Library save</Text>
-        <Text style={styles.panelText}>
+      <View
+        style={[
+          styles.panel,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
+          Library save
+        </Text>
+        <Text style={[styles.panelText, { color: theme.primaryText }]}>
           {state.shouldSaveToLibrary
             ? `${state.saveSummary?.saved ?? 0} saved to library`
             : `${state.saveSummary?.discarded ?? 0} discarded`}
         </Text>
         {savedIds.length > 0 ? (
-          <Text style={styles.pathText}>Song ids: {savedIds.join(", ")}</Text>
+          <Text style={[styles.pathText, { color: theme.mutedText }]}>
+            Song ids: {savedIds.join(", ")}
+          </Text>
         ) : null}
       </View>
 
-      <Link href="/(tabs)/library" style={styles.backLink}>
+      <Link
+        href="/(tabs)/library"
+        style={[styles.backLink, { color: theme.accent }]}
+      >
         Open Library
       </Link>
     </ScrollView>
@@ -37,7 +58,6 @@ export function ImportSuccessScreen() {
 
 const styles = StyleSheet.create({
   scroll: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
   },
   content: {
@@ -49,52 +69,43 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   kicker: {
-    color: "#0f766e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   title: {
-    color: "#121417",
     fontSize: 34,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 40,
   },
   subtitle: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
   },
   panel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 8,
     padding: 16,
   },
   panelLabel: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   panelText: {
-    color: "#29322e",
     fontSize: 14,
     lineHeight: 20,
   },
   pathText: {
-    color: "#74807a",
     fontSize: 12,
     lineHeight: 17,
   },
   backLink: {
-    color: "#0f766e",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,

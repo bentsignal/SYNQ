@@ -1,26 +1,47 @@
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useImportSession } from "../hooks/use-import-session";
 
 export function ImportFailureScreen() {
   const { state } = useImportSession();
+  const theme = useCustomizationTheme();
 
   return (
-    <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      style={[styles.scroll, { backgroundColor: theme.background }]}
+    >
       <View style={styles.header}>
-        <Text style={styles.kicker}>Import stopped</Text>
-        <Text style={styles.title}>Failure</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.kicker, { color: theme.danger }]}>
+          Import stopped
+        </Text>
+        <Text style={[styles.title, { color: theme.primaryText }]}>
+          Failure
+        </Text>
+        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
           {state.error ?? "The import session could not continue."}
         </Text>
       </View>
 
-      <View style={styles.panel}>
-        <Text style={styles.panelLabel}>Phase</Text>
-        <Text style={styles.panelText}>{state.phase}</Text>
+      <View
+        style={[
+          styles.panel,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
+          Phase
+        </Text>
+        <Text style={[styles.panelText, { color: theme.primaryText }]}>
+          {state.phase}
+        </Text>
       </View>
 
-      <Link href="/import/files" style={styles.backLink}>
+      <Link
+        href="/import/files"
+        style={[styles.backLink, { color: theme.accent }]}
+      >
         Back to files
       </Link>
     </ScrollView>
@@ -29,7 +50,6 @@ export function ImportFailureScreen() {
 
 const styles = StyleSheet.create({
   scroll: {
-    backgroundColor: "#f4f7f5",
     flex: 1,
   },
   content: {
@@ -41,47 +61,39 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   kicker: {
-    color: "#b42318",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   title: {
-    color: "#121417",
     fontSize: 34,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 40,
   },
   subtitle: {
-    color: "#52605a",
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
   },
   panel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 8,
     padding: 16,
   },
   panelLabel: {
-    color: "#52605a",
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0,
     textTransform: "uppercase",
   },
   panelText: {
-    color: "#29322e",
     fontSize: 14,
     lineHeight: 20,
   },
   backLink: {
-    color: "#0f766e",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,

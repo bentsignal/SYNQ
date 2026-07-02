@@ -1,5 +1,6 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportSongDraft } from "../types/import-session";
 
 type ImportSongPreviewListProps = {
@@ -25,11 +26,20 @@ export function ImportSongPreviewList({
   onRemoveSong,
   songs,
 }: ImportSongPreviewListProps) {
+  const theme = useCustomizationTheme();
+
   if (songs.length === 0) {
     return (
-      <View style={styles.emptyPanel}>
-        <Text style={styles.emptyTitle}>No songs staged</Text>
-        <Text style={styles.emptyBody}>
+      <View
+        style={[
+          styles.emptyPanel,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <Text style={[styles.emptyTitle, { color: theme.primaryText }]}>
+          No songs staged
+        </Text>
+        <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
           Choose songs to review them before saving.
         </Text>
       </View>
@@ -37,27 +47,51 @@ export function ImportSongPreviewList({
   }
 
   return (
-    <View style={styles.list}>
+    <View
+      style={[
+        styles.list,
+        { backgroundColor: theme.surface, borderColor: theme.border },
+      ]}
+    >
       {songs.map((song) => (
-        <View key={song.id} style={styles.row}>
+        <View
+          key={song.id}
+          style={[styles.row, { borderBottomColor: theme.borderSubtle }]}
+        >
           <View style={styles.rowText}>
-            <Text numberOfLines={1} style={styles.title}>
+            <Text
+              numberOfLines={1}
+              style={[styles.title, { color: theme.primaryText }]}
+            >
               {song.title}
             </Text>
-            <Text numberOfLines={1} style={styles.meta}>
+            <Text
+              numberOfLines={1}
+              style={[styles.meta, { color: theme.secondaryText }]}
+            >
               {song.artist} / {song.album}
             </Text>
-            <Text numberOfLines={1} style={styles.fileName}>
+            <Text
+              numberOfLines={1}
+              style={[styles.fileName, { color: theme.mutedText }]}
+            >
               {song.fileName}
             </Text>
           </View>
-          <Text style={styles.duration}>{formatDuration(song.duration)}</Text>
+          <Text style={[styles.duration, { color: theme.primaryText }]}>
+            {formatDuration(song.duration)}
+          </Text>
           {canEditSongs || onRemoveSong ? (
             <View style={styles.actionGroup}>
               {canEditSongs ? (
                 <Link asChild href={`/import/edit/${song.id}`}>
-                  <Pressable accessibilityRole="button" style={styles.editButton}>
-                    <Text style={styles.editText}>Edit</Text>
+                  <Pressable
+                    accessibilityRole="button"
+                    style={[styles.editButton, { borderColor: theme.border }]}
+                  >
+                    <Text style={[styles.editText, { color: theme.accent }]}>
+                      Edit
+                    </Text>
                   </Pressable>
                 </Link>
               ) : null}
@@ -65,9 +99,11 @@ export function ImportSongPreviewList({
                 <Pressable
                   accessibilityRole="button"
                   onPress={() => onRemoveSong(song.id)}
-                  style={styles.removeButton}
+                  style={[styles.removeButton, { borderColor: theme.border }]}
                 >
-                  <Text style={styles.removeText}>Remove</Text>
+                  <Text style={[styles.removeText, { color: theme.danger }]}>
+                    Remove
+                  </Text>
                 </Pressable>
               ) : null}
             </View>
@@ -80,35 +116,28 @@ export function ImportSongPreviewList({
 
 const styles = StyleSheet.create({
   emptyPanel: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     gap: 8,
     padding: 16,
   },
   emptyTitle: {
-    color: "#121417",
     fontSize: 16,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 21,
   },
   emptyBody: {
-    color: "#52605a",
     fontSize: 14,
     lineHeight: 20,
   },
   list: {
-    backgroundColor: "#ffffff",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     overflow: "hidden",
   },
   row: {
     alignItems: "center",
-    borderBottomColor: "#edf2ef",
     borderBottomWidth: 1,
     flexDirection: "row",
     gap: 12,
@@ -122,24 +151,20 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   title: {
-    color: "#121417",
     fontSize: 15,
     fontWeight: "800",
     letterSpacing: 0,
     lineHeight: 20,
   },
   meta: {
-    color: "#52605a",
     fontSize: 13,
     lineHeight: 18,
   },
   fileName: {
-    color: "#74807a",
     fontSize: 12,
     lineHeight: 16,
   },
   duration: {
-    color: "#29322e",
     fontSize: 13,
     fontWeight: "800",
     letterSpacing: 0,
@@ -155,7 +180,6 @@ const styles = StyleSheet.create({
   },
   editButton: {
     alignItems: "center",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: "center",
@@ -164,7 +188,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   editText: {
-    color: "#0f766e",
     fontSize: 11,
     fontWeight: "800",
     letterSpacing: 0,
@@ -172,7 +195,6 @@ const styles = StyleSheet.create({
   },
   removeButton: {
     alignItems: "center",
-    borderColor: "#dbe3de",
     borderRadius: 8,
     borderWidth: 1,
     justifyContent: "center",
@@ -181,7 +203,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   removeText: {
-    color: "#b42318",
     fontSize: 11,
     fontWeight: "800",
     letterSpacing: 0,

@@ -137,7 +137,7 @@ export function useLibrarySongDetailQuery(songId: number) {
       fileType: songRow?.fileType ?? "Unknown file type",
       isMissing: !songRow,
       originalFileName: songRow?.originalFileName ?? "Unknown source file",
-      pathToFile: songRow?.pathToFile ?? "No file path recorded",
+      pathToFile: songRow?.pathToFile ?? null,
       playlists: playlistRows.map((playlist) => ({
         id: playlist.id,
         title: playlist.name ?? "Untitled playlist",

@@ -34,6 +34,7 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
   const { detail, errors } = useLibrarySongDetailQuery(songId);
   const { addToQueue, playSong } = usePlaybackSession();
   const hasErrors = errors.length > 0;
+  const canPlay = !detail.isMissing && detail.pathToFile !== null;
   const updatedLabel =
     detail.updatedAt > 0
       ? `Updated ${new Date(detail.updatedAt).toLocaleTimeString()}`
@@ -61,34 +62,36 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
       <View style={styles.actionRow}>
         <Pressable
           accessibilityRole="button"
-          disabled={detail.isMissing}
+          disabled={!canPlay}
           onPress={() => {
             playSong({
               album: detail.albumLabel,
               artist: detail.artistLabel,
               duration: detail.duration,
               id: songId,
+              pathToFile: detail.pathToFile,
               title: detail.title,
             });
             router.push("/player");
           }}
-          style={[styles.primaryButton, detail.isMissing ? styles.disabled : null]}
+          style={[styles.primaryButton, !canPlay ? styles.disabled : null]}
         >
           <Text style={styles.primaryButtonText}>Play</Text>
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          disabled={detail.isMissing}
+          disabled={!canPlay}
           onPress={() => {
             addToQueue({
               album: detail.albumLabel,
               artist: detail.artistLabel,
               duration: detail.duration,
               id: songId,
+              pathToFile: detail.pathToFile,
               title: detail.title,
             });
           }}
-          style={[styles.secondaryButton, detail.isMissing ? styles.disabled : null]}
+          style={[styles.secondaryButton, !canPlay ? styles.disabled : null]}
         >
           <Text style={styles.secondaryButtonText}>Add to queue</Text>
         </Pressable>
@@ -120,7 +123,9 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
       <View style={styles.panel}>
         <Text style={styles.panelLabel}>Source</Text>
         <Text style={styles.panelText}>{detail.originalFileName}</Text>
-        <Text style={styles.pathText}>{detail.pathToFile}</Text>
+        <Text style={styles.pathText}>
+          {detail.pathToFile ?? "No file path recorded"}
+        </Text>
       </View>
 
       <View style={styles.panel}>
@@ -129,6 +134,8 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
             ? "One or more song detail queries failed."
             : detail.isMissing
               ? "Song missing from database."
+              : !canPlay
+                ? "Song has no playable file path."
               : updatedLabel}
         </Text>
       </View>

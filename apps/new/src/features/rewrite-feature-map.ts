@@ -32,7 +32,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/playback",
     targetBoundary: "src/features/playback",
-    nextMilestone: "Connect the playback session boundary to TrackPlayer, persistence, and remote events.",
+    nextMilestone: "Add playback persistence, progress/status sync, remote events, and deeper queue controls.",
   },
   {
     key: "import",

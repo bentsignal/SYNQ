@@ -17,6 +17,7 @@ export type PlaybackQueueItem = {
   artist: string;
   duration: number | null;
   id: number;
+  pathToFile: string | null;
   title: string;
 };
 

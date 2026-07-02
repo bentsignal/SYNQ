@@ -2,8 +2,10 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
+  useRef,
   type ReactNode,
 } from "react";
 import {
@@ -11,6 +13,7 @@ import {
   initialPlaybackState,
   upsertQueueItem,
 } from "../services/playback-session-service";
+import { createExpoAvTrackPlayerAdapter } from "../services/track-player-adapter";
 import type {
   PlaybackQueueItem,
   PlaybackState,
@@ -25,6 +28,7 @@ type PlaybackAction =
   | { type: "skip-previous" }
   | { song: PlaybackQueueItem; type: "add-to-queue" }
   | { songId: number; type: "remove-from-queue" }
+  | { error: string; type: "native-failure" }
   | { type: "toggle-loop" }
   | { type: "toggle-shuffle" };
 
@@ -52,6 +56,29 @@ const getActiveTrack = (state: PlaybackState) =>
   state.activeQueueIndex === null
     ? null
     : state.queue[state.activeQueueIndex] ?? null;
+
+const getNextTrack = (state: PlaybackState) => {
+  const nextIndex =
+    state.activeQueueIndex === null ? 0 : state.activeQueueIndex + 1;
+
+  return state.queue[nextIndex] ?? null;
+};
+
+const getPreviousTrack = (state: PlaybackState) => {
+  if (state.position >= 3000) {
+    return getActiveTrack(state);
+  }
+
+  const previousIndex =
+    state.activeQueueIndex === null
+      ? null
+      : Math.max(0, state.activeQueueIndex - 1);
+
+  return previousIndex === null ? null : state.queue[previousIndex] ?? null;
+};
+
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : "Playback command failed.";
 
 const bumpQueueRevision = (state: PlaybackState) => ({
   ...state,
@@ -175,6 +202,12 @@ const playbackReducer = (
         queue,
       });
     }
+    case "native-failure":
+      return {
+        ...state,
+        error: action.error,
+        isPlaying: false,
+      };
     case "toggle-loop":
       return {
         ...state,
@@ -196,32 +229,76 @@ const playbackReducer = (
 
 export function PlaybackProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(playbackReducer, initialPlaybackState);
+  const stateRef = useRef(state);
+  const adapterRef = useRef(createExpoAvTrackPlayerAdapter());
   const activeTrack = useMemo(() => getActiveTrack(state), [state]);
+
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
+  useEffect(
+    () => () => {
+      void adapterRef.current.destroy();
+    },
+    [],
+  );
+
+  const runNativeCommand = useCallback((command: () => Promise<void>) => {
+    void command().catch((error) => {
+      dispatch({ error: getErrorMessage(error), type: "native-failure" });
+    });
+  }, []);
 
   const playSong = useCallback((song: PlaybackQueueItem) => {
     dispatch({ song, type: "play-song" });
-  }, []);
+    runNativeCommand(() => adapterRef.current.play(song));
+  }, [runNativeCommand]);
   const pause = useCallback(() => {
     dispatch({ type: "pause" });
-  }, []);
+    runNativeCommand(() => adapterRef.current.pause());
+  }, [runNativeCommand]);
   const resume = useCallback(() => {
+    const activeSong = getActiveTrack(stateRef.current);
+
     dispatch({ type: "resume" });
-  }, []);
+    runNativeCommand(() =>
+      activeSong ? adapterRef.current.resume() : Promise.resolve(),
+    );
+  }, [runNativeCommand]);
   const seekTo = useCallback((position: number) => {
     dispatch({ position, type: "seek-to" });
-  }, []);
+    runNativeCommand(() => adapterRef.current.seekTo(position));
+  }, [runNativeCommand]);
   const skipNext = useCallback(() => {
+    const nextTrack = getNextTrack(stateRef.current);
+
     dispatch({ type: "skip-next" });
-  }, []);
+    runNativeCommand(() =>
+      nextTrack ? adapterRef.current.play(nextTrack) : adapterRef.current.stop(),
+    );
+  }, [runNativeCommand]);
   const skipPrevious = useCallback(() => {
+    const previousTrack = getPreviousTrack(stateRef.current);
+
     dispatch({ type: "skip-previous" });
-  }, []);
+    runNativeCommand(() =>
+      previousTrack
+        ? adapterRef.current.play(previousTrack)
+        : adapterRef.current.seekTo(0),
+    );
+  }, [runNativeCommand]);
   const addToQueue = useCallback((song: PlaybackQueueItem) => {
     dispatch({ song, type: "add-to-queue" });
   }, []);
   const removeFromQueue = useCallback((songId: number) => {
+    const activeTrackId = stateRef.current.activeTrackId;
+
     dispatch({ songId, type: "remove-from-queue" });
-  }, []);
+    if (activeTrackId === songId) {
+      runNativeCommand(() => adapterRef.current.stop());
+    }
+  }, [runNativeCommand]);
   const toggleLoop = useCallback(() => {
     dispatch({ type: "toggle-loop" });
   }, []);

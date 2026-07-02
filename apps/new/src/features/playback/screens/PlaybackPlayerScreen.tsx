@@ -115,6 +115,13 @@ export function PlaybackPlayerScreen() {
         </Text>
       </View>
 
+      {state.error ? (
+        <View style={styles.panel}>
+          <Text style={styles.panelLabel}>Playback Error</Text>
+          <Text style={styles.errorText}>{state.error}</Text>
+        </View>
+      ) : null}
+
       <Link href="/queue" style={styles.backLink}>
         Open queue
       </Link>
@@ -245,6 +252,12 @@ const styles = StyleSheet.create({
   panelText: {
     color: "#52605a",
     fontSize: 14,
+    lineHeight: 20,
+  },
+  errorText: {
+    color: "#b42318",
+    fontSize: 14,
+    fontWeight: "700",
     lineHeight: 20,
   },
   backLink: {

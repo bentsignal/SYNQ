@@ -22,6 +22,7 @@ import {
   artistRowsToPreview,
   playlistRowsToPreview,
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
+import { rowsToSongPreviews } from "../../../apps/new/src/features/library/services/library-song-preview-service";
 
 const song = ({
   duration = 180_000,
@@ -417,8 +418,95 @@ function assertLibraryCollectionPreviewSmoke() {
   assert.equal(artists[0]?.imagePath, "/images/artist-profile-small.jpg");
 }
 
+function assertLibrarySongPreviewSmoke() {
+  const previews = rowsToSongPreviews({
+    limit: 10,
+    order: "desc",
+    query: "featured",
+    rows: [
+      {
+        albumName: "Beta Album",
+        artistName: "Beta Artist",
+        duration: 20_000,
+        pathToFile: "/tmp/beta.mp3",
+        songId: 2,
+        title: "Beta",
+      },
+      {
+        albumName: "Alpha Album",
+        artistName: "Alpha Artist",
+        duration: 10_000,
+        pathToFile: "/tmp/alpha.mp3",
+        songId: 1,
+        title: "Alpha",
+      },
+      {
+        albumName: "Alpha Album",
+        artistName: "Featured Artist",
+        duration: 10_000,
+        pathToFile: "/tmp/alpha.mp3",
+        songId: 1,
+        title: "Alpha",
+      },
+      {
+        albumName: null,
+        artistName: null,
+        duration: null,
+        pathToFile: null,
+        songId: 3,
+        title: "Gamma",
+      },
+    ],
+    sort: "title",
+  });
+  assert.deepEqual(
+    previews.map((song) => song.id),
+    [1],
+  );
+  assert.equal(previews[0]?.artist, "Alpha Artist, Featured Artist");
+  assert.equal(previews[0]?.album, "Alpha Album");
+
+  const recentAsc = rowsToSongPreviews({
+    limit: 2,
+    order: "asc",
+    rows: [
+      {
+        albumName: null,
+        artistName: null,
+        duration: null,
+        pathToFile: null,
+        songId: 1,
+        title: "Alpha",
+      },
+      {
+        albumName: null,
+        artistName: null,
+        duration: null,
+        pathToFile: null,
+        songId: 2,
+        title: "Beta",
+      },
+      {
+        albumName: null,
+        artistName: null,
+        duration: null,
+        pathToFile: null,
+        songId: 3,
+        title: "Gamma",
+      },
+    ],
+    sort: "recent",
+  });
+  assert.deepEqual(
+    recentAsc.map((song) => song.id),
+    [1, 2],
+  );
+  assert.equal(recentAsc[0]?.artist, "Unknown");
+}
+
 assertPlaybackSessionSmoke();
 assertImportSessionSmoke();
 assertLibraryCollectionDetailSmoke();
 assertLibraryCollectionPreviewSmoke();
+assertLibrarySongPreviewSmoke();
 console.log("Rewrite deterministic smoke checks passed.");

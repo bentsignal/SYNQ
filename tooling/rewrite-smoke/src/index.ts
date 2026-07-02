@@ -184,6 +184,7 @@ import {
   getLibrarySongDetailBackHref,
   getLibrarySongDetailHref,
   getLibrarySongDetailPlayerHref,
+  getLibrarySongDetailStatusState,
   getLibrarySongDetailMutationErrorMessage,
   getLibrarySongDeleteConfirmationCopy,
   getLibrarySongDeleteSuccessHref,
@@ -2616,13 +2617,14 @@ function assertLibrarySongDetailSmoke() {
     confirmLabel: "Delete",
     title: "Delete song",
   });
+  const playableActionState = getLibrarySongDetailActionState({
+    detail,
+    isDeleting: false,
+    isExporting: false,
+    isTogglingLiked: false,
+  });
   assert.deepEqual(
-    getLibrarySongDetailActionState({
-      detail,
-      isDeleting: false,
-      isExporting: false,
-      isTogglingLiked: false,
-    }),
+    playableActionState,
     {
       canDelete: true,
       canExport: true,
@@ -2631,6 +2633,48 @@ function assertLibrarySongDetailSmoke() {
       deleteLabel: "Delete",
       exportLabel: "Export",
       likedLabel: "Unlike",
+    },
+  );
+  assert.deepEqual(
+    getLibrarySongDetailStatusState({
+      actionState: playableActionState,
+      detail,
+      errors: [],
+      formatUpdatedAt: (updatedAt) => `time:${updatedAt}`,
+      mutationError: null,
+    }),
+    {
+      isError: false,
+      statusLabel: "Updated time:42",
+      updatedLabel: "Updated time:42",
+    },
+  );
+  assert.deepEqual(
+    getLibrarySongDetailStatusState({
+      actionState: playableActionState,
+      detail,
+      errors: [new Error("query")],
+      formatUpdatedAt: (updatedAt) => `time:${updatedAt}`,
+      mutationError: null,
+    }),
+    {
+      isError: true,
+      statusLabel: "One or more song detail queries failed.",
+      updatedLabel: "Updated time:42",
+    },
+  );
+  assert.deepEqual(
+    getLibrarySongDetailStatusState({
+      actionState: playableActionState,
+      detail,
+      errors: [new Error("query")],
+      formatUpdatedAt: (updatedAt) => `time:${updatedAt}`,
+      mutationError: "Export failed.",
+    }),
+    {
+      isError: true,
+      statusLabel: "Export failed.",
+      updatedLabel: "Updated time:42",
     },
   );
   assert.deepEqual(buildLibrarySongEditFormState(detail), {
@@ -2730,6 +2774,25 @@ function assertLibrarySongDetailSmoke() {
   assert.equal(missing.originalFileName, "Unknown source file");
   assert.equal(missing.artistLabel, "Unknown");
   assert.equal(missing.isMissing, true);
+  const missingActionState = getLibrarySongDetailActionState({
+    detail: missing,
+    isDeleting: false,
+    isExporting: false,
+    isTogglingLiked: false,
+  });
+  assert.deepEqual(
+    getLibrarySongDetailStatusState({
+      actionState: missingActionState,
+      detail: missing,
+      errors: [],
+      mutationError: null,
+    }),
+    {
+      isError: false,
+      statusLabel: "Song missing from database.",
+      updatedLabel: "Waiting for song data",
+    },
+  );
   assert.deepEqual(buildLibrarySongEditFormState(missing), {
     albumNames: "",
     artistNames: "",
@@ -2744,12 +2807,7 @@ function assertLibrarySongDetailSmoke() {
     { canSave: false, saveLabel: "Save" },
   );
   assert.deepEqual(
-    getLibrarySongDetailActionState({
-      detail: missing,
-      isDeleting: false,
-      isExporting: false,
-      isTogglingLiked: false,
-    }),
+    missingActionState,
     {
       canDelete: false,
       canExport: false,
@@ -2758,6 +2816,38 @@ function assertLibrarySongDetailSmoke() {
       deleteLabel: "Delete",
       exportLabel: "Export",
       likedLabel: "Like",
+    },
+  );
+  const unplayable = buildLibrarySongDetail({
+    albumRows: [],
+    artistRows: [],
+    likedRows: [],
+    playlistRows: [],
+    songRow: {
+      duration: null,
+      fileType: null,
+      originalFileName: "no-path.mp3",
+      pathToFile: null,
+      title: "No Path",
+    },
+    updatedAt: 0,
+  });
+  assert.deepEqual(
+    getLibrarySongDetailStatusState({
+      actionState: getLibrarySongDetailActionState({
+        detail: unplayable,
+        isDeleting: false,
+        isExporting: false,
+        isTogglingLiked: false,
+      }),
+      detail: unplayable,
+      errors: [],
+      mutationError: null,
+    }),
+    {
+      isError: false,
+      statusLabel: "Song has no playable file path.",
+      updatedLabel: "Waiting for song data",
     },
   );
 }

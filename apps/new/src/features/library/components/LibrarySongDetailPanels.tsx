@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type {
   LibrarySongDetail,
-  LibrarySongDetailActionState,
+  LibrarySongDetailStatusState,
 } from "../services/library-song-detail-service";
 
 type LibrarySongSourcePanelProps = {
@@ -33,22 +33,13 @@ export function LibrarySongSourcePanel({ detail }: LibrarySongSourcePanelProps) 
 }
 
 type LibrarySongStatusPanelProps = {
-  actionState: LibrarySongDetailActionState;
-  detail: LibrarySongDetail;
-  error: string | null;
-  hasErrors: boolean;
-  updatedLabel: string;
+  statusState: LibrarySongDetailStatusState;
 };
 
 export function LibrarySongStatusPanel({
-  actionState,
-  detail,
-  error,
-  hasErrors,
-  updatedLabel,
+  statusState,
 }: LibrarySongStatusPanelProps) {
   const theme = useCustomizationTheme();
-  const isError = hasErrors || error !== null;
 
   return (
     <View
@@ -59,18 +50,13 @@ export function LibrarySongStatusPanel({
     >
       <Text
         style={[
-          isError ? styles.errorText : styles.panelText,
-          { color: isError ? theme.danger : theme.secondaryText },
+          statusState.isError ? styles.errorText : styles.panelText,
+          {
+            color: statusState.isError ? theme.danger : theme.secondaryText,
+          },
         ]}
       >
-        {error ??
-          (hasErrors
-            ? "One or more song detail queries failed."
-            : detail.isMissing
-              ? "Song missing from database."
-              : !actionState.canPlay
-                ? "Song has no playable file path."
-                : updatedLabel)}
+        {statusState.statusLabel}
       </Text>
     </View>
   );

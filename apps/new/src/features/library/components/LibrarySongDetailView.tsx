@@ -4,6 +4,7 @@ import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customi
 import type { LibrarySongDetailController } from "../hooks/use-library-song-detail-controller";
 import {
   getLibrarySongDetailBackHref,
+  getLibrarySongDetailStatusState,
   type LibrarySongDetail,
 } from "../services/library-song-detail-service";
 import { LibrarySongDetailActions } from "./LibrarySongDetailActions";
@@ -33,11 +34,12 @@ export function LibrarySongDetailView({
   toggleLiked,
 }: LibrarySongDetailViewProps) {
   const theme = useCustomizationTheme();
-  const hasErrors = errors.length > 0;
-  const updatedLabel =
-    detail.updatedAt > 0
-      ? `Updated ${new Date(detail.updatedAt).toLocaleTimeString()}`
-      : "Waiting for song data";
+  const statusState = getLibrarySongDetailStatusState({
+    actionState,
+    detail,
+    errors,
+    mutationError: error,
+  });
 
   return (
     <ScrollView
@@ -85,11 +87,7 @@ export function LibrarySongDetailView({
       <LibrarySongSourcePanel detail={detail} />
 
       <LibrarySongStatusPanel
-        actionState={actionState}
-        detail={detail}
-        error={error}
-        hasErrors={hasErrors}
-        updatedLabel={updatedLabel}
+        statusState={statusState}
       />
 
       <Link

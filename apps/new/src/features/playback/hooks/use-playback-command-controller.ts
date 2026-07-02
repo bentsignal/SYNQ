@@ -9,6 +9,7 @@ import {
   getResumeNativeCommandPlan,
   getSkipNextNativeCommandPlan,
   getSkipPreviousNativeCommandPlan,
+  runPlaybackNativeCommandPlan,
   type PlaybackNativeCommandPlan,
 } from "../services/playback-native-command-plan-service";
 import { clearPersistedPlaybackState } from "../services/playback-persistence-service";
@@ -59,25 +60,7 @@ export function usePlaybackCommandController({
 }: UsePlaybackCommandControllerParams): PlaybackCommands {
   const runNativeCommandPlan = useCallback(
     (plan: PlaybackNativeCommandPlan) => {
-      switch (plan.type) {
-        case "noop":
-          return;
-        case "pause":
-          runNativeCommand(() => adapter.pause());
-          return;
-        case "play":
-          runNativeCommand(() => adapter.play(plan.track));
-          return;
-        case "resume":
-          runNativeCommand(() => adapter.resume());
-          return;
-        case "seek":
-          runNativeCommand(() => adapter.seekTo(plan.position));
-          return;
-        case "stop":
-          runNativeCommand(() => adapter.stop());
-          return;
-      }
+      runPlaybackNativeCommandPlan({ adapter, plan, runNativeCommand });
     },
     [adapter, runNativeCommand],
   );

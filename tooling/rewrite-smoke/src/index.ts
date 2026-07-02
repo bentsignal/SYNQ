@@ -68,9 +68,12 @@ import {
   getImportLibraryHref,
   getImportPremiumGateState,
   getImportPremiumHref,
+  getImportSaveBackLink,
   getImportSaveActionState,
   getImportSaveExportErrorMessage,
   getImportSaveHref,
+  getImportSaveHeaderState,
+  getImportSaveLibraryToggleState,
   getImportSuccessState,
   getImportWifiActionState,
   getImportWifiState,
@@ -1010,6 +1013,18 @@ function assertImportSessionSmoke() {
       isWorking: false,
     },
   );
+  assert.deepEqual(getImportSaveHeaderState(), {
+    kicker: "Import review",
+    subtitle: "Review staged songs before writing them to the library.",
+    title: "Save",
+  });
+  assert.deepEqual(getImportSaveLibraryToggleState(), {
+    label: "Save to library",
+  });
+  assert.deepEqual(getImportSaveBackLink(), {
+    href: "/(tabs)/import/files",
+    label: "Back to files",
+  });
   assert.deepEqual(
     getImportHomeState({ premiumActive: false, state }).routes.map((route) => ({
       href: route.href,

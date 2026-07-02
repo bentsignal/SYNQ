@@ -112,6 +112,21 @@ export type ImportSaveActionState = ReturnType<
   typeof getImportSaveActionState
 >;
 
+export const getImportSaveHeaderState = () => ({
+  kicker: "Import review",
+  subtitle: "Review staged songs before writing them to the library.",
+  title: "Save",
+});
+
+export const getImportSaveLibraryToggleState = () => ({
+  label: "Save to library",
+});
+
+export const getImportSaveBackLink = () => ({
+  href: getImportFilesHref(),
+  label: "Back to files",
+});
+
 export const getImportSaveExportErrorMessage = (caughtError: unknown) =>
   caughtError instanceof Error
     ? caughtError.message

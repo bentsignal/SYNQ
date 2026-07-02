@@ -1,17 +1,21 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { getImportSaveHeaderState } from "../services/import-screen-state-service";
 
 export function ImportSaveHeader() {
   const theme = useCustomizationTheme();
+  const headerState = getImportSaveHeaderState();
 
   return (
     <View style={styles.header}>
       <Text style={[styles.kicker, { color: theme.accent }]}>
-        Import review
+        {headerState.kicker}
       </Text>
-      <Text style={[styles.title, { color: theme.primaryText }]}>Save</Text>
+      <Text style={[styles.title, { color: theme.primaryText }]}>
+        {headerState.title}
+      </Text>
       <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-        Review staged songs before writing them to the library.
+        {headerState.subtitle}
       </Text>
     </View>
   );

@@ -2,7 +2,7 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportSaveController } from "../hooks/use-import-save-controller";
-import { getImportFilesHref } from "../services/import-screen-state-service";
+import { getImportSaveBackLink } from "../services/import-screen-state-service";
 import type { ImportSessionState } from "../types/import-session";
 import { ImportPremiumGate } from "./ImportPremiumGate";
 import { ImportSaveActions } from "./ImportSaveActions";
@@ -25,7 +25,7 @@ export function ImportSaveScreenView({
   toggleShouldSaveToLibrary,
 }: ImportSaveScreenViewProps) {
   const theme = useCustomizationTheme();
-  const filesHref = getImportFilesHref();
+  const backLink = getImportSaveBackLink();
 
   return (
     <ScrollView
@@ -50,10 +50,10 @@ export function ImportSaveScreenView({
       </ImportPremiumGate>
 
       <Link
-        href={filesHref}
+        href={backLink.href}
         style={[styles.backLink, { color: theme.accent }]}
       >
-        Back to files
+        {backLink.label}
       </Link>
     </ScrollView>
   );

@@ -464,6 +464,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import save header, save-to-library toggle, export/finish/discard
     actions, and export error panel now render through focused components
     instead of one large save screen view.
+  - Done: import save header copy, save-to-library toggle label, and back-link
+    state now live in the import screen state service with smoke coverage
+    instead of component-local copy.
   - Done: import success/failure result labels now live in the import
     screen-state service with deterministic smoke coverage instead of being
     computed inline in route screens.

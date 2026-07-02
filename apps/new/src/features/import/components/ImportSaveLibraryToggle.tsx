@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { getImportSaveLibraryToggleState } from "../services/import-screen-state-service";
 
 type ImportSaveLibraryToggleProps = {
   shouldSaveToLibrary: boolean;
@@ -11,6 +12,7 @@ export function ImportSaveLibraryToggle({
   toggleShouldSaveToLibrary,
 }: ImportSaveLibraryToggleProps) {
   const theme = useCustomizationTheme();
+  const toggleState = getImportSaveLibraryToggleState();
 
   return (
     <Pressable
@@ -35,7 +37,7 @@ export function ImportSaveLibraryToggle({
         ]}
       />
       <Text style={[styles.toggleText, { color: theme.primaryText }]}>
-        Save to library
+        {toggleState.label}
       </Text>
     </Pressable>
   );

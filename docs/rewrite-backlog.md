@@ -52,7 +52,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     collection previews with all-collection browse routes, user-facing library
     home copy and empty states,
     song/playlist/album/artist detail routes with song and collection playback
-    entry points plus navigable song relationship rows, playlist/album/artist
+    entry points plus navigable song relationship rows, library song metadata
+    editing, playlist/album/artist
     create/edit flows, collection song add/remove flows with bulk add selection,
     durable
     album/playlist/artist song reorder flows, and collection cover/profile image
@@ -1103,3 +1104,5 @@ endless old-app polishing loop.
   list, backed by reactive song file-path data.
 - Done: add all-playlists, all-albums, and all-artists browse routes for the
   new app library collection previews.
+- Done: add a slim new-app library song edit route for title and comma-separated
+  artist/album metadata updates.

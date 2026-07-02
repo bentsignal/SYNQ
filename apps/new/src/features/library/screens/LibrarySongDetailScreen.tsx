@@ -160,6 +160,19 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
             Add to queue
           </Text>
         </Pressable>
+        <Link
+          href={`/(tabs)/library/song/edit/${songId}`}
+          style={[
+            styles.secondaryButton,
+            {
+              backgroundColor: theme.surface,
+              borderColor: theme.border,
+              color: theme.accent,
+            },
+          ]}
+        >
+          Edit
+        </Link>
       </View>
 
       <RelationshipSection

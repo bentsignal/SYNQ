@@ -7,6 +7,7 @@ import type { PrivacySettingsStatus } from "../types/privacy-settings";
 export type SettingsRoute = {
   description: string;
   href:
+    | "/(tabs)/settings"
     | "/premium"
     | "/(tabs)/settings/backup"
     | "/(tabs)/settings/customization"
@@ -14,6 +15,11 @@ export type SettingsRoute = {
     | "/(tabs)/settings/support";
   label: string;
 };
+
+export type SettingsHomeHref = "/(tabs)/settings";
+
+export const getSettingsHomeHref = (): SettingsHomeHref =>
+  "/(tabs)/settings";
 
 export type SupportAction = {
   description: string;

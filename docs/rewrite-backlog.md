@@ -379,6 +379,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: settings home route metadata and Premium status label now live in the
     settings screen service/controller, and the route renders through a focused
     component.
+  - Done: settings back destinations now live in the settings screen service
+    and are consumed by premium, backup, privacy, and support screens instead
+    of duplicating route literals.
   - Done: import save export/finish/discard labels now live with save action
     availability in the import session service instead of the save screen.
   - Done: import save artist, album, playlist, and album-cover relationship

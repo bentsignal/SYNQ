@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import type { PrivacyScreenController } from "../hooks/use-privacy-screen-controller";
 import { useCustomizationTheme } from "../hooks/use-customization-theme";
+import { getSettingsHomeHref } from "../services/settings-screen-service";
 
 type PrivacyScreenViewProps = PrivacyScreenController;
 
@@ -78,7 +79,7 @@ export function PrivacyScreenView({
       ) : null}
 
       <Link
-        href="/(tabs)/settings"
+        href={getSettingsHomeHref()}
         style={[styles.backLink, { color: theme.accent }]}
       >
         Back to Settings

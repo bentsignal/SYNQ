@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import type { SupportScreenController } from "../hooks/use-support-screen-controller";
 import { useCustomizationTheme } from "../hooks/use-customization-theme";
+import { getSettingsHomeHref } from "../services/settings-screen-service";
 
 type SupportScreenViewProps = SupportScreenController;
 
@@ -70,7 +71,7 @@ export function SupportScreenView({
       </View>
 
       <Link
-        href="/(tabs)/settings"
+        href={getSettingsHomeHref()}
         style={[styles.backLink, { color: theme.accent }]}
       >
         Back to Settings

@@ -1,6 +1,7 @@
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { getSettingsHomeHref } from "@/src/features/settings/services/settings-screen-service";
 import type { PremiumScreenController } from "../hooks/use-premium-screen-controller";
 import { PremiumActionRow } from "./PremiumActionRow";
 import { PremiumFeatureList } from "./PremiumFeatureList";
@@ -61,7 +62,7 @@ export function PremiumScreenView({
       />
 
       <Link
-        href="/(tabs)/settings"
+        href={getSettingsHomeHref()}
         style={[styles.backLink, { color: theme.accent }]}
       >
         Back to Settings

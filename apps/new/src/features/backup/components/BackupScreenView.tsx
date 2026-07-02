@@ -1,6 +1,7 @@
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { getSettingsHomeHref } from "@/src/features/settings/services/settings-screen-service";
 import type { BackupScreenController } from "../hooks/use-backup-screen-controller";
 import { BackupActionList } from "./BackupActionList";
 import { BackupScreenHeader } from "./BackupScreenHeader";
@@ -29,7 +30,7 @@ export function BackupScreenView({
       <BackupStatusPanel resetStatus={resetStatus} statusState={statusState} />
 
       <Link
-        href="/(tabs)/settings"
+        href={getSettingsHomeHref()}
         style={[styles.backLink, { color: theme.accent }]}
       >
         Back to Settings

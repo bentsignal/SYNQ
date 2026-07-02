@@ -255,6 +255,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import staged-song edit header, metadata fields, source-file panel,
     error/save actions, and navigation links now render through focused
     components instead of one large edit form view.
+  - Done: import staged-song preview empty state and row rendering now live in
+    focused components instead of the shared preview list owning every row
+    action.
   - Done: collection detail play, queue, export, and delete action state now
     lives in the library interaction service instead of the detail screen.
   - Done: collection detail play, queue, export, delete, reorder, remove, and

@@ -75,6 +75,7 @@ import {
 } from "../../../apps/new/src/features/import/services/import-library-save-plan-service";
 import { getImportFileCommandErrorMessage } from "../../../apps/new/src/features/import/services/import-file-command-service";
 import {
+  getWifiImportServerStartErrorMessage,
   getWifiStartTransferDecision,
   getWifiTransferSize,
   getWifiUploadDecision,
@@ -1269,6 +1270,14 @@ function assertWifiImportRequestSmoke() {
   assert.equal(getWifiTransferSize(null), 0);
   assert.equal(getWifiTransferSize({ size: "3" }), 3);
   assert.equal(getWifiTransferSize({ size: 2.5 }), 0);
+  assert.equal(
+    getWifiImportServerStartErrorMessage(new Error("Server smoke failure")),
+    "Server smoke failure",
+  );
+  assert.equal(
+    getWifiImportServerStartErrorMessage(null),
+    "Wi-Fi transfer server could not start.",
+  );
   assert.deepEqual(
     getWifiStartTransferDecision({
       isMidTransfer: true,

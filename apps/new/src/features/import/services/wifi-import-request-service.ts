@@ -131,6 +131,11 @@ export const wifiImportPrepareFailureResponse: WifiImportJsonResponse = {
   status: 500,
 };
 
+export const getWifiImportServerStartErrorMessage = (caughtError: unknown) =>
+  caughtError instanceof Error
+    ? caughtError.message
+    : "Wi-Fi transfer server could not start.";
+
 export const getWifiUploadFailureResponse = (
   message: string,
 ): WifiImportJsonResponse => ({

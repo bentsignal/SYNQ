@@ -190,6 +190,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: Wi-Fi import finish-to-review/failure decision now lives in the import
     session service with deterministic smoke coverage instead of the command
     hook branching inline.
+  - Done: Wi-Fi import server startup fallback copy now lives in the Wi-Fi
+    import request service with deterministic smoke coverage instead of an
+    inline hook branch.
   - Done: import session command mutation fallback copy now lives in the import
     session service with deterministic smoke coverage instead of inline hook
     branches.

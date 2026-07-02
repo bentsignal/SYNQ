@@ -5,6 +5,7 @@ import {
   createWifiImportRouteHandlers,
   createWifiImportRouteRuntimeState,
 } from "../services/wifi-import-server-route-service";
+import { getWifiImportServerStartErrorMessage } from "../services/wifi-import-request-service";
 import { useImportSession } from "./use-import-session";
 
 const wifiImportPorts = [3000, 3001, 3002, 3003, 3004] as const;
@@ -100,11 +101,7 @@ export function useWifiImportServer() {
       setError(null);
       setIsReady(true);
     } catch (caughtError) {
-      setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Wi-Fi transfer server could not start.",
-      );
+      setError(getWifiImportServerStartErrorMessage(caughtError));
       setIsReady(false);
       setPort(null);
     }

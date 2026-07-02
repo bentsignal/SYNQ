@@ -3,9 +3,9 @@ import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";
 import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system";
+import { likedSongsPlaylistId } from "../services/library-playlist-constants-service";
 
 const unknownLabels = new Set(["", "unknown", "unknown artist", "unknown album"]);
-const likedSongsPlaylistId = 2;
 
 const normalizeName = (name: string) => name.trim();
 

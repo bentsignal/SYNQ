@@ -83,6 +83,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: collection detail routes now mount kind-specific live query hooks so
     playlist, album, and artist detail screens do not subscribe to unrelated
     collection tables.
+  - Done: song detail derives liked state from playlist membership rows and no
+    longer opens a duplicate liked-song live query.
   - Done: rewrite verification hygiene scans now include new app route files,
     not only feature implementation files.
   - Done: import files and Wi-Fi presentation/action state now lives in the
@@ -159,6 +161,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     add-to-collection relationship query fan-out.
   - Done: preserve collection detail shaping smoke coverage while reducing
     collection detail route live query fan-out.
+  - Done: extend song detail smoke coverage to liked-state derivation from the
+    shared Liked Songs playlist membership.
   - Done: extend rewrite verification gates to route-file event, console,
     dimensions, and AsyncStorage scans.
   - Done: extend deterministic smoke coverage to collection form year parsing

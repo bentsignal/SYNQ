@@ -3,6 +3,7 @@ import type {
   LibraryCollectionDetailKind,
   LibraryCollectionDetailSong,
 } from "./library-collection-detail-service";
+import { likedSongsPlaylistId } from "./library-playlist-constants-service";
 
 export type LibraryCollectionListHref =
   | "/(tabs)/library/albums"
@@ -31,7 +32,8 @@ export const canDeleteLibraryCollection = ({
   id: number;
   isMissing: boolean;
   kind: LibraryCollectionDetailKind;
-}) => !isMissing && (kind !== "playlist" || (id !== 1 && id !== 2));
+}) =>
+  !isMissing && (kind !== "playlist" || (id !== 1 && id !== likedSongsPlaylistId));
 
 export const getPlayableCollectionSongs = (
   songs: LibraryCollectionDetailSong[],

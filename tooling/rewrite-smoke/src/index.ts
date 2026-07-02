@@ -1550,6 +1550,23 @@ function assertLibrarySongDetailSmoke() {
   assert.equal(detail.relationshipSummary, "2 artists / 2 albums / 2 playlists");
   assert.equal(detail.isLiked, true);
   assert.equal(detail.isMissing, false);
+  assert.equal(
+    buildLibrarySongDetail({
+      albumRows: [],
+      artistRows: [],
+      likedRows: [],
+      playlistRows: [{ id: 2, name: "Liked Songs" }],
+      songRow: {
+        duration: null,
+        fileType: null,
+        originalFileName: null,
+        pathToFile: null,
+        title: "Liked through playlist membership",
+      },
+      updatedAt: 43,
+    }).isLiked,
+    true,
+  );
   assert.deepEqual(
     detail.albums.map((album) => `${album.id}:${album.detail}`),
     ["2:Album", "1:2026"],

@@ -1,4 +1,5 @@
 import { formatDurationMs } from "../../app-shell/services/duration-format-service";
+import { likedSongsPlaylistId } from "./library-playlist-constants-service";
 
 export type LibrarySongDetailSongRow = {
   duration: number | null;
@@ -123,7 +124,9 @@ export const buildLibrarySongDetail = ({
     duration: songRow?.duration ?? null,
     durationLabel: formatDurationMs(songRow?.duration ?? null),
     fileType: songRow?.fileType ?? "Unknown file type",
-    isLiked: likedRows.length > 0,
+    isLiked:
+      likedRows.length > 0 ||
+      uniquePlaylists.some((playlist) => playlist.id === likedSongsPlaylistId),
     isMissing: !songRow,
     originalFileName: songRow?.originalFileName ?? "Unknown source file",
     pathToFile: songRow?.pathToFile ?? null,

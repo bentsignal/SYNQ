@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getPlaybackQueueRowState } from "../services/playback-session-service";
+import { getPlaybackQueueRowState } from "../services/playback-queue-service";
 import type { PlaybackQueueItem } from "../types/playback-state";
 
 type PlaybackQueueListProps = {

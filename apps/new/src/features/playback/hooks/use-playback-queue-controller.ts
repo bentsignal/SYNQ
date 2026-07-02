@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { getPlaybackQueueActionState } from "../services/playback-session-service";
+import { getPlaybackQueueActionState } from "../services/playback-queue-service";
 import type { PlaybackQueueItem } from "../types/playback-state";
 import { usePlaybackSession } from "./use-playback-session";
 

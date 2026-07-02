@@ -16,8 +16,8 @@ import {
 } from "../hooks/use-playback-command-controller";
 import { usePlaybackNativeStatusListener } from "../hooks/use-playback-native-status-listener";
 import { usePlaybackTrackAdvancement } from "../hooks/use-playback-track-advancement";
+import { getActiveTrack } from "../services/playback-queue-service";
 import {
-  getActiveTrack,
   initialPlaybackState,
   playbackReducer,
 } from "../services/playback-session-service";

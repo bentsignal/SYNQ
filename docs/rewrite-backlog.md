@@ -163,6 +163,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     live in the collection form service instead of screen-local formatting.
   - Done: playback queue row/action state now lives in the playback service
     instead of queue screen boundary checks.
+  - Done: playback queue indexing, active/previous/replacement-track lookup,
+    row action state, and queue filter defaults now live in a dedicated queue
+    service instead of the session reducer service.
   - Done: playback queue haptics and command handlers now live in a controller
     hook, and queue row/list rendering now lives in a dedicated component
     instead of the queue screen.

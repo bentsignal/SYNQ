@@ -10,8 +10,8 @@ import {
   getNextQueueIndex,
   getPreviousTrack,
   getReplacementTrackAfterRemoval,
-  type PlaybackAction,
-} from "../services/playback-session-service";
+} from "../services/playback-queue-service";
+import type { PlaybackAction } from "../services/playback-session-service";
 import type { TrackPlayerAdapter } from "../services/track-player-adapter";
 import type {
   PlaybackQueueItem,

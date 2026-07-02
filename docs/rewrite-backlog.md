@@ -169,6 +169,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: privacy and customization status labels, control disabled state,
     swatch selection state, and haptic-toggle behavior now live in a settings
     screen service instead of settings screens.
+  - Done: customization Premium gating, theme/icon updates, haptics toggle
+    side effects, and screen action wiring now live in a controller hook instead
+    of the customization screen.
   - Done: import save export/finish/discard labels now live with save action
     availability in the import session service instead of the save screen.
   - Done: add-to-collection bulk selection count, mutation guards, and add row

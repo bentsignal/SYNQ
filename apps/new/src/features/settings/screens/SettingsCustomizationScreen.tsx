@@ -7,20 +7,16 @@ import {
   Text,
   View,
 } from "react-native";
-import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
-import { useCustomizationSettingsContext } from "../context/CustomizationSettingsProvider";
+import { useCustomizationScreenController } from "../hooks/use-customization-screen-controller";
 import {
   useCustomizationTheme,
   type CustomizationTheme,
 } from "../hooks/use-customization-theme";
-import { useHapticFeedback } from "../hooks/use-haptic-feedback";
 import {
   customizationOptions,
 } from "../services/customization-settings-service";
 import {
   getCustomizationOptionState,
-  getCustomizationScreenState,
-  shouldSendHapticForHapticsToggle,
 } from "../services/settings-screen-service";
 import type { CustomizationColorKey } from "../types/customization-settings";
 
@@ -85,38 +81,14 @@ function ColorOptionRow({
 }
 
 export function SettingsCustomizationScreen() {
-  const { state: premiumState } = usePremiumEntitlement();
   const {
-    setAppIcon,
-    setHapticsEnabled,
-    setTheme,
-    state: customizationState,
-  } = useCustomizationSettingsContext();
-  const { sendHaptic } = useHapticFeedback();
+    customizationState,
+    screenState,
+    updateAppIcon,
+    updateHapticsEnabled,
+    updateTheme,
+  } = useCustomizationScreenController();
   const theme = useCustomizationTheme();
-  const screenState = getCustomizationScreenState({
-    premiumActive: premiumState.active,
-    status: customizationState.status,
-  });
-  const handleSetTheme = (themeKey: CustomizationColorKey) => {
-    sendHaptic("light");
-    void setTheme(themeKey);
-  };
-  const handleSetAppIcon = (appIcon: CustomizationColorKey) => {
-    sendHaptic("light");
-    void setAppIcon(appIcon);
-  };
-  const handleSetHapticsEnabled = (hapticsEnabled: boolean) => {
-    if (
-      shouldSendHapticForHapticsToggle({
-        hapticsEnabled: customizationState.settings.hapticsEnabled,
-      })
-    ) {
-      sendHaptic("light");
-    }
-
-    void setHapticsEnabled(hapticsEnabled);
-  };
 
   return (
     <ScrollView
@@ -186,14 +158,14 @@ export function SettingsCustomizationScreen() {
       >
         <ColorOptionRow
           disabled={screenState.themeControlsDisabled}
-          onSelect={handleSetTheme}
+          onSelect={updateTheme}
           selectedKey={customizationState.settings.theme}
           theme={theme}
           title="Theme"
         />
         <ColorOptionRow
           disabled={screenState.themeControlsDisabled}
-          onSelect={handleSetAppIcon}
+          onSelect={updateAppIcon}
           selectedKey={customizationState.settings.appIcon}
           theme={theme}
           title="App Icon"
@@ -216,7 +188,7 @@ export function SettingsCustomizationScreen() {
         </View>
         <Switch
           disabled={screenState.hapticsDisabled}
-          onValueChange={handleSetHapticsEnabled}
+          onValueChange={updateHapticsEnabled}
           thumbColor={theme.surface}
           trackColor={{ false: "#cfd8d3", true: theme.accent }}
           value={customizationState.settings.hapticsEnabled}

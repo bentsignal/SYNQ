@@ -73,3 +73,5 @@ export function useImportSaveController({
     toggleShouldSaveToLibrary,
   };
 }
+
+export type ImportSaveController = ReturnType<typeof useImportSaveController>;

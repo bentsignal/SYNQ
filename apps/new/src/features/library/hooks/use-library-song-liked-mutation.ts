@@ -2,11 +2,13 @@ import { useCallback } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { setLibrarySongLiked } from "../repository/song-metadata-repository";
 import {
-  getLibrarySongDetailMutationErrorMessage,
   type LibrarySongDetail,
   type LibrarySongDetailActionState,
-  type LibrarySongDetailMutationAction,
 } from "../services/library-song-detail-service";
+import {
+  getLibrarySongDetailMutationErrorMessage,
+  type LibrarySongDetailMutationAction,
+} from "../services/library-song-detail-mutation-service";
 
 type LibrarySongDetailMutationDispatch = (
   action: LibrarySongDetailMutationAction,

@@ -239,6 +239,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     status and mutation-controller assembly.
   - Done: song detail play, queue, like, export, delete, mutation error, and
     busy-state workflows now live in a controller hook instead of the screen.
+  - Done: song detail mutation reducer, busy flags, and fallback mutation copy
+    now live in a focused mutation service instead of the read-model/detail
+    shaping service.
   - Done: edit-song form fields, save/cancel controls, query/mutation status
     copy, and error rendering now live in a focused component instead of the
     route screen.

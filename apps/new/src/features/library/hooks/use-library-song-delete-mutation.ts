@@ -6,11 +6,13 @@ import { deleteLibrarySong } from "../repository/song-metadata-repository";
 import {
   getLibrarySongDeleteConfirmationCopy,
   getLibrarySongDeleteSuccessHref,
-  getLibrarySongDetailMutationErrorMessage,
   type LibrarySongDetail,
   type LibrarySongDetailActionState,
-  type LibrarySongDetailMutationAction,
 } from "../services/library-song-detail-service";
+import {
+  getLibrarySongDetailMutationErrorMessage,
+  type LibrarySongDetailMutationAction,
+} from "../services/library-song-detail-mutation-service";
 
 type LibrarySongDetailMutationDispatch = (
   action: LibrarySongDetailMutationAction,

@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { getLibrarySongEditFieldState } from "../services/library-song-form-service";
 
 type EditLibrarySongFieldsProps = {
   albumNames: string;
@@ -19,6 +20,7 @@ export function EditLibrarySongFields({
   title,
 }: EditLibrarySongFieldsProps) {
   const theme = useCustomizationTheme();
+  const fieldState = getLibrarySongEditFieldState();
   const inputStyle = [
     styles.input,
     {
@@ -32,13 +34,13 @@ export function EditLibrarySongFields({
     <View style={styles.form}>
       <View style={styles.field}>
         <Text style={[styles.label, { color: theme.secondaryText }]}>
-          Title
+          {fieldState.title.label}
         </Text>
         <TextInput
           onChangeText={onChangeTitle}
-          placeholder="Song title"
+          placeholder={fieldState.title.placeholder}
           placeholderTextColor={theme.mutedText}
-          returnKeyType="next"
+          returnKeyType={fieldState.title.returnKeyType}
           style={inputStyle}
           value={title}
         />
@@ -46,14 +48,14 @@ export function EditLibrarySongFields({
 
       <View style={styles.field}>
         <Text style={[styles.label, { color: theme.secondaryText }]}>
-          Artists
+          {fieldState.artistNames.label}
         </Text>
         <TextInput
           autoCapitalize="words"
           onChangeText={onChangeArtistNames}
-          placeholder="Artist names"
+          placeholder={fieldState.artistNames.placeholder}
           placeholderTextColor={theme.mutedText}
-          returnKeyType="next"
+          returnKeyType={fieldState.artistNames.returnKeyType}
           style={inputStyle}
           value={artistNames}
         />
@@ -61,14 +63,14 @@ export function EditLibrarySongFields({
 
       <View style={styles.field}>
         <Text style={[styles.label, { color: theme.secondaryText }]}>
-          Albums
+          {fieldState.albumNames.label}
         </Text>
         <TextInput
           autoCapitalize="words"
           onChangeText={onChangeAlbumNames}
-          placeholder="Album names"
+          placeholder={fieldState.albumNames.placeholder}
           placeholderTextColor={theme.mutedText}
-          returnKeyType="done"
+          returnKeyType={fieldState.albumNames.returnKeyType}
           style={inputStyle}
           value={albumNames}
         />

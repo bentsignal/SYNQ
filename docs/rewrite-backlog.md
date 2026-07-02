@@ -315,6 +315,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: library song edit save fallback copy now lives in the song form
     service with deterministic smoke coverage instead of an inline controller
     branch.
+  - Done: library song edit field labels, placeholders, and return-key state
+    now live in the song form service with deterministic smoke coverage instead
+    of component-local form copy.
   - Done: library song export snapshot hashing/staleness/mark-exported logic
     now lives in a dedicated export snapshot repository instead of the song
     metadata edit repository.

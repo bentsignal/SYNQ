@@ -211,6 +211,7 @@ import {
   buildLibrarySongEditFormState,
   getLibrarySongEditActionState,
   getLibrarySongEditErrorMessage,
+  getLibrarySongEditFieldState,
   getLibrarySongEditStatusState,
 } from "../../../apps/new/src/features/library/services/library-song-form-service";
 import {
@@ -2747,6 +2748,23 @@ function assertLibrarySongDetailSmoke() {
     albumNames: "Alpha Album, Beta Album",
     artistNames: "Alpha Artist, Beta Artist",
     title: "Alpha",
+  });
+  assert.deepEqual(getLibrarySongEditFieldState(), {
+    albumNames: {
+      label: "Albums",
+      placeholder: "Album names",
+      returnKeyType: "done",
+    },
+    artistNames: {
+      label: "Artists",
+      placeholder: "Artist names",
+      returnKeyType: "next",
+    },
+    title: {
+      label: "Title",
+      placeholder: "Song title",
+      returnKeyType: "next",
+    },
   });
   assert.deepEqual(
     getLibrarySongEditActionState({

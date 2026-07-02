@@ -83,6 +83,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     song preview service instead of the preview list component.
   - Done: mini-player visibility, labels, metadata, and ad-blocked command state
     now live in the playback player-state service instead of the mini-player UI.
+  - Done: home now-playing summary labels now live in an app-shell service
+    instead of the home screen.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -147,6 +149,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     row state and playback item conversion.
   - Done: extend deterministic smoke coverage to mini-player hidden routes,
     remaining-time metadata, play/pause labels, and ad-break blocking.
+  - Done: extend deterministic smoke coverage to home now-playing labels for
+    empty, paused, and playing playback states.
 
 ### Phase 3: New App Build-Out
 

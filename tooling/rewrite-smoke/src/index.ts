@@ -3,6 +3,7 @@ import {
   formatDurationMs,
   formatRemainingDurationMs,
 } from "../../../apps/new/src/features/app-shell/services/duration-format-service";
+import { getHomeNowPlayingState } from "../../../apps/new/src/features/app-shell/services/home-screen-service";
 import { parseNumericRouteParam } from "../../../apps/new/src/features/app-shell/services/route-param-service";
 import {
   getActiveTrack,
@@ -1424,6 +1425,49 @@ function assertRouteParamSmoke() {
   assert.equal(parseNumericRouteParam(["not-a-number"]), null);
 }
 
+function assertHomeScreenSmoke() {
+  const activeTrack = song({ duration: 125_000, id: 1, title: "Home Track" });
+
+  assert.deepEqual(
+    getHomeNowPlayingState({
+      activeTrack: null,
+      state: {
+        ...initialPlaybackState,
+        queue: [activeTrack],
+      },
+    }),
+    {
+      detailLabel: "1 songs in queue",
+      playbackLabel: "Nothing playing",
+      title: "Choose a song to start listening",
+    },
+  );
+  assert.deepEqual(
+    getHomeNowPlayingState({
+      activeTrack,
+      state: {
+        ...initialPlaybackState,
+        isPlaying: false,
+      },
+    }),
+    {
+      detailLabel: "Smoke Artist - 2:05",
+      playbackLabel: "Paused",
+      title: "Home Track",
+    },
+  );
+  assert.equal(
+    getHomeNowPlayingState({
+      activeTrack,
+      state: {
+        ...initialPlaybackState,
+        isPlaying: true,
+      },
+    }).playbackLabel,
+    "Playing now",
+  );
+}
+
 function assertImportSongFormSmoke() {
   assert.equal(parseImportTrackInput(""), null);
   assert.equal(parseImportTrackInput("  "), null);
@@ -1454,6 +1498,7 @@ function assertImportSongFormSmoke() {
 
 assertDurationFormatSmoke();
 assertRouteParamSmoke();
+assertHomeScreenSmoke();
 assertImportSongFormSmoke();
 assertPlaybackSessionSmoke();
 assertPlaybackPlayerStateSmoke();

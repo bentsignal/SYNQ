@@ -1,6 +1,7 @@
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
+import { getHomeNowPlayingState } from "@/src/features/app-shell/services/home-screen-service";
 import { useLibrarySongPreviewQuery } from "@/src/features/library/hooks/use-library-song-preview-query";
 import { useLibrarySummaryQuery } from "@/src/features/library/hooks/use-library-summary-query";
 import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
@@ -12,12 +13,7 @@ export function HomeScreen() {
   const recentSongs = useLibrarySongPreviewQuery({ limit: 4 });
   const { activeTrack, state } = usePlaybackSession();
   const hasLibrary = summary.counts.songs > 0;
-  const queueCount = state.queue.length;
-  const playbackLabel = activeTrack
-    ? state.isPlaying
-      ? "Playing now"
-      : "Paused"
-    : "Nothing playing";
+  const nowPlaying = getHomeNowPlayingState({ activeTrack, state });
 
   return (
     <ScrollView
@@ -43,15 +39,13 @@ export function HomeScreen() {
       >
         <View style={styles.nowPlayingCopy}>
           <Text style={[styles.sectionLabel, { color: theme.accent }]}>
-            {playbackLabel}
+            {nowPlaying.playbackLabel}
           </Text>
           <Text style={[styles.nowPlayingTitle, { color: theme.primaryText }]}>
-            {activeTrack?.title ?? "Choose a song to start listening"}
+            {nowPlaying.title}
           </Text>
           <Text style={[styles.bodyText, { color: theme.secondaryText }]}>
-            {activeTrack
-              ? `${activeTrack.artist} - ${formatDurationMs(activeTrack.duration)}`
-              : `${queueCount} songs in queue`}
+            {nowPlaying.detailLabel}
           </Text>
         </View>
         <View style={styles.nowPlayingActions}>

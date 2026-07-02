@@ -22,3 +22,9 @@ export type PremiumPurchaseResult = {
   message: string;
   tierId: PremiumTierId;
 };
+
+export type PremiumEntitlementStatus = {
+  active: boolean;
+  message: string;
+  tierId: PremiumTierId;
+};

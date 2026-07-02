@@ -63,8 +63,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     erase document cleanup/database reset are connected. Manual restore smoke
     and edge-case hardening are next.
   - Premium/settings: settings home, premium screen, customization/backup
-    routes, live RevenueCat pricing, purchase, and restore commands exist;
-    app-wide entitlement state and customization ports are next.
+    routes, live RevenueCat pricing, purchase, restore commands, and an
+    app-wide entitlement provider exist; deeper premium gates and customization
+    ports are next.
 - [ ] Move reusable feature logic from `apps/old` into shared app-local modules
   that `apps/new` can consume without copying UI spaghetti.
 - [ ] Build the `apps/new` screens against reactive Drizzle query hooks instead
@@ -112,9 +113,10 @@ audio into durable library storage, persisting artwork to shared image storage,
 and editing staged song metadata before save. Backup now has a
 feature-owned command-state shell with real archive/share, restore, and
 erase/reset commands. Premium now has a feature-owned purchase session shell
-connected to RevenueCat pricing, purchase, and restore commands, but app-wide
-entitlement state is not yet wired through settings/import/playback gates. It
-is not yet a replacement app. The next useful work should alternate between:
+connected to RevenueCat pricing, purchase, restore commands, and an app-wide
+entitlement provider consumed by Settings and Backup; deeper import/playback
+gates and customization state are still next. It is not yet a replacement app.
+The next useful work should alternate between:
 
 - closing Phase 2 gaps that would otherwise be copied into the new app; and
 - defining/building `apps/new` feature surfaces so cleanup does not become an

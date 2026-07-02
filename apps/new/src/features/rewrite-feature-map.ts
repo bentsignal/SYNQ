@@ -56,7 +56,7 @@ export const rewriteFeatures: RewriteFeature[] = [
     status: "active",
     oldReference: "apps/old/src/features/premium",
     targetBoundary: "src/features/premium + src/features/settings",
-    nextMilestone: "Wire app-wide entitlement state, customization, privacy, haptics, and support flows behind settings routes.",
+    nextMilestone: "Wire deeper premium gates, customization, privacy, haptics, and support flows behind settings routes.",
   },
 ];
 

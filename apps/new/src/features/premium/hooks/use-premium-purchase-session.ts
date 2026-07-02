@@ -11,11 +11,18 @@ import type {
   PremiumTier,
   PremiumTierId,
 } from "../types/premium-purchase";
+import { usePremiumEntitlement } from "../context/PremiumEntitlementProvider";
 
 type PremiumPurchaseAction =
   | { tierId: PremiumTierId; type: "select" }
   | { type: "start" }
   | { result: PremiumPurchaseResult; type: "succeed" }
+  | {
+      active: boolean;
+      message: string | null;
+      tierId: PremiumTierId;
+      type: "sync-entitlement";
+    }
   | { error: string; type: "fail" }
   | { type: "reset" };
 
@@ -55,6 +62,13 @@ const premiumPurchaseReducer = (
         phase: "success",
         selectedTierId: action.result.tierId,
       };
+    case "sync-entitlement":
+      return {
+        ...state,
+        active: action.active,
+        message: state.phase === "idle" ? action.message : state.message,
+        selectedTierId: action.tierId,
+      };
     case "fail":
       return {
         ...state,
@@ -68,9 +82,14 @@ const premiumPurchaseReducer = (
 };
 
 export function usePremiumPurchaseSession() {
+  const { applyStatus, state: entitlementState } = usePremiumEntitlement();
   const [state, dispatch] = useReducer(
     premiumPurchaseReducer,
-    initialPremiumPurchaseState,
+    {
+      ...initialPremiumPurchaseState,
+      active: entitlementState.active,
+      selectedTierId: entitlementState.tierId,
+    },
   );
   const [tiers, setTiers] = useState<PremiumTier[]>(premiumTiers);
 
@@ -97,6 +116,15 @@ export function usePremiumPurchaseSession() {
     };
   }, []);
 
+  useEffect(() => {
+    dispatch({
+      active: entitlementState.active,
+      message: entitlementState.message,
+      tierId: entitlementState.tierId,
+      type: "sync-entitlement",
+    });
+  }, [entitlementState.active, entitlementState.message, entitlementState.tierId]);
+
   const selectTier = useCallback((tierId: PremiumTierId) => {
     dispatch({ tierId, type: "select" });
   }, []);
@@ -106,6 +134,7 @@ export function usePremiumPurchaseSession() {
 
     try {
       const result = await purchasePremiumTier(state.selectedTierId);
+      applyStatus(result);
       dispatch({ result, type: "succeed" });
     } catch (caughtError) {
       dispatch({
@@ -116,13 +145,14 @@ export function usePremiumPurchaseSession() {
         type: "fail",
       });
     }
-  }, [state.selectedTierId]);
+  }, [applyStatus, state.selectedTierId]);
 
   const restorePurchase = useCallback(async () => {
     dispatch({ type: "start" });
 
     try {
       const result = await restorePremiumPurchase();
+      applyStatus(result);
       dispatch({ result, type: "succeed" });
     } catch (caughtError) {
       dispatch({
@@ -133,7 +163,7 @@ export function usePremiumPurchaseSession() {
         type: "fail",
       });
     }
-  }, []);
+  }, [applyStatus]);
 
   const reset = useCallback(() => {
     dispatch({ type: "reset" });
@@ -147,7 +177,16 @@ export function usePremiumPurchaseSession() {
       restorePurchase,
       selectTier,
       state,
+      entitlementState,
     }),
-    [purchaseSelectedTier, reset, restorePurchase, selectTier, state, tiers],
+    [
+      entitlementState,
+      purchaseSelectedTier,
+      reset,
+      restorePurchase,
+      selectTier,
+      state,
+      tiers,
+    ],
   );
 }

@@ -1,4 +1,5 @@
 import type {
+  PremiumEntitlementStatus,
   PremiumPurchaseResult,
   PremiumTier,
   PremiumTierId,
@@ -121,6 +122,26 @@ export async function restorePremiumPurchase(): Promise<PremiumPurchaseResult> {
   return {
     active: true,
     message: "Premium purchase restored.",
+    tierId: getTierIdFromProduct(entitlement.productIdentifier),
+  };
+}
+
+export async function checkPremiumEntitlement(): Promise<PremiumEntitlementStatus> {
+  configureRevenueCat();
+  const customerInfo = await Purchases.getCustomerInfo();
+  const entitlement = customerInfo.entitlements.active.Premium;
+
+  if (!entitlement) {
+    return {
+      active: false,
+      message: "Premium is inactive.",
+      tierId: "monthly",
+    };
+  }
+
+  return {
+    active: true,
+    message: "Premium is active.",
     tierId: getTierIdFromProduct(entitlement.productIdentifier),
   };
 }

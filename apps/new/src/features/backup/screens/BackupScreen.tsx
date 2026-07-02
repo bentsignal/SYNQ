@@ -1,4 +1,5 @@
 import { Link } from "expo-router";
+import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import {
   Alert,
   Pressable,
@@ -42,6 +43,7 @@ const operationLabels = {
 
 export function BackupScreen() {
   const { reset, runOperation, state } = useBackupSession();
+  const { state: premiumState } = usePremiumEntitlement();
   const isRunning = state.phase === "running";
   const runBackupOperation = (operation: BackupOperation) => {
     if (operation === "backup") {
@@ -86,7 +88,7 @@ export function BackupScreen() {
             <View style={styles.cardText}>
               <View style={styles.cardTitleRow}>
                 <Text style={styles.cardTitle}>{action.title}</Text>
-                {state.requiresPremium ? (
+                {state.requiresPremium && !premiumState.active ? (
                   <Text style={styles.premiumPill}>Premium</Text>
                 ) : null}
               </View>

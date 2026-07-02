@@ -1,5 +1,6 @@
 import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
 
 type SettingsRoute = {
   description: string;
@@ -26,6 +27,8 @@ const settingsRoutes: SettingsRoute[] = [
 ];
 
 export function SettingsHomeScreen() {
+  const { state: premiumState } = usePremiumEntitlement();
+
   return (
     <ScrollView contentContainerStyle={styles.content} style={styles.scroll}>
       <View style={styles.header}>
@@ -33,6 +36,9 @@ export function SettingsHomeScreen() {
         <Text style={styles.title}>Settings</Text>
         <Text style={styles.subtitle}>
           Manage the pieces around your library experience.
+        </Text>
+        <Text style={styles.statusText}>
+          {premiumState.active ? "Premium active" : "Premium inactive"}
         </Text>
       </View>
 
@@ -85,6 +91,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     maxWidth: 520,
+  },
+  statusText: {
+    color: "#0f766e",
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
   },
   list: {
     backgroundColor: "#ffffff",

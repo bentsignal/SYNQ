@@ -6,6 +6,8 @@ export const playbackAdProgressIntervalMs = 5_000;
 export const initialPlaybackAdGateState: PlaybackAdGateState = {
   accumulatedMs: 0,
   active: false,
+  playbackDuration: 0,
+  playbackPosition: 0,
   due: false,
   lastTrackedPosition: null,
   thresholdMs: playbackAdThresholdMs,
@@ -17,6 +19,8 @@ export const resetPlaybackAdGate = (
   ...state,
   accumulatedMs: 0,
   active: false,
+  playbackDuration: 0,
+  playbackPosition: 0,
   due: false,
   lastTrackedPosition: null,
 });
@@ -26,12 +30,28 @@ export const beginPlaybackAdBreak = (
 ): PlaybackAdGateState => ({
   ...state,
   active: true,
+  playbackDuration: 0,
+  playbackPosition: 0,
   due: true,
 });
 
 export const completePlaybackAdBreak = (
   state: PlaybackAdGateState,
 ): PlaybackAdGateState => resetPlaybackAdGate(state);
+
+export const updatePlaybackAdBreakProgress = ({
+  duration,
+  position,
+  state,
+}: {
+  duration: number | null;
+  position: number;
+  state: PlaybackAdGateState;
+}): PlaybackAdGateState => ({
+  ...state,
+  playbackDuration: Math.max(0, duration ?? state.playbackDuration),
+  playbackPosition: Math.max(0, position),
+});
 
 export const trackPlaybackAdProgress = ({
   currentPosition,

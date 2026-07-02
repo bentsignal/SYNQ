@@ -33,7 +33,6 @@ const getProgressPercent = ({
 export function PlaybackPlayerScreen() {
   const {
     activeTrack,
-    completeAdBreak,
     pause,
     resume,
     seekTo,
@@ -45,6 +44,10 @@ export function PlaybackPlayerScreen() {
   } = usePlaybackSession();
   const hasActiveTrack = !!activeTrack;
   const adBreakActive = state.adGate.active || state.adGate.due;
+  const adProgressPercent = getProgressPercent({
+    duration: state.adGate.playbackDuration,
+    position: state.adGate.playbackPosition,
+  });
   const progressPercent = getProgressPercent({
     duration: state.duration,
     position: state.position,
@@ -75,17 +78,20 @@ export function PlaybackPlayerScreen() {
           <Text style={styles.panelLabel}>Premium gate</Text>
           <Text style={styles.adTitle}>Ad break required</Text>
           <Text style={styles.panelText}>
-            Free playback pauses after 10 minutes of listening. Complete the ad
-            break to keep playing, or open Premium for ad-free listening.
+            Free playback pauses after 10 minutes of listening. The ad will
+            resume your song when it finishes, or you can open Premium for
+            ad-free listening.
           </Text>
+          <Text style={styles.panelText}>
+            {formatDuration(state.adGate.playbackPosition)} /{" "}
+            {formatDuration(state.adGate.playbackDuration)}
+          </Text>
+          <View style={styles.progressTrack}>
+            <View
+              style={[styles.progressFill, { width: `${adProgressPercent}%` }]}
+            />
+          </View>
           <View style={styles.adActions}>
-            <Pressable
-              accessibilityRole="button"
-              onPress={completeAdBreak}
-              style={styles.primaryButton}
-            >
-              <Text style={styles.primaryText}>Complete Break</Text>
-            </Pressable>
             <Link asChild href="/premium">
               <Pressable accessibilityRole="button" style={styles.controlButton}>
                 <Text style={styles.controlText}>Open Premium</Text>

@@ -18,7 +18,6 @@ export function PlaybackQueueScreen() {
   const {
     activeTrack,
     clearQueue,
-    completeAdBreak,
     moveQueueSong,
     playSong,
     removeFromQueue,
@@ -41,17 +40,10 @@ export function PlaybackQueueScreen() {
           <Text style={styles.panelLabel}>Premium gate</Text>
           <Text style={styles.adTitle}>Ad break required</Text>
           <Text style={styles.panelText}>
-            Queue playback commands are paused for free users until the ad break
-            is complete.
+            Queue playback commands are paused while the bundled ad plays. Your
+            song resumes automatically when the ad finishes.
           </Text>
           <View style={styles.adActions}>
-            <Pressable
-              accessibilityRole="button"
-              onPress={completeAdBreak}
-              style={styles.completeButton}
-            >
-              <Text style={styles.completeText}>Complete Break</Text>
-            </Pressable>
             <Link asChild href="/premium">
               <Pressable accessibilityRole="button" style={styles.premiumButton}>
                 <Text style={styles.premiumText}>Open Premium</Text>
@@ -332,21 +324,6 @@ const styles = StyleSheet.create({
   },
   removeText: {
     color: "#b42318",
-    fontSize: 11,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  completeButton: {
-    alignItems: "center",
-    backgroundColor: "#0f766e",
-    borderRadius: 8,
-    justifyContent: "center",
-    minHeight: 38,
-    paddingHorizontal: 12,
-  },
-  completeText: {
-    color: "#ffffff",
     fontSize: 11,
     fontWeight: "800",
     letterSpacing: 0,

@@ -4,6 +4,10 @@ import type {
   PlaybackState,
 } from "../types/playback-state";
 
+const playbackAdAudio = require("../../../assets/audio/ad.mp3") as number;
+
+type TrackPlayerSource = "ad" | "library";
+
 export type TrackPlayerStatusSnapshot = {
   didJustFinish: boolean;
   duration: number | null;
@@ -11,14 +15,17 @@ export type TrackPlayerStatusSnapshot = {
   isPlaying: boolean;
   position: number;
   songId: number | null;
+  source: TrackPlayerSource | null;
 };
 
 export type TrackPlayerAdapter = {
   destroy: () => Promise<void>;
   pause: () => Promise<void>;
   play: (song: PlaybackQueueItem) => Promise<void>;
+  playAd: () => Promise<void>;
   restore: (state: PlaybackState) => Promise<void>;
   resume: () => Promise<void>;
+  resumeLibrary: () => Promise<void>;
   seekTo: (position: number) => Promise<void>;
   setStatusListener: (
     listener: ((status: TrackPlayerStatusSnapshot) => void) | null,
@@ -30,21 +37,26 @@ export const createUnavailableTrackPlayerAdapter = (): TrackPlayerAdapter => ({
   destroy: () => Promise.resolve(),
   pause: () => Promise.resolve(),
   play: () => Promise.resolve(),
+  playAd: () => Promise.resolve(),
   restore: () => Promise.resolve(),
   resume: () => Promise.resolve(),
+  resumeLibrary: () => Promise.resolve(),
   seekTo: () => Promise.resolve(),
   setStatusListener: () => {},
   stop: () => Promise.resolve(),
 });
 
 export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
-  let sound: Audio.Sound | null = null;
+  let adSound: Audio.Sound | null = null;
+  let librarySound: Audio.Sound | null = null;
   let loadedSongId: number | null = null;
+  let activeSource: TrackPlayerSource | null = null;
   let statusListener: ((status: TrackPlayerStatusSnapshot) => void) | null =
     null;
 
   const toStatusSnapshot = (
     status: AVPlaybackStatus,
+    source: TrackPlayerSource,
   ): TrackPlayerStatusSnapshot => {
     if (!status.isLoaded) {
       return {
@@ -54,6 +66,7 @@ export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
         isPlaying: false,
         position: 0,
         songId: loadedSongId,
+        source,
       };
     }
 
@@ -64,12 +77,16 @@ export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
       isPlaying: status.isPlaying,
       position: status.positionMillis,
       songId: loadedSongId,
+      source,
     };
   };
 
-  const attachStatusListener = () => {
+  const attachStatusListener = (
+    sound: Audio.Sound | null,
+    source: TrackPlayerSource,
+  ) => {
     sound?.setOnPlaybackStatusUpdate((status) => {
-      statusListener?.(toStatusSnapshot(status));
+      statusListener?.(toStatusSnapshot(status, source));
     });
   };
 
@@ -84,12 +101,32 @@ export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
     });
   };
 
-  const unloadCurrentSound = async () => {
-    if (sound) {
-      await sound.unloadAsync();
-      sound = null;
+  const unloadAdSound = async () => {
+    if (adSound) {
+      await adSound.unloadAsync();
+      adSound = null;
+    }
+
+    if (activeSource === "ad") {
+      activeSource = null;
+    }
+  };
+
+  const unloadLibrarySound = async () => {
+    if (librarySound) {
+      await librarySound.unloadAsync();
+      librarySound = null;
       loadedSongId = null;
     }
+
+    if (activeSource === "library") {
+      activeSource = null;
+    }
+  };
+
+  const unloadAllSounds = async () => {
+    await unloadAdSound();
+    await unloadLibrarySound();
   };
 
   const playSong = async (song: PlaybackQueueItem) => {
@@ -98,13 +135,15 @@ export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
     }
 
     await configureAudio();
+    await unloadAdSound();
 
-    if (sound && loadedSongId === song.id) {
-      await sound.replayAsync();
+    if (librarySound && loadedSongId === song.id) {
+      activeSource = "library";
+      await librarySound.replayAsync();
       return;
     }
 
-    await unloadCurrentSound();
+    await unloadLibrarySound();
 
     const created = await Audio.Sound.createAsync(
       { uri: song.pathToFile },
@@ -114,19 +153,54 @@ export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
       },
     );
 
-    sound = created.sound;
+    librarySound = created.sound;
     loadedSongId = song.id;
-    attachStatusListener();
+    activeSource = "library";
+    attachStatusListener(librarySound, "library");
+  };
+
+  const playAd = async () => {
+    await configureAudio();
+
+    if (librarySound) {
+      await librarySound.pauseAsync();
+    }
+
+    await unloadAdSound();
+
+    const created = await Audio.Sound.createAsync(playbackAdAudio, {
+      positionMillis: 0,
+      shouldPlay: true,
+    });
+
+    adSound = created.sound;
+    activeSource = "ad";
+    attachStatusListener(adSound, "ad");
+  };
+
+  const resumeLibrary = async () => {
+    await unloadAdSound();
+
+    if (librarySound) {
+      activeSource = "library";
+      await librarySound.playAsync();
+    }
   };
 
   return {
-    destroy: unloadCurrentSound,
+    destroy: unloadAllSounds,
     pause: async () => {
-      if (sound) {
-        await sound.pauseAsync();
+      if (activeSource === "ad" && adSound) {
+        await adSound.pauseAsync();
+        return;
+      }
+
+      if (librarySound) {
+        await librarySound.pauseAsync();
       }
     },
     play: playSong,
+    playAd,
     restore: async (state) => {
       const activeSong =
         state.activeQueueIndex === null
@@ -138,23 +212,36 @@ export const createExpoAvTrackPlayerAdapter = (): TrackPlayerAdapter => {
       }
     },
     resume: async () => {
-      if (sound) {
-        await sound.playAsync();
+      if (activeSource === "ad" && adSound) {
+        await adSound.playAsync();
+        return;
+      }
+
+      if (librarySound) {
+        activeSource = "library";
+        await librarySound.playAsync();
       }
     },
+    resumeLibrary,
     seekTo: async (position) => {
-      if (sound) {
-        await sound.setPositionAsync(position);
+      if (librarySound) {
+        await librarySound.setPositionAsync(position);
       }
     },
     setStatusListener: (listener) => {
       statusListener = listener;
-      attachStatusListener();
+      attachStatusListener(librarySound, "library");
+      attachStatusListener(adSound, "ad");
     },
     stop: async () => {
-      if (sound) {
-        await sound.stopAsync();
+      if (adSound) {
+        await adSound.stopAsync();
       }
+
+      if (librarySound) {
+        await librarySound.stopAsync();
+      }
+      activeSource = null;
     },
   };
 };

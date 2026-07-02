@@ -29,6 +29,8 @@ export type PlaybackMode = {
 export type PlaybackAdGateState = {
   accumulatedMs: number;
   active: boolean;
+  playbackDuration: number;
+  playbackPosition: number;
   due: boolean;
   lastTrackedPosition: number | null;
   thresholdMs: number;

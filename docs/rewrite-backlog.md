@@ -202,6 +202,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     labels now live in the library interaction service instead of the screen.
   - Done: add-to-collection song list row rendering now lives in a dedicated
     component instead of the route screen.
+  - Done: add-to-collection search, selection summary, bulk-add action, status,
+    and navigation presentation now live in a focused form component instead of
+    the route screen.
   - Done: song detail like, export, and delete labels now live with action
     availability in the song detail service instead of the detail screen.
   - Done: song detail relationship list rendering now lives in a dedicated

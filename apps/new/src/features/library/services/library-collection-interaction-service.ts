@@ -189,6 +189,10 @@ export const getAddableSongSelectionState = ({
   };
 };
 
+export type AddableSongSelectionState = ReturnType<
+  typeof getAddableSongSelectionState
+>;
+
 export const toggleSongIdSelection = ({
   selectedSongIds,
   songId,

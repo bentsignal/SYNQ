@@ -320,7 +320,7 @@ export function PlaybackPlayerScreen() {
           Session
         </Text>
         <Text style={[styles.panelText, { color: theme.secondaryText }]}>
-          {state.queue.length} queued / revision {state.queueRevision}
+          {state.queue.length} queued
         </Text>
         <Text style={[styles.panelText, { color: theme.secondaryText }]}>
           Free listening before ad break:{" "}

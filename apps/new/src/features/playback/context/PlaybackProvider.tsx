@@ -18,6 +18,7 @@ import {
 } from "../services/playback-ad-gate-service";
 import {
   findQueueIndex,
+  getNextQueueIndex,
   initialPlaybackState,
   moveQueueItem,
   upsertQueueItem,
@@ -45,7 +46,7 @@ type PlaybackAction =
   | { type: "pause" }
   | { type: "resume" }
   | { position: number; type: "seek-to" }
-  | { type: "skip-next" }
+  | { targetIndex: number | null; type: "skip-next" }
   | { type: "skip-previous" }
   | { song: PlaybackQueueItem; type: "add-to-queue" }
   | { type: "clear-queue" }
@@ -61,7 +62,7 @@ type PlaybackAction =
       status: TrackPlayerStatusSnapshot;
       type: "native-status";
     }
-  | { type: "native-finished" }
+  | { targetIndex: number | null; type: "native-finished" }
   | { premiumActive: boolean; type: "sync-premium" }
   | { type: "toggle-loop" }
   | { type: "toggle-shuffle" };
@@ -95,13 +96,6 @@ const getActiveTrack = (state: PlaybackState) =>
   state.activeQueueIndex === null
     ? null
     : state.queue[state.activeQueueIndex] ?? null;
-
-const getNextTrack = (state: PlaybackState) => {
-  const nextIndex =
-    state.activeQueueIndex === null ? 0 : state.activeQueueIndex + 1;
-
-  return state.queue[nextIndex] ?? null;
-};
 
 const getPreviousTrack = (state: PlaybackState) => {
   if (state.position >= 3000) {
@@ -188,9 +182,10 @@ const playbackReducer = (
         position: Math.max(0, Math.min(action.position, state.duration)),
       };
     case "skip-next": {
-      const nextIndex =
-        state.activeQueueIndex === null ? 0 : state.activeQueueIndex + 1;
-      const nextTrack = state.queue[nextIndex] ?? null;
+      const nextTrack =
+        action.targetIndex === null
+          ? null
+          : state.queue[action.targetIndex] ?? null;
 
       if (!nextTrack) {
         return {
@@ -202,7 +197,7 @@ const playbackReducer = (
 
       return {
         ...state,
-        activeQueueIndex: nextIndex,
+        activeQueueIndex: action.targetIndex,
         activeTrackId: nextTrack.id,
         duration: nextTrack.duration ?? 0,
         isPlaying: true,
@@ -363,14 +358,10 @@ const playbackReducer = (
         position: Math.max(0, action.status.position),
       };
     case "native-finished": {
-      const nextIndex =
-        state.activeQueueIndex === null ? null : state.activeQueueIndex + 1;
-      const loopIndex =
-        state.mode.loop && state.queue.length > 0 ? 0 : null;
-      const targetIndex =
-        nextIndex !== null && state.queue[nextIndex] ? nextIndex : loopIndex;
       const nextTrack =
-        targetIndex === null ? null : state.queue[targetIndex] ?? null;
+        action.targetIndex === null
+          ? null
+          : state.queue[action.targetIndex] ?? null;
 
       if (!nextTrack) {
         return {
@@ -382,7 +373,7 @@ const playbackReducer = (
 
       return {
         ...state,
-        activeQueueIndex: targetIndex,
+        activeQueueIndex: action.targetIndex,
         activeTrackId: nextTrack.id,
         duration: nextTrack.duration ?? 0,
         isPlaying: true,
@@ -508,13 +499,16 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const nextTrack = getNextTrack(stateRef.current);
-    const loopTrack = stateRef.current.mode.loop
-      ? stateRef.current.queue[0] ?? null
-      : null;
-    const targetTrack = nextTrack ?? loopTrack;
+    const targetIndex = getNextQueueIndex({
+      activeQueueIndex: stateRef.current.activeQueueIndex,
+      loop: stateRef.current.mode.loop,
+      queue: stateRef.current.queue,
+      shuffle: stateRef.current.mode.shuffle,
+    });
+    const targetTrack =
+      targetIndex === null ? null : stateRef.current.queue[targetIndex] ?? null;
 
-    dispatch({ type: "native-finished" });
+    dispatch({ targetIndex, type: "native-finished" });
     if (targetTrack) {
       runNativeCommand(() => adapterRef.current.play(targetTrack));
     }
@@ -622,9 +616,16 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
   );
   const skipNext = useCallback(() => {
     runAdGatedCommand(() => {
-      const nextTrack = getNextTrack(stateRef.current);
+      const targetIndex = getNextQueueIndex({
+        activeQueueIndex: stateRef.current.activeQueueIndex,
+        loop: stateRef.current.mode.loop,
+        queue: stateRef.current.queue,
+        shuffle: stateRef.current.mode.shuffle,
+      });
+      const nextTrack =
+        targetIndex === null ? null : stateRef.current.queue[targetIndex] ?? null;
 
-      dispatch({ type: "skip-next" });
+      dispatch({ targetIndex, type: "skip-next" });
       runNativeCommand(() =>
         nextTrack
           ? adapterRef.current.play(nextTrack)

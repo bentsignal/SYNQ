@@ -57,8 +57,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Playback: explicit session state, queue/player screens, an Expo Audio
     adapter for play/pause/seek/skip, native status/progress sync,
     filesystem-backed session persistence, queue reordering, and player
-    progress controls, active-track removal handling, queue clearing, a
-    tab-shell mini player for active tracks, and
+    progress controls, active-track removal handling, queue clearing, shuffled
+    next-track advancement for manual skip and native completion, a tab-shell
+    mini player for active tracks, and
     persisted Premium/free-listening ad gate state with bundled ad audio
     playback exist. Remote command semantics for play/pause/next/previous/seek,
     queue-ended, and error handling now exist behind the provider boundary;

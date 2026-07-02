@@ -80,3 +80,43 @@ export const moveQueueItem = ({
 
   return nextQueue;
 };
+
+export const getNextQueueIndex = ({
+  activeQueueIndex,
+  loop,
+  queue,
+  random = Math.random,
+  shuffle,
+}: {
+  activeQueueIndex: number | null;
+  loop: boolean;
+  queue: PlaybackQueueItem[];
+  random?: () => number;
+  shuffle: boolean;
+}) => {
+  if (queue.length === 0) {
+    return null;
+  }
+
+  if (shuffle) {
+    const playableIndexes = queue
+      .map((_, index) => index)
+      .filter((index) => index !== activeQueueIndex);
+
+    if (playableIndexes.length === 0) {
+      return loop ? 0 : null;
+    }
+
+    const randomIndex = Math.floor(random() * playableIndexes.length);
+
+    return playableIndexes[randomIndex] ?? null;
+  }
+
+  const nextIndex = activeQueueIndex === null ? 0 : activeQueueIndex + 1;
+
+  if (queue[nextIndex]) {
+    return nextIndex;
+  }
+
+  return loop ? 0 : null;
+};

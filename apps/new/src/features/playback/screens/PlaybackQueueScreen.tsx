@@ -58,7 +58,7 @@ export function PlaybackQueueScreen() {
           Now Playing
         </Text>
         <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          Queue state is owned by the playback feature boundary.
+          Reorder upcoming songs, remove tracks, or jump to a different song.
         </Text>
       </View>
 
@@ -194,18 +194,7 @@ export function PlaybackQueueScreen() {
         </View>
       )}
 
-      <View
-        style={[
-          styles.panel,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-        ]}
-      >
-        <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
-          Revision
-        </Text>
-        <Text style={[styles.panelText, { color: theme.secondaryText }]}>
-          {state.queueRevision}
-        </Text>
+      <View style={styles.actionRow}>
         <Pressable
           accessibilityRole="button"
           disabled={state.queue.length === 0}
@@ -405,12 +394,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0,
     textTransform: "uppercase",
   },
-  panel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 8,
-    padding: 16,
-  },
   panelLabel: {
     fontSize: 12,
     fontWeight: "800",
@@ -429,6 +412,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     minHeight: 36,
     paddingHorizontal: 12,
+  },
+  actionRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
   },
   backLink: {
     fontSize: 15,

@@ -75,6 +75,28 @@ export type PlaybackPlayerActionState = ReturnType<
   typeof getPlaybackPlayerActionState
 >;
 
+export const getPlaybackPlayerViewState = ({
+  activeTrack,
+  state,
+}: {
+  activeTrack: PlaybackQueueItem | null;
+  state: PlaybackState;
+}) => ({
+  actionState: getPlaybackPlayerActionState({ activeTrack, state }),
+  adProgressPercent: getPlaybackProgressPercent({
+    duration: state.adGate.playbackDuration,
+    position: state.adGate.playbackPosition,
+  }),
+  freeListeningRemainingMs: getFreeListeningRemainingMs({
+    accumulatedMs: state.adGate.accumulatedMs,
+    thresholdMs: state.adGate.thresholdMs,
+  }),
+  progressPercent: getPlaybackProgressPercent({
+    duration: state.duration,
+    position: state.position,
+  }),
+});
+
 export const getPlaybackMiniPlayerState = ({
   activeTrack,
   pathname,

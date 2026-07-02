@@ -19,6 +19,7 @@ import {
   getFreeListeningRemainingMs,
   getPlaybackMiniPlayerState,
   getPlaybackPlayerActionState,
+  getPlaybackPlayerViewState,
   getPlaybackProgressPercent,
   getSeekTargetPosition,
 } from "../../../apps/new/src/features/playback/services/playback-player-state-service";
@@ -615,6 +616,40 @@ function assertPlaybackPlayerStateSmoke() {
       loopLabel: "Loop Off",
       playPauseLabel: "Play",
       shuffleLabel: "Shuffle Off",
+    },
+  );
+  assert.deepEqual(
+    getPlaybackPlayerViewState({
+      activeTrack,
+      state: {
+        ...initialPlaybackState,
+        adGate: {
+          ...initialPlaybackState.adGate,
+          accumulatedMs: 120_000,
+          playbackDuration: 30_000,
+          playbackPosition: 7_500,
+          thresholdMs: 600_000,
+        },
+        duration: 180_000,
+        isPlaying: true,
+        position: 45_000,
+      },
+    }),
+    {
+      actionState: {
+        adBreakActive: false,
+        canFastForward: true,
+        canPlayPause: true,
+        canRewind: true,
+        canSkipNext: true,
+        canSkipPrevious: true,
+        loopLabel: "Loop Off",
+        playPauseLabel: "Pause",
+        shuffleLabel: "Shuffle Off",
+      },
+      adProgressPercent: 25,
+      freeListeningRemainingMs: 480_000,
+      progressPercent: 25,
     },
   );
   assert.deepEqual(

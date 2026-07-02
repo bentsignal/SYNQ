@@ -1,9 +1,7 @@
 import { useCallback } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
-  getFreeListeningRemainingMs,
-  getPlaybackPlayerActionState,
-  getPlaybackProgressPercent,
+  getPlaybackPlayerViewState,
   getSeekTargetPosition,
 } from "../services/playback-player-state-service";
 import { usePlaybackSession } from "./use-playback-session";
@@ -21,19 +19,12 @@ export function usePlaybackPlayerController() {
     toggleLoop,
     toggleShuffle,
   } = usePlaybackSession();
-  const actionState = getPlaybackPlayerActionState({ activeTrack, state });
-  const adProgressPercent = getPlaybackProgressPercent({
-    duration: state.adGate.playbackDuration,
-    position: state.adGate.playbackPosition,
-  });
-  const progressPercent = getPlaybackProgressPercent({
-    duration: state.duration,
-    position: state.position,
-  });
-  const freeListeningRemainingMs = getFreeListeningRemainingMs({
-    accumulatedMs: state.adGate.accumulatedMs,
-    thresholdMs: state.adGate.thresholdMs,
-  });
+  const {
+    actionState,
+    adProgressPercent,
+    freeListeningRemainingMs,
+    progressPercent,
+  } = getPlaybackPlayerViewState({ activeTrack, state });
 
   const rewind = useCallback(() => {
     sendHaptic("light");

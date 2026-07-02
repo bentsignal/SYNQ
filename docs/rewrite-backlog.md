@@ -338,6 +338,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     live in the playback player-state service instead of the player screen.
   - Done: playback player command handlers, haptics, seek targets, and progress
     derivation now live in a controller hook instead of the player screen.
+  - Done: playback player aggregate view state now lives in the player-state
+    service with deterministic smoke coverage instead of being assembled in the
+    controller hook.
   - Done: Expo Audio native status-to-playback snapshot translation now lives
     in a pure playback service with deterministic smoke coverage.
   - Done: playback native command planning for resume, skip next/previous, and

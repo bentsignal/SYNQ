@@ -253,6 +253,7 @@ import {
   getBackupConfirmationState,
   getBackupPhaseTransitionEffects,
   getBackupOperationLabel,
+  getBackupScreenState,
   getBackupStatusState,
 } from "../../../apps/new/src/features/backup/services/backup-screen-service";
 import {
@@ -4177,6 +4178,12 @@ function assertBackupScreenSmoke() {
     backupActionCards.map((card) => card.operation),
     ["backup", "restore", "erase"],
   );
+  assert.deepEqual(getBackupScreenState(), {
+    backLink: {
+      href: "/(tabs)/settings",
+      label: "Back to Settings",
+    },
+  });
   assert.deepEqual(startedBackupState, {
     error: null,
     lastOperation: "backup",

@@ -3,6 +3,7 @@ import type {
   BackupOperation,
   BackupSessionState,
 } from "../types/backup-session";
+import { getSettingsBackLink } from "../../settings/services/settings-screen-service";
 
 export type BackupActionCard = {
   body: string;
@@ -27,6 +28,10 @@ export const backupActionCards: BackupActionCard[] = [
     title: "Erase your library",
   },
 ];
+
+export const getBackupScreenState = () => ({
+  backLink: getSettingsBackLink(),
+});
 
 const operationLabels = {
   backup: "Backup",

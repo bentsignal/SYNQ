@@ -399,6 +399,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     instead of the route screen.
   - Done: backup header, action list/cards, and status panel now render through
     focused components instead of one large backup screen view.
+  - Done: backup settings back-link presentation now lives in the backup screen
+    service with smoke coverage instead of the view.
   - Done: backup restore now unzips into a cache staging directory and rejects
     empty archives before replacing the live document directory.
   - Done: backup session reducer state transitions now live in a pure service

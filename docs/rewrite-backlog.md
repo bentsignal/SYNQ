@@ -92,6 +92,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     preference-aware haptics, and staged-file cleanup now runs when songs are
     removed or discarded. Staged import sessions now persist a validated
     manifest across route/provider remounts while keeping staged audio in cache.
+    Import session state transitions now live in a feature service, leaving the
+    provider focused on file/cache/persistence orchestration.
     Wi-Fi transfer now falls back across a small local port range and reports
     the active port. Import review can also export staged draft files before
     save/discard. Deeper manual smoke is next.
@@ -1138,3 +1140,6 @@ endless old-app polishing loop.
 - Done: close new-app library export metadata parity by writing stale MP3/FLAC
   tags through shared audio infrastructure and recording
   `snapshotAtLastExport` after export preparation.
+- Done: extract the new-app import session reducer and initial state into an
+  import feature service, keeping `ImportSessionProvider` focused on
+  side-effect orchestration.

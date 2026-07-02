@@ -1,18 +1,10 @@
-import { useState } from "react";
-import { Link, router, useLocalSearchParams } from "expo-router";
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { shareLibrarySongs } from "@/src/features/export/services/library-export-service";
+import { Link, useLocalSearchParams } from "expo-router";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
-import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
+import { useLibrarySongDetailController } from "../hooks/use-library-song-detail-controller";
 import { useLibrarySongDetailQuery } from "../hooks/use-library-song-detail-query";
 import {
-  deleteLibrarySong,
-  setLibrarySongLiked,
-} from "../repository/song-metadata-repository";
-import {
-  getLibrarySongDetailActionState,
   getLibrarySongRelationshipHref,
   type LibrarySongRelationshipKind,
 } from "../services/library-song-detail-service";
@@ -47,80 +39,24 @@ export function LibrarySongDetailScreen() {
 
 function LibrarySongDetailContent({ songId }: { songId: number }) {
   const { detail, errors } = useLibrarySongDetailQuery(songId);
-  const { addToQueue, playSong } = usePlaybackSession();
-  const { removeFromQueue } = usePlaybackSession();
   const theme = useCustomizationTheme();
-  const { sendHaptic } = useHapticFeedback();
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [exportError, setExportError] = useState<string | null>(null);
-  const [isExporting, setIsExporting] = useState(false);
-  const [isTogglingLiked, setIsTogglingLiked] = useState(false);
   const hasErrors = errors.length > 0;
-  const actionState = getLibrarySongDetailActionState({
+  const {
+    actionState,
+    deleteCurrentSong,
+    error,
+    exportCurrentSong,
+    playCurrentSong,
+    queueCurrentSong,
+    toggleLiked,
+  } = useLibrarySongDetailController({
     detail,
-    isDeleting,
-    isExporting,
-    isTogglingLiked,
+    songId,
   });
   const updatedLabel =
     detail.updatedAt > 0
       ? `Updated ${new Date(detail.updatedAt).toLocaleTimeString()}`
       : "Waiting for song data";
-  const deleteSong = () => {
-    Alert.alert("Delete song", `Delete ${detail.title}?`, [
-      { text: "Cancel", style: "cancel" },
-      {
-        onPress: async () => {
-          setIsDeleting(true);
-          setExportError(null);
-
-          try {
-            await deleteLibrarySong(songId);
-            removeFromQueue(songId);
-            sendHaptic("success");
-            router.replace("/(tabs)/library");
-          } catch (error) {
-            sendHaptic("error");
-            setExportError(
-              error instanceof Error
-                ? error.message
-                : "Song could not be deleted.",
-            );
-          } finally {
-            setIsDeleting(false);
-          }
-        },
-        style: "destructive",
-        text: "Delete",
-      },
-    ]);
-  };
-  const toggleLiked = async () => {
-    if (detail.isMissing) {
-      sendHaptic("error");
-      return;
-    }
-
-    setIsTogglingLiked(true);
-    setExportError(null);
-
-    try {
-      await setLibrarySongLiked({
-        liked: !detail.isLiked,
-        songId,
-      });
-      sendHaptic("light");
-    } catch (error) {
-      sendHaptic("error");
-      setExportError(
-        error instanceof Error
-          ? error.message
-          : "Liked Songs could not be updated.",
-      );
-    } finally {
-      setIsTogglingLiked(false);
-    }
-  };
 
   return (
     <ScrollView
@@ -170,18 +106,7 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         <Pressable
           accessibilityRole="button"
           disabled={!actionState.canPlay}
-          onPress={() => {
-            sendHaptic("light");
-            playSong({
-              album: detail.albumLabel,
-              artist: detail.artistLabel,
-              duration: detail.duration,
-              id: songId,
-              pathToFile: detail.pathToFile,
-              title: detail.title,
-            });
-            router.push("/player");
-          }}
+          onPress={playCurrentSong}
           style={[
             styles.primaryButton,
             { backgroundColor: theme.accent },
@@ -195,17 +120,7 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         <Pressable
           accessibilityRole="button"
           disabled={!actionState.canPlay}
-          onPress={() => {
-            sendHaptic("light");
-            addToQueue({
-              album: detail.albumLabel,
-              artist: detail.artistLabel,
-              duration: detail.duration,
-              id: songId,
-              pathToFile: detail.pathToFile,
-              title: detail.title,
-            });
-          }}
+          onPress={queueCurrentSong}
           style={[
             styles.secondaryButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
@@ -246,30 +161,7 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         <Pressable
           accessibilityRole="button"
           disabled={!actionState.canExport}
-          onPress={async () => {
-            setExportError(null);
-            setIsExporting(true);
-
-            try {
-              await shareLibrarySongs([
-                {
-                  id: songId,
-                  pathToFile: detail.pathToFile,
-                  title: detail.title,
-                },
-              ]);
-              sendHaptic("success");
-            } catch (error) {
-              sendHaptic("error");
-              setExportError(
-                error instanceof Error
-                  ? error.message
-                  : "Song could not be exported.",
-              );
-            } finally {
-              setIsExporting(false);
-            }
-          }}
+          onPress={exportCurrentSong}
           style={[
             styles.secondaryButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
@@ -283,7 +175,7 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         <Pressable
           accessibilityRole="button"
           disabled={!actionState.canDelete}
-          onPress={deleteSong}
+          onPress={deleteCurrentSong}
           style={[
             styles.dangerButton,
             { backgroundColor: theme.surface, borderColor: theme.danger },
@@ -347,15 +239,15 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
       >
         <Text
           style={[
-            hasErrors || exportError ? styles.errorText : styles.panelText,
+            hasErrors || error ? styles.errorText : styles.panelText,
             {
-              color: hasErrors || exportError
+              color: hasErrors || error
                 ? theme.danger
                 : theme.secondaryText,
             },
           ]}
         >
-          {exportError ??
+          {error ??
             (hasErrors
               ? "One or more song detail queries failed."
               : detail.isMissing

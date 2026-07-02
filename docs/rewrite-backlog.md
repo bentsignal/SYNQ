@@ -220,6 +220,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: customization Premium gating, theme/icon updates, haptics toggle
     side effects, and screen action wiring now live in a controller hook instead
     of the customization screen.
+  - Done: privacy analytics toggle haptics and persistence commands now live in
+    a controller hook, and the privacy route renders through a focused
+    component instead of owning the switch layout.
   - Done: support action copy now lives in the settings screen service, support
     link haptics/external URL opening live in a controller hook, and the support
     route renders through a focused component.

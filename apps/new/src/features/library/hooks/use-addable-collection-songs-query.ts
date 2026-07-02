@@ -4,111 +4,12 @@ import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import type { LibraryCollectionDetailKind } from "./use-library-collection-detail-query";
+import {
+  rowsToAddableCollectionSongs,
+  type AddableCollectionSongRow,
+} from "../services/addable-collection-songs-service";
 
-type AddableSongRow = {
-  albumName: string | null;
-  artistName: string | null;
-  duration: number | null;
-  songId: number;
-  title: string | null;
-};
-
-type AddableSongAccumulator = {
-  albumNames: Set<string>;
-  artistNames: Set<string>;
-  duration: number | null;
-  id: number;
-  title: string;
-};
-
-export type AddableCollectionSong = {
-  album: string;
-  artist: string;
-  duration: number | null;
-  id: number;
-  isLinked: boolean;
-  title: string;
-};
-
-const unknownLabel = "Unknown";
-
-const formatNames = (names: Set<string>) => {
-  if (names.size === 0) {
-    return unknownLabel;
-  }
-
-  return Array.from(names).sort((first, second) =>
-    first.localeCompare(second),
-  ).join(", ");
-};
-
-const normalizeQuery = (query?: string) => query?.trim().toLowerCase() ?? "";
-
-const matchesQuery = (song: AddableCollectionSong, query: string) => {
-  if (!query) {
-    return true;
-  }
-
-  return [song.title, song.artist, song.album].some((value) =>
-    value.toLowerCase().includes(query),
-  );
-};
-
-const buildSongs = ({
-  linkedSongIds,
-  query,
-  rows,
-}: {
-  linkedSongIds: Set<number>;
-  query?: string;
-  rows: AddableSongRow[];
-}) => {
-  const songMap = new Map<number, AddableSongAccumulator>();
-  const normalizedQuery = normalizeQuery(query);
-
-  rows.forEach((row) => {
-    const song =
-      songMap.get(row.songId) ??
-      {
-        albumNames: new Set<string>(),
-        artistNames: new Set<string>(),
-        duration: row.duration,
-        id: row.songId,
-        title: row.title ?? "Untitled song",
-      };
-
-    if (row.albumName) {
-      song.albumNames.add(row.albumName);
-    }
-
-    if (row.artistName) {
-      song.artistNames.add(row.artistName);
-    }
-
-    songMap.set(row.songId, song);
-  });
-
-  return Array.from(songMap.values())
-    .map<AddableCollectionSong>((song) => ({
-      album: formatNames(song.albumNames),
-      artist: formatNames(song.artistNames),
-      duration: song.duration,
-      id: song.id,
-      isLinked: linkedSongIds.has(song.id),
-      title: song.title,
-    }))
-    .filter((song) => matchesQuery(song, normalizedQuery))
-    .sort((first, second) => {
-      if (first.isLinked !== second.isLinked) {
-        return first.isLinked ? 1 : -1;
-      }
-
-      return first.title.localeCompare(second.title, undefined, {
-        sensitivity: "base",
-      });
-    })
-    .slice(0, 100);
-};
+export type { AddableCollectionSong } from "../services/addable-collection-songs-service";
 
 export function useAddableCollectionSongsQuery({
   collectionId,
@@ -176,10 +77,10 @@ export function useAddableCollectionSongsQuery({
       ),
     );
 
-    return buildSongs({
+    return rowsToAddableCollectionSongs({
       linkedSongIds,
       query,
-      rows: (songs.data ?? []) as AddableSongRow[],
+      rows: (songs.data ?? []) as AddableCollectionSongRow[],
     });
   }, [linkedRows, query, songs.data]);
 

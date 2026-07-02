@@ -41,6 +41,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     coverage.
   - Done: song preview search/sort aggregation now lives in a pure library
     service with deterministic smoke coverage.
+  - Done: add-to-collection song picker aggregation/search/linked-state sorting
+    now lives in a pure library service with deterministic smoke coverage.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -60,6 +62,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     aggregation, sorting, limits, image resolution, and fallback labels.
   - Done: extend deterministic smoke coverage to library song preview
     aggregation, search filtering, sort order, limits, and fallback labels.
+  - Done: extend deterministic smoke coverage to add-to-collection song picker
+    aggregation, query filtering, linked-state ordering, limits, and fallback
+    labels.
 
 ### Phase 3: New App Build-Out
 

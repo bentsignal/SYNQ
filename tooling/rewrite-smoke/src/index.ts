@@ -185,23 +185,25 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import {
   collectionFormReducer,
+  getCollectionFormErrorMessage,
+  getInitialCollectionFormState,
+  parseAlbumYearInput,
+} from "../../../apps/new/src/features/library/services/collection-form-service";
+import {
   getCollectionDetailHref,
+  getCollectionFormActionState,
   getCollectionFormBackHref,
   getCollectionFormBackLink,
-  getCollectionFormActionState,
-  getCollectionFormErrorMessage,
   getCollectionFormFieldState,
   getCollectionFormImageLabel,
+  getCollectionFormPreviewInitial,
+  getCollectionFormSaveLabel,
   getCreateCollectionFormCopy,
   getCreateCollectionFormSubtitle,
   getEditCollectionFormCopy,
   getEditCollectionFormSubtitle,
-  getInitialCollectionFormState,
-  getCollectionFormPreviewInitial,
-  getCollectionFormSaveLabel,
   getSavedCollectionFormImageLabel,
-  parseAlbumYearInput,
-} from "../../../apps/new/src/features/library/services/collection-form-service";
+} from "../../../apps/new/src/features/library/services/collection-form-interaction-service";
 import {
   createCollectionFromForm,
   updateCollectionFromForm,

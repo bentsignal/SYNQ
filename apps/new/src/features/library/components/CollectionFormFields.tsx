@@ -3,7 +3,7 @@ import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customi
 import {
   getCollectionFormFieldState,
   type CollectionFormActionState,
-} from "../services/collection-form-service";
+} from "../services/collection-form-interaction-service";
 import type {
   CollectionFormCopy,
   CollectionFormKind,

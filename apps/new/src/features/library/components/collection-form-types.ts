@@ -1,4 +1,4 @@
-import type { CollectionFormActionState } from "../services/collection-form-service";
+import type { CollectionFormActionState } from "../services/collection-form-interaction-service";
 
 export type CollectionFormKind = "album" | "artist" | "playlist";
 

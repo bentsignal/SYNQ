@@ -337,6 +337,10 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     duplicating route-screen presentation.
   - Done: collection create/edit preview initials and save button labels now
     live in the collection form service instead of screen-local formatting.
+  - Done: collection create/edit copy, field presentation, route helpers,
+    image labels, preview initials, save labels, and action-state derivation
+    now live in a focused form interaction service instead of the form reducer
+    service.
   - Done: collection create/edit detail-route construction now lives in the
     collection form service with deterministic smoke coverage instead of
     duplicated controller route templates.

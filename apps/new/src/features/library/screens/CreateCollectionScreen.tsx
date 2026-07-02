@@ -1,10 +1,10 @@
 import { CollectionFormView } from "../components/CollectionFormView";
 import { useCreateCollectionFormController } from "../hooks/use-create-collection-form-controller";
+import type { CollectionFormKind } from "../services/collection-form-service";
 import {
   getCreateCollectionFormCopy,
   getCreateCollectionFormSubtitle,
-  type CollectionFormKind,
-} from "../services/collection-form-service";
+} from "../services/collection-form-interaction-service";
 
 type CreateCollectionKind = CollectionFormKind;
 

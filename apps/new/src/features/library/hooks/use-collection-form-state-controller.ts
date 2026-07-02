@@ -1,11 +1,13 @@
 import { useEffect, useReducer } from "react";
 import {
   collectionFormReducer,
+  getInitialCollectionFormState,
+} from "../services/collection-form-service";
+import {
   getCollectionFormActionState,
   getCollectionFormPreviewInitial,
   getCollectionFormSaveLabel,
-  getInitialCollectionFormState,
-} from "../services/collection-form-service";
+} from "../services/collection-form-interaction-service";
 
 type CollectionFormHydration = {
   name: string;

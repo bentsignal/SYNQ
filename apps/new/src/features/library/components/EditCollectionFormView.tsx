@@ -2,7 +2,7 @@ import {
   getEditCollectionFormSubtitle,
   getSavedCollectionFormImageLabel,
   type CollectionFormActionState,
-} from "../services/collection-form-service";
+} from "../services/collection-form-interaction-service";
 import type { EditCollectionKind } from "../services/edit-collection-query-service";
 import { CollectionFormView } from "./CollectionFormView";
 import type { CollectionFormImage } from "./collection-form-types";

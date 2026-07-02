@@ -283,6 +283,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: create-collection image picking, validation, create mutations,
     haptics, navigation, and mutation-error workflows now live in a controller
     hook instead of the screen.
+  - Done: create-collection image picking and create/navigation side effects
+    now live in a focused command hook instead of the form controller owning
+    every create command path.
   - Done: collection create/edit field, artwork, validation, save, and library
     back-link rendering now share one focused form component instead of
     duplicating route-screen presentation.

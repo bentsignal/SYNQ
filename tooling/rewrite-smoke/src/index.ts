@@ -31,7 +31,12 @@ import {
   getSkipPreviousNativeCommandPlan,
 } from "../../../apps/new/src/features/playback/services/playback-native-command-plan-service";
 import { runAdGatedPlaybackCommand } from "../../../apps/new/src/features/playback/services/playback-command-gate-service";
-import { getRemoteFailurePlaybackCommandPlan } from "../../../apps/new/src/features/playback/services/playback-command-plan-service";
+import {
+  getClearQueuePlaybackCommandPlan,
+  getPlaySongPlaybackCommandPlan,
+  getRemoteFailurePlaybackCommandPlan,
+  getResetPlaybackCommandPlan,
+} from "../../../apps/new/src/features/playback/services/playback-command-plan-service";
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
   getImportFilesActionState,
@@ -506,6 +511,21 @@ function assertPlaybackNativeCommandPlanSmoke() {
     "started-ad",
   );
   assert.deepEqual(gatedEvents, ["command", "ad"]);
+  assert.deepEqual(getPlaySongPlaybackCommandPlan(first), {
+    action: {
+      song: first,
+      type: "play-song",
+    },
+    nativeCommand: { track: first, type: "play" },
+  });
+  assert.deepEqual(getClearQueuePlaybackCommandPlan(), {
+    action: { type: "clear-queue" },
+    nativeCommand: { type: "stop" },
+  });
+  assert.deepEqual(getResetPlaybackCommandPlan(), {
+    action: { type: "reset" },
+    nativeCommand: { type: "stop" },
+  });
   assert.deepEqual(getRemoteFailurePlaybackCommandPlan("Remote smoke failure"), {
     action: {
       error: "Remote smoke failure",

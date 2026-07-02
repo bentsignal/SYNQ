@@ -5,7 +5,12 @@ import {
   type PlaybackRemoteCommandResult,
 } from "../services/playback-remote-command-service";
 import { runAdGatedPlaybackCommand } from "../services/playback-command-gate-service";
-import { getRemoteFailurePlaybackCommandPlan } from "../services/playback-command-plan-service";
+import {
+  getClearQueuePlaybackCommandPlan,
+  getPlaySongPlaybackCommandPlan,
+  getRemoteFailurePlaybackCommandPlan,
+  getResetPlaybackCommandPlan,
+} from "../services/playback-command-plan-service";
 import {
   getRemoveFromQueueNativeCommandPlan,
   getResumeNativeCommandPlan,
@@ -89,11 +94,13 @@ export function usePlaybackCommandController({
   const playSong = useCallback(
     (song: PlaybackQueueItem) => {
       runAdGatedCommand(() => {
-        dispatch({ song, type: "play-song" });
-        runNativeCommand(() => adapter.play(song));
+        const { action, nativeCommand } = getPlaySongPlaybackCommandPlan(song);
+
+        dispatch(action);
+        runNativeCommandPlan(nativeCommand);
       });
     },
-    [adapter, dispatch, runAdGatedCommand, runNativeCommand],
+    [dispatch, runAdGatedCommand, runNativeCommandPlan],
   );
 
   const pause = useCallback(() => {
@@ -141,15 +148,19 @@ export function usePlaybackCommandController({
   }, [dispatch]);
 
   const clearQueue = useCallback(() => {
-    dispatch({ type: "clear-queue" });
-    runNativeCommand(() => adapter.stop());
-  }, [adapter, dispatch, runNativeCommand]);
+    const { action, nativeCommand } = getClearQueuePlaybackCommandPlan();
+
+    dispatch(action);
+    runNativeCommandPlan(nativeCommand);
+  }, [dispatch, runNativeCommandPlan]);
 
   const resetPlaybackSession = useCallback(() => {
+    const { action, nativeCommand } = getResetPlaybackCommandPlan();
+
     void clearPersistedPlaybackState();
-    dispatch({ type: "reset" });
-    runNativeCommand(() => adapter.stop());
-  }, [adapter, dispatch, runNativeCommand]);
+    dispatch(action);
+    runNativeCommandPlan(nativeCommand);
+  }, [dispatch, runNativeCommandPlan]);
 
   const moveQueueSong = useCallback(
     (songId: number, direction: "down" | "up") => {

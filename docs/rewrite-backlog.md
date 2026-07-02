@@ -73,6 +73,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     service instead of the save screen.
   - Done: collection preview detail-route generation now lives in the collection
     preview service instead of duplicated preview/list UI helpers.
+  - Done: library collection list filtering, empty labels, and query status
+    labels now live in the collection list service instead of screen-local
+    state shaping.
   - Done: import files and Wi-Fi presentation/action state now lives in the
     import session service instead of entry screens.
   - Done: shared collection create/edit form action state now lives in the
@@ -144,6 +147,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: extend deterministic smoke coverage to collection list search
     filtering across title, meta, detail, whitespace, and case-insensitive
     queries.
+  - Done: extend deterministic smoke coverage to collection list empty and
+    status label derivation.
   - Done: extend deterministic smoke coverage to shared duration formatting for
     empty, rounded, long, and remaining-time labels.
   - Done: extend deterministic smoke coverage to shared route param parsing for

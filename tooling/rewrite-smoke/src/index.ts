@@ -69,7 +69,10 @@ import {
 } from "../../../apps/new/src/features/library/services/collection-form-service";
 import { rowsToAddableCollectionSongs } from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
 import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
-import { filterCollectionPreviews } from "../../../apps/new/src/features/library/services/library-collection-list-service";
+import {
+  filterCollectionPreviews,
+  getLibraryCollectionListState,
+} from "../../../apps/new/src/features/library/services/library-collection-list-service";
 import {
   buildLibrarySongDetail,
   getLibrarySongDetailActionState,
@@ -1858,6 +1861,37 @@ function assertLibraryCollectionListSmoke() {
   assert.deepEqual(
     filterCollectionPreviews({ collections, query: "missing" }),
     [],
+  );
+  assert.deepEqual(
+    getLibraryCollectionListState({
+      collections,
+      emptyLabel: "No albums in library",
+      errors: [],
+      formatUpdatedAt: (updatedAt) => `time:${updatedAt}`,
+      query: "missing",
+      updatedAt: 123,
+    }),
+    {
+      emptyLabel: "No matching collections",
+      hasErrors: false,
+      statusLabel: "Updated time:123",
+      visibleCollections: [],
+    },
+  );
+  assert.deepEqual(
+    getLibraryCollectionListState({
+      collections,
+      emptyLabel: "No albums in library",
+      errors: [new Error("boom")],
+      query: "",
+      updatedAt: 0,
+    }),
+    {
+      emptyLabel: "No albums in library",
+      hasErrors: true,
+      statusLabel: "One or more collection queries failed.",
+      visibleCollections: collections,
+    },
   );
 }
 

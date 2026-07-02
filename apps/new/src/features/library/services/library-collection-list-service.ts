@@ -28,3 +28,37 @@ export const filterCollectionPreviews = ({
     collectionMatchesQuery(collection, normalizedQuery),
   );
 };
+
+export const getLibraryCollectionListState = ({
+  collections,
+  emptyLabel,
+  errors,
+  formatUpdatedAt = (updatedAt) =>
+    new Date(updatedAt).toLocaleTimeString(),
+  query,
+  updatedAt,
+}: {
+  collections: LibraryCollectionPreview[];
+  emptyLabel: string;
+  errors: readonly unknown[];
+  formatUpdatedAt?: (updatedAt: number) => string;
+  query?: string;
+  updatedAt: number;
+}) => {
+  const normalizedQuery = normalizeQuery(query);
+  const visibleCollections = collections.filter((collection) =>
+    collectionMatchesQuery(collection, normalizedQuery),
+  );
+  const hasErrors = errors.length > 0;
+
+  return {
+    emptyLabel: normalizedQuery ? "No matching collections" : emptyLabel,
+    hasErrors,
+    statusLabel: hasErrors
+      ? "One or more collection queries failed."
+      : updatedAt > 0
+        ? `Updated ${formatUpdatedAt(updatedAt)}`
+        : "Waiting for library data",
+    visibleCollections,
+  };
+};

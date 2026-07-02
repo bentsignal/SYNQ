@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link } from "expo-router";
 import {
   Image,
@@ -14,7 +14,7 @@ import {
   type CollectionKind,
   useLibraryCollectionPreviewQuery,
 } from "../hooks/use-library-collection-preview-query";
-import { filterCollectionPreviews } from "../services/library-collection-list-service";
+import { getLibraryCollectionListState } from "../services/library-collection-list-service";
 import { getLibraryCollectionPreviewHref } from "../services/library-collection-preview-service";
 
 type LibraryCollectionListScreenProps = {
@@ -63,15 +63,13 @@ export function LibraryCollectionListScreen({
     limit: null,
   });
   const copy = copyByKind[kind];
-  const visibleCollections = useMemo(
-    () => filterCollectionPreviews({ collections: collections[kind], query }),
-    [collections, kind, query],
-  );
-  const hasErrors = errors.length > 0;
-  const updatedLabel =
-    updatedAt > 0
-      ? `Updated ${new Date(updatedAt).toLocaleTimeString()}`
-      : "Waiting for library data";
+  const listState = getLibraryCollectionListState({
+    collections: collections[kind],
+    emptyLabel: copy.empty,
+    errors,
+    query,
+    updatedAt,
+  });
 
   return (
     <ScrollView
@@ -122,12 +120,12 @@ export function LibraryCollectionListScreen({
           { backgroundColor: theme.surface, borderColor: theme.border },
         ]}
       >
-        {visibleCollections.length === 0 ? (
+        {listState.visibleCollections.length === 0 ? (
           <Text style={[styles.emptyText, { color: theme.mutedText }]}>
-            {query.trim() ? "No matching collections" : copy.empty}
+            {listState.emptyLabel}
           </Text>
         ) : (
-          visibleCollections.map((collection) => (
+          listState.visibleCollections.map((collection) => (
             <Link
               asChild
               href={getLibraryCollectionPreviewHref(collection)}
@@ -192,11 +190,13 @@ export function LibraryCollectionListScreen({
       >
         <Text
           style={[
-            hasErrors ? styles.errorText : styles.statusText,
-            { color: hasErrors ? theme.danger : theme.secondaryText },
+            listState.hasErrors ? styles.errorText : styles.statusText,
+            {
+              color: listState.hasErrors ? theme.danger : theme.secondaryText,
+            },
           ]}
         >
-          {hasErrors ? "One or more collection queries failed." : updatedLabel}
+          {listState.statusLabel}
         </Text>
       </View>
     </ScrollView>

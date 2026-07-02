@@ -2,12 +2,18 @@ import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 
-export function LibraryInvalidCollectionState() {
+type LibraryInvalidCollectionStateProps = {
+  kicker?: string;
+};
+
+export function LibraryInvalidCollectionState({
+  kicker = "Library",
+}: LibraryInvalidCollectionStateProps) {
   const theme = useCustomizationTheme();
 
   return (
     <View style={[styles.screen, { backgroundColor: theme.background }]}>
-      <Text style={[styles.kicker, { color: theme.accent }]}>Library</Text>
+      <Text style={[styles.kicker, { color: theme.accent }]}>{kicker}</Text>
       <Text style={[styles.title, { color: theme.primaryText }]}>
         Invalid collection
       </Text>

@@ -1,8 +1,7 @@
-import { Link, useLocalSearchParams } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
-import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { EditCollectionFormView } from "../components/EditCollectionFormView";
+import { LibraryInvalidCollectionState } from "../components/LibraryInvalidCollectionState";
 import { useEditCollectionFormController } from "../hooks/use-edit-collection-form-controller";
 import {
   useEditAlbumCollectionQuery,
@@ -48,29 +47,10 @@ const labels: Record<
 
 export function EditCollectionScreen({ kind }: EditCollectionScreenProps) {
   const params = useLocalSearchParams<{ id?: string }>();
-  const theme = useCustomizationTheme();
   const id = parseNumericRouteParam(params.id);
 
   if (id === null) {
-    return (
-      <View style={[styles.screen, { backgroundColor: theme.background }]}>
-        <Text style={[styles.kicker, { color: theme.accent }]}>
-          {labels[kind].kicker}
-        </Text>
-        <Text style={[styles.title, { color: theme.primaryText }]}>
-          Invalid collection
-        </Text>
-        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          This route needs a numeric id.
-        </Text>
-        <Link
-          href="/(tabs)/library"
-          style={[styles.backLink, { color: theme.accent }]}
-        >
-          Back to Library
-        </Link>
-      </View>
-    );
+    return <LibraryInvalidCollectionState kicker={labels[kind].kicker} />;
   }
 
   return <EditCollectionContent id={id} kind={kind} />;
@@ -166,34 +146,3 @@ function EditCollectionForm({
     />
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    gap: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-  kicker: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 40,
-  },
-  subtitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    maxWidth: 520,
-  },
-  backLink: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-  },
-});

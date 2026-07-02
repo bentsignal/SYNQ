@@ -86,6 +86,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     now live in a library service instead of the add-songs screen.
   - Done: add-to-collection row selected/saving/disabled state now lives in the
     library interaction service instead of inline row rendering logic.
+  - Done: add-to-collection and edit-collection invalid id routes now share the
+    focused library invalid-state component instead of duplicating themed route
+    fallback UI.
   - Done: collection detail list-route and protected-delete rules now live in
     the library interaction service instead of the detail screen.
   - Done: player progress, seek target, and free-listening remaining-time math

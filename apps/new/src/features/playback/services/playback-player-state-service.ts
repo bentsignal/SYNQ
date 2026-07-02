@@ -71,6 +71,10 @@ export const getPlaybackPlayerActionState = ({
   };
 };
 
+export type PlaybackPlayerActionState = ReturnType<
+  typeof getPlaybackPlayerActionState
+>;
+
 export const getPlaybackMiniPlayerState = ({
   activeTrack,
   pathname,

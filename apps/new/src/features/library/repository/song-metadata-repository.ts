@@ -1,8 +1,10 @@
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";
+import * as FileSystem from "expo-file-system";
 
 const unknownLabels = new Set(["", "unknown", "unknown artist", "unknown album"]);
+const likedSongsPlaylistId = 2;
 
 const normalizeName = (name: string) => name.trim();
 
@@ -80,6 +82,19 @@ const linkArtistToAlbum = async ({
   await db.insert(schema.artistsAlbums).values({ albumId, artistId });
 };
 
+const getNextLikedSongPosition = async () => {
+  const rows = await db
+    .select({ position: schema.playlistSongs.position })
+    .from(schema.playlistSongs)
+    .where(eq(schema.playlistSongs.playlistId, likedSongsPlaylistId));
+  const highestPosition = rows.reduce(
+    (highest, row) => Math.max(highest, row.position ?? 0),
+    0,
+  );
+
+  return highestPosition + 1;
+};
+
 export async function updateLibrarySongMetadata({
   albumNames,
   artistNames,
@@ -127,5 +142,62 @@ export async function updateLibrarySongMetadata({
     for (const artistId of artistIds) {
       await linkArtistToAlbum({ albumId, artistId });
     }
+  }
+}
+
+export async function setLibrarySongLiked({
+  liked,
+  songId,
+}: {
+  liked: boolean;
+  songId: number;
+}) {
+  const existing = await db
+    .select({ id: schema.playlistSongs.id })
+    .from(schema.playlistSongs)
+    .where(
+      and(
+        eq(schema.playlistSongs.playlistId, likedSongsPlaylistId),
+        eq(schema.playlistSongs.songId, songId),
+      ),
+    )
+    .limit(1);
+
+  if (liked) {
+    if (existing.length > 0) {
+      return;
+    }
+
+    await db.insert(schema.playlistSongs).values({
+      playlistId: likedSongsPlaylistId,
+      position: await getNextLikedSongPosition(),
+      songId,
+    });
+    return;
+  }
+
+  await db
+    .delete(schema.playlistSongs)
+    .where(
+      and(
+        eq(schema.playlistSongs.playlistId, likedSongsPlaylistId),
+        eq(schema.playlistSongs.songId, songId),
+      ),
+    );
+}
+
+export async function deleteLibrarySong(songId: number) {
+  await db.delete(schema.albumSongs).where(eq(schema.albumSongs.songId, songId));
+  await db.delete(schema.artistSongs).where(eq(schema.artistSongs.songId, songId));
+  await db
+    .delete(schema.playlistSongs)
+    .where(eq(schema.playlistSongs.songId, songId));
+  await db.delete(schema.songs).where(eq(schema.songs.id, songId));
+
+  if (FileSystem.documentDirectory) {
+    await FileSystem.deleteAsync(
+      `${FileSystem.documentDirectory}library/${songId}`,
+      { idempotent: true },
+    );
   }
 }

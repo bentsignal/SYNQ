@@ -61,6 +61,7 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     editing, playlist/album/artist
     create/edit flows, collection song add/remove flows with bulk add selection,
     song and collection file sharing/export actions,
+    Liked Songs toggles and library song deletion,
     durable
     album/playlist/artist song reorder flows, and collection cover/profile image
     picking, persistence, and thumbnail rendering exist.
@@ -1117,3 +1118,5 @@ endless old-app polishing loop.
   artist/album metadata updates.
 - Done: add first-pass new-app library export actions for individual songs and
   playable songs in a collection, backed by a feature-owned export service.
+- Done: add new-app song detail actions for toggling Liked Songs and deleting a
+  library song through feature-owned repository commands.

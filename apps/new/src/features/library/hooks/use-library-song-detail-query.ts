@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 
 type SongRow = {
@@ -27,6 +27,10 @@ type ArtistRow = {
 type PlaylistRow = {
   id: number;
   name: string | null;
+};
+
+type LikedRow = {
+  id: number;
 };
 
 const formatCount = (count: number, singular: string, plural = `${singular}s`) =>
@@ -106,12 +110,24 @@ export function useLibrarySongDetailQuery(songId: number) {
       )
       .where(eq(schema.playlistSongs.songId, songId)),
   );
+  const liked = useLiveQuery(
+    db
+      .select({ id: schema.playlistSongs.id })
+      .from(schema.playlistSongs)
+      .where(
+        and(
+          eq(schema.playlistSongs.playlistId, 2),
+          eq(schema.playlistSongs.songId, songId),
+        ),
+      ),
+  );
 
   const detail = useMemo(() => {
     const songRow = (song.data?.[0] ?? null) as SongRow | null;
     const artistRows = uniqueById((artists.data ?? []) as ArtistRow[]);
     const albumRows = uniqueById((albums.data ?? []) as AlbumRow[]);
     const playlistRows = uniqueById((playlists.data ?? []) as PlaylistRow[]);
+    const likedRows = (liked.data ?? []) as LikedRow[];
     const artistLabel = formatNames(
       artistRows.flatMap((artist) => (artist.name ? [artist.name] : [])),
     );
@@ -135,6 +151,7 @@ export function useLibrarySongDetailQuery(songId: number) {
       duration: songRow?.duration ?? null,
       durationLabel: formatDuration(songRow?.duration ?? null),
       fileType: songRow?.fileType ?? "Unknown file type",
+      isLiked: likedRows.length > 0,
       isMissing: !songRow,
       originalFileName: songRow?.originalFileName ?? "Unknown source file",
       pathToFile: songRow?.pathToFile ?? null,
@@ -152,6 +169,7 @@ export function useLibrarySongDetailQuery(songId: number) {
         song.updatedAt?.getTime() ?? 0,
         artists.updatedAt?.getTime() ?? 0,
         albums.updatedAt?.getTime() ?? 0,
+        liked.updatedAt?.getTime() ?? 0,
         playlists.updatedAt?.getTime() ?? 0,
       ),
     };
@@ -160,6 +178,8 @@ export function useLibrarySongDetailQuery(songId: number) {
     albums.updatedAt,
     artists.data,
     artists.updatedAt,
+    liked.data,
+    liked.updatedAt,
     playlists.data,
     playlists.updatedAt,
     song.data,
@@ -168,6 +188,6 @@ export function useLibrarySongDetailQuery(songId: number) {
 
   return {
     detail,
-    errors: [song.error, artists.error, albums.error, playlists.error].filter(Boolean),
+    errors: [song.error, artists.error, albums.error, liked.error, playlists.error].filter(Boolean),
   };
 }

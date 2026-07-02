@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Link, router, useLocalSearchParams } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { shareLibrarySongs } from "@/src/features/export/services/library-export-service";
 import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useLibrarySongDetailQuery } from "../hooks/use-library-song-detail-query";
+import {
+  deleteLibrarySong,
+  setLibrarySongLiked,
+} from "../repository/song-metadata-repository";
 
 const parseId = (value: string | string[] | undefined) => {
   const rawValue = Array.isArray(value) ? value[0] : value;
@@ -59,16 +63,74 @@ export function LibrarySongDetailScreen() {
 function LibrarySongDetailContent({ songId }: { songId: number }) {
   const { detail, errors } = useLibrarySongDetailQuery(songId);
   const { addToQueue, playSong } = usePlaybackSession();
+  const { removeFromQueue } = usePlaybackSession();
   const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();
+  const [isDeleting, setIsDeleting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [isTogglingLiked, setIsTogglingLiked] = useState(false);
   const hasErrors = errors.length > 0;
   const canPlay = !detail.isMissing && detail.pathToFile !== null;
   const updatedLabel =
     detail.updatedAt > 0
       ? `Updated ${new Date(detail.updatedAt).toLocaleTimeString()}`
       : "Waiting for song data";
+  const deleteSong = () => {
+    Alert.alert("Delete song", `Delete ${detail.title}?`, [
+      { text: "Cancel", style: "cancel" },
+      {
+        onPress: async () => {
+          setIsDeleting(true);
+          setExportError(null);
+
+          try {
+            await deleteLibrarySong(songId);
+            removeFromQueue(songId);
+            sendHaptic("success");
+            router.replace("/(tabs)/library");
+          } catch (error) {
+            sendHaptic("error");
+            setExportError(
+              error instanceof Error
+                ? error.message
+                : "Song could not be deleted.",
+            );
+          } finally {
+            setIsDeleting(false);
+          }
+        },
+        style: "destructive",
+        text: "Delete",
+      },
+    ]);
+  };
+  const toggleLiked = async () => {
+    if (detail.isMissing) {
+      sendHaptic("error");
+      return;
+    }
+
+    setIsTogglingLiked(true);
+    setExportError(null);
+
+    try {
+      await setLibrarySongLiked({
+        liked: !detail.isLiked,
+        songId,
+      });
+      sendHaptic("light");
+    } catch (error) {
+      sendHaptic("error");
+      setExportError(
+        error instanceof Error
+          ? error.message
+          : "Liked Songs could not be updated.",
+      );
+    } finally {
+      setIsTogglingLiked(false);
+    }
+  };
 
   return (
     <ScrollView
@@ -164,6 +226,20 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
             Add to queue
           </Text>
         </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          disabled={detail.isMissing || isTogglingLiked}
+          onPress={toggleLiked}
+          style={[
+            styles.secondaryButton,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+            detail.isMissing || isTogglingLiked ? styles.disabled : null,
+          ]}
+        >
+          <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
+            {detail.isLiked ? "Unlike" : "Like"}
+          </Text>
+        </Pressable>
         <Link
           href={`/(tabs)/library/song/edit/${songId}`}
           style={[
@@ -212,6 +288,20 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
         >
           <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
             {isExporting ? "Exporting" : "Export"}
+          </Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          disabled={detail.isMissing || isDeleting}
+          onPress={deleteSong}
+          style={[
+            styles.dangerButton,
+            { backgroundColor: theme.surface, borderColor: theme.danger },
+            detail.isMissing || isDeleting ? styles.disabled : null,
+          ]}
+        >
+          <Text style={[styles.secondaryButtonText, { color: theme.danger }]}>
+            {isDeleting ? "Deleting" : "Delete"}
           </Text>
         </Pressable>
       </View>
@@ -427,6 +517,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     minHeight: 44,
     minWidth: 132,
+    paddingHorizontal: 14,
+  },
+  dangerButton: {
+    alignItems: "center",
+    borderRadius: 8,
+    borderWidth: 1,
+    flexGrow: 1,
+    justifyContent: "center",
+    minHeight: 44,
+    minWidth: 112,
     paddingHorizontal: 14,
   },
   disabled: {

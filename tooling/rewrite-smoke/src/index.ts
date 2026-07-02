@@ -69,6 +69,8 @@ import {
   buildEditedImportSongDraft,
   getImportSongEditActionState,
   getImportSongEditErrorMessage,
+  getImportSongEditFilesHref,
+  getImportSongEditSaveHref,
   parseImportTrackInput,
 } from "../../../apps/new/src/features/import/services/import-song-form-service";
 import {
@@ -3060,6 +3062,8 @@ function assertImportSongFormSmoke() {
   assert.deepEqual(getImportSongEditActionState({ title: "   " }), {
     canSave: false,
   });
+  assert.equal(getImportSongEditSaveHref(), "/(tabs)/import/save");
+  assert.equal(getImportSongEditFilesHref(), "/(tabs)/import/files");
   assert.equal(
     getImportSongEditErrorMessage(new Error("Edit import smoke failure")),
     "Edit import smoke failure",

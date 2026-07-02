@@ -85,6 +85,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     instead of repeated library/import screen helpers.
   - Done: import staged-song edit track parsing and metadata normalization now
     live in an import service instead of the edit screen.
+  - Done: import staged-song edit save/files destinations now live in the
+    import song form service with deterministic smoke coverage instead of
+    inline controller and component route strings.
   - Done: collection detail playable-song filtering and optimistic reorder
     helpers now live in a library service instead of the detail screen.
   - Done: add-to-collection bulk selection derivation and selection set updates

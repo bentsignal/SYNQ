@@ -1,6 +1,10 @@
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import {
+  getImportSongEditFilesHref,
+  getImportSongEditSaveHref,
+} from "../services/import-song-form-service";
 
 type EditImportSongInvalidStateProps = {
   reason: "invalid-id" | "not-staged";
@@ -11,6 +15,8 @@ export function EditImportSongInvalidState({
 }: EditImportSongInvalidStateProps) {
   const theme = useCustomizationTheme();
   const isInvalidId = reason === "invalid-id";
+  const saveHref = getImportSongEditSaveHref();
+  const filesHref = getImportSongEditFilesHref();
 
   return (
     <View style={[styles.screen, { backgroundColor: theme.background }]}>
@@ -25,7 +31,7 @@ export function EditImportSongInvalidState({
       </Text>
       {isInvalidId ? (
         <Link
-          href="/(tabs)/import/save"
+          href={saveHref}
           style={[styles.backLink, { color: theme.accent }]}
         >
           Back to save
@@ -33,13 +39,13 @@ export function EditImportSongInvalidState({
       ) : (
         <View style={styles.linkRow}>
           <Link
-            href="/(tabs)/import/files"
+            href={filesHref}
             style={[styles.backLink, { color: theme.accent }]}
           >
             Back to files
           </Link>
           <Link
-            href="/(tabs)/import/save"
+            href={saveHref}
             style={[styles.backLink, { color: theme.accent }]}
           >
             Back to save

@@ -5,6 +5,7 @@ import {
   buildEditedImportSongDraft,
   getImportSongEditActionState,
   getImportSongEditErrorMessage,
+  getImportSongEditSaveHref,
 } from "../services/import-song-form-service";
 import type { ImportSongDraft } from "../types/import-session";
 
@@ -55,7 +56,7 @@ export function useEditImportSongController({
         }),
       );
       sendHaptic("success");
-      router.replace("/(tabs)/import/save");
+      router.replace(getImportSongEditSaveHref());
     } catch (caughtError) {
       sendHaptic("error");
       setError(getImportSongEditErrorMessage(caughtError));

@@ -1,20 +1,26 @@
 import { Link } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import {
+  getImportSongEditFilesHref,
+  getImportSongEditSaveHref,
+} from "../services/import-song-form-service";
 
 export function EditImportSongLinks() {
   const theme = useCustomizationTheme();
+  const saveHref = getImportSongEditSaveHref();
+  const filesHref = getImportSongEditFilesHref();
 
   return (
     <View style={styles.linkRow}>
       <Link
-        href="/(tabs)/import/save"
+        href={saveHref}
         style={[styles.backLink, { color: theme.accent }]}
       >
         Back to save
       </Link>
       <Link
-        href="/(tabs)/import/files"
+        href={filesHref}
         style={[styles.backLink, { color: theme.accent }]}
       >
         Back to files

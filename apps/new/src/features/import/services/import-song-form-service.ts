@@ -1,5 +1,15 @@
 import type { ImportSongDraft } from "../types/import-session";
 
+export type ImportSongEditHref =
+  | "/(tabs)/import/files"
+  | "/(tabs)/import/save";
+
+export const getImportSongEditSaveHref = (): ImportSongEditHref =>
+  "/(tabs)/import/save";
+
+export const getImportSongEditFilesHref = (): ImportSongEditHref =>
+  "/(tabs)/import/files";
+
 export const parseImportTrackInput = (value: string) => {
   const trimmed = value.trim();
 

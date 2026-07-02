@@ -114,6 +114,8 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import {
   getCollectionFormActionState,
+  getCreateCollectionFormCopy,
+  getCreateCollectionFormSubtitle,
   getEditCollectionFormCopy,
   getCollectionFormPreviewInitial,
   getCollectionFormSaveLabel,
@@ -2535,6 +2537,31 @@ function assertCollectionFormSmoke() {
   assert.equal(
     getCollectionDuplicateNameMessage("playlist"),
     "A playlist with this name already exists.",
+  );
+  assert.deepEqual(getCreateCollectionFormCopy("album"), {
+    createLabel: "Create album",
+    duplicateNoun: "album",
+    kicker: "Album",
+    namePlaceholder: "Album name",
+    title: "Create album",
+  });
+  assert.deepEqual(getCreateCollectionFormCopy("artist"), {
+    createLabel: "Create artist",
+    duplicateNoun: "artist",
+    kicker: "Artist",
+    namePlaceholder: "Artist name",
+    title: "Create artist",
+  });
+  assert.deepEqual(getCreateCollectionFormCopy("playlist"), {
+    createLabel: "Create playlist",
+    duplicateNoun: "playlist",
+    kicker: "Playlist",
+    namePlaceholder: "Playlist name",
+    title: "Create playlist",
+  });
+  assert.equal(
+    getCreateCollectionFormSubtitle({ duplicateNoun: "playlist" }),
+    "Name the playlist, choose optional artwork, and start organizing your music.",
   );
   assert.deepEqual(getEditCollectionFormCopy("album"), {
     editLabel: "Save album",

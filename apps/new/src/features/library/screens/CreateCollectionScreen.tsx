@@ -1,47 +1,19 @@
 import { CollectionFormView } from "../components/CollectionFormView";
 import { useCreateCollectionFormController } from "../hooks/use-create-collection-form-controller";
+import {
+  getCreateCollectionFormCopy,
+  getCreateCollectionFormSubtitle,
+  type CollectionFormKind,
+} from "../services/collection-form-service";
 
-type CreateCollectionKind = "album" | "artist" | "playlist";
+type CreateCollectionKind = CollectionFormKind;
 
 type CreateCollectionScreenProps = {
   kind: CreateCollectionKind;
 };
 
-const labels: Record<
-  CreateCollectionKind,
-  {
-    createLabel: string;
-    duplicateNoun: string;
-    kicker: string;
-    namePlaceholder: string;
-    title: string;
-  }
-> = {
-  album: {
-    createLabel: "Create album",
-    duplicateNoun: "album",
-    kicker: "Album",
-    namePlaceholder: "Album name",
-    title: "Create album",
-  },
-  artist: {
-    createLabel: "Create artist",
-    duplicateNoun: "artist",
-    kicker: "Artist",
-    namePlaceholder: "Artist name",
-    title: "Create artist",
-  },
-  playlist: {
-    createLabel: "Create playlist",
-    duplicateNoun: "playlist",
-    kicker: "Playlist",
-    namePlaceholder: "Playlist name",
-    title: "Create playlist",
-  },
-};
-
 export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
-  const copy = labels[kind];
+  const copy = getCreateCollectionFormCopy(kind);
   const {
     actionState,
     create,
@@ -72,7 +44,7 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
       onPickImage={pickImage}
       onSave={create}
       saveLabel={saveLabel}
-      subtitle={`Name the ${copy.duplicateNoun}, choose optional artwork, and start organizing your music.`}
+      subtitle={getCreateCollectionFormSubtitle(copy)}
       year={year}
     />
   );

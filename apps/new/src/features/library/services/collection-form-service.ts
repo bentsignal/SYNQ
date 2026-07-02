@@ -7,6 +7,52 @@ export type EditCollectionFormCopy = {
   title: string;
 };
 
+export type CreateCollectionFormCopy = {
+  createLabel: string;
+  duplicateNoun: string;
+  kicker: string;
+  namePlaceholder: string;
+  title: string;
+};
+
+export const getCreateCollectionFormCopy = (
+  kind: CollectionFormKind,
+): CreateCollectionFormCopy => {
+  switch (kind) {
+    case "album":
+      return {
+        createLabel: "Create album",
+        duplicateNoun: "album",
+        kicker: "Album",
+        namePlaceholder: "Album name",
+        title: "Create album",
+      };
+    case "artist":
+      return {
+        createLabel: "Create artist",
+        duplicateNoun: "artist",
+        kicker: "Artist",
+        namePlaceholder: "Artist name",
+        title: "Create artist",
+      };
+    case "playlist":
+      return {
+        createLabel: "Create playlist",
+        duplicateNoun: "playlist",
+        kicker: "Playlist",
+        namePlaceholder: "Playlist name",
+        title: "Create playlist",
+      };
+  }
+};
+
+export const getCreateCollectionFormSubtitle = ({
+  duplicateNoun,
+}: {
+  duplicateNoun: string;
+}) =>
+  `Name the ${duplicateNoun}, choose optional artwork, and start organizing your music.`;
+
 export const getEditCollectionFormCopy = (
   kind: CollectionFormKind,
 ): EditCollectionFormCopy => {

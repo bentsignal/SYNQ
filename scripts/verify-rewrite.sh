@@ -68,6 +68,9 @@ scan_for_forbidden_matches "feature hygiene scan" \
 echo "==> AsyncStorage boundary scan"
 scan_async_storage_boundaries
 
+echo "==> Deterministic rewrite smoke"
+pnpm --filter @synq/rewrite-smoke smoke
+
 echo "==> Old app iOS export smoke"
 pnpm --filter @synq/old exec expo export --platform ios --output-dir dist-export-smoke
 

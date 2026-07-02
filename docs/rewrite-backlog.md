@@ -45,6 +45,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     smokes with export-artifact cleanup.
   - Done: extend the rewrite gate with an AsyncStorage boundary scan so direct
     storage usage stays behind feature storage services.
+  - Done: add deterministic reducer smoke coverage for playback queue/ad-gate
+    behavior and import session transitions through `@synq/rewrite-smoke`.
 
 ### Phase 3: New App Build-Out
 
@@ -218,8 +220,9 @@ endless old-app polishing loop.
 - `pnpm install` succeeds for the workspace.
 - `pnpm lint` succeeds through Turbo with warnings only.
 - `pnpm verify:rewrite` succeeds and is the preferred repeatable guardrail for
-  rewrite checkpoints, including event-emitter, feature hygiene, and
-  AsyncStorage boundary scans.
+  rewrite checkpoints, including event-emitter, feature hygiene, AsyncStorage
+  boundary scans, deterministic playback/import reducer smokes, and old/new iOS
+  export smokes.
 - `pnpm --filter @synq/old exec expo export --platform ios --output-dir dist-export-smoke`
   succeeds, proving the old app still bundles from `apps/old`.
 - `pnpm --filter @synq/db lint` and `pnpm --filter @synq/db typecheck`

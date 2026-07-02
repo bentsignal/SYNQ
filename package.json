@@ -11,6 +11,7 @@
     "format": "turbo run format --continue",
     "format:fix": "turbo run format --continue -- --write",
     "lint": "turbo run lint --continue",
+    "smoke:rewrite": "pnpm --filter @synq/rewrite-smoke smoke",
     "typecheck": "turbo run typecheck",
     "verify:rewrite": "bash scripts/verify-rewrite.sh"
   },

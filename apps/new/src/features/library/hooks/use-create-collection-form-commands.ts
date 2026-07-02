@@ -5,7 +5,7 @@ import {
   createArtistWithImage,
   createPlaylist,
 } from "../repository/collection-repository";
-import { pickCollectionImage } from "../services/collection-image-picker-service";
+import { useCollectionFormImageCommand } from "./use-collection-form-image-command";
 import { createCollectionFromForm } from "../services/collection-form-mutation-service";
 import {
   getCollectionDetailHref,
@@ -36,25 +36,10 @@ export function useCreateCollectionFormCommands({
 }: UseCreateCollectionFormCommandsParams) {
   const router = useRouter();
   const { sendHaptic } = useHapticFeedback();
-
-  const pickImage = async () => {
-    try {
-      sendHaptic("light");
-      const pickedImage = await pickCollectionImage();
-      if (pickedImage) {
-        dispatchFormState({ image: pickedImage, type: "pick-image" });
-      }
-    } catch (caughtError) {
-      sendHaptic("error");
-      dispatchFormState({
-        error: getCollectionFormErrorMessage({
-          caughtError,
-          fallbackMessage: "Image could not be selected.",
-        }),
-        type: "fail",
-      });
-    }
-  };
+  const pickImage = useCollectionFormImageCommand({
+    dispatchFormState,
+    sendHaptic,
+  });
 
   const create = async () => {
     if (!canSave) {

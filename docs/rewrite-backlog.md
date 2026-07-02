@@ -84,6 +84,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: edit-collection image picking and save/navigation side effects now
     live in a focused command hook instead of the form controller owning every
     edit command path.
+  - Done: shared create/edit collection image-pick side effects now live in a
+    shared form image command hook instead of duplicated create/edit command
+    implementations.
   - Done: edit-collection query result/controller/view wiring now lives in a
     connected form component instead of the route screen owning form assembly.
   - Done: edit-collection form fields, image picker presentation, validation

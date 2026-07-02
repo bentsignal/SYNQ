@@ -37,3 +37,7 @@ export function usePremiumScreenController() {
     statusState,
   };
 }
+
+export type PremiumScreenController = ReturnType<
+  typeof usePremiumScreenController
+>;

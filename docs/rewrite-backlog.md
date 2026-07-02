@@ -456,6 +456,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     import screen state service with smoke coverage instead of the component.
   - Done: import save export/finish/discard labels now live with save action
     availability in the import session service instead of the save screen.
+  - Done: import save staged-song export loading/error transitions now live in
+    the import screen state service reducer with smoke coverage instead of
+    controller-local state setters.
   - Done: import save artist, album, playlist, and album-cover relationship
     linking now lives in a dedicated import library link service instead of the
     top-level library save orchestration.

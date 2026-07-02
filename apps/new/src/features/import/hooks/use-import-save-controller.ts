@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useReducer } from "react";
 import { router } from "expo-router";
 import { shareImportDraftSongs } from "@/src/features/export/services/import-draft-export-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
@@ -7,6 +7,8 @@ import {
   getImportFinishResultHref,
   getImportSaveActionState,
   getImportSaveExportErrorMessage,
+  importSaveExportReducer,
+  initialImportSaveExportState,
 } from "../services/import-screen-state-service";
 import type { ImportSessionState } from "../types/import-session";
 
@@ -24,10 +26,12 @@ export function useImportSaveController({
   state,
 }: UseImportSaveControllerParams) {
   const { sendHaptic } = useHapticFeedback();
-  const [exportError, setExportError] = useState<string | null>(null);
-  const [isExporting, setIsExporting] = useState(false);
+  const [exportState, dispatchExportState] = useReducer(
+    importSaveExportReducer,
+    initialImportSaveExportState,
+  );
   const actionState = getImportSaveActionState({
-    isExporting,
+    isExporting: exportState.isExporting,
     state,
   });
 
@@ -37,17 +41,19 @@ export function useImportSaveController({
   };
 
   const exportSongs = async () => {
-    setExportError(null);
-    setIsExporting(true);
+    dispatchExportState({ type: "begin" });
 
     try {
       await shareImportDraftSongs(state.songs);
       sendHaptic("success");
     } catch (caughtError) {
       sendHaptic("error");
-      setExportError(getImportSaveExportErrorMessage(caughtError));
+      dispatchExportState({
+        error: getImportSaveExportErrorMessage(caughtError),
+        type: "fail",
+      });
     } finally {
-      setIsExporting(false);
+      dispatchExportState({ type: "finish" });
     }
   };
 
@@ -68,7 +74,7 @@ export function useImportSaveController({
   return {
     actionState,
     discardImport,
-    exportError,
+    exportError: exportState.error,
     exportSongs,
     finishImport,
     toggleShouldSaveToLibrary,

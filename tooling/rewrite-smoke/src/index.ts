@@ -82,6 +82,8 @@ import {
   getImportSongPreviewEmptyState,
   getImportWifiActionState,
   getImportWifiState,
+  importSaveExportReducer,
+  initialImportSaveExportState,
 } from "../../../apps/new/src/features/import/services/import-screen-state-service";
 import {
   getFinishWifiTransferAction,
@@ -1236,6 +1238,37 @@ function assertImportSessionSmoke() {
       finishLabel: "Finishing",
       hasSongs: true,
       isWorking: true,
+    },
+  );
+  assert.deepEqual(initialImportSaveExportState, {
+    error: null,
+    isExporting: false,
+  });
+  assert.deepEqual(
+    importSaveExportReducer(initialImportSaveExportState, { type: "begin" }),
+    {
+      error: null,
+      isExporting: true,
+    },
+  );
+  assert.deepEqual(
+    importSaveExportReducer(
+      {
+        error: null,
+        isExporting: true,
+      },
+      { type: "finish" },
+    ),
+    initialImportSaveExportState,
+  );
+  assert.deepEqual(
+    importSaveExportReducer(initialImportSaveExportState, {
+      error: "Staged songs could not be exported.",
+      type: "fail",
+    }),
+    {
+      error: "Staged songs could not be exported.",
+      isExporting: false,
     },
   );
   assert.equal(

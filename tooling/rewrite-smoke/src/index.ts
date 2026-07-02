@@ -24,6 +24,7 @@ import { audioStatusToTrackPlayerSnapshot } from "../../../apps/new/src/features
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
   getImportFilesActionState,
+  getImportHomeState,
   getImportPremiumGateState,
   getImportSaveActionState,
   getImportWifiState,
@@ -634,6 +635,18 @@ function assertImportSessionSmoke() {
       isWorking: false,
     },
   );
+  assert.deepEqual(
+    getImportHomeState({ premiumActive: false, state }).routes.map((route) => ({
+      href: route.href,
+      label: route.label,
+      metaLabel: route.metaLabel,
+    })),
+    [
+      { href: "/premium", label: "Files", metaLabel: "Premium" },
+      { href: "/premium", label: "Wi-Fi", metaLabel: "Premium" },
+      { href: "/premium", label: "Save", metaLabel: "Premium" },
+    ],
+  );
 
   state = importSessionReducer(state, {
     songs: [first, second],
@@ -659,6 +672,26 @@ function assertImportSessionSmoke() {
       hasSongs: true,
       isWorking: false,
     },
+  );
+  assert.deepEqual(
+    getImportHomeState({ premiumActive: true, state }).routes.map((route) => ({
+      href: route.href,
+      label: route.label,
+      metaLabel: route.metaLabel,
+    })),
+    [
+      {
+        href: "/(tabs)/import/files",
+        label: "Files",
+        metaLabel: "2 staged",
+      },
+      { href: "/(tabs)/import/wifi", label: "Wi-Fi", metaLabel: "Local" },
+      {
+        href: "/(tabs)/import/save",
+        label: "Save",
+        metaLabel: "reviewing",
+      },
+    ],
   );
   assert.deepEqual(
     getImportSaveActionState({ isExporting: true, state }),
@@ -738,6 +771,26 @@ function assertImportSessionSmoke() {
       statusLabel: "Receiving files",
     },
   );
+  assert.deepEqual(
+    getImportHomeState({ premiumActive: true, state }).routes.map((route) => ({
+      href: route.href,
+      label: route.label,
+      metaLabel: route.metaLabel,
+    })),
+    [
+      {
+        href: "/(tabs)/import/files",
+        label: "Files",
+        metaLabel: "0 staged",
+      },
+      { href: "/(tabs)/import/wifi", label: "Wi-Fi", metaLabel: "0" },
+      {
+        href: "/(tabs)/import/save",
+        label: "Save",
+        metaLabel: "processing",
+      },
+    ],
+  );
   assert.equal(
     getImportWifiState({
       error: "Port unavailable",
@@ -773,6 +826,26 @@ function assertImportSessionSmoke() {
       progressLabel: "1/2 received",
       statusLabel: "Receiving files",
     },
+  );
+  assert.deepEqual(
+    getImportHomeState({ premiumActive: true, state }).routes.map((route) => ({
+      href: route.href,
+      label: route.label,
+      metaLabel: route.metaLabel,
+    })),
+    [
+      {
+        href: "/(tabs)/import/files",
+        label: "Files",
+        metaLabel: "1 staged",
+      },
+      { href: "/(tabs)/import/wifi", label: "Wi-Fi", metaLabel: "1" },
+      {
+        href: "/(tabs)/import/save",
+        label: "Save",
+        metaLabel: "processing",
+      },
+    ],
   );
 
   const readyState = {

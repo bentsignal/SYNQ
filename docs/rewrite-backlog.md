@@ -265,6 +265,10 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import save header, save-to-library toggle, staged-song preview,
     export/finish/discard actions, export error panel, and back link now render
     from a focused component instead of the route screen.
+  - Done: import home route metadata, Premium lockout destinations, staged
+    counts, Wi-Fi status labels, and route-selection haptics now split between
+    an import session service, controller hook, and focused component instead
+    of the route screen.
   - Done: import save-to-library metadata planning now lives in a pure service
     with deterministic smoke coverage for unknown labels and multi-artist
     splitting.
@@ -402,6 +406,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     availability, seek boundaries, ad-break blocking, and mode labels.
   - Done: extend deterministic smoke coverage to import Premium gate active,
     checking, and failure states.
+  - Done: extend deterministic smoke coverage to import home Premium routing,
+    staged counts, Wi-Fi progress, and save phase labels.
 
 ### Phase 3: New App Build-Out
 

@@ -33,6 +33,57 @@ export const initialImportSessionState: ImportSessionState = {
   source: "files",
 };
 
+export type ImportHomeRoute = {
+  description: string;
+  href:
+    | "/premium"
+    | "/(tabs)/import/files"
+    | "/(tabs)/import/wifi"
+    | "/(tabs)/import/save";
+  label: string;
+  metaLabel: string;
+};
+
+export const getImportHomeState = ({
+  premiumActive,
+  state,
+}: {
+  premiumActive: boolean;
+  state: ImportSessionState;
+}) => {
+  const importLocked = !premiumActive;
+
+  return {
+    importLocked,
+    routes: [
+      {
+        description: "Select local audio and review staged songs.",
+        href: importLocked ? "/premium" : "/(tabs)/import/files",
+        label: "Files",
+        metaLabel: importLocked ? "Premium" : `${state.songs.length} staged`,
+      },
+      {
+        description: "Receive audio from a browser on the same network.",
+        href: importLocked ? "/premium" : "/(tabs)/import/wifi",
+        label: "Wi-Fi",
+        metaLabel: importLocked
+          ? "Premium"
+          : state.source === "wifi"
+            ? state.progress.current.toString()
+            : "Local",
+      },
+      {
+        description: "Finish or discard the current import session.",
+        href: importLocked ? "/premium" : "/(tabs)/import/save",
+        label: "Save",
+        metaLabel: importLocked ? "Premium" : state.phase,
+      },
+    ] satisfies ImportHomeRoute[],
+  };
+};
+
+export type ImportHomeState = ReturnType<typeof getImportHomeState>;
+
 export const getImportSaveActionState = ({
   isExporting,
   state,

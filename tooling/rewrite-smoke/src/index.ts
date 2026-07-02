@@ -173,6 +173,10 @@ import {
   getLibraryCollectionListState,
 } from "../../../apps/new/src/features/library/services/library-collection-list-service";
 import {
+  getLibraryHomeHeaderActions,
+  getLibraryHomeImportHref,
+} from "../../../apps/new/src/features/library/services/library-home-service";
+import {
   buildLibrarySongDetail,
   getLibrarySongDetailActionState,
   getLibrarySongDetailBackHref,
@@ -3036,6 +3040,28 @@ function assertLibraryCollectionListSmoke() {
   );
 }
 
+function assertLibraryHomeSmoke() {
+  assert.equal(getLibraryHomeImportHref(), "/(tabs)/import");
+  assert.deepEqual(getLibraryHomeHeaderActions(), [
+    {
+      href: "/(tabs)/import",
+      label: "Import music",
+    },
+    {
+      href: "/(tabs)/library/playlist/create",
+      label: "Create playlist",
+    },
+    {
+      href: "/(tabs)/library/album/create",
+      label: "Create album",
+    },
+    {
+      href: "/(tabs)/library/artist/create",
+      label: "Create artist",
+    },
+  ]);
+}
+
 function assertDurationFormatSmoke() {
   assert.equal(formatDurationMs(null), "--:--");
   assert.equal(formatDurationMs(undefined), "--:--");
@@ -3637,4 +3663,5 @@ assertLibrarySongDetailSmoke();
 assertEditCollectionQuerySmoke();
 assertCollectionFormSmoke();
 assertLibraryCollectionListSmoke();
+assertLibraryHomeSmoke();
 console.log("Rewrite deterministic smoke checks passed.");

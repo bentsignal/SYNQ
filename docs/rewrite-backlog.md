@@ -1550,6 +1550,8 @@ endless old-app polishing loop.
    - Done: song detail, edit, and back destinations now live in the song detail
      service with smoke coverage instead of inline song component and edit
      controller route strings.
+   - Done: library home header actions now come from a library home service
+     with smoke coverage instead of hard-coded create/import links in the view.
 
 2. Playlist:
    - Done: add `useLibraryPlaylistsQuery` for the list-level library playlist

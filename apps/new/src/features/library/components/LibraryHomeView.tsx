@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryHomeController } from "../hooks/use-library-home-controller";
+import { getLibraryHomeHeaderActions } from "../services/library-home-service";
 import { LibraryCollectionPreviewSection } from "./LibraryCollectionPreviewSection";
 import { LibrarySongPreviewList } from "./LibrarySongPreviewList";
 import { LibrarySummaryGrid } from "./LibrarySummaryGrid";
@@ -22,6 +23,7 @@ export function LibraryHomeView({
   updatedLabel,
 }: LibraryHomeViewProps) {
   const theme = useCustomizationTheme();
+  const headerActions = getLibraryHomeHeaderActions();
 
   return (
     <ScrollView
@@ -40,30 +42,15 @@ export function LibraryHomeView({
           grows.
         </Text>
         <View style={styles.createLinks}>
-          <Link
-            href="/(tabs)/import"
-            style={[styles.createLink, { color: theme.accent }]}
-          >
-            Import music
-          </Link>
-          <Link
-            href="/(tabs)/library/playlist/create"
-            style={[styles.createLink, { color: theme.accent }]}
-          >
-            Create playlist
-          </Link>
-          <Link
-            href="/(tabs)/library/album/create"
-            style={[styles.createLink, { color: theme.accent }]}
-          >
-            Create album
-          </Link>
-          <Link
-            href="/(tabs)/library/artist/create"
-            style={[styles.createLink, { color: theme.accent }]}
-          >
-            Create artist
-          </Link>
+          {headerActions.map((action) => (
+            <Link
+              href={action.href}
+              key={action.href}
+              style={[styles.createLink, { color: theme.accent }]}
+            >
+              {action.label}
+            </Link>
+          ))}
         </View>
       </View>
 

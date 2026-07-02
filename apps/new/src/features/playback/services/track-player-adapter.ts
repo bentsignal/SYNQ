@@ -3,26 +3,18 @@ import {
   PLAYBACK_STATUS_UPDATE,
   setAudioModeAsync,
   type AudioPlayer,
-  type AudioStatus,
 } from "expo-audio";
 import type {
   PlaybackQueueItem,
   PlaybackState,
 } from "../types/playback-state";
+import {
+  audioStatusToTrackPlayerSnapshot,
+  type TrackPlayerSource,
+  type TrackPlayerStatusSnapshot,
+} from "./playback-native-status-service";
 
 const playbackAdAudio = require("../../../assets/audio/ad.mp3") as number;
-
-type TrackPlayerSource = "ad" | "library";
-
-export type TrackPlayerStatusSnapshot = {
-  didJustFinish: boolean;
-  duration: number | null;
-  isLoaded: boolean;
-  isPlaying: boolean;
-  position: number;
-  songId: number | null;
-  source: TrackPlayerSource | null;
-};
 
 export type TrackPlayerAdapter = {
   destroy: () => Promise<void>;
@@ -64,39 +56,18 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
   let statusListener: ((status: TrackPlayerStatusSnapshot) => void) | null =
     null;
 
-  const toStatusSnapshot = (
-    status: AudioStatus,
-    source: TrackPlayerSource,
-  ): TrackPlayerStatusSnapshot => {
-    if (!status.isLoaded) {
-      return {
-        didJustFinish: false,
-        duration: null,
-        isLoaded: false,
-        isPlaying: false,
-        position: 0,
-        songId: loadedSongId,
-        source,
-      };
-    }
-
-    return {
-      didJustFinish: status.didJustFinish,
-      duration: Number.isFinite(status.duration) ? status.duration * 1000 : null,
-      isLoaded: true,
-      isPlaying: status.playing,
-      position: status.currentTime * 1000,
-      songId: loadedSongId,
-      source,
-    };
-  };
-
   const attachStatusListener = (
     player: AudioPlayer | null,
     source: TrackPlayerSource,
   ) => {
     const subscription = player?.addListener(PLAYBACK_STATUS_UPDATE, (status) => {
-      statusListener?.(toStatusSnapshot(status, source));
+      statusListener?.(
+        audioStatusToTrackPlayerSnapshot({
+          loadedSongId,
+          source,
+          status,
+        }),
+      );
     });
 
     if (source === "ad") {

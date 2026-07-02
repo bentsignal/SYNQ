@@ -11,7 +11,7 @@ import {
   trackPlaybackAdProgress,
   updatePlaybackAdBreakProgress,
 } from "./playback-ad-gate-service";
-import type { TrackPlayerStatusSnapshot } from "./track-player-adapter";
+import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
 
 export type PlaybackAction =
   | { song: PlaybackQueueItem; type: "play-song" }

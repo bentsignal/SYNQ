@@ -20,6 +20,7 @@ import {
   getPlaybackProgressPercent,
   getSeekTargetPosition,
 } from "../../../apps/new/src/features/playback/services/playback-player-state-service";
+import { audioStatusToTrackPlayerSnapshot } from "../../../apps/new/src/features/playback/services/playback-native-status-service";
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
   getImportFilesActionState,
@@ -300,6 +301,71 @@ function assertPlaybackSessionSmoke() {
   assert.equal(state.adGate.active, false);
   assert.equal(state.adGate.due, false);
   assert.equal(state.isPlaying, true);
+}
+
+function assertPlaybackNativeStatusSmoke() {
+  assert.deepEqual(
+    audioStatusToTrackPlayerSnapshot({
+      loadedSongId: 4,
+      source: "library",
+      status: {
+        isLoaded: false,
+      },
+    }),
+    {
+      didJustFinish: false,
+      duration: null,
+      isLoaded: false,
+      isPlaying: false,
+      position: 0,
+      songId: 4,
+      source: "library",
+    },
+  );
+  assert.deepEqual(
+    audioStatusToTrackPlayerSnapshot({
+      loadedSongId: 5,
+      source: "library",
+      status: {
+        currentTime: 12.5,
+        didJustFinish: false,
+        duration: 180,
+        isLoaded: true,
+        playing: true,
+      },
+    }),
+    {
+      didJustFinish: false,
+      duration: 180_000,
+      isLoaded: true,
+      isPlaying: true,
+      position: 12_500,
+      songId: 5,
+      source: "library",
+    },
+  );
+  assert.deepEqual(
+    audioStatusToTrackPlayerSnapshot({
+      loadedSongId: null,
+      source: "ad",
+      status: {
+        currentTime: 2,
+        didJustFinish: true,
+        duration: Number.NaN,
+        isLoaded: true,
+        playing: false,
+      },
+    }),
+    {
+      didJustFinish: true,
+      duration: null,
+      isLoaded: true,
+      isPlaying: false,
+      position: 2_000,
+      songId: null,
+      source: "ad",
+    },
+  );
 }
 
 function assertPlaybackPlayerStateSmoke() {
@@ -2529,6 +2595,7 @@ assertBackupScreenSmoke();
 assertPremiumScreenSmoke();
 assertSettingsScreenSmoke();
 assertPlaybackSessionSmoke();
+assertPlaybackNativeStatusSmoke();
 assertPlaybackPlayerStateSmoke();
 assertImportSessionSmoke();
 assertLibraryCollectionDetailSmoke();

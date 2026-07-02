@@ -172,6 +172,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     component instead of the route screen.
   - Done: playback player command availability and shuffle/loop/play labels now
     live in the playback player-state service instead of the player screen.
+  - Done: playback player command handlers, haptics, seek targets, and progress
+    derivation now live in a controller hook instead of the player screen.
   - Done: import Premium gate access state, checking copy, and error
     presentation now live in the import session service instead of the gate UI.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.

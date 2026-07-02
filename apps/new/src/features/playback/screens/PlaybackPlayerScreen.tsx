@@ -2,87 +2,25 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { usePlaybackSession } from "../hooks/use-playback-session";
-import {
-  getFreeListeningRemainingMs,
-  getPlaybackPlayerActionState,
-  getPlaybackProgressPercent,
-  getSeekTargetPosition,
-} from "../services/playback-player-state-service";
+import { usePlaybackPlayerController } from "../hooks/use-playback-player-controller";
 
 export function PlaybackPlayerScreen() {
   const theme = useCustomizationTheme();
-  const { sendHaptic } = useHapticFeedback();
   const {
+    actionState,
     activeTrack,
-    pause,
-    resume,
-    seekTo,
-    skipNext,
-    skipPrevious,
+    adProgressPercent,
+    fastForward,
+    freeListeningRemainingMs,
+    progressPercent,
+    rewind,
+    skipBack,
+    skipForward,
     state,
-    toggleLoop,
-    toggleShuffle,
-  } = usePlaybackSession();
-  const actionState = getPlaybackPlayerActionState({ activeTrack, state });
-  const adProgressPercent = getPlaybackProgressPercent({
-    duration: state.adGate.playbackDuration,
-    position: state.adGate.playbackPosition,
-  });
-  const progressPercent = getPlaybackProgressPercent({
-    duration: state.duration,
-    position: state.position,
-  });
-  const freeListeningRemainingMs = getFreeListeningRemainingMs({
-    accumulatedMs: state.adGate.accumulatedMs,
-    thresholdMs: state.adGate.thresholdMs,
-  });
-  const rewind = () => {
-    sendHaptic("light");
-    seekTo(
-      getSeekTargetPosition({
-        direction: "backward",
-        duration: state.duration,
-        position: state.position,
-      }),
-    );
-  };
-  const fastForward = () => {
-    sendHaptic("light");
-    seekTo(
-      getSeekTargetPosition({
-        direction: "forward",
-        duration: state.duration,
-        position: state.position,
-      }),
-    );
-  };
-  const handleSkipPrevious = () => {
-    sendHaptic("light");
-    skipPrevious();
-  };
-  const handlePlayPause = () => {
-    sendHaptic(state.isPlaying ? "soft" : "light");
-    if (state.isPlaying) {
-      pause();
-      return;
-    }
-
-    resume();
-  };
-  const handleSkipNext = () => {
-    sendHaptic("light");
-    skipNext();
-  };
-  const handleToggleShuffle = () => {
-    sendHaptic("light");
-    toggleShuffle();
-  };
-  const handleToggleLoop = () => {
-    sendHaptic("light");
-    toggleLoop();
-  };
+    toggleLoopMode,
+    togglePlayPause,
+    toggleShuffleMode,
+  } = usePlaybackPlayerController();
 
   return (
     <ScrollView
@@ -195,7 +133,7 @@ export function PlaybackPlayerScreen() {
         <Pressable
           accessibilityRole="button"
           disabled={!actionState.canSkipPrevious}
-          onPress={handleSkipPrevious}
+          onPress={skipBack}
           style={[
             styles.controlButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
@@ -209,7 +147,7 @@ export function PlaybackPlayerScreen() {
         <Pressable
           accessibilityRole="button"
           disabled={!actionState.canPlayPause}
-          onPress={handlePlayPause}
+          onPress={togglePlayPause}
           style={[
             styles.primaryButton,
             { backgroundColor: theme.accent },
@@ -223,7 +161,7 @@ export function PlaybackPlayerScreen() {
         <Pressable
           accessibilityRole="button"
           disabled={!actionState.canSkipNext}
-          onPress={handleSkipNext}
+          onPress={skipForward}
           style={[
             styles.controlButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
@@ -270,7 +208,7 @@ export function PlaybackPlayerScreen() {
       <View style={styles.controls}>
         <Pressable
           accessibilityRole="button"
-          onPress={handleToggleShuffle}
+          onPress={toggleShuffleMode}
           style={[
             styles.controlButton,
             { backgroundColor: theme.surface, borderColor: theme.border },
@@ -282,7 +220,7 @@ export function PlaybackPlayerScreen() {
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          onPress={handleToggleLoop}
+          onPress={toggleLoopMode}
           style={[
             styles.controlButton,
             { backgroundColor: theme.surface, borderColor: theme.border },

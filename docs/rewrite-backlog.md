@@ -159,6 +159,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import session command orchestration for Wi-Fi transfer prep,
     save/discard persistence cleanup, session reset, and reducer dispatches now
     lives in a focused hook instead of the provider body.
+  - Done: backup operation fallback copy now lives in the backup session service
+    with deterministic smoke coverage instead of an inline hook branch.
   - Done: customization screen theme/icon/haptics controls, Premium lockout
     panel, status, and error rendering now live in a focused settings component
     instead of the route screen.

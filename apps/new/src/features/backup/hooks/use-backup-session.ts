@@ -2,6 +2,7 @@ import { useCallback, useMemo, useReducer } from "react";
 import { runBackupCommand } from "../services/backup-command-service";
 import {
   backupSessionReducer,
+  getBackupSessionErrorMessage,
   initialBackupSessionState,
 } from "../services/backup-session-state-service";
 import type { BackupOperation } from "../types/backup-session";
@@ -20,10 +21,7 @@ export function useBackupSession() {
       dispatch({ result, type: "succeed" });
     } catch (caughtError) {
       dispatch({
-        error:
-          caughtError instanceof Error
-            ? caughtError.message
-            : "Backup operation failed.",
+        error: getBackupSessionErrorMessage(caughtError),
         operation,
         type: "fail",
       });

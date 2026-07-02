@@ -18,6 +18,11 @@ export const initialBackupSessionState: BackupSessionState = {
   requiresPremium: true,
 };
 
+export const getBackupSessionErrorMessage = (caughtError: unknown) =>
+  caughtError instanceof Error
+    ? caughtError.message
+    : "Backup operation failed.";
+
 export const backupSessionReducer = (
   state: BackupSessionState,
   action: BackupSessionAction,

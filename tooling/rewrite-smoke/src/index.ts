@@ -172,6 +172,7 @@ import {
 } from "../../../apps/new/src/features/backup/services/backup-screen-service";
 import {
   backupSessionReducer,
+  getBackupSessionErrorMessage,
   initialBackupSessionState,
 } from "../../../apps/new/src/features/backup/services/backup-session-state-service";
 import type { BackupSessionState } from "../../../apps/new/src/features/backup/types/backup-session";
@@ -3132,6 +3133,14 @@ function assertBackupScreenSmoke() {
   assert.deepEqual(
     backupSessionReducer(successState, { type: "reset" }),
     initialBackupSessionState,
+  );
+  assert.equal(
+    getBackupSessionErrorMessage(new Error("Backup smoke failure")),
+    "Backup smoke failure",
+  );
+  assert.equal(
+    getBackupSessionErrorMessage(null),
+    "Backup operation failed.",
   );
   assert.equal(getBackupOperationLabel("backup"), "Backup");
   assert.equal(getBackupOperationLabel("erase"), "Erase");

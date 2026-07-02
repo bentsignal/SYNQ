@@ -152,7 +152,10 @@ import {
 import {
   buildLibrarySongDetail,
   getLibrarySongDetailActionState,
+  getLibrarySongDetailPlayerHref,
   getLibrarySongDetailMutationErrorMessage,
+  getLibrarySongDeleteConfirmationCopy,
+  getLibrarySongDeleteSuccessHref,
   getLibrarySongRelationshipHref,
   toLibrarySongDetailPlaybackItem,
   toLibrarySongExportItem,
@@ -2485,6 +2488,14 @@ function assertLibrarySongDetailSmoke() {
     getLibrarySongRelationshipHref({ id: 3, kind: "playlist" }),
     "/(tabs)/library/playlist/3",
   );
+  assert.equal(getLibrarySongDetailPlayerHref(), "/player");
+  assert.equal(getLibrarySongDeleteSuccessHref(), "/(tabs)/library");
+  assert.deepEqual(getLibrarySongDeleteConfirmationCopy(detail), {
+    body: "Delete Alpha?",
+    cancelLabel: "Cancel",
+    confirmLabel: "Delete",
+    title: "Delete song",
+  });
   assert.deepEqual(
     getLibrarySongDetailActionState({
       detail,

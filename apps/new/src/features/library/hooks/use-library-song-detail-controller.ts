@@ -10,7 +10,10 @@ import {
 } from "../repository/song-metadata-repository";
 import {
   getLibrarySongDetailActionState,
+  getLibrarySongDetailPlayerHref,
   getLibrarySongDetailMutationErrorMessage,
+  getLibrarySongDeleteConfirmationCopy,
+  getLibrarySongDeleteSuccessHref,
   toLibrarySongDetailPlaybackItem,
   toLibrarySongExportItem,
   type LibrarySongDetail,
@@ -48,7 +51,7 @@ export function useLibrarySongDetailController({
 
     sendHaptic("light");
     playSong(playbackItem);
-    router.push("/player");
+    router.push(getLibrarySongDetailPlayerHref());
   }, [actionState.canPlay, playSong, playbackItem, sendHaptic]);
 
   const queueCurrentSong = useCallback(() => {
@@ -120,8 +123,10 @@ export function useLibrarySongDetailController({
       return;
     }
 
-    Alert.alert("Delete song", `Delete ${detail.title}?`, [
-      { text: "Cancel", style: "cancel" },
+    const confirmation = getLibrarySongDeleteConfirmationCopy(detail);
+
+    Alert.alert(confirmation.title, confirmation.body, [
+      { text: confirmation.cancelLabel, style: "cancel" },
       {
         onPress: async () => {
           setIsDeleting(true);
@@ -131,7 +136,7 @@ export function useLibrarySongDetailController({
             await deleteLibrarySong(songId);
             removeFromQueue(songId);
             sendHaptic("success");
-            router.replace("/(tabs)/library");
+            router.replace(getLibrarySongDeleteSuccessHref());
           } catch (caughtError) {
             sendHaptic("error");
             setError(
@@ -145,12 +150,12 @@ export function useLibrarySongDetailController({
           }
         },
         style: "destructive",
-        text: "Delete",
+        text: confirmation.confirmLabel,
       },
     ]);
   }, [
     actionState.canDelete,
-    detail.title,
+    detail,
     removeFromQueue,
     sendHaptic,
     songId,

@@ -97,6 +97,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     now live in a playback service instead of the player screen.
   - Done: song detail relationship routing and action disabled-state derivation
     now live in the song detail service instead of the detail screen.
+  - Done: song detail play/delete destination routes and delete confirmation
+    copy now live in the song detail service with deterministic smoke coverage
+    instead of inline controller branches.
   - Done: import save action availability now lives in the import session
     service instead of the save screen.
   - Done: import home/save/files/Wi-Fi/Premium screen state selectors now live

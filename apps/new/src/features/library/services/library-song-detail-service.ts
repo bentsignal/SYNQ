@@ -66,6 +66,8 @@ export type LibrarySongRelationshipHref =
   | `/(tabs)/library/artist/${number}`
   | `/(tabs)/library/playlist/${number}`;
 
+export type LibrarySongDetailHref = "/player" | "/(tabs)/library";
+
 const formatCount = (count: number, singular: string, plural = `${singular}s`) =>
   `${count} ${count === 1 ? singular : plural}`;
 
@@ -161,6 +163,21 @@ export const getLibrarySongRelationshipHref = ({
       return `/(tabs)/library/playlist/${id}`;
   }
 };
+
+export const getLibrarySongDetailPlayerHref = (): LibrarySongDetailHref =>
+  "/player";
+
+export const getLibrarySongDeleteSuccessHref = (): LibrarySongDetailHref =>
+  "/(tabs)/library";
+
+export const getLibrarySongDeleteConfirmationCopy = (
+  detail: LibrarySongDetail,
+) => ({
+  body: `Delete ${detail.title}?`,
+  cancelLabel: "Cancel",
+  confirmLabel: "Delete",
+  title: "Delete song",
+});
 
 export const getLibrarySongDetailActionState = ({
   detail,

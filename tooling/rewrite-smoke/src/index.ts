@@ -64,7 +64,11 @@ import {
   getLibrarySongDetailActionState,
   getLibrarySongRelationshipHref,
 } from "../../../apps/new/src/features/library/services/library-song-detail-service";
-import { rowsToSongPreviews } from "../../../apps/new/src/features/library/services/library-song-preview-service";
+import {
+  getLibrarySongPreviewRowState,
+  rowsToSongPreviews,
+  toLibrarySongPlaybackItem,
+} from "../../../apps/new/src/features/library/services/library-song-preview-service";
 
 const song = ({
   duration = 180_000,
@@ -912,6 +916,24 @@ function assertLibrarySongPreviewSmoke() {
   );
   assert.equal(previews[0]?.artist, "Alpha Artist, Featured Artist");
   assert.equal(previews[0]?.album, "Alpha Album");
+  assert.deepEqual(
+    getLibrarySongPreviewRowState({
+      activeTrackId: 1,
+      song: previews[0]!,
+    }),
+    {
+      canPlay: true,
+      isActive: true,
+    },
+  );
+  assert.deepEqual(toLibrarySongPlaybackItem(previews[0]!), {
+    album: "Alpha Album",
+    artist: "Alpha Artist, Featured Artist",
+    duration: 10_000,
+    id: 1,
+    pathToFile: "/tmp/alpha.mp3",
+    title: "Alpha",
+  });
 
   const recentAsc = rowsToSongPreviews({
     limit: 2,
@@ -949,6 +971,16 @@ function assertLibrarySongPreviewSmoke() {
     [1, 2],
   );
   assert.equal(recentAsc[0]?.artist, "Unknown");
+  assert.deepEqual(
+    getLibrarySongPreviewRowState({
+      activeTrackId: 1,
+      song: recentAsc[0]!,
+    }),
+    {
+      canPlay: false,
+      isActive: true,
+    },
+  );
 }
 
 function assertAddableCollectionSongsSmoke() {

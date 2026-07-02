@@ -9,6 +9,10 @@ import type {
   LibrarySongPreviewOrder,
   LibrarySongPreviewSort,
 } from "../hooks/use-library-song-preview-query";
+import {
+  getLibrarySongPreviewRowState,
+  toLibrarySongPlaybackItem,
+} from "../services/library-song-preview-service";
 import { LibrarySongListControls } from "./LibrarySongListControls";
 
 type LibrarySongPreviewListProps = {
@@ -81,16 +85,11 @@ export function LibrarySongPreviewList({
           ]}
         >
           {songs.map((song) => {
-            const canPlay = song.pathToFile !== null;
-            const isActive = activeTrack?.id === song.id;
-            const playbackItem = {
-              album: song.album,
-              artist: song.artist,
-              duration: song.duration,
-              id: song.id,
-              pathToFile: song.pathToFile,
-              title: song.title,
-            };
+            const { canPlay, isActive } = getLibrarySongPreviewRowState({
+              activeTrackId: activeTrack?.id ?? null,
+              song,
+            });
+            const playbackItem = toLibrarySongPlaybackItem(song);
 
             return (
               <View

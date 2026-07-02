@@ -7,6 +7,15 @@ export type LibrarySongPreview = {
   title: string;
 };
 
+export type LibrarySongPreviewPlaybackItem = {
+  album: string;
+  artist: string;
+  duration: number | null;
+  id: number;
+  pathToFile: string | null;
+  title: string;
+};
+
 export type LibrarySongPreviewSort = "album" | "artist" | "recent" | "title";
 
 export type LibrarySongPreviewOrder = "asc" | "desc";
@@ -77,6 +86,28 @@ const sortSongs = (
 
   return order === "asc" ? sorted.reverse() : sorted;
 };
+
+export const getLibrarySongPreviewRowState = ({
+  activeTrackId,
+  song,
+}: {
+  activeTrackId: number | null;
+  song: LibrarySongPreview;
+}) => ({
+  canPlay: song.pathToFile !== null,
+  isActive: activeTrackId === song.id,
+});
+
+export const toLibrarySongPlaybackItem = (
+  song: LibrarySongPreview,
+): LibrarySongPreviewPlaybackItem => ({
+  album: song.album,
+  artist: song.artist,
+  duration: song.duration,
+  id: song.id,
+  pathToFile: song.pathToFile,
+  title: song.title,
+});
 
 export const rowsToSongPreviews = ({
   limit,

@@ -79,6 +79,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     collection form service instead of duplicated screen save/edit guards.
   - Done: playback queue row/action state now lives in the playback service
     instead of queue screen boundary checks.
+  - Done: song preview row state and playback item conversion now live in the
+    song preview service instead of the preview list component.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -139,6 +141,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     image-pick, save, blank-name, saving, and missing-collection states.
   - Done: extend deterministic smoke coverage to playback queue active rows,
     move boundaries, ad-break play disabling, and clear-queue availability.
+  - Done: extend deterministic smoke coverage to song preview playable/active
+    row state and playback item conversion.
 
 ### Phase 3: New App Build-Out
 

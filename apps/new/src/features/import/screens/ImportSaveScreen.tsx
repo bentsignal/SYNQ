@@ -7,6 +7,7 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import { ImportPremiumGate } from "../components/ImportPremiumGate";
 import { ImportSongPreviewList } from "../components/ImportSongPreviewList";
 import { useImportSession } from "../hooks/use-import-session";
+import { getImportSaveActionState } from "../services/import-session-state-service";
 
 export function ImportSaveScreen() {
   const { discardSession, saveImportSession, setShouldSaveToLibrary, state } =
@@ -15,9 +16,11 @@ export function ImportSaveScreen() {
   const { sendHaptic } = useHapticFeedback();
   const [exportError, setExportError] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
-  const canFinish = state.songs.length > 0;
-  const isWorking =
-    state.phase === "saving" || state.phase === "discarding" || isExporting;
+  const { canDiscard, canExport, canFinish, isWorking } =
+    getImportSaveActionState({
+      isExporting,
+      state,
+    });
 
   return (
     <ScrollView
@@ -69,7 +72,7 @@ export function ImportSaveScreen() {
         <View style={styles.actionRow}>
           <Pressable
             accessibilityRole="button"
-            disabled={!canFinish || isWorking}
+            disabled={!canExport}
             onPress={async () => {
               setExportError(null);
               setIsExporting(true);
@@ -91,7 +94,7 @@ export function ImportSaveScreen() {
             style={[
               styles.secondaryButton,
               { backgroundColor: theme.surface, borderColor: theme.border },
-              !canFinish || isWorking ? styles.disabled : null,
+              !canExport ? styles.disabled : null,
             ]}
           >
             <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
@@ -100,7 +103,7 @@ export function ImportSaveScreen() {
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            disabled={!canFinish || isWorking}
+            disabled={!canFinish}
             onPress={async () => {
               sendHaptic("medium");
               const succeeded = await saveImportSession();
@@ -110,7 +113,7 @@ export function ImportSaveScreen() {
             style={[
               styles.primaryButton,
               { backgroundColor: theme.accent },
-              !canFinish || isWorking ? styles.disabled : null,
+              !canFinish ? styles.disabled : null,
             ]}
           >
             <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
@@ -119,7 +122,7 @@ export function ImportSaveScreen() {
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            disabled={isWorking}
+            disabled={!canDiscard}
             onPress={async () => {
               sendHaptic("medium");
               const discarded = await discardSession();
@@ -129,7 +132,7 @@ export function ImportSaveScreen() {
             style={[
               styles.secondaryButton,
               { backgroundColor: theme.surface, borderColor: theme.border },
-              isWorking ? styles.disabled : null,
+              !canDiscard ? styles.disabled : null,
             ]}
           >
             <Text style={[styles.secondaryButtonText, { color: theme.danger }]}>

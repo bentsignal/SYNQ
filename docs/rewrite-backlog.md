@@ -69,6 +69,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     now live in a playback service instead of the player screen.
   - Done: song detail relationship routing and action disabled-state derivation
     now live in the song detail service instead of the detail screen.
+  - Done: import save action availability now lives in the import session
+    service instead of the save screen.
 - [ ] Finish repository/query coverage for all high-traffic library workflows.
   - Songs, playlists, albums, and artists have Drizzle-backed query coverage.
   - Remaining gaps should be audited from screens/forms rather than assumed.
@@ -119,6 +121,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     clamping, and free-listening remaining-time calculations.
   - Done: extend deterministic smoke coverage to song detail relationship hrefs
     and play/export/like/delete action availability.
+  - Done: extend deterministic smoke coverage to import save export, finish,
+    and discard availability across empty, ready, exporting, and saving states.
 
 ### Phase 3: New App Build-Out
 

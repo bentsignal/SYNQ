@@ -33,6 +33,26 @@ export const initialImportSessionState: ImportSessionState = {
   source: "files",
 };
 
+export const getImportSaveActionState = ({
+  isExporting,
+  state,
+}: {
+  isExporting: boolean;
+  state: ImportSessionState;
+}) => {
+  const hasSongs = state.songs.length > 0;
+  const isWorking =
+    state.phase === "saving" || state.phase === "discarding" || isExporting;
+
+  return {
+    canDiscard: !isWorking,
+    canExport: hasSongs && !isWorking,
+    canFinish: hasSongs && !isWorking,
+    hasSongs,
+    isWorking,
+  };
+};
+
 export const importSessionReducer = (
   state: ImportSessionState,
   action: ImportSessionAction,

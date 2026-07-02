@@ -17,6 +17,7 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-player-state-service";
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
+  getImportSaveActionState,
   importSessionReducer,
   initialImportSessionState,
 } from "../../../apps/new/src/features/import/services/import-session-state-service";
@@ -244,6 +245,16 @@ function assertImportSessionSmoke() {
   });
   assert.equal(state.phase, "picking");
   assert.equal(state.source, "files");
+  assert.deepEqual(
+    getImportSaveActionState({ isExporting: false, state }),
+    {
+      canDiscard: true,
+      canExport: false,
+      canFinish: false,
+      hasSongs: false,
+      isWorking: false,
+    },
+  );
 
   state = importSessionReducer(state, {
     songs: [first, second],
@@ -252,6 +263,26 @@ function assertImportSessionSmoke() {
   assert.equal(state.phase, "reviewing");
   assert.equal(state.selectedSongId, first.id);
   assert.deepEqual(state.progress, { current: 2, total: 2 });
+  assert.deepEqual(
+    getImportSaveActionState({ isExporting: false, state }),
+    {
+      canDiscard: true,
+      canExport: true,
+      canFinish: true,
+      hasSongs: true,
+      isWorking: false,
+    },
+  );
+  assert.deepEqual(
+    getImportSaveActionState({ isExporting: true, state }),
+    {
+      canDiscard: false,
+      canExport: false,
+      canFinish: false,
+      hasSongs: true,
+      isWorking: true,
+    },
+  );
 
   state = importSessionReducer(state, {
     song: { ...second, title: "Edited Import 2" },
@@ -275,6 +306,16 @@ function assertImportSessionSmoke() {
   });
   state = importSessionReducer(state, { type: "saving" });
   assert.equal(state.phase, "discarding");
+  assert.deepEqual(
+    getImportSaveActionState({ isExporting: false, state }),
+    {
+      canDiscard: false,
+      canExport: false,
+      canFinish: false,
+      hasSongs: true,
+      isWorking: true,
+    },
+  );
 
   state = importSessionReducer(state, {
     summary: { discarded: 1, saved: 0, savedSongIds: [] },

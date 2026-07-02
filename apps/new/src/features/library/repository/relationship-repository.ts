@@ -3,6 +3,19 @@ import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";
 import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
 
+const getNextAlbumTrack = async (albumId: number) => {
+  const rows = await db
+    .select({ track: schema.albumSongs.track })
+    .from(schema.albumSongs)
+    .where(eq(schema.albumSongs.albumId, albumId));
+  const highestTrack = rows.reduce(
+    (highest, row) => Math.max(highest, row.track ?? 0),
+    0,
+  );
+
+  return highestTrack + 1;
+};
+
 export async function addSongToCollection({
   collectionId,
   kind,
@@ -29,6 +42,7 @@ export async function addSongToCollection({
         await db.insert(schema.albumSongs).values({
           albumId: collectionId,
           songId,
+          track: await getNextAlbumTrack(collectionId),
         });
       }
 
@@ -74,6 +88,28 @@ export async function addSongToCollection({
         });
       }
     }
+  }
+}
+
+export async function updateAlbumSongOrder({
+  albumId,
+  songIds,
+}: {
+  albumId: number;
+  songIds: number[];
+}) {
+  for (let index = 0; index < songIds.length; index += 1) {
+    const songId = songIds[index];
+
+    await db
+      .update(schema.albumSongs)
+      .set({ track: index + 1 })
+      .where(
+        and(
+          eq(schema.albumSongs.albumId, albumId),
+          eq(schema.albumSongs.songId, songId),
+        ),
+      );
   }
 }
 

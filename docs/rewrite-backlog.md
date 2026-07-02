@@ -48,8 +48,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     stack placeholders, and thin route files.
   - Library: first reactive Drizzle summary, searchable/sortable song surface,
     collection previews, read-only song/playlist/album/artist detail routes,
-    playlist/album/artist create/edit flows, and collection song add/remove
-    flows exist; reorder relationship flows are next.
+    playlist/album/artist create/edit flows, collection song add/remove flows,
+    and album song reorder by track exist; playlist/artist ordering needs
+    schema support before it can be durable.
   - Playback: explicit session state, queue/player screens, and a TrackPlayer
     adapter seam exist; native playback, persistence, and remote events are
     next.
@@ -103,9 +104,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
 We are solidly through Phase 1, well into Phase 2, and starting Phase 3. The
 `apps/new` shell now has a root stack, tabs, modal placeholders, feature
 boundaries, database initialization, and a first reactive Library surface with
-searchable/sortable songs, linked details, collection create/edit flows, and
-song add/remove. Settings now has a feature-owned home with backup,
-customization, and premium route entry points. Playback now has a reducer-backed
+searchable/sortable songs, linked details, collection create/edit flows, song
+add/remove, and album song reorder. Settings now has a feature-owned home with
+backup, customization, and premium route entry points. Playback now has a reducer-backed
 session boundary plus queue/player screens, but it is not yet connected to
 native playback. Import now has a route-per-step session shell, native file
 selection, a Wi-Fi transfer route/server, cache staging,

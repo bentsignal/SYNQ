@@ -4,9 +4,13 @@ import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { LibraryCollectionSongList } from "../components/LibraryCollectionSongList";
 import {
   useLibraryCollectionDetailQuery,
+  type LibraryCollectionDetailSong,
   type LibraryCollectionDetailKind,
 } from "../hooks/use-library-collection-detail-query";
-import { removeSongFromCollection } from "../repository/relationship-repository";
+import {
+  removeSongFromCollection,
+  updateAlbumSongOrder,
+} from "../repository/relationship-repository";
 
 type LibraryCollectionDetailScreenProps = {
   kind: LibraryCollectionDetailKind;
@@ -17,6 +21,34 @@ const parseId = (value: string | string[] | undefined) => {
   const id = Number(rawValue);
 
   return Number.isFinite(id) ? id : null;
+};
+
+const reorderSongs = ({
+  direction,
+  songId,
+  songs,
+}: {
+  direction: "down" | "up";
+  songId: number;
+  songs: LibraryCollectionDetailSong[];
+}) => {
+  const fromIndex = songs.findIndex((song) => song.id === songId);
+
+  if (fromIndex < 0) {
+    return songs;
+  }
+
+  const toIndex = direction === "up" ? fromIndex - 1 : fromIndex + 1;
+
+  if (toIndex < 0 || toIndex >= songs.length) {
+    return songs;
+  }
+
+  const nextSongs = [...songs];
+  const [movedSong] = nextSongs.splice(fromIndex, 1);
+  nextSongs.splice(toIndex, 0, movedSong);
+
+  return nextSongs;
 };
 
 export function LibraryCollectionDetailScreen({
@@ -49,6 +81,7 @@ function LibraryCollectionDetailContent({
   kind: LibraryCollectionDetailKind;
 }) {
   const { detail, errors } = useLibraryCollectionDetailQuery({ id, kind });
+  const [movingSongId, setMovingSongId] = useState<number | null>(null);
   const [removingSongId, setRemovingSongId] = useState<number | null>(null);
   const [mutationError, setMutationError] = useState<string | null>(null);
   const hasErrors = errors.length > 0;
@@ -93,6 +126,36 @@ function LibraryCollectionDetailContent({
       </View>
 
       <LibraryCollectionSongList
+        movingSongId={movingSongId}
+        onMoveSong={
+          kind === "album"
+            ? async (songId, direction) => {
+                setMovingSongId(songId);
+                setMutationError(null);
+
+                try {
+                  const reorderedSongs = reorderSongs({
+                    direction,
+                    songId,
+                    songs: detail.songs,
+                  });
+
+                  await updateAlbumSongOrder({
+                    albumId: id,
+                    songIds: reorderedSongs.map((song) => song.id),
+                  });
+                } catch (caughtError) {
+                  setMutationError(
+                    caughtError instanceof Error
+                      ? caughtError.message
+                      : "Song order could not be saved.",
+                  );
+                } finally {
+                  setMovingSongId(null);
+                }
+              }
+            : undefined
+        }
         onRemoveSong={async (songId) => {
           setRemovingSongId(songId);
           setMutationError(null);

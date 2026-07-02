@@ -3,6 +3,8 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { LibraryCollectionDetailSong } from "../hooks/use-library-collection-detail-query";
 
 type LibraryCollectionSongListProps = {
+  movingSongId?: number | null;
+  onMoveSong?: (songId: number, direction: "down" | "up") => void;
   onRemoveSong?: (songId: number) => void;
   removingSongId?: number | null;
   songs: LibraryCollectionDetailSong[];
@@ -21,10 +23,14 @@ const formatDuration = (duration: number | null) => {
 };
 
 export function LibraryCollectionSongList({
+  movingSongId,
+  onMoveSong,
   onRemoveSong,
   removingSongId,
   songs,
 }: LibraryCollectionSongListProps) {
+  const isMutating = movingSongId !== null || removingSongId !== null;
+
   if (songs.length === 0) {
     return (
       <View style={styles.emptyPanel}>
@@ -39,7 +45,7 @@ export function LibraryCollectionSongList({
 
   return (
     <View style={styles.list}>
-      {songs.map((song) => (
+      {songs.map((song, index) => (
         <View key={song.id} style={styles.row}>
           <Link asChild href={`/(tabs)/library/song/${song.id}`}>
             <Pressable style={styles.rowLink}>
@@ -57,14 +63,44 @@ export function LibraryCollectionSongList({
               <Text style={styles.duration}>{formatDuration(song.duration)}</Text>
             </Pressable>
           </Link>
+          {onMoveSong ? (
+            <View style={styles.reorderButtons}>
+              <Pressable
+                accessibilityLabel={`Move ${song.title} up`}
+                accessibilityRole="button"
+                disabled={index === 0 || isMutating}
+                onPress={() => onMoveSong(song.id, "up")}
+                style={[
+                  styles.moveButton,
+                  index === 0 || isMutating ? styles.disabledButton : null,
+                ]}
+              >
+                <Text style={styles.moveText}>Up</Text>
+              </Pressable>
+              <Pressable
+                accessibilityLabel={`Move ${song.title} down`}
+                accessibilityRole="button"
+                disabled={index === songs.length - 1 || isMutating}
+                onPress={() => onMoveSong(song.id, "down")}
+                style={[
+                  styles.moveButton,
+                  index === songs.length - 1 || isMutating
+                    ? styles.disabledButton
+                    : null,
+                ]}
+              >
+                <Text style={styles.moveText}>Down</Text>
+              </Pressable>
+            </View>
+          ) : null}
           {onRemoveSong ? (
             <Pressable
               accessibilityRole="button"
-              disabled={removingSongId === song.id}
+              disabled={isMutating}
               onPress={() => onRemoveSong(song.id)}
               style={[
                 styles.removeButton,
-                removingSongId === song.id ? styles.disabledButton : null,
+                isMutating ? styles.disabledButton : null,
               ]}
             >
               <Text style={styles.removeText}>
@@ -166,8 +202,29 @@ const styles = StyleSheet.create({
     minWidth: 76,
     paddingHorizontal: 10,
   },
+  reorderButtons: {
+    flexDirection: "row",
+    gap: 6,
+  },
+  moveButton: {
+    alignItems: "center",
+    borderColor: "#dbe3de",
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: "center",
+    minHeight: 34,
+    minWidth: 54,
+    paddingHorizontal: 8,
+  },
   disabledButton: {
     opacity: 0.55,
+  },
+  moveText: {
+    color: "#0f766e",
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 0,
+    textTransform: "uppercase",
   },
   removeText: {
     color: "#b42318",

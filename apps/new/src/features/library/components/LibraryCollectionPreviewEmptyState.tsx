@@ -1,8 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { getLibraryCollectionPreviewEmptyState } from "../services/library-collection-preview-service";
 
 export function LibraryCollectionPreviewEmptyState() {
   const theme = useCustomizationTheme();
+  const emptyState = getLibraryCollectionPreviewEmptyState();
 
   return (
     <View
@@ -12,10 +14,10 @@ export function LibraryCollectionPreviewEmptyState() {
       ]}
     >
       <Text style={[styles.emptyTitle, { color: theme.primaryText }]}>
-        No collections yet
+        {emptyState.title}
       </Text>
       <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
-        Create a playlist, album, or artist once you have songs to organize.
+        {emptyState.body}
       </Text>
     </View>
   );

@@ -152,6 +152,7 @@ import {
 import {
   albumRowsToPreview,
   artistRowsToPreview,
+  getLibraryCollectionPreviewEmptyState,
   getLibraryCollectionPreviewHref,
   playlistRowsToPreview,
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
@@ -2228,6 +2229,11 @@ function assertLibraryCollectionInteractionSmoke() {
 
 function assertLibraryCollectionPreviewSmoke() {
   const getImagePath = (hash: string) => `/images/${hash}-small.jpg`;
+
+  assert.deepEqual(getLibraryCollectionPreviewEmptyState(), {
+    body: "Create a playlist, album, or artist once you have songs to organize.",
+    title: "No collections yet",
+  });
 
   const playlists = playlistRowsToPreview({
     getImagePath,

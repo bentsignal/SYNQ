@@ -1,24 +1,9 @@
 import { useCallback, useMemo } from "react";
-import {
-  discardImportSession,
-  saveImportSessionToLibrary,
-} from "../services/import-library-save-service";
-import {
-  clearImportCache,
-  prepareWifiImportCache,
-} from "../services/import-file-service";
-import { clearPersistedImportSessionState } from "../services/import-session-persistence-service";
-import {
-  getFinishWifiTransferAction,
-  getImportSessionCommandErrorMessage,
-  type ImportSessionAction,
-} from "../services/import-session-state-service";
-import type {
-  ImportSaveSummary,
-  ImportSessionState,
-  ImportSongDraft,
-} from "../types/import-session";
+import type { ImportSessionAction } from "../services/import-session-state-service";
+import type { ImportSessionState, ImportSongDraft } from "../types/import-session";
 import { useImportFileCommands } from "./use-import-file-commands";
+import { useImportSessionLifecycleCommands } from "./use-import-session-lifecycle-commands";
+import { useImportSessionWifiCommands } from "./use-import-session-wifi-commands";
 
 type UseImportSessionCommandsParams = {
   dispatch: (action: ImportSessionAction) => void;
@@ -38,23 +23,6 @@ export function useImportSessionCommands({
     dispatch({ type: "begin-file-pick" });
   }, [dispatch]);
 
-  const beginWifiTransfer = useCallback(async (total: number) => {
-    try {
-      await prepareWifiImportCache();
-      dispatch({ total, type: "begin-wifi-transfer" });
-      return true;
-    } catch (caughtError) {
-      dispatch({
-        error: getImportSessionCommandErrorMessage({
-          caughtError,
-          mutation: "begin-wifi-transfer",
-        }),
-        type: "fail",
-      });
-      return false;
-    }
-  }, [dispatch]);
-
   const failSession = useCallback((error: string) => {
     dispatch({ error, type: "fail" });
   }, [dispatch]);
@@ -62,14 +30,6 @@ export function useImportSessionCommands({
   const reviewSongs = useCallback((songs: ImportSongDraft[]) => {
     dispatch({ songs, type: "review" });
   }, [dispatch]);
-
-  const receiveWifiSong = useCallback((song: ImportSongDraft) => {
-    dispatch({ song, type: "receive-wifi-song" });
-  }, [dispatch]);
-
-  const finishWifiTransfer = useCallback(() => {
-    dispatch(getFinishWifiTransferAction(state.songs));
-  }, [dispatch, state.songs]);
 
   const setShouldSaveToLibrary = useCallback(
     (shouldSaveToLibrary: boolean) => {
@@ -82,57 +42,18 @@ export function useImportSessionCommands({
     dispatch({ song, type: "update-song" });
   }, [dispatch]);
 
-  const finishSession = useCallback((summary: ImportSaveSummary) => {
-    dispatch({ summary, type: "finish" });
-  }, [dispatch]);
+  const { beginWifiTransfer, finishWifiTransfer, receiveWifiSong } =
+    useImportSessionWifiCommands({
+      dispatch,
+      songs: state.songs,
+    });
 
-  const saveImportSession = useCallback(async () => {
-    dispatch({ type: "saving" });
-
-    try {
-      const summary = state.shouldSaveToLibrary
-        ? await saveImportSessionToLibrary(state.songs)
-        : await discardImportSession(state.songs);
-
-      await clearPersistedImportSessionState();
-      dispatch({ summary, type: "finish" });
-      return true;
-    } catch (caughtError) {
-      dispatch({
-        error: getImportSessionCommandErrorMessage({
-          caughtError,
-          mutation: "save-session",
-        }),
-        type: "fail",
-      });
-      return false;
-    }
-  }, [dispatch, state.shouldSaveToLibrary, state.songs]);
-
-  const discardSession = useCallback(async () => {
-    dispatch({ type: "saving" });
-
-    try {
-      await clearImportCache();
-      await clearPersistedImportSessionState();
-      dispatch({ type: "discard" });
-      return true;
-    } catch (caughtError) {
-      dispatch({
-        error: getImportSessionCommandErrorMessage({
-          caughtError,
-          mutation: "discard-session",
-        }),
-        type: "fail",
-      });
-      return false;
-    }
-  }, [dispatch]);
-
-  const resetSession = useCallback(() => {
-    void clearPersistedImportSessionState();
-    dispatch({ type: "reset" });
-  }, [dispatch]);
+  const { discardSession, finishSession, resetSession, saveImportSession } =
+    useImportSessionLifecycleCommands({
+      dispatch,
+      shouldSaveToLibrary: state.shouldSaveToLibrary,
+      songs: state.songs,
+    });
 
   return useMemo(
     () => ({

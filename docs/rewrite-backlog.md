@@ -582,6 +582,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: Wi-Fi import header, address status, progress, and review/back
     actions now render through focused components instead of one large Wi-Fi
     screen view.
+  - Done: import session Wi-Fi transfer setup and save/discard/reset
+    lifecycle commands now live in focused hooks instead of one import command
+    aggregator owning every command path.
   - Done: customization and privacy settings now share a typed persistence
     reducer/loader boundary, and customization save/icon commands live in a
     focused hook instead of the provider-facing settings hook.

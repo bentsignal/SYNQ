@@ -190,3 +190,5 @@
   cache copy and draft processing.
 - Kept direct import cache smoke coverage while moving filename and destination
   planning into a focused step service.
+- Added direct import session persistence step smoke coverage for path planning
+  and persisted-session restore decisions.

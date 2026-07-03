@@ -297,3 +297,5 @@
   the main file selection executor.
 - Split import cache filename and destination planning out of the filesystem
   cache executor.
+- Split import session persistence path planning and restore-state derivation
+  out of the filesystem persistence executor.

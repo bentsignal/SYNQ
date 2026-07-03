@@ -3,6 +3,11 @@ import {
   normalizePersistedImportSession,
   toPersistedImportSession,
 } from "./import-session-persistence-normalizer-service";
+import {
+  getImportSessionDirectory,
+  getImportSessionFile,
+  getRestoredImportSessionState,
+} from "./import-session-persistence-step-service";
 
 export type ImportSessionPersistenceDependencies = {
   deletePath: (
@@ -19,25 +24,17 @@ export type ImportSessionPersistenceDependencies = {
   writeAsString: (path: string, contents: string) => Promise<void>;
 };
 
-const importSessionDirectoryName = "import";
 const importSessionFileName = "session.json";
 
 export const getImportSessionDirectoryWithDependencies = ({
   documentDirectory,
 }: Pick<ImportSessionPersistenceDependencies, "documentDirectory">) => {
-  if (!documentDirectory) {
-    throw new Error("Document directory is unavailable.");
-  }
-
-  return `${documentDirectory}${importSessionDirectoryName}`;
+  return getImportSessionDirectory({ documentDirectory });
 };
 
 export const getImportSessionFileWithDependencies = (
   dependencies: Pick<ImportSessionPersistenceDependencies, "documentDirectory">,
-) =>
-  `${getImportSessionDirectoryWithDependencies(
-    dependencies,
-  )}/${importSessionFileName}`;
+) => getImportSessionFile(dependencies);
 
 const filterExistingDraftsWithDependencies = async ({
   dependencies,
@@ -101,22 +98,7 @@ export async function loadPersistedImportSessionStateWithDependencies(
       return null;
     }
 
-    return {
-      error: null,
-      phase: "reviewing",
-      progress: {
-        current: songs.length,
-        total: songs.length,
-      },
-      saveSummary: null,
-      selectedSongId:
-        songs.some((song) => song.id === persistedSession.selectedSongId)
-          ? persistedSession.selectedSongId
-          : songs[0]?.id ?? null,
-      shouldSaveToLibrary: persistedSession.shouldSaveToLibrary,
-      songs,
-      source: persistedSession.source,
-    };
+    return getRestoredImportSessionState({ persistedSession, songs });
   } catch {
     return null;
   }

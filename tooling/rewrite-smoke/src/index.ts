@@ -254,6 +254,11 @@ import {
   type ImportSessionPersistenceDependencies,
 } from "../../../apps/new/src/features/import/services/import-session-persistence-executor-service";
 import {
+  getImportSessionDirectory,
+  getImportSessionFile,
+  getRestoredImportSessionState,
+} from "../../../apps/new/src/features/import/services/import-session-persistence-step-service";
+import {
   buildEditedImportSongDraft,
   getImportSongEditActionState,
   getImportSongEditErrorMessage,
@@ -9354,8 +9359,49 @@ async function assertImportSessionPersistenceExecutorSmoke() {
     "file:///documents/import",
   );
   assert.equal(
+    getImportSessionDirectory({ documentDirectory: "file:///documents/" }),
+    "file:///documents/import",
+  );
+  assert.equal(
     getImportSessionFileWithDependencies(dependencies),
     sessionFile,
+  );
+  assert.equal(
+    getImportSessionFile({ documentDirectory: "file:///documents/" }),
+    sessionFile,
+  );
+  assert.deepEqual(
+    getRestoredImportSessionState({
+      persistedSession: {
+        selectedSongId: second.id,
+        shouldSaveToLibrary: false,
+        songs: [first, second],
+        source: "wifi",
+      },
+      songs: [first],
+    }),
+    {
+      error: null,
+      phase: "reviewing",
+      progress: { current: 1, total: 1 },
+      saveSummary: null,
+      selectedSongId: first.id,
+      shouldSaveToLibrary: false,
+      songs: [first],
+      source: "wifi",
+    },
+  );
+  assert.equal(
+    getRestoredImportSessionState({
+      persistedSession: {
+        selectedSongId: second.id,
+        shouldSaveToLibrary: false,
+        songs: [first, second],
+        source: "wifi",
+      },
+      songs: [],
+    }),
+    null,
   );
   assert.equal(
     await loadPersistedImportSessionStateWithDependencies(dependencies),

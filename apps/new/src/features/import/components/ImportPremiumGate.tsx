@@ -1,22 +1,15 @@
 import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
-import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import {
-  getImportPremiumGateActionCommand,
-  getImportPremiumGateState,
-} from "../services/import-premium-gate-state-service";
+import { useImportPremiumGateController } from "../hooks/use-import-premium-gate-controller";
 
 type ImportPremiumGateProps = {
   children: React.ReactNode;
 };
 
 export function ImportPremiumGate({ children }: ImportPremiumGateProps) {
-  const state = usePremiumEntitlementSelector((store) => store.state);
   const theme = useCustomizationTheme();
-  const { sendHaptic } = useHapticFeedback();
-  const gateState = getImportPremiumGateState(state);
+  const { gateState, onSelectPremiumAction } = useImportPremiumGateController();
 
   if (gateState.canAccessImport) {
     return children;
@@ -55,9 +48,7 @@ export function ImportPremiumGate({ children }: ImportPremiumGateProps) {
       ) : null}
       <Link asChild href={gateState.action.href}>
         <Pressable
-          onPress={() =>
-            sendHaptic(getImportPremiumGateActionCommand().haptic)
-          }
+          onPress={onSelectPremiumAction}
           className="min-h-[42px] items-center justify-center self-start rounded-lg px-3.5"
           style={{ backgroundColor: theme.accent }}
         >

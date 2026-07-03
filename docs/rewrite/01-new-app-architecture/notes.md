@@ -12,3 +12,6 @@
 - Library command hooks should keep haptics, alerts, navigation, dispatch, and
   local reducer state; command services should own repository/export calls and
   persistence payload shaping.
+- Collection list screens now use a list-specific single-kind live query hook
+  instead of reusing the library-home all-preview hook, so Albums, Artists, and
+  Playlists list pages subscribe only to the repository query they render.

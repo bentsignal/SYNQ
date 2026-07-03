@@ -1,6 +1,6 @@
 import { LibraryCollectionListView } from "../components/LibraryCollectionListView";
 import { useLibraryCollectionListController } from "../hooks/use-library-collection-list-controller";
-import { type CollectionKind } from "../hooks/use-library-collection-preview-query";
+import { type CollectionKind } from "../hooks/use-library-collection-list-query";
 import { getLibraryCollectionListCopy } from "../services/library-collection-list-service";
 
 type LibraryCollectionListScreenProps = {

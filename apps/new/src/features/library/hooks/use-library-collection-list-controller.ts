@@ -1,8 +1,8 @@
 import { useReducer } from "react";
 import {
   type CollectionKind,
-  useLibraryCollectionPreviewQuery,
-} from "./use-library-collection-preview-query";
+  useLibraryCollectionListQuery,
+} from "./use-library-collection-list-query";
 import {
   getLibraryCollectionListState,
   initialLibraryCollectionListControlState,
@@ -22,13 +22,14 @@ export function useLibraryCollectionListController({
     libraryCollectionListControlReducer,
     initialLibraryCollectionListControlState,
   );
-  const { collections, errors, updatedAt } = useLibraryCollectionPreviewQuery({
+  const { collections, error, updatedAt } = useLibraryCollectionListQuery({
+    kind,
     limit: null,
   });
   const listState = getLibraryCollectionListState({
-    collections: collections[kind],
+    collections,
     emptyLabel,
-    errors,
+    errors: error ? [error] : [],
     query: controls.query,
     updatedAt,
   });

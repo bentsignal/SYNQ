@@ -23,3 +23,5 @@
 - Added command services for collection form, song, and collection mutations so
   hooks keep UI side effects while services own concrete repository/export
   wiring.
+- Aligned collection list queries with the song query/helper pattern by adding
+  a single-kind collection list live query hook plus pure row-shaping service.

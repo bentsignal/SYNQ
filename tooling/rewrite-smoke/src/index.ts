@@ -289,6 +289,9 @@ import {
   libraryCollectionListControlReducer,
 } from "../../../apps/new/src/features/library/services/library-collection-list-service";
 import {
+  rowsToCollectionListPreviews,
+} from "../../../apps/new/src/features/library/services/library-collection-list-query-service";
+import {
   getLibraryHomeHeaderActions,
   getLibraryHomeHeaderState,
   getLibraryHomeImportHref,
@@ -4618,6 +4621,31 @@ function assertLibraryCollectionListSmoke() {
       title: "Road Mix",
     },
   ];
+  assert.deepEqual(
+    rowsToCollectionListPreviews({
+      kind: "artists",
+      limit: null,
+      rows: [
+        {
+          albumId: 7,
+          artistId: 9,
+          artistName: "Single Kind Artist",
+          profileImage: "profile",
+          songId: 4,
+        },
+      ],
+    }),
+    [
+      {
+        detail: "1 song / 1 album",
+        id: 9,
+        imagePath: null,
+        kind: "artists",
+        meta: "Artist",
+        title: "Single Kind Artist",
+      },
+    ],
+  );
 
   assert.deepEqual(
     filterCollectionPreviews({ collections, query: "" }).map(

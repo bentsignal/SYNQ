@@ -12,4 +12,4 @@
 - [ ] Keep import/save orchestration moving toward small command, reducer,
   filesystem, and repository services.
 - [ ] Keep playback queue/player synchronization small enough to reason about.
-- [ ] Keep collection list helpers aligned with the song query/helper pattern.
+- [x] Keep collection list helpers aligned with the song query/helper pattern.

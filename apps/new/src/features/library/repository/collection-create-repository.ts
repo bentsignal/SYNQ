@@ -1,8 +1,68 @@
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { saveCoverImage } from "@/src/features/images/services/image-storage-service";
-import { assertCollectionName } from "../services/collection-metadata-service";
+import {
+  createAlbumWithDependencies,
+  createArtistWithDependencies,
+  createPlaylistWithDependencies,
+} from "./collection-create-executor-repository";
 import { assertUniqueCollectionName } from "./collection-uniqueness-repository";
+
+const collectionCreateDependencies = {
+  assertUniqueCollectionName,
+  insertAlbumRow: async ({
+    coverImage,
+    name,
+    year,
+  }: {
+    coverImage: string | null;
+    name: string;
+    year?: number;
+  }) => {
+    const createdAlbum = await db
+      .insert(schema.albums)
+      .values({
+        coverImage,
+        name,
+        year,
+      })
+      .returning({ id: schema.albums.id });
+
+    return createdAlbum[0]?.id ?? null;
+  },
+  insertArtistRow: async ({
+    name,
+    profileImage,
+  }: {
+    name: string;
+    profileImage?: string | null;
+  }) => {
+    const createdArtist = await db
+      .insert(schema.artists)
+      .values({ name, profileImage })
+      .returning({ id: schema.artists.id });
+
+    return createdArtist[0]?.id ?? null;
+  },
+  insertPlaylistRow: async ({
+    coverImage,
+    name,
+  }: {
+    coverImage: string | null;
+    name: string;
+  }) => {
+    const createdPlaylist = await db
+      .insert(schema.playlists)
+      .values({
+        coverImage,
+        name,
+      })
+      .returning({ id: schema.playlists.id });
+
+    return createdPlaylist[0]?.id ?? null;
+  },
+  saveCoverImage,
+};
 
 export async function createAlbum({
   coverImage,
@@ -13,52 +73,18 @@ export async function createAlbum({
   name: string;
   year?: number;
 }) {
-  const cleanName = assertCollectionName({ kind: "album", name });
-
-  await assertUniqueCollectionName({ kind: "album", name: cleanName });
-
-  const createdAlbum = await db
-    .insert(schema.albums)
-    .values({
-      coverImage: await saveCoverImage(coverImage),
-      name: cleanName,
+  return createAlbumWithDependencies(
+    {
+      coverImage,
+      name,
       year,
-    })
-    .returning({ id: schema.albums.id });
-
-  const id = createdAlbum[0]?.id;
-
-  if (!id) {
-    throw new Error("Album could not be created.");
-  }
-
-  return {
-    id,
-    name: cleanName,
-    year,
-  };
+    },
+    collectionCreateDependencies,
+  );
 }
 
 export async function createArtist(name: string) {
-  const cleanName = assertCollectionName({ kind: "artist", name });
-
-  await assertUniqueCollectionName({ kind: "artist", name: cleanName });
-
-  const createdArtist = await db
-    .insert(schema.artists)
-    .values({ name: cleanName })
-    .returning({ id: schema.artists.id });
-
-  const id = createdArtist[0]?.id;
-
-  if (!id) {
-    throw new Error("Artist could not be created.");
-  }
-
-  return {
-    id,
-    name: cleanName,
-  };
+  return createArtistWithDependencies({ name }, collectionCreateDependencies);
 }
 
 export async function createArtistWithImage({
@@ -68,28 +94,13 @@ export async function createArtistWithImage({
   name: string;
   profileImage?: string | null;
 }) {
-  const cleanName = assertCollectionName({ kind: "artist", name });
-
-  await assertUniqueCollectionName({ kind: "artist", name: cleanName });
-
-  const createdArtist = await db
-    .insert(schema.artists)
-    .values({
-      name: cleanName,
-      profileImage: await saveCoverImage(profileImage),
-    })
-    .returning({ id: schema.artists.id });
-
-  const id = createdArtist[0]?.id;
-
-  if (!id) {
-    throw new Error("Artist could not be created.");
-  }
-
-  return {
-    id,
-    name: cleanName,
-  };
+  return createArtistWithDependencies(
+    {
+      name,
+      profileImage,
+    },
+    collectionCreateDependencies,
+  );
 }
 
 export async function createPlaylist({
@@ -99,26 +110,11 @@ export async function createPlaylist({
   coverImage?: string | null;
   name: string;
 }) {
-  const cleanName = assertCollectionName({ kind: "playlist", name });
-
-  await assertUniqueCollectionName({ kind: "playlist", name: cleanName });
-
-  const createdPlaylist = await db
-    .insert(schema.playlists)
-    .values({
-      coverImage: await saveCoverImage(coverImage),
-      name: cleanName,
-    })
-    .returning({ id: schema.playlists.id });
-
-  const id = createdPlaylist[0]?.id;
-
-  if (!id) {
-    throw new Error("Playlist could not be created.");
-  }
-
-  return {
-    id,
-    name: cleanName,
-  };
+  return createPlaylistWithDependencies(
+    {
+      coverImage,
+      name,
+    },
+    collectionCreateDependencies,
+  );
 }

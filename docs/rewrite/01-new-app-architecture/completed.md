@@ -206,3 +206,6 @@
 - Moved album, artist, and playlist update validation, uniqueness, image
   persistence, protected-playlist guards, and album artist replacement behind a
   shared injectable repository executor.
+- Moved album, artist, and playlist creation validation, uniqueness, image
+  persistence, insert-id assertions, and result shaping behind a shared
+  injectable repository executor.

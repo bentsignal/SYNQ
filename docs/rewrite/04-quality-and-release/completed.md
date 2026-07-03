@@ -96,3 +96,6 @@
 - Added collection update executor smoke coverage for album, artist, and
   playlist update sequencing, optional image persistence, protected playlists,
   required names, and duplicate-name failures.
+- Added collection create executor smoke coverage for album, artist, and
+  playlist creation sequencing, optional image persistence, missing insert ids,
+  required names, and duplicate-name failures.

@@ -222,6 +222,14 @@ import {
   splitImportLibraryNames,
 } from "../../../apps/new/src/features/import/services/import-library-save-plan-service";
 import {
+  deleteLibrarySongFilesWithDependencies,
+  getImportLibraryDirectoryWithDependencies,
+  getImportLibrarySongDirectory,
+  getImportLibrarySongFile,
+  moveImportAudioToLibraryWithDependencies,
+  type ImportLibraryFileDependencies,
+} from "../../../apps/new/src/features/import/services/import-library-file-executor-service";
+import {
   saveImportSongToLibrary,
   type ImportLibrarySongSaveDependencies,
 } from "../../../apps/new/src/features/import/services/import-library-song-save-executor-service";
@@ -7114,6 +7122,103 @@ async function assertImportSessionPersistenceExecutorSmoke() {
   );
 }
 
+async function assertImportLibraryFileExecutorSmoke() {
+  const calls: string[] = [];
+  let documentDirectory: string | null = "file:///documents/";
+  let shouldCopyFail = false;
+  const dependencies: ImportLibraryFileDependencies = {
+    copyFile: async ({ from, to }) => {
+      calls.push(`copy:${from}:${to}`);
+      if (shouldCopyFail) {
+        throw new Error("copy failed");
+      }
+    },
+    deletePath: async (path, options) => {
+      calls.push(`delete:${path}:${options?.idempotent === true}`);
+    },
+    get documentDirectory() {
+      return documentDirectory;
+    },
+    makeDirectory: async (path, options) => {
+      calls.push(`mkdir:${path}:${options?.intermediates === true}`);
+    },
+  };
+
+  const libraryDirectory =
+    getImportLibraryDirectoryWithDependencies(dependencies);
+  assert.equal(libraryDirectory, "file:///documents/library");
+  const songDirectory = getImportLibrarySongDirectory({
+    libraryDirectory,
+    songId: 42,
+  });
+  assert.equal(songDirectory, "file:///documents/library/42");
+  assert.equal(
+    getImportLibrarySongFile({
+      fileName: "track.mp3",
+      songDirectory,
+    }),
+    "file:///documents/library/42/track.mp3",
+  );
+
+  assert.equal(
+    await moveImportAudioToLibraryWithDependencies({
+      cacheUri: "file:///cache/import-track.mp3",
+      dependencies,
+      fileName: "track.mp3",
+      songId: 42,
+    }),
+    "file:///documents/library/42/track.mp3",
+  );
+  assert.deepEqual(calls, [
+    "mkdir:file:///documents/library:true",
+    "mkdir:file:///documents/library/42:true",
+    "copy:file:///cache/import-track.mp3:file:///documents/library/42/track.mp3",
+    "delete:file:///cache/import-track.mp3:true",
+  ]);
+
+  calls.length = 0;
+  await deleteLibrarySongFilesWithDependencies(42, dependencies);
+  assert.deepEqual(calls, ["delete:file:///documents/library/42:true"]);
+
+  calls.length = 0;
+  documentDirectory = null;
+  await deleteLibrarySongFilesWithDependencies(43, dependencies);
+  assert.deepEqual(calls, []);
+  assert.throws(
+    () => getImportLibraryDirectoryWithDependencies(dependencies),
+    /Document directory is unavailable/,
+  );
+  await assert.rejects(
+    () =>
+      moveImportAudioToLibraryWithDependencies({
+        cacheUri: "file:///cache/missing-document-directory.mp3",
+        dependencies,
+        fileName: "missing.mp3",
+        songId: 43,
+      }),
+    /Document directory is unavailable/,
+  );
+  assert.deepEqual(calls, []);
+
+  documentDirectory = "file:///documents/";
+  shouldCopyFail = true;
+  await assert.rejects(
+    () =>
+      moveImportAudioToLibraryWithDependencies({
+        cacheUri: "file:///cache/failing-track.mp3",
+        dependencies,
+        fileName: "failing.mp3",
+        songId: 44,
+      }),
+    /copy failed/,
+  );
+  assert.deepEqual(calls, [
+    "mkdir:file:///documents/library:true",
+    "mkdir:file:///documents/library/44:true",
+    "copy:file:///cache/failing-track.mp3:file:///documents/library/44/failing.mp3",
+  ]);
+}
+
 async function assertImportLibrarySavePlanSmoke() {
   assert.equal(hasMeaningfulImportLibraryName("Unknown"), false);
   assert.equal(hasMeaningfulImportLibraryName("Unknown Artist"), false);
@@ -8768,6 +8873,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertPlaybackPersistenceExecutorSmoke();
   await assertImportFileCacheExecutorSmoke();
   await assertImportSessionPersistenceExecutorSmoke();
+  await assertImportLibraryFileExecutorSmoke();
   await assertWifiImportRequestSmoke();
   await assertBackupCommandExecutorSmoke();
   await assertPremiumPurchaseExecutorSmoke();

@@ -1,21 +1,21 @@
 import * as FileSystem from "expo-file-system";
+import {
+  deleteLibrarySongFilesWithDependencies,
+  moveImportAudioToLibraryWithDependencies,
+  type ImportLibraryFileDependencies,
+} from "./import-library-file-executor-service";
 
-const getLibraryDirectory = () => {
-  if (!FileSystem.documentDirectory) {
-    throw new Error("Document directory is unavailable.");
-  }
-
-  return `${FileSystem.documentDirectory}library`;
+const importLibraryFileDependencies: ImportLibraryFileDependencies = {
+  copyFile: FileSystem.copyAsync,
+  deletePath: FileSystem.deleteAsync,
+  documentDirectory: FileSystem.documentDirectory,
+  makeDirectory: FileSystem.makeDirectoryAsync,
 };
 
 export const deleteLibrarySongFiles = async (songId: number) => {
-  if (!FileSystem.documentDirectory) {
-    return;
-  }
-
-  await FileSystem.deleteAsync(
-    `${FileSystem.documentDirectory}library/${songId}`,
-    { idempotent: true },
+  await deleteLibrarySongFilesWithDependencies(
+    songId,
+    importLibraryFileDependencies,
   );
 };
 
@@ -28,20 +28,10 @@ export const moveImportAudioToLibrary = async ({
   fileName: string;
   songId: number;
 }) => {
-  const libraryDirectory = getLibraryDirectory();
-  await FileSystem.makeDirectoryAsync(libraryDirectory, {
-    intermediates: true,
+  return moveImportAudioToLibraryWithDependencies({
+    cacheUri,
+    dependencies: importLibraryFileDependencies,
+    fileName,
+    songId,
   });
-
-  const songDirectory = `${libraryDirectory}/${songId}`;
-  await FileSystem.makeDirectoryAsync(songDirectory, { intermediates: true });
-
-  const destination = `${songDirectory}/${fileName}`;
-  await FileSystem.copyAsync({
-    from: cacheUri,
-    to: destination,
-  });
-  await FileSystem.deleteAsync(cacheUri, { idempotent: true });
-
-  return destination;
 };

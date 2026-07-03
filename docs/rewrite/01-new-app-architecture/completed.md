@@ -177,3 +177,5 @@
   without Expo filesystem.
 - Moved library song relationship cleanup, song-row deletion, and optional file
   cleanup behind an injectable repository executor.
+- Moved import library audio file movement and cache cleanup behind an
+  injectable file executor.

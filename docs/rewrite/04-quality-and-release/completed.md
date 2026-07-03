@@ -59,3 +59,6 @@
 - Added library song delete executor smoke coverage for relationship cleanup
   order, song-row deletion, file cleanup, and missing document-directory
   behavior.
+- Added import library file executor smoke coverage for library path planning,
+  audio copy/cache cleanup order, no-op file deletion, unavailable document
+  directories, and copy failures.

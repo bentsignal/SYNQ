@@ -332,3 +332,5 @@
 - Added direct library song edit save action-constructor smoke coverage.
 - Added direct add-collection-songs and collection-form finish
   action-constructor smoke coverage.
+- Added a rewrite verification guardrail that rejects inline object-literal
+  dispatch calls in new-app feature code.

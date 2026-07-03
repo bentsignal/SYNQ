@@ -147,6 +147,11 @@ scan_for_forbidden_matches "new app hygiene scan" \
   rg -n "console\\.log|console\\.error|Dimensions\\.get" \
   apps/new/app apps/new/src/features -g "*.ts" -g "*.tsx"
 
+echo "==> New app raw dispatch action scan"
+scan_for_forbidden_matches "new app raw dispatch action scan" \
+  rg -n "dispatch[A-Za-z0-9_]*\\(\\{" \
+  apps/new/src/features -g "*.ts" -g "*.tsx"
+
 echo "==> Rewrite debt audit"
 bash scripts/audit-rewrite-debt.sh
 

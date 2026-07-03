@@ -16,6 +16,25 @@ import {
 
 type ImportSessionLifecycleDispatch = (action: ImportSessionAction) => void;
 
+type ImportSessionLifecycleCommandResult = {
+  action: ImportSessionAction;
+  succeeded: boolean;
+};
+
+const runImportSessionLifecycleAttempt = async ({
+  dispatch,
+  run,
+}: {
+  dispatch: ImportSessionLifecycleDispatch;
+  run: () => Promise<ImportSessionLifecycleCommandResult>;
+}) => {
+  dispatch(getSavingImportSessionAction());
+
+  const result = await run();
+  dispatch(result.action);
+  return result.succeeded;
+};
+
 export const runFinishImportSessionCommand = ({
   dispatch,
   summary,
@@ -37,17 +56,17 @@ export const runSaveImportSessionCommand = async ({
   shouldSaveToLibrary: boolean;
   songs: ImportSessionState["songs"];
 }) => {
-  dispatch(getSavingImportSessionAction());
-
-  const result = await saveImportSessionLifecycle(
-    {
-      shouldSaveToLibrary,
-      songs,
-    },
-    dependencies,
-  );
-  dispatch(result.action);
-  return result.succeeded;
+  return runImportSessionLifecycleAttempt({
+    dispatch,
+    run: () =>
+      saveImportSessionLifecycle(
+        {
+          shouldSaveToLibrary,
+          songs,
+        },
+        dependencies,
+      ),
+  });
 };
 
 export const runDiscardImportSessionCommand = async ({
@@ -57,11 +76,10 @@ export const runDiscardImportSessionCommand = async ({
   dependencies: ImportSessionLifecycleDependencies;
   dispatch: ImportSessionLifecycleDispatch;
 }) => {
-  dispatch(getSavingImportSessionAction());
-
-  const result = await discardImportSessionLifecycle(dependencies);
-  dispatch(result.action);
-  return result.succeeded;
+  return runImportSessionLifecycleAttempt({
+    dispatch,
+    run: () => discardImportSessionLifecycle(dependencies),
+  });
 };
 
 export const runResetImportSessionCommand = ({

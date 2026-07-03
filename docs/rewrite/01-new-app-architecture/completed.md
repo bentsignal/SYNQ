@@ -327,6 +327,8 @@
   a focused command-flow service.
 - Moved import session lifecycle dispatch sequencing out of the React hook and
   into a focused command-flow service.
+- Collapsed repeated import session lifecycle saving/result dispatch
+  orchestration into a shared command-flow helper.
 - Moved playback transport ad-gated command-plan sequencing out of the React
   hook and into a focused command-flow service.
 - Moved playback queue session mutation and command-plan sequencing out of the

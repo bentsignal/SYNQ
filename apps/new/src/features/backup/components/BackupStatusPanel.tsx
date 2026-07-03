@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { BackupScreenController } from "../hooks/use-backup-screen-controller";
 
@@ -15,21 +15,20 @@ export function BackupStatusPanel({
 
   return (
     <View
-      style={[
-        styles.panel,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="gap-2.5 rounded-lg border p-4"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
-      <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
+      <Text
+        className="text-xs font-extrabold uppercase"
+        style={{ color: theme.secondaryText }}
+      >
         Status
       </Text>
       <Text
-        style={[
-          statusState.isFailure ? styles.errorText : styles.panelText,
-          {
-            color: statusState.isFailure ? theme.danger : theme.primaryText,
-          },
-        ]}
+        className={`text-sm leading-5 ${statusState.isFailure ? "font-bold" : ""}`}
+        style={{
+          color: statusState.isFailure ? theme.danger : theme.primaryText,
+        }}
       >
         {statusState.message}
       </Text>
@@ -37,9 +36,13 @@ export function BackupStatusPanel({
         <Pressable
           accessibilityRole="button"
           onPress={resetStatus}
-          style={[styles.resetButton, { borderColor: theme.border }]}
+          className="min-h-[38px] items-center justify-center rounded-lg border px-3"
+          style={{ borderColor: theme.border }}
         >
-          <Text style={[styles.resetButtonText, { color: theme.accent }]}>
+          <Text
+            className="text-xs font-extrabold uppercase"
+            style={{ color: theme.accent }}
+          >
             Reset status
           </Text>
         </Pressable>
@@ -47,41 +50,3 @@ export function BackupStatusPanel({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  panel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 10,
-    padding: 16,
-  },
-  panelLabel: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  panelText: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  errorText: {
-    fontSize: 14,
-    fontWeight: "700",
-    lineHeight: 20,
-  },
-  resetButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    justifyContent: "center",
-    minHeight: 38,
-    paddingHorizontal: 12,
-  },
-  resetButtonText: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-});

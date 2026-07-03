@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { HomeScreenController } from "../hooks/use-home-screen-controller";
 import { getHomeLibraryHref } from "../services/home-screen-service";
@@ -19,13 +19,17 @@ export function HomeRecentSongsSection({
 
   return (
     <>
-      <View style={styles.sectionHeader}>
-        <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
+      <View className="flex-row items-center justify-between gap-3">
+        <Text
+          className="text-[22px] font-extrabold leading-7"
+          style={{ color: theme.primaryText }}
+        >
           Recent Songs
         </Text>
         <Link
+          className="text-[13px] font-extrabold uppercase"
           href={libraryHref}
-          style={[styles.sectionLink, { color: theme.accent }]}
+          style={{ color: theme.accent }}
         >
           View library
         </Link>
@@ -35,24 +39,3 @@ export function HomeRecentSongsSection({
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionHeader: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 12,
-    justifyContent: "space-between",
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 28,
-  },
-  sectionLink: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-});

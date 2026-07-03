@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { BackupScreenController } from "../hooks/use-backup-screen-controller";
 import { getBackupScreenState } from "../services/backup-screen-service";
@@ -20,8 +20,9 @@ export function BackupScreenView({
 
   return (
     <ScrollView
-      contentContainerStyle={styles.content}
-      style={[styles.scroll, { backgroundColor: theme.background }]}
+      className="flex-1"
+      contentContainerClassName="gap-5 px-5 py-14"
+      style={{ backgroundColor: theme.background }}
     >
       <BackupScreenHeader />
       <BackupActionList
@@ -31,27 +32,12 @@ export function BackupScreenView({
       <BackupStatusPanel resetStatus={resetStatus} statusState={statusState} />
 
       <Link
+        className="text-[15px] font-extrabold"
         href={screenState.backLink.href}
-        style={[styles.backLink, { color: theme.accent }]}
+        style={{ color: theme.accent }}
       >
         {screenState.backLink.label}
       </Link>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    gap: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-  backLink: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-  },
-});

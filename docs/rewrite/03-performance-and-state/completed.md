@@ -24,3 +24,5 @@
 - Configured NativeWind/Tailwind for the new app and converted the first
   app-shell/import/backup components from `StyleSheet.create` to utility
   classes, lowering the StyleSheet ratchet from 111 calls to 106.
+- Converted another app-shell/backup presentation batch to utility classes,
+  lowering the StyleSheet ratchet from 106 calls to 101.

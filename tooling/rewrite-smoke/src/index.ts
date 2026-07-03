@@ -565,6 +565,15 @@ import {
   premiumOfferingNames,
   premiumTiers,
 } from "../../../apps/new/src/features/premium/services/premium-catalog-service";
+import {
+  checkPremiumEntitlementWithDependencies,
+  loadPremiumTiersWithDependencies,
+  purchasePremiumTierWithDependencies,
+  restorePremiumPurchaseWithDependencies,
+  type PremiumCustomerInfo,
+  type PremiumPurchaseExecutorDependencies,
+  type PremiumPurchasePackage,
+} from "../../../apps/new/src/features/premium/services/premium-purchase-executor-service";
 import type {
   PremiumPurchaseState,
   PremiumTier,
@@ -7442,6 +7451,118 @@ function assertPremiumScreenSmoke() {
   );
 }
 
+async function assertPremiumPurchaseExecutorSmoke() {
+  const monthlyPackage: PremiumPurchasePackage = {
+    product: { priceString: "$1.99" },
+  };
+  const yearlyPackage: PremiumPurchasePackage = {
+    product: { priceString: "$19.99" },
+  };
+  const lifetimePackage: PremiumPurchasePackage = {
+    product: { priceString: "$49.99" },
+  };
+  const purchasedPackages: PremiumPurchasePackage[] = [];
+  let restoredProductIdentifier: string | null = null;
+  let checkedProductIdentifier: string | null = null;
+  let purchasedProductIdentifier: string | null = "SYNQPremiumYearly";
+  const getCustomerInfo = (
+    productIdentifier: string | null,
+  ): PremiumCustomerInfo => ({
+    entitlements: {
+      active: productIdentifier
+        ? { Premium: { productIdentifier } }
+        : {},
+    },
+  });
+  const createDependencies = (
+    packages: Partial<
+      Record<keyof typeof premiumOfferingNames, PremiumPurchasePackage>
+    >,
+  ): PremiumPurchaseExecutorDependencies => ({
+    getCustomerInfo: async () => getCustomerInfo(checkedProductIdentifier),
+    getOfferings: async () => ({
+      all: Object.fromEntries(
+        Object.entries(packages).map(([tierId, purchasePackage]) => [
+          premiumOfferingNames[tierId as keyof typeof premiumOfferingNames],
+          purchasePackage ? { availablePackages: [purchasePackage] } : undefined,
+        ]),
+      ),
+    }),
+    purchasePackage: async (purchasePackage) => {
+      purchasedPackages.push(purchasePackage);
+      return { customerInfo: getCustomerInfo(purchasedProductIdentifier) };
+    },
+    restorePurchases: async () => getCustomerInfo(restoredProductIdentifier),
+  });
+  const dependencies = createDependencies({
+    lifetime: lifetimePackage,
+    monthly: monthlyPackage,
+    yearly: yearlyPackage,
+  });
+
+  assert.deepEqual(
+    (await loadPremiumTiersWithDependencies(dependencies)).map((tier) => ({
+      id: tier.id,
+      price: tier.price,
+    })),
+    [
+      { id: "monthly", price: "$1.99" },
+      { id: "yearly", price: "$19.99" },
+      { id: "lifetime", price: "$49.99" },
+    ],
+  );
+  assert.deepEqual(
+    await purchasePremiumTierWithDependencies("yearly", dependencies),
+    {
+      active: true,
+      message: "Premium is active.",
+      tierId: "yearly",
+    },
+  );
+  assert.deepEqual(purchasedPackages, [yearlyPackage]);
+
+  purchasedProductIdentifier = null;
+  await assert.rejects(
+    () => purchasePremiumTierWithDependencies("monthly", dependencies),
+    /Premium entitlement was not activated/,
+  );
+
+  await assert.rejects(
+    () =>
+      purchasePremiumTierWithDependencies(
+        "lifetime",
+        createDependencies({ monthly: monthlyPackage, yearly: yearlyPackage }),
+      ),
+    /Premium Lifetime is unavailable/,
+  );
+
+  assert.deepEqual(await restorePremiumPurchaseWithDependencies(dependencies), {
+    active: false,
+    message: "No active premium purchase was found.",
+    tierId: "monthly",
+  });
+
+  restoredProductIdentifier = "unmapped-product";
+  assert.deepEqual(await restorePremiumPurchaseWithDependencies(dependencies), {
+    active: true,
+    message: "Premium purchase restored.",
+    tierId: "monthly",
+  });
+
+  assert.deepEqual(await checkPremiumEntitlementWithDependencies(dependencies), {
+    active: false,
+    message: "Premium is inactive.",
+    tierId: "monthly",
+  });
+
+  checkedProductIdentifier = "SYNQPremiumLifetime";
+  assert.deepEqual(await checkPremiumEntitlementWithDependencies(dependencies), {
+    active: true,
+    message: "Premium is active.",
+    tierId: "lifetime",
+  });
+}
+
 function assertSettingsScreenSmoke() {
   const initialSettings = { allowAnalytics: true };
   const loadedSettings = { allowAnalytics: false };
@@ -7688,6 +7809,7 @@ assertPlaybackPlayerStateSmoke();
 void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertWifiImportRequestSmoke();
   await assertBackupCommandExecutorSmoke();
+  await assertPremiumPurchaseExecutorSmoke();
   await assertImportSessionSmoke();
   assertLibraryCollectionDetailSmoke();
   assertLibraryCollectionInteractionSmoke();

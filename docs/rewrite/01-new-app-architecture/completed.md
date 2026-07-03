@@ -156,3 +156,5 @@
   repository.
 - Split static premium tier catalog and product mapping out of the RevenueCat
   purchase adapter.
+- Moved premium purchase, restore, entitlement, and tier-loading behavior behind
+  an injectable executor so the RevenueCat adapter only wires native calls.

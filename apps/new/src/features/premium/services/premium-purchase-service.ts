@@ -1,16 +1,20 @@
+import type { PurchasesPackage } from "react-native-purchases";
+import Purchases from "react-native-purchases";
+import { premiumTiers } from "./premium-catalog-service";
+import {
+  checkPremiumEntitlementWithDependencies,
+  loadPremiumTiersWithDependencies,
+  purchasePremiumTierWithDependencies,
+  restorePremiumPurchaseWithDependencies,
+  type PremiumPurchaseExecutorDependencies,
+  type PremiumPurchasePackage,
+} from "./premium-purchase-executor-service";
 import type {
   PremiumEntitlementStatus,
   PremiumPurchaseResult,
   PremiumTier,
   PremiumTierId,
 } from "../types/premium-purchase";
-import Purchases from "react-native-purchases";
-import {
-  getTierIdFromProduct,
-  hydratePremiumTierPrices,
-  premiumOfferingNames,
-  premiumTiers,
-} from "./premium-catalog-service";
 
 const publicRevenueCatKey = "appl_qzTfhRrmSegqQhRUukTmiUsVMIq";
 
@@ -30,90 +34,41 @@ const configureRevenueCat = () => {
   isConfigured = true;
 };
 
-const getPackageForTier = async (tierId: PremiumTierId) => {
-  configureRevenueCat();
-  const offerings = await Purchases.getOfferings();
-  const premiumOffering = offerings.all[premiumOfferingNames[tierId]];
-  const purchasePackage = premiumOffering?.availablePackages[0];
-
-  if (!purchasePackage) {
-    throw new Error(`${premiumOfferingNames[tierId]} is unavailable.`);
-  }
-
-  return purchasePackage;
+const premiumPurchaseDependencies: PremiumPurchaseExecutorDependencies = {
+  getCustomerInfo: async () => {
+    configureRevenueCat();
+    return Purchases.getCustomerInfo();
+  },
+  getOfferings: async () => {
+    configureRevenueCat();
+    return Purchases.getOfferings();
+  },
+  purchasePackage: async (purchasePackage: PremiumPurchasePackage) =>
+    Purchases.purchasePackage(purchasePackage as PurchasesPackage),
+  restorePurchases: async () => {
+    configureRevenueCat();
+    return Purchases.restorePurchases();
+  },
 };
 
 export async function loadPremiumTiers(): Promise<PremiumTier[]> {
   configureRevenueCat();
-  const offerings = await Purchases.getOfferings();
-
-  return hydratePremiumTierPrices({
-    lifetime:
-      offerings.all[premiumOfferingNames.lifetime]?.availablePackages[0]
-        ?.product.priceString,
-    monthly:
-      offerings.all[premiumOfferingNames.monthly]?.availablePackages[0]?.product
-        .priceString,
-    yearly:
-      offerings.all[premiumOfferingNames.yearly]?.availablePackages[0]?.product
-        .priceString,
-  });
+  return loadPremiumTiersWithDependencies(premiumPurchaseDependencies);
 }
 
 export async function purchasePremiumTier(
   tierId: PremiumTierId,
 ): Promise<PremiumPurchaseResult> {
-  const purchasePackage = await getPackageForTier(tierId);
-  const { customerInfo } = await Purchases.purchasePackage(purchasePackage);
-  const entitlement = customerInfo.entitlements.active.Premium;
-
-  if (!entitlement) {
-    throw new Error("Premium entitlement was not activated.");
-  }
-
-  return {
-    active: true,
-    message: "Premium is active.",
-    tierId: getTierIdFromProduct(entitlement.productIdentifier),
-  };
+  return purchasePremiumTierWithDependencies(
+    tierId,
+    premiumPurchaseDependencies,
+  );
 }
 
 export async function restorePremiumPurchase(): Promise<PremiumPurchaseResult> {
-  configureRevenueCat();
-  const customerInfo = await Purchases.restorePurchases();
-  const entitlement = customerInfo.entitlements.active.Premium;
-
-  if (!entitlement) {
-    return {
-      active: false,
-      message: "No active premium purchase was found.",
-      tierId: "monthly",
-    };
-  }
-
-  return {
-    active: true,
-    message: "Premium purchase restored.",
-    tierId: getTierIdFromProduct(entitlement.productIdentifier),
-  };
+  return restorePremiumPurchaseWithDependencies(premiumPurchaseDependencies);
 }
 
 export async function checkPremiumEntitlement(): Promise<PremiumEntitlementStatus> {
-  configureRevenueCat();
-  const customerInfo = await Purchases.getCustomerInfo();
-  const entitlement = customerInfo.entitlements.active.Premium;
-
-  if (!entitlement) {
-    return {
-      active: false,
-      message: "Premium is inactive.",
-      tierId: "monthly",
-    };
-  }
-
-  return {
-    active: true,
-    message: "Premium is active.",
-    tierId: getTierIdFromProduct(entitlement.productIdentifier),
-  };
+  return checkPremiumEntitlementWithDependencies(premiumPurchaseDependencies);
 }

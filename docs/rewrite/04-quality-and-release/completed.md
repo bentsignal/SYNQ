@@ -33,3 +33,6 @@
   delete, move, remove, and add forwarding.
 - Added Wi-Fi import route-handler smoke coverage for transfer start, upload,
   duplicate upload, failure, finish, and reset runtime transitions.
+- Added injectable premium purchase executor smoke coverage for tier price
+  loading, purchase activation, restore, entitlement checks, fallback tier
+  mapping, and unavailable packages.

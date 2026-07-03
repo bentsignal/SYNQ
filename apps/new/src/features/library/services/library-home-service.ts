@@ -121,14 +121,14 @@ export const getLibraryHomeStatusState = ({
   collectionUpdatedAt: number;
   errors: readonly unknown[];
   formatUpdatedAt?: (updatedAt: number) => string;
-  songUpdatedAt?: Date | null;
+  songUpdatedAt: number;
   summaryUpdatedAt: number;
 }): LibraryHomeStatusState => {
   const hasErrors = errors.length > 0;
   const latestUpdate = Math.max(
     summaryUpdatedAt,
     collectionUpdatedAt,
-    songUpdatedAt?.getTime() ?? 0,
+    songUpdatedAt,
   );
 
   return {

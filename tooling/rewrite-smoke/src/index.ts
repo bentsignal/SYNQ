@@ -925,6 +925,10 @@ import {
   rowsToSongPreviews,
 } from "../../../apps/new/src/features/library/services/library-song-preview-service";
 import {
+  buildLibrarySongPreviewQueryResult,
+  getLibrarySongPreviewQueryUpdatedAt,
+} from "../../../apps/new/src/features/library/services/library-song-preview-query-result-service";
+import {
   getLibrarySongListControlsState,
   getLibrarySongPreviewDetailHref,
   getLibrarySongPreviewEmptyState,
@@ -7020,6 +7024,48 @@ function assertLibrarySongPreviewSmoke() {
     previews.map((song) => song.id),
     [1],
   );
+  const previewQueryResult = buildLibrarySongPreviewQueryResult({
+    error: new Error("song smoke"),
+    limit: 2,
+    order: "asc",
+    query: "a",
+    rows: [
+      {
+        albumName: null,
+        artistName: null,
+        duration: null,
+        pathToFile: null,
+        songId: 1,
+        title: "Alpha",
+      },
+      {
+        albumName: null,
+        artistName: null,
+        duration: null,
+        pathToFile: null,
+        songId: 2,
+        title: "Beta",
+      },
+      {
+        albumName: null,
+        artistName: null,
+        duration: null,
+        pathToFile: null,
+        songId: 3,
+        title: "Gamma",
+      },
+    ],
+    sort: "recent",
+    updatedAt: new Date(42),
+  });
+  assert.deepEqual(
+    previewQueryResult.songs.map((song) => song.id),
+    [1, 2],
+  );
+  assert.equal(previewQueryResult.isEmpty, false);
+  assert.equal(previewQueryResult.updatedAt, 42);
+  assert.equal((previewQueryResult.error as Error).message, "song smoke");
+  assert.equal(getLibrarySongPreviewQueryUpdatedAt(null), 0);
   assert.equal(previews[0]?.artist, "Alpha Artist, Featured Artist");
   assert.equal(previews[0]?.album, "Alpha Album");
   assert.deepEqual(
@@ -10845,7 +10891,7 @@ function assertLibraryHomeSmoke() {
       collectionUpdatedAt: 20,
       errors: [],
       formatUpdatedAt: (updatedAt) => `time:${updatedAt}`,
-      songUpdatedAt: new Date(30),
+      songUpdatedAt: 30,
       summaryUpdatedAt: 10,
     }),
     {
@@ -10858,7 +10904,7 @@ function assertLibraryHomeSmoke() {
     getLibraryHomeStatusState({
       collectionUpdatedAt: 0,
       errors: [],
-      songUpdatedAt: null,
+      songUpdatedAt: 0,
       summaryUpdatedAt: 0,
     }),
     {
@@ -10872,7 +10918,7 @@ function assertLibraryHomeSmoke() {
       collectionUpdatedAt: 20,
       errors: [new Error("boom")],
       formatUpdatedAt: (updatedAt) => `time:${updatedAt}`,
-      songUpdatedAt: new Date(30),
+      songUpdatedAt: 30,
       summaryUpdatedAt: 10,
     }),
     {

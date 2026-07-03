@@ -281,3 +281,5 @@
   query error collection, image resolution, and missing timestamp fallback.
 - Added direct collection preview query result smoke coverage for grouped
   preview counts, totals, error ordering, empty-state, and timestamp merging.
+- Added direct song preview query result smoke coverage for list ordering,
+  error forwarding, empty-state, and timestamp normalization.

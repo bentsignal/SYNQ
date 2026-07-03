@@ -390,3 +390,5 @@
 - Moved library collection preview grouping, totals, empty-state, error, and
   timestamp assembly out of the React hook and into a focused preview query
   result service.
+- Moved library song preview list, empty-state, error, and timestamp assembly
+  out of the React hook and into a focused preview query result service.

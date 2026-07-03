@@ -1,11 +1,11 @@
 import { useMemo } from "react";
 import { useLibrarySongPreviewLiveQuery } from "../data/use-library-song-preview-live-query";
 import {
-  rowsToSongPreviews,
   type LibrarySongPreviewOrder,
   type LibrarySongPreviewRow,
   type LibrarySongPreviewSort,
 } from "../services/library-song-preview-service";
+import { buildLibrarySongPreviewQueryResult } from "../services/library-song-preview-query-result-service";
 
 export type {
   LibrarySongPreview,
@@ -28,22 +28,17 @@ export function useLibrarySongPreviewQuery({
 }: LibrarySongPreviewQueryOptions = {}) {
   const { data, error, updatedAt } = useLibrarySongPreviewLiveQuery();
 
-  const songs = useMemo(
+  return useMemo(
     () =>
-      rowsToSongPreviews({
+      buildLibrarySongPreviewQueryResult({
+        error,
         limit,
         order,
         query,
         rows: (data ?? []) as LibrarySongPreviewRow[],
         sort,
+        updatedAt,
       }),
-    [data, limit, order, query, sort],
+    [data, error, limit, order, query, sort, updatedAt],
   );
-
-  return {
-    error,
-    isEmpty: songs.length === 0,
-    songs,
-    updatedAt,
-  };
 }

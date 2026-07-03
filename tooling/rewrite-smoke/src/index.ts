@@ -180,12 +180,14 @@ import {
 import {
   collectionDetailMutationReducer,
   getCollectionDetailMutationErrorMessage,
+  initialCollectionDetailMutationState,
+} from "../../../apps/new/src/features/library/services/library-collection-mutation-service";
+import {
   getCollectionSongListState,
   getCollectionSongOrderUpdate,
   getCollectionSongRowActionState,
-  initialCollectionDetailMutationState,
   reorderCollectionSongs,
-} from "../../../apps/new/src/features/library/services/library-collection-mutation-service";
+} from "../../../apps/new/src/features/library/services/library-collection-song-mutation-service";
 import {
   getCollectionPlaybackCommandPlan,
   getCollectionPlaybackPlan,

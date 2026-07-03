@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionDetailSong } from "../hooks/use-library-collection-detail-query";
-import { getCollectionSongRowActionState } from "../services/library-collection-mutation-service";
+import { getCollectionSongRowActionState } from "../services/library-collection-song-mutation-service";
 import { getLibrarySongDetailHref } from "../services/library-song-interaction-service";
 
 type LibraryCollectionSongRowProps = {

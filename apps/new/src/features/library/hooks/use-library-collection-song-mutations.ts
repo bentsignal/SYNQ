@@ -9,9 +9,9 @@ import type {
 } from "../services/library-collection-detail-service";
 import {
   getCollectionDetailMutationErrorMessage,
-  getCollectionSongOrderUpdate,
   type CollectionDetailMutationAction,
 } from "../services/library-collection-mutation-service";
+import { getCollectionSongOrderUpdate } from "../services/library-collection-song-mutation-service";
 
 type CollectionDetailMutationDispatch = (
   action: CollectionDetailMutationAction,

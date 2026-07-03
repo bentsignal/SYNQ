@@ -6,7 +6,7 @@ import {
   type AddableCollectionSong,
   type AddCollectionSongsStatusState,
 } from "../services/addable-collection-songs-service";
-import type { AddableSongSelectionState } from "../services/add-collection-songs-interaction-service";
+import type { AddableSongSelectionState } from "../services/add-collection-songs-selection-service";
 import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
 import { AddCollectionSongsHeader } from "./AddCollectionSongsHeader";
 import { AddCollectionSongsSectionHeader } from "./AddCollectionSongsSectionHeader";

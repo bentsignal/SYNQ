@@ -140,17 +140,19 @@ import {
   rowsToCollectionDetailSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-detail-service";
 import {
-  addCollectionSongsControllerReducer,
-  addCollectionSongsSearchReducer,
   getAddableSongRowState,
   getAddableSongSelectionState,
-  getAddCollectionSongsMutationErrorMessage,
   getSelectedAddableSongIds,
-  initialAddCollectionSongsControllerState,
-  initialAddCollectionSongsSearchState,
   removeSongIdSelection,
   toggleSongIdSelection,
-} from "../../../apps/new/src/features/library/services/add-collection-songs-interaction-service";
+} from "../../../apps/new/src/features/library/services/add-collection-songs-selection-service";
+import {
+  addCollectionSongsControllerReducer,
+  addCollectionSongsSearchReducer,
+  getAddCollectionSongsMutationErrorMessage,
+  initialAddCollectionSongsControllerState,
+  initialAddCollectionSongsSearchState,
+} from "../../../apps/new/src/features/library/services/add-collection-songs-state-service";
 import {
   canDeleteLibraryCollection,
   getCollectionAddSongsHref,

@@ -7,9 +7,9 @@ import {
 } from "../repository/relationship-repository";
 import {
   getAddCollectionSongsMutationErrorMessage,
-  type AddableSongSelectionState,
   type AddCollectionSongsControllerAction,
-} from "../services/add-collection-songs-interaction-service";
+} from "../services/add-collection-songs-state-service";
+import type { AddableSongSelectionState } from "../services/add-collection-songs-selection-service";
 
 type AddCollectionSongsControllerDispatch = (
   action: AddCollectionSongsControllerAction,

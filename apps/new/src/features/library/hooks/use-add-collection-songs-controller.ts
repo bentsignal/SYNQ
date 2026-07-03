@@ -5,9 +5,9 @@ import type { LibraryCollectionDetailKind } from "../services/library-collection
 import { useAddCollectionSongsCommands } from "./use-add-collection-songs-commands";
 import {
   addCollectionSongsControllerReducer,
-  getAddableSongSelectionState,
   initialAddCollectionSongsControllerState,
-} from "../services/add-collection-songs-interaction-service";
+} from "../services/add-collection-songs-state-service";
+import { getAddableSongSelectionState } from "../services/add-collection-songs-selection-service";
 
 export function useAddCollectionSongsController({
   collectionId,

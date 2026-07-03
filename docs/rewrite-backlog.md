@@ -126,6 +126,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: add-to-collection selection, search, mutation reducer, error copy,
     and row interaction state now live in a focused add-collection interaction
     service instead of the broader collection-detail interaction module.
+  - Done: add-to-collection selection/row presentation and reducer/mutation
+    state now live in separate services instead of one interaction helper owning
+    selection derivation, reducers, error copy, and row labels.
   - Done: add-to-collection and edit-collection invalid id routes now share the
     focused library invalid-state component instead of duplicating themed route
     fallback UI.

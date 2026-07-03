@@ -2,7 +2,7 @@ import { useReducer } from "react";
 import {
   addCollectionSongsSearchReducer,
   initialAddCollectionSongsSearchState,
-} from "../services/add-collection-songs-interaction-service";
+} from "../services/add-collection-songs-state-service";
 
 export function useAddCollectionSongsSearchQuery() {
   const [state, dispatch] = useReducer(

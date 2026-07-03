@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { AddableSongSelectionState } from "../services/add-collection-songs-interaction-service";
+import type { AddableSongSelectionState } from "../services/add-collection-songs-selection-service";
 
 type AddCollectionSongsSelectionPanelProps = {
   onAddSelectedSongs: () => void;

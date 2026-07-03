@@ -304,3 +304,4 @@
 - Added direct edit song controller result-state smoke coverage.
 - Added direct collection form controller result-state smoke coverage.
 - Added direct create/edit collection form controller view-state smoke coverage.
+- Added direct collection detail mutation controller-state smoke coverage.

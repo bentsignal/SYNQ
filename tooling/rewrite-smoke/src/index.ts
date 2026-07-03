@@ -550,6 +550,7 @@ import {
   canMutateLibraryCollectionMembership,
   getCollectionDetailActionState,
   getCollectionDetailMutationActionState,
+  getCollectionDetailMutationControllerState,
   getPlayableCollectionSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-action-state-service";
 import {
@@ -5150,6 +5151,39 @@ async function assertLibraryCollectionInteractionSmoke() {
       deleteLabel: "Deleting",
       exportLabel: "Exporting",
       playableSongs: [songs[0], songs[2]],
+    },
+  );
+  assert.deepEqual(
+    getCollectionDetailMutationControllerState({
+      detail: {
+        isMissing: false,
+        songs,
+      },
+      id: 7,
+      kind: "album",
+      mutationState: {
+        isDeleting: false,
+        isExporting: true,
+        movingSongId: 2,
+        mutationError: "Collection mutation failed.",
+        removingSongId: 3,
+      },
+    }),
+    {
+      actionState: {
+        canDelete: true,
+        canEdit: true,
+        canExport: false,
+        canMutateSongs: true,
+        canPlay: true,
+        canQueue: true,
+        deleteLabel: "Delete",
+        exportLabel: "Exporting",
+        playableSongs: [songs[0], songs[2]],
+      },
+      movingSongId: 2,
+      mutationError: "Collection mutation failed.",
+      removingSongId: 3,
     },
   );
   assert.deepEqual(initialCollectionDetailMutationState, {

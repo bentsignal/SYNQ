@@ -110,3 +110,29 @@ export const getCollectionDetailMutationActionState = ({
     kind,
     songs: detail.songs,
   });
+
+export const getCollectionDetailMutationControllerState = ({
+  detail,
+  id,
+  kind,
+  mutationState,
+}: {
+  detail: Pick<LibraryCollectionDetail, "isMissing" | "songs">;
+  id: number;
+  kind: LibraryCollectionDetailKind;
+  mutationState: CollectionDetailMutationState;
+}) => ({
+  actionState: getCollectionDetailMutationActionState({
+    detail,
+    id,
+    kind,
+    mutationState,
+  }),
+  movingSongId: mutationState.movingSongId,
+  mutationError: mutationState.mutationError,
+  removingSongId: mutationState.removingSongId,
+});
+
+export type CollectionDetailMutationControllerState = ReturnType<
+  typeof getCollectionDetailMutationControllerState
+>;

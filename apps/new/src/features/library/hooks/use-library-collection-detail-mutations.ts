@@ -1,10 +1,10 @@
-import { useMemo, useReducer } from "react";
+import { useReducer } from "react";
 import { useLibraryCollectionCollectionMutations } from "./use-library-collection-collection-mutations";
 import { useLibraryCollectionSongMutations } from "./use-library-collection-song-mutations";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
-  getCollectionDetailMutationActionState,
+  getCollectionDetailMutationControllerState,
 } from "../services/library-collection-action-state-service";
 import {
   collectionDetailMutationReducer,
@@ -26,23 +26,14 @@ export function useLibraryCollectionDetailMutations({
     collectionDetailMutationReducer,
     initialCollectionDetailMutationState,
   );
-  const actionState = useMemo(
-    () =>
-      getCollectionDetailMutationActionState({
-        detail,
-        id,
-        kind,
-        mutationState,
-      }),
-    [
-      detail,
-      id,
-      kind,
-      mutationState,
-    ],
-  );
+  const controllerState = getCollectionDetailMutationControllerState({
+    detail,
+    id,
+    kind,
+    mutationState,
+  });
   const collectionMutations = useLibraryCollectionCollectionMutations({
-    actionState,
+    actionState: controllerState.actionState,
     detail,
     dispatchMutation,
     id,
@@ -56,11 +47,8 @@ export function useLibraryCollectionDetailMutations({
   });
 
   return {
-    actionState,
+    ...controllerState,
     ...collectionMutations,
-    movingSongId: mutationState.movingSongId,
-    mutationError: mutationState.mutationError,
-    removingSongId: mutationState.removingSongId,
     ...songMutations,
   };
 }

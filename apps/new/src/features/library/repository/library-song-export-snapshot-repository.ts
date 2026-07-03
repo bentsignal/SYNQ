@@ -2,83 +2,79 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
 import * as Crypto from "expo-crypto";
+import {
+  isLibrarySongSnapshotStaleWithDependencies,
+  markLibrarySongAsExportedWithDependencies,
+  type LibrarySongExportSnapshotDependencies,
+} from "./library-song-export-snapshot-executor-repository";
 
-const getLibrarySongSnapshotHash = async (songId: number) => {
-  const songRows = await db
-    .select()
-    .from(schema.songs)
-    .where(eq(schema.songs.id, songId))
-    .limit(1);
-  const song = songRows[0];
+const librarySongExportSnapshotDependencies: LibrarySongExportSnapshotDependencies =
+  {
+    digestSnapshot: (input) =>
+      Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, input),
+    loadAlbumRows: (songId) =>
+      db
+        .select({
+          coverImage: schema.albums.coverImage,
+          name: schema.albums.name,
+          year: schema.albums.year,
+        })
+        .from(schema.albumSongs)
+        .innerJoin(schema.albums, eq(schema.albumSongs.albumId, schema.albums.id))
+        .where(eq(schema.albumSongs.songId, songId)),
+    loadArtistRows: (songId) =>
+      db
+        .select({ name: schema.artists.name })
+        .from(schema.artistSongs)
+        .innerJoin(
+          schema.artists,
+          eq(schema.artistSongs.artistId, schema.artists.id),
+        )
+        .where(eq(schema.artistSongs.songId, songId)),
+    loadSnapshotAtLastExport: async (songId) => {
+      const songRows = await db
+        .select({ snapshotAtLastExport: schema.songs.snapshotAtLastExport })
+        .from(schema.songs)
+        .where(eq(schema.songs.id, songId))
+        .limit(1);
 
-  if (!song) {
-    throw new Error(`Song ${songId} not found.`);
-  }
+      return songRows.length === 0
+        ? undefined
+        : songRows[0]?.snapshotAtLastExport;
+    },
+    loadSongRow: async (songId) => {
+      const songRows = await db
+        .select({
+          coverImage: schema.songs.coverImage,
+          duration: schema.songs.duration,
+          fileType: schema.songs.fileType,
+          snapshotAtLastExport: schema.songs.snapshotAtLastExport,
+          title: schema.songs.title,
+        })
+        .from(schema.songs)
+        .where(eq(schema.songs.id, songId))
+        .limit(1);
 
-  const albumsContainingSong = await db
-    .select({
-      coverImage: schema.albums.coverImage,
-      name: schema.albums.name,
-      year: schema.albums.year,
-    })
-    .from(schema.albumSongs)
-    .innerJoin(schema.albums, eq(schema.albumSongs.albumId, schema.albums.id))
-    .where(eq(schema.albumSongs.songId, songId));
-  const albumNames = albumsContainingSong
-    .map(
-      (album) =>
-        `${album.name ?? ""}${album.year ?? ""}${album.coverImage ?? ""}`,
-    )
-    .sort()
-    .join(",");
-
-  const artistsOnSong = await db
-    .select({ name: schema.artists.name })
-    .from(schema.artistSongs)
-    .innerJoin(schema.artists, eq(schema.artistSongs.artistId, schema.artists.id))
-    .where(eq(schema.artistSongs.songId, songId));
-  const artistNames = artistsOnSong
-    .map((artist) => artist.name ?? "")
-    .sort()
-    .join(",");
-
-  return Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    [
-      song.title,
-      song.duration,
-      song.fileType,
-      song.coverImage,
-      artistNames,
-      albumNames,
-    ].join("-"),
-  );
-};
+      return songRows[0] ?? null;
+    },
+    updateSnapshotAtLastExport: async ({ snapshotAtLastExport, songId }) => {
+      await db
+        .update(schema.songs)
+        .set({ snapshotAtLastExport })
+        .where(eq(schema.songs.id, songId));
+    },
+  };
 
 export async function isLibrarySongSnapshotStale(songId: number) {
-  const songRows = await db
-    .select({ snapshotAtLastExport: schema.songs.snapshotAtLastExport })
-    .from(schema.songs)
-    .where(eq(schema.songs.id, songId))
-    .limit(1);
-  const snapshotAtLastExport = songRows[0]?.snapshotAtLastExport;
-
-  if (songRows.length === 0) {
-    return null;
-  }
-
-  if (!snapshotAtLastExport) {
-    return true;
-  }
-
-  return (await getLibrarySongSnapshotHash(songId)) !== snapshotAtLastExport;
+  return isLibrarySongSnapshotStaleWithDependencies(
+    songId,
+    librarySongExportSnapshotDependencies,
+  );
 }
 
 export async function markLibrarySongAsExported(songId: number) {
-  const snapshotAtLastExport = await getLibrarySongSnapshotHash(songId);
-
-  await db
-    .update(schema.songs)
-    .set({ snapshotAtLastExport })
-    .where(eq(schema.songs.id, songId));
+  await markLibrarySongAsExportedWithDependencies(
+    songId,
+    librarySongExportSnapshotDependencies,
+  );
 }

@@ -187,3 +187,5 @@
   staged-file replacement behind an injectable filesystem executor.
 - Moved library export metadata shaping, artwork loading, tag writeback, and
   export snapshot marking behind an injectable executor.
+- Moved library export snapshot hashing, staleness checks, and exported
+  snapshot updates behind an injectable repository executor.

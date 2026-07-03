@@ -557,6 +557,14 @@ import {
   type LibrarySongDeleteDependencies,
 } from "../../../apps/new/src/features/library/repository/library-song-delete-executor-repository";
 import {
+  getLibrarySongExportSnapshotInput,
+  getLibrarySongSnapshotHashWithDependencies,
+  isLibrarySongSnapshotStaleWithDependencies,
+  markLibrarySongAsExportedWithDependencies,
+  type LibrarySongExportSnapshotSongRow,
+  type LibrarySongExportSnapshotDependencies,
+} from "../../../apps/new/src/features/library/repository/library-song-export-snapshot-executor-repository";
+import {
   rowsToSongPreviews,
 } from "../../../apps/new/src/features/library/services/library-song-preview-service";
 import {
@@ -5409,6 +5417,133 @@ async function assertLibrarySongDeleteExecutorSmoke() {
   ]);
 }
 
+async function assertLibrarySongExportSnapshotExecutorSmoke() {
+  const calls: string[] = [];
+  let snapshotAtLastExport: string | null | undefined = "digest:current";
+  let songRow: LibrarySongExportSnapshotSongRow = {
+    coverImage: "song-cover",
+    duration: 123_000,
+    fileType: "audio/mpeg",
+    snapshotAtLastExport: "digest:current",
+    title: "Smoke Song",
+  };
+  const dependencies: LibrarySongExportSnapshotDependencies = {
+    digestSnapshot: async (input) => {
+      calls.push(`digest:${input}`);
+      return `digest:${input}`;
+    },
+    loadAlbumRows: async (songId) => {
+      calls.push(`albums:${songId}`);
+      return [
+        { coverImage: "beta-cover", name: "Beta", year: null },
+        { coverImage: "alpha-cover", name: "Alpha", year: 2026 },
+      ];
+    },
+    loadArtistRows: async (songId) => {
+      calls.push(`artists:${songId}`);
+      return [{ name: "Beta Artist" }, { name: "Alpha Artist" }];
+    },
+    loadSnapshotAtLastExport: async (songId) => {
+      calls.push(`snapshot:${songId}`);
+      return snapshotAtLastExport;
+    },
+    loadSongRow: async (songId) => {
+      calls.push(`song:${songId}`);
+      return songRow;
+    },
+    updateSnapshotAtLastExport: async ({ snapshotAtLastExport, songId }) => {
+      calls.push(`update:${songId}:${snapshotAtLastExport}`);
+    },
+  };
+  const snapshotInput = getLibrarySongExportSnapshotInput({
+    albums: [
+      { coverImage: "beta-cover", name: "Beta", year: null },
+      { coverImage: "alpha-cover", name: "Alpha", year: 2026 },
+    ],
+    artists: [{ name: "Beta Artist" }, { name: "Alpha Artist" }],
+    song: songRow,
+  });
+
+  assert.equal(
+    snapshotInput,
+    "Smoke Song-123000-audio/mpeg-song-cover-Alpha Artist,Beta Artist-Alpha2026alpha-cover,Betabeta-cover",
+  );
+  assert.equal(
+    await getLibrarySongSnapshotHashWithDependencies(42, dependencies),
+    `digest:${snapshotInput}`,
+  );
+  assert.deepEqual(calls, [
+    "song:42",
+    "albums:42",
+    "artists:42",
+    `digest:${snapshotInput}`,
+  ]);
+
+  calls.length = 0;
+  snapshotAtLastExport = undefined;
+  assert.equal(
+    await isLibrarySongSnapshotStaleWithDependencies(43, dependencies),
+    null,
+  );
+  assert.deepEqual(calls, ["snapshot:43"]);
+
+  calls.length = 0;
+  snapshotAtLastExport = null;
+  assert.equal(
+    await isLibrarySongSnapshotStaleWithDependencies(44, dependencies),
+    true,
+  );
+  assert.deepEqual(calls, ["snapshot:44"]);
+
+  calls.length = 0;
+  snapshotAtLastExport = `digest:${snapshotInput}`;
+  assert.equal(
+    await isLibrarySongSnapshotStaleWithDependencies(45, dependencies),
+    false,
+  );
+  assert.deepEqual(calls, [
+    "snapshot:45",
+    "song:45",
+    "albums:45",
+    "artists:45",
+    `digest:${snapshotInput}`,
+  ]);
+
+  calls.length = 0;
+  snapshotAtLastExport = "old-digest";
+  assert.equal(
+    await isLibrarySongSnapshotStaleWithDependencies(46, dependencies),
+    true,
+  );
+  assert.deepEqual(calls, [
+    "snapshot:46",
+    "song:46",
+    "albums:46",
+    "artists:46",
+    `digest:${snapshotInput}`,
+  ]);
+
+  calls.length = 0;
+  await markLibrarySongAsExportedWithDependencies(47, dependencies);
+  assert.deepEqual(calls, [
+    "song:47",
+    "albums:47",
+    "artists:47",
+    `digest:${snapshotInput}`,
+    `update:47:digest:${snapshotInput}`,
+  ]);
+
+  songRow = { ...songRow, title: null };
+  await assert.rejects(
+    () =>
+      getLibrarySongSnapshotHashWithDependencies(48, {
+        ...dependencies,
+        loadSongRow: async () => null,
+      }),
+    /Song 48 not found/,
+  );
+}
+
 function assertEditCollectionQuerySmoke() {
   const getImagePath = (hash: string) => `/images/${hash}-small.jpg`;
 
@@ -9410,6 +9545,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   assertAddableCollectionSongsSmoke();
   assertLibrarySongDetailSmoke();
   await assertLibrarySongDeleteExecutorSmoke();
+  await assertLibrarySongExportSnapshotExecutorSmoke();
   assertEditCollectionQuerySmoke();
   assertCollectionFormSmoke();
   await assertCollectionImagePickerExecutorSmoke();

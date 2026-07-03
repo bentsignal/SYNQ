@@ -73,3 +73,6 @@
 - Added library export metadata executor smoke coverage for metadata shaping,
   artwork embedding, stale snapshot decisions, tag writeback, snapshot marking,
   and failure-safe export fallback behavior.
+- Added library export snapshot executor smoke coverage for deterministic hash
+  inputs, missing songs, no prior snapshot, fresh snapshots, stale snapshots,
+  and exported snapshot updates.

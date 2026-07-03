@@ -6,6 +6,7 @@ import {
   createInitialSettingsPersistenceState,
   settingsPersistenceReducer,
 } from "../services/settings-persistence-state-service";
+import { runSettingsLoadCommand } from "../services/settings-persistence-command-flow-service";
 import type { CustomizationSettings } from "../types/customization-settings";
 import { useCustomizationSettingsCommands } from "./use-customization-settings-commands";
 import { useSettingsPersistenceLoader } from "./use-settings-persistence-loader";
@@ -23,19 +24,12 @@ export function useCustomizationSettingsStore() {
   });
 
   const reloadSettings = useCallback(async () => {
-    dispatch({ type: "load" });
-
-    try {
-      dispatch({
-        settings: await loadCustomizationSettings(),
-        type: "load-success",
-      });
-    } catch (caughtError) {
-      dispatch({
-        error: getCustomizationSettingsErrorMessage(caughtError),
-        type: "load-failure",
-      });
-    }
+    await runSettingsLoadCommand({
+      dispatch,
+      getErrorMessage: getCustomizationSettingsErrorMessage,
+      isCurrent: () => true,
+      loadSettings: loadCustomizationSettings,
+    });
   }, []);
 
   const { setAppIcon, setHapticsEnabled, setTheme } =

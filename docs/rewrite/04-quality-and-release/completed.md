@@ -249,3 +249,5 @@
 - Added direct playback persistence command-flow smoke coverage for hydrate,
   stale suppression, restore-playing, pre-hydrate skip, throttle, and immediate
   paused-state save decisions.
+- Reused existing settings load command-flow smoke coverage for customization
+  manual reload sequencing after moving the hook to the shared service.

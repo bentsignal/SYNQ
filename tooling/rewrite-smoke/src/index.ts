@@ -105,6 +105,7 @@ import {
   getSkipNextNativeCommandPlan,
   getSkipPreviousNativeCommandPlan,
 } from "../../../apps/new/src/features/playback/services/playback-native-command-plan-service";
+import { getPlaybackNativeTargetCommandPlan } from "../../../apps/new/src/features/playback/services/playback-native-command-step-service";
 import { runAdGatedPlaybackCommand } from "../../../apps/new/src/features/playback/services/playback-command-gate-service";
 import {
   handlePlaybackRemoteCommand,
@@ -1603,6 +1604,26 @@ function assertPlaybackNativeCommandPlanSmoke() {
   assert.equal(
     getPlaybackNativeCommandErrorMessage("unknown native failure"),
     "Playback command failed.",
+  );
+  assert.deepEqual(
+    getPlaybackNativeTargetCommandPlan({
+      queue: [first, second],
+      targetIndex: 1,
+    }),
+    {
+      command: { track: second, type: "play" },
+      targetIndex: 1,
+    },
+  );
+  assert.deepEqual(
+    getPlaybackNativeTargetCommandPlan({
+      queue: [first, second],
+      targetIndex: null,
+    }),
+    {
+      command: { type: "stop" },
+      targetIndex: null,
+    },
   );
   assert.deepEqual(getSkipNextNativeCommandPlan(state), {
     command: { track: second, type: "play" },

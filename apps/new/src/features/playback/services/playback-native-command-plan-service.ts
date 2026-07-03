@@ -9,6 +9,7 @@ import {
   getPreviousTrack,
   getReplacementTrackAfterRemoval,
 } from "./playback-queue-service";
+import { getPlaybackNativeTargetCommandPlan } from "./playback-native-command-step-service";
 
 export type PlaybackNativeCommandPlan =
   | { type: "noop" }
@@ -65,12 +66,11 @@ export const getSkipNextNativeCommandPlan = (
     queue: state.queue,
     shuffle: state.mode.shuffle,
   });
-  const nextTrack = targetIndex === null ? null : state.queue[targetIndex] ?? null;
 
-  return {
-    command: nextTrack ? { track: nextTrack, type: "play" } : { type: "stop" },
+  return getPlaybackNativeTargetCommandPlan({
+    queue: state.queue,
     targetIndex,
-  };
+  });
 };
 
 export const getSkipPreviousNativeCommandPlan = (

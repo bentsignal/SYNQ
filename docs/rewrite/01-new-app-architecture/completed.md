@@ -280,3 +280,5 @@
   transition service.
 - Moved playback native library source validation out of the native player
   registry orchestration.
+- Split playback native target-index command planning out of the native command
+  plan service.

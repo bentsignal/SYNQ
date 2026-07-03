@@ -172,3 +172,5 @@
   progress and library status position/duration updates.
 - Added direct playback native player state smoke coverage for playable library
   source validation.
+- Added direct playback native command step smoke coverage for target-index play
+  and stop planning.

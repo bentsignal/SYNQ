@@ -7,11 +7,9 @@ import type {
   LibrarySongEditControllerState,
 } from "../services/library-song-form-service";
 import {
-  getLibrarySongEditBlockedCommand,
-  getLibrarySongEditCoverPickedCommand,
-  getLibrarySongEditFailureCommand,
-  getLibrarySongEditSaveSuccessCommand,
-} from "../services/library-song-form-command-state-service";
+  runLibrarySongEditCoverPickCommand,
+  runLibrarySongEditSaveCommand,
+} from "../services/library-song-form-command-flow-service";
 
 type UseEditLibrarySongCommandsParams = {
   canPickCoverImage: boolean;
@@ -31,53 +29,24 @@ export function useEditLibrarySongCommands({
   const { sendHaptic } = useHapticFeedback();
 
   const pickCoverImage = async () => {
-    if (!canPickCoverImage) {
-      const command = getLibrarySongEditBlockedCommand();
-      sendHaptic(command.haptic);
-      return;
-    }
-
-    try {
-      const pickedImage = await pickCollectionImage();
-      if (pickedImage) {
-        const command = getLibrarySongEditCoverPickedCommand(pickedImage);
-        dispatchFormState(command.action);
-        sendHaptic(command.haptic);
-      }
-    } catch (caughtError) {
-      const command = getLibrarySongEditFailureCommand(caughtError);
-      sendHaptic(command.haptic);
-      dispatchFormState(command.action);
-    }
+    await runLibrarySongEditCoverPickCommand({
+      canPickCoverImage,
+      dispatch: dispatchFormState,
+      pickCoverImage: pickCollectionImage,
+      sendHaptic,
+    });
   };
 
   const save = async () => {
-    if (!canSave) {
-      const command = getLibrarySongEditBlockedCommand();
-      sendHaptic(command.haptic);
-      return;
-    }
-
-    dispatchFormState({ type: "begin-save" });
-
-    try {
-      await updateLibrarySongMetadataCommand({
-        albumNames: formState.albumNames,
-        artistNames: formState.artistNames,
-        coverImageDataUrl: formState.coverImage?.dataUrl,
-        id: songId,
-        title: formState.title,
-      });
-      const command = getLibrarySongEditSaveSuccessCommand({ songId });
-      sendHaptic(command.haptic);
-      replaceNativeRoute(command.href);
-    } catch (caughtError) {
-      const command = getLibrarySongEditFailureCommand(caughtError);
-      sendHaptic(command.haptic);
-      dispatchFormState(command.action);
-    } finally {
-      dispatchFormState({ type: "finish-save" });
-    }
+    await runLibrarySongEditSaveCommand({
+      canSave,
+      dispatch: dispatchFormState,
+      formState,
+      replaceRoute: replaceNativeRoute,
+      sendHaptic,
+      songId,
+      updateLibrarySongMetadata: updateLibrarySongMetadataCommand,
+    });
   };
 
   return {

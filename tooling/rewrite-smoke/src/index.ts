@@ -854,6 +854,7 @@ import {
 import {
   buildLibrarySongEditFormState,
   getInitialLibrarySongEditControllerState,
+  type LibrarySongEditControllerAction,
   librarySongEditControllerReducer,
 } from "../../../apps/new/src/features/library/services/library-song-form-service";
 import {
@@ -863,6 +864,10 @@ import {
   getLibrarySongEditFailureCommand,
   getLibrarySongEditSaveSuccessCommand,
 } from "../../../apps/new/src/features/library/services/library-song-form-command-state-service";
+import {
+  runLibrarySongEditCoverPickCommand,
+  runLibrarySongEditSaveCommand,
+} from "../../../apps/new/src/features/library/services/library-song-form-command-flow-service";
 import {
   getLibrarySongEditActionState,
   getLibrarySongEditFieldState,
@@ -7992,6 +7997,126 @@ async function assertLibrarySongDetailSmoke() {
     haptic: "success",
     href: "/(tabs)/library/song/42",
   });
+  const songEditCommandEvents: unknown[] = [];
+  const dispatchSongEditCommand = (action: LibrarySongEditControllerAction) => {
+    songEditCommandEvents.push(["dispatch", action]);
+  };
+  const sendSongEditHaptic = (haptic: string) => {
+    songEditCommandEvents.push(["haptic", haptic]);
+  };
+  const replaceSongEditRoute = (href: string) => {
+    songEditCommandEvents.push(["route", href]);
+  };
+  await runLibrarySongEditCoverPickCommand({
+    canPickCoverImage: false,
+    dispatch: dispatchSongEditCommand,
+    pickCoverImage: async () => {
+      songEditCommandEvents.push(["unexpected-pick"]);
+      return null;
+    },
+    sendHaptic: sendSongEditHaptic,
+  });
+  await runLibrarySongEditCoverPickCommand({
+    canPickCoverImage: true,
+    dispatch: dispatchSongEditCommand,
+    pickCoverImage: async () => null,
+    sendHaptic: sendSongEditHaptic,
+  });
+  await runLibrarySongEditCoverPickCommand({
+    canPickCoverImage: true,
+    dispatch: dispatchSongEditCommand,
+    pickCoverImage: async () => ({
+      dataUrl: "data:image/jpeg;base64,cover",
+      fileName: "cover.jpg",
+    }),
+    sendHaptic: sendSongEditHaptic,
+  });
+  await runLibrarySongEditCoverPickCommand({
+    canPickCoverImage: true,
+    dispatch: dispatchSongEditCommand,
+    pickCoverImage: async () => {
+      throw new Error("Cover failed");
+    },
+    sendHaptic: sendSongEditHaptic,
+  });
+  const editableSongState = {
+    ...songEditState,
+    albumNames: "Alpha Album",
+    artistNames: "Alpha Artist",
+    coverImage: {
+      dataUrl: "data:image/png;base64,updated-cover",
+      fileName: "updated-cover.png",
+    },
+    title: "Updated Alpha",
+  };
+  await runLibrarySongEditSaveCommand({
+    canSave: false,
+    dispatch: dispatchSongEditCommand,
+    formState: editableSongState,
+    replaceRoute: replaceSongEditRoute,
+    sendHaptic: sendSongEditHaptic,
+    songId: 42,
+    updateLibrarySongMetadata: async () => {
+      songEditCommandEvents.push(["unexpected-save"]);
+    },
+  });
+  await runLibrarySongEditSaveCommand({
+    canSave: true,
+    dispatch: dispatchSongEditCommand,
+    formState: editableSongState,
+    replaceRoute: replaceSongEditRoute,
+    sendHaptic: sendSongEditHaptic,
+    songId: 43,
+    updateLibrarySongMetadata: async (params) => {
+      songEditCommandEvents.push(["save", params]);
+    },
+  });
+  await runLibrarySongEditSaveCommand({
+    canSave: true,
+    dispatch: dispatchSongEditCommand,
+    formState: editableSongState,
+    replaceRoute: replaceSongEditRoute,
+    sendHaptic: sendSongEditHaptic,
+    songId: 44,
+    updateLibrarySongMetadata: async () => {
+      throw new Error("Save failed");
+    },
+  });
+  assert.deepEqual(songEditCommandEvents, [
+    ["haptic", "error"],
+    [
+      "dispatch",
+      {
+        coverImage: {
+          dataUrl: "data:image/jpeg;base64,cover",
+          fileName: "cover.jpg",
+        },
+        type: "pick-cover-image",
+      },
+    ],
+    ["haptic", "light"],
+    ["haptic", "error"],
+    ["dispatch", { errorMessage: "Cover failed", type: "fail" }],
+    ["haptic", "error"],
+    ["dispatch", { type: "begin-save" }],
+    [
+      "save",
+      {
+        albumNames: "Alpha Album",
+        artistNames: "Alpha Artist",
+        coverImageDataUrl: "data:image/png;base64,updated-cover",
+        id: 43,
+        title: "Updated Alpha",
+      },
+    ],
+    ["haptic", "success"],
+    ["route", "/(tabs)/library/song/43"],
+    ["dispatch", { type: "finish-save" }],
+    ["dispatch", { type: "begin-save" }],
+    ["haptic", "error"],
+    ["dispatch", { errorMessage: "Save failed", type: "fail" }],
+    ["dispatch", { type: "finish-save" }],
+  ]);
   assert.deepEqual(
     getLibrarySongDetailActionState({
       detail,

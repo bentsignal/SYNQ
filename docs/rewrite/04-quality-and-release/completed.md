@@ -261,3 +261,5 @@
   sequencing.
 - Added direct collection form mutation command-flow smoke coverage for blocked
   saves, create/update success navigation, and failure dispatch sequencing.
+- Added direct song form command-flow smoke coverage for blocked cover pick,
+  canceled pick, cover-pick success/failure, and save success/failure sequencing.

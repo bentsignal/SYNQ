@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getImportWifiActionState } from "../services/import-screen-state-service";
+import { getImportWifiActionState } from "../services/import-wifi-screen-state-service";
 
 type ImportWifiActionsProps = {
   canReviewSave: boolean;

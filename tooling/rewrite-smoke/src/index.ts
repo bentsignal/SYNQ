@@ -104,9 +104,11 @@ import {
 import {
   getImportHomeState,
   getImportPremiumGateState,
+} from "../../../apps/new/src/features/import/services/import-screen-state-service";
+import {
   getImportWifiActionState,
   getImportWifiState,
-} from "../../../apps/new/src/features/import/services/import-screen-state-service";
+} from "../../../apps/new/src/features/import/services/import-wifi-screen-state-service";
 import {
   getFinishWifiTransferAction,
   getImportSessionCommandErrorMessage,

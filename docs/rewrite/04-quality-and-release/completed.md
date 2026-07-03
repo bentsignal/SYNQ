@@ -12,3 +12,5 @@
   verifier smoke that proves the rule fails on violations.
 - Ratcheted the rewrite debt audit to block new `StyleSheet` references and
   raw `sendHaptic("...")` interaction decisions in the new app.
+- Added a shared app-shell native alert presenter and ratcheted the rewrite
+  debt audit to block direct feature-level `Alert.alert` calls.

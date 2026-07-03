@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import { Alert } from "react-native";
 import { router } from "expo-router";
+import { showNativeConfirmationAlert } from "@/src/features/app-shell/services/native-alert-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { deleteLibrarySongCommand } from "../services/library-song-command-service";
 import { type LibrarySongDetail } from "../services/library-song-detail-service";
@@ -45,37 +45,36 @@ export function useLibrarySongDeleteMutation({
 
     const confirmation = getLibrarySongDeleteConfirmationCopy(detail);
 
-    Alert.alert(confirmation.title, confirmation.body, [
-      { text: confirmation.cancelLabel, style: "cancel" },
-      {
-        onPress: async () => {
-          dispatchMutation(
-            getLibrarySongDetailMutationStartCommand("delete-song").action,
-          );
+    showNativeConfirmationAlert({
+      body: confirmation.body,
+      cancelLabel: confirmation.cancelLabel,
+      confirmLabel: confirmation.confirmLabel,
+      onConfirm: async () => {
+        dispatchMutation(
+          getLibrarySongDetailMutationStartCommand("delete-song").action,
+        );
 
-          try {
-            await deleteLibrarySongCommand(songId);
-            removeFromQueue(songId);
-            const command = getLibrarySongDeleteSuccessCommand();
-            sendHaptic(command.haptic);
-            router.replace(command.href);
-          } catch (caughtError) {
-            const command = getLibrarySongDetailMutationFailureCommand({
-              caughtError,
-              mutation: "delete-song",
-            });
-            sendHaptic(command.haptic);
-            dispatchMutation(command.action);
-          } finally {
-            dispatchMutation(
-              getLibrarySongDetailMutationFinishCommand("delete-song").action,
-            );
-          }
-        },
-        style: "destructive",
-        text: confirmation.confirmLabel,
+        try {
+          await deleteLibrarySongCommand(songId);
+          removeFromQueue(songId);
+          const command = getLibrarySongDeleteSuccessCommand();
+          sendHaptic(command.haptic);
+          router.replace(command.href);
+        } catch (caughtError) {
+          const command = getLibrarySongDetailMutationFailureCommand({
+            caughtError,
+            mutation: "delete-song",
+          });
+          sendHaptic(command.haptic);
+          dispatchMutation(command.action);
+        } finally {
+          dispatchMutation(
+            getLibrarySongDetailMutationFinishCommand("delete-song").action,
+          );
+        }
       },
-    ]);
+      title: confirmation.title,
+    });
   }, [
     actionState.canDelete,
     detail,

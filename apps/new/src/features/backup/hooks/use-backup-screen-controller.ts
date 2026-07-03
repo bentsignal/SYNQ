@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Alert } from "react-native";
+import { showNativeConfirmationAlert } from "@/src/features/app-shell/services/native-alert-service";
 import { useImportSessionSelector } from "@/src/features/import/hooks/use-import-session";
 import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
 import { usePlaybackResetSession } from "@/src/features/playback/hooks/use-playback-session-selectors";
@@ -69,20 +69,16 @@ export function useBackupScreenController() {
       return;
     }
 
-    Alert.alert(confirmation.title, confirmation.body, [
-      {
-        style: "cancel",
-        text: "Cancel",
+    showNativeConfirmationAlert({
+      body: confirmation.body,
+      cancelLabel: "Cancel",
+      confirmLabel: confirmation.confirmLabel,
+      onConfirm: () => {
+        sendHaptic(getBackupOperationConfirmCommand(operation).haptic);
+        void runOperation(operation);
       },
-      {
-        onPress: () => {
-          sendHaptic(getBackupOperationConfirmCommand(operation).haptic);
-          void runOperation(operation);
-        },
-        style: "destructive",
-        text: confirmation.confirmLabel,
-      },
-    ]);
+      title: confirmation.title,
+    });
   };
 
   const resetStatus = () => {

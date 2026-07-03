@@ -1,7 +1,4 @@
-import type {
-  PlaybackQueueItem,
-  PlaybackState,
-} from "../types/playback-state";
+import type { PlaybackState } from "../types/playback-state";
 import type { TrackPlayerAdapter } from "./track-player-adapter";
 import {
   getActiveTrack,
@@ -9,15 +6,15 @@ import {
   getPreviousTrack,
   getReplacementTrackAfterRemoval,
 } from "./playback-queue-service";
-import { getPlaybackNativeTargetCommandPlan } from "./playback-native-command-step-service";
+import {
+  getPlaybackNativePreviousCommandPlan,
+  getPlaybackNativeReplacementCommandPlan,
+  getPlaybackNativeResumeCommandPlan,
+  getPlaybackNativeTargetCommandPlan,
+  type PlaybackNativeCommandPlan,
+} from "./playback-native-command-step-service";
 
-export type PlaybackNativeCommandPlan =
-  | { type: "noop" }
-  | { type: "pause" }
-  | { type: "play"; track: PlaybackQueueItem }
-  | { type: "resume" }
-  | { position: number; type: "seek" }
-  | { type: "stop" };
+export type { PlaybackNativeCommandPlan } from "./playback-native-command-step-service";
 
 export const getPlaybackNativeCommandErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Playback command failed.";
@@ -55,7 +52,7 @@ export const runPlaybackNativeCommandPlan = ({
 export const getResumeNativeCommandPlan = (
   state: PlaybackState,
 ): PlaybackNativeCommandPlan =>
-  getActiveTrack(state) ? { type: "resume" } : { type: "noop" };
+  getPlaybackNativeResumeCommandPlan({ activeTrack: getActiveTrack(state) });
 
 export const getSkipNextNativeCommandPlan = (
   state: PlaybackState,
@@ -78,9 +75,7 @@ export const getSkipPreviousNativeCommandPlan = (
 ): PlaybackNativeCommandPlan => {
   const previousTrack = getPreviousTrack(state);
 
-  return previousTrack
-    ? { track: previousTrack, type: "play" }
-    : { position: 0, type: "seek" };
+  return getPlaybackNativePreviousCommandPlan({ previousTrack });
 };
 
 export const getRemoveFromQueueNativeCommandPlan = ({
@@ -99,7 +94,8 @@ export const getRemoveFromQueueNativeCommandPlan = ({
     state,
   });
 
-  return replacementTrack && state.isPlaying
-    ? { track: replacementTrack, type: "play" }
-    : { type: "stop" };
+  return getPlaybackNativeReplacementCommandPlan({
+    isPlaying: state.isPlaying,
+    replacementTrack,
+  });
 };

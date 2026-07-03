@@ -174,3 +174,5 @@
   source validation.
 - Added direct playback native command step smoke coverage for target-index play
   and stop planning.
+- Added direct playback native command step smoke coverage for resume, previous,
+  and replacement-track planning.

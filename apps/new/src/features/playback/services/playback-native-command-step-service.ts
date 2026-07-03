@@ -1,5 +1,19 @@
 import type { PlaybackQueueItem } from "../types/playback-state";
-import type { PlaybackNativeCommandPlan } from "./playback-native-command-plan-service";
+
+export type PlaybackNativeCommandPlan =
+  | { type: "noop" }
+  | { type: "pause" }
+  | { type: "play"; track: PlaybackQueueItem }
+  | { type: "resume" }
+  | { position: number; type: "seek" }
+  | { type: "stop" };
+
+export const getPlaybackNativeResumeCommandPlan = ({
+  activeTrack,
+}: {
+  activeTrack: PlaybackQueueItem | null;
+}): PlaybackNativeCommandPlan =>
+  activeTrack ? { type: "resume" } : { type: "noop" };
 
 export const getPlaybackNativeTargetCommandPlan = ({
   queue,
@@ -18,3 +32,23 @@ export const getPlaybackNativeTargetCommandPlan = ({
     targetIndex,
   };
 };
+
+export const getPlaybackNativePreviousCommandPlan = ({
+  previousTrack,
+}: {
+  previousTrack: PlaybackQueueItem | null;
+}): PlaybackNativeCommandPlan =>
+  previousTrack
+    ? { track: previousTrack, type: "play" }
+    : { position: 0, type: "seek" };
+
+export const getPlaybackNativeReplacementCommandPlan = ({
+  isPlaying,
+  replacementTrack,
+}: {
+  isPlaying: boolean;
+  replacementTrack: PlaybackQueueItem | null;
+}): PlaybackNativeCommandPlan =>
+  replacementTrack && isPlaying
+    ? { track: replacementTrack, type: "play" }
+    : { type: "stop" };

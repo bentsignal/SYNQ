@@ -282,3 +282,5 @@
   registry orchestration.
 - Split playback native target-index command planning out of the native command
   plan service.
+- Moved playback native resume, previous-track, and queue-removal command
+  decisions into the native command step service.

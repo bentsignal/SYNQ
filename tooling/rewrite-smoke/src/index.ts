@@ -105,7 +105,12 @@ import {
   getSkipNextNativeCommandPlan,
   getSkipPreviousNativeCommandPlan,
 } from "../../../apps/new/src/features/playback/services/playback-native-command-plan-service";
-import { getPlaybackNativeTargetCommandPlan } from "../../../apps/new/src/features/playback/services/playback-native-command-step-service";
+import {
+  getPlaybackNativePreviousCommandPlan,
+  getPlaybackNativeReplacementCommandPlan,
+  getPlaybackNativeResumeCommandPlan,
+  getPlaybackNativeTargetCommandPlan,
+} from "../../../apps/new/src/features/playback/services/playback-native-command-step-service";
 import { runAdGatedPlaybackCommand } from "../../../apps/new/src/features/playback/services/playback-command-gate-service";
 import {
   handlePlaybackRemoteCommand,
@@ -1624,6 +1629,35 @@ function assertPlaybackNativeCommandPlanSmoke() {
       command: { type: "stop" },
       targetIndex: null,
     },
+  );
+  assert.deepEqual(
+    getPlaybackNativeResumeCommandPlan({ activeTrack: first }),
+    { type: "resume" },
+  );
+  assert.deepEqual(getPlaybackNativeResumeCommandPlan({ activeTrack: null }), {
+    type: "noop",
+  });
+  assert.deepEqual(
+    getPlaybackNativePreviousCommandPlan({ previousTrack: first }),
+    { track: first, type: "play" },
+  );
+  assert.deepEqual(
+    getPlaybackNativePreviousCommandPlan({ previousTrack: null }),
+    { position: 0, type: "seek" },
+  );
+  assert.deepEqual(
+    getPlaybackNativeReplacementCommandPlan({
+      isPlaying: true,
+      replacementTrack: second,
+    }),
+    { track: second, type: "play" },
+  );
+  assert.deepEqual(
+    getPlaybackNativeReplacementCommandPlan({
+      isPlaying: false,
+      replacementTrack: second,
+    }),
+    { type: "stop" },
   );
   assert.deepEqual(getSkipNextNativeCommandPlan(state), {
     command: { track: second, type: "play" },

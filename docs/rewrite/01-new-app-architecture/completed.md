@@ -223,3 +223,5 @@
   domain services so filesystem-backed settings modules only wire persistence.
 - Split Wi-Fi import request handling into focused response, transfer-decision,
   and upload-decision services so route handlers compose narrower policies.
+- Split collection song relationship Drizzle adapters into album, artist, and
+  playlist repositories behind the existing relationship facade.

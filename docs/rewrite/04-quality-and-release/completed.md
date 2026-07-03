@@ -112,3 +112,5 @@
   customization normalization fallbacks, and privacy normalization fallbacks.
 - Preserved Wi-Fi import route-handler smoke coverage across the request
   service split for transfer gating, upload acceptance, and response copy.
+- Preserved collection song relationship smoke coverage while splitting the
+  table-specific Drizzle adapters into smaller repository modules.

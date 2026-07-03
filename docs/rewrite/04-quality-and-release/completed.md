@@ -228,3 +228,5 @@
 - Added direct Wi-Fi import review-save action-flow smoke coverage.
 - Added direct import save export action-flow smoke coverage for share success
   and failure dispatch sequencing.
+- Added direct library collection playback action-flow smoke coverage for
+  blocked and successful play/queue sequencing.

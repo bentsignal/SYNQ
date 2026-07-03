@@ -620,6 +620,10 @@ import {
   getCollectionQueuePlan,
 } from "../../../apps/new/src/features/library/services/library-collection-playback-service";
 import {
+  runLibraryCollectionPlayAction,
+  runLibraryCollectionQueueAction,
+} from "../../../apps/new/src/features/library/services/library-collection-playback-action-flow-service";
+import {
   albumRowsToPreview,
   artistRowsToPreview,
   playlistRowsToPreview,
@@ -4980,6 +4984,50 @@ async function assertLibraryCollectionInteractionSmoke() {
       queuedSongs: [songs[0], songs[2]],
     },
   );
+  const collectionPlaybackActionEvents: unknown[] = [];
+  const collectionPlaybackActions = {
+    addToQueue: (song: (typeof songs)[number]) => {
+      collectionPlaybackActionEvents.push(["queue", song.id]);
+    },
+    playSong: (song: (typeof songs)[number]) => {
+      collectionPlaybackActionEvents.push(["play", song.id]);
+    },
+    pushRoute: (href: "/player") => {
+      collectionPlaybackActionEvents.push(["route", href]);
+    },
+    sendHaptic: (haptic: string) => {
+      collectionPlaybackActionEvents.push(["haptic", haptic]);
+    },
+  };
+  runLibraryCollectionPlayAction({
+    actionState: { playableSongs: [] },
+    ...collectionPlaybackActions,
+  });
+  runLibraryCollectionPlayAction({
+    actionState: { playableSongs: [songs[0]!, songs[2]!] },
+    ...collectionPlaybackActions,
+  });
+  runLibraryCollectionQueueAction({
+    actionState: { canQueue: false, playableSongs: [songs[0]!, songs[2]!] },
+    addToQueue: collectionPlaybackActions.addToQueue,
+    sendHaptic: collectionPlaybackActions.sendHaptic,
+  });
+  runLibraryCollectionQueueAction({
+    actionState: { canQueue: true, playableSongs: [songs[0]!, songs[2]!] },
+    addToQueue: collectionPlaybackActions.addToQueue,
+    sendHaptic: collectionPlaybackActions.sendHaptic,
+  });
+  assert.deepEqual(collectionPlaybackActionEvents, [
+    ["haptic", "error"],
+    ["haptic", "light"],
+    ["play", songs[0]!.id],
+    ["queue", songs[2]!.id],
+    ["route", "/player"],
+    ["haptic", "error"],
+    ["haptic", "light"],
+    ["queue", songs[0]!.id],
+    ["queue", songs[2]!.id],
+  ]);
   assert.deepEqual(
     reorderCollectionSongs({ direction: "down", songId: 1, songs }).map(
       (song) => song.id,

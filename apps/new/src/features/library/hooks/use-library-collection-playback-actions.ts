@@ -2,9 +2,9 @@ import { pushNativeRoute } from "@/src/features/app-shell/services/native-route-
 import { usePlaybackSongActions } from "@/src/features/playback/hooks/use-playback-session-selectors";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
-  getCollectionPlaybackCommandPlan,
-  getCollectionQueueCommandPlan,
-} from "../services/library-collection-playback-service";
+  runLibraryCollectionPlayAction,
+  runLibraryCollectionQueueAction,
+} from "../services/library-collection-playback-action-flow-service";
 import type { CollectionDetailActionState } from "../services/library-collection-action-state-service";
 
 type UseLibraryCollectionPlaybackActionsParams = {
@@ -18,34 +18,21 @@ export function useLibraryCollectionPlaybackActions({
   const { sendHaptic } = useHapticFeedback();
 
   const playCollection = () => {
-    const playbackPlan = getCollectionPlaybackCommandPlan({
-      playableSongs: actionState.playableSongs,
+    runLibraryCollectionPlayAction({
+      actionState,
+      addToQueue,
+      playSong,
+      pushRoute: pushNativeRoute,
+      sendHaptic,
     });
-
-    sendHaptic(playbackPlan.haptic);
-
-    if (!playbackPlan.firstSong || !playbackPlan.playerHref) {
-      return;
-    }
-
-    playSong(playbackPlan.firstSong);
-    playbackPlan.queuedSongs.forEach(addToQueue);
-    pushNativeRoute(playbackPlan.playerHref);
   };
 
   const queueCollection = () => {
-    const queuePlan = getCollectionQueueCommandPlan({
-      canQueue: actionState.canQueue,
-      playableSongs: actionState.playableSongs,
+    runLibraryCollectionQueueAction({
+      actionState,
+      addToQueue,
+      sendHaptic,
     });
-
-    sendHaptic(queuePlan.haptic);
-
-    if (queuePlan.queuedSongs.length === 0) {
-      return;
-    }
-
-    queuePlan.queuedSongs.forEach(addToQueue);
   };
 
   return {

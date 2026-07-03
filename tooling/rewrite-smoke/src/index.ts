@@ -226,10 +226,12 @@ import {
 } from "../../../apps/new/src/features/library/services/add-collection-songs-selection-service";
 import {
   addCollectionSongsControllerReducer,
-  addCollectionSongsSearchReducer,
   initialAddCollectionSongsControllerState,
-  initialAddCollectionSongsSearchState,
 } from "../../../apps/new/src/features/library/services/add-collection-songs-state-service";
+import {
+  addCollectionSongsSearchReducer,
+  initialAddCollectionSongsSearchState,
+} from "../../../apps/new/src/features/library/services/add-collection-songs-search-state-service";
 import {
   getAddCollectionSongsBlockedCommand,
   getAddCollectionSongsFailureCommand,

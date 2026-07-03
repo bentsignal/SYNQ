@@ -102,3 +102,5 @@
   mutation guards agree on seeded playlist protections.
 - Extracted a shared library section header component used by song previews and
   collection detail song sections.
+- Split collection detail action-state helpers out of the broader interaction
+  service so mutation/playback hooks import a narrower boundary.

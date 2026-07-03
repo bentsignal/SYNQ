@@ -2,9 +2,7 @@ import { Link } from "expo-router";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
-import {
-  type CollectionDetailActionState,
-} from "../services/library-collection-interaction-service";
+import type { CollectionDetailActionState } from "../services/library-collection-action-state-service";
 import {
   getCollectionAddSongsHref,
   getCollectionEditHref,

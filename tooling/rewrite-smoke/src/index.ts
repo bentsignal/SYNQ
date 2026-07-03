@@ -231,11 +231,13 @@ import {
   canDeleteLibraryCollection,
   canMutateLibraryCollectionMembership,
   getCollectionDetailActionState,
+  getPlayableCollectionSongs,
+} from "../../../apps/new/src/features/library/services/library-collection-action-state-service";
+import {
   getCollectionDetailStatusState,
   getCollectionDetailViewState,
   getDeleteCollectionConfirmationCopy,
   getLibraryCollectionSongEmptyState,
-  getPlayableCollectionSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-interaction-service";
 import {
   getCollectionAddSongsHref,

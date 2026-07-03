@@ -4,10 +4,8 @@ import type { HapticFeedbackType } from "@/src/features/settings/services/haptic
 import { deleteLibraryCollectionCommand } from "../services/library-collection-command-service";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
-import {
-  getDeleteCollectionConfirmationCopy,
-  type CollectionDetailActionState,
-} from "../services/library-collection-interaction-service";
+import type { CollectionDetailActionState } from "../services/library-collection-action-state-service";
+import { getDeleteCollectionConfirmationCopy } from "../services/library-collection-interaction-service";
 import {
   getCollectionDeleteFinishCommand,
   getCollectionDeleteStartCommand,

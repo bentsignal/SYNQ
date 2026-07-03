@@ -26,11 +26,15 @@ count_files() {
 
 stylesheet_creates="$(count_matches "StyleSheet\\.create" "${NEW_APP_PATHS[@]}")"
 context_modules="$(count_files "\\b(createContext|useContext)\\b" "${NEW_APP_PATHS[@]}")"
+context_directories="$(
+  find apps/new/src/features -type d -name context -print | wc -l | tr -d " "
+)"
 
 printf "New app StyleSheet.create calls: %s/%s max\n" \
   "$stylesheet_creates" "$MAX_NEW_APP_STYLESHEET_CREATE"
 printf "New app React context modules: %s/%s max\n" \
   "$context_modules" "$MAX_NEW_APP_CONTEXT_MODULES"
+printf "New app context directories: %s/0 max\n" "$context_directories"
 
 failed=0
 
@@ -45,6 +49,13 @@ if (( context_modules > MAX_NEW_APP_CONTEXT_MODULES )); then
   echo
   echo "React context module count grew. Prefer Rostra selector stores for new shared state."
   rg -n "\\b(createContext|useContext)\\b" "${NEW_APP_PATHS[@]}" -g "*.ts" -g "*.tsx"
+  failed=1
+fi
+
+if (( context_directories > 0 )); then
+  echo
+  echo "Feature context directories are not allowed in the new app. Use Rostra-backed state modules instead."
+  find apps/new/src/features -type d -name context -print
   failed=1
 fi
 

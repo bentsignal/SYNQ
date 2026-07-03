@@ -45,12 +45,14 @@
 - Final library home, summary, invalid states, image input, song preview, and
   relationship-section presentation styles now use NativeWind utilities; the
   StyleSheet ratchet is 0 calls after clearing the final new-app batch.
-- The first Rostra-backed provider is customization settings. It keeps the
-  compatibility hook while exposing selector reads for lower-churn consumers.
+- The first Rostra-backed provider was customization settings; it now exposes
+  selector reads for lower-churn consumers.
 - Customization settings, premium entitlement, import session, and playback
-  session are all Rostra-backed. Compatibility hooks still exist for a few
-  provider modules, but production consumers use selector hooks and the audit
-  blocks new React context modules.
+  session are all Rostra-backed. Production consumers use selector hooks, and
+  the audit blocks new React context modules.
 - The new app mirrors the old app's NativeWind 4 setup: Expo Babel jsx import
   source, `nativewind/metro`, `globals.css`, `nativewind-env.d.ts`, and a local
   Tailwind config.
+- Rostra-backed customization, premium entitlement, and playback provider
+  modules now live under feature `state/` folders instead of `context/`, and
+  `pnpm audit:rewrite-debt` blocks new feature context directories.

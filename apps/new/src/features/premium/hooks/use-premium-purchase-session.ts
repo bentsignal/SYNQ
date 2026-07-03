@@ -7,7 +7,7 @@ import {
   premiumTierLoadReducer,
 } from "../services/premium-purchase-state-service";
 import type { PremiumTierId } from "../types/premium-purchase";
-import { usePremiumEntitlementSelector } from "../context/PremiumEntitlementProvider";
+import { usePremiumEntitlementSelector } from "../state/PremiumEntitlementProvider";
 import { usePremiumPurchaseCommands } from "./use-premium-purchase-commands";
 import { usePremiumTierLoader } from "./use-premium-tier-loader";
 

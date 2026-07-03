@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
-import { usePremiumEntitlementSelector } from "@/src/features/premium/context/PremiumEntitlementProvider";
+import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { getImportPremiumGateState } from "../services/import-premium-gate-state-service";

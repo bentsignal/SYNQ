@@ -6,7 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import { createStore } from "rostra";
-import { usePremiumEntitlementSelector } from "@/src/features/premium/context/PremiumEntitlementProvider";
+import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
 import { usePlaybackAdGateController } from "../hooks/use-playback-ad-gate-controller";
 import {
   usePlaybackCommandController,

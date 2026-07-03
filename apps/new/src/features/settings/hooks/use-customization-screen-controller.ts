@@ -1,5 +1,5 @@
-import { usePremiumEntitlementSelector } from "@/src/features/premium/context/PremiumEntitlementProvider";
-import { useCustomizationSettingsContext } from "../context/CustomizationSettingsProvider";
+import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
+import { useCustomizationSettingsSelector } from "../state/CustomizationSettingsProvider";
 import {
   getCustomizationScreenState,
   shouldSendHapticForHapticsToggle,
@@ -11,12 +11,16 @@ export function useCustomizationScreenController() {
   const premiumActive = usePremiumEntitlementSelector(
     (store) => store.state.active,
   );
-  const {
-    setAppIcon,
-    setHapticsEnabled,
-    setTheme,
-    state: customizationState,
-  } = useCustomizationSettingsContext();
+  const setAppIcon = useCustomizationSettingsSelector(
+    (store) => store.setAppIcon,
+  );
+  const setHapticsEnabled = useCustomizationSettingsSelector(
+    (store) => store.setHapticsEnabled,
+  );
+  const setTheme = useCustomizationSettingsSelector((store) => store.setTheme);
+  const customizationState = useCustomizationSettingsSelector(
+    (store) => store.state,
+  );
   const { sendHaptic } = useHapticFeedback();
   const screenState = getCustomizationScreenState({
     premiumActive,

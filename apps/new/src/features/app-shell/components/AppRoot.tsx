@@ -1,8 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 import { useInitDB } from "@synq/db";
-import { PlaybackProvider } from "@/src/features/playback/context/PlaybackProvider";
-import { PremiumEntitlementProvider } from "@/src/features/premium/context/PremiumEntitlementProvider";
-import { CustomizationSettingsProvider } from "@/src/features/settings/context/CustomizationSettingsProvider";
+import { PlaybackProvider } from "@/src/features/playback/state/PlaybackProvider";
+import { PremiumEntitlementProvider } from "@/src/features/premium/state/PremiumEntitlementProvider";
+import { CustomizationSettingsProvider } from "@/src/features/settings/state/CustomizationSettingsProvider";
 import { AppNavigation } from "./AppNavigation";
 import { DatabaseStateScreen } from "./DatabaseStateScreen";
 

@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import { Alert } from "react-native";
 import { useImportSessionSelector } from "@/src/features/import/hooks/use-import-session";
-import { usePremiumEntitlementSelector } from "@/src/features/premium/context/PremiumEntitlementProvider";
+import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
 import { usePlaybackSessionSelector } from "@/src/features/playback/hooks/use-playback-session";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { useCustomizationSettingsSelector } from "@/src/features/settings/context/CustomizationSettingsProvider";
+import { useCustomizationSettingsSelector } from "@/src/features/settings/state/CustomizationSettingsProvider";
 import {
   getBackupActionState,
   getBackupConfirmationState,

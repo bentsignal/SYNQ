@@ -1,4 +1,4 @@
 export {
   usePlaybackSession,
   usePlaybackSessionSelector,
-} from "../context/PlaybackProvider";
+} from "../state/PlaybackProvider";

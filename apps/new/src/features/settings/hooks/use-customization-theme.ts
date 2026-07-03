@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useCustomizationSettingsSelector } from "../context/CustomizationSettingsProvider";
+import { useCustomizationSettingsSelector } from "../state/CustomizationSettingsProvider";
 import { getCustomizationOption } from "../services/customization-settings-service";
 
 export type CustomizationTheme = {

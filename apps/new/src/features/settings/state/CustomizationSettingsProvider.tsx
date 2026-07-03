@@ -23,7 +23,3 @@ export function useCustomizationSettingsSelector<SelectedValue>(
 ) {
   return useStore(selector);
 }
-
-export function useCustomizationSettingsContext() {
-  return useCustomizationSettingsSelector((store) => store);
-}

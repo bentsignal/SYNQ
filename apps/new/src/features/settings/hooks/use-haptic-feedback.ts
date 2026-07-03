@@ -3,7 +3,7 @@ import {
   sendNativeHaptic,
   type HapticFeedbackType,
 } from "../services/haptic-feedback-service";
-import { useCustomizationSettingsSelector } from "../context/CustomizationSettingsProvider";
+import { useCustomizationSettingsSelector } from "../state/CustomizationSettingsProvider";
 
 export function useHapticFeedback() {
   const hapticsEnabled = useCustomizationSettingsSelector(

@@ -13,7 +13,10 @@ import {
   getLibrarySongExportSuccessCommand,
   getLibrarySongLikedSuccessCommand,
 } from "./library-song-detail-mutation-command-state-service";
-import type { LibrarySongDetailMutationAction } from "./library-song-detail-mutation-service";
+import type {
+  LibrarySongDetailMutationAction,
+  LibrarySongDetailMutationKind,
+} from "./library-song-detail-mutation-service";
 import type { LibrarySongDetailActionState } from "./library-song-detail-state-service";
 
 type LibrarySongDetailMutationDispatch = (
@@ -31,6 +34,36 @@ type NativeConfirmationPresenter = (params: {
 }) => void;
 
 type NativeRouteReplacer = (href: LibrarySongDetailHref) => void;
+
+const runLibrarySongDetailMutationAttempt = async ({
+  dispatch,
+  mutation,
+  onSuccess,
+  run,
+  sendHaptic,
+}: {
+  dispatch: LibrarySongDetailMutationDispatch;
+  mutation: LibrarySongDetailMutationKind;
+  onSuccess: () => void;
+  run: () => Promise<unknown>;
+  sendHaptic: HapticSender;
+}) => {
+  dispatch(getLibrarySongDetailMutationStartCommand(mutation).action);
+
+  try {
+    await run();
+    onSuccess();
+  } catch (caughtError) {
+    const command = getLibrarySongDetailMutationFailureCommand({
+      caughtError,
+      mutation,
+    });
+    sendHaptic(command.haptic);
+    dispatch(command.action);
+  } finally {
+    dispatch(getLibrarySongDetailMutationFinishCommand(mutation).action);
+  }
+};
 
 export const runLibrarySongDeleteCommand = ({
   actionState,
@@ -65,24 +98,18 @@ export const runLibrarySongDeleteCommand = ({
     cancelLabel: confirmation.cancelLabel,
     confirmLabel: confirmation.confirmLabel,
     onConfirm: async () => {
-      dispatch(getLibrarySongDetailMutationStartCommand("delete-song").action);
-
-      try {
-        await deleteLibrarySong(songId);
-        removeFromQueue(songId);
-        const command = getLibrarySongDeleteSuccessCommand();
-        sendHaptic(command.haptic);
-        replaceRoute(command.href);
-      } catch (caughtError) {
-        const command = getLibrarySongDetailMutationFailureCommand({
-          caughtError,
-          mutation: "delete-song",
-        });
-        sendHaptic(command.haptic);
-        dispatch(command.action);
-      } finally {
-        dispatch(getLibrarySongDetailMutationFinishCommand("delete-song").action);
-      }
+      await runLibrarySongDetailMutationAttempt({
+        dispatch,
+        mutation: "delete-song",
+        onSuccess: () => {
+          removeFromQueue(songId);
+          const command = getLibrarySongDeleteSuccessCommand();
+          sendHaptic(command.haptic);
+          replaceRoute(command.href);
+        },
+        run: () => deleteLibrarySong(songId),
+        sendHaptic,
+      });
     },
     title: confirmation.title,
   });
@@ -111,21 +138,15 @@ export const runLibrarySongExportCommand = async ({
     return;
   }
 
-  dispatch(getLibrarySongDetailMutationStartCommand("export-song").action);
-
-  try {
-    await exportLibrarySong({ detail, songId });
-    sendHaptic(getLibrarySongExportSuccessCommand().haptic);
-  } catch (caughtError) {
-    const command = getLibrarySongDetailMutationFailureCommand({
-      caughtError,
-      mutation: "export-song",
-    });
-    sendHaptic(command.haptic);
-    dispatch(command.action);
-  } finally {
-    dispatch(getLibrarySongDetailMutationFinishCommand("export-song").action);
-  }
+  await runLibrarySongDetailMutationAttempt({
+    dispatch,
+    mutation: "export-song",
+    onSuccess: () => {
+      sendHaptic(getLibrarySongExportSuccessCommand().haptic);
+    },
+    run: () => exportLibrarySong({ detail, songId }),
+    sendHaptic,
+  });
 };
 
 export const runLibrarySongLikedCommand = async ({
@@ -151,22 +172,17 @@ export const runLibrarySongLikedCommand = async ({
     return;
   }
 
-  dispatch(getLibrarySongDetailMutationStartCommand("toggle-liked").action);
-
-  try {
-    await toggleLibrarySongLiked({
-      liked: !detail.isLiked,
-      songId,
-    });
-    sendHaptic(getLibrarySongLikedSuccessCommand().haptic);
-  } catch (caughtError) {
-    const command = getLibrarySongDetailMutationFailureCommand({
-      caughtError,
-      mutation: "toggle-liked",
-    });
-    sendHaptic(command.haptic);
-    dispatch(command.action);
-  } finally {
-    dispatch(getLibrarySongDetailMutationFinishCommand("toggle-liked").action);
-  }
+  await runLibrarySongDetailMutationAttempt({
+    dispatch,
+    mutation: "toggle-liked",
+    onSuccess: () => {
+      sendHaptic(getLibrarySongLikedSuccessCommand().haptic);
+    },
+    run: () =>
+      toggleLibrarySongLiked({
+        liked: !detail.isLiked,
+        songId,
+      }),
+    sendHaptic,
+  });
 };

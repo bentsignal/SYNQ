@@ -156,6 +156,8 @@
   repository.
 - Collapsed repeated library collection mutation start/failure/finish
   orchestration into a shared command-flow helper.
+- Collapsed repeated library song detail mutation start/failure/finish
+  orchestration into a shared command-flow helper.
 - Split static premium tier catalog and product mapping out of the RevenueCat
   purchase adapter.
 - Moved premium purchase, restore, entitlement, and tier-loading behavior behind

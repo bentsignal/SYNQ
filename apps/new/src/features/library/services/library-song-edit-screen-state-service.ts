@@ -1,4 +1,5 @@
 import type { LibrarySongDetail } from "./library-song-detail-service";
+import type { LibrarySongEditControllerState } from "./library-song-form-service";
 
 export const getLibrarySongEditFieldState = () =>
   ({
@@ -35,6 +36,29 @@ export const getLibrarySongEditActionState = ({
 
 export type LibrarySongEditActionState = ReturnType<
   typeof getLibrarySongEditActionState
+>;
+
+export const getLibrarySongEditControllerResultState = ({
+  detail,
+  formState,
+}: {
+  detail: LibrarySongDetail;
+  formState: LibrarySongEditControllerState;
+}) => ({
+  actionState: getLibrarySongEditActionState({
+    detail,
+    isSaving: formState.isSaving,
+    title: formState.title,
+  }),
+  albumNames: formState.albumNames,
+  artistNames: formState.artistNames,
+  coverImage: formState.coverImage,
+  errorMessage: formState.errorMessage,
+  title: formState.title,
+});
+
+export type LibrarySongEditControllerResultState = ReturnType<
+  typeof getLibrarySongEditControllerResultState
 >;
 
 export type LibrarySongEditStatusState = {

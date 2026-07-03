@@ -3,7 +3,7 @@ import {
   getInitialLibrarySongEditControllerState,
   librarySongEditControllerReducer,
 } from "../services/library-song-form-service";
-import { getLibrarySongEditActionState } from "../services/library-song-edit-screen-state-service";
+import { getLibrarySongEditControllerResultState } from "../services/library-song-edit-screen-state-service";
 import { type LibrarySongDetail } from "../services/library-song-detail-service";
 import { useEditLibrarySongCommands } from "./use-edit-library-song-commands";
 
@@ -21,10 +21,9 @@ export function useEditLibrarySongController({
     undefined,
     getInitialLibrarySongEditControllerState,
   );
-  const actionState = getLibrarySongEditActionState({
+  const resultState = getLibrarySongEditControllerResultState({
     detail,
-    isSaving: formState.isSaving,
-    title: formState.title,
+    formState,
   });
 
   useEffect(() => {
@@ -37,24 +36,19 @@ export function useEditLibrarySongController({
     };
 
   const { pickCoverImage, save } = useEditLibrarySongCommands({
-    canPickCoverImage: actionState.canPickCoverImage,
-    canSave: actionState.canSave,
+    canPickCoverImage: resultState.actionState.canPickCoverImage,
+    canSave: resultState.actionState.canSave,
     dispatchFormState,
     formState,
     songId,
   });
 
   return {
-    actionState,
-    albumNames: formState.albumNames,
-    artistNames: formState.artistNames,
-    coverImage: formState.coverImage,
-    errorMessage: formState.errorMessage,
+    ...resultState,
     pickCoverImage,
     save,
     setAlbumNames: updateField("albumNames"),
     setArtistNames: updateField("artistNames"),
     setTitle: updateField("title"),
-    title: formState.title,
   };
 }

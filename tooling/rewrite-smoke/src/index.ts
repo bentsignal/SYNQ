@@ -919,6 +919,7 @@ import {
 } from "../../../apps/new/src/features/library/services/library-song-form-command-flow-service";
 import {
   getLibrarySongEditActionState,
+  getLibrarySongEditControllerResultState,
   getLibrarySongEditFieldState,
   getLibrarySongEditStatusState,
 } from "../../../apps/new/src/features/library/services/library-song-edit-screen-state-service";
@@ -8411,6 +8412,31 @@ async function assertLibrarySongDetailSmoke() {
       title: "Alpha",
     }),
     { canPickCoverImage: false, canSave: false, saveLabel: "Saving" },
+  );
+  assert.deepEqual(
+    getLibrarySongEditControllerResultState({
+      detail,
+      formState: {
+        ...songEditState,
+        albumNames: "Controller Album",
+        artistNames: "Controller Artist",
+        errorMessage: "Controller error.",
+        isSaving: true,
+        title: "Controller Title",
+      },
+    }),
+    {
+      actionState: {
+        canPickCoverImage: false,
+        canSave: false,
+        saveLabel: "Saving",
+      },
+      albumNames: "Controller Album",
+      artistNames: "Controller Artist",
+      coverImage: null,
+      errorMessage: "Controller error.",
+      title: "Controller Title",
+    },
   );
   assert.deepEqual(
     getLibrarySongEditStatusState({

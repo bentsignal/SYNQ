@@ -11,7 +11,7 @@ import {
   getLibrarySongPlayCommand,
   getLibrarySongQueueCommand,
   toLibrarySongDetailPlaybackItem,
-} from "../services/library-song-interaction-service";
+} from "../services/library-song-playback-state-service";
 
 type UseLibrarySongPlaybackActionsParams = {
   actionState: LibrarySongDetailActionState;

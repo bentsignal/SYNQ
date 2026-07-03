@@ -3,7 +3,7 @@ import { deleteLibrarySong } from "../repository/library-song-delete-repository"
 import { setLibrarySongLiked } from "../repository/library-song-liked-repository";
 import { updateLibrarySongMetadata } from "../repository/song-metadata-repository";
 import type { LibrarySongDetail } from "./library-song-detail-service";
-import { toLibrarySongExportItem } from "./library-song-interaction-service";
+import { toLibrarySongExportItem } from "./library-song-playback-state-service";
 
 export const toggleLibrarySongLikedCommand = ({
   liked,

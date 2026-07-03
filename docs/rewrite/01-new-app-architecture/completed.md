@@ -135,3 +135,5 @@
   session store code can depend on defaults without importing reducer actions.
 - Split collection list search control reducer state out of collection list
   navigation, copy, and filtering state.
+- Split library song playback/export command state out of song detail
+  navigation and relationship view state.

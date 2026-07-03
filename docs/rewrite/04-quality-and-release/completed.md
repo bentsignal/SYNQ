@@ -309,6 +309,8 @@
   cross-query error ordering.
 - Added direct edit collection query mapping smoke coverage for album, artist,
   and playlist form-state assembly.
+- Preserved direct edit collection state smoke coverage while splitting
+  kind-specific form-state assembly out of the query result service.
 - Added direct library collection list error normalization smoke coverage.
 - Added direct add-collection-songs controller result-state smoke coverage.
 - Added direct collection detail mutation action-state smoke coverage.

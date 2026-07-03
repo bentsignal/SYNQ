@@ -10,7 +10,7 @@ import {
 } from "../services/edit-collection-query-service";
 import { getLibrarySmallImagePath } from "../services/library-image-path-service";
 
-export type { EditCollectionKind } from "../services/edit-collection-query-service";
+export type { EditCollectionKind } from "../services/edit-collection-state-service";
 
 export function useEditAlbumCollectionQuery({ id }: { id: number }) {
   const album = useEditAlbumRowQuery(id);

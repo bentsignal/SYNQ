@@ -6,11 +6,13 @@ import {
 import {
   buildEditAlbumRowQueryResult,
   buildEditCollectionRowQueryResult,
-  type EditCollectionAlbumArtistRow,
-  type EditCollectionAlbumRow,
-  type EditCollectionArtistRow,
-  type EditCollectionPlaylistRow,
 } from "../services/edit-collection-query-service";
+import type {
+  EditCollectionAlbumArtistRow,
+  EditCollectionAlbumRow,
+  EditCollectionArtistRow,
+  EditCollectionPlaylistRow,
+} from "../services/edit-collection-state-service";
 
 export function useEditAlbumRowQuery(id: number) {
   const { album, artists } = useEditAlbumRowLiveQuery(id);

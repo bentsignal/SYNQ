@@ -1,6 +1,6 @@
 import { useEditCollectionFormController } from "../hooks/use-edit-collection-form-controller";
 import type { EditCollectionQueryResult } from "../hooks/use-edit-collection-query";
-import type { EditCollectionKind } from "../services/edit-collection-query-service";
+import type { EditCollectionKind } from "../services/edit-collection-state-service";
 import { EditCollectionFormView } from "./EditCollectionFormView";
 
 type EditCollectionConnectedFormCopy = {

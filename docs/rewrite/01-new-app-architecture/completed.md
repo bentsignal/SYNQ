@@ -418,6 +418,9 @@
   and into the library home service.
 - Moved edit collection form-state query mapping out of React hooks and into
   the edit collection query service.
+- Split edit collection kind, row types, image-path normalization, and
+  kind-specific form-state shaping into a focused edit collection state
+  service.
 - Moved library collection list query-error normalization out of the React
   controller and into the collection list service.
 - Moved add-collection-songs controller result shaping out of the React hook

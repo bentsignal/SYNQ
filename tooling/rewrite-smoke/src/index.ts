@@ -842,10 +842,10 @@ import {
   buildEditAlbumRowQueryResult,
   buildEditArtistCollectionQueryResult,
   buildEditCollectionRowQueryResult,
-  buildEditCollectionState,
   buildEditPlaylistCollectionQueryResult,
   getEditAlbumRowQueryUpdatedAt,
 } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
+import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-state-service";
 import {
   filterCollectionPreviews,
   getLibraryCollectionListErrors,

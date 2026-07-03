@@ -1,4 +1,4 @@
-import type { EditCollectionKind } from "../services/edit-collection-query-service";
+import type { EditCollectionKind } from "../services/edit-collection-state-service";
 import { getEditCollectionFormControllerViewState } from "../services/collection-form-interaction-service";
 import { useCollectionFormStateController } from "./use-collection-form-state-controller";
 import { useEditCollectionFormCommands } from "./use-edit-collection-form-commands";

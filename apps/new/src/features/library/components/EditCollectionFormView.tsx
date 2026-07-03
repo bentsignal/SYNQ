@@ -3,7 +3,7 @@ import {
   type CollectionFormActionState,
 } from "../services/collection-form-interaction-service";
 import { getEditCollectionFormSubtitle } from "../services/collection-form-copy-service";
-import type { EditCollectionKind } from "../services/edit-collection-query-service";
+import type { EditCollectionKind } from "../services/edit-collection-state-service";
 import { CollectionFormView } from "./CollectionFormView";
 import type { CollectionFormImage } from "./collection-form-types";
 

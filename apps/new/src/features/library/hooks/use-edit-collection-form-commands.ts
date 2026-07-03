@@ -7,7 +7,7 @@ import {
   type CollectionFormAction,
   type CollectionFormState,
 } from "../services/collection-form-state-service";
-import type { EditCollectionKind } from "../services/edit-collection-query-service";
+import type { EditCollectionKind } from "../services/edit-collection-state-service";
 
 type UseEditCollectionFormCommandsParams = {
   canSave: boolean;

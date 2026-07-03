@@ -1,3 +1,4 @@
+import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import type { ImportSessionState } from "../types/import-session";
 import {
   getImportHomeHref,
@@ -47,3 +48,5 @@ export const getImportWifiActionState = () => ({
     label: "Review save",
   },
 });
+
+export const getImportWifiReviewSaveHaptic = (): HapticFeedbackType => "light";

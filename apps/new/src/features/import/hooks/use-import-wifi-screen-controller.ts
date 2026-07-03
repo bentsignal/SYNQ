@@ -1,5 +1,12 @@
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { getImportWifiState } from "../services/import-wifi-screen-state-service";
+import {
+  getImportFileRemovalResultCommand,
+  getImportFileRemovalStartHaptic,
+} from "../services/import-file-command-service";
+import {
+  getImportWifiReviewSaveHaptic,
+  getImportWifiState,
+} from "../services/import-wifi-screen-state-service";
 import { useImportSessionSelector } from "./use-import-session";
 import { useWifiImportServer } from "./use-wifi-import-server";
 
@@ -17,13 +24,14 @@ export function useImportWifiScreenController() {
   });
 
   const removeSong = async (songId: number) => {
-    sendHaptic("medium");
+    sendHaptic(getImportFileRemovalStartHaptic());
     const removed = await removeImportSongs([songId]);
-    sendHaptic(removed ? "success" : "error");
+    const command = getImportFileRemovalResultCommand(removed);
+    sendHaptic(command.haptic);
   };
 
   const reviewSave = () => {
-    sendHaptic("light");
+    sendHaptic(getImportWifiReviewSaveHaptic());
   };
 
   return {

@@ -122,6 +122,7 @@ import {
 } from "../../../apps/new/src/features/import/services/import-premium-gate-state-service";
 import {
   getImportWifiActionState,
+  getImportWifiReviewSaveHaptic,
   getImportWifiState,
 } from "../../../apps/new/src/features/import/services/import-wifi-screen-state-service";
 import {
@@ -1747,6 +1748,7 @@ function assertImportSessionSmoke() {
       label: "Review save",
     },
   });
+  assert.equal(getImportWifiReviewSaveHaptic(), "light");
   assert.deepEqual(
     getImportHomeState({ premiumActive: true, state }).routes.map((route) => ({
       href: route.href,

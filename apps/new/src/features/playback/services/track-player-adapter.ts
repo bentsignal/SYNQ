@@ -1,6 +1,5 @@
 import {
   createAudioPlayer,
-  PLAYBACK_STATUS_UPDATE,
   type AudioPlayer,
 } from "expo-audio";
 import type {
@@ -8,7 +7,6 @@ import type {
   PlaybackState,
 } from "../types/playback-state";
 import {
-  audioStatusToTrackPlayerSnapshot,
   type TrackPlayerSource,
   type TrackPlayerStatusSnapshot,
 } from "./playback-native-status-service";
@@ -16,6 +14,7 @@ import {
   configurePlaybackAudio,
   playbackAdAudio,
 } from "./playback-native-audio-service";
+import { createTrackPlayerStatusListenerRegistry } from "./playback-native-status-listener-service";
 
 export type TrackPlayerAdapter = {
   destroy: () => Promise<void>;
@@ -45,52 +44,17 @@ export const createUnavailableTrackPlayerAdapter = (): TrackPlayerAdapter => ({
   stop: () => Promise.resolve(),
 });
 
-type AudioPlayerSubscription = ReturnType<AudioPlayer["addListener"]>;
-
 export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
   let adPlayer: AudioPlayer | null = null;
-  let adStatusSubscription: AudioPlayerSubscription | null = null;
   let libraryPlayer: AudioPlayer | null = null;
-  let libraryStatusSubscription: AudioPlayerSubscription | null = null;
   let loadedSongId: number | null = null;
   let activeSource: TrackPlayerSource | null = null;
-  let statusListener: ((status: TrackPlayerStatusSnapshot) => void) | null =
-    null;
-
-  const attachStatusListener = (
-    player: AudioPlayer | null,
-    source: TrackPlayerSource,
-  ) => {
-    const subscription = player?.addListener(PLAYBACK_STATUS_UPDATE, (status) => {
-      statusListener?.(
-        audioStatusToTrackPlayerSnapshot({
-          loadedSongId,
-          source,
-          status,
-        }),
-      );
-    });
-
-    if (source === "ad") {
-      adStatusSubscription?.remove();
-      adStatusSubscription = subscription ?? null;
-      return;
-    }
-
-    libraryStatusSubscription?.remove();
-    libraryStatusSubscription = subscription ?? null;
-  };
-
-  const removeStatusListeners = () => {
-    adStatusSubscription?.remove();
-    adStatusSubscription = null;
-    libraryStatusSubscription?.remove();
-    libraryStatusSubscription = null;
-  };
+  const statusListeners = createTrackPlayerStatusListenerRegistry({
+    getLoadedSongId: () => loadedSongId,
+  });
 
   const removeAdPlayer = () => {
-    adStatusSubscription?.remove();
-    adStatusSubscription = null;
+    statusListeners.removeAd();
 
     if (adPlayer) {
       adPlayer.remove();
@@ -103,8 +67,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
   };
 
   const removeLibraryPlayer = () => {
-    libraryStatusSubscription?.remove();
-    libraryStatusSubscription = null;
+    statusListeners.removeLibrary();
 
     if (libraryPlayer) {
       libraryPlayer.remove();
@@ -142,7 +105,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
     libraryPlayer = createAudioPlayer({ uri: song.pathToFile });
     loadedSongId = song.id;
     activeSource = "library";
-    attachStatusListener(libraryPlayer, "library");
+    statusListeners.attach(libraryPlayer, "library");
     libraryPlayer.play();
   };
 
@@ -157,7 +120,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
 
     adPlayer = createAudioPlayer(playbackAdAudio);
     activeSource = "ad";
-    attachStatusListener(adPlayer, "ad");
+    statusListeners.attach(adPlayer, "ad");
     adPlayer.play();
   };
 
@@ -212,15 +175,14 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
       }
     },
     setStatusListener: (listener) => {
-      statusListener = listener;
+      statusListeners.setListener(listener);
 
       if (!listener) {
-        removeStatusListeners();
         return;
       }
 
-      attachStatusListener(libraryPlayer, "library");
-      attachStatusListener(adPlayer, "ad");
+      statusListeners.attach(libraryPlayer, "library");
+      statusListeners.attach(adPlayer, "ad");
     },
     stop: async () => {
       if (adPlayer) {

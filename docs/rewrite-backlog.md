@@ -85,6 +85,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: playback persistence defensive normalizers now live in a focused
     normalizer service instead of the persistence codec owning every restore
     validation detail.
+  - Done: playback native status subscription bookkeeping now lives in a
+    focused listener registry instead of the track-player adapter owning player
+    lifecycle and event-listener replacement together.
   - Done: collection detail song-row aggregation now lives in a focused song
     detail service instead of the detail shell builder owning song grouping,
     artist/album fallback labels, and track sorting.

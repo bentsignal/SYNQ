@@ -182,3 +182,5 @@
   playback-mode toggles.
 - Added direct import session step smoke coverage for file/Wi-Fi starts,
   failure, review, receive, remove, edit, save, finish, and discard transitions.
+- Kept direct import session smoke coverage while moving Wi-Fi, staged-song, and
+  save/discard transitions into narrower step services.

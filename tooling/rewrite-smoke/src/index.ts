@@ -203,17 +203,23 @@ import {
 } from "../../../apps/new/src/features/import/services/import-session-state-service";
 import {
   beginImportFilePick,
-  beginImportWifiTransfer,
-  discardImportSession,
   failImportSession,
-  finishImportSession,
+} from "../../../apps/new/src/features/import/services/import-session-step-service";
+import {
+  beginImportWifiTransfer,
   receiveImportWifiSong,
+} from "../../../apps/new/src/features/import/services/import-session-wifi-step-service";
+import {
   removeImportSongs,
   reviewImportSongs,
+  updateImportSong,
+} from "../../../apps/new/src/features/import/services/import-session-song-step-service";
+import {
+  discardImportSession,
+  finishImportSession,
   setImportSaveToLibrary,
   startImportSessionSave,
-  updateImportSong,
-} from "../../../apps/new/src/features/import/services/import-session-step-service";
+} from "../../../apps/new/src/features/import/services/import-session-save-step-service";
 import {
   initialImportSessionState,
 } from "../../../apps/new/src/features/import/services/import-session-initial-state-service";

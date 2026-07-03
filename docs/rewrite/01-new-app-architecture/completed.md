@@ -289,3 +289,5 @@
 - Split playback session hydration, failure, and playback-mode toggles into a
   focused session step service.
 - Split import session reducer transitions into a focused session step service.
+- Split import session Wi-Fi, staged-song, and save/discard state transitions
+  into separate focused step services.

@@ -6,17 +6,23 @@ import type {
 import { initialImportSessionState } from "./import-session-initial-state-service";
 import {
   beginImportFilePick,
-  beginImportWifiTransfer,
-  discardImportSession,
   failImportSession,
-  finishImportSession,
+} from "./import-session-step-service";
+import {
+  beginImportWifiTransfer,
   receiveImportWifiSong,
+} from "./import-session-wifi-step-service";
+import {
   removeImportSongs,
   reviewImportSongs,
+  updateImportSong,
+} from "./import-session-song-step-service";
+import {
+  discardImportSession,
+  finishImportSession,
   setImportSaveToLibrary,
   startImportSessionSave,
-  updateImportSong,
-} from "./import-session-step-service";
+} from "./import-session-save-step-service";
 
 export type ImportSessionAction =
   | { type: "begin-file-pick" }

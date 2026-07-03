@@ -278,3 +278,5 @@
   track-finished transitions.
 - Split playback native ad/library status update derivation out of the native
   transition service.
+- Moved playback native library source validation out of the native player
+  registry orchestration.

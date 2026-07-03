@@ -170,3 +170,5 @@
   target activation.
 - Added direct playback native transition step smoke coverage for ad status
   progress and library status position/duration updates.
+- Added direct playback native player state smoke coverage for playable library
+  source validation.

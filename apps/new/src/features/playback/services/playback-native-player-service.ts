@@ -6,6 +6,7 @@ import type { PlaybackQueueItem } from "../types/playback-state";
 import { playbackAdAudio } from "./playback-native-audio-service";
 import {
   getPlaybackNativePlayerPlayAdState,
+  getPlaybackNativeLibraryAudioSource,
   getPlaybackNativePlayerPlayLibraryPlan,
   getPlaybackNativePlayerPlayLibraryState,
   getPlaybackNativePlayerRemoveSourceState,
@@ -83,9 +84,7 @@ export const createPlaybackNativePlayerRegistry = () => {
       adPlayer.play();
     },
     playLibrarySong: async (song: PlaybackQueueItem) => {
-      if (!song.pathToFile) {
-        throw new Error("This song does not have a playable file path.");
-      }
+      const source = getPlaybackNativeLibraryAudioSource(song);
 
       removeAdPlayer();
 
@@ -105,7 +104,7 @@ export const createPlaybackNativePlayerRegistry = () => {
 
       removeLibraryPlayer();
 
-      libraryPlayer = createAudioPlayer({ uri: song.pathToFile });
+      libraryPlayer = createAudioPlayer(source);
       registryState = getPlaybackNativePlayerPlayLibraryState({
         songId: song.id,
         state: registryState,

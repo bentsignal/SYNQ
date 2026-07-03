@@ -90,6 +90,7 @@ import {
   getPlaybackLibraryStatusUpdate,
 } from "../../../apps/new/src/features/playback/services/playback-native-transition-step-service";
 import {
+  getPlaybackNativeLibraryAudioSource,
   getPlaybackNativePlayerPlayAdState,
   getPlaybackNativePlayerPlayLibraryPlan,
   getPlaybackNativePlayerPlayLibraryState,
@@ -1533,6 +1534,17 @@ function assertPlaybackNativePlayerStateSmoke() {
       state: firstLibraryState,
     }),
     { type: "replace-library-player" },
+  );
+  assert.deepEqual(
+    getPlaybackNativeLibraryAudioSource({
+      id: 10,
+      pathToFile: "/tmp/playable.mp3",
+    }),
+    { uri: "/tmp/playable.mp3" },
+  );
+  assert.throws(
+    () => getPlaybackNativeLibraryAudioSource({ id: 10, pathToFile: null }),
+    /playable file path/,
   );
 
   const adState = getPlaybackNativePlayerPlayAdState(firstLibraryState);

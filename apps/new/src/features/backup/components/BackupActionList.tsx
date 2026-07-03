@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import type { BackupScreenController } from "../hooks/use-backup-screen-controller";
 import { backupActionCards } from "../services/backup-screen-service";
 import { BackupActionCard } from "./BackupActionCard";
@@ -13,7 +13,7 @@ export function BackupActionList({
   runBackupOperation,
 }: BackupActionListProps) {
   return (
-    <View style={styles.list}>
+    <View className="gap-3">
       {backupActionCards.map((action) => (
         <BackupActionCard
           action={action}
@@ -25,9 +25,3 @@ export function BackupActionList({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  list: {
-    gap: 12,
-  },
-});

@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 
 type DatabaseStateScreenProps = {
@@ -15,50 +15,28 @@ export function DatabaseStateScreen({
   const theme = useCustomizationTheme();
 
   return (
-    <View style={[styles.screen, { backgroundColor: theme.background }]}>
+    <View
+      className="flex-1 items-center justify-center p-5"
+      style={{ backgroundColor: theme.background }}
+    >
       <View
-        style={[
-          styles.panel,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-        ]}
+        className="max-w-[360px] items-center gap-3 rounded-lg border p-5"
+        style={{ backgroundColor: theme.surface, borderColor: theme.border }}
       >
         {showSpinner ? <ActivityIndicator color={theme.accent} /> : null}
-        <Text style={[styles.title, { color: theme.primaryText }]}>
+        <Text
+          className="text-center text-lg font-extrabold leading-[23px]"
+          style={{ color: theme.primaryText }}
+        >
           {title}
         </Text>
-        <Text style={[styles.detail, { color: theme.secondaryText }]}>
+        <Text
+          className="text-center text-sm leading-5"
+          style={{ color: theme.secondaryText }}
+        >
           {detail}
         </Text>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    alignItems: "center",
-    flex: 1,
-    justifyContent: "center",
-    padding: 20,
-  },
-  panel: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 12,
-    maxWidth: 360,
-    padding: 20,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 23,
-    textAlign: "center",
-  },
-  detail: {
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: "center",
-  },
-});

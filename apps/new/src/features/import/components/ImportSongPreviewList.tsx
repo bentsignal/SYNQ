@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportSongDraft } from "../types/import-session";
 import { ImportSongPreviewEmptyState } from "./ImportSongPreviewEmptyState";
@@ -23,10 +23,8 @@ export function ImportSongPreviewList({
 
   return (
     <View
-      style={[
-        styles.list,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="overflow-hidden rounded-lg border"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
       {songs.map((song) => (
         <ImportSongPreviewRow
@@ -39,11 +37,3 @@ export function ImportSongPreviewList({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  list: {
-    borderRadius: 8,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-});

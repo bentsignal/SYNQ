@@ -19,17 +19,16 @@
 
 ## Utility Styling Migration
 
-- [ ] Decide whether the new app should use NativeWind, Uniwind, or another
+- [x] Decide whether the new app should use NativeWind, Uniwind, or another
   Tailwind-compatible React Native utility system.
-- [ ] Confirm/install/configure the chosen library in `apps/new`; current
-  package manifests do not list NativeWind, Uniwind, or Tailwind packages.
+- [x] Confirm/install/configure the chosen library in `apps/new`.
 - [ ] Convert `StyleSheet` usage to utility classes wherever physically
   practical.
 - [ ] Keep small escape hatches for dynamic runtime styles that are awkward or
   unsafe to express as utility classes.
 - [ ] Add a custom lint rule or hygiene scan to ban new `StyleSheet.create`
   usage after the migration path is established.
-- [ ] Ratchet `MAX_NEW_APP_STYLESHEET_CREATE` down as utility-class
+- [x] Ratchet `MAX_NEW_APP_STYLESHEET_CREATE` down as utility-class
   conversions land.
 - [ ] Track remaining justified `StyleSheet` exceptions explicitly.
 

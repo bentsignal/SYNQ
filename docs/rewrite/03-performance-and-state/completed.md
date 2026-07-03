@@ -21,3 +21,6 @@
 - Migrated playback session from broad React context to a Rostra store,
   converted playback, library, home, and backup consumers to selector reads,
   and lowered the context ratchet from 1 module to 0.
+- Configured NativeWind/Tailwind for the new app and converted the first
+  app-shell/import/backup components from `StyleSheet.create` to utility
+  classes, lowering the StyleSheet ratchet from 111 calls to 106.

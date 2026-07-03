@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { HomeScreenController } from "../hooks/use-home-screen-controller";
 import { HomeHero } from "./HomeHero";
@@ -18,8 +18,9 @@ export function HomeScreenView({
 
   return (
     <ScrollView
-      contentContainerStyle={styles.content}
-      style={[styles.screen, { backgroundColor: theme.background }]}
+      className="flex-1"
+      contentContainerClassName="gap-[22px] px-5 py-14"
+      style={{ backgroundColor: theme.background }}
     >
       <HomeHero />
       <HomeNowPlayingPanel nowPlaying={nowPlaying} />
@@ -31,14 +32,3 @@ export function HomeScreenView({
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  content: {
-    gap: 22,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-});

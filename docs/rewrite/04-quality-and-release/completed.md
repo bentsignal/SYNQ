@@ -27,3 +27,7 @@
   cache cleanup and failure-safe cleanup skipping.
 - Expanded playback reducer smoke coverage for ad native status, ad completion,
   and native-finished advance/end transitions.
+- Added injectable library song command smoke coverage for like, delete,
+  export, and metadata update forwarding.
+- Added injectable library collection command smoke coverage for export,
+  delete, move, remove, and add forwarding.

@@ -310,6 +310,15 @@ import {
   initialCollectionDetailMutationState,
 } from "../../../apps/new/src/features/library/services/library-collection-mutation-state-service";
 import {
+  type LibraryCollectionCommandDependencies,
+  addLibraryCollectionSongCommandWithDependencies,
+  addLibraryCollectionSongsCommandWithDependencies,
+  deleteLibraryCollectionCommandWithDependencies,
+  exportLibraryCollectionCommandWithDependencies,
+  moveLibraryCollectionSongCommandWithDependencies,
+  removeLibraryCollectionSongCommandWithDependencies,
+} from "../../../apps/new/src/features/library/services/library-collection-command-executor-service";
+import {
   getCollectionSongListState,
   getCollectionSongOrderUpdate,
   getCollectionSongRowActionState,
@@ -473,6 +482,13 @@ import {
   getLibrarySongEditFieldState,
   getLibrarySongEditStatusState,
 } from "../../../apps/new/src/features/library/services/library-song-edit-screen-state-service";
+import {
+  type LibrarySongCommandDependencies,
+  deleteLibrarySongCommandWithDependencies,
+  exportLibrarySongCommandWithDependencies,
+  toggleLibrarySongLikedCommandWithDependencies,
+  updateLibrarySongMetadataCommandWithDependencies,
+} from "../../../apps/new/src/features/library/services/library-song-command-executor-service";
 import {
   rowsToSongPreviews,
 } from "../../../apps/new/src/features/library/services/library-song-preview-service";
@@ -2553,6 +2569,28 @@ function assertLibraryCollectionDetailSmoke() {
 }
 
 function assertLibraryCollectionInteractionSmoke() {
+  const commandCalls: unknown[] = [];
+  const collectionCommandDependencies: LibraryCollectionCommandDependencies = {
+    addSongToCollection: async (params) => {
+      commandCalls.push(["add-one", params]);
+    },
+    addSongsToCollection: async (params) => {
+      commandCalls.push(["add-many", params]);
+    },
+    deleteCollection: async (params) => {
+      commandCalls.push(["delete", params]);
+    },
+    removeSongFromCollection: async (params) => {
+      commandCalls.push(["remove", params]);
+    },
+    shareLibrarySongs: async (songs) => {
+      commandCalls.push(["share", songs]);
+    },
+    updateCollectionSongOrder: async (params) => {
+      commandCalls.push(["order", params]);
+    },
+  };
+
   assert.deepEqual(getLibraryInvalidCollectionState(), {
     backLink: {
       href: "/(tabs)/library",
@@ -2605,6 +2643,55 @@ function assertLibraryCollectionInteractionSmoke() {
       title: "Third",
       track: 3,
     },
+  ]);
+
+  void exportLibraryCollectionCommandWithDependencies(
+    getPlayableCollectionSongs(songs),
+    collectionCommandDependencies,
+  );
+  void deleteLibraryCollectionCommandWithDependencies(
+    { id: 7, kind: "album" },
+    collectionCommandDependencies,
+  );
+  void moveLibraryCollectionSongCommandWithDependencies(
+    {
+      collectionId: 7,
+      direction: "down",
+      kind: "playlist",
+      songId: 1,
+      songs,
+    },
+    collectionCommandDependencies,
+  );
+  void removeLibraryCollectionSongCommandWithDependencies(
+    { collectionId: 7, kind: "artist", songId: 3 },
+    collectionCommandDependencies,
+  );
+  void addLibraryCollectionSongCommandWithDependencies(
+    { collectionId: 7, kind: "album", songId: 4 },
+    collectionCommandDependencies,
+  );
+  void addLibraryCollectionSongsCommandWithDependencies(
+    { collectionId: 7, kind: "playlist", songIds: [5, 6] },
+    collectionCommandDependencies,
+  );
+  assert.deepEqual(commandCalls, [
+    [
+      "share",
+      [songs[0], songs[2]],
+    ],
+    ["delete", { id: 7, kind: "album" }],
+    [
+      "order",
+      {
+        collectionId: 7,
+        kind: "playlist",
+        songIds: [2, 1, 3],
+      },
+    ],
+    ["remove", { collectionId: 7, kind: "artist", songId: 3 }],
+    ["add-one", { collectionId: 7, kind: "album", songId: 4 }],
+    ["add-many", { collectionId: 7, kind: "playlist", songIds: [5, 6] }],
   ]);
 
   assert.deepEqual(
@@ -4039,6 +4126,21 @@ function assertAddableCollectionSongsSmoke() {
 }
 
 function assertLibrarySongDetailSmoke() {
+  const commandCalls: unknown[] = [];
+  const songCommandDependencies: LibrarySongCommandDependencies = {
+    deleteLibrarySong: async (songId) => {
+      commandCalls.push(["delete", songId]);
+    },
+    setLibrarySongLiked: async (params) => {
+      commandCalls.push(["liked", params]);
+    },
+    shareLibrarySongs: async (songs) => {
+      commandCalls.push(["share", songs]);
+    },
+    updateLibrarySongMetadata: async (params) => {
+      commandCalls.push(["metadata", params]);
+    },
+  };
   const detail = buildLibrarySongDetail({
     albumRows: [
       {
@@ -4119,6 +4221,52 @@ function assertLibrarySongDetailSmoke() {
       title: "Alpha",
     },
   );
+  void toggleLibrarySongLikedCommandWithDependencies(
+    { liked: false, songId: 42 },
+    songCommandDependencies,
+  );
+  void deleteLibrarySongCommandWithDependencies(
+    42,
+    songCommandDependencies,
+  );
+  void exportLibrarySongCommandWithDependencies(
+    { detail, songId: 42 },
+    songCommandDependencies,
+  );
+  void updateLibrarySongMetadataCommandWithDependencies(
+    {
+      albumNames: "Alpha Album, Beta Album",
+      artistNames: "Alpha Artist, Beta Artist",
+      coverImageDataUrl: "data:image/png;base64,cover",
+      id: 42,
+      title: "Updated Alpha",
+    },
+    songCommandDependencies,
+  );
+  assert.deepEqual(commandCalls, [
+    ["liked", { liked: false, songId: 42 }],
+    ["delete", 42],
+    [
+      "share",
+      [
+        {
+          id: 42,
+          pathToFile: "/tmp/alpha.mp3",
+          title: "Alpha",
+        },
+      ],
+    ],
+    [
+      "metadata",
+      {
+        albumNames: "Alpha Album, Beta Album",
+        artistNames: "Alpha Artist, Beta Artist",
+        coverImageDataUrl: "data:image/png;base64,cover",
+        id: 42,
+        title: "Updated Alpha",
+      },
+    ],
+  ]);
   assert.equal(
     buildLibrarySongDetail({
       albumRows: [

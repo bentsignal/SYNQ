@@ -3,7 +3,19 @@ import { deleteLibrarySong } from "../repository/library-song-delete-repository"
 import { setLibrarySongLiked } from "../repository/library-song-liked-repository";
 import { updateLibrarySongMetadata } from "../repository/song-metadata-repository";
 import type { LibrarySongDetail } from "./library-song-detail-service";
-import { toLibrarySongExportItem } from "./library-song-playback-state-service";
+import {
+  deleteLibrarySongCommandWithDependencies,
+  exportLibrarySongCommandWithDependencies,
+  toggleLibrarySongLikedCommandWithDependencies,
+  updateLibrarySongMetadataCommandWithDependencies,
+} from "./library-song-command-executor-service";
+
+const librarySongCommandDependencies = {
+  deleteLibrarySong,
+  setLibrarySongLiked,
+  shareLibrarySongs,
+  updateLibrarySongMetadata,
+};
 
 export const toggleLibrarySongLikedCommand = ({
   liked,
@@ -12,13 +24,16 @@ export const toggleLibrarySongLikedCommand = ({
   liked: boolean;
   songId: number;
 }) =>
-  setLibrarySongLiked({
-    liked,
-    songId,
-  });
+  toggleLibrarySongLikedCommandWithDependencies(
+    { liked, songId },
+    librarySongCommandDependencies,
+  );
 
 export const deleteLibrarySongCommand = (songId: number) =>
-  deleteLibrarySong(songId);
+  deleteLibrarySongCommandWithDependencies(
+    songId,
+    librarySongCommandDependencies,
+  );
 
 export const exportLibrarySongCommand = ({
   detail,
@@ -26,7 +41,11 @@ export const exportLibrarySongCommand = ({
 }: {
   detail: LibrarySongDetail;
   songId: number;
-}) => shareLibrarySongs([toLibrarySongExportItem({ detail, songId })]);
+}) =>
+  exportLibrarySongCommandWithDependencies(
+    { detail, songId },
+    librarySongCommandDependencies,
+  );
 
 export const updateLibrarySongMetadataCommand = ({
   albumNames,
@@ -41,10 +60,13 @@ export const updateLibrarySongMetadataCommand = ({
   id: number;
   title: string;
 }) =>
-  updateLibrarySongMetadata({
-    albumNames,
-    artistNames,
-    coverImageDataUrl,
-    id,
-    title,
-  });
+  updateLibrarySongMetadataCommandWithDependencies(
+    {
+      albumNames,
+      artistNames,
+      coverImageDataUrl,
+      id,
+      title,
+    },
+    librarySongCommandDependencies,
+  );

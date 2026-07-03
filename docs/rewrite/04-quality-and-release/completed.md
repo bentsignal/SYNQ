@@ -275,3 +275,5 @@
   interactions and conditional haptics-toggle sequencing.
 - Added direct import interaction action-flow smoke coverage for home route and
   premium gate haptic sequencing.
+- Added direct backup phase effect smoke coverage for no-op, restore-success
+  reset, and failure haptic sequencing.

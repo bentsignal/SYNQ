@@ -947,6 +947,7 @@ import {
 } from "../../../apps/new/src/features/backup/services/backup-screen-action-flow-service";
 import {
   getBackupPhaseTransitionEffects,
+  runBackupPhaseTransitionEffects,
 } from "../../../apps/new/src/features/backup/services/backup-phase-effect-service";
 import {
   backupSessionReducer,
@@ -12622,6 +12623,68 @@ async function assertBackupScreenSmoke() {
       shouldResetRuntimeSessions: false,
     },
   );
+  const backupPhaseEffectEvents: unknown[] = [];
+  runBackupPhaseTransitionEffects({
+    currentState: idleState,
+    previousPhase: "idle",
+    reloadCustomizationSettings: () => {
+      backupPhaseEffectEvents.push(["unexpected-reload"]);
+    },
+    resetPlaybackSession: () => {
+      backupPhaseEffectEvents.push(["unexpected-reset-playback"]);
+    },
+    resetSession: () => {
+      backupPhaseEffectEvents.push(["unexpected-reset-import"]);
+    },
+    sendHaptic: (haptic) => {
+      backupPhaseEffectEvents.push(["unexpected-haptic", haptic]);
+    },
+  });
+  assert.deepEqual(
+    runBackupPhaseTransitionEffects({
+      currentState: { ...successState, lastOperation: "restore" },
+      previousPhase: "running",
+      reloadCustomizationSettings: () => {
+        backupPhaseEffectEvents.push(["reload-customization"]);
+      },
+      resetPlaybackSession: () => {
+        backupPhaseEffectEvents.push(["reset-playback"]);
+      },
+      resetSession: () => {
+        backupPhaseEffectEvents.push(["reset-import"]);
+      },
+      sendHaptic: (haptic) => {
+        backupPhaseEffectEvents.push(["haptic", haptic]);
+      },
+    }),
+    {
+      haptic: "success",
+      shouldResetRuntimeSessions: true,
+    },
+  );
+  runBackupPhaseTransitionEffects({
+    currentState: failureState,
+    previousPhase: "running",
+    reloadCustomizationSettings: () => {
+      backupPhaseEffectEvents.push(["unexpected-failure-reload"]);
+    },
+    resetPlaybackSession: () => {
+      backupPhaseEffectEvents.push(["unexpected-failure-reset-playback"]);
+    },
+    resetSession: () => {
+      backupPhaseEffectEvents.push(["unexpected-failure-reset-import"]);
+    },
+    sendHaptic: (haptic) => {
+      backupPhaseEffectEvents.push(["haptic", haptic]);
+    },
+  });
+  assert.deepEqual(backupPhaseEffectEvents, [
+    ["haptic", "success"],
+    ["reset-import"],
+    ["reset-playback"],
+    ["reload-customization"],
+    ["haptic", "error"],
+  ]);
   assert.deepEqual(
     getBackupDocumentDirectoryDeletePaths({
       documentDirectory: "file:///doc/",

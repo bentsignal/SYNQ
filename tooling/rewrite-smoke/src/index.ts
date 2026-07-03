@@ -413,6 +413,7 @@ import type {
 import {
   createWifiImportRouteRuntimeState,
 } from "../../../apps/new/src/features/import/services/wifi-import-route-runtime-state-service";
+import { getWifiTransferPage } from "../../../apps/new/src/features/import/services/wifi-transfer-page";
 import type { ImportSongDraft } from "../../../apps/new/src/features/import/types/import-session";
 import {
   buildAlbumDetail,
@@ -3527,6 +3528,11 @@ async function assertWifiImportRequestSmoke() {
     message: "ERROR - Failed to upload song: Disk full",
     status: 500,
   });
+  const transferPage = getWifiTransferPage();
+  assert.equal(transferPage.includes('accept="audio/*"'), true);
+  assert.equal(transferPage.includes("./startTransfer"), true);
+  assert.equal(transferPage.includes("./fileUpload"), true);
+  assert.equal(transferPage.includes("./finishTransfer"), true);
 
   const responses: unknown[] = [];
   const htmlResponses: string[] = [];

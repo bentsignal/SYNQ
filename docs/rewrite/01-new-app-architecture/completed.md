@@ -305,3 +305,5 @@
   step service.
 - Split playback persistence mode, queue-filter, and source normalization into
   a focused persistence domain service.
+- Split the Wi-Fi transfer browser page into a compact document composer plus
+  focused page asset service.

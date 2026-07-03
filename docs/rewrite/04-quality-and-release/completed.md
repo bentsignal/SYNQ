@@ -198,3 +198,5 @@
   restored active-gate reset behavior.
 - Added direct playback persistence domain smoke coverage for mode,
   queue-filter, and source normalization.
+- Added direct Wi-Fi transfer page smoke coverage for the audio input and
+  browser upload endpoint contract.

@@ -1,12 +1,8 @@
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import {
-  buildAlbumRowsQuery,
-  buildAlbumSongRowsQuery,
-  buildArtistRowsQuery,
-  buildArtistSongRowsQuery,
-  buildPlaylistRowsQuery,
-  buildPlaylistSongRowsQuery,
-} from "../repository/collection-detail-query-repository";
+  useAlbumCollectionDetailRowsLiveQuery,
+  useArtistCollectionDetailRowsLiveQuery,
+  usePlaylistCollectionDetailRowsLiveQuery,
+} from "../data/use-library-collection-detail-rows-live-query";
 import type {
   AlbumDetailRow,
   ArtistDetailRow,
@@ -15,8 +11,7 @@ import type {
 } from "../services/library-collection-detail-service";
 
 export function usePlaylistCollectionDetailRowsQuery(id: number) {
-  const playlist = useLiveQuery(buildPlaylistRowsQuery(id));
-  const songs = useLiveQuery(buildPlaylistSongRowsQuery(id));
+  const { playlist, songs } = usePlaylistCollectionDetailRowsLiveQuery(id);
 
   return {
     playlistRows: (playlist.data ?? []) as PlaylistDetailRow[],
@@ -29,8 +24,7 @@ export function usePlaylistCollectionDetailRowsQuery(id: number) {
 }
 
 export function useAlbumCollectionDetailRowsQuery(id: number) {
-  const album = useLiveQuery(buildAlbumRowsQuery(id));
-  const songs = useLiveQuery(buildAlbumSongRowsQuery(id));
+  const { album, songs } = useAlbumCollectionDetailRowsLiveQuery(id);
 
   return {
     albumRows: (album.data ?? []) as AlbumDetailRow[],
@@ -43,8 +37,7 @@ export function useAlbumCollectionDetailRowsQuery(id: number) {
 }
 
 export function useArtistCollectionDetailRowsQuery(id: number) {
-  const artist = useLiveQuery(buildArtistRowsQuery(id));
-  const songs = useLiveQuery(buildArtistSongRowsQuery(id));
+  const { artist, songs } = useArtistCollectionDetailRowsLiveQuery(id);
 
   return {
     artistRows: (artist.data ?? []) as ArtistDetailRow[],

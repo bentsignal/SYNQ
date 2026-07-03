@@ -55,3 +55,5 @@
   modules to 2.
 - Moved the edit-collection row live-query adapters into a library data module
   and lowered the remaining library hook live-query ratchet from 2 modules to 1.
+- Moved the collection-detail row live-query adapters into a library data module
+  and lowered the remaining library hook live-query ratchet from 1 module to 0.

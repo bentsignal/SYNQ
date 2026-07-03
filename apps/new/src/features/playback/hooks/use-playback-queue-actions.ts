@@ -1,11 +1,11 @@
 import { useCallback } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
-  getPlaybackQueueClearCommand,
-  getPlaybackQueueMoveCommand,
-  getPlaybackQueuePlayCommand,
-  getPlaybackQueueRemoveCommand,
-} from "../services/playback-queue-command-state-service";
+  runPlaybackQueueClearCommand,
+  runPlaybackQueueMoveCommand,
+  runPlaybackQueuePlayCommand,
+  runPlaybackQueueRemoveCommand,
+} from "../services/playback-queue-command-flow-service";
 import type { PlaybackQueueItem } from "../types/playback-state";
 
 type UsePlaybackQueueActionsParams = {
@@ -25,31 +25,43 @@ export function usePlaybackQueueActions({
 
   const playQueuedSong = useCallback(
     (song: PlaybackQueueItem) => {
-      sendHaptic(getPlaybackQueuePlayCommand().haptic);
-      playSong(song);
+      runPlaybackQueuePlayCommand({
+        playSong,
+        sendHaptic,
+        song,
+      });
     },
     [playSong, sendHaptic],
   );
 
   const removeQueuedSong = useCallback(
     (songId: number) => {
-      sendHaptic(getPlaybackQueueRemoveCommand().haptic);
-      removeFromQueue(songId);
+      runPlaybackQueueRemoveCommand({
+        removeFromQueue,
+        sendHaptic,
+        songId,
+      });
     },
     [removeFromQueue, sendHaptic],
   );
 
   const moveQueuedSong = useCallback(
     (songId: number, direction: "down" | "up") => {
-      sendHaptic(getPlaybackQueueMoveCommand().haptic);
-      moveQueueSong(songId, direction);
+      runPlaybackQueueMoveCommand({
+        direction,
+        moveQueueSong,
+        sendHaptic,
+        songId,
+      });
     },
     [moveQueueSong, sendHaptic],
   );
 
   const clearQueuedSongs = useCallback(() => {
-    sendHaptic(getPlaybackQueueClearCommand().haptic);
-    clearQueue();
+    runPlaybackQueueClearCommand({
+      clearQueue,
+      sendHaptic,
+    });
   }, [clearQueue, sendHaptic]);
 
   return {

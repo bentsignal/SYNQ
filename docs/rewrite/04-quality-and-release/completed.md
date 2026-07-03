@@ -208,3 +208,5 @@
   bridge startup success/failure mapping.
 - Added direct playback player command-flow smoke coverage for seek, button,
   pause, and resume sequencing.
+- Added direct playback queue command-flow smoke coverage for play, move,
+  remove, and clear sequencing.

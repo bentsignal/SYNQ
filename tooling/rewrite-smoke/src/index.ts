@@ -29,6 +29,12 @@ import {
   getPlaybackQueueRemoveCommand,
 } from "../../../apps/new/src/features/playback/services/playback-queue-command-state-service";
 import {
+  runPlaybackQueueClearCommand,
+  runPlaybackQueueMoveCommand,
+  runPlaybackQueuePlayCommand,
+  runPlaybackQueueRemoveCommand,
+} from "../../../apps/new/src/features/playback/services/playback-queue-command-flow-service";
+import {
   getPlaybackQueueRowPresentation,
   getPlaybackQueueRowState,
 } from "../../../apps/new/src/features/playback/services/playback-queue-row-service";
@@ -1098,6 +1104,48 @@ function assertPlaybackSessionSmoke() {
   assert.deepEqual(getPlaybackQueueClearCommand(), {
     haptic: "medium",
   });
+  const queueCommandEvents: unknown[] = [];
+  const sendQueueCommandHaptic = (haptic: string) => {
+    queueCommandEvents.push(["haptic", haptic]);
+  };
+  runPlaybackQueuePlayCommand({
+    playSong: (song) => {
+      queueCommandEvents.push(["play", song.id]);
+    },
+    sendHaptic: sendQueueCommandHaptic,
+    song: first,
+  });
+  runPlaybackQueueMoveCommand({
+    direction: "down",
+    moveQueueSong: (songId, direction) => {
+      queueCommandEvents.push(["move", songId, direction]);
+    },
+    sendHaptic: sendQueueCommandHaptic,
+    songId: second.id,
+  });
+  runPlaybackQueueRemoveCommand({
+    removeFromQueue: (songId) => {
+      queueCommandEvents.push(["remove", songId]);
+    },
+    sendHaptic: sendQueueCommandHaptic,
+    songId: third.id,
+  });
+  runPlaybackQueueClearCommand({
+    clearQueue: () => {
+      queueCommandEvents.push(["clear"]);
+    },
+    sendHaptic: sendQueueCommandHaptic,
+  });
+  assert.deepEqual(queueCommandEvents, [
+    ["haptic", "light"],
+    ["play", first.id],
+    ["haptic", "light"],
+    ["move", second.id, "down"],
+    ["haptic", "medium"],
+    ["remove", third.id],
+    ["haptic", "medium"],
+    ["clear"],
+  ]);
 
   state = playbackReducer(state, { song: second, type: "add-to-queue" });
   state = playbackReducer(state, { song: third, type: "add-to-queue" });

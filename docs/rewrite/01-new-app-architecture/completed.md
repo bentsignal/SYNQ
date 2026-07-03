@@ -315,3 +315,5 @@
   mapping out of the React hook and into a focused command service.
 - Moved playback player haptic/action sequencing out of the React hook and
   into a focused command-flow service.
+- Moved playback queue haptic/action sequencing out of the React hook and into
+  a focused command-flow service.

@@ -13,7 +13,7 @@ import {
   type AlbumPreviewRow,
   type ArtistPreviewRow,
   type PlaylistPreviewRow,
-} from "../services/library-collection-preview-service";
+} from "../services/library-collection-preview-row-service";
 
 export type {
   CollectionKind,

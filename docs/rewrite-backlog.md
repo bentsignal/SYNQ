@@ -59,6 +59,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: collection preview aggregation for playlist, album, and artist
     sections now lives in a pure library service with deterministic smoke
     coverage.
+  - Done: collection preview row aggregation is split into playlist, album, and
+    artist row services behind a small barrel instead of one large collection
+    preview helper owning every collection kind.
   - Done: song preview search/sort aggregation now lives in a pure library
     service with deterministic smoke coverage.
   - Done: song preview row detail/play destinations now live in the song

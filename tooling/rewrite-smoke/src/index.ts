@@ -122,9 +122,11 @@ import {
   getImportFilesActionLinks,
 } from "../../../apps/new/src/features/import/services/import-files-screen-state-service";
 import {
+  getImportHomeRouteSelectCommand,
   getImportHomeState,
 } from "../../../apps/new/src/features/import/services/import-home-screen-state-service";
 import {
+  getImportPremiumGateActionCommand,
   getImportPremiumGateState,
 } from "../../../apps/new/src/features/import/services/import-premium-gate-state-service";
 import {
@@ -1462,6 +1464,9 @@ function assertImportSessionSmoke() {
       title: "Import is a Premium feature",
     },
   );
+  assert.deepEqual(getImportPremiumGateActionCommand(), {
+    haptic: "light",
+  });
   assert.deepEqual(
     getImportSaveActionState({ isExporting: false, state }),
     {
@@ -1521,6 +1526,9 @@ function assertImportSessionSmoke() {
   assert.deepEqual(getImportSongPreviewEmptyState(), {
     body: "Choose songs to review them before saving.",
     title: "No songs staged",
+  });
+  assert.deepEqual(getImportHomeRouteSelectCommand(), {
+    haptic: "light",
   });
   assert.deepEqual(
     getImportHomeState({ premiumActive: false, state }).routes.map((route) => ({

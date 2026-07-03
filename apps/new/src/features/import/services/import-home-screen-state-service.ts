@@ -1,4 +1,5 @@
 import type { ImportSessionState } from "../types/import-session";
+import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import {
   getImportFilesHref,
   getImportPremiumHref,
@@ -13,6 +14,15 @@ export type ImportHomeRoute = {
   label: string;
   metaLabel: string;
 };
+
+type ImportHomeInteractionCommand = {
+  haptic: HapticFeedbackType;
+};
+
+export const getImportHomeRouteSelectCommand =
+  (): ImportHomeInteractionCommand => ({
+    haptic: "light",
+  });
 
 export const getImportHomeState = ({
   premiumActive,

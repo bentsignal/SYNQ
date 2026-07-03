@@ -1,6 +1,9 @@
 import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { getImportHomeState } from "../services/import-home-screen-state-service";
+import {
+  getImportHomeRouteSelectCommand,
+  getImportHomeState,
+} from "../services/import-home-screen-state-service";
 import { useImportSessionSelector } from "./use-import-session";
 
 export function useImportHomeController() {
@@ -15,7 +18,7 @@ export function useImportHomeController() {
   });
 
   const selectImportRoute = () => {
-    sendHaptic("light");
+    sendHaptic(getImportHomeRouteSelectCommand().haptic);
   };
 
   return {

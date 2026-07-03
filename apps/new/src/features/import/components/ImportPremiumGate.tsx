@@ -3,7 +3,10 @@ import { Pressable, Text, View } from "react-native";
 import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { getImportPremiumGateState } from "../services/import-premium-gate-state-service";
+import {
+  getImportPremiumGateActionCommand,
+  getImportPremiumGateState,
+} from "../services/import-premium-gate-state-service";
 
 type ImportPremiumGateProps = {
   children: React.ReactNode;
@@ -52,7 +55,9 @@ export function ImportPremiumGate({ children }: ImportPremiumGateProps) {
       ) : null}
       <Link asChild href={gateState.action.href}>
         <Pressable
-          onPress={() => sendHaptic("light")}
+          onPress={() =>
+            sendHaptic(getImportPremiumGateActionCommand().haptic)
+          }
           className="min-h-[42px] items-center justify-center self-start rounded-lg px-3.5"
           style={{ backgroundColor: theme.accent }}
         >

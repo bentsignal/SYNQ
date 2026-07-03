@@ -1,4 +1,14 @@
+import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import { getImportPremiumHref } from "./import-navigation-service";
+
+type ImportPremiumGateActionCommand = {
+  haptic: HapticFeedbackType;
+};
+
+export const getImportPremiumGateActionCommand =
+  (): ImportPremiumGateActionCommand => ({
+    haptic: "light",
+  });
 
 export const getImportPremiumGateState = ({
   active,

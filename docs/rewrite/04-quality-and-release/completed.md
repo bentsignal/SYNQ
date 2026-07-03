@@ -244,3 +244,5 @@
   success, save failure rollback, and before-save failure rollback sequencing.
 - Added direct settings persistence load command-flow smoke coverage for
   success, failure, and stale-load suppression sequencing.
+- Added direct import session persistence command-flow smoke coverage for
+  hydrate dispatch, null/stale suppression, save, clear, and no-op decisions.

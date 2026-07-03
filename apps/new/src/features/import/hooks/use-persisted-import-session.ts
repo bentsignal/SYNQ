@@ -4,6 +4,10 @@ import {
   loadPersistedImportSessionState,
   savePersistedImportSessionState,
 } from "../services/import-session-persistence-service";
+import {
+  runImportSessionHydrateCommand,
+  runImportSessionPersistenceCommand,
+} from "../services/import-session-persistence-command-flow-service";
 import type { ImportSessionState } from "../types/import-session";
 
 export type PersistedImportSessionDispatch = (action: {
@@ -21,15 +25,11 @@ export function usePersistedImportSession({
   useEffect(() => {
     let cancelled = false;
 
-    const hydrateImportSession = async () => {
-      const persistedState = await loadPersistedImportSessionState();
-
-      if (!cancelled && persistedState) {
-        dispatch({ state: persistedState, type: "hydrate" });
-      }
-    };
-
-    void hydrateImportSession();
+    void runImportSessionHydrateCommand({
+      dispatch,
+      isCurrent: () => !cancelled,
+      loadPersistedImportSessionState,
+    });
 
     return () => {
       cancelled = true;
@@ -37,13 +37,10 @@ export function usePersistedImportSession({
   }, [dispatch]);
 
   useEffect(() => {
-    if (state.phase === "processing" || state.phase === "reviewing") {
-      void savePersistedImportSessionState(state);
-      return;
-    }
-
-    if (state.phase === "idle" && state.songs.length === 0) {
-      void clearPersistedImportSessionState();
-    }
+    void runImportSessionPersistenceCommand({
+      clearPersistedImportSessionState,
+      savePersistedImportSessionState,
+      state,
+    });
   }, [state]);
 }

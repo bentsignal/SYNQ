@@ -353,3 +353,5 @@
   React hooks and into a shared settings persistence command-flow service.
 - Moved settings persistence load success/failure and stale-result dispatch
   sequencing out of the loader hook and into the shared command-flow service.
+- Moved import session hydrate plus save/clear persistence decisions out of the
+  React persistence hook and into a focused command-flow service.

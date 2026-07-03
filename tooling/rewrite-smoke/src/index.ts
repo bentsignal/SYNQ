@@ -324,6 +324,10 @@ import {
   type ImportSessionPersistenceDependencies,
 } from "../../../apps/new/src/features/import/services/import-session-persistence-executor-service";
 import {
+  runImportSessionHydrateCommand,
+  runImportSessionPersistenceCommand,
+} from "../../../apps/new/src/features/import/services/import-session-persistence-command-flow-service";
+import {
   getImportSessionDirectory,
   getImportSessionFile,
   getRestoredImportSessionState,
@@ -3762,6 +3766,68 @@ async function assertImportSessionSmoke() {
     "review",
     "set-save-to-library",
     "update-song",
+  ]);
+  const importSessionPersistenceEvents: unknown[] = [];
+  const dispatchImportSessionPersistenceCommand = (
+    action: ImportSessionAction,
+  ) => {
+    importSessionPersistenceEvents.push(["dispatch", action]);
+  };
+  const persistedImportSession = {
+    ...initialImportSessionState,
+    phase: "reviewing" as const,
+    songs: [importDraft(93)],
+  };
+  await runImportSessionHydrateCommand({
+    dispatch: dispatchImportSessionPersistenceCommand,
+    isCurrent: () => true,
+    loadPersistedImportSessionState: async () => persistedImportSession,
+  });
+  await runImportSessionHydrateCommand({
+    dispatch: dispatchImportSessionPersistenceCommand,
+    isCurrent: () => true,
+    loadPersistedImportSessionState: async () => null,
+  });
+  await runImportSessionHydrateCommand({
+    dispatch: dispatchImportSessionPersistenceCommand,
+    isCurrent: () => false,
+    loadPersistedImportSessionState: async () => persistedImportSession,
+  });
+  await runImportSessionPersistenceCommand({
+    clearPersistedImportSessionState: async () => {
+      importSessionPersistenceEvents.push(["clear"]);
+    },
+    savePersistedImportSessionState: async (state) => {
+      importSessionPersistenceEvents.push(["save", state.phase]);
+    },
+    state: persistedImportSession,
+  });
+  await runImportSessionPersistenceCommand({
+    clearPersistedImportSessionState: async () => {
+      importSessionPersistenceEvents.push(["clear"]);
+    },
+    savePersistedImportSessionState: async (state) => {
+      importSessionPersistenceEvents.push(["save", state.phase]);
+    },
+    state: initialImportSessionState,
+  });
+  await runImportSessionPersistenceCommand({
+    clearPersistedImportSessionState: async () => {
+      importSessionPersistenceEvents.push(["unexpected-clear"]);
+    },
+    savePersistedImportSessionState: async (state) => {
+      importSessionPersistenceEvents.push(["unexpected-save", state.phase]);
+    },
+    state: {
+      ...initialImportSessionState,
+      phase: "success",
+      songs: [importDraft(94)],
+    },
+  });
+  assert.deepEqual(importSessionPersistenceEvents, [
+    ["dispatch", { state: persistedImportSession, type: "hydrate" }],
+    ["save", "reviewing"],
+    ["clear"],
   ]);
   const importSessionWifiCommandEvents: unknown[] = [];
   const dispatchImportSessionWifiCommand = (action: ImportSessionAction) => {

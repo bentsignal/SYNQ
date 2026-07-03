@@ -1,9 +1,9 @@
 import type { PlaybackQueueItem, PlaybackState } from "../types/playback-state";
 import {
   findQueueIndex,
-  getReplacementTrackAfterRemoval,
   moveQueueItem,
-} from "./playback-queue-service";
+} from "./playback-queue-mutation-service";
+import { getReplacementTrackAfterRemoval } from "./playback-queue-selection-service";
 
 export const getPlaybackQueueRemovalUpdate = ({
   songId,

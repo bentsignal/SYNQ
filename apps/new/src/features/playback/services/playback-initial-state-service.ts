@@ -1,6 +1,6 @@
 import type { PlaybackState } from "../types/playback-state";
 import { initialPlaybackAdGateState } from "./playback-ad-gate-service";
-import { initialPlaybackQueueFilter } from "./playback-queue-service";
+import { initialPlaybackQueueFilter } from "./playback-queue-filter-service";
 
 export const initialPlaybackState: PlaybackState = {
   activeQueueIndex: null,

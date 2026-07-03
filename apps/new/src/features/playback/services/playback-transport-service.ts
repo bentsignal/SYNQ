@@ -1,5 +1,8 @@
 import type { PlaybackQueueItem, PlaybackState } from "../types/playback-state";
-import { findQueueIndex, upsertQueueItem } from "./playback-queue-service";
+import {
+  findQueueIndex,
+  upsertQueueItem,
+} from "./playback-queue-mutation-service";
 import { setPlaybackActiveQueueIndex } from "./playback-active-track-service";
 
 export const playPlaybackSong = ({

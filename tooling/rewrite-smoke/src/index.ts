@@ -15,7 +15,7 @@ import { parseNumericRouteParam } from "../../../apps/new/src/features/app-shell
 import {
   getActiveTrack,
   getNextQueueIndex,
-} from "../../../apps/new/src/features/playback/services/playback-queue-service";
+} from "../../../apps/new/src/features/playback/services/playback-queue-selection-service";
 import {
   setPlaybackActiveQueueIndex,
 } from "../../../apps/new/src/features/playback/services/playback-active-track-service";

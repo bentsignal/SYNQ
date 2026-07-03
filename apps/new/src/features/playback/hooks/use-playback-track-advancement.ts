@@ -1,6 +1,6 @@
 import { useCallback, type RefObject } from "react";
 import { getPlaybackNativeFinishedAction } from "../services/playback-native-transition-service";
-import { getNextQueueIndex } from "../services/playback-queue-service";
+import { getNextQueueIndex } from "../services/playback-queue-selection-service";
 import type { PlaybackAction } from "../services/playback-session-action-service";
 import type { TrackPlayerAdapter } from "../services/track-player-adapter";
 import type { PlaybackState } from "../types/playback-state";

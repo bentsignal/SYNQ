@@ -5,7 +5,7 @@ import {
   getNextQueueIndex,
   getPreviousTrack,
   getReplacementTrackAfterRemoval,
-} from "./playback-queue-service";
+} from "./playback-queue-selection-service";
 import {
   getPlaybackNativePreviousCommandPlan,
   getPlaybackNativeReplacementCommandPlan,

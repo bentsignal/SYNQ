@@ -25,3 +25,6 @@
   wiring.
 - Aligned collection list queries with the song query/helper pattern by adding
   a single-kind collection list live query hook plus pure row-shaping service.
+- Moved import save/link Drizzle writes behind import repository modules and
+  added a rewrite verification scan that keeps import hooks, components, and
+  services clear of direct database access.

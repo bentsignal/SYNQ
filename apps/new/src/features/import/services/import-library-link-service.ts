@@ -1,53 +1,41 @@
-import { db } from "@synq/db";
-import * as schema from "@synq/db/schema";
-import { eq } from "drizzle-orm";
 import { saveCoverImage } from "@/src/features/images/services/image-storage-service";
+import {
+  findImportLibraryAlbumIdByName,
+  findImportLibraryArtistIdByName,
+  insertImportLibraryAlbum,
+  insertImportLibraryArtist,
+  linkImportArtistAlbum,
+  linkImportSongAlbum,
+  linkImportSongArtist,
+  linkImportSongToLibraryPlaylist,
+  updateImportLibraryAlbumCover,
+} from "../repository/import-library-link-repository";
 import type { ImportSongDraft } from "../types/import-session";
 import {
   buildImportLibrarySongSavePlan,
   normalizeImportLibraryName,
 } from "./import-library-save-plan-service";
 
-const libraryPlaylistId = 1;
-
 const ensureArtist = async (name: string) => {
   const cleanName = normalizeImportLibraryName(name);
-  const existing = await db
-    .select({ id: schema.artists.id })
-    .from(schema.artists)
-    .where(eq(schema.artists.name, cleanName))
-    .limit(1);
+  const existingId = await findImportLibraryArtistIdByName(cleanName);
 
-  if (existing[0]) {
-    return existing[0].id;
+  if (existingId !== null) {
+    return existingId;
   }
 
-  const inserted = await db
-    .insert(schema.artists)
-    .values({ name: cleanName })
-    .returning({ id: schema.artists.id });
-
-  return inserted[0].id;
+  return insertImportLibraryArtist(cleanName);
 };
 
 const ensureAlbum = async (name: string) => {
   const cleanName = normalizeImportLibraryName(name);
-  const existing = await db
-    .select({ id: schema.albums.id })
-    .from(schema.albums)
-    .where(eq(schema.albums.name, cleanName))
-    .limit(1);
+  const existingId = await findImportLibraryAlbumIdByName(cleanName);
 
-  if (existing[0]) {
-    return existing[0].id;
+  if (existingId !== null) {
+    return existingId;
   }
 
-  const inserted = await db
-    .insert(schema.albums)
-    .values({ name: cleanName })
-    .returning({ id: schema.albums.id });
-
-  return inserted[0].id;
+  return insertImportLibraryAlbum(cleanName);
 };
 
 const updateAlbumCover = async ({
@@ -63,17 +51,7 @@ const updateAlbumCover = async ({
     return;
   }
 
-  await db
-    .update(schema.albums)
-    .set({ coverImage })
-    .where(eq(schema.albums.id, albumId));
-};
-
-const linkSongToLibraryPlaylist = async (songId: number) => {
-  await db.insert(schema.playlistSongs).values({
-    playlistId: libraryPlaylistId,
-    songId,
-  });
+  await updateImportLibraryAlbumCover({ albumId, coverImage });
 };
 
 const linkSongArtists = async ({
@@ -88,10 +66,7 @@ const linkSongArtists = async ({
   for (const artistName of artistNames) {
     const artistId = await ensureArtist(artistName);
     artistIds.push(artistId);
-    await db.insert(schema.artistSongs).values({
-      artistId,
-      songId,
-    });
+    await linkImportSongArtist({ artistId, songId });
   }
 
   return artistIds;
@@ -109,7 +84,7 @@ const linkSongAlbum = async ({
   songId: number;
 }) => {
   const albumId = await ensureAlbum(albumName);
-  await db.insert(schema.albumSongs).values({
+  await linkImportSongAlbum({
     albumId,
     songId,
     track: song.track,
@@ -117,10 +92,7 @@ const linkSongAlbum = async ({
   await updateAlbumCover({ albumId, artwork: song.artwork });
 
   for (const artistId of artistIds) {
-    await db.insert(schema.artistsAlbums).values({
-      albumId,
-      artistId,
-    });
+    await linkImportArtistAlbum({ albumId, artistId });
   }
 
   return true;
@@ -148,7 +120,7 @@ export const linkImportSongToLibrary = async ({
       })
     : false;
 
-  await linkSongToLibraryPlaylist(songId);
+  await linkImportSongToLibraryPlaylist(songId);
 
   return { linkedAlbum };
 };

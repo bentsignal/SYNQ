@@ -44,6 +44,24 @@ scan_async_storage_boundaries() {
   fi
 }
 
+scan_import_database_boundaries() {
+  local matches
+
+  matches="$(
+    rg -n "@synq/db|@synq/db/schema|drizzle-orm|\\bdb\\." \
+      apps/new/src/features/import/hooks \
+      apps/new/src/features/import/components \
+      apps/new/src/features/import/services \
+      -g "*.ts" -g "*.tsx" || true
+  )"
+
+  if [[ -n "$matches" ]]; then
+    printf "%s\n" "$matches"
+    echo "Import database access must stay behind import repository modules."
+    return 1
+  fi
+}
+
 trap cleanup EXIT
 
 echo "==> Typecheck"
@@ -70,6 +88,9 @@ bash scripts/audit-rewrite-debt.sh
 
 echo "==> AsyncStorage boundary scan"
 scan_async_storage_boundaries
+
+echo "==> Import database boundary scan"
+scan_import_database_boundaries
 
 echo "==> Deterministic rewrite smoke"
 pnpm --filter @synq/rewrite-smoke smoke

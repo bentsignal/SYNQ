@@ -15,3 +15,7 @@
 - Collection list screens now use a list-specific single-kind live query hook
   instead of reusing the library-home all-preview hook, so Albums, Artists, and
   Playlists list pages subscribe only to the repository query they render.
+- Import save services now keep filesystem/image orchestration while concrete
+  song, artist, album, and relationship database writes live under
+  `src/features/import/repository`. `pnpm verify:rewrite` scans import hooks,
+  components, and services to keep direct Drizzle imports out of that layer.

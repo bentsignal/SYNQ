@@ -1,13 +1,16 @@
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
-import * as FileSystem from "expo-file-system";
 import { saveCoverImage } from "@/src/features/images/services/image-storage-service";
 import type {
   ImportSaveSummary,
   ImportSongDraft,
 } from "../types/import-session";
 import { deleteImportDraftCacheFiles } from "./import-file-cache-service";
+import {
+  deleteLibrarySongFiles,
+  moveImportAudioToLibrary,
+} from "./import-library-file-service";
 import { linkImportSongToLibrary } from "./import-library-link-service";
 
 const getErrorMessage = (error: unknown) =>
@@ -55,47 +58,7 @@ const deleteLibrarySong = async (songId: number) => {
     .delete(schema.playlistSongs)
     .where(eq(schema.playlistSongs.songId, songId));
   await db.delete(schema.songs).where(eq(schema.songs.id, songId));
-
-  if (FileSystem.documentDirectory) {
-    await FileSystem.deleteAsync(
-      `${FileSystem.documentDirectory}library/${songId}`,
-      { idempotent: true },
-    );
-  }
-};
-
-const ensureLibraryDirectory = async () => {
-  if (!FileSystem.documentDirectory) {
-    throw new Error("Document directory is unavailable.");
-  }
-
-  await FileSystem.makeDirectoryAsync(`${FileSystem.documentDirectory}library`, {
-    intermediates: true,
-  });
-};
-
-const moveImportAudioToLibrary = async ({
-  cacheUri,
-  fileName,
-  songId,
-}: {
-  cacheUri: string;
-  fileName: string;
-  songId: number;
-}) => {
-  await ensureLibraryDirectory();
-
-  const songDirectory = `${FileSystem.documentDirectory}library/${songId}`;
-  await FileSystem.makeDirectoryAsync(songDirectory, { intermediates: true });
-
-  const destination = `${songDirectory}/${fileName}`;
-  await FileSystem.copyAsync({
-    from: cacheUri,
-    to: destination,
-  });
-  await FileSystem.deleteAsync(cacheUri, { idempotent: true });
-
-  return destination;
+  await deleteLibrarySongFiles(songId);
 };
 
 const updateLibrarySongPath = async ({

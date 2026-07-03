@@ -1,10 +1,10 @@
 export {
   addCollectionSongsControllerReducer,
   addCollectionSongsSearchReducer,
-  getAddCollectionSongsMutationErrorMessage,
   initialAddCollectionSongsControllerState,
   initialAddCollectionSongsSearchState,
 } from "./add-collection-songs-state-service";
+export { getAddCollectionSongsMutationErrorMessage } from "./add-collection-songs-command-state-service";
 export type {
   AddCollectionSongsControllerAction,
   AddCollectionSongsControllerState,

@@ -121,3 +121,5 @@
   without importing real database repositories.
 - Split collection form create/edit copy helpers out of field and action
   presentation state.
+- Split add-collection-songs command and mutation-error helpers out of reducer
+  state.

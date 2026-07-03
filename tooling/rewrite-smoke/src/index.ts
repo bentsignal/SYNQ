@@ -227,6 +227,10 @@ import {
 import {
   addCollectionSongsControllerReducer,
   addCollectionSongsSearchReducer,
+  initialAddCollectionSongsControllerState,
+  initialAddCollectionSongsSearchState,
+} from "../../../apps/new/src/features/library/services/add-collection-songs-state-service";
+import {
   getAddCollectionSongsBlockedCommand,
   getAddCollectionSongsFailureCommand,
   getAddCollectionSongsMutationErrorMessage,
@@ -235,9 +239,7 @@ import {
   getAddCollectionSongsSongStartCommand,
   getAddCollectionSongsSongSuccessCommand,
   getAddCollectionSongsToggleSelectionCommand,
-  initialAddCollectionSongsControllerState,
-  initialAddCollectionSongsSearchState,
-} from "../../../apps/new/src/features/library/services/add-collection-songs-state-service";
+} from "../../../apps/new/src/features/library/services/add-collection-songs-command-state-service";
 import {
   canEditLibraryCollection,
   canDeleteLibraryCollection,

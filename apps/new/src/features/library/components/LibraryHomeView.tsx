@@ -1,7 +1,7 @@
 import { ScrollView, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryHomeController } from "../hooks/use-library-home-controller";
-import { getLibraryHomeHeaderState } from "../services/library-home-service";
+import { getLibraryHomeHeaderState } from "../services/library-home-header-service";
 import { LibraryCollectionPreviewSection } from "./LibraryCollectionPreviewSection";
 import { LibraryHomeHeader } from "./LibraryHomeHeader";
 import { LibrarySongPreviewList } from "./LibrarySongPreviewList";

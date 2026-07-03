@@ -12,7 +12,6 @@ import {
 import {
   LibraryActionButton,
   LibraryActionRow,
-  libraryActionPartStyles,
 } from "./LibraryActionParts";
 
 type LibraryCollectionDetailActionsProps = {
@@ -58,14 +57,16 @@ export function LibraryCollectionDetailActions({
         variant="secondary"
       />
       <Link
+        className="text-sm font-extrabold uppercase"
         href={editHref}
-        style={[libraryActionPartStyles.linkText, { color: theme.accent }]}
+        style={{ color: theme.accent }}
       >
         Edit {detail.eyebrow.toLowerCase()}
       </Link>
       <Link
+        className="text-sm font-extrabold uppercase"
         href={addHref}
-        style={[libraryActionPartStyles.linkText, { color: theme.accent }]}
+        style={{ color: theme.accent }}
       >
         Add songs
       </Link>

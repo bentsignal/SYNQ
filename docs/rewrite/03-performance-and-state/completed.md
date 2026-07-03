@@ -57,3 +57,8 @@
 - Converted add-to-collection library screen/header/list/status presentation
   styles to utility classes, lowering the StyleSheet ratchet from 39 calls to
   31.
+- Converted shared library action parts and song row actions to utility
+  classes, lowering the StyleSheet ratchet from 31 calls to 27.
+- Converted collection list/detail screen, header, search, list, and status
+  presentation styles to utility classes, lowering the StyleSheet ratchet from
+  27 calls to 19.

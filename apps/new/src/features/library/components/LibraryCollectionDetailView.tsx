@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useLibraryCollectionDetailController } from "../hooks/use-library-collection-detail-controller";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
@@ -56,8 +56,9 @@ export function LibraryCollectionDetailView({
 
   return (
     <ScrollView
-      contentContainerStyle={styles.content}
-      style={[styles.scroll, { backgroundColor: theme.background }]}
+      className="flex-1"
+      contentContainerClassName="gap-5 px-5 py-14"
+      style={{ backgroundColor: theme.background }}
     >
       <LibraryCollectionDetailHeader
         detail={detail}
@@ -75,11 +76,17 @@ export function LibraryCollectionDetailView({
         onQueue={queueCollection}
       />
 
-      <View style={styles.sectionHeader}>
-        <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
+      <View className="flex-row items-end justify-between gap-3">
+        <Text
+          className="flex-1 text-xl font-extrabold leading-[25px]"
+          style={{ color: theme.primaryText }}
+        >
           {viewState.songSection.title}
         </Text>
-        <Text style={[styles.sectionMeta, { color: theme.secondaryText }]}>
+        <Text
+          className="text-xs font-extrabold uppercase leading-[17px]"
+          style={{ color: theme.secondaryText }}
+        >
           {viewState.songSection.meta}
         </Text>
       </View>
@@ -97,47 +104,12 @@ export function LibraryCollectionDetailView({
       />
 
       <Link
+        className="text-[15px] font-extrabold"
         href={viewState.backLink.href}
-        style={[styles.backLink, { color: theme.accent }]}
+        style={{ color: theme.accent }}
       >
         {viewState.backLink.label}
       </Link>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    gap: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-  sectionHeader: {
-    alignItems: "flex-end",
-    flexDirection: "row",
-    gap: 12,
-    justifyContent: "space-between",
-  },
-  sectionTitle: {
-    flex: 1,
-    fontSize: 20,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 25,
-  },
-  sectionMeta: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 17,
-    textTransform: "uppercase",
-  },
-  backLink: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-  },
-});

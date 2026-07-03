@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { CollectionSongRowActionState } from "../services/library-collection-song-mutation-service";
 
@@ -20,34 +20,38 @@ export function LibraryCollectionSongRowActions({
   return (
     <>
       {onMoveSong ? (
-        <View style={styles.reorderButtons}>
+        <View className="flex-row gap-1.5">
           <Pressable
             accessibilityLabel={`Move ${songTitle} up`}
             accessibilityRole="button"
+            className={`min-h-[34px] min-w-[54px] items-center justify-center rounded-lg border px-2 ${
+              rowState.canMoveUp ? "" : "opacity-[0.55]"
+            }`}
             disabled={!rowState.canMoveUp}
             onPress={() => onMoveSong("up")}
-            style={[
-              styles.moveButton,
-              { borderColor: theme.border },
-              !rowState.canMoveUp ? styles.disabledButton : null,
-            ]}
+            style={{ borderColor: theme.border }}
           >
-            <Text style={[styles.moveText, { color: theme.accent }]}>
+            <Text
+              className="text-[11px] font-extrabold uppercase"
+              style={{ color: theme.accent }}
+            >
               {rowState.upLabel}
             </Text>
           </Pressable>
           <Pressable
             accessibilityLabel={`Move ${songTitle} down`}
             accessibilityRole="button"
+            className={`min-h-[34px] min-w-[54px] items-center justify-center rounded-lg border px-2 ${
+              rowState.canMoveDown ? "" : "opacity-[0.55]"
+            }`}
             disabled={!rowState.canMoveDown}
             onPress={() => onMoveSong("down")}
-            style={[
-              styles.moveButton,
-              { borderColor: theme.border },
-              !rowState.canMoveDown ? styles.disabledButton : null,
-            ]}
+            style={{ borderColor: theme.border }}
           >
-            <Text style={[styles.moveText, { color: theme.accent }]}>
+            <Text
+              className="text-[11px] font-extrabold uppercase"
+              style={{ color: theme.accent }}
+            >
               {rowState.downLabel}
             </Text>
           </Pressable>
@@ -56,15 +60,17 @@ export function LibraryCollectionSongRowActions({
       {onRemoveSong ? (
         <Pressable
           accessibilityRole="button"
+          className={`min-h-[34px] min-w-[76px] items-center justify-center rounded-lg border px-2.5 ${
+            rowState.canRemove ? "" : "opacity-[0.55]"
+          }`}
           disabled={!rowState.canRemove}
           onPress={onRemoveSong}
-          style={[
-            styles.removeButton,
-            { borderColor: theme.border },
-            !rowState.canRemove ? styles.disabledButton : null,
-          ]}
+          style={{ borderColor: theme.border }}
         >
-          <Text style={[styles.removeText, { color: theme.danger }]}>
+          <Text
+            className="text-[11px] font-extrabold uppercase"
+            style={{ color: theme.danger }}
+          >
             {rowState.removeLabel}
           </Text>
         </Pressable>
@@ -72,43 +78,3 @@ export function LibraryCollectionSongRowActions({
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  disabledButton: {
-    opacity: 0.55,
-  },
-  moveButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    justifyContent: "center",
-    minHeight: 34,
-    minWidth: 54,
-    paddingHorizontal: 8,
-  },
-  moveText: {
-    fontSize: 11,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  removeButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    justifyContent: "center",
-    minHeight: 34,
-    minWidth: 76,
-    paddingHorizontal: 10,
-  },
-  removeText: {
-    fontSize: 11,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  reorderButtons: {
-    flexDirection: "row",
-    gap: 6,
-  },
-});

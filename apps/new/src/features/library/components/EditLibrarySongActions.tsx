@@ -5,7 +5,6 @@ import type { LibrarySongEditActionState } from "../services/library-song-edit-s
 import {
   LibraryActionButton,
   LibraryActionRow,
-  libraryActionPartStyles,
 } from "./LibraryActionParts";
 
 type EditLibrarySongActionsProps = {
@@ -33,18 +32,14 @@ export function EditLibrarySongActions({
         variant="primary"
       />
       <Link
+        className="min-h-11 flex-grow overflow-hidden rounded-lg border px-3.5 text-center text-[13px] font-extrabold uppercase leading-[42px]"
         href={getLibrarySongDetailHref({ songId })}
-        style={[
-          libraryActionPartStyles.linkButton,
-          {
-            backgroundColor: theme.surface,
-            borderColor: theme.border,
-            color: theme.accent,
-            flexGrow: 1,
-            lineHeight: 42,
-            minWidth: 112,
-          },
-        ]}
+        style={{
+          backgroundColor: theme.surface,
+          borderColor: theme.border,
+          color: theme.accent,
+          minWidth: 112,
+        }}
       >
         Cancel
       </Link>

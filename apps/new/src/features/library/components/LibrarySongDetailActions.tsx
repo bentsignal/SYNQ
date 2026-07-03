@@ -5,7 +5,6 @@ import { getLibrarySongEditHref } from "../services/library-song-interaction-ser
 import {
   LibraryActionButton,
   LibraryActionRow,
-  libraryActionPartStyles,
 } from "./LibraryActionParts";
 
 type LibrarySongDetailActionsProps = {
@@ -57,18 +56,14 @@ export function LibrarySongDetailActions({
         variant="secondary"
       />
       <Link
+        className="min-h-11 flex-grow overflow-hidden rounded-lg border px-3.5 text-center text-[13px] font-extrabold uppercase leading-[42px]"
         href={getLibrarySongEditHref({ songId })}
-        style={[
-          libraryActionPartStyles.linkButton,
-          {
-            backgroundColor: theme.surface,
-            borderColor: theme.border,
-            color: theme.accent,
-            flexGrow: 1,
-            lineHeight: 42,
-            minWidth: 132,
-          },
-        ]}
+        style={{
+          backgroundColor: theme.surface,
+          borderColor: theme.border,
+          color: theme.accent,
+          minWidth: 132,
+        }}
       >
         Edit
       </Link>

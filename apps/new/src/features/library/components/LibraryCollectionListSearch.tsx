@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput } from "react-native";
+import { TextInput } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 
 type LibraryCollectionListSearchProps = {
@@ -18,29 +18,17 @@ export function LibraryCollectionListSearch({
     <TextInput
       autoCapitalize="none"
       autoCorrect={false}
+      className="min-h-[46px] rounded-lg border px-3.5 text-[15px]"
       onChangeText={onChangeQuery}
       placeholder={placeholder}
       placeholderTextColor={theme.mutedText}
       returnKeyType="search"
-      style={[
-        styles.searchInput,
-        {
-          backgroundColor: theme.surface,
-          borderColor: theme.border,
-          color: theme.primaryText,
-        },
-      ]}
+      style={{
+        backgroundColor: theme.surface,
+        borderColor: theme.border,
+        color: theme.primaryText,
+      }}
       value={query}
     />
   );
 }
-
-const styles = StyleSheet.create({
-  searchInput: {
-    borderRadius: 8,
-    borderWidth: 1,
-    fontSize: 15,
-    minHeight: 46,
-    paddingHorizontal: 14,
-  },
-});

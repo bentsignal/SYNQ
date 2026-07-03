@@ -1,5 +1,5 @@
 import { Link, router } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, View } from "react-native";
 import {
   SongRowActionButton,
   SongRowDuration,
@@ -45,7 +45,9 @@ export function LibrarySongPreviewRow({
         title={song.title}
         wrapper={(children) => (
           <Link asChild href={detailHref}>
-            <Pressable style={styles.linkedText}>{children}</Pressable>
+            <Pressable className="min-h-[46px] min-w-0 flex-1 justify-center">
+              {children}
+            </Pressable>
           </Link>
         )}
         theme={theme}
@@ -81,12 +83,3 @@ export function LibrarySongPreviewRow({
     </SongRowShell>
   );
 }
-
-const styles = StyleSheet.create({
-  linkedText: {
-    flex: 1,
-    justifyContent: "center",
-    minHeight: 46,
-    minWidth: 0,
-  },
-});

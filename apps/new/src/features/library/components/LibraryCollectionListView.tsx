@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type {
   LibraryCollectionListCopy,
@@ -26,8 +26,9 @@ export function LibraryCollectionListView({
 
   return (
     <ScrollView
-      contentContainerStyle={styles.content}
-      style={[styles.screen, { backgroundColor: theme.background }]}
+      className="flex-1"
+      contentContainerClassName="gap-[18px] px-5 py-14"
+      style={{ backgroundColor: theme.background }}
     >
       <LibraryCollectionListHeader
         backLink={copy.backLink}
@@ -45,14 +46,3 @@ export function LibraryCollectionListView({
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  content: {
-    gap: 18,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-  screen: {
-    flex: 1,
-  },
-});

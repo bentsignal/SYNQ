@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionListState } from "../services/library-collection-list-service";
 import { getLibraryCollectionPreviewHref } from "../services/library-collection-preview-service";
@@ -13,13 +13,14 @@ export function LibraryCollectionList({ listState }: LibraryCollectionListProps)
 
   return (
     <View
-      style={[
-        styles.list,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="overflow-hidden rounded-lg border"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
       {listState.visibleCollections.length === 0 ? (
-        <Text style={[styles.emptyText, { color: theme.mutedText }]}>
+        <Text
+          className="p-3.5 text-sm italic leading-5"
+          style={{ color: theme.mutedText }}
+        >
           {listState.emptyLabel}
         </Text>
       ) : (
@@ -30,45 +31,47 @@ export function LibraryCollectionList({ listState }: LibraryCollectionListProps)
             key={`${collection.kind}-${collection.id}`}
           >
             <Pressable
-              style={[styles.row, { borderBottomColor: theme.borderSubtle }]}
+              className="min-h-16 flex-row items-center gap-3 border-b px-3.5 py-2.5"
+              style={{ borderBottomColor: theme.borderSubtle }}
             >
               {collection.imagePath ? (
                 <Image
+                  className="h-11 w-11 rounded-md"
                   source={{ uri: collection.imagePath }}
-                  style={styles.thumbnail}
                 />
               ) : (
                 <View
-                  style={[
-                    styles.thumbnailPlaceholder,
-                    { backgroundColor: theme.background },
-                  ]}
+                  className="h-11 w-11 items-center justify-center rounded-md"
+                  style={{ backgroundColor: theme.background }}
                 >
                   <Text
-                    style={[styles.thumbnailInitial, { color: theme.accent }]}
+                    className="text-base font-extrabold leading-[21px]"
+                    style={{ color: theme.accent }}
                   >
                     {collection.title.slice(0, 1).toUpperCase()}
                   </Text>
                 </View>
               )}
-              <View style={styles.rowText}>
+              <View className="min-w-0 flex-1 gap-1">
                 <Text
+                  className="text-[15px] font-extrabold leading-5"
                   numberOfLines={1}
-                  style={[styles.collectionTitle, { color: theme.primaryText }]}
+                  style={{ color: theme.primaryText }}
                 >
                   {collection.title}
                 </Text>
                 <Text
+                  className="text-[13px] leading-[18px]"
                   numberOfLines={1}
-                  style={[
-                    styles.collectionMeta,
-                    { color: theme.secondaryText },
-                  ]}
+                  style={{ color: theme.secondaryText }}
                 >
                   {collection.meta}
                 </Text>
               </View>
-              <Text style={[styles.detail, { color: theme.primaryText }]}>
+              <Text
+                className="max-w-[118px] text-right text-xs font-extrabold"
+                style={{ color: theme.primaryText }}
+              >
                 {collection.detail}
               </Text>
             </Pressable>
@@ -78,66 +81,3 @@ export function LibraryCollectionList({ listState }: LibraryCollectionListProps)
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  collectionMeta: {
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  collectionTitle: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 20,
-  },
-  detail: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    maxWidth: 118,
-    textAlign: "right",
-  },
-  emptyText: {
-    fontSize: 14,
-    fontStyle: "italic",
-    lineHeight: 20,
-    padding: 14,
-  },
-  list: {
-    borderRadius: 8,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-  row: {
-    alignItems: "center",
-    borderBottomWidth: 1,
-    flexDirection: "row",
-    gap: 12,
-    minHeight: 64,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  rowText: {
-    flex: 1,
-    gap: 4,
-    minWidth: 0,
-  },
-  thumbnail: {
-    borderRadius: 6,
-    height: 44,
-    width: 44,
-  },
-  thumbnailInitial: {
-    fontSize: 16,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 21,
-  },
-  thumbnailPlaceholder: {
-    alignItems: "center",
-    borderRadius: 6,
-    height: 44,
-    justifyContent: "center",
-    width: 44,
-  },
-});

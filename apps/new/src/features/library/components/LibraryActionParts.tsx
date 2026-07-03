@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import {
   Pressable,
-  StyleSheet,
   Text,
   View,
   type ViewStyle,
@@ -18,7 +17,10 @@ export function LibraryActionRow({
   children: ReactNode;
 }) {
   return (
-    <View style={[styles.actionRow, alignItems ? { alignItems } : null]}>
+    <View
+      className="flex-row flex-wrap gap-3"
+      style={alignItems ? { alignItems } : undefined}
+    >
       {children}
     </View>
   );
@@ -47,90 +49,30 @@ export function LibraryActionButton({
   return (
     <Pressable
       accessibilityRole="button"
+      className={`min-h-11 items-center justify-center rounded-lg px-3.5 ${
+        isPrimary ? "" : "border"
+      } ${disabled ? "opacity-[0.45]" : ""}`}
       disabled={disabled}
       onPress={onPress}
-      style={[
-        styles.button,
-        {
-          backgroundColor: isPrimary ? theme.accent : theme.surface,
-          borderColor: isDanger ? theme.danger : theme.border,
-          flexGrow,
-          minWidth: minWidth ?? (isDanger ? 112 : 132),
-        },
-        isPrimary ? styles.primaryButton : styles.outlineButton,
-        disabled ? styles.disabled : null,
-      ]}
+      style={{
+        backgroundColor: isPrimary ? theme.accent : theme.surface,
+        borderColor: isDanger ? theme.danger : theme.border,
+        flexGrow,
+        minWidth: minWidth ?? (isDanger ? 112 : 132),
+      }}
     >
       <Text
-        style={[
-          styles.buttonText,
-          {
-            color: isPrimary
-              ? theme.onAccent
-              : isDanger
-                ? theme.danger
-                : theme.accent,
-          },
-        ]}
+        className="text-[13px] font-extrabold uppercase"
+        style={{
+          color: isPrimary
+            ? theme.onAccent
+            : isDanger
+              ? theme.danger
+              : theme.accent,
+        }}
       >
         {label}
       </Text>
     </Pressable>
   );
 }
-
-export const libraryActionPartStyles = StyleSheet.create({
-  disabled: {
-    opacity: 0.45,
-  },
-  linkButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    fontSize: 13,
-    fontWeight: "800",
-    justifyContent: "center",
-    letterSpacing: 0,
-    minHeight: 44,
-    overflow: "hidden",
-    paddingHorizontal: 14,
-    textAlign: "center",
-    textTransform: "uppercase",
-  },
-  linkText: {
-    fontSize: 14,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-});
-
-const styles = StyleSheet.create({
-  actionRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  button: {
-    alignItems: "center",
-    borderRadius: 8,
-    justifyContent: "center",
-    minHeight: 44,
-    paddingHorizontal: 14,
-  },
-  buttonText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  disabled: {
-    opacity: 0.45,
-  },
-  outlineButton: {
-    borderWidth: 1,
-  },
-  primaryButton: {
-    borderWidth: 0,
-  },
-});

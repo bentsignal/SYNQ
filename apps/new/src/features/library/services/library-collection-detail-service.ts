@@ -1,24 +1,17 @@
+import {
+  formatCollectionDetailNames,
+  rowsToCollectionDetailSongs,
+  type LibraryCollectionDetailSong,
+  type LibraryCollectionDetailSongRow,
+} from "./library-collection-detail-song-service";
+
 export type LibraryCollectionDetailKind = "album" | "artist" | "playlist";
 
-export type LibraryCollectionDetailSong = {
-  album: string;
-  artist: string;
-  duration: number | null;
-  id: number;
-  pathToFile: string | null;
-  title: string;
-  track: number | null;
-};
-
-export type LibraryCollectionDetailSongRow = {
-  albumName: string | null;
-  artistName: string | null;
-  duration: number | null;
-  pathToFile: string | null;
-  songId: number;
-  title: string | null;
-  track: number | null;
-};
+export {
+  rowsToCollectionDetailSongs,
+  type LibraryCollectionDetailSong,
+  type LibraryCollectionDetailSongRow,
+} from "./library-collection-detail-song-service";
 
 export type LibraryCollectionDetail = {
   detail: string;
@@ -52,82 +45,8 @@ export type ArtistDetailRow = {
 
 export type CollectionImagePathResolver = (imageHash: string) => string | null;
 
-const unknownLabel = "Unknown";
-
 const formatCount = (count: number, singular: string, plural = `${singular}s`) =>
   `${count} ${count === 1 ? singular : plural}`;
-
-const formatNames = (names: Set<string>) => {
-  if (names.size === 0) {
-    return unknownLabel;
-  }
-
-  return Array.from(names).sort((first, second) =>
-    first.localeCompare(second),
-  ).join(", ");
-};
-
-export const rowsToCollectionDetailSongs = (
-  rows: LibraryCollectionDetailSongRow[],
-) => {
-  const songMap = new Map<
-    number,
-    {
-      albumNames: Set<string>;
-      artistNames: Set<string>;
-      duration: number | null;
-      id: number;
-      pathToFile: string | null;
-      title: string;
-      track: number | null;
-    }
-  >();
-
-  rows.forEach((row) => {
-    const song =
-      songMap.get(row.songId) ??
-      {
-        albumNames: new Set<string>(),
-        artistNames: new Set<string>(),
-        duration: row.duration,
-        id: row.songId,
-        pathToFile: row.pathToFile,
-        title: row.title ?? "Untitled song",
-        track: row.track,
-      };
-
-    if (row.albumName) {
-      song.albumNames.add(row.albumName);
-    }
-
-    if (row.artistName) {
-      song.artistNames.add(row.artistName);
-    }
-
-    songMap.set(row.songId, song);
-  });
-
-  return Array.from(songMap.values())
-    .map<LibraryCollectionDetailSong>((song) => ({
-      album: formatNames(song.albumNames),
-      artist: formatNames(song.artistNames),
-      duration: song.duration,
-      id: song.id,
-      pathToFile: song.pathToFile,
-      title: song.title,
-      track: song.track,
-    }))
-    .sort((first, second) => {
-      if (first.track !== null || second.track !== null) {
-        return (
-          (first.track ?? Number.MAX_SAFE_INTEGER) -
-          (second.track ?? Number.MAX_SAFE_INTEGER)
-        );
-      }
-
-      return first.id - second.id;
-    });
-};
 
 export const buildPlaylistDetail = ({
   getImagePath,
@@ -178,7 +97,7 @@ export const buildAlbumDetail = ({
 
   const album = albumRows[0];
   const songs = rowsToCollectionDetailSongs(songRows);
-  const artistLabel = formatNames(artists);
+  const artistLabel = formatCollectionDetailNames(artists);
 
   return {
     detail: formatCount(songs.length, "song"),

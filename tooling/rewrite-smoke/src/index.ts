@@ -147,8 +147,8 @@ import {
   buildAlbumDetail,
   buildArtistDetail,
   buildPlaylistDetail,
-  rowsToCollectionDetailSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-detail-service";
+import { rowsToCollectionDetailSongs } from "../../../apps/new/src/features/library/services/library-collection-detail-song-service";
 import {
   getAddableSongRowState,
   getAddableSongSelectionState,

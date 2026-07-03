@@ -1,6 +1,6 @@
 import { ScrollView, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { ImportSongEditActionState } from "../services/import-song-form-service";
+import type { ImportSongEditActionState } from "../services/import-song-edit-form-state-service";
 import type { ImportSongDraft } from "../types/import-session";
 import { EditImportSongActions } from "./EditImportSongActions";
 import { EditImportSongFields } from "./EditImportSongFields";

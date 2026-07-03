@@ -3,7 +3,7 @@ import { useNumericRouteParam } from "@/src/features/app-shell/hooks/use-numeric
 import {
   getImportSongEditScreenState,
   type ImportSongEditScreenState,
-} from "../services/import-song-form-service";
+} from "../services/import-song-edit-screen-state-service";
 import type { ImportSongDraft } from "../types/import-session";
 import { useImportSessionSelector } from "./use-import-session";
 

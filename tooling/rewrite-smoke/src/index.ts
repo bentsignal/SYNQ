@@ -160,12 +160,14 @@ import {
   getImportSongEditErrorMessage,
   getImportSongEditFieldState,
   getImportSongEditInitialState,
-  getImportSongDraftForEdit,
   getImportSongEditRequiredTitleMessage,
-  getImportSongEditScreenState,
   importSongEditFormReducer,
   parseImportTrackInput,
-} from "../../../apps/new/src/features/import/services/import-song-form-service";
+} from "../../../apps/new/src/features/import/services/import-song-edit-form-state-service";
+import {
+  getImportSongDraftForEdit,
+  getImportSongEditScreenState,
+} from "../../../apps/new/src/features/import/services/import-song-edit-screen-state-service";
 import {
   getImportSongEditInvalidSaveCommand,
   getImportSongEditSaveFailureCommand,

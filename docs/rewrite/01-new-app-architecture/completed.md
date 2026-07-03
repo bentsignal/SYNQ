@@ -276,3 +276,5 @@
   mutation service.
 - Shared playback active-track activation between transport commands and native
   track-finished transitions.
+- Split playback native ad/library status update derivation out of the native
+  transition service.

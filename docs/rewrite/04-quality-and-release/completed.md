@@ -168,3 +168,5 @@
   and move active-index derivation.
 - Added direct playback active-track smoke coverage for valid and missing queue
   target activation.
+- Added direct playback native transition step smoke coverage for ad status
+  progress and library status position/duration updates.

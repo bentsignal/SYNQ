@@ -86,6 +86,10 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-screen-state-service";
 import { audioStatusToTrackPlayerSnapshot } from "../../../apps/new/src/features/playback/services/playback-native-status-service";
 import {
+  getPlaybackAdStatusUpdate,
+  getPlaybackLibraryStatusUpdate,
+} from "../../../apps/new/src/features/playback/services/playback-native-transition-step-service";
+import {
   getPlaybackNativePlayerPlayAdState,
   getPlaybackNativePlayerPlayLibraryPlan,
   getPlaybackNativePlayerPlayLibraryState,
@@ -1200,6 +1204,23 @@ function assertPlaybackSessionSmoke() {
     1,
   );
 
+  const directLibraryStatusUpdate = getPlaybackLibraryStatusUpdate({
+    premiumActive: false,
+    state,
+    status: {
+      didJustFinish: false,
+      duration: 600_000,
+      isLoaded: true,
+      isPlaying: true,
+      position: -100,
+      songId: third.id,
+      source: "library",
+    },
+  });
+  assert.equal(directLibraryStatusUpdate.duration, 600_000);
+  assert.equal(directLibraryStatusUpdate.position, 0);
+  assert.equal(directLibraryStatusUpdate.isPlaying, true);
+
   state = playbackReducer(state, {
     premiumActive: false,
     status: {
@@ -1233,6 +1254,22 @@ function assertPlaybackSessionSmoke() {
   state = playbackReducer(state, { type: "begin-ad-break" });
   assert.equal(state.adGate.active, true);
   assert.equal(state.isPlaying, false);
+
+  const directAdStatusUpdate = getPlaybackAdStatusUpdate({
+    state,
+    status: {
+      didJustFinish: false,
+      duration: 30_000,
+      isLoaded: true,
+      isPlaying: true,
+      position: 12_000,
+      songId: null,
+      source: "ad",
+    },
+  });
+  assert.equal(directAdStatusUpdate.adGate.playbackDuration, 30_000);
+  assert.equal(directAdStatusUpdate.adGate.playbackPosition, 12_000);
+  assert.equal(directAdStatusUpdate.isPlaying, false);
 
   state = playbackReducer(state, {
     premiumActive: false,

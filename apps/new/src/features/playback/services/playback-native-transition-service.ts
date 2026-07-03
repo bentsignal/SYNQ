@@ -3,11 +3,13 @@ import {
   beginPlaybackAdBreak,
   completePlaybackAdBreak,
   resetPlaybackAdGate,
-  trackPlaybackAdProgress,
-  updatePlaybackAdBreakProgress,
 } from "./playback-ad-gate-service";
 import { setPlaybackActiveQueueIndex } from "./playback-active-track-service";
 import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
+import {
+  getPlaybackAdStatusUpdate,
+  getPlaybackLibraryStatusUpdate,
+} from "./playback-native-transition-step-service";
 
 export const beginPlaybackAdBreakTransition = (
   state: PlaybackState,
@@ -42,27 +44,17 @@ export const applyPlaybackNativeStatus = ({
   if (status.source === "ad") {
     return {
       ...state,
-      adGate: updatePlaybackAdBreakProgress({
-        duration: status.duration,
-        position: status.position,
-        state: state.adGate,
-      }),
-      isPlaying: false,
+      ...getPlaybackAdStatusUpdate({ state, status }),
     };
   }
 
   return {
     ...state,
-    adGate: status.isPlaying
-      ? trackPlaybackAdProgress({
-          currentPosition: status.position,
-          gate: state.adGate,
-          premiumActive,
-        })
-      : state.adGate,
-    duration: status.duration ?? state.duration,
-    isPlaying: status.isPlaying,
-    position: Math.max(0, status.position),
+    ...getPlaybackLibraryStatusUpdate({
+      premiumActive,
+      state,
+      status,
+    }),
   };
 };
 

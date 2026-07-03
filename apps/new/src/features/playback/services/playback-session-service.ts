@@ -57,6 +57,18 @@ export type PlaybackAction =
   | { type: "toggle-loop" }
   | { type: "toggle-shuffle" };
 
+export type PlaybackHydrateAction = Extract<
+  PlaybackAction,
+  { type: "hydrate" }
+>;
+
+export const getHydratePlaybackAction = (
+  state: PlaybackState,
+): PlaybackHydrateAction => ({
+  state,
+  type: "hydrate",
+});
+
 export const getAddPlaybackQueueSongAction = (
   song: PlaybackQueueItem,
 ): PlaybackAction => ({

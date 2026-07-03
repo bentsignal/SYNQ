@@ -327,3 +327,4 @@
 - Added direct playback queue action-constructor smoke coverage.
 - Added direct import session saving and hydrate action-constructor smoke
   coverage.
+- Added direct playback hydrate action-constructor smoke coverage.

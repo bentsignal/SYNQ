@@ -1,7 +1,9 @@
-import type { PlaybackAction } from "./playback-session-service";
+import {
+  getHydratePlaybackAction,
+  type PlaybackHydrateAction,
+} from "./playback-session-service";
 import type { PlaybackState } from "../types/playback-state";
 
-type PlaybackHydrateAction = Extract<PlaybackAction, { type: "hydrate" }>;
 type PlaybackPersistenceDispatch = (action: PlaybackHydrateAction) => void;
 
 export const runPlaybackHydrateCommand = async ({
@@ -20,7 +22,7 @@ export const runPlaybackHydrateCommand = async ({
     return false;
   }
 
-  dispatch({ state: persistedState, type: "hydrate" });
+  dispatch(getHydratePlaybackAction(persistedState));
 
   if (persistedState.isPlaying) {
     onRestorePlayingState(persistedState);

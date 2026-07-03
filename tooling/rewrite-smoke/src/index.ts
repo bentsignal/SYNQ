@@ -51,6 +51,7 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-initial-state-service";
 import {
   getAddPlaybackQueueSongAction,
+  getHydratePlaybackAction,
   getMovePlaybackQueueSongAction,
   getTogglePlaybackLoopAction,
   getTogglePlaybackShuffleAction,
@@ -1318,6 +1319,10 @@ async function assertPlaybackSessionSmoke() {
   const dispatchPlaybackPersistenceCommand = (action: PlaybackAction) => {
     playbackPersistenceEvents.push(["dispatch", action]);
   };
+  assert.deepEqual(getHydratePlaybackAction(initialPlaybackState), {
+    state: initialPlaybackState,
+    type: "hydrate",
+  });
   assert.equal(
     await runPlaybackHydrateCommand({
       dispatch: dispatchPlaybackPersistenceCommand,

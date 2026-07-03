@@ -440,3 +440,5 @@
   the React hook and into the collection form state service.
 - Moved Wi-Fi import server stop action construction out of the hook and into
   the server state service.
+- Moved premium purchase action construction out of hooks and command flows
+  and into the premium purchase state service.

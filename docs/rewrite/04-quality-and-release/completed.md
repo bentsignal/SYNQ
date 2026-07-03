@@ -318,3 +318,4 @@
 - Added direct collection form hydrate and field action-constructor smoke
   coverage.
 - Added direct Wi-Fi import server stop action-constructor smoke coverage.
+- Added direct premium purchase action-constructor smoke coverage.

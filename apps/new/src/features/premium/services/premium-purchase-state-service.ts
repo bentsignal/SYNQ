@@ -39,6 +39,49 @@ export const getInitialPremiumPurchaseState = ({
   selectedTierId: tierId,
 });
 
+export const getPremiumPurchaseSelectAction = (
+  tierId: PremiumTierId,
+): PremiumPurchaseAction => ({
+  tierId,
+  type: "select",
+});
+
+export const getPremiumPurchaseStartAction = (): PremiumPurchaseAction => ({
+  type: "start",
+});
+
+export const getPremiumPurchaseSucceedAction = (
+  result: PremiumPurchaseResult,
+): PremiumPurchaseAction => ({
+  result,
+  type: "succeed",
+});
+
+export const getPremiumPurchaseSyncEntitlementAction = ({
+  active,
+  message,
+  tierId,
+}: Omit<
+  Extract<PremiumPurchaseAction, { type: "sync-entitlement" }>,
+  "type"
+>): PremiumPurchaseAction => ({
+  active,
+  message,
+  tierId,
+  type: "sync-entitlement",
+});
+
+export const getPremiumPurchaseFailAction = (
+  error: string,
+): PremiumPurchaseAction => ({
+  error,
+  type: "fail",
+});
+
+export const getPremiumPurchaseResetAction = (): PremiumPurchaseAction => ({
+  type: "reset",
+});
+
 export const premiumPurchaseReducer = (
   state: PremiumPurchaseState,
   action: PremiumPurchaseAction,

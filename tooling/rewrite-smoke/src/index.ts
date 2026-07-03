@@ -1073,6 +1073,12 @@ import {
 import {
   getInitialPremiumPurchaseState,
   getInitialPremiumTierLoadState,
+  getPremiumPurchaseFailAction,
+  getPremiumPurchaseResetAction,
+  getPremiumPurchaseSelectAction,
+  getPremiumPurchaseStartAction,
+  getPremiumPurchaseSucceedAction,
+  getPremiumPurchaseSyncEntitlementAction,
   type PremiumPurchaseAction,
   type PremiumTierLoadAction,
   premiumPurchaseReducer,
@@ -14033,10 +14039,48 @@ async function assertPremiumScreenSmoke() {
       selectedTierId: "yearly",
     },
   );
-  let reducerState = premiumPurchaseReducer(getInitialPremiumPurchaseState(), {
+  assert.deepEqual(getPremiumPurchaseSelectAction("lifetime"), {
     tierId: "lifetime",
     type: "select",
   });
+  assert.deepEqual(getPremiumPurchaseStartAction(), { type: "start" });
+  assert.deepEqual(
+    getPremiumPurchaseSucceedAction({
+      active: true,
+      message: "Premium smoke active.",
+      tierId: "yearly",
+    }),
+    {
+      result: {
+        active: true,
+        message: "Premium smoke active.",
+        tierId: "yearly",
+      },
+      type: "succeed",
+    },
+  );
+  assert.deepEqual(
+    getPremiumPurchaseSyncEntitlementAction({
+      active: true,
+      message: "Synced entitlement.",
+      tierId: "yearly",
+    }),
+    {
+      active: true,
+      message: "Synced entitlement.",
+      tierId: "yearly",
+      type: "sync-entitlement",
+    },
+  );
+  assert.deepEqual(getPremiumPurchaseFailAction("Premium failed."), {
+    error: "Premium failed.",
+    type: "fail",
+  });
+  assert.deepEqual(getPremiumPurchaseResetAction(), { type: "reset" });
+  let reducerState = premiumPurchaseReducer(
+    getInitialPremiumPurchaseState(),
+    getPremiumPurchaseSelectAction("lifetime"),
+  );
   assert.deepEqual(reducerState, {
     active: false,
     error: null,
@@ -14044,17 +14088,20 @@ async function assertPremiumScreenSmoke() {
     phase: "idle",
     selectedTierId: "lifetime",
   });
-  reducerState = premiumPurchaseReducer(reducerState, { type: "start" });
+  reducerState = premiumPurchaseReducer(
+    reducerState,
+    getPremiumPurchaseStartAction(),
+  );
   assert.equal(reducerState.phase, "loading");
   assert.deepEqual(
-    premiumPurchaseReducer(reducerState, {
-      result: {
+    premiumPurchaseReducer(
+      reducerState,
+      getPremiumPurchaseSucceedAction({
         active: true,
         message: "Premium smoke active.",
         tierId: "yearly",
-      },
-      type: "succeed",
-    }),
+      }),
+    ),
     {
       active: true,
       error: null,
@@ -14064,10 +14111,10 @@ async function assertPremiumScreenSmoke() {
     },
   );
   assert.deepEqual(
-    premiumPurchaseReducer(reducerState, {
-      error: "Premium failed.",
-      type: "fail",
-    }),
+    premiumPurchaseReducer(
+      reducerState,
+      getPremiumPurchaseFailAction("Premium failed."),
+    ),
     {
       active: false,
       error: "Premium failed.",
@@ -14077,12 +14124,14 @@ async function assertPremiumScreenSmoke() {
     },
   );
   assert.deepEqual(
-    premiumPurchaseReducer(getInitialPremiumPurchaseState(), {
-      active: true,
-      message: "Synced entitlement.",
-      tierId: "yearly",
-      type: "sync-entitlement",
-    }),
+    premiumPurchaseReducer(
+      getInitialPremiumPurchaseState(),
+      getPremiumPurchaseSyncEntitlementAction({
+        active: true,
+        message: "Synced entitlement.",
+        tierId: "yearly",
+      }),
+    ),
     {
       active: true,
       error: null,

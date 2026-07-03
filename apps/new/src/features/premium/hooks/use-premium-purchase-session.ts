@@ -3,6 +3,8 @@ import { premiumTiers } from "../services/premium-purchase-service";
 import {
   getInitialPremiumPurchaseState,
   getInitialPremiumTierLoadState,
+  getPremiumPurchaseSelectAction,
+  getPremiumPurchaseSyncEntitlementAction,
   premiumPurchaseReducer,
   premiumTierLoadReducer,
 } from "../services/premium-purchase-state-service";
@@ -34,16 +36,15 @@ export function usePremiumPurchaseSession() {
   usePremiumTierLoader({ dispatchTierState });
 
   useEffect(() => {
-    dispatch({
+    dispatch(getPremiumPurchaseSyncEntitlementAction({
       active: entitlementState.active,
       message: entitlementState.message,
       tierId: entitlementState.tierId,
-      type: "sync-entitlement",
-    });
+    }));
   }, [entitlementState.active, entitlementState.message, entitlementState.tierId]);
 
   const selectTier = useCallback((tierId: PremiumTierId) => {
-    dispatch({ tierId, type: "select" });
+    dispatch(getPremiumPurchaseSelectAction(tierId));
   }, []);
 
   const { purchaseSelectedTier, reset, restorePurchase } =

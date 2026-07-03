@@ -4,7 +4,14 @@ import type {
   PremiumTierId,
 } from "../types/premium-purchase";
 import { getPremiumMutationErrorMessage } from "./premium-screen-service";
-import type { PremiumPurchaseAction } from "./premium-purchase-state-service";
+import {
+  getPremiumPurchaseFailAction,
+  getPremiumPurchaseResetAction,
+  getPremiumPurchaseSelectAction,
+  getPremiumPurchaseStartAction,
+  getPremiumPurchaseSucceedAction,
+  type PremiumPurchaseAction,
+} from "./premium-purchase-state-service";
 
 type PremiumPurchaseDispatch = (action: PremiumPurchaseAction) => void;
 
@@ -15,7 +22,7 @@ export const runPremiumTierSelectionCommand = ({
   dispatch: PremiumPurchaseDispatch;
   tierId: PremiumTierId;
 }) => {
-  dispatch({ tierId, type: "select" });
+  dispatch(getPremiumPurchaseSelectAction(tierId));
 };
 
 export const runPremiumPurchaseCommand = async ({
@@ -29,20 +36,21 @@ export const runPremiumPurchaseCommand = async ({
   purchasePremiumTier: (tierId: PremiumTierId) => Promise<PremiumPurchaseResult>;
   selectedTierId: PremiumTierId;
 }) => {
-  dispatch({ type: "start" });
+  dispatch(getPremiumPurchaseStartAction());
 
   try {
     const result = await purchasePremiumTier(selectedTierId);
     applyStatus(result);
-    dispatch({ result, type: "succeed" });
+    dispatch(getPremiumPurchaseSucceedAction(result));
   } catch (caughtError) {
-    dispatch({
-      error: getPremiumMutationErrorMessage({
-        caughtError,
-        mutation: "purchase-tier",
-      }),
-      type: "fail",
-    });
+    dispatch(
+      getPremiumPurchaseFailAction(
+        getPremiumMutationErrorMessage({
+          caughtError,
+          mutation: "purchase-tier",
+        }),
+      ),
+    );
   }
 };
 
@@ -55,20 +63,21 @@ export const runPremiumRestoreCommand = async ({
   dispatch: PremiumPurchaseDispatch;
   restorePremiumPurchase: () => Promise<PremiumPurchaseResult>;
 }) => {
-  dispatch({ type: "start" });
+  dispatch(getPremiumPurchaseStartAction());
 
   try {
     const result = await restorePremiumPurchase();
     applyStatus(result);
-    dispatch({ result, type: "succeed" });
+    dispatch(getPremiumPurchaseSucceedAction(result));
   } catch (caughtError) {
-    dispatch({
-      error: getPremiumMutationErrorMessage({
-        caughtError,
-        mutation: "restore-purchase",
-      }),
-      type: "fail",
-    });
+    dispatch(
+      getPremiumPurchaseFailAction(
+        getPremiumMutationErrorMessage({
+          caughtError,
+          mutation: "restore-purchase",
+        }),
+      ),
+    );
   }
 };
 
@@ -77,5 +86,5 @@ export const runPremiumPurchaseResetCommand = ({
 }: {
   dispatch: PremiumPurchaseDispatch;
 }) => {
-  dispatch({ type: "reset" });
+  dispatch(getPremiumPurchaseResetAction());
 };

@@ -14,6 +14,7 @@ MAX_NEW_APP_RAW_ROUTER_CALLS="${MAX_NEW_APP_RAW_ROUTER_CALLS:-0}"
 MAX_NEW_APP_CONTEXT_MODULES="${MAX_NEW_APP_CONTEXT_MODULES:-0}"
 MAX_EXTERNAL_PLAYBACK_SELECTOR_IMPORTS="${MAX_EXTERNAL_PLAYBACK_SELECTOR_IMPORTS:-0}"
 MAX_LIBRARY_HOOK_LIVE_QUERY_MODULES="${MAX_LIBRARY_HOOK_LIVE_QUERY_MODULES:-0}"
+MAX_FEATURE_ROUTE_PARAM_IMPORTS="${MAX_FEATURE_ROUTE_PARAM_IMPORTS:-0}"
 
 count_matches() {
   local pattern="$1"
@@ -66,6 +67,18 @@ library_hook_live_query_modules="$(
     wc -l |
     tr -d " "
 )"
+feature_route_param_imports="$(
+  ((
+      rg -n "useLocalSearchParams|parseNumericRouteParam" \
+        apps/new/src/features \
+        -g "*.ts" -g "*.tsx" || true
+    ) |
+      rg -v "apps/new/src/features/app-shell/hooks/use-numeric-route-param\\.ts:" |
+      rg -v "apps/new/src/features/app-shell/services/route-param-service\\.ts:" || true
+  ) |
+    wc -l |
+    tr -d " "
+)"
 
 printf "New app StyleSheet.create calls: %s/%s max\n" \
   "$stylesheet_creates" "$MAX_NEW_APP_STYLESHEET_CREATE"
@@ -84,6 +97,8 @@ printf "External playback selector imports: %s/%s max\n" \
   "$external_playback_selector_imports" "$MAX_EXTERNAL_PLAYBACK_SELECTOR_IMPORTS"
 printf "Library hook live-query modules: %s/%s max\n" \
   "$library_hook_live_query_modules" "$MAX_LIBRARY_HOOK_LIVE_QUERY_MODULES"
+printf "Feature route-param boundary violations: %s/%s max\n" \
+  "$feature_route_param_imports" "$MAX_FEATURE_ROUTE_PARAM_IMPORTS"
 
 failed=0
 
@@ -154,6 +169,19 @@ if (( library_hook_live_query_modules > MAX_LIBRARY_HOOK_LIVE_QUERY_MODULES )); 
   rg -l "useLiveQuery|drizzle-orm/expo-sqlite" \
     apps/new/src/features/library/hooks \
     -g "*.ts" -g "*.tsx"
+  failed=1
+fi
+
+if (( feature_route_param_imports > MAX_FEATURE_ROUTE_PARAM_IMPORTS )); then
+  echo
+  echo "Feature modules should use the app-shell route-param hook instead of direct route-param parsing."
+  (
+    rg -n "useLocalSearchParams|parseNumericRouteParam" \
+      apps/new/src/features \
+      -g "*.ts" -g "*.tsx" || true
+  ) |
+    rg -v "apps/new/src/features/app-shell/hooks/use-numeric-route-param\\.ts:" |
+    rg -v "apps/new/src/features/app-shell/services/route-param-service\\.ts:"
   failed=1
 fi
 

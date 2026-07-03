@@ -17,3 +17,5 @@
 - Added a shared app-shell imperative route presenter and ratcheted the rewrite
   debt audit to block direct feature-level `router.push`/`router.replace`
   calls.
+- Ratcheted the rewrite debt audit to block direct feature-level route-param
+  parsing outside the app-shell `useNumericRouteParam` boundary.

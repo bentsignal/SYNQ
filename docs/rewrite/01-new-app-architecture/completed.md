@@ -257,3 +257,5 @@
   protected-playlist guard steps out of the main update executor.
 - Split collection create name validation, required/optional image preparation,
   and created-id assertion steps out of the main create executor.
+- Split song metadata relationship get-or-create and album-artist link planning
+  helpers out of the main relationship replace executor.

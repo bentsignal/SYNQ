@@ -1,26 +1,13 @@
+import {
+  ensureSongMetadataAlbum,
+  ensureSongMetadataAlbumArtistLinks,
+  ensureSongMetadataArtist,
+  type SongMetadataRelationshipDependencies,
+} from "./song-metadata-relationship-step-repository";
+
 const unknownLabels = new Set(["", "unknown", "unknown artist", "unknown album"]);
 
-export type SongMetadataRelationshipDependencies = {
-  deleteAlbumSongRows: (songId: number) => Promise<void>;
-  deleteArtistSongRows: (songId: number) => Promise<void>;
-  findAlbumArtistLinkId: (params: {
-    albumId: number;
-    artistId: number;
-  }) => Promise<number | null>;
-  findAlbumIdByName: (name: string) => Promise<number | null>;
-  findArtistIdByName: (name: string) => Promise<number | null>;
-  insertAlbum: (name: string) => Promise<number>;
-  insertAlbumArtistRows: (
-    rows: { albumId: number; artistId: number }[],
-  ) => Promise<void>;
-  insertAlbumSongRows: (
-    rows: { albumId: number; songId: number }[],
-  ) => Promise<void>;
-  insertArtist: (name: string) => Promise<number>;
-  insertArtistSongRows: (
-    rows: { artistId: number; songId: number }[],
-  ) => Promise<void>;
-};
+export type { SongMetadataRelationshipDependencies };
 
 export const normalizeSongMetadataRelationshipName = (name: string) =>
   name.trim();
@@ -37,73 +24,6 @@ export const splitSongMetadataRelationshipNames = (value: string) =>
         .filter(hasMeaningfulRelationshipName),
     ),
   );
-
-const ensureArtistWithDependencies = async (
-  name: string,
-  dependencies: Pick<
-    SongMetadataRelationshipDependencies,
-    "findArtistIdByName" | "insertArtist"
-  >,
-) => {
-  const cleanName = normalizeSongMetadataRelationshipName(name);
-  const existingId = await dependencies.findArtistIdByName(cleanName);
-
-  if (existingId !== null) {
-    return existingId;
-  }
-
-  return dependencies.insertArtist(cleanName);
-};
-
-const ensureAlbumWithDependencies = async (
-  name: string,
-  dependencies: Pick<
-    SongMetadataRelationshipDependencies,
-    "findAlbumIdByName" | "insertAlbum"
-  >,
-) => {
-  const cleanName = normalizeSongMetadataRelationshipName(name);
-  const existingId = await dependencies.findAlbumIdByName(cleanName);
-
-  if (existingId !== null) {
-    return existingId;
-  }
-
-  return dependencies.insertAlbum(cleanName);
-};
-
-const ensureAlbumArtistLinksWithDependencies = async (
-  {
-    albumIds,
-    artistIds,
-  }: {
-    albumIds: number[];
-    artistIds: number[];
-  },
-  dependencies: Pick<
-    SongMetadataRelationshipDependencies,
-    "findAlbumArtistLinkId" | "insertAlbumArtistRows"
-  >,
-) => {
-  const rows: { albumId: number; artistId: number }[] = [];
-
-  for (const albumId of albumIds) {
-    for (const artistId of artistIds) {
-      const existingId = await dependencies.findAlbumArtistLinkId({
-        albumId,
-        artistId,
-      });
-
-      if (existingId === null) {
-        rows.push({ albumId, artistId });
-      }
-    }
-  }
-
-  if (rows.length > 0) {
-    await dependencies.insertAlbumArtistRows(rows);
-  }
-};
 
 export async function replaceLibrarySongMetadataRelationshipsWithDependencies(
   {
@@ -124,11 +44,11 @@ export async function replaceLibrarySongMetadataRelationshipsWithDependencies(
   await dependencies.deleteAlbumSongRows(songId);
 
   for (const artistName of splitSongMetadataRelationshipNames(artistNames)) {
-    artistIds.push(await ensureArtistWithDependencies(artistName, dependencies));
+    artistIds.push(await ensureSongMetadataArtist(artistName, dependencies));
   }
 
   for (const albumName of splitSongMetadataRelationshipNames(albumNames)) {
-    albumIds.push(await ensureAlbumWithDependencies(albumName, dependencies));
+    albumIds.push(await ensureSongMetadataAlbum(albumName, dependencies));
   }
 
   if (artistIds.length > 0) {
@@ -143,7 +63,7 @@ export async function replaceLibrarySongMetadataRelationshipsWithDependencies(
     );
   }
 
-  await ensureAlbumArtistLinksWithDependencies(
+  await ensureSongMetadataAlbumArtistLinks(
     { albumIds, artistIds },
     dependencies,
   );

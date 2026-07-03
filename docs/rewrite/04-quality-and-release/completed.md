@@ -148,3 +148,5 @@
   preparation, optional image patches, and protected playlist guards.
 - Added direct collection create step smoke coverage for uniqueness/name
   preparation, created-id assertions, and image preparation.
+- Added direct song metadata relationship step smoke coverage for artist/album
+  ensure helpers and album-artist link insertion planning.

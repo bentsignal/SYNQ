@@ -540,6 +540,11 @@ import {
   type SongMetadataRelationshipDependencies,
 } from "../../../apps/new/src/features/library/repository/song-metadata-relationship-executor-repository";
 import {
+  ensureSongMetadataAlbum,
+  ensureSongMetadataAlbumArtistLinks,
+  ensureSongMetadataArtist,
+} from "../../../apps/new/src/features/library/repository/song-metadata-relationship-step-repository";
+import {
   assertLibrarySongTitle,
   normalizeLibrarySongTitle,
   updateLibrarySongMetadataWithDependencies,
@@ -6925,6 +6930,81 @@ async function assertSongMetadataRelationshipExecutorSmoke() {
     ),
     ["Alpha Artist", "Beta Artist"],
   );
+
+  const stepCalls: unknown[] = [];
+  const stepDependencies: Pick<
+    SongMetadataRelationshipDependencies,
+    | "findAlbumArtistLinkId"
+    | "findAlbumIdByName"
+    | "findArtistIdByName"
+    | "insertAlbum"
+    | "insertAlbumArtistRows"
+    | "insertArtist"
+  > = {
+    findAlbumArtistLinkId: async ({ albumId, artistId }) => {
+      stepCalls.push(["step-find-link", albumId, artistId]);
+      return albumId === 10 && artistId === 20 ? 1 : null;
+    },
+    findAlbumIdByName: async (name) => {
+      stepCalls.push(["step-find-album", name]);
+      return name === "Existing Album" ? 10 : null;
+    },
+    findArtistIdByName: async (name) => {
+      stepCalls.push(["step-find-artist", name]);
+      return name === "Existing Artist" ? 20 : null;
+    },
+    insertAlbum: async (name) => {
+      stepCalls.push(["step-insert-album", name]);
+      return 11;
+    },
+    insertAlbumArtistRows: async (rows) => {
+      stepCalls.push(["step-insert-links", rows]);
+    },
+    insertArtist: async (name) => {
+      stepCalls.push(["step-insert-artist", name]);
+      return 21;
+    },
+  };
+  assert.equal(
+    await ensureSongMetadataArtist("Existing Artist", stepDependencies),
+    20,
+  );
+  assert.equal(
+    await ensureSongMetadataArtist(" New Artist ", stepDependencies),
+    21,
+  );
+  assert.equal(
+    await ensureSongMetadataAlbum("Existing Album", stepDependencies),
+    10,
+  );
+  assert.equal(
+    await ensureSongMetadataAlbum(" New Album ", stepDependencies),
+    11,
+  );
+  await ensureSongMetadataAlbumArtistLinks(
+    { albumIds: [10, 11], artistIds: [20, 21] },
+    stepDependencies,
+  );
+  assert.deepEqual(stepCalls, [
+    ["step-find-artist", "Existing Artist"],
+    ["step-find-artist", "New Artist"],
+    ["step-insert-artist", "New Artist"],
+    ["step-find-album", "Existing Album"],
+    ["step-find-album", "New Album"],
+    ["step-insert-album", "New Album"],
+    ["step-find-link", 10, 20],
+    ["step-find-link", 10, 21],
+    ["step-find-link", 11, 20],
+    ["step-find-link", 11, 21],
+    [
+      "step-insert-links",
+      [
+        { albumId: 10, artistId: 21 },
+        { albumId: 11, artistId: 20 },
+        { albumId: 11, artistId: 21 },
+      ],
+    ],
+  ]);
 
   assert.deepEqual(
     await replaceLibrarySongMetadataRelationshipsWithDependencies(

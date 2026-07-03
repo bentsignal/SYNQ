@@ -56,3 +56,6 @@
 - Added playback persistence executor smoke coverage for missing files, corrupt
   JSON, normalized loads, save payloads, clear behavior, and unavailable
   document-directory failures.
+- Added library song delete executor smoke coverage for relationship cleanup
+  order, song-row deletion, file cleanup, and missing document-directory
+  behavior.

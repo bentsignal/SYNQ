@@ -532,6 +532,11 @@ import {
   updateLibrarySongMetadataCommandWithDependencies,
 } from "../../../apps/new/src/features/library/services/library-song-command-executor-service";
 import {
+  deleteLibrarySongWithDependencies,
+  getLibrarySongDirectoryPath,
+  type LibrarySongDeleteDependencies,
+} from "../../../apps/new/src/features/library/repository/library-song-delete-executor-repository";
+import {
   rowsToSongPreviews,
 } from "../../../apps/new/src/features/library/services/library-song-preview-service";
 import {
@@ -5311,6 +5316,58 @@ function assertLibrarySongDetailSmoke() {
   );
 }
 
+async function assertLibrarySongDeleteExecutorSmoke() {
+  const calls: string[] = [];
+  let documentDirectory: string | null = "file:///documents/";
+  const dependencies: LibrarySongDeleteDependencies = {
+    get documentDirectory() {
+      return documentDirectory;
+    },
+    deleteAlbumSongRows: async (songId) => {
+      calls.push(`album-songs:${songId}`);
+    },
+    deleteArtistSongRows: async (songId) => {
+      calls.push(`artist-songs:${songId}`);
+    },
+    deleteLibrarySongFiles: async (songId) => {
+      calls.push(`files:${songId}`);
+    },
+    deletePlaylistSongRows: async (songId) => {
+      calls.push(`playlist-songs:${songId}`);
+    },
+    deleteSongRow: async (songId) => {
+      calls.push(`song:${songId}`);
+    },
+  };
+
+  assert.equal(
+    getLibrarySongDirectoryPath({
+      documentDirectory: "file:///documents/",
+      songId: 42,
+    }),
+    "file:///documents/library/42",
+  );
+
+  await deleteLibrarySongWithDependencies(42, dependencies);
+  assert.deepEqual(calls, [
+    "album-songs:42",
+    "artist-songs:42",
+    "playlist-songs:42",
+    "song:42",
+    "files:42",
+  ]);
+
+  calls.length = 0;
+  documentDirectory = null;
+  await deleteLibrarySongWithDependencies(43, dependencies);
+  assert.deepEqual(calls, [
+    "album-songs:43",
+    "artist-songs:43",
+    "playlist-songs:43",
+    "song:43",
+  ]);
+}
+
 function assertEditCollectionQuerySmoke() {
   const getImagePath = (hash: string) => `/images/${hash}-small.jpg`;
 
@@ -8724,6 +8781,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   assertLibrarySongPreviewSmoke();
   assertAddableCollectionSongsSmoke();
   assertLibrarySongDetailSmoke();
+  await assertLibrarySongDeleteExecutorSmoke();
   assertEditCollectionQuerySmoke();
   assertCollectionFormSmoke();
   await assertCollectionImagePickerExecutorSmoke();

@@ -175,3 +175,5 @@
 - Moved playback session persistence load/save/clear behavior behind an
   injectable executor so high-traffic playback state persistence is testable
   without Expo filesystem.
+- Moved library song relationship cleanup, song-row deletion, and optional file
+  cleanup behind an injectable repository executor.

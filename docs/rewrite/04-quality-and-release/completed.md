@@ -78,3 +78,6 @@
   and exported snapshot updates.
 - Added collection delete executor smoke coverage for album, artist, playlist,
   and protected system-playlist deletion behavior.
+- Added album artist update executor smoke coverage for name normalization,
+  unknown-label filtering, existing/new artist resolution, deduping, and
+  relationship replacement.

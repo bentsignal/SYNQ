@@ -191,3 +191,5 @@
   snapshot updates behind an injectable repository executor.
 - Moved album, artist, and playlist collection deletion orchestration behind an
   injectable repository executor.
+- Moved album artist-name parsing, artist lookup/creation, and album-artist
+  relationship replacement behind an injectable repository executor.

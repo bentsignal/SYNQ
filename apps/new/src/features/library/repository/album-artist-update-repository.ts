@@ -1,35 +1,37 @@
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
+import {
+  replaceAlbumArtistsWithDependencies,
+  type AlbumArtistUpdateDependencies,
+} from "./album-artist-update-executor-repository";
 
-const unknownArtistLabels = new Set(["", "unknown", "unknown artist"]);
+const albumArtistUpdateDependencies: AlbumArtistUpdateDependencies = {
+  deleteAlbumArtistRows: async (albumId) => {
+    await db
+      .delete(schema.artistsAlbums)
+      .where(eq(schema.artistsAlbums.albumId, albumId));
+  },
+  findArtistIdByName: async (name) => {
+    const existing = await db
+      .select({ id: schema.artists.id })
+      .from(schema.artists)
+      .where(eq(schema.artists.name, name))
+      .limit(1);
 
-const normalizeArtistName = (name: string) => name.trim();
+    return existing[0]?.id ?? null;
+  },
+  insertAlbumArtistRows: async (rows) => {
+    await db.insert(schema.artistsAlbums).values(rows);
+  },
+  insertArtist: async (name) => {
+    const inserted = await db
+      .insert(schema.artists)
+      .values({ name })
+      .returning({ id: schema.artists.id });
 
-const splitArtistNames = (value: string) =>
-  value
-    .split(",")
-    .map(normalizeArtistName)
-    .filter((name) => !unknownArtistLabels.has(name.toLowerCase()));
-
-const ensureArtist = async (name: string) => {
-  const cleanName = normalizeArtistName(name);
-  const existing = await db
-    .select({ id: schema.artists.id })
-    .from(schema.artists)
-    .where(eq(schema.artists.name, cleanName))
-    .limit(1);
-
-  if (existing[0]) {
-    return existing[0].id;
-  }
-
-  const inserted = await db
-    .insert(schema.artists)
-    .values({ name: cleanName })
-    .returning({ id: schema.artists.id });
-
-  return inserted[0].id;
+    return inserted[0].id;
+  },
 };
 
 export const replaceAlbumArtists = async ({
@@ -39,24 +41,8 @@ export const replaceAlbumArtists = async ({
   albumId: number;
   artistNames: string;
 }) => {
-  const artistIds = new Set<number>();
-
-  for (const artistName of splitArtistNames(artistNames)) {
-    artistIds.add(await ensureArtist(artistName));
-  }
-
-  await db
-    .delete(schema.artistsAlbums)
-    .where(eq(schema.artistsAlbums.albumId, albumId));
-
-  if (artistIds.size === 0) {
-    return;
-  }
-
-  await db.insert(schema.artistsAlbums).values(
-    Array.from(artistIds).map((artistId) => ({
-      albumId,
-      artistId,
-    })),
+  await replaceAlbumArtistsWithDependencies(
+    { albumId, artistNames },
+    albumArtistUpdateDependencies,
   );
 };

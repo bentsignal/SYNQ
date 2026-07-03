@@ -446,6 +446,12 @@ import {
   updateCollectionFormCommandFactory,
 } from "../../../apps/new/src/features/library/services/collection-form-command-factory-service";
 import {
+  normalizeAlbumArtistName,
+  replaceAlbumArtistsWithDependencies,
+  splitAlbumArtistNames,
+  type AlbumArtistUpdateDependencies,
+} from "../../../apps/new/src/features/library/repository/album-artist-update-executor-repository";
+import {
   assertSupportedCollectionImageType,
   getCollectionImageMimeType,
   pickCollectionImageWithDependencies,
@@ -6222,6 +6228,65 @@ async function assertCollectionImagePickerExecutorSmoke() {
   assert.deepEqual(calls, ["pick"]);
 }
 
+async function assertAlbumArtistUpdateExecutorSmoke() {
+  const calls: unknown[] = [];
+  const existingArtists = new Map<string, number>([["Alpha Artist", 7]]);
+  let nextArtistId = 20;
+  const dependencies: AlbumArtistUpdateDependencies = {
+    deleteAlbumArtistRows: async (albumId) => {
+      calls.push(["delete-album-artists", albumId]);
+    },
+    findArtistIdByName: async (name) => {
+      calls.push(["find-artist", name]);
+      return existingArtists.get(name) ?? null;
+    },
+    insertAlbumArtistRows: async (rows) => {
+      calls.push(["insert-album-artists", rows]);
+    },
+    insertArtist: async (name) => {
+      calls.push(["insert-artist", name]);
+      const id = nextArtistId++;
+      existingArtists.set(name, id);
+      return id;
+    },
+  };
+
+  assert.equal(normalizeAlbumArtistName("  Artist  "), "Artist");
+  assert.deepEqual(
+    splitAlbumArtistNames(" Alpha Artist, Unknown, , Unknown Artist, Beta "),
+    ["Alpha Artist", "Beta"],
+  );
+
+  await replaceAlbumArtistsWithDependencies(
+    {
+      albumId: 42,
+      artistNames: " Alpha Artist, Beta Artist, Alpha Artist, unknown ",
+    },
+    dependencies,
+  );
+  assert.deepEqual(calls, [
+    ["find-artist", "Alpha Artist"],
+    ["find-artist", "Beta Artist"],
+    ["insert-artist", "Beta Artist"],
+    ["find-artist", "Alpha Artist"],
+    ["delete-album-artists", 42],
+    [
+      "insert-album-artists",
+      [
+        { albumId: 42, artistId: 7 },
+        { albumId: 42, artistId: 20 },
+      ],
+    ],
+  ]);
+
+  calls.length = 0;
+  await replaceAlbumArtistsWithDependencies(
+    { albumId: 43, artistNames: "Unknown Artist, unknown, " },
+    dependencies,
+  );
+  assert.deepEqual(calls, [["delete-album-artists", 43]]);
+}
+
 async function assertCollectionFormMutationSmoke() {
   const createCalls: unknown[] = [];
   const createRepository: CollectionFormCreateRepository = {
@@ -9633,6 +9698,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   assertEditCollectionQuerySmoke();
   assertCollectionFormSmoke();
   await assertCollectionImagePickerExecutorSmoke();
+  await assertAlbumArtistUpdateExecutorSmoke();
   await assertCollectionFormMutationSmoke();
   assertLibraryCollectionListSmoke();
   assertLibraryHomeSmoke();

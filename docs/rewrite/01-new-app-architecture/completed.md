@@ -430,3 +430,5 @@
   instead of duplicating image-storage adapters across query hooks.
 - Moved playback ad-gate action construction out of hooks and into the
   playback ad-gate service.
+- Moved playback native status, failure, and finished action construction out
+  of hooks and into the native transition service.

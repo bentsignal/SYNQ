@@ -140,6 +140,11 @@ import {
   getPlaybackLibraryStatusUpdate,
 } from "../../../apps/new/src/features/playback/services/playback-native-transition-step-service";
 import {
+  getPlaybackNativeFailureAction,
+  getPlaybackNativeFinishedAction,
+  getPlaybackNativeStatusAction,
+} from "../../../apps/new/src/features/playback/services/playback-native-transition-service";
+import {
   getPlaybackNativeLibraryAudioSource,
   getPlaybackNativePlayerPlayAdState,
   getPlaybackNativePlayerPlayLibraryPlan,
@@ -1772,34 +1777,59 @@ async function assertPlaybackSessionSmoke() {
   assert.equal(directLibraryStatusUpdate.position, 0);
   assert.equal(directLibraryStatusUpdate.isPlaying, true);
 
-  state = playbackReducer(state, {
-    premiumActive: false,
-    status: {
-      didJustFinish: false,
-      duration: 600_000,
-      isLoaded: true,
-      isPlaying: true,
-      position: 0,
-      songId: third.id,
-      source: "library",
+  const libraryNativeStatus = {
+    didJustFinish: false,
+    duration: 600_000,
+    isLoaded: true,
+    isPlaying: true,
+    position: 0,
+    songId: third.id,
+    source: "library" as const,
+  };
+  assert.deepEqual(
+    getPlaybackNativeStatusAction({
+      premiumActive: false,
+      status: libraryNativeStatus,
+    }),
+    {
+      premiumActive: false,
+      status: libraryNativeStatus,
+      type: "native-status",
     },
-    type: "native-status",
+  );
+  assert.deepEqual(getPlaybackNativeFailureAction("Ad failure"), {
+    error: "Ad failure",
+    type: "native-failure",
   });
+  assert.deepEqual(getPlaybackNativeFinishedAction(1), {
+    targetIndex: 1,
+    type: "native-finished",
+  });
+
+  state = playbackReducer(
+    state,
+    getPlaybackNativeStatusAction({
+      premiumActive: false,
+      status: libraryNativeStatus,
+    }),
+  );
   assert.equal(state.adGate.lastTrackedPosition, 0);
 
-  state = playbackReducer(state, {
-    premiumActive: false,
-    status: {
-      didJustFinish: false,
-      duration: 600_000,
-      isLoaded: true,
-      isPlaying: true,
-      position: 600_000,
-      songId: third.id,
-      source: "library",
-    },
-    type: "native-status",
-  });
+  state = playbackReducer(
+    state,
+    getPlaybackNativeStatusAction({
+      premiumActive: false,
+      status: {
+        didJustFinish: false,
+        duration: 600_000,
+        isLoaded: true,
+        isPlaying: true,
+        position: 600_000,
+        songId: third.id,
+        source: "library",
+      },
+    }),
+  );
   assert.equal(state.adGate.due, true);
 
   assert.deepEqual(getBeginPlaybackAdBreakAction(), {
@@ -1817,53 +1847,48 @@ async function assertPlaybackSessionSmoke() {
   assert.equal(state.adGate.active, true);
   assert.equal(state.isPlaying, false);
 
+  const adNativeStatus = {
+    didJustFinish: false,
+    duration: 30_000,
+    isLoaded: true,
+    isPlaying: true,
+    position: 12_000,
+    songId: null,
+    source: "ad" as const,
+  };
   const directAdStatusUpdate = getPlaybackAdStatusUpdate({
     state,
-    status: {
-      didJustFinish: false,
-      duration: 30_000,
-      isLoaded: true,
-      isPlaying: true,
-      position: 12_000,
-      songId: null,
-      source: "ad",
-    },
+    status: adNativeStatus,
   });
   assert.equal(directAdStatusUpdate.adGate.playbackDuration, 30_000);
   assert.equal(directAdStatusUpdate.adGate.playbackPosition, 12_000);
   assert.equal(directAdStatusUpdate.isPlaying, false);
 
-  state = playbackReducer(state, {
-    premiumActive: false,
-    status: {
-      didJustFinish: false,
-      duration: 30_000,
-      isLoaded: true,
-      isPlaying: true,
-      position: 12_000,
-      songId: null,
-      source: "ad",
-    },
-    type: "native-status",
-  });
+  state = playbackReducer(
+    state,
+    getPlaybackNativeStatusAction({
+      premiumActive: false,
+      status: adNativeStatus,
+    }),
+  );
   assert.equal(state.adGate.playbackDuration, 30_000);
   assert.equal(state.adGate.playbackPosition, 12_000);
   assert.equal(state.isPlaying, false);
 
-  state = playbackReducer(state, { error: "Ad failure", type: "native-failure" });
+  state = playbackReducer(state, getPlaybackNativeFailureAction("Ad failure"));
   state = playbackReducer(state, getCompletePlaybackAdBreakAction());
   assert.equal(state.adGate.active, false);
   assert.equal(state.adGate.due, false);
   assert.equal(state.error, null);
   assert.equal(state.isPlaying, true);
 
-  state = playbackReducer(state, { targetIndex: 1, type: "native-finished" });
+  state = playbackReducer(state, getPlaybackNativeFinishedAction(1));
   assert.equal(state.activeTrackId, second.id);
   assert.equal(state.activeQueueIndex, 1);
   assert.equal(state.position, 0);
   assert.equal(state.isPlaying, true);
 
-  state = playbackReducer(state, { targetIndex: null, type: "native-finished" });
+  state = playbackReducer(state, getPlaybackNativeFinishedAction(null));
   assert.equal(state.activeTrackId, second.id);
   assert.equal(state.position, state.duration);
   assert.equal(state.isPlaying, false);

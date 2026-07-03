@@ -1,5 +1,6 @@
 import { useEffect, type RefObject } from "react";
 import { getCompletePlaybackAdBreakAction } from "../services/playback-ad-gate-service";
+import { getPlaybackNativeStatusAction } from "../services/playback-native-transition-service";
 import type { PlaybackAction } from "../services/playback-session-service";
 import type { TrackPlayerAdapter } from "../services/track-player-adapter";
 
@@ -31,11 +32,10 @@ export function usePlaybackNativeStatusListener({
         return;
       }
 
-      dispatch({
+      dispatch(getPlaybackNativeStatusAction({
         premiumActive: premiumActiveRef.current,
         status,
-        type: "native-status",
-      });
+      }));
     });
 
     return () => {

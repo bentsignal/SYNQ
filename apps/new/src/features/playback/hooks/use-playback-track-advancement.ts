@@ -1,4 +1,5 @@
 import { useCallback, type RefObject } from "react";
+import { getPlaybackNativeFinishedAction } from "../services/playback-native-transition-service";
 import { getNextQueueIndex } from "../services/playback-queue-service";
 import type { PlaybackAction } from "../services/playback-session-service";
 import type { TrackPlayerAdapter } from "../services/track-player-adapter";
@@ -36,7 +37,7 @@ export function usePlaybackTrackAdvancement({
     const targetTrack =
       targetIndex === null ? null : stateRef.current.queue[targetIndex] ?? null;
 
-    dispatch({ targetIndex, type: "native-finished" });
+    dispatch(getPlaybackNativeFinishedAction(targetIndex));
     if (targetTrack) {
       runNativeCommand(() => adapter.play(targetTrack));
     }

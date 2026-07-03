@@ -3,6 +3,7 @@ import {
   getPlaybackNativeCommandErrorMessage,
   type PlaybackNativeCommandPlan,
 } from "../services/playback-native-command-plan-service";
+import { getPlaybackNativeFailureAction } from "../services/playback-native-transition-service";
 import { runPlaybackNativeCommandPlan } from "../services/playback-native-command-plan-service";
 import type { PlaybackAction } from "../services/playback-session-service";
 import type { TrackPlayerAdapter } from "../services/track-player-adapter";
@@ -20,10 +21,11 @@ export function usePlaybackNativeCommandRunner({
   const runNativeCommand = useCallback(
     (command: () => Promise<void>) => {
       void command().catch((error) => {
-        dispatch({
-          error: getPlaybackNativeCommandErrorMessage(error),
-          type: "native-failure",
-        });
+        dispatch(
+          getPlaybackNativeFailureAction(
+            getPlaybackNativeCommandErrorMessage(error),
+          ),
+        );
       });
     },
     [dispatch],

@@ -310,3 +310,4 @@
   action-constructor smoke coverage.
 - Added direct library small-image path resolver smoke coverage.
 - Added direct playback ad-gate action-constructor smoke coverage.
+- Added direct playback native action-constructor smoke coverage.

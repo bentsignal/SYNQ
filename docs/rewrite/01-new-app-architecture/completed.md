@@ -150,3 +150,5 @@
   view-state helpers.
 - Split add-to-collection song persistence into per-kind repositories while
   preserving the public collection command API.
+- Split collection update persistence into album, artist, and playlist
+  repositories behind the existing collection update facade.

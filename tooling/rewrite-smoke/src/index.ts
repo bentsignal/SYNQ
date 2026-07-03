@@ -239,6 +239,9 @@ import {
   getCollectionDetailMutationBlockedCommand,
   getCollectionDetailMutationFailureCommand,
   getCollectionDetailMutationErrorMessage,
+  getCollectionExportFinishCommand,
+  getCollectionExportStartCommand,
+  getCollectionExportSuccessCommand,
   getCollectionSongMoveFinishCommand,
   getCollectionSongMoveStartCommand,
   getCollectionSongMoveSuccessCommand,
@@ -2378,6 +2381,21 @@ function assertLibraryCollectionInteractionSmoke() {
   assert.deepEqual(getCollectionDeleteFinishCommand(), {
     action: {
       mutation: "delete-collection",
+      type: "finish",
+    },
+  });
+  assert.deepEqual(getCollectionExportStartCommand(), {
+    action: {
+      mutation: "export-collection",
+      type: "begin",
+    },
+  });
+  assert.deepEqual(getCollectionExportSuccessCommand(), {
+    haptic: "success",
+  });
+  assert.deepEqual(getCollectionExportFinishCommand(), {
+    action: {
+      mutation: "export-collection",
       type: "finish",
     },
   });

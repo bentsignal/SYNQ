@@ -179,6 +179,27 @@ export const getCollectionDeleteFinishCommand =
     },
   });
 
+export const getCollectionExportStartCommand =
+  (): CollectionDetailMutationActionCommand => ({
+    action: {
+      mutation: "export-collection",
+      type: "begin",
+    },
+  });
+
+export const getCollectionExportSuccessCommand =
+  (): CollectionDetailMutationHapticCommand => ({
+    haptic: "success",
+  });
+
+export const getCollectionExportFinishCommand =
+  (): CollectionDetailMutationActionCommand => ({
+    action: {
+      mutation: "export-collection",
+      type: "finish",
+    },
+  });
+
 export const getCollectionSongMoveStartCommand = (
   songId: number,
 ): CollectionDetailMutationActionCommand => ({

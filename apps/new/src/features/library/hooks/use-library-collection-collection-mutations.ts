@@ -7,7 +7,11 @@ import {
   type CollectionDetailActionState,
 } from "../services/library-collection-interaction-service";
 import {
-  getCollectionDetailMutationErrorMessage,
+  getCollectionDetailMutationBlockedCommand,
+  getCollectionDetailMutationFailureCommand,
+  getCollectionExportFinishCommand,
+  getCollectionExportStartCommand,
+  getCollectionExportSuccessCommand,
   type CollectionDetailMutationAction,
 } from "../services/library-collection-mutation-service";
 
@@ -34,26 +38,24 @@ export function useLibraryCollectionCollectionMutations({
 
   const exportCollection = async () => {
     if (!actionState.canExport) {
-      sendHaptic("error");
+      sendHaptic(getCollectionDetailMutationBlockedCommand().haptic);
       return;
     }
 
-    dispatchMutation({ mutation: "export-collection", type: "begin" });
+    dispatchMutation(getCollectionExportStartCommand().action);
 
     try {
       await exportLibraryCollectionCommand(actionState.playableSongs);
-      sendHaptic("success");
+      sendHaptic(getCollectionExportSuccessCommand().haptic);
     } catch (caughtError) {
-      sendHaptic("error");
-      dispatchMutation({
-        error: getCollectionDetailMutationErrorMessage({
-          caughtError,
-          mutation: "export-collection",
-        }),
-        type: "fail",
+      const command = getCollectionDetailMutationFailureCommand({
+        caughtError,
+        mutation: "export-collection",
       });
+      sendHaptic(command.haptic);
+      dispatchMutation(command.action);
     } finally {
-      dispatchMutation({ mutation: "export-collection", type: "finish" });
+      dispatchMutation(getCollectionExportFinishCommand().action);
     }
   };
 

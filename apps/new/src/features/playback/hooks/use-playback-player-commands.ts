@@ -4,7 +4,7 @@ import {
   getPlaybackPlayerButtonCommand,
   getPlaybackPlayerPlayPauseCommand,
   getPlaybackPlayerSeekCommand,
-} from "../services/playback-player-state-service";
+} from "../services/playback-player-command-state-service";
 import type { PlaybackState } from "../types/playback-state";
 
 type PlaybackPlayerSessionCommands = {

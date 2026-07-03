@@ -45,14 +45,16 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-persistence-codec-service";
 import {
   getFreeListeningRemainingMs,
-  getPlaybackPlayerButtonCommand,
   getPlaybackPlayerActionState,
-  getPlaybackPlayerPlayPauseCommand,
-  getPlaybackPlayerSeekCommand,
   getPlaybackPlayerViewState,
   getPlaybackProgressPercent,
   getSeekTargetPosition,
 } from "../../../apps/new/src/features/playback/services/playback-player-state-service";
+import {
+  getPlaybackPlayerButtonCommand,
+  getPlaybackPlayerPlayPauseCommand,
+  getPlaybackPlayerSeekCommand,
+} from "../../../apps/new/src/features/playback/services/playback-player-command-state-service";
 import {
   getPlaybackAdBreakPanelState,
   getPlaybackMiniPlayerState,

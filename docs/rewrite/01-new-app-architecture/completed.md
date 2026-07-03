@@ -143,3 +143,5 @@
   executor with deterministic smoke coverage for summaries and cache cleanup.
 - Centralized import session action builders so file, Wi-Fi, and session command
   hooks dispatch typed command helpers instead of raw reducer objects.
+- Split playback player haptic/seek command state out of player view-state
+  derivation.

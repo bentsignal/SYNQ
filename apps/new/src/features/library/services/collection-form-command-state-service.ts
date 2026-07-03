@@ -6,10 +6,12 @@ import {
 import {
   getCollectionFormErrorMessage,
   getCollectionFormFallbackMessage,
-  type CollectionFormAction,
-  type CollectionFormImage,
   type CollectionFormKind,
 } from "./collection-form-service";
+import type {
+  CollectionFormAction,
+  CollectionFormImage,
+} from "./collection-form-state-service";
 import { getCollectionRequiredNameMessage } from "./collection-metadata-service";
 
 type CollectionFormOperation = "create" | "update";

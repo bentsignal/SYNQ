@@ -2,7 +2,7 @@ import { useEffect, useReducer } from "react";
 import {
   collectionFormReducer,
   getInitialCollectionFormState,
-} from "../services/collection-form-service";
+} from "../services/collection-form-state-service";
 import {
   getCollectionFormActionState,
   getCollectionFormPreviewInitial,

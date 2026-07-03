@@ -113,3 +113,5 @@
   including deterministic smoke coverage for cover handling and rollback.
 - Split collection form command/haptic state helpers out of the reducer and
   validation service.
+- Split collection form reducer state and actions into a dedicated state
+  service.

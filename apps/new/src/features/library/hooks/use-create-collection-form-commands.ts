@@ -10,9 +10,9 @@ import {
 } from "../services/collection-form-command-state-service";
 import {
   type CollectionFormAction,
-  type CollectionFormKind,
   type CollectionFormState,
-} from "../services/collection-form-service";
+} from "../services/collection-form-state-service";
+import type { CollectionFormKind } from "../services/collection-form-service";
 
 type UseCreateCollectionFormCommandsParams = {
   canSave: boolean;

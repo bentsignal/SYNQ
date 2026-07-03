@@ -301,12 +301,14 @@ import {
   getLibraryCollectionPreviewHref,
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import {
-  collectionFormReducer,
   getCollectionFormErrorMessage,
   getCollectionFormFallbackMessage,
-  getInitialCollectionFormState,
   parseAlbumYearInput,
 } from "../../../apps/new/src/features/library/services/collection-form-service";
+import {
+  collectionFormReducer,
+  getInitialCollectionFormState,
+} from "../../../apps/new/src/features/library/services/collection-form-state-service";
 import {
   getCollectionFormBeginSaveCommand,
   getCollectionFormBlockedSaveCommand,
@@ -4889,6 +4891,22 @@ function assertCollectionFormSmoke() {
     year: "",
   });
   assert.deepEqual(
+    getInitialCollectionFormState({
+      artistNames: "Seed Artist",
+      name: "Seed Collection",
+      year: "1999",
+    }),
+    {
+      artistNames: "Seed Artist",
+      error: null,
+      image: null,
+      isDirty: false,
+      isSaving: false,
+      name: "Seed Collection",
+      year: "1999",
+    },
+  );
+  assert.deepEqual(
     collectionFormReducer(collectionFormState, {
       artistNames: "Hydrated Artist",
       name: "Hydrated Album",
@@ -4993,6 +5011,16 @@ function assertCollectionFormSmoke() {
       ...collectionFormState,
       error: "Album name is required.",
     },
+  );
+  assert.deepEqual(
+    collectionFormReducer(
+      {
+        ...collectionFormState,
+        error: "Album name is required.",
+      },
+      { type: "clear-error" },
+    ),
+    collectionFormState,
   );
   assert.equal(
     getCollectionFormPreviewInitial({

@@ -11,7 +11,7 @@ import {
 import {
   type CollectionFormAction,
   type CollectionFormState,
-} from "../services/collection-form-service";
+} from "../services/collection-form-state-service";
 import type { EditCollectionKind } from "../services/edit-collection-query-service";
 
 type UseEditCollectionFormCommandsParams = {

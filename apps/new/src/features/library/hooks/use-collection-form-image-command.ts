@@ -8,7 +8,7 @@ import {
 } from "../services/collection-form-command-state-service";
 import {
   type CollectionFormAction,
-} from "../services/collection-form-service";
+} from "../services/collection-form-state-service";
 
 type CollectionFormDispatch = React.Dispatch<CollectionFormAction>;
 

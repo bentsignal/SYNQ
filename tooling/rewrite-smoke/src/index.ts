@@ -485,6 +485,11 @@ import {
   getCancelledBackupRestoreResult,
   getPickedBackupArchiveUri,
 } from "../../../apps/new/src/features/backup/services/backup-command-result-service";
+import {
+  assertBackupRestoreStagedItems,
+  getBackupDocumentDirectoryDeletePaths,
+  getBackupRestoreStagedItemMoves,
+} from "../../../apps/new/src/features/backup/services/backup-file-system-plan-service";
 import type { BackupSessionState } from "../../../apps/new/src/features/backup/types/backup-session";
 import {
   getPremiumActionState,
@@ -6443,6 +6448,80 @@ function assertBackupScreenSmoke() {
       haptic: "error",
       shouldResetRuntimeSessions: false,
     },
+  );
+  assert.deepEqual(
+    getBackupDocumentDirectoryDeletePaths({
+      documentDirectory: "file:///doc/",
+      items: [
+        "SQLite",
+        "import",
+        "playback",
+        "settings",
+        "songs",
+      ],
+    }),
+    [
+      "file:///doc/SQLite",
+      "file:///doc/import",
+      "file:///doc/playback",
+      "file:///doc/settings",
+      "file:///doc/songs",
+    ],
+  );
+  assert.deepEqual(
+    assertBackupRestoreStagedItems([
+      "SQLite",
+      "import",
+      "playback",
+      "settings",
+      "songs",
+    ]),
+    [
+      "SQLite",
+      "import",
+      "playback",
+      "settings",
+      "songs",
+    ],
+  );
+  assert.throws(
+    () => assertBackupRestoreStagedItems([]),
+    /Backup archive did not contain any library files/,
+  );
+  assert.deepEqual(
+    getBackupRestoreStagedItemMoves({
+      documentDirectory: "file:///doc/",
+      stagedItems: [
+        "SQLite",
+        "import/session.json",
+        "playback/session.json",
+        "settings/customization.json",
+        "songs/track.mp3",
+      ],
+      stagingDirectory: "file:///cache/restore/",
+    }),
+    [
+      {
+        from: "file:///cache/restore/SQLite",
+        to: "file:///doc/SQLite",
+      },
+      {
+        from: "file:///cache/restore/import/session.json",
+        to: "file:///doc/import/session.json",
+      },
+      {
+        from: "file:///cache/restore/playback/session.json",
+        to: "file:///doc/playback/session.json",
+      },
+      {
+        from: "file:///cache/restore/settings/customization.json",
+        to: "file:///doc/settings/customization.json",
+      },
+      {
+        from: "file:///cache/restore/songs/track.mp3",
+        to: "file:///doc/songs/track.mp3",
+      },
+    ],
   );
 }
 

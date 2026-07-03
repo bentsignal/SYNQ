@@ -1,4 +1,9 @@
 import * as FileSystem from "expo-file-system";
+import {
+  assertBackupRestoreStagedItems,
+  getBackupDocumentDirectoryDeletePaths,
+  getBackupRestoreStagedItemMoves,
+} from "./backup-file-system-plan-service";
 
 export const getBackupDocumentDirectory = () => {
   if (!FileSystem.documentDirectory) {
@@ -28,8 +33,11 @@ export const clearBackupDocumentDirectory = async () => {
   const documentDirectory = getBackupDocumentDirectory();
   const items = await FileSystem.readDirectoryAsync(documentDirectory);
 
-  for (const item of items) {
-    await FileSystem.deleteAsync(`${documentDirectory}${item}`, {
+  for (const path of getBackupDocumentDirectoryDeletePaths({
+    documentDirectory,
+    items,
+  })) {
+    await FileSystem.deleteAsync(path, {
       idempotent: true,
     });
   }
@@ -57,12 +65,7 @@ export const assertBackupRestoreStagingDirectoryHasFiles = async (
   stagingDirectory: string,
 ) => {
   const stagedItems = await FileSystem.readDirectoryAsync(stagingDirectory);
-
-  if (stagedItems.length === 0) {
-    throw new Error("Backup archive did not contain any library files.");
-  }
-
-  return stagedItems;
+  return assertBackupRestoreStagedItems(stagedItems);
 };
 
 export const replaceBackupDocumentDirectoryWithStagedItems = async (
@@ -73,10 +76,14 @@ export const replaceBackupDocumentDirectoryWithStagedItems = async (
 
   await clearBackupDocumentDirectory();
 
-  for (const item of stagedItems) {
+  for (const move of getBackupRestoreStagedItemMoves({
+    documentDirectory,
+    stagedItems,
+    stagingDirectory,
+  })) {
     await FileSystem.moveAsync({
-      from: `${stagingDirectory}${item}`,
-      to: `${documentDirectory}${item}`,
+      from: move.from,
+      to: move.to,
     });
   }
 };

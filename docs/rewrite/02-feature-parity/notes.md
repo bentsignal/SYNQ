@@ -84,6 +84,11 @@
 - Import session reset now clears both the persisted import session JSON and the
   staged import cache directory, matching backup reset expectations for
   realistic partially staged imports.
+- Backup erase/restore filesystem planning now has deterministic smoke coverage
+  for realistic document contents: SQLite data, import session state, playback
+  session state, customization settings, and song media paths. The native
+  filesystem service consumes those pure delete/move plans before invoking Expo
+  filesystem calls.
 
 ## Premium And Settings Evidence
 

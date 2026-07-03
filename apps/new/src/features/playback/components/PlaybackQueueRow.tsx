@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { getPlaybackQueueRowPresentation } from "../services/playback-queue-row-service";
 import type { PlaybackQueueItem } from "../types/playback-state";
@@ -35,36 +35,44 @@ export function PlaybackQueueRow({
   });
 
   return (
-    <View style={[styles.row, { borderBottomColor: theme.borderSubtle }]}>
+    <View
+      className="min-h-[68px] flex-row items-center gap-3 border-b px-3.5 py-2.5"
+      style={{ borderBottomColor: theme.borderSubtle }}
+    >
       <Pressable
         accessibilityRole="button"
+        className={`min-w-0 flex-1 flex-row items-center gap-3 ${
+          !rowState.canPlay ? "opacity-[0.45]" : ""
+        }`}
         disabled={!rowState.canPlay}
         onPress={() => onPlaySong(song)}
-        style={[styles.rowMain, !rowState.canPlay ? styles.disabled : null]}
       >
         <Text
-          style={[
-            rowState.isActive ? styles.activeIndex : styles.index,
-            { color: rowState.isActive ? theme.accent : theme.mutedText },
-          ]}
+          className="min-w-[22px] text-right text-xs font-extrabold"
+          style={{ color: rowState.isActive ? theme.accent : theme.mutedText }}
         >
           {rowState.indexLabel}
         </Text>
-        <View style={styles.rowText}>
+        <View className="min-w-0 flex-1 gap-1">
           <Text
+            className="text-[15px] font-extrabold leading-5"
             numberOfLines={1}
-            style={[styles.songTitle, { color: theme.primaryText }]}
+            style={{ color: theme.primaryText }}
           >
             {song.title}
           </Text>
           <Text
+            className="text-[13px] leading-[18px]"
             numberOfLines={1}
-            style={[styles.songMeta, { color: theme.secondaryText }]}
+            style={{ color: theme.secondaryText }}
           >
             {rowState.metadataLabel}
           </Text>
         </View>
-        <Text style={[styles.duration, { color: theme.primaryText }]}>
+        <Text
+          className="min-w-11 text-right text-[13px] font-extrabold"
+          style={{ color: theme.primaryText }}
+        >
           {rowState.durationLabel}
         </Text>
       </Pressable>
@@ -76,61 +84,3 @@ export function PlaybackQueueRow({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  activeIndex: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    minWidth: 22,
-    textAlign: "right",
-  },
-  disabled: {
-    opacity: 0.45,
-  },
-  duration: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    minWidth: 44,
-    textAlign: "right",
-  },
-  index: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    minWidth: 22,
-    textAlign: "right",
-  },
-  row: {
-    alignItems: "center",
-    borderBottomWidth: 1,
-    flexDirection: "row",
-    gap: 12,
-    minHeight: 68,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  rowMain: {
-    alignItems: "center",
-    flex: 1,
-    flexDirection: "row",
-    gap: 12,
-    minWidth: 0,
-  },
-  rowText: {
-    flex: 1,
-    gap: 4,
-    minWidth: 0,
-  },
-  songMeta: {
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  songTitle: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 20,
-  },
-});

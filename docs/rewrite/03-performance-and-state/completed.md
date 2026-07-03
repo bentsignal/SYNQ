@@ -46,3 +46,9 @@
 - Converted playback ad-break panels, player control rows, and queue row action
   buttons to utility classes, lowering the StyleSheet ratchet from 59 calls to
   55.
+- Converted the final import home/result/song-preview row styles to utility
+  classes, clearing import components of StyleSheet usage and lowering the
+  StyleSheet ratchet from 55 calls to 52.
+- Converted remaining playback screen, mini-player, now-playing, and queue row
+  presentation styles to utility classes, lowering the StyleSheet ratchet from
+  52 calls to 47.

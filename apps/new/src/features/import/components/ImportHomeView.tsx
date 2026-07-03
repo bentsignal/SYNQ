@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportHomeController } from "../hooks/use-import-home-controller";
 
@@ -13,45 +13,60 @@ export function ImportHomeView({
 
   return (
     <ScrollView
-      contentContainerStyle={styles.content}
-      style={[styles.scroll, { backgroundColor: theme.background }]}
+      className="flex-1"
+      contentContainerClassName="gap-5 px-5 py-14"
+      style={{ backgroundColor: theme.background }}
     >
-      <View style={styles.header}>
-        <Text style={[styles.kicker, { color: theme.accent }]}>
+      <View className="gap-2">
+        <Text
+          className="text-[13px] font-extrabold uppercase"
+          style={{ color: theme.accent }}
+        >
           Add Music
         </Text>
-        <Text style={[styles.title, { color: theme.primaryText }]}>Import</Text>
-        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
+        <Text
+          className="text-[34px] font-extrabold leading-10"
+          style={{ color: theme.primaryText }}
+        >
+          Import
+        </Text>
+        <Text
+          className="max-w-[520px] text-[15px] leading-[22px]"
+          style={{ color: theme.secondaryText }}
+        >
           Bring songs into SYNQ with a review step before saving.
         </Text>
       </View>
 
       <View
-        style={[
-          styles.list,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-        ]}
+        className="overflow-hidden rounded-lg border"
+        style={{ backgroundColor: theme.surface, borderColor: theme.border }}
       >
         {screenState.routes.map((route) => (
           <Link asChild href={route.href} key={route.label}>
             <Pressable
+              className="min-h-[76px] flex-row items-center gap-3.5 border-b px-4 py-3.5"
               onPress={onSelectImportRoute}
-              style={[styles.row, { borderBottomColor: theme.borderSubtle }]}
+              style={{ borderBottomColor: theme.borderSubtle }}
             >
-              <View style={styles.rowText}>
-                <Text style={[styles.rowTitle, { color: theme.primaryText }]}>
+              <View className="min-w-0 flex-1 gap-[5px]">
+                <Text
+                  className="text-base font-extrabold leading-[21px]"
+                  style={{ color: theme.primaryText }}
+                >
                   {route.label}
                 </Text>
                 <Text
-                  style={[
-                    styles.rowDescription,
-                    { color: theme.secondaryText },
-                  ]}
+                  className="text-[13px] leading-[19px]"
+                  style={{ color: theme.secondaryText }}
                 >
                   {route.description}
                 </Text>
               </View>
-              <Text style={[styles.rowMeta, { color: theme.accent }]}>
+              <Text
+                className="text-right text-xs font-extrabold uppercase"
+                style={{ color: theme.accent }}
+              >
                 {route.metaLabel}
               </Text>
             </Pressable>
@@ -61,70 +76,3 @@ export function ImportHomeView({
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    gap: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-  header: {
-    gap: 8,
-  },
-  kicker: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 40,
-  },
-  subtitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    maxWidth: 520,
-  },
-  list: {
-    borderRadius: 8,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-  row: {
-    alignItems: "center",
-    borderBottomWidth: 1,
-    flexDirection: "row",
-    gap: 14,
-    minHeight: 76,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-  },
-  rowText: {
-    flex: 1,
-    gap: 5,
-    minWidth: 0,
-  },
-  rowTitle: {
-    fontSize: 16,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 21,
-  },
-  rowDescription: {
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  rowMeta: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textAlign: "right",
-    textTransform: "uppercase",
-  },
-});

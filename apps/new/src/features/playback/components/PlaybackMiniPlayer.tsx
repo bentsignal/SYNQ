@@ -1,5 +1,5 @@
 import { Link, usePathname } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { usePlaybackSessionSelector } from "../hooks/use-playback-session";
 import {
@@ -27,25 +27,25 @@ export function PlaybackMiniPlayer() {
 
   return (
     <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: theme.surface,
-          borderColor: miniPlayer.blockedByAd ? theme.danger : theme.border,
-        },
-      ]}
+      className="absolute bottom-[82px] left-3 right-3 z-20 min-h-16 flex-row items-center gap-3 rounded-lg border px-3.5 py-2.5"
+      style={{
+        backgroundColor: theme.surface,
+        borderColor: miniPlayer.blockedByAd ? theme.danger : theme.border,
+      }}
     >
       <Link asChild href={playerHref}>
-        <Pressable style={styles.trackLink}>
+        <Pressable className="min-w-0 flex-1 gap-[3px]">
           <Text
+            className="text-[15px] font-extrabold leading-5"
             numberOfLines={1}
-            style={[styles.title, { color: theme.primaryText }]}
+            style={{ color: theme.primaryText }}
           >
             {miniPlayer.title}
           </Text>
           <Text
+            className="text-xs leading-[17px]"
             numberOfLines={1}
-            style={[styles.meta, { color: theme.secondaryText }]}
+            style={{ color: theme.secondaryText }}
           >
             {miniPlayer.metaLabel}
           </Text>
@@ -54,22 +54,18 @@ export function PlaybackMiniPlayer() {
       <Pressable
         disabled={!miniPlayer.canTogglePlayback}
         onPress={state.isPlaying ? pause : resume}
-        style={[
-          styles.command,
-          {
-            backgroundColor: miniPlayer.blockedByAd
-              ? theme.borderSubtle
-              : theme.accent,
-          },
-        ]}
+        className="min-h-10 min-w-[74px] items-center justify-center rounded-lg px-3.5"
+        style={{
+          backgroundColor: miniPlayer.blockedByAd
+            ? theme.borderSubtle
+            : theme.accent,
+        }}
       >
         <Text
-          style={[
-            styles.commandText,
-            {
-              color: miniPlayer.blockedByAd ? theme.mutedText : theme.onAccent,
-            },
-          ]}
+          className="text-[13px] font-extrabold"
+          style={{
+            color: miniPlayer.blockedByAd ? theme.mutedText : theme.onAccent,
+          }}
         >
           {miniPlayer.playLabel}
         </Text>
@@ -77,49 +73,3 @@ export function PlaybackMiniPlayer() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    bottom: 82,
-    flexDirection: "row",
-    gap: 12,
-    left: 12,
-    minHeight: 64,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    position: "absolute",
-    right: 12,
-    zIndex: 20,
-  },
-  trackLink: {
-    flex: 1,
-    gap: 3,
-    minWidth: 0,
-  },
-  title: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 20,
-  },
-  meta: {
-    fontSize: 12,
-    lineHeight: 17,
-  },
-  command: {
-    alignItems: "center",
-    borderRadius: 8,
-    justifyContent: "center",
-    minHeight: 40,
-    minWidth: 74,
-    paddingHorizontal: 14,
-  },
-  commandText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-  },
-});

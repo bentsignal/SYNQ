@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type {
@@ -21,49 +21,65 @@ export function PlaybackNowPlayingPanel({
 
   return (
     <View
-      style={[
-        styles.nowPlayingPanel,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="min-h-[180px] gap-2 rounded-lg border p-[18px]"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
-      <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
+      <Text
+        className="text-xs font-extrabold uppercase"
+        style={{ color: theme.secondaryText }}
+      >
         Now playing
       </Text>
       {activeTrack ? (
         <>
           <Text
+            className="text-[28px] font-extrabold leading-[34px]"
             numberOfLines={2}
-            style={[styles.trackTitle, { color: theme.primaryText }]}
+            style={{ color: theme.primaryText }}
           >
             {activeTrack.title}
           </Text>
           <Text
+            className="text-[15px] leading-[22px]"
             numberOfLines={1}
-            style={[styles.trackMeta, { color: theme.secondaryText }]}
+            style={{ color: theme.secondaryText }}
           >
             {activeTrack.artist} / {activeTrack.album}
           </Text>
-          <Text style={[styles.duration, { color: theme.primaryText }]}>
+          <Text
+            className="text-lg font-extrabold leading-6"
+            style={{ color: theme.primaryText }}
+          >
             {formatDurationMs(state.position)} / {formatDurationMs(state.duration)}
           </Text>
-          <View style={[styles.progressTrack, { backgroundColor: theme.border }]}>
+          <View
+            className="h-2 overflow-hidden rounded-full"
+            style={{ backgroundColor: theme.border }}
+          >
             <View
-              style={[
-                styles.progressFill,
-                { backgroundColor: theme.accent, width: `${progressPercent}%` },
-              ]}
+              className="h-full rounded-full"
+              style={{ backgroundColor: theme.accent, width: `${progressPercent}%` }}
             />
           </View>
-          <Text style={[styles.progressText, { color: theme.secondaryText }]}>
+          <Text
+            className="text-xs font-extrabold uppercase leading-[17px]"
+            style={{ color: theme.secondaryText }}
+          >
             {progressPercent}% complete
           </Text>
         </>
       ) : (
         <>
-          <Text style={[styles.trackTitle, { color: theme.primaryText }]}>
+          <Text
+            className="text-[28px] font-extrabold leading-[34px]"
+            style={{ color: theme.primaryText }}
+          >
             Nothing selected
           </Text>
-          <Text style={[styles.trackMeta, { color: theme.secondaryText }]}>
+          <Text
+            className="text-[15px] leading-[22px]"
+            style={{ color: theme.secondaryText }}
+          >
             Open a song in Library and start a playback session.
           </Text>
         </>
@@ -71,51 +87,3 @@ export function PlaybackNowPlayingPanel({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  nowPlayingPanel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 8,
-    minHeight: 180,
-    padding: 18,
-  },
-  panelLabel: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  trackTitle: {
-    fontSize: 28,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 34,
-  },
-  trackMeta: {
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  duration: {
-    fontSize: 18,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 24,
-  },
-  progressTrack: {
-    borderRadius: 999,
-    height: 8,
-    overflow: "hidden",
-  },
-  progressFill: {
-    borderRadius: 999,
-    height: "100%",
-  },
-  progressText: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 17,
-    textTransform: "uppercase",
-  },
-});

@@ -385,3 +385,5 @@
   React hooks and into a focused import interaction action-flow service.
 - Moved backup phase transition haptic and runtime-session reset sequencing out
   of the React hook and into the backup phase effect service.
+- Moved library collection detail result timestamp/error assembly out of React
+  hooks and into a focused collection detail result service.

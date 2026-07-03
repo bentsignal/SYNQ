@@ -277,3 +277,5 @@
   premium gate haptic sequencing.
 - Added direct backup phase effect smoke coverage for no-op, restore-success
   reset, and failure haptic sequencing.
+- Added direct collection detail result smoke coverage for timestamp merging,
+  query error collection, image resolution, and missing timestamp fallback.

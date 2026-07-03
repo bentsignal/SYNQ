@@ -505,6 +505,13 @@ import {
   buildArtistDetail,
   buildPlaylistDetail,
 } from "../../../apps/new/src/features/library/services/library-collection-detail-service";
+import {
+  buildAlbumDetailResult,
+  buildArtistDetailResult,
+  buildPlaylistDetailResult,
+  getCollectionDetailResultErrors,
+  getCollectionDetailResultUpdatedAt,
+} from "../../../apps/new/src/features/library/services/library-collection-detail-result-service";
 import { rowsToCollectionDetailSongs } from "../../../apps/new/src/features/library/services/library-collection-detail-song-service";
 import {
   getAddableSongRowState,
@@ -4800,6 +4807,67 @@ function assertLibraryCollectionDetailSmoke() {
   });
   assert.equal(artist.title, "Smoke Artist");
   assert.equal(artist.detail, "2 songs / 2 albums");
+  assert.equal(
+    getCollectionDetailResultUpdatedAt(new Date(40), new Date(41)),
+    41,
+  );
+  assert.equal(getCollectionDetailResultUpdatedAt(null, undefined), 0);
+  assert.deepEqual(
+    getCollectionDetailResultErrors(null, new Error("songs failed")).map(
+      (error) => (error instanceof Error ? error.message : error),
+    ),
+    ["songs failed"],
+  );
+  const playlistResult = buildPlaylistDetailResult({
+    collectionError: new Error("playlist failed"),
+    getImagePath: (imageHash) => `/small/${imageHash}`,
+    playlistRows: [{ coverImage: "playlist-hash", name: "Result Playlist" }],
+    playlistUpdatedAt: new Date(12),
+    songRows: [],
+    songsError: null,
+    songsUpdatedAt: new Date(13),
+  });
+  assert.equal(playlistResult.detail.title, "Result Playlist");
+  assert.equal(playlistResult.detail.imagePath, "/small/playlist-hash");
+  assert.equal(playlistResult.detail.updatedAt, 13);
+  assert.equal(
+    playlistResult.errors[0] instanceof Error
+      ? playlistResult.errors[0].message
+      : playlistResult.errors[0],
+    "playlist failed",
+  );
+  const albumResult = buildAlbumDetailResult({
+    albumRows: [
+      {
+        artistName: "Result Artist",
+        coverImage: "album-hash",
+        name: "Result Album",
+        year: null,
+      },
+    ],
+    albumUpdatedAt: new Date(20),
+    collectionError: null,
+    getImagePath: (imageHash) => `/small/${imageHash}`,
+    songRows: [],
+    songsError: new Error("album songs failed"),
+    songsUpdatedAt: new Date(19),
+  });
+  assert.equal(albumResult.detail.title, "Result Album");
+  assert.equal(albumResult.detail.imagePath, "/small/album-hash");
+  assert.equal(albumResult.detail.updatedAt, 20);
+  assert.equal(albumResult.errors.length, 1);
+  const artistResult = buildArtistDetailResult({
+    artistRows: [{ albumId: 1, name: "Result Artist", profileImage: null }],
+    artistUpdatedAt: undefined,
+    collectionError: null,
+    getImagePath: (imageHash) => `/small/${imageHash}`,
+    songRows: [],
+    songsError: null,
+    songsUpdatedAt: undefined,
+  });
+  assert.equal(artistResult.detail.title, "Result Artist");
+  assert.equal(artistResult.detail.updatedAt, 0);
+  assert.deepEqual(artistResult.errors, []);
 }
 
 async function assertLibraryCollectionInteractionSmoke() {

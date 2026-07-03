@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
 import {
-  buildAlbumDetail,
-  buildArtistDetail,
-  buildPlaylistDetail,
-} from "../services/library-collection-detail-service";
+  buildAlbumDetailResult,
+  buildArtistDetailResult,
+  buildPlaylistDetailResult,
+} from "../services/library-collection-detail-result-service";
 import type {
   useAlbumCollectionDetailRowsQuery,
   useArtistCollectionDetailRowsQuery,
@@ -19,27 +19,26 @@ export function usePlaylistCollectionDetailResult(
 ) {
   const detail = useMemo(
     () =>
-      buildPlaylistDetail({
+      buildPlaylistDetailResult({
+        collectionError: playlist.collectionError,
         getImagePath: getSmallImagePath,
         playlistRows: playlist.playlistRows,
+        playlistUpdatedAt: playlist.playlistUpdatedAt,
         songRows: playlist.songRows,
-        updatedAt: Math.max(
-          playlist.playlistUpdatedAt?.getTime() ?? 0,
-          playlist.songsUpdatedAt?.getTime() ?? 0,
-        ),
+        songsError: playlist.songsError,
+        songsUpdatedAt: playlist.songsUpdatedAt,
       }),
     [
+      playlist.collectionError,
       playlist.playlistRows,
       playlist.playlistUpdatedAt,
+      playlist.songsError,
       playlist.songRows,
       playlist.songsUpdatedAt,
     ],
   );
 
-  return {
-    detail,
-    errors: [playlist.collectionError, playlist.songsError].filter(Boolean),
-  };
+  return detail;
 }
 
 export function useAlbumCollectionDetailResult(
@@ -47,22 +46,26 @@ export function useAlbumCollectionDetailResult(
 ) {
   const detail = useMemo(
     () =>
-      buildAlbumDetail({
+      buildAlbumDetailResult({
         albumRows: album.albumRows,
+        albumUpdatedAt: album.albumUpdatedAt,
+        collectionError: album.collectionError,
         getImagePath: getSmallImagePath,
         songRows: album.songRows,
-        updatedAt: Math.max(
-          album.albumUpdatedAt?.getTime() ?? 0,
-          album.songsUpdatedAt?.getTime() ?? 0,
-        ),
+        songsError: album.songsError,
+        songsUpdatedAt: album.songsUpdatedAt,
       }),
-    [album.albumRows, album.albumUpdatedAt, album.songRows, album.songsUpdatedAt],
+    [
+      album.albumRows,
+      album.albumUpdatedAt,
+      album.collectionError,
+      album.songRows,
+      album.songsError,
+      album.songsUpdatedAt,
+    ],
   );
 
-  return {
-    detail,
-    errors: [album.collectionError, album.songsError].filter(Boolean),
-  };
+  return detail;
 }
 
 export function useArtistCollectionDetailResult(
@@ -70,25 +73,24 @@ export function useArtistCollectionDetailResult(
 ) {
   const detail = useMemo(
     () =>
-      buildArtistDetail({
+      buildArtistDetailResult({
         artistRows: artist.artistRows,
+        artistUpdatedAt: artist.artistUpdatedAt,
+        collectionError: artist.collectionError,
         getImagePath: getSmallImagePath,
         songRows: artist.songRows,
-        updatedAt: Math.max(
-          artist.artistUpdatedAt?.getTime() ?? 0,
-          artist.songsUpdatedAt?.getTime() ?? 0,
-        ),
+        songsError: artist.songsError,
+        songsUpdatedAt: artist.songsUpdatedAt,
       }),
     [
       artist.artistRows,
       artist.artistUpdatedAt,
+      artist.collectionError,
       artist.songRows,
+      artist.songsError,
       artist.songsUpdatedAt,
     ],
   );
 
-  return {
-    detail,
-    errors: [artist.collectionError, artist.songsError].filter(Boolean),
-  };
+  return detail;
 }

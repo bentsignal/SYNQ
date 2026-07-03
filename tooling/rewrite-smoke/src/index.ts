@@ -492,6 +492,7 @@ import {
 } from "../../../apps/new/src/features/import/services/wifi-import-upload-decision-service";
 import {
   getWifiImportServerAddress,
+  getWifiImportServerStopAction,
   initialWifiImportServerState,
   wifiImportServerReducer,
 } from "../../../apps/new/src/features/import/services/wifi-import-server-state-service";
@@ -4393,13 +4394,17 @@ async function assertWifiImportRequestSmoke() {
     getWifiImportServerAddress(serverState),
     "http://192.168.1.4:3002",
   );
+  assert.deepEqual(getWifiImportServerStopAction(), { type: "stop" });
 
-  assert.deepEqual(wifiImportServerReducer(serverState, { type: "stop" }), {
-    error: null,
-    ipAddress: "192.168.1.4",
-    isReady: false,
-    port: null,
-  });
+  assert.deepEqual(
+    wifiImportServerReducer(serverState, getWifiImportServerStopAction()),
+    {
+      error: null,
+      ipAddress: "192.168.1.4",
+      isReady: false,
+      port: null,
+    },
+  );
   assert.deepEqual(
     wifiImportServerReducer(serverState, {
       error: "Port busy",

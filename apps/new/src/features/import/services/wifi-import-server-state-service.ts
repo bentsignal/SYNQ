@@ -32,6 +32,10 @@ export const initialWifiImportServerState: WifiImportServerState = {
   port: null,
 };
 
+export const getWifiImportServerStopAction = (): WifiImportServerAction => ({
+  type: "stop",
+});
+
 export const wifiImportServerReducer = (
   state: WifiImportServerState,
   action: WifiImportServerAction,

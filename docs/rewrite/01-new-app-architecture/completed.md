@@ -438,3 +438,5 @@
   React hook and into the song edit form service.
 - Moved shared collection form hydrate and field action construction out of
   the React hook and into the collection form state service.
+- Moved Wi-Fi import server stop action construction out of the hook and into
+  the server state service.

@@ -10,6 +10,7 @@ import {
 } from "../services/wifi-import-server-route-service";
 import {
   getWifiImportServerAddress,
+  getWifiImportServerStopAction,
   initialWifiImportServerState,
   wifiImportServerReducer,
 } from "../services/wifi-import-server-state-service";
@@ -79,7 +80,7 @@ export function useWifiImportServer() {
     dispatchServerState(startup.action);
 
     return () => {
-      dispatchServerState({ type: "stop" });
+      dispatchServerState(getWifiImportServerStopAction());
       activeServer?.stop();
     };
   }, [getRouteDependencies]);

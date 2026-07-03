@@ -408,7 +408,12 @@ import {
   wifiImportServerReducer,
 } from "../../../apps/new/src/features/import/services/wifi-import-server-state-service";
 import {
+  resolveWifiImportServerAddressAction,
+  startWifiImportServerWithDependencies,
+} from "../../../apps/new/src/features/import/services/wifi-import-server-command-service";
+import {
   createWifiImportRouteHandlers,
+  type WifiImportRouteHandlerDependencies,
 } from "../../../apps/new/src/features/import/services/wifi-import-route-handler-service";
 import type {
   WifiBridgeRequest,
@@ -3503,6 +3508,83 @@ async function assertWifiImportRequestSmoke() {
     isReady: true,
     port: 3002,
   });
+  assert.deepEqual(
+    await resolveWifiImportServerAddressAction({
+      getIpAddress: async () => "10.0.0.7",
+    }),
+    {
+      ipAddress: "10.0.0.7",
+      type: "resolve-address",
+    },
+  );
+  assert.deepEqual(
+    await resolveWifiImportServerAddressAction({
+      getIpAddress: async () => {
+        throw new Error("offline");
+      },
+    }),
+    { type: "clear-address" },
+  );
+  const emptyWifiRouteDependencies =
+    {} as WifiImportRouteHandlerDependencies;
+  const startupEvents: unknown[] = [];
+  const startResult = startWifiImportServerWithDependencies({
+    createRouteHandlers: ({ runtimeState }) => {
+      startupEvents.push([
+        "routes",
+        runtimeState.isMidTransfer,
+        runtimeState.receivedIds.size,
+      ]);
+
+      return {} as ReturnType<typeof createWifiImportRouteHandlers>;
+    },
+    createRuntimeState: createWifiImportRouteRuntimeState,
+    getRouteDependencies: () => {
+      startupEvents.push(["dependencies"]);
+
+      return emptyWifiRouteDependencies;
+    },
+    startServer: ({ routeHandlers }) => {
+      startupEvents.push(["start", routeHandlers !== null]);
+
+      return {
+        port: 3010,
+        server: {
+          stop: () => {
+            startupEvents.push(["stop"]);
+          },
+        },
+      };
+    },
+  });
+  assert.deepEqual(startResult.action, {
+    port: 3010,
+    type: "start",
+  });
+  assert.notEqual(startResult.server, null);
+  startResult.server?.stop();
+  assert.deepEqual(startupEvents, [
+    ["routes", false, 0],
+    ["start", true],
+    ["stop"],
+  ]);
+  assert.deepEqual(
+    startWifiImportServerWithDependencies({
+      createRouteHandlers: () => ({} as ReturnType<typeof createWifiImportRouteHandlers>),
+      createRuntimeState: createWifiImportRouteRuntimeState,
+      getRouteDependencies: () => emptyWifiRouteDependencies,
+      startServer: () => {
+        throw new Error("bridge failed");
+      },
+    }),
+    {
+      action: {
+        error: "bridge failed",
+        type: "fail",
+      },
+      server: null,
+    },
+  );
   assert.equal(getWifiTransferSize(null), 0);
   assert.equal(getWifiTransferSize({ size: "3" }), 3);
   assert.equal(getWifiTransferSize({ size: 2.5 }), 0);

@@ -311,3 +311,5 @@
   into a focused command-flow service.
 - Moved import file selection and staged-song removal sequencing out of the
   React hook and into a focused command-flow service.
+- Moved Wi-Fi import server address resolution and bridge startup result
+  mapping out of the React hook and into a focused command service.

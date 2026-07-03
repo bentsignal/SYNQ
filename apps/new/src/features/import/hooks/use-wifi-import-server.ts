@@ -3,7 +3,6 @@ import { usePathname } from "expo-router";
 import { useEffect, useReducer } from "react";
 import {
   startWifiImportBridgeServer,
-  type WifiImportBridgeServerStartup,
 } from "../services/wifi-import-bridge-server-service";
 import {
   createWifiImportRouteHandlers,
@@ -14,7 +13,11 @@ import {
   initialWifiImportServerState,
   wifiImportServerReducer,
 } from "../services/wifi-import-server-state-service";
-import { getWifiImportServerStartErrorMessage } from "../services/wifi-import-response-service";
+import {
+  resolveWifiImportServerAddressAction,
+  startWifiImportServerWithDependencies,
+  type WifiImportServerStartup,
+} from "../services/wifi-import-server-command-service";
 import { isWifiImportTransferPathname } from "../services/wifi-import-transfer-decision-service";
 import { useImportSessionSelector } from "./use-import-session";
 import { useWifiImportRouteDependencies } from "./use-wifi-import-route-dependencies";
@@ -48,18 +51,12 @@ export function useWifiImportServer() {
     let isMounted = true;
 
     const loadIpAddress = async () => {
-      try {
-        const nextAddress = await Network.getIpAddressAsync();
-        if (isMounted) {
-          dispatchServerState({
-            ipAddress: nextAddress,
-            type: "resolve-address",
-          });
-        }
-      } catch {
-        if (isMounted) {
-          dispatchServerState({ type: "clear-address" });
-        }
+      const action = await resolveWifiImportServerAddressAction({
+        getIpAddress: Network.getIpAddressAsync,
+      });
+
+      if (isMounted) {
+        dispatchServerState(action);
       }
     };
 
@@ -71,25 +68,15 @@ export function useWifiImportServer() {
   }, []);
 
   useEffect(() => {
-    let activeServer: WifiImportBridgeServerStartup["server"] | null = null;
-    const routeHandlers = createWifiImportRouteHandlers({
-      dependencies: getRouteDependencies,
-      runtimeState: createWifiImportRouteRuntimeState(),
+    const startup = startWifiImportServerWithDependencies({
+      createRouteHandlers: createWifiImportRouteHandlers,
+      createRuntimeState: createWifiImportRouteRuntimeState,
+      getRouteDependencies,
+      startServer: startWifiImportBridgeServer,
     });
-
-    try {
-      const { port, server } = startWifiImportBridgeServer({ routeHandlers });
-      activeServer = server;
-      dispatchServerState({
-        port,
-        type: "start",
-      });
-    } catch (caughtError) {
-      dispatchServerState({
-        error: getWifiImportServerStartErrorMessage(caughtError),
-        type: "fail",
-      });
-    }
+    let activeServer: WifiImportServerStartup["server"] | null =
+      startup.server;
+    dispatchServerState(startup.action);
 
     return () => {
       dispatchServerState({ type: "stop" });

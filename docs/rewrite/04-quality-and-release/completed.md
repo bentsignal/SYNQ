@@ -204,3 +204,5 @@
   selection-add, single-song-add, blocked, and failure sequences.
 - Added direct import file command-flow smoke coverage for file selection,
   cancellation/skipped files, picker failure, removal, and removal failure.
+- Added direct Wi-Fi import server command smoke coverage for IP resolution and
+  bridge startup success/failure mapping.

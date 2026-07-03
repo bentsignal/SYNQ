@@ -27,3 +27,14 @@
   orchestration while song, artist, and album metadata reads live under
   `src/features/export/repository`. `pnpm verify:rewrite` scans export services
   to keep direct Drizzle imports out of that layer.
+- Import route screens should stay as wrappers around feature controllers.
+  Result screens now receive their full view model from
+  `use-import-result-controller`, and the premium gate receives entitlement and
+  interaction wiring from `use-import-premium-gate-controller`.
+- Verification for the latest import controller slices:
+  `pnpm verify:rewrite` passed for the result-screen controller extraction;
+  `pnpm --filter @synq/new typecheck`, `pnpm --filter @synq/new lint`,
+  `pnpm --filter @synq/rewrite-smoke typecheck`,
+  `pnpm --filter @synq/rewrite-smoke smoke`, and
+  `bash scripts/audit-rewrite-debt.sh` passed for the premium-gate controller
+  extraction.

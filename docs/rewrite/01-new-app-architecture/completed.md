@@ -61,3 +61,7 @@
   approved Drizzle/database boundary after the library data-module migration.
 - Moved import save-screen store wiring into its feature controller so the route
   component stays presentation-focused and orchestration remains in hooks.
+- Moved import success/failure result screens behind a result controller and
+  pure view-state helpers, leaving the route components as thin view wrappers.
+- Moved the import premium gate's entitlement read and haptic command behind a
+  gate controller so the component stays focused on rendering the gated UI.

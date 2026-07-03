@@ -274,3 +274,5 @@
   operations out of the main library link executor.
 - Split playback queue removal and move state derivation out of the queue
   mutation service.
+- Shared playback active-track activation between transport commands and native
+  track-finished transitions.

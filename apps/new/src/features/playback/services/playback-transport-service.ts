@@ -1,32 +1,6 @@
 import type { PlaybackQueueItem, PlaybackState } from "../types/playback-state";
 import { findQueueIndex, upsertQueueItem } from "./playback-queue-service";
-
-const setActiveTrack = ({
-  index,
-  state,
-}: {
-  index: number | null;
-  state: PlaybackState;
-}): PlaybackState => {
-  const track = index === null ? null : state.queue[index] ?? null;
-
-  if (!track) {
-    return {
-      ...state,
-      isPlaying: false,
-      position: state.duration,
-    };
-  }
-
-  return {
-    ...state,
-    activeQueueIndex: index,
-    activeTrackId: track.id,
-    duration: track.duration ?? 0,
-    isPlaying: true,
-    position: 0,
-  };
-};
+import { setPlaybackActiveQueueIndex } from "./playback-active-track-service";
 
 export const playPlaybackSong = ({
   song,
@@ -81,7 +55,7 @@ export const skipToNextPlaybackTrack = ({
 }: {
   state: PlaybackState;
   targetIndex: number | null;
-}) => setActiveTrack({ index: targetIndex, state });
+}) => setPlaybackActiveQueueIndex({ index: targetIndex, state });
 
 export const skipToPreviousPlaybackTrack = (
   state: PlaybackState,
@@ -105,5 +79,5 @@ export const skipToPreviousPlaybackTrack = (
     };
   }
 
-  return setActiveTrack({ index: previousIndex, state });
+  return setPlaybackActiveQueueIndex({ index: previousIndex, state });
 };

@@ -6,6 +6,7 @@ import {
   trackPlaybackAdProgress,
   updatePlaybackAdBreakProgress,
 } from "./playback-ad-gate-service";
+import { setPlaybackActiveQueueIndex } from "./playback-active-track-service";
 import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
 
 export const beginPlaybackAdBreakTransition = (
@@ -71,27 +72,7 @@ export const finishPlaybackNativeTrack = ({
 }: {
   state: PlaybackState;
   targetIndex: number | null;
-}): PlaybackState => {
-  const nextTrack =
-    targetIndex === null ? null : state.queue[targetIndex] ?? null;
-
-  if (!nextTrack) {
-    return {
-      ...state,
-      isPlaying: false,
-      position: state.duration,
-    };
-  }
-
-  return {
-    ...state,
-    activeQueueIndex: targetIndex,
-    activeTrackId: nextTrack.id,
-    duration: nextTrack.duration ?? 0,
-    isPlaying: true,
-    position: 0,
-  };
-};
+}): PlaybackState => setPlaybackActiveQueueIndex({ index: targetIndex, state });
 
 export const syncPlaybackPremiumState = ({
   premiumActive,

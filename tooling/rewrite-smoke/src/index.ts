@@ -17,6 +17,9 @@ import {
   getNextQueueIndex,
 } from "../../../apps/new/src/features/playback/services/playback-queue-service";
 import {
+  setPlaybackActiveQueueIndex,
+} from "../../../apps/new/src/features/playback/services/playback-active-track-service";
+import {
   getPlaybackQueueActionState,
 } from "../../../apps/new/src/features/playback/services/playback-queue-action-state-service";
 import {
@@ -1013,6 +1016,21 @@ function assertPlaybackSessionSmoke() {
   );
   assert.equal(removalUpdate.activeTrackId, second.id);
   assert.equal(removalUpdate.activeQueueIndex, 0);
+  const directActivatedState = setPlaybackActiveQueueIndex({
+    index: 1,
+    state: directQueuedState,
+  });
+  assert.equal(directActivatedState.activeTrackId, second.id);
+  assert.equal(directActivatedState.activeQueueIndex, 1);
+  assert.equal(directActivatedState.position, 0);
+  assert.equal(directActivatedState.isPlaying, true);
+  const directMissingActivationState = setPlaybackActiveQueueIndex({
+    index: null,
+    state: directQueuedState,
+  });
+  assert.equal(directMissingActivationState.activeTrackId, first.id);
+  assert.equal(directMissingActivationState.position, directQueuedState.duration);
+  assert.equal(directMissingActivationState.isPlaying, false);
   const directRemovedState = removePlaybackQueueSong({
     songId: first.id,
     state: directQueuedState,

@@ -166,3 +166,5 @@
   album linking, and nullable album-cover update behavior.
 - Added direct playback queue step smoke coverage for removal replacement state
   and move active-index derivation.
+- Added direct playback active-track smoke coverage for valid and missing queue
+  target activation.

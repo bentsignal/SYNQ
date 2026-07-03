@@ -1,7 +1,7 @@
 import { useMemo, useReducer } from "react";
+import { initialImportSessionState } from "../services/import-session-initial-state-service";
 import {
   importSessionReducer,
-  initialImportSessionState,
 } from "../services/import-session-state-service";
 import type { ImportSessionState } from "../types/import-session";
 import {

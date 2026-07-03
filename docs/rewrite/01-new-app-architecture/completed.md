@@ -137,3 +137,5 @@
   navigation, copy, and filtering state.
 - Split library song playback/export command state out of song detail
   navigation and relationship view state.
+- Split import session initial state out of the reducer module so the session
+  store can depend on defaults without importing reducer actions.

@@ -3,6 +3,7 @@ import type {
   ImportSessionState,
   ImportSongDraft,
 } from "../types/import-session";
+import { initialImportSessionState } from "./import-session-initial-state-service";
 
 export type ImportSessionAction =
   | { type: "begin-file-pick" }
@@ -18,20 +19,6 @@ export type ImportSessionAction =
   | { type: "saving" }
   | { type: "discard" }
   | { type: "reset" };
-
-export const initialImportSessionState: ImportSessionState = {
-  error: null,
-  phase: "idle",
-  progress: {
-    current: 0,
-    total: 0,
-  },
-  saveSummary: null,
-  selectedSongId: null,
-  shouldSaveToLibrary: true,
-  songs: [],
-  source: "files",
-};
 
 export const importSessionReducer = (
   state: ImportSessionState,

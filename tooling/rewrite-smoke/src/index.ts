@@ -142,8 +142,10 @@ import {
 } from "../../../apps/new/src/features/import/services/import-wifi-screen-state-service";
 import {
   importSessionReducer,
-  initialImportSessionState,
 } from "../../../apps/new/src/features/import/services/import-session-state-service";
+import {
+  initialImportSessionState,
+} from "../../../apps/new/src/features/import/services/import-session-initial-state-service";
 import {
   getFinishWifiTransferAction,
   getImportSessionCommandErrorMessage,

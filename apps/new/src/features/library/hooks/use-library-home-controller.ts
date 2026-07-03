@@ -3,6 +3,7 @@ import { useLibraryCollectionPreviewQuery } from "./use-library-collection-previ
 import { useLibrarySongPreviewQuery } from "./use-library-song-preview-query";
 import { useLibrarySummaryQuery } from "./use-library-summary-query";
 import {
+  getLibraryHomeQueryErrors,
   getLibraryHomeStatusState,
   initialLibraryHomeControlState,
   libraryHomeControlReducer,
@@ -22,11 +23,11 @@ export function useLibraryHomeController() {
   const songPreview = useLibrarySongPreviewQuery(controls);
   const statusState = getLibraryHomeStatusState({
     collectionUpdatedAt: collectionPreview.updatedAt,
-    errors: [
-      ...summary.errors,
-      ...collectionPreview.errors,
-      ...(songPreview.error ? [songPreview.error] : []),
-    ],
+    errors: getLibraryHomeQueryErrors({
+      collectionErrors: collectionPreview.errors,
+      songError: songPreview.error,
+      summaryErrors: summary.errors,
+    }),
     songUpdatedAt: songPreview.updatedAt,
     summaryUpdatedAt: summary.updatedAt,
   });

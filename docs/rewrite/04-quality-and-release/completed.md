@@ -293,3 +293,5 @@
   filtering, error ordering, and timestamp normalization.
 - Added direct edit collection row query smoke coverage for row selection,
   error preference, and timestamp merging.
+- Added direct library home query error aggregation smoke coverage for
+  cross-query error ordering.

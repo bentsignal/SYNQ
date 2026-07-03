@@ -110,6 +110,20 @@ export const getLibraryHomeHeaderState = () => ({
   title: "Library",
 });
 
+export const getLibraryHomeQueryErrors = ({
+  collectionErrors,
+  songError,
+  summaryErrors,
+}: {
+  collectionErrors: readonly unknown[];
+  songError: unknown;
+  summaryErrors: readonly unknown[];
+}) => [
+  ...summaryErrors,
+  ...collectionErrors,
+  ...(songError ? [songError] : []),
+];
+
 export const getLibraryHomeStatusState = ({
   collectionUpdatedAt,
   errors,

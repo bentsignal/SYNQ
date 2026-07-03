@@ -831,6 +831,7 @@ import {
   getLibraryHomeHeaderActions,
   getLibraryHomeHeaderState,
   getLibraryHomeImportHref,
+  getLibraryHomeQueryErrors,
   getLibraryHomeStatusState,
   initialLibraryHomeControlState,
   libraryHomeControlReducer,
@@ -11026,6 +11027,14 @@ function assertLibraryHomeSmoke() {
       songUpdatedAt: null,
     }),
     0,
+  );
+  assert.deepEqual(
+    getLibraryHomeQueryErrors({
+      collectionErrors: [new Error("collection smoke")],
+      songError: new Error("song smoke"),
+      summaryErrors: [new Error("summary smoke")],
+    }).map((error) => (error as Error).message),
+    ["summary smoke", "collection smoke", "song smoke"],
   );
 
   let controls = libraryHomeControlReducer(initialLibraryHomeControlState, {

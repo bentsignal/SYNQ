@@ -1,10 +1,8 @@
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import {
-  buildEditAlbumArtistRowsQuery,
-  buildEditAlbumRowQuery,
-  buildEditArtistRowQuery,
-  buildEditPlaylistRowQuery,
-} from "../repository/edit-collection-query-repository";
+  useEditAlbumRowLiveQuery,
+  useEditArtistRowLiveQuery,
+  useEditPlaylistRowLiveQuery,
+} from "../data/use-edit-collection-row-live-query";
 import type {
   EditCollectionAlbumArtistRow,
   EditCollectionAlbumRow,
@@ -13,8 +11,7 @@ import type {
 } from "../services/edit-collection-query-service";
 
 export function useEditAlbumRowQuery(id: number) {
-  const album = useLiveQuery(buildEditAlbumRowQuery(id));
-  const artists = useLiveQuery(buildEditAlbumArtistRowsQuery(id));
+  const { album, artists } = useEditAlbumRowLiveQuery(id);
 
   return {
     artistRows: (artists.data ?? []) as EditCollectionAlbumArtistRow[],
@@ -30,7 +27,7 @@ export function useEditAlbumRowQuery(id: number) {
 }
 
 export function useEditArtistRowQuery(id: number) {
-  const artist = useLiveQuery(buildEditArtistRowQuery(id));
+  const artist = useEditArtistRowLiveQuery(id);
 
   return {
     error: artist.error,
@@ -40,7 +37,7 @@ export function useEditArtistRowQuery(id: number) {
 }
 
 export function useEditPlaylistRowQuery(id: number) {
-  const playlist = useLiveQuery(buildEditPlaylistRowQuery(id));
+  const playlist = useEditPlaylistRowLiveQuery(id);
 
   return {
     error: playlist.error,

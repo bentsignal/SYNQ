@@ -53,3 +53,5 @@
 - Moved the addable-collection song-row live-query adapters into a library data
   module and lowered the remaining library hook live-query ratchet from 3
   modules to 2.
+- Moved the edit-collection row live-query adapters into a library data module
+  and lowered the remaining library hook live-query ratchet from 2 modules to 1.

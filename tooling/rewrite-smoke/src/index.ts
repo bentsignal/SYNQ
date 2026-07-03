@@ -426,14 +426,16 @@ import {
 } from "../../../apps/new/src/features/library/services/library-song-detail-mutation-service";
 import {
   buildLibrarySongEditFormState,
+  getInitialLibrarySongEditControllerState,
+  librarySongEditControllerReducer,
+} from "../../../apps/new/src/features/library/services/library-song-form-service";
+import {
   getLibrarySongEditBlockedCommand,
   getLibrarySongEditCoverPickedCommand,
   getLibrarySongEditErrorMessage,
   getLibrarySongEditFailureCommand,
-  getInitialLibrarySongEditControllerState,
   getLibrarySongEditSaveSuccessCommand,
-  librarySongEditControllerReducer,
-} from "../../../apps/new/src/features/library/services/library-song-form-service";
+} from "../../../apps/new/src/features/library/services/library-song-form-command-state-service";
 import {
   getLibrarySongEditActionState,
   getLibrarySongEditFieldState,

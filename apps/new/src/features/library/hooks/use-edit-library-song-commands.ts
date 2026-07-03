@@ -11,7 +11,7 @@ import {
   getLibrarySongEditCoverPickedCommand,
   getLibrarySongEditFailureCommand,
   getLibrarySongEditSaveSuccessCommand,
-} from "../services/library-song-form-service";
+} from "../services/library-song-form-command-state-service";
 
 type UseEditLibrarySongCommandsParams = {
   canPickCoverImage: boolean;

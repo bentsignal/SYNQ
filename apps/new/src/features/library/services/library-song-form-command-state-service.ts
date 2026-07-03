@@ -1,0 +1,60 @@
+import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
+import {
+  getLibrarySongDetailHref,
+  type LibrarySongDetailHref,
+} from "./library-song-interaction-service";
+import type {
+  LibrarySongEditControllerAction,
+  LibrarySongEditCoverImage,
+} from "./library-song-form-service";
+
+type LibrarySongEditHapticCommand = {
+  haptic: HapticFeedbackType;
+};
+
+type LibrarySongEditActionCommand = LibrarySongEditHapticCommand & {
+  action: LibrarySongEditControllerAction;
+};
+
+type LibrarySongEditNavigationCommand = LibrarySongEditHapticCommand & {
+  href: LibrarySongDetailHref;
+};
+
+export const getLibrarySongEditErrorMessage = (caughtError: unknown) =>
+  caughtError instanceof Error
+    ? caughtError.message
+    : "Song could not be saved.";
+
+export const getLibrarySongEditBlockedCommand =
+  (): LibrarySongEditHapticCommand => ({
+    haptic: "error",
+  });
+
+export const getLibrarySongEditCoverPickedCommand = (
+  coverImage: LibrarySongEditCoverImage,
+): LibrarySongEditActionCommand => ({
+  action: {
+    coverImage,
+    type: "pick-cover-image",
+  },
+  haptic: "light",
+});
+
+export const getLibrarySongEditFailureCommand = (
+  caughtError: unknown,
+): LibrarySongEditActionCommand => ({
+  action: {
+    errorMessage: getLibrarySongEditErrorMessage(caughtError),
+    type: "fail",
+  },
+  haptic: "error",
+});
+
+export const getLibrarySongEditSaveSuccessCommand = ({
+  songId,
+}: {
+  songId: number;
+}): LibrarySongEditNavigationCommand => ({
+  haptic: "success",
+  href: getLibrarySongDetailHref({ songId }),
+});

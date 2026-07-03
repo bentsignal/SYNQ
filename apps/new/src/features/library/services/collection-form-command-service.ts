@@ -9,9 +9,9 @@ import {
   updatePlaylist,
 } from "../repository/collection-update-repository";
 import {
-  createCollectionFromForm,
-  updateCollectionFromForm,
-} from "./collection-form-mutation-service";
+  createCollectionFormCommandFactory,
+  updateCollectionFormCommandFactory,
+} from "./collection-form-command-factory-service";
 import type { CollectionFormKind } from "./collection-form-domain-service";
 
 type CreateCollectionFromFormCommandParams = {
@@ -27,42 +27,24 @@ type UpdateCollectionFromFormCommandParams =
     id: number;
   };
 
-export const createCollectionFromFormCommand = ({
-  imageDataUrl,
-  kind,
-  name,
-  year,
-}: CreateCollectionFromFormCommandParams) =>
-  createCollectionFromForm({
-    imageDataUrl,
-    kind,
-    name,
-    repository: {
-      createAlbum,
-      createArtistWithImage,
-      createPlaylist,
-    },
-    year,
+const createCollectionFromFormWithRepository =
+  createCollectionFormCommandFactory({
+    createAlbum,
+    createArtistWithImage,
+    createPlaylist,
   });
 
-export const updateCollectionFromFormCommand = ({
-  artistNames,
-  id,
-  imageDataUrl,
-  kind,
-  name,
-  year,
-}: UpdateCollectionFromFormCommandParams) =>
-  updateCollectionFromForm({
-    artistNames,
-    id,
-    imageDataUrl,
-    kind,
-    name,
-    repository: {
-      updateAlbum,
-      updateArtist,
-      updatePlaylist,
-    },
-    year,
+const updateCollectionFromFormWithRepository =
+  updateCollectionFormCommandFactory({
+    updateAlbum,
+    updateArtist,
+    updatePlaylist,
   });
+
+export const createCollectionFromFormCommand = (
+  params: CreateCollectionFromFormCommandParams,
+) => createCollectionFromFormWithRepository(params);
+
+export const updateCollectionFromFormCommand = (
+  params: UpdateCollectionFromFormCommandParams,
+) => updateCollectionFromFormWithRepository(params);

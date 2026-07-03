@@ -117,3 +117,5 @@
   service.
 - Split collection form domain kind and year parsing into a dedicated domain
   service.
+- Added a collection form command factory so command wiring can be smoke-tested
+  without importing real database repositories.

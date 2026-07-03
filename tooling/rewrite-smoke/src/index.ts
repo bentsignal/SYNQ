@@ -342,6 +342,10 @@ import {
   type CollectionFormUpdateRepository,
 } from "../../../apps/new/src/features/library/services/collection-form-mutation-service";
 import {
+  createCollectionFormCommandFactory,
+  updateCollectionFormCommandFactory,
+} from "../../../apps/new/src/features/library/services/collection-form-command-factory-service";
+import {
   assertCollectionName,
   getCollectionDuplicateNameMessage,
   getCollectionRequiredNameMessage,
@@ -5285,6 +5289,108 @@ async function assertCollectionFormMutationSmoke() {
     [
       "playlist",
       { coverImage: "playlist-image", id: 23, name: "Smoke Playlist" },
+    ],
+  ]);
+
+  const factoryCreateCalls: unknown[] = [];
+  const createCommand = createCollectionFormCommandFactory({
+    createAlbum: async (params) => {
+      factoryCreateCalls.push(["album", params]);
+      return { id: 31 };
+    },
+    createArtistWithImage: async (params) => {
+      factoryCreateCalls.push(["artist", params]);
+      return { id: 32 };
+    },
+    createPlaylist: async (params) => {
+      factoryCreateCalls.push(["playlist", params]);
+      return { id: 33 };
+    },
+  });
+
+  assert.deepEqual(
+    await createCommand({
+      imageDataUrl: "factory-album-image",
+      kind: "album",
+      name: "Factory Album",
+      year: "2001",
+    }),
+    { id: 31 },
+  );
+  await createCommand({
+    imageDataUrl: "factory-artist-image",
+    kind: "artist",
+    name: "Factory Artist",
+    year: "",
+  });
+  await createCommand({
+    imageDataUrl: "factory-playlist-image",
+    kind: "playlist",
+    name: "Factory Playlist",
+    year: "",
+  });
+  assert.deepEqual(factoryCreateCalls, [
+    [
+      "album",
+      { coverImage: "factory-album-image", name: "Factory Album", year: 2001 },
+    ],
+    ["artist", { name: "Factory Artist", profileImage: "factory-artist-image" }],
+    [
+      "playlist",
+      { coverImage: "factory-playlist-image", name: "Factory Playlist" },
+    ],
+  ]);
+
+  const factoryUpdateCalls: unknown[] = [];
+  const updateCommand = updateCollectionFormCommandFactory({
+    updateAlbum: async (params) => {
+      factoryUpdateCalls.push(["album", params]);
+    },
+    updateArtist: async (params) => {
+      factoryUpdateCalls.push(["artist", params]);
+    },
+    updatePlaylist: async (params) => {
+      factoryUpdateCalls.push(["playlist", params]);
+    },
+  });
+
+  await updateCommand({
+    artistNames: "Factory Artist One, Factory Artist Two",
+    id: 41,
+    imageDataUrl: "factory-album-image",
+    kind: "album",
+    name: "Factory Album",
+    year: "1999",
+  });
+  await updateCommand({
+    id: 42,
+    imageDataUrl: "factory-artist-image",
+    kind: "artist",
+    name: "Factory Artist",
+    year: "",
+  });
+  await updateCommand({
+    id: 43,
+    imageDataUrl: "factory-playlist-image",
+    kind: "playlist",
+    name: "Factory Playlist",
+    year: "",
+  });
+  assert.deepEqual(factoryUpdateCalls, [
+    [
+      "album",
+      {
+        artistNames: "Factory Artist One, Factory Artist Two",
+        coverImage: "factory-album-image",
+        id: 41,
+        name: "Factory Album",
+        year: 1999,
+      },
+    ],
+    ["artist", { id: 42, name: "Factory Artist", profileImage: "factory-artist-image" }],
+    [
+      "playlist",
+      { coverImage: "factory-playlist-image", id: 43, name: "Factory Playlist" },
     ],
   ]);
 }

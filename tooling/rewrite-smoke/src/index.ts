@@ -1094,19 +1094,21 @@ import {
 } from "../../../apps/new/src/features/premium/services/premium-screen-service";
 import {
   getInitialPremiumPurchaseState,
-  getInitialPremiumTierLoadState,
   getPremiumPurchaseFailAction,
   getPremiumPurchaseResetAction,
   getPremiumPurchaseSelectAction,
   getPremiumPurchaseStartAction,
   getPremiumPurchaseSucceedAction,
   getPremiumPurchaseSyncEntitlementAction,
-  getPremiumTierLoadResolveAction,
   type PremiumPurchaseAction,
-  type PremiumTierLoadAction,
   premiumPurchaseReducer,
-  premiumTierLoadReducer,
 } from "../../../apps/new/src/features/premium/services/premium-purchase-state-service";
+import {
+  getInitialPremiumTierLoadState,
+  getPremiumTierLoadResolveAction,
+  type PremiumTierLoadAction,
+  premiumTierLoadReducer,
+} from "../../../apps/new/src/features/premium/services/premium-tier-load-state-service";
 import {
   runPremiumPurchaseCommand,
   runPremiumPurchaseResetCommand,

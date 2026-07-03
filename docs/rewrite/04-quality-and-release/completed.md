@@ -337,6 +337,8 @@
   coverage.
 - Added direct Wi-Fi import server stop action-constructor smoke coverage.
 - Added direct premium purchase action-constructor smoke coverage.
+- Preserved direct premium tier-load action/reducer smoke coverage while
+  moving tier-load state behind a focused state service.
 - Added direct backup session action-constructor smoke coverage.
 - Added direct premium entitlement and tier-load action-constructor smoke
   coverage.

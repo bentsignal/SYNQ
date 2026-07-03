@@ -2,12 +2,14 @@ import { useCallback, useEffect, useMemo, useReducer } from "react";
 import { premiumTiers } from "../services/premium-purchase-service";
 import {
   getInitialPremiumPurchaseState,
-  getInitialPremiumTierLoadState,
   getPremiumPurchaseSelectAction,
   getPremiumPurchaseSyncEntitlementAction,
   premiumPurchaseReducer,
-  premiumTierLoadReducer,
 } from "../services/premium-purchase-state-service";
+import {
+  getInitialPremiumTierLoadState,
+  premiumTierLoadReducer,
+} from "../services/premium-tier-load-state-service";
 import type { PremiumTierId } from "../types/premium-purchase";
 import { usePremiumEntitlementSelector } from "../state/PremiumEntitlementProvider";
 import { usePremiumPurchaseCommands } from "./use-premium-purchase-commands";

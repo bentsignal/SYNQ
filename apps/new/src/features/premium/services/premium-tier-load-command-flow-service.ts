@@ -2,7 +2,7 @@ import type { PremiumTier } from "../types/premium-purchase";
 import {
   getPremiumTierLoadResolveAction,
   type PremiumTierLoadAction,
-} from "./premium-purchase-state-service";
+} from "./premium-tier-load-state-service";
 
 type PremiumTierLoadDispatch = (action: PremiumTierLoadAction) => void;
 

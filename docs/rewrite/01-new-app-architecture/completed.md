@@ -461,6 +461,8 @@
   the server state service.
 - Moved premium purchase action construction out of hooks and command flows
   and into the premium purchase state service.
+- Split premium tier-load state, reducer, and resolve action construction out
+  of the purchase state service into a focused tier-load state service.
 - Moved backup session action construction out of command flows and into the
   backup session state service.
 - Moved premium entitlement and tier-load action construction out of command

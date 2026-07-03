@@ -2,7 +2,6 @@ import type {
   PremiumEntitlementStatus,
   PremiumPurchaseResult,
   PremiumPurchaseState,
-  PremiumTier,
   PremiumTierId,
 } from "../types/premium-purchase";
 
@@ -19,14 +18,13 @@ export type PremiumPurchaseAction =
   | { error: string; type: "fail" }
   | { type: "reset" };
 
-export type PremiumTierLoadState = {
-  tiers: PremiumTier[];
-};
-
-export type PremiumTierLoadAction = {
-  tiers: PremiumTier[];
-  type: "resolve";
-};
+export {
+  getInitialPremiumTierLoadState,
+  getPremiumTierLoadResolveAction,
+  premiumTierLoadReducer,
+  type PremiumTierLoadAction,
+  type PremiumTierLoadState,
+} from "./premium-tier-load-state-service";
 
 export const getInitialPremiumPurchaseState = ({
   active = false,
@@ -126,31 +124,5 @@ export const premiumPurchaseReducer = (
       };
     case "reset":
       return getInitialPremiumPurchaseState();
-  }
-};
-
-export const getInitialPremiumTierLoadState = (
-  tiers: PremiumTier[],
-): PremiumTierLoadState => ({
-  tiers,
-});
-
-export const getPremiumTierLoadResolveAction = (
-  tiers: PremiumTier[],
-): PremiumTierLoadAction => ({
-  tiers,
-  type: "resolve",
-});
-
-export const premiumTierLoadReducer = (
-  state: PremiumTierLoadState,
-  action: PremiumTierLoadAction,
-): PremiumTierLoadState => {
-  switch (action.type) {
-    case "resolve":
-      return {
-        ...state,
-        tiers: action.tiers,
-      };
   }
 };

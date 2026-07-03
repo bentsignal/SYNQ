@@ -3,7 +3,7 @@ import {
   loadPremiumTiers,
   premiumTiers,
 } from "../services/premium-purchase-service";
-import type { PremiumTierLoadAction } from "../services/premium-purchase-state-service";
+import type { PremiumTierLoadAction } from "../services/premium-tier-load-state-service";
 import { runPremiumTierLoadCommand } from "../services/premium-tier-load-command-flow-service";
 
 type UsePremiumTierLoaderParams = {

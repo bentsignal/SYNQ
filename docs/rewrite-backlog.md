@@ -286,6 +286,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     customization screen view.
   - Done: playback hydration, native restore trigger, and throttled persistence
     now live in a focused hook instead of the provider body.
+  - Done: playback persisted-state serialization and normalization now live in
+    a pure persistence codec service with deterministic smoke coverage instead
+    of the filesystem persistence service owning parsing and validation.
   - Done: playback Premium/ad-gate sync, ad-break trigger, and premium-resume
     side effects now live in a focused hook instead of the provider body.
   - Done: playback native status listener, ad completion, and native status

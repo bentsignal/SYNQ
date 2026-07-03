@@ -28,6 +28,10 @@ import {
   removePlaybackQueueSong,
 } from "../../../apps/new/src/features/playback/services/playback-session-queue-service";
 import {
+  normalizePlaybackState,
+  toPersistedPlaybackState,
+} from "../../../apps/new/src/features/playback/services/playback-persistence-codec-service";
+import {
   getFreeListeningRemainingMs,
   getPlaybackAdBreakPanelState,
   getPlaybackMiniPlayerState,
@@ -436,6 +440,55 @@ function assertPlaybackSessionSmoke() {
   });
   assert.equal(directRemovedState.activeTrackId, second.id);
   assert.equal(clearPlaybackQueue(directQueuedState).queue.length, 0);
+
+  const persistedState = toPersistedPlaybackState({
+    ...directQueuedState,
+    error: "Native failure should not persist",
+  });
+  assert.equal("error" in persistedState, false);
+  assert.deepEqual(
+    persistedState.queue.map((item) => item.id),
+    [1, 2, 3],
+  );
+
+  const normalizedState = normalizePlaybackState({
+    activeQueueIndex: 5,
+    activeTrackId: second.id,
+    adGate: {
+      active: true,
+      accumulatedMs: 999_999,
+      lastTrackedPosition: -10,
+      playbackDuration: 120_000,
+      playbackPosition: 999_999,
+      thresholdMs: 300_000,
+    },
+    isPlaying: true,
+    mode: { loop: true, shuffle: "bad" },
+    queue: [
+      {
+        album: "Smoke Album",
+        artist: "Smoke Artist",
+        duration: 120_000,
+        id: second.id,
+        pathToFile: "/tmp/second.mp3",
+        title: "Second",
+      },
+      { id: "invalid" },
+    ],
+    queueFilter: { order: "bad", query: 12, sort: "title" },
+    source: { id: second.id, type: "playlist" },
+  });
+  assert.equal(normalizedState.activeQueueIndex, null);
+  assert.equal(normalizedState.adGate.active, false);
+  assert.equal(normalizedState.mode.loop, true);
+  assert.equal(normalizedState.mode.shuffle, false);
+  assert.equal(normalizedState.queue.length, 1);
+  assert.deepEqual(normalizedState.queueFilter, {
+    order: "desc",
+    query: "",
+    sort: "title",
+  });
+  assert.deepEqual(normalizedState.source, { id: second.id, type: "playlist" });
 
   state = playbackReducer(state, { type: "pause" });
   assert.equal(state.isPlaying, false);

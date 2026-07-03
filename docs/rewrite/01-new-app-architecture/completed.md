@@ -203,3 +203,6 @@
   executor so create/update adapters only provide table-specific lookups.
 - Moved library song metadata title validation, relationship replacement, and
   cover targeting behind an injectable repository executor.
+- Moved album, artist, and playlist update validation, uniqueness, image
+  persistence, protected-playlist guards, and album artist replacement behind a
+  shared injectable repository executor.

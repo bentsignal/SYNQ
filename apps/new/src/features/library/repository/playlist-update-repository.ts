@@ -2,9 +2,11 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
 import { saveCoverImage } from "@/src/features/images/services/image-storage-service";
-import { assertCollectionName } from "../services/collection-metadata-service";
 import { isProtectedPlaylistId } from "../services/library-playlist-constants-service";
 import { assertUniqueCollectionName } from "./collection-uniqueness-repository";
+import {
+  updatePlaylistWithDependencies,
+} from "./collection-update-executor-repository";
 
 export async function updatePlaylist({
   coverImage,
@@ -15,30 +17,25 @@ export async function updatePlaylist({
   id: number;
   name: string;
 }) {
-  if (isProtectedPlaylistId(id)) {
-    throw new Error("This protected playlist cannot be edited.");
-  }
-
-  const cleanName = assertCollectionName({ kind: "playlist", name });
-
-  await assertUniqueCollectionName({
-    excludeId: id,
-    kind: "playlist",
-    name: cleanName,
-  });
-
-  await db
-    .update(schema.playlists)
-    .set({
-      ...(coverImage !== undefined
-        ? { coverImage: await saveCoverImage(coverImage) }
-        : {}),
-      name: cleanName,
-    })
-    .where(eq(schema.playlists.id, id));
-
-  return {
-    id,
-    name: cleanName,
-  };
+  return updatePlaylistWithDependencies(
+    {
+      coverImage,
+      id,
+      name,
+    },
+    {
+      assertUniqueCollectionName,
+      isProtectedPlaylistId,
+      saveCoverImage,
+      updatePlaylistRow: async ({ coverImage, id, name }) => {
+        await db
+          .update(schema.playlists)
+          .set({
+            ...(coverImage !== undefined ? { coverImage } : {}),
+            name,
+          })
+          .where(eq(schema.playlists.id, id));
+      },
+    },
+  );
 }

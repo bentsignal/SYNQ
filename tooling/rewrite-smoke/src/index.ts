@@ -463,6 +463,14 @@ import {
   type CollectionUniquenessDependencies,
 } from "../../../apps/new/src/features/library/repository/collection-uniqueness-executor-repository";
 import {
+  updateAlbumWithDependencies,
+  updateArtistWithDependencies,
+  updatePlaylistWithDependencies,
+  type AlbumUpdateDependencies,
+  type ArtistUpdateDependencies,
+  type PlaylistUpdateDependencies,
+} from "../../../apps/new/src/features/library/repository/collection-update-executor-repository";
+import {
   normalizeAlbumArtistName,
   replaceAlbumArtistsWithDependencies,
   splitAlbumArtistNames,
@@ -6831,6 +6839,176 @@ async function assertCollectionUniquenessExecutorSmoke() {
   assert.deepEqual(calls, [["playlist", "Existing List", 9]]);
 }
 
+async function assertCollectionUpdateExecutorSmoke() {
+  const calls: unknown[] = [];
+  let savedImage: string | null = "saved-image";
+  const baseDependencies = {
+    assertUniqueCollectionName: async (params: {
+      excludeId: number;
+      kind: "album" | "artist" | "playlist";
+      name: string;
+    }) => {
+      calls.push(["unique", params]);
+
+      if (params.name === "Duplicate") {
+        throw new Error("Duplicate name");
+      }
+    },
+    saveCoverImage: async (image?: string | null) => {
+      calls.push(["save-image", image]);
+      return savedImage;
+    },
+  };
+  const albumDependencies: AlbumUpdateDependencies = {
+    ...baseDependencies,
+    replaceAlbumArtists: async (params) => {
+      calls.push(["album-artists", params]);
+    },
+    updateAlbumRow: async (params) => {
+      calls.push(["album-row", params]);
+    },
+  };
+  const artistDependencies: ArtistUpdateDependencies = {
+    ...baseDependencies,
+    updateArtistRow: async (params) => {
+      calls.push(["artist-row", params]);
+    },
+  };
+  const playlistDependencies: PlaylistUpdateDependencies = {
+    ...baseDependencies,
+    isProtectedPlaylistId: (id) => id === 1,
+    updatePlaylistRow: async (params) => {
+      calls.push(["playlist-row", params]);
+    },
+  };
+
+  assert.deepEqual(
+    await updateAlbumWithDependencies(
+      {
+        artistNames: "Alpha Artist, Beta Artist",
+        coverImage: "album-cover",
+        id: 10,
+        name: "  Smoke Album  ",
+        year: 2026,
+      },
+      albumDependencies,
+    ),
+    { id: 10, name: "Smoke Album", year: 2026 },
+  );
+  assert.deepEqual(calls, [
+    [
+      "unique",
+      { excludeId: 10, kind: "album", name: "Smoke Album" },
+    ],
+    ["save-image", "album-cover"],
+    [
+      "album-row",
+      { coverImage: "saved-image", id: 10, name: "Smoke Album", year: 2026 },
+    ],
+    [
+      "album-artists",
+      { albumId: 10, artistNames: "Alpha Artist, Beta Artist" },
+    ],
+  ]);
+
+  calls.length = 0;
+  await updateAlbumWithDependencies(
+    {
+      id: 11,
+      name: "No Cover Album",
+      year: null,
+    },
+    albumDependencies,
+  );
+  assert.deepEqual(calls, [
+    [
+      "unique",
+      { excludeId: 11, kind: "album", name: "No Cover Album" },
+    ],
+    ["album-row", { id: 11, name: "No Cover Album", year: null }],
+  ]);
+
+  calls.length = 0;
+  savedImage = null;
+  assert.deepEqual(
+    await updateArtistWithDependencies(
+      {
+        id: 12,
+        name: "  Smoke Artist  ",
+        profileImage: "artist-image",
+      },
+      artistDependencies,
+    ),
+    { id: 12, name: "Smoke Artist" },
+  );
+  assert.deepEqual(calls, [
+    [
+      "unique",
+      { excludeId: 12, kind: "artist", name: "Smoke Artist" },
+    ],
+    ["save-image", "artist-image"],
+    ["artist-row", { id: 12, name: "Smoke Artist", profileImage: null }],
+  ]);
+
+  calls.length = 0;
+  savedImage = "playlist-image";
+  assert.deepEqual(
+    await updatePlaylistWithDependencies(
+      {
+        coverImage: "playlist-cover",
+        id: 13,
+        name: "  Smoke Playlist  ",
+      },
+      playlistDependencies,
+    ),
+    { id: 13, name: "Smoke Playlist" },
+  );
+  assert.deepEqual(calls, [
+    [
+      "unique",
+      { excludeId: 13, kind: "playlist", name: "Smoke Playlist" },
+    ],
+    ["save-image", "playlist-cover"],
+    [
+      "playlist-row",
+      { coverImage: "playlist-image", id: 13, name: "Smoke Playlist" },
+    ],
+  ]);
+
+  calls.length = 0;
+  await assert.rejects(
+    () =>
+      updatePlaylistWithDependencies(
+        { id: 1, name: "System Playlist" },
+        playlistDependencies,
+      ),
+    /protected playlist/,
+  );
+  assert.deepEqual(calls, []);
+
+  await assert.rejects(
+    () =>
+      updateArtistWithDependencies(
+        { id: 14, name: "   " },
+        artistDependencies,
+      ),
+    /Artist name is required/,
+  );
+  assert.deepEqual(calls, []);
+
+  await assert.rejects(
+    () =>
+      updateArtistWithDependencies(
+        { id: 15, name: "Duplicate" },
+        artistDependencies,
+      ),
+    /Duplicate name/,
+  );
+  assert.deepEqual(calls, [
+    ["unique", { excludeId: 15, kind: "artist", name: "Duplicate" }],
+  ]);
+}
+
 async function assertCollectionFormMutationSmoke() {
   const createCalls: unknown[] = [];
   const createRepository: CollectionFormCreateRepository = {
@@ -10248,6 +10426,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertSongMetadataRelationshipExecutorSmoke();
   await assertSongMetadataUpdateExecutorSmoke();
   await assertCollectionUniquenessExecutorSmoke();
+  await assertCollectionUpdateExecutorSmoke();
   await assertCollectionFormMutationSmoke();
   assertLibraryCollectionListSmoke();
   assertLibraryHomeSmoke();

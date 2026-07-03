@@ -93,3 +93,6 @@
 - Added song metadata update executor smoke coverage for title validation,
   relationship sequencing, album-cover targeting, song-cover fallback, and
   empty saved-cover no-ops.
+- Added collection update executor smoke coverage for album, artist, and
+  playlist update sequencing, optional image persistence, protected playlists,
+  required names, and duplicate-name failures.

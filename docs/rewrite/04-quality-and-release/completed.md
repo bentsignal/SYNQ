@@ -303,3 +303,4 @@
 - Added direct song detail mutation action-state smoke coverage.
 - Added direct edit song controller result-state smoke coverage.
 - Added direct collection form controller result-state smoke coverage.
+- Added direct create/edit collection form controller view-state smoke coverage.

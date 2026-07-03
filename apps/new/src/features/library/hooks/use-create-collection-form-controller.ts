@@ -1,4 +1,5 @@
 import type { CollectionFormKind } from "../services/collection-form-domain-service";
+import { getCreateCollectionFormControllerViewState } from "../services/collection-form-interaction-service";
 import { useCreateCollectionFormCommands } from "./use-create-collection-form-commands";
 import { useCollectionFormStateController } from "./use-collection-form-state-controller";
 
@@ -38,19 +39,18 @@ export function useCreateCollectionFormController({
     formState,
     kind,
   });
+  const viewState = getCreateCollectionFormControllerViewState({
+    actionState,
+    formState,
+    imageInitial,
+    saveLabel,
+  });
 
   return {
-    actionState,
+    ...viewState,
     create,
-    error: formState.error,
-    image: formState.image,
-    imageInitial,
-    isSaving: formState.isSaving,
-    name: formState.name,
     pickImage,
-    saveLabel,
     setName: updateName,
     setYear: updateYear,
-    year: formState.year,
   };
 }

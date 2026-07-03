@@ -1,4 +1,5 @@
 import type { EditCollectionKind } from "../services/edit-collection-query-service";
+import { getEditCollectionFormControllerViewState } from "../services/collection-form-interaction-service";
 import { useCollectionFormStateController } from "./use-collection-form-state-controller";
 import { useEditCollectionFormCommands } from "./use-edit-collection-form-commands";
 
@@ -53,21 +54,19 @@ export function useEditCollectionFormController({
     id,
     kind,
   });
+  const viewState = getEditCollectionFormControllerViewState({
+    actionState,
+    formState,
+    imageInitial,
+    saveLabel,
+  });
 
   return {
-    actionState,
-    artistNames: formState.artistNames,
-    error: formState.error,
-    image: formState.image,
-    imageInitial,
-    isSaving: formState.isSaving,
-    name: formState.name,
+    ...viewState,
     pickImage,
     save,
-    saveLabel,
     updateArtistNames,
     updateName,
     updateYear,
-    year: formState.year,
   };
 }

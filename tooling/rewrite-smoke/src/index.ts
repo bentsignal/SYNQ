@@ -694,6 +694,8 @@ import {
 import {
   getCollectionFormActionState,
   getCollectionFormControllerResultState,
+  getCreateCollectionFormControllerViewState,
+  getEditCollectionFormControllerViewState,
   getCollectionFormFieldState,
   getCollectionFormImageLabel,
   getCollectionFormPreviewInitial,
@@ -9361,6 +9363,68 @@ async function assertCollectionFormSmoke() {
       isDirty: false,
       isSaving: false,
       name: "Seed Collection",
+      year: "1999",
+    },
+  );
+  const controllerViewState = getInitialCollectionFormState({
+    artistNames: "Seed Artist",
+    name: "Seed Collection",
+    year: "1999",
+  });
+  assert.deepEqual(
+    getCreateCollectionFormControllerViewState({
+      actionState: {
+        canEdit: true,
+        canPickImage: true,
+        canSave: true,
+        hasName: true,
+      },
+      formState: controllerViewState,
+      imageInitial: "S",
+      saveLabel: "Create collection",
+    }),
+    {
+      actionState: {
+        canEdit: true,
+        canPickImage: true,
+        canSave: true,
+        hasName: true,
+      },
+      error: null,
+      image: null,
+      imageInitial: "S",
+      isSaving: false,
+      name: "Seed Collection",
+      saveLabel: "Create collection",
+      year: "1999",
+    },
+  );
+  assert.deepEqual(
+    getEditCollectionFormControllerViewState({
+      actionState: {
+        canEdit: true,
+        canPickImage: true,
+        canSave: true,
+        hasName: true,
+      },
+      formState: controllerViewState,
+      imageInitial: "S",
+      saveLabel: "Save collection",
+    }),
+    {
+      actionState: {
+        canEdit: true,
+        canPickImage: true,
+        canSave: true,
+        hasName: true,
+      },
+      artistNames: "Seed Artist",
+      error: null,
+      image: null,
+      imageInitial: "S",
+      isSaving: false,
+      name: "Seed Collection",
+      saveLabel: "Save collection",
       year: "1999",
     },
   );

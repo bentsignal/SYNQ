@@ -386,6 +386,11 @@ import {
   type LikedSongMembershipDependencies,
 } from "../../../apps/new/src/features/library/repository/collection-song-membership-executor-repository";
 import {
+  removeSongFromCollectionWithDependencies,
+  updateCollectionSongOrderWithDependencies,
+  type CollectionSongRelationshipDependencies,
+} from "../../../apps/new/src/features/library/repository/collection-song-relationship-executor-repository";
+import {
   getCollectionSongListState,
   getCollectionSongOrderUpdate,
   getCollectionSongRowActionState,
@@ -4308,6 +4313,99 @@ async function assertCollectionSongMembershipExecutorSmoke() {
     false,
   );
   assert.deepEqual(calls, [["delete", 2, 5]]);
+}
+
+async function assertCollectionSongRelationshipExecutorSmoke() {
+  const calls: unknown[] = [];
+  const dependencies: CollectionSongRelationshipDependencies = {
+    protectedPlaylistIds: new Set([1, 2]),
+    removeAlbumSong: async (params) => {
+      calls.push(["remove-album", params]);
+    },
+    removeArtistSong: async (params) => {
+      calls.push(["remove-artist", params]);
+    },
+    removePlaylistSong: async (params) => {
+      calls.push(["remove-playlist", params]);
+    },
+    updateAlbumSongOrder: async (params) => {
+      calls.push(["order-album", params]);
+    },
+    updateArtistSongOrder: async (params) => {
+      calls.push(["order-artist", params]);
+    },
+    updatePlaylistSongOrder: async (params) => {
+      calls.push(["order-playlist", params]);
+    },
+  };
+
+  await updateCollectionSongOrderWithDependencies(
+    { collectionId: 10, kind: "album", songIds: [3, 1] },
+    dependencies,
+  );
+  assert.deepEqual(calls, [
+    ["order-album", { collectionId: 10, order: 1, songId: 3 }],
+    ["order-album", { collectionId: 10, order: 2, songId: 1 }],
+  ]);
+
+  calls.length = 0;
+  await updateCollectionSongOrderWithDependencies(
+    { collectionId: 11, kind: "artist", songIds: [4] },
+    dependencies,
+  );
+  assert.deepEqual(calls, [
+    ["order-artist", { collectionId: 11, order: 1, songId: 4 }],
+  ]);
+
+  calls.length = 0;
+  await updateCollectionSongOrderWithDependencies(
+    { collectionId: 12, kind: "playlist", songIds: [5, 6] },
+    dependencies,
+  );
+  assert.deepEqual(calls, [
+    ["order-playlist", { collectionId: 12, order: 1, songId: 5 }],
+    ["order-playlist", { collectionId: 12, order: 2, songId: 6 }],
+  ]);
+
+  calls.length = 0;
+  await assert.rejects(
+    () =>
+      updateCollectionSongOrderWithDependencies(
+        { collectionId: 1, kind: "playlist", songIds: [7] },
+        dependencies,
+      ),
+    /protected playlist/,
+  );
+  assert.deepEqual(calls, []);
+
+  await removeSongFromCollectionWithDependencies(
+    { collectionId: 20, kind: "album", songId: 8 },
+    dependencies,
+  );
+  await removeSongFromCollectionWithDependencies(
+    { collectionId: 21, kind: "artist", songId: 9 },
+    dependencies,
+  );
+  await removeSongFromCollectionWithDependencies(
+    { collectionId: 22, kind: "playlist", songId: 10 },
+    dependencies,
+  );
+  assert.deepEqual(calls, [
+    ["remove-album", { collectionId: 20, songId: 8 }],
+    ["remove-artist", { collectionId: 21, songId: 9 }],
+    ["remove-playlist", { collectionId: 22, songId: 10 }],
+  ]);
+
+  calls.length = 0;
+  await assert.rejects(
+    () =>
+      removeSongFromCollectionWithDependencies(
+        { collectionId: 2, kind: "playlist", songId: 11 },
+        dependencies,
+      ),
+    /protected playlist/,
+  );
+  assert.deepEqual(calls, []);
 }
 
 function assertLibraryCollectionPreviewSmoke() {
@@ -9956,6 +10054,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   assertLibraryCollectionInteractionSmoke();
   await assertCollectionDeleteExecutorSmoke();
   await assertCollectionSongMembershipExecutorSmoke();
+  await assertCollectionSongRelationshipExecutorSmoke();
   assertLibraryCollectionPreviewSmoke();
   assertLibrarySongPreviewSmoke();
   assertAddableCollectionSongsSmoke();

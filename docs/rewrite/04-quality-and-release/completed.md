@@ -86,3 +86,5 @@
   album-artist link preservation.
 - Added collection song membership executor smoke coverage for append order,
   duplicate no-ops, protected playlist guards, and liked-song deletion.
+- Added collection song relationship executor smoke coverage for album, artist,
+  and playlist reorder/remove dispatch plus protected playlist guards.

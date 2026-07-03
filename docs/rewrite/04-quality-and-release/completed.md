@@ -226,3 +226,5 @@
 - Added direct import file-screen action-flow smoke coverage for choose-files
   and remove-song success/failure sequencing.
 - Added direct Wi-Fi import review-save action-flow smoke coverage.
+- Added direct import save export action-flow smoke coverage for share success
+  and failure dispatch sequencing.

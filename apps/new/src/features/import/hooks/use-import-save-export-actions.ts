@@ -1,9 +1,8 @@
 import { useReducer } from "react";
 import { shareImportDraftSongs } from "@/src/features/export/services/import-draft-export-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
+import { runImportSaveExportAction } from "../services/import-save-export-action-flow-service";
 import {
-  getImportSaveExportFailureCommand,
-  getImportSaveExportSuccessCommand,
   importSaveExportReducer,
   initialImportSaveExportState,
 } from "../services/import-save-export-state-service";
@@ -23,21 +22,12 @@ export function useImportSaveExportActions({
   );
 
   const exportSongs = async () => {
-    dispatchExportState({ type: "begin" });
-
-    try {
-      await shareImportDraftSongs(state.songs);
-      const command = getImportSaveExportSuccessCommand();
-      sendHaptic(command.haptic);
-    } catch (caughtError) {
-      const command = getImportSaveExportFailureCommand(caughtError);
-      sendHaptic(command.haptic);
-      if (command.action) {
-        dispatchExportState(command.action);
-      }
-    } finally {
-      dispatchExportState({ type: "finish" });
-    }
+    await runImportSaveExportAction({
+      dispatch: dispatchExportState,
+      sendHaptic,
+      shareImportDraftSongs,
+      state,
+    });
   };
 
   return {

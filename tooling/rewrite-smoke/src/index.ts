@@ -206,6 +206,9 @@ import {
   initialImportSaveExportState,
 } from "../../../apps/new/src/features/import/services/import-save-export-state-service";
 import {
+  runImportSaveExportAction,
+} from "../../../apps/new/src/features/import/services/import-save-export-action-flow-service";
+import {
   getImportDiscardResultCommand,
   getImportFinishResultCommand,
   getImportSaveSessionStartHaptic,
@@ -3535,6 +3538,41 @@ async function assertImportSessionSmoke() {
       haptic: "error",
     },
   );
+  const importSaveExportActionEvents: unknown[] = [];
+  await runImportSaveExportAction({
+    dispatch: (action) => {
+      importSaveExportActionEvents.push(["dispatch", action]);
+    },
+    sendHaptic: (haptic) => {
+      importSaveExportActionEvents.push(["haptic", haptic]);
+    },
+    shareImportDraftSongs: async (songs) => {
+      importSaveExportActionEvents.push(["share", songs.length]);
+    },
+    state,
+  });
+  await runImportSaveExportAction({
+    dispatch: (action) => {
+      importSaveExportActionEvents.push(["dispatch", action]);
+    },
+    sendHaptic: (haptic) => {
+      importSaveExportActionEvents.push(["haptic", haptic]);
+    },
+    shareImportDraftSongs: async () => {
+      throw new Error("Share failed");
+    },
+    state,
+  });
+  assert.deepEqual(importSaveExportActionEvents, [
+    ["dispatch", { type: "begin" }],
+    ["share", state.songs.length],
+    ["haptic", "success"],
+    ["dispatch", { type: "finish" }],
+    ["dispatch", { type: "begin" }],
+    ["haptic", "error"],
+    ["dispatch", { error: "Share failed", type: "fail" }],
+    ["dispatch", { type: "finish" }],
+  ]);
   assert.deepEqual(
     getImportSuccessState({
       ...state,

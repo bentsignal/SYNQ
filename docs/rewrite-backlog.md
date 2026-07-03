@@ -79,6 +79,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: playback queue row remove/reorder controls now live in a focused
     row-actions component instead of the row renderer owning every queue-row
     control surface.
+  - Done: playback player button rendering now lives in a focused control
+    button component instead of the player controls component repeating themed
+    button markup for every playback command.
   - Done: collection detail song-row aggregation now lives in a focused song
     detail service instead of the detail shell builder owning song grouping,
     artist/album fallback labels, and track sorting.

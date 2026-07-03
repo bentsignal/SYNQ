@@ -3375,32 +3375,38 @@ function assertLibrarySongPreviewSmoke() {
   assert.deepEqual(
     getLibrarySongListControlsState({ order: "asc", sort: "artist" }),
     {
-      nextOrder: "desc",
-      orderLabel: "Asc",
+      orderButton: {
+        haptic: "light",
+        label: "Asc",
+        nextOrder: "desc",
+      },
       searchInput: {
         placeholder: "Search songs, artists, albums",
       },
       sortOptions: [
-        { isActive: false, label: "Recent", value: "recent" },
-        { isActive: false, label: "Title", value: "title" },
-        { isActive: true, label: "Artist", value: "artist" },
-        { isActive: false, label: "Album", value: "album" },
+        { haptic: "light", isActive: false, label: "Recent", value: "recent" },
+        { haptic: "light", isActive: false, label: "Title", value: "title" },
+        { haptic: "light", isActive: true, label: "Artist", value: "artist" },
+        { haptic: "light", isActive: false, label: "Album", value: "album" },
       ],
     },
   );
   assert.deepEqual(
     getLibrarySongListControlsState({ order: "desc", sort: "recent" }),
     {
-      nextOrder: "asc",
-      orderLabel: "Desc",
+      orderButton: {
+        haptic: "light",
+        label: "Desc",
+        nextOrder: "asc",
+      },
       searchInput: {
         placeholder: "Search songs, artists, albums",
       },
       sortOptions: [
-        { isActive: true, label: "Recent", value: "recent" },
-        { isActive: false, label: "Title", value: "title" },
-        { isActive: false, label: "Artist", value: "artist" },
-        { isActive: false, label: "Album", value: "album" },
+        { haptic: "light", isActive: true, label: "Recent", value: "recent" },
+        { haptic: "light", isActive: false, label: "Title", value: "title" },
+        { haptic: "light", isActive: false, label: "Artist", value: "artist" },
+        { haptic: "light", isActive: false, label: "Album", value: "album" },
       ],
     },
   );

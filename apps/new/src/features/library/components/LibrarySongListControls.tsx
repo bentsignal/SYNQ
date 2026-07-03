@@ -53,7 +53,7 @@ export function LibrarySongListControls({
               accessibilityRole="button"
               accessibilityState={{ selected: option.isActive }}
               onPress={() => {
-                sendHaptic("light");
+                sendHaptic(option.haptic);
                 setSort(option.value);
               }}
               className="min-h-[38px] min-w-[72px] items-center justify-center rounded-lg border px-3"
@@ -79,8 +79,8 @@ export function LibrarySongListControls({
         <Pressable
           accessibilityRole="button"
           onPress={() => {
-            sendHaptic("light");
-            setOrder(controlsState.nextOrder);
+            sendHaptic(controlsState.orderButton.haptic);
+            setOrder(controlsState.orderButton.nextOrder);
           }}
           className="min-h-[38px] min-w-[72px] items-center justify-center rounded-lg border px-3"
           style={{
@@ -92,7 +92,7 @@ export function LibrarySongListControls({
             className="text-xs font-extrabold uppercase"
             style={{ color: theme.surface }}
           >
-            {controlsState.orderLabel}
+            {controlsState.orderButton.label}
           </Text>
         </Pressable>
       </View>

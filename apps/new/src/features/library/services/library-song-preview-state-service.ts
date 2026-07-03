@@ -81,28 +81,35 @@ export const getLibrarySongListControlsState = ({
   order: LibrarySongPreviewOrder;
   sort: LibrarySongPreviewSort;
 }) => ({
-  nextOrder: order === "asc" ? "desc" as const : "asc" as const,
-  orderLabel: order === "asc" ? "Asc" : "Desc",
+  orderButton: {
+    haptic: "light" as HapticFeedbackType,
+    label: order === "asc" ? "Asc" : "Desc",
+    nextOrder: order === "asc" ? "desc" as const : "asc" as const,
+  },
   searchInput: {
     placeholder: "Search songs, artists, albums",
   },
   sortOptions: [
     {
+      haptic: "light" as HapticFeedbackType,
       isActive: sort === "recent",
       label: "Recent",
       value: "recent" as const,
     },
     {
+      haptic: "light" as HapticFeedbackType,
       isActive: sort === "title",
       label: "Title",
       value: "title" as const,
     },
     {
+      haptic: "light" as HapticFeedbackType,
       isActive: sort === "artist",
       label: "Artist",
       value: "artist" as const,
     },
     {
+      haptic: "light" as HapticFeedbackType,
       isActive: sort === "album",
       label: "Album",
       value: "album" as const,

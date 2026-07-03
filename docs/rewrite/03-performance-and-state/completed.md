@@ -80,3 +80,6 @@
 - Added named playback selector facade hooks for non-playback consumers and a
   rewrite audit ratchet that blocks external features from importing raw
   playback session selectors.
+- Split premium entitlement reducer state out of the Rostra provider and added
+  deterministic smoke coverage for entitlement checking, success, and failure
+  transitions.

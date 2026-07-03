@@ -45,3 +45,7 @@
 - Route screens that need numeric IDs should use
   `useNumericRouteParam`; direct `useLocalSearchParams` plus
   `parseNumericRouteParam` is now isolated to the app-shell hook boundary.
+- Premium entitlement state now follows the provider pattern used elsewhere:
+  `PremiumEntitlementProvider` only adapts Rostra, `use-premium-entitlement-store`
+  owns async refresh/apply wiring, and `premium-entitlement-state-service`
+  owns the pure reducer covered by deterministic smoke.

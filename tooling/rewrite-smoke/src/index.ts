@@ -454,6 +454,10 @@ import {
   premiumPurchaseReducer,
   premiumTierLoadReducer,
 } from "../../../apps/new/src/features/premium/services/premium-purchase-state-service";
+import {
+  initialPremiumEntitlementState,
+  premiumEntitlementReducer,
+} from "../../../apps/new/src/features/premium/services/premium-entitlement-state-service";
 import type {
   PremiumPurchaseState,
   PremiumTier,
@@ -6000,6 +6004,62 @@ function assertPremiumScreenSmoke() {
       price: "$10",
     },
   ];
+  assert.deepEqual(initialPremiumEntitlementState, {
+    active: false,
+    error: null,
+    message: null,
+    phase: "checking",
+    tierId: "monthly",
+  });
+  assert.deepEqual(
+    premiumEntitlementReducer(
+      {
+        active: true,
+        error: "Previous error.",
+        message: "Previous message.",
+        phase: "failure",
+        tierId: "yearly",
+      },
+      { type: "checking" },
+    ),
+    {
+      active: true,
+      error: null,
+      message: "Previous message.",
+      phase: "checking",
+      tierId: "yearly",
+    },
+  );
+  assert.deepEqual(
+    premiumEntitlementReducer(initialPremiumEntitlementState, {
+      status: {
+        active: true,
+        message: "Premium smoke active.",
+        tierId: "lifetime",
+      },
+      type: "succeed",
+    }),
+    {
+      active: true,
+      error: null,
+      message: "Premium smoke active.",
+      phase: "ready",
+      tierId: "lifetime",
+    },
+  );
+  assert.deepEqual(
+    premiumEntitlementReducer(initialPremiumEntitlementState, {
+      error: "Premium entitlement failed.",
+      type: "fail",
+    }),
+    {
+      active: false,
+      error: "Premium entitlement failed.",
+      message: null,
+      phase: "failure",
+      tierId: "monthly",
+    },
+  );
   assert.deepEqual(
     getInitialPremiumPurchaseState({
       active: true,

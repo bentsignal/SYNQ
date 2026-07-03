@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getLibrarySongPreviewEmptyState } from "../services/library-song-preview-service";
+import { getLibrarySongPreviewEmptyState } from "../services/library-song-preview-state-service";
 
 export function LibrarySongPreviewEmptyState() {
   const theme = useCustomizationTheme();

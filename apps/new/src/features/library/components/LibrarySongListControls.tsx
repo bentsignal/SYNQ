@@ -5,7 +5,7 @@ import type {
   LibrarySongPreviewOrder,
   LibrarySongPreviewSort,
 } from "../hooks/use-library-song-preview-query";
-import { getLibrarySongListControlsState } from "../services/library-song-preview-service";
+import { getLibrarySongListControlsState } from "../services/library-song-preview-state-service";
 
 type LibrarySongListControlsProps = {
   order: LibrarySongPreviewOrder;

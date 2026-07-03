@@ -75,6 +75,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     with smoke coverage instead of control component constants.
   - Done: song preview list section title and shown-count meta now live in the
     song preview service with smoke coverage instead of the list component.
+  - Done: song preview row state, routes, empty/list copy, controls, and
+    playback payloads now live in a focused state service instead of the row
+    aggregation service.
   - Done: add-to-collection song picker aggregation/search/linked-state sorting
     now lives in a pure library service with deterministic smoke coverage.
   - Done: song detail label/relationship/duration shaping now lives in a pure

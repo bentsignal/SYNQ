@@ -9,7 +9,7 @@ import {
   getLibrarySongPreviewPlayerHref,
   getLibrarySongPreviewRowState,
   toLibrarySongPlaybackItem,
-} from "../services/library-song-preview-service";
+} from "../services/library-song-preview-state-service";
 
 type LibrarySongPreviewRowProps = {
   activeTrackId: number | null;

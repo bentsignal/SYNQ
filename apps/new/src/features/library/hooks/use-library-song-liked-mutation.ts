@@ -4,11 +4,7 @@ import { toggleLibrarySongLikedCommand } from "../services/library-song-command-
 import { type LibrarySongDetail } from "../services/library-song-detail-service";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
 import { runLibrarySongLikedCommand } from "../services/library-song-detail-mutation-command-flow-service";
-import type { LibrarySongDetailMutationAction } from "../services/library-song-detail-mutation-service";
-
-type LibrarySongDetailMutationDispatch = (
-  action: LibrarySongDetailMutationAction,
-) => void;
+import type { LibrarySongDetailMutationDispatch } from "../services/library-song-detail-mutation-runtime-service";
 
 type UseLibrarySongLikedMutationParams = {
   actionState: LibrarySongDetailActionState;

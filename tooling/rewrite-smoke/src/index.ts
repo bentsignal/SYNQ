@@ -940,6 +940,7 @@ import {
   runLibrarySongExportCommand,
   runLibrarySongLikedCommand,
 } from "../../../apps/new/src/features/library/services/library-song-detail-mutation-command-flow-service";
+import { runLibrarySongDetailMutationAttempt } from "../../../apps/new/src/features/library/services/library-song-detail-mutation-runtime-service";
 import {
   initialLibrarySongDetailMutationState,
   type LibrarySongDetailMutationAction,
@@ -8328,6 +8329,62 @@ async function assertLibrarySongDetailSmoke() {
   assert.deepEqual(getLibrarySongLikedSuccessCommand(), {
     haptic: "light",
   });
+  const songMutationAttemptEvents: unknown[] = [];
+  await runLibrarySongDetailMutationAttempt({
+    dispatch: (action) => {
+      songMutationAttemptEvents.push(["dispatch", action]);
+    },
+    mutation: "export-song",
+    onSuccess: () => {
+      songMutationAttemptEvents.push(["success"]);
+    },
+    run: async () => {
+      songMutationAttemptEvents.push(["run"]);
+    },
+    sendHaptic: (haptic) => {
+      songMutationAttemptEvents.push(["haptic", haptic]);
+    },
+  });
+  await runLibrarySongDetailMutationAttempt({
+    dispatch: (action) => {
+      songMutationAttemptEvents.push(["dispatch", action]);
+    },
+    mutation: "toggle-liked",
+    onSuccess: () => {
+      songMutationAttemptEvents.push(["unexpected-success"]);
+    },
+    run: async () => {
+      throw new Error("Liked failed");
+    },
+    sendHaptic: (haptic) => {
+      songMutationAttemptEvents.push(["haptic", haptic]);
+    },
+  });
+  assert.deepEqual(songMutationAttemptEvents, [
+    [
+      "dispatch",
+      { mutation: "export-song", type: "begin" },
+    ],
+    ["run"],
+    ["success"],
+    [
+      "dispatch",
+      { mutation: "export-song", type: "finish" },
+    ],
+    [
+      "dispatch",
+      { mutation: "toggle-liked", type: "begin" },
+    ],
+    ["haptic", "error"],
+    [
+      "dispatch",
+      { error: "Liked failed", type: "fail" },
+    ],
+    [
+      "dispatch",
+      { mutation: "toggle-liked", type: "finish" },
+    ],
+  ]);
   const songMutationCommandEvents: unknown[] = [];
   const dispatchSongMutationCommand = (
     action: LibrarySongDetailMutationAction,

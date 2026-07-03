@@ -62,6 +62,21 @@ export type ImportSongEditFormAction =
       type: "clear-error";
     };
 
+export type ImportSongEditFormField =
+  Extract<ImportSongEditFormAction, { type: "change-field" }>["field"];
+
+export const getImportSongEditChangeFieldAction = ({
+  field,
+  value,
+}: {
+  field: ImportSongEditFormField;
+  value: string;
+}): ImportSongEditFormAction => ({
+  field,
+  type: "change-field",
+  value,
+});
+
 export const importSongEditFormReducer = (
   state: ImportSongEditFormState,
   action: ImportSongEditFormAction,
@@ -116,6 +131,25 @@ export const getImportSongEditActionState = ({ title }: { title: string }) => ({
 
 export type ImportSongEditActionState = ReturnType<
   typeof getImportSongEditActionState
+>;
+
+export const getImportSongEditControllerResultState = ({
+  formState,
+}: {
+  formState: ImportSongEditFormState;
+}) => ({
+  actionState: getImportSongEditActionState({
+    title: formState.title,
+  }),
+  album: formState.album,
+  artist: formState.artist,
+  error: formState.error,
+  title: formState.title,
+  track: formState.track,
+});
+
+export type ImportSongEditControllerResultState = ReturnType<
+  typeof getImportSongEditControllerResultState
 >;
 
 export const getImportSongEditErrorMessage = (caughtError: unknown) =>

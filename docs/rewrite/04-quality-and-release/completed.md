@@ -311,3 +311,5 @@
 - Added direct library small-image path resolver smoke coverage.
 - Added direct playback ad-gate action-constructor smoke coverage.
 - Added direct playback native action-constructor smoke coverage.
+- Added direct import song edit field action and controller result-state smoke
+  coverage.

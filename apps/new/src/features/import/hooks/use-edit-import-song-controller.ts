@@ -1,6 +1,8 @@
 import { useReducer } from "react";
 import {
-  getImportSongEditActionState,
+  getImportSongEditChangeFieldAction,
+  getImportSongEditControllerResultState,
+  type ImportSongEditFormField,
   getImportSongEditInitialState,
   importSongEditFormReducer,
 } from "../services/import-song-edit-form-state-service";
@@ -21,13 +23,13 @@ export function useEditImportSongController({
     song,
     getImportSongEditInitialState,
   );
-  const actionState = getImportSongEditActionState({
-    title: formState.title,
+  const resultState = getImportSongEditControllerResultState({
+    formState,
   });
 
   const updateField =
-    (field: "album" | "artist" | "title" | "track") => (value: string) => {
-      dispatchFormState({ field, type: "change-field", value });
+    (field: ImportSongEditFormField) => (value: string) => {
+      dispatchFormState(getImportSongEditChangeFieldAction({ field, value }));
     };
 
   const updateAlbum = updateField("album");
@@ -36,7 +38,7 @@ export function useEditImportSongController({
   const updateTrack = updateField("track");
 
   const { save } = useEditImportSongCommands({
-    canSave: actionState.canSave,
+    canSave: resultState.actionState.canSave,
     dispatchFormState,
     formState,
     song,
@@ -44,15 +46,10 @@ export function useEditImportSongController({
   });
 
   return {
-    actionState,
-    album: formState.album,
-    artist: formState.artist,
-    error: formState.error,
+    ...resultState,
     save,
     setAlbum: updateAlbum,
     setArtist: updateArtist,
-    title: formState.title,
-    track: formState.track,
     updateTitle,
     updateTrack,
   };

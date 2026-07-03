@@ -353,6 +353,8 @@ import {
 import {
   buildEditedImportSongDraft,
   getImportSongEditActionState,
+  getImportSongEditChangeFieldAction,
+  getImportSongEditControllerResultState,
   getImportSongEditErrorMessage,
   getImportSongEditFieldState,
   getImportSongEditInitialState,
@@ -11786,11 +11788,37 @@ function assertImportSongFormSmoke() {
   );
   const editFormState = getImportSongEditInitialState(importDraft(8));
   assert.deepEqual(
-    importSongEditFormReducer(editFormState, {
+    getImportSongEditChangeFieldAction({
+      field: "title",
+      value: "Changed",
+    }),
+    {
       field: "title",
       type: "change-field",
       value: "Changed",
-    }),
+    },
+  );
+  assert.deepEqual(
+    getImportSongEditControllerResultState({ formState: editFormState }),
+    {
+      actionState: {
+        canSave: true,
+      },
+      album: "Smoke Album",
+      artist: "Smoke Artist",
+      error: null,
+      title: "Import 8",
+      track: "8",
+    },
+  );
+  assert.deepEqual(
+    importSongEditFormReducer(
+      editFormState,
+      getImportSongEditChangeFieldAction({
+        field: "title",
+        value: "Changed",
+      }),
+    ),
     {
       ...editFormState,
       error: null,

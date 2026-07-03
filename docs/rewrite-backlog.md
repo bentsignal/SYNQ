@@ -106,6 +106,10 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import session command error copy and Wi-Fi finish decisions now live
     in a focused command service instead of the reducer service owning command
     messaging and state transitions together.
+  - Done: backup document/cache directory paths, staging cleanup, and restore
+    replacement writes now live in a focused filesystem service instead of the
+    backup command service owning low-level file operations and command flow
+    together.
   - Done: library export metadata lookup, artwork tag loading, and stale
     snapshot writeback now live in a focused metadata service instead of the
     share orchestration service owning export preparation details.

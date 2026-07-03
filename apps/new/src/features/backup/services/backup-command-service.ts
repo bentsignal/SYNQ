@@ -1,47 +1,20 @@
 import { resetDatabaseConnection } from "@synq/db";
 import * as DocumentPicker from "expo-document-picker";
-import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { unzip, zip } from "react-native-zip-archive";
 import type {
   BackupCommandResult,
   BackupOperation,
 } from "../types/backup-session";
-
-const getDocumentDirectory = () => {
-  if (!FileSystem.documentDirectory) {
-    throw new Error("Document directory is unavailable.");
-  }
-
-  return FileSystem.documentDirectory;
-};
-
-const clearDocumentDirectory = async () => {
-  const documentDirectory = getDocumentDirectory();
-  const items = await FileSystem.readDirectoryAsync(documentDirectory);
-
-  for (const item of items) {
-    await FileSystem.deleteAsync(`${documentDirectory}${item}`, {
-      idempotent: true,
-    });
-  }
-};
-
-const getBackupRestoreStagingDirectory = () => {
-  if (!FileSystem.cacheDirectory) {
-    throw new Error("Cache directory is unavailable.");
-  }
-
-  return `${FileSystem.cacheDirectory}synq-restore-${Date.now()}/`;
-};
-
-const getBackupArchivePath = () => {
-  if (!FileSystem.cacheDirectory) {
-    throw new Error("Cache directory is unavailable.");
-  }
-
-  return `${FileSystem.cacheDirectory}synq-backup-${Date.now()}.zip`;
-};
+import {
+  assertBackupRestoreStagingDirectoryHasFiles,
+  cleanupBackupRestoreStagingDirectory,
+  clearBackupDocumentDirectory,
+  getBackupArchivePath,
+  getBackupDocumentDirectory,
+  prepareBackupRestoreStagingDirectory,
+  replaceBackupDocumentDirectoryWithStagedItems,
+} from "./backup-file-system-service";
 
 const runCreateBackupCommand = async (): Promise<BackupCommandResult> => {
   const canShare = await Sharing.isAvailableAsync();
@@ -50,7 +23,10 @@ const runCreateBackupCommand = async (): Promise<BackupCommandResult> => {
     throw new Error("Sharing is unavailable on this device.");
   }
 
-  const archivePath = await zip(getDocumentDirectory(), getBackupArchivePath());
+  const archivePath = await zip(
+    getBackupDocumentDirectory(),
+    getBackupArchivePath(),
+  );
   await Sharing.shareAsync(archivePath, {
     dialogTitle: "Share SYNQ backup",
     mimeType: "application/zip",
@@ -76,52 +52,8 @@ const pickBackupArchive = async () => {
   return result.assets[0]?.uri ?? null;
 };
 
-const prepareRestoreStagingDirectory = async () => {
-  const stagingDirectory = getBackupRestoreStagingDirectory();
-  await FileSystem.deleteAsync(stagingDirectory, { idempotent: true });
-  await FileSystem.makeDirectoryAsync(stagingDirectory, { intermediates: true });
-
-  return stagingDirectory;
-};
-
-const cleanupRestoreStagingDirectory = async (stagingDirectory: string) => {
-  try {
-    await FileSystem.deleteAsync(stagingDirectory, { idempotent: true });
-  } catch {
-    // Cache cleanup should not hide the restore outcome.
-  }
-};
-
-const assertRestoreStagingDirectoryHasFiles = async (
-  stagingDirectory: string,
-) => {
-  const stagedItems = await FileSystem.readDirectoryAsync(stagingDirectory);
-
-  if (stagedItems.length === 0) {
-    throw new Error("Backup archive did not contain any library files.");
-  }
-
-  return stagedItems;
-};
-
-const replaceDocumentDirectoryWithStagedItems = async (
-  stagingDirectory: string,
-  stagedItems: string[],
-) => {
-  const documentDirectory = getDocumentDirectory();
-
-  await clearDocumentDirectory();
-
-  for (const item of stagedItems) {
-    await FileSystem.moveAsync({
-      from: `${stagingDirectory}${item}`,
-      to: `${documentDirectory}${item}`,
-    });
-  }
-};
-
 const runEraseLibraryCommand = async (): Promise<BackupCommandResult> => {
-  await clearDocumentDirectory();
+  await clearBackupDocumentDirectory();
   await resetDatabaseConnection();
 
   return {
@@ -140,16 +72,19 @@ const runRestoreBackupCommand = async (): Promise<BackupCommandResult> => {
     };
   }
 
-  const stagingDirectory = await prepareRestoreStagingDirectory();
+  const stagingDirectory = await prepareBackupRestoreStagingDirectory();
 
   try {
     await unzip(archiveUri, stagingDirectory);
     const stagedItems =
-      await assertRestoreStagingDirectoryHasFiles(stagingDirectory);
-    await replaceDocumentDirectoryWithStagedItems(stagingDirectory, stagedItems);
+      await assertBackupRestoreStagingDirectoryHasFiles(stagingDirectory);
+    await replaceBackupDocumentDirectoryWithStagedItems(
+      stagingDirectory,
+      stagedItems,
+    );
     await resetDatabaseConnection();
   } finally {
-    await cleanupRestoreStagingDirectory(stagingDirectory);
+    await cleanupBackupRestoreStagingDirectory(stagingDirectory);
   }
 
   return {

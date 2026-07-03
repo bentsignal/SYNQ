@@ -138,3 +138,5 @@
   picker, sharing, and compression adapters into smaller backup services.
 - Added playback native player state smoke coverage for ad/library source
   transitions, replay decisions, and source removal behavior.
+- Preserved Wi-Fi import route-handler smoke coverage while separating bridge
+  types, pure JSON response sending, and route runtime state helpers.

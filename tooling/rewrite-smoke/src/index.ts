@@ -311,10 +311,14 @@ import {
 } from "../../../apps/new/src/features/import/services/wifi-import-server-state-service";
 import {
   createWifiImportRouteHandlers,
-  createWifiImportRouteRuntimeState,
-  type WifiBridgeRequest,
-  type WifiBridgeResponse,
 } from "../../../apps/new/src/features/import/services/wifi-import-route-handler-service";
+import type {
+  WifiBridgeRequest,
+  WifiBridgeResponse,
+} from "../../../apps/new/src/features/import/services/wifi-import-bridge-types";
+import {
+  createWifiImportRouteRuntimeState,
+} from "../../../apps/new/src/features/import/services/wifi-import-route-runtime-state-service";
 import type { ImportSongDraft } from "../../../apps/new/src/features/import/types/import-session";
 import {
   buildAlbumDetail,

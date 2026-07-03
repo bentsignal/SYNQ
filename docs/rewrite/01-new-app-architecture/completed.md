@@ -247,3 +247,5 @@
   compression out of the backup command composition service.
 - Extracted playback native player registry transition decisions into a pure
   state service while keeping Expo audio calls in the native registry.
+- Split Wi-Fi import bridge request/response types, JSON response sending, and
+  mutable route runtime state out of the route-handler service.

@@ -1,22 +1,18 @@
 import type { ImportSongDraft } from "../types/import-session";
+import type {
+  WifiBridgeRequest,
+  WifiBridgeResponse,
+} from "./wifi-import-bridge-types";
 import {
   getWifiUploadFailureResponse,
   wifiImportFinishResponse,
   wifiImportPrepareFailureResponse,
   wifiImportResetResponse,
-  type WifiImportJsonResponse,
 } from "./wifi-import-response-service";
+import { sendWifiImportJsonResponse } from "./wifi-import-bridge-response-service";
+import type { WifiImportRouteRuntimeState } from "./wifi-import-route-runtime-state-service";
 import { getWifiStartTransferDecision } from "./wifi-import-transfer-decision-service";
 import { getWifiUploadDecision } from "./wifi-import-upload-decision-service";
-
-export type WifiBridgeRequest = {
-  postData?: unknown;
-};
-
-export type WifiBridgeResponse = {
-  html: (html: string) => void;
-  json: (payload: object, status?: number) => unknown;
-};
 
 export type WifiImportRouteHandlers = {
   handleConnection: (
@@ -60,24 +56,6 @@ export type WifiImportRouteHandlerDependencies = {
     type: string;
   }) => Promise<ImportSongDraft>;
 };
-
-const sendWifiImportJsonResponse = (
-  response: WifiBridgeResponse,
-  payload: WifiImportJsonResponse,
-) => {
-  response.json(payload, payload.status);
-};
-
-export type WifiImportRouteRuntimeState = {
-  isMidTransfer: boolean;
-  receivedIds: Set<number>;
-};
-
-export const createWifiImportRouteRuntimeState =
-  (): WifiImportRouteRuntimeState => ({
-    isMidTransfer: false,
-    receivedIds: new Set<number>(),
-  });
 
 export const createWifiImportRouteHandlers = ({
   dependencies,

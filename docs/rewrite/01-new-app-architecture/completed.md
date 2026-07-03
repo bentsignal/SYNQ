@@ -36,3 +36,6 @@
   and ID3 writeback orchestration.
 - Slimmed the playback Rostra provider by moving native adapter lifecycle and
   mutable playback-state ref synchronization into dedicated playback hooks.
+- Added a new-app database boundary scan that keeps direct Drizzle/database
+  access limited to repository modules, query hooks, and approved app/backup
+  infrastructure boundaries.

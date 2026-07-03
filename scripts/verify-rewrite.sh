@@ -94,6 +94,35 @@ scan_export_database_boundaries() {
   fi
 }
 
+scan_new_app_database_boundaries() {
+  local matches
+
+  matches="$(
+    rg -n "@synq/db|@synq/db/schema|drizzle-orm|\\bdb\\." \
+      apps/new/app apps/new/src \
+      -g "*.ts" -g "*.tsx" || true
+  )"
+
+  if [[ -z "$matches" ]]; then
+    return 0
+  fi
+
+  local violations
+  violations="$(
+    printf "%s\n" "$matches" |
+      rg -v "/repository/" |
+      rg -v "hooks/use-[^:]*query\\.ts:" |
+      rg -v "apps/new/src/features/app-shell/components/AppRoot\\.tsx:" |
+      rg -v "apps/new/src/features/backup/services/backup-command-service\\.ts:" || true
+  )"
+
+  if [[ -n "$violations" ]]; then
+    printf "%s\n" "$violations"
+    echo "New app database access must stay behind repository modules, query hooks, or the approved app/backup boundaries."
+    return 1
+  fi
+}
+
 trap cleanup EXIT
 
 echo "==> Typecheck"
@@ -129,6 +158,9 @@ scan_image_database_boundaries
 
 echo "==> Export database boundary scan"
 scan_export_database_boundaries
+
+echo "==> New app database boundary scan"
+scan_new_app_database_boundaries
 
 echo "==> Deterministic rewrite smoke"
 pnpm --filter @synq/rewrite-smoke smoke

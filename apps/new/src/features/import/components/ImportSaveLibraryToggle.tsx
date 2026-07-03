@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getImportSaveLibraryToggleState } from "../services/import-screen-state-service";
+import { getImportSaveLibraryToggleState } from "../services/import-save-screen-state-service";
 
 type ImportSaveLibraryToggleProps = {
   shouldSaveToLibrary: boolean;

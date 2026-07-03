@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { ImportSaveActionState } from "../services/import-screen-state-service";
+import type { ImportSaveActionState } from "../services/import-save-screen-state-service";
 
 type ImportSaveActionsProps = {
   actionState: ImportSaveActionState;

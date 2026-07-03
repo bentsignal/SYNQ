@@ -2,7 +2,7 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportSaveController } from "../hooks/use-import-save-controller";
-import { getImportSaveBackLink } from "../services/import-screen-state-service";
+import { getImportSaveBackLink } from "../services/import-save-screen-state-service";
 import type { ImportSessionState } from "../types/import-session";
 import { ImportPremiumGate } from "./ImportPremiumGate";
 import { ImportSaveActions } from "./ImportSaveActions";

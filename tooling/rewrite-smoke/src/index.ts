@@ -390,6 +390,8 @@ import {
   getSettingsBackLink,
   getSettingsHomeHref,
   getSettingsPremiumHref,
+  getSupportActionKey,
+  supportActions,
 } from "../../../apps/new/src/features/settings/services/settings-navigation-service";
 import {
   createInitialSettingsPersistenceState,
@@ -5664,6 +5666,11 @@ function assertSettingsScreenSmoke() {
       title: "Support",
     },
   });
+  assert.deepEqual(
+    supportActions.map((action) => action.label),
+    ["Leave a Review", "Contact Support", "X", "Instagram", "Discord"],
+  );
+  assert.equal(getSupportActionKey(supportActions[0]!), "review");
   assert.deepEqual(getPrivacyScreenState({ status: "loading" }), {
     isAnalyticsDisabled: true,
     statusLabel: "Loading",

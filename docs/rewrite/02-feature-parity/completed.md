@@ -30,3 +30,5 @@
 - Restored old album artist relationship editing in the new album edit flow with
   a comma-separated Artists field that replaces `artistsAlbums` rows on save and
   creates missing artist records through the collection update repository.
+- Restored old settings review/support parity in the new Support screen,
+  including native store review prompting plus support and social links.

@@ -70,3 +70,11 @@
 - Import session reset now clears both the persisted import session JSON and the
   staged import cache directory, matching backup reset expectations for
   realistic partially staged imports.
+
+## Premium And Settings Evidence
+
+- Old settings support parity is restored in the new Support screen. The new
+  support action list now includes `Leave a Review`, `Contact Support`, `X`,
+  `Instagram`, and `Discord`; URL actions still open externally, while the
+  review action uses `expo-store-review` when the platform supports the native
+  store prompt.

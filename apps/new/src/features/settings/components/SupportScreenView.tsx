@@ -2,6 +2,7 @@ import { Pressable, Text, View } from "react-native";
 import type { SupportScreenController } from "../hooks/use-support-screen-controller";
 import { useCustomizationTheme } from "../hooks/use-customization-theme";
 import { getSupportScreenViewState } from "../services/settings-screen-service";
+import { getSupportActionKey } from "../services/settings-navigation-service";
 import {
   SettingsBackLink,
   SettingsInfoPanel,
@@ -12,7 +13,7 @@ import {
 type SupportScreenViewProps = SupportScreenController;
 
 export function SupportScreenView({
-  openUrl,
+  runSupportAction,
   supportActions,
 }: SupportScreenViewProps) {
   const theme = useCustomizationTheme();
@@ -29,8 +30,8 @@ export function SupportScreenView({
         {supportActions.map((action) => (
           <Pressable
             accessibilityRole="link"
-            key={action.url}
-            onPress={() => openUrl(action.url)}
+            key={getSupportActionKey(action)}
+            onPress={() => runSupportAction(action)}
             className="min-h-[78px] flex-row items-center gap-3.5 border-b px-4 py-3.5"
             style={{ borderBottomColor: theme.borderSubtle }}
           >

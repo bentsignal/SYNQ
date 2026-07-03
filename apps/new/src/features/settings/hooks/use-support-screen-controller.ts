@@ -1,5 +1,9 @@
+import * as StoreReview from "expo-store-review";
 import { Linking } from "react-native";
-import { supportActions } from "../services/settings-navigation-service";
+import {
+  supportActions,
+  type SupportAction,
+} from "../services/settings-navigation-service";
 import { useHapticFeedback } from "./use-haptic-feedback";
 
 export function useSupportScreenController() {
@@ -10,8 +14,25 @@ export function useSupportScreenController() {
     void Linking.openURL(url);
   };
 
+  const requestReview = async () => {
+    sendHaptic("light");
+    if (await StoreReview.isAvailableAsync()) {
+      await StoreReview.requestReview();
+    }
+  };
+
+  const runSupportAction = (action: SupportAction) => {
+    if (action.type === "review") {
+      void requestReview();
+      return;
+    }
+
+    openUrl(action.url);
+  };
+
   return {
     openUrl,
+    runSupportAction,
     supportActions,
   };
 }

@@ -1,8 +1,11 @@
 import { useCallback, useMemo, useReducer } from "react";
 import { runBackupCommand } from "../services/backup-command-service";
 import {
+  runBackupSessionOperationCommand,
+  runBackupSessionResetCommand,
+} from "../services/backup-session-command-flow-service";
+import {
   backupSessionReducer,
-  getBackupSessionErrorMessage,
   initialBackupSessionState,
 } from "../services/backup-session-state-service";
 import type { BackupOperation } from "../types/backup-session";
@@ -14,22 +17,15 @@ export function useBackupSession() {
   );
 
   const runOperation = useCallback(async (operation: BackupOperation) => {
-    dispatch({ operation, type: "start" });
-
-    try {
-      const result = await runBackupCommand(operation);
-      dispatch({ result, type: "succeed" });
-    } catch (caughtError) {
-      dispatch({
-        error: getBackupSessionErrorMessage(caughtError),
-        operation,
-        type: "fail",
-      });
-    }
+    await runBackupSessionOperationCommand({
+      dispatch,
+      operation,
+      runBackupCommand,
+    });
   }, []);
 
   const reset = useCallback(() => {
-    dispatch({ type: "reset" });
+    runBackupSessionResetCommand({ dispatch });
   }, []);
 
   return useMemo(

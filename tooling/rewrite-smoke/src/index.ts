@@ -907,7 +907,12 @@ import {
   backupSessionReducer,
   getBackupSessionErrorMessage,
   initialBackupSessionState,
+  type BackupSessionAction,
 } from "../../../apps/new/src/features/backup/services/backup-session-state-service";
+import {
+  runBackupSessionOperationCommand,
+  runBackupSessionResetCommand,
+} from "../../../apps/new/src/features/backup/services/backup-session-command-flow-service";
 import {
   getBackupCommandResult,
   getCancelledBackupRestoreResult,
@@ -11133,7 +11138,7 @@ async function assertImportLibrarySavePlanSmoke() {
   assert.deepEqual(calls, ["delete-cache-7,8"]);
 }
 
-function assertBackupScreenSmoke() {
+async function assertBackupScreenSmoke() {
   const idleState: BackupSessionState = {
     error: null,
     lastOperation: null,
@@ -11219,6 +11224,41 @@ function assertBackupScreenSmoke() {
     getBackupSessionErrorMessage(null),
     "Backup operation failed.",
   );
+  const backupSessionCommandEvents: BackupSessionAction[] = [];
+  await runBackupSessionOperationCommand({
+    dispatch: (action) => {
+      backupSessionCommandEvents.push(action);
+    },
+    operation: "backup",
+    runBackupCommand: async (operation) => ({
+      message: "Command complete.",
+      operation,
+    }),
+  });
+  await runBackupSessionOperationCommand({
+    dispatch: (action) => {
+      backupSessionCommandEvents.push(action);
+    },
+    operation: "restore",
+    runBackupCommand: async () => {
+      throw new Error("Restore exploded");
+    },
+  });
+  runBackupSessionResetCommand({
+    dispatch: (action) => {
+      backupSessionCommandEvents.push(action);
+    },
+  });
+  assert.deepEqual(backupSessionCommandEvents, [
+    { operation: "backup", type: "start" },
+    {
+      result: { message: "Command complete.", operation: "backup" },
+      type: "succeed",
+    },
+    { operation: "restore", type: "start" },
+    { error: "Restore exploded", operation: "restore", type: "fail" },
+    { type: "reset" },
+  ]);
   assert.deepEqual(getBackupCommandResult("backup"), {
     message: "Backup archive was created and handed to the share sheet.",
     operation: "backup",
@@ -13184,7 +13224,6 @@ assertDurationFormatSmoke();
 assertRouteParamSmoke();
 assertHomeScreenSmoke();
 assertImportSongFormSmoke();
-assertBackupScreenSmoke();
 assertPremiumScreenSmoke();
 assertPlaybackSessionSmoke();
 assertPlaybackNativeStatusSmoke();
@@ -13192,6 +13231,7 @@ assertPlaybackNativePlayerStateSmoke();
 assertPlaybackNativeCommandPlanSmoke();
 assertPlaybackPlayerStateSmoke();
 void assertImportLibrarySavePlanSmoke().then(async () => {
+  await assertBackupScreenSmoke();
   await assertSettingsScreenSmoke();
   await assertPlaybackPersistenceExecutorSmoke();
   await assertImportFileCacheExecutorSmoke();

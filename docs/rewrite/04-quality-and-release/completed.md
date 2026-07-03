@@ -234,3 +234,5 @@
   blocked and successful play/queue sequencing.
 - Added direct backup screen action-flow smoke coverage for immediate,
   confirmed, destructive, and reset sequencing.
+- Added direct backup session command-flow smoke coverage for success, failure,
+  and reset dispatch sequencing.

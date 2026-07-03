@@ -343,3 +343,5 @@
   service.
 - Moved backup operation confirmation, haptic, run, and reset sequencing out
   of the screen controller and into a focused action-flow service.
+- Moved backup session start/success/failure/reset dispatch sequencing out of
+  the React hook and into a focused command-flow service.

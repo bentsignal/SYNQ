@@ -202,6 +202,19 @@ import {
   importSessionReducer,
 } from "../../../apps/new/src/features/import/services/import-session-state-service";
 import {
+  beginImportFilePick,
+  beginImportWifiTransfer,
+  discardImportSession,
+  failImportSession,
+  finishImportSession,
+  receiveImportWifiSong,
+  removeImportSongs,
+  reviewImportSongs,
+  setImportSaveToLibrary,
+  startImportSessionSave,
+  updateImportSong,
+} from "../../../apps/new/src/features/import/services/import-session-step-service";
+import {
   initialImportSessionState,
 } from "../../../apps/new/src/features/import/services/import-session-initial-state-service";
 import {
@@ -2332,6 +2345,113 @@ function assertPlaybackPlayerStateSmoke() {
 async function assertImportSessionSmoke() {
   const first = importDraft(1);
   const second = importDraft(2);
+
+  assert.deepEqual(
+    beginImportFilePick({
+      ...initialImportSessionState,
+      error: "Old import failure",
+    }),
+    {
+      ...initialImportSessionState,
+      error: null,
+      phase: "picking",
+      source: "files",
+    },
+  );
+  assert.deepEqual(
+    beginImportWifiTransfer({
+      state: {
+        ...initialImportSessionState,
+        selectedSongId: first.id,
+        songs: [first],
+      },
+      total: 3,
+    }),
+    {
+      ...initialImportSessionState,
+      error: null,
+      phase: "processing",
+      progress: { current: 0, total: 3 },
+      saveSummary: null,
+      selectedSongId: null,
+      songs: [],
+      source: "wifi",
+    },
+  );
+  assert.deepEqual(
+    failImportSession({
+      error: "Import step failure",
+      state: initialImportSessionState,
+    }),
+    {
+      ...initialImportSessionState,
+      error: "Import step failure",
+      phase: "failure",
+    },
+  );
+  assert.deepEqual(
+    reviewImportSongs({
+      songs: [first, second],
+      state: initialImportSessionState,
+    }).progress,
+    { current: 2, total: 2 },
+  );
+  assert.deepEqual(
+    receiveImportWifiSong({
+      song: first,
+      state: receiveImportWifiSong({
+        song: first,
+        state: {
+          ...initialImportSessionState,
+          progress: { current: 0, total: 2 },
+        },
+      }),
+    }).songs.map((song) => song.id),
+    [first.id],
+  );
+  assert.deepEqual(
+    removeImportSongs({
+      songIds: [first.id],
+      state: reviewImportSongs({
+        songs: [first, second],
+        state: initialImportSessionState,
+      }),
+    }).songs.map((song) => song.id),
+    [second.id],
+  );
+  assert.equal(
+    setImportSaveToLibrary({
+      shouldSaveToLibrary: false,
+      state: initialImportSessionState,
+    }).shouldSaveToLibrary,
+    false,
+  );
+  assert.equal(
+    updateImportSong({
+      song: { ...second, title: "Step Edited" },
+      state: reviewImportSongs({
+        songs: [first, second],
+        state: initialImportSessionState,
+      }),
+    }).songs[1]?.title,
+    "Step Edited",
+  );
+  assert.equal(
+    startImportSessionSave({
+      ...initialImportSessionState,
+      shouldSaveToLibrary: false,
+      songs: [first],
+    }).phase,
+    "discarding",
+  );
+  assert.deepEqual(
+    finishImportSession({
+      state: initialImportSessionState,
+      summary: { discarded: 1, saved: 2, savedSongIds: [1, 2] },
+    }).progress,
+    { current: 3, total: 3 },
+  );
+  assert.equal(discardImportSession().phase, "idle");
 
   assert.equal(normalizePersistedImportSession(null), null);
   assert.equal(normalizePersistedImportSession({ songs: [] }), null);

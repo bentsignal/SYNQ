@@ -4,6 +4,19 @@ import type {
   ImportSongDraft,
 } from "../types/import-session";
 import { initialImportSessionState } from "./import-session-initial-state-service";
+import {
+  beginImportFilePick,
+  beginImportWifiTransfer,
+  discardImportSession,
+  failImportSession,
+  finishImportSession,
+  receiveImportWifiSong,
+  removeImportSongs,
+  reviewImportSongs,
+  setImportSaveToLibrary,
+  startImportSessionSave,
+  updateImportSong,
+} from "./import-session-step-service";
 
 export type ImportSessionAction =
   | { type: "begin-file-pick" }
@@ -26,115 +39,32 @@ export const importSessionReducer = (
 ): ImportSessionState => {
   switch (action.type) {
     case "begin-file-pick":
-      return {
-        ...state,
-        error: null,
-        phase: "picking",
-        source: "files",
-      };
+      return beginImportFilePick(state);
     case "begin-wifi-transfer":
-      return {
-        ...state,
-        error: null,
-        phase: "processing",
-        progress: {
-          current: 0,
-          total: action.total,
-        },
-        saveSummary: null,
-        selectedSongId: null,
-        songs: [],
-        source: "wifi",
-      };
+      return beginImportWifiTransfer({ state, total: action.total });
     case "fail":
-      return {
-        ...state,
-        error: action.error,
-        phase: "failure",
-      };
-    case "receive-wifi-song": {
-      const songs = state.songs.some((song) => song.id === action.song.id)
-        ? state.songs
-        : [...state.songs, action.song];
-
-      return {
-        ...state,
-        progress: {
-          current: songs.length,
-          total: Math.max(state.progress.total, songs.length),
-        },
-        selectedSongId: action.song.id,
-        songs,
-      };
-    }
+      return failImportSession({ error: action.error, state });
+    case "receive-wifi-song":
+      return receiveImportWifiSong({ song: action.song, state });
     case "review":
-      return {
-        ...state,
-        error: null,
-        phase: "reviewing",
-        progress: {
-          current: action.songs.length,
-          total: action.songs.length,
-        },
-        saveSummary: null,
-        selectedSongId: action.songs[0]?.id ?? null,
-        songs: action.songs,
-      };
-    case "remove-songs": {
-      const songIdSet = new Set(action.songIds);
-      const songs = state.songs.filter((song) => !songIdSet.has(song.id));
-
-      return {
-        ...state,
-        progress: {
-          current: songs.length,
-          total: songs.length,
-        },
-        selectedSongId: songs[0]?.id ?? null,
-        songs,
-      };
-    }
+      return reviewImportSongs({ songs: action.songs, state });
+    case "remove-songs":
+      return removeImportSongs({ songIds: action.songIds, state });
     case "set-save-to-library":
-      return {
-        ...state,
+      return setImportSaveToLibrary({
         shouldSaveToLibrary: action.shouldSaveToLibrary,
-      };
+        state,
+      });
     case "update-song":
-      return {
-        ...state,
-        saveSummary: null,
-        songs: state.songs.map((song) =>
-          song.id === action.song.id ? action.song : song,
-        ),
-      };
+      return updateImportSong({ song: action.song, state });
     case "saving":
-      return {
-        ...state,
-        error: null,
-        phase: state.shouldSaveToLibrary ? "saving" : "discarding",
-        progress: {
-          current: 0,
-          total: state.songs.length,
-        },
-      };
+      return startImportSessionSave(state);
     case "finish":
-      return {
-        ...state,
-        error: null,
-        phase: "success",
-        progress: {
-          current: action.summary.saved + action.summary.discarded,
-          total: action.summary.saved + action.summary.discarded,
-        },
-        saveSummary: action.summary,
-      };
+      return finishImportSession({ state, summary: action.summary });
     case "hydrate":
       return action.state;
     case "discard":
-      return {
-        ...initialImportSessionState,
-        phase: "idle",
-      };
+      return discardImportSession();
     case "reset":
       return initialImportSessionState;
   }

@@ -180,3 +180,5 @@
   queue-clear/reset, seek, and remote-failure plan construction.
 - Added direct playback session step smoke coverage for hydration, failure, and
   playback-mode toggles.
+- Added direct import session step smoke coverage for file/Wi-Fi starts,
+  failure, review, receive, remove, edit, save, finish, and discard transitions.

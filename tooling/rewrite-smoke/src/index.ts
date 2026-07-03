@@ -798,6 +798,7 @@ import {
   type LibraryExportShareDependencies,
 } from "../../../apps/new/src/features/export/services/library-export-share-executor-service";
 import {
+  buildLibraryExportAudioTags,
   buildLibrarySongExportMetadata,
   formatLibraryExportNames,
   loadArtworkTagWithDependencies,
@@ -10728,6 +10729,52 @@ async function assertLibraryExportMetadataExecutorSmoke() {
     "info:file:///documents/images/cover-hash-full.jpg",
     "read:file:///documents/images/cover-hash-full.jpg:base64",
   ]);
+
+  assert.deepEqual(
+    buildLibraryExportAudioTags({
+      artwork: {
+        description: "Album Cover",
+        imageBuffer: "base64-cover",
+        mime: "image/jpeg",
+      },
+      metadata: {
+        album: "Smoke Album",
+        artist: "Smoke Artist",
+        coverImage: "cover-hash",
+        fileType: "audio/mpeg",
+        pathToFile: "file:///song.mp3",
+        title: "Smoke Song",
+      },
+    }),
+    {
+      APIC: {
+        description: "Album Cover",
+        imageBuffer: "base64-cover",
+        mime: "image/jpeg",
+      },
+      album: "Smoke Album",
+      artist: "Smoke Artist",
+      title: "Smoke Song",
+    },
+  );
+  assert.deepEqual(
+    buildLibraryExportAudioTags({
+      artwork: null,
+      metadata: {
+        album: "",
+        artist: "",
+        coverImage: null,
+        fileType: null,
+        pathToFile: "file:///song.mp3",
+        title: "Untitled song",
+      },
+    }),
+    {
+      album: "",
+      artist: "",
+      title: "Untitled song",
+    },
+  );
 
   calls.length = 0;
   artworkExists = false;

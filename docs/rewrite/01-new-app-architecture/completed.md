@@ -229,3 +229,5 @@
   playlist repositories behind the existing collection-create facade.
 - Split import library artist/album find-or-create behavior into a focused
   entity-link service used by the import song linking executor.
+- Split library export ID3 tag construction into a focused pure helper used by
+  export metadata writeback orchestration.

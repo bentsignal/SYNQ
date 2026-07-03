@@ -122,6 +122,19 @@ export const loadLibrarySongExportMetadataWithDependencies = async (
   return buildLibrarySongExportMetadata({ albums, artists, song });
 };
 
+export const buildLibraryExportAudioTags = ({
+  artwork,
+  metadata,
+}: {
+  artwork: LibraryExportArtworkTag | null;
+  metadata: LibraryExportMetadata;
+}): AudioMetadataTags => ({
+  ...(artwork ? { APIC: artwork } : {}),
+  album: metadata.album,
+  artist: metadata.artist,
+  title: metadata.title,
+});
+
 export const prepareLibrarySongForExportWithDependencies = async (
   song: LibraryExportMetadataSong,
   dependencies: LibraryExportMetadataDependencies,
@@ -140,18 +153,11 @@ export const prepareLibrarySongForExportWithDependencies = async (
     return song.pathToFile;
   }
 
-  const tags: AudioMetadataTags = {
-    album: metadata.album,
-    artist: metadata.artist,
-    title: metadata.title,
-  };
   const artwork = await loadArtworkTagWithDependencies(
     metadata.coverImage,
     dependencies,
   );
-  if (artwork) {
-    tags.APIC = artwork;
-  }
+  const tags = buildLibraryExportAudioTags({ artwork, metadata });
 
   try {
     await dependencies.writeTags({

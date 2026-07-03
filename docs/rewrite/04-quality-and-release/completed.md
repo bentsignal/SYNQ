@@ -118,3 +118,5 @@
   table-specific insert adapters into smaller repository modules.
 - Added direct import library entity-link smoke coverage for existing artist
   and album reuse plus new artist and album insertion.
+- Added library export audio-tag smoke coverage for metadata-only and
+  artwork-embedded ID3 payload construction.

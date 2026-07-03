@@ -325,3 +325,5 @@
   React hook and into a focused command-flow service.
 - Moved basic import session transition dispatching out of the aggregate React
   command hook and into a focused command-flow service.
+- Moved Wi-Fi import session cache-prep, receive, and finish command
+  sequencing out of the React hook and into a focused command-flow service.

@@ -287,6 +287,11 @@ import {
   runUpdateImportSongCommand,
 } from "../../../apps/new/src/features/import/services/import-session-command-flow-service";
 import {
+  runBeginWifiTransferCommand,
+  runFinishWifiTransferCommand,
+  runReceiveWifiSongCommand,
+} from "../../../apps/new/src/features/import/services/import-session-wifi-command-flow-service";
+import {
   discardImportSessionLifecycle,
   getFinishImportSessionAction,
   resetImportSessionLifecycle,
@@ -3573,6 +3578,50 @@ async function assertImportSessionSmoke() {
     "review",
     "set-save-to-library",
     "update-song",
+  ]);
+  const importSessionWifiCommandEvents: unknown[] = [];
+  const dispatchImportSessionWifiCommand = (action: ImportSessionAction) => {
+    importSessionWifiCommandEvents.push([
+      action.type,
+      "error" in action ? action.error : null,
+    ]);
+  };
+  assert.equal(
+    await runBeginWifiTransferCommand({
+      dispatch: dispatchImportSessionWifiCommand,
+      prepareWifiImportCache: async () => {},
+      total: 4,
+    }),
+    true,
+  );
+  assert.equal(
+    await runBeginWifiTransferCommand({
+      dispatch: dispatchImportSessionWifiCommand,
+      prepareWifiImportCache: async () => {
+        throw new Error("Cache failed");
+      },
+      total: 5,
+    }),
+    false,
+  );
+  runReceiveWifiSongCommand({
+    dispatch: dispatchImportSessionWifiCommand,
+    song: importDraft(93),
+  });
+  runFinishWifiTransferCommand({
+    dispatch: dispatchImportSessionWifiCommand,
+    songs: [importDraft(94)],
+  });
+  runFinishWifiTransferCommand({
+    dispatch: dispatchImportSessionWifiCommand,
+    songs: [],
+  });
+  assert.deepEqual(importSessionWifiCommandEvents, [
+    ["begin-wifi-transfer", null],
+    ["fail", "Cache failed"],
+    ["receive-wifi-song", null],
+    ["review", null],
+    ["fail", "No Wi-Fi songs were received."],
   ]);
   assert.equal(
     getImportSessionCommandErrorMessage({

@@ -23,3 +23,5 @@
   document-picker archive URI normalization.
 - Added injectable backup command orchestration smoke coverage for backup,
   restore, erase, cancellation, sharing availability, and restore cleanup.
+- Added import save-to-library session smoke coverage for successful draft
+  cache cleanup and failure-safe cleanup skipping.

@@ -20,6 +20,8 @@ export async function saveImportSongsToLibrary(
     savedSongIds.push(await saveImportSongToLibrary(song, dependencies));
   }
 
+  await dependencies.deleteImportDraftCacheFiles(songs);
+
   return {
     discarded: 0,
     saved: savedSongIds.length,

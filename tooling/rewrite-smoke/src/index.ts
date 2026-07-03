@@ -6264,7 +6264,7 @@ async function assertImportLibrarySavePlanSmoke() {
       {
         ...createDependencies({ linkedAlbum: true }),
         deleteImportDraftCacheFiles: async (songs) => {
-          calls.push(`delete-cache-${songs.length}`);
+          calls.push(`delete-cache-${songs.map((song) => song.id).join(",")}`);
         },
       },
     ),
@@ -6283,6 +6283,28 @@ async function assertImportLibrarySavePlanSmoke() {
     "move-42-import-6.mp3-/tmp/import-6.mp3",
     "update-path-42-/library/42.mp3",
     "link-42",
+    "delete-cache-5,6",
+  ]);
+  calls.length = 0;
+
+  await assert.rejects(
+    () =>
+      saveImportSongsToLibrary(
+        [importDraft(9), importDraft(10)],
+        {
+          ...createDependencies({ linkedAlbum: false, moveFails: true }),
+          deleteImportDraftCacheFiles: async (songs) => {
+            calls.push(`delete-cache-${songs.map((song) => song.id).join(",")}`);
+          },
+        },
+      ),
+    /Audio file could not be saved: move failed/,
+  );
+  assert.deepEqual(calls, [
+    "insert-9",
+    "move-42-import-9.mp3-/tmp/import-9.mp3",
+    "delete-row-42",
+    "delete-files-42",
   ]);
   calls.length = 0;
 

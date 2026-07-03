@@ -73,6 +73,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: playback queue row action state, labels, metadata, and duration
     presentation now live in a focused row service with deterministic smoke
     coverage instead of the row component and generic queue mechanics service.
+  - Done: playback queue ad-break panel rendering now lives in a focused
+    component instead of the queue screen view owning warning-panel layout and
+    Premium action rendering.
   - Done: collection detail song-row aggregation now lives in a focused song
     detail service instead of the detail shell builder owning song grouping,
     artist/album fallback labels, and track sorting.

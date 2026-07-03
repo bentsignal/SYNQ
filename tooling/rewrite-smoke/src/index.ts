@@ -559,6 +559,12 @@ import {
   initialPremiumEntitlementState,
   premiumEntitlementReducer,
 } from "../../../apps/new/src/features/premium/services/premium-entitlement-state-service";
+import {
+  getTierIdFromProduct,
+  hydratePremiumTierPrices,
+  premiumOfferingNames,
+  premiumTiers,
+} from "../../../apps/new/src/features/premium/services/premium-catalog-service";
 import type {
   PremiumPurchaseState,
   PremiumTier,
@@ -7294,6 +7300,30 @@ function assertPremiumScreenSmoke() {
     {
       tiers,
     },
+  );
+  assert.deepEqual(
+    premiumTiers.map((tier) => tier.id),
+    ["monthly", "yearly", "lifetime"],
+  );
+  assert.deepEqual(premiumOfferingNames, {
+    lifetime: "Premium Lifetime",
+    monthly: "Premium Monthly",
+    yearly: "Premium Yearly",
+  });
+  assert.equal(getTierIdFromProduct("SYNQPremiumLifetime"), "lifetime");
+  assert.equal(getTierIdFromProduct("SYNQPremiumMonthly"), "monthly");
+  assert.equal(getTierIdFromProduct("SYNQPremiumYearly"), "yearly");
+  assert.equal(getTierIdFromProduct("unknown-product"), "monthly");
+  assert.deepEqual(
+    hydratePremiumTierPrices({
+      monthly: "$1.99",
+      yearly: "$19.99",
+    }).map((tier) => ({ id: tier.id, price: tier.price })),
+    [
+      { id: "monthly", price: "$1.99" },
+      { id: "yearly", price: "$19.99" },
+      { id: "lifetime", price: "$∞" },
+    ],
   );
   const idleState: PremiumPurchaseState = {
     active: false,

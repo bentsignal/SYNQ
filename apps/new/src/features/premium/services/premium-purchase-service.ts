@@ -5,44 +5,18 @@ import type {
   PremiumTierId,
 } from "../types/premium-purchase";
 import Purchases from "react-native-purchases";
+import {
+  getTierIdFromProduct,
+  hydratePremiumTierPrices,
+  premiumOfferingNames,
+  premiumTiers,
+} from "./premium-catalog-service";
 
 const publicRevenueCatKey = "appl_qzTfhRrmSegqQhRUukTmiUsVMIq";
 
-const offeringNames = {
-  lifetime: "Premium Lifetime",
-  monthly: "Premium Monthly",
-  yearly: "Premium Yearly",
-} satisfies Record<PremiumTierId, string>;
-
-const productTierIds = {
-  SYNQPremiumLifetime: "lifetime",
-  SYNQPremiumMonthly: "monthly",
-  SYNQPremiumYearly: "yearly",
-} satisfies Record<string, PremiumTierId>;
-const productTierIdLookup: Record<string, PremiumTierId> = productTierIds;
-
 let isConfigured = false;
 
-export const premiumTiers: PremiumTier[] = [
-  {
-    description: "Full access with monthly renewal.",
-    id: "monthly",
-    label: "Monthly",
-    price: "$∞",
-  },
-  {
-    description: "Full access with yearly renewal.",
-    id: "yearly",
-    label: "Yearly",
-    price: "$∞",
-  },
-  {
-    description: "Full access with one lifetime purchase.",
-    id: "lifetime",
-    label: "Lifetime",
-    price: "$∞",
-  },
-];
+export { premiumTiers };
 
 const configureRevenueCat = () => {
   if (isConfigured) {
@@ -56,18 +30,14 @@ const configureRevenueCat = () => {
   isConfigured = true;
 };
 
-const getTierIdFromProduct = (productIdentifier: string): PremiumTierId => {
-  return productTierIdLookup[productIdentifier] ?? "monthly";
-};
-
 const getPackageForTier = async (tierId: PremiumTierId) => {
   configureRevenueCat();
   const offerings = await Purchases.getOfferings();
-  const premiumOffering = offerings.all[offeringNames[tierId]];
+  const premiumOffering = offerings.all[premiumOfferingNames[tierId]];
   const purchasePackage = premiumOffering?.availablePackages[0];
 
   if (!purchasePackage) {
-    throw new Error(`${offeringNames[tierId]} is unavailable.`);
+    throw new Error(`${premiumOfferingNames[tierId]} is unavailable.`);
   }
 
   return purchasePackage;
@@ -77,14 +47,16 @@ export async function loadPremiumTiers(): Promise<PremiumTier[]> {
   configureRevenueCat();
   const offerings = await Purchases.getOfferings();
 
-  return premiumTiers.map((tier) => {
-    const purchasePackage =
-      offerings.all[offeringNames[tier.id]]?.availablePackages[0];
-
-    return {
-      ...tier,
-      price: purchasePackage?.product.priceString ?? tier.price,
-    };
+  return hydratePremiumTierPrices({
+    lifetime:
+      offerings.all[premiumOfferingNames.lifetime]?.availablePackages[0]
+        ?.product.priceString,
+    monthly:
+      offerings.all[premiumOfferingNames.monthly]?.availablePackages[0]?.product
+        .priceString,
+    yearly:
+      offerings.all[premiumOfferingNames.yearly]?.availablePackages[0]?.product
+        .priceString,
   });
 }
 

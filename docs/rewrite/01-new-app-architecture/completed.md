@@ -154,3 +154,5 @@
   repositories behind the existing collection update facade.
 - Split library song metadata relationship rewrites out of the song metadata
   repository.
+- Split static premium tier catalog and product mapping out of the RevenueCat
+  purchase adapter.

@@ -1,12 +1,11 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useReducer,
   type ReactNode,
 } from "react";
+import { createStore } from "rostra";
 import { checkPremiumEntitlement } from "../services/premium-purchase-service";
 import { getPremiumMutationErrorMessage } from "../services/premium-screen-service";
 import type {
@@ -29,7 +28,7 @@ type PremiumEntitlementAction =
   | { error: string; type: "fail" }
   | { status: PremiumEntitlementStatus; type: "succeed" };
 
-type PremiumEntitlementValue = {
+export type PremiumEntitlementValue = {
   applyStatus: (status: PremiumEntitlementStatus) => void;
   refresh: () => Promise<void>;
   state: PremiumEntitlementState;
@@ -42,9 +41,6 @@ const initialPremiumEntitlementState: PremiumEntitlementState = {
   phase: "checking",
   tierId: "monthly",
 };
-
-const PremiumEntitlementContext =
-  createContext<PremiumEntitlementValue | null>(null);
 
 const premiumEntitlementReducer = (
   state: PremiumEntitlementState,
@@ -74,11 +70,7 @@ const premiumEntitlementReducer = (
   }
 };
 
-export function PremiumEntitlementProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+function usePremiumEntitlementStore(): PremiumEntitlementValue {
   const [state, dispatch] = useReducer(
     premiumEntitlementReducer,
     initialPremiumEntitlementState,
@@ -111,7 +103,7 @@ export function PremiumEntitlementProvider({
     void refresh();
   }, [refresh]);
 
-  const value = useMemo<PremiumEntitlementValue>(
+  return useMemo<PremiumEntitlementValue>(
     () => ({
       applyStatus,
       refresh,
@@ -119,22 +111,26 @@ export function PremiumEntitlementProvider({
     }),
     [applyStatus, refresh, state],
   );
+}
 
-  return (
-    <PremiumEntitlementContext.Provider value={value}>
-      {children}
-    </PremiumEntitlementContext.Provider>
-  );
+const { Store, useStore } = createStore<object, PremiumEntitlementValue>(
+  usePremiumEntitlementStore,
+);
+
+export function PremiumEntitlementProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  return <Store>{children}</Store>;
+}
+
+export function usePremiumEntitlementSelector<SelectedValue>(
+  selector: (store: PremiumEntitlementValue) => SelectedValue,
+) {
+  return useStore(selector);
 }
 
 export function usePremiumEntitlement() {
-  const value = useContext(PremiumEntitlementContext);
-
-  if (!value) {
-    throw new Error(
-      "usePremiumEntitlement must be used inside PremiumEntitlementProvider.",
-    );
-  }
-
-  return value;
+  return usePremiumEntitlementSelector((store) => store);
 }

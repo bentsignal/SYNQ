@@ -1,11 +1,13 @@
-import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
+import { usePremiumEntitlementSelector } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { settingsRoutes } from "../services/settings-navigation-service";
 import { getSettingsHomeState } from "../services/settings-screen-service";
 
 export function useSettingsHomeController() {
-  const { state: premiumState } = usePremiumEntitlement();
+  const premiumActive = usePremiumEntitlementSelector(
+    (store) => store.state.active,
+  );
   const screenState = getSettingsHomeState({
-    premiumActive: premiumState.active,
+    premiumActive,
   });
 
   return {

@@ -9,7 +9,7 @@
 - [ ] Prioritize high-churn providers first:
   - playback session
   - import session
-  - premium entitlement
+  - done: premium entitlement
   - done: customization settings/theme
 - [ ] Preserve provider ergonomics while using selector functions for
   component reads.

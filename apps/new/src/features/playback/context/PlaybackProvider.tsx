@@ -7,7 +7,7 @@ import {
   useRef,
   type ReactNode,
 } from "react";
-import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
+import { usePremiumEntitlementSelector } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { usePlaybackAdGateController } from "../hooks/use-playback-ad-gate-controller";
 import {
   usePlaybackCommandController,
@@ -36,7 +36,9 @@ type PlaybackSessionValue = PlaybackCommands & {
 const PlaybackSessionContext = createContext<PlaybackSessionValue | null>(null);
 
 export function PlaybackProvider({ children }: { children: ReactNode }) {
-  const { state: premiumState } = usePremiumEntitlement();
+  const premiumActive = usePremiumEntitlementSelector(
+    (store) => store.state.active,
+  );
   const [state, dispatch] = useReducer(playbackReducer, initialPlaybackState);
   const stateRef = useRef(state);
   const adapterRef = useRef(createExpoAudioTrackPlayerAdapter());
@@ -79,7 +81,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     dispatch,
     onBeginAdBreak: playNativeAdBreak,
     onResumeLibraryAfterPremium: resumeNativeLibraryAfterPremium,
-    premiumActive: premiumState.active,
+    premiumActive,
     state,
     stateRef,
   });

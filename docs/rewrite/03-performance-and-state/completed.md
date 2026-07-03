@@ -12,3 +12,6 @@
 - Migrated customization settings from broad React context to a Rostra store,
   added selector reads for theme and haptics, and lowered the context ratchet
   from 4 modules to 3.
+- Migrated premium entitlement from broad React context to a Rostra store,
+  added selector reads for active/status consumers, and lowered the context
+  ratchet from 3 modules to 2.

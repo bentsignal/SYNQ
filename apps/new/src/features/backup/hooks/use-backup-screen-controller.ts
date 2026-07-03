@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Alert } from "react-native";
 import { useImportSession } from "@/src/features/import/hooks/use-import-session";
-import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
+import { usePremiumEntitlementSelector } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
@@ -18,7 +18,9 @@ export function useBackupScreenController() {
   const { sendHaptic } = useHapticFeedback();
   const { resetSession } = useImportSession();
   const { resetPlaybackSession } = usePlaybackSession();
-  const { state: premiumState } = usePremiumEntitlement();
+  const premiumActive = usePremiumEntitlementSelector(
+    (store) => store.state.active,
+  );
   const previousPhaseRef = useRef(state.phase);
   const statusState = getBackupStatusState(state);
 
@@ -77,7 +79,7 @@ export function useBackupScreenController() {
   const getActionState = (operation: BackupOperation) =>
     getBackupActionState({
       operation,
-      premiumActive: premiumState.active,
+      premiumActive,
       state,
     });
 

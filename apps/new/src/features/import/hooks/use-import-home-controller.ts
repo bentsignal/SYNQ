@@ -1,4 +1,4 @@
-import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
+import { usePremiumEntitlementSelector } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { getImportHomeState } from "../services/import-home-screen-state-service";
 import { useImportSession } from "./use-import-session";
@@ -6,9 +6,11 @@ import { useImportSession } from "./use-import-session";
 export function useImportHomeController() {
   const { state } = useImportSession();
   const { sendHaptic } = useHapticFeedback();
-  const { state: premiumState } = usePremiumEntitlement();
+  const premiumActive = usePremiumEntitlementSelector(
+    (store) => store.state.active,
+  );
   const screenState = getImportHomeState({
-    premiumActive: premiumState.active,
+    premiumActive,
     state,
   });
 

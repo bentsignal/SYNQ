@@ -1,4 +1,4 @@
-import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
+import { usePremiumEntitlementSelector } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { useCustomizationSettingsContext } from "../context/CustomizationSettingsProvider";
 import {
   getCustomizationScreenState,
@@ -8,7 +8,9 @@ import type { CustomizationColorKey } from "../types/customization-settings";
 import { useHapticFeedback } from "./use-haptic-feedback";
 
 export function useCustomizationScreenController() {
-  const { state: premiumState } = usePremiumEntitlement();
+  const premiumActive = usePremiumEntitlementSelector(
+    (store) => store.state.active,
+  );
   const {
     setAppIcon,
     setHapticsEnabled,
@@ -17,7 +19,7 @@ export function useCustomizationScreenController() {
   } = useCustomizationSettingsContext();
   const { sendHaptic } = useHapticFeedback();
   const screenState = getCustomizationScreenState({
-    premiumActive: premiumState.active,
+    premiumActive,
     status: customizationState.status,
   });
 

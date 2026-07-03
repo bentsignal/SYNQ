@@ -7,12 +7,17 @@ import {
   premiumTierLoadReducer,
 } from "../services/premium-purchase-state-service";
 import type { PremiumTierId } from "../types/premium-purchase";
-import { usePremiumEntitlement } from "../context/PremiumEntitlementProvider";
+import { usePremiumEntitlementSelector } from "../context/PremiumEntitlementProvider";
 import { usePremiumPurchaseCommands } from "./use-premium-purchase-commands";
 import { usePremiumTierLoader } from "./use-premium-tier-loader";
 
 export function usePremiumPurchaseSession() {
-  const { applyStatus, state: entitlementState } = usePremiumEntitlement();
+  const applyStatus = usePremiumEntitlementSelector(
+    (store) => store.applyStatus,
+  );
+  const entitlementState = usePremiumEntitlementSelector(
+    (store) => store.state,
+  );
   const [state, dispatch] = useReducer(
     premiumPurchaseReducer,
     getInitialPremiumPurchaseState({

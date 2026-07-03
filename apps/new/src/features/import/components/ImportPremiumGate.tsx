@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { usePremiumEntitlement } from "@/src/features/premium/context/PremiumEntitlementProvider";
+import { usePremiumEntitlementSelector } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { getImportPremiumGateState } from "../services/import-premium-gate-state-service";
@@ -10,7 +10,7 @@ type ImportPremiumGateProps = {
 };
 
 export function ImportPremiumGate({ children }: ImportPremiumGateProps) {
-  const { state } = usePremiumEntitlement();
+  const state = usePremiumEntitlementSelector((store) => store.state);
   const theme = useCustomizationTheme();
   const { sendHaptic } = useHapticFeedback();
   const gateState = getImportPremiumGateState(state);

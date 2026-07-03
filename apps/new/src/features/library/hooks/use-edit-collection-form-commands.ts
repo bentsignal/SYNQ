@@ -4,7 +4,7 @@ import {
   updateAlbum,
   updateArtist,
   updatePlaylist,
-} from "../repository/collection-repository";
+} from "../repository/collection-update-repository";
 import { useCollectionFormImageCommand } from "./use-collection-form-image-command";
 import { updateCollectionFromForm } from "../services/collection-form-mutation-service";
 import { getCollectionDetailHref } from "../services/collection-form-interaction-service";

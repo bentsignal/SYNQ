@@ -4,7 +4,7 @@ import {
   createAlbum,
   createArtistWithImage,
   createPlaylist,
-} from "../repository/collection-repository";
+} from "../repository/collection-create-repository";
 import { useCollectionFormImageCommand } from "./use-collection-form-image-command";
 import { createCollectionFromForm } from "../services/collection-form-mutation-service";
 import { getCollectionDetailHref } from "../services/collection-form-interaction-service";

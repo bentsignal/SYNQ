@@ -62,6 +62,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: add-to-collection repository writes now live in a focused collection
     song add repository instead of the broader relationship mutation
     repository.
+  - Done: collection create/update writes now live in focused repository
+    modules instead of one broad collection mutation repository.
   - Done: collection detail song-row aggregation now lives in a focused song
     detail service instead of the detail shell builder owning song grouping,
     artist/album fallback labels, and track sorting.

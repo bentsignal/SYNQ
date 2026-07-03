@@ -12,9 +12,9 @@
 - There are many `StyleSheet.create` call sites across `apps/new`; make this a
   staged migration with enforcement after a few representative conversions.
 - `scripts/audit-rewrite-debt.sh` currently allows the known baseline of 111
-  `StyleSheet.create` calls and 2 React context modules. Lower those limits
+  `StyleSheet.create` calls and 1 React context module. Lower those limits
   whenever cleanup lands.
 - The first Rostra-backed provider is customization settings. It keeps the
   compatibility hook while exposing selector reads for lower-churn consumers.
-- Premium entitlement is also Rostra-backed. Remaining broad React context
-  modules are import session and playback session.
+- Premium entitlement and import session are also Rostra-backed. The remaining
+  broad React context module is playback session.

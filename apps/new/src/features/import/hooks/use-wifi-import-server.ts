@@ -14,16 +14,20 @@ import {
   wifiImportServerReducer,
 } from "../services/wifi-import-server-state-service";
 import { getWifiImportServerStartErrorMessage } from "../services/wifi-import-request-service";
-import { useImportSession } from "./use-import-session";
+import { useImportSessionSelector } from "./use-import-session";
 import { useWifiImportRouteDependencies } from "./use-wifi-import-route-dependencies";
 
 export function useWifiImportServer() {
-  const {
-    beginWifiTransfer,
-    failSession,
-    finishWifiTransfer,
-    receiveWifiSong,
-  } = useImportSession();
+  const beginWifiTransfer = useImportSessionSelector(
+    (store) => store.beginWifiTransfer,
+  );
+  const failSession = useImportSessionSelector((store) => store.failSession);
+  const finishWifiTransfer = useImportSessionSelector(
+    (store) => store.finishWifiTransfer,
+  );
+  const receiveWifiSong = useImportSessionSelector(
+    (store) => store.receiveWifiSong,
+  );
   const [serverState, dispatchServerState] = useReducer(
     wifiImportServerReducer,
     initialWifiImportServerState,

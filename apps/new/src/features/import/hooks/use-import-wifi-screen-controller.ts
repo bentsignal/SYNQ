@@ -1,10 +1,13 @@
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { getImportWifiState } from "../services/import-wifi-screen-state-service";
-import { useImportSession } from "./use-import-session";
+import { useImportSessionSelector } from "./use-import-session";
 import { useWifiImportServer } from "./use-wifi-import-server";
 
 export function useImportWifiScreenController() {
-  const { removeImportSongs, state } = useImportSession();
+  const removeImportSongs = useImportSessionSelector(
+    (store) => store.removeImportSongs,
+  );
+  const state = useImportSessionSelector((store) => store.state);
   const { sendHaptic } = useHapticFeedback();
   const serverState = useWifiImportServer();
   const wifiState = getImportWifiState({

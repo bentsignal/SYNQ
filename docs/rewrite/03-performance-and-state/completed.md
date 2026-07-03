@@ -15,3 +15,6 @@
 - Migrated premium entitlement from broad React context to a Rostra store,
   added selector reads for active/status consumers, and lowered the context
   ratchet from 3 modules to 2.
+- Migrated import session from broad React context to a Rostra store, converted
+  import and backup consumers to selector reads, and lowered the context
+  ratchet from 2 modules to 1.

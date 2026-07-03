@@ -8,7 +8,7 @@
   reads reduce rerenders.
 - [ ] Prioritize high-churn providers first:
   - playback session
-  - import session
+  - done: import session
   - done: premium entitlement
   - done: customization settings/theme
 - [ ] Preserve provider ergonomics while using selector functions for

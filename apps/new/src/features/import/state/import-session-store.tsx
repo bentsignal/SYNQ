@@ -1,10 +1,9 @@
 import {
-  createContext,
-  useContext,
   useMemo,
   useReducer,
   type ReactNode,
 } from "react";
+import { createStore } from "rostra";
 import {
   useImportSessionCommands,
   type ImportSessionCommands,
@@ -16,13 +15,11 @@ import {
 } from "../services/import-session-state-service";
 import type { ImportSessionState } from "../types/import-session";
 
-type ImportSessionValue = ImportSessionCommands & {
+export type ImportSessionValue = ImportSessionCommands & {
   state: ImportSessionState;
 };
 
-const ImportSessionContext = createContext<ImportSessionValue | null>(null);
-
-export function ImportSessionProvider({ children }: { children: ReactNode }) {
+function useImportSessionStore(): ImportSessionValue {
   const [state, dispatch] = useReducer(
     importSessionReducer,
     initialImportSessionState,
@@ -34,27 +31,29 @@ export function ImportSessionProvider({ children }: { children: ReactNode }) {
     state,
   });
 
-  const value = useMemo<ImportSessionValue>(
+  return useMemo<ImportSessionValue>(
     () => ({
       ...commands,
       state,
     }),
     [commands, state],
   );
+}
 
-  return (
-    <ImportSessionContext.Provider value={value}>
-      {children}
-    </ImportSessionContext.Provider>
-  );
+const { Store, useStore } = createStore<object, ImportSessionValue>(
+  useImportSessionStore,
+);
+
+export function ImportSessionProvider({ children }: { children: ReactNode }) {
+  return <Store>{children}</Store>;
+}
+
+export function useImportSessionSelector<SelectedValue>(
+  selector: (store: ImportSessionValue) => SelectedValue,
+) {
+  return useStore(selector);
 }
 
 export function useImportSession() {
-  const value = useContext(ImportSessionContext);
-
-  if (!value) {
-    throw new Error("useImportSession must be used inside ImportSessionProvider.");
-  }
-
-  return value;
+  return useImportSessionSelector((store) => store);
 }

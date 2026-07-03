@@ -1,10 +1,10 @@
 import { ImportResultScreenView } from "../components/ImportResultScreenView";
-import { useImportSession } from "../hooks/use-import-session";
+import { useImportSessionSelector } from "../hooks/use-import-session";
 import { getImportFilesHref } from "../services/import-navigation-service";
 import { getImportFailureState } from "../services/import-result-screen-state-service";
 
 export function ImportFailureScreen() {
-  const { state } = useImportSession();
+  const state = useImportSessionSelector((store) => store.state);
   const resultState = getImportFailureState(state);
 
   return (

@@ -3,10 +3,16 @@ import { useCallback } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { getImportFilesActionState } from "../services/import-files-screen-state-service";
 import { getImportFilesResultHref } from "../services/import-navigation-service";
-import { useImportSession } from "./use-import-session";
+import { useImportSessionSelector } from "./use-import-session";
 
 export function useImportFilesController() {
-  const { removeImportSongs, startFileImport, state } = useImportSession();
+  const removeImportSongs = useImportSessionSelector(
+    (store) => store.removeImportSongs,
+  );
+  const startFileImport = useImportSessionSelector(
+    (store) => store.startFileImport,
+  );
+  const state = useImportSessionSelector((store) => store.state);
   const { sendHaptic } = useHapticFeedback();
   const actionState = getImportFilesActionState(state);
 

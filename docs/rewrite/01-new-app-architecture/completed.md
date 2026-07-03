@@ -327,3 +327,5 @@
   command hook and into a focused command-flow service.
 - Moved Wi-Fi import session cache-prep, receive, and finish command
   sequencing out of the React hook and into a focused command-flow service.
+- Moved import save-screen toggle, finish, and discard haptic/navigation
+  sequencing out of the React hook and into a focused action-flow service.

@@ -212,6 +212,11 @@ import {
   getImportSaveToggleCommand,
 } from "../../../apps/new/src/features/import/services/import-save-session-command-service";
 import {
+  runImportDiscardAction,
+  runImportFinishAction,
+  runImportSaveToggleAction,
+} from "../../../apps/new/src/features/import/services/import-save-session-action-flow-service";
+import {
   getImportSaveBackLink,
   getImportSaveActionState,
   getImportSaveHeaderState,
@@ -2972,6 +2977,56 @@ async function assertImportSessionSmoke() {
     haptic: "error",
     href: "/(tabs)/import/failure",
   });
+  const saveSessionActionEvents: unknown[] = [];
+  const sendSaveSessionActionHaptic = (haptic: string) => {
+    saveSessionActionEvents.push(["haptic", haptic]);
+  };
+  const navigateSaveSessionAction = (href: string) => {
+    saveSessionActionEvents.push(["navigate", href]);
+  };
+  runImportSaveToggleAction({
+    sendHaptic: sendSaveSessionActionHaptic,
+    setShouldSaveToLibrary: (shouldSaveToLibrary) => {
+      saveSessionActionEvents.push(["set-save", shouldSaveToLibrary]);
+    },
+    state: { shouldSaveToLibrary: false },
+  });
+  await runImportFinishAction({
+    navigate: navigateSaveSessionAction,
+    saveImportSession: async () => true,
+    sendHaptic: sendSaveSessionActionHaptic,
+  });
+  await runImportFinishAction({
+    navigate: navigateSaveSessionAction,
+    saveImportSession: async () => false,
+    sendHaptic: sendSaveSessionActionHaptic,
+  });
+  await runImportDiscardAction({
+    discardSession: async () => true,
+    navigate: navigateSaveSessionAction,
+    sendHaptic: sendSaveSessionActionHaptic,
+  });
+  await runImportDiscardAction({
+    discardSession: async () => false,
+    navigate: navigateSaveSessionAction,
+    sendHaptic: sendSaveSessionActionHaptic,
+  });
+  assert.deepEqual(saveSessionActionEvents, [
+    ["haptic", "light"],
+    ["set-save", true],
+    ["haptic", "medium"],
+    ["haptic", "success"],
+    ["navigate", "/(tabs)/import/success"],
+    ["haptic", "medium"],
+    ["haptic", "error"],
+    ["navigate", "/(tabs)/import/failure"],
+    ["haptic", "medium"],
+    ["haptic", "success"],
+    ["navigate", "/(tabs)/import"],
+    ["haptic", "medium"],
+    ["haptic", "error"],
+    ["navigate", "/(tabs)/import/failure"],
+  ]);
   assert.deepEqual(getImportSongPreviewEmptyState(), {
     body: "Choose songs to review them before saving.",
     title: "No songs staged",

@@ -221,3 +221,5 @@
 - Added direct Wi-Fi import session command-flow smoke coverage for cache-prep
   success/failure, receive, review finish, and empty-transfer failure
   sequencing.
+- Added direct import save-screen action-flow smoke coverage for save toggles
+  plus finish/discard success and failure navigation sequencing.

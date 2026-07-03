@@ -1,11 +1,10 @@
 import { pushNativeRoute } from "@/src/features/app-shell/services/native-route-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
-  getImportDiscardResultCommand,
-  getImportFinishResultCommand,
-  getImportSaveSessionStartHaptic,
-  getImportSaveToggleCommand,
-} from "../services/import-save-session-command-service";
+  runImportDiscardAction,
+  runImportFinishAction,
+  runImportSaveToggleAction,
+} from "../services/import-save-session-action-flow-service";
 import type { ImportSessionState } from "../types/import-session";
 
 type UseImportSaveSessionActionsParams = {
@@ -24,25 +23,27 @@ export function useImportSaveSessionActions({
   const { sendHaptic } = useHapticFeedback();
 
   const toggleShouldSaveToLibrary = () => {
-    const command = getImportSaveToggleCommand(state);
-    sendHaptic(command.haptic);
-    setShouldSaveToLibrary(command.shouldSaveToLibrary);
+    runImportSaveToggleAction({
+      sendHaptic,
+      setShouldSaveToLibrary,
+      state,
+    });
   };
 
   const finishImport = async () => {
-    sendHaptic(getImportSaveSessionStartHaptic());
-    const succeeded = await saveImportSession();
-    const command = getImportFinishResultCommand(succeeded);
-    sendHaptic(command.haptic);
-    pushNativeRoute(command.href);
+    await runImportFinishAction({
+      navigate: pushNativeRoute,
+      saveImportSession,
+      sendHaptic,
+    });
   };
 
   const discardImport = async () => {
-    sendHaptic(getImportSaveSessionStartHaptic());
-    const discarded = await discardSession();
-    const command = getImportDiscardResultCommand(discarded);
-    sendHaptic(command.haptic);
-    pushNativeRoute(command.href);
+    await runImportDiscardAction({
+      discardSession,
+      navigate: pushNativeRoute,
+      sendHaptic,
+    });
   };
 
   return {

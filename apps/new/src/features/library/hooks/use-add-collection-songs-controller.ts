@@ -5,6 +5,7 @@ import type { LibraryCollectionDetailKind } from "../services/library-collection
 import { useAddCollectionSongsCommands } from "./use-add-collection-songs-commands";
 import {
   addCollectionSongsControllerReducer,
+  getAddCollectionSongsToggleSelectionCommand,
   initialAddCollectionSongsControllerState,
 } from "../services/add-collection-songs-state-service";
 import { getAddableSongSelectionState } from "../services/add-collection-songs-selection-service";
@@ -32,8 +33,9 @@ export function useAddCollectionSongsController({
 
   const toggleSongSelection = useCallback(
     (songId: number) => {
-      sendHaptic("light");
-      dispatchControllerState({ songId, type: "toggle-selection" });
+      const command = getAddCollectionSongsToggleSelectionCommand(songId);
+      sendHaptic(command.haptic);
+      dispatchControllerState(command.action);
     },
     [sendHaptic],
   );

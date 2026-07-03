@@ -219,6 +219,7 @@ import {
   getAddCollectionSongsSelectionSuccessCommand,
   getAddCollectionSongsSongStartCommand,
   getAddCollectionSongsSongSuccessCommand,
+  getAddCollectionSongsToggleSelectionCommand,
   initialAddCollectionSongsControllerState,
   initialAddCollectionSongsSearchState,
 } from "../../../apps/new/src/features/library/services/add-collection-songs-state-service";
@@ -3126,6 +3127,13 @@ function assertLibraryCollectionInteractionSmoke() {
   );
   assert.deepEqual(getAddCollectionSongsBlockedCommand(), {
     haptic: "error",
+  });
+  assert.deepEqual(getAddCollectionSongsToggleSelectionCommand(3), {
+    action: {
+      songId: 3,
+      type: "toggle-selection",
+    },
+    haptic: "light",
   });
   assert.deepEqual(getAddCollectionSongsSelectionStartCommand(), {
     action: {

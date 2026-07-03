@@ -167,6 +167,16 @@ export const getAddCollectionSongsBlockedCommand =
     haptic: "error",
   });
 
+export const getAddCollectionSongsToggleSelectionCommand = (
+  songId: number,
+): AddCollectionSongsActionCommand => ({
+  action: {
+    songId,
+    type: "toggle-selection",
+  },
+  haptic: "light",
+});
+
 export const getAddCollectionSongsSelectionStartCommand =
   (): AddCollectionSongsActionCommand => ({
     action: {

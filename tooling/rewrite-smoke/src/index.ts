@@ -510,6 +510,10 @@ import {
   getPickedBackupArchiveUri,
 } from "../../../apps/new/src/features/backup/services/backup-command-result-service";
 import {
+  type BackupCommandExecutorDependencies,
+  runBackupCommandWithDependencies,
+} from "../../../apps/new/src/features/backup/services/backup-command-executor-service";
+import {
   assertBackupRestoreStagedItems,
   getBackupDocumentDirectoryDeletePaths,
   getBackupRestoreStagedItemMoves,
@@ -6626,6 +6630,131 @@ function assertBackupScreenSmoke() {
   );
 }
 
+async function assertBackupCommandExecutorSmoke() {
+  const calls: string[] = [];
+  const record = (message: string) => {
+    calls.push(message);
+  };
+  const createDependencies = (
+    overrides: Partial<BackupCommandExecutorDependencies> = {},
+  ): BackupCommandExecutorDependencies => ({
+    assertRestoreStagingDirectoryHasFiles: async (stagingDirectory) => {
+      record(`assert-staged:${stagingDirectory}`);
+
+      return ["SQLite", "songs/track.mp3"];
+    },
+    cleanupRestoreStagingDirectory: async (stagingDirectory) => {
+      record(`cleanup:${stagingDirectory}`);
+    },
+    clearDocumentDirectory: async () => {
+      record("clear-document");
+    },
+    getArchivePath: () => "file:///cache/synq-backup.zip",
+    getDocumentDirectory: () => "file:///doc/",
+    isSharingAvailable: async () => true,
+    pickArchive: async () => "file:///picked.zip",
+    prepareRestoreStagingDirectory: async () => {
+      record("prepare-staging");
+
+      return "file:///cache/restore/";
+    },
+    replaceDocumentDirectoryWithStagedItems: async (
+      stagingDirectory,
+      stagedItems,
+    ) => {
+      record(`replace:${stagingDirectory}:${stagedItems.join(",")}`);
+    },
+    resetDatabaseConnection: async () => {
+      record("reset-db");
+    },
+    shareArchive: async (archivePath, options) => {
+      record(
+        `share:${archivePath}:${options.mimeType}:${options.UTI}:${options.dialogTitle}`,
+      );
+    },
+    unzipArchive: async (archiveUri, stagingDirectory) => {
+      record(`unzip:${archiveUri}:${stagingDirectory}`);
+    },
+    zipDirectory: async (sourceDirectory, archivePath) => {
+      record(`zip:${sourceDirectory}:${archivePath}`);
+
+      return archivePath;
+    },
+    ...overrides,
+  });
+
+  await assert.rejects(
+    runBackupCommandWithDependencies(
+      "backup",
+      createDependencies({
+        isSharingAvailable: async () => false,
+      }),
+    ),
+    /Sharing is unavailable/,
+  );
+  assert.deepEqual(calls, []);
+
+  assert.deepEqual(
+    await runBackupCommandWithDependencies("backup", createDependencies()),
+    getBackupCommandResult("backup"),
+  );
+  assert.deepEqual(calls, [
+    "zip:file:///doc/:file:///cache/synq-backup.zip",
+    "share:file:///cache/synq-backup.zip:application/zip:com.pkware.zip-archive:Share SYNQ backup",
+  ]);
+  calls.length = 0;
+
+  assert.deepEqual(
+    await runBackupCommandWithDependencies("erase", createDependencies()),
+    getBackupCommandResult("erase"),
+  );
+  assert.deepEqual(calls, ["clear-document", "reset-db"]);
+  calls.length = 0;
+
+  assert.deepEqual(
+    await runBackupCommandWithDependencies(
+      "restore",
+      createDependencies({
+        pickArchive: async () => null,
+      }),
+    ),
+    getCancelledBackupRestoreResult(),
+  );
+  assert.deepEqual(calls, []);
+
+  assert.deepEqual(
+    await runBackupCommandWithDependencies("restore", createDependencies()),
+    getBackupCommandResult("restore"),
+  );
+  assert.deepEqual(calls, [
+    "prepare-staging",
+    "unzip:file:///picked.zip:file:///cache/restore/",
+    "assert-staged:file:///cache/restore/",
+    "replace:file:///cache/restore/:SQLite,songs/track.mp3",
+    "reset-db",
+    "cleanup:file:///cache/restore/",
+  ]);
+  calls.length = 0;
+
+  await assert.rejects(
+    runBackupCommandWithDependencies(
+      "restore",
+      createDependencies({
+        unzipArchive: async (archiveUri, stagingDirectory) => {
+          record(`unzip:${archiveUri}:${stagingDirectory}`);
+          throw new Error("Unzip failed");
+        },
+      }),
+    ),
+    /Unzip failed/,
+  );
+  assert.deepEqual(calls, [
+    "prepare-staging",
+    "unzip:file:///picked.zip:file:///cache/restore/",
+    "cleanup:file:///cache/restore/",
+  ]);
+}
+
 function assertPremiumScreenSmoke() {
   const tiers: PremiumTier[] = [
     {
@@ -7142,6 +7271,7 @@ assertPlaybackNativeStatusSmoke();
 assertPlaybackNativeCommandPlanSmoke();
 assertPlaybackPlayerStateSmoke();
 void assertImportLibrarySavePlanSmoke().then(async () => {
+  await assertBackupCommandExecutorSmoke();
   await assertImportSessionSmoke();
   assertLibraryCollectionDetailSmoke();
   assertLibraryCollectionInteractionSmoke();

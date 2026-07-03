@@ -21,3 +21,5 @@
   parsing outside the app-shell `useNumericRouteParam` boundary.
 - Expanded deterministic backup smoke coverage for command result messages and
   document-picker archive URI normalization.
+- Added injectable backup command orchestration smoke coverage for backup,
+  restore, erase, cancellation, sharing availability, and restore cleanup.

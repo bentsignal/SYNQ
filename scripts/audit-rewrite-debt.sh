@@ -8,6 +8,7 @@ cd "$ROOT_DIR"
 NEW_APP_PATHS=(apps/new/app apps/new/src)
 MAX_NEW_APP_STYLESHEET_CREATE="${MAX_NEW_APP_STYLESHEET_CREATE:-0}"
 MAX_NEW_APP_CONTEXT_MODULES="${MAX_NEW_APP_CONTEXT_MODULES:-0}"
+MAX_EXTERNAL_PLAYBACK_SELECTOR_IMPORTS="${MAX_EXTERNAL_PLAYBACK_SELECTOR_IMPORTS:-0}"
 
 count_matches() {
   local pattern="$1"
@@ -29,12 +30,24 @@ context_modules="$(count_files "\\b(createContext|useContext)\\b" "${NEW_APP_PAT
 context_directories="$(
   find apps/new/src/features -type d -name context -print | wc -l | tr -d " "
 )"
+external_playback_selector_imports="$(
+  (
+    (rg -l "usePlaybackSessionSelector|usePlaybackSession\\(" \
+      apps/new/src/features \
+      -g "*.ts" -g "*.tsx" || true) |
+      (rg -v "apps/new/src/features/playback/" || true)
+  ) |
+    wc -l |
+    tr -d " "
+)"
 
 printf "New app StyleSheet.create calls: %s/%s max\n" \
   "$stylesheet_creates" "$MAX_NEW_APP_STYLESHEET_CREATE"
 printf "New app React context modules: %s/%s max\n" \
   "$context_modules" "$MAX_NEW_APP_CONTEXT_MODULES"
 printf "New app context directories: %s/0 max\n" "$context_directories"
+printf "External playback selector imports: %s/%s max\n" \
+  "$external_playback_selector_imports" "$MAX_EXTERNAL_PLAYBACK_SELECTOR_IMPORTS"
 
 failed=0
 
@@ -56,6 +69,16 @@ if (( context_directories > 0 )); then
   echo
   echo "Feature context directories are not allowed in the new app. Use Rostra-backed state modules instead."
   find apps/new/src/features -type d -name context -print
+  failed=1
+fi
+
+if (( external_playback_selector_imports > MAX_EXTERNAL_PLAYBACK_SELECTOR_IMPORTS )); then
+  echo
+  echo "Non-playback features should use named playback facade hooks instead of raw playback store selectors."
+  (rg -l "usePlaybackSessionSelector|usePlaybackSession\\(" \
+    apps/new/src/features \
+    -g "*.ts" -g "*.tsx" || true) |
+    rg -v "apps/new/src/features/playback/"
   failed=1
 fi
 

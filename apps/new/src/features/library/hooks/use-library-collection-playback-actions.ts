@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { usePlaybackSessionSelector } from "@/src/features/playback/hooks/use-playback-session";
+import { usePlaybackSongActions } from "@/src/features/playback/hooks/use-playback-session-selectors";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
   getCollectionPlaybackCommandPlan,
@@ -14,8 +14,7 @@ type UseLibraryCollectionPlaybackActionsParams = {
 export function useLibraryCollectionPlaybackActions({
   actionState,
 }: UseLibraryCollectionPlaybackActionsParams) {
-  const addToQueue = usePlaybackSessionSelector((store) => store.addToQueue);
-  const playSong = usePlaybackSessionSelector((store) => store.playSong);
+  const { addToQueue, playSong } = usePlaybackSongActions();
   const { sendHaptic } = useHapticFeedback();
 
   const playCollection = () => {

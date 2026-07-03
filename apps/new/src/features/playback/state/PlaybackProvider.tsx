@@ -116,7 +116,3 @@ export function usePlaybackSessionSelector<SelectedValue>(
 ) {
   return useStore(selector);
 }
-
-export function usePlaybackSession() {
-  return usePlaybackSessionSelector((store) => store);
-}

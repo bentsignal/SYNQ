@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Alert } from "react-native";
 import { useImportSessionSelector } from "@/src/features/import/hooks/use-import-session";
 import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
-import { usePlaybackSessionSelector } from "@/src/features/playback/hooks/use-playback-session";
+import { usePlaybackResetSession } from "@/src/features/playback/hooks/use-playback-session-selectors";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useCustomizationSettingsSelector } from "@/src/features/settings/state/CustomizationSettingsProvider";
 import {
@@ -18,9 +18,7 @@ export function useBackupScreenController() {
   const { reset, runOperation, state } = useBackupSession();
   const { sendHaptic } = useHapticFeedback();
   const resetSession = useImportSessionSelector((store) => store.resetSession);
-  const resetPlaybackSession = usePlaybackSessionSelector(
-    (store) => store.resetPlaybackSession,
-  );
+  const resetPlaybackSession = usePlaybackResetSession();
   const reloadCustomizationSettings = useCustomizationSettingsSelector(
     (store) => store.reloadSettings,
   );

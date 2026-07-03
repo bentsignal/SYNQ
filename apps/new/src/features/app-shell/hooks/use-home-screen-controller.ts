@@ -1,6 +1,9 @@
 import { useLibrarySongPreviewQuery } from "@/src/features/library/hooks/use-library-song-preview-query";
 import { useLibrarySummaryQuery } from "@/src/features/library/hooks/use-library-summary-query";
-import { usePlaybackSessionSelector } from "@/src/features/playback/hooks/use-playback-session";
+import {
+  usePlaybackActiveTrack,
+  usePlaybackState,
+} from "@/src/features/playback/hooks/use-playback-session-selectors";
 import {
   getHomeGuideSections,
   getHomeNowPlayingState,
@@ -9,8 +12,8 @@ import {
 export function useHomeScreenController() {
   const summary = useLibrarySummaryQuery();
   const recentSongs = useLibrarySongPreviewQuery({ limit: 4 });
-  const activeTrack = usePlaybackSessionSelector((store) => store.activeTrack);
-  const state = usePlaybackSessionSelector((store) => store.state);
+  const activeTrack = usePlaybackActiveTrack();
+  const state = usePlaybackState();
   const guideSections = getHomeGuideSections();
   const hasLibrary = summary.counts.songs > 0;
   const nowPlaying = getHomeNowPlayingState({ activeTrack, state });

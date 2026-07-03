@@ -1,5 +1,8 @@
 import { Text, View } from "react-native";
-import { usePlaybackSessionSelector } from "@/src/features/playback/hooks/use-playback-session";
+import {
+  usePlaybackActiveTrack,
+  usePlaybackSongActions,
+} from "@/src/features/playback/hooks/use-playback-session-selectors";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type {
   LibrarySongPreview,
@@ -33,9 +36,8 @@ export function LibrarySongPreviewList({
   sort,
 }: LibrarySongPreviewListProps) {
   const theme = useCustomizationTheme();
-  const activeTrack = usePlaybackSessionSelector((store) => store.activeTrack);
-  const addToQueue = usePlaybackSessionSelector((store) => store.addToQueue);
-  const playSong = usePlaybackSessionSelector((store) => store.playSong);
+  const activeTrack = usePlaybackActiveTrack();
+  const { addToQueue, playSong } = usePlaybackSongActions();
   const listState = getLibrarySongPreviewListState({ songs });
 
   return (

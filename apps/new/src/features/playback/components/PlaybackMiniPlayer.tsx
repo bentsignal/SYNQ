@@ -1,7 +1,11 @@
 import { Link, usePathname } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { usePlaybackSessionSelector } from "../hooks/use-playback-session";
+import {
+  usePlaybackActiveTrack,
+  usePlaybackState,
+  usePlaybackToggleActions,
+} from "../hooks/use-playback-session-selectors";
 import {
   getPlaybackMiniPlayerState,
   getPlaybackPlayerHref,
@@ -10,10 +14,9 @@ import {
 export function PlaybackMiniPlayer() {
   const theme = useCustomizationTheme();
   const pathname = usePathname();
-  const activeTrack = usePlaybackSessionSelector((store) => store.activeTrack);
-  const pause = usePlaybackSessionSelector((store) => store.pause);
-  const resume = usePlaybackSessionSelector((store) => store.resume);
-  const state = usePlaybackSessionSelector((store) => store.state);
+  const activeTrack = usePlaybackActiveTrack();
+  const { pause, resume } = usePlaybackToggleActions();
+  const state = usePlaybackState();
   const miniPlayer = getPlaybackMiniPlayerState({
     activeTrack,
     pathname,

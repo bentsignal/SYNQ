@@ -77,3 +77,6 @@
 - Added a new-app ESLint rule that rejects `StyleSheet.create`, so utility
   class styling stays enforced during normal lint runs as well as rewrite
   verification.
+- Added named playback selector facade hooks for non-playback consumers and a
+  rewrite audit ratchet that blocks external features from importing raw
+  playback session selectors.

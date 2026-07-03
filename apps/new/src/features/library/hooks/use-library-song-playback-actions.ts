@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { router } from "expo-router";
-import { usePlaybackSessionSelector } from "@/src/features/playback/hooks/use-playback-session";
+import { usePlaybackSongActions } from "@/src/features/playback/hooks/use-playback-session-selectors";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
   type LibrarySongDetail,
@@ -22,8 +22,7 @@ export function useLibrarySongPlaybackActions({
   detail,
   songId,
 }: UseLibrarySongPlaybackActionsParams) {
-  const addToQueue = usePlaybackSessionSelector((store) => store.addToQueue);
-  const playSong = usePlaybackSessionSelector((store) => store.playSong);
+  const { addToQueue, playSong } = usePlaybackSongActions();
   const { sendHaptic } = useHapticFeedback();
   const playbackItem = useMemo(
     () => toLibrarySongDetailPlaybackItem({ detail, songId }),

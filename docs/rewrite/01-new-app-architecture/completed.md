@@ -434,3 +434,5 @@
   of hooks and into the native transition service.
 - Moved import song edit field action and controller result-state shaping out
   of the React hook and into the import edit form service.
+- Moved library song edit hydrate and field action construction out of the
+  React hook and into the song edit form service.

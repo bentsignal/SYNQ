@@ -1,6 +1,9 @@
 import { useEffect, useReducer } from "react";
 import {
+  getLibrarySongEditChangeFieldAction,
+  getLibrarySongEditHydrateAction,
   getInitialLibrarySongEditControllerState,
+  type LibrarySongEditControllerField,
   librarySongEditControllerReducer,
 } from "../services/library-song-form-service";
 import { getLibrarySongEditControllerResultState } from "../services/library-song-edit-screen-state-service";
@@ -27,12 +30,12 @@ export function useEditLibrarySongController({
   });
 
   useEffect(() => {
-    dispatchFormState({ detail, songId, type: "hydrate" });
+    dispatchFormState(getLibrarySongEditHydrateAction({ detail, songId }));
   }, [detail, songId]);
 
   const updateField =
-    (field: "albumNames" | "artistNames" | "title") => (value: string) => {
-      dispatchFormState({ field, type: "change-field", value });
+    (field: LibrarySongEditControllerField) => (value: string) => {
+      dispatchFormState(getLibrarySongEditChangeFieldAction({ field, value }));
     };
 
   const { pickCoverImage, save } = useEditLibrarySongCommands({

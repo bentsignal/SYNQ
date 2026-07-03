@@ -313,3 +313,5 @@
 - Added direct playback native action-constructor smoke coverage.
 - Added direct import song edit field action and controller result-state smoke
   coverage.
+- Added direct library song edit hydrate and field action-constructor smoke
+  coverage.

@@ -927,6 +927,8 @@ import {
 } from "../../../apps/new/src/features/library/services/library-song-detail-mutation-service";
 import {
   buildLibrarySongEditFormState,
+  getLibrarySongEditChangeFieldAction,
+  getLibrarySongEditHydrateAction,
   getInitialLibrarySongEditControllerState,
   type LibrarySongEditControllerAction,
   librarySongEditControllerReducer,
@@ -8408,12 +8410,27 @@ async function assertLibrarySongDetailSmoke() {
     loadedSongId: null,
     title: "",
   });
+  assert.deepEqual(getLibrarySongEditHydrateAction({ detail, songId: 42 }), {
+    detail,
+    songId: 42,
+    type: "hydrate",
+  });
   assert.deepEqual(
-    librarySongEditControllerReducer(songEditState, {
-      detail,
-      songId: 42,
-      type: "hydrate",
+    getLibrarySongEditChangeFieldAction({
+      field: "title",
+      value: "Updated",
     }),
+    {
+      field: "title",
+      type: "change-field",
+      value: "Updated",
+    },
+  );
+  assert.deepEqual(
+    librarySongEditControllerReducer(
+      songEditState,
+      getLibrarySongEditHydrateAction({ detail, songId: 42 }),
+    ),
     {
       ...songEditState,
       albumNames: "Alpha Album, Beta Album",
@@ -8430,11 +8447,7 @@ async function assertLibrarySongDetailSmoke() {
         loadedSongId: 42,
         title: "Local Edit",
       },
-      {
-        detail,
-        songId: 42,
-        type: "hydrate",
-      },
+      getLibrarySongEditHydrateAction({ detail, songId: 42 }),
     ),
     {
       ...songEditState,
@@ -8443,11 +8456,13 @@ async function assertLibrarySongDetailSmoke() {
     },
   );
   assert.deepEqual(
-    librarySongEditControllerReducer(songEditState, {
-      field: "title",
-      type: "change-field",
-      value: "Updated",
-    }),
+    librarySongEditControllerReducer(
+      songEditState,
+      getLibrarySongEditChangeFieldAction({
+        field: "title",
+        value: "Updated",
+      }),
+    ),
     {
       ...songEditState,
       title: "Updated",

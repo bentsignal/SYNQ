@@ -45,6 +45,33 @@ export type LibrarySongEditControllerAction =
       type: "fail";
     };
 
+export type LibrarySongEditControllerField =
+  Extract<LibrarySongEditControllerAction, { type: "change-field" }>["field"];
+
+export const getLibrarySongEditHydrateAction = ({
+  detail,
+  songId,
+}: {
+  detail: LibrarySongDetail;
+  songId: number;
+}): LibrarySongEditControllerAction => ({
+  detail,
+  songId,
+  type: "hydrate",
+});
+
+export const getLibrarySongEditChangeFieldAction = ({
+  field,
+  value,
+}: {
+  field: LibrarySongEditControllerField;
+  value: string;
+}): LibrarySongEditControllerAction => ({
+  field,
+  type: "change-field",
+  value,
+});
+
 export const buildLibrarySongEditFormState = (
   detail: LibrarySongDetail,
 ): LibrarySongEditFormState => ({

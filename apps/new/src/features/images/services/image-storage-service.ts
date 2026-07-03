@@ -6,60 +6,27 @@ import {
   hasStoredImageHash,
   insertStoredImageHash,
 } from "../repository/image-repository";
+import {
+  getImagePathFromDirectory,
+  saveCoverImageWithDependencies,
+  type ImageStorageDependencies,
+  type ImageStorageVariant,
+} from "./image-storage-executor-service";
 
 const imageDirectory = `${FileSystem.documentDirectory}images`;
 
-const splitImageData = (image: string) => {
-  const [metadata, buffer] = image.split(",");
-  const mime = metadata?.match(/^data:(.*);base64$/)?.[1] ?? "";
-
-  return {
-    buffer,
-    mime,
-  };
-};
-
-export const getImagePathFromHash = (hash: string) => ({
-  pathToFullImage: `${imageDirectory}/${hash}-full.jpg`,
-  pathToSmallImage: `${imageDirectory}/${hash}-small.jpg`,
-});
-
-const assertImageDirectoryExists = async () => {
-  if (!FileSystem.documentDirectory) {
-    throw new Error("Document directory is unavailable.");
-  }
-
-  await FileSystem.makeDirectoryAsync(imageDirectory, {
-    intermediates: true,
-  });
-};
-
-const checkIfImageExists = async (hash: string) => {
-  const { pathToFullImage, pathToSmallImage } = getImagePathFromHash(hash);
-  const [fullImageFile, smallImageFile] = await Promise.all([
-    FileSystem.getInfoAsync(pathToFullImage),
-    FileSystem.getInfoAsync(pathToSmallImage),
-  ]);
-  const hasImageRow = await hasStoredImageHash(hash);
-
-  return fullImageFile.exists && smallImageFile.exists && hasImageRow;
-};
-
 const writeImageVariant = async ({
   base64,
+  compress,
   path,
   width,
-}: {
-  base64: string;
-  path: string;
-  width: number;
-}) => {
+}: ImageStorageVariant) => {
   const manipulated = await ImageManipulator.manipulateAsync(
     `data:image/jpeg;base64,${base64}`,
     [{ resize: { width } }],
     {
       base64: true,
-      compress: width <= 200 ? 0.5 : 1,
+      compress,
       format: SaveFormat.JPEG,
     },
   );
@@ -73,47 +40,23 @@ const writeImageVariant = async ({
   });
 };
 
-const writeImageToFileSystem = async (base64Image: string, hash: string) => {
-  const { buffer, mime } = splitImageData(base64Image);
-
-  if (!buffer || (mime !== "image/jpeg" && mime !== "image/png")) {
-    throw new Error(`Invalid image format: ${mime || "unknown"}`);
-  }
-
-  const { pathToFullImage, pathToSmallImage } = getImagePathFromHash(hash);
-
-  await Promise.all([
-    writeImageVariant({
-      base64: buffer,
-      path: pathToFullImage,
-      width: 1500,
-    }),
-    writeImageVariant({
-      base64: buffer,
-      path: pathToSmallImage,
-      width: 200,
-    }),
-  ]);
+const imageStorageDependencies: ImageStorageDependencies = {
+  createDirectory: FileSystem.makeDirectoryAsync,
+  digestImageSample: (sample) =>
+    Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, sample),
+  getInfo: FileSystem.getInfoAsync,
+  hasStoredImageHash,
+  imageDirectory,
+  insertStoredImageHash,
+  writeImageVariant,
 };
 
+export const getImagePathFromHash = (hash: string) =>
+  getImagePathFromDirectory({
+    hash,
+    imageDirectory,
+  });
+
 export async function saveCoverImage(base64Image?: string | null) {
-  if (!base64Image) {
-    return null;
-  }
-
-  await assertImageDirectoryExists();
-
-  const hash = await Crypto.digestStringAsync(
-    Crypto.CryptoDigestAlgorithm.SHA256,
-    base64Image.slice(0, 100),
-  );
-
-  if (await checkIfImageExists(hash)) {
-    return hash;
-  }
-
-  await writeImageToFileSystem(base64Image, hash);
-  await insertStoredImageHash(hash);
-
-  return hash;
+  return saveCoverImageWithDependencies(base64Image, imageStorageDependencies);
 }

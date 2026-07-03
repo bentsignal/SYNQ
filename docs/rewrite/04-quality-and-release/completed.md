@@ -47,3 +47,6 @@
 - Added persisted import-session executor smoke coverage for missing files,
   corrupt JSON, cached draft filtering, selected-song fallback, empty-state
   clears, saves, and best-effort cleanup.
+- Added image-storage executor smoke coverage for data URL parsing, image path
+  planning, variant write plans, duplicate detection, invalid formats, null
+  inputs, writes, and stored-image row inserts.

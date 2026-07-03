@@ -167,3 +167,5 @@
   executor so file picker and Wi-Fi import staging share one cache boundary.
 - Moved persisted import-session load/save/clear behavior behind an injectable
   executor so restored draft validation is testable without Expo filesystem.
+- Moved cover-image storage validation, duplicate detection, path planning, and
+  variant write orchestration behind an injectable executor.

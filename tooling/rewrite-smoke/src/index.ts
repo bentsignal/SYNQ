@@ -627,6 +627,16 @@ import {
   type SettingsJsonFileStoreDependencies,
 } from "../../../apps/new/src/features/settings/services/settings-json-file-store-service";
 import {
+  checkStoredImageExistsWithDependencies,
+  getImagePathFromDirectory,
+  getImagePathFromHashWithDependencies,
+  getImageStorageVariants,
+  saveCoverImageWithDependencies,
+  splitImageData,
+  writeImageToFileSystemWithDependencies,
+  type ImageStorageDependencies,
+} from "../../../apps/new/src/features/images/services/image-storage-executor-service";
+import {
   getExportFileNameFromPath,
   sanitizeExportFileName,
 } from "../../../apps/new/src/features/export/services/export-file-name-service";
@@ -8329,6 +8339,143 @@ async function assertShareExportFilesExecutorSmoke() {
   ]);
 }
 
+async function assertImageStorageExecutorSmoke() {
+  const calls: string[] = [];
+  const existingFiles = new Set<string>();
+  let storedImageHash = false;
+  let imageDirectory: string | null = "file:///documents/images";
+  const dependencies: ImageStorageDependencies = {
+    createDirectory: async (path, options) => {
+      calls.push(`mkdir:${path}:${String(options.intermediates)}`);
+    },
+    digestImageSample: async (sample) => {
+      calls.push(`digest:${sample}`);
+      return "hash-123";
+    },
+    get getInfo() {
+      return async (path: string) => {
+        calls.push(`info:${path}`);
+        return { exists: existingFiles.has(path) };
+      };
+    },
+    hasStoredImageHash: async (hash) => {
+      calls.push(`has-row:${hash}`);
+      return storedImageHash;
+    },
+    get imageDirectory() {
+      return imageDirectory;
+    },
+    insertStoredImageHash: async (hash) => {
+      calls.push(`insert-row:${hash}`);
+      storedImageHash = true;
+    },
+    writeImageVariant: async ({ base64, compress, path, width }) => {
+      calls.push(`write:${path}:${width}:${compress}:${base64}`);
+      existingFiles.add(path);
+    },
+  };
+  const paths = {
+    pathToFullImage: "file:///documents/images/hash-123-full.jpg",
+    pathToSmallImage: "file:///documents/images/hash-123-small.jpg",
+  };
+
+  assert.deepEqual(splitImageData("data:image/png;base64,abc123"), {
+    buffer: "abc123",
+    mime: "image/png",
+  });
+  assert.deepEqual(
+    getImagePathFromDirectory({
+      hash: "hash-123",
+      imageDirectory: "file:///documents/images",
+    }),
+    paths,
+  );
+  assert.deepEqual(getImagePathFromHashWithDependencies("hash-123", dependencies), paths);
+  assert.deepEqual(getImageStorageVariants({ base64: "abc123", paths }), [
+    {
+      base64: "abc123",
+      compress: 1,
+      path: paths.pathToFullImage,
+      width: 1500,
+    },
+    {
+      base64: "abc123",
+      compress: 0.5,
+      path: paths.pathToSmallImage,
+      width: 200,
+    },
+  ]);
+
+  assert.equal(await saveCoverImageWithDependencies(null, dependencies), null);
+  assert.deepEqual(calls, []);
+
+  assert.equal(
+    await checkStoredImageExistsWithDependencies("hash-123", dependencies),
+    false,
+  );
+  assert.deepEqual(calls, [
+    `info:${paths.pathToFullImage}`,
+    `info:${paths.pathToSmallImage}`,
+    "has-row:hash-123",
+  ]);
+
+  calls.length = 0;
+  assert.equal(
+    await saveCoverImageWithDependencies(
+      "data:image/jpeg;base64,cover-data",
+      dependencies,
+    ),
+    "hash-123",
+  );
+  assert.deepEqual(calls, [
+    "mkdir:file:///documents/images:true",
+    "digest:data:image/jpeg;base64,cover-data",
+    `info:${paths.pathToFullImage}`,
+    `info:${paths.pathToSmallImage}`,
+    "has-row:hash-123",
+    `write:${paths.pathToFullImage}:1500:1:cover-data`,
+    `write:${paths.pathToSmallImage}:200:0.5:cover-data`,
+    "insert-row:hash-123",
+  ]);
+
+  calls.length = 0;
+  existingFiles.add(paths.pathToFullImage);
+  existingFiles.add(paths.pathToSmallImage);
+  storedImageHash = true;
+  assert.equal(
+    await saveCoverImageWithDependencies(
+      "data:image/jpeg;base64,cover-data",
+      dependencies,
+    ),
+    "hash-123",
+  );
+  assert.deepEqual(calls, [
+    "mkdir:file:///documents/images:true",
+    "digest:data:image/jpeg;base64,cover-data",
+    `info:${paths.pathToFullImage}`,
+    `info:${paths.pathToSmallImage}`,
+    "has-row:hash-123",
+  ]);
+
+  calls.length = 0;
+  await assert.rejects(
+    () =>
+      writeImageToFileSystemWithDependencies({
+        base64Image: "data:image/gif;base64,abc123",
+        dependencies,
+        hash: "hash-123",
+      }),
+    /Invalid image format: image\/gif/,
+  );
+  assert.deepEqual(calls, []);
+
+  imageDirectory = null;
+  assert.throws(
+    () => getImagePathFromHashWithDependencies("hash-123", dependencies),
+    /Document directory is unavailable/,
+  );
+}
+
 assertDurationFormatSmoke();
 assertRouteParamSmoke();
 assertHomeScreenSmoke();
@@ -8348,6 +8495,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertPremiumPurchaseExecutorSmoke();
   await assertSettingsJsonFileStoreSmoke();
   await assertShareExportFilesExecutorSmoke();
+  await assertImageStorageExecutorSmoke();
   await assertImportSessionSmoke();
   assertLibraryCollectionDetailSmoke();
   assertLibraryCollectionInteractionSmoke();

@@ -112,6 +112,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: shared settings screen chrome now lives in focused presentational
     parts instead of settings home, customization, privacy, and support screens
     duplicating header, panel, and back-link layout.
+  - Done: shared settings switch-row presentation now lives in a focused
+    component instead of privacy and haptics screens duplicating switch row
+    structure and styles.
   - Done: collection detail song-row aggregation now lives in a focused song
     detail service instead of the detail shell builder owning song grouping,
     artist/album fallback labels, and track sorting.

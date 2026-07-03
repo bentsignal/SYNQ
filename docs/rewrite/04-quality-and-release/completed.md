@@ -124,3 +124,5 @@
   decision helper behind a dedicated service boundary.
 - Preserved import library link smoke coverage while splitting entity and
   relationship table adapters into smaller repository modules.
+- Preserved import library song-row smoke coverage while splitting song-row
+  writes and relationship cleanup into smaller repository modules.

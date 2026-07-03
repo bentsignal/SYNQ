@@ -235,3 +235,5 @@
   state service and into a focused phase-effect service.
 - Split import library link Drizzle adapters into entity and relationship
   repositories behind the existing import-library link facade.
+- Split import library song Drizzle adapters into song-row and relationship
+  cleanup repositories behind the existing import-library song facade.

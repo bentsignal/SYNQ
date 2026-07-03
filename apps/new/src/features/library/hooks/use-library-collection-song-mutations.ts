@@ -9,7 +9,7 @@ import type { CollectionDetailMutationDispatch } from "../services/library-colle
 import {
   runLibraryCollectionSongMoveCommand,
   runLibraryCollectionSongRemoveCommand,
-} from "../services/library-collection-mutation-command-flow-service";
+} from "../services/library-collection-detail-song-command-flow-service";
 
 type UseLibraryCollectionSongMutationsParams = {
   detail: LibraryCollectionDetail;

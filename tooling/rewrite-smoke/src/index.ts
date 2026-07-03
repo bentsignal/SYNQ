@@ -616,9 +616,11 @@ import { runCollectionDetailMutationAttempt } from "../../../apps/new/src/featur
 import {
   runLibraryCollectionDeleteCommand,
   runLibraryCollectionExportCommand,
+} from "../../../apps/new/src/features/library/services/library-collection-detail-collection-command-flow-service";
+import {
   runLibraryCollectionSongMoveCommand,
   runLibraryCollectionSongRemoveCommand,
-} from "../../../apps/new/src/features/library/services/library-collection-mutation-command-flow-service";
+} from "../../../apps/new/src/features/library/services/library-collection-detail-song-command-flow-service";
 import {
   collectionDetailMutationReducer,
   getCollectionDetailMutationErrorMessage,

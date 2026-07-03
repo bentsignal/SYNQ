@@ -5,7 +5,7 @@ import type { LibraryCollectionDetail } from "../services/library-collection-det
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import type { CollectionDetailActionState } from "../services/library-collection-action-state-service";
 import type { CollectionDetailMutationDispatch } from "../services/library-collection-detail-mutation-runtime-service";
-import { runLibraryCollectionExportCommand } from "../services/library-collection-mutation-command-flow-service";
+import { runLibraryCollectionExportCommand } from "../services/library-collection-detail-collection-command-flow-service";
 
 type UseLibraryCollectionCollectionMutationsParams = {
   actionState: CollectionDetailActionState;

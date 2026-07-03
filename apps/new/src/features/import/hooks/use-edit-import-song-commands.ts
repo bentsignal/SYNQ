@@ -2,12 +2,14 @@ import { replaceNativeRoute } from "@/src/features/app-shell/services/native-rou
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
   buildEditedImportSongDraft,
-  getImportSongEditInvalidSaveCommand,
-  getImportSongEditSaveFailureCommand,
-  getImportSongEditSaveSuccessCommand,
   type ImportSongEditFormAction,
   type ImportSongEditFormState,
 } from "../services/import-song-form-service";
+import {
+  getImportSongEditInvalidSaveCommand,
+  getImportSongEditSaveFailureCommand,
+  getImportSongEditSaveSuccessCommand,
+} from "../services/import-song-edit-command-service";
 import type { ImportSongDraft } from "../types/import-session";
 
 type UseEditImportSongCommandsParams = {

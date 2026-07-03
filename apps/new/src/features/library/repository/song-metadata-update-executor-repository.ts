@@ -1,3 +1,11 @@
+import {
+  assertLibrarySongTitle,
+  getLibrarySongCoverUpdateTarget,
+  normalizeLibrarySongTitle,
+} from "./song-metadata-update-step-repository";
+
+export { assertLibrarySongTitle, normalizeLibrarySongTitle };
+
 export type SongMetadataUpdateDependencies = {
   replaceRelationships: (params: {
     albumNames: string;
@@ -17,18 +25,6 @@ export type SongMetadataUpdateDependencies = {
     songId: number;
     title: string;
   }) => Promise<void>;
-};
-
-export const normalizeLibrarySongTitle = (title: string) => title.trim();
-
-export const assertLibrarySongTitle = (title: string) => {
-  const cleanTitle = normalizeLibrarySongTitle(title);
-
-  if (!cleanTitle) {
-    throw new Error("Song title is required.");
-  }
-
-  return cleanTitle;
 };
 
 export async function updateLibrarySongMetadataWithDependencies(
@@ -61,18 +57,26 @@ export async function updateLibrarySongMetadataWithDependencies(
     return;
   }
 
-  const coverImage = await dependencies.saveCoverImage(coverImageDataUrl);
+  const target = getLibrarySongCoverUpdateTarget({
+    albumIds,
+    coverImage: await dependencies.saveCoverImage(coverImageDataUrl),
+    songId: id,
+  });
 
-  if (!coverImage) {
+  if (!target) {
     return;
   }
 
-  const firstAlbumId = albumIds[0];
-
-  if (firstAlbumId) {
-    await dependencies.updateAlbumCover({ albumId: firstAlbumId, coverImage });
+  if (target.kind === "album") {
+    await dependencies.updateAlbumCover({
+      albumId: target.albumId,
+      coverImage: target.coverImage,
+    });
     return;
   }
 
-  await dependencies.updateSongCover({ coverImage, songId: id });
+  await dependencies.updateSongCover({
+    coverImage: target.coverImage,
+    songId: target.songId,
+  });
 }

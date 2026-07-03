@@ -551,6 +551,9 @@ import {
   type SongMetadataUpdateDependencies,
 } from "../../../apps/new/src/features/library/repository/song-metadata-update-executor-repository";
 import {
+  getLibrarySongCoverUpdateTarget,
+} from "../../../apps/new/src/features/library/repository/song-metadata-update-step-repository";
+import {
   assertSupportedCollectionImageType,
   getCollectionImageMimeType,
   pickCollectionImageWithDependencies,
@@ -7099,6 +7102,30 @@ async function assertSongMetadataUpdateExecutorSmoke() {
   assert.equal(normalizeLibrarySongTitle("  Smoke Song  "), "Smoke Song");
   assert.equal(assertLibrarySongTitle("  Smoke Song  "), "Smoke Song");
   assert.throws(() => assertLibrarySongTitle("   "), /Song title is required/);
+  assert.equal(
+    getLibrarySongCoverUpdateTarget({
+      albumIds: [7],
+      coverImage: null,
+      songId: 2,
+    }),
+    null,
+  );
+  assert.deepEqual(
+    getLibrarySongCoverUpdateTarget({
+      albumIds: [7],
+      coverImage: "saved-cover",
+      songId: 2,
+    }),
+    { albumId: 7, coverImage: "saved-cover", kind: "album" },
+  );
+  assert.deepEqual(
+    getLibrarySongCoverUpdateTarget({
+      albumIds: [],
+      coverImage: "saved-cover",
+      songId: 2,
+    }),
+    { coverImage: "saved-cover", kind: "song", songId: 2 },
+  );
 
   await assert.rejects(
     () =>

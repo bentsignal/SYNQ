@@ -259,3 +259,5 @@
   and created-id assertion steps out of the main create executor.
 - Split song metadata relationship get-or-create and album-artist link planning
   helpers out of the main relationship replace executor.
+- Split song metadata update title validation and cover update target selection
+  out of the main metadata update executor.

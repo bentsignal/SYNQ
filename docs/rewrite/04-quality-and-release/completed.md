@@ -150,3 +150,5 @@
   preparation, created-id assertions, and image preparation.
 - Added direct song metadata relationship step smoke coverage for artist/album
   ensure helpers and album-artist link insertion planning.
+- Added direct song metadata update step smoke coverage for title validation and
+  album-vs-song cover target selection.

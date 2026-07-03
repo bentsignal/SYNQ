@@ -39,6 +39,10 @@
   song delete, song export, collection create/edit/delete/export. Intentional
   replacements: song title/artist/album editing via comma-separated metadata
   fields, collection song add/remove/reorder via unified detail rows.
-- Audit gaps retained in todo: old song cover editing and old album artist
-  relationship editing. Seeded system playlist exposure was closed by filtering
-  playlist id `1` from previews and blocking its collection mutations.
+- Old song cover editing is restored in the new edit-song flow. The new detail
+  model prefers song-specific cover hashes and falls back to linked album cover
+  hashes for display; saves apply picked covers to the first linked album or to
+  the song row when the song has no album, matching the old edit behavior.
+- Audit gap retained in todo: old album artist relationship editing. Seeded
+  system playlist exposure was closed by filtering playlist id `1` from
+  previews and blocking its collection mutations.

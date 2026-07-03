@@ -31,17 +31,20 @@ export const exportLibrarySongCommand = ({
 export const updateLibrarySongMetadataCommand = ({
   albumNames,
   artistNames,
+  coverImageDataUrl,
   id,
   title,
 }: {
   albumNames: string;
   artistNames: string;
+  coverImageDataUrl?: string | null;
   id: number;
   title: string;
 }) =>
   updateLibrarySongMetadata({
     albumNames,
     artistNames,
+    coverImageDataUrl,
     id,
     title,
   });

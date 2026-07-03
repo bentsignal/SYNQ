@@ -22,7 +22,9 @@ function EditLibrarySongContent({ songId }: { songId: number }) {
     actionState,
     albumNames,
     artistNames,
+    coverImage,
     errorMessage,
+    pickCoverImage,
     save,
     setAlbumNames,
     setArtistNames,
@@ -38,12 +40,14 @@ function EditLibrarySongContent({ songId }: { songId: number }) {
       actionState={actionState}
       albumNames={albumNames}
       artistNames={artistNames}
+      coverImage={coverImage}
       detail={detail}
       errorMessage={errorMessage}
       errors={errors}
       onChangeAlbumNames={setAlbumNames}
       onChangeArtistNames={setArtistNames}
       onChangeTitle={setTitle}
+      onPickCoverImage={pickCoverImage}
       onSave={save}
       songId={songId}
       title={title}

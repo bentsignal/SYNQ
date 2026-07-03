@@ -3358,15 +3358,34 @@ function assertAddableCollectionSongsSmoke() {
 function assertLibrarySongDetailSmoke() {
   const detail = buildLibrarySongDetail({
     albumRows: [
-      { id: 2, name: "Beta Album", track: 2, year: null },
-      { id: 1, name: "Alpha Album", track: 1, year: 2026 },
-      { id: 1, name: "Alpha Album", track: 1, year: 2026 },
+      {
+        coverImage: "beta-album-cover",
+        id: 2,
+        name: "Beta Album",
+        track: 2,
+        year: null,
+      },
+      {
+        coverImage: "alpha-album-cover",
+        id: 1,
+        name: "Alpha Album",
+        track: 1,
+        year: 2026,
+      },
+      {
+        coverImage: "alpha-album-cover",
+        id: 1,
+        name: "Alpha Album",
+        track: 1,
+        year: 2026,
+      },
     ],
     artistRows: [
       { id: 2, name: "Beta Artist" },
       { id: 1, name: "Alpha Artist" },
       { id: 1, name: "Alpha Artist" },
     ],
+    getImagePath: (hash) => `/images/${hash}-small.jpg`,
     likedRows: [{ id: 10 }],
     playlistRows: [
       { id: 5, name: "Smoke Playlist" },
@@ -3374,6 +3393,7 @@ function assertLibrarySongDetailSmoke() {
       { id: 6, name: null },
     ],
     songRow: {
+      coverImage: "song-cover",
       duration: 125_000,
       fileType: "audio/mpeg",
       originalFileName: "alpha.mp3",
@@ -3387,6 +3407,7 @@ function assertLibrarySongDetailSmoke() {
   assert.equal(detail.durationLabel, "2:05");
   assert.equal(detail.artistLabel, "Alpha Artist, Beta Artist");
   assert.equal(detail.albumLabel, "Alpha Album, Beta Album");
+  assert.equal(detail.coverImagePath, "/images/song-cover-small.jpg");
   assert.equal(detail.relationshipSummary, "2 artists / 2 albums / 2 playlists");
   assert.equal(detail.isLiked, true);
   assert.equal(detail.isMissing, false);
@@ -3417,11 +3438,21 @@ function assertLibrarySongDetailSmoke() {
   );
   assert.equal(
     buildLibrarySongDetail({
-      albumRows: [],
+      albumRows: [
+        {
+          coverImage: "playlist-album-cover",
+          id: 9,
+          name: "Playlist Album",
+          track: null,
+          year: null,
+        },
+      ],
       artistRows: [],
+      getImagePath: (hash) => `/images/${hash}-small.jpg`,
       likedRows: [],
       playlistRows: [{ id: 2, name: "Liked Songs" }],
       songRow: {
+        coverImage: null,
         duration: null,
         fileType: null,
         originalFileName: null,
@@ -3431,6 +3462,33 @@ function assertLibrarySongDetailSmoke() {
       updatedAt: 43,
     }).isLiked,
     true,
+  );
+  assert.equal(
+    buildLibrarySongDetail({
+      albumRows: [
+        {
+          coverImage: "fallback-album-cover",
+          id: 3,
+          name: "Fallback Album",
+          track: null,
+          year: null,
+        },
+      ],
+      artistRows: [],
+      getImagePath: (hash) => `/images/${hash}-small.jpg`,
+      likedRows: [],
+      playlistRows: [],
+      songRow: {
+        coverImage: null,
+        duration: null,
+        fileType: null,
+        originalFileName: null,
+        pathToFile: null,
+        title: "Album cover fallback",
+      },
+      updatedAt: 44,
+    }).coverImagePath,
+    "/images/fallback-album-cover-small.jpg",
   );
   assert.deepEqual(
     detail.albums.map((album) => `${album.id}:${album.detail}`),
@@ -3624,12 +3682,14 @@ function assertLibrarySongDetailSmoke() {
   assert.deepEqual(buildLibrarySongEditFormState(detail), {
     albumNames: "Alpha Album, Beta Album",
     artistNames: "Alpha Artist, Beta Artist",
+    coverImage: null,
     title: "Alpha",
   });
   const songEditState = getInitialLibrarySongEditControllerState();
   assert.deepEqual(songEditState, {
     albumNames: "",
     artistNames: "",
+    coverImage: null,
     errorMessage: null,
     isSaving: false,
     loadedSongId: null,
@@ -3645,6 +3705,7 @@ function assertLibrarySongDetailSmoke() {
       ...songEditState,
       albumNames: "Alpha Album, Beta Album",
       artistNames: "Alpha Artist, Beta Artist",
+      coverImage: null,
       loadedSongId: 42,
       title: "Alpha",
     },
@@ -3677,6 +3738,22 @@ function assertLibrarySongDetailSmoke() {
     {
       ...songEditState,
       title: "Updated",
+    },
+  );
+  assert.deepEqual(
+    librarySongEditControllerReducer(songEditState, {
+      coverImage: {
+        dataUrl: "data:image/jpeg;base64,cover",
+        fileName: "cover.jpg",
+      },
+      type: "pick-cover-image",
+    }),
+    {
+      ...songEditState,
+      coverImage: {
+        dataUrl: "data:image/jpeg;base64,cover",
+        fileName: "cover.jpg",
+      },
     },
   );
   assert.deepEqual(
@@ -3730,7 +3807,7 @@ function assertLibrarySongDetailSmoke() {
       isSaving: false,
       title: " Alpha ",
     }),
-    { canSave: true, saveLabel: "Save" },
+    { canPickCoverImage: true, canSave: true, saveLabel: "Save" },
   );
   assert.deepEqual(
     getLibrarySongEditActionState({
@@ -3738,7 +3815,7 @@ function assertLibrarySongDetailSmoke() {
       isSaving: false,
       title: "   ",
     }),
-    { canSave: false, saveLabel: "Save" },
+    { canPickCoverImage: true, canSave: false, saveLabel: "Save" },
   );
   assert.deepEqual(
     getLibrarySongEditActionState({
@@ -3746,7 +3823,7 @@ function assertLibrarySongDetailSmoke() {
       isSaving: true,
       title: "Alpha",
     }),
-    { canSave: false, saveLabel: "Saving" },
+    { canPickCoverImage: false, canSave: false, saveLabel: "Saving" },
   );
   assert.deepEqual(
     getLibrarySongEditStatusState({
@@ -3871,6 +3948,7 @@ function assertLibrarySongDetailSmoke() {
   assert.deepEqual(buildLibrarySongEditFormState(missing), {
     albumNames: "",
     artistNames: "",
+    coverImage: null,
     title: "",
   });
   assert.deepEqual(
@@ -3890,7 +3968,7 @@ function assertLibrarySongDetailSmoke() {
       isSaving: false,
       title: "Recovered title",
     }),
-    { canSave: false, saveLabel: "Save" },
+    { canPickCoverImage: false, canSave: false, saveLabel: "Save" },
   );
   assert.deepEqual(
     missingActionState,
@@ -3910,6 +3988,7 @@ function assertLibrarySongDetailSmoke() {
     likedRows: [],
     playlistRows: [],
     songRow: {
+      coverImage: null,
       duration: null,
       fileType: null,
       originalFileName: "no-path.mp3",

@@ -3,6 +3,10 @@ import type { LibrarySongDetail } from "./library-song-detail-service";
 export type LibrarySongEditFormState = {
   albumNames: string;
   artistNames: string;
+  coverImage: {
+    dataUrl: string;
+    fileName: string;
+  } | null;
   title: string;
 };
 
@@ -24,6 +28,13 @@ export type LibrarySongEditControllerAction =
       value: string;
     }
   | {
+      coverImage: {
+        dataUrl: string;
+        fileName: string;
+      };
+      type: "pick-cover-image";
+    }
+  | {
       type: "begin-save";
     }
   | {
@@ -39,6 +50,7 @@ export const buildLibrarySongEditFormState = (
 ): LibrarySongEditFormState => ({
   albumNames: detail.albumLabel === "Unknown" ? "" : detail.albumLabel,
   artistNames: detail.artistLabel === "Unknown" ? "" : detail.artistLabel,
+  coverImage: null,
   title: detail.isMissing ? "" : detail.title,
 });
 
@@ -46,6 +58,7 @@ export const getInitialLibrarySongEditControllerState =
   (): LibrarySongEditControllerState => ({
     albumNames: "",
     artistNames: "",
+    coverImage: null,
     errorMessage: null,
     isSaving: false,
     loadedSongId: null,
@@ -71,6 +84,11 @@ export const librarySongEditControllerReducer = (
       return {
         ...state,
         [action.field]: action.value,
+      };
+    case "pick-cover-image":
+      return {
+        ...state,
+        coverImage: action.coverImage,
       };
     case "begin-save":
       return {

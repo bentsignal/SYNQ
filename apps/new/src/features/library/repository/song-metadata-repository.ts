@@ -1,3 +1,4 @@
+import { saveCoverImage } from "@/src/features/images/services/image-storage-service";
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";
@@ -83,11 +84,13 @@ const linkArtistToAlbum = async ({
 export async function updateLibrarySongMetadata({
   albumNames,
   artistNames,
+  coverImageDataUrl,
   id,
   title,
 }: {
   albumNames: string;
   artistNames: string;
+  coverImageDataUrl?: string | null;
   id: number;
   title: string;
 }) {
@@ -127,5 +130,28 @@ export async function updateLibrarySongMetadata({
     for (const artistId of artistIds) {
       await linkArtistToAlbum({ albumId, artistId });
     }
+  }
+
+  if (coverImageDataUrl !== undefined) {
+    const coverImage = await saveCoverImage(coverImageDataUrl);
+
+    if (!coverImage) {
+      return;
+    }
+
+    const firstAlbumId = albumIds[0];
+
+    if (firstAlbumId) {
+      await db
+        .update(schema.albums)
+        .set({ coverImage })
+        .where(eq(schema.albums.id, firstAlbumId));
+      return;
+    }
+
+    await db
+      .update(schema.songs)
+      .set({ coverImage })
+      .where(eq(schema.songs.id, id));
   }
 }

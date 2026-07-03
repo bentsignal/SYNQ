@@ -6,6 +6,7 @@ import { likedSongsPlaylistId } from "../services/library-playlist-constants-ser
 export const buildLibrarySongDetailRowsQuery = (songId: number) =>
   db
     .select({
+      coverImage: schema.songs.coverImage,
       duration: schema.songs.duration,
       fileType: schema.songs.fileType,
       originalFileName: schema.songs.originalFileName,
@@ -28,6 +29,7 @@ export const buildLibrarySongDetailArtistRowsQuery = (songId: number) =>
 export const buildLibrarySongDetailAlbumRowsQuery = (songId: number) =>
   db
     .select({
+      coverImage: schema.albums.coverImage,
       id: schema.albums.id,
       name: schema.albums.name,
       track: schema.albumSongs.track,

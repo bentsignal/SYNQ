@@ -1,6 +1,7 @@
 import { useEffect, useReducer } from "react";
 import { router } from "expo-router";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
+import { pickCollectionImage } from "../services/collection-image-picker-service";
 import { updateLibrarySongMetadataCommand } from "../services/library-song-command-service";
 import {
   getLibrarySongEditErrorMessage,
@@ -41,6 +42,30 @@ export function useEditLibrarySongController({
       dispatchFormState({ field, type: "change-field", value });
     };
 
+  const pickCoverImage = async () => {
+    if (!actionState.canPickCoverImage) {
+      sendHaptic("error");
+      return;
+    }
+
+    try {
+      const pickedImage = await pickCollectionImage();
+      if (pickedImage) {
+        dispatchFormState({
+          coverImage: pickedImage,
+          type: "pick-cover-image",
+        });
+        sendHaptic("light");
+      }
+    } catch (caughtError) {
+      sendHaptic("error");
+      dispatchFormState({
+        errorMessage: getLibrarySongEditErrorMessage(caughtError),
+        type: "fail",
+      });
+    }
+  };
+
   const save = async () => {
     if (!actionState.canSave) {
       sendHaptic("error");
@@ -53,6 +78,7 @@ export function useEditLibrarySongController({
       await updateLibrarySongMetadataCommand({
         albumNames: formState.albumNames,
         artistNames: formState.artistNames,
+        coverImageDataUrl: formState.coverImage?.dataUrl,
         id: songId,
         title: formState.title,
       });
@@ -73,7 +99,9 @@ export function useEditLibrarySongController({
     actionState,
     albumNames: formState.albumNames,
     artistNames: formState.artistNames,
+    coverImage: formState.coverImage,
     errorMessage: formState.errorMessage,
+    pickCoverImage,
     save,
     setAlbumNames: updateField("albumNames"),
     setArtistNames: updateField("artistNames"),

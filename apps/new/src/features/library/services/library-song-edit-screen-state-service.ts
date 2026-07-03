@@ -28,6 +28,7 @@ export const getLibrarySongEditActionState = ({
   isSaving: boolean;
   title: string;
 }) => ({
+  canPickCoverImage: !detail.isMissing && !isSaving,
   canSave: !detail.isMissing && title.trim().length > 0 && !isSaving,
   saveLabel: isSaving ? "Saving" : "Save",
 });

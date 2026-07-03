@@ -24,3 +24,6 @@
   reflects `playlistSongs` membership in the seeded Liked Songs playlist.
 - Restored seeded system-playlist protection by hiding playlist id `1` from new
   previews and blocking edit/add/reorder/remove mutations for that playlist.
+- Restored old song cover editing in the new song edit flow, including picked
+  cover previews, image persistence, album-cover fallback, and export snapshot
+  invalidation through the existing song metadata save path.

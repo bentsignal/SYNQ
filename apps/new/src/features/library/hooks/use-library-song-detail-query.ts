@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
 import {
   buildLibrarySongDetailAlbumRowsQuery,
   buildLibrarySongDetailArtistRowsQuery,
@@ -18,6 +19,9 @@ import {
 
 export type { LibrarySongDetail } from "../services/library-song-detail-service";
 
+const getSmallImagePath = (imageHash: string) =>
+  getImagePathFromHash(imageHash).pathToSmallImage;
+
 export function useLibrarySongDetailQuery(songId: number) {
   const song = useLiveQuery(buildLibrarySongDetailRowsQuery(songId));
   const artists = useLiveQuery(buildLibrarySongDetailArtistRowsQuery(songId));
@@ -28,6 +32,7 @@ export function useLibrarySongDetailQuery(songId: number) {
     return buildLibrarySongDetail({
       albumRows: (albums.data ?? []) as LibrarySongDetailAlbumRow[],
       artistRows: (artists.data ?? []) as LibrarySongDetailArtistRow[],
+      getImagePath: getSmallImagePath,
       likedRows: (liked.data ?? []) as LibrarySongDetailLikedRow[],
       playlistRows: (playlists.data ?? []) as LibrarySongDetailPlaylistRow[],
       songRow: (song.data?.[0] ?? null) as LibrarySongDetailSongRow | null,

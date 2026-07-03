@@ -2,6 +2,7 @@ import { formatDurationMs } from "../../app-shell/services/duration-format-servi
 import { likedSongsPlaylistId } from "./library-playlist-constants-service";
 
 export type LibrarySongDetailSongRow = {
+  coverImage: string | null;
   duration: number | null;
   fileType: string | null;
   originalFileName: string | null;
@@ -10,6 +11,7 @@ export type LibrarySongDetailSongRow = {
 };
 
 export type LibrarySongDetailAlbumRow = {
+  coverImage: string | null;
   id: number;
   name: string | null;
   track: number | null;
@@ -43,6 +45,7 @@ export type LibrarySongDetail = {
     id: number;
     title: string;
   }[];
+  coverImagePath: string | null;
   duration: number | null;
   durationLabel: string;
   fileType: string;
@@ -79,6 +82,7 @@ const uniqueById = <T extends { id: number }>(rows: T[]) => {
 export const buildLibrarySongDetail = ({
   albumRows,
   artistRows,
+  getImagePath,
   likedRows,
   playlistRows,
   songRow,
@@ -86,6 +90,7 @@ export const buildLibrarySongDetail = ({
 }: {
   albumRows: LibrarySongDetailAlbumRow[];
   artistRows: LibrarySongDetailArtistRow[];
+  getImagePath?: (imageHash: string) => string;
   likedRows: LibrarySongDetailLikedRow[];
   playlistRows: LibrarySongDetailPlaylistRow[];
   songRow: LibrarySongDetailSongRow | null;
@@ -100,6 +105,10 @@ export const buildLibrarySongDetail = ({
   const albumLabel = formatNames(
     uniqueAlbums.flatMap((album) => (album.name ? [album.name] : [])),
   );
+  const coverImageHash =
+    songRow?.coverImage ??
+    uniqueAlbums.find((album) => album.coverImage !== null)?.coverImage ??
+    null;
 
   return {
     albumLabel,
@@ -114,6 +123,7 @@ export const buildLibrarySongDetail = ({
       id: artist.id,
       title: artist.name ?? "Untitled artist",
     })),
+    coverImagePath: coverImageHash ? getImagePath?.(coverImageHash) ?? null : null,
     duration: songRow?.duration ?? null,
     durationLabel: formatDurationMs(songRow?.duration ?? null),
     fileType: songRow?.fileType ?? "Unknown file type",

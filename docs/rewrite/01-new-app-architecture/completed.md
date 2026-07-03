@@ -185,3 +185,5 @@
   injectable repository executor.
 - Moved backup document-directory clearing, restore staging, cleanup, and
   staged-file replacement behind an injectable filesystem executor.
+- Moved library export metadata shaping, artwork loading, tag writeback, and
+  export snapshot marking behind an injectable executor.

@@ -697,6 +697,16 @@ import {
   shareExportFilesWithDependencies,
   type ShareExportFilesDependencies,
 } from "../../../apps/new/src/features/export/services/share-export-files-executor-service";
+import {
+  buildLibrarySongExportMetadata,
+  formatLibraryExportNames,
+  loadArtworkTagWithDependencies,
+  prepareLibrarySongForExportWithDependencies,
+  type LibraryExportMetadataDependencies,
+} from "../../../apps/new/src/features/export/services/library-export-metadata-executor-service";
+import type {
+  LibraryExportSongMetadataRow,
+} from "../../../apps/new/src/features/export/repository/library-export-metadata-repository";
 
 const song = ({
   duration = 180_000,
@@ -9057,6 +9067,178 @@ async function assertShareExportFilesExecutorSmoke() {
   ]);
 }
 
+async function assertLibraryExportMetadataExecutorSmoke() {
+  const calls: string[] = [];
+  let stale = true;
+  let songRow: LibraryExportSongMetadataRow = {
+    coverImage: null,
+    fileType: "audio/mpeg",
+    pathToFile: "file:///library/song.mp3",
+    title: null,
+  };
+  let artworkExists = true;
+  let writeFails = false;
+  const dependencies: LibraryExportMetadataDependencies = {
+    getImagePathFromHash: (hash) => ({
+      pathToFullImage: `file:///documents/images/${hash}-full.jpg`,
+    }),
+    getInfo: async (path) => {
+      calls.push(`info:${path}`);
+      return { exists: artworkExists };
+    },
+    isLibrarySongSnapshotStale: async (songId) => {
+      calls.push(`stale:${songId}`);
+      return stale;
+    },
+    loadAlbumRows: async (songId) => {
+      calls.push(`albums:${songId}`);
+      return [
+        { coverImage: "album-cover", name: "Beta Album" },
+        { coverImage: null, name: "Alpha Album" },
+        { coverImage: null, name: null },
+      ];
+    },
+    loadArtistRows: async (songId) => {
+      calls.push(`artists:${songId}`);
+      return [{ name: "Beta Artist" }, { name: "Alpha Artist" }];
+    },
+    loadSongRow: async (songId) => {
+      calls.push(`song:${songId}`);
+      return songRow;
+    },
+    markLibrarySongAsExported: async (songId) => {
+      calls.push(`mark:${songId}`);
+    },
+    readAsString: async (path, options) => {
+      calls.push(`read:${path}:${options.encoding}`);
+      return "base64-cover";
+    },
+    writeTags: async ({ filePath, fileType, tags }) => {
+      calls.push(
+        `write:${filePath}:${fileType}:${tags.title}:${tags.artist}:${tags.album}:${tags.APIC?.imageBuffer ?? "none"}`,
+      );
+      if (writeFails) {
+        throw new Error("tag write failed");
+      }
+    },
+  };
+
+  assert.equal(formatLibraryExportNames(["Beta", "", "Alpha"]), "Alpha, Beta");
+  assert.deepEqual(
+    buildLibrarySongExportMetadata({
+      albums: [
+        { coverImage: "album-cover", name: "Album" },
+        { coverImage: null, name: null },
+      ],
+      artists: [{ name: "Artist" }],
+      song: {
+        coverImage: "song-cover",
+        fileType: "audio/mpeg",
+        pathToFile: "file:///library/song.mp3",
+        title: null,
+      },
+    }),
+    {
+      album: "Album",
+      artist: "Artist",
+      coverImage: "song-cover",
+      fileType: "audio/mpeg",
+      pathToFile: "file:///library/song.mp3",
+      title: "Untitled song",
+    },
+  );
+  assert.deepEqual(
+    await loadArtworkTagWithDependencies("cover-hash", dependencies),
+    {
+      description: "Album Cover",
+      imageBuffer: "base64-cover",
+      mime: "image/jpeg",
+    },
+  );
+  assert.deepEqual(calls, [
+    "info:file:///documents/images/cover-hash-full.jpg",
+    "read:file:///documents/images/cover-hash-full.jpg:base64",
+  ]);
+
+  calls.length = 0;
+  artworkExists = false;
+  assert.equal(
+    await loadArtworkTagWithDependencies("missing-cover", dependencies),
+    null,
+  );
+  assert.deepEqual(calls, [
+    "info:file:///documents/images/missing-cover-full.jpg",
+  ]);
+
+  calls.length = 0;
+  stale = false;
+  assert.equal(
+    await prepareLibrarySongForExportWithDependencies(
+      { id: 42, pathToFile: "file:///original.mp3" },
+      dependencies,
+    ),
+    "file:///original.mp3",
+  );
+  assert.deepEqual(calls, ["stale:42"]);
+
+  calls.length = 0;
+  stale = true;
+  artworkExists = true;
+  assert.equal(
+    await prepareLibrarySongForExportWithDependencies(
+      { id: 43, pathToFile: "file:///fallback.mp3" },
+      dependencies,
+    ),
+    "file:///library/song.mp3",
+  );
+  assert.deepEqual(calls, [
+    "stale:43",
+    "song:43",
+    "artists:43",
+    "albums:43",
+    "info:file:///documents/images/album-cover-full.jpg",
+    "read:file:///documents/images/album-cover-full.jpg:base64",
+    "write:file:///library/song.mp3:audio/mpeg:Untitled song:Alpha Artist, Beta Artist:Alpha Album, Beta Album:base64-cover",
+    "mark:43",
+  ]);
+
+  calls.length = 0;
+  songRow = { ...songRow, pathToFile: null };
+  assert.equal(
+    await prepareLibrarySongForExportWithDependencies(
+      { id: 44, pathToFile: "file:///fallback.mp3" },
+      dependencies,
+    ),
+    "file:///fallback.mp3",
+  );
+  assert.deepEqual(calls, ["stale:44", "song:44", "artists:44", "albums:44"]);
+
+  calls.length = 0;
+  songRow = {
+    coverImage: "song-cover",
+    fileType: "audio/mp4",
+    pathToFile: "file:///library/song.m4a",
+    title: "Tagged Song",
+  };
+  writeFails = true;
+  assert.equal(
+    await prepareLibrarySongForExportWithDependencies(
+      { id: 45, pathToFile: "file:///fallback.m4a" },
+      dependencies,
+    ),
+    "file:///library/song.m4a",
+  );
+  assert.deepEqual(calls, [
+    "stale:45",
+    "song:45",
+    "artists:45",
+    "albums:45",
+    "info:file:///documents/images/song-cover-full.jpg",
+    "read:file:///documents/images/song-cover-full.jpg:base64",
+    "write:file:///library/song.m4a:audio/mp4:Tagged Song:Alpha Artist, Beta Artist:Alpha Album, Beta Album:base64-cover",
+  ]);
+}
+
 async function assertImageStorageExecutorSmoke() {
   const calls: string[] = [];
   const existingFiles = new Set<string>();
@@ -9218,6 +9400,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertPremiumPurchaseExecutorSmoke();
   await assertSettingsJsonFileStoreSmoke();
   await assertShareExportFilesExecutorSmoke();
+  await assertLibraryExportMetadataExecutorSmoke();
   await assertImageStorageExecutorSmoke();
   await assertImportSessionSmoke();
   assertLibraryCollectionDetailSmoke();

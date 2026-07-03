@@ -70,3 +70,6 @@
 - Added backup filesystem executor smoke coverage for document/cache directory
   availability, archive/staging paths, clear/prepare/cleanup behavior, staged
   item reads, and restore replacement move order.
+- Added library export metadata executor smoke coverage for metadata shaping,
+  artwork embedding, stale snapshot decisions, tag writeback, snapshot marking,
+  and failure-safe export fallback behavior.

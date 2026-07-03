@@ -147,8 +147,16 @@ import {
   initialImportSessionState,
 } from "../../../apps/new/src/features/import/services/import-session-initial-state-service";
 import {
+  getBeginFilePickAction,
+  getBeginWifiTransferAction,
+  getFailImportSessionAction,
   getFinishWifiTransferAction,
   getImportSessionCommandErrorMessage,
+  getReceiveWifiSongAction,
+  getRemoveImportSongsAction,
+  getReviewImportSongsAction,
+  getSetImportSaveToLibraryAction,
+  getUpdateImportSongAction,
 } from "../../../apps/new/src/features/import/services/import-session-command-service";
 import {
   discardImportSessionLifecycle,
@@ -1980,6 +1988,37 @@ async function assertImportSessionSmoke() {
   assert.deepEqual(getFinishWifiTransferAction([importDraft(77)]), {
     songs: [importDraft(77)],
     type: "review",
+  });
+  assert.deepEqual(getBeginFilePickAction(), {
+    type: "begin-file-pick",
+  });
+  assert.deepEqual(getBeginWifiTransferAction(3), {
+    total: 3,
+    type: "begin-wifi-transfer",
+  });
+  assert.deepEqual(getFailImportSessionAction("Nope"), {
+    error: "Nope",
+    type: "fail",
+  });
+  assert.deepEqual(getReviewImportSongsAction([importDraft(88)]), {
+    songs: [importDraft(88)],
+    type: "review",
+  });
+  assert.deepEqual(getReceiveWifiSongAction(importDraft(89)), {
+    song: importDraft(89),
+    type: "receive-wifi-song",
+  });
+  assert.deepEqual(getRemoveImportSongsAction([1, 2]), {
+    songIds: [1, 2],
+    type: "remove-songs",
+  });
+  assert.deepEqual(getSetImportSaveToLibraryAction(false), {
+    shouldSaveToLibrary: false,
+    type: "set-save-to-library",
+  });
+  assert.deepEqual(getUpdateImportSongAction(importDraft(90)), {
+    song: importDraft(90),
+    type: "update-song",
   });
   assert.equal(
     getImportSessionCommandErrorMessage({

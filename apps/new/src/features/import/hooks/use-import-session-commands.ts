@@ -1,4 +1,11 @@
 import { useCallback, useMemo } from "react";
+import {
+  getBeginFilePickAction,
+  getFailImportSessionAction,
+  getReviewImportSongsAction,
+  getSetImportSaveToLibraryAction,
+  getUpdateImportSongAction,
+} from "../services/import-session-command-service";
 import type { ImportSessionAction } from "../services/import-session-state-service";
 import type { ImportSessionState, ImportSongDraft } from "../types/import-session";
 import { useImportFileCommands } from "./use-import-file-commands";
@@ -20,26 +27,26 @@ export function useImportSessionCommands({
   });
 
   const beginFilePick = useCallback(() => {
-    dispatch({ type: "begin-file-pick" });
+    dispatch(getBeginFilePickAction());
   }, [dispatch]);
 
   const failSession = useCallback((error: string) => {
-    dispatch({ error, type: "fail" });
+    dispatch(getFailImportSessionAction(error));
   }, [dispatch]);
 
   const reviewSongs = useCallback((songs: ImportSongDraft[]) => {
-    dispatch({ songs, type: "review" });
+    dispatch(getReviewImportSongsAction(songs));
   }, [dispatch]);
 
   const setShouldSaveToLibrary = useCallback(
     (shouldSaveToLibrary: boolean) => {
-      dispatch({ shouldSaveToLibrary, type: "set-save-to-library" });
+      dispatch(getSetImportSaveToLibraryAction(shouldSaveToLibrary));
     },
     [dispatch],
   );
 
   const updateImportSong = useCallback((song: ImportSongDraft) => {
-    dispatch({ song, type: "update-song" });
+    dispatch(getUpdateImportSongAction(song));
   }, [dispatch]);
 
   const { beginWifiTransfer, finishWifiTransfer, receiveWifiSong } =

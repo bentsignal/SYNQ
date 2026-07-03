@@ -141,3 +141,5 @@
   store can depend on defaults without importing reducer actions.
 - Extracted import library session save/discard execution behind an injectable
   executor with deterministic smoke coverage for summaries and cache cleanup.
+- Centralized import session action builders so file, Wi-Fi, and session command
+  hooks dispatch typed command helpers instead of raw reducer objects.

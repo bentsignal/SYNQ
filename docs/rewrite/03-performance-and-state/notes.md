@@ -10,7 +10,7 @@
 - Current `apps/new/package.json` includes Rostra, NativeWind, and Tailwind.
 - There are many `StyleSheet.create` call sites across `apps/new`; make this a
   staged migration with enforcement after a few representative conversions.
-- `scripts/audit-rewrite-debt.sh` currently allows the known baseline of 19
+- `scripts/audit-rewrite-debt.sh` currently allows the known baseline of 8
   `StyleSheet.create` calls and 0 React context modules. Lower those limits
   whenever cleanup lands.
 - Import edit fields/invalid state/save toggle/Wi-Fi address panel and playback
@@ -39,6 +39,12 @@
 - Collection list/detail screen, header, search, list, and status presentation
   styles now use NativeWind utilities; the StyleSheet ratchet is 19 calls after
   converting that local batch.
+- Song detail header/panels/view and song list controls now use NativeWind
+  utilities; the StyleSheet ratchet is 15 calls after converting that local
+  batch.
+- Collection preview and collection song list presentation styles now use
+  NativeWind utilities; the StyleSheet ratchet is 8 calls after converting that
+  local batch.
 - The first Rostra-backed provider is customization settings. It keeps the
   compatibility hook while exposing selector reads for lower-churn consumers.
 - Customization settings, premium entitlement, import session, and playback

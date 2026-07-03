@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionDetailSong } from "../hooks/use-library-collection-detail-query";
 import { LibraryCollectionSongEmptyState } from "./LibraryCollectionSongEmptyState";
@@ -27,10 +27,8 @@ export function LibraryCollectionSongList({
 
   return (
     <View
-      style={[
-        styles.list,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="overflow-hidden rounded-lg border"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
       {songs.map((song, index) => (
         <LibraryCollectionSongRow
@@ -47,11 +45,3 @@ export function LibraryCollectionSongList({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  list: {
-    borderRadius: 8,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-});

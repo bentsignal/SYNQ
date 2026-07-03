@@ -62,3 +62,7 @@
 - Converted collection list/detail screen, header, search, list, and status
   presentation styles to utility classes, lowering the StyleSheet ratchet from
   27 calls to 19.
+- Converted song detail header/panels/view and song list controls to utility
+  classes, lowering the StyleSheet ratchet from 19 calls to 15.
+- Converted collection preview and collection song list presentation styles to
+  utility classes, lowering the StyleSheet ratchet from 15 calls to 8.

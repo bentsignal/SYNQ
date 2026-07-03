@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionPreview } from "../hooks/use-library-collection-preview-query";
 import { LibraryCollectionPreviewRow } from "./LibraryCollectionPreviewRow";
@@ -23,28 +23,33 @@ export function LibraryCollectionPreviewColumn({
   const theme = useCustomizationTheme();
 
   return (
-    <View style={styles.column}>
-      <View style={styles.columnHeader}>
-        <Text style={[styles.columnTitle, { color: theme.secondaryText }]}>
+    <View className="gap-2">
+      <View className="flex-row items-center justify-between gap-3">
+        <Text
+          className="text-xs font-extrabold uppercase tracking-normal"
+          style={{ color: theme.secondaryText }}
+        >
           {title}
         </Text>
         {total > collections.length ? (
           <Link
+            className="text-xs font-extrabold uppercase tracking-normal"
             href={viewAllHref}
-            style={[styles.viewAllLink, { color: theme.accent }]}
+            style={{ color: theme.accent }}
           >
             View all
           </Link>
         ) : null}
       </View>
       <View
-        style={[
-          styles.list,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-        ]}
+        className="overflow-hidden rounded-lg border"
+        style={{ backgroundColor: theme.surface, borderColor: theme.border }}
       >
         {collections.length === 0 ? (
-          <Text style={[styles.placeholder, { color: theme.mutedText }]}>
+          <Text
+            className="p-3.5 text-sm italic leading-5"
+            style={{ color: theme.mutedText }}
+          >
             None yet
           </Text>
         ) : (
@@ -59,38 +64,3 @@ export function LibraryCollectionPreviewColumn({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  column: {
-    gap: 8,
-  },
-  columnHeader: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 12,
-    justifyContent: "space-between",
-  },
-  columnTitle: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  viewAllLink: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  list: {
-    borderRadius: 8,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-  placeholder: {
-    fontSize: 14,
-    fontStyle: "italic",
-    lineHeight: 20,
-    padding: 14,
-  },
-});

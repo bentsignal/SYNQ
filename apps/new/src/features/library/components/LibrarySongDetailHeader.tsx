@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetail } from "../services/library-song-detail-service";
 
@@ -11,40 +11,59 @@ export function LibrarySongDetailHeader({ detail }: LibrarySongDetailHeaderProps
 
   return (
     <>
-      <View style={styles.header}>
-        <Text style={[styles.kicker, { color: theme.accent }]}>Song</Text>
-        <Text style={[styles.title, { color: theme.primaryText }]}>
+      <View className="gap-2">
+        <Text
+          className="text-[13px] font-extrabold uppercase"
+          style={{ color: theme.accent }}
+        >
+          Song
+        </Text>
+        <Text
+          className="text-[34px] font-extrabold leading-10"
+          style={{ color: theme.primaryText }}
+        >
           {detail.title}
         </Text>
-        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
+        <Text
+          className="max-w-[520px] text-[15px] leading-[22px]"
+          style={{ color: theme.secondaryText }}
+        >
           {detail.relationshipSummary}
         </Text>
       </View>
 
-      <View style={styles.summaryGrid}>
+      <View className="flex-row flex-wrap gap-3">
         <View
-          style={[
-            styles.summaryPanel,
-            { backgroundColor: theme.surface, borderColor: theme.border },
-          ]}
+          className="min-h-[92px] min-w-[140px] flex-grow basis-[47%] gap-1.5 rounded-lg border p-4"
+          style={{ backgroundColor: theme.surface, borderColor: theme.border }}
         >
-          <Text style={[styles.summaryValue, { color: theme.primaryText }]}>
+          <Text
+            className="text-[22px] font-extrabold leading-7"
+            style={{ color: theme.primaryText }}
+          >
             {detail.durationLabel}
           </Text>
-          <Text style={[styles.summaryLabel, { color: theme.secondaryText }]}>
+          <Text
+            className="text-[13px] font-bold leading-[18px]"
+            style={{ color: theme.secondaryText }}
+          >
             Duration
           </Text>
         </View>
         <View
-          style={[
-            styles.summaryPanel,
-            { backgroundColor: theme.surface, borderColor: theme.border },
-          ]}
+          className="min-h-[92px] min-w-[140px] flex-grow basis-[47%] gap-1.5 rounded-lg border p-4"
+          style={{ backgroundColor: theme.surface, borderColor: theme.border }}
         >
-          <Text style={[styles.summaryValue, { color: theme.primaryText }]}>
+          <Text
+            className="text-[22px] font-extrabold leading-7"
+            style={{ color: theme.primaryText }}
+          >
             {detail.fileType}
           </Text>
-          <Text style={[styles.summaryLabel, { color: theme.secondaryText }]}>
+          <Text
+            className="text-[13px] font-bold leading-[18px]"
+            style={{ color: theme.secondaryText }}
+          >
             File type
           </Text>
         </View>
@@ -52,52 +71,3 @@ export function LibrarySongDetailHeader({ detail }: LibrarySongDetailHeaderProps
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    gap: 8,
-  },
-  kicker: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 40,
-  },
-  subtitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    maxWidth: 520,
-  },
-  summaryGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  summaryPanel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    flexBasis: "47%",
-    flexGrow: 1,
-    gap: 6,
-    minHeight: 92,
-    minWidth: 140,
-    padding: 16,
-  },
-  summaryValue: {
-    fontSize: 22,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 28,
-  },
-  summaryLabel: {
-    fontSize: 13,
-    fontWeight: "700",
-    lineHeight: 18,
-  },
-});

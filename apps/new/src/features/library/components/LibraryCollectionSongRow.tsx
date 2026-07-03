@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionDetailSong } from "../hooks/use-library-collection-detail-query";
@@ -36,27 +36,38 @@ export function LibraryCollectionSongRow({
   });
 
   return (
-    <View style={[styles.row, { borderBottomColor: theme.borderSubtle }]}>
+    <View
+      className="min-h-[66px] flex-row items-center gap-3 border-b px-3.5 py-2.5"
+      style={{ borderBottomColor: theme.borderSubtle }}
+    >
       <Link asChild href={getLibrarySongDetailHref({ songId: song.id })}>
-        <Pressable style={styles.rowLink}>
-          <Text style={[styles.track, { color: theme.mutedText }]}>
+        <Pressable className="min-w-0 flex-1 flex-row items-center gap-3">
+          <Text
+            className="min-w-6 text-right text-xs font-extrabold tracking-normal"
+            style={{ color: theme.mutedText }}
+          >
             {song.track !== null ? song.track.toString() : ""}
           </Text>
-          <View style={styles.rowText}>
+          <View className="min-w-0 flex-1 gap-1">
             <Text
               numberOfLines={1}
-              style={[styles.title, { color: theme.primaryText }]}
+              className="text-[15px] font-extrabold leading-5 tracking-normal"
+              style={{ color: theme.primaryText }}
             >
               {song.title}
             </Text>
             <Text
               numberOfLines={1}
-              style={[styles.meta, { color: theme.secondaryText }]}
+              className="text-[13px] leading-[18px]"
+              style={{ color: theme.secondaryText }}
             >
               {song.artist} / {song.album}
             </Text>
           </View>
-          <Text style={[styles.duration, { color: theme.primaryText }]}>
+          <Text
+            className="min-w-11 text-right text-[13px] font-extrabold tracking-normal"
+            style={{ color: theme.primaryText }}
+          >
             {formatDurationMs(song.duration)}
           </Text>
         </Pressable>
@@ -72,51 +83,3 @@ export function LibraryCollectionSongRow({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  duration: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    minWidth: 44,
-    textAlign: "right",
-  },
-  meta: {
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  row: {
-    alignItems: "center",
-    borderBottomWidth: 1,
-    flexDirection: "row",
-    gap: 12,
-    minHeight: 66,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  rowLink: {
-    alignItems: "center",
-    flex: 1,
-    flexDirection: "row",
-    gap: 12,
-    minWidth: 0,
-  },
-  rowText: {
-    flex: 1,
-    gap: 4,
-    minWidth: 0,
-  },
-  title: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 20,
-  },
-  track: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    minWidth: 24,
-    textAlign: "right",
-  },
-});

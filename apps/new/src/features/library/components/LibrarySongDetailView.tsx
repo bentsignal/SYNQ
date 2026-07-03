@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetailController } from "../hooks/use-library-song-detail-controller";
 import type { LibrarySongDetail } from "../services/library-song-detail-service";
@@ -42,8 +42,9 @@ export function LibrarySongDetailView({
 
   return (
     <ScrollView
-      contentContainerStyle={styles.content}
-      style={[styles.scroll, { backgroundColor: theme.background }]}
+      className="flex-1"
+      contentContainerClassName="gap-5 px-5 py-14"
+      style={{ backgroundColor: theme.background }}
     >
       <LibrarySongDetailHeader detail={detail} />
 
@@ -78,32 +79,15 @@ export function LibrarySongDetailView({
 
       <LibrarySongSourcePanel detail={detail} />
 
-      <LibrarySongStatusPanel
-        statusState={statusState}
-      />
+      <LibrarySongStatusPanel statusState={statusState} />
 
       <Link
+        className="text-[15px] font-extrabold"
         href={viewState.backLink.href}
-        style={[styles.backLink, { color: theme.accent }]}
+        style={{ color: theme.accent }}
       >
         {viewState.backLink.label}
       </Link>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    gap: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-  backLink: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-  },
-});

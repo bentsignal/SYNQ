@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import type {
@@ -29,25 +29,23 @@ export function LibrarySongListControls({
   const controlsState = getLibrarySongListControlsState({ order, sort });
 
   return (
-    <View style={styles.controls}>
+    <View className="gap-2.5">
       <TextInput
         autoCapitalize="none"
         autoCorrect={false}
+        className="min-h-12 rounded-lg border px-3.5 text-[15px] font-semibold"
         onChangeText={setQuery}
         placeholder={controlsState.searchInput.placeholder}
         placeholderTextColor={theme.mutedText}
-        style={[
-          styles.searchInput,
-          {
-            backgroundColor: theme.surface,
-            borderColor: theme.border,
-            color: theme.primaryText,
-          },
-        ]}
+        style={{
+          backgroundColor: theme.surface,
+          borderColor: theme.border,
+          color: theme.primaryText,
+        }}
         value={query}
       />
 
-      <View style={styles.sortRow}>
+      <View className="flex-row flex-wrap gap-2">
         {controlsState.sortOptions.map((option) => {
           return (
             <Pressable
@@ -58,25 +56,19 @@ export function LibrarySongListControls({
                 sendHaptic("light");
                 setSort(option.value);
               }}
-              style={[
-                styles.sortOption,
-                {
-                  backgroundColor: option.isActive
-                    ? theme.accent
-                    : theme.surface,
-                  borderColor: option.isActive ? theme.accent : theme.border,
-                },
-              ]}
+              className="min-h-[38px] min-w-[72px] items-center justify-center rounded-lg border px-3"
+              style={{
+                backgroundColor: option.isActive
+                  ? theme.accent
+                  : theme.surface,
+                borderColor: option.isActive ? theme.accent : theme.border,
+              }}
             >
               <Text
-                style={[
-                  styles.sortOptionText,
-                  {
-                    color: option.isActive
-                      ? theme.onAccent
-                      : theme.secondaryText,
-                  },
-                ]}
+                className="text-xs font-extrabold uppercase"
+                style={{
+                  color: option.isActive ? theme.onAccent : theme.secondaryText,
+                }}
               >
                 {option.label}
               </Text>
@@ -90,12 +82,16 @@ export function LibrarySongListControls({
             sendHaptic("light");
             setOrder(controlsState.nextOrder);
           }}
-          style={[
-            styles.orderButton,
-            { backgroundColor: theme.primaryText, borderColor: theme.primaryText },
-          ]}
+          className="min-h-[38px] min-w-[72px] items-center justify-center rounded-lg border px-3"
+          style={{
+            backgroundColor: theme.primaryText,
+            borderColor: theme.primaryText,
+          }}
         >
-          <Text style={[styles.orderText, { color: theme.surface }]}>
+          <Text
+            className="text-xs font-extrabold uppercase"
+            style={{ color: theme.surface }}
+          >
             {controlsState.orderLabel}
           </Text>
         </Pressable>
@@ -103,53 +99,3 @@ export function LibrarySongListControls({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  controls: {
-    gap: 10,
-  },
-  searchInput: {
-    borderRadius: 8,
-    borderWidth: 1,
-    fontSize: 15,
-    fontWeight: "600",
-    letterSpacing: 0,
-    minHeight: 48,
-    paddingHorizontal: 14,
-  },
-  sortRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  sortOption: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    justifyContent: "center",
-    minHeight: 38,
-    minWidth: 72,
-    paddingHorizontal: 12,
-  },
-  sortOptionText: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  orderButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    justifyContent: "center",
-    minHeight: 38,
-    minWidth: 72,
-    paddingHorizontal: 12,
-  },
-  orderText: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-});

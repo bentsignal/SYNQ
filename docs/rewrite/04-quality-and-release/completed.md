@@ -210,3 +210,5 @@
   pause, and resume sequencing.
 - Added direct playback queue command-flow smoke coverage for play, move,
   remove, and clear sequencing.
+- Added direct import session lifecycle command-flow smoke coverage for finish,
+  save, discard, reset, and failure sequencing.

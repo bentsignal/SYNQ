@@ -5,12 +5,14 @@ import {
   saveImportSessionToLibrary,
 } from "../services/import-library-save-service";
 import {
-  discardImportSessionLifecycle,
-  getFinishImportSessionAction,
-  resetImportSessionLifecycle,
-  saveImportSessionLifecycle,
   type ImportSessionLifecycleDependencies,
 } from "../services/import-session-lifecycle-service";
+import {
+  runDiscardImportSessionCommand,
+  runFinishImportSessionCommand,
+  runResetImportSessionCommand,
+  runSaveImportSessionCommand,
+} from "../services/import-session-lifecycle-command-flow-service";
 import { clearPersistedImportSessionState } from "../services/import-session-persistence-service";
 import type { ImportSessionAction } from "../services/import-session-state-service";
 import type {
@@ -41,35 +43,35 @@ export function useImportSessionLifecycleCommands({
 
   const finishSession = useCallback(
     (summary: ImportSaveSummary) => {
-      dispatch(getFinishImportSessionAction(summary));
+      runFinishImportSessionCommand({
+        dispatch,
+        summary,
+      });
     },
     [dispatch],
   );
 
   const saveImportSession = useCallback(async () => {
-    dispatch({ type: "saving" });
-
-    const result = await saveImportSessionLifecycle(
-      {
-        shouldSaveToLibrary,
-        songs,
-      },
+    return runSaveImportSessionCommand({
       dependencies,
-    );
-    dispatch(result.action);
-    return result.succeeded;
+      dispatch,
+      shouldSaveToLibrary,
+      songs,
+    });
   }, [dependencies, dispatch, shouldSaveToLibrary, songs]);
 
   const discardSession = useCallback(async () => {
-    dispatch({ type: "saving" });
-
-    const result = await discardImportSessionLifecycle(dependencies);
-    dispatch(result.action);
-    return result.succeeded;
+    return runDiscardImportSessionCommand({
+      dependencies,
+      dispatch,
+    });
   }, [dependencies, dispatch]);
 
   const resetSession = useCallback(() => {
-    dispatch(resetImportSessionLifecycle(dependencies));
+    runResetImportSessionCommand({
+      dependencies,
+      dispatch,
+    });
   }, [dependencies, dispatch]);
 
   return useMemo(

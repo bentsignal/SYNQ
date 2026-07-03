@@ -242,6 +242,11 @@ import {
   type ImportLibraryLinkDependencies,
 } from "../../../apps/new/src/features/import/services/import-library-link-executor-service";
 import {
+  linkImportLibrarySongAlbum,
+  linkImportLibrarySongArtists,
+  updateImportLibraryAlbumCover,
+} from "../../../apps/new/src/features/import/services/import-library-link-operation-service";
+import {
   getImportAlbumCoverUpdateParams,
   getImportArtistAlbumLinkParams,
   getImportSongAlbumLinkParams,
@@ -9245,6 +9250,55 @@ async function assertImportLibraryLinkExecutorSmoke() {
     null,
   );
 
+  await updateImportLibraryAlbumCover({
+    albumId: 70,
+    artwork: "direct-cover",
+    dependencies,
+  });
+  assert.deepEqual(calls, [
+    "save-cover:direct-cover",
+    "update-album-cover:70:cover-hash",
+  ]);
+
+  calls.length = 0;
+  assert.deepEqual(
+    await linkImportLibrarySongArtists({
+      artistNames: ["Alice", "Direct Artist"],
+      dependencies,
+      songId: 41,
+    }),
+    [7, 100],
+  );
+  assert.deepEqual(calls, [
+    "find-artist:Alice",
+    "link-song-artist:41:7",
+    "find-artist:Direct Artist",
+    "insert-artist:Direct Artist",
+    "link-song-artist:41:100",
+  ]);
+
+  calls.length = 0;
+  existingArtists.delete("Direct Artist");
+  nextArtistId = 100;
+  savedCover = null;
+  assert.equal(
+    await linkImportLibrarySongAlbum({
+      albumName: "Existing Album",
+      artistIds: [],
+      dependencies,
+      song: { ...importDraft(40), artwork: null, track: null },
+      songId: 40,
+    }),
+    true,
+  );
+  assert.deepEqual(calls, [
+    "find-album:Existing Album",
+    "link-song-album:40:70:none",
+    "save-cover:none",
+  ]);
+
+  calls.length = 0;
+  savedCover = "cover-hash";
   assert.equal(await ensureImportLibraryArtist(" Alice ", dependencies), 7);
   assert.equal(await ensureImportLibraryArtist(" Charlie ", dependencies), 100);
   assert.equal(

@@ -1,14 +1,8 @@
 import type { ImportSongDraft } from "../types/import-session";
 import {
-  ensureImportLibraryAlbum,
-  ensureImportLibraryArtist,
-} from "./import-library-entity-link-service";
-import {
-  getImportAlbumCoverUpdateParams,
-  getImportArtistAlbumLinkParams,
-  getImportSongAlbumLinkParams,
-  getImportSongArtistLinkParams,
-} from "./import-library-link-step-service";
+  linkImportLibrarySongAlbum,
+  linkImportLibrarySongArtists,
+} from "./import-library-link-operation-service";
 import { buildImportLibrarySongSavePlan } from "./import-library-save-plan-service";
 
 type ImportSongLibraryLinkResult = {
@@ -54,81 +48,6 @@ export type ImportLibraryLinkDependencies = {
   }) => Promise<void>;
 };
 
-const updateAlbumCover = async ({
-  albumId,
-  artwork,
-  dependencies,
-}: {
-  albumId: number;
-  artwork: string | null;
-  dependencies: ImportLibraryLinkDependencies;
-}) => {
-  const params = getImportAlbumCoverUpdateParams({
-    albumId,
-    coverImage: await dependencies.saveCoverImage(artwork),
-  });
-
-  if (!params) {
-    return;
-  }
-
-  await dependencies.updateAlbumCover(params);
-};
-
-const linkSongArtists = async ({
-  artistNames,
-  dependencies,
-  songId,
-}: {
-  artistNames: string[];
-  dependencies: ImportLibraryLinkDependencies;
-  songId: number;
-}) => {
-  const artistIds: number[] = [];
-
-  for (const artistName of artistNames) {
-    const artistId = await ensureImportLibraryArtist(artistName, dependencies);
-    artistIds.push(artistId);
-    await dependencies.linkSongArtist(
-      getImportSongArtistLinkParams({ artistId, songId }),
-    );
-  }
-
-  return artistIds;
-};
-
-const linkSongAlbum = async ({
-  albumName,
-  artistIds,
-  dependencies,
-  song,
-  songId,
-}: {
-  albumName: string;
-  artistIds: number[];
-  dependencies: ImportLibraryLinkDependencies;
-  song: ImportSongDraft;
-  songId: number;
-}) => {
-  const albumId = await ensureImportLibraryAlbum(albumName, dependencies);
-  await dependencies.linkSongAlbum(
-    getImportSongAlbumLinkParams({
-      albumId,
-      songId,
-      track: song.track,
-    }),
-  );
-  await updateAlbumCover({ albumId, artwork: song.artwork, dependencies });
-
-  for (const artistId of artistIds) {
-    await dependencies.linkArtistAlbum(
-      getImportArtistAlbumLinkParams({ albumId, artistId }),
-    );
-  }
-
-  return true;
-};
-
 export const linkImportSongToLibraryWithDependencies = async ({
   dependencies,
   song,
@@ -139,14 +58,14 @@ export const linkImportSongToLibraryWithDependencies = async ({
   songId: number;
 }): Promise<ImportSongLibraryLinkResult> => {
   const savePlan = buildImportLibrarySongSavePlan(song);
-  const artistIds = await linkSongArtists({
+  const artistIds = await linkImportLibrarySongArtists({
     artistNames: savePlan.artistNames,
     dependencies,
     songId,
   });
 
   const linkedAlbum = savePlan.albumName
-    ? await linkSongAlbum({
+    ? await linkImportLibrarySongAlbum({
         albumName: savePlan.albumName,
         artistIds,
         dependencies,

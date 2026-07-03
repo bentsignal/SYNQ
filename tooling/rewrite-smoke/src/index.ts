@@ -545,6 +545,8 @@ import {
 } from "../../../apps/new/src/features/library/services/add-collection-songs-selection-service";
 import {
   addCollectionSongsControllerReducer,
+  getAddCollectionSongsFinishSelectionAction,
+  getAddCollectionSongsFinishSongAction,
   initialAddCollectionSongsControllerState,
 } from "../../../apps/new/src/features/library/services/add-collection-songs-state-service";
 import {
@@ -700,6 +702,7 @@ import { parseAlbumYearInput } from "../../../apps/new/src/features/library/serv
 import {
   collectionFormReducer,
   getCollectionFormChangeFieldAction,
+  getCollectionFormFinishSaveAction,
   getCollectionFormHydrateAction,
   getInitialCollectionFormState,
 } from "../../../apps/new/src/features/library/services/collection-form-state-service";
@@ -6355,10 +6358,13 @@ async function assertLibraryCollectionInteractionSmoke() {
         ...selectedAddControllerState,
         isAddingSelection: true,
       },
-      { type: "finish-add-selection" },
+      getAddCollectionSongsFinishSelectionAction(),
     ),
     selectedAddControllerState,
   );
+  assert.deepEqual(getAddCollectionSongsFinishSelectionAction(), {
+    type: "finish-add-selection",
+  });
   assert.deepEqual(
     addCollectionSongsControllerReducer(selectedAddControllerState, {
       songId: 1,
@@ -6383,10 +6389,13 @@ async function assertLibraryCollectionInteractionSmoke() {
         ...selectedAddControllerState,
         savingSongId: 3,
       },
-      { type: "finish-add-song" },
+      getAddCollectionSongsFinishSongAction(),
     ),
     selectedAddControllerState,
   );
+  assert.deepEqual(getAddCollectionSongsFinishSongAction(), {
+    type: "finish-add-song",
+  });
   assert.deepEqual(
     addCollectionSongsControllerReducer(selectedAddControllerState, {
       error: "Song could not be added.",
@@ -9775,10 +9784,13 @@ async function assertCollectionFormSmoke() {
         ...collectionFormState,
         isSaving: true,
       },
-      { type: "finish-save" },
+      getCollectionFormFinishSaveAction(),
     ),
     collectionFormState,
   );
+  assert.deepEqual(getCollectionFormFinishSaveAction(), {
+    type: "finish-save",
+  });
   assert.deepEqual(
     collectionFormReducer(collectionFormState, {
       error: "Album name is required.",

@@ -10,7 +10,11 @@ import {
   getAddCollectionSongsToggleSelectionCommand,
 } from "./add-collection-songs-command-state-service";
 import type { AddableSongSelectionState } from "./add-collection-songs-selection-service";
-import type { AddCollectionSongsControllerAction } from "./add-collection-songs-state-service";
+import {
+  getAddCollectionSongsFinishSelectionAction,
+  getAddCollectionSongsFinishSongAction,
+  type AddCollectionSongsControllerAction,
+} from "./add-collection-songs-state-service";
 
 type AddCollectionSongsControllerDispatch = (
   action: AddCollectionSongsControllerAction,
@@ -91,7 +95,7 @@ export const runAddCollectionSongsSelectionCommand = async ({
     sendHaptic(command.haptic);
     dispatchControllerState(command.action);
   } finally {
-    dispatchControllerState({ type: "finish-add-selection" });
+    dispatchControllerState(getAddCollectionSongsFinishSelectionAction());
   }
 };
 
@@ -126,6 +130,6 @@ export const runAddCollectionSongCommand = async ({
     sendHaptic(command.haptic);
     dispatchControllerState(command.action);
   } finally {
-    dispatchControllerState({ type: "finish-add-song" });
+    dispatchControllerState(getAddCollectionSongsFinishSongAction());
   }
 };

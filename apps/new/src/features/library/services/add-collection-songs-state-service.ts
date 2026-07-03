@@ -50,6 +50,16 @@ export const initialAddCollectionSongsControllerState: AddCollectionSongsControl
     selectedSongIds: new Set(),
   };
 
+export const getAddCollectionSongsFinishSelectionAction =
+  (): AddCollectionSongsControllerAction => ({
+    type: "finish-add-selection",
+  });
+
+export const getAddCollectionSongsFinishSongAction =
+  (): AddCollectionSongsControllerAction => ({
+    type: "finish-add-song",
+  });
+
 export const addCollectionSongsControllerReducer = (
   state: AddCollectionSongsControllerState,
   action: AddCollectionSongsControllerAction,

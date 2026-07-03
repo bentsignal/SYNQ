@@ -73,6 +73,10 @@ export const getCollectionFormChangeFieldAction = ({
   value,
 });
 
+export const getCollectionFormFinishSaveAction = (): CollectionFormAction => ({
+  type: "finish-save",
+});
+
 export const getInitialCollectionFormState = ({
   artistNames = "",
   name = "",

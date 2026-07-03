@@ -458,3 +458,5 @@
   the generic settings persistence state service.
 - Moved library song edit save action construction out of the command flow and
   into the song edit form service.
+- Moved add-collection-songs and collection-form finish action construction
+  out of command flows and into reducer state services.

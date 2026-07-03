@@ -7,9 +7,10 @@ import {
   getCollectionFormSuccessCommand,
 } from "./collection-form-command-state-service";
 import type { CollectionFormKind } from "./collection-form-domain-service";
-import type {
-  CollectionFormAction,
-  CollectionFormState,
+import {
+  getCollectionFormFinishSaveAction,
+  type CollectionFormAction,
+  type CollectionFormState,
 } from "./collection-form-state-service";
 
 type CollectionFormDispatch = (action: CollectionFormAction) => void;
@@ -82,7 +83,7 @@ export const runCreateCollectionFormSaveCommand = async ({
     sendHaptic(command.haptic);
     dispatch(command.action);
   } finally {
-    dispatch({ type: "finish-save" });
+    dispatch(getCollectionFormFinishSaveAction());
   }
 };
 
@@ -135,6 +136,6 @@ export const runEditCollectionFormSaveCommand = async ({
     sendHaptic(command.haptic);
     dispatch(command.action);
   } finally {
-    dispatch({ type: "finish-save" });
+    dispatch(getCollectionFormFinishSaveAction());
   }
 };

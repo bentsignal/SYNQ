@@ -53,12 +53,14 @@ export const getCollectionSongListState = ({
 });
 
 export const getCollectionSongRowActionState = ({
+  canMutateSongs = true,
   index,
   movingSongId,
   removingSongId,
   songId,
   totalSongs,
 }: {
+  canMutateSongs?: boolean;
   index: number;
   movingSongId: number | null;
   removingSongId: number | null;
@@ -73,9 +75,9 @@ export const getCollectionSongRowActionState = ({
   const isRemoving = removingSongId === songId;
 
   return {
-    canMoveDown: !isMutating && index < totalSongs - 1,
-    canMoveUp: !isMutating && index > 0,
-    canRemove: !isMutating,
+    canMoveDown: canMutateSongs && !isMutating && index < totalSongs - 1,
+    canMoveUp: canMutateSongs && !isMutating && index > 0,
+    canRemove: canMutateSongs && !isMutating,
     downLabel: isMoving ? "Moving" : "Down",
     isMoving,
     isRemoving,

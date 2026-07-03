@@ -2,6 +2,10 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
 import type { CollectionMetadataKind } from "../services/collection-metadata-service";
+import {
+  likedSongsPlaylistId,
+  systemPlaylistId,
+} from "../services/library-playlist-constants-service";
 
 type DeletableCollectionKind = CollectionMetadataKind;
 
@@ -30,7 +34,7 @@ export async function deleteCollection({
       await db.delete(schema.artists).where(eq(schema.artists.id, id));
       return;
     case "playlist":
-      if (id === 1 || id === 2) {
+      if (id === systemPlaylistId || id === likedSongsPlaylistId) {
         throw new Error("This system playlist cannot be deleted.");
       }
 

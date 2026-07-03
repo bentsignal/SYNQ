@@ -1,6 +1,7 @@
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, ne } from "drizzle-orm";
+import { systemPlaylistId } from "../services/library-playlist-constants-service";
 
 export const buildPlaylistPreviewRowsQuery = () =>
   db
@@ -14,7 +15,8 @@ export const buildPlaylistPreviewRowsQuery = () =>
     .leftJoin(
       schema.playlistSongs,
       eq(schema.playlists.id, schema.playlistSongs.playlistId),
-    );
+    )
+    .where(ne(schema.playlists.id, systemPlaylistId));
 
 export const buildAlbumPreviewRowsQuery = () =>
   db

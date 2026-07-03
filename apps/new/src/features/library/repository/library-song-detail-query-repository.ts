@@ -1,6 +1,7 @@
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import { likedSongsPlaylistId } from "../services/library-playlist-constants-service";
 
 export const buildLibrarySongDetailRowsQuery = (songId: number) =>
   db
@@ -48,3 +49,16 @@ export const buildLibrarySongDetailPlaylistRowsQuery = (songId: number) =>
       eq(schema.playlistSongs.playlistId, schema.playlists.id),
     )
     .where(eq(schema.playlistSongs.songId, songId));
+
+export const buildLibrarySongDetailLikedRowsQuery = (songId: number) =>
+  db
+    .select({
+      id: schema.playlistSongs.id,
+    })
+    .from(schema.playlistSongs)
+    .where(
+      and(
+        eq(schema.playlistSongs.playlistId, likedSongsPlaylistId),
+        eq(schema.playlistSongs.songId, songId),
+      ),
+    );

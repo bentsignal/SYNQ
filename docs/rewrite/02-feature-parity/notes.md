@@ -29,3 +29,16 @@
 - New settings privacy/support routes are additional surface, not old-to-new
   gaps. Old support/social actions were inline settings actions.
 - Backup and premium have no obvious primary route gaps in the first-pass audit.
+
+## Edit/Delete/Export Audit Evidence
+
+- Song detail now subscribes to Liked Songs membership through
+  `buildLibrarySongDetailLikedRowsQuery`, matching the existing mutation path
+  that toggles `playlistSongs` rows for the seeded liked playlist.
+- Nash completed a read-only edit/delete/export audit. Verified parity:
+  song delete, song export, collection create/edit/delete/export. Intentional
+  replacements: song title/artist/album editing via comma-separated metadata
+  fields, collection song add/remove/reorder via unified detail rows.
+- Audit gaps retained in todo: old song cover editing and old album artist
+  relationship editing. Seeded system playlist exposure was closed by filtering
+  playlist id `1` from previews and blocking its collection mutations.

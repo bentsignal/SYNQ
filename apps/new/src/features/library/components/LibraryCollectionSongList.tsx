@@ -5,6 +5,7 @@ import { LibraryCollectionSongEmptyState } from "./LibraryCollectionSongEmptySta
 import { LibraryCollectionSongRow } from "./LibraryCollectionSongRow";
 
 type LibraryCollectionSongListProps = {
+  canMutateSongs?: boolean;
   movingSongId?: number | null;
   onMoveSong?: (songId: number, direction: "down" | "up") => void;
   onRemoveSong?: (songId: number) => void;
@@ -13,6 +14,7 @@ type LibraryCollectionSongListProps = {
 };
 
 export function LibraryCollectionSongList({
+  canMutateSongs = true,
   movingSongId,
   onMoveSong,
   onRemoveSong,
@@ -32,6 +34,7 @@ export function LibraryCollectionSongList({
     >
       {songs.map((song, index) => (
         <LibraryCollectionSongRow
+          canMutateSongs={canMutateSongs}
           index={index}
           key={song.id}
           movingSongId={movingSongId}

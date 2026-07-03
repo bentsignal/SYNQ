@@ -3,6 +3,7 @@ import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
 import { saveCoverImage } from "@/src/features/images/services/image-storage-service";
 import { assertCollectionName } from "../services/collection-metadata-service";
+import { systemPlaylistId } from "../services/library-playlist-constants-service";
 import { assertUniqueCollectionName } from "./collection-uniqueness-repository";
 
 export async function updateAlbum({
@@ -84,6 +85,10 @@ export async function updatePlaylist({
   id: number;
   name: string;
 }) {
+  if (id === systemPlaylistId) {
+    throw new Error("This system playlist cannot be edited.");
+  }
+
   const cleanName = assertCollectionName({ kind: "playlist", name });
 
   await assertUniqueCollectionName({

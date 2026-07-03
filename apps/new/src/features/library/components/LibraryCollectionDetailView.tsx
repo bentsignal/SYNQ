@@ -92,6 +92,7 @@ export function LibraryCollectionDetailView({
       </View>
 
       <LibraryCollectionSongList
+        canMutateSongs={actionState.canMutateSongs}
         movingSongId={movingSongId}
         onMoveSong={moveSong}
         onRemoveSong={removeSong}

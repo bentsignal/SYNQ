@@ -2,6 +2,7 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
+import { systemPlaylistId } from "../services/library-playlist-constants-service";
 
 export async function updateCollectionSongOrder({
   collectionId,
@@ -39,6 +40,10 @@ export async function updateCollectionSongOrder({
           );
         break;
       case "playlist":
+        if (collectionId === systemPlaylistId) {
+          throw new Error("This system playlist cannot be changed.");
+        }
+
         await db
           .update(schema.playlistSongs)
           .set({ position: index + 1 })
@@ -84,6 +89,10 @@ export async function removeSongFromCollection({
         );
       return;
     case "playlist":
+      if (collectionId === systemPlaylistId) {
+        throw new Error("This system playlist cannot be changed.");
+      }
+
       await db
         .delete(schema.playlistSongs)
         .where(

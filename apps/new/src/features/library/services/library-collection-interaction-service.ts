@@ -3,7 +3,10 @@ import type {
 } from "./library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
 import { getLibraryCollectionBackHref } from "./library-collection-navigation-service";
-import { likedSongsPlaylistId } from "./library-playlist-constants-service";
+import {
+  likedSongsPlaylistId,
+  systemPlaylistId,
+} from "./library-playlist-constants-service";
 
 export const getLibraryCollectionSongEmptyState = () => ({
   body: "Add songs from your library to build this collection.",
@@ -34,7 +37,29 @@ export const canDeleteLibraryCollection = ({
   isMissing: boolean;
   kind: LibraryCollectionDetailKind;
 }) =>
-  !isMissing && (kind !== "playlist" || (id !== 1 && id !== likedSongsPlaylistId));
+  !isMissing &&
+  (kind !== "playlist" ||
+    (id !== systemPlaylistId && id !== likedSongsPlaylistId));
+
+export const canMutateLibraryCollectionMembership = ({
+  id,
+  isMissing,
+  kind,
+}: {
+  id: number;
+  isMissing: boolean;
+  kind: LibraryCollectionDetailKind;
+}) => !isMissing && (kind !== "playlist" || id !== systemPlaylistId);
+
+export const canEditLibraryCollection = ({
+  id,
+  isMissing,
+  kind,
+}: {
+  id: number;
+  isMissing: boolean;
+  kind: LibraryCollectionDetailKind;
+}) => canMutateLibraryCollectionMembership({ id, isMissing, kind });
 
 export const getPlayableCollectionSongs = (
   songs: LibraryCollectionDetailSong[],
@@ -62,10 +87,22 @@ export const getCollectionDetailActionState = ({
     isMissing,
     kind,
   });
+  const canEditCollection = canEditLibraryCollection({
+    id,
+    isMissing,
+    kind,
+  });
+  const canMutateSongs = canMutateLibraryCollectionMembership({
+    id,
+    isMissing,
+    kind,
+  });
 
   return {
     canDelete: canDeleteCollection && !isDeleting,
+    canEdit: canEditCollection,
     canExport: hasPlayableSongs && !isExporting,
+    canMutateSongs,
     canPlay: hasPlayableSongs,
     canQueue: hasPlayableSongs,
     deleteLabel: isDeleting ? "Deleting" : "Delete",

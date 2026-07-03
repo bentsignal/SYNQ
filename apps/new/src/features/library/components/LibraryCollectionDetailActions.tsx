@@ -56,20 +56,24 @@ export function LibraryCollectionDetailActions({
         theme={theme}
         variant="secondary"
       />
-      <Link
-        className="text-sm font-extrabold uppercase"
-        href={editHref}
-        style={{ color: theme.accent }}
-      >
-        Edit {detail.eyebrow.toLowerCase()}
-      </Link>
-      <Link
-        className="text-sm font-extrabold uppercase"
-        href={addHref}
-        style={{ color: theme.accent }}
-      >
-        Add songs
-      </Link>
+      {actionState.canEdit ? (
+        <Link
+          className="text-sm font-extrabold uppercase"
+          href={editHref}
+          style={{ color: theme.accent }}
+        >
+          Edit {detail.eyebrow.toLowerCase()}
+        </Link>
+      ) : null}
+      {actionState.canMutateSongs ? (
+        <Link
+          className="text-sm font-extrabold uppercase"
+          href={addHref}
+          style={{ color: theme.accent }}
+        >
+          Add songs
+        </Link>
+      ) : null}
       <LibraryActionButton
         disabled={!actionState.canExport}
         label={actionState.exportLabel}

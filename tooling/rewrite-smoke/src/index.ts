@@ -188,7 +188,9 @@ import {
   initialAddCollectionSongsSearchState,
 } from "../../../apps/new/src/features/library/services/add-collection-songs-state-service";
 import {
+  canEditLibraryCollection,
   canDeleteLibraryCollection,
+  canMutateLibraryCollectionMembership,
   getCollectionDetailActionState,
   getCollectionDetailStatusState,
   getCollectionDetailViewState,
@@ -2094,7 +2096,9 @@ function assertLibraryCollectionInteractionSmoke() {
     }),
     {
       canDelete: true,
+      canEdit: true,
       canExport: true,
+      canMutateSongs: true,
       canPlay: true,
       canQueue: true,
       deleteLabel: "Delete",
@@ -2113,7 +2117,9 @@ function assertLibraryCollectionInteractionSmoke() {
     }),
     {
       canDelete: false,
+      canEdit: true,
       canExport: false,
+      canMutateSongs: true,
       canPlay: true,
       canQueue: true,
       deleteLabel: "Deleting",
@@ -2132,7 +2138,9 @@ function assertLibraryCollectionInteractionSmoke() {
     }),
     {
       canDelete: false,
+      canEdit: false,
       canExport: true,
+      canMutateSongs: false,
       canPlay: true,
       canQueue: true,
       deleteLabel: "Delete",
@@ -2151,7 +2159,9 @@ function assertLibraryCollectionInteractionSmoke() {
     }),
     {
       canDelete: false,
+      canEdit: false,
       canExport: false,
+      canMutateSongs: false,
       canPlay: false,
       canQueue: false,
       deleteLabel: "Delete",
@@ -2451,6 +2461,28 @@ function assertLibraryCollectionInteractionSmoke() {
   );
   assert.equal(
     getCollectionSongRowActionState({
+      canMutateSongs: false,
+      index: 1,
+      movingSongId: null,
+      removingSongId: null,
+      songId: 2,
+      totalSongs: songs.length,
+    }).canRemove,
+    false,
+  );
+  assert.equal(
+    getCollectionSongRowActionState({
+      canMutateSongs: false,
+      index: 1,
+      movingSongId: null,
+      removingSongId: null,
+      songId: 2,
+      totalSongs: songs.length,
+    }).canMoveUp,
+    false,
+  );
+  assert.equal(
+    getCollectionSongRowActionState({
       index: 2,
       movingSongId: null,
       removingSongId: null,
@@ -2557,6 +2589,38 @@ function assertLibraryCollectionInteractionSmoke() {
       id: 1,
       isMissing: false,
       kind: "album",
+    }),
+    true,
+  );
+  assert.equal(
+    canEditLibraryCollection({
+      id: 1,
+      isMissing: false,
+      kind: "playlist",
+    }),
+    false,
+  );
+  assert.equal(
+    canEditLibraryCollection({
+      id: 2,
+      isMissing: false,
+      kind: "playlist",
+    }),
+    true,
+  );
+  assert.equal(
+    canMutateLibraryCollectionMembership({
+      id: 1,
+      isMissing: false,
+      kind: "playlist",
+    }),
+    false,
+  );
+  assert.equal(
+    canMutateLibraryCollectionMembership({
+      id: 3,
+      isMissing: false,
+      kind: "playlist",
     }),
     true,
   );

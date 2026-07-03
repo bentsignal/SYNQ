@@ -8,6 +8,7 @@ import { getLibrarySongDetailHref } from "../services/library-song-interaction-s
 import { LibraryCollectionSongRowActions } from "./LibraryCollectionSongRowActions";
 
 type LibraryCollectionSongRowProps = {
+  canMutateSongs?: boolean;
   index: number;
   movingSongId?: number | null;
   onMoveSong?: (songId: number, direction: "down" | "up") => void;
@@ -18,6 +19,7 @@ type LibraryCollectionSongRowProps = {
 };
 
 export function LibraryCollectionSongRow({
+  canMutateSongs = true,
   index,
   movingSongId,
   onMoveSong,
@@ -28,6 +30,7 @@ export function LibraryCollectionSongRow({
 }: LibraryCollectionSongRowProps) {
   const theme = useCustomizationTheme();
   const rowState = getCollectionSongRowActionState({
+    canMutateSongs,
     index,
     movingSongId: movingSongId ?? null,
     removingSongId: removingSongId ?? null,

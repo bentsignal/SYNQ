@@ -20,3 +20,7 @@
   screen, where draft export and save/discard actions now live together.
 - Restored old `/ingest/*` route compatibility by routing those entry points to
   the new import file, Wi-Fi, export/save, success, and failure screens.
+- Restored reactive song-detail liked-state reads so the new Like/Unlike action
+  reflects `playlistSongs` membership in the seeded Liked Songs playlist.
+- Restored seeded system-playlist protection by hiding playlist id `1` from new
+  previews and blocking edit/add/reorder/remove mutations for that playlist.

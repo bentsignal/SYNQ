@@ -194,3 +194,5 @@
   and persisted-session restore decisions.
 - Added direct playback persistence step smoke coverage for primitive and
   queue-item normalization.
+- Added direct playback persistence ad-gate smoke coverage for clamping and
+  restored active-gate reset behavior.

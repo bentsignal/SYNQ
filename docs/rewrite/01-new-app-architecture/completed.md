@@ -301,3 +301,5 @@
   out of the filesystem persistence executor.
 - Split playback persistence primitive and queue-item normalization into a
   focused persistence step service.
+- Split playback persistence ad-gate normalization into a focused persistence
+  step service.

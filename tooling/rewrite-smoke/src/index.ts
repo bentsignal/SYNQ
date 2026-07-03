@@ -65,6 +65,10 @@ import {
   numberOrNull,
 } from "../../../apps/new/src/features/playback/services/playback-persistence-step-service";
 import {
+  normalizeAdGate,
+  normalizeRestoredAdGate,
+} from "../../../apps/new/src/features/playback/services/playback-persistence-ad-gate-service";
+import {
   clearPersistedPlaybackStateWithDependencies,
   getPlaybackStateDirectoryWithDependencies,
   getPlaybackStateFileWithDependencies,
@@ -1156,6 +1160,35 @@ function assertPlaybackSessionSmoke() {
   assert.deepEqual(
     persistedState.queue.map((item) => item.id),
     [1, 2, 3],
+  );
+
+  assert.deepEqual(
+    normalizeAdGate({
+      accumulatedMs: 999_999,
+      lastTrackedPosition: -10,
+      playbackDuration: 120_000,
+      playbackPosition: 999_999,
+      thresholdMs: 300_000,
+    }),
+    {
+      accumulatedMs: 300_000,
+      active: false,
+      due: true,
+      lastTrackedPosition: null,
+      playbackDuration: 120_000,
+      playbackPosition: 120_000,
+      thresholdMs: 300_000,
+    },
+  );
+  assert.equal(
+    normalizeRestoredAdGate({
+      active: true,
+      accumulatedMs: 10_000,
+      playbackDuration: 30_000,
+      playbackPosition: 12_000,
+      thresholdMs: 300_000,
+    }).active,
+    false,
   );
 
   const normalizedState = normalizePlaybackState({

@@ -79,3 +79,5 @@
   and command assembly into a dedicated store hook.
 - Moved backup phase-transition haptics and runtime-session reset effects out
   of the screen controller into a dedicated backup effects hook.
+- Moved backup command result copy and document-picker URI normalization into a
+  pure service covered by deterministic smoke.

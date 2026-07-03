@@ -439,6 +439,11 @@ import {
   getBackupSessionErrorMessage,
   initialBackupSessionState,
 } from "../../../apps/new/src/features/backup/services/backup-session-state-service";
+import {
+  getBackupCommandResult,
+  getCancelledBackupRestoreResult,
+  getPickedBackupArchiveUri,
+} from "../../../apps/new/src/features/backup/services/backup-command-result-service";
 import type { BackupSessionState } from "../../../apps/new/src/features/backup/types/backup-session";
 import {
   getPremiumActionState,
@@ -5859,6 +5864,43 @@ function assertBackupScreenSmoke() {
   assert.equal(
     getBackupSessionErrorMessage(null),
     "Backup operation failed.",
+  );
+  assert.deepEqual(getBackupCommandResult("backup"), {
+    message: "Backup archive was created and handed to the share sheet.",
+    operation: "backup",
+  });
+  assert.deepEqual(getBackupCommandResult("erase"), {
+    message: "Local library files and database rows were erased.",
+    operation: "erase",
+  });
+  assert.deepEqual(getBackupCommandResult("restore"), {
+    message: "Backup archive was restored into the local library.",
+    operation: "restore",
+  });
+  assert.deepEqual(getCancelledBackupRestoreResult(), {
+    message: "Restore was cancelled.",
+    operation: "restore",
+  });
+  assert.equal(
+    getPickedBackupArchiveUri({
+      assets: [{ uri: "file:///backup.zip" }],
+      canceled: false,
+    }),
+    "file:///backup.zip",
+  );
+  assert.equal(
+    getPickedBackupArchiveUri({
+      assets: [],
+      canceled: false,
+    }),
+    null,
+  );
+  assert.equal(
+    getPickedBackupArchiveUri({
+      assets: [{ uri: "file:///backup.zip" }],
+      canceled: true,
+    }),
+    null,
   );
   assert.equal(getBackupOperationLabel("backup"), "Backup");
   assert.equal(getBackupOperationLabel("erase"), "Erase");

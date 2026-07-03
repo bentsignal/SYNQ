@@ -19,3 +19,5 @@
   calls.
 - Ratcheted the rewrite debt audit to block direct feature-level route-param
   parsing outside the app-shell `useNumericRouteParam` boundary.
+- Expanded deterministic backup smoke coverage for command result messages and
+  document-picker archive URI normalization.

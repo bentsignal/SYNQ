@@ -7,6 +7,11 @@ import type {
   BackupOperation,
 } from "../types/backup-session";
 import {
+  getBackupCommandResult,
+  getCancelledBackupRestoreResult,
+  getPickedBackupArchiveUri,
+} from "./backup-command-result-service";
+import {
   assertBackupRestoreStagingDirectoryHasFiles,
   cleanupBackupRestoreStagingDirectory,
   clearBackupDocumentDirectory,
@@ -33,10 +38,7 @@ const runCreateBackupCommand = async (): Promise<BackupCommandResult> => {
     UTI: "com.pkware.zip-archive",
   });
 
-  return {
-    message: "Backup archive was created and handed to the share sheet.",
-    operation: "backup",
-  };
+  return getBackupCommandResult("backup");
 };
 
 const pickBackupArchive = async () => {
@@ -45,31 +47,21 @@ const pickBackupArchive = async () => {
     type: "application/zip",
   });
 
-  if (result.canceled) {
-    return null;
-  }
-
-  return result.assets[0]?.uri ?? null;
+  return getPickedBackupArchiveUri(result);
 };
 
 const runEraseLibraryCommand = async (): Promise<BackupCommandResult> => {
   await clearBackupDocumentDirectory();
   await resetDatabaseConnection();
 
-  return {
-    message: "Local library files and database rows were erased.",
-    operation: "erase",
-  };
+  return getBackupCommandResult("erase");
 };
 
 const runRestoreBackupCommand = async (): Promise<BackupCommandResult> => {
   const archiveUri = await pickBackupArchive();
 
   if (!archiveUri) {
-    return {
-      message: "Restore was cancelled.",
-      operation: "restore",
-    };
+    return getCancelledBackupRestoreResult();
   }
 
   const stagingDirectory = await prepareBackupRestoreStagingDirectory();
@@ -87,10 +79,7 @@ const runRestoreBackupCommand = async (): Promise<BackupCommandResult> => {
     await cleanupBackupRestoreStagingDirectory(stagingDirectory);
   }
 
-  return {
-    message: "Backup archive was restored into the local library.",
-    operation: "restore",
-  };
+  return getBackupCommandResult("restore");
 };
 
 export async function runBackupCommand(

@@ -78,6 +78,9 @@
 - Backup restore/erase phase-transition side effects now live in
   `use-backup-phase-effects`, keeping the runtime reset behavior explicit and
   isolated from the screen action controller.
+- Backup command results and restore picker cancel/URI handling now live in a
+  pure command-result service with smoke coverage for backup, erase, restore,
+  restore cancellation, missing assets, and selected archive URIs.
 - Import session reset now clears both the persisted import session JSON and the
   staged import cache directory, matching backup reset expectations for
   realistic partially staged imports.

@@ -4,6 +4,10 @@ import type {
   LibrarySongPreviewSort,
 } from "../services/library-song-preview-service";
 import { getLibrarySongListControlsState } from "../services/library-song-preview-state-service";
+import {
+  runLibrarySongListOrderToggleAction,
+  runLibrarySongListSortSelectAction,
+} from "../services/library-song-list-controls-action-flow-service";
 
 type UseLibrarySongListControlsParams = {
   order: LibrarySongPreviewOrder;
@@ -22,18 +26,21 @@ export function useLibrarySongListControls({
   const controlsState = getLibrarySongListControlsState({ order, sort });
 
   const selectSort = (nextSort: LibrarySongPreviewSort) => {
-    const option = controlsState.sortOptions.find(
-      (sortOption) => sortOption.value === nextSort,
-    );
-    if (option) {
-      sendHaptic(option.haptic);
-    }
-    setSort(nextSort);
+    runLibrarySongListSortSelectAction({
+      order,
+      sendHaptic,
+      setSort,
+      sort: nextSort,
+    });
   };
 
   const toggleOrder = () => {
-    sendHaptic(controlsState.orderButton.haptic);
-    setOrder(controlsState.orderButton.nextOrder);
+    runLibrarySongListOrderToggleAction({
+      order,
+      sendHaptic,
+      setOrder,
+      sort,
+    });
   };
 
   return {

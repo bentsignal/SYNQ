@@ -923,6 +923,10 @@ import {
   runLibrarySongPreviewQueueAction,
 } from "../../../apps/new/src/features/library/services/library-song-preview-action-flow-service";
 import {
+  runLibrarySongListOrderToggleAction,
+  runLibrarySongListSortSelectAction,
+} from "../../../apps/new/src/features/library/services/library-song-list-controls-action-flow-service";
+import {
   backupActionCards,
   getBackupActionState,
   getBackupConfirmationState,
@@ -6931,6 +6935,33 @@ function assertLibrarySongPreviewSmoke() {
       ],
     },
   );
+  const songListControlEvents: unknown[] = [];
+  runLibrarySongListSortSelectAction({
+    order: "asc",
+    sendHaptic: (haptic) => {
+      songListControlEvents.push(["haptic", haptic]);
+    },
+    setSort: (sort) => {
+      songListControlEvents.push(["sort", sort]);
+    },
+    sort: "album",
+  });
+  runLibrarySongListOrderToggleAction({
+    order: "desc",
+    sendHaptic: (haptic) => {
+      songListControlEvents.push(["haptic", haptic]);
+    },
+    setOrder: (order) => {
+      songListControlEvents.push(["order", order]);
+    },
+    sort: "recent",
+  });
+  assert.deepEqual(songListControlEvents, [
+    ["haptic", "light"],
+    ["sort", "album"],
+    ["haptic", "light"],
+    ["order", "asc"],
+  ]);
   assert.deepEqual(toLibrarySongPlaybackItem(previews[0]!), {
     album: "Alpha Album",
     artist: "Alpha Artist, Featured Artist",

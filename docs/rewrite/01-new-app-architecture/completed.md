@@ -376,3 +376,5 @@
 - Moved library song preview-row play/queue haptic, playback, queueing, and
   navigation sequencing out of the React hook and into a focused action-flow
   service.
+- Moved library song list sort/order haptic and state-update sequencing out of
+  the React hook and into a focused controls action-flow service.

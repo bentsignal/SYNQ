@@ -269,3 +269,5 @@
   image pick, picked image dispatch, and picker failure sequencing.
 - Added direct library song preview action-flow smoke coverage for play and
   queue haptic/action sequencing.
+- Added direct library song list controls action-flow smoke coverage for sort
+  selection and order toggle sequencing.

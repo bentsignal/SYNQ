@@ -7,11 +7,11 @@ import {
   insertStoredImageHash,
 } from "../repository/image-repository";
 import {
-  getImagePathFromDirectory,
   saveCoverImageWithDependencies,
   type ImageStorageDependencies,
   type ImageStorageVariant,
 } from "./image-storage-executor-service";
+import { getImagePathFromDirectory } from "./image-storage-step-service";
 
 const imageDirectory = `${FileSystem.documentDirectory}images`;
 

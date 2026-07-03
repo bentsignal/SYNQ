@@ -903,14 +903,16 @@ import {
 } from "../../../apps/new/src/features/settings/services/settings-json-file-store-service";
 import {
   checkStoredImageExistsWithDependencies,
-  getImagePathFromDirectory,
   getImagePathFromHashWithDependencies,
-  getImageStorageVariants,
   saveCoverImageWithDependencies,
-  splitImageData,
   writeImageToFileSystemWithDependencies,
   type ImageStorageDependencies,
 } from "../../../apps/new/src/features/images/services/image-storage-executor-service";
+import {
+  getImagePathFromDirectory,
+  getImageStorageVariants,
+  splitImageData,
+} from "../../../apps/new/src/features/images/services/image-storage-step-service";
 import {
   getExportFileNameFromPath,
   sanitizeExportFileName,

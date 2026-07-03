@@ -291,3 +291,5 @@
 - Split import session reducer transitions into a focused session step service.
 - Split import session Wi-Fi, staged-song, and save/discard state transitions
   into separate focused step services.
+- Split image storage data parsing, path planning, and variant planning out of
+  the filesystem executor.

@@ -184,3 +184,5 @@
   failure, review, receive, remove, edit, save, finish, and discard transitions.
 - Kept direct import session smoke coverage while moving Wi-Fi, staged-song, and
   save/discard transitions into narrower step services.
+- Kept direct image storage smoke coverage while moving pure path/data/variant
+  planning into a focused step service.

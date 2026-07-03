@@ -87,6 +87,10 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-native-command-plan-service";
 import { runAdGatedPlaybackCommand } from "../../../apps/new/src/features/playback/services/playback-command-gate-service";
 import {
+  handlePlaybackRemoteCommand,
+  type PlaybackRemoteCommandHandlers,
+} from "../../../apps/new/src/features/playback/services/playback-remote-command-service";
+import {
   getClearQueuePlaybackCommandPlan,
   getPausePlaybackCommandPlan,
   getPlaySongPlaybackCommandPlan,
@@ -1454,6 +1458,120 @@ function assertPlaybackNativeCommandPlanSmoke() {
     "started-ad",
   );
   assert.deepEqual(gatedEvents, ["command", "ad"]);
+
+  const remoteEvents: string[] = [];
+  let remoteAllowed = true;
+  const remoteHandlers: PlaybackRemoteCommandHandlers = {
+    beginAdBreak: () => remoteEvents.push("ad"),
+    canRunPlaybackCommand: () => remoteAllowed,
+    fail: (message) => remoteEvents.push(`fail:${message}`),
+    pause: () => remoteEvents.push("pause"),
+    queueEnded: () => remoteEvents.push("queue-ended"),
+    resume: () => remoteEvents.push("resume"),
+    seekTo: (position) => remoteEvents.push(`seek:${position}`),
+    skipNext: () => remoteEvents.push("next"),
+    skipPrevious: () => remoteEvents.push("previous"),
+  };
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { type: "play" },
+      handlers: remoteHandlers,
+    }),
+    "handled",
+  );
+  assert.deepEqual(remoteEvents, ["resume"]);
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { type: "next" },
+      handlers: remoteHandlers,
+    }),
+    "handled",
+  );
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { type: "previous" },
+      handlers: remoteHandlers,
+    }),
+    "handled",
+  );
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { type: "queue-ended" },
+      handlers: remoteHandlers,
+    }),
+    "handled",
+  );
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { position: 64_000, type: "seek" },
+      handlers: remoteHandlers,
+    }),
+    "handled",
+  );
+  assert.deepEqual(remoteEvents, [
+    "resume",
+    "next",
+    "previous",
+    "queue-ended",
+    "seek:64000",
+  ]);
+
+  remoteAllowed = false;
+  remoteEvents.length = 0;
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { type: "play" },
+      handlers: remoteHandlers,
+    }),
+    "started-ad",
+  );
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { type: "next" },
+      handlers: remoteHandlers,
+    }),
+    "started-ad",
+  );
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { type: "previous" },
+      handlers: remoteHandlers,
+    }),
+    "started-ad",
+  );
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { type: "queue-ended" },
+      handlers: remoteHandlers,
+    }),
+    "started-ad",
+  );
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { position: 12_000, type: "seek" },
+      handlers: remoteHandlers,
+    }),
+    "blocked-by-ad",
+  );
+  assert.deepEqual(remoteEvents, ["ad", "ad", "ad", "ad"]);
+
+  remoteEvents.length = 0;
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { type: "pause" },
+      handlers: remoteHandlers,
+    }),
+    "handled",
+  );
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { message: "Remote smoke failure", type: "error" },
+      handlers: remoteHandlers,
+    }),
+    "handled",
+  );
+  assert.deepEqual(remoteEvents, ["pause", "fail:Remote smoke failure"]);
+
   assert.deepEqual(getPlaySongPlaybackCommandPlan(first), {
     action: {
       song: first,

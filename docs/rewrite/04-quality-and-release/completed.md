@@ -132,3 +132,5 @@
   file cleanup, and delete orchestration boundaries.
 - Added settings support action smoke coverage for URL actions and App Store
   review available/unavailable branches.
+- Added playback remote command smoke coverage for ad-gated play/next/previous/
+  queue-ended commands, blocked seeks, pause, and remote failure handling.

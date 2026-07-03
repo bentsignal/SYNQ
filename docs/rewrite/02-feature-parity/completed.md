@@ -42,3 +42,5 @@
   app-shell modal context.
 - Restored the old Wi-Fi import route guard so remote `/startTransfer` requests
   are rejected unless the app is currently showing a Wi-Fi import route.
+- Covered playback remote command parity for allowed, ad-gated, blocked seek,
+  pause, queue-ended, and error command paths in the deterministic smoke suite.

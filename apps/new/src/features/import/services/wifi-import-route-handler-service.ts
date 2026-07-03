@@ -1,18 +1,18 @@
-import type { ImportSongDraft } from "../types/import-session";
 import type {
   WifiBridgeRequest,
   WifiBridgeResponse,
 } from "./wifi-import-bridge-types";
 import {
-  getWifiUploadFailureResponse,
   wifiImportFinishResponse,
-  wifiImportPrepareFailureResponse,
   wifiImportResetResponse,
 } from "./wifi-import-response-service";
 import { sendWifiImportJsonResponse } from "./wifi-import-bridge-response-service";
 import type { WifiImportRouteRuntimeState } from "./wifi-import-route-runtime-state-service";
-import { getWifiStartTransferDecision } from "./wifi-import-transfer-decision-service";
-import { getWifiUploadDecision } from "./wifi-import-upload-decision-service";
+import {
+  runWifiImportFileUploadRoute,
+  runWifiImportStartTransferRoute,
+  type WifiImportRouteHandlerDependencies,
+} from "./wifi-import-route-operation-service";
 
 export type WifiImportRouteHandlers = {
   handleConnection: (
@@ -41,21 +41,7 @@ export type WifiImportRouteHandlers = {
   ) => Promise<void>;
 };
 
-export type WifiImportRouteHandlerDependencies = {
-  allowTransfer: boolean;
-  beginWifiTransfer: (transferSize: number) => Promise<boolean>;
-  failSession: (message: string) => void;
-  finishWifiTransfer: () => void;
-  getConnectionResponse: () => object;
-  getTransferPage: () => string;
-  receiveWifiSong: (song: ImportSongDraft) => void;
-  stageWifiImportFile: (params: {
-    data: string;
-    id: number;
-    name: string;
-    type: string;
-  }) => Promise<ImportSongDraft>;
-};
+export type { WifiImportRouteHandlerDependencies } from "./wifi-import-route-operation-service";
 
 export const createWifiImportRouteHandlers = ({
   dependencies,
@@ -68,39 +54,12 @@ export const createWifiImportRouteHandlers = ({
     response.json(dependencies().getConnectionResponse(), 200);
   },
   handleFileUpload: async (request, response) => {
-    const routeDependencies = dependencies();
-
-    try {
-      const decision = getWifiUploadDecision({
-        postData: request.postData,
-        receivedIds: runtimeState.receivedIds,
-      });
-
-      if (!decision.shouldAccept) {
-        sendWifiImportJsonResponse(response, decision.response);
-        return;
-      }
-
-      const song = await routeDependencies.stageWifiImportFile({
-        data: decision.upload.b64,
-        id: decision.upload.id,
-        name: decision.upload.name,
-        type: decision.upload.type,
-      });
-
-      runtimeState.receivedIds.add(decision.upload.id);
-      routeDependencies.receiveWifiSong(song);
-      sendWifiImportJsonResponse(response, decision.response);
-    } catch (caughtError) {
-      const message =
-        caughtError instanceof Error ? caughtError.message : String(caughtError);
-
-      routeDependencies.failSession(message);
-      sendWifiImportJsonResponse(
-        response,
-        getWifiUploadFailureResponse(message),
-      );
-    }
+    await runWifiImportFileUploadRoute({
+      dependencies: dependencies(),
+      request,
+      response,
+      runtimeState,
+    });
   },
   handleFinishTransfer: async (_request, response) => {
     runtimeState.isMidTransfer = false;
@@ -116,29 +75,11 @@ export const createWifiImportRouteHandlers = ({
     response.html(dependencies().getTransferPage());
   },
   handleStartTransfer: async (request, response) => {
-    const routeDependencies = dependencies();
-    const decision = getWifiStartTransferDecision({
-      allowTransfer: routeDependencies.allowTransfer,
-      isMidTransfer: runtimeState.isMidTransfer,
-      postData: request.postData,
+    await runWifiImportStartTransferRoute({
+      dependencies: dependencies(),
+      request,
+      response,
+      runtimeState,
     });
-
-    if (!decision.shouldStart) {
-      sendWifiImportJsonResponse(response, decision.response);
-      return;
-    }
-
-    runtimeState.receivedIds.clear();
-    const canStart = await routeDependencies.beginWifiTransfer(
-      decision.transferSize,
-    );
-
-    if (!canStart) {
-      sendWifiImportJsonResponse(response, wifiImportPrepareFailureResponse);
-      return;
-    }
-
-    runtimeState.isMidTransfer = true;
-    sendWifiImportJsonResponse(response, decision.response);
   },
 });

@@ -65,3 +65,6 @@
   pure view-state helpers, leaving the route components as thin view wrappers.
 - Moved the import premium gate's entitlement read and haptic command behind a
   gate controller so the component stays focused on rendering the gated UI.
+- Moved the edit-import-song route behind a screen controller and pure
+  edit-screen state helper, including invalid-id and not-staged state
+  derivation.

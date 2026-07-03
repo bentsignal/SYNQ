@@ -38,3 +38,7 @@
   `pnpm --filter @synq/rewrite-smoke smoke`, and
   `bash scripts/audit-rewrite-debt.sh` passed for the premium-gate controller
   extraction.
+- Edit-import-song routing now parses the route parameter in
+  `use-edit-import-song-screen-controller`, then delegates invalid-id,
+  not-staged, and ready-state derivation to `getImportSongEditScreenState`.
+  Deterministic smoke covers all three outcomes.

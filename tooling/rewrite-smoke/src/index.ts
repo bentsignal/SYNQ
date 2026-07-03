@@ -157,6 +157,7 @@ import {
   getImportSongEditInvalidSaveCommand,
   getImportSongDraftForEdit,
   getImportSongEditRequiredTitleMessage,
+  getImportSongEditScreenState,
   getImportSongEditSaveFailureCommand,
   getImportSongEditSaveSuccessCommand,
   importSongEditFormReducer,
@@ -5536,6 +5537,36 @@ function assertImportSongFormSmoke() {
       songs: [importDraft(7), importDraft(8)],
     }),
     null,
+  );
+  assert.deepEqual(
+    getImportSongEditScreenState({
+      songId: null,
+      songs: [importDraft(7), importDraft(8)],
+    }),
+    {
+      reason: "invalid-id",
+      type: "invalid",
+    },
+  );
+  assert.deepEqual(
+    getImportSongEditScreenState({
+      songId: 8,
+      songs: [importDraft(7), importDraft(8)],
+    }),
+    {
+      song: importDraft(8),
+      type: "ready",
+    },
+  );
+  assert.deepEqual(
+    getImportSongEditScreenState({
+      songId: 99,
+      songs: [importDraft(7), importDraft(8)],
+    }),
+    {
+      reason: "not-staged",
+      type: "invalid",
+    },
   );
   assert.deepEqual(getImportSongEditFieldState(), {
     album: {

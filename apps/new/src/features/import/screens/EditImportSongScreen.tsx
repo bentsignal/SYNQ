@@ -1,31 +1,18 @@
-import { useLocalSearchParams } from "expo-router";
-import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
 import { EditImportSongConnectedForm } from "../components/EditImportSongConnectedForm";
 import { EditImportSongInvalidState } from "../components/EditImportSongInvalidState";
-import { useEditImportSongQuery } from "../hooks/use-edit-import-song-query";
+import { useEditImportSongScreenController } from "../hooks/use-edit-import-song-screen-controller";
 
 export function EditImportSongScreen() {
-  const params = useLocalSearchParams<{ id?: string }>();
-  const id = parseNumericRouteParam(params.id);
+  const controller = useEditImportSongScreenController();
 
-  if (id === null) {
-    return <EditImportSongInvalidState reason="invalid-id" />;
-  }
-
-  return <EditImportSongContent songId={id} />;
-}
-
-function EditImportSongContent({ songId }: { songId: number }) {
-  const { song, updateImportSong } = useEditImportSongQuery(songId);
-
-  if (!song) {
-    return <EditImportSongInvalidState reason="not-staged" />;
+  if (controller.type === "invalid") {
+    return <EditImportSongInvalidState reason={controller.reason} />;
   }
 
   return (
     <EditImportSongConnectedForm
-      song={song}
-      updateImportSong={updateImportSong}
+      song={controller.song}
+      updateImportSong={controller.updateImportSong}
     />
   );
 }

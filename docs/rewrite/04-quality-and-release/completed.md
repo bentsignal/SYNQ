@@ -76,3 +76,5 @@
 - Added library export snapshot executor smoke coverage for deterministic hash
   inputs, missing songs, no prior snapshot, fresh snapshots, stale snapshots,
   and exported snapshot updates.
+- Added collection delete executor smoke coverage for album, artist, playlist,
+  and protected system-playlist deletion behavior.

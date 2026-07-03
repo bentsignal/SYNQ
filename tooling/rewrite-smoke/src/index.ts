@@ -373,6 +373,11 @@ import {
   removeLibraryCollectionSongCommandWithDependencies,
 } from "../../../apps/new/src/features/library/services/library-collection-command-executor-service";
 import {
+  assertCanDeletePlaylist,
+  deleteCollectionWithDependencies,
+  type CollectionDeleteDependencies,
+} from "../../../apps/new/src/features/library/repository/collection-delete-executor-repository";
+import {
   getCollectionSongListState,
   getCollectionSongOrderUpdate,
   getCollectionSongRowActionState,
@@ -4079,6 +4084,84 @@ function assertLibraryCollectionInteractionSmoke() {
       isSelected: false,
     },
   );
+}
+
+async function assertCollectionDeleteExecutorSmoke() {
+  const calls: string[] = [];
+  const dependencies: CollectionDeleteDependencies = {
+    deleteAlbumArtistRows: async (albumId) => {
+      calls.push(`delete-album-artists:${albumId}`);
+    },
+    deleteAlbumRow: async (albumId) => {
+      calls.push(`delete-album:${albumId}`);
+    },
+    deleteAlbumSongRows: async (albumId) => {
+      calls.push(`delete-album-songs:${albumId}`);
+    },
+    deleteArtistAlbumRows: async (artistId) => {
+      calls.push(`delete-artist-albums:${artistId}`);
+    },
+    deleteArtistRow: async (artistId) => {
+      calls.push(`delete-artist:${artistId}`);
+    },
+    deleteArtistSongRows: async (artistId) => {
+      calls.push(`delete-artist-songs:${artistId}`);
+    },
+    deletePlaylistRow: async (playlistId) => {
+      calls.push(`delete-playlist:${playlistId}`);
+    },
+    deletePlaylistSongRows: async (playlistId) => {
+      calls.push(`delete-playlist-songs:${playlistId}`);
+    },
+    likedSongsPlaylistId: 2,
+    systemPlaylistId: 1,
+  };
+
+  await deleteCollectionWithDependencies(
+    { id: 10, kind: "album" },
+    dependencies,
+  );
+  assert.deepEqual(calls, [
+    "delete-album-songs:10",
+    "delete-album-artists:10",
+    "delete-album:10",
+  ]);
+
+  calls.length = 0;
+  await deleteCollectionWithDependencies(
+    { id: 11, kind: "artist" },
+    dependencies,
+  );
+  assert.deepEqual(calls, [
+    "delete-artist-songs:11",
+    "delete-artist-albums:11",
+    "delete-artist:11",
+  ]);
+
+  calls.length = 0;
+  await deleteCollectionWithDependencies(
+    { id: 12, kind: "playlist" },
+    dependencies,
+  );
+  assert.deepEqual(calls, [
+    "delete-playlist-songs:12",
+    "delete-playlist:12",
+  ]);
+
+  calls.length = 0;
+  assert.throws(
+    () => assertCanDeletePlaylist({ dependencies, id: 1 }),
+    /system playlist/,
+  );
+  await assert.rejects(
+    () =>
+      deleteCollectionWithDependencies(
+        { id: 2, kind: "playlist" },
+        dependencies,
+      ),
+    /system playlist/,
+  );
+  assert.deepEqual(calls, []);
 }
 
 function assertLibraryCollectionPreviewSmoke() {
@@ -9540,6 +9623,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertImportSessionSmoke();
   assertLibraryCollectionDetailSmoke();
   assertLibraryCollectionInteractionSmoke();
+  await assertCollectionDeleteExecutorSmoke();
   assertLibraryCollectionPreviewSmoke();
   assertLibrarySongPreviewSmoke();
   assertAddableCollectionSongsSmoke();

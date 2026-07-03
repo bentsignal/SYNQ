@@ -189,3 +189,5 @@
   export snapshot marking behind an injectable executor.
 - Moved library export snapshot hashing, staleness checks, and exported
   snapshot updates behind an injectable repository executor.
+- Moved album, artist, and playlist collection deletion orchestration behind an
+  injectable repository executor.

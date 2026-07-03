@@ -423,8 +423,11 @@ import {
   backupActionCards,
   getBackupActionState,
   getBackupConfirmationState,
+  getBackupOperationConfirmCommand,
   getBackupPhaseTransitionEffects,
   getBackupOperationLabel,
+  getBackupOperationStartCommand,
+  getBackupResetStatusCommand,
   getBackupScreenState,
   getBackupStatusState,
 } from "../../../apps/new/src/features/backup/services/backup-screen-service";
@@ -5821,6 +5824,24 @@ function assertBackupScreenSmoke() {
     body: "This removes local songs, collections, metadata, and library files from this device.",
     confirmLabel: "Erase",
     title: "Erase library",
+  });
+  assert.deepEqual(getBackupOperationStartCommand("backup"), {
+    haptic: "light",
+  });
+  assert.deepEqual(getBackupOperationStartCommand("restore"), {
+    haptic: "light",
+  });
+  assert.deepEqual(getBackupOperationStartCommand("erase"), {
+    haptic: "medium",
+  });
+  assert.deepEqual(getBackupOperationConfirmCommand("restore"), {
+    haptic: "medium",
+  });
+  assert.deepEqual(getBackupOperationConfirmCommand("erase"), {
+    haptic: "heavy",
+  });
+  assert.deepEqual(getBackupResetStatusCommand(), {
+    haptic: "light",
   });
   assert.deepEqual(getBackupStatusState(idleState), {
     canReset: false,

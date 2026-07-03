@@ -8,7 +8,10 @@ import { useCustomizationSettingsSelector } from "@/src/features/settings/state/
 import {
   getBackupActionState,
   getBackupConfirmationState,
+  getBackupOperationConfirmCommand,
+  getBackupOperationStartCommand,
   getBackupPhaseTransitionEffects,
+  getBackupResetStatusCommand,
   getBackupStatusState,
 } from "../services/backup-screen-service";
 import type { BackupOperation } from "../types/backup-session";
@@ -54,7 +57,7 @@ export function useBackupScreenController() {
   ]);
 
   const runBackupOperation = (operation: BackupOperation) => {
-    sendHaptic(operation === "erase" ? "medium" : "light");
+    sendHaptic(getBackupOperationStartCommand(operation).haptic);
 
     if (operation === "backup") {
       void runOperation(operation);
@@ -73,7 +76,7 @@ export function useBackupScreenController() {
       },
       {
         onPress: () => {
-          sendHaptic(operation === "erase" ? "heavy" : "medium");
+          sendHaptic(getBackupOperationConfirmCommand(operation).haptic);
           void runOperation(operation);
         },
         style: "destructive",
@@ -83,7 +86,7 @@ export function useBackupScreenController() {
   };
 
   const resetStatus = () => {
-    sendHaptic("light");
+    sendHaptic(getBackupResetStatusCommand().haptic);
     reset();
   };
 

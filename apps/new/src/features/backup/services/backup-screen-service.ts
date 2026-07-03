@@ -3,6 +3,7 @@ import type {
   BackupOperation,
   BackupSessionState,
 } from "../types/backup-session";
+import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import { getSettingsBackLink } from "../../settings/services/settings-navigation-service";
 
 export type BackupActionCard = {
@@ -72,6 +73,26 @@ export const getBackupConfirmationState = (operation: BackupOperation) => {
     title: isRestore ? "Restore library" : "Erase library",
   };
 };
+
+type BackupInteractionCommand = {
+  haptic: HapticFeedbackType;
+};
+
+export const getBackupOperationStartCommand = (
+  operation: BackupOperation,
+): BackupInteractionCommand => ({
+  haptic: operation === "erase" ? "medium" : "light",
+});
+
+export const getBackupOperationConfirmCommand = (
+  operation: BackupOperation,
+): BackupInteractionCommand => ({
+  haptic: operation === "erase" ? "heavy" : "medium",
+});
+
+export const getBackupResetStatusCommand = (): BackupInteractionCommand => ({
+  haptic: "light",
+});
 
 export const getBackupStatusState = (state: BackupSessionState) => ({
   canReset: state.phase === "failure",

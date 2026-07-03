@@ -3,10 +3,7 @@ import type {
 } from "./library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
 import { getLibraryCollectionBackHref } from "./library-collection-navigation-service";
-import {
-  likedSongsPlaylistId,
-  systemPlaylistId,
-} from "./library-playlist-constants-service";
+import { isProtectedPlaylistId } from "./library-playlist-constants-service";
 
 export const getLibraryCollectionSongEmptyState = () => ({
   body: "Add songs from your library to build this collection.",
@@ -37,9 +34,7 @@ export const canDeleteLibraryCollection = ({
   isMissing: boolean;
   kind: LibraryCollectionDetailKind;
 }) =>
-  !isMissing &&
-  (kind !== "playlist" ||
-    (id !== systemPlaylistId && id !== likedSongsPlaylistId));
+  !isMissing && (kind !== "playlist" || !isProtectedPlaylistId(id));
 
 export const canMutateLibraryCollectionMembership = ({
   id,
@@ -49,7 +44,7 @@ export const canMutateLibraryCollectionMembership = ({
   id: number;
   isMissing: boolean;
   kind: LibraryCollectionDetailKind;
-}) => !isMissing && (kind !== "playlist" || id !== systemPlaylistId);
+}) => !isMissing && (kind !== "playlist" || !isProtectedPlaylistId(id));
 
 export const canEditLibraryCollection = ({
   id,

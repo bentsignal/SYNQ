@@ -3,7 +3,7 @@ import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
 import { saveCoverImage } from "@/src/features/images/services/image-storage-service";
 import { assertCollectionName } from "../services/collection-metadata-service";
-import { systemPlaylistId } from "../services/library-playlist-constants-service";
+import { isProtectedPlaylistId } from "../services/library-playlist-constants-service";
 import { assertUniqueCollectionName } from "./collection-uniqueness-repository";
 
 const unknownArtistLabels = new Set(["", "unknown", "unknown artist"]);
@@ -150,8 +150,8 @@ export async function updatePlaylist({
   id: number;
   name: string;
 }) {
-  if (id === systemPlaylistId) {
-    throw new Error("This system playlist cannot be edited.");
+  if (isProtectedPlaylistId(id)) {
+    throw new Error("This protected playlist cannot be edited.");
   }
 
   const cleanName = assertCollectionName({ kind: "playlist", name });

@@ -2,7 +2,7 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
-import { systemPlaylistId } from "../services/library-playlist-constants-service";
+import { isProtectedPlaylistId } from "../services/library-playlist-constants-service";
 
 const getNextAlbumTrack = async (albumId: number) => {
   const rows = await db
@@ -98,8 +98,8 @@ export async function addSongToCollection({
       return;
     }
     case "playlist": {
-      if (collectionId === systemPlaylistId) {
-        throw new Error("This system playlist cannot be changed.");
+      if (isProtectedPlaylistId(collectionId)) {
+        throw new Error("This protected playlist cannot be changed.");
       }
 
       const existing = await db

@@ -2949,11 +2949,27 @@ function assertLibraryCollectionInteractionSmoke() {
       isMissing: false,
       kind: "playlist",
     }),
+    false,
+  );
+  assert.equal(
+    canEditLibraryCollection({
+      id: 3,
+      isMissing: false,
+      kind: "playlist",
+    }),
     true,
   );
   assert.equal(
     canMutateLibraryCollectionMembership({
       id: 1,
+      isMissing: false,
+      kind: "playlist",
+    }),
+    false,
+  );
+  assert.equal(
+    canMutateLibraryCollectionMembership({
+      id: 2,
       isMissing: false,
       kind: "playlist",
     }),

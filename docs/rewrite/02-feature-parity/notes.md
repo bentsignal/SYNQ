@@ -16,6 +16,10 @@
   new Home quick actions to `/(tabs)/import/files` and
   `/(tabs)/import/wifi`. The generic import hub remains available through the
   tab bar and nested import routes.
+- Old Home instruction modal coverage is restored as a new Home setup guide
+  section with Spotify setup, export flow, and network transfer guidance. This
+  keeps the behavior in app-shell view state instead of reintroducing broad
+  modal context.
 - Old `/ingest/*` was an earlier import stack with placeholder export/save
   steps plus direct file-browser processing. It is intentionally replaced by
   the new import feature; `apps/new/app/ingest/*` now exists only as

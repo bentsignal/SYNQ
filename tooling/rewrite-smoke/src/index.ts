@@ -4,6 +4,7 @@ import {
   formatRemainingDurationMs,
 } from "../../../apps/new/src/features/app-shell/services/duration-format-service";
 import {
+  getHomeGuideSections,
   getHomeLibraryHref,
   getHomeNowPlayingActions,
   getHomeNowPlayingState,
@@ -4864,6 +4865,17 @@ function assertHomeScreenSmoke() {
       label: "Premium",
     },
   ]);
+  assert.deepEqual(
+    getHomeGuideSections().map((section) => ({
+      steps: section.steps.length,
+      title: section.title,
+    })),
+    [
+      { steps: 3, title: "Spotify Setup" },
+      { steps: 3, title: "Export Flow" },
+      { steps: 3, title: "Network Transfer" },
+    ],
+  );
   assert.deepEqual(getHomeNowPlayingActions(), [
     {
       detail: "Open current song",

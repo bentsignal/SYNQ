@@ -35,3 +35,6 @@
 - Restored old Home direct import-entry parity by exposing separate Files and
   Wi-Fi quick actions that route to the new import feature's file and network
   screens.
+- Restored old Home instruction content as a new setup guide section covering
+  Spotify setup, export flow, and network transfer without reintroducing
+  app-shell modal context.

@@ -85,3 +85,5 @@
   transitions.
 - Moved playback session store orchestration out of the Rostra provider so the
   provider module no longer owns native playback wiring or reducer assembly.
+- Moved import session store orchestration out of the Rostra provider so the
+  provider module no longer owns persistence or command assembly.

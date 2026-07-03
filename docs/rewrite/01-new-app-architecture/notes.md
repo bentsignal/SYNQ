@@ -53,3 +53,6 @@
   `PlaybackProvider` adapts Rostra, while `use-playback-session-store` owns
   reducer state, persistence, native adapter/listener wiring, ad-gate wiring,
   and command assembly.
+- Import session provider wiring now follows the same shell pattern:
+  `ImportSessionProvider` adapts Rostra, while `use-import-session-store` owns
+  reducer state, persistence loading/saving, and import command assembly.

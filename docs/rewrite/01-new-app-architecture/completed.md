@@ -75,3 +75,5 @@
 - Slimmed the playback Rostra provider by moving playback session store
   orchestration into a dedicated hook while leaving the provider as a store
   adapter.
+- Slimmed the import session Rostra provider by moving reducer, persistence,
+  and command assembly into a dedicated store hook.

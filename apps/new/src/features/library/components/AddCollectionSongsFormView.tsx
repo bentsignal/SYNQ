@@ -7,7 +7,7 @@ import {
   type AddCollectionSongsStatusState,
 } from "../services/addable-collection-songs-screen-state-service";
 import type { AddableSongSelectionState } from "../services/add-collection-songs-selection-service";
-import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
+import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import { AddCollectionSongsHeader } from "./AddCollectionSongsHeader";
 import { AddCollectionSongsSectionHeader } from "./AddCollectionSongsSectionHeader";
 import { AddCollectionSongsSelectionPanel } from "./AddCollectionSongsSelectionPanel";

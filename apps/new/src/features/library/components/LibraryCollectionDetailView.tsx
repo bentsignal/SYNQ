@@ -2,10 +2,8 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useLibraryCollectionDetailController } from "../hooks/use-library-collection-detail-controller";
-import type {
-  LibraryCollectionDetail,
-  LibraryCollectionDetailKind,
-} from "../services/library-collection-detail-service";
+import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
+import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
   getCollectionDetailViewState,
   getCollectionDetailStatusState,

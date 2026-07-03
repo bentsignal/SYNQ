@@ -3,10 +3,8 @@ import {
   removeSongFromCollection,
   updateCollectionSongOrder,
 } from "../repository/relationship-repository";
-import type {
-  LibraryCollectionDetail,
-  LibraryCollectionDetailKind,
-} from "../services/library-collection-detail-service";
+import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
+import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
   getCollectionDetailMutationErrorMessage,
   type CollectionDetailMutationAction,

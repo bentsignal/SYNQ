@@ -56,6 +56,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     components.
   - Done: collection detail row aggregation/detail shaping now lives in a pure
     library service with deterministic smoke coverage.
+  - Done: collection kind typing now lives in an explicit library service
+    boundary instead of repository and UI modules importing it through a query
+    hook.
   - Done: collection detail song-row aggregation now lives in a focused song
     detail service instead of the detail shell builder owning song grouping,
     artist/album fallback labels, and track sorting.

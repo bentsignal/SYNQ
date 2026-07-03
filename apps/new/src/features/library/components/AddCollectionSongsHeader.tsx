@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
 import { getAddCollectionSongsHeaderState } from "../services/addable-collection-songs-screen-state-service";
+import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 
 type AddCollectionSongsHeaderProps = {
   kind: LibraryCollectionDetailKind;

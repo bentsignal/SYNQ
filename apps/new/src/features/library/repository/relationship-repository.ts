@@ -1,7 +1,7 @@
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { and, eq } from "drizzle-orm";
-import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
+import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 
 const getNextAlbumTrack = async (albumId: number) => {
   const rows = await db

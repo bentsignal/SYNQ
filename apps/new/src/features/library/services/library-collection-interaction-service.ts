@@ -1,7 +1,7 @@
 import type {
-  LibraryCollectionDetailKind,
   LibraryCollectionDetailSong,
 } from "./library-collection-detail-service";
+import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
 import { likedSongsPlaylistId } from "./library-playlist-constants-service";
 
 export type LibraryCollectionListHref =

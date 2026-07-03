@@ -6,8 +6,8 @@ import {
   useAlbumCollectionDetailQuery,
   useArtistCollectionDetailQuery,
   usePlaylistCollectionDetailQuery,
-  type LibraryCollectionDetailKind,
 } from "../hooks/use-library-collection-detail-query";
+import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 
 type LibraryCollectionDetailScreenProps = {
   kind: LibraryCollectionDetailKind;

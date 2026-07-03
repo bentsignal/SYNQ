@@ -1,7 +1,7 @@
 import { useCallback, useReducer } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import type { AddableCollectionSong } from "../services/addable-collection-songs-service";
-import type { LibraryCollectionDetailKind } from "../services/library-collection-detail-service";
+import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import { useAddCollectionSongsCommands } from "./use-add-collection-songs-commands";
 import {
   addCollectionSongsControllerReducer,

@@ -10,9 +10,9 @@ import {
 } from "./use-library-collection-detail-result";
 
 export type {
-  LibraryCollectionDetailKind,
   LibraryCollectionDetailSong,
 } from "../services/library-collection-detail-service";
+export type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 
 export function usePlaylistCollectionDetailQuery({ id }: { id: number }) {
   const playlist = usePlaylistCollectionDetailRowsQuery(id);

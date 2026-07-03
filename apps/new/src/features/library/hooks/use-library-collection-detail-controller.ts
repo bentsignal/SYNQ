@@ -1,9 +1,7 @@
 import { useLibraryCollectionDetailMutations } from "./use-library-collection-detail-mutations";
 import { useLibraryCollectionPlaybackActions } from "./use-library-collection-playback-actions";
-import type {
-  LibraryCollectionDetail,
-  LibraryCollectionDetailKind,
-} from "../services/library-collection-detail-service";
+import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
+import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 
 type UseLibraryCollectionDetailControllerParams = {
   detail: LibraryCollectionDetail;

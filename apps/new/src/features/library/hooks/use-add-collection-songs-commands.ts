@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import type { HapticFeedbackType } from "@/src/features/settings/services/haptic-feedback-service";
-import type { LibraryCollectionDetailKind } from "../services/library-collection-detail-service";
+import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
   addSongToCollection,
   addSongsToCollection,

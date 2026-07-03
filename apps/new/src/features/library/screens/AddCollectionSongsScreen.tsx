@@ -8,7 +8,7 @@ import {
   useAddableArtistCollectionSongsQuery,
   useAddablePlaylistCollectionSongsQuery,
 } from "../hooks/use-addable-collection-songs-query";
-import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
+import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 
 type AddCollectionSongsScreenProps = {
   kind: LibraryCollectionDetailKind;

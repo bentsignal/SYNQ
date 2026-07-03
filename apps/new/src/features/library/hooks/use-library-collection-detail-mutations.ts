@@ -1,10 +1,8 @@
 import { useMemo, useReducer } from "react";
 import { useLibraryCollectionCollectionMutations } from "./use-library-collection-collection-mutations";
 import { useLibraryCollectionSongMutations } from "./use-library-collection-song-mutations";
-import type {
-  LibraryCollectionDetail,
-  LibraryCollectionDetailKind,
-} from "../services/library-collection-detail-service";
+import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
+import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
   getCollectionDetailActionState,
 } from "../services/library-collection-interaction-service";

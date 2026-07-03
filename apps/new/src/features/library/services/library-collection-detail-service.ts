@@ -4,14 +4,14 @@ import {
   type LibraryCollectionDetailSong,
   type LibraryCollectionDetailSongRow,
 } from "./library-collection-detail-song-service";
-
-export type LibraryCollectionDetailKind = "album" | "artist" | "playlist";
+import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
 
 export {
   rowsToCollectionDetailSongs,
   type LibraryCollectionDetailSong,
   type LibraryCollectionDetailSongRow,
 } from "./library-collection-detail-song-service";
+export type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
 
 export type LibraryCollectionDetail = {
   detail: string;

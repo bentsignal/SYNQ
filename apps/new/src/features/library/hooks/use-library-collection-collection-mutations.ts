@@ -1,10 +1,8 @@
 import { shareLibrarySongs } from "@/src/features/export/services/library-export-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useLibraryCollectionDeleteCommand } from "./use-library-collection-delete-command";
-import type {
-  LibraryCollectionDetail,
-  LibraryCollectionDetailKind,
-} from "../services/library-collection-detail-service";
+import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
+import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
   type CollectionDetailActionState,
 } from "../services/library-collection-interaction-service";

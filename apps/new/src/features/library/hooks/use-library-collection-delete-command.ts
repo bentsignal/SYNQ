@@ -1,10 +1,8 @@
 import { Alert } from "react-native";
 import { router } from "expo-router";
 import { deleteCollection } from "../repository/collection-delete-repository";
-import type {
-  LibraryCollectionDetail,
-  LibraryCollectionDetailKind,
-} from "../services/library-collection-detail-service";
+import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
+import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
   getCollectionListHref,
   getDeleteCollectionConfirmationCopy,

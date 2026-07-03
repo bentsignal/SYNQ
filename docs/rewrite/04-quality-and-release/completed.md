@@ -265,3 +265,5 @@
   canceled pick, cover-pick success/failure, and save success/failure sequencing.
 - Added direct import song edit command-flow smoke coverage for invalid save,
   successful draft update navigation, and draft-build failure sequencing.
+- Added direct collection form image command-flow smoke coverage for canceled
+  image pick, picked image dispatch, and picker failure sequencing.

@@ -371,3 +371,5 @@
   a focused song form command-flow service.
 - Moved import song edit save, haptic, failure, and navigation sequencing out
   of the React hook and into a focused command-flow service.
+- Moved collection form image pick haptic, dispatch, and failure sequencing out
+  of the React hook and into a focused image command-flow service.

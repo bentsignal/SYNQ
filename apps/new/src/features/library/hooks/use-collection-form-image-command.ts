@@ -1,11 +1,7 @@
 import { useCallback } from "react";
 import type { HapticFeedbackType } from "@/src/features/settings/services/haptic-feedback-service";
 import { pickCollectionImage } from "../services/collection-image-picker-service";
-import {
-  getCollectionFormImagePickedCommand,
-  getCollectionFormImagePickFailureCommand,
-  getCollectionFormImagePickStartCommand,
-} from "../services/collection-form-command-state-service";
+import { runCollectionFormImagePickCommand } from "../services/collection-form-image-command-flow-service";
 import {
   type CollectionFormAction,
 } from "../services/collection-form-state-service";
@@ -20,18 +16,10 @@ export function useCollectionFormImageCommand({
   sendHaptic: (type: HapticFeedbackType) => void;
 }) {
   return useCallback(async () => {
-    try {
-      sendHaptic(getCollectionFormImagePickStartCommand().haptic);
-      const pickedImage = await pickCollectionImage();
-      if (pickedImage) {
-        dispatchFormState(
-          getCollectionFormImagePickedCommand(pickedImage).action,
-        );
-      }
-    } catch (caughtError) {
-      const command = getCollectionFormImagePickFailureCommand(caughtError);
-      sendHaptic(command.haptic);
-      dispatchFormState(command.action);
-    }
+    await runCollectionFormImagePickCommand({
+      dispatch: dispatchFormState,
+      pickImage: pickCollectionImage,
+      sendHaptic,
+    });
   }, [dispatchFormState, sendHaptic]);
 }

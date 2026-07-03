@@ -667,6 +667,7 @@ import {
   getCollectionFormImagePickStartCommand,
   getCollectionFormSuccessCommand,
 } from "../../../apps/new/src/features/library/services/collection-form-command-state-service";
+import { runCollectionFormImagePickCommand } from "../../../apps/new/src/features/library/services/collection-form-image-command-flow-service";
 import {
   runCreateCollectionFormSaveCommand,
   runEditCollectionFormSaveCommand,
@@ -8946,6 +8947,53 @@ async function assertCollectionFormSmoke() {
       haptic: "error",
     },
   );
+  const collectionImageCommandEvents: unknown[] = [];
+  const dispatchCollectionImageCommand = (action: {
+    [key: string]: unknown;
+    type: string;
+  }) => {
+    collectionImageCommandEvents.push(["dispatch", action]);
+  };
+  const sendCollectionImageHaptic = (haptic: string) => {
+    collectionImageCommandEvents.push(["haptic", haptic]);
+  };
+  await runCollectionFormImagePickCommand({
+    dispatch: dispatchCollectionImageCommand,
+    pickImage: async () => null,
+    sendHaptic: sendCollectionImageHaptic,
+  });
+  await runCollectionFormImagePickCommand({
+    dispatch: dispatchCollectionImageCommand,
+    pickImage: async () => ({
+      dataUrl: "data:image/png;base64,smoke",
+      fileName: "smoke.png",
+    }),
+    sendHaptic: sendCollectionImageHaptic,
+  });
+  await runCollectionFormImagePickCommand({
+    dispatch: dispatchCollectionImageCommand,
+    pickImage: async () => {
+      throw new Error("Image command failed");
+    },
+    sendHaptic: sendCollectionImageHaptic,
+  });
+  assert.deepEqual(collectionImageCommandEvents, [
+    ["haptic", "light"],
+    ["haptic", "light"],
+    [
+      "dispatch",
+      {
+        image: {
+          dataUrl: "data:image/png;base64,smoke",
+          fileName: "smoke.png",
+        },
+        type: "pick-image",
+      },
+    ],
+    ["haptic", "light"],
+    ["haptic", "error"],
+    ["dispatch", { error: "Image command failed", type: "fail" }],
+  ]);
   assert.deepEqual(getCollectionFormSuccessCommand({ id: 42, kind: "album" }), {
     haptic: "success",
     href: "/(tabs)/library/album/42",

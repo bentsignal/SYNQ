@@ -243,3 +243,5 @@
   into a dedicated file service and delete orchestration service.
 - Moved settings support review/link native side effects out of the controller
   hook and behind a support action service boundary.
+- Split backup command native adapters for archive picking, sharing, and
+  compression out of the backup command composition service.

@@ -1,11 +1,14 @@
 import { resetDatabaseConnection } from "@synq/db";
-import * as DocumentPicker from "expo-document-picker";
-import * as Sharing from "expo-sharing";
-import { unzip, zip } from "react-native-zip-archive";
 import type { BackupOperation } from "../types/backup-session";
+import { pickBackupArchive } from "./backup-archive-picker-service";
 import {
-  getPickedBackupArchiveUri,
-} from "./backup-command-result-service";
+  isBackupArchiveSharingAvailable,
+  shareBackupArchive,
+} from "./backup-archive-sharing-service";
+import {
+  unzipBackupArchive,
+  zipBackupDirectory,
+} from "./backup-archive-compression-service";
 import { runBackupCommandWithDependencies } from "./backup-command-executor-service";
 import {
   assertBackupRestoreStagingDirectoryHasFiles,
@@ -17,15 +20,6 @@ import {
   replaceBackupDocumentDirectoryWithStagedItems,
 } from "./backup-file-system-service";
 
-const pickBackupArchive = async () => {
-  const result = await DocumentPicker.getDocumentAsync({
-    copyToCacheDirectory: true,
-    type: "application/zip",
-  });
-
-  return getPickedBackupArchiveUri(result);
-};
-
 export async function runBackupCommand(
   operation: BackupOperation,
 ) {
@@ -36,14 +30,14 @@ export async function runBackupCommand(
     clearDocumentDirectory: clearBackupDocumentDirectory,
     getArchivePath: getBackupArchivePath,
     getDocumentDirectory: getBackupDocumentDirectory,
-    isSharingAvailable: Sharing.isAvailableAsync,
+    isSharingAvailable: isBackupArchiveSharingAvailable,
     pickArchive: pickBackupArchive,
     prepareRestoreStagingDirectory: prepareBackupRestoreStagingDirectory,
     replaceDocumentDirectoryWithStagedItems:
       replaceBackupDocumentDirectoryWithStagedItems,
     resetDatabaseConnection,
-    shareArchive: Sharing.shareAsync,
-    unzipArchive: unzip,
-    zipDirectory: zip,
+    shareArchive: shareBackupArchive,
+    unzipArchive: unzipBackupArchive,
+    zipDirectory: zipBackupDirectory,
   });
 }

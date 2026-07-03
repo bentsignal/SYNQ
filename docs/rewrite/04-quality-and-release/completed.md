@@ -134,3 +134,5 @@
   review available/unavailable branches.
 - Added playback remote command smoke coverage for ad-gated play/next/previous/
   queue-ended commands, blocked seeks, pause, and remote failure handling.
+- Preserved backup command executor smoke coverage while splitting production
+  picker, sharing, and compression adapters into smaller backup services.

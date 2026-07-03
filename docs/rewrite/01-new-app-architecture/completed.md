@@ -307,3 +307,5 @@
   a focused persistence domain service.
 - Split the Wi-Fi transfer browser page into a compact document composer plus
   focused page asset service.
+- Moved add-to-collection song command sequencing out of the React hook and
+  into a focused command-flow service.

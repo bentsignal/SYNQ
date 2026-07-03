@@ -447,6 +447,11 @@ import {
   getAddCollectionSongsToggleSelectionCommand,
 } from "../../../apps/new/src/features/library/services/add-collection-songs-command-state-service";
 import {
+  runAddCollectionSongCommand,
+  runAddCollectionSongsSelectionCommand,
+  runAddCollectionSongsToggleSelectionCommand,
+} from "../../../apps/new/src/features/library/services/add-collection-songs-command-flow-service";
+import {
   canEditLibraryCollection,
   canDeleteLibraryCollection,
   canMutateLibraryCollectionMembership,
@@ -3803,7 +3808,7 @@ function assertLibraryCollectionDetailSmoke() {
   assert.equal(artist.detail, "2 songs / 2 albums");
 }
 
-function assertLibraryCollectionInteractionSmoke() {
+async function assertLibraryCollectionInteractionSmoke() {
   const commandCalls: unknown[] = [];
   const collectionCommandDependencies: LibraryCollectionCommandDependencies = {
     addSongToCollection: async (params) => {
@@ -4826,6 +4831,99 @@ function assertLibraryCollectionInteractionSmoke() {
       haptic: "error",
     },
   );
+
+  const commandEvents: unknown[] = [];
+  const commandDependencies = {
+    addCollectionSong: async ({
+      collectionId,
+      kind,
+      songId,
+    }: {
+      collectionId: number;
+      kind: "album" | "artist" | "playlist";
+      songId: number;
+    }) => {
+      commandEvents.push(["add-song", collectionId, kind, songId]);
+    },
+    addCollectionSongs: async ({
+      collectionId,
+      kind,
+      songIds,
+    }: {
+      collectionId: number;
+      kind: "album" | "artist" | "playlist";
+      songIds: number[];
+    }) => {
+      commandEvents.push(["add-songs", collectionId, kind, songIds]);
+    },
+    collectionId: 9,
+    dispatchControllerState: (action: unknown) => {
+      commandEvents.push(["dispatch", action]);
+    },
+    kind: "playlist" as const,
+    selectionState: {
+      bulkAddLabel: "Add selected",
+      canBulkAdd: true,
+      isMutating: false,
+      selectedAddableSongIds: [1, 3],
+      selectedCount: 2,
+      selectionLabel: "2 selected",
+    },
+    sendHaptic: (haptic: string) => {
+      commandEvents.push(["haptic", haptic]);
+    },
+  };
+  runAddCollectionSongsToggleSelectionCommand({
+    ...commandDependencies,
+    songId: 5,
+  });
+  await runAddCollectionSongsSelectionCommand(commandDependencies);
+  await runAddCollectionSongCommand({
+    ...commandDependencies,
+    songId: 3,
+  });
+  assert.deepEqual(commandEvents, [
+    ["haptic", "light"],
+    ["dispatch", { songId: 5, type: "toggle-selection" }],
+    ["haptic", "medium"],
+    ["dispatch", { type: "begin-add-selection" }],
+    ["add-songs", 9, "playlist", [1, 3]],
+    ["dispatch", { type: "clear-selection" }],
+    ["haptic", "success"],
+    ["dispatch", { type: "finish-add-selection" }],
+    ["haptic", "light"],
+    ["dispatch", { songId: 3, type: "begin-add-song" }],
+    ["add-song", 9, "playlist", 3],
+    ["dispatch", { songId: 3, type: "remove-selection" }],
+    ["haptic", "success"],
+    ["dispatch", { type: "finish-add-song" }],
+  ]);
+  commandEvents.length = 0;
+  await runAddCollectionSongsSelectionCommand({
+    ...commandDependencies,
+    selectionState: {
+      ...commandDependencies.selectionState,
+      canBulkAdd: false,
+      selectedAddableSongIds: [],
+      selectedCount: 0,
+    },
+  });
+  assert.deepEqual(commandEvents, [["haptic", "error"]]);
+  commandEvents.length = 0;
+  await runAddCollectionSongCommand({
+    ...commandDependencies,
+    addCollectionSong: async () => {
+      throw new Error("add failed");
+    },
+    songId: 6,
+  });
+  assert.deepEqual(commandEvents, [
+    ["haptic", "light"],
+    ["dispatch", { songId: 6, type: "begin-add-song" }],
+    ["haptic", "error"],
+    ["dispatch", { error: "add failed", type: "fail" }],
+    ["dispatch", { type: "finish-add-song" }],
+  ]);
 
   const selected = toggleSongIdSelection({
     selectedSongIds: new Set([1]),
@@ -12248,7 +12346,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertImageStorageExecutorSmoke();
   await assertImportSessionSmoke();
   assertLibraryCollectionDetailSmoke();
-  assertLibraryCollectionInteractionSmoke();
+  await assertLibraryCollectionInteractionSmoke();
   await assertCollectionDeleteExecutorSmoke();
   await assertCollectionSongMembershipExecutorSmoke();
   await assertCollectionSongAddExecutorSmoke();

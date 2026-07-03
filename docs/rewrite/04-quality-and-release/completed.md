@@ -200,3 +200,5 @@
   queue-filter, and source normalization.
 - Added direct Wi-Fi transfer page smoke coverage for the audio input and
   browser upload endpoint contract.
+- Added direct add-to-collection command-flow smoke coverage for toggle,
+  selection-add, single-song-add, blocked, and failure sequences.

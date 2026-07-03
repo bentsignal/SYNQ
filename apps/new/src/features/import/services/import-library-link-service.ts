@@ -1,4 +1,4 @@
-import { saveCoverImage } from "@/src/features/images/services/image-storage-service";
+import { saveCoverImage } from "../../images/services/image-storage-service";
 import {
   findImportLibraryAlbumIdByName,
   findImportLibraryArtistIdByName,

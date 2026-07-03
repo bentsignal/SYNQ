@@ -145,6 +145,12 @@ import {
   getImportSessionCommandErrorMessage,
 } from "../../../apps/new/src/features/import/services/import-session-command-service";
 import {
+  discardImportSessionLifecycle,
+  getFinishImportSessionAction,
+  resetImportSessionLifecycle,
+  saveImportSessionLifecycle,
+} from "../../../apps/new/src/features/import/services/import-session-lifecycle-service";
+import {
   normalizePersistedImportSession,
   toPersistedImportSession,
 } from "../../../apps/new/src/features/import/services/import-session-persistence-normalizer-service";
@@ -1373,7 +1379,7 @@ function assertPlaybackPlayerStateSmoke() {
   );
 }
 
-function assertImportSessionSmoke() {
+async function assertImportSessionSmoke() {
   const first = importDraft(1);
   const second = importDraft(2);
 
@@ -1664,6 +1670,127 @@ function assertImportSessionSmoke() {
       finishLabel: "Finishing",
       hasSongs: true,
       isWorking: true,
+    },
+  );
+  const lifecycleSummary = {
+    discarded: 0,
+    saved: 2,
+    savedSongIds: [first.id, second.id],
+  };
+  const lifecycleCalls: string[] = [];
+  const lifecycleDependencies = {
+    clearImportCache: async () => {
+      lifecycleCalls.push("clear-cache");
+    },
+    clearPersistedImportSessionState: async () => {
+      lifecycleCalls.push("clear-persisted");
+    },
+    discardImportSession: async (songs: ImportSongDraft[]) => {
+      lifecycleCalls.push(`discard-${songs.length}`);
+      return {
+        discarded: songs.length,
+        saved: 0,
+        savedSongIds: [],
+      };
+    },
+    saveImportSessionToLibrary: async (songs: ImportSongDraft[]) => {
+      lifecycleCalls.push(`save-${songs.length}`);
+      return lifecycleSummary;
+    },
+  };
+
+  assert.deepEqual(getFinishImportSessionAction(lifecycleSummary), {
+    summary: lifecycleSummary,
+    type: "finish",
+  });
+  assert.deepEqual(
+    await saveImportSessionLifecycle(
+      {
+        shouldSaveToLibrary: true,
+        songs: [first, second],
+      },
+      lifecycleDependencies,
+    ),
+    {
+      action: {
+        summary: lifecycleSummary,
+        type: "finish",
+      },
+      succeeded: true,
+    },
+  );
+  assert.deepEqual(lifecycleCalls, ["save-2", "clear-persisted"]);
+  lifecycleCalls.length = 0;
+  assert.deepEqual(
+    await saveImportSessionLifecycle(
+      {
+        shouldSaveToLibrary: false,
+        songs: [first],
+      },
+      lifecycleDependencies,
+    ),
+    {
+      action: {
+        summary: {
+          discarded: 1,
+          saved: 0,
+          savedSongIds: [],
+        },
+        type: "finish",
+      },
+      succeeded: true,
+    },
+  );
+  assert.deepEqual(lifecycleCalls, ["discard-1", "clear-persisted"]);
+  lifecycleCalls.length = 0;
+  assert.deepEqual(
+    await discardImportSessionLifecycle(lifecycleDependencies),
+    {
+      action: { type: "discard" },
+      succeeded: true,
+    },
+  );
+  assert.deepEqual(lifecycleCalls, ["clear-cache", "clear-persisted"]);
+  lifecycleCalls.length = 0;
+  assert.deepEqual(resetImportSessionLifecycle(lifecycleDependencies), {
+    type: "reset",
+  });
+  await Promise.resolve();
+  assert.deepEqual(lifecycleCalls, ["clear-cache", "clear-persisted"]);
+
+  const failingLifecycleDependencies = {
+    ...lifecycleDependencies,
+    clearImportCache: async () => {
+      throw new Error("Cache clear failed.");
+    },
+    saveImportSessionToLibrary: async () => {
+      throw new Error("Library save failed.");
+    },
+  };
+  assert.deepEqual(
+    await saveImportSessionLifecycle(
+      {
+        shouldSaveToLibrary: true,
+        songs: [first],
+      },
+      failingLifecycleDependencies,
+    ),
+    {
+      action: {
+        error: "Library save failed.",
+        type: "fail",
+      },
+      succeeded: false,
+    },
+  );
+  assert.deepEqual(
+    await discardImportSessionLifecycle(failingLifecycleDependencies),
+    {
+      action: {
+        error: "Cache clear failed.",
+        type: "fail",
+      },
+      succeeded: false,
     },
   );
   assert.deepEqual(initialImportSaveExportState, {
@@ -6569,16 +6696,16 @@ assertPlaybackSessionSmoke();
 assertPlaybackNativeStatusSmoke();
 assertPlaybackNativeCommandPlanSmoke();
 assertPlaybackPlayerStateSmoke();
-assertImportSessionSmoke();
-assertLibraryCollectionDetailSmoke();
-assertLibraryCollectionInteractionSmoke();
-assertLibraryCollectionPreviewSmoke();
-assertLibrarySongPreviewSmoke();
-assertAddableCollectionSongsSmoke();
-assertLibrarySongDetailSmoke();
-assertEditCollectionQuerySmoke();
-assertCollectionFormSmoke();
-void assertCollectionFormMutationSmoke().then(() => {
+void assertImportSessionSmoke().then(async () => {
+  assertLibraryCollectionDetailSmoke();
+  assertLibraryCollectionInteractionSmoke();
+  assertLibraryCollectionPreviewSmoke();
+  assertLibrarySongPreviewSmoke();
+  assertAddableCollectionSongsSmoke();
+  assertLibrarySongDetailSmoke();
+  assertEditCollectionQuerySmoke();
+  assertCollectionFormSmoke();
+  await assertCollectionFormMutationSmoke();
   assertLibraryCollectionListSmoke();
   assertLibraryHomeSmoke();
   console.log("Rewrite deterministic smoke checks passed.");

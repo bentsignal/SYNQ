@@ -107,3 +107,5 @@
 - Split collection detail mutation reducer and error-message state out of the
   command helper service.
 - Split edit-import-song save command helpers out of the form state service.
+- Moved import session save/discard/reset lifecycle orchestration into an
+  injectable service covered by deterministic smoke.

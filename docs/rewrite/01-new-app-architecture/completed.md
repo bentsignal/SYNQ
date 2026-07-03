@@ -72,3 +72,6 @@
   removed repeated `useLocalSearchParams` parsing from import/library screens.
 - Slimmed the premium entitlement Rostra provider by moving entitlement state
   reduction into a pure service and refresh/apply wiring into a dedicated hook.
+- Slimmed the playback Rostra provider by moving playback session store
+  orchestration into a dedicated hook while leaving the provider as a store
+  adapter.

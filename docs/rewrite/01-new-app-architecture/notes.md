@@ -49,3 +49,7 @@
   `PremiumEntitlementProvider` only adapts Rostra, `use-premium-entitlement-store`
   owns async refresh/apply wiring, and `premium-entitlement-state-service`
   owns the pure reducer covered by deterministic smoke.
+- Playback provider wiring now follows the same shell pattern:
+  `PlaybackProvider` adapts Rostra, while `use-playback-session-store` owns
+  reducer state, persistence, native adapter/listener wiring, ad-gate wiring,
+  and command assembly.

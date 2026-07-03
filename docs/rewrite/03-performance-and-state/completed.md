@@ -83,3 +83,5 @@
 - Split premium entitlement reducer state out of the Rostra provider and added
   deterministic smoke coverage for entitlement checking, success, and failure
   transitions.
+- Moved playback session store orchestration out of the Rostra provider so the
+  provider module no longer owns native playback wiring or reducer assembly.

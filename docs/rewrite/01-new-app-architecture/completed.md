@@ -245,3 +245,5 @@
   hook and behind a support action service boundary.
 - Split backup command native adapters for archive picking, sharing, and
   compression out of the backup command composition service.
+- Extracted playback native player registry transition decisions into a pure
+  state service while keeping Expo audio calls in the native registry.

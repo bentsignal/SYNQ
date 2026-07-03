@@ -4,11 +4,16 @@ import {
 } from "expo-audio";
 import type { PlaybackQueueItem } from "../types/playback-state";
 import { playbackAdAudio } from "./playback-native-audio-service";
+import {
+  getPlaybackNativePlayerPlayAdState,
+  getPlaybackNativePlayerPlayLibraryPlan,
+  getPlaybackNativePlayerPlayLibraryState,
+  getPlaybackNativePlayerRemoveSourceState,
+  getPlaybackNativePlayerResumeLibraryState,
+  initialPlaybackNativePlayerRegistryState,
+} from "./playback-native-player-state-service";
 import { createTrackPlayerStatusListenerRegistry } from "./playback-native-status-listener-service";
-import type {
-  TrackPlayerSource,
-  TrackPlayerStatusSnapshot,
-} from "./playback-native-status-service";
+import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
 
 type TrackPlayerStatusListener = (
   status: TrackPlayerStatusSnapshot,
@@ -17,10 +22,9 @@ type TrackPlayerStatusListener = (
 export const createPlaybackNativePlayerRegistry = () => {
   let adPlayer: AudioPlayer | null = null;
   let libraryPlayer: AudioPlayer | null = null;
-  let loadedSongId: number | null = null;
-  let activeSource: TrackPlayerSource | null = null;
+  let registryState = initialPlaybackNativePlayerRegistryState();
   const statusListeners = createTrackPlayerStatusListenerRegistry({
-    getLoadedSongId: () => loadedSongId,
+    getLoadedSongId: () => registryState.loadedSongId,
   });
 
   const removeAdPlayer = () => {
@@ -31,9 +35,10 @@ export const createPlaybackNativePlayerRegistry = () => {
       adPlayer = null;
     }
 
-    if (activeSource === "ad") {
-      activeSource = null;
-    }
+    registryState = getPlaybackNativePlayerRemoveSourceState({
+      source: "ad",
+      state: registryState,
+    });
   };
 
   const removeLibraryPlayer = () => {
@@ -42,12 +47,12 @@ export const createPlaybackNativePlayerRegistry = () => {
     if (libraryPlayer) {
       libraryPlayer.remove();
       libraryPlayer = null;
-      loadedSongId = null;
     }
 
-    if (activeSource === "library") {
-      activeSource = null;
-    }
+    registryState = getPlaybackNativePlayerRemoveSourceState({
+      source: "library",
+      state: registryState,
+    });
   };
 
   return {
@@ -56,7 +61,7 @@ export const createPlaybackNativePlayerRegistry = () => {
       removeLibraryPlayer();
     },
     pause: async () => {
-      if (activeSource === "ad" && adPlayer) {
+      if (registryState.activeSource === "ad" && adPlayer) {
         adPlayer.pause();
         return;
       }
@@ -73,7 +78,7 @@ export const createPlaybackNativePlayerRegistry = () => {
       removeAdPlayer();
 
       adPlayer = createAudioPlayer(playbackAdAudio);
-      activeSource = "ad";
+      registryState = getPlaybackNativePlayerPlayAdState(registryState);
       statusListeners.attach(adPlayer, "ad");
       adPlayer.play();
     },
@@ -84,8 +89,15 @@ export const createPlaybackNativePlayerRegistry = () => {
 
       removeAdPlayer();
 
-      if (libraryPlayer && loadedSongId === song.id) {
-        activeSource = "library";
+      const plan = getPlaybackNativePlayerPlayLibraryPlan({
+        songId: song.id,
+        state: registryState,
+      });
+      if (libraryPlayer && plan.type === "replay-loaded-song") {
+        registryState = getPlaybackNativePlayerPlayLibraryState({
+          songId: song.id,
+          state: registryState,
+        });
         await libraryPlayer.seekTo(0);
         libraryPlayer.play();
         return;
@@ -94,19 +106,21 @@ export const createPlaybackNativePlayerRegistry = () => {
       removeLibraryPlayer();
 
       libraryPlayer = createAudioPlayer({ uri: song.pathToFile });
-      loadedSongId = song.id;
-      activeSource = "library";
+      registryState = getPlaybackNativePlayerPlayLibraryState({
+        songId: song.id,
+        state: registryState,
+      });
       statusListeners.attach(libraryPlayer, "library");
       libraryPlayer.play();
     },
     resume: async () => {
-      if (activeSource === "ad" && adPlayer) {
+      if (registryState.activeSource === "ad" && adPlayer) {
         adPlayer.play();
         return;
       }
 
       if (libraryPlayer) {
-        activeSource = "library";
+        registryState = getPlaybackNativePlayerResumeLibraryState(registryState);
         libraryPlayer.play();
       }
     },
@@ -114,7 +128,7 @@ export const createPlaybackNativePlayerRegistry = () => {
       removeAdPlayer();
 
       if (libraryPlayer) {
-        activeSource = "library";
+        registryState = getPlaybackNativePlayerResumeLibraryState(registryState);
         libraryPlayer.play();
       }
     },

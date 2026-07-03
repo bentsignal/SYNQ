@@ -79,6 +79,14 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-screen-state-service";
 import { audioStatusToTrackPlayerSnapshot } from "../../../apps/new/src/features/playback/services/playback-native-status-service";
 import {
+  getPlaybackNativePlayerPlayAdState,
+  getPlaybackNativePlayerPlayLibraryPlan,
+  getPlaybackNativePlayerPlayLibraryState,
+  getPlaybackNativePlayerRemoveSourceState,
+  getPlaybackNativePlayerResumeLibraryState,
+  initialPlaybackNativePlayerRegistryState,
+} from "../../../apps/new/src/features/playback/services/playback-native-player-state-service";
+import {
   getPlaybackNativeCommandErrorMessage,
   getRemoveFromQueueNativeCommandPlan,
   getResumeNativeCommandPlan,
@@ -1352,6 +1360,67 @@ function assertPlaybackNativeStatusSmoke() {
       position: 2_000,
       songId: null,
       source: "ad",
+    },
+  );
+}
+
+function assertPlaybackNativePlayerStateSmoke() {
+  const emptyState = initialPlaybackNativePlayerRegistryState();
+  assert.deepEqual(emptyState, {
+    activeSource: null,
+    loadedSongId: null,
+  });
+
+  const firstLibraryState = getPlaybackNativePlayerPlayLibraryState({
+    songId: 10,
+    state: emptyState,
+  });
+  assert.deepEqual(firstLibraryState, {
+    activeSource: "library",
+    loadedSongId: 10,
+  });
+  assert.deepEqual(
+    getPlaybackNativePlayerPlayLibraryPlan({
+      songId: 10,
+      state: firstLibraryState,
+    }),
+    { type: "replay-loaded-song" },
+  );
+  assert.deepEqual(
+    getPlaybackNativePlayerPlayLibraryPlan({
+      songId: 11,
+      state: firstLibraryState,
+    }),
+    { type: "replace-library-player" },
+  );
+
+  const adState = getPlaybackNativePlayerPlayAdState(firstLibraryState);
+  assert.deepEqual(adState, {
+    activeSource: "ad",
+    loadedSongId: 10,
+  });
+  assert.deepEqual(getPlaybackNativePlayerResumeLibraryState(adState), {
+    activeSource: "library",
+    loadedSongId: 10,
+  });
+  assert.deepEqual(
+    getPlaybackNativePlayerRemoveSourceState({
+      source: "ad",
+      state: adState,
+    }),
+    {
+      activeSource: null,
+      loadedSongId: 10,
+    },
+  );
+  assert.deepEqual(
+    getPlaybackNativePlayerRemoveSourceState({
+      source: "library",
+      state: firstLibraryState,
+    }),
+    {
+      activeSource: null,
+      loadedSongId: null,
     },
   );
 }
@@ -11183,6 +11252,7 @@ assertBackupScreenSmoke();
 assertPremiumScreenSmoke();
 assertPlaybackSessionSmoke();
 assertPlaybackNativeStatusSmoke();
+assertPlaybackNativePlayerStateSmoke();
 assertPlaybackNativeCommandPlanSmoke();
 assertPlaybackPlayerStateSmoke();
 void assertImportLibrarySavePlanSmoke().then(async () => {

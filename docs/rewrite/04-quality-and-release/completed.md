@@ -136,3 +136,5 @@
   queue-ended commands, blocked seeks, pause, and remote failure handling.
 - Preserved backup command executor smoke coverage while splitting production
   picker, sharing, and compression adapters into smaller backup services.
+- Added playback native player state smoke coverage for ad/library source
+  transitions, replay decisions, and source removal behavior.

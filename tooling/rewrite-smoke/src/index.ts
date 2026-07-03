@@ -360,7 +360,6 @@ import {
   getRestoredImportSessionState,
 } from "../../../apps/new/src/features/import/services/import-session-persistence-step-service";
 import {
-  buildEditedImportSongDraft,
   getImportSongEditActionState,
   getImportSongEditChangeFieldAction,
   getImportSongEditControllerResultState,
@@ -370,8 +369,11 @@ import {
   getImportSongEditRequiredTitleMessage,
   type ImportSongEditFormAction,
   importSongEditFormReducer,
-  parseImportTrackInput,
 } from "../../../apps/new/src/features/import/services/import-song-edit-form-state-service";
+import {
+  buildEditedImportSongDraft,
+  parseImportTrackInput,
+} from "../../../apps/new/src/features/import/services/import-song-edit-draft-service";
 import {
   getImportSongDraftForEdit,
   getImportSongEditScreenState,

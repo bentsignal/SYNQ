@@ -277,6 +277,8 @@
   canceled pick, cover-pick success/failure, and save success/failure sequencing.
 - Added direct import song edit command-flow smoke coverage for invalid save,
   successful draft update navigation, and draft-build failure sequencing.
+- Preserved direct import song edit draft smoke coverage while splitting track
+  parsing and edited-draft construction into a focused service.
 - Added direct collection form image command-flow smoke coverage for canceled
   image pick, picked image dispatch, and picker failure sequencing.
 - Added direct library song preview action-flow smoke coverage for play and
@@ -327,6 +329,8 @@
 - Added direct playback native action-constructor smoke coverage.
 - Added direct import song edit field action and controller result-state smoke
   coverage.
+- Preserved direct import song edit field smoke coverage while the draft
+  helpers moved behind a narrower service boundary.
 - Added direct library song edit hydrate and field action-constructor smoke
   coverage.
 - Added direct collection form hydrate and field action-constructor smoke

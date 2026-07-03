@@ -6,10 +6,10 @@ import {
   getImportSongEditSaveSuccessCommand,
 } from "./import-song-edit-command-service";
 import {
-  buildEditedImportSongDraft,
   type ImportSongEditFormAction,
   type ImportSongEditFormState,
 } from "./import-song-edit-form-state-service";
+import { buildEditedImportSongDraft } from "./import-song-edit-draft-service";
 import type { ImportSongEditHref } from "./import-song-edit-navigation-service";
 
 type ImportSongEditDispatch = (action: ImportSongEditFormAction) => void;

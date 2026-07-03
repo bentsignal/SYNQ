@@ -107,6 +107,8 @@
 - Split collection detail mutation reducer and error-message state out of the
   command helper service.
 - Split edit-import-song save command helpers out of the form state service.
+- Split edit-import-song draft track parsing and edited-draft construction out
+  of the form state service.
 - Moved import session save/discard/reset lifecycle orchestration into an
   injectable service covered by deterministic smoke.
 - Split import library one-song save execution out of the session save loop,
@@ -449,6 +451,8 @@
   of hooks and into the native transition service.
 - Moved import song edit field action and controller result-state shaping out
   of the React hook and into the import edit form service.
+- Moved import song edit draft normalization out of the form state service and
+  into a focused draft service.
 - Moved library song edit hydrate and field action construction out of the
   React hook and into the song edit form service.
 - Moved shared collection form hydrate and field action construction out of

@@ -459,6 +459,10 @@ import {
   updateCollectionFormCommandFactory,
 } from "../../../apps/new/src/features/library/services/collection-form-command-factory-service";
 import {
+  assertUniqueCollectionNameWithDependencies,
+  type CollectionUniquenessDependencies,
+} from "../../../apps/new/src/features/library/repository/collection-uniqueness-executor-repository";
+import {
   normalizeAlbumArtistName,
   replaceAlbumArtistsWithDependencies,
   splitAlbumArtistNames,
@@ -6651,6 +6655,60 @@ async function assertSongMetadataRelationshipExecutorSmoke() {
   ]);
 }
 
+async function assertCollectionUniquenessExecutorSmoke() {
+  const calls: unknown[] = [];
+  const duplicates = new Set(["album:Existing Album", "playlist:Existing List"]);
+  const dependencies: CollectionUniquenessDependencies = {
+    hasMatchingAlbumName: async ({ excludeId, name }) => {
+      calls.push(["album", name, excludeId ?? null]);
+      return duplicates.has(`album:${name}`);
+    },
+    hasMatchingArtistName: async ({ excludeId, name }) => {
+      calls.push(["artist", name, excludeId ?? null]);
+      return duplicates.has(`artist:${name}`);
+    },
+    hasMatchingPlaylistName: async ({ excludeId, name }) => {
+      calls.push(["playlist", name, excludeId ?? null]);
+      return duplicates.has(`playlist:${name}`);
+    },
+  };
+
+  await assertUniqueCollectionNameWithDependencies(
+    { kind: "artist", name: "New Artist" },
+    dependencies,
+  );
+  assert.deepEqual(calls, [["artist", "New Artist", null]]);
+
+  calls.length = 0;
+  await assertUniqueCollectionNameWithDependencies(
+    { excludeId: 42, kind: "album", name: "New Album" },
+    dependencies,
+  );
+  assert.deepEqual(calls, [["album", "New Album", 42]]);
+
+  calls.length = 0;
+  await assert.rejects(
+    () =>
+      assertUniqueCollectionNameWithDependencies(
+        { kind: "album", name: "Existing Album" },
+        dependencies,
+      ),
+    /An album with this name already exists/,
+  );
+  assert.deepEqual(calls, [["album", "Existing Album", null]]);
+
+  calls.length = 0;
+  await assert.rejects(
+    () =>
+      assertUniqueCollectionNameWithDependencies(
+        { excludeId: 9, kind: "playlist", name: "Existing List" },
+        dependencies,
+      ),
+    /A playlist with this name already exists/,
+  );
+  assert.deepEqual(calls, [["playlist", "Existing List", 9]]);
+}
+
 async function assertCollectionFormMutationSmoke() {
   const createCalls: unknown[] = [];
   const createRepository: CollectionFormCreateRepository = {
@@ -10066,6 +10124,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertCollectionImagePickerExecutorSmoke();
   await assertAlbumArtistUpdateExecutorSmoke();
   await assertSongMetadataRelationshipExecutorSmoke();
+  await assertCollectionUniquenessExecutorSmoke();
   await assertCollectionFormMutationSmoke();
   assertLibraryCollectionListSmoke();
   assertLibraryHomeSmoke();

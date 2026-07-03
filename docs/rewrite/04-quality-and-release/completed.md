@@ -88,3 +88,5 @@
   duplicate no-ops, protected playlist guards, and liked-song deletion.
 - Added collection song relationship executor smoke coverage for album, artist,
   and playlist reorder/remove dispatch plus protected playlist guards.
+- Added collection uniqueness executor smoke coverage for kind-specific lookup
+  routing, edit exclusions, and duplicate-name errors.

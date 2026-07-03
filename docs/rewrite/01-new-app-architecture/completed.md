@@ -199,3 +199,5 @@
   behavior behind a shared injectable repository executor.
 - Moved collection song reorder/remove behavior behind an injectable repository
   executor so relationship mutations are separated from Drizzle table adapters.
+- Moved collection name uniqueness policy behind an injectable repository
+  executor so create/update adapters only provide table-specific lookups.

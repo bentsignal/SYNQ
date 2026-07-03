@@ -17,4 +17,6 @@
   - library action parts
 - Added or expanded deterministic smoke coverage around many pure services and
   screen-state helpers.
-
+- Moved library song preview, song detail, and summary Drizzle query builders
+  out of UI hooks and into repository modules, clearing direct database/schema
+  imports from `apps/new/src/features/library/hooks`.

@@ -6,6 +6,6 @@
 - [x] Add a `StyleSheet.create` lint/hygiene rule after utility styling is
   configured.
 - [x] Add a React context hygiene rule after Rostra migration starts.
-- [ ] Lower rewrite debt audit limits as StyleSheet and context migrations land.
+- [x] Lower rewrite debt audit limits as StyleSheet and context migrations land.
 - [ ] Run a final parity audit against `apps/old`.
 - [ ] Decide release readiness criteria after parity and performance work land.

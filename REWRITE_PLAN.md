@@ -22,8 +22,8 @@ This is the slim control panel for the rewrite. Detailed tracking lives under
   or Rostra stores instead of event emitters, broad React context, direct
   storage calls, or screen-local orchestration.
 - [ ] UI components are slim and mostly presentation-focused.
-- [ ] Styling primarily uses configured utility classes instead of local
-  `StyleSheet` objects, with lint enforcement once migration is practical.
+- [x] Styling uses configured utility classes instead of local `StyleSheet`
+  objects, with hygiene enforcement blocking regressions in `apps/new`.
 - [ ] Deterministic smoke coverage exists for import, save-to-library, playback
   queue/ad gate, library edits, backup, and final parity-sensitive behavior.
 - [ ] `pnpm verify:rewrite` passes, including old/new mobile export smokes.
@@ -42,10 +42,9 @@ This is the slim control panel for the rewrite. Detailed tracking lives under
 ## Next Best Work
 
 1. Continue slimming mixed-responsibility feature services and UI components.
-2. Start the utility-style migration plan by confirming NativeWind/Uniwind
-   choice and adding a lint guard in warning mode.
-3. Start the Rostra migration plan by inventorying React contexts and replacing
-   the highest-churn providers first.
-4. Expand deterministic smoke around behavior moved out of screens/hooks.
-5. Keep committing after each verified checkpoint.
-
+2. Continue extracting repository boundaries where UI hooks still import
+   database schema or broad mutation services directly.
+3. Expand deterministic smoke around behavior moved out of screens/hooks.
+4. Start deeper old/new parity audits for import, library editing, playback,
+   backup, premium, and settings.
+5. Keep committing and pushing after each verified checkpoint.

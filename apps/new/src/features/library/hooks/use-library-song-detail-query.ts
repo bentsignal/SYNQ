@@ -1,8 +1,11 @@
 import { useMemo } from "react";
-import { db } from "@synq/db";
-import * as schema from "@synq/db/schema";
-import { eq } from "drizzle-orm";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import {
+  buildLibrarySongDetailAlbumRowsQuery,
+  buildLibrarySongDetailArtistRowsQuery,
+  buildLibrarySongDetailPlaylistRowsQuery,
+  buildLibrarySongDetailRowsQuery,
+} from "../repository/library-song-detail-query-repository";
 import {
   buildLibrarySongDetail,
   type LibrarySongDetailAlbumRow,
@@ -14,53 +17,10 @@ import {
 export type { LibrarySongDetail } from "../services/library-song-detail-service";
 
 export function useLibrarySongDetailQuery(songId: number) {
-  const song = useLiveQuery(
-    db
-      .select({
-        duration: schema.songs.duration,
-        fileType: schema.songs.fileType,
-        originalFileName: schema.songs.originalFileName,
-        pathToFile: schema.songs.pathToFile,
-        title: schema.songs.title,
-      })
-      .from(schema.songs)
-      .where(eq(schema.songs.id, songId)),
-  );
-  const artists = useLiveQuery(
-    db
-      .select({
-        id: schema.artists.id,
-        name: schema.artists.name,
-      })
-      .from(schema.artistSongs)
-      .innerJoin(schema.artists, eq(schema.artistSongs.artistId, schema.artists.id))
-      .where(eq(schema.artistSongs.songId, songId)),
-  );
-  const albums = useLiveQuery(
-    db
-      .select({
-        id: schema.albums.id,
-        name: schema.albums.name,
-        track: schema.albumSongs.track,
-        year: schema.albums.year,
-      })
-      .from(schema.albumSongs)
-      .innerJoin(schema.albums, eq(schema.albumSongs.albumId, schema.albums.id))
-      .where(eq(schema.albumSongs.songId, songId)),
-  );
-  const playlists = useLiveQuery(
-    db
-      .select({
-        id: schema.playlists.id,
-        name: schema.playlists.name,
-      })
-      .from(schema.playlistSongs)
-      .innerJoin(
-        schema.playlists,
-        eq(schema.playlistSongs.playlistId, schema.playlists.id),
-      )
-      .where(eq(schema.playlistSongs.songId, songId)),
-  );
+  const song = useLiveQuery(buildLibrarySongDetailRowsQuery(songId));
+  const artists = useLiveQuery(buildLibrarySongDetailArtistRowsQuery(songId));
+  const albums = useLiveQuery(buildLibrarySongDetailAlbumRowsQuery(songId));
+  const playlists = useLiveQuery(buildLibrarySongDetailPlaylistRowsQuery(songId));
   const detail = useMemo(() => {
     return buildLibrarySongDetail({
       albumRows: (albums.data ?? []) as LibrarySongDetailAlbumRow[],

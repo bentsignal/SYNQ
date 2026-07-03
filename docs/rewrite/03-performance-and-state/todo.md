@@ -6,7 +6,7 @@
 - [x] Inventory all React context usage in `apps/new`.
 - [x] Replace broad React context providers with Rostra stores where selector
   reads reduce rerenders.
-- [ ] Prioritize high-churn providers first:
+- [x] Prioritize high-churn providers first:
   - done: playback session
   - done: import session
   - done: premium entitlement
@@ -22,15 +22,15 @@
 - [x] Decide whether the new app should use NativeWind, Uniwind, or another
   Tailwind-compatible React Native utility system.
 - [x] Confirm/install/configure the chosen library in `apps/new`.
-- [ ] Convert `StyleSheet` usage to utility classes wherever physically
+- [x] Convert `StyleSheet` usage to utility classes wherever physically
   practical.
-- [ ] Keep small escape hatches for dynamic runtime styles that are awkward or
+- [x] Keep small escape hatches for dynamic runtime styles that are awkward or
   unsafe to express as utility classes.
-- [ ] Add a custom lint rule or hygiene scan to ban new `StyleSheet.create`
+- [x] Add a custom lint rule or hygiene scan to ban new `StyleSheet.create`
   usage after the migration path is established.
 - [x] Ratchet `MAX_NEW_APP_STYLESHEET_CREATE` down as utility-class
   conversions land.
-- [ ] Track remaining justified `StyleSheet` exceptions explicitly.
+- [x] Track remaining justified `StyleSheet` exceptions explicitly.
 
 ## State And Render Performance
 

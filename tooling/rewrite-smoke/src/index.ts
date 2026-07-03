@@ -92,6 +92,12 @@ import {
   initialImportSaveExportState,
 } from "../../../apps/new/src/features/import/services/import-save-export-state-service";
 import {
+  getImportDiscardResultCommand,
+  getImportFinishResultCommand,
+  getImportSaveSessionStartHaptic,
+  getImportSaveToggleCommand,
+} from "../../../apps/new/src/features/import/services/import-save-session-command-service";
+import {
   getImportSaveBackLink,
   getImportSaveActionState,
   getImportSaveHeaderState,
@@ -1373,6 +1379,37 @@ function assertImportSessionSmoke() {
   assert.deepEqual(getImportSaveBackLink(), {
     href: "/(tabs)/import/files",
     label: "Back to files",
+  });
+  assert.deepEqual(
+    getImportSaveToggleCommand({ shouldSaveToLibrary: false }),
+    {
+      haptic: "light",
+      shouldSaveToLibrary: true,
+    },
+  );
+  assert.deepEqual(
+    getImportSaveToggleCommand({ shouldSaveToLibrary: true }),
+    {
+      haptic: "light",
+      shouldSaveToLibrary: false,
+    },
+  );
+  assert.equal(getImportSaveSessionStartHaptic(), "medium");
+  assert.deepEqual(getImportFinishResultCommand(true), {
+    haptic: "success",
+    href: "/(tabs)/import/success",
+  });
+  assert.deepEqual(getImportFinishResultCommand(false), {
+    haptic: "error",
+    href: "/(tabs)/import/failure",
+  });
+  assert.deepEqual(getImportDiscardResultCommand(true), {
+    haptic: "success",
+    href: "/(tabs)/import",
+  });
+  assert.deepEqual(getImportDiscardResultCommand(false), {
+    haptic: "error",
+    href: "/(tabs)/import/failure",
   });
   assert.deepEqual(getImportSongPreviewEmptyState(), {
     body: "Choose songs to review them before saving.",

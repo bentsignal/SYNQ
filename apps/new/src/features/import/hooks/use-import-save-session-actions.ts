@@ -1,9 +1,11 @@
 import { router } from "expo-router";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
-  getImportDiscardResultHref,
-  getImportFinishResultHref,
-} from "../services/import-navigation-service";
+  getImportDiscardResultCommand,
+  getImportFinishResultCommand,
+  getImportSaveSessionStartHaptic,
+  getImportSaveToggleCommand,
+} from "../services/import-save-session-command-service";
 import type { ImportSessionState } from "../types/import-session";
 
 type UseImportSaveSessionActionsParams = {
@@ -22,22 +24,25 @@ export function useImportSaveSessionActions({
   const { sendHaptic } = useHapticFeedback();
 
   const toggleShouldSaveToLibrary = () => {
-    sendHaptic("light");
-    setShouldSaveToLibrary(!state.shouldSaveToLibrary);
+    const command = getImportSaveToggleCommand(state);
+    sendHaptic(command.haptic);
+    setShouldSaveToLibrary(command.shouldSaveToLibrary);
   };
 
   const finishImport = async () => {
-    sendHaptic("medium");
+    sendHaptic(getImportSaveSessionStartHaptic());
     const succeeded = await saveImportSession();
-    sendHaptic(succeeded ? "success" : "error");
-    router.push(getImportFinishResultHref(succeeded));
+    const command = getImportFinishResultCommand(succeeded);
+    sendHaptic(command.haptic);
+    router.push(command.href);
   };
 
   const discardImport = async () => {
-    sendHaptic("medium");
+    sendHaptic(getImportSaveSessionStartHaptic());
     const discarded = await discardSession();
-    sendHaptic(discarded ? "success" : "error");
-    router.push(getImportDiscardResultHref(discarded));
+    const command = getImportDiscardResultCommand(discarded);
+    sendHaptic(command.haptic);
+    router.push(command.href);
   };
 
   return {

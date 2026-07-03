@@ -1,8 +1,8 @@
 import { router } from "expo-router";
 import { useCallback } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
+import { getImportFilesActionState } from "../services/import-files-screen-state-service";
 import { getImportFilesResultHref } from "../services/import-navigation-service";
-import { getImportFilesActionState } from "../services/import-screen-state-service";
 import { useImportSession } from "./use-import-session";
 
 export function useImportFilesController() {

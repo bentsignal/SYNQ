@@ -2,7 +2,7 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportFilesController } from "../hooks/use-import-files-controller";
-import { getImportFilesActionLinks } from "../services/import-screen-state-service";
+import { getImportFilesActionLinks } from "../services/import-files-screen-state-service";
 import { ImportPremiumGate } from "./ImportPremiumGate";
 import { ImportSongPreviewList } from "./ImportSongPreviewList";
 

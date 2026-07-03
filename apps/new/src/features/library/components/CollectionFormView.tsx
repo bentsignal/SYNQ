@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { CollectionFormActions } from "./CollectionFormActions";
 import { CollectionFormFields } from "./CollectionFormFields";
@@ -31,14 +31,15 @@ export function CollectionFormView({
   const backLink = getCollectionFormBackLink();
 
   return (
-    <View style={[styles.screen, { backgroundColor: theme.background }]}>
+    <View
+      className="flex-1 gap-5 px-5 py-14"
+      style={{ backgroundColor: theme.background }}
+    >
       <CollectionFormHeader copy={copy} subtitle={subtitle} />
 
       <View
-        style={[
-          styles.form,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-        ]}
+        className="gap-3 rounded-lg border p-4"
+        style={{ backgroundColor: theme.surface, borderColor: theme.border }}
       >
         <CollectionFormFields
           actionState={actionState}
@@ -68,31 +69,12 @@ export function CollectionFormView({
       </View>
 
       <Link
+        className="text-[15px] font-extrabold"
         href={backLink.href}
-        style={[styles.backLink, { color: theme.accent }]}
+        style={{ color: theme.accent }}
       >
         {backLink.label}
       </Link>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    gap: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-  form: {
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 12,
-    padding: 16,
-  },
-  backLink: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-  },
-});

@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, Text } from "react-native";
 import {
   SongRowActionButton,
   SongRowDuration,
@@ -39,22 +39,19 @@ export function AddableSongRow({
           checked: isSelected,
           disabled: song.isLinked,
         }}
+        className={`h-[30px] w-[30px] items-center justify-center rounded-lg border-2 ${
+          song.isLinked ? "opacity-[0.45]" : ""
+        }`}
         disabled={song.isLinked}
         onPress={() => onToggleSongSelection(song.id)}
-        style={[
-          styles.selectBox,
-          { borderColor: theme.border },
-          isSelected
-            ? { backgroundColor: theme.accent, borderColor: theme.accent }
-            : null,
-          song.isLinked ? styles.disabled : null,
-        ]}
+        style={{
+          backgroundColor: isSelected ? theme.accent : undefined,
+          borderColor: isSelected ? theme.accent : theme.border,
+        }}
       >
         <Text
-          style={[
-            styles.selectMark,
-            { color: isSelected ? theme.onAccent : theme.mutedText },
-          ]}
+          className="text-[15px] font-extrabold leading-5"
+          style={{ color: isSelected ? theme.onAccent : theme.mutedText }}
         >
           {isSelected ? "x" : ""}
         </Text>
@@ -76,23 +73,3 @@ export function AddableSongRow({
     </SongRowShell>
   );
 }
-
-const styles = StyleSheet.create({
-  disabled: {
-    opacity: 0.45,
-  },
-  selectBox: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 2,
-    height: 30,
-    justifyContent: "center",
-    width: 30,
-  },
-  selectMark: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 20,
-  },
-});

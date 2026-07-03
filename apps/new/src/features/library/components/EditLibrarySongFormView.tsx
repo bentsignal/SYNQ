@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetail } from "../hooks/use-library-song-detail-query";
 import {
@@ -48,8 +48,9 @@ export function EditLibrarySongFormView({
 
   return (
     <ScrollView
-      contentContainerStyle={styles.content}
-      style={[styles.screen, { backgroundColor: theme.background }]}
+      className="flex-1"
+      contentContainerClassName="gap-5 px-5 py-14"
+      style={{ backgroundColor: theme.background }}
     >
       <EditLibrarySongHeader detail={detail} />
       <EditLibrarySongFields
@@ -65,20 +66,7 @@ export function EditLibrarySongFormView({
         onSave={onSave}
         songId={songId}
       />
-      <EditLibrarySongStatusPanel
-        statusState={statusState}
-      />
+      <EditLibrarySongStatusPanel statusState={statusState} />
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  content: {
-    gap: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-});

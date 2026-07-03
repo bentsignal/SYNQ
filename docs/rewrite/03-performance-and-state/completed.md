@@ -52,3 +52,8 @@
 - Converted remaining playback screen, mini-player, now-playing, and queue row
   presentation styles to utility classes, lowering the StyleSheet ratchet from
   52 calls to 47.
+- Converted collection form and edit-library-song form presentation styles to
+  utility classes, lowering the StyleSheet ratchet from 47 calls to 39.
+- Converted add-to-collection library screen/header/list/status presentation
+  styles to utility classes, lowering the StyleSheet ratchet from 39 calls to
+  31.

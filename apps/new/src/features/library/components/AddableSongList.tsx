@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { AddableCollectionSong } from "../hooks/use-addable-collection-songs-query";
 import { AddableSongEmptyState } from "./AddableSongEmptyState";
@@ -27,10 +27,8 @@ export function AddableSongList({
 
   return (
     <View
-      style={[
-        styles.list,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="overflow-hidden rounded-lg border"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
       {songs.map((song) => (
         <AddableSongRow
@@ -45,11 +43,3 @@ export function AddableSongList({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  list: {
-    borderRadius: 8,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-});

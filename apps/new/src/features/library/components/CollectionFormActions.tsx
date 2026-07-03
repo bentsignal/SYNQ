@@ -1,7 +1,6 @@
 import {
   ActivityIndicator,
   Pressable,
-  StyleSheet,
   Text,
 } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
@@ -30,7 +29,11 @@ export function CollectionFormActions({
   return (
     <>
       {visibleErrors.map((message) => (
-        <Text key={message} style={[styles.errorText, { color: theme.danger }]}>
+        <Text
+          className="text-sm font-bold leading-5"
+          key={message}
+          style={{ color: theme.danger }}
+        >
           {message}
         </Text>
       ))}
@@ -39,43 +42,19 @@ export function CollectionFormActions({
         accessibilityRole="button"
         disabled={!actionState.canSave}
         onPress={onSave}
-        style={[
-          styles.saveButton,
-          {
-            backgroundColor: actionState.canSave
-              ? theme.accent
-              : theme.inactive,
-          },
-        ]}
+        className="min-h-12 flex-row items-center justify-center gap-2.5 rounded-lg px-4"
+        style={{
+          backgroundColor: actionState.canSave ? theme.accent : theme.inactive,
+        }}
       >
         {isSaving ? <ActivityIndicator color={theme.onAccent} /> : null}
-        <Text style={[styles.saveText, { color: theme.onAccent }]}>
+        <Text
+          className="text-sm font-extrabold uppercase"
+          style={{ color: theme.onAccent }}
+        >
           {saveLabel}
         </Text>
       </Pressable>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  saveButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    flexDirection: "row",
-    gap: 10,
-    justifyContent: "center",
-    minHeight: 48,
-    paddingHorizontal: 16,
-  },
-  saveText: {
-    fontSize: 14,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  errorText: {
-    fontSize: 14,
-    fontWeight: "700",
-    lineHeight: 20,
-  },
-});

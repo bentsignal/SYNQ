@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetail } from "../hooks/use-library-song-detail-query";
 
@@ -10,37 +10,25 @@ export function EditLibrarySongHeader({ detail }: EditLibrarySongHeaderProps) {
   const theme = useCustomizationTheme();
 
   return (
-    <View style={styles.header}>
-      <Text style={[styles.kicker, { color: theme.accent }]}>Edit song</Text>
-      <Text style={[styles.title, { color: theme.primaryText }]}>
+    <View className="gap-2">
+      <Text
+        className="text-[13px] font-extrabold uppercase"
+        style={{ color: theme.accent }}
+      >
+        Edit song
+      </Text>
+      <Text
+        className="text-[34px] font-extrabold leading-10"
+        style={{ color: theme.primaryText }}
+      >
         {detail.title}
       </Text>
-      <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
+      <Text
+        className="max-w-[520px] text-[15px] leading-[22px]"
+        style={{ color: theme.secondaryText }}
+      >
         {detail.originalFileName}
       </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    gap: 8,
-  },
-  kicker: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 40,
-  },
-  subtitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    maxWidth: 520,
-  },
-});

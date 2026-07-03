@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Text, TextInput, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { getAddCollectionSongsHeaderState } from "../services/addable-collection-songs-screen-state-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
@@ -19,14 +19,23 @@ export function AddCollectionSongsHeader({
 
   return (
     <>
-      <View style={styles.header}>
-        <Text style={[styles.kicker, { color: theme.accent }]}>
+      <View className="gap-2">
+        <Text
+          className="text-[13px] font-extrabold uppercase"
+          style={{ color: theme.accent }}
+        >
           {state.kicker}
         </Text>
-        <Text style={[styles.title, { color: theme.primaryText }]}>
+        <Text
+          className="text-[34px] font-extrabold leading-10"
+          style={{ color: theme.primaryText }}
+        >
           {state.title}
         </Text>
-        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
+        <Text
+          className="max-w-[520px] text-[15px] leading-[22px]"
+          style={{ color: theme.secondaryText }}
+        >
           {state.subtitle}
         </Text>
       </View>
@@ -34,50 +43,18 @@ export function AddCollectionSongsHeader({
       <TextInput
         autoCapitalize="none"
         clearButtonMode="while-editing"
+        className="min-h-12 rounded-lg border px-3.5 text-base"
         onChangeText={onChangeQuery}
         placeholder={state.searchInput.placeholder}
         placeholderTextColor={theme.mutedText}
         returnKeyType={state.searchInput.returnKeyType}
-        style={[
-          styles.searchInput,
-          {
-            backgroundColor: theme.surface,
-            borderColor: theme.border,
-            color: theme.primaryText,
-          },
-        ]}
+        style={{
+          backgroundColor: theme.surface,
+          borderColor: theme.border,
+          color: theme.primaryText,
+        }}
         value={query}
       />
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    gap: 8,
-  },
-  kicker: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 40,
-  },
-  subtitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    maxWidth: 520,
-  },
-  searchInput: {
-    borderRadius: 8,
-    borderWidth: 1,
-    fontSize: 16,
-    minHeight: 48,
-    paddingHorizontal: 14,
-  },
-});

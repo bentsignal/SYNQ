@@ -1,10 +1,8 @@
 import { useMemo, useReducer } from "react";
 import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
+import { initialPlaybackState } from "../services/playback-initial-state-service";
 import { getActiveTrack } from "../services/playback-queue-service";
-import {
-  initialPlaybackState,
-  playbackReducer,
-} from "../services/playback-session-service";
+import { playbackReducer } from "../services/playback-session-service";
 import type {
   PlaybackQueueItem,
   PlaybackState,

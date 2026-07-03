@@ -1,4 +1,4 @@
-import { initialPlaybackState } from "./playback-session-service";
+import { initialPlaybackState } from "./playback-initial-state-service";
 import {
   finiteNumber,
   isRecord,

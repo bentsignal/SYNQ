@@ -1,5 +1,5 @@
 import * as FileSystem from "expo-file-system";
-import { initialPlaybackState } from "./playback-session-service";
+import { initialPlaybackState } from "./playback-initial-state-service";
 import type { PlaybackState } from "../types/playback-state";
 import {
   normalizePlaybackState,

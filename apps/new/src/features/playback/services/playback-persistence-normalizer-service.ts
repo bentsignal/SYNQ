@@ -2,7 +2,7 @@ import {
   initialPlaybackAdGateState,
   resetPlaybackAdGate,
 } from "./playback-ad-gate-service";
-import { initialPlaybackState } from "./playback-session-service";
+import { initialPlaybackState } from "./playback-initial-state-service";
 import type {
   PlaybackAdGateState,
   PlaybackMode,

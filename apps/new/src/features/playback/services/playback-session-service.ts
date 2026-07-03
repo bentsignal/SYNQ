@@ -1,5 +1,4 @@
 import type { PlaybackQueueItem, PlaybackState } from "../types/playback-state";
-import { initialPlaybackAdGateState } from "./playback-ad-gate-service";
 import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
 import {
   applyPlaybackNativeStatus,
@@ -8,9 +7,7 @@ import {
   finishPlaybackNativeTrack,
   syncPlaybackPremiumState,
 } from "./playback-native-transition-service";
-import {
-  initialPlaybackQueueFilter,
-} from "./playback-queue-service";
+import { initialPlaybackState } from "./playback-initial-state-service";
 import {
   addPlaybackQueueSong,
   bumpPlaybackQueueRevision,
@@ -53,26 +50,6 @@ export type PlaybackAction =
   | { premiumActive: boolean; type: "sync-premium" }
   | { type: "toggle-loop" }
   | { type: "toggle-shuffle" };
-
-export const initialPlaybackState: PlaybackState = {
-  activeQueueIndex: null,
-  activeTrackId: null,
-  addOffset: 0,
-  adGate: initialPlaybackAdGateState,
-  duration: 0,
-  error: null,
-  initialized: true,
-  isPlaying: false,
-  mode: {
-    loop: false,
-    shuffle: false,
-  },
-  position: 0,
-  queue: [],
-  queueFilter: initialPlaybackQueueFilter,
-  queueRevision: 0,
-  source: null,
-};
 
 export const playbackReducer = (
   state: PlaybackState,

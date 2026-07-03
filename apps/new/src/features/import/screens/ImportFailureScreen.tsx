@@ -1,7 +1,7 @@
 import { ImportResultScreenView } from "../components/ImportResultScreenView";
 import { useImportSession } from "../hooks/use-import-session";
 import { getImportFilesHref } from "../services/import-navigation-service";
-import { getImportFailureState } from "../services/import-screen-state-service";
+import { getImportFailureState } from "../services/import-result-screen-state-service";
 
 export function ImportFailureScreen() {
   const { state } = useImportSession();

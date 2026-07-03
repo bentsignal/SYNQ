@@ -186,6 +186,8 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import save-review action state, header/toggle copy, back link, and
     staged-song empty state now live in a focused save screen-state service
     instead of the broader import screen-state service.
+  - Done: import success/failure result labels now live in a focused result
+    screen-state service instead of the broader import screen-state service.
   - Done: import files/save/Wi-Fi/result back-links and staged-song edit
     destinations now live in import services with deterministic smoke coverage
     instead of inline component route strings.

@@ -1,7 +1,7 @@
 import { ImportResultScreenView } from "../components/ImportResultScreenView";
 import { useImportSession } from "../hooks/use-import-session";
 import { getImportLibraryHref } from "../services/import-navigation-service";
-import { getImportSuccessState } from "../services/import-screen-state-service";
+import { getImportSuccessState } from "../services/import-result-screen-state-service";
 
 export function ImportSuccessScreen() {
   const { state } = useImportSession();

@@ -765,6 +765,11 @@ import {
   type ShareExportFilesDependencies,
 } from "../../../apps/new/src/features/export/services/share-export-files-executor-service";
 import {
+  getImportDraftExportFiles,
+  shareImportDraftSongsWithDependencies,
+  type ImportDraftExportDependencies,
+} from "../../../apps/new/src/features/export/services/import-draft-export-executor-service";
+import {
   getPlayableLibraryExportSongs,
   shareLibrarySongsWithDependencies,
   type LibraryExportShareDependencies,
@@ -10350,6 +10355,76 @@ async function assertLibraryExportShareExecutorSmoke() {
   assert.deepEqual(calls, [["available"]]);
 }
 
+async function assertImportDraftExportExecutorSmoke() {
+  const calls: unknown[] = [];
+  let sharingAvailable = true;
+  const drafts = [
+    importDraft(1),
+    {
+      ...importDraft(2),
+      cacheUri: "file:///cache/fallback.mp3",
+      fileName: "",
+      title: "Fallback Title",
+    },
+  ];
+  const dependencies: ImportDraftExportDependencies = {
+    assertSharingAvailable: async () => {
+      calls.push(["available"]);
+
+      if (!sharingAvailable) {
+        throw new Error("Sharing is unavailable on this device.");
+      }
+    },
+    shareExportFiles: async (params) => {
+      calls.push(["share", params]);
+      return { exported: params.files.length };
+    },
+  };
+
+  assert.deepEqual(getImportDraftExportFiles(drafts), [
+    {
+      fileNameFallback: "import-1.mp3",
+      sourceUri: "/tmp/import-1.mp3",
+    },
+    {
+      fileNameFallback: "Fallback Title",
+      sourceUri: "file:///cache/fallback.mp3",
+    },
+  ]);
+  assert.deepEqual(
+    await shareImportDraftSongsWithDependencies(drafts, dependencies),
+    { exported: 2 },
+  );
+  assert.deepEqual(calls, [
+    ["available"],
+    [
+      "share",
+      {
+        directoryPrefix: "synq-import-export",
+        files: [
+          {
+            fileNameFallback: "import-1.mp3",
+            sourceUri: "/tmp/import-1.mp3",
+          },
+          {
+            fileNameFallback: "Fallback Title",
+            sourceUri: "file:///cache/fallback.mp3",
+          },
+        ],
+        noFilesMessage: "No staged songs are available to export.",
+      },
+    ],
+  ]);
+
+  calls.length = 0;
+  sharingAvailable = false;
+  await assert.rejects(
+    () => shareImportDraftSongsWithDependencies(drafts, dependencies),
+    /Sharing is unavailable/,
+  );
+  assert.deepEqual(calls, [["available"]]);
+}
+
 async function assertLibraryExportMetadataExecutorSmoke() {
   const calls: string[] = [];
   let stale = true;
@@ -10684,6 +10759,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertSettingsJsonFileStoreSmoke();
   await assertShareExportFilesExecutorSmoke();
   await assertLibraryExportShareExecutorSmoke();
+  await assertImportDraftExportExecutorSmoke();
   await assertLibraryExportMetadataExecutorSmoke();
   await assertImageStorageExecutorSmoke();
   await assertImportSessionSmoke();

@@ -2,6 +2,9 @@ import * as FileSystem from "expo-file-system";
 import type { ImportSongDraft } from "@/src/features/import/types/import-session";
 import { assertSharingAvailable } from "./export-file-service";
 import {
+  shareImportDraftSongsWithDependencies,
+} from "./import-draft-export-executor-service";
+import {
   shareExportFilesWithDependencies,
   type ShareExportFilesDependencies,
 } from "./share-export-files-executor-service";
@@ -19,15 +22,12 @@ const importDraftExportDependencies: ShareExportFilesDependencies = {
 };
 
 export async function shareImportDraftSongs(songs: ImportSongDraft[]) {
-  await assertSharingAvailable();
-
-  return shareExportFilesWithDependencies({
-    dependencies: importDraftExportDependencies,
-    directoryPrefix: "synq-import-export",
-    files: songs.map((song) => ({
-      fileNameFallback: song.fileName || song.title,
-      sourceUri: song.cacheUri,
-    })),
-    noFilesMessage: "No staged songs are available to export.",
+  return shareImportDraftSongsWithDependencies(songs, {
+    assertSharingAvailable,
+    shareExportFiles: (params) =>
+      shareExportFilesWithDependencies({
+        dependencies: importDraftExportDependencies,
+        ...params,
+      }),
   });
 }

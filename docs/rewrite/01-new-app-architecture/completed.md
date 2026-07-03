@@ -214,3 +214,5 @@
 - Moved library song export sharing orchestration behind an injectable executor
   so playable filtering and export file preparation are separated from Expo
   sharing adapters.
+- Moved import draft export sharing orchestration behind an injectable executor
+  so staged-song file mapping is separated from Expo sharing adapters.

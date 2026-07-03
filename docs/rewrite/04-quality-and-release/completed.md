@@ -104,3 +104,5 @@
 - Added library export sharing executor smoke coverage for playable-song
   filtering, sharing availability, export preparation, and share-file
   delegation.
+- Added import draft export executor smoke coverage for staged-song file
+  mapping, sharing availability, and share-file delegation.

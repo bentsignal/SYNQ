@@ -1045,6 +1045,10 @@ import {
   shouldSendHapticForHapticsToggle,
 } from "../../../apps/new/src/features/settings/services/settings-screen-service";
 import {
+  runCustomizationHapticsToggleAction,
+  runSettingsInteractionAction,
+} from "../../../apps/new/src/features/settings/services/settings-interaction-action-flow-service";
+import {
   getSettingsBackLink,
   getSettingsHomeHref,
   getSettingsPremiumHref,
@@ -13873,6 +13877,42 @@ async function assertSettingsScreenSmoke() {
     getCustomizationHapticsToggleCommand({ hapticsEnabled: false }),
     null,
   );
+  const settingsInteractionEvents: unknown[] = [];
+  runSettingsInteractionAction({
+    action: () => {
+      settingsInteractionEvents.push(["action", "theme"]);
+    },
+    sendHaptic: (haptic) => {
+      settingsInteractionEvents.push(["haptic", haptic]);
+    },
+  });
+  runCustomizationHapticsToggleAction({
+    currentHapticsEnabled: true,
+    nextHapticsEnabled: false,
+    sendHaptic: (haptic) => {
+      settingsInteractionEvents.push(["haptic", haptic]);
+    },
+    setHapticsEnabled: (hapticsEnabled) => {
+      settingsInteractionEvents.push(["haptics-enabled", hapticsEnabled]);
+    },
+  });
+  runCustomizationHapticsToggleAction({
+    currentHapticsEnabled: false,
+    nextHapticsEnabled: true,
+    sendHaptic: (haptic) => {
+      settingsInteractionEvents.push(["unexpected-haptic", haptic]);
+    },
+    setHapticsEnabled: (hapticsEnabled) => {
+      settingsInteractionEvents.push(["haptics-enabled", hapticsEnabled]);
+    },
+  });
+  assert.deepEqual(settingsInteractionEvents, [
+    ["haptic", "light"],
+    ["action", "theme"],
+    ["haptic", "light"],
+    ["haptics-enabled", false],
+    ["haptics-enabled", true],
+  ]);
   assert.equal(
     getCustomizationSettingsErrorMessage(
       new Error("Customization smoke failure"),

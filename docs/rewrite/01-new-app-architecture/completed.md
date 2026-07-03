@@ -378,3 +378,6 @@
   service.
 - Moved library song list sort/order haptic and state-update sequencing out of
   the React hook and into a focused controls action-flow service.
+- Moved settings support/privacy/customization interaction haptics and haptics
+  toggle sequencing out of React hooks and into a focused interaction
+  action-flow service.

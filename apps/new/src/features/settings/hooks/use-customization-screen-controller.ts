@@ -1,10 +1,12 @@
 import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
 import { useCustomizationSettingsSelector } from "../state/CustomizationSettingsProvider";
 import {
-  getCustomizationHapticsToggleCommand,
   getCustomizationScreenState,
-  getSettingsInteractionCommand,
 } from "../services/settings-screen-service";
+import {
+  runCustomizationHapticsToggleAction,
+  runSettingsInteractionAction,
+} from "../services/settings-interaction-action-flow-service";
 import type { CustomizationColorKey } from "../types/customization-settings";
 import { useHapticFeedback } from "./use-haptic-feedback";
 
@@ -29,25 +31,26 @@ export function useCustomizationScreenController() {
   });
 
   const updateTheme = (themeKey: CustomizationColorKey) => {
-    sendHaptic(getSettingsInteractionCommand().haptic);
-    void setTheme(themeKey);
+    void runSettingsInteractionAction({
+      action: () => setTheme(themeKey),
+      sendHaptic,
+    });
   };
 
   const updateAppIcon = (appIcon: CustomizationColorKey) => {
-    sendHaptic(getSettingsInteractionCommand().haptic);
-    void setAppIcon(appIcon);
+    void runSettingsInteractionAction({
+      action: () => setAppIcon(appIcon),
+      sendHaptic,
+    });
   };
 
   const updateHapticsEnabled = (hapticsEnabled: boolean) => {
-    const command = getCustomizationHapticsToggleCommand({
-      hapticsEnabled: customizationState.settings.hapticsEnabled,
+    void runCustomizationHapticsToggleAction({
+      currentHapticsEnabled: customizationState.settings.hapticsEnabled,
+      nextHapticsEnabled: hapticsEnabled,
+      sendHaptic,
+      setHapticsEnabled,
     });
-
-    if (command) {
-      sendHaptic(command.haptic);
-    }
-
-    void setHapticsEnabled(hapticsEnabled);
   };
 
   return {

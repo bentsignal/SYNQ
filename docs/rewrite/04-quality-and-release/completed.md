@@ -271,3 +271,5 @@
   queue haptic/action sequencing.
 - Added direct library song list controls action-flow smoke coverage for sort
   selection and order toggle sequencing.
+- Added direct settings interaction action-flow smoke coverage for generic
+  interactions and conditional haptics-toggle sequencing.

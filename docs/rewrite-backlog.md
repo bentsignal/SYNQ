@@ -158,6 +158,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: playback player, queue, mini-player, and Premium ad-gate
     destinations now live in the playback player-state service with
     deterministic smoke coverage instead of inline playback route strings.
+  - Done: playback player/queue screen copy, mini-player visibility, ad-break
+    copy, and playback destinations now live in a focused screen-state service
+    instead of the player math/action-state service.
   - Done: song detail relationship routing and action disabled-state derivation
     now live in the song detail service instead of the detail screen.
   - Done: song detail route/view-state helpers, delete confirmation copy, and

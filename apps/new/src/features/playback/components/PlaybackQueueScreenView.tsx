@@ -2,7 +2,7 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { PlaybackQueueController } from "../hooks/use-playback-queue-controller";
-import { getPlaybackQueueScreenState } from "../services/playback-player-state-service";
+import { getPlaybackQueueScreenState } from "../services/playback-screen-state-service";
 import { PlaybackQueueList } from "./PlaybackQueueList";
 
 type PlaybackQueueScreenViewProps = PlaybackQueueController;

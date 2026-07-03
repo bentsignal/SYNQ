@@ -2,7 +2,7 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { PlaybackPlayerController } from "../hooks/use-playback-player-controller";
-import { getPlaybackPlayerScreenState } from "../services/playback-player-state-service";
+import { getPlaybackPlayerScreenState } from "../services/playback-screen-state-service";
 import { PlaybackAdBreakPanel } from "./PlaybackAdBreakPanel";
 import { PlaybackNowPlayingPanel } from "./PlaybackNowPlayingPanel";
 import { PlaybackPlayerControls } from "./PlaybackPlayerControls";

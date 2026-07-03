@@ -33,19 +33,21 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-persistence-codec-service";
 import {
   getFreeListeningRemainingMs,
+  getPlaybackPlayerActionState,
+  getPlaybackPlayerViewState,
+  getPlaybackProgressPercent,
+  getSeekTargetPosition,
+} from "../../../apps/new/src/features/playback/services/playback-player-state-service";
+import {
   getPlaybackAdBreakPanelState,
   getPlaybackMiniPlayerState,
   getPlaybackPlayerHref,
-  getPlaybackPlayerActionState,
   getPlaybackPlayerScreenState,
-  getPlaybackPlayerViewState,
   getPlaybackPremiumHref,
-  getPlaybackProgressPercent,
   getPlaybackQueueEmptyState,
   getPlaybackQueueHref,
   getPlaybackQueueScreenState,
-  getSeekTargetPosition,
-} from "../../../apps/new/src/features/playback/services/playback-player-state-service";
+} from "../../../apps/new/src/features/playback/services/playback-screen-state-service";
 import { audioStatusToTrackPlayerSnapshot } from "../../../apps/new/src/features/playback/services/playback-native-status-service";
 import {
   getPlaybackNativeCommandErrorMessage,

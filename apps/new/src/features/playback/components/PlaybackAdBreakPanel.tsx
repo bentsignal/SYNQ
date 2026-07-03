@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getPlaybackAdBreakPanelState } from "../services/playback-player-state-service";
+import { getPlaybackAdBreakPanelState } from "../services/playback-screen-state-service";
 import type { PlaybackState } from "../types/playback-state";
 
 type PlaybackAdBreakPanelProps = {

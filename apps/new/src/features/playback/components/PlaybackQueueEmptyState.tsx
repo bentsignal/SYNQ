@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getPlaybackQueueEmptyState } from "../services/playback-player-state-service";
+import { getPlaybackQueueEmptyState } from "../services/playback-screen-state-service";
 
 export function PlaybackQueueEmptyState() {
   const theme = useCustomizationTheme();

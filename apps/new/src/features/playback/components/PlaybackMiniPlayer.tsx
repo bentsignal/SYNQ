@@ -5,7 +5,7 @@ import { usePlaybackSession } from "../hooks/use-playback-session";
 import {
   getPlaybackMiniPlayerState,
   getPlaybackPlayerHref,
-} from "../services/playback-player-state-service";
+} from "../services/playback-screen-state-service";
 
 export function PlaybackMiniPlayer() {
   const theme = useCustomizationTheme();

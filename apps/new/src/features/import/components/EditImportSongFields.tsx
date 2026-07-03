@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput } from "react-native";
+import { Text, TextInput } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { getImportSongEditFieldState } from "../services/import-song-form-service";
 
@@ -25,23 +25,24 @@ export function EditImportSongFields({
 }: EditImportSongFieldsProps) {
   const theme = useCustomizationTheme();
   const fieldState = getImportSongEditFieldState();
-  const inputStyle = [
-    styles.input,
-    {
-      backgroundColor: theme.background,
-      borderColor: theme.border,
-      color: theme.primaryText,
-    },
-  ];
+  const inputStyle = {
+    backgroundColor: theme.background,
+    borderColor: theme.border,
+    color: theme.primaryText,
+  };
 
   return (
     <>
-      <Text style={[styles.label, { color: theme.primaryText }]}>
+      <Text
+        className="text-[13px] font-extrabold"
+        style={{ color: theme.primaryText }}
+      >
         {fieldState.title.label}
       </Text>
       <TextInput
         autoCapitalize="words"
         autoCorrect={false}
+        className="min-h-[46px] rounded-lg border px-3 text-base"
         onChangeText={onChangeTitle}
         placeholder={fieldState.title.placeholder}
         placeholderTextColor={theme.mutedText}
@@ -50,12 +51,16 @@ export function EditImportSongFields({
         value={title}
       />
 
-      <Text style={[styles.label, { color: theme.primaryText }]}>
+      <Text
+        className="text-[13px] font-extrabold"
+        style={{ color: theme.primaryText }}
+      >
         {fieldState.artist.label}
       </Text>
       <TextInput
         autoCapitalize="words"
         autoCorrect={false}
+        className="min-h-[46px] rounded-lg border px-3 text-base"
         onChangeText={onChangeArtist}
         placeholder={fieldState.artist.placeholder}
         placeholderTextColor={theme.mutedText}
@@ -64,12 +69,16 @@ export function EditImportSongFields({
         value={artist}
       />
 
-      <Text style={[styles.label, { color: theme.primaryText }]}>
+      <Text
+        className="text-[13px] font-extrabold"
+        style={{ color: theme.primaryText }}
+      >
         {fieldState.album.label}
       </Text>
       <TextInput
         autoCapitalize="words"
         autoCorrect={false}
+        className="min-h-[46px] rounded-lg border px-3 text-base"
         onChangeText={onChangeAlbum}
         placeholder={fieldState.album.placeholder}
         placeholderTextColor={theme.mutedText}
@@ -78,10 +87,14 @@ export function EditImportSongFields({
         value={album}
       />
 
-      <Text style={[styles.label, { color: theme.primaryText }]}>
+      <Text
+        className="text-[13px] font-extrabold"
+        style={{ color: theme.primaryText }}
+      >
         {fieldState.track.label}
       </Text>
       <TextInput
+        className="min-h-[46px] rounded-lg border px-3 text-base"
         inputMode="numeric"
         keyboardType="number-pad"
         onChangeText={onChangeTrack}
@@ -94,18 +107,3 @@ export function EditImportSongFields({
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  label: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-  },
-  input: {
-    borderRadius: 8,
-    borderWidth: 1,
-    fontSize: 16,
-    minHeight: 46,
-    paddingHorizontal: 12,
-  },
-});

@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import {
   getImportSongEditInvalidState,
@@ -17,23 +17,36 @@ export function EditImportSongInvalidState({
   const invalidState = getImportSongEditInvalidState(reason);
 
   return (
-    <View style={[styles.screen, { backgroundColor: theme.background }]}>
-      <Text style={[styles.kicker, { color: theme.accent }]}>
+    <View
+      className="flex-1 gap-3 px-5 py-14"
+      style={{ backgroundColor: theme.background }}
+    >
+      <Text
+        className="text-[13px] font-extrabold uppercase"
+        style={{ color: theme.accent }}
+      >
         {invalidState.kicker}
       </Text>
-      <Text style={[styles.title, { color: theme.primaryText }]}>
+      <Text
+        className="text-[34px] font-extrabold leading-10"
+        style={{ color: theme.primaryText }}
+      >
         {invalidState.title}
       </Text>
-      <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
+      <Text
+        className="max-w-[520px] text-[15px] leading-[22px]"
+        style={{ color: theme.secondaryText }}
+      >
         {invalidState.subtitle}
       </Text>
 
-      <View style={styles.linkRow}>
+      <View className="flex-row flex-wrap gap-4">
         {invalidState.links.map((link) => (
           <Link
+            className="text-[15px] font-extrabold"
             href={link.href}
             key={link.href}
-            style={[styles.backLink, { color: theme.accent }]}
+            style={{ color: theme.accent }}
           >
             {link.label}
           </Link>
@@ -42,39 +55,3 @@ export function EditImportSongInvalidState({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    gap: 12,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-  kicker: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 40,
-  },
-  subtitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    maxWidth: 520,
-  },
-  linkRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 16,
-  },
-  backLink: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-  },
-});

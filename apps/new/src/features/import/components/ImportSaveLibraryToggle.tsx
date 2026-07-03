@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { getImportSaveLibraryToggleState } from "../services/import-save-screen-state-service";
 
@@ -19,14 +19,12 @@ export function ImportSaveLibraryToggle({
       accessibilityRole="checkbox"
       accessibilityState={{ checked: shouldSaveToLibrary }}
       onPress={toggleShouldSaveToLibrary}
-      style={[
-        styles.toggleRow,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="min-h-[52px] flex-row items-center gap-3 rounded-lg border px-3.5"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
       <View
+        className="h-[22px] w-[22px] rounded-md border-2"
         style={[
-          styles.toggleBox,
           { borderColor: theme.inactive },
           shouldSaveToLibrary
             ? {
@@ -36,32 +34,12 @@ export function ImportSaveLibraryToggle({
             : null,
         ]}
       />
-      <Text style={[styles.toggleText, { color: theme.primaryText }]}>
+      <Text
+        className="text-[15px] font-extrabold"
+        style={{ color: theme.primaryText }}
+      >
         {toggleState.label}
       </Text>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  toggleBox: {
-    borderRadius: 6,
-    borderWidth: 2,
-    height: 22,
-    width: 22,
-  },
-  toggleRow: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    flexDirection: "row",
-    gap: 12,
-    minHeight: 52,
-    paddingHorizontal: 14,
-  },
-  toggleText: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-  },
-});

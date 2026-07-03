@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { PlaybackQueueItem } from "../types/playback-state";
 import { PlaybackQueueEmptyState } from "./PlaybackQueueEmptyState";
@@ -29,10 +29,8 @@ export function PlaybackQueueList({
 
   return (
     <View
-      style={[
-        styles.list,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="overflow-hidden rounded-lg border"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
       {songs.map((song, index) => (
         <PlaybackQueueRow
@@ -50,11 +48,3 @@ export function PlaybackQueueList({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  list: {
-    borderRadius: 8,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-});

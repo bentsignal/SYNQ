@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { getPlaybackQueueEmptyState } from "../services/playback-screen-state-service";
 
@@ -8,36 +8,21 @@ export function PlaybackQueueEmptyState() {
 
   return (
     <View
-      style={[
-        styles.emptyPanel,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="gap-2 rounded-lg border p-4"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
-      <Text style={[styles.emptyTitle, { color: theme.primaryText }]}>
+      <Text
+        className="text-base font-extrabold leading-[21px]"
+        style={{ color: theme.primaryText }}
+      >
         {emptyState.title}
       </Text>
-      <Text style={[styles.emptyBody, { color: theme.secondaryText }]}>
+      <Text
+        className="text-sm leading-5"
+        style={{ color: theme.secondaryText }}
+      >
         {emptyState.body}
       </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  emptyBody: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  emptyPanel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 8,
-    padding: 16,
-  },
-  emptyTitle: {
-    fontSize: 16,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 21,
-  },
-});

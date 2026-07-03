@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { PlaybackState } from "../types/playback-state";
@@ -16,18 +16,25 @@ export function PlaybackSessionPanel({
 
   return (
     <View
-      style={[
-        styles.panel,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="gap-2 rounded-lg border p-4"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
-      <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
+      <Text
+        className="text-xs font-extrabold uppercase"
+        style={{ color: theme.secondaryText }}
+      >
         Session
       </Text>
-      <Text style={[styles.panelText, { color: theme.secondaryText }]}>
+      <Text
+        className="text-sm leading-5"
+        style={{ color: theme.secondaryText }}
+      >
         {state.queue.length} queued
       </Text>
-      <Text style={[styles.panelText, { color: theme.secondaryText }]}>
+      <Text
+        className="text-sm leading-5"
+        style={{ color: theme.secondaryText }}
+      >
         Free listening before ad break:{" "}
         {formatDurationMs(freeListeningRemainingMs)}
       </Text>
@@ -40,39 +47,21 @@ export function PlaybackErrorPanel({ error }: { error: string }) {
 
   return (
     <View
-      style={[
-        styles.panel,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="gap-2 rounded-lg border p-4"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
-      <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
+      <Text
+        className="text-xs font-extrabold uppercase"
+        style={{ color: theme.secondaryText }}
+      >
         Playback Error
       </Text>
-      <Text style={[styles.errorText, { color: theme.danger }]}>{error}</Text>
+      <Text
+        className="text-sm font-bold leading-5"
+        style={{ color: theme.danger }}
+      >
+        {error}
+      </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  panel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 8,
-    padding: 16,
-  },
-  panelLabel: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  panelText: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  errorText: {
-    fontSize: 14,
-    fontWeight: "700",
-    lineHeight: 20,
-  },
-});

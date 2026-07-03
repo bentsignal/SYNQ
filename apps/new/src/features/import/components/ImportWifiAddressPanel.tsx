@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportWifiScreenController } from "../hooks/use-import-wifi-screen-controller";
 
@@ -16,76 +16,49 @@ export function ImportWifiAddressPanel({
 
   return (
     <View
-      style={[
-        styles.addressPanel,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="gap-2 rounded-lg border p-4"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
-      <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
+      <Text
+        className="text-xs font-extrabold uppercase"
+        style={{ color: theme.secondaryText }}
+      >
         Local address
       </Text>
       <Text
         selectable
         numberOfLines={2}
-        style={[
-          address ? styles.addressText : styles.mutedText,
-          { color: address ? theme.primaryText : theme.mutedText },
-        ]}
+        className={
+          address
+            ? "text-[21px] font-extrabold leading-7"
+            : "text-base leading-[22px]"
+        }
+        style={{ color: address ? theme.primaryText : theme.mutedText }}
       >
         {address || "Finding device address"}
       </Text>
       <Text
-        style={[styles.statusText, { color: error ? theme.danger : theme.accent }]}
+        className="text-[13px] font-extrabold"
+        style={{ color: error ? theme.danger : theme.accent }}
       >
         {statusLabel}
       </Text>
       {port ? (
-        <Text style={[styles.portText, { color: theme.secondaryText }]}>
+        <Text
+          className="text-xs leading-[17px]"
+          style={{ color: theme.secondaryText }}
+        >
           Listening on port {port}
         </Text>
       ) : null}
       {error ? (
-        <Text style={[styles.errorText, { color: theme.danger }]}>{error}</Text>
+        <Text
+          className="text-[13px] font-extrabold leading-[18px]"
+          style={{ color: theme.danger }}
+        >
+          {error}
+        </Text>
       ) : null}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  addressPanel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 8,
-    padding: 16,
-  },
-  addressText: {
-    fontSize: 21,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 28,
-  },
-  errorText: {
-    fontSize: 13,
-    fontWeight: "800",
-    lineHeight: 18,
-  },
-  mutedText: {
-    fontSize: 16,
-    lineHeight: 22,
-  },
-  panelLabel: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  portText: {
-    fontSize: 12,
-    lineHeight: 17,
-  },
-  statusText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-  },
-});

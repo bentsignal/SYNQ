@@ -135,6 +135,13 @@ export const getInitialPremiumTierLoadState = (
   tiers,
 });
 
+export const getPremiumTierLoadResolveAction = (
+  tiers: PremiumTier[],
+): PremiumTierLoadAction => ({
+  tiers,
+  type: "resolve",
+});
+
 export const premiumTierLoadReducer = (
   state: PremiumTierLoadState,
   action: PremiumTierLoadAction,

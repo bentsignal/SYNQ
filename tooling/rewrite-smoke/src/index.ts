@@ -1083,6 +1083,7 @@ import {
   getPremiumPurchaseStartAction,
   getPremiumPurchaseSucceedAction,
   getPremiumPurchaseSyncEntitlementAction,
+  getPremiumTierLoadResolveAction,
   type PremiumPurchaseAction,
   type PremiumTierLoadAction,
   premiumPurchaseReducer,
@@ -1099,6 +1100,9 @@ import {
   runPremiumEntitlementRefreshCommand,
 } from "../../../apps/new/src/features/premium/services/premium-entitlement-command-flow-service";
 import {
+  getPremiumEntitlementCheckingAction,
+  getPremiumEntitlementFailAction,
+  getPremiumEntitlementSucceedAction,
   initialPremiumEntitlementState,
   type PremiumEntitlementAction,
   premiumEntitlementReducer,
@@ -13969,7 +13973,7 @@ async function assertPremiumScreenSmoke() {
         phase: "failure",
         tierId: "yearly",
       },
-      { type: "checking" },
+      getPremiumEntitlementCheckingAction(),
     ),
     {
       active: true,
@@ -13980,14 +13984,14 @@ async function assertPremiumScreenSmoke() {
     },
   );
   assert.deepEqual(
-    premiumEntitlementReducer(initialPremiumEntitlementState, {
-      status: {
+    premiumEntitlementReducer(
+      initialPremiumEntitlementState,
+      getPremiumEntitlementSucceedAction({
         active: true,
         message: "Premium smoke active.",
         tierId: "lifetime",
-      },
-      type: "succeed",
-    }),
+      }),
+    ),
     {
       active: true,
       error: null,
@@ -13997,10 +14001,10 @@ async function assertPremiumScreenSmoke() {
     },
   );
   assert.deepEqual(
-    premiumEntitlementReducer(initialPremiumEntitlementState, {
-      error: "Premium entitlement failed.",
-      type: "fail",
-    }),
+    premiumEntitlementReducer(
+      initialPremiumEntitlementState,
+      getPremiumEntitlementFailAction("Premium entitlement failed."),
+    ),
     {
       active: false,
       error: "Premium entitlement failed.",
@@ -14009,6 +14013,28 @@ async function assertPremiumScreenSmoke() {
       tierId: "monthly",
     },
   );
+  assert.deepEqual(getPremiumEntitlementCheckingAction(), {
+    type: "checking",
+  });
+  assert.deepEqual(
+    getPremiumEntitlementSucceedAction({
+      active: true,
+      message: "Applied.",
+      tierId: "yearly",
+    }),
+    {
+      status: {
+        active: true,
+        message: "Applied.",
+        tierId: "yearly",
+      },
+      type: "succeed",
+    },
+  );
+  assert.deepEqual(getPremiumEntitlementFailAction("Check failed"), {
+    error: "Check failed",
+    type: "fail",
+  });
   const premiumEntitlementCommandEvents: unknown[] = [];
   const dispatchPremiumEntitlementCommand = (
     action: PremiumEntitlementAction,
@@ -14258,6 +14284,10 @@ async function assertPremiumScreenSmoke() {
       tiers,
     },
   );
+  assert.deepEqual(getPremiumTierLoadResolveAction(tiers), {
+    tiers,
+    type: "resolve",
+  });
   const premiumTierLoadCommandEvents: unknown[] = [];
   const dispatchPremiumTierLoadCommand = (action: PremiumTierLoadAction) => {
     premiumTierLoadCommandEvents.push(action);

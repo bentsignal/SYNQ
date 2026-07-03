@@ -1,5 +1,10 @@
 import type { PremiumEntitlementStatus } from "../types/premium-purchase";
-import type { PremiumEntitlementAction } from "./premium-entitlement-state-service";
+import {
+  getPremiumEntitlementCheckingAction,
+  getPremiumEntitlementFailAction,
+  getPremiumEntitlementSucceedAction,
+  type PremiumEntitlementAction,
+} from "./premium-entitlement-state-service";
 import { getPremiumMutationErrorMessage } from "./premium-screen-service";
 
 type PremiumEntitlementDispatch = (action: PremiumEntitlementAction) => void;
@@ -11,7 +16,7 @@ export const runPremiumEntitlementApplyCommand = ({
   dispatch: PremiumEntitlementDispatch;
   status: PremiumEntitlementStatus;
 }) => {
-  dispatch({ status, type: "succeed" });
+  dispatch(getPremiumEntitlementSucceedAction(status));
 };
 
 export const runPremiumEntitlementRefreshCommand = async ({
@@ -21,20 +26,20 @@ export const runPremiumEntitlementRefreshCommand = async ({
   checkPremiumEntitlement: () => Promise<PremiumEntitlementStatus>;
   dispatch: PremiumEntitlementDispatch;
 }) => {
-  dispatch({ type: "checking" });
+  dispatch(getPremiumEntitlementCheckingAction());
 
   try {
-    dispatch({
-      status: await checkPremiumEntitlement(),
-      type: "succeed",
-    });
+    dispatch(
+      getPremiumEntitlementSucceedAction(await checkPremiumEntitlement()),
+    );
   } catch (caughtError) {
-    dispatch({
-      error: getPremiumMutationErrorMessage({
-        caughtError,
-        mutation: "check-entitlement",
-      }),
-      type: "fail",
-    });
+    dispatch(
+      getPremiumEntitlementFailAction(
+        getPremiumMutationErrorMessage({
+          caughtError,
+          mutation: "check-entitlement",
+        }),
+      ),
+    );
   }
 };

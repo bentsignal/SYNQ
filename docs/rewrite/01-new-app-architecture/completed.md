@@ -444,3 +444,5 @@
   and into the premium purchase state service.
 - Moved backup session action construction out of command flows and into the
   backup session state service.
+- Moved premium entitlement and tier-load action construction out of command
+  flows and into premium state services.

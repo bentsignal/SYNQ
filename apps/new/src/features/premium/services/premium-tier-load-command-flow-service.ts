@@ -1,5 +1,8 @@
 import type { PremiumTier } from "../types/premium-purchase";
-import type { PremiumTierLoadAction } from "./premium-purchase-state-service";
+import {
+  getPremiumTierLoadResolveAction,
+  type PremiumTierLoadAction,
+} from "./premium-purchase-state-service";
 
 type PremiumTierLoadDispatch = (action: PremiumTierLoadAction) => void;
 
@@ -17,11 +20,11 @@ export const runPremiumTierLoadCommand = async ({
   try {
     const tiers = await loadPremiumTiers();
     if (isCurrent()) {
-      dispatch({ tiers, type: "resolve" });
+      dispatch(getPremiumTierLoadResolveAction(tiers));
     }
   } catch {
     if (isCurrent()) {
-      dispatch({ tiers: fallbackTiers, type: "resolve" });
+      dispatch(getPremiumTierLoadResolveAction(fallbackTiers));
     }
   }
 };

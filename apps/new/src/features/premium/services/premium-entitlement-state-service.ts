@@ -26,6 +26,25 @@ export const initialPremiumEntitlementState: PremiumEntitlementState = {
   tierId: "monthly",
 };
 
+export const getPremiumEntitlementCheckingAction =
+  (): PremiumEntitlementAction => ({
+    type: "checking",
+  });
+
+export const getPremiumEntitlementSucceedAction = (
+  status: PremiumEntitlementStatus,
+): PremiumEntitlementAction => ({
+  status,
+  type: "succeed",
+});
+
+export const getPremiumEntitlementFailAction = (
+  error: string,
+): PremiumEntitlementAction => ({
+  error,
+  type: "fail",
+});
+
 export const premiumEntitlementReducer = (
   state: PremiumEntitlementState,
   action: PremiumEntitlementAction,

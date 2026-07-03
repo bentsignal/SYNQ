@@ -30,3 +30,39 @@ export const processImportAssetWithDependencies = async <
     }),
   );
 };
+
+export const processImportAssetsWithDependencies = async <
+  Asset extends ImportFileSelectionAsset,
+>({
+  assets,
+  dependencies,
+}: {
+  assets: Asset[];
+  dependencies: ImportFileSelectionDependencies<Asset>;
+}): Promise<{
+  drafts: ImportSongDraft[];
+  skipped: number;
+}> => {
+  const drafts: ImportSongDraft[] = [];
+  let skipped = 0;
+
+  for (let index = 0; index < assets.length; index += 1) {
+    const asset = assets[index];
+    try {
+      drafts.push(
+        await processImportAssetWithDependencies({
+          asset,
+          dependencies,
+          index,
+        }),
+      );
+    } catch {
+      skipped += 1;
+    }
+  }
+
+  return {
+    drafts,
+    skipped,
+  };
+};

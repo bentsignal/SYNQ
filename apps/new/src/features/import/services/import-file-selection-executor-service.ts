@@ -2,7 +2,7 @@ import type { ImportSongDraft } from "../types/import-session";
 import {
   getWifiImportFileProcessParams,
 } from "./import-file-selection-step-service";
-import { processImportAssetWithDependencies } from "./import-file-selection-operation-service";
+import { processImportAssetsWithDependencies } from "./import-file-selection-operation-service";
 
 export type ImportFileSelectionAsset = {
   mimeType?: string | null;
@@ -80,28 +80,10 @@ export async function selectImportFilesWithDependencies<
 
   await dependencies.createImportCacheDirectory();
 
-  const drafts: ImportSongDraft[] = [];
-  let skipped = 0;
-
-  for (let index = 0; index < result.assets.length; index += 1) {
-    const asset = result.assets[index];
-    try {
-      drafts.push(
-        await processImportAssetWithDependencies({
-          asset,
-          dependencies,
-          index,
-        }),
-      );
-    } catch {
-      skipped += 1;
-    }
-  }
-
-  return {
-    drafts,
-    skipped,
-  };
+  return processImportAssetsWithDependencies({
+    assets: result.assets,
+    dependencies,
+  });
 }
 
 export async function stageWifiImportFileWithDependencies<

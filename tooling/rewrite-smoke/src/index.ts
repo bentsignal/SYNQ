@@ -470,7 +470,10 @@ import {
   getCachedImportFileProcessParams,
   getWifiImportFileProcessParams,
 } from "../../../apps/new/src/features/import/services/import-file-selection-step-service";
-import { processImportAssetWithDependencies } from "../../../apps/new/src/features/import/services/import-file-selection-operation-service";
+import {
+  processImportAssetWithDependencies,
+  processImportAssetsWithDependencies,
+} from "../../../apps/new/src/features/import/services/import-file-selection-operation-service";
 import {
   getImportFileCommandErrorMessage,
   getImportFileRemovalResultCommand,
@@ -12619,6 +12622,43 @@ async function assertImportFileSelectionExecutorSmoke() {
     "process:/cache/direct.wav:cached-direct.wav:audio/wav:1004",
   ]);
   calls.length = 0;
+
+  failingCopyIndex = 1;
+  assert.deepEqual(
+    await processImportAssetsWithDependencies({
+      assets: [
+        {
+          mimeType: "audio/mpeg",
+          name: "batch-one.mp3",
+          uri: "file:///batch-one.mp3",
+        },
+        {
+          mimeType: "audio/aac",
+          name: "batch-bad.m4a",
+          uri: "file:///batch-bad.m4a",
+        },
+      ],
+      dependencies,
+    }),
+    {
+      drafts: [
+        {
+          ...importDraft(1_000),
+          cacheUri: "/cache/batch-one.mp3",
+          fileName: "cached-batch-one.mp3",
+          fileType: "audio/mpeg",
+        },
+      ],
+      skipped: 1,
+    },
+  );
+  assert.deepEqual(calls, [
+    "copy:batch-one.mp3:file:///batch-one.mp3:0",
+    "process:/cache/batch-one.mp3:cached-batch-one.mp3:audio/mpeg:1000",
+    "copy:batch-bad.m4a:file:///batch-bad.m4a:1",
+  ]);
+  calls.length = 0;
+  failingCopyIndex = 2;
 
   assert.deepEqual(await selectImportFilesWithDependencies(dependencies), {
     drafts: [],

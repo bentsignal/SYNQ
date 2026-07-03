@@ -2,21 +2,18 @@ import { useRouter } from "expo-router";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useCollectionFormImageCommand } from "./use-collection-form-image-command";
 import { createCollectionFromFormCommand } from "../services/collection-form-command-service";
-import { getCollectionDetailHref } from "../services/collection-form-navigation-service";
 import {
-  getCollectionFormErrorMessage,
+  getCollectionFormBeginSaveCommand,
+  getCollectionFormBlockedSaveCommand,
+  getCollectionFormFailureCommand,
+  getCollectionFormSuccessCommand,
   type CollectionFormAction,
   type CollectionFormKind,
   type CollectionFormState,
 } from "../services/collection-form-service";
 
-type CreateCollectionFormCommandsCopy = {
-  kicker: string;
-};
-
 type UseCreateCollectionFormCommandsParams = {
   canSave: boolean;
-  copy: CreateCollectionFormCommandsCopy;
   dispatchFormState: React.Dispatch<CollectionFormAction>;
   formState: CollectionFormState;
   kind: CollectionFormKind;
@@ -24,7 +21,6 @@ type UseCreateCollectionFormCommandsParams = {
 
 export function useCreateCollectionFormCommands({
   canSave,
-  copy,
   dispatchFormState,
   formState,
   kind,
@@ -38,15 +34,13 @@ export function useCreateCollectionFormCommands({
 
   const create = async () => {
     if (!canSave) {
-      sendHaptic("error");
-      dispatchFormState({
-        error: `${copy.kicker} name is required.`,
-        type: "fail",
-      });
+      const command = getCollectionFormBlockedSaveCommand(kind);
+      sendHaptic(command.haptic);
+      dispatchFormState(command.action);
       return;
     }
 
-    dispatchFormState({ type: "begin-save" });
+    dispatchFormState(getCollectionFormBeginSaveCommand().action);
 
     try {
       const collection = await createCollectionFromFormCommand({
@@ -55,17 +49,20 @@ export function useCreateCollectionFormCommands({
         name: formState.name,
         year: formState.year,
       });
-      sendHaptic("success");
-      router.replace(getCollectionDetailHref({ id: collection.id, kind }));
-    } catch (caughtError) {
-      sendHaptic("error");
-      dispatchFormState({
-        error: getCollectionFormErrorMessage({
-          caughtError,
-          fallbackMessage: `${copy.kicker} could not be created.`,
-        }),
-        type: "fail",
+      const command = getCollectionFormSuccessCommand({
+        id: collection.id,
+        kind,
       });
+      sendHaptic(command.haptic);
+      router.replace(command.href);
+    } catch (caughtError) {
+      const command = getCollectionFormFailureCommand({
+        caughtError,
+        kind,
+        operation: "create",
+      });
+      sendHaptic(command.haptic);
+      dispatchFormState(command.action);
     } finally {
       dispatchFormState({ type: "finish-save" });
     }

@@ -34,7 +34,6 @@ export function useCreateCollectionFormController({
 
   const { create, pickImage } = useCreateCollectionFormCommands({
     canSave: actionState.canSave,
-    copy,
     dispatchFormState,
     formState,
     kind,

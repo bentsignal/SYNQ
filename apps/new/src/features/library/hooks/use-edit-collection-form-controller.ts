@@ -48,7 +48,6 @@ export function useEditCollectionFormController({
 
   const { pickImage, save } = useEditCollectionFormCommands({
     canSave: actionState.canSave,
-    copy,
     dispatchFormState,
     formState,
     id,

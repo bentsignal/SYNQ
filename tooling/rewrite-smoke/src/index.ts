@@ -266,7 +266,11 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import {
   collectionFormReducer,
+  getCollectionFormBeginSaveCommand,
+  getCollectionFormBlockedSaveCommand,
   getCollectionFormErrorMessage,
+  getCollectionFormFailureCommand,
+  getCollectionFormSuccessCommand,
   getInitialCollectionFormState,
   parseAlbumYearInput,
 } from "../../../apps/new/src/features/library/services/collection-form-service";
@@ -4697,6 +4701,50 @@ function assertCollectionFormSmoke() {
       fallbackMessage: "Album could not be created.",
     }),
     "Album could not be created.",
+  );
+  assert.deepEqual(getCollectionFormBlockedSaveCommand("album"), {
+    action: {
+      error: "Album name is required.",
+      type: "fail",
+    },
+    haptic: "error",
+  });
+  assert.deepEqual(getCollectionFormBeginSaveCommand(), {
+    action: {
+      type: "begin-save",
+    },
+  });
+  assert.deepEqual(getCollectionFormSuccessCommand({ id: 42, kind: "album" }), {
+    haptic: "success",
+    href: "/(tabs)/library/album/42",
+  });
+  assert.deepEqual(
+    getCollectionFormFailureCommand({
+      caughtError: new Error("Create failed"),
+      kind: "playlist",
+      operation: "create",
+    }),
+    {
+      action: {
+        error: "Create failed",
+        type: "fail",
+      },
+      haptic: "error",
+    },
+  );
+  assert.deepEqual(
+    getCollectionFormFailureCommand({
+      caughtError: null,
+      kind: "artist",
+      operation: "update",
+    }),
+    {
+      action: {
+        error: "Artist could not be updated.",
+        type: "fail",
+      },
+      haptic: "error",
+    },
   );
   assert.throws(
     () => parseAlbumYearInput("-1"),

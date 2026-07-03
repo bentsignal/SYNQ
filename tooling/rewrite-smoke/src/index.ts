@@ -386,6 +386,11 @@ import {
   type LikedSongMembershipDependencies,
 } from "../../../apps/new/src/features/library/repository/collection-song-membership-executor-repository";
 import {
+  addSongsToCollectionWithDependencies,
+  addSongToCollectionWithDependencies,
+  type CollectionSongAddDependencies,
+} from "../../../apps/new/src/features/library/repository/collection-song-add-executor-repository";
+import {
   removeSongFromCollectionWithDependencies,
   updateCollectionSongOrderWithDependencies,
   type CollectionSongRelationshipDependencies,
@@ -4337,6 +4342,50 @@ async function assertCollectionSongMembershipExecutorSmoke() {
     false,
   );
   assert.deepEqual(calls, [["delete", 2, 5]]);
+}
+
+async function assertCollectionSongAddExecutorSmoke() {
+  const calls: unknown[] = [];
+  const dependencies: CollectionSongAddDependencies = {
+    addSongToAlbum: async (params) => {
+      calls.push(["album", params]);
+    },
+    addSongToArtist: async (params) => {
+      calls.push(["artist", params]);
+    },
+    addSongToPlaylist: async (params) => {
+      calls.push(["playlist", params]);
+    },
+  };
+
+  await addSongToCollectionWithDependencies(
+    { collectionId: 10, kind: "album", songId: 1 },
+    dependencies,
+  );
+  await addSongToCollectionWithDependencies(
+    { collectionId: 11, kind: "artist", songId: 2 },
+    dependencies,
+  );
+  await addSongToCollectionWithDependencies(
+    { collectionId: 12, kind: "playlist", songId: 3 },
+    dependencies,
+  );
+  assert.deepEqual(calls, [
+    ["album", { albumId: 10, songId: 1 }],
+    ["artist", { artistId: 11, songId: 2 }],
+    ["playlist", { playlistId: 12, songId: 3 }],
+  ]);
+
+  calls.length = 0;
+  await addSongsToCollectionWithDependencies(
+    { collectionId: 13, kind: "playlist", songIds: [4, 5, 6] },
+    dependencies,
+  );
+  assert.deepEqual(calls, [
+    ["playlist", { playlistId: 13, songId: 4 }],
+    ["playlist", { playlistId: 13, songId: 5 }],
+    ["playlist", { playlistId: 13, songId: 6 }],
+  ]);
 }
 
 async function assertCollectionSongRelationshipExecutorSmoke() {
@@ -10559,6 +10608,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   assertLibraryCollectionInteractionSmoke();
   await assertCollectionDeleteExecutorSmoke();
   await assertCollectionSongMembershipExecutorSmoke();
+  await assertCollectionSongAddExecutorSmoke();
   await assertCollectionSongRelationshipExecutorSmoke();
   assertLibraryCollectionPreviewSmoke();
   assertLibrarySongPreviewSmoke();

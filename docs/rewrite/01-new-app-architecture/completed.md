@@ -209,3 +209,5 @@
 - Moved album, artist, and playlist creation validation, uniqueness, image
   persistence, insert-id assertions, and result shaping behind a shared
   injectable repository executor.
+- Moved single and batched collection song add dispatch behind an injectable
+  repository executor so collection-kind routing is separated from adapters.

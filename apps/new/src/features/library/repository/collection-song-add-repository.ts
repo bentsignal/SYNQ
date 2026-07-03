@@ -1,7 +1,17 @@
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import { addSongToAlbum } from "./album-song-add-repository";
 import { addSongToArtist } from "./artist-song-add-repository";
+import {
+  addSongsToCollectionWithDependencies,
+  addSongToCollectionWithDependencies,
+} from "./collection-song-add-executor-repository";
 import { addSongToPlaylist } from "./playlist-song-add-repository";
+
+const collectionSongAddDependencies = {
+  addSongToAlbum,
+  addSongToArtist,
+  addSongToPlaylist,
+};
 
 export async function addSongToCollection({
   collectionId,
@@ -12,16 +22,14 @@ export async function addSongToCollection({
   kind: LibraryCollectionDetailKind;
   songId: number;
 }) {
-  switch (kind) {
-    case "album":
-      await addSongToAlbum({ albumId: collectionId, songId });
-      return;
-    case "artist":
-      await addSongToArtist({ artistId: collectionId, songId });
-      return;
-    case "playlist":
-      await addSongToPlaylist({ playlistId: collectionId, songId });
-  }
+  await addSongToCollectionWithDependencies(
+    {
+      collectionId,
+      kind,
+      songId,
+    },
+    collectionSongAddDependencies,
+  );
 }
 
 export async function addSongsToCollection({
@@ -33,11 +41,12 @@ export async function addSongsToCollection({
   kind: LibraryCollectionDetailKind;
   songIds: number[];
 }) {
-  for (const songId of songIds) {
-    await addSongToCollection({
+  await addSongsToCollectionWithDependencies(
+    {
       collectionId,
       kind,
-      songId,
-    });
-  }
+      songIds,
+    },
+    collectionSongAddDependencies,
+  );
 }

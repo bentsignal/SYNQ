@@ -416,3 +416,5 @@
   into the song detail state service.
 - Moved edit song controller result-state shaping out of the React hook and
   into the song edit screen-state service.
+- Moved shared collection form controller result-state shaping out of the React
+  hook and into the collection form interaction service.

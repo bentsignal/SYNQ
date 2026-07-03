@@ -4,9 +4,7 @@ import {
   getInitialCollectionFormState,
 } from "../services/collection-form-state-service";
 import {
-  getCollectionFormActionState,
-  getCollectionFormPreviewInitial,
-  getCollectionFormSaveLabel,
+  getCollectionFormControllerResultState,
 } from "../services/collection-form-interaction-service";
 
 type CollectionFormHydration = {
@@ -34,18 +32,11 @@ export function useCollectionFormStateController({
     undefined,
     getInitialCollectionFormState,
   );
-  const actionState = getCollectionFormActionState({
+  const resultState = getCollectionFormControllerResultState({
+    fallbackInitial,
+    formState,
     isMissing,
-    isSaving: formState.isSaving,
-    name: formState.name,
-  });
-  const imageInitial = getCollectionFormPreviewInitial({
-    fallback: fallbackInitial,
-    name: formState.name,
-  });
-  const resolvedSaveLabel = getCollectionFormSaveLabel({
-    defaultLabel: saveLabel,
-    isSaving: formState.isSaving,
+    saveLabel,
     savingLabel,
   });
 
@@ -73,11 +64,9 @@ export function useCollectionFormStateController({
     };
 
   return {
-    actionState,
+    ...resultState,
     dispatchFormState,
     formState,
-    imageInitial,
-    saveLabel: resolvedSaveLabel,
     updateArtistNames: updateField("artistNames"),
     updateName: updateField("name"),
     updateYear: updateField("year"),

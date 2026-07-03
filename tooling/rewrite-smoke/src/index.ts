@@ -693,6 +693,7 @@ import {
 } from "../../../apps/new/src/features/library/services/collection-form-mutation-command-flow-service";
 import {
   getCollectionFormActionState,
+  getCollectionFormControllerResultState,
   getCollectionFormFieldState,
   getCollectionFormImageLabel,
   getCollectionFormPreviewInitial,
@@ -9282,6 +9283,59 @@ async function assertCollectionFormSmoke() {
       canPickImage: false,
       canSave: false,
       hasName: true,
+    },
+  );
+  assert.deepEqual(
+    getCollectionFormControllerResultState({
+      fallbackInitial: "C",
+      formState: {
+        artistNames: "",
+        error: null,
+        image: null,
+        isDirty: true,
+        isSaving: true,
+        name: "  Smoke Album  ",
+        year: "",
+      },
+      saveLabel: "Save album",
+      savingLabel: "Saving album",
+    }),
+    {
+      actionState: {
+        canEdit: false,
+        canPickImage: false,
+        canSave: false,
+        hasName: true,
+      },
+      imageInitial: "S",
+      saveLabel: "Saving album",
+    },
+  );
+  assert.deepEqual(
+    getCollectionFormControllerResultState({
+      fallbackInitial: "P",
+      formState: {
+        artistNames: "",
+        error: null,
+        image: null,
+        isDirty: false,
+        isSaving: false,
+        name: "",
+        year: "",
+      },
+      isMissing: true,
+      saveLabel: "Save playlist",
+      savingLabel: "Saving playlist",
+    }),
+    {
+      actionState: {
+        canEdit: false,
+        canPickImage: false,
+        canSave: false,
+        hasName: false,
+      },
+      imageInitial: "P",
+      saveLabel: "Save playlist",
     },
   );
   const collectionFormState = getInitialCollectionFormState();

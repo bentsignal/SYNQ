@@ -172,3 +172,6 @@
 - Moved collection/song image picker result handling behind an injectable
   executor so MIME validation and base64 conversion are testable without native
   picker modules.
+- Moved playback session persistence load/save/clear behavior behind an
+  injectable executor so high-traffic playback state persistence is testable
+  without Expo filesystem.

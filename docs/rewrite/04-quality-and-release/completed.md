@@ -53,3 +53,6 @@
 - Added collection image-picker executor smoke coverage for canceled picks,
   empty asset results, MIME fallback/validation, base64 reads, and data URL
   assembly.
+- Added playback persistence executor smoke coverage for missing files, corrupt
+  JSON, normalized loads, save payloads, clear behavior, and unavailable
+  document-directory failures.

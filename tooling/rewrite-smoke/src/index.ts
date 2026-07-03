@@ -46,6 +46,14 @@ import {
   toPersistedPlaybackState,
 } from "../../../apps/new/src/features/playback/services/playback-persistence-codec-service";
 import {
+  clearPersistedPlaybackStateWithDependencies,
+  getPlaybackStateDirectoryWithDependencies,
+  getPlaybackStateFileWithDependencies,
+  loadPersistedPlaybackStateWithDependencies,
+  savePersistedPlaybackStateWithDependencies,
+  type PlaybackPersistenceDependencies,
+} from "../../../apps/new/src/features/playback/services/playback-persistence-executor-service";
+import {
   getFreeListeningRemainingMs,
   getPlaybackPlayerViewState,
   getPlaybackProgressPercent,
@@ -989,6 +997,133 @@ function assertPlaybackSessionSmoke() {
   assert.equal(state.adGate.active, false);
   assert.equal(state.adGate.due, false);
   assert.equal(state.isPlaying, true);
+}
+
+async function assertPlaybackPersistenceExecutorSmoke() {
+  const calls: string[] = [];
+  const files = new Map<string, string>();
+  let documentDirectory: string | null = "file:///documents/";
+  const playbackFile = "file:///documents/playback/session.json";
+  const first = song({ id: 501, title: "Persisted First" });
+  const second = song({ id: 502, title: "Persisted Second" });
+  const dependencies: PlaybackPersistenceDependencies = {
+    deletePath: async (path, options) => {
+      calls.push(`delete:${path}:${String(options.idempotent)}`);
+      files.delete(path);
+    },
+    get documentDirectory() {
+      return documentDirectory;
+    },
+    getInfo: async (path) => {
+      calls.push(`info:${path}`);
+      return { exists: files.has(path) };
+    },
+    makeDirectory: async (path, options) => {
+      calls.push(`mkdir:${path}:${String(options.intermediates)}`);
+    },
+    readAsString: async (path) => {
+      calls.push(`read:${path}`);
+      const contents = files.get(path);
+      if (contents === undefined) {
+        throw new Error("Missing playback state.");
+      }
+
+      return contents;
+    },
+    writeAsString: async (path, contents) => {
+      calls.push(`write:${path}:${contents}`);
+      files.set(path, contents);
+    },
+  };
+
+  assert.equal(
+    getPlaybackStateDirectoryWithDependencies(dependencies),
+    "file:///documents/playback",
+  );
+  assert.equal(
+    getPlaybackStateFileWithDependencies(dependencies),
+    playbackFile,
+  );
+  assert.deepEqual(
+    await loadPersistedPlaybackStateWithDependencies(dependencies),
+    initialPlaybackState,
+  );
+  assert.deepEqual(calls, [`info:${playbackFile}`]);
+
+  calls.length = 0;
+  files.set(playbackFile, "{not-json");
+  assert.deepEqual(
+    await loadPersistedPlaybackStateWithDependencies(dependencies),
+    initialPlaybackState,
+  );
+  assert.deepEqual(calls, [`info:${playbackFile}`, `read:${playbackFile}`]);
+
+  calls.length = 0;
+  files.set(
+    playbackFile,
+    JSON.stringify({
+      activeQueueIndex: 1,
+      activeTrackId: second.id,
+      isPlaying: true,
+      queue: [first, second],
+      source: { id: 42, type: "playlist" },
+    }),
+  );
+  const loadedState =
+    await loadPersistedPlaybackStateWithDependencies(dependencies);
+  assert.equal(loadedState.activeQueueIndex, 1);
+  assert.equal(loadedState.activeTrackId, second.id);
+  assert.equal(loadedState.isPlaying, true);
+  assert.deepEqual(
+    loadedState.queue.map((item) => item.id),
+    [first.id, second.id],
+  );
+  assert.deepEqual(loadedState.source, { id: 42, type: "playlist" });
+  assert.deepEqual(calls, [`info:${playbackFile}`, `read:${playbackFile}`]);
+
+  calls.length = 0;
+  const stateToSave = {
+    ...initialPlaybackState,
+    activeQueueIndex: 0,
+    activeTrackId: first.id,
+    error: "Do not persist this error.",
+    isPlaying: true,
+    queue: [first],
+  };
+  await savePersistedPlaybackStateWithDependencies({
+    dependencies,
+    state: stateToSave,
+  });
+  assert.deepEqual(calls, [
+    "mkdir:file:///documents/playback:true",
+    `write:${playbackFile}:${JSON.stringify(
+      toPersistedPlaybackState(stateToSave),
+    )}`,
+  ]);
+  assert.equal(JSON.parse(files.get(playbackFile) ?? "{}").error, undefined);
+
+  calls.length = 0;
+  await clearPersistedPlaybackStateWithDependencies(dependencies);
+  assert.deepEqual(calls, [`delete:${playbackFile}:true`]);
+  assert.equal(files.has(playbackFile), false);
+
+  documentDirectory = null;
+  assert.throws(
+    () => getPlaybackStateDirectoryWithDependencies(dependencies),
+    /document directory/i,
+  );
+  assert.deepEqual(
+    await loadPersistedPlaybackStateWithDependencies(dependencies),
+    initialPlaybackState,
+  );
+  await assert.rejects(
+    () =>
+      savePersistedPlaybackStateWithDependencies({
+        dependencies,
+        state: initialPlaybackState,
+      }),
+    /document directory/i,
+  );
 }
 
 function assertPlaybackNativeStatusSmoke() {
@@ -8573,6 +8708,7 @@ assertPlaybackNativeStatusSmoke();
 assertPlaybackNativeCommandPlanSmoke();
 assertPlaybackPlayerStateSmoke();
 void assertImportLibrarySavePlanSmoke().then(async () => {
+  await assertPlaybackPersistenceExecutorSmoke();
   await assertImportFileCacheExecutorSmoke();
   await assertImportSessionPersistenceExecutorSmoke();
   await assertWifiImportRequestSmoke();

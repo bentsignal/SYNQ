@@ -96,3 +96,5 @@
   button component.
 - Moved add-collection-songs selection haptic orchestration into the command
   hook so the controller focuses on reducer state and derived selection state.
+- Extracted the library home header into a dedicated component so the home view
+  composes feature sections more directly.

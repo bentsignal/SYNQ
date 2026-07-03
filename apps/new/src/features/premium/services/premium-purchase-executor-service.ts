@@ -5,26 +5,21 @@ import type {
   PremiumTierId,
 } from "../types/premium-purchase";
 import {
-  getTierIdFromProduct,
   hydratePremiumTierPrices,
   premiumOfferingNames,
 } from "./premium-catalog-service";
+import {
+  getPremiumEntitlementStatusResult,
+  getPremiumPurchaseActivationResult,
+  getPremiumRestoreResult,
+  type PremiumCustomerInfo,
+} from "./premium-entitlement-result-service";
+
+export type { PremiumCustomerInfo } from "./premium-entitlement-result-service";
 
 export type PremiumPurchasePackage = {
   product: {
     priceString?: string | null;
-  };
-};
-
-type PremiumEntitlement = {
-  productIdentifier?: string | null;
-};
-
-export type PremiumCustomerInfo = {
-  entitlements?: {
-    active?: {
-      Premium?: PremiumEntitlement | null;
-    };
   };
 };
 
@@ -45,13 +40,6 @@ export type PremiumPurchaseExecutorDependencies = {
   ) => Promise<{ customerInfo: PremiumCustomerInfo }>;
   restorePurchases: () => Promise<PremiumCustomerInfo>;
 };
-
-const getPremiumEntitlement = (customerInfo: PremiumCustomerInfo) =>
-  customerInfo.entitlements?.active?.Premium ?? null;
-
-const getPremiumTierIdFromEntitlement = (
-  entitlement: PremiumEntitlement,
-): PremiumTierId => getTierIdFromProduct(entitlement.productIdentifier ?? "");
 
 const getPackageForTierWithDependencies = async (
   tierId: PremiumTierId,
@@ -95,57 +83,19 @@ export async function purchasePremiumTierWithDependencies(
     dependencies,
   );
   const { customerInfo } = await dependencies.purchasePackage(purchasePackage);
-  const entitlement = getPremiumEntitlement(customerInfo);
-
-  if (!entitlement) {
-    throw new Error("Premium entitlement was not activated.");
-  }
-
-  return {
-    active: true,
-    message: "Premium is active.",
-    tierId: getPremiumTierIdFromEntitlement(entitlement),
-  };
+  return getPremiumPurchaseActivationResult(customerInfo);
 }
 
 export async function restorePremiumPurchaseWithDependencies(
   dependencies: PremiumPurchaseExecutorDependencies,
 ): Promise<PremiumPurchaseResult> {
   const customerInfo = await dependencies.restorePurchases();
-  const entitlement = getPremiumEntitlement(customerInfo);
-
-  if (!entitlement) {
-    return {
-      active: false,
-      message: "No active premium purchase was found.",
-      tierId: "monthly",
-    };
-  }
-
-  return {
-    active: true,
-    message: "Premium purchase restored.",
-    tierId: getPremiumTierIdFromEntitlement(entitlement),
-  };
+  return getPremiumRestoreResult(customerInfo);
 }
 
 export async function checkPremiumEntitlementWithDependencies(
   dependencies: PremiumPurchaseExecutorDependencies,
 ): Promise<PremiumEntitlementStatus> {
   const customerInfo = await dependencies.getCustomerInfo();
-  const entitlement = getPremiumEntitlement(customerInfo);
-
-  if (!entitlement) {
-    return {
-      active: false,
-      message: "Premium is inactive.",
-      tierId: "monthly",
-    };
-  }
-
-  return {
-    active: true,
-    message: "Premium is active.",
-    tierId: getPremiumTierIdFromEntitlement(entitlement),
-  };
+  return getPremiumEntitlementStatusResult(customerInfo);
 }

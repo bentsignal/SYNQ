@@ -1139,10 +1139,15 @@ import {
   loadPremiumTiersWithDependencies,
   purchasePremiumTierWithDependencies,
   restorePremiumPurchaseWithDependencies,
-  type PremiumCustomerInfo,
   type PremiumPurchaseExecutorDependencies,
   type PremiumPurchasePackage,
 } from "../../../apps/new/src/features/premium/services/premium-purchase-executor-service";
+import {
+  getPremiumEntitlementStatusResult,
+  getPremiumPurchaseActivationResult,
+  getPremiumRestoreResult,
+  type PremiumCustomerInfo,
+} from "../../../apps/new/src/features/premium/services/premium-entitlement-result-service";
 import type {
   PremiumEntitlementStatus,
   PremiumPurchaseState,
@@ -14626,6 +14631,18 @@ async function assertPremiumPurchaseExecutorSmoke() {
     () => purchasePremiumTierWithDependencies("monthly", dependencies),
     /Premium entitlement was not activated/,
   );
+  assert.throws(
+    () => getPremiumPurchaseActivationResult(getCustomerInfo(null)),
+    /Premium entitlement was not activated/,
+  );
+  assert.deepEqual(
+    getPremiumPurchaseActivationResult(getCustomerInfo("SYNQPremiumYearly")),
+    {
+      active: true,
+      message: "Premium is active.",
+      tierId: "yearly",
+    },
+  );
 
   await assert.rejects(
     () =>
@@ -14641,6 +14658,11 @@ async function assertPremiumPurchaseExecutorSmoke() {
     message: "No active premium purchase was found.",
     tierId: "monthly",
   });
+  assert.deepEqual(getPremiumRestoreResult(getCustomerInfo(null)), {
+    active: false,
+    message: "No active premium purchase was found.",
+    tierId: "monthly",
+  });
 
   restoredProductIdentifier = "unmapped-product";
   assert.deepEqual(await restorePremiumPurchaseWithDependencies(dependencies), {
@@ -14648,8 +14670,18 @@ async function assertPremiumPurchaseExecutorSmoke() {
     message: "Premium purchase restored.",
     tierId: "monthly",
   });
+  assert.deepEqual(getPremiumRestoreResult(getCustomerInfo("unmapped-product")), {
+    active: true,
+    message: "Premium purchase restored.",
+    tierId: "monthly",
+  });
 
   assert.deepEqual(await checkPremiumEntitlementWithDependencies(dependencies), {
+    active: false,
+    message: "Premium is inactive.",
+    tierId: "monthly",
+  });
+  assert.deepEqual(getPremiumEntitlementStatusResult(getCustomerInfo(null)), {
     active: false,
     message: "Premium is inactive.",
     tierId: "monthly",
@@ -14661,6 +14693,14 @@ async function assertPremiumPurchaseExecutorSmoke() {
     message: "Premium is active.",
     tierId: "lifetime",
   });
+  assert.deepEqual(
+    getPremiumEntitlementStatusResult(getCustomerInfo("SYNQPremiumLifetime")),
+    {
+      active: true,
+      message: "Premium is active.",
+      tierId: "lifetime",
+    },
+  );
 }
 
 async function assertSettingsScreenSmoke() {

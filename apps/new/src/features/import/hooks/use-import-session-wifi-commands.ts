@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { prepareWifiImportCache } from "../services/import-file-service";
+import { createImportCacheDirectory } from "../services/import-file-cache-service";
 import {
   getFinishWifiTransferAction,
   getImportSessionCommandErrorMessage,
@@ -19,7 +19,7 @@ export function useImportSessionWifiCommands({
   const beginWifiTransfer = useCallback(
     async (total: number) => {
       try {
-        await prepareWifiImportCache();
+        await createImportCacheDirectory();
         dispatch({ total, type: "begin-wifi-transfer" });
         return true;
       } catch (caughtError) {

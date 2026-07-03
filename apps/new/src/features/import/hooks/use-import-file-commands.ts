@@ -1,8 +1,6 @@
 import { useCallback } from "react";
-import {
-  deleteImportDraftCacheFiles,
-  selectImportFiles,
-} from "../services/import-file-service";
+import { deleteImportDraftCacheFiles } from "../services/import-file-cache-service";
+import { selectImportFiles } from "../services/import-file-service";
 import { getImportFileCommandErrorMessage } from "../services/import-file-command-service";
 import type { ImportSessionAction } from "../services/import-session-state-service";
 import type { ImportSongDraft } from "../types/import-session";

@@ -261,6 +261,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     focused hook instead of the provider body.
   - Done: import file-pick and staged-song removal command orchestration now
     lives in a focused hook instead of the provider body.
+  - Done: import file cache IO and metadata-to-draft shaping now live in
+    focused import services instead of the file picker/Wi-Fi staging service
+    owning cache cleanup, cache writes, audio metadata, and draft assembly.
   - Done: import session command orchestration for Wi-Fi transfer prep,
     save/discard persistence cleanup, session reset, and reducer dispatches now
     lives in a focused hook instead of the provider body.

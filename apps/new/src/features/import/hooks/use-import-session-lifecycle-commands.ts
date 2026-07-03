@@ -3,7 +3,7 @@ import {
   discardImportSession,
   saveImportSessionToLibrary,
 } from "../services/import-library-save-service";
-import { clearImportCache } from "../services/import-file-service";
+import { clearImportCache } from "../services/import-file-cache-service";
 import { clearPersistedImportSessionState } from "../services/import-session-persistence-service";
 import {
   getImportSessionCommandErrorMessage,

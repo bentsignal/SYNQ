@@ -361,6 +361,9 @@ import {
   getLibrarySongDetailPlayerHref,
   getLibrarySongDetailViewState,
   getLibrarySongEditHref,
+  getLibrarySongPlaybackBlockedCommand,
+  getLibrarySongPlayCommand,
+  getLibrarySongQueueCommand,
   getLibrarySongRelationshipHref,
   toLibrarySongDetailPlaybackItem,
   toLibrarySongExportItem,
@@ -3778,6 +3781,16 @@ function assertLibrarySongDetailSmoke() {
     "/(tabs)/library/playlist/3",
   );
   assert.equal(getLibrarySongDetailPlayerHref(), "/player");
+  assert.deepEqual(getLibrarySongPlaybackBlockedCommand(), {
+    haptic: "error",
+  });
+  assert.deepEqual(getLibrarySongPlayCommand(), {
+    haptic: "light",
+    href: "/player",
+  });
+  assert.deepEqual(getLibrarySongQueueCommand(), {
+    haptic: "light",
+  });
   assert.equal(getLibrarySongDetailBackHref(), "/(tabs)/library");
   assert.deepEqual(getLibraryInvalidSongState(), {
     backLink: {

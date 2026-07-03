@@ -7,7 +7,9 @@ import {
 } from "../services/library-song-detail-service";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
 import {
-  getLibrarySongDetailPlayerHref,
+  getLibrarySongPlaybackBlockedCommand,
+  getLibrarySongPlayCommand,
+  getLibrarySongQueueCommand,
   toLibrarySongDetailPlaybackItem,
 } from "../services/library-song-interaction-service";
 
@@ -31,22 +33,23 @@ export function useLibrarySongPlaybackActions({
 
   const playCurrentSong = useCallback(() => {
     if (!actionState.canPlay) {
-      sendHaptic("error");
+      sendHaptic(getLibrarySongPlaybackBlockedCommand().haptic);
       return;
     }
 
-    sendHaptic("light");
+    const command = getLibrarySongPlayCommand();
+    sendHaptic(command.haptic);
     playSong(playbackItem);
-    router.push(getLibrarySongDetailPlayerHref());
+    router.push(command.href);
   }, [actionState.canPlay, playSong, playbackItem, sendHaptic]);
 
   const queueCurrentSong = useCallback(() => {
     if (!actionState.canPlay) {
-      sendHaptic("error");
+      sendHaptic(getLibrarySongPlaybackBlockedCommand().haptic);
       return;
     }
 
-    sendHaptic("light");
+    sendHaptic(getLibrarySongQueueCommand().haptic);
     addToQueue(playbackItem);
   }, [actionState.canPlay, addToQueue, playbackItem, sendHaptic]);
 

@@ -287,3 +287,5 @@
   aggregation, error ordering, and timestamp normalization.
 - Added direct collection list query result smoke coverage for preview
   assembly, error forwarding, empty-state, and timestamp normalization.
+- Added direct song detail query result smoke coverage for detail assembly,
+  image resolution, error ordering, and timestamp normalization.

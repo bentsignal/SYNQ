@@ -834,6 +834,10 @@ import {
   buildLibrarySongDetail,
 } from "../../../apps/new/src/features/library/services/library-song-detail-service";
 import {
+  buildLibrarySongDetailQueryResult,
+  getLibrarySongDetailQueryUpdatedAt,
+} from "../../../apps/new/src/features/library/services/library-song-detail-query-result-service";
+import {
   getLibrarySongDetailActionState,
   getLibrarySongDetailStatusState,
 } from "../../../apps/new/src/features/library/services/library-song-detail-state-service";
@@ -7506,6 +7510,56 @@ async function assertLibrarySongDetailSmoke() {
   assert.equal(detail.relationshipSummary, "2 artists / 2 albums / 2 playlists");
   assert.equal(detail.isLiked, true);
   assert.equal(detail.isMissing, false);
+  const detailQueryResult = buildLibrarySongDetailQueryResult({
+    albumError: new Error("album detail smoke"),
+    albumRows: [
+      {
+        coverImage: "album-cover",
+        id: 1,
+        name: "Alpha Album",
+        track: 1,
+        year: 2026,
+      },
+    ],
+    albumUpdatedAt: new Date(20),
+    artistError: null,
+    artistRows: [{ id: 1, name: "Alpha Artist" }],
+    artistUpdatedAt: new Date(30),
+    getImagePath: (hash) => `/images/${hash}.jpg`,
+    likedError: new Error("liked detail smoke"),
+    likedRows: [],
+    likedUpdatedAt: new Date(50),
+    playlistError: null,
+    playlistRows: [],
+    playlistUpdatedAt: new Date(40),
+    songError: new Error("song detail smoke"),
+    songRow: {
+      coverImage: null,
+      duration: null,
+      fileType: null,
+      originalFileName: null,
+      pathToFile: null,
+      title: "Query Alpha",
+    },
+    songUpdatedAt: new Date(10),
+  });
+  assert.equal(detailQueryResult.detail.title, "Query Alpha");
+  assert.equal(detailQueryResult.detail.coverImagePath, "/images/album-cover.jpg");
+  assert.equal(detailQueryResult.detail.updatedAt, 50);
+  assert.deepEqual(
+    detailQueryResult.errors.map((error) => (error as Error).message),
+    ["song detail smoke", "album detail smoke", "liked detail smoke"],
+  );
+  assert.equal(
+    getLibrarySongDetailQueryUpdatedAt({
+      albumUpdatedAt: null,
+      artistUpdatedAt: null,
+      likedUpdatedAt: null,
+      playlistUpdatedAt: null,
+      songUpdatedAt: null,
+    }),
+    0,
+  );
   assert.deepEqual(
     toLibrarySongDetailPlaybackItem({
       detail,

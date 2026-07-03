@@ -4,7 +4,7 @@ import type { LibraryCollectionDetailKind } from "../services/library-collection
 import {
   addSongToCollection,
   addSongsToCollection,
-} from "../repository/relationship-repository";
+} from "../repository/collection-song-add-repository";
 import {
   getAddCollectionSongsMutationErrorMessage,
   type AddCollectionSongsControllerAction,

@@ -11,7 +11,8 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import type { LibrarySongPreview } from "../hooks/use-library-song-preview-query";
 import {
   getLibrarySongPreviewDetailHref,
-  getLibrarySongPreviewPlayerHref,
+  getLibrarySongPreviewPlayCommand,
+  getLibrarySongPreviewQueueCommand,
   getLibrarySongPreviewRowState,
   toLibrarySongPlaybackItem,
 } from "../services/library-song-preview-state-service";
@@ -61,9 +62,10 @@ export function LibrarySongPreviewRow({
           disabled={!canPlay}
           label="Play"
           onPress={() => {
-            sendHaptic("light");
+            const command = getLibrarySongPreviewPlayCommand();
+            sendHaptic(command.haptic);
             playSong(playbackItem);
-            router.push(getLibrarySongPreviewPlayerHref());
+            router.push(command.href);
           }}
           textColor={theme.onAccent}
         />
@@ -74,7 +76,7 @@ export function LibrarySongPreviewRow({
           disabled={!canPlay}
           label="Queue"
           onPress={() => {
-            sendHaptic("light");
+            sendHaptic(getLibrarySongPreviewQueueCommand().haptic);
             addToQueue(playbackItem);
           }}
           textColor={theme.accent}

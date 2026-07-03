@@ -3,6 +3,7 @@ import type {
   LibrarySongPreviewOrder,
   LibrarySongPreviewSort,
 } from "./library-song-preview-service";
+import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 
 export type LibrarySongPreviewPlaybackItem = {
   album: string;
@@ -35,6 +36,25 @@ export const getLibrarySongPreviewDetailHref = (
 
 export const getLibrarySongPreviewPlayerHref = (): LibrarySongPreviewHref =>
   "/player";
+
+type LibrarySongPreviewPlaybackCommand = {
+  haptic: HapticFeedbackType;
+};
+
+type LibrarySongPreviewPlayCommand = LibrarySongPreviewPlaybackCommand & {
+  href: LibrarySongPreviewHref;
+};
+
+export const getLibrarySongPreviewPlayCommand =
+  (): LibrarySongPreviewPlayCommand => ({
+    haptic: "light",
+    href: getLibrarySongPreviewPlayerHref(),
+  });
+
+export const getLibrarySongPreviewQueueCommand =
+  (): LibrarySongPreviewPlaybackCommand => ({
+    haptic: "light",
+  });
 
 export const getLibrarySongPreviewEmptyState = () => ({
   body: "Import audio files to start building your song library.",

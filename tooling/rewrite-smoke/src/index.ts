@@ -403,7 +403,9 @@ import {
   getLibrarySongPreviewDetailHref,
   getLibrarySongPreviewEmptyState,
   getLibrarySongPreviewListState,
+  getLibrarySongPreviewPlayCommand,
   getLibrarySongPreviewPlayerHref,
+  getLibrarySongPreviewQueueCommand,
   getLibrarySongPreviewRowState,
   toLibrarySongPlaybackItem,
 } from "../../../apps/new/src/features/library/services/library-song-preview-state-service";
@@ -3351,6 +3353,13 @@ function assertLibrarySongPreviewSmoke() {
     "/(tabs)/library/song/1",
   );
   assert.equal(getLibrarySongPreviewPlayerHref(), "/player");
+  assert.deepEqual(getLibrarySongPreviewPlayCommand(), {
+    haptic: "light",
+    href: "/player",
+  });
+  assert.deepEqual(getLibrarySongPreviewQueueCommand(), {
+    haptic: "light",
+  });
   assert.deepEqual(getLibrarySongPreviewEmptyState(), {
     body: "Import audio files to start building your song library.",
     link: {

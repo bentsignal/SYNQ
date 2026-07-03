@@ -42,3 +42,5 @@
 - Moved the song-detail Drizzle live-query adapter out of the UI-facing library
   hook into a library data module and added a ratchet for remaining library hook
   live-query modules.
+- Moved the library summary live-query adapter into a library data module and
+  lowered the remaining library hook live-query ratchet from 7 modules to 6.

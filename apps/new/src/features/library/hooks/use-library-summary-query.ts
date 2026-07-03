@@ -1,18 +1,9 @@
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import {
-  buildAlbumSummaryRowsQuery,
-  buildArtistSummaryRowsQuery,
-  buildPlaylistSummaryRowsQuery,
-  buildSongSummaryRowsQuery,
-} from "../repository/library-summary-query-repository";
+import { useLibrarySummaryLiveQuery } from "../data/use-library-summary-live-query";
 
 const getCount = (rows: unknown[] | undefined) => rows?.length ?? 0;
 
 export function useLibrarySummaryQuery() {
-  const songs = useLiveQuery(buildSongSummaryRowsQuery());
-  const playlists = useLiveQuery(buildPlaylistSummaryRowsQuery());
-  const albums = useLiveQuery(buildAlbumSummaryRowsQuery());
-  const artists = useLiveQuery(buildArtistSummaryRowsQuery());
+  const { albums, artists, playlists, songs } = useLibrarySummaryLiveQuery();
 
   return {
     counts: {

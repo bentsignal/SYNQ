@@ -1,89 +1,79 @@
 import * as FileSystem from "expo-file-system";
 import {
-  assertBackupRestoreStagedItems,
-  getBackupDocumentDirectoryDeletePaths,
-  getBackupRestoreStagedItemMoves,
-} from "./backup-file-system-plan-service";
+  assertBackupRestoreStagingDirectoryHasFilesWithDependencies,
+  cleanupBackupRestoreStagingDirectoryWithDependencies,
+  clearBackupDocumentDirectoryWithDependencies,
+  getBackupArchivePathWithDependencies,
+  getBackupDocumentDirectoryWithDependencies,
+  getBackupRestoreStagingDirectoryWithDependencies,
+  prepareBackupRestoreStagingDirectoryWithDependencies,
+  replaceBackupDocumentDirectoryWithStagedItemsWithDependencies,
+  type BackupFileSystemDependencies,
+} from "./backup-file-system-executor-service";
+
+const backupFileSystemDependencies: BackupFileSystemDependencies = {
+  cacheDirectory: FileSystem.cacheDirectory,
+  deletePath: FileSystem.deleteAsync,
+  documentDirectory: FileSystem.documentDirectory,
+  makeDirectory: FileSystem.makeDirectoryAsync,
+  movePath: FileSystem.moveAsync,
+  now: Date.now,
+  readDirectory: FileSystem.readDirectoryAsync,
+};
 
 export const getBackupDocumentDirectory = () => {
-  if (!FileSystem.documentDirectory) {
-    throw new Error("Document directory is unavailable.");
-  }
-
-  return FileSystem.documentDirectory;
+  return getBackupDocumentDirectoryWithDependencies(
+    backupFileSystemDependencies,
+  );
 };
 
 export const getBackupRestoreStagingDirectory = () => {
-  if (!FileSystem.cacheDirectory) {
-    throw new Error("Cache directory is unavailable.");
-  }
-
-  return `${FileSystem.cacheDirectory}synq-restore-${Date.now()}/`;
+  return getBackupRestoreStagingDirectoryWithDependencies(
+    backupFileSystemDependencies,
+  );
 };
 
 export const getBackupArchivePath = () => {
-  if (!FileSystem.cacheDirectory) {
-    throw new Error("Cache directory is unavailable.");
-  }
-
-  return `${FileSystem.cacheDirectory}synq-backup-${Date.now()}.zip`;
+  return getBackupArchivePathWithDependencies(backupFileSystemDependencies);
 };
 
 export const clearBackupDocumentDirectory = async () => {
-  const documentDirectory = getBackupDocumentDirectory();
-  const items = await FileSystem.readDirectoryAsync(documentDirectory);
-
-  for (const path of getBackupDocumentDirectoryDeletePaths({
-    documentDirectory,
-    items,
-  })) {
-    await FileSystem.deleteAsync(path, {
-      idempotent: true,
-    });
-  }
+  await clearBackupDocumentDirectoryWithDependencies(
+    backupFileSystemDependencies,
+  );
 };
 
 export const prepareBackupRestoreStagingDirectory = async () => {
-  const stagingDirectory = getBackupRestoreStagingDirectory();
-  await FileSystem.deleteAsync(stagingDirectory, { idempotent: true });
-  await FileSystem.makeDirectoryAsync(stagingDirectory, { intermediates: true });
-
-  return stagingDirectory;
+  return prepareBackupRestoreStagingDirectoryWithDependencies(
+    backupFileSystemDependencies,
+  );
 };
 
 export const cleanupBackupRestoreStagingDirectory = async (
   stagingDirectory: string,
 ) => {
-  try {
-    await FileSystem.deleteAsync(stagingDirectory, { idempotent: true });
-  } catch {
-    // Cache cleanup should not hide the restore outcome.
-  }
+  await cleanupBackupRestoreStagingDirectoryWithDependencies(
+    stagingDirectory,
+    backupFileSystemDependencies,
+  );
 };
 
 export const assertBackupRestoreStagingDirectoryHasFiles = async (
   stagingDirectory: string,
 ) => {
-  const stagedItems = await FileSystem.readDirectoryAsync(stagingDirectory);
-  return assertBackupRestoreStagedItems(stagedItems);
+  return assertBackupRestoreStagingDirectoryHasFilesWithDependencies(
+    stagingDirectory,
+    backupFileSystemDependencies,
+  );
 };
 
 export const replaceBackupDocumentDirectoryWithStagedItems = async (
   stagingDirectory: string,
   stagedItems: string[],
 ) => {
-  const documentDirectory = getBackupDocumentDirectory();
-
-  await clearBackupDocumentDirectory();
-
-  for (const move of getBackupRestoreStagedItemMoves({
-    documentDirectory,
+  await replaceBackupDocumentDirectoryWithStagedItemsWithDependencies({
+    dependencies: backupFileSystemDependencies,
     stagedItems,
     stagingDirectory,
-  })) {
-    await FileSystem.moveAsync({
-      from: move.from,
-      to: move.to,
-    });
-  }
+  });
 };

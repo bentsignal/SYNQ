@@ -67,3 +67,6 @@
   and no-album imports.
 - Added import library song row executor smoke coverage for draft insert values,
   path/cover updates, and relationship cleanup order.
+- Added backup filesystem executor smoke coverage for document/cache directory
+  availability, archive/staging paths, clear/prepare/cleanup behavior, staged
+  item reads, and restore replacement move order.

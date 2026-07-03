@@ -601,6 +601,17 @@ import {
   getBackupDocumentDirectoryDeletePaths,
   getBackupRestoreStagedItemMoves,
 } from "../../../apps/new/src/features/backup/services/backup-file-system-plan-service";
+import {
+  assertBackupRestoreStagingDirectoryHasFilesWithDependencies,
+  cleanupBackupRestoreStagingDirectoryWithDependencies,
+  clearBackupDocumentDirectoryWithDependencies,
+  getBackupArchivePathWithDependencies,
+  getBackupDocumentDirectoryWithDependencies,
+  getBackupRestoreStagingDirectoryWithDependencies,
+  prepareBackupRestoreStagingDirectoryWithDependencies,
+  replaceBackupDocumentDirectoryWithStagedItemsWithDependencies,
+  type BackupFileSystemDependencies,
+} from "../../../apps/new/src/features/backup/services/backup-file-system-executor-service";
 import type { BackupSessionState } from "../../../apps/new/src/features/backup/types/backup-session";
 import {
   getPremiumActionState,
@@ -7953,6 +7964,117 @@ function assertBackupScreenSmoke() {
   );
 }
 
+async function assertBackupFileSystemExecutorSmoke() {
+  const calls: string[] = [];
+  let cacheDirectory: string | null = "file:///cache/";
+  let documentDirectory: string | null = "file:///doc/";
+  let failCleanup = false;
+  const directories = new Map<string, string[]>([
+    ["file:///doc/", ["SQLite", "settings", "songs"]],
+    ["file:///cache/synq-restore-123/", ["SQLite", "songs/track.mp3"]],
+  ]);
+  const dependencies: BackupFileSystemDependencies = {
+    get cacheDirectory() {
+      return cacheDirectory;
+    },
+    deletePath: async (path, options) => {
+      calls.push(`delete:${path}:${options?.idempotent === true}`);
+      if (failCleanup && path === "file:///cache/synq-restore-123/") {
+        throw new Error("cleanup failed");
+      }
+    },
+    get documentDirectory() {
+      return documentDirectory;
+    },
+    makeDirectory: async (path, options) => {
+      calls.push(`mkdir:${path}:${options?.intermediates === true}`);
+    },
+    movePath: async ({ from, to }) => {
+      calls.push(`move:${from}:${to}`);
+    },
+    now: () => 123,
+    readDirectory: async (path) => {
+      calls.push(`read:${path}`);
+      return directories.get(path) ?? [];
+    },
+  };
+
+  assert.equal(
+    getBackupDocumentDirectoryWithDependencies(dependencies),
+    "file:///doc/",
+  );
+  assert.equal(
+    getBackupRestoreStagingDirectoryWithDependencies(dependencies),
+    "file:///cache/synq-restore-123/",
+  );
+  assert.equal(
+    getBackupArchivePathWithDependencies(dependencies),
+    "file:///cache/synq-backup-123.zip",
+  );
+
+  await clearBackupDocumentDirectoryWithDependencies(dependencies);
+  assert.deepEqual(calls, [
+    "read:file:///doc/",
+    "delete:file:///doc/SQLite:true",
+    "delete:file:///doc/settings:true",
+    "delete:file:///doc/songs:true",
+  ]);
+
+  calls.length = 0;
+  assert.equal(
+    await prepareBackupRestoreStagingDirectoryWithDependencies(dependencies),
+    "file:///cache/synq-restore-123/",
+  );
+  assert.deepEqual(calls, [
+    "delete:file:///cache/synq-restore-123/:true",
+    "mkdir:file:///cache/synq-restore-123/:true",
+  ]);
+
+  calls.length = 0;
+  assert.deepEqual(
+    await assertBackupRestoreStagingDirectoryHasFilesWithDependencies(
+      "file:///cache/synq-restore-123/",
+      dependencies,
+    ),
+    ["SQLite", "songs/track.mp3"],
+  );
+  assert.deepEqual(calls, ["read:file:///cache/synq-restore-123/"]);
+
+  calls.length = 0;
+  await replaceBackupDocumentDirectoryWithStagedItemsWithDependencies({
+    dependencies,
+    stagedItems: ["SQLite", "songs/track.mp3"],
+    stagingDirectory: "file:///cache/synq-restore-123/",
+  });
+  assert.deepEqual(calls, [
+    "read:file:///doc/",
+    "delete:file:///doc/SQLite:true",
+    "delete:file:///doc/settings:true",
+    "delete:file:///doc/songs:true",
+    "move:file:///cache/synq-restore-123/SQLite:file:///doc/SQLite",
+    "move:file:///cache/synq-restore-123/songs/track.mp3:file:///doc/songs/track.mp3",
+  ]);
+
+  calls.length = 0;
+  failCleanup = true;
+  await cleanupBackupRestoreStagingDirectoryWithDependencies(
+    "file:///cache/synq-restore-123/",
+    dependencies,
+  );
+  assert.deepEqual(calls, ["delete:file:///cache/synq-restore-123/:true"]);
+
+  documentDirectory = null;
+  assert.throws(
+    () => getBackupDocumentDirectoryWithDependencies(dependencies),
+    /Document directory is unavailable/,
+  );
+  cacheDirectory = null;
+  assert.throws(
+    () => getBackupArchivePathWithDependencies(dependencies),
+    /Cache directory is unavailable/,
+  );
+}
+
 async function assertBackupCommandExecutorSmoke() {
   const calls: string[] = [];
   const record = (message: string) => {
@@ -9091,6 +9213,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertImportLibraryLinkExecutorSmoke();
   await assertImportLibrarySongRowExecutorSmoke();
   await assertWifiImportRequestSmoke();
+  await assertBackupFileSystemExecutorSmoke();
   await assertBackupCommandExecutorSmoke();
   await assertPremiumPurchaseExecutorSmoke();
   await assertSettingsJsonFileStoreSmoke();

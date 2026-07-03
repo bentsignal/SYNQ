@@ -183,3 +183,5 @@
   behind an injectable executor.
 - Moved import library song row insert, update, and cleanup behavior behind an
   injectable repository executor.
+- Moved backup document-directory clearing, restore staging, cleanup, and
+  staged-file replacement behind an injectable filesystem executor.

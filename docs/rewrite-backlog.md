@@ -67,6 +67,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: library song liked and delete writes now live in focused
     repositories instead of the metadata edit repository owning playlist and
     file-storage side effects.
+  - Done: playback native audio mode setup and ad asset ownership now live in a
+    focused native-audio service instead of the track-player adapter owning
+    every native setup detail.
   - Done: collection detail song-row aggregation now lives in a focused song
     detail service instead of the detail shell builder owning song grouping,
     artist/album fallback labels, and track sorting.

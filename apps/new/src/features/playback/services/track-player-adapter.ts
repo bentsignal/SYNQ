@@ -1,7 +1,6 @@
 import {
   createAudioPlayer,
   PLAYBACK_STATUS_UPDATE,
-  setAudioModeAsync,
   type AudioPlayer,
 } from "expo-audio";
 import type {
@@ -13,8 +12,10 @@ import {
   type TrackPlayerSource,
   type TrackPlayerStatusSnapshot,
 } from "./playback-native-status-service";
-
-const playbackAdAudio = require("../../../assets/audio/ad.mp3") as number;
+import {
+  configurePlaybackAudio,
+  playbackAdAudio,
+} from "./playback-native-audio-service";
 
 export type TrackPlayerAdapter = {
   destroy: () => Promise<void>;
@@ -87,17 +88,6 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
     libraryStatusSubscription = null;
   };
 
-  const configureAudio = async () => {
-    await setAudioModeAsync({
-      allowsRecording: false,
-      interruptionMode: "doNotMix",
-      interruptionModeAndroid: "duckOthers",
-      playsInSilentMode: true,
-      shouldPlayInBackground: true,
-      shouldRouteThroughEarpiece: false,
-    });
-  };
-
   const removeAdPlayer = () => {
     adStatusSubscription?.remove();
     adStatusSubscription = null;
@@ -137,7 +127,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
       throw new Error("This song does not have a playable file path.");
     }
 
-    await configureAudio();
+    await configurePlaybackAudio();
     removeAdPlayer();
 
     if (libraryPlayer && loadedSongId === song.id) {
@@ -157,7 +147,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
   };
 
   const playAd = async () => {
-    await configureAudio();
+    await configurePlaybackAudio();
 
     if (libraryPlayer) {
       libraryPlayer.pause();

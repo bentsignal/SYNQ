@@ -353,6 +353,7 @@ import {
   getCachedImportFileProcessParams,
   getWifiImportFileProcessParams,
 } from "../../../apps/new/src/features/import/services/import-file-selection-step-service";
+import { processImportAssetWithDependencies } from "../../../apps/new/src/features/import/services/import-file-selection-operation-service";
 import {
   getImportFileCommandErrorMessage,
   getImportFileRemovalResultCommand,
@@ -9201,6 +9202,24 @@ async function assertImportFileSelectionExecutorSmoke() {
       id: 52,
     },
   );
+  assert.deepEqual(
+    await processImportAssetWithDependencies({
+      asset: { mimeType: "audio/wav", name: "direct.wav", uri: "file:///direct.wav" },
+      dependencies,
+      index: 4,
+    }),
+    {
+      ...importDraft(1_004),
+      cacheUri: "/cache/direct.wav",
+      fileName: "cached-direct.wav",
+      fileType: "audio/wav",
+    },
+  );
+  assert.deepEqual(calls, [
+    "copy:direct.wav:file:///direct.wav:4",
+    "process:/cache/direct.wav:cached-direct.wav:audio/wav:1004",
+  ]);
+  calls.length = 0;
 
   assert.deepEqual(await selectImportFilesWithDependencies(dependencies), {
     drafts: [],

@@ -293,3 +293,5 @@
   into separate focused step services.
 - Split image storage data parsing, path planning, and variant planning out of
   the filesystem executor.
+- Split import file selection single-asset copy/process orchestration out of
+  the main file selection executor.

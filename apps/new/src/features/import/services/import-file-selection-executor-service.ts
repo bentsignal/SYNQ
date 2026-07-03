@@ -1,8 +1,8 @@
 import type { ImportSongDraft } from "../types/import-session";
 import {
-  getCachedImportFileProcessParams,
   getWifiImportFileProcessParams,
 } from "./import-file-selection-step-service";
+import { processImportAssetWithDependencies } from "./import-file-selection-operation-service";
 
 export type ImportFileSelectionAsset = {
   mimeType?: string | null;
@@ -59,32 +59,6 @@ export type StageWifiImportFileParams = {
   id: number;
   name: string;
   type: string;
-};
-
-const processImportAssetWithDependencies = async <
-  Asset extends ImportFileSelectionAsset,
->({
-  asset,
-  dependencies,
-  index,
-}: {
-  asset: Asset;
-  dependencies: ImportFileSelectionDependencies<Asset>;
-  index: number;
-}) => {
-  const { destination, fileName } = await dependencies.copyAssetToImportCache({
-    asset,
-    index,
-  });
-
-  return dependencies.processCachedImportFile(
-    getCachedImportFileProcessParams({
-      asset,
-      destination,
-      fileName,
-      id: dependencies.now() + index,
-    }),
-  );
 };
 
 export async function selectImportFilesWithDependencies<

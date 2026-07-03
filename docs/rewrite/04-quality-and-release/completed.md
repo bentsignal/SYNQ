@@ -186,3 +186,5 @@
   save/discard transitions into narrower step services.
 - Kept direct image storage smoke coverage while moving pure path/data/variant
   planning into a focused step service.
+- Added direct import file selection operation smoke coverage for single-asset
+  cache copy and draft processing.

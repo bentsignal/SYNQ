@@ -65,6 +65,9 @@ scan_for_forbidden_matches "new app hygiene scan" \
   rg -n "console\\.log|console\\.error|Dimensions\\.get" \
   apps/new/app apps/new/src/features -g "*.ts" -g "*.tsx"
 
+echo "==> Rewrite debt audit"
+bash scripts/audit-rewrite-debt.sh
+
 echo "==> AsyncStorage boundary scan"
 scan_async_storage_boundaries
 

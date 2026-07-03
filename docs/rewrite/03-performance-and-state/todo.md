@@ -13,8 +13,9 @@
   - customization settings/theme
 - [ ] Preserve provider ergonomics while using selector functions for
   component reads.
-- [ ] Add lint or hygiene scans to prevent new broad React context usage once
+- [x] Add lint or hygiene scans to prevent new broad React context usage once
   migration is underway.
+- [ ] Ratchet `MAX_NEW_APP_CONTEXT_MODULES` down as providers move to Rostra.
 
 ## Utility Styling Migration
 
@@ -28,6 +29,8 @@
   unsafe to express as utility classes.
 - [ ] Add a custom lint rule or hygiene scan to ban new `StyleSheet.create`
   usage after the migration path is established.
+- [ ] Ratchet `MAX_NEW_APP_STYLESHEET_CREATE` down as utility-class
+  conversions land.
 - [ ] Track remaining justified `StyleSheet` exceptions explicitly.
 
 ## State And Render Performance
@@ -37,4 +40,3 @@
   services.
 - [ ] Add profiler/manual notes for high-traffic playback, import, and library
   screens after the architecture stabilizes.
-

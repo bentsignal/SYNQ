@@ -8,6 +8,7 @@
     "clean:all": "turbo run clean",
     "dev": "turbo run dev --parallel --continue",
     "dev:old": "pnpm --filter @synq/old dev",
+    "audit:rewrite-debt": "bash scripts/audit-rewrite-debt.sh",
     "format": "turbo run format --continue",
     "format:fix": "turbo run format --continue -- --write",
     "lint": "turbo run lint --continue",

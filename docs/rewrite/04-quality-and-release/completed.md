@@ -6,4 +6,5 @@
 - Added hygiene scans for event emitters, direct AsyncStorage boundaries, and
   other new-app architecture risks.
 - Kept old-app and new-app iOS export smokes passing at checkpoints.
-
+- Added `pnpm audit:rewrite-debt` and included it in the full rewrite
+  verification gate.

@@ -7,4 +7,5 @@
 - Isolated native audio status subscriptions in a focused listener registry.
 - Reduced repeated UI structure that could otherwise create broad rerender
   surfaces.
-
+- Added a rewrite debt audit ratchet for new-app `StyleSheet.create` and React
+  context usage, wired into `pnpm verify:rewrite`.

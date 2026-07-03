@@ -12,9 +12,11 @@
   save screen. The new screen owns draft export via
   `use-import-save-export-actions.ts` and `ImportSaveActions.tsx` alongside
   save/discard actions.
-- Old `/ingest/*` has no new `apps/new/app/ingest` or
-  `apps/new/src/features/ingest` equivalent. Decide whether the old ingest stack
-  is obsolete or must be rebuilt into the new import feature.
+- Old `/ingest/*` was an earlier import stack with placeholder export/save
+  steps plus direct file-browser processing. It is intentionally replaced by
+  the new import feature; `apps/new/app/ingest/*` now exists only as
+  compatibility routes to the new import file, Wi-Fi, export/save, success, and
+  failure screens.
 - Old top-level collection and song routes mostly moved under
   `/(tabs)/library/*`. Treat route-shape changes as acceptable only after each
   linked flow is manually checked from new navigation.

@@ -3,7 +3,7 @@
 - [x] Audit each `apps/old` primary route/screen against `apps/new`.
 - [ ] Close missing behavior in import, save-to-library, playback, backup,
   premium, settings, and all library collection flows.
-- [ ] Decide whether old `/ingest/*` is obsolete or must be rebuilt in the new
+- [x] Decide whether old `/ingest/*` is obsolete or must be rebuilt in the new
   import feature.
 - [x] Decide whether old `/import/export` needs a distinct new route or whether
   new save-screen export is the intended replacement.

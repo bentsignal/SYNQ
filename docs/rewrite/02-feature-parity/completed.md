@@ -18,3 +18,5 @@
   song ordering controls on the new collection detail rows.
 - Restored `/import/export` route parity as an alias to the new import save
   screen, where draft export and save/discard actions now live together.
+- Restored old `/ingest/*` route compatibility by routing those entry points to
+  the new import file, Wi-Fi, export/save, success, and failure screens.

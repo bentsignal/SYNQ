@@ -263,3 +263,4 @@
   out of the main metadata update executor.
 - Split collection song relationship order and remove operation planning out of
   the main relationship executor.
+- Split collection song add operation planning out of the main add executor.

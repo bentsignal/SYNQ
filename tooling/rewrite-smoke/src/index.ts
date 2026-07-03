@@ -425,6 +425,10 @@ import {
   type CollectionSongAddDependencies,
 } from "../../../apps/new/src/features/library/repository/collection-song-add-executor-repository";
 import {
+  getCollectionSongAddOperation,
+  getCollectionSongAddOperations,
+} from "../../../apps/new/src/features/library/repository/collection-song-add-step-repository";
+import {
   removeSongFromCollectionWithDependencies,
   updateCollectionSongOrderWithDependencies,
   type CollectionSongRelationshipDependencies,
@@ -4625,6 +4629,26 @@ async function assertCollectionSongAddExecutorSmoke() {
       calls.push(["playlist", params]);
     },
   };
+
+  assert.deepEqual(
+    getCollectionSongAddOperation({
+      collectionId: 9,
+      kind: "album",
+      songId: 1,
+    }),
+    { albumId: 9, kind: "album", songId: 1 },
+  );
+  assert.deepEqual(
+    getCollectionSongAddOperations({
+      collectionId: 9,
+      kind: "playlist",
+      songIds: [1, 2],
+    }),
+    [
+      { kind: "playlist", playlistId: 9, songId: 1 },
+      { kind: "playlist", playlistId: 9, songId: 2 },
+    ],
+  );
 
   await addSongToCollectionWithDependencies(
     { collectionId: 10, kind: "album", songId: 1 },

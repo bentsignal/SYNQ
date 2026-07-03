@@ -1,4 +1,9 @@
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
+import {
+  getCollectionSongAddOperation,
+  getCollectionSongAddOperations,
+  type CollectionSongAddOperation,
+} from "./collection-song-add-step-repository";
 
 export type CollectionSongAddDependencies = {
   addSongToAlbum: (params: {
@@ -15,6 +20,31 @@ export type CollectionSongAddDependencies = {
   }) => Promise<void>;
 };
 
+const executeCollectionSongAddOperation = async (
+  operation: CollectionSongAddOperation,
+  dependencies: CollectionSongAddDependencies,
+) => {
+  switch (operation.kind) {
+    case "album":
+      await dependencies.addSongToAlbum({
+        albumId: operation.albumId,
+        songId: operation.songId,
+      });
+      return;
+    case "artist":
+      await dependencies.addSongToArtist({
+        artistId: operation.artistId,
+        songId: operation.songId,
+      });
+      return;
+    case "playlist":
+      await dependencies.addSongToPlaylist({
+        playlistId: operation.playlistId,
+        songId: operation.songId,
+      });
+  }
+};
+
 export async function addSongToCollectionWithDependencies(
   {
     collectionId,
@@ -27,19 +57,14 @@ export async function addSongToCollectionWithDependencies(
   },
   dependencies: CollectionSongAddDependencies,
 ) {
-  switch (kind) {
-    case "album":
-      await dependencies.addSongToAlbum({ albumId: collectionId, songId });
-      return;
-    case "artist":
-      await dependencies.addSongToArtist({ artistId: collectionId, songId });
-      return;
-    case "playlist":
-      await dependencies.addSongToPlaylist({
-        playlistId: collectionId,
-        songId,
-      });
-  }
+  await executeCollectionSongAddOperation(
+    getCollectionSongAddOperation({
+      collectionId,
+      kind,
+      songId,
+    }),
+    dependencies,
+  );
 }
 
 export async function addSongsToCollectionWithDependencies(
@@ -54,14 +79,11 @@ export async function addSongsToCollectionWithDependencies(
   },
   dependencies: CollectionSongAddDependencies,
 ) {
-  for (const songId of songIds) {
-    await addSongToCollectionWithDependencies(
-      {
-        collectionId,
-        kind,
-        songId,
-      },
-      dependencies,
-    );
+  for (const operation of getCollectionSongAddOperations({
+    collectionId,
+    kind,
+    songIds,
+  })) {
+    await executeCollectionSongAddOperation(operation, dependencies);
   }
 }

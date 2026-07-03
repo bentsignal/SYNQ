@@ -154,3 +154,5 @@
   album-vs-song cover target selection.
 - Added direct collection song relationship step smoke coverage for order and
   remove operation planning.
+- Added direct collection song add step smoke coverage for single and batch add
+  operation planning.

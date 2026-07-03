@@ -298,3 +298,4 @@
 - Added direct edit collection query mapping smoke coverage for album, artist,
   and playlist form-state assembly.
 - Added direct library collection list error normalization smoke coverage.
+- Added direct add-collection-songs controller result-state smoke coverage.

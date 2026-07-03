@@ -1,4 +1,5 @@
 import type { AddableCollectionSong } from "./addable-collection-songs-service";
+import type { AddCollectionSongsControllerState } from "./add-collection-songs-state-service";
 
 export const getSelectedAddableSongIds = ({
   selectedSongIds,
@@ -44,6 +45,28 @@ export const getAddableSongSelectionState = ({
 
 export type AddableSongSelectionState = ReturnType<
   typeof getAddableSongSelectionState
+>;
+
+export const getAddCollectionSongsControllerResultState = ({
+  controllerState,
+  songs,
+}: {
+  controllerState: AddCollectionSongsControllerState;
+  songs: AddableCollectionSong[];
+}) => ({
+  mutationError: controllerState.mutationError,
+  savingSongId: controllerState.savingSongId,
+  selectedSongIds: controllerState.selectedSongIds,
+  selectionState: getAddableSongSelectionState({
+    isAddingSelection: controllerState.isAddingSelection,
+    savingSongId: controllerState.savingSongId,
+    songs,
+    selectedSongIds: controllerState.selectedSongIds,
+  }),
+});
+
+export type AddCollectionSongsControllerResultState = ReturnType<
+  typeof getAddCollectionSongsControllerResultState
 >;
 
 export const toggleSongIdSelection = ({

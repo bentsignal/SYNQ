@@ -408,3 +408,5 @@
   the edit collection query service.
 - Moved library collection list query-error normalization out of the React
   controller and into the collection list service.
+- Moved add-collection-songs controller result shaping out of the React hook
+  and into the selection service.

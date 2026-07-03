@@ -514,6 +514,7 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-detail-result-service";
 import { rowsToCollectionDetailSongs } from "../../../apps/new/src/features/library/services/library-collection-detail-song-service";
 import {
+  getAddCollectionSongsControllerResultState,
   getAddableSongRowState,
   getAddableSongSelectionState,
   getSelectedAddableSongIds,
@@ -6079,6 +6080,26 @@ async function assertLibraryCollectionInteractionSmoke() {
       songs: addableSongs,
     }).canBulkAdd,
     false,
+  );
+  const addSongsControllerResultState =
+    getAddCollectionSongsControllerResultState({
+      controllerState: {
+        isAddingSelection: false,
+        mutationError: "Add failed.",
+        savingSongId: 3,
+        selectedSongIds: new Set([1, 2, 3]),
+      },
+      songs: addableSongs,
+    });
+  assert.equal(addSongsControllerResultState.mutationError, "Add failed.");
+  assert.equal(addSongsControllerResultState.savingSongId, 3);
+  assert.deepEqual(
+    Array.from(addSongsControllerResultState.selectedSongIds),
+    [1, 2, 3],
+  );
+  assert.deepEqual(
+    addSongsControllerResultState.selectionState.selectedAddableSongIds,
+    [1, 3],
   );
   assert.deepEqual(
     {

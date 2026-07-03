@@ -6,7 +6,7 @@ import {
   addCollectionSongsControllerReducer,
   initialAddCollectionSongsControllerState,
 } from "../services/add-collection-songs-state-service";
-import { getAddableSongSelectionState } from "../services/add-collection-songs-selection-service";
+import { getAddCollectionSongsControllerResultState } from "../services/add-collection-songs-selection-service";
 
 export function useAddCollectionSongsController({
   collectionId,
@@ -21,11 +21,9 @@ export function useAddCollectionSongsController({
     addCollectionSongsControllerReducer,
     initialAddCollectionSongsControllerState,
   );
-  const selectionState = getAddableSongSelectionState({
-    isAddingSelection: controllerState.isAddingSelection,
-    savingSongId: controllerState.savingSongId,
+  const resultState = getAddCollectionSongsControllerResultState({
+    controllerState,
     songs,
-    selectedSongIds: controllerState.selectedSongIds,
   });
 
   const { addSelectedSongs, addSong, toggleSongSelection } =
@@ -33,16 +31,13 @@ export function useAddCollectionSongsController({
       collectionId,
       dispatchControllerState,
       kind,
-      selectionState,
+      selectionState: resultState.selectionState,
     });
 
   return {
     addSelectedSongs,
     addSong,
-    mutationError: controllerState.mutationError,
-    savingSongId: controllerState.savingSongId,
-    selectedSongIds: controllerState.selectedSongIds,
-    selectionState,
+    ...resultState,
     toggleSongSelection,
   };
 }

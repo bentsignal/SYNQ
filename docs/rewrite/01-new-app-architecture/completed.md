@@ -163,3 +163,5 @@
   filesystem wiring.
 - Moved import-draft and library song export sharing through a shared injectable
   executor with pure filename helpers.
+- Moved import file-cache copy/write/delete orchestration behind an injectable
+  executor so file picker and Wi-Fi import staging share one cache boundary.

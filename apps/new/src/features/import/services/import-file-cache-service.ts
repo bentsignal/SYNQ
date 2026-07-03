@@ -1,20 +1,30 @@
-import * as DocumentPicker from "expo-document-picker";
+import type * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import type { ImportSongDraft } from "../types/import-session";
+import {
+  clearImportCacheWithDependencies,
+  copyAssetToImportCacheWithDependencies,
+  createImportCacheDirectoryWithDependencies,
+  deleteImportDraftCacheFilesWithDependencies,
+  writeBase64AssetToImportCacheWithDependencies,
+  type ImportFileCacheDependencies,
+} from "./import-file-cache-executor-service";
 
-const importCacheDirectory = `${FileSystem.cacheDirectory}import`;
-
-const getErrorMessage = (error: unknown) =>
-  error instanceof Error ? error.message : String(error);
-
-const sanitizeFileName = (name: string) =>
-  name.replaceAll(/[^a-zA-Z0-9._-]/g, "_");
+const importFileCacheDependencies: ImportFileCacheDependencies = {
+  cacheDirectory: FileSystem.cacheDirectory,
+  copyFile: FileSystem.copyAsync,
+  deletePath: FileSystem.deleteAsync,
+  makeDirectory: FileSystem.makeDirectoryAsync,
+  now: Date.now,
+  writeBase64File: async (path, data) => {
+    await FileSystem.writeAsStringAsync(path, data, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+  },
+};
 
 export const createImportCacheDirectory = async () => {
-  await FileSystem.deleteAsync(importCacheDirectory, { idempotent: true });
-  await FileSystem.makeDirectoryAsync(importCacheDirectory, {
-    intermediates: true,
-  });
+  await createImportCacheDirectoryWithDependencies(importFileCacheDependencies);
 };
 
 export const copyAssetToImportCache = async ({
@@ -24,18 +34,12 @@ export const copyAssetToImportCache = async ({
   asset: DocumentPicker.DocumentPickerAsset;
   index: number;
 }) => {
-  const safeName = sanitizeFileName(asset.name || `song-${index + 1}`);
-  const destination = `${importCacheDirectory}/${Date.now()}-${index}-${safeName}`;
-
-  await FileSystem.copyAsync({
-    from: asset.uri,
-    to: destination,
+  return copyAssetToImportCacheWithDependencies({
+    dependencies: importFileCacheDependencies,
+    index,
+    name: asset.name,
+    uri: asset.uri,
   });
-
-  return {
-    destination,
-    fileName: safeName,
-  };
 };
 
 export const writeBase64AssetToImportCache = async ({
@@ -47,35 +51,21 @@ export const writeBase64AssetToImportCache = async ({
   id: number;
   name: string;
 }) => {
-  const safeName = sanitizeFileName(name || `song-${id}`);
-  const destination = `${importCacheDirectory}/${id}-${safeName}`;
-
-  await FileSystem.writeAsStringAsync(destination, data, {
-    encoding: FileSystem.EncodingType.Base64,
+  return writeBase64AssetToImportCacheWithDependencies({
+    data,
+    dependencies: importFileCacheDependencies,
+    id,
+    name,
   });
-
-  return {
-    destination,
-    fileName: safeName,
-  };
 };
 
 export async function clearImportCache() {
-  try {
-    await FileSystem.deleteAsync(importCacheDirectory, { idempotent: true });
-  } catch (error) {
-    throw new Error(`Import cache cleanup failed: ${getErrorMessage(error)}`);
-  }
+  await clearImportCacheWithDependencies(importFileCacheDependencies);
 }
 
 export async function deleteImportDraftCacheFiles(songs: ImportSongDraft[]) {
-  try {
-    await Promise.all(
-      songs.map((song) =>
-        FileSystem.deleteAsync(song.cacheUri, { idempotent: true }),
-      ),
-    );
-  } catch (error) {
-    throw new Error(`Import file cleanup failed: ${getErrorMessage(error)}`);
-  }
+  await deleteImportDraftCacheFilesWithDependencies({
+    dependencies: importFileCacheDependencies,
+    songs,
+  });
 }

@@ -214,6 +214,18 @@ import {
   saveImportSongsToLibrary,
 } from "../../../apps/new/src/features/import/services/import-library-session-save-executor-service";
 import {
+  clearImportCacheWithDependencies,
+  copyAssetToImportCacheWithDependencies,
+  createImportCacheDirectoryWithDependencies,
+  deleteImportDraftCacheFilesWithDependencies,
+  getBase64ImportCacheDestination,
+  getCopyImportCacheDestination,
+  getImportCacheDirectory,
+  sanitizeImportCacheFileName,
+  writeBase64AssetToImportCacheWithDependencies,
+  type ImportFileCacheDependencies,
+} from "../../../apps/new/src/features/import/services/import-file-cache-executor-service";
+import {
   getImportFileCommandErrorMessage,
   getImportFileRemovalResultCommand,
   getImportFileRemovalStartHaptic,
@@ -6525,6 +6537,132 @@ function assertImportSongFormSmoke() {
   assert.equal(edited.id, 9);
 }
 
+async function assertImportFileCacheExecutorSmoke() {
+  const calls: string[] = [];
+  let cacheDirectory: string | null = "file:///cache/";
+  let failDeletePath: string | null = null;
+  const dependencies: ImportFileCacheDependencies = {
+    get cacheDirectory() {
+      return cacheDirectory;
+    },
+    copyFile: async ({ from, to }) => {
+      calls.push(`copy:${from}:${to}`);
+    },
+    deletePath: async (path, options) => {
+      calls.push(`delete:${path}:${String(options.idempotent)}`);
+      if (path === failDeletePath) {
+        throw new Error("Delete failed.");
+      }
+    },
+    makeDirectory: async (path, options) => {
+      calls.push(`mkdir:${path}:${String(options.intermediates)}`);
+    },
+    now: () => 98765,
+    writeBase64File: async (path, data) => {
+      calls.push(`write-base64:${path}:${data}`);
+    },
+  };
+
+  assert.equal(
+    sanitizeImportCacheFileName("01 Smoke Song!.mp3"),
+    "01_Smoke_Song_.mp3",
+  );
+  assert.equal(getImportCacheDirectory(dependencies), "file:///cache/import");
+  assert.deepEqual(
+    getCopyImportCacheDestination({
+      dependencies,
+      index: 2,
+      name: "Bad Name?.m4a",
+    }),
+    {
+      destination: "file:///cache/import/98765-2-Bad_Name_.m4a",
+      fileName: "Bad_Name_.m4a",
+    },
+  );
+  assert.deepEqual(
+    getBase64ImportCacheDestination({
+      dependencies,
+      id: 42,
+      name: "",
+    }),
+    {
+      destination: "file:///cache/import/42-song-42",
+      fileName: "song-42",
+    },
+  );
+
+  await createImportCacheDirectoryWithDependencies(dependencies);
+  assert.deepEqual(calls, [
+    "delete:file:///cache/import:true",
+    "mkdir:file:///cache/import:true",
+  ]);
+
+  calls.length = 0;
+  assert.deepEqual(
+    await copyAssetToImportCacheWithDependencies({
+      dependencies,
+      index: 0,
+      name: "My Song.mp3",
+      uri: "file:///picked/my-song.mp3",
+    }),
+    {
+      destination: "file:///cache/import/98765-0-My_Song.mp3",
+      fileName: "My_Song.mp3",
+    },
+  );
+  assert.deepEqual(calls, [
+    "copy:file:///picked/my-song.mp3:file:///cache/import/98765-0-My_Song.mp3",
+  ]);
+
+  calls.length = 0;
+  assert.deepEqual(
+    await writeBase64AssetToImportCacheWithDependencies({
+      data: "U09ORw==",
+      dependencies,
+      id: 9,
+      name: "Wi-Fi Song.mp3",
+    }),
+    {
+      destination: "file:///cache/import/9-Wi-Fi_Song.mp3",
+      fileName: "Wi-Fi_Song.mp3",
+    },
+  );
+  assert.deepEqual(calls, [
+    "write-base64:file:///cache/import/9-Wi-Fi_Song.mp3:U09ORw==",
+  ]);
+
+  calls.length = 0;
+  await clearImportCacheWithDependencies(dependencies);
+  assert.deepEqual(calls, ["delete:file:///cache/import:true"]);
+
+  failDeletePath = "file:///cache/import";
+  await assert.rejects(
+    () => clearImportCacheWithDependencies(dependencies),
+    /Import cache cleanup failed: Delete failed/,
+  );
+
+  failDeletePath = "file:///cache/song-2.mp3";
+  calls.length = 0;
+  await assert.rejects(
+    () =>
+      deleteImportDraftCacheFilesWithDependencies({
+        dependencies,
+        songs: [
+          importDraft(1),
+          { ...importDraft(2), cacheUri: "file:///cache/song-2.mp3" },
+        ],
+      }),
+    /Import file cleanup failed: Delete failed/,
+  );
+  assert.deepEqual(calls, [
+    "delete:/tmp/import-1.mp3:true",
+    "delete:file:///cache/song-2.mp3:true",
+  ]);
+
+  cacheDirectory = null;
+  assert.throws(() => getImportCacheDirectory(dependencies), /unavailable/);
+}
+
 async function assertImportLibrarySavePlanSmoke() {
   assert.equal(hasMeaningfulImportLibraryName("Unknown"), false);
   assert.equal(hasMeaningfulImportLibraryName("Unknown Artist"), false);
@@ -8039,6 +8177,7 @@ assertPlaybackNativeStatusSmoke();
 assertPlaybackNativeCommandPlanSmoke();
 assertPlaybackPlayerStateSmoke();
 void assertImportLibrarySavePlanSmoke().then(async () => {
+  await assertImportFileCacheExecutorSmoke();
   await assertWifiImportRequestSmoke();
   await assertBackupCommandExecutorSmoke();
   await assertPremiumPurchaseExecutorSmoke();

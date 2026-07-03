@@ -41,3 +41,6 @@
 - Added shared export-file executor smoke coverage for sanitized filenames,
   single-file sharing, multi-file copy/share cleanup, cache failures, and copy
   failure cleanup.
+- Added import file-cache executor smoke coverage for sanitized filenames,
+  cache directory reset, picked-file copies, Wi-Fi base64 writes, cleanup error
+  wrapping, draft cache deletion, and unavailable cache directories.

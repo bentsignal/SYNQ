@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import type { CustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { PremiumTier, PremiumTierId } from "../types/premium-purchase";
 
@@ -25,22 +25,31 @@ function PremiumTierCard({
   return (
     <Pressable
       accessibilityRole="button"
+      className="min-h-[82px] flex-row items-center gap-3.5 rounded-lg border p-4"
       onPress={onSelect}
       style={[
-        styles.tierCard,
         { backgroundColor: theme.surface, borderColor: theme.border },
         isSelected ? { borderColor: theme.accent, borderWidth: 2 } : null,
       ]}
     >
-      <View style={styles.tierText}>
-        <Text style={[styles.tierTitle, { color: theme.primaryText }]}>
+      <View className="min-w-0 flex-1 gap-[5px]">
+        <Text
+          className="text-lg font-extrabold leading-6"
+          style={{ color: theme.primaryText }}
+        >
           {tier.label}
         </Text>
-        <Text style={[styles.tierDescription, { color: theme.secondaryText }]}>
+        <Text
+          className="text-[13px] leading-[19px]"
+          style={{ color: theme.secondaryText }}
+        >
           {tier.description}
         </Text>
       </View>
-      <Text style={[styles.tierPrice, { color: theme.accent }]}>
+      <Text
+        className="min-w-11 text-right text-lg font-extrabold"
+        style={{ color: theme.accent }}
+      >
         {tier.price}
       </Text>
     </Pressable>
@@ -54,7 +63,7 @@ export function PremiumTierList({
   tiers,
 }: PremiumTierListProps) {
   return (
-    <View style={styles.tierList}>
+    <View className="gap-3">
       {tiers.map((tier) => (
         <PremiumTierCard
           isSelected={tier.id === selectedTierId}
@@ -67,40 +76,3 @@ export function PremiumTierList({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  tierList: {
-    gap: 12,
-  },
-  tierCard: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    flexDirection: "row",
-    gap: 14,
-    minHeight: 82,
-    padding: 16,
-  },
-  tierText: {
-    flex: 1,
-    gap: 5,
-    minWidth: 0,
-  },
-  tierTitle: {
-    fontSize: 18,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 24,
-  },
-  tierDescription: {
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  tierPrice: {
-    fontSize: 18,
-    fontWeight: "800",
-    letterSpacing: 0,
-    minWidth: 44,
-    textAlign: "right",
-  },
-});

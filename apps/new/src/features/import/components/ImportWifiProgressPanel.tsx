@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 
 type ImportWifiProgressPanelProps = {
@@ -12,40 +12,21 @@ export function ImportWifiProgressPanel({
 
   return (
     <View
-      style={[
-        styles.progressPanel,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="flex-row items-center justify-between gap-3 rounded-lg border p-4"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
-      <Text style={[styles.panelLabel, { color: theme.secondaryText }]}>
+      <Text
+        className="text-xs font-extrabold uppercase"
+        style={{ color: theme.secondaryText }}
+      >
         Progress
       </Text>
-      <Text style={[styles.progressValue, { color: theme.primaryText }]}>
+      <Text
+        className="text-base font-extrabold"
+        style={{ color: theme.primaryText }}
+      >
         {progressLabel}
       </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  panelLabel: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  progressPanel: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    flexDirection: "row",
-    gap: 12,
-    justifyContent: "space-between",
-    padding: 16,
-  },
-  progressValue: {
-    fontSize: 16,
-    fontWeight: "800",
-    letterSpacing: 0,
-  },
-});

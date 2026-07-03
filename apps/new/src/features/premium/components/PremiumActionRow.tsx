@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import type { CustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { PremiumActionState } from "../services/premium-screen-service";
 
@@ -16,77 +16,41 @@ export function PremiumActionRow({
   theme,
 }: PremiumActionRowProps) {
   return (
-    <View style={styles.actionRow}>
+    <View className="flex-row flex-wrap gap-3">
       <Pressable
         accessibilityRole="button"
+        className="min-h-[46px] min-w-40 flex-grow items-center justify-center rounded-lg px-3.5"
         disabled={!actionState.canPurchase}
         onPress={onPurchase}
         style={[
-          styles.primaryButton,
           { backgroundColor: theme.accent },
-          !actionState.canPurchase ? styles.disabled : null,
+          !actionState.canPurchase ? { opacity: 0.5 } : null,
         ]}
       >
-        <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
+        <Text
+          className="text-[13px] font-extrabold uppercase"
+          style={{ color: theme.onAccent }}
+        >
           {actionState.purchaseLabel}
         </Text>
       </Pressable>
       <Pressable
         accessibilityRole="button"
+        className="min-h-[46px] min-w-[110px] flex-grow items-center justify-center rounded-lg border px-3.5"
         disabled={!actionState.canRestore}
         onPress={onRestore}
         style={[
-          styles.secondaryButton,
           { backgroundColor: theme.surface, borderColor: theme.border },
-          !actionState.canRestore ? styles.disabled : null,
+          !actionState.canRestore ? { opacity: 0.5 } : null,
         ]}
       >
-        <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
+        <Text
+          className="text-[13px] font-extrabold uppercase"
+          style={{ color: theme.accent }}
+        >
           Restore
         </Text>
       </Pressable>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  actionRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  primaryButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    flexGrow: 1,
-    justifyContent: "center",
-    minHeight: 46,
-    minWidth: 160,
-    paddingHorizontal: 14,
-  },
-  secondaryButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    flexGrow: 1,
-    justifyContent: "center",
-    minHeight: 46,
-    minWidth: 110,
-    paddingHorizontal: 14,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  primaryButtonText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  secondaryButtonText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-});

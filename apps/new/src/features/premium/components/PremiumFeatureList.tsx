@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import type { CustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { premiumFeatureCopy } from "../services/premium-screen-service";
 
@@ -9,15 +9,14 @@ type PremiumFeatureListProps = {
 export function PremiumFeatureList({ theme }: PremiumFeatureListProps) {
   return (
     <View
-      style={[
-        styles.featureList,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="gap-2.5 rounded-lg border p-4"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
       {premiumFeatureCopy.map((feature) => (
         <Text
+          className="text-sm font-bold leading-5"
           key={feature}
-          style={[styles.featureText, { color: theme.primaryText }]}
+          style={{ color: theme.primaryText }}
         >
           {feature}
         </Text>
@@ -25,17 +24,3 @@ export function PremiumFeatureList({ theme }: PremiumFeatureListProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  featureList: {
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 10,
-    padding: 16,
-  },
-  featureText: {
-    fontSize: 14,
-    fontWeight: "700",
-    lineHeight: 20,
-  },
-});

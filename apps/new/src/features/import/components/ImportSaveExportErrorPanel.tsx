@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 
 type ImportSaveExportErrorPanelProps = {
@@ -16,27 +16,15 @@ export function ImportSaveExportErrorPanel({
 
   return (
     <View
-      style={[
-        styles.errorPanel,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="rounded-lg border p-3.5"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
-      <Text style={[styles.errorText, { color: theme.danger }]}>
+      <Text
+        className="text-sm font-bold leading-5"
+        style={{ color: theme.danger }}
+      >
         {exportError}
       </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  errorPanel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    padding: 14,
-  },
-  errorText: {
-    fontSize: 14,
-    fontWeight: "700",
-    lineHeight: 20,
-  },
-});

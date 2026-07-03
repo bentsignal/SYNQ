@@ -1,6 +1,5 @@
 import { Link } from "expo-router";
 import { Pressable, View } from "react-native";
-import { pushNativeRoute } from "@/src/features/app-shell/services/native-route-service";
 import {
   SongRowActionButton,
   SongRowDuration,
@@ -8,12 +7,10 @@ import {
   SongRowTextStack,
 } from "@/src/features/app-shell/components/SongRowParts";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import type { LibrarySongPreview } from "../hooks/use-library-song-preview-query";
+import { useLibrarySongPreviewRowActions } from "../hooks/use-library-song-preview-row-actions";
 import {
   getLibrarySongPreviewDetailHref,
-  getLibrarySongPreviewPlayCommand,
-  getLibrarySongPreviewQueueCommand,
   getLibrarySongPreviewRowState,
   toLibrarySongPlaybackItem,
 } from "../services/library-song-preview-state-service";
@@ -32,13 +29,16 @@ export function LibrarySongPreviewRow({
   song,
 }: LibrarySongPreviewRowProps) {
   const theme = useCustomizationTheme();
-  const { sendHaptic } = useHapticFeedback();
   const { canPlay, isActive } = getLibrarySongPreviewRowState({
     activeTrackId,
     song,
   });
-  const playbackItem = toLibrarySongPlaybackItem(song);
   const detailHref = getLibrarySongPreviewDetailHref(song);
+  const { play, queue } = useLibrarySongPreviewRowActions({
+    addToQueue,
+    playSong,
+    song,
+  });
 
   return (
     <SongRowShell isActive={isActive} theme={theme}>
@@ -62,12 +62,7 @@ export function LibrarySongPreviewRow({
           borderColor={theme.accent}
           disabled={!canPlay}
           label="Play"
-          onPress={() => {
-            const command = getLibrarySongPreviewPlayCommand();
-            sendHaptic(command.haptic);
-            playSong(playbackItem);
-            pushNativeRoute(command.href);
-          }}
+          onPress={play}
           textColor={theme.onAccent}
         />
         <SongRowActionButton
@@ -76,10 +71,7 @@ export function LibrarySongPreviewRow({
           borderColor={theme.border}
           disabled={!canPlay}
           label="Queue"
-          onPress={() => {
-            sendHaptic(getLibrarySongPreviewQueueCommand().haptic);
-            addToQueue(playbackItem);
-          }}
+          onPress={queue}
           textColor={theme.accent}
         />
       </View>

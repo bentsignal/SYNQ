@@ -84,3 +84,5 @@
 - Moved edit-library-song cover-pick and save side-effect orchestration out of
   the form controller into a dedicated command hook aligned with collection
   form command patterns.
+- Moved library song preview row play/queue side effects out of the row
+  component into a dedicated action hook.

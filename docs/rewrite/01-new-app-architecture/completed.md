@@ -100,3 +100,5 @@
   composes feature sections more directly.
 - Added a shared protected-playlist predicate so UI action state and repository
   mutation guards agree on seeded playlist protections.
+- Extracted a shared library section header component used by song previews and
+  collection detail song sections.

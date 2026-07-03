@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useLibraryCollectionDetailController } from "../hooks/use-library-collection-detail-controller";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
@@ -12,6 +12,7 @@ import { LibraryCollectionDetailActions } from "./LibraryCollectionDetailActions
 import { LibraryCollectionDetailHeader } from "./LibraryCollectionDetailHeader";
 import { LibraryCollectionDetailStatus } from "./LibraryCollectionDetailStatus";
 import { LibraryCollectionSongList } from "./LibraryCollectionSongList";
+import { LibrarySectionHeader } from "./LibrarySectionHeader";
 
 type LibraryCollectionDetailResult = {
   detail: LibraryCollectionDetail;
@@ -76,20 +77,10 @@ export function LibraryCollectionDetailView({
         onQueue={queueCollection}
       />
 
-      <View className="flex-row items-end justify-between gap-3">
-        <Text
-          className="flex-1 text-xl font-extrabold leading-[25px]"
-          style={{ color: theme.primaryText }}
-        >
-          {viewState.songSection.title}
-        </Text>
-        <Text
-          className="text-xs font-extrabold uppercase leading-[17px]"
-          style={{ color: theme.secondaryText }}
-        >
-          {viewState.songSection.meta}
-        </Text>
-      </View>
+      <LibrarySectionHeader
+        meta={viewState.songSection.meta}
+        title={viewState.songSection.title}
+      />
 
       <LibraryCollectionSongList
         canMutateSongs={actionState.canMutateSongs}
@@ -100,9 +91,7 @@ export function LibraryCollectionDetailView({
         songs={detail.songs}
       />
 
-      <LibraryCollectionDetailStatus
-        statusState={statusState}
-      />
+      <LibraryCollectionDetailStatus statusState={statusState} />
 
       <Link
         className="text-[15px] font-extrabold"

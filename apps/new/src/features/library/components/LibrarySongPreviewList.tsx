@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import {
   usePlaybackActiveTrack,
   usePlaybackSongActions,
@@ -13,6 +13,7 @@ import { getLibrarySongPreviewListState } from "../services/library-song-preview
 import { LibrarySongListControls } from "./LibrarySongListControls";
 import { LibrarySongPreviewEmptyState } from "./LibrarySongPreviewEmptyState";
 import { LibrarySongPreviewRow } from "./LibrarySongPreviewRow";
+import { LibrarySectionHeader } from "./LibrarySectionHeader";
 
 type LibrarySongPreviewListProps = {
   isEmpty: boolean;
@@ -42,20 +43,7 @@ export function LibrarySongPreviewList({
 
   return (
     <View className="gap-3">
-      <View className="flex-row items-end justify-between gap-3">
-        <Text
-          className="flex-1 text-xl font-extrabold leading-[25px] tracking-normal"
-          style={{ color: theme.primaryText }}
-        >
-          {listState.title}
-        </Text>
-        <Text
-          className="text-xs font-extrabold uppercase leading-[17px] tracking-normal"
-          style={{ color: theme.secondaryText }}
-        >
-          {listState.meta}
-        </Text>
-      </View>
+      <LibrarySectionHeader meta={listState.meta} title={listState.title} />
 
       <LibrarySongListControls
         order={order}

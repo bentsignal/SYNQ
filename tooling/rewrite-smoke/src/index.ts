@@ -16,6 +16,10 @@ import {
   getActiveTrack,
   getNextQueueIndex,
   getPlaybackQueueActionState,
+  getPlaybackQueueClearCommand,
+  getPlaybackQueueMoveCommand,
+  getPlaybackQueuePlayCommand,
+  getPlaybackQueueRemoveCommand,
 } from "../../../apps/new/src/features/playback/services/playback-queue-service";
 import {
   getPlaybackQueueRowPresentation,
@@ -515,6 +519,18 @@ function assertPlaybackSessionSmoke() {
   });
   assert.deepEqual(getPlaybackQueueActionState({ queueLength: 0 }), {
     canClearQueue: false,
+  });
+  assert.deepEqual(getPlaybackQueuePlayCommand(), {
+    haptic: "light",
+  });
+  assert.deepEqual(getPlaybackQueueMoveCommand(), {
+    haptic: "light",
+  });
+  assert.deepEqual(getPlaybackQueueRemoveCommand(), {
+    haptic: "medium",
+  });
+  assert.deepEqual(getPlaybackQueueClearCommand(), {
+    haptic: "medium",
   });
 
   state = playbackReducer(state, { song: second, type: "add-to-queue" });

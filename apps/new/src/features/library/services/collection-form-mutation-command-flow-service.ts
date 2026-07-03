@@ -35,6 +35,41 @@ type CollectionFormUpdateCommand = (params: {
   year: string;
 }) => Promise<unknown>;
 
+type CollectionFormSaveOperation = "create" | "update";
+
+const runCollectionFormSaveAttempt = async ({
+  dispatch,
+  kind,
+  onSuccess,
+  operation,
+  run,
+  sendHaptic,
+}: {
+  dispatch: CollectionFormDispatch;
+  kind: CollectionFormKind;
+  onSuccess: (id: number) => void;
+  operation: CollectionFormSaveOperation;
+  run: () => Promise<{ id: number }>;
+  sendHaptic: HapticSender;
+}) => {
+  dispatch(getCollectionFormBeginSaveCommand().action);
+
+  try {
+    const collection = await run();
+    onSuccess(collection.id);
+  } catch (caughtError) {
+    const command = getCollectionFormFailureCommand({
+      caughtError,
+      kind,
+      operation,
+    });
+    sendHaptic(command.haptic);
+    dispatch(command.action);
+  } finally {
+    dispatch(getCollectionFormFinishSaveAction());
+  }
+};
+
 export const runCreateCollectionFormSaveCommand = async ({
   canSave,
   createCollectionFromForm,
@@ -59,32 +94,27 @@ export const runCreateCollectionFormSaveCommand = async ({
     return;
   }
 
-  dispatch(getCollectionFormBeginSaveCommand().action);
-
-  try {
-    const collection = await createCollectionFromForm({
-      imageDataUrl: formState.image?.dataUrl,
-      kind,
-      name: formState.name,
-      year: formState.year,
-    });
-    const command = getCollectionFormSuccessCommand({
-      id: collection.id,
-      kind,
-    });
-    sendHaptic(command.haptic);
-    replaceRoute(command.href);
-  } catch (caughtError) {
-    const command = getCollectionFormFailureCommand({
-      caughtError,
-      kind,
-      operation: "create",
-    });
-    sendHaptic(command.haptic);
-    dispatch(command.action);
-  } finally {
-    dispatch(getCollectionFormFinishSaveAction());
-  }
+  await runCollectionFormSaveAttempt({
+    dispatch,
+    kind,
+    onSuccess: (id) => {
+      const command = getCollectionFormSuccessCommand({
+        id,
+        kind,
+      });
+      sendHaptic(command.haptic);
+      replaceRoute(command.href);
+    },
+    operation: "create",
+    run: () =>
+      createCollectionFromForm({
+        imageDataUrl: formState.image?.dataUrl,
+        kind,
+        name: formState.name,
+        year: formState.year,
+      }),
+    sendHaptic,
+  });
 };
 
 export const runEditCollectionFormSaveCommand = async ({
@@ -113,29 +143,29 @@ export const runEditCollectionFormSaveCommand = async ({
     return;
   }
 
-  dispatch(getCollectionFormBeginSaveCommand().action);
-
-  try {
-    await updateCollectionFromForm({
-      artistNames: formState.artistNames,
-      id,
-      imageDataUrl: formState.image?.dataUrl,
-      kind,
-      name: formState.name,
-      year: formState.year,
-    });
-    const command = getCollectionFormSuccessCommand({ id, kind });
-    sendHaptic(command.haptic);
-    replaceRoute(command.href);
-  } catch (caughtError) {
-    const command = getCollectionFormFailureCommand({
-      caughtError,
-      kind,
-      operation: "update",
-    });
-    sendHaptic(command.haptic);
-    dispatch(command.action);
-  } finally {
-    dispatch(getCollectionFormFinishSaveAction());
-  }
+  await runCollectionFormSaveAttempt({
+    dispatch,
+    kind,
+    onSuccess: (savedId) => {
+      const command = getCollectionFormSuccessCommand({
+        id: savedId,
+        kind,
+      });
+      sendHaptic(command.haptic);
+      replaceRoute(command.href);
+    },
+    operation: "update",
+    run: async () => {
+      await updateCollectionFromForm({
+        artistNames: formState.artistNames,
+        id,
+        imageDataUrl: formState.image?.dataUrl,
+        kind,
+        name: formState.name,
+        year: formState.year,
+      });
+      return { id };
+    },
+    sendHaptic,
+  });
 };

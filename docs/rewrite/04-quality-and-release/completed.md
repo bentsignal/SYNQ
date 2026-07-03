@@ -222,6 +222,8 @@
   collapsing repeated start/failure/finish orchestration into a shared helper.
 - Preserved library song detail mutation command-flow smoke coverage while
   collapsing repeated start/failure/finish orchestration into a shared helper.
+- Preserved collection form command-flow smoke coverage while collapsing
+  repeated save start/failure/finish orchestration into a shared helper.
 - Added direct Wi-Fi import session command-flow smoke coverage for cache-prep
   success/failure, receive, review finish, and empty-transfer failure
   sequencing.

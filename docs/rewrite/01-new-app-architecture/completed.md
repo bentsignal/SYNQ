@@ -113,6 +113,8 @@
   including deterministic smoke coverage for cover handling and rollback.
 - Split collection form command/haptic state helpers out of the reducer and
   validation service.
+- Collapsed repeated collection form save start/failure/finish orchestration
+  into a shared command-flow helper.
 - Split collection form reducer state and actions into a dedicated state
   service.
 - Split collection form domain kind and year parsing into a dedicated domain

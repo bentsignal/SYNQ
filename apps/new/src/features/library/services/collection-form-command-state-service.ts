@@ -6,8 +6,8 @@ import {
 import {
   getCollectionFormErrorMessage,
   getCollectionFormFallbackMessage,
-  type CollectionFormKind,
 } from "./collection-form-service";
+import type { CollectionFormKind } from "./collection-form-domain-service";
 import type {
   CollectionFormAction,
   CollectionFormImage,

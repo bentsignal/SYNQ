@@ -12,7 +12,7 @@ import {
   createCollectionFromForm,
   updateCollectionFromForm,
 } from "./collection-form-mutation-service";
-import type { CollectionFormKind } from "./collection-form-service";
+import type { CollectionFormKind } from "./collection-form-domain-service";
 
 type CreateCollectionFromFormCommandParams = {
   artistNames?: string;

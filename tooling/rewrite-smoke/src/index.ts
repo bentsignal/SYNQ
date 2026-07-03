@@ -303,8 +303,8 @@ import {
 import {
   getCollectionFormErrorMessage,
   getCollectionFormFallbackMessage,
-  parseAlbumYearInput,
 } from "../../../apps/new/src/features/library/services/collection-form-service";
+import { parseAlbumYearInput } from "../../../apps/new/src/features/library/services/collection-form-domain-service";
 import {
   collectionFormReducer,
   getInitialCollectionFormState,
@@ -4830,6 +4830,7 @@ function assertCollectionFormSmoke() {
   assert.equal(parseAlbumYearInput(""), undefined);
   assert.equal(parseAlbumYearInput("   "), undefined);
   assert.equal(parseAlbumYearInput("0"), 0);
+  assert.equal(parseAlbumYearInput("0007"), 7);
   assert.equal(parseAlbumYearInput(" 2026 "), 2026);
   assert.deepEqual(
     getCollectionFormActionState({

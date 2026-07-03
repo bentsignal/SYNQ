@@ -1,4 +1,4 @@
-import { type CollectionFormKind } from "../services/collection-form-service";
+import type { CollectionFormKind } from "../services/collection-form-domain-service";
 import { useCreateCollectionFormCommands } from "./use-create-collection-form-commands";
 import { useCollectionFormStateController } from "./use-collection-form-state-controller";
 

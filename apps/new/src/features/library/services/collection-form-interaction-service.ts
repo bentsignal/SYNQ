@@ -1,4 +1,4 @@
-import type { CollectionFormKind } from "./collection-form-service";
+import type { CollectionFormKind } from "./collection-form-domain-service";
 
 export type EditCollectionFormCopy = {
   editLabel: string;

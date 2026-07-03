@@ -12,7 +12,7 @@ import {
   type CollectionFormAction,
   type CollectionFormState,
 } from "../services/collection-form-state-service";
-import type { CollectionFormKind } from "../services/collection-form-service";
+import type { CollectionFormKind } from "../services/collection-form-domain-service";
 
 type UseCreateCollectionFormCommandsParams = {
   canSave: boolean;

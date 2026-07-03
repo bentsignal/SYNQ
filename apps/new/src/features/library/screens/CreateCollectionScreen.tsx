@@ -1,6 +1,6 @@
 import { CollectionFormView } from "../components/CollectionFormView";
 import { useCreateCollectionFormController } from "../hooks/use-create-collection-form-controller";
-import type { CollectionFormKind } from "../services/collection-form-service";
+import type { CollectionFormKind } from "../services/collection-form-domain-service";
 import {
   getCreateCollectionFormCopy,
   getCreateCollectionFormSubtitle,

@@ -115,3 +115,5 @@
   validation service.
 - Split collection form reducer state and actions into a dedicated state
   service.
+- Split collection form domain kind and year parsing into a dedicated domain
+  service.

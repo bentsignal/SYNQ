@@ -1,7 +1,7 @@
 import {
   parseAlbumYearInput,
   type CollectionFormKind,
-} from "./collection-form-service";
+} from "./collection-form-domain-service";
 
 export type CreatedCollection = {
   id: number;

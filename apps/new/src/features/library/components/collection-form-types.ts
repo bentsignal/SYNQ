@@ -1,6 +1,7 @@
 import type { CollectionFormActionState } from "../services/collection-form-interaction-service";
+import type { CollectionFormKind } from "../services/collection-form-domain-service";
 
-export type CollectionFormKind = "album" | "artist" | "playlist";
+export type { CollectionFormKind } from "../services/collection-form-domain-service";
 
 export type CollectionFormCopy = {
   kicker: string;

@@ -182,18 +182,20 @@ import {
 } from "../../../apps/new/src/features/library/services/add-collection-songs-state-service";
 import {
   canDeleteLibraryCollection,
-  getCollectionAddSongsHref,
   getCollectionDetailActionState,
   getCollectionDetailStatusState,
   getCollectionDetailViewState,
-  getCollectionEditHref,
-  getCollectionListHref,
   getDeleteCollectionConfirmationCopy,
-  getLibraryCollectionBackHref,
-  getLibraryInvalidCollectionState,
   getLibraryCollectionSongEmptyState,
   getPlayableCollectionSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-interaction-service";
+import {
+  getCollectionAddSongsHref,
+  getCollectionEditHref,
+  getCollectionListHref,
+  getLibraryCollectionBackHref,
+  getLibraryInvalidCollectionState,
+} from "../../../apps/new/src/features/library/services/library-collection-navigation-service";
 import {
   collectionDetailMutationReducer,
   getCollectionDetailMutationErrorMessage,

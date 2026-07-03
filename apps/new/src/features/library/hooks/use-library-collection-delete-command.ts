@@ -4,10 +4,10 @@ import { deleteCollection } from "../repository/collection-delete-repository";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
-  getCollectionListHref,
   getDeleteCollectionConfirmationCopy,
   type CollectionDetailActionState,
 } from "../services/library-collection-interaction-service";
+import { getCollectionListHref } from "../services/library-collection-navigation-service";
 import {
   getCollectionDetailMutationErrorMessage,
   type CollectionDetailMutationAction,

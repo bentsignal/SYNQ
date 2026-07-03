@@ -4,10 +4,12 @@ import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customi
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
-  getCollectionAddSongsHref,
-  getCollectionEditHref,
   type CollectionDetailActionState,
 } from "../services/library-collection-interaction-service";
+import {
+  getCollectionAddSongsHref,
+  getCollectionEditHref,
+} from "../services/library-collection-navigation-service";
 
 type LibraryCollectionDetailActionsProps = {
   actionState: CollectionDetailActionState;

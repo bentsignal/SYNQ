@@ -94,6 +94,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import staged-song edit routes, back links, and invalid route states
     now live in a focused navigation service instead of the edit form service
     owning route copy and form mutation state together.
+  - Done: library collection detail/list routes and invalid collection state
+    now live in a focused navigation service instead of the interaction service
+    owning routing and action/status state together.
   - Done: collection detail song-row aggregation now lives in a focused song
     detail service instead of the detail shell builder owning song grouping,
     artist/album fallback labels, and track sorting.

@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getLibraryInvalidCollectionState } from "../services/library-collection-interaction-service";
+import { getLibraryInvalidCollectionState } from "../services/library-collection-navigation-service";
 
 type LibraryInvalidCollectionStateProps = {
   kicker?: string;

@@ -955,7 +955,6 @@ import {
   librarySongDetailMutationReducer,
 } from "../../../apps/new/src/features/library/services/library-song-detail-mutation-service";
 import {
-  buildLibrarySongEditFormState,
   getLibrarySongEditBeginSaveAction,
   getLibrarySongEditChangeFieldAction,
   getLibrarySongEditFinishSaveAction,
@@ -964,6 +963,7 @@ import {
   type LibrarySongEditControllerAction,
   librarySongEditControllerReducer,
 } from "../../../apps/new/src/features/library/services/library-song-form-service";
+import { buildLibrarySongEditFormState } from "../../../apps/new/src/features/library/services/library-song-edit-form-state-service";
 import {
   getLibrarySongEditBlockedCommand,
   getLibrarySongEditCoverPickedCommand,

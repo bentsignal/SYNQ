@@ -1,14 +1,8 @@
 import type { LibrarySongDetail } from "./library-song-detail-service";
-
-export type LibrarySongEditFormState = {
-  albumNames: string;
-  artistNames: string;
-  coverImage: {
-    dataUrl: string;
-    fileName: string;
-  } | null;
-  title: string;
-};
+import {
+  buildLibrarySongEditFormState,
+  type LibrarySongEditFormState,
+} from "./library-song-edit-form-state-service";
 
 export type LibrarySongEditControllerState = LibrarySongEditFormState & {
   errorMessage: string | null;
@@ -82,15 +76,6 @@ export const getLibrarySongEditFinishSaveAction =
     type: "finish-save",
   });
 
-export const buildLibrarySongEditFormState = (
-  detail: LibrarySongDetail,
-): LibrarySongEditFormState => ({
-  albumNames: detail.albumLabel === "Unknown" ? "" : detail.albumLabel,
-  artistNames: detail.artistLabel === "Unknown" ? "" : detail.artistLabel,
-  coverImage: null,
-  title: detail.isMissing ? "" : detail.title,
-});
-
 export const getInitialLibrarySongEditControllerState =
   (): LibrarySongEditControllerState => ({
     albumNames: "",
@@ -146,6 +131,4 @@ export const librarySongEditControllerReducer = (
   }
 };
 
-export type LibrarySongEditCoverImage = NonNullable<
-  LibrarySongEditFormState["coverImage"]
->;
+export type { LibrarySongEditFormState } from "./library-song-edit-form-state-service";

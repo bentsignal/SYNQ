@@ -5,7 +5,7 @@ import {
   getLibrarySongEditStatusState,
   type LibrarySongEditActionState,
 } from "../services/library-song-edit-screen-state-service";
-import type { LibrarySongEditFormState } from "../services/library-song-form-service";
+import type { LibrarySongEditFormState } from "../services/library-song-edit-form-state-service";
 import { EditLibrarySongActions } from "./EditLibrarySongActions";
 import { EditLibrarySongCoverInput } from "./EditLibrarySongCoverInput";
 import { EditLibrarySongFields } from "./EditLibrarySongFields";

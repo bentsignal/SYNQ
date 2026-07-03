@@ -1,7 +1,7 @@
 import { Image, Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongEditActionState } from "../services/library-song-edit-screen-state-service";
-import type { LibrarySongEditFormState } from "../services/library-song-form-service";
+import type { LibrarySongEditFormState } from "../services/library-song-edit-form-state-service";
 
 type EditLibrarySongCoverInputProps = {
   actionState: LibrarySongEditActionState;

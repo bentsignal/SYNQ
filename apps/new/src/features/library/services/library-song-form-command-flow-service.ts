@@ -10,8 +10,8 @@ import {
   getLibrarySongEditFinishSaveAction,
   type LibrarySongEditControllerAction,
   type LibrarySongEditControllerState,
-  type LibrarySongEditCoverImage,
 } from "./library-song-form-service";
+import type { LibrarySongEditCoverImage } from "./library-song-edit-form-state-service";
 import type { LibrarySongDetailHref } from "./library-song-interaction-service";
 
 type LibrarySongEditDispatch = (

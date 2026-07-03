@@ -5,8 +5,8 @@ import {
 } from "./library-song-interaction-service";
 import type {
   LibrarySongEditControllerAction,
-  LibrarySongEditCoverImage,
 } from "./library-song-form-service";
+import type { LibrarySongEditCoverImage } from "./library-song-edit-form-state-service";
 
 type LibrarySongEditHapticCommand = {
   haptic: HapticFeedbackType;

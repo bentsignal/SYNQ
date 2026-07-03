@@ -7,8 +7,8 @@ import { clearImportCache } from "../services/import-file-cache-service";
 import { clearPersistedImportSessionState } from "../services/import-session-persistence-service";
 import {
   getImportSessionCommandErrorMessage,
-  type ImportSessionAction,
-} from "../services/import-session-state-service";
+} from "../services/import-session-command-service";
+import type { ImportSessionAction } from "../services/import-session-state-service";
 import type {
   ImportSaveSummary,
   ImportSessionState,

@@ -115,11 +115,13 @@ import {
   getImportWifiState,
 } from "../../../apps/new/src/features/import/services/import-wifi-screen-state-service";
 import {
-  getFinishWifiTransferAction,
-  getImportSessionCommandErrorMessage,
   importSessionReducer,
   initialImportSessionState,
 } from "../../../apps/new/src/features/import/services/import-session-state-service";
+import {
+  getFinishWifiTransferAction,
+  getImportSessionCommandErrorMessage,
+} from "../../../apps/new/src/features/import/services/import-session-command-service";
 import {
   buildEditedImportSongDraft,
   getImportSongEditActionState,

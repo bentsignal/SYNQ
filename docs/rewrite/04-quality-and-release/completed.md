@@ -202,3 +202,5 @@
   browser upload endpoint contract.
 - Added direct add-to-collection command-flow smoke coverage for toggle,
   selection-add, single-song-add, blocked, and failure sequences.
+- Added direct import file command-flow smoke coverage for file selection,
+  cancellation/skipped files, picker failure, removal, and removal failure.

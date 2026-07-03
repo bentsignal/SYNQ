@@ -384,6 +384,10 @@ import {
   getImportFileSelectionStartHaptic,
 } from "../../../apps/new/src/features/import/services/import-file-command-service";
 import {
+  runImportFileRemovalCommand,
+  runImportFileSelectionCommand,
+} from "../../../apps/new/src/features/import/services/import-file-command-flow-service";
+import {
   getWifiImportServerStartErrorMessage,
   getWifiUploadFailureResponse,
   wifiImportFinishResponse,
@@ -2801,6 +2805,111 @@ async function assertImportSessionSmoke() {
     }),
     "Selected staged songs could not be removed.",
   );
+  const fileCommandEvents: unknown[] = [];
+  const recordFileCommandEvent = (event: unknown) => {
+    fileCommandEvents.push(event);
+  };
+  const dispatchFileCommand = (action: unknown) => {
+    recordFileCommandEvent(["dispatch", action]);
+  };
+  assert.equal(
+    await runImportFileSelectionCommand({
+      dependencies: {
+        deleteImportDraftCacheFiles: async () => undefined,
+        selectImportFiles: async () => ({
+          drafts: [importDraft(91)],
+          skipped: 0,
+        }),
+      },
+      dispatch: dispatchFileCommand,
+    }),
+    true,
+  );
+  assert.deepEqual(fileCommandEvents, [
+    ["dispatch", { type: "begin-file-pick" }],
+    ["dispatch", { songs: [importDraft(91)], type: "review" }],
+  ]);
+  fileCommandEvents.length = 0;
+  assert.equal(
+    await runImportFileSelectionCommand({
+      dependencies: {
+        deleteImportDraftCacheFiles: async () => undefined,
+        selectImportFiles: async () => ({
+          drafts: [],
+          skipped: 2,
+        }),
+      },
+      dispatch: dispatchFileCommand,
+    }),
+    false,
+  );
+  assert.deepEqual(fileCommandEvents, [
+    ["dispatch", { type: "begin-file-pick" }],
+    [
+      "dispatch",
+      {
+        error: "No selected songs could be staged for import.",
+        type: "fail",
+      },
+    ],
+  ]);
+  fileCommandEvents.length = 0;
+  assert.equal(
+    await runImportFileSelectionCommand({
+      dependencies: {
+        deleteImportDraftCacheFiles: async () => undefined,
+        selectImportFiles: async () => {
+          throw new Error("picker failed");
+        },
+      },
+      dispatch: dispatchFileCommand,
+    }),
+    false,
+  );
+  assert.deepEqual(fileCommandEvents, [
+    ["dispatch", { type: "begin-file-pick" }],
+    ["dispatch", { error: "picker failed", type: "fail" }],
+  ]);
+  fileCommandEvents.length = 0;
+  assert.equal(
+    await runImportFileRemovalCommand({
+      dependencies: {
+        deleteImportDraftCacheFiles: async (removedSongs) => {
+          recordFileCommandEvent([
+            "delete-cache",
+            removedSongs.map((song) => song.id),
+          ]);
+        },
+        selectImportFiles: async () => ({ drafts: [], skipped: 0 }),
+      },
+      dispatch: dispatchFileCommand,
+      songIds: [first.id],
+      songs: [first, second],
+    }),
+    true,
+  );
+  assert.deepEqual(fileCommandEvents, [
+    ["delete-cache", [first.id]],
+    ["dispatch", { songIds: [first.id], type: "remove-songs" }],
+  ]);
+  fileCommandEvents.length = 0;
+  assert.equal(
+    await runImportFileRemovalCommand({
+      dependencies: {
+        deleteImportDraftCacheFiles: async () => {
+          throw new Error("delete failed");
+        },
+        selectImportFiles: async () => ({ drafts: [], skipped: 0 }),
+      },
+      dispatch: dispatchFileCommand,
+      songIds: [second.id],
+      songs: [first, second],
+    }),
+    false,
+  );
+  assert.deepEqual(fileCommandEvents, [
+    ["dispatch", { error: "delete failed", type: "fail" }],
+  ]);
   assert.deepEqual(
     getImportSaveActionState({ isExporting: false, state }),
     {

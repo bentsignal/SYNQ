@@ -309,3 +309,5 @@
   focused page asset service.
 - Moved add-to-collection song command sequencing out of the React hook and
   into a focused command-flow service.
+- Moved import file selection and staged-song removal sequencing out of the
+  React hook and into a focused command-flow service.

@@ -1,16 +1,11 @@
 import { useReducer } from "react";
-import { replaceNativeRoute } from "@/src/features/app-shell/services/native-route-service";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
-  buildEditedImportSongDraft,
   getImportSongEditActionState,
-  getImportSongEditInvalidSaveCommand,
   getImportSongEditInitialState,
-  getImportSongEditSaveFailureCommand,
-  getImportSongEditSaveSuccessCommand,
   importSongEditFormReducer,
 } from "../services/import-song-form-service";
 import type { ImportSongDraft } from "../types/import-session";
+import { useEditImportSongCommands } from "./use-edit-import-song-commands";
 
 type UseEditImportSongControllerParams = {
   song: ImportSongDraft;
@@ -21,7 +16,6 @@ export function useEditImportSongController({
   song,
   updateImportSong,
 }: UseEditImportSongControllerParams) {
-  const { sendHaptic } = useHapticFeedback();
   const [formState, dispatchFormState] = useReducer(
     importSongEditFormReducer,
     song,
@@ -41,33 +35,13 @@ export function useEditImportSongController({
   const updateTitle = updateField("title");
   const updateTrack = updateField("track");
 
-  const save = () => {
-    if (!actionState.canSave) {
-      const command = getImportSongEditInvalidSaveCommand();
-      sendHaptic(command.haptic);
-      dispatchFormState(command.action);
-      return;
-    }
-
-    try {
-      updateImportSong(
-        buildEditedImportSongDraft({
-          album: formState.album,
-          artist: formState.artist,
-          song,
-          title: formState.title,
-          track: formState.track,
-        }),
-      );
-      const command = getImportSongEditSaveSuccessCommand();
-      sendHaptic(command.haptic);
-      replaceNativeRoute(command.href);
-    } catch (caughtError) {
-      const command = getImportSongEditSaveFailureCommand(caughtError);
-      sendHaptic(command.haptic);
-      dispatchFormState(command.action);
-    }
-  };
+  const { save } = useEditImportSongCommands({
+    canSave: actionState.canSave,
+    dispatchFormState,
+    formState,
+    song,
+    updateImportSong,
+  });
 
   return {
     actionState,

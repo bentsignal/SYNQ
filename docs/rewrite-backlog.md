@@ -179,6 +179,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: shared song-row shell, metadata, duration, and compact action
     presentation now lives in app-shell components instead of library preview,
     add-to-collection, and import review rows repeating row layout primitives.
+  - Done: shared library action-row and action-button presentation now lives
+    in a focused component instead of song detail, collection detail, and edit
+    song action components repeating button structure and styles.
   - Done: shared numeric route param parsing now lives in an app-shell service
     instead of repeated library/import screen helpers.
   - Done: home quick-action, now-playing, library, and recent-song destinations

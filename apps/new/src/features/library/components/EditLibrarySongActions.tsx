@@ -1,8 +1,12 @@
 import { Link } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { getLibrarySongDetailHref } from "../services/library-song-interaction-service";
 import type { LibrarySongEditActionState } from "../services/library-song-form-service";
+import {
+  LibraryActionButton,
+  LibraryActionRow,
+  libraryActionPartStyles,
+} from "./LibraryActionParts";
 
 type EditLibrarySongActionsProps = {
   actionState: LibrarySongEditActionState;
@@ -18,75 +22,32 @@ export function EditLibrarySongActions({
   const theme = useCustomizationTheme();
 
   return (
-    <View style={styles.actionRow}>
-      <Pressable
-        accessibilityRole="button"
+    <LibraryActionRow>
+      <LibraryActionButton
         disabled={!actionState.canSave}
+        flexGrow={1}
+        label={actionState.saveLabel}
+        minWidth={112}
         onPress={onSave}
-        style={[
-          styles.primaryButton,
-          { backgroundColor: theme.accent },
-          !actionState.canSave ? styles.disabled : null,
-        ]}
-      >
-        <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
-          {actionState.saveLabel}
-        </Text>
-      </Pressable>
+        theme={theme}
+        variant="primary"
+      />
       <Link
         href={getLibrarySongDetailHref({ songId })}
         style={[
-          styles.secondaryButton,
+          libraryActionPartStyles.linkButton,
           {
             backgroundColor: theme.surface,
             borderColor: theme.border,
             color: theme.accent,
+            flexGrow: 1,
+            lineHeight: 42,
+            minWidth: 112,
           },
         ]}
       >
         Cancel
       </Link>
-    </View>
+    </LibraryActionRow>
   );
 }
-
-const styles = StyleSheet.create({
-  actionRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  primaryButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    flexGrow: 1,
-    justifyContent: "center",
-    minHeight: 44,
-    minWidth: 112,
-    paddingHorizontal: 14,
-  },
-  secondaryButton: {
-    borderRadius: 8,
-    borderWidth: 1,
-    flexGrow: 1,
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 42,
-    minHeight: 44,
-    minWidth: 112,
-    overflow: "hidden",
-    paddingHorizontal: 14,
-    textAlign: "center",
-    textTransform: "uppercase",
-  },
-  disabled: {
-    opacity: 0.45,
-  },
-  primaryButtonText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-});

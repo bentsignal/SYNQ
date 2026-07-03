@@ -2,11 +2,9 @@ import { useCallback } from "react";
 import { pushNativeRoute } from "@/src/features/app-shell/services/native-route-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
-  getImportFileRemovalResultCommand,
-  getImportFileRemovalStartHaptic,
-  getImportFileSelectionResultCommand,
-  getImportFileSelectionStartHaptic,
-} from "../services/import-file-command-service";
+  runImportFilesChooseAction,
+  runImportFilesRemoveAction,
+} from "../services/import-files-action-flow-service";
 import { getImportFilesActionState } from "../services/import-files-screen-state-service";
 import { useImportSessionSelector } from "./use-import-session";
 
@@ -22,21 +20,20 @@ export function useImportFilesController() {
   const actionState = getImportFilesActionState(state);
 
   const chooseFiles = useCallback(async () => {
-    sendHaptic(getImportFileSelectionStartHaptic());
-    const staged = await startFileImport();
-    const command = getImportFileSelectionResultCommand(staged);
-
-    sendHaptic(command.haptic);
-    pushNativeRoute(command.href);
+    await runImportFilesChooseAction({
+      navigate: pushNativeRoute,
+      sendHaptic,
+      startFileImport,
+    });
   }, [sendHaptic, startFileImport]);
 
   const removeSong = useCallback(
     async (songId: number) => {
-      sendHaptic(getImportFileRemovalStartHaptic());
-      const removed = await removeImportSongs([songId]);
-      const command = getImportFileRemovalResultCommand(removed);
-
-      sendHaptic(command.haptic);
+      await runImportFilesRemoveAction({
+        removeImportSongs,
+        sendHaptic,
+        songId,
+      });
     },
     [removeImportSongs, sendHaptic],
   );

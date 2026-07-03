@@ -440,6 +440,10 @@ import {
   runImportFileSelectionCommand,
 } from "../../../apps/new/src/features/import/services/import-file-command-flow-service";
 import {
+  runImportFilesChooseAction,
+  runImportFilesRemoveAction,
+} from "../../../apps/new/src/features/import/services/import-files-action-flow-service";
+import {
   getWifiImportServerStartErrorMessage,
   getWifiUploadFailureResponse,
   wifiImportFinishResponse,
@@ -3081,6 +3085,53 @@ async function assertImportSessionSmoke() {
   assert.deepEqual(getImportFileRemovalResultCommand(false), {
     haptic: "error",
   });
+  const importFilesActionEvents: unknown[] = [];
+  const sendImportFilesActionHaptic = (haptic: string) => {
+    importFilesActionEvents.push(["haptic", haptic]);
+  };
+  const navigateImportFilesAction = (href: string) => {
+    importFilesActionEvents.push(["navigate", href]);
+  };
+  await runImportFilesChooseAction({
+    navigate: navigateImportFilesAction,
+    sendHaptic: sendImportFilesActionHaptic,
+    startFileImport: async () => true,
+  });
+  await runImportFilesChooseAction({
+    navigate: navigateImportFilesAction,
+    sendHaptic: sendImportFilesActionHaptic,
+    startFileImport: async () => false,
+  });
+  await runImportFilesRemoveAction({
+    removeImportSongs: async (songIds) => {
+      importFilesActionEvents.push(["remove", songIds]);
+      return true;
+    },
+    sendHaptic: sendImportFilesActionHaptic,
+    songId: first.id,
+  });
+  await runImportFilesRemoveAction({
+    removeImportSongs: async (songIds) => {
+      importFilesActionEvents.push(["remove", songIds]);
+      return false;
+    },
+    sendHaptic: sendImportFilesActionHaptic,
+    songId: second.id,
+  });
+  assert.deepEqual(importFilesActionEvents, [
+    ["haptic", "light"],
+    ["haptic", "success"],
+    ["navigate", "/(tabs)/import/save"],
+    ["haptic", "light"],
+    ["haptic", "error"],
+    ["navigate", "/(tabs)/import/failure"],
+    ["haptic", "medium"],
+    ["remove", [first.id]],
+    ["haptic", "success"],
+    ["haptic", "medium"],
+    ["remove", [second.id]],
+    ["haptic", "error"],
+  ]);
   assert.equal(
     getImportFileCommandErrorMessage({
       caughtError: new Error("Picker smoke failure"),

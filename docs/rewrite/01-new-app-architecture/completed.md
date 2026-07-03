@@ -329,3 +329,5 @@
   sequencing out of the React hook and into a focused command-flow service.
 - Moved import save-screen toggle, finish, and discard haptic/navigation
   sequencing out of the React hook and into a focused action-flow service.
+- Moved import file-screen choose/remove haptic and navigation sequencing out
+  of the React hook and into a focused action-flow service.

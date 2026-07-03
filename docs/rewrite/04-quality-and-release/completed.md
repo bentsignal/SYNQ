@@ -223,3 +223,5 @@
   sequencing.
 - Added direct import save-screen action-flow smoke coverage for save toggles
   plus finish/discard success and failure navigation sequencing.
+- Added direct import file-screen action-flow smoke coverage for choose-files
+  and remove-song success/failure sequencing.

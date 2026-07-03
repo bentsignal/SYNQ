@@ -1,11 +1,6 @@
 import { useMemo } from "react";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
-import {
-  buildAlbumPreviewRowsQuery,
-  buildArtistPreviewRowsQuery,
-  buildPlaylistPreviewRowsQuery,
-} from "../repository/collection-preview-query-repository";
+import { useLibraryCollectionPreviewLiveQuery } from "../data/use-library-collection-preview-live-query";
 import {
   albumRowsToPreview,
   artistRowsToPreview,
@@ -30,9 +25,8 @@ type LibraryCollectionPreviewQueryOptions = {
 export function useLibraryCollectionPreviewQuery({
   limit = 6,
 }: LibraryCollectionPreviewQueryOptions = {}) {
-  const playlists = useLiveQuery(buildPlaylistPreviewRowsQuery());
-  const albums = useLiveQuery(buildAlbumPreviewRowsQuery());
-  const artists = useLiveQuery(buildArtistPreviewRowsQuery());
+  const { albums, artists, playlists } =
+    useLibraryCollectionPreviewLiveQuery();
 
   const collections = useMemo(
     () => ({

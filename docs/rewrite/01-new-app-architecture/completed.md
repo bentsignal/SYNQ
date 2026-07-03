@@ -48,3 +48,5 @@
   lowered the remaining library hook live-query ratchet from 6 modules to 5.
 - Moved the collection-list live-query adapter into a library data module and
   lowered the remaining library hook live-query ratchet from 5 modules to 4.
+- Moved the collection-preview live-query adapter into a library data module
+  and lowered the remaining library hook live-query ratchet from 4 modules to 3.

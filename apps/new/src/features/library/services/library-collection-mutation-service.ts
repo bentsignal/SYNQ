@@ -1,3 +1,5 @@
+import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
+
 export type CollectionDetailMutationKind =
   | "delete-collection"
   | "export-collection"
@@ -125,3 +127,77 @@ export const getCollectionDetailMutationErrorMessage = ({
       return "Song could not be removed.";
   }
 };
+
+type CollectionDetailMutationActionCommand = {
+  action: CollectionDetailMutationAction;
+};
+
+type CollectionDetailMutationHapticCommand = {
+  haptic: HapticFeedbackType;
+};
+
+type CollectionDetailMutationFailureCommand =
+  CollectionDetailMutationActionCommand & CollectionDetailMutationHapticCommand;
+
+export const getCollectionSongMoveStartCommand = (
+  songId: number,
+): CollectionDetailMutationActionCommand => ({
+  action: {
+    mutation: "move-song",
+    songId,
+    type: "begin",
+  },
+});
+
+export const getCollectionSongMoveSuccessCommand =
+  (): CollectionDetailMutationHapticCommand => ({
+    haptic: "light",
+  });
+
+export const getCollectionSongMoveFinishCommand =
+  (): CollectionDetailMutationActionCommand => ({
+    action: {
+      mutation: "move-song",
+      type: "finish",
+    },
+  });
+
+export const getCollectionSongRemovalStartCommand = (
+  songId: number,
+): CollectionDetailMutationActionCommand => ({
+  action: {
+    mutation: "remove-song",
+    songId,
+    type: "begin",
+  },
+});
+
+export const getCollectionSongRemovalSuccessCommand =
+  (): CollectionDetailMutationHapticCommand => ({
+    haptic: "medium",
+  });
+
+export const getCollectionSongRemovalFinishCommand =
+  (): CollectionDetailMutationActionCommand => ({
+    action: {
+      mutation: "remove-song",
+      type: "finish",
+    },
+  });
+
+export const getCollectionDetailMutationFailureCommand = ({
+  caughtError,
+  mutation,
+}: {
+  caughtError: unknown;
+  mutation: CollectionDetailMutationKind;
+}): CollectionDetailMutationFailureCommand => ({
+  action: {
+    error: getCollectionDetailMutationErrorMessage({
+      caughtError,
+      mutation,
+    }),
+    type: "fail",
+  },
+  haptic: "error",
+});

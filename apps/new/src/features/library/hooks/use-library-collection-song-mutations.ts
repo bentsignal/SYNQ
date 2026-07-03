@@ -6,7 +6,13 @@ import {
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
-  getCollectionDetailMutationErrorMessage,
+  getCollectionDetailMutationFailureCommand,
+  getCollectionSongMoveFinishCommand,
+  getCollectionSongMoveStartCommand,
+  getCollectionSongMoveSuccessCommand,
+  getCollectionSongRemovalFinishCommand,
+  getCollectionSongRemovalStartCommand,
+  getCollectionSongRemovalSuccessCommand,
   type CollectionDetailMutationAction,
 } from "../services/library-collection-mutation-service";
 
@@ -30,7 +36,7 @@ export function useLibraryCollectionSongMutations({
   const { sendHaptic } = useHapticFeedback();
 
   const moveSong = async (songId: number, direction: "down" | "up") => {
-    dispatchMutation({ mutation: "move-song", songId, type: "begin" });
+    dispatchMutation(getCollectionSongMoveStartCommand(songId).action);
 
     try {
       await moveLibraryCollectionSongCommand({
@@ -40,23 +46,21 @@ export function useLibraryCollectionSongMutations({
         songId,
         songs: detail.songs,
       });
-      sendHaptic("light");
+      sendHaptic(getCollectionSongMoveSuccessCommand().haptic);
     } catch (caughtError) {
-      sendHaptic("error");
-      dispatchMutation({
-        error: getCollectionDetailMutationErrorMessage({
-          caughtError,
-          mutation: "move-song",
-        }),
-        type: "fail",
+      const command = getCollectionDetailMutationFailureCommand({
+        caughtError,
+        mutation: "move-song",
       });
+      sendHaptic(command.haptic);
+      dispatchMutation(command.action);
     } finally {
-      dispatchMutation({ mutation: "move-song", type: "finish" });
+      dispatchMutation(getCollectionSongMoveFinishCommand().action);
     }
   };
 
   const removeSong = async (songId: number) => {
-    dispatchMutation({ mutation: "remove-song", songId, type: "begin" });
+    dispatchMutation(getCollectionSongRemovalStartCommand(songId).action);
 
     try {
       await removeLibraryCollectionSongCommand({
@@ -64,18 +68,16 @@ export function useLibraryCollectionSongMutations({
         kind,
         songId,
       });
-      sendHaptic("medium");
+      sendHaptic(getCollectionSongRemovalSuccessCommand().haptic);
     } catch (caughtError) {
-      sendHaptic("error");
-      dispatchMutation({
-        error: getCollectionDetailMutationErrorMessage({
-          caughtError,
-          mutation: "remove-song",
-        }),
-        type: "fail",
+      const command = getCollectionDetailMutationFailureCommand({
+        caughtError,
+        mutation: "remove-song",
       });
+      sendHaptic(command.haptic);
+      dispatchMutation(command.action);
     } finally {
-      dispatchMutation({ mutation: "remove-song", type: "finish" });
+      dispatchMutation(getCollectionSongRemovalFinishCommand().action);
     }
   };
 

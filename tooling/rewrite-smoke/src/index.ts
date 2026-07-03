@@ -233,7 +233,14 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-navigation-service";
 import {
   collectionDetailMutationReducer,
+  getCollectionDetailMutationFailureCommand,
   getCollectionDetailMutationErrorMessage,
+  getCollectionSongMoveFinishCommand,
+  getCollectionSongMoveStartCommand,
+  getCollectionSongMoveSuccessCommand,
+  getCollectionSongRemovalFinishCommand,
+  getCollectionSongRemovalStartCommand,
+  getCollectionSongRemovalSuccessCommand,
   initialCollectionDetailMutationState,
 } from "../../../apps/new/src/features/library/services/library-collection-mutation-service";
 import {
@@ -2340,6 +2347,38 @@ function assertLibraryCollectionInteractionSmoke() {
       mutationError: "Song order could not be saved.",
     },
   );
+  assert.deepEqual(getCollectionSongMoveStartCommand(2), {
+    action: {
+      mutation: "move-song",
+      songId: 2,
+      type: "begin",
+    },
+  });
+  assert.deepEqual(getCollectionSongMoveSuccessCommand(), {
+    haptic: "light",
+  });
+  assert.deepEqual(getCollectionSongMoveFinishCommand(), {
+    action: {
+      mutation: "move-song",
+      type: "finish",
+    },
+  });
+  assert.deepEqual(getCollectionSongRemovalStartCommand(3), {
+    action: {
+      mutation: "remove-song",
+      songId: 3,
+      type: "begin",
+    },
+  });
+  assert.deepEqual(getCollectionSongRemovalSuccessCommand(), {
+    haptic: "medium",
+  });
+  assert.deepEqual(getCollectionSongRemovalFinishCommand(), {
+    action: {
+      mutation: "remove-song",
+      type: "finish",
+    },
+  });
   assert.deepEqual(
     getCollectionDetailStatusState({
       errors: [],
@@ -2677,6 +2716,19 @@ function assertLibraryCollectionInteractionSmoke() {
       mutation: "delete-collection",
     }),
     "Collection could not be deleted.",
+  );
+  assert.deepEqual(
+    getCollectionDetailMutationFailureCommand({
+      caughtError: new Error("Move failed"),
+      mutation: "move-song",
+    }),
+    {
+      action: {
+        error: "Move failed",
+        type: "fail",
+      },
+      haptic: "error",
+    },
   );
   assert.equal(
     canDeleteLibraryCollection({

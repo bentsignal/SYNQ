@@ -1,7 +1,7 @@
 import {
   getHydratePlaybackAction,
   type PlaybackHydrateAction,
-} from "./playback-session-service";
+} from "./playback-session-action-service";
 import type { PlaybackState } from "../types/playback-state";
 
 type PlaybackPersistenceDispatch = (action: PlaybackHydrateAction) => void;

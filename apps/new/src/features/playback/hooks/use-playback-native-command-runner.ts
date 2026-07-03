@@ -5,7 +5,7 @@ import {
 } from "../services/playback-native-command-plan-service";
 import { getPlaybackNativeFailureAction } from "../services/playback-native-transition-service";
 import { runPlaybackNativeCommandPlan } from "../services/playback-native-command-plan-service";
-import type { PlaybackAction } from "../services/playback-session-service";
+import type { PlaybackAction } from "../services/playback-session-action-service";
 import type { TrackPlayerAdapter } from "../services/track-player-adapter";
 import type { PlaybackState } from "../types/playback-state";
 

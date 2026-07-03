@@ -7,7 +7,7 @@ import {
   runPlaybackQueueToggleLoopCommand,
   runPlaybackQueueToggleShuffleCommand,
 } from "../services/playback-queue-session-command-flow-service";
-import type { PlaybackAction } from "../services/playback-session-service";
+import type { PlaybackAction } from "../services/playback-session-action-service";
 import type {
   PlaybackQueueItem,
   PlaybackState,

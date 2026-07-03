@@ -7,7 +7,7 @@ import {
   runPlaybackHydrateCommand,
   runPlaybackPersistenceCommand,
 } from "../services/playback-persistence-command-flow-service";
-import type { PlaybackAction } from "../services/playback-session-service";
+import type { PlaybackAction } from "../services/playback-session-action-service";
 import type { PlaybackState } from "../types/playback-state";
 
 export function usePersistedPlaybackSession({

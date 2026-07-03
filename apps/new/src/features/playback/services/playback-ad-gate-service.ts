@@ -1,5 +1,5 @@
 import type { PlaybackAdGateState } from "../types/playback-state";
-import type { PlaybackAction } from "./playback-session-service";
+import type { PlaybackAction } from "./playback-session-action-service";
 
 export const playbackAdThresholdMs = 600_000;
 export const playbackAdProgressIntervalMs = 5_000;

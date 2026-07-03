@@ -1,5 +1,5 @@
 import type { PlaybackState } from "../types/playback-state";
-import type { PlaybackAction } from "./playback-session-service";
+import type { PlaybackAction } from "./playback-session-action-service";
 import {
   beginPlaybackAdBreak,
   completePlaybackAdBreak,

@@ -1,7 +1,7 @@
 import { useEffect, type RefObject } from "react";
 import { getCompletePlaybackAdBreakAction } from "../services/playback-ad-gate-service";
 import { getPlaybackNativeStatusAction } from "../services/playback-native-transition-service";
-import type { PlaybackAction } from "../services/playback-session-service";
+import type { PlaybackAction } from "../services/playback-session-action-service";
 import type { TrackPlayerAdapter } from "../services/track-player-adapter";
 
 type UsePlaybackNativeStatusListenerParams = {

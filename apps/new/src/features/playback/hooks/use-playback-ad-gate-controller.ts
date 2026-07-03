@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
-import type { PlaybackAction } from "../services/playback-session-service";
+import type { PlaybackAction } from "../services/playback-session-action-service";
 import type {
   PlaybackQueueItem,
   PlaybackState,

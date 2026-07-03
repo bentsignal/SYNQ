@@ -1,5 +1,5 @@
 import type { PlaybackQueueItem } from "../types/playback-state";
-import type { PlaybackAction } from "./playback-session-service";
+import type { PlaybackAction } from "./playback-session-action-service";
 import type { PlaybackNativeCommandPlan } from "./playback-native-command-step-service";
 
 export type PlaybackCommandPlan = {

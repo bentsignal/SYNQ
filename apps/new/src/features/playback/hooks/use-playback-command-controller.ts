@@ -4,7 +4,7 @@ import {
   type PlaybackRemoteCommandResult,
 } from "../services/playback-remote-command-service";
 import type { PlaybackNativeCommandPlan } from "../services/playback-native-command-plan-service";
-import type { PlaybackAction } from "../services/playback-session-service";
+import type { PlaybackAction } from "../services/playback-session-action-service";
 import type {
   PlaybackQueueItem,
   PlaybackState,

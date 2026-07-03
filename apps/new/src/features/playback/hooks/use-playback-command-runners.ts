@@ -5,7 +5,7 @@ import {
   type PlaybackCommandPlan,
 } from "../services/playback-command-plan-service";
 import type { PlaybackNativeCommandPlan } from "../services/playback-native-command-plan-service";
-import type { PlaybackAction } from "../services/playback-session-service";
+import type { PlaybackAction } from "../services/playback-session-action-service";
 
 type UsePlaybackCommandRunnersParams = {
   beginAdBreak: () => void;

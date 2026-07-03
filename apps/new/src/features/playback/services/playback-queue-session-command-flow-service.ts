@@ -9,7 +9,7 @@ import {
   getTogglePlaybackLoopAction,
   getTogglePlaybackShuffleAction,
   type PlaybackAction,
-} from "./playback-session-service";
+} from "./playback-session-action-service";
 import type {
   PlaybackQueueItem,
   PlaybackState,

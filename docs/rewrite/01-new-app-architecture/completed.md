@@ -469,6 +469,8 @@
   flow service and into the save/export state service.
 - Moved playback queue action construction out of command flows and into the
   playback session service.
+- Split playback action types and queue/hydrate action constructors out of the
+  reducer service and into a focused playback session action service.
 - Moved import session saving and hydrate action construction out of command
   flows and into the import session state service.
 - Moved playback hydrate action construction out of the persistence flow and

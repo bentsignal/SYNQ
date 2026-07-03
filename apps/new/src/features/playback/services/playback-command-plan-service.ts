@@ -1,4 +1,4 @@
-import type { PlaybackAction } from "./playback-session-service";
+import type { PlaybackAction } from "./playback-session-action-service";
 import {
   getClearQueuePlaybackStepPlan,
   getPausePlaybackStepPlan,

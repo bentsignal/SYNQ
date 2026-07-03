@@ -55,8 +55,10 @@ import {
   getMovePlaybackQueueSongAction,
   getTogglePlaybackLoopAction,
   getTogglePlaybackShuffleAction,
-  playbackReducer,
   type PlaybackAction,
+} from "../../../apps/new/src/features/playback/services/playback-session-action-service";
+import {
+  playbackReducer,
 } from "../../../apps/new/src/features/playback/services/playback-session-service";
 import {
   getBeginPlaybackAdBreakAction,

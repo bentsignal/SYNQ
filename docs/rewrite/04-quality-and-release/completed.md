@@ -343,9 +343,13 @@
 - Added direct import save/export begin and finish action-constructor smoke
   coverage.
 - Added direct playback queue action-constructor smoke coverage.
+- Preserved direct playback queue action-constructor smoke coverage while
+  moving the constructors behind a focused action service.
 - Added direct import session saving and hydrate action-constructor smoke
   coverage.
 - Added direct playback hydrate action-constructor smoke coverage.
+- Preserved direct playback hydrate action-constructor smoke coverage while
+  moving the constructor behind the playback action service.
 - Added direct settings persistence action-constructor smoke coverage.
 - Added direct library song edit save action-constructor smoke coverage.
 - Added direct add-collection-songs and collection-form finish

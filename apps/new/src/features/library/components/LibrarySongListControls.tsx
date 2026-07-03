@@ -1,11 +1,10 @@
 import { Pressable, Text, TextInput, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import type {
   LibrarySongPreviewOrder,
   LibrarySongPreviewSort,
 } from "../hooks/use-library-song-preview-query";
-import { getLibrarySongListControlsState } from "../services/library-song-preview-state-service";
+import { useLibrarySongListControls } from "../hooks/use-library-song-list-controls";
 
 type LibrarySongListControlsProps = {
   order: LibrarySongPreviewOrder;
@@ -25,8 +24,13 @@ export function LibrarySongListControls({
   sort,
 }: LibrarySongListControlsProps) {
   const theme = useCustomizationTheme();
-  const { sendHaptic } = useHapticFeedback();
-  const controlsState = getLibrarySongListControlsState({ order, sort });
+  const { controlsState, selectSort, toggleOrder } =
+    useLibrarySongListControls({
+      order,
+      setOrder,
+      setSort,
+      sort,
+    });
 
   return (
     <View className="gap-2.5">
@@ -52,10 +56,7 @@ export function LibrarySongListControls({
               key={option.value}
               accessibilityRole="button"
               accessibilityState={{ selected: option.isActive }}
-              onPress={() => {
-                sendHaptic(option.haptic);
-                setSort(option.value);
-              }}
+              onPress={() => selectSort(option.value)}
               className="min-h-[38px] min-w-[72px] items-center justify-center rounded-lg border px-3"
               style={{
                 backgroundColor: option.isActive
@@ -78,10 +79,7 @@ export function LibrarySongListControls({
 
         <Pressable
           accessibilityRole="button"
-          onPress={() => {
-            sendHaptic(controlsState.orderButton.haptic);
-            setOrder(controlsState.orderButton.nextOrder);
-          }}
+          onPress={toggleOrder}
           className="min-h-[38px] min-w-[72px] items-center justify-center rounded-lg border px-3"
           style={{
             backgroundColor: theme.primaryText,

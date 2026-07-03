@@ -86,3 +86,5 @@
   form command patterns.
 - Moved library song preview row play/queue side effects out of the row
   component into a dedicated action hook.
+- Moved library song list sort/order haptic handlers out of the controls
+  component into a dedicated controls hook.

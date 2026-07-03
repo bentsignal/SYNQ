@@ -82,6 +82,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: playback player button rendering now lives in a focused control
     button component instead of the player controls component repeating themed
     button markup for every playback command.
+  - Done: playback persistence defensive normalizers now live in a focused
+    normalizer service instead of the persistence codec owning every restore
+    validation detail.
   - Done: collection detail song-row aggregation now lives in a focused song
     detail service instead of the detail shell builder owning song grouping,
     artist/album fallback labels, and track sorting.

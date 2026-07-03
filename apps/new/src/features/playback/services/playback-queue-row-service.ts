@@ -49,3 +49,7 @@ export const getPlaybackQueueRowPresentation = ({
   moveUpLabel: "Up",
   removeLabel: "Remove",
 });
+
+export type PlaybackQueueRowPresentation = ReturnType<
+  typeof getPlaybackQueueRowPresentation
+>;

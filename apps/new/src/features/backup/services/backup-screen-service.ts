@@ -1,8 +1,4 @@
-import type {
-  BackupPhase,
-  BackupOperation,
-  BackupSessionState,
-} from "../types/backup-session";
+import type { BackupOperation, BackupSessionState } from "../types/backup-session";
 import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import { getSettingsBackLink } from "../../settings/services/settings-navigation-service";
 
@@ -104,33 +100,3 @@ export const getBackupStatusState = (state: BackupSessionState) => ({
       ? `${getBackupOperationLabel(state.lastOperation)} ${state.phase}`
       : "No backup operation has run."),
 });
-
-export const getBackupPhaseTransitionEffects = ({
-  currentState,
-  previousPhase,
-}: {
-  currentState: BackupSessionState;
-  previousPhase: BackupPhase;
-}) => {
-  if (previousPhase === currentState.phase) {
-    return {
-      haptic: null,
-      shouldResetRuntimeSessions: false,
-    };
-  }
-
-  const succeededWithLibraryReplacement =
-    currentState.phase === "success" &&
-    (currentState.lastOperation === "erase" ||
-      currentState.lastOperation === "restore");
-
-  return {
-    haptic:
-      currentState.phase === "success"
-        ? ("success" as const)
-        : currentState.phase === "failure"
-          ? ("error" as const)
-          : null,
-    shouldResetRuntimeSessions: succeededWithLibraryReplacement,
-  };
-};

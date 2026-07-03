@@ -120,3 +120,5 @@
   and album reuse plus new artist and album insertion.
 - Added library export audio-tag smoke coverage for metadata-only and
   artwork-embedded ID3 payload construction.
+- Preserved backup phase-transition smoke coverage while moving the effect
+  decision helper behind a dedicated service boundary.

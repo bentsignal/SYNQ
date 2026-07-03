@@ -231,3 +231,5 @@
   entity-link service used by the import song linking executor.
 - Split library export ID3 tag construction into a focused pure helper used by
   export metadata writeback orchestration.
+- Split backup phase-transition side-effect decisions out of the backup screen
+  state service and into a focused phase-effect service.

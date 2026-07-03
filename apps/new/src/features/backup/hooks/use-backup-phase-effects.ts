@@ -3,7 +3,7 @@ import { useImportSessionSelector } from "@/src/features/import/hooks/use-import
 import { usePlaybackResetSession } from "@/src/features/playback/hooks/use-playback-session-selectors";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useCustomizationSettingsSelector } from "@/src/features/settings/state/CustomizationSettingsProvider";
-import { getBackupPhaseTransitionEffects } from "../services/backup-screen-service";
+import { getBackupPhaseTransitionEffects } from "../services/backup-phase-effect-service";
 import type { BackupSessionState } from "../types/backup-session";
 
 export function useBackupPhaseEffects(state: BackupSessionState) {

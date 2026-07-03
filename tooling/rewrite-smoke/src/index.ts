@@ -655,13 +655,15 @@ import {
   getBackupActionState,
   getBackupConfirmationState,
   getBackupOperationConfirmCommand,
-  getBackupPhaseTransitionEffects,
   getBackupOperationLabel,
   getBackupOperationStartCommand,
   getBackupResetStatusCommand,
   getBackupScreenState,
   getBackupStatusState,
 } from "../../../apps/new/src/features/backup/services/backup-screen-service";
+import {
+  getBackupPhaseTransitionEffects,
+} from "../../../apps/new/src/features/backup/services/backup-phase-effect-service";
 import {
   backupSessionReducer,
   getBackupSessionErrorMessage,

@@ -14,3 +14,7 @@
   ingest, library, playback, settings, backup, and premium.
 - Replaced old `/player/edit` active-track options access with an `Edit song`
   link on the new player screen that routes to the library song edit flow.
+- Intentionally replaced old `/album/reorder` with inline persisted Up/Down
+  song ordering controls on the new collection detail rows.
+- Restored `/import/export` route parity as an alias to the new import save
+  screen, where draft export and save/discard actions now live together.

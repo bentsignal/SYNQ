@@ -3,6 +3,7 @@ export type ImportNavigationHref =
   | "/(tabs)/import"
   | "/(tabs)/import/files"
   | "/(tabs)/import/wifi"
+  | "/(tabs)/import/export"
   | "/(tabs)/import/save"
   | "/(tabs)/import/success"
   | "/(tabs)/import/failure"
@@ -18,6 +19,9 @@ export const getImportWifiHref = (): ImportNavigationHref =>
 
 export const getImportSaveHref = (): ImportNavigationHref =>
   "/(tabs)/import/save";
+
+export const getImportExportHref = (): ImportNavigationHref =>
+  "/(tabs)/import/export";
 
 export const getImportLibraryHref = (): ImportNavigationHref =>
   "/(tabs)/library";

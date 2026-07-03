@@ -8,19 +8,19 @@
 
 ## Route Audit Evidence
 
-- Old `/import/export` has no direct new route. New import save exposes draft
-  export via `use-import-save-export-actions.ts` and `ImportSaveActions.tsx`, so
-  this is a step/route-shape parity question rather than obviously missing
-  export capability.
+- Old `/import/export` now resolves in the new app as an alias to the import
+  save screen. The new screen owns draft export via
+  `use-import-save-export-actions.ts` and `ImportSaveActions.tsx` alongside
+  save/discard actions.
 - Old `/ingest/*` has no new `apps/new/app/ingest` or
   `apps/new/src/features/ingest` equivalent. Decide whether the old ingest stack
   is obsolete or must be rebuilt into the new import feature.
 - Old top-level collection and song routes mostly moved under
   `/(tabs)/library/*`. Treat route-shape changes as acceptable only after each
   linked flow is manually checked from new navigation.
-- Old `/album/reorder` has no obvious new route/action. New collection detail
-  supports row-level up/down persistence, but there is no dedicated album
-  reorder screen.
+- Old `/album/reorder` drag ordering is intentionally replaced by inline
+  persisted Up/Down song controls on new collection detail rows. This applies
+  to albums, artists, and playlists instead of only albums.
 - Old `/player/edit` exposed active-track options from the player. New player
   now exposes `Edit song` for the active track when playback commands are not
   blocked by an ad gate, routing to the existing library song edit flow.

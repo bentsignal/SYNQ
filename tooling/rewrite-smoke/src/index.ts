@@ -76,6 +76,7 @@ import {
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
   getImportDiscardResultHref,
+  getImportExportHref,
   getImportFilesHref,
   getImportFilesResultHref,
   getImportFinishResultHref,
@@ -1261,6 +1262,7 @@ function assertImportSessionSmoke() {
   assert.equal(getImportHomeHref(), "/(tabs)/import");
   assert.equal(getImportFilesHref(), "/(tabs)/import/files");
   assert.equal(getImportSaveHref(), "/(tabs)/import/save");
+  assert.equal(getImportExportHref(), "/(tabs)/import/export");
   assert.equal(getImportLibraryHref(), "/(tabs)/library");
   assert.equal(getImportPremiumHref(), "/premium");
   assert.deepEqual(getImportFilesActionState(state), {

@@ -5,9 +5,9 @@
   premium, settings, and all library collection flows.
 - [ ] Decide whether old `/ingest/*` is obsolete or must be rebuilt in the new
   import feature.
-- [ ] Decide whether old `/import/export` needs a distinct new route or whether
+- [x] Decide whether old `/import/export` needs a distinct new route or whether
   new save-screen export is the intended replacement.
-- [ ] Add or intentionally replace old album reorder parity.
+- [x] Add or intentionally replace old album reorder parity.
 - [x] Add active-player edit/options access or intentionally replace old
   `/player/edit` behavior.
 - [ ] Verify edit/delete/export behavior for songs, playlists, albums, and

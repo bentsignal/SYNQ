@@ -1,5 +1,12 @@
 const { defineConfig } = require("eslint/config");
 const expoConfig = require("eslint-config-expo/flat");
+const noStyleSheet = require("./eslint-rules/no-stylesheet");
+
+const synqNativewindPlugin = {
+  rules: {
+    "no-stylesheet": noStyleSheet,
+  },
+};
 
 module.exports = defineConfig([
   {
@@ -8,16 +15,11 @@ module.exports = defineConfig([
   expoConfig,
   {
     files: ["**/*.{ts,tsx}"],
+    plugins: {
+      "synq-nativewind": synqNativewindPlugin,
+    },
     rules: {
-      "no-restricted-syntax": [
-        "error",
-        {
-          selector:
-            "CallExpression[callee.object.name='StyleSheet'][callee.property.name='create']",
-          message:
-            "Use NativeWind/utility classes in the new app instead of StyleSheet.create.",
-        },
-      ],
+      "synq-nativewind/no-stylesheet": "error",
     },
   },
 ]);

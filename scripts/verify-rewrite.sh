@@ -131,6 +131,9 @@ pnpm typecheck
 echo "==> Lint"
 pnpm lint
 
+echo "==> New app custom ESLint rules"
+bash scripts/verify-new-app-eslint-rules.sh
+
 echo "==> Whitespace"
 git diff --check
 

@@ -62,3 +62,6 @@
 - Added import library file executor smoke coverage for library path planning,
   audio copy/cache cleanup order, no-op file deletion, unavailable document
   directories, and copy failures.
+- Added import library link executor smoke coverage for normalized artist/album
+  reuse and inserts, song relationships, album-cover updates, playlist linking,
+  and no-album imports.

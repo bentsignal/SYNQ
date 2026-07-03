@@ -179,3 +179,5 @@
   cleanup behind an injectable repository executor.
 - Moved import library audio file movement and cache cleanup behind an
   injectable file executor.
+- Moved import library artist, album, cover, and playlist linking orchestration
+  behind an injectable executor.

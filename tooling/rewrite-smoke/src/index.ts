@@ -222,6 +222,10 @@ import {
   splitImportLibraryNames,
 } from "../../../apps/new/src/features/import/services/import-library-save-plan-service";
 import {
+  linkImportSongToLibraryWithDependencies,
+  type ImportLibraryLinkDependencies,
+} from "../../../apps/new/src/features/import/services/import-library-link-executor-service";
+import {
   deleteLibrarySongFilesWithDependencies,
   getImportLibraryDirectoryWithDependencies,
   getImportLibrarySongDirectory,
@@ -7219,6 +7223,128 @@ async function assertImportLibraryFileExecutorSmoke() {
   ]);
 }
 
+async function assertImportLibraryLinkExecutorSmoke() {
+  const calls: string[] = [];
+  const existingArtists = new Map<string, number>([["Alice", 7]]);
+  const existingAlbums = new Map<string, number>([["Existing Album", 70]]);
+  let nextArtistId = 100;
+  let nextAlbumId = 200;
+  let savedCover: string | null = "cover-hash";
+  const dependencies: ImportLibraryLinkDependencies = {
+    findAlbumIdByName: async (name) => {
+      calls.push(`find-album:${name}`);
+      return existingAlbums.get(name) ?? null;
+    },
+    findArtistIdByName: async (name) => {
+      calls.push(`find-artist:${name}`);
+      return existingArtists.get(name) ?? null;
+    },
+    insertAlbum: async (name) => {
+      calls.push(`insert-album:${name}`);
+      const id = nextAlbumId++;
+      existingAlbums.set(name, id);
+      return id;
+    },
+    insertArtist: async (name) => {
+      calls.push(`insert-artist:${name}`);
+      const id = nextArtistId++;
+      existingArtists.set(name, id);
+      return id;
+    },
+    linkArtistAlbum: async ({ albumId, artistId }) => {
+      calls.push(`link-artist-album:${artistId}:${albumId}`);
+    },
+    linkSongAlbum: async ({ albumId, songId, track }) => {
+      calls.push(`link-song-album:${songId}:${albumId}:${track ?? "none"}`);
+    },
+    linkSongArtist: async ({ artistId, songId }) => {
+      calls.push(`link-song-artist:${songId}:${artistId}`);
+    },
+    linkSongToLibraryPlaylist: async (songId) => {
+      calls.push(`link-playlist:${songId}`);
+    },
+    saveCoverImage: async (artwork) => {
+      calls.push(`save-cover:${artwork ?? "none"}`);
+      return savedCover;
+    },
+    updateAlbumCover: async ({ albumId, coverImage }) => {
+      calls.push(`update-album-cover:${albumId}:${coverImage}`);
+    },
+  };
+
+  assert.deepEqual(
+    await linkImportSongToLibraryWithDependencies({
+      dependencies,
+      song: {
+        ...importDraft(71),
+        album: "  New Album  ",
+        artist: " Alice, Bob, Unknown Artist ",
+        artwork: "data:image/png;base64,cover",
+        track: 3,
+      },
+      songId: 42,
+    }),
+    { linkedAlbum: true },
+  );
+  assert.deepEqual(calls, [
+    "find-artist:Alice",
+    "link-song-artist:42:7",
+    "find-artist:Bob",
+    "insert-artist:Bob",
+    "link-song-artist:42:100",
+    "find-album:New Album",
+    "insert-album:New Album",
+    "link-song-album:42:200:3",
+    "save-cover:data:image/png;base64,cover",
+    "update-album-cover:200:cover-hash",
+    "link-artist-album:7:200",
+    "link-artist-album:100:200",
+    "link-playlist:42",
+  ]);
+
+  calls.length = 0;
+  savedCover = null;
+  assert.deepEqual(
+    await linkImportSongToLibraryWithDependencies({
+      dependencies,
+      song: {
+        ...importDraft(72),
+        album: "Existing Album",
+        artist: "Unknown Artist",
+        artwork: null,
+        track: null,
+      },
+      songId: 43,
+    }),
+    { linkedAlbum: true },
+  );
+  assert.deepEqual(calls, [
+    "find-album:Existing Album",
+    "link-song-album:43:70:none",
+    "save-cover:none",
+    "link-playlist:43",
+  ]);
+
+  calls.length = 0;
+  assert.deepEqual(
+    await linkImportSongToLibraryWithDependencies({
+      dependencies,
+      song: {
+        ...importDraft(73),
+        album: "Unknown Album",
+        artist: " Alice ",
+      },
+      songId: 44,
+    }),
+    { linkedAlbum: false },
+  );
+  assert.deepEqual(calls, [
+    "find-artist:Alice",
+    "link-song-artist:44:7",
+    "link-playlist:44",
+  ]);
+}
+
 async function assertImportLibrarySavePlanSmoke() {
   assert.equal(hasMeaningfulImportLibraryName("Unknown"), false);
   assert.equal(hasMeaningfulImportLibraryName("Unknown Artist"), false);
@@ -8874,6 +9000,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertImportFileCacheExecutorSmoke();
   await assertImportSessionPersistenceExecutorSmoke();
   await assertImportLibraryFileExecutorSmoke();
+  await assertImportLibraryLinkExecutorSmoke();
   await assertWifiImportRequestSmoke();
   await assertBackupCommandExecutorSmoke();
   await assertPremiumPurchaseExecutorSmoke();

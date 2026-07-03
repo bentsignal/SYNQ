@@ -23,6 +23,36 @@ export const getBackupSessionErrorMessage = (caughtError: unknown) =>
     ? caughtError.message
     : "Backup operation failed.";
 
+export const getBackupSessionStartAction = (
+  operation: BackupOperation,
+): BackupSessionAction => ({
+  operation,
+  type: "start",
+});
+
+export const getBackupSessionSucceedAction = (
+  result: BackupCommandResult,
+): BackupSessionAction => ({
+  result,
+  type: "succeed",
+});
+
+export const getBackupSessionFailAction = ({
+  error,
+  operation,
+}: {
+  error: string;
+  operation: BackupOperation;
+}): BackupSessionAction => ({
+  error,
+  operation,
+  type: "fail",
+});
+
+export const getBackupSessionResetAction = (): BackupSessionAction => ({
+  type: "reset",
+});
+
 export const backupSessionReducer = (
   state: BackupSessionState,
   action: BackupSessionAction,

@@ -3,7 +3,11 @@ import type {
   BackupOperation,
 } from "../types/backup-session";
 import {
+  getBackupSessionFailAction,
   getBackupSessionErrorMessage,
+  getBackupSessionResetAction,
+  getBackupSessionStartAction,
+  getBackupSessionSucceedAction,
   type BackupSessionAction,
 } from "./backup-session-state-service";
 
@@ -18,17 +22,16 @@ export const runBackupSessionOperationCommand = async ({
   operation: BackupOperation;
   runBackupCommand: (operation: BackupOperation) => Promise<BackupCommandResult>;
 }) => {
-  dispatch({ operation, type: "start" });
+  dispatch(getBackupSessionStartAction(operation));
 
   try {
     const result = await runBackupCommand(operation);
-    dispatch({ result, type: "succeed" });
+    dispatch(getBackupSessionSucceedAction(result));
   } catch (caughtError) {
-    dispatch({
+    dispatch(getBackupSessionFailAction({
       error: getBackupSessionErrorMessage(caughtError),
       operation,
-      type: "fail",
-    });
+    }));
   }
 };
 
@@ -37,5 +40,5 @@ export const runBackupSessionResetCommand = ({
 }: {
   dispatch: BackupSessionCommandDispatch;
 }) => {
-  dispatch({ type: "reset" });
+  dispatch(getBackupSessionResetAction());
 };

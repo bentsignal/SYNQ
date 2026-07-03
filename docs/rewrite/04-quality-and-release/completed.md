@@ -319,3 +319,4 @@
   coverage.
 - Added direct Wi-Fi import server stop action-constructor smoke coverage.
 - Added direct premium purchase action-constructor smoke coverage.
+- Added direct backup session action-constructor smoke coverage.

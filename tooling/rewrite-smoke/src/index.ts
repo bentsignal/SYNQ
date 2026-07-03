@@ -1029,6 +1029,10 @@ import {
 import {
   backupSessionReducer,
   getBackupSessionErrorMessage,
+  getBackupSessionFailAction,
+  getBackupSessionResetAction,
+  getBackupSessionStartAction,
+  getBackupSessionSucceedAction,
   initialBackupSessionState,
   type BackupSessionAction,
 } from "../../../apps/new/src/features/backup/services/backup-session-state-service";
@@ -13229,11 +13233,37 @@ async function assertBackupScreenSmoke() {
   };
   const startedBackupState = backupSessionReducer(
     initialBackupSessionState,
-    {
+    getBackupSessionStartAction("backup"),
+  );
+  assert.deepEqual(getBackupSessionStartAction("backup"), {
+    operation: "backup",
+    type: "start",
+  });
+  assert.deepEqual(
+    getBackupSessionSucceedAction({
+      message: "Backup complete.",
       operation: "backup",
-      type: "start",
+    }),
+    {
+      result: {
+        message: "Backup complete.",
+        operation: "backup",
+      },
+      type: "succeed",
     },
   );
+  assert.deepEqual(
+    getBackupSessionFailAction({
+      error: "Backup failed.",
+      operation: "backup",
+    }),
+    {
+      error: "Backup failed.",
+      operation: "backup",
+      type: "fail",
+    },
+  );
+  assert.deepEqual(getBackupSessionResetAction(), { type: "reset" });
 
   assert.deepEqual(
     backupActionCards.map((card) => card.operation),
@@ -13253,21 +13283,23 @@ async function assertBackupScreenSmoke() {
     requiresPremium: true,
   });
   assert.deepEqual(
-    backupSessionReducer(startedBackupState, {
-      result: {
+    backupSessionReducer(
+      startedBackupState,
+      getBackupSessionSucceedAction({
         message: "Backup complete.",
         operation: "backup",
-      },
-      type: "succeed",
-    }),
+      }),
+    ),
     successState,
   );
   assert.deepEqual(
-    backupSessionReducer(startedBackupState, {
-      error: "Backup failed.",
-      operation: "backup",
-      type: "fail",
-    }),
+    backupSessionReducer(
+      startedBackupState,
+      getBackupSessionFailAction({
+        error: "Backup failed.",
+        operation: "backup",
+      }),
+    ),
     {
       error: "Backup failed.",
       lastOperation: "backup",
@@ -13277,7 +13309,7 @@ async function assertBackupScreenSmoke() {
     },
   );
   assert.deepEqual(
-    backupSessionReducer(successState, { type: "reset" }),
+    backupSessionReducer(successState, getBackupSessionResetAction()),
     initialBackupSessionState,
   );
   assert.equal(

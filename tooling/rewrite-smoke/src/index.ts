@@ -444,6 +444,9 @@ import {
   runImportFilesRemoveAction,
 } from "../../../apps/new/src/features/import/services/import-files-action-flow-service";
 import {
+  runImportWifiReviewSaveAction,
+} from "../../../apps/new/src/features/import/services/import-wifi-action-flow-service";
+import {
   getWifiImportServerStartErrorMessage,
   getWifiUploadFailureResponse,
   wifiImportFinishResponse,
@@ -3833,6 +3836,13 @@ async function assertImportSessionSmoke() {
     },
   });
   assert.equal(getImportWifiReviewSaveHaptic(), "light");
+  const importWifiActionEvents: unknown[] = [];
+  runImportWifiReviewSaveAction({
+    sendHaptic: (haptic) => {
+      importWifiActionEvents.push(["haptic", haptic]);
+    },
+  });
+  assert.deepEqual(importWifiActionEvents, [["haptic", "light"]]);
   assert.deepEqual(
     getImportHomeState({ premiumActive: true, state }).routes.map((route) => ({
       href: route.href,

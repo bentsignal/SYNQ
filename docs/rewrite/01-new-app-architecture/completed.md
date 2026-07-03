@@ -331,3 +331,5 @@
   sequencing out of the React hook and into a focused action-flow service.
 - Moved import file-screen choose/remove haptic and navigation sequencing out
   of the React hook and into a focused action-flow service.
+- Reused the import file removal action flow from the Wi-Fi import screen and
+  moved review-save haptic sequencing into a focused action-flow service.

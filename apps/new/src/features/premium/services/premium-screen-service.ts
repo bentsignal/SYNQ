@@ -2,7 +2,7 @@ import type {
   PremiumPurchaseState,
   PremiumTier,
 } from "../types/premium-purchase";
-import { getSettingsBackLink } from "../../settings/services/settings-screen-service";
+import { getSettingsBackLink } from "../../settings/services/settings-navigation-service";
 
 export const premiumFeatureCopy = [
   "Unlimited library import",

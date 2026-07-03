@@ -3,7 +3,7 @@ import type {
   BackupOperation,
   BackupSessionState,
 } from "../types/backup-session";
-import { getSettingsBackLink } from "../../settings/services/settings-screen-service";
+import { getSettingsBackLink } from "../../settings/services/settings-navigation-service";
 
 export type BackupActionCard = {
   body: string;

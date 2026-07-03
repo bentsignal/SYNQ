@@ -370,12 +370,14 @@ import {
   getPrivacyScreenViewState,
   getPrivacyScreenState,
   getPrivacySettingsErrorMessage,
-  getSettingsBackLink,
-  getSettingsHomeHref,
-  getSettingsPremiumHref,
   getSupportScreenViewState,
   shouldSendHapticForHapticsToggle,
 } from "../../../apps/new/src/features/settings/services/settings-screen-service";
+import {
+  getSettingsBackLink,
+  getSettingsHomeHref,
+  getSettingsPremiumHref,
+} from "../../../apps/new/src/features/settings/services/settings-navigation-service";
 import {
   createInitialSettingsPersistenceState,
   settingsPersistenceReducer,

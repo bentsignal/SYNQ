@@ -1,5 +1,5 @@
 import { Linking } from "react-native";
-import { supportActions } from "../services/settings-screen-service";
+import { supportActions } from "../services/settings-navigation-service";
 import { useHapticFeedback } from "./use-haptic-feedback";
 
 export function useSupportScreenController() {

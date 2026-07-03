@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { CustomizationTheme } from "../hooks/use-customization-theme";
-import { getSettingsPremiumHref } from "../services/settings-screen-service";
+import { getSettingsPremiumHref } from "../services/settings-navigation-service";
 
 type CustomizationPremiumPanelProps = {
   theme: CustomizationTheme;

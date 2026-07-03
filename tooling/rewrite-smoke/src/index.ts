@@ -88,6 +88,8 @@ import {
 } from "../../../apps/new/src/features/import/services/import-navigation-service";
 import {
   getImportSaveExportErrorMessage,
+  getImportSaveExportFailureCommand,
+  getImportSaveExportSuccessCommand,
   importSaveExportReducer,
   initialImportSaveExportState,
 } from "../../../apps/new/src/features/import/services/import-save-export-state-service";
@@ -1551,6 +1553,19 @@ function assertImportSessionSmoke() {
   assert.equal(
     getImportSaveExportErrorMessage(undefined),
     "Staged songs could not be exported.",
+  );
+  assert.deepEqual(getImportSaveExportSuccessCommand(), {
+    haptic: "success",
+  });
+  assert.deepEqual(
+    getImportSaveExportFailureCommand(new Error("Export smoke failure")),
+    {
+      action: {
+        error: "Export smoke failure",
+        type: "fail",
+      },
+      haptic: "error",
+    },
   );
   assert.deepEqual(
     getImportSuccessState({

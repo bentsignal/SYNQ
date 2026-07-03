@@ -3,7 +3,6 @@ import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportSaveController } from "../hooks/use-import-save-controller";
 import { getImportSaveBackLink } from "../services/import-save-screen-state-service";
-import type { ImportSessionState } from "../types/import-session";
 import { ImportPremiumGate } from "./ImportPremiumGate";
 import { ImportSaveActions } from "./ImportSaveActions";
 import { ImportSaveExportErrorPanel } from "./ImportSaveExportErrorPanel";
@@ -11,9 +10,7 @@ import { ImportSaveHeader } from "./ImportSaveHeader";
 import { ImportSaveLibraryToggle } from "./ImportSaveLibraryToggle";
 import { ImportSongPreviewList } from "./ImportSongPreviewList";
 
-type ImportSaveScreenViewProps = ImportSaveController & {
-  state: ImportSessionState;
-};
+type ImportSaveScreenViewProps = ImportSaveController;
 
 export function ImportSaveScreenView({
   actionState,

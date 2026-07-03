@@ -1,21 +1,19 @@
 import { useImportSaveExportActions } from "./use-import-save-export-actions";
 import { useImportSaveSessionActions } from "./use-import-save-session-actions";
+import { useImportSessionSelector } from "./use-import-session";
 import { getImportSaveActionState } from "../services/import-save-screen-state-service";
-import type { ImportSessionState } from "../types/import-session";
 
-type UseImportSaveControllerParams = {
-  discardSession: () => Promise<boolean>;
-  saveImportSession: () => Promise<boolean>;
-  setShouldSaveToLibrary: (shouldSaveToLibrary: boolean) => void;
-  state: ImportSessionState;
-};
-
-export function useImportSaveController({
-  discardSession,
-  saveImportSession,
-  setShouldSaveToLibrary,
-  state,
-}: UseImportSaveControllerParams) {
+export function useImportSaveController() {
+  const discardSession = useImportSessionSelector(
+    (store) => store.discardSession,
+  );
+  const saveImportSession = useImportSessionSelector(
+    (store) => store.saveImportSession,
+  );
+  const setShouldSaveToLibrary = useImportSessionSelector(
+    (store) => store.setShouldSaveToLibrary,
+  );
+  const state = useImportSessionSelector((store) => store.state);
   const exportActions = useImportSaveExportActions({ state });
   const sessionActions = useImportSaveSessionActions({
     discardSession,
@@ -30,6 +28,7 @@ export function useImportSaveController({
 
   return {
     actionState,
+    state,
     ...exportActions,
     ...sessionActions,
   };

@@ -725,6 +725,7 @@ import {
   runCreateCollectionFormSaveCommand,
   runEditCollectionFormSaveCommand,
 } from "../../../apps/new/src/features/library/services/collection-form-mutation-command-flow-service";
+import { runCollectionFormSaveAttempt } from "../../../apps/new/src/features/library/services/collection-form-mutation-runtime-service";
 import {
   getCollectionFormActionState,
   getCollectionFormControllerResultState,
@@ -10171,6 +10172,50 @@ async function assertCollectionFormSmoke() {
   const replaceCollectionFormRoute = (href: string) => {
     collectionFormCommandEvents.push(["route", href]);
   };
+  const collectionFormAttemptEvents: unknown[] = [];
+  await runCollectionFormSaveAttempt({
+    dispatch: (action) => {
+      collectionFormAttemptEvents.push(["dispatch", action]);
+    },
+    kind: "album",
+    onSuccess: (id) => {
+      collectionFormAttemptEvents.push(["success", id]);
+    },
+    operation: "create",
+    run: async () => {
+      collectionFormAttemptEvents.push(["run"]);
+      return { id: 47 };
+    },
+    sendHaptic: (haptic) => {
+      collectionFormAttemptEvents.push(["haptic", haptic]);
+    },
+  });
+  await runCollectionFormSaveAttempt({
+    dispatch: (action) => {
+      collectionFormAttemptEvents.push(["dispatch", action]);
+    },
+    kind: "playlist",
+    onSuccess: (id) => {
+      collectionFormAttemptEvents.push(["unexpected-success", id]);
+    },
+    operation: "update",
+    run: async () => {
+      throw new Error("Attempt failed");
+    },
+    sendHaptic: (haptic) => {
+      collectionFormAttemptEvents.push(["haptic", haptic]);
+    },
+  });
+  assert.deepEqual(collectionFormAttemptEvents, [
+    ["dispatch", { type: "begin-save" }],
+    ["run"],
+    ["success", 47],
+    ["dispatch", { type: "finish-save" }],
+    ["dispatch", { type: "begin-save" }],
+    ["haptic", "error"],
+    ["dispatch", { error: "Attempt failed", type: "fail" }],
+    ["dispatch", { type: "finish-save" }],
+  ]);
   await runCreateCollectionFormSaveCommand({
     canSave: false,
     createCollectionFromForm: async () => {

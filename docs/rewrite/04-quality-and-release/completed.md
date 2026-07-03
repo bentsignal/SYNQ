@@ -291,3 +291,5 @@
   image resolution, error ordering, and timestamp normalization.
 - Added direct addable collection songs result smoke coverage for linked-state
   filtering, error ordering, and timestamp normalization.
+- Added direct edit collection row query smoke coverage for row selection,
+  error preference, and timestamp merging.

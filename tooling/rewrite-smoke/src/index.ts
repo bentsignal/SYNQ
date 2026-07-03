@@ -803,7 +803,12 @@ import {
   getAddCollectionSongsStatusState,
   getAddCollectionSongsUpdatedLabel,
 } from "../../../apps/new/src/features/library/services/addable-collection-songs-screen-state-service";
-import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
+import {
+  buildEditAlbumRowQueryResult,
+  buildEditCollectionRowQueryResult,
+  buildEditCollectionState,
+  getEditAlbumRowQueryUpdatedAt,
+} from "../../../apps/new/src/features/library/services/edit-collection-query-service";
 import {
   filterCollectionPreviews,
   getLibraryCollectionCreateHref,
@@ -8886,6 +8891,45 @@ async function assertLibrarySongExportSnapshotExecutorSmoke() {
 
 function assertEditCollectionQuerySmoke() {
   const getImagePath = (hash: string) => `/images/${hash}-small.jpg`;
+  const editAlbumRowResult = buildEditAlbumRowQueryResult({
+    albumError: null,
+    albumRows: [{ coverImage: "album-cover", name: "Smoke Album", year: 2026 }],
+    albumUpdatedAt: new Date(20),
+    artistRows: [
+      { id: 2, name: "Beta Artist" },
+      { id: 1, name: "Alpha Artist" },
+    ],
+    artistRowsError: new Error("artist rows smoke"),
+    artistRowsUpdatedAt: new Date(30),
+  });
+  assert.equal(editAlbumRowResult.row?.name, "Smoke Album");
+  assert.deepEqual(
+    editAlbumRowResult.artistRows.map((artist) => artist.id),
+    [2, 1],
+  );
+  assert.equal(
+    (editAlbumRowResult.error as Error).message,
+    "artist rows smoke",
+  );
+  assert.equal(editAlbumRowResult.updatedAt?.getTime(), 30);
+  assert.equal(
+    getEditAlbumRowQueryUpdatedAt({
+      albumUpdatedAt: undefined,
+      artistRowsUpdatedAt: undefined,
+    }),
+    undefined,
+  );
+  const editArtistRowResult = buildEditCollectionRowQueryResult({
+    error: new Error("artist smoke"),
+    rows: [{ name: "Smoke Artist", profileImage: "artist-profile" }],
+    updatedAt: new Date(40),
+  });
+  assert.equal((editArtistRowResult.error as Error).message, "artist smoke");
+  assert.deepEqual(editArtistRowResult.row, {
+    name: "Smoke Artist",
+    profileImage: "artist-profile",
+  });
+  assert.equal(editArtistRowResult.updatedAt?.getTime(), 40);
 
   const album = buildEditCollectionState({
     albumArtistRows: [

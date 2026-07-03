@@ -3,45 +3,44 @@ import {
   useEditArtistRowLiveQuery,
   useEditPlaylistRowLiveQuery,
 } from "../data/use-edit-collection-row-live-query";
-import type {
-  EditCollectionAlbumArtistRow,
-  EditCollectionAlbumRow,
-  EditCollectionArtistRow,
-  EditCollectionPlaylistRow,
+import {
+  buildEditAlbumRowQueryResult,
+  buildEditCollectionRowQueryResult,
+  type EditCollectionAlbumArtistRow,
+  type EditCollectionAlbumRow,
+  type EditCollectionArtistRow,
+  type EditCollectionPlaylistRow,
 } from "../services/edit-collection-query-service";
 
 export function useEditAlbumRowQuery(id: number) {
   const { album, artists } = useEditAlbumRowLiveQuery(id);
 
-  return {
-    artistRows: (artists.data ?? []) as EditCollectionAlbumArtistRow[],
-    error: album.error ?? artists.error,
-    row: album.data?.[0] as EditCollectionAlbumRow | undefined,
-    updatedAt:
-      album.updatedAt && artists.updatedAt
-        ? new Date(
-            Math.max(album.updatedAt.getTime(), artists.updatedAt.getTime()),
-          )
-        : album.updatedAt ?? artists.updatedAt,
-  };
+  return buildEditAlbumRowQueryResult({
+    albumError: album.error,
+    albumRows: album.data as EditCollectionAlbumRow[] | undefined,
+    albumUpdatedAt: album.updatedAt,
+    artistRows: artists.data as EditCollectionAlbumArtistRow[] | undefined,
+    artistRowsError: artists.error,
+    artistRowsUpdatedAt: artists.updatedAt,
+  });
 }
 
 export function useEditArtistRowQuery(id: number) {
   const artist = useEditArtistRowLiveQuery(id);
 
-  return {
+  return buildEditCollectionRowQueryResult({
     error: artist.error,
-    row: artist.data?.[0] as EditCollectionArtistRow | undefined,
+    rows: artist.data as EditCollectionArtistRow[] | undefined,
     updatedAt: artist.updatedAt,
-  };
+  });
 }
 
 export function useEditPlaylistRowQuery(id: number) {
   const playlist = useEditPlaylistRowLiveQuery(id);
 
-  return {
+  return buildEditCollectionRowQueryResult({
     error: playlist.error,
-    row: playlist.data?.[0] as EditCollectionPlaylistRow | undefined,
+    rows: playlist.data as EditCollectionPlaylistRow[] | undefined,
     updatedAt: playlist.updatedAt,
-  };
+  });
 }

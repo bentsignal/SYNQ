@@ -84,3 +84,5 @@
 - Added song metadata relationship executor smoke coverage for name
   normalization, unknown-label filtering, deduping, song join replacement, and
   album-artist link preservation.
+- Added collection song membership executor smoke coverage for append order,
+  duplicate no-ops, protected playlist guards, and liked-song deletion.

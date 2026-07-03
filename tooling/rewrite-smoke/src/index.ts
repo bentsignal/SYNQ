@@ -378,6 +378,14 @@ import {
   type CollectionDeleteDependencies,
 } from "../../../apps/new/src/features/library/repository/collection-delete-executor-repository";
 import {
+  addOrderedSongRelationshipWithDependencies,
+  addSongToPlaylistWithDependencies,
+  assertCanMutatePlaylistMembership,
+  getNextSongRelationshipOrder,
+  setLikedSongMembershipWithDependencies,
+  type LikedSongMembershipDependencies,
+} from "../../../apps/new/src/features/library/repository/collection-song-membership-executor-repository";
+import {
   getCollectionSongListState,
   getCollectionSongOrderUpdate,
   getCollectionSongRowActionState,
@@ -4174,6 +4182,132 @@ async function assertCollectionDeleteExecutorSmoke() {
     /system playlist/,
   );
   assert.deepEqual(calls, []);
+}
+
+async function assertCollectionSongMembershipExecutorSmoke() {
+  const calls: unknown[] = [];
+  const relationships = new Map<string, { id: number; order: number }>([
+    ["10:1", { id: 100, order: 2 }],
+    ["10:2", { id: 101, order: 5 }],
+  ]);
+  let nextId = 200;
+  const dependencies: LikedSongMembershipDependencies = {
+    deleteRelationship: async ({ ownerId, songId }) => {
+      calls.push(["delete", ownerId, songId]);
+      relationships.delete(`${ownerId}:${songId}`);
+    },
+    findRelationshipId: async ({ ownerId, songId }) => {
+      calls.push(["find", ownerId, songId]);
+      return relationships.get(`${ownerId}:${songId}`)?.id ?? null;
+    },
+    insertRelationship: async ({ order, ownerId, songId }) => {
+      calls.push(["insert", ownerId, songId, order]);
+      relationships.set(`${ownerId}:${songId}`, { id: nextId++, order });
+    },
+    loadRelationshipOrders: async (ownerId) => {
+      calls.push(["load-orders", ownerId]);
+      return Array.from(relationships.entries())
+        .filter(([key]) => key.startsWith(`${ownerId}:`))
+        .map(([, relationship]) => relationship.order);
+    },
+  };
+
+  assert.equal(getNextSongRelationshipOrder([null, 2, 5]), 6);
+
+  assert.equal(
+    await addOrderedSongRelationshipWithDependencies(
+      { ownerId: 10, songId: 3 },
+      dependencies,
+    ),
+    true,
+  );
+  assert.deepEqual(calls, [
+    ["find", 10, 3],
+    ["load-orders", 10],
+    ["insert", 10, 3, 6],
+  ]);
+
+  calls.length = 0;
+  assert.equal(
+    await addOrderedSongRelationshipWithDependencies(
+      { ownerId: 10, songId: 3 },
+      dependencies,
+    ),
+    false,
+  );
+  assert.deepEqual(calls, [["find", 10, 3]]);
+
+  calls.length = 0;
+  await assert.rejects(
+    () =>
+      addSongToPlaylistWithDependencies(
+        {
+          playlistId: 1,
+          protectedPlaylistIds: new Set([1, 2]),
+          songId: 9,
+        },
+        dependencies,
+      ),
+    /protected playlist/,
+  );
+  assert.deepEqual(calls, []);
+  assert.throws(
+    () =>
+      assertCanMutatePlaylistMembership({
+        playlistId: 2,
+        protectedPlaylistIds: new Set([2]),
+      }),
+    /protected playlist/,
+  );
+
+  assert.equal(
+    await addSongToPlaylistWithDependencies(
+      {
+        playlistId: 11,
+        protectedPlaylistIds: new Set([1, 2]),
+        songId: 4,
+      },
+      dependencies,
+    ),
+    true,
+  );
+  assert.deepEqual(calls, [
+    ["find", 11, 4],
+    ["load-orders", 11],
+    ["insert", 11, 4, 1],
+  ]);
+
+  calls.length = 0;
+  assert.equal(
+    await setLikedSongMembershipWithDependencies(
+      {
+        liked: true,
+        playlistId: 2,
+        songId: 5,
+      },
+      dependencies,
+    ),
+    true,
+  );
+  assert.deepEqual(calls, [
+    ["find", 2, 5],
+    ["load-orders", 2],
+    ["insert", 2, 5, 1],
+  ]);
+
+  calls.length = 0;
+  assert.equal(
+    await setLikedSongMembershipWithDependencies(
+      {
+        liked: false,
+        playlistId: 2,
+        songId: 5,
+      },
+      dependencies,
+    ),
+    false,
+  );
+  assert.deepEqual(calls, [["delete", 2, 5]]);
 }
 
 function assertLibraryCollectionPreviewSmoke() {
@@ -9821,6 +9955,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   assertLibraryCollectionDetailSmoke();
   assertLibraryCollectionInteractionSmoke();
   await assertCollectionDeleteExecutorSmoke();
+  await assertCollectionSongMembershipExecutorSmoke();
   assertLibraryCollectionPreviewSmoke();
   assertLibrarySongPreviewSmoke();
   assertAddableCollectionSongsSmoke();

@@ -195,3 +195,5 @@
   relationship replacement behind an injectable repository executor.
 - Moved song metadata artist/album parsing, lookup/creation, song joins, and
   album-artist link reconciliation behind an injectable repository executor.
+- Moved album, artist, playlist, and liked-song membership append/delete
+  behavior behind a shared injectable repository executor.

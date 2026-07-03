@@ -279,3 +279,5 @@
   reset, and failure haptic sequencing.
 - Added direct collection detail result smoke coverage for timestamp merging,
   query error collection, image resolution, and missing timestamp fallback.
+- Added direct collection preview query result smoke coverage for grouped
+  preview counts, totals, error ordering, empty-state, and timestamp merging.

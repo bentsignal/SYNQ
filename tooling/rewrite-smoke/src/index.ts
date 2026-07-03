@@ -661,6 +661,12 @@ import {
   getLibraryCollectionPreviewHref,
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import {
+  buildLibraryCollectionPreviewQueryResult,
+  getLibraryCollectionPreviewErrors,
+  getLibraryCollectionPreviewUpdatedAt,
+  isLibraryCollectionPreviewGroupEmpty,
+} from "../../../apps/new/src/features/library/services/library-collection-preview-query-result-service";
+import {
   getCollectionFormErrorMessage,
   getCollectionFormFallbackMessage,
 } from "../../../apps/new/src/features/library/services/collection-form-service";
@@ -6876,6 +6882,97 @@ function assertLibraryCollectionPreviewSmoke() {
     }),
     "/(tabs)/library/artist/1",
   );
+  assert.equal(
+    getLibraryCollectionPreviewUpdatedAt({
+      albumUpdatedAt: new Date(30),
+      artistUpdatedAt: new Date(20),
+      playlistUpdatedAt: new Date(10),
+    }),
+    30,
+  );
+  assert.deepEqual(
+    getLibraryCollectionPreviewErrors({
+      albumError: null,
+      artistError: new Error("artists failed"),
+      playlistError: new Error("playlists failed"),
+    }).map((error) => (error instanceof Error ? error.message : error)),
+    ["playlists failed", "artists failed"],
+  );
+  assert.equal(
+    isLibraryCollectionPreviewGroupEmpty({
+      albums: [],
+      artists: [],
+      playlists: [],
+    }),
+    true,
+  );
+  assert.equal(
+    isLibraryCollectionPreviewGroupEmpty({
+      albums,
+      artists: [],
+      playlists: [],
+    }),
+    false,
+  );
+  const collectionPreviewResult = buildLibraryCollectionPreviewQueryResult({
+    albumError: new Error("albums failed"),
+    albumRows: [
+      {
+        albumCoverImage: "alpha-cover",
+        albumId: 1,
+        albumName: "Alpha Album",
+        artistName: "Alpha Artist",
+        songId: 20,
+        year: 2026,
+      },
+    ],
+    albumUpdatedAt: new Date(12),
+    artistError: null,
+    artistRows: [
+      {
+        albumId: 1,
+        artistId: 1,
+        artistName: "Alpha Artist",
+        profileImage: "artist-profile",
+        songId: 30,
+      },
+    ],
+    artistUpdatedAt: new Date(14),
+    getImagePath,
+    limit: 1,
+    playlistError: null,
+    playlistRows: [
+      {
+        coverImage: "playlist-cover",
+        playlistId: 1,
+        playlistName: "First Playlist",
+        songId: 10,
+      },
+      {
+        coverImage: null,
+        playlistId: 2,
+        playlistName: "Second Playlist",
+        songId: 11,
+      },
+    ],
+    playlistUpdatedAt: new Date(13),
+  });
+  assert.deepEqual(
+    Object.fromEntries(
+      Object.entries(collectionPreviewResult.collections).map(
+        ([key, value]) => [key, value.length],
+      ),
+    ),
+    { albums: 1, artists: 1, playlists: 1 },
+  );
+  assert.deepEqual(collectionPreviewResult.totals, {
+    albums: 1,
+    artists: 1,
+    playlists: 2,
+  });
+  assert.equal(collectionPreviewResult.isEmpty, false);
+  assert.equal(collectionPreviewResult.updatedAt, 14);
+  assert.equal(collectionPreviewResult.errors.length, 1);
 }
 
 function assertLibrarySongPreviewSmoke() {

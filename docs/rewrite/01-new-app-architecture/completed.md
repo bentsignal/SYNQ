@@ -387,3 +387,6 @@
   of the React hook and into the backup phase effect service.
 - Moved library collection detail result timestamp/error assembly out of React
   hooks and into a focused collection detail result service.
+- Moved library collection preview grouping, totals, empty-state, error, and
+  timestamp assembly out of the React hook and into a focused preview query
+  result service.

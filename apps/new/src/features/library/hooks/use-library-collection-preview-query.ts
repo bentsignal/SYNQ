@@ -2,13 +2,11 @@ import { useMemo } from "react";
 import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
 import { useLibraryCollectionPreviewLiveQuery } from "../data/use-library-collection-preview-live-query";
 import {
-  albumRowsToPreview,
-  artistRowsToPreview,
-  playlistRowsToPreview,
   type AlbumPreviewRow,
   type ArtistPreviewRow,
   type PlaylistPreviewRow,
 } from "../services/library-collection-preview-row-service";
+import { buildLibraryCollectionPreviewQueryResult } from "../services/library-collection-preview-query-result-service";
 
 export type {
   CollectionKind,
@@ -28,53 +26,32 @@ export function useLibraryCollectionPreviewQuery({
   const { albums, artists, playlists } =
     useLibraryCollectionPreviewLiveQuery();
 
-  const collections = useMemo(
-    () => ({
-      albums: albumRowsToPreview({
+  return useMemo(
+    () =>
+      buildLibraryCollectionPreviewQueryResult({
+        albumError: albums.error,
+        albumRows: (albums.data ?? []) as AlbumPreviewRow[],
+        albumUpdatedAt: albums.updatedAt,
+        artistError: artists.error,
+        artistRows: (artists.data ?? []) as ArtistPreviewRow[],
+        artistUpdatedAt: artists.updatedAt,
         getImagePath: getSmallImagePath,
         limit,
-        rows: (albums.data ?? []) as AlbumPreviewRow[],
+        playlistError: playlists.error,
+        playlistRows: (playlists.data ?? []) as PlaylistPreviewRow[],
+        playlistUpdatedAt: playlists.updatedAt,
       }),
-      artists: artistRowsToPreview({
-        getImagePath: getSmallImagePath,
-        limit,
-        rows: (artists.data ?? []) as ArtistPreviewRow[],
-      }),
-      playlists: playlistRowsToPreview({
-        getImagePath: getSmallImagePath,
-        limit,
-        rows: (playlists.data ?? []) as PlaylistPreviewRow[],
-      }),
-    }),
-    [albums.data, artists.data, limit, playlists.data],
+    [
+      albums.data,
+      albums.error,
+      albums.updatedAt,
+      artists.data,
+      artists.error,
+      artists.updatedAt,
+      limit,
+      playlists.data,
+      playlists.error,
+      playlists.updatedAt,
+    ],
   );
-  const totals = {
-    albums: albumRowsToPreview({
-      rows: (albums.data ?? []) as AlbumPreviewRow[],
-      limit: null,
-    }).length,
-    artists: artistRowsToPreview({
-      rows: (artists.data ?? []) as ArtistPreviewRow[],
-      limit: null,
-    }).length,
-    playlists: playlistRowsToPreview({
-      rows: (playlists.data ?? []) as PlaylistPreviewRow[],
-      limit: null,
-    }).length,
-  };
-
-  return {
-    collections,
-    errors: [playlists.error, albums.error, artists.error].filter(Boolean),
-    isEmpty:
-      collections.albums.length === 0 &&
-      collections.artists.length === 0 &&
-      collections.playlists.length === 0,
-    updatedAt: Math.max(
-      playlists.updatedAt?.getTime() ?? 0,
-      albums.updatedAt?.getTime() ?? 0,
-      artists.updatedAt?.getTime() ?? 0,
-    ),
-    totals,
-  };
 }

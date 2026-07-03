@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { usePlaybackSessionSelector } from "@/src/features/playback/hooks/use-playback-session";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type {
@@ -39,12 +39,18 @@ export function LibrarySongPreviewList({
   const listState = getLibrarySongPreviewListState({ songs });
 
   return (
-    <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
+    <View className="gap-3">
+      <View className="flex-row items-end justify-between gap-3">
+        <Text
+          className="flex-1 text-xl font-extrabold leading-[25px] tracking-normal"
+          style={{ color: theme.primaryText }}
+        >
           {listState.title}
         </Text>
-        <Text style={[styles.sectionMeta, { color: theme.secondaryText }]}>
+        <Text
+          className="text-xs font-extrabold uppercase leading-[17px] tracking-normal"
+          style={{ color: theme.secondaryText }}
+        >
           {listState.meta}
         </Text>
       </View>
@@ -62,10 +68,8 @@ export function LibrarySongPreviewList({
         <LibrarySongPreviewEmptyState />
       ) : (
         <View
-          style={[
-            styles.list,
-            { backgroundColor: theme.surface, borderColor: theme.border },
-          ]}
+          className="overflow-hidden rounded-lg border"
+          style={{ backgroundColor: theme.surface, borderColor: theme.border }}
         >
           {songs.map((song) => (
             <LibrarySongPreviewRow
@@ -81,34 +85,3 @@ export function LibrarySongPreviewList({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    gap: 12,
-  },
-  sectionHeader: {
-    alignItems: "flex-end",
-    flexDirection: "row",
-    gap: 12,
-    justifyContent: "space-between",
-  },
-  sectionTitle: {
-    flex: 1,
-    fontSize: 20,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 25,
-  },
-  sectionMeta: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 17,
-    textTransform: "uppercase",
-  },
-  list: {
-    borderRadius: 8,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-});

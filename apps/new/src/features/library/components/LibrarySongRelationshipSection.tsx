@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import {
   getLibrarySongRelationshipHref,
@@ -22,18 +22,22 @@ export function LibrarySongRelationshipSection({
   const theme = useCustomizationTheme();
 
   return (
-    <View style={styles.relationshipSection}>
-      <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
+    <View className="gap-2.5">
+      <Text
+        className="text-xl font-extrabold leading-[25px] tracking-normal"
+        style={{ color: theme.primaryText }}
+      >
         {title}
       </Text>
       <View
-        style={[
-          styles.relationshipList,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-        ]}
+        className="overflow-hidden rounded-lg border"
+        style={{ backgroundColor: theme.surface, borderColor: theme.border }}
       >
         {items.length === 0 ? (
-          <Text style={[styles.emptyRelationship, { color: theme.mutedText }]}>
+          <Text
+            className="p-3.5 text-sm italic leading-5"
+            style={{ color: theme.mutedText }}
+          >
             {emptyLabel}
           </Text>
         ) : (
@@ -44,26 +48,20 @@ export function LibrarySongRelationshipSection({
               key={item.id}
             >
               <Pressable
-                style={[
-                  styles.relationshipRow,
-                  { borderBottomColor: theme.borderSubtle },
-                ]}
+                className="min-h-[54px] flex-row items-center gap-3 border-b px-3.5 py-2.5"
+                style={{ borderBottomColor: theme.borderSubtle }}
               >
                 <Text
+                  className="flex-1 text-[15px] font-extrabold leading-5 tracking-normal"
                   numberOfLines={1}
-                  style={[
-                    styles.relationshipTitle,
-                    { color: theme.primaryText },
-                  ]}
+                  style={{ color: theme.primaryText }}
                 >
                   {item.title}
                 </Text>
                 {item.detail ? (
                   <Text
-                    style={[
-                      styles.relationshipDetail,
-                      { color: theme.secondaryText },
-                    ]}
+                    className="max-w-[140px] text-right text-xs font-extrabold tracking-normal"
+                    style={{ color: theme.secondaryText }}
                   >
                     {item.detail}
                   </Text>
@@ -76,49 +74,3 @@ export function LibrarySongRelationshipSection({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  emptyRelationship: {
-    fontSize: 14,
-    fontStyle: "italic",
-    lineHeight: 20,
-    padding: 14,
-  },
-  relationshipDetail: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    maxWidth: 140,
-    textAlign: "right",
-  },
-  relationshipList: {
-    borderRadius: 8,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-  relationshipRow: {
-    alignItems: "center",
-    borderBottomWidth: 1,
-    flexDirection: "row",
-    gap: 12,
-    minHeight: 54,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  relationshipSection: {
-    gap: 10,
-  },
-  relationshipTitle: {
-    flex: 1,
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 25,
-  },
-});

@@ -66,3 +66,7 @@
   classes, lowering the StyleSheet ratchet from 19 calls to 15.
 - Converted collection preview and collection song list presentation styles to
   utility classes, lowering the StyleSheet ratchet from 15 calls to 8.
+- Converted the final library home, summary, invalid states, image input, song
+  preview, and relationship-section presentation styles to utility classes,
+  clearing new-app `StyleSheet.create` usage and lowering the ratchet from 8
+  calls to 0.

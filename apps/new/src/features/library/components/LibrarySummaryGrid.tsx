@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 
 const summaryItems = [
@@ -30,19 +30,23 @@ export function LibrarySummaryGrid({ counts }: LibrarySummaryGridProps) {
   const theme = useCustomizationTheme();
 
   return (
-    <View style={styles.grid}>
+    <View className="flex-row flex-wrap gap-3">
       {summaryItems.map((item) => (
         <View
+          className="min-h-24 min-w-[140px] flex-grow basis-[47%] gap-1.5 rounded-lg border p-4"
           key={item.key}
-          style={[
-            styles.card,
-            { backgroundColor: theme.surface, borderColor: theme.border },
-          ]}
+          style={{ backgroundColor: theme.surface, borderColor: theme.border }}
         >
-          <Text style={[styles.count, { color: theme.primaryText }]}>
+          <Text
+            className="text-3xl font-extrabold leading-9 tracking-normal"
+            style={{ color: theme.primaryText }}
+          >
             {counts[item.key]}
           </Text>
-          <Text style={[styles.label, { color: theme.secondaryText }]}>
+          <Text
+            className="text-[13px] font-extrabold uppercase tracking-normal"
+            style={{ color: theme.secondaryText }}
+          >
             {item.label}
           </Text>
         </View>
@@ -50,33 +54,3 @@ export function LibrarySummaryGrid({ counts }: LibrarySummaryGridProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  card: {
-    borderRadius: 8,
-    borderWidth: 1,
-    flexBasis: "47%",
-    flexGrow: 1,
-    gap: 6,
-    minHeight: 96,
-    minWidth: 140,
-    padding: 16,
-  },
-  count: {
-    fontSize: 30,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 36,
-  },
-  label: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-});

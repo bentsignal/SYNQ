@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryHomeController } from "../hooks/use-library-home-controller";
 import { getLibraryHomeHeaderState } from "../services/library-home-service";
@@ -26,25 +26,36 @@ export function LibraryHomeView({
 
   return (
     <ScrollView
-      contentContainerStyle={styles.content}
-      style={[styles.screen, { backgroundColor: theme.background }]}
+      className="flex-1"
+      contentContainerClassName="gap-5 px-5 py-14"
+      style={{ backgroundColor: theme.background }}
     >
-      <View style={styles.header}>
-        <Text style={[styles.kicker, { color: theme.accent }]}>
+      <View className="gap-2">
+        <Text
+          className="text-[13px] font-extrabold uppercase tracking-normal"
+          style={{ color: theme.accent }}
+        >
           {headerState.kicker}
         </Text>
-        <Text style={[styles.title, { color: theme.primaryText }]}>
+        <Text
+          className="text-[34px] font-extrabold leading-10 tracking-normal"
+          style={{ color: theme.primaryText }}
+        >
           {headerState.title}
         </Text>
-        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
+        <Text
+          className="max-w-[460px] text-[15px] leading-[22px]"
+          style={{ color: theme.secondaryText }}
+        >
           {headerState.subtitle}
         </Text>
-        <View style={styles.createLinks}>
+        <View className="flex-row flex-wrap gap-3">
           {headerState.actions.map((action) => (
             <Link
+              className="text-sm font-extrabold uppercase tracking-normal"
               href={action.href}
               key={action.href}
-              style={[styles.createLink, { color: theme.accent }]}
+              style={{ color: theme.accent }}
             >
               {action.label}
             </Link>
@@ -72,18 +83,14 @@ export function LibraryHomeView({
       />
 
       <View
-        style={[
-          styles.panel,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-        ]}
+        className="rounded-lg border p-4"
+        style={{ backgroundColor: theme.surface, borderColor: theme.border }}
       >
         <Text
-          style={[
-            statusState.isError ? styles.errorText : styles.panelText,
-            {
-              color: statusState.isError ? theme.danger : theme.secondaryText,
-            },
-          ]}
+          className={`text-sm leading-5 ${statusState.isError ? "font-bold" : ""}`}
+          style={{
+            color: statusState.isError ? theme.danger : theme.secondaryText,
+          }}
         >
           {statusState.statusLabel}
         </Text>
@@ -91,59 +98,3 @@ export function LibraryHomeView({
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  content: {
-    gap: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-  header: {
-    gap: 8,
-  },
-  kicker: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 40,
-  },
-  subtitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    maxWidth: 460,
-  },
-  createLinks: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  createLink: {
-    fontSize: 14,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  panel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    padding: 16,
-  },
-  panelText: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  errorText: {
-    fontSize: 14,
-    fontWeight: "700",
-    lineHeight: 20,
-  },
-});

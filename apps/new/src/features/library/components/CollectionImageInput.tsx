@@ -1,4 +1,4 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import {
   getCollectionFormImageLabel,
@@ -38,35 +38,46 @@ export function CollectionImageInput({
 
   return (
     <>
-      <Text style={[styles.label, { color: theme.secondaryText }]}>
+      <Text
+        className="text-xs font-extrabold uppercase tracking-normal"
+        style={{ color: theme.secondaryText }}
+      >
         {imageLabel}
       </Text>
-      <View style={styles.imageRow}>
+      <View className="flex-row items-center gap-3">
         {imageUri ? (
-          <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+          <Image className="h-[72px] w-[72px] rounded-lg" source={{ uri: imageUri }} />
         ) : (
           <View
-            style={[
-              styles.imagePlaceholder,
-              { backgroundColor: theme.background, borderColor: theme.border },
-            ]}
+            className="h-[72px] w-[72px] items-center justify-center rounded-lg border"
+            style={{ backgroundColor: theme.background, borderColor: theme.border }}
           >
-            <Text style={[styles.imageInitial, { color: theme.accent }]}>
+            <Text
+              className="text-2xl font-extrabold leading-[30px] tracking-normal"
+              style={{ color: theme.accent }}
+            >
               {imageInitial}
             </Text>
           </View>
         )}
-        <View style={styles.imageText}>
-          <Text style={[styles.imageName, { color: theme.primaryText }]}>
+        <View className="min-w-0 flex-1 gap-2">
+          <Text
+            className="text-[13px] font-bold leading-[18px]"
+            style={{ color: theme.primaryText }}
+          >
             {imageName}
           </Text>
           <Pressable
             accessibilityRole="button"
             disabled={!actionState.canPickImage}
             onPress={onPickImage}
-            style={[styles.imageButton, { borderColor: theme.border }]}
+            className="min-h-[34px] self-start items-center justify-center rounded-lg border px-2.5"
+            style={{ borderColor: theme.border }}
           >
-            <Text style={[styles.imageButtonText, { color: theme.accent }]}>
+            <Text
+              className="text-[11px] font-extrabold uppercase tracking-normal"
+              style={{ color: theme.accent }}
+            >
               Choose image
             </Text>
           </Pressable>
@@ -75,61 +86,3 @@ export function CollectionImageInput({
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  label: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  imageRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 12,
-  },
-  imagePreview: {
-    borderRadius: 8,
-    height: 72,
-    width: 72,
-  },
-  imagePlaceholder: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    height: 72,
-    justifyContent: "center",
-    width: 72,
-  },
-  imageInitial: {
-    fontSize: 24,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 30,
-  },
-  imageText: {
-    flex: 1,
-    gap: 8,
-    minWidth: 0,
-  },
-  imageName: {
-    fontSize: 13,
-    fontWeight: "700",
-    lineHeight: 18,
-  },
-  imageButton: {
-    alignItems: "center",
-    alignSelf: "flex-start",
-    borderRadius: 8,
-    borderWidth: 1,
-    justifyContent: "center",
-    minHeight: 34,
-    paddingHorizontal: 10,
-  },
-  imageButtonText: {
-    fontSize: 11,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-});

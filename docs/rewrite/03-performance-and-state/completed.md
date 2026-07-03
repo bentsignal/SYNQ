@@ -74,3 +74,6 @@
   preview, and relationship-section presentation styles to utility classes,
   clearing new-app `StyleSheet.create` usage and lowering the ratchet from 8
   calls to 0.
+- Added a new-app ESLint rule that rejects `StyleSheet.create`, so utility
+  class styling stays enforced during normal lint runs as well as rewrite
+  verification.

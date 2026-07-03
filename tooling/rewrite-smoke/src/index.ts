@@ -451,11 +451,13 @@ import type {
 } from "../../../apps/new/src/features/premium/types/premium-purchase";
 import {
   getCustomizationSettingsErrorMessage,
+  getCustomizationHapticsToggleCommand,
   getCustomizationOptionState,
   getCustomizationScreenState,
   getPrivacyScreenViewState,
   getPrivacyScreenState,
   getPrivacySettingsErrorMessage,
+  getSettingsInteractionCommand,
   getSupportScreenViewState,
   shouldSendHapticForHapticsToggle,
 } from "../../../apps/new/src/features/settings/services/settings-screen-service";
@@ -6287,6 +6289,19 @@ function assertSettingsScreenSmoke() {
   assert.equal(
     shouldSendHapticForHapticsToggle({ hapticsEnabled: false }),
     false,
+  );
+  assert.deepEqual(getSettingsInteractionCommand(), {
+    haptic: "light",
+  });
+  assert.deepEqual(
+    getCustomizationHapticsToggleCommand({ hapticsEnabled: true }),
+    {
+      haptic: "light",
+    },
+  );
+  assert.equal(
+    getCustomizationHapticsToggleCommand({ hapticsEnabled: false }),
+    null,
   );
   assert.equal(
     getCustomizationSettingsErrorMessage(

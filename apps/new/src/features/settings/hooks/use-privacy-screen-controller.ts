@@ -1,4 +1,7 @@
-import { getPrivacyScreenState } from "../services/settings-screen-service";
+import {
+  getPrivacyScreenState,
+  getSettingsInteractionCommand,
+} from "../services/settings-screen-service";
 import { useHapticFeedback } from "./use-haptic-feedback";
 import { usePrivacySettings } from "./use-privacy-settings";
 
@@ -8,7 +11,7 @@ export function usePrivacyScreenController() {
   const screenState = getPrivacyScreenState({ status: state.status });
 
   const updateAllowAnalytics = (allowAnalytics: boolean) => {
-    sendHaptic("light");
+    sendHaptic(getSettingsInteractionCommand().haptic);
     void setAllowAnalytics(allowAnalytics);
   };
 

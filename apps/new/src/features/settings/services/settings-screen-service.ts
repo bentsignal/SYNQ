@@ -2,6 +2,7 @@ import type {
   CustomizationColorKey,
   CustomizationSettingsStatus,
 } from "../types/customization-settings";
+import type { HapticFeedbackType } from "./haptic-feedback-service";
 import type { PrivacySettingsStatus } from "../types/privacy-settings";
 import { getSettingsBackLink } from "./settings-navigation-service";
 
@@ -89,11 +90,28 @@ export const getCustomizationOptionState = ({
   isSelected: optionKey === selectedKey,
 });
 
+type SettingsInteractionCommand = {
+  haptic: HapticFeedbackType;
+};
+
+export const getSettingsInteractionCommand = (): SettingsInteractionCommand => ({
+  haptic: "light",
+});
+
 export const shouldSendHapticForHapticsToggle = ({
   hapticsEnabled,
 }: {
   hapticsEnabled: boolean;
 }) => hapticsEnabled;
+
+export const getCustomizationHapticsToggleCommand = ({
+  hapticsEnabled,
+}: {
+  hapticsEnabled: boolean;
+}): SettingsInteractionCommand | null =>
+  shouldSendHapticForHapticsToggle({ hapticsEnabled })
+    ? getSettingsInteractionCommand()
+    : null;
 
 export const getCustomizationSettingsErrorMessage = (caughtError: unknown) =>
   caughtError instanceof Error

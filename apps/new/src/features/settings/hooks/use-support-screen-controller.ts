@@ -4,18 +4,19 @@ import {
   supportActions,
   type SupportAction,
 } from "../services/settings-navigation-service";
+import { getSettingsInteractionCommand } from "../services/settings-screen-service";
 import { useHapticFeedback } from "./use-haptic-feedback";
 
 export function useSupportScreenController() {
   const { sendHaptic } = useHapticFeedback();
 
   const openUrl = (url: string) => {
-    sendHaptic("light");
+    sendHaptic(getSettingsInteractionCommand().haptic);
     void Linking.openURL(url);
   };
 
   const requestReview = async () => {
-    sendHaptic("light");
+    sendHaptic(getSettingsInteractionCommand().haptic);
     if (await StoreReview.isAvailableAsync()) {
       await StoreReview.requestReview();
     }

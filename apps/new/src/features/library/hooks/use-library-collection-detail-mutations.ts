@@ -9,7 +9,7 @@ import {
 import {
   collectionDetailMutationReducer,
   initialCollectionDetailMutationState,
-} from "../services/library-collection-mutation-service";
+} from "../services/library-collection-mutation-state-service";
 
 type UseLibraryCollectionDetailMutationsParams = {
   detail: LibraryCollectionDetail;

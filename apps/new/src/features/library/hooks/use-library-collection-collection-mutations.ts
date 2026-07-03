@@ -10,8 +10,8 @@ import {
   getCollectionExportFinishCommand,
   getCollectionExportStartCommand,
   getCollectionExportSuccessCommand,
-  type CollectionDetailMutationAction,
 } from "../services/library-collection-mutation-service";
+import type { CollectionDetailMutationAction } from "../services/library-collection-mutation-state-service";
 
 type CollectionDetailMutationDispatch = (
   action: CollectionDetailMutationAction,

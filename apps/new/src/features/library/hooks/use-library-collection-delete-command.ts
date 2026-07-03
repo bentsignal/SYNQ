@@ -12,8 +12,8 @@ import {
   getCollectionDeleteSuccessCommand,
   getCollectionDetailMutationBlockedCommand,
   getCollectionDetailMutationFailureCommand,
-  type CollectionDetailMutationAction,
 } from "../services/library-collection-mutation-service";
+import type { CollectionDetailMutationAction } from "../services/library-collection-mutation-state-service";
 
 type CollectionDetailMutationDispatch = (
   action: CollectionDetailMutationAction,

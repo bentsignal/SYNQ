@@ -104,3 +104,5 @@
   collection detail song sections.
 - Split collection detail action-state helpers out of the broader interaction
   service so mutation/playback hooks import a narrower boundary.
+- Split collection detail mutation reducer and error-message state out of the
+  command helper service.

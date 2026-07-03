@@ -247,13 +247,11 @@ import {
   getLibraryInvalidCollectionState,
 } from "../../../apps/new/src/features/library/services/library-collection-navigation-service";
 import {
-  collectionDetailMutationReducer,
   getCollectionDeleteFinishCommand,
   getCollectionDeleteStartCommand,
   getCollectionDeleteSuccessCommand,
   getCollectionDetailMutationBlockedCommand,
   getCollectionDetailMutationFailureCommand,
-  getCollectionDetailMutationErrorMessage,
   getCollectionExportFinishCommand,
   getCollectionExportStartCommand,
   getCollectionExportSuccessCommand,
@@ -263,8 +261,12 @@ import {
   getCollectionSongRemovalFinishCommand,
   getCollectionSongRemovalStartCommand,
   getCollectionSongRemovalSuccessCommand,
-  initialCollectionDetailMutationState,
 } from "../../../apps/new/src/features/library/services/library-collection-mutation-service";
+import {
+  collectionDetailMutationReducer,
+  getCollectionDetailMutationErrorMessage,
+  initialCollectionDetailMutationState,
+} from "../../../apps/new/src/features/library/services/library-collection-mutation-state-service";
 import {
   getCollectionSongListState,
   getCollectionSongOrderUpdate,

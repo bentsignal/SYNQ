@@ -148,3 +148,5 @@
 - Split playback queue action-state derivation out of queue algorithms.
 - Split playback player action-state derivation out of player progress and
   view-state helpers.
+- Split add-to-collection song persistence into per-kind repositories while
+  preserving the public collection command API.

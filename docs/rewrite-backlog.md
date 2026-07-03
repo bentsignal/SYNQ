@@ -106,6 +106,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import session command error copy and Wi-Fi finish decisions now live
     in a focused command service instead of the reducer service owning command
     messaging and state transitions together.
+  - Done: import session persistence validation and serialization now live in
+    a focused normalizer service with deterministic smoke coverage instead of
+    the filesystem persistence service owning persisted payload parsing.
   - Done: backup document/cache directory paths, staging cleanup, and restore
     replacement writes now live in a focused filesystem service instead of the
     backup command service owning low-level file operations and command flow

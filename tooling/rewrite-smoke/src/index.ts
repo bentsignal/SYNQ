@@ -123,6 +123,10 @@ import {
   getImportSessionCommandErrorMessage,
 } from "../../../apps/new/src/features/import/services/import-session-command-service";
 import {
+  normalizePersistedImportSession,
+  toPersistedImportSession,
+} from "../../../apps/new/src/features/import/services/import-session-persistence-normalizer-service";
+import {
   buildEditedImportSongDraft,
   getImportSongEditActionState,
   getImportSongEditErrorMessage,
@@ -1220,6 +1224,29 @@ function assertImportSessionSmoke() {
   const first = importDraft(1);
   const second = importDraft(2);
 
+  assert.equal(normalizePersistedImportSession(null), null);
+  assert.equal(normalizePersistedImportSession({ songs: [] }), null);
+  assert.deepEqual(
+    normalizePersistedImportSession({
+      selectedSongId: "missing",
+      shouldSaveToLibrary: "yes",
+      songs: [
+        first,
+        {
+          id: "broken",
+          title: "Broken",
+        },
+      ],
+      source: "unknown",
+    }),
+    {
+      selectedSongId: first.id,
+      shouldSaveToLibrary: true,
+      songs: [first],
+      source: "files",
+    },
+  );
+
   let state = importSessionReducer(initialImportSessionState, {
     type: "begin-file-pick",
   });
@@ -1354,6 +1381,12 @@ function assertImportSessionSmoke() {
   assert.equal(state.phase, "reviewing");
   assert.equal(state.selectedSongId, first.id);
   assert.deepEqual(state.progress, { current: 2, total: 2 });
+  assert.deepEqual(toPersistedImportSession(state), {
+    selectedSongId: first.id,
+    shouldSaveToLibrary: true,
+    songs: [first, second],
+    source: "files",
+  });
   assert.deepEqual(getImportFilesActionState(state), {
     canChooseFiles: true,
     chooseLabel: "Choose songs",

@@ -57,6 +57,33 @@ export type PlaybackAction =
   | { type: "toggle-loop" }
   | { type: "toggle-shuffle" };
 
+export const getAddPlaybackQueueSongAction = (
+  song: PlaybackQueueItem,
+): PlaybackAction => ({
+  song,
+  type: "add-to-queue",
+});
+
+export const getMovePlaybackQueueSongAction = ({
+  direction,
+  songId,
+}: {
+  direction: "down" | "up";
+  songId: number;
+}): PlaybackAction => ({
+  direction,
+  songId,
+  type: "move-queue-song",
+});
+
+export const getTogglePlaybackLoopAction = (): PlaybackAction => ({
+  type: "toggle-loop",
+});
+
+export const getTogglePlaybackShuffleAction = (): PlaybackAction => ({
+  type: "toggle-shuffle",
+});
+
 export const playbackReducer = (
   state: PlaybackState,
   action: PlaybackAction,

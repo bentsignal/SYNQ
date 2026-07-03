@@ -448,3 +448,5 @@
   flows and into premium state services.
 - Moved import save/export begin and finish action construction out of the
   flow service and into the save/export state service.
+- Moved playback queue action construction out of command flows and into the
+  playback session service.

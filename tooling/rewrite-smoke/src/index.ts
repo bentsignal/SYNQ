@@ -50,6 +50,10 @@ import {
   initialPlaybackState,
 } from "../../../apps/new/src/features/playback/services/playback-initial-state-service";
 import {
+  getAddPlaybackQueueSongAction,
+  getMovePlaybackQueueSongAction,
+  getTogglePlaybackLoopAction,
+  getTogglePlaybackShuffleAction,
   playbackReducer,
   type PlaybackAction,
 } from "../../../apps/new/src/features/playback/services/playback-session-service";
@@ -1497,8 +1501,28 @@ async function assertPlaybackSessionSmoke() {
     ["clear"],
   ]);
 
-  state = playbackReducer(state, { song: second, type: "add-to-queue" });
-  state = playbackReducer(state, { song: third, type: "add-to-queue" });
+  assert.deepEqual(getAddPlaybackQueueSongAction(second), {
+    song: second,
+    type: "add-to-queue",
+  });
+  assert.deepEqual(
+    getMovePlaybackQueueSongAction({
+      direction: "up",
+      songId: third.id,
+    }),
+    {
+      direction: "up",
+      songId: third.id,
+      type: "move-queue-song",
+    },
+  );
+  assert.deepEqual(getTogglePlaybackLoopAction(), { type: "toggle-loop" });
+  assert.deepEqual(getTogglePlaybackShuffleAction(), {
+    type: "toggle-shuffle",
+  });
+
+  state = playbackReducer(state, getAddPlaybackQueueSongAction(second));
+  state = playbackReducer(state, getAddPlaybackQueueSongAction(third));
   assert.deepEqual(
     state.queue.map((item) => item.id),
     [1, 2, 3],
@@ -1755,11 +1779,13 @@ async function assertPlaybackSessionSmoke() {
     },
   );
 
-  state = playbackReducer(state, {
-    direction: "up",
-    songId: third.id,
-    type: "move-queue-song",
-  });
+  state = playbackReducer(
+    state,
+    getMovePlaybackQueueSongAction({
+      direction: "up",
+      songId: third.id,
+    }),
+  );
   assert.deepEqual(
     state.queue.map((item) => item.id),
     [1, 3, 2],
@@ -1771,7 +1797,7 @@ async function assertPlaybackSessionSmoke() {
   assert.equal(state.activeQueueIndex, 0);
   assert.equal(state.isPlaying, true);
 
-  state = playbackReducer(state, { type: "toggle-shuffle" });
+  state = playbackReducer(state, getTogglePlaybackShuffleAction());
   assert.equal(
     getNextQueueIndex({
       activeQueueIndex: state.activeQueueIndex,

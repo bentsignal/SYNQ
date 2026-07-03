@@ -324,3 +324,4 @@
   coverage.
 - Added direct import save/export begin and finish action-constructor smoke
   coverage.
+- Added direct playback queue action-constructor smoke coverage.

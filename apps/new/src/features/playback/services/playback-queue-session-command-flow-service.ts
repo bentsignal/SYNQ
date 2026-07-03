@@ -3,7 +3,13 @@ import {
   getRemoveFromQueuePlaybackCommandPlan,
   type PlaybackCommandPlan,
 } from "./playback-command-plan-service";
-import type { PlaybackAction } from "./playback-session-service";
+import {
+  getAddPlaybackQueueSongAction,
+  getMovePlaybackQueueSongAction,
+  getTogglePlaybackLoopAction,
+  getTogglePlaybackShuffleAction,
+  type PlaybackAction,
+} from "./playback-session-service";
 import type {
   PlaybackQueueItem,
   PlaybackState,
@@ -20,7 +26,7 @@ export const runPlaybackQueueAddSongCommand = ({
 }: Pick<PlaybackQueueSessionCommandDependencies, "dispatch"> & {
   song: PlaybackQueueItem;
 }) => {
-  dispatch({ song, type: "add-to-queue" });
+  dispatch(getAddPlaybackQueueSongAction(song));
 };
 
 export const runPlaybackQueueClearSessionCommand = ({
@@ -37,7 +43,7 @@ export const runPlaybackQueueMoveSongCommand = ({
   direction: "down" | "up";
   songId: number;
 }) => {
-  dispatch({ direction, songId, type: "move-queue-song" });
+  dispatch(getMovePlaybackQueueSongAction({ direction, songId }));
 };
 
 export const runPlaybackQueueRemoveSongCommand = ({
@@ -59,11 +65,11 @@ export const runPlaybackQueueRemoveSongCommand = ({
 export const runPlaybackQueueToggleLoopCommand = ({
   dispatch,
 }: Pick<PlaybackQueueSessionCommandDependencies, "dispatch">) => {
-  dispatch({ type: "toggle-loop" });
+  dispatch(getTogglePlaybackLoopAction());
 };
 
 export const runPlaybackQueueToggleShuffleCommand = ({
   dispatch,
 }: Pick<PlaybackQueueSessionCommandDependencies, "dispatch">) => {
-  dispatch({ type: "toggle-shuffle" });
+  dispatch(getTogglePlaybackShuffleAction());
 };

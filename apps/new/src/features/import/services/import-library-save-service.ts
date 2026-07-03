@@ -15,53 +15,20 @@ import {
   moveImportAudioToLibrary,
 } from "./import-library-file-service";
 import { linkImportSongToLibrary } from "./import-library-link-service";
+import {
+  saveImportSongToLibrary,
+  type ImportLibrarySongSaveDependencies,
+} from "./import-library-song-save-executor-service";
 
-const getErrorMessage = (error: unknown) =>
-  error instanceof Error ? error.message : String(error);
-
-const updateSongCover = async ({
-  artwork,
-  songId,
-}: {
-  artwork: string | null;
-  songId: number;
-}) => {
-  const coverImage = await saveCoverImage(artwork);
-
-  if (!coverImage) {
-    return;
-  }
-
-  await updateImportLibrarySongCover({ coverImage, songId });
-};
-
-const deleteLibrarySong = async (songId: number) => {
-  await deleteImportLibrarySongRows(songId);
-  await deleteLibrarySongFiles(songId);
-};
-
-const saveOneImportSong = async (song: ImportSongDraft) => {
-  const songId = await insertImportSongDraft(song);
-
-  try {
-    const libraryPath = await moveImportAudioToLibrary({
-      cacheUri: song.cacheUri,
-      fileName: song.fileName,
-      songId,
-    });
-    await updateImportLibrarySongPath({ pathToFile: libraryPath, songId });
-  } catch (error) {
-    await deleteLibrarySong(songId);
-    throw new Error(`Audio file could not be saved: ${getErrorMessage(error)}`);
-  }
-
-  const { linkedAlbum } = await linkImportSongToLibrary({ song, songId });
-
-  if (!linkedAlbum) {
-    await updateSongCover({ artwork: song.artwork, songId });
-  }
-
-  return songId;
+const importLibrarySongSaveDependencies: ImportLibrarySongSaveDependencies = {
+  deleteImportLibrarySongRows,
+  deleteLibrarySongFiles,
+  insertImportSongDraft,
+  linkImportSongToLibrary,
+  moveImportAudioToLibrary,
+  saveCoverImage,
+  updateImportLibrarySongCover,
+  updateImportLibrarySongPath,
 };
 
 export async function saveImportSessionToLibrary(
@@ -70,7 +37,9 @@ export async function saveImportSessionToLibrary(
   const savedSongIds: number[] = [];
 
   for (const song of songs) {
-    savedSongIds.push(await saveOneImportSong(song));
+    savedSongIds.push(
+      await saveImportSongToLibrary(song, importLibrarySongSaveDependencies),
+    );
   }
 
   return {

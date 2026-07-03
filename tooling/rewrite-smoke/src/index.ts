@@ -184,6 +184,10 @@ import {
   splitImportLibraryNames,
 } from "../../../apps/new/src/features/import/services/import-library-save-plan-service";
 import {
+  saveImportSongToLibrary,
+  type ImportLibrarySongSaveDependencies,
+} from "../../../apps/new/src/features/import/services/import-library-song-save-executor-service";
+import {
   getImportFileCommandErrorMessage,
   getImportFileRemovalResultCommand,
   getImportFileRemovalStartHaptic,
@@ -5896,7 +5900,7 @@ function assertImportSongFormSmoke() {
   assert.equal(edited.id, 9);
 }
 
-function assertImportLibrarySavePlanSmoke() {
+async function assertImportLibrarySavePlanSmoke() {
   assert.equal(hasMeaningfulImportLibraryName("Unknown"), false);
   assert.equal(hasMeaningfulImportLibraryName("Unknown Artist"), false);
   assert.equal(hasMeaningfulImportLibraryName("  Album Name  "), true);
@@ -5926,6 +5930,100 @@ function assertImportLibrarySavePlanSmoke() {
       artistNames: [],
     },
   );
+
+  const calls: string[] = [];
+  const createDependencies = ({
+    linkedAlbum,
+    moveFails = false,
+    savedCover = "cover-hash",
+  }: {
+    linkedAlbum: boolean;
+    moveFails?: boolean;
+    savedCover?: string | null;
+  }): ImportLibrarySongSaveDependencies => ({
+    deleteImportLibrarySongRows: async (songId) => {
+      calls.push(`delete-row-${songId}`);
+    },
+    deleteLibrarySongFiles: async (songId) => {
+      calls.push(`delete-files-${songId}`);
+    },
+    insertImportSongDraft: async (song) => {
+      calls.push(`insert-${song.id}`);
+      return 42;
+    },
+    linkImportSongToLibrary: async ({ songId }) => {
+      calls.push(`link-${songId}`);
+      return { linkedAlbum };
+    },
+    moveImportAudioToLibrary: async ({ cacheUri, fileName, songId }) => {
+      calls.push(`move-${songId}-${fileName}-${cacheUri}`);
+      if (moveFails) {
+        throw new Error("move failed");
+      }
+      return `/library/${songId}.mp3`;
+    },
+    saveCoverImage: async (artwork) => {
+      calls.push(`save-cover-${artwork ?? "none"}`);
+      return savedCover;
+    },
+    updateImportLibrarySongCover: async ({ coverImage, songId }) => {
+      calls.push(`update-cover-${songId}-${coverImage}`);
+    },
+    updateImportLibrarySongPath: async ({ pathToFile, songId }) => {
+      calls.push(`update-path-${songId}-${pathToFile}`);
+    },
+  });
+
+  const artworkSong = {
+    ...importDraft(3),
+    artwork: "data:image/jpeg;base64,abc",
+  };
+  assert.equal(
+    await saveImportSongToLibrary(
+      artworkSong,
+      createDependencies({ linkedAlbum: false }),
+    ),
+    42,
+  );
+  assert.deepEqual(calls, [
+    "insert-3",
+    "move-42-import-3.mp3-/tmp/import-3.mp3",
+    "update-path-42-/library/42.mp3",
+    "link-42",
+    "save-cover-data:image/jpeg;base64,abc",
+    "update-cover-42-cover-hash",
+  ]);
+  calls.length = 0;
+
+  assert.equal(
+    await saveImportSongToLibrary(
+      artworkSong,
+      createDependencies({ linkedAlbum: true }),
+    ),
+    42,
+  );
+  assert.deepEqual(calls, [
+    "insert-3",
+    "move-42-import-3.mp3-/tmp/import-3.mp3",
+    "update-path-42-/library/42.mp3",
+    "link-42",
+  ]);
+  calls.length = 0;
+
+  await assert.rejects(
+    () =>
+      saveImportSongToLibrary(
+        importDraft(4),
+        createDependencies({ linkedAlbum: false, moveFails: true }),
+      ),
+    /Audio file could not be saved: move failed/,
+  );
+  assert.deepEqual(calls, [
+    "insert-4",
+    "move-42-import-4.mp3-/tmp/import-4.mp3",
+    "delete-row-42",
+    "delete-files-42",
+  ]);
 }
 
 function assertBackupScreenSmoke() {
@@ -6687,7 +6785,6 @@ assertDurationFormatSmoke();
 assertRouteParamSmoke();
 assertHomeScreenSmoke();
 assertImportSongFormSmoke();
-assertImportLibrarySavePlanSmoke();
 assertWifiImportRequestSmoke();
 assertBackupScreenSmoke();
 assertPremiumScreenSmoke();
@@ -6696,7 +6793,8 @@ assertPlaybackSessionSmoke();
 assertPlaybackNativeStatusSmoke();
 assertPlaybackNativeCommandPlanSmoke();
 assertPlaybackPlayerStateSmoke();
-void assertImportSessionSmoke().then(async () => {
+void assertImportLibrarySavePlanSmoke().then(async () => {
+  await assertImportSessionSmoke();
   assertLibraryCollectionDetailSmoke();
   assertLibraryCollectionInteractionSmoke();
   assertLibraryCollectionPreviewSmoke();

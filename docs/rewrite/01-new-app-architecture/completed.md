@@ -109,3 +109,5 @@
 - Split edit-import-song save command helpers out of the form state service.
 - Moved import session save/discard/reset lifecycle orchestration into an
   injectable service covered by deterministic smoke.
+- Split import library one-song save execution out of the session save loop,
+  including deterministic smoke coverage for cover handling and rollback.

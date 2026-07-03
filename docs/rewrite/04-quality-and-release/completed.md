@@ -130,3 +130,5 @@
   artwork, and audio tag helpers into smaller services.
 - Preserved library song delete smoke coverage while separating row cleanup,
   file cleanup, and delete orchestration boundaries.
+- Added settings support action smoke coverage for URL actions and App Store
+  review available/unavailable branches.

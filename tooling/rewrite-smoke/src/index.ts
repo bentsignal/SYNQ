@@ -760,6 +760,10 @@ import {
   supportActions,
 } from "../../../apps/new/src/features/settings/services/settings-navigation-service";
 import {
+  runSettingsSupportActionWithDependencies,
+  type SettingsSupportActionDependencies,
+} from "../../../apps/new/src/features/settings/services/settings-support-action-executor-service";
+import {
   createInitialSettingsPersistenceState,
   settingsPersistenceReducer,
 } from "../../../apps/new/src/features/settings/services/settings-persistence-state-service";
@@ -10020,7 +10024,7 @@ async function assertPremiumPurchaseExecutorSmoke() {
   });
 }
 
-function assertSettingsScreenSmoke() {
+async function assertSettingsScreenSmoke() {
   const initialSettings = { allowAnalytics: true };
   const loadedSettings = { allowAnalytics: false };
 
@@ -10190,6 +10194,45 @@ function assertSettingsScreenSmoke() {
     ["Leave a Review", "Contact Support", "X", "Instagram", "Discord"],
   );
   assert.equal(getSupportActionKey(supportActions[0]!), "review");
+  const supportActionCalls: string[] = [];
+  let reviewAvailable = false;
+  const supportActionDependencies: SettingsSupportActionDependencies = {
+    isReviewAvailable: async () => {
+      supportActionCalls.push("review-available");
+      return reviewAvailable;
+    },
+    openUrl: async (url) => {
+      supportActionCalls.push(`open:${url}`);
+    },
+    requestReview: async () => {
+      supportActionCalls.push("request-review");
+    },
+  };
+  await runSettingsSupportActionWithDependencies(
+    supportActions[1]!,
+    supportActionDependencies,
+  );
+  assert.deepEqual(supportActionCalls, [
+    "open:https://directedbyshawn.com/synq-support",
+  ]);
+
+  supportActionCalls.length = 0;
+  await runSettingsSupportActionWithDependencies(
+    supportActions[0]!,
+    supportActionDependencies,
+  );
+  assert.deepEqual(supportActionCalls, ["review-available"]);
+
+  supportActionCalls.length = 0;
+  reviewAvailable = true;
+  await runSettingsSupportActionWithDependencies(
+    supportActions[0]!,
+    supportActionDependencies,
+  );
+  assert.deepEqual(supportActionCalls, [
+    "review-available",
+    "request-review",
+  ]);
   assert.deepEqual(getPrivacyScreenState({ status: "loading" }), {
     isAnalyticsDisabled: true,
     statusLabel: "Loading",
@@ -11020,12 +11063,12 @@ assertHomeScreenSmoke();
 assertImportSongFormSmoke();
 assertBackupScreenSmoke();
 assertPremiumScreenSmoke();
-assertSettingsScreenSmoke();
 assertPlaybackSessionSmoke();
 assertPlaybackNativeStatusSmoke();
 assertPlaybackNativeCommandPlanSmoke();
 assertPlaybackPlayerStateSmoke();
 void assertImportLibrarySavePlanSmoke().then(async () => {
+  await assertSettingsScreenSmoke();
   await assertPlaybackPersistenceExecutorSmoke();
   await assertImportFileCacheExecutorSmoke();
   await assertImportFileSelectionExecutorSmoke();

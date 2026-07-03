@@ -241,3 +241,5 @@
   artwork, and audio tag services behind the existing export executor facade.
 - Moved library song delete filesystem cleanup out of the repository boundary
   into a dedicated file service and delete orchestration service.
+- Moved settings support review/link native side effects out of the controller
+  hook and behind a support action service boundary.

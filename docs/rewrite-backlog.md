@@ -176,6 +176,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     instead of the collection list screen.
   - Done: shared duration and remaining-duration formatting now lives in an
     app-shell service instead of repeated library/import/playback UI helpers.
+  - Done: shared song-row shell, metadata, duration, and compact action
+    presentation now lives in app-shell components instead of library preview,
+    add-to-collection, and import review rows repeating row layout primitives.
   - Done: shared numeric route param parsing now lives in an app-shell service
     instead of repeated library/import screen helpers.
   - Done: home quick-action, now-playing, library, and recent-song destinations

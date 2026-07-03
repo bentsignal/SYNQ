@@ -1,6 +1,12 @@
 import { Link, router } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
+import { Pressable, StyleSheet, View } from "react-native";
+import {
+  SongRowActionButton,
+  SongRowDuration,
+  SongRowShell,
+  SongRowTextStack,
+  songRowPartStyles,
+} from "@/src/features/app-shell/components/SongRowParts";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import type { LibrarySongPreview } from "../hooks/use-library-song-preview-query";
@@ -34,141 +40,54 @@ export function LibrarySongPreviewRow({
   const detailHref = getLibrarySongPreviewDetailHref(song);
 
   return (
-    <View
-      style={[
-        styles.row,
-        { borderBottomColor: theme.borderSubtle },
-        isActive ? { backgroundColor: theme.borderSubtle } : null,
-      ]}
-    >
-      <Link asChild href={detailHref}>
-        <Pressable style={styles.rowText}>
-          <Text
-            numberOfLines={1}
-            style={[styles.songTitle, { color: theme.primaryText }]}
-          >
-            {song.title}
-          </Text>
-          <Text
-            numberOfLines={1}
-            style={[styles.songMeta, { color: theme.secondaryText }]}
-          >
-            {song.artist} / {song.album}
-          </Text>
-        </Pressable>
-      </Link>
-      <Text style={[styles.duration, { color: theme.primaryText }]}>
-        {formatDurationMs(song.duration)}
-      </Text>
-      <View style={styles.actionGroup}>
-        <Pressable
+    <SongRowShell isActive={isActive} theme={theme}>
+      <SongRowTextStack
+        meta={`${song.artist} / ${song.album}`}
+        title={song.title}
+        wrapper={(children) => (
+          <Link asChild href={detailHref}>
+            <Pressable style={styles.linkedText}>{children}</Pressable>
+          </Link>
+        )}
+        theme={theme}
+      />
+      <SongRowDuration duration={song.duration} theme={theme} />
+      <View style={songRowPartStyles.actionGroup}>
+        <SongRowActionButton
           accessibilityLabel={`Play ${song.title}`}
-          accessibilityRole="button"
+          backgroundColor={theme.accent}
+          borderColor={theme.accent}
           disabled={!canPlay}
+          label="Play"
           onPress={() => {
             sendHaptic("light");
             playSong(playbackItem);
             router.push(getLibrarySongPreviewPlayerHref());
           }}
-          style={[
-            styles.actionButton,
-            {
-              backgroundColor: theme.accent,
-              borderColor: theme.accent,
-            },
-            !canPlay ? styles.disabled : null,
-          ]}
-        >
-          <Text style={[styles.primaryActionText, { color: theme.onAccent }]}>
-            Play
-          </Text>
-        </Pressable>
-        <Pressable
+          textColor={theme.onAccent}
+        />
+        <SongRowActionButton
           accessibilityLabel={`Add ${song.title} to queue`}
-          accessibilityRole="button"
+          backgroundColor={theme.surface}
+          borderColor={theme.border}
           disabled={!canPlay}
+          label="Queue"
           onPress={() => {
             sendHaptic("light");
             addToQueue(playbackItem);
           }}
-          style={[
-            styles.actionButton,
-            {
-              backgroundColor: theme.surface,
-              borderColor: theme.border,
-            },
-            !canPlay ? styles.disabled : null,
-          ]}
-        >
-          <Text style={[styles.secondaryActionText, { color: theme.accent }]}>
-            Queue
-          </Text>
-        </Pressable>
+          textColor={theme.accent}
+        />
       </View>
-    </View>
+    </SongRowShell>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    alignItems: "center",
-    borderBottomWidth: 1,
-    flexDirection: "row",
-    gap: 12,
-    minHeight: 66,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  rowText: {
+  linkedText: {
     flex: 1,
-    gap: 4,
     justifyContent: "center",
     minHeight: 46,
     minWidth: 0,
-  },
-  songTitle: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 20,
-  },
-  songMeta: {
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  duration: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    minWidth: 44,
-    textAlign: "right",
-  },
-  actionGroup: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  actionButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    justifyContent: "center",
-    minHeight: 36,
-    minWidth: 58,
-    paddingHorizontal: 10,
-  },
-  disabled: {
-    opacity: 0.45,
-  },
-  primaryActionText: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  secondaryActionText: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
   },
 });

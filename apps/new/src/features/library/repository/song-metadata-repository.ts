@@ -5,6 +5,9 @@ import { eq } from "drizzle-orm";
 import {
   replaceLibrarySongMetadataRelationships,
 } from "./song-metadata-relationship-repository";
+import {
+  updateLibrarySongMetadataWithDependencies,
+} from "./song-metadata-update-executor-repository";
 
 export async function updateLibrarySongMetadata({
   albumNames,
@@ -19,46 +22,38 @@ export async function updateLibrarySongMetadata({
   id: number;
   title: string;
 }) {
-  const cleanTitle = title.trim();
-
-  if (!cleanTitle) {
-    throw new Error("Song title is required.");
-  }
-
-  await db
-    .update(schema.songs)
-    .set({
-      snapshotAtLastExport: null,
-      title: cleanTitle,
-    })
-    .where(eq(schema.songs.id, id));
-
-  const { albumIds } = await replaceLibrarySongMetadataRelationships({
-    albumNames,
-    artistNames,
-    songId: id,
-  });
-
-  if (coverImageDataUrl !== undefined) {
-    const coverImage = await saveCoverImage(coverImageDataUrl);
-
-    if (!coverImage) {
-      return;
-    }
-
-    const firstAlbumId = albumIds[0];
-
-    if (firstAlbumId) {
-      await db
-        .update(schema.albums)
-        .set({ coverImage })
-        .where(eq(schema.albums.id, firstAlbumId));
-      return;
-    }
-
-    await db
-      .update(schema.songs)
-      .set({ coverImage })
-      .where(eq(schema.songs.id, id));
-  }
+  await updateLibrarySongMetadataWithDependencies(
+    {
+      albumNames,
+      artistNames,
+      coverImageDataUrl,
+      id,
+      title,
+    },
+    {
+      replaceRelationships: replaceLibrarySongMetadataRelationships,
+      saveCoverImage,
+      updateAlbumCover: async ({ albumId, coverImage }) => {
+        await db
+          .update(schema.albums)
+          .set({ coverImage })
+          .where(eq(schema.albums.id, albumId));
+      },
+      updateSongCover: async ({ coverImage, songId }) => {
+        await db
+          .update(schema.songs)
+          .set({ coverImage })
+          .where(eq(schema.songs.id, songId));
+      },
+      updateSongTitle: async ({ songId, title }) => {
+        await db
+          .update(schema.songs)
+          .set({
+            snapshotAtLastExport: null,
+            title,
+          })
+          .where(eq(schema.songs.id, songId));
+      },
+    },
+  );
 }

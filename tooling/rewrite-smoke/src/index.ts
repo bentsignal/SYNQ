@@ -475,6 +475,12 @@ import {
   type SongMetadataRelationshipDependencies,
 } from "../../../apps/new/src/features/library/repository/song-metadata-relationship-executor-repository";
 import {
+  assertLibrarySongTitle,
+  normalizeLibrarySongTitle,
+  updateLibrarySongMetadataWithDependencies,
+  type SongMetadataUpdateDependencies,
+} from "../../../apps/new/src/features/library/repository/song-metadata-update-executor-repository";
+import {
   assertSupportedCollectionImageType,
   getCollectionImageMimeType,
   pickCollectionImageWithDependencies,
@@ -6655,6 +6661,122 @@ async function assertSongMetadataRelationshipExecutorSmoke() {
   ]);
 }
 
+async function assertSongMetadataUpdateExecutorSmoke() {
+  const calls: unknown[] = [];
+  let relationshipAlbumIds: number[] = [7];
+  let savedCoverImage: string | null = "saved-cover";
+  const dependencies: SongMetadataUpdateDependencies = {
+    replaceRelationships: async (params) => {
+      calls.push(["relationships", params]);
+      return { albumIds: relationshipAlbumIds };
+    },
+    saveCoverImage: async (coverImageDataUrl) => {
+      calls.push(["save-cover", coverImageDataUrl]);
+      return savedCoverImage;
+    },
+    updateAlbumCover: async (params) => {
+      calls.push(["album-cover", params]);
+    },
+    updateSongCover: async (params) => {
+      calls.push(["song-cover", params]);
+    },
+    updateSongTitle: async (params) => {
+      calls.push(["song-title", params]);
+    },
+  };
+
+  assert.equal(normalizeLibrarySongTitle("  Smoke Song  "), "Smoke Song");
+  assert.equal(assertLibrarySongTitle("  Smoke Song  "), "Smoke Song");
+  assert.throws(() => assertLibrarySongTitle("   "), /Song title is required/);
+
+  await assert.rejects(
+    () =>
+      updateLibrarySongMetadataWithDependencies(
+        {
+          albumNames: "Album",
+          artistNames: "Artist",
+          id: 1,
+          title: " ",
+        },
+        dependencies,
+      ),
+    /Song title is required/,
+  );
+  assert.deepEqual(calls, []);
+
+  await updateLibrarySongMetadataWithDependencies(
+    {
+      albumNames: " Album ",
+      artistNames: " Artist ",
+      id: 2,
+      title: "  Renamed  ",
+    },
+    dependencies,
+  );
+  assert.deepEqual(calls, [
+    ["song-title", { songId: 2, title: "Renamed" }],
+    [
+      "relationships",
+      { albumNames: " Album ", artistNames: " Artist ", songId: 2 },
+    ],
+  ]);
+
+  calls.length = 0;
+  await updateLibrarySongMetadataWithDependencies(
+    {
+      albumNames: "Album",
+      artistNames: "Artist",
+      coverImageDataUrl: "data:image/png;base64,cover",
+      id: 3,
+      title: "Cover Song",
+    },
+    dependencies,
+  );
+  assert.deepEqual(calls, [
+    ["song-title", { songId: 3, title: "Cover Song" }],
+    ["relationships", { albumNames: "Album", artistNames: "Artist", songId: 3 }],
+    ["save-cover", "data:image/png;base64,cover"],
+    ["album-cover", { albumId: 7, coverImage: "saved-cover" }],
+  ]);
+
+  calls.length = 0;
+  relationshipAlbumIds = [];
+  await updateLibrarySongMetadataWithDependencies(
+    {
+      albumNames: "",
+      artistNames: "Artist",
+      coverImageDataUrl: "song-cover",
+      id: 4,
+      title: "Standalone Song",
+    },
+    dependencies,
+  );
+  assert.deepEqual(calls, [
+    ["song-title", { songId: 4, title: "Standalone Song" }],
+    ["relationships", { albumNames: "", artistNames: "Artist", songId: 4 }],
+    ["save-cover", "song-cover"],
+    ["song-cover", { coverImage: "saved-cover", songId: 4 }],
+  ]);
+
+  calls.length = 0;
+  savedCoverImage = null;
+  await updateLibrarySongMetadataWithDependencies(
+    {
+      albumNames: "",
+      artistNames: "Artist",
+      coverImageDataUrl: null,
+      id: 5,
+      title: "No Cover",
+    },
+    dependencies,
+  );
+  assert.deepEqual(calls, [
+    ["song-title", { songId: 5, title: "No Cover" }],
+    ["relationships", { albumNames: "", artistNames: "Artist", songId: 5 }],
+    ["save-cover", null],
+  ]);
+}
+
 async function assertCollectionUniquenessExecutorSmoke() {
   const calls: unknown[] = [];
   const duplicates = new Set(["album:Existing Album", "playlist:Existing List"]);
@@ -10124,6 +10246,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertCollectionImagePickerExecutorSmoke();
   await assertAlbumArtistUpdateExecutorSmoke();
   await assertSongMetadataRelationshipExecutorSmoke();
+  await assertSongMetadataUpdateExecutorSmoke();
   await assertCollectionUniquenessExecutorSmoke();
   await assertCollectionFormMutationSmoke();
   assertLibraryCollectionListSmoke();

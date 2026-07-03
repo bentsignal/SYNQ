@@ -201,3 +201,5 @@
   executor so relationship mutations are separated from Drizzle table adapters.
 - Moved collection name uniqueness policy behind an injectable repository
   executor so create/update adapters only provide table-specific lookups.
+- Moved library song metadata title validation, relationship replacement, and
+  cover targeting behind an injectable repository executor.

@@ -90,3 +90,6 @@
   and playlist reorder/remove dispatch plus protected playlist guards.
 - Added collection uniqueness executor smoke coverage for kind-specific lookup
   routing, edit exclusions, and duplicate-name errors.
+- Added song metadata update executor smoke coverage for title validation,
+  relationship sequencing, album-cover targeting, song-cover fallback, and
+  empty saved-cover no-ops.

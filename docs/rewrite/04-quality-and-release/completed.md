@@ -114,3 +114,5 @@
   service split for transfer gating, upload acceptance, and response copy.
 - Preserved collection song relationship smoke coverage while splitting the
   table-specific Drizzle adapters into smaller repository modules.
+- Preserved collection create executor smoke coverage while splitting the
+  table-specific insert adapters into smaller repository modules.

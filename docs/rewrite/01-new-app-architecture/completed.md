@@ -225,3 +225,5 @@
   and upload-decision services so route handlers compose narrower policies.
 - Split collection song relationship Drizzle adapters into album, artist, and
   playlist repositories behind the existing relationship facade.
+- Split collection creation Drizzle insert adapters into album, artist, and
+  playlist repositories behind the existing collection-create facade.

@@ -239,3 +239,5 @@
   cleanup repositories behind the existing import-library song facade.
 - Split library export metadata writeback into focused metadata builder,
   artwork, and audio tag services behind the existing export executor facade.
+- Moved library song delete filesystem cleanup out of the repository boundary
+  into a dedicated file service and delete orchestration service.

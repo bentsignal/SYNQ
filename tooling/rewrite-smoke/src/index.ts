@@ -624,10 +624,18 @@ import {
   updateLibrarySongMetadataCommandWithDependencies,
 } from "../../../apps/new/src/features/library/services/library-song-command-executor-service";
 import {
-  deleteLibrarySongWithDependencies,
-  getLibrarySongDirectoryPath,
-  type LibrarySongDeleteDependencies,
+  deleteLibrarySongRowsWithDependencies,
+  type LibrarySongDeleteRowDependencies,
 } from "../../../apps/new/src/features/library/repository/library-song-delete-executor-repository";
+import {
+  deleteLibrarySongWithDependencies,
+  type LibrarySongDeleteDependencies,
+} from "../../../apps/new/src/features/library/services/library-song-delete-executor-service";
+import {
+  deleteLibrarySongFilesWithDependencies as deleteLibrarySongFilesForLibraryWithDependencies,
+  getLibrarySongDirectoryPath,
+  type LibrarySongFileDependencies,
+} from "../../../apps/new/src/features/library/services/library-song-file-executor-service";
 import {
   getLibrarySongExportSnapshotInput,
   getLibrarySongSnapshotHashWithDependencies,
@@ -5803,25 +5811,35 @@ function assertLibrarySongDetailSmoke() {
 
 async function assertLibrarySongDeleteExecutorSmoke() {
   const calls: string[] = [];
-  let documentDirectory: string | null = "file:///documents/";
-  const dependencies: LibrarySongDeleteDependencies = {
-    get documentDirectory() {
-      return documentDirectory;
-    },
+  const rowDependencies: LibrarySongDeleteRowDependencies = {
     deleteAlbumSongRows: async (songId) => {
       calls.push(`album-songs:${songId}`);
     },
     deleteArtistSongRows: async (songId) => {
       calls.push(`artist-songs:${songId}`);
     },
-    deleteLibrarySongFiles: async (songId) => {
-      calls.push(`files:${songId}`);
-    },
     deletePlaylistSongRows: async (songId) => {
       calls.push(`playlist-songs:${songId}`);
     },
     deleteSongRow: async (songId) => {
       calls.push(`song:${songId}`);
+    },
+  };
+  let documentDirectory: string | null = "file:///documents/";
+  const fileDependencies: LibrarySongFileDependencies = {
+    deletePath: async (path, options) => {
+      calls.push(`files:${path}:${options?.idempotent ?? false}`);
+    },
+    get documentDirectory() {
+      return documentDirectory;
+    },
+  };
+  const deleteDependencies: LibrarySongDeleteDependencies = {
+    deleteLibrarySongFiles: async (songId) => {
+      calls.push(`delete-files:${songId}`);
+    },
+    deleteLibrarySongRows: async (songId) => {
+      calls.push(`delete-rows:${songId}`);
     },
   };
 
@@ -5833,24 +5851,26 @@ async function assertLibrarySongDeleteExecutorSmoke() {
     "file:///documents/library/42",
   );
 
-  await deleteLibrarySongWithDependencies(42, dependencies);
+  await deleteLibrarySongRowsWithDependencies(42, rowDependencies);
   assert.deepEqual(calls, [
     "album-songs:42",
     "artist-songs:42",
     "playlist-songs:42",
     "song:42",
-    "files:42",
   ]);
 
   calls.length = 0;
+  await deleteLibrarySongFilesForLibraryWithDependencies(42, fileDependencies);
+  assert.deepEqual(calls, ["files:file:///documents/library/42:true"]);
+
+  calls.length = 0;
   documentDirectory = null;
-  await deleteLibrarySongWithDependencies(43, dependencies);
-  assert.deepEqual(calls, [
-    "album-songs:43",
-    "artist-songs:43",
-    "playlist-songs:43",
-    "song:43",
-  ]);
+  await deleteLibrarySongFilesForLibraryWithDependencies(43, fileDependencies);
+  assert.deepEqual(calls, []);
+
+  calls.length = 0;
+  await deleteLibrarySongWithDependencies(44, deleteDependencies);
+  assert.deepEqual(calls, ["delete-rows:44", "delete-files:44"]);
 }
 
 async function assertLibrarySongExportSnapshotExecutorSmoke() {

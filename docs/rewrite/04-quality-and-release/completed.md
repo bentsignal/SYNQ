@@ -128,3 +128,5 @@
   writes and relationship cleanup into smaller repository modules.
 - Preserved library export metadata smoke coverage while extracting metadata,
   artwork, and audio tag helpers into smaller services.
+- Preserved library song delete smoke coverage while separating row cleanup,
+  file cleanup, and delete orchestration boundaries.

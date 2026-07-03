@@ -2,7 +2,7 @@ import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getImportSongEditHref } from "../services/import-song-form-service";
+import { getImportSongEditHref } from "../services/import-song-edit-navigation-service";
 import type { ImportSongDraft } from "../types/import-session";
 
 type ImportSongPreviewRowProps = {

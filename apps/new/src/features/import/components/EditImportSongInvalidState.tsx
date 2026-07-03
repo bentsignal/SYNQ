@@ -4,7 +4,7 @@ import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customi
 import {
   getImportSongEditInvalidState,
   type ImportSongEditInvalidReason,
-} from "../services/import-song-form-service";
+} from "../services/import-song-edit-navigation-service";
 
 type EditImportSongInvalidStateProps = {
   reason: ImportSongEditInvalidReason;

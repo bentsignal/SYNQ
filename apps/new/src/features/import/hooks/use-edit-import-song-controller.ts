@@ -7,9 +7,9 @@ import {
   getImportSongEditErrorMessage,
   getImportSongEditInitialState,
   getImportSongEditRequiredTitleMessage,
-  getImportSongEditSaveHref,
   importSongEditFormReducer,
 } from "../services/import-song-form-service";
+import { getImportSongEditSaveHref } from "../services/import-song-edit-navigation-service";
 import type { ImportSongDraft } from "../types/import-session";
 
 type UseEditImportSongControllerParams = {

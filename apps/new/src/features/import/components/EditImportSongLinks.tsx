@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getImportSongEditBackLinks } from "../services/import-song-form-service";
+import { getImportSongEditBackLinks } from "../services/import-song-edit-navigation-service";
 
 export function EditImportSongLinks() {
   const theme = useCustomizationTheme();

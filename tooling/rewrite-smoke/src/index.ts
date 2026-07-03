@@ -345,8 +345,12 @@ import {
 } from "../../../apps/new/src/features/library/services/library-song-detail-mutation-service";
 import {
   buildLibrarySongEditFormState,
+  getLibrarySongEditBlockedCommand,
+  getLibrarySongEditCoverPickedCommand,
   getLibrarySongEditErrorMessage,
+  getLibrarySongEditFailureCommand,
   getInitialLibrarySongEditControllerState,
+  getLibrarySongEditSaveSuccessCommand,
   librarySongEditControllerReducer,
 } from "../../../apps/new/src/features/library/services/library-song-form-service";
 import {
@@ -3974,6 +3978,39 @@ function assertLibrarySongDetailSmoke() {
     getLibrarySongEditErrorMessage(null),
     "Song could not be saved.",
   );
+  assert.deepEqual(getLibrarySongEditBlockedCommand(), {
+    haptic: "error",
+  });
+  assert.deepEqual(
+    getLibrarySongEditCoverPickedCommand({
+      dataUrl: "data:image/jpeg;base64,cover",
+      fileName: "cover.jpg",
+    }),
+    {
+      action: {
+        coverImage: {
+          dataUrl: "data:image/jpeg;base64,cover",
+          fileName: "cover.jpg",
+        },
+        type: "pick-cover-image",
+      },
+      haptic: "light",
+    },
+  );
+  assert.deepEqual(
+    getLibrarySongEditFailureCommand(new Error("Song edit smoke failure")),
+    {
+      action: {
+        errorMessage: "Song edit smoke failure",
+        type: "fail",
+      },
+      haptic: "error",
+    },
+  );
+  assert.deepEqual(getLibrarySongEditSaveSuccessCommand({ songId: 42 }), {
+    haptic: "success",
+    href: "/(tabs)/library/song/42",
+  });
   assert.deepEqual(
     getLibrarySongDetailActionState({
       detail,

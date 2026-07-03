@@ -4,13 +4,15 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import { pickCollectionImage } from "../services/collection-image-picker-service";
 import { updateLibrarySongMetadataCommand } from "../services/library-song-command-service";
 import {
-  getLibrarySongEditErrorMessage,
+  getLibrarySongEditBlockedCommand,
+  getLibrarySongEditCoverPickedCommand,
+  getLibrarySongEditFailureCommand,
+  getLibrarySongEditSaveSuccessCommand,
   getInitialLibrarySongEditControllerState,
   librarySongEditControllerReducer,
 } from "../services/library-song-form-service";
 import { getLibrarySongEditActionState } from "../services/library-song-edit-screen-state-service";
 import { type LibrarySongDetail } from "../services/library-song-detail-service";
-import { getLibrarySongDetailHref } from "../services/library-song-interaction-service";
 
 type UseEditLibrarySongControllerParams = {
   detail: LibrarySongDetail;
@@ -44,31 +46,29 @@ export function useEditLibrarySongController({
 
   const pickCoverImage = async () => {
     if (!actionState.canPickCoverImage) {
-      sendHaptic("error");
+      const command = getLibrarySongEditBlockedCommand();
+      sendHaptic(command.haptic);
       return;
     }
 
     try {
       const pickedImage = await pickCollectionImage();
       if (pickedImage) {
-        dispatchFormState({
-          coverImage: pickedImage,
-          type: "pick-cover-image",
-        });
-        sendHaptic("light");
+        const command = getLibrarySongEditCoverPickedCommand(pickedImage);
+        dispatchFormState(command.action);
+        sendHaptic(command.haptic);
       }
     } catch (caughtError) {
-      sendHaptic("error");
-      dispatchFormState({
-        errorMessage: getLibrarySongEditErrorMessage(caughtError),
-        type: "fail",
-      });
+      const command = getLibrarySongEditFailureCommand(caughtError);
+      sendHaptic(command.haptic);
+      dispatchFormState(command.action);
     }
   };
 
   const save = async () => {
     if (!actionState.canSave) {
-      sendHaptic("error");
+      const command = getLibrarySongEditBlockedCommand();
+      sendHaptic(command.haptic);
       return;
     }
 
@@ -82,14 +82,13 @@ export function useEditLibrarySongController({
         id: songId,
         title: formState.title,
       });
-      sendHaptic("success");
-      router.replace(getLibrarySongDetailHref({ songId }));
+      const command = getLibrarySongEditSaveSuccessCommand({ songId });
+      sendHaptic(command.haptic);
+      router.replace(command.href);
     } catch (caughtError) {
-      sendHaptic("error");
-      dispatchFormState({
-        errorMessage: getLibrarySongEditErrorMessage(caughtError),
-        type: "fail",
-      });
+      const command = getLibrarySongEditFailureCommand(caughtError);
+      sendHaptic(command.haptic);
+      dispatchFormState(command.action);
     } finally {
       dispatchFormState({ type: "finish-save" });
     }

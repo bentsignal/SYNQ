@@ -1050,6 +1050,7 @@ function assertPlaybackPlayerStateSmoke() {
     }),
     {
       adBreakActive: false,
+      canEditActiveTrack: false,
       canFastForward: false,
       canPlayPause: false,
       canRewind: false,
@@ -1073,6 +1074,7 @@ function assertPlaybackPlayerStateSmoke() {
     }),
     {
       adBreakActive: false,
+      canEditActiveTrack: true,
       canFastForward: true,
       canPlayPause: true,
       canRewind: true,
@@ -1109,6 +1111,7 @@ function assertPlaybackPlayerStateSmoke() {
     }),
     {
       adBreakActive: true,
+      canEditActiveTrack: false,
       canFastForward: false,
       canPlayPause: false,
       canRewind: false,
@@ -1139,6 +1142,7 @@ function assertPlaybackPlayerStateSmoke() {
     {
       actionState: {
         adBreakActive: false,
+        canEditActiveTrack: true,
         canFastForward: true,
         canPlayPause: true,
         canRewind: true,

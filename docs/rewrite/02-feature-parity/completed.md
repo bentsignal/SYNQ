@@ -12,3 +12,5 @@
   restore/erase.
 - Completed a first-pass old/new route and primary-screen audit across import,
   ingest, library, playback, settings, backup, and premium.
+- Replaced old `/player/edit` active-track options access with an `Edit song`
+  link on the new player screen that routes to the library song edit flow.

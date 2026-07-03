@@ -22,8 +22,8 @@
   supports row-level up/down persistence, but there is no dedicated album
   reorder screen.
 - Old `/player/edit` exposed active-track options from the player. New player
-  has transport controls and a queue link; song edit exists from library song
-  detail but active-player edit/options access needs a parity decision.
+  now exposes `Edit song` for the active track when playback commands are not
+  blocked by an ad gate, routing to the existing library song edit flow.
 - New settings privacy/support routes are additional surface, not old-to-new
   gaps. Old support/social actions were inline settings actions.
 - Backup and premium have no obvious primary route gaps in the first-pass audit.

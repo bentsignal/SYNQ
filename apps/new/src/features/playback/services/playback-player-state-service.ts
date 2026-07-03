@@ -56,6 +56,7 @@ export const getPlaybackPlayerActionState = ({
 
   return {
     adBreakActive,
+    canEditActiveTrack: canRunTrackCommand,
     canFastForward:
       canRunTrackCommand && state.duration > 0 && state.position < state.duration,
     canPlayPause: canRunTrackCommand,

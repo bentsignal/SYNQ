@@ -231,10 +231,7 @@ import {
   parseAlbumYearInput,
 } from "../../../apps/new/src/features/library/services/collection-form-service";
 import {
-  getCollectionDetailHref,
   getCollectionFormActionState,
-  getCollectionFormBackHref,
-  getCollectionFormBackLink,
   getCollectionFormFieldState,
   getCollectionFormImageLabel,
   getCollectionFormPreviewInitial,
@@ -245,6 +242,11 @@ import {
   getEditCollectionFormSubtitle,
   getSavedCollectionFormImageLabel,
 } from "../../../apps/new/src/features/library/services/collection-form-interaction-service";
+import {
+  getCollectionDetailHref,
+  getCollectionFormBackHref,
+  getCollectionFormBackLink,
+} from "../../../apps/new/src/features/library/services/collection-form-navigation-service";
 import {
   createCollectionFromForm,
   updateCollectionFromForm,

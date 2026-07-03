@@ -106,6 +106,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: library export metadata lookup, artwork tag loading, and stale
     snapshot writeback now live in a focused metadata service instead of the
     share orchestration service owning export preparation details.
+  - Done: collection form back/detail destinations now live in a focused
+    navigation service instead of the form interaction service owning routing
+    and form presentation state together.
   - Done: collection detail song-row aggregation now lives in a focused song
     detail service instead of the detail shell builder owning song grouping,
     artist/album fallback labels, and track sorting.

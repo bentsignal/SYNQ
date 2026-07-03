@@ -6,7 +6,7 @@ import { CollectionFormFields } from "./CollectionFormFields";
 import { CollectionFormHeader } from "./CollectionFormHeader";
 import { CollectionImageInput } from "./CollectionImageInput";
 import type { CollectionFormViewProps } from "./collection-form-types";
-import { getCollectionFormBackLink } from "../services/collection-form-interaction-service";
+import { getCollectionFormBackLink } from "../services/collection-form-navigation-service";
 
 export function CollectionFormView({
   actionState,

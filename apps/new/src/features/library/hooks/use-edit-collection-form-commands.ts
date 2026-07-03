@@ -7,7 +7,7 @@ import {
 } from "../repository/collection-update-repository";
 import { useCollectionFormImageCommand } from "./use-collection-form-image-command";
 import { updateCollectionFromForm } from "../services/collection-form-mutation-service";
-import { getCollectionDetailHref } from "../services/collection-form-interaction-service";
+import { getCollectionDetailHref } from "../services/collection-form-navigation-service";
 import {
   getCollectionFormErrorMessage,
   type CollectionFormAction,

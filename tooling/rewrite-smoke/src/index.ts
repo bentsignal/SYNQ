@@ -69,6 +69,11 @@ import {
   normalizeRestoredAdGate,
 } from "../../../apps/new/src/features/playback/services/playback-persistence-ad-gate-service";
 import {
+  normalizeMode,
+  normalizeQueueFilter,
+  normalizeSource,
+} from "../../../apps/new/src/features/playback/services/playback-persistence-domain-service";
+import {
   clearPersistedPlaybackStateWithDependencies,
   getPlaybackStateDirectoryWithDependencies,
   getPlaybackStateFileWithDependencies,
@@ -1190,6 +1195,23 @@ function assertPlaybackSessionSmoke() {
     }).active,
     false,
   );
+  assert.deepEqual(normalizeMode({ loop: true, shuffle: "bad" }), {
+    loop: true,
+    shuffle: false,
+  });
+  assert.deepEqual(
+    normalizeQueueFilter({ order: "bad", query: 12, sort: "title" }),
+    {
+      order: "desc",
+      query: "",
+      sort: "title",
+    },
+  );
+  assert.deepEqual(normalizeSource({ id: second.id, type: "playlist" }), {
+    id: second.id,
+    type: "playlist",
+  });
+  assert.equal(normalizeSource({ id: "bad", type: "playlist" }), null);
 
   const normalizedState = normalizePlaybackState({
     activeQueueIndex: 5,

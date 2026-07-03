@@ -303,3 +303,5 @@
   focused persistence step service.
 - Split playback persistence ad-gate normalization into a focused persistence
   step service.
+- Split playback persistence mode, queue-filter, and source normalization into
+  a focused persistence domain service.

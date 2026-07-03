@@ -196,3 +196,5 @@
   queue-item normalization.
 - Added direct playback persistence ad-gate smoke coverage for clamping and
   restored active-gate reset behavior.
+- Added direct playback persistence domain smoke coverage for mode,
+  queue-filter, and source normalization.

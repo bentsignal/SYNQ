@@ -2,7 +2,7 @@
 
 ## Rostra State Migration
 
-- [ ] Add `rostra` to the new app once the migration slice is ready.
+- [x] Add `rostra` to the new app once the migration slice is ready.
 - [ ] Inventory all React context usage in `apps/new`.
 - [ ] Replace broad React context providers with Rostra stores where selector
   reads reduce rerenders.
@@ -10,7 +10,7 @@
   - playback session
   - import session
   - premium entitlement
-  - customization settings/theme
+  - done: customization settings/theme
 - [ ] Preserve provider ergonomics while using selector functions for
   component reads.
 - [x] Add lint or hygiene scans to prevent new broad React context usage once

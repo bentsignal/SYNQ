@@ -1,37 +1,29 @@
+import type { PropsWithChildren } from "react";
+import { createStore } from "rostra";
 import {
-  createContext,
-  useContext,
-  type PropsWithChildren,
-} from "react";
-import { useCustomizationSettings } from "../hooks/use-customization-settings";
+  useCustomizationSettingsStore,
+  type CustomizationSettingsStore,
+} from "../hooks/use-customization-settings";
 
-type CustomizationSettingsContextValue = ReturnType<
-  typeof useCustomizationSettings
->;
+type CustomizationSettingsStoreProps = object;
 
-const CustomizationSettingsContext =
-  createContext<CustomizationSettingsContextValue | null>(null);
+const { Store, useStore } = createStore<
+  CustomizationSettingsStoreProps,
+  CustomizationSettingsStore
+>(useCustomizationSettingsStore);
 
 export function CustomizationSettingsProvider({
   children,
 }: PropsWithChildren) {
-  const customizationSettings = useCustomizationSettings();
+  return <Store>{children}</Store>;
+}
 
-  return (
-    <CustomizationSettingsContext.Provider value={customizationSettings}>
-      {children}
-    </CustomizationSettingsContext.Provider>
-  );
+export function useCustomizationSettingsSelector<SelectedValue>(
+  selector: (store: CustomizationSettingsStore) => SelectedValue,
+) {
+  return useStore(selector);
 }
 
 export function useCustomizationSettingsContext() {
-  const context = useContext(CustomizationSettingsContext);
-
-  if (!context) {
-    throw new Error(
-      "useCustomizationSettingsContext must be used within CustomizationSettingsProvider.",
-    );
-  }
-
-  return context;
+  return useCustomizationSettingsSelector((store) => store);
 }

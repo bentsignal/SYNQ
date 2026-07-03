@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useCustomizationSettingsContext } from "../context/CustomizationSettingsProvider";
+import { useCustomizationSettingsSelector } from "../context/CustomizationSettingsProvider";
 import { getCustomizationOption } from "../services/customization-settings-service";
 
 export type CustomizationTheme = {
@@ -17,8 +17,10 @@ export type CustomizationTheme = {
 };
 
 export function useCustomizationTheme(): CustomizationTheme {
-  const { state } = useCustomizationSettingsContext();
-  const activeTheme = getCustomizationOption(state.settings.theme);
+  const theme = useCustomizationSettingsSelector(
+    (store) => store.state.settings.theme,
+  );
+  const activeTheme = getCustomizationOption(theme);
 
   return useMemo(
     () => ({

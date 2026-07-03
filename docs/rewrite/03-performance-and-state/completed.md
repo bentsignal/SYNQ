@@ -9,3 +9,6 @@
   surfaces.
 - Added a rewrite debt audit ratchet for new-app `StyleSheet.create` and React
   context usage, wired into `pnpm verify:rewrite`.
+- Migrated customization settings from broad React context to a Rostra store,
+  added selector reads for theme and haptics, and lowered the context ratchet
+  from 4 modules to 3.

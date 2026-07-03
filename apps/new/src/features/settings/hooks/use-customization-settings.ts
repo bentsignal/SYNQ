@@ -12,7 +12,7 @@ import type { CustomizationSettings } from "../types/customization-settings";
 import { useCustomizationSettingsCommands } from "./use-customization-settings-commands";
 import { useSettingsPersistenceLoader } from "./use-settings-persistence-loader";
 
-export function useCustomizationSettings() {
+export function useCustomizationSettingsStore() {
   const [state, dispatch] = useReducer(
     settingsPersistenceReducer<CustomizationSettings>,
     createInitialSettingsPersistenceState(defaultCustomizationSettings),
@@ -40,3 +40,7 @@ export function useCustomizationSettings() {
     [setAppIcon, setHapticsEnabled, setTheme, state],
   );
 }
+
+export type CustomizationSettingsStore = ReturnType<
+  typeof useCustomizationSettingsStore
+>;

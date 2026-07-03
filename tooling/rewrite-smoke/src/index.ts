@@ -420,6 +420,10 @@ import {
   type LikedSongMembershipDependencies,
 } from "../../../apps/new/src/features/library/repository/collection-song-membership-executor-repository";
 import {
+  getLikedSongRelationshipDelete,
+  getOrderedSongRelationshipInsert,
+} from "../../../apps/new/src/features/library/repository/collection-song-membership-step-repository";
+import {
   addSongsToCollectionWithDependencies,
   addSongToCollectionWithDependencies,
   type CollectionSongAddDependencies,
@@ -4519,6 +4523,21 @@ async function assertCollectionSongMembershipExecutorSmoke() {
   };
 
   assert.equal(getNextSongRelationshipOrder([null, 2, 5]), 6);
+  assert.deepEqual(
+    getOrderedSongRelationshipInsert({
+      order: 6,
+      ownerId: 10,
+      songId: 3,
+    }),
+    { order: 6, ownerId: 10, songId: 3 },
+  );
+  assert.deepEqual(
+    getLikedSongRelationshipDelete({
+      playlistId: 2,
+      songId: 5,
+    }),
+    { ownerId: 2, songId: 5 },
+  );
 
   assert.equal(
     await addOrderedSongRelationshipWithDependencies(

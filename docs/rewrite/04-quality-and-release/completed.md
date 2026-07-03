@@ -156,3 +156,5 @@
   remove operation planning.
 - Added direct collection song add step smoke coverage for single and batch add
   operation planning.
+- Added direct collection song membership step smoke coverage for insert and
+  liked-delete parameter planning.

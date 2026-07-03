@@ -264,3 +264,5 @@
 - Split collection song relationship order and remove operation planning out of
   the main relationship executor.
 - Split collection song add operation planning out of the main add executor.
+- Split collection song membership order, guard, insert, and liked-delete
+  helpers out of the main membership executor.

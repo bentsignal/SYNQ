@@ -809,6 +809,10 @@ import {
   toLibrarySongExportItem,
 } from "../../../apps/new/src/features/library/services/library-song-playback-state-service";
 import {
+  runLibrarySongPlayAction,
+  runLibrarySongQueueAction,
+} from "../../../apps/new/src/features/library/services/library-song-playback-action-flow-service";
+import {
   getLibrarySongDeleteSuccessCommand,
   getLibrarySongDetailMutationBlockedCommand,
   getLibrarySongDetailMutationErrorMessage,
@@ -6840,6 +6844,60 @@ function assertLibrarySongDetailSmoke() {
   assert.deepEqual(getLibrarySongQueueCommand(), {
     haptic: "light",
   });
+  const songPlaybackItem = toLibrarySongDetailPlaybackItem({
+    detail,
+    songId: 42,
+  });
+  const songPlaybackActionEvents: unknown[] = [];
+  const songPlaybackActions = {
+    addToQueue: (song: typeof songPlaybackItem) => {
+      songPlaybackActionEvents.push(["queue", song.id]);
+    },
+    playSong: (song: typeof songPlaybackItem) => {
+      songPlaybackActionEvents.push(["play", song.id]);
+    },
+    pushRoute: (href: string) => {
+      songPlaybackActionEvents.push(["route", href]);
+    },
+    sendHaptic: (haptic: string) => {
+      songPlaybackActionEvents.push(["haptic", haptic]);
+    },
+  };
+  runLibrarySongPlayAction({
+    canPlay: false,
+    playbackItem: songPlaybackItem,
+    playSong: songPlaybackActions.playSong,
+    pushRoute: songPlaybackActions.pushRoute,
+    sendHaptic: songPlaybackActions.sendHaptic,
+  });
+  runLibrarySongPlayAction({
+    canPlay: true,
+    playbackItem: songPlaybackItem,
+    playSong: songPlaybackActions.playSong,
+    pushRoute: songPlaybackActions.pushRoute,
+    sendHaptic: songPlaybackActions.sendHaptic,
+  });
+  runLibrarySongQueueAction({
+    addToQueue: songPlaybackActions.addToQueue,
+    canPlay: false,
+    playbackItem: songPlaybackItem,
+    sendHaptic: songPlaybackActions.sendHaptic,
+  });
+  runLibrarySongQueueAction({
+    addToQueue: songPlaybackActions.addToQueue,
+    canPlay: true,
+    playbackItem: songPlaybackItem,
+    sendHaptic: songPlaybackActions.sendHaptic,
+  });
+  assert.deepEqual(songPlaybackActionEvents, [
+    ["haptic", "error"],
+    ["haptic", "light"],
+    ["play", 42],
+    ["route", "/player"],
+    ["haptic", "error"],
+    ["haptic", "light"],
+    ["queue", 42],
+  ]);
   assert.equal(getLibrarySongDetailBackHref(), "/(tabs)/library");
   assert.deepEqual(getLibraryInvalidSongState(), {
     backLink: {

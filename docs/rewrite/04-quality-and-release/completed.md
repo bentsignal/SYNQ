@@ -230,3 +230,5 @@
   and failure dispatch sequencing.
 - Added direct library collection playback action-flow smoke coverage for
   blocked and successful play/queue sequencing.
+- Added direct library song detail playback action-flow smoke coverage for
+  blocked and successful play/queue sequencing.

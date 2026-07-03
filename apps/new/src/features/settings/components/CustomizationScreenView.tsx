@@ -1,4 +1,4 @@
-import { StyleSheet, Text } from "react-native";
+import { Text } from "react-native";
 import type { CustomizationScreenController } from "../hooks/use-customization-screen-controller";
 import { useCustomizationTheme } from "../hooks/use-customization-theme";
 import { CustomizationColorControls } from "./CustomizationColorControls";
@@ -53,18 +53,13 @@ export function CustomizationScreenView({
       />
 
       {customizationState.error && (
-        <Text style={[styles.errorText, { color: theme.danger }]}>
+        <Text
+          className="text-[13px] font-bold leading-[19px]"
+          style={{ color: theme.danger }}
+        >
           {customizationState.error}
         </Text>
       )}
     </SettingsScreenContent>
   );
 }
-
-const styles = StyleSheet.create({
-  errorText: {
-    fontSize: 13,
-    fontWeight: "700",
-    lineHeight: 19,
-  },
-});

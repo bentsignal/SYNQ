@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { getImportWifiActionState } from "../services/import-wifi-screen-state-service";
 
@@ -16,60 +16,32 @@ export function ImportWifiActions({
   const actionState = getImportWifiActionState();
 
   return (
-    <View style={styles.actionRow}>
+    <View className="flex-row flex-wrap items-center gap-4">
       <Link asChild href={actionState.reviewSave.href}>
         <Pressable
           accessibilityRole="button"
           disabled={!canReviewSave}
           onPress={reviewSave}
-          style={[
-            styles.primaryButton,
-            { backgroundColor: theme.accent },
-            !canReviewSave ? styles.disabled : null,
-          ]}
+          className={`min-h-[46px] min-w-[130px] items-center justify-center rounded-lg px-3.5 ${
+            canReviewSave ? "" : "opacity-[0.45]"
+          }`}
+          style={{ backgroundColor: theme.accent }}
         >
-          <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
+          <Text
+            className="text-[13px] font-extrabold uppercase"
+            style={{ color: theme.onAccent }}
+          >
             {actionState.reviewSave.label}
           </Text>
         </Pressable>
       </Link>
       <Link
+        className="text-[15px] font-extrabold"
         href={actionState.backLink.href}
-        style={[styles.backLink, { color: theme.accent }]}
+        style={{ color: theme.accent }}
       >
         {actionState.backLink.label}
       </Link>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  actionRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 16,
-  },
-  backLink: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-  },
-  disabled: {
-    opacity: 0.45,
-  },
-  primaryButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    justifyContent: "center",
-    minHeight: 46,
-    minWidth: 130,
-    paddingHorizontal: 14,
-  },
-  primaryButtonText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-});

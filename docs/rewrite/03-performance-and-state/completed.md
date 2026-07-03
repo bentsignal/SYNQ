@@ -34,3 +34,7 @@
 - Converted import gate/panel components and premium screen presentation
   components to utility classes, lowering the StyleSheet ratchet from 92 calls
   to 83.
+- Converted import edit/save/Wi-Fi action rows and links to utility classes,
+  lowering the StyleSheet ratchet from 83 calls to 79.
+- Converted settings component presentation styles to utility classes, lowering
+  the StyleSheet ratchet from 79 calls to 71.

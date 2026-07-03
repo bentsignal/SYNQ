@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportSaveActionState } from "../services/import-save-screen-state-service";
 
@@ -18,18 +18,20 @@ export function ImportSaveActions({
   const theme = useCustomizationTheme();
 
   return (
-    <View style={styles.actionRow}>
+    <View className="flex-row flex-wrap gap-3">
       <Pressable
         accessibilityRole="button"
         disabled={!actionState.canExport}
         onPress={exportSongs}
-        style={[
-          styles.secondaryButton,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-          !actionState.canExport ? styles.disabled : null,
-        ]}
+        className={`min-h-[46px] min-w-[110px] flex-grow items-center justify-center rounded-lg border px-3.5 ${
+          actionState.canExport ? "" : "opacity-[0.45]"
+        }`}
+        style={{ backgroundColor: theme.surface, borderColor: theme.border }}
       >
-        <Text style={[styles.secondaryButtonText, { color: theme.accent }]}>
+        <Text
+          className="text-[13px] font-extrabold uppercase"
+          style={{ color: theme.accent }}
+        >
           {actionState.exportLabel}
         </Text>
       </Pressable>
@@ -37,13 +39,15 @@ export function ImportSaveActions({
         accessibilityRole="button"
         disabled={!actionState.canFinish}
         onPress={finishImport}
-        style={[
-          styles.primaryButton,
-          { backgroundColor: theme.accent },
-          !actionState.canFinish ? styles.disabled : null,
-        ]}
+        className={`min-h-[46px] min-w-[110px] flex-grow items-center justify-center rounded-lg px-3.5 ${
+          actionState.canFinish ? "" : "opacity-[0.45]"
+        }`}
+        style={{ backgroundColor: theme.accent }}
       >
-        <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
+        <Text
+          className="text-[13px] font-extrabold uppercase"
+          style={{ color: theme.onAccent }}
+        >
           {actionState.finishLabel}
         </Text>
       </Pressable>
@@ -51,58 +55,18 @@ export function ImportSaveActions({
         accessibilityRole="button"
         disabled={!actionState.canDiscard}
         onPress={discardImport}
-        style={[
-          styles.secondaryButton,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-          !actionState.canDiscard ? styles.disabled : null,
-        ]}
+        className={`min-h-[46px] min-w-[110px] flex-grow items-center justify-center rounded-lg border px-3.5 ${
+          actionState.canDiscard ? "" : "opacity-[0.45]"
+        }`}
+        style={{ backgroundColor: theme.surface, borderColor: theme.border }}
       >
-        <Text style={[styles.secondaryButtonText, { color: theme.danger }]}>
+        <Text
+          className="text-[13px] font-extrabold uppercase"
+          style={{ color: theme.danger }}
+        >
           {actionState.discardLabel}
         </Text>
       </Pressable>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  actionRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-  disabled: {
-    opacity: 0.45,
-  },
-  primaryButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    flexGrow: 1,
-    justifyContent: "center",
-    minHeight: 46,
-    minWidth: 110,
-    paddingHorizontal: 14,
-  },
-  primaryButtonText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  secondaryButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    flexGrow: 1,
-    justifyContent: "center",
-    minHeight: 46,
-    minWidth: 110,
-    paddingHorizontal: 14,
-  },
-  secondaryButtonText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-});

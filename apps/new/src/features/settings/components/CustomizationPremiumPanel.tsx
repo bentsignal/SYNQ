@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import type { CustomizationTheme } from "../hooks/use-customization-theme";
 import { getSettingsPremiumHref } from "../services/settings-navigation-service";
 
@@ -12,24 +12,32 @@ export function CustomizationPremiumPanel({
 }: CustomizationPremiumPanelProps) {
   return (
     <View
-      style={[
-        styles.premiumPanel,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="flex-row items-center gap-3.5 rounded-lg border p-4"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
-      <View style={styles.premiumText}>
-        <Text style={[styles.panelTitle, { color: theme.primaryText }]}>
+      <View className="min-w-0 flex-1 gap-[5px]">
+        <Text
+          className="text-base font-extrabold leading-[22px]"
+          style={{ color: theme.primaryText }}
+        >
           Premium customization locked
         </Text>
-        <Text style={[styles.panelDescription, { color: theme.secondaryText }]}>
+        <Text
+          className="text-[13px] leading-[19px]"
+          style={{ color: theme.secondaryText }}
+        >
           Unlock theme and app icon choices with Premium.
         </Text>
       </View>
       <Link asChild href={getSettingsPremiumHref()}>
         <Pressable
-          style={[styles.premiumButton, { backgroundColor: theme.accent }]}
+          className="min-h-10 items-center justify-center rounded-lg px-3.5"
+          style={{ backgroundColor: theme.accent }}
         >
-          <Text style={[styles.premiumButtonText, { color: theme.onAccent }]}>
+          <Text
+            className="text-[13px] font-extrabold uppercase"
+            style={{ color: theme.onAccent }}
+          >
             Premium
           </Text>
         </Pressable>
@@ -37,42 +45,3 @@ export function CustomizationPremiumPanel({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  premiumPanel: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    flexDirection: "row",
-    gap: 14,
-    padding: 16,
-  },
-  premiumText: {
-    flex: 1,
-    gap: 5,
-    minWidth: 0,
-  },
-  panelTitle: {
-    fontSize: 16,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 22,
-  },
-  panelDescription: {
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  premiumButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    justifyContent: "center",
-    minHeight: 40,
-    paddingHorizontal: 14,
-  },
-  premiumButtonText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-});

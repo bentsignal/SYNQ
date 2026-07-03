@@ -1,13 +1,6 @@
 import { Link, type Href } from "expo-router";
 import type { ReactNode } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  type TextStyle,
-  View,
-  type ViewStyle,
-} from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import type { CustomizationTheme } from "../hooks/use-customization-theme";
 
 export type SettingsScreenHeaderState = {
@@ -29,19 +22,22 @@ export type SettingsBackLinkState = {
 
 type SettingsScreenContentProps = {
   children: ReactNode;
-  contentStyle?: ViewStyle;
+  contentClassName?: string;
   theme: CustomizationTheme;
 };
 
 export function SettingsScreenContent({
   children,
-  contentStyle,
+  contentClassName,
   theme,
 }: SettingsScreenContentProps) {
   return (
     <ScrollView
-      contentContainerStyle={[styles.content, contentStyle]}
-      style={[styles.scroll, { backgroundColor: theme.background }]}
+      className="flex-1"
+      contentContainerClassName={`gap-[18px] px-5 py-14 ${
+        contentClassName ?? ""
+      }`}
+      style={{ backgroundColor: theme.background }}
     >
       {children}
     </ScrollView>
@@ -50,28 +46,40 @@ export function SettingsScreenContent({
 
 export function SettingsScreenHeader({
   header,
-  subtitleStyle,
+  subtitleClassName,
   theme,
 }: {
   header: SettingsScreenHeaderState;
-  subtitleStyle?: TextStyle;
+  subtitleClassName?: string;
   theme: CustomizationTheme;
 }) {
   return (
-    <View style={styles.header}>
-      <Text style={[styles.kicker, { color: theme.accent }]}>
+    <View className="gap-2">
+      <Text
+        className="text-[13px] font-extrabold uppercase"
+        style={{ color: theme.accent }}
+      >
         {header.kicker}
       </Text>
-      <Text style={[styles.title, { color: theme.primaryText }]}>
+      <Text
+        className="text-[34px] font-extrabold leading-10"
+        style={{ color: theme.primaryText }}
+      >
         {header.title}
       </Text>
       <Text
-        style={[styles.subtitle, { color: theme.secondaryText }, subtitleStyle]}
+        className={`max-w-[560px] text-[15px] leading-[22px] ${
+          subtitleClassName ?? ""
+        }`}
+        style={{ color: theme.secondaryText }}
       >
         {header.subtitle}
       </Text>
       {header.statusLabel ? (
-        <Text style={[styles.statusText, { color: theme.accent }]}>
+        <Text
+          className="text-[13px] font-extrabold uppercase"
+          style={{ color: theme.accent }}
+        >
           {header.statusLabel}
         </Text>
       ) : null}
@@ -88,15 +96,19 @@ export function SettingsInfoPanel({
 }) {
   return (
     <View
-      style={[
-        styles.panel,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="gap-2 rounded-lg border p-4"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
-      <Text style={[styles.panelTitle, { color: theme.primaryText }]}>
+      <Text
+        className="text-base font-extrabold leading-[22px]"
+        style={{ color: theme.primaryText }}
+      >
         {panel.title}
       </Text>
-      <Text style={[styles.panelBody, { color: theme.secondaryText }]}>
+      <Text
+        className="text-sm leading-5"
+        style={{ color: theme.secondaryText }}
+      >
         {panel.body}
       </Text>
     </View>
@@ -111,74 +123,12 @@ export function SettingsBackLink({
   theme: CustomizationTheme;
 }) {
   return (
-    <Link href={backLink.href} style={[styles.backLink, { color: theme.accent }]}>
+    <Link
+      className="text-[15px] font-extrabold"
+      href={backLink.href}
+      style={{ color: theme.accent }}
+    >
       {backLink.label}
     </Link>
   );
 }
-
-export const settingsScreenPartStyles = StyleSheet.create({
-  errorText: {
-    fontSize: 13,
-    fontWeight: "800",
-    lineHeight: 18,
-  },
-});
-
-const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    gap: 18,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-  header: {
-    gap: 8,
-  },
-  kicker: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 40,
-  },
-  subtitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    maxWidth: 560,
-  },
-  statusText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  panel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 8,
-    padding: 16,
-  },
-  panelTitle: {
-    fontSize: 16,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 22,
-  },
-  panelBody: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  backLink: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-  },
-});

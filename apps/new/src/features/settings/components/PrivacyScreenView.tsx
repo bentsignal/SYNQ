@@ -7,7 +7,6 @@ import {
   SettingsInfoPanel,
   SettingsScreenContent,
   SettingsScreenHeader,
-  settingsScreenPartStyles,
 } from "./SettingsScreenParts";
 import { SettingsSwitchRow } from "./SettingsSwitchRow";
 
@@ -40,7 +39,10 @@ export function PrivacyScreenView({
       <SettingsInfoPanel panel={viewState.localFirstPanel} theme={theme} />
 
       {state.error ? (
-        <Text style={[settingsScreenPartStyles.errorText, { color: theme.danger }]}>
+        <Text
+          className="text-[13px] font-extrabold leading-[18px]"
+          style={{ color: theme.danger }}
+        >
           {state.error}
         </Text>
       ) : null}

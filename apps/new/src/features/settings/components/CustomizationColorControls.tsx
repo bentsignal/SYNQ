@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import type { CustomizationTheme } from "../hooks/use-customization-theme";
 import { customizationOptions } from "../services/customization-settings-service";
 import { getCustomizationOptionState } from "../services/settings-screen-service";
@@ -29,11 +29,14 @@ function ColorOptionRow({
   title,
 }: ColorOptionRowProps) {
   return (
-    <View style={[styles.optionGroup, disabled && styles.disabledGroup]}>
-      <Text style={[styles.sectionTitle, { color: theme.primaryText }]}>
+    <View className={`gap-3 ${disabled ? "opacity-50" : ""}`}>
+      <Text
+        className="text-[17px] font-extrabold leading-[23px]"
+        style={{ color: theme.primaryText }}
+      >
         {title}
       </Text>
-      <View style={styles.swatchRow}>
+      <View className="flex-row flex-wrap gap-2.5">
         {customizationOptions.map((option) => {
           const optionState = getCustomizationOptionState({
             disabled,
@@ -48,20 +51,22 @@ function ColorOptionRow({
               disabled={disabled}
               key={option.key}
               onPress={() => onSelect(option.key)}
-              style={[
-                styles.swatchButton,
-                { borderColor: theme.border },
-                optionState.isSelected && {
-                  borderColor: theme.accent,
-                  borderWidth: 2,
-                },
-              ]}
+              className={`min-h-[86px] min-w-[78px] items-center justify-center gap-2 rounded-lg border px-2.5 py-2.5 ${
+                optionState.isSelected ? "border-2" : ""
+              }`}
+              style={{
+                borderColor: optionState.isSelected
+                  ? theme.accent
+                  : theme.border,
+              }}
             >
               <View
-                style={[styles.swatch, { backgroundColor: option.color }]}
+                className="h-9 w-9 rounded-[18px] border border-[rgba(18,20,23,0.16)]"
+                style={{ backgroundColor: option.color }}
               />
               <Text
-                style={[styles.swatchLabel, { color: theme.secondaryText }]}
+                className="text-xs font-bold leading-4"
+                style={{ color: theme.secondaryText }}
               >
                 {option.label}
               </Text>
@@ -83,10 +88,8 @@ export function CustomizationColorControls({
 }: CustomizationColorControlsProps) {
   return (
     <View
-      style={[
-        styles.section,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="gap-[18px] rounded-lg border p-4"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
       <ColorOptionRow
         disabled={disabled}
@@ -105,53 +108,3 @@ export function CustomizationColorControls({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  section: {
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 18,
-    padding: 16,
-  },
-  optionGroup: {
-    gap: 12,
-  },
-  disabledGroup: {
-    opacity: 0.5,
-  },
-  sectionTitle: {
-    fontSize: 17,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 23,
-  },
-  swatchRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-  },
-  swatchButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 8,
-    justifyContent: "center",
-    minHeight: 86,
-    minWidth: 78,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-  },
-  swatch: {
-    borderColor: "rgba(18, 20, 23, 0.16)",
-    borderRadius: 18,
-    borderWidth: 1,
-    height: 36,
-    width: 36,
-  },
-  swatchLabel: {
-    fontSize: 12,
-    fontWeight: "700",
-    letterSpacing: 0,
-    lineHeight: 16,
-  },
-});

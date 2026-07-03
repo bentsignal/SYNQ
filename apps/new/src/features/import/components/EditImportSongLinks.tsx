@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { getImportSongEditBackLinks } from "../services/import-song-edit-navigation-service";
 
@@ -8,12 +8,13 @@ export function EditImportSongLinks() {
   const links = getImportSongEditBackLinks();
 
   return (
-    <View style={styles.linkRow}>
+    <View className="flex-row flex-wrap gap-4">
       {links.map((link) => (
         <Link
+          className="text-[15px] font-extrabold"
           href={link.href}
           key={link.href}
-          style={[styles.backLink, { color: theme.accent }]}
+          style={{ color: theme.accent }}
         >
           {link.label}
         </Link>
@@ -21,16 +22,3 @@ export function EditImportSongLinks() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  linkRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 16,
-  },
-  backLink: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-  },
-});

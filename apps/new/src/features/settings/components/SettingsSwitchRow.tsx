@@ -1,4 +1,4 @@
-import { StyleSheet, Switch, Text, View } from "react-native";
+import { Switch, Text, View } from "react-native";
 import type { CustomizationTheme } from "../hooks/use-customization-theme";
 
 type SettingsSwitchRowProps = {
@@ -22,16 +22,20 @@ export function SettingsSwitchRow({
 }: SettingsSwitchRowProps) {
   return (
     <View
-      style={[
-        styles.preferenceRow,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="min-h-[78px] flex-row items-center gap-3.5 rounded-lg border px-4 py-3.5"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
-      <View style={styles.preferenceText}>
-        <Text style={[styles.rowTitle, { color: theme.primaryText }]}>
+      <View className="min-w-0 flex-1 gap-[5px]">
+        <Text
+          className="text-base font-extrabold leading-[21px]"
+          style={{ color: theme.primaryText }}
+        >
           {title}
         </Text>
-        <Text style={[styles.rowDescription, { color: theme.secondaryText }]}>
+        <Text
+          className="text-[13px] leading-[19px]"
+          style={{ color: theme.secondaryText }}
+        >
           {description}
         </Text>
       </View>
@@ -48,31 +52,3 @@ export function SettingsSwitchRow({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  preferenceRow: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    flexDirection: "row",
-    gap: 14,
-    minHeight: 78,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-  },
-  preferenceText: {
-    flex: 1,
-    gap: 5,
-    minWidth: 0,
-  },
-  rowTitle: {
-    fontSize: 16,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 21,
-  },
-  rowDescription: {
-    fontSize: 13,
-    lineHeight: 19,
-  },
-});

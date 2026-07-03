@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { LibrarySongDetailActionState } from "../services/library-song-detail-service";
+import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
 import { getLibrarySongEditHref } from "../services/library-song-interaction-service";
 
 type LibrarySongDetailActionsProps = {

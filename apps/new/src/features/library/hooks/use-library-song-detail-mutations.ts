@@ -1,9 +1,7 @@
 import { useReducer } from "react";
 import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
-import {
-  getLibrarySongDetailActionState,
-  type LibrarySongDetail,
-} from "../services/library-song-detail-service";
+import type { LibrarySongDetail } from "../services/library-song-detail-service";
+import { getLibrarySongDetailActionState } from "../services/library-song-detail-state-service";
 import {
   initialLibrarySongDetailMutationState,
   librarySongDetailMutationReducer,

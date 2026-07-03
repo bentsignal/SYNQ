@@ -3,8 +3,8 @@ import { shareLibrarySongs } from "@/src/features/export/services/library-export
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
   type LibrarySongDetail,
-  type LibrarySongDetailActionState,
 } from "../services/library-song-detail-service";
+import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
 import { toLibrarySongExportItem } from "../services/library-song-interaction-service";
 import {
   getLibrarySongDetailMutationErrorMessage,

@@ -79,6 +79,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     now lives in a pure library service with deterministic smoke coverage.
   - Done: song detail label/relationship/duration shaping now lives in a pure
     library service with deterministic smoke coverage.
+  - Done: song detail action availability and status labels now live in a
+    focused state service instead of the detail read-model builder owning
+    mutation/UI state.
   - Done: edit-collection query state and singular collection kind typing now
     live in a library service instead of depending on the edit screen.
   - Done: edit-collection SQL builders and row subscriptions now live in

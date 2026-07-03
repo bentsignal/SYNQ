@@ -4,8 +4,8 @@ import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-s
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
   type LibrarySongDetail,
-  type LibrarySongDetailActionState,
 } from "../services/library-song-detail-service";
+import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
 import {
   getLibrarySongDetailPlayerHref,
   toLibrarySongDetailPlaybackItem,

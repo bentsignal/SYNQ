@@ -263,9 +263,11 @@ import {
 } from "../../../apps/new/src/features/library/services/library-home-service";
 import {
   buildLibrarySongDetail,
+} from "../../../apps/new/src/features/library/services/library-song-detail-service";
+import {
   getLibrarySongDetailActionState,
   getLibrarySongDetailStatusState,
-} from "../../../apps/new/src/features/library/services/library-song-detail-service";
+} from "../../../apps/new/src/features/library/services/library-song-detail-state-service";
 import {
   getLibraryInvalidSongState,
   getLibrarySongDeleteConfirmationCopy,

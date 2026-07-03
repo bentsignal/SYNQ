@@ -2,8 +2,8 @@ import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type {
   LibrarySongDetail,
-  LibrarySongDetailStatusState,
 } from "../services/library-song-detail-service";
+import type { LibrarySongDetailStatusState } from "../services/library-song-detail-state-service";
 
 type LibrarySongSourcePanelProps = {
   detail: LibrarySongDetail;

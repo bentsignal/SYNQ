@@ -5,8 +5,8 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import { deleteLibrarySong } from "../repository/song-metadata-repository";
 import {
   type LibrarySongDetail,
-  type LibrarySongDetailActionState,
 } from "../services/library-song-detail-service";
+import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
 import {
   getLibrarySongDeleteConfirmationCopy,
   getLibrarySongDeleteSuccessHref,

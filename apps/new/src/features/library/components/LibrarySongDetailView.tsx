@@ -2,10 +2,8 @@ import { Link } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetailController } from "../hooks/use-library-song-detail-controller";
-import {
-  getLibrarySongDetailStatusState,
-  type LibrarySongDetail,
-} from "../services/library-song-detail-service";
+import type { LibrarySongDetail } from "../services/library-song-detail-service";
+import { getLibrarySongDetailStatusState } from "../services/library-song-detail-state-service";
 import { getLibrarySongDetailViewState } from "../services/library-song-interaction-service";
 import { LibrarySongDetailActions } from "./LibrarySongDetailActions";
 import { LibrarySongDetailHeader } from "./LibrarySongDetailHeader";

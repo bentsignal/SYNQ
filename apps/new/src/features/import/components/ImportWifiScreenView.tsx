@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportWifiScreenController } from "../hooks/use-import-wifi-screen-controller";
 import { ImportSongPreviewList } from "./ImportSongPreviewList";
@@ -21,8 +21,9 @@ export function ImportWifiScreenView({
 
   return (
     <ScrollView
-      contentContainerStyle={styles.content}
-      style={[styles.scroll, { backgroundColor: theme.background }]}
+      className="flex-1"
+      contentContainerClassName="gap-5 px-5 py-14"
+      style={{ backgroundColor: theme.background }}
     >
       <ImportWifiHeader />
       <ImportWifiAddressPanel
@@ -42,14 +43,3 @@ export function ImportWifiScreenView({
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    gap: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-});

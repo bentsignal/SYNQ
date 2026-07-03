@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportSongEditActionState } from "../services/import-song-form-service";
 import type { ImportSongDraft } from "../types/import-session";
@@ -41,16 +41,15 @@ export function EditImportSongFormView({
 
   return (
     <ScrollView
-      contentContainerStyle={styles.content}
-      style={[styles.scroll, { backgroundColor: theme.background }]}
+      className="flex-1"
+      contentContainerClassName="gap-5 px-5 py-14"
+      style={{ backgroundColor: theme.background }}
     >
       <EditImportSongHeader />
 
       <View
-        style={[
-          styles.form,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-        ]}
+        className="gap-2.5 rounded-lg border p-4"
+        style={{ backgroundColor: theme.surface, borderColor: theme.border }}
       >
         <EditImportSongFields
           album={album}
@@ -74,20 +73,3 @@ export function EditImportSongFormView({
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    gap: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-  form: {
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 10,
-    padding: 16,
-  },
-});

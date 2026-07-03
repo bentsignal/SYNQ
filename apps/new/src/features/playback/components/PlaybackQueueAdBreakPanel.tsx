@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { PlaybackHref } from "../services/playback-screen-state-service";
 
@@ -23,72 +23,29 @@ export function PlaybackQueueAdBreakPanel({
   const theme = useCustomizationTheme();
 
   return (
-    <View style={styles.adPanel}>
-      <Text style={styles.panelLabel}>{panelState.kicker}</Text>
-      <Text style={styles.adTitle}>{panelState.title}</Text>
-      <Text style={[styles.panelText, { color: theme.secondaryText }]}>
+    <View className="gap-2.5 rounded-lg border border-[#fed7aa] bg-[#fff7ed] p-4">
+      <Text className="text-xs font-extrabold uppercase">
+        {panelState.kicker}
+      </Text>
+      <Text className="text-lg font-extrabold leading-6 text-[#9a3412]">
+        {panelState.title}
+      </Text>
+      <Text className="text-sm leading-5" style={{ color: theme.secondaryText }}>
         {panelState.body}
       </Text>
-      <View style={styles.adActions}>
+      <View className="flex-row flex-wrap gap-2.5">
         <Link asChild href={panelState.action.href}>
           <Pressable
             accessibilityRole="button"
-            style={[styles.premiumButton, { backgroundColor: theme.surface }]}
+            className="min-h-[38px] items-center justify-center rounded-lg border border-[#fed7aa] px-3"
+            style={{ backgroundColor: theme.surface }}
           >
-            <Text style={styles.premiumText}>{panelState.action.label}</Text>
+            <Text className="text-[11px] font-extrabold uppercase text-[#9a3412]">
+              {panelState.action.label}
+            </Text>
           </Pressable>
         </Link>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  adActions: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-  },
-  adPanel: {
-    backgroundColor: "#fff7ed",
-    borderColor: "#fed7aa",
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 10,
-    padding: 16,
-  },
-  adTitle: {
-    color: "#9a3412",
-    fontSize: 18,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 24,
-  },
-  panelLabel: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  panelText: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  premiumButton: {
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderColor: "#fed7aa",
-    borderRadius: 8,
-    borderWidth: 1,
-    justifyContent: "center",
-    minHeight: 38,
-    paddingHorizontal: 12,
-  },
-  premiumText: {
-    color: "#9a3412",
-    fontSize: 11,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-});

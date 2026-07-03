@@ -1,5 +1,5 @@
 import { Link } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportFilesController } from "../hooks/use-import-files-controller";
 import { getImportFilesActionLinks } from "../services/import-files-screen-state-service";
@@ -19,15 +19,27 @@ export function ImportFilesScreenView({
 
   return (
     <ScrollView
-      contentContainerStyle={styles.content}
-      style={[styles.scroll, { backgroundColor: theme.background }]}
+      className="flex-1"
+      contentContainerClassName="gap-5 px-5 py-14"
+      style={{ backgroundColor: theme.background }}
     >
-      <View style={styles.header}>
-        <Text style={[styles.kicker, { color: theme.accent }]}>
+      <View className="gap-2">
+        <Text
+          className="text-[13px] font-extrabold uppercase"
+          style={{ color: theme.accent }}
+        >
           Import files
         </Text>
-        <Text style={[styles.title, { color: theme.primaryText }]}>Files</Text>
-        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
+        <Text
+          className="text-[34px] font-extrabold leading-10"
+          style={{ color: theme.primaryText }}
+        >
+          Files
+        </Text>
+        <Text
+          className="max-w-[520px] text-[15px] leading-[22px]"
+          style={{ color: theme.secondaryText }}
+        >
           Stage songs here before choosing whether to save them.
         </Text>
       </View>
@@ -37,13 +49,15 @@ export function ImportFilesScreenView({
           accessibilityRole="button"
           disabled={!actionState.canChooseFiles}
           onPress={chooseFiles}
-          style={[
-            styles.primaryButton,
-            { backgroundColor: theme.accent },
-            !actionState.canChooseFiles ? styles.disabled : null,
-          ]}
+          className={`min-h-[46px] items-center justify-center rounded-lg px-4 ${
+            actionState.canChooseFiles ? "" : "opacity-50"
+          }`}
+          style={{ backgroundColor: theme.accent }}
         >
-          <Text style={[styles.primaryButtonText, { color: theme.onAccent }]}>
+          <Text
+            className="text-[13px] font-extrabold uppercase"
+            style={{ color: theme.onAccent }}
+          >
             {actionState.chooseLabel}
           </Text>
         </Pressable>
@@ -55,12 +69,13 @@ export function ImportFilesScreenView({
         songs={state.songs}
       />
 
-      <View style={styles.actionRow}>
+      <View className="flex-row flex-wrap gap-4">
         {actionLinks.map((link) => (
           <Link
+            className="text-[15px] font-extrabold"
             href={link.href}
             key={link.href}
-            style={[styles.backLink, { color: theme.accent }]}
+            style={{ color: theme.accent }}
           >
             {link.label}
           </Link>
@@ -69,60 +84,3 @@ export function ImportFilesScreenView({
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    gap: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-  header: {
-    gap: 8,
-  },
-  kicker: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 40,
-  },
-  subtitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    maxWidth: 520,
-  },
-  primaryButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    justifyContent: "center",
-    minHeight: 46,
-    paddingHorizontal: 16,
-  },
-  primaryButtonText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  actionRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 16,
-  },
-  backLink: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-  },
-});

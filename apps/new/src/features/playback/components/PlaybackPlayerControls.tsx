@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import type { PlaybackPlayerActionState } from "../services/playback-player-state-service";
 import { PlaybackPlayerControlButton } from "./PlaybackPlayerControlButton";
 
@@ -25,7 +25,7 @@ export function PlaybackPlayerControls({
 }: PlaybackPlayerControlsProps) {
   return (
     <>
-      <View style={styles.controls}>
+      <View className="flex-row flex-wrap gap-3">
         <PlaybackPlayerControlButton
           disabled={!actionState.canSkipPrevious}
           label="Prev"
@@ -44,7 +44,7 @@ export function PlaybackPlayerControls({
         />
       </View>
 
-      <View style={styles.controls}>
+      <View className="flex-row flex-wrap gap-3">
         <PlaybackPlayerControlButton
           disabled={!actionState.canRewind}
           label="-15s"
@@ -57,7 +57,7 @@ export function PlaybackPlayerControls({
         />
       </View>
 
-      <View style={styles.controls}>
+      <View className="flex-row flex-wrap gap-3">
         <PlaybackPlayerControlButton
           label={actionState.shuffleLabel}
           onPress={onToggleShuffleMode}
@@ -70,11 +70,3 @@ export function PlaybackPlayerControls({
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  controls: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-  },
-});

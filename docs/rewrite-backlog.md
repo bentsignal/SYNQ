@@ -103,6 +103,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import session command error copy and Wi-Fi finish decisions now live
     in a focused command service instead of the reducer service owning command
     messaging and state transitions together.
+  - Done: library export metadata lookup, artwork tag loading, and stale
+    snapshot writeback now live in a focused metadata service instead of the
+    share orchestration service owning export preparation details.
   - Done: collection detail song-row aggregation now lives in a focused song
     detail service instead of the detail shell builder owning song grouping,
     artist/album fallback labels, and track sorting.

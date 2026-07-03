@@ -398,3 +398,5 @@
   assembly out of the React hook and into a focused query result service.
 - Moved library song detail result, error, image-path, and timestamp assembly
   out of the React hook and into a focused query result service.
+- Moved addable collection songs filtering, linked-state, error, and timestamp
+  assembly out of the React hook and into a focused result service.

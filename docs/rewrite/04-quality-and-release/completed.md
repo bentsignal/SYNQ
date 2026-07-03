@@ -289,3 +289,5 @@
   assembly, error forwarding, empty-state, and timestamp normalization.
 - Added direct song detail query result smoke coverage for detail assembly,
   image resolution, error ordering, and timestamp normalization.
+- Added direct addable collection songs result smoke coverage for linked-state
+  filtering, error ordering, and timestamp normalization.

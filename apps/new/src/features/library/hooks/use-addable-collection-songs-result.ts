@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import {
-  rowsToAddableCollectionSongs,
-  rowsToLinkedSongIds,
+  type AddableCollectionLinkedSongRow,
 } from "../services/addable-collection-songs-service";
+import { buildAddableCollectionSongsResult } from "../services/addable-collection-songs-result-service";
 import type { useAllAddableSongRowsQuery } from "./use-addable-collection-song-rows-query";
 
 export function useAddableCollectionSongsResult({
@@ -12,26 +12,31 @@ export function useAddableCollectionSongsResult({
   query,
   songRows,
 }: {
-  linkedRows: Parameters<typeof rowsToLinkedSongIds>[0];
+  linkedRows: readonly AddableCollectionLinkedSongRow[];
   linkedRowsError: Error | undefined;
   linkedRowsUpdatedAt: Date | undefined;
   query?: string;
   songRows: ReturnType<typeof useAllAddableSongRowsQuery>;
 }) {
-  const addableSongs = useMemo(() => {
-    return rowsToAddableCollectionSongs({
-      linkedSongIds: rowsToLinkedSongIds(linkedRows),
+  return useMemo(
+    () =>
+      buildAddableCollectionSongsResult({
+        linkedRows,
+        linkedRowsError,
+        linkedRowsUpdatedAt,
+        query,
+        songRows: songRows.rows,
+        songRowsError: songRows.error,
+        songRowsUpdatedAt: songRows.updatedAt,
+      }),
+    [
+      linkedRows,
+      linkedRowsError,
+      linkedRowsUpdatedAt,
       query,
-      rows: songRows.rows,
-    });
-  }, [linkedRows, query, songRows.rows]);
-
-  return {
-    errors: [songRows.error, linkedRowsError].filter(Boolean),
-    songs: addableSongs,
-    updatedAt: Math.max(
-      songRows.updatedAt?.getTime() ?? 0,
-      linkedRowsUpdatedAt?.getTime() ?? 0,
-    ),
-  };
+      songRows.error,
+      songRows.rows,
+      songRows.updatedAt,
+    ],
+  );
 }

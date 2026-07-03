@@ -793,6 +793,10 @@ import {
   rowsToAddableCollectionSongs,
 } from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
 import {
+  buildAddableCollectionSongsResult,
+  getAddableCollectionSongsUpdatedAt,
+} from "../../../apps/new/src/features/library/services/addable-collection-songs-result-service";
+import {
   getAddCollectionSongsBackHref,
   getAddCollectionSongsBackLink,
   getAddCollectionSongsHeaderState,
@@ -7397,6 +7401,49 @@ function assertAddableCollectionSongsSmoke() {
   assert.equal(songs[0]?.artist, "Featured Artist, First Artist");
   assert.equal(songs[0]?.album, "First Album");
   assert.equal(songs[0]?.isLinked, false);
+  const addableResult = buildAddableCollectionSongsResult({
+    linkedRows: [{ songId: 2 }],
+    linkedRowsError: new Error("linked smoke"),
+    linkedRowsUpdatedAt: new Date(30),
+    query: "beta",
+    songRows: [
+      {
+        albumName: "Second Album",
+        artistName: "Second Artist",
+        duration: 20_000,
+        songId: 2,
+        title: "Beta",
+      },
+      {
+        albumName: "First Album",
+        artistName: "First Artist",
+        duration: 10_000,
+        songId: 1,
+        title: "Alpha",
+      },
+    ],
+    songRowsError: new Error("songs smoke"),
+    songRowsUpdatedAt: new Date(40),
+  });
+  assert.deepEqual(
+    addableResult.songs.map((song) => ({
+      id: song.id,
+      isLinked: song.isLinked,
+    })),
+    [{ id: 2, isLinked: true }],
+  );
+  assert.deepEqual(
+    addableResult.errors.map((error) => (error as Error).message),
+    ["songs smoke", "linked smoke"],
+  );
+  assert.equal(addableResult.updatedAt, 40);
+  assert.equal(
+    getAddableCollectionSongsUpdatedAt({
+      linkedRowsUpdatedAt: null,
+      songRowsUpdatedAt: null,
+    }),
+    0,
+  );
 
   const sorted = rowsToAddableCollectionSongs({
     linkedSongIds: new Set([1]),

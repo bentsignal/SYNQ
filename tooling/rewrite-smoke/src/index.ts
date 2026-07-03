@@ -381,9 +381,11 @@ import {
   getLibraryCollectionListBackHref,
   getLibraryCollectionListCopy,
   getLibraryCollectionListState,
+} from "../../../apps/new/src/features/library/services/library-collection-list-service";
+import {
   initialLibraryCollectionListControlState,
   libraryCollectionListControlReducer,
-} from "../../../apps/new/src/features/library/services/library-collection-list-service";
+} from "../../../apps/new/src/features/library/services/library-collection-list-control-state-service";
 import {
   rowsToCollectionListPreviews,
 } from "../../../apps/new/src/features/library/services/library-collection-list-query-service";

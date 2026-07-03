@@ -133,3 +133,5 @@
   hook and split queue command state out of queue algorithms.
 - Split playback initial state out of the reducer module so persistence and
   session store code can depend on defaults without importing reducer actions.
+- Split collection list search control reducer state out of collection list
+  navigation, copy, and filtering state.

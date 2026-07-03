@@ -1,4 +1,5 @@
 import type { LibrarySongDetail } from "./library-song-detail-service";
+import type { LibrarySongDetailMutationState } from "./library-song-detail-mutation-service";
 
 export const getLibrarySongDetailActionState = ({
   detail,
@@ -27,6 +28,23 @@ export const getLibrarySongDetailActionState = ({
 export type LibrarySongDetailActionState = ReturnType<
   typeof getLibrarySongDetailActionState
 >;
+
+export const getLibrarySongDetailMutationActionState = ({
+  detail,
+  mutationState,
+}: {
+  detail: LibrarySongDetail;
+  mutationState: Pick<
+    LibrarySongDetailMutationState,
+    "isDeleting" | "isExporting" | "isTogglingLiked"
+  >;
+}) =>
+  getLibrarySongDetailActionState({
+    detail,
+    isDeleting: mutationState.isDeleting,
+    isExporting: mutationState.isExporting,
+    isTogglingLiked: mutationState.isTogglingLiked,
+  });
 
 export type LibrarySongDetailStatusState = {
   isError: boolean;

@@ -1,7 +1,7 @@
 import { useReducer } from "react";
 import { usePlaybackRemoveFromQueue } from "@/src/features/playback/hooks/use-playback-session-selectors";
 import type { LibrarySongDetail } from "../services/library-song-detail-service";
-import { getLibrarySongDetailActionState } from "../services/library-song-detail-state-service";
+import { getLibrarySongDetailMutationActionState } from "../services/library-song-detail-state-service";
 import {
   initialLibrarySongDetailMutationState,
   librarySongDetailMutationReducer,
@@ -24,11 +24,9 @@ export function useLibrarySongDetailMutations({
     librarySongDetailMutationReducer,
     initialLibrarySongDetailMutationState,
   );
-  const actionState = getLibrarySongDetailActionState({
+  const actionState = getLibrarySongDetailMutationActionState({
     detail,
-    isDeleting: mutationState.isDeleting,
-    isExporting: mutationState.isExporting,
-    isTogglingLiked: mutationState.isTogglingLiked,
+    mutationState,
   });
 
   const toggleLiked = useLibrarySongLikedMutation({

@@ -855,6 +855,7 @@ import {
 } from "../../../apps/new/src/features/library/services/library-song-detail-query-result-service";
 import {
   getLibrarySongDetailActionState,
+  getLibrarySongDetailMutationActionState,
   getLibrarySongDetailStatusState,
 } from "../../../apps/new/src/features/library/services/library-song-detail-state-service";
 import {
@@ -7957,6 +7958,25 @@ async function assertLibrarySongDetailSmoke() {
       canToggleLiked: true,
       deleteLabel: "Delete",
       exportLabel: "Export",
+      likedLabel: "Unlike",
+    },
+  );
+  assert.deepEqual(
+    getLibrarySongDetailMutationActionState({
+      detail,
+      mutationState: {
+        isDeleting: true,
+        isExporting: true,
+        isTogglingLiked: true,
+      },
+    }),
+    {
+      canDelete: false,
+      canExport: false,
+      canPlay: true,
+      canToggleLiked: false,
+      deleteLabel: "Deleting",
+      exportLabel: "Exporting",
       likedLabel: "Unlike",
     },
   );

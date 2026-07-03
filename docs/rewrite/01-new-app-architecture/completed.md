@@ -412,3 +412,5 @@
   and into the selection service.
 - Moved collection detail mutation action-state derivation out of the React
   hook and into the collection action-state service.
+- Moved song detail mutation action-state derivation out of the React hook and
+  into the song detail state service.

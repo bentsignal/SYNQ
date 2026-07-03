@@ -300,3 +300,4 @@
 - Added direct library collection list error normalization smoke coverage.
 - Added direct add-collection-songs controller result-state smoke coverage.
 - Added direct collection detail mutation action-state smoke coverage.
+- Added direct song detail mutation action-state smoke coverage.

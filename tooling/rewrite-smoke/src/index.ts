@@ -838,7 +838,13 @@ import {
   getLibrarySongLikedSuccessCommand,
 } from "../../../apps/new/src/features/library/services/library-song-detail-mutation-command-state-service";
 import {
+  runLibrarySongDeleteCommand,
+  runLibrarySongExportCommand,
+  runLibrarySongLikedCommand,
+} from "../../../apps/new/src/features/library/services/library-song-detail-mutation-command-flow-service";
+import {
   initialLibrarySongDetailMutationState,
+  type LibrarySongDetailMutationAction,
   librarySongDetailMutationReducer,
 } from "../../../apps/new/src/features/library/services/library-song-detail-mutation-service";
 import {
@@ -7109,7 +7115,7 @@ function assertAddableCollectionSongsSmoke() {
   );
 }
 
-function assertLibrarySongDetailSmoke() {
+async function assertLibrarySongDetailSmoke() {
   const commandCalls: unknown[] = [];
   const songCommandDependencies: LibrarySongCommandDependencies = {
     deleteLibrarySong: async (songId) => {
@@ -7541,6 +7547,185 @@ function assertLibrarySongDetailSmoke() {
   assert.deepEqual(getLibrarySongLikedSuccessCommand(), {
     haptic: "light",
   });
+  const songMutationCommandEvents: unknown[] = [];
+  const dispatchSongMutationCommand = (
+    action: LibrarySongDetailMutationAction,
+  ) => {
+    songMutationCommandEvents.push(["dispatch", action]);
+  };
+  const sendSongMutationHaptic = (haptic: string) => {
+    songMutationCommandEvents.push(["haptic", haptic]);
+  };
+  const showSongDeleteConfirmation = async (
+    shouldConfirm: boolean,
+    shouldFailDelete = false,
+  ) => {
+    const confirmations: Promise<void>[] = [];
+    runLibrarySongDeleteCommand({
+      actionState: playableActionState,
+      deleteLibrarySong: async (deletedSongId) => {
+        songMutationCommandEvents.push(["delete", deletedSongId]);
+
+        if (shouldFailDelete) {
+          throw new Error("Delete failed");
+        }
+      },
+      detail,
+      dispatch: dispatchSongMutationCommand,
+      removeFromQueue: (queuedSongId) => {
+        songMutationCommandEvents.push(["remove-from-queue", queuedSongId]);
+      },
+      replaceRoute: (href) => {
+        songMutationCommandEvents.push(["route", href]);
+      },
+      sendHaptic: sendSongMutationHaptic,
+      showConfirmation: (params) => {
+        songMutationCommandEvents.push([
+          "confirm",
+          params.title,
+          params.body,
+          params.cancelLabel,
+          params.confirmLabel,
+        ]);
+
+        if (shouldConfirm) {
+          confirmations.push(Promise.resolve(params.onConfirm()));
+        }
+      },
+      songId: 42,
+    });
+    await Promise.all(confirmations);
+  };
+  runLibrarySongDeleteCommand({
+    actionState: {
+      ...playableActionState,
+      canDelete: false,
+    },
+    deleteLibrarySong: async () => {
+      songMutationCommandEvents.push(["unexpected-delete"]);
+    },
+    detail,
+    dispatch: dispatchSongMutationCommand,
+    removeFromQueue: (songId) => {
+      songMutationCommandEvents.push(["unexpected-remove-from-queue", songId]);
+    },
+    replaceRoute: (href) => {
+      songMutationCommandEvents.push(["unexpected-route", href]);
+    },
+    sendHaptic: sendSongMutationHaptic,
+    showConfirmation: () => {
+      songMutationCommandEvents.push(["unexpected-confirm"]);
+    },
+    songId: 42,
+  });
+  await showSongDeleteConfirmation(false);
+  await showSongDeleteConfirmation(true);
+  await showSongDeleteConfirmation(true, true);
+  await runLibrarySongExportCommand({
+    actionState: {
+      ...playableActionState,
+      canExport: false,
+    },
+    detail,
+    dispatch: dispatchSongMutationCommand,
+    exportLibrarySong: async () => {
+      songMutationCommandEvents.push(["unexpected-export"]);
+    },
+    sendHaptic: sendSongMutationHaptic,
+    songId: 42,
+  });
+  await runLibrarySongExportCommand({
+    actionState: playableActionState,
+    detail,
+    dispatch: dispatchSongMutationCommand,
+    exportLibrarySong: async (params) => {
+      songMutationCommandEvents.push([
+        "export",
+        params.songId,
+        params.detail.title,
+      ]);
+    },
+    sendHaptic: sendSongMutationHaptic,
+    songId: 42,
+  });
+  await runLibrarySongExportCommand({
+    actionState: playableActionState,
+    detail,
+    dispatch: dispatchSongMutationCommand,
+    exportLibrarySong: async () => {
+      throw new Error("Export failed");
+    },
+    sendHaptic: sendSongMutationHaptic,
+    songId: 42,
+  });
+  await runLibrarySongLikedCommand({
+    actionState: {
+      ...playableActionState,
+      canToggleLiked: false,
+    },
+    detail,
+    dispatch: dispatchSongMutationCommand,
+    sendHaptic: sendSongMutationHaptic,
+    songId: 42,
+    toggleLibrarySongLiked: async () => {
+      songMutationCommandEvents.push(["unexpected-liked"]);
+    },
+  });
+  await runLibrarySongLikedCommand({
+    actionState: playableActionState,
+    detail,
+    dispatch: dispatchSongMutationCommand,
+    sendHaptic: sendSongMutationHaptic,
+    songId: 42,
+    toggleLibrarySongLiked: async (params) => {
+      songMutationCommandEvents.push(["liked", params.songId, params.liked]);
+    },
+  });
+  await runLibrarySongLikedCommand({
+    actionState: playableActionState,
+    detail,
+    dispatch: dispatchSongMutationCommand,
+    sendHaptic: sendSongMutationHaptic,
+    songId: 42,
+    toggleLibrarySongLiked: async () => {
+      throw new Error("Liked failed");
+    },
+  });
+  assert.deepEqual(songMutationCommandEvents, [
+    ["haptic", "error"],
+    ["confirm", "Delete song", "Delete Alpha?", "Cancel", "Delete"],
+    ["confirm", "Delete song", "Delete Alpha?", "Cancel", "Delete"],
+    ["dispatch", { mutation: "delete-song", type: "begin" }],
+    ["delete", 42],
+    ["remove-from-queue", 42],
+    ["haptic", "success"],
+    ["route", "/(tabs)/library"],
+    ["dispatch", { mutation: "delete-song", type: "finish" }],
+    ["confirm", "Delete song", "Delete Alpha?", "Cancel", "Delete"],
+    ["dispatch", { mutation: "delete-song", type: "begin" }],
+    ["delete", 42],
+    ["haptic", "error"],
+    ["dispatch", { error: "Delete failed", type: "fail" }],
+    ["dispatch", { mutation: "delete-song", type: "finish" }],
+    ["haptic", "error"],
+    ["dispatch", { mutation: "export-song", type: "begin" }],
+    ["export", 42, "Alpha"],
+    ["haptic", "success"],
+    ["dispatch", { mutation: "export-song", type: "finish" }],
+    ["dispatch", { mutation: "export-song", type: "begin" }],
+    ["haptic", "error"],
+    ["dispatch", { error: "Export failed", type: "fail" }],
+    ["dispatch", { mutation: "export-song", type: "finish" }],
+    ["haptic", "error"],
+    ["dispatch", { mutation: "toggle-liked", type: "begin" }],
+    ["liked", 42, false],
+    ["haptic", "light"],
+    ["dispatch", { mutation: "toggle-liked", type: "finish" }],
+    ["dispatch", { mutation: "toggle-liked", type: "begin" }],
+    ["haptic", "error"],
+    ["dispatch", { error: "Liked failed", type: "fail" }],
+    ["dispatch", { mutation: "toggle-liked", type: "finish" }],
+  ]);
   assert.deepEqual(
     getLibrarySongDetailStatusState({
       actionState: playableActionState,
@@ -14007,7 +14192,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   assertLibraryCollectionPreviewSmoke();
   assertLibrarySongPreviewSmoke();
   assertAddableCollectionSongsSmoke();
-  assertLibrarySongDetailSmoke();
+  await assertLibrarySongDetailSmoke();
   await assertLibrarySongDeleteExecutorSmoke();
   await assertLibrarySongExportSnapshotExecutorSmoke();
   assertEditCollectionQuerySmoke();

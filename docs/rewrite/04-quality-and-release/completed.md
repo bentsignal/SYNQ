@@ -256,3 +256,6 @@
   success/failure sequencing.
 - Added direct collection delete command-flow smoke coverage for blocked,
   canceled confirmation, success navigation, failure, and finish sequencing.
+- Added direct song detail mutation command-flow smoke coverage for blocked,
+  canceled delete confirmation, delete/export/liked success, and failure
+  sequencing.

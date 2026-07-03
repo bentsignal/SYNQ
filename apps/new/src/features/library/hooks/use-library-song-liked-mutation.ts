@@ -3,13 +3,7 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import { toggleLibrarySongLikedCommand } from "../services/library-song-command-service";
 import { type LibrarySongDetail } from "../services/library-song-detail-service";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
-import {
-  getLibrarySongDetailMutationBlockedCommand,
-  getLibrarySongDetailMutationFailureCommand,
-  getLibrarySongDetailMutationFinishCommand,
-  getLibrarySongDetailMutationStartCommand,
-  getLibrarySongLikedSuccessCommand,
-} from "../services/library-song-detail-mutation-command-state-service";
+import { runLibrarySongLikedCommand } from "../services/library-song-detail-mutation-command-flow-service";
 import type { LibrarySongDetailMutationAction } from "../services/library-song-detail-mutation-service";
 
 type LibrarySongDetailMutationDispatch = (
@@ -32,37 +26,17 @@ export function useLibrarySongLikedMutation({
   const { sendHaptic } = useHapticFeedback();
 
   return useCallback(async () => {
-    if (!actionState.canToggleLiked) {
-      const command = getLibrarySongDetailMutationBlockedCommand();
-      sendHaptic(command.haptic);
-      return;
-    }
-
-    dispatchMutation(
-      getLibrarySongDetailMutationStartCommand("toggle-liked").action,
-    );
-
-    try {
-      await toggleLibrarySongLikedCommand({
-        liked: !detail.isLiked,
-        songId,
-      });
-      sendHaptic(getLibrarySongLikedSuccessCommand().haptic);
-    } catch (caughtError) {
-      const command = getLibrarySongDetailMutationFailureCommand({
-        caughtError,
-        mutation: "toggle-liked",
-      });
-      sendHaptic(command.haptic);
-      dispatchMutation(command.action);
-    } finally {
-      dispatchMutation(
-        getLibrarySongDetailMutationFinishCommand("toggle-liked").action,
-      );
-    }
+    await runLibrarySongLikedCommand({
+      actionState,
+      detail,
+      dispatch: dispatchMutation,
+      sendHaptic,
+      songId,
+      toggleLibrarySongLiked: toggleLibrarySongLikedCommand,
+    });
   }, [
-    actionState.canToggleLiked,
-    detail.isLiked,
+    actionState,
+    detail,
     dispatchMutation,
     sendHaptic,
     songId,

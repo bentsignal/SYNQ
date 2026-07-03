@@ -363,3 +363,5 @@
   of React hooks and into a focused collection mutation command-flow service.
 - Moved collection delete confirmation, success navigation, failure, and finish
   sequencing out of the React hook and into the collection mutation flow service.
+- Moved song delete, export, and liked mutation sequencing out of React hooks
+  and into a focused song detail mutation command-flow service.

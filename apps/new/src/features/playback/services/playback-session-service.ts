@@ -23,6 +23,12 @@ import {
   skipToNextPlaybackTrack,
   skipToPreviousPlaybackTrack,
 } from "./playback-transport-service";
+import {
+  failPlaybackSession,
+  hydratePlaybackSession,
+  togglePlaybackLoopMode,
+  togglePlaybackShuffleMode,
+} from "./playback-session-step-service";
 
 export type PlaybackAction =
   | { song: PlaybackQueueItem; type: "play-song" }
@@ -57,11 +63,7 @@ export const playbackReducer = (
 ): PlaybackState => {
   switch (action.type) {
     case "hydrate":
-      return {
-        ...action.state,
-        error: null,
-        initialized: true,
-      };
+      return hydratePlaybackSession(action.state);
     case "reset":
       return initialPlaybackState;
     case "play-song": {
@@ -99,11 +101,7 @@ export const playbackReducer = (
     case "complete-ad-break":
       return completePlaybackAdBreakTransition(state);
     case "native-failure":
-      return {
-        ...state,
-        error: action.error,
-        isPlaying: false,
-      };
+      return failPlaybackSession({ error: action.error, state });
     case "native-status":
       return applyPlaybackNativeStatus({
         premiumActive: action.premiumActive,
@@ -121,26 +119,10 @@ export const playbackReducer = (
         state,
       });
     case "toggle-loop":
-      return {
-        ...state,
-        mode: {
-          ...state.mode,
-          loop: !state.mode.loop,
-        },
-      };
+      return togglePlaybackLoopMode(state);
     case "toggle-shuffle":
-      return {
-        ...state,
-        mode: {
-          ...state.mode,
-          shuffle: !state.mode.shuffle,
-        },
-      };
+      return togglePlaybackShuffleMode(state);
     case "remote-failure":
-      return {
-        ...state,
-        error: action.error,
-        isPlaying: false,
-      };
+      return failPlaybackSession({ error: action.error, state });
   }
 };

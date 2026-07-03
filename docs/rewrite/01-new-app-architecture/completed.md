@@ -286,3 +286,5 @@
   decisions into the native command step service.
 - Split simple playback command action/native plan construction into a focused
   command step service.
+- Split playback session hydration, failure, and playback-mode toggles into a
+  focused session step service.

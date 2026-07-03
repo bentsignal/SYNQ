@@ -39,6 +39,12 @@ import {
   playbackReducer,
 } from "../../../apps/new/src/features/playback/services/playback-session-service";
 import {
+  failPlaybackSession,
+  hydratePlaybackSession,
+  togglePlaybackLoopMode,
+  togglePlaybackShuffleMode,
+} from "../../../apps/new/src/features/playback/services/playback-session-step-service";
+import {
   addPlaybackQueueSong,
   clearPlaybackQueue,
   movePlaybackQueueSong,
@@ -951,6 +957,34 @@ function assertPlaybackSessionSmoke() {
   const first = song({ id: 1, title: "First" });
   const second = song({ id: 2, title: "Second" });
   const third = song({ id: 3, title: "Third" });
+
+  assert.deepEqual(
+    hydratePlaybackSession({
+      ...initialPlaybackState,
+      error: "Needs reset",
+    }),
+    {
+      ...initialPlaybackState,
+      error: null,
+      initialized: true,
+    },
+  );
+  assert.deepEqual(
+    failPlaybackSession({
+      error: "Native failure",
+      state: {
+        ...initialPlaybackState,
+        isPlaying: true,
+      },
+    }),
+    {
+      ...initialPlaybackState,
+      error: "Native failure",
+      isPlaying: false,
+    },
+  );
+  assert.equal(togglePlaybackLoopMode(initialPlaybackState).mode.loop, true);
+  assert.equal(togglePlaybackShuffleMode(initialPlaybackState).mode.shuffle, true);
 
   let state = playbackReducer(initialPlaybackState, {
     song: first,

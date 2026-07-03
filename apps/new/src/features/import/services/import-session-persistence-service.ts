@@ -1,107 +1,39 @@
 import * as FileSystem from "expo-file-system";
-import type { ImportSessionState, ImportSongDraft } from "../types/import-session";
 import {
-  normalizePersistedImportSession,
-  toPersistedImportSession,
-} from "./import-session-persistence-normalizer-service";
+  clearPersistedImportSessionStateWithDependencies,
+  loadPersistedImportSessionStateWithDependencies,
+  savePersistedImportSessionStateWithDependencies,
+  type ImportSessionPersistenceDependencies,
+} from "./import-session-persistence-executor-service";
+import type { ImportSessionState } from "../types/import-session";
 
-const importSessionDirectoryName = "import";
-const importSessionFileName = "session.json";
-
-const getImportSessionDirectory = () => {
-  if (!FileSystem.documentDirectory) {
-    throw new Error("Document directory is unavailable.");
-  }
-
-  return `${FileSystem.documentDirectory}${importSessionDirectoryName}`;
-};
-
-const getImportSessionFile = () => {
-  return `${getImportSessionDirectory()}/${importSessionFileName}`;
-};
-
-const ensureImportSessionDirectory = async () => {
-  await FileSystem.makeDirectoryAsync(getImportSessionDirectory(), {
-    intermediates: true,
-  });
-};
-
-const filterExistingDrafts = async (songs: ImportSongDraft[]) => {
-  const existingSongs: ImportSongDraft[] = [];
-
-  for (const song of songs) {
-    const fileInfo = await FileSystem.getInfoAsync(song.cacheUri);
-    if (fileInfo.exists) {
-      existingSongs.push(song);
-    }
-  }
-
-  return existingSongs;
-};
+const importSessionPersistenceDependencies: ImportSessionPersistenceDependencies =
+  {
+    deletePath: FileSystem.deleteAsync,
+    documentDirectory: FileSystem.documentDirectory,
+    getInfo: FileSystem.getInfoAsync,
+    makeDirectory: FileSystem.makeDirectoryAsync,
+    readAsString: FileSystem.readAsStringAsync,
+    writeAsString: FileSystem.writeAsStringAsync,
+  };
 
 export async function loadPersistedImportSessionState(): Promise<ImportSessionState | null> {
-  try {
-    const fileInfo = await FileSystem.getInfoAsync(getImportSessionFile());
-    if (!fileInfo.exists) {
-      return null;
-    }
-
-    const contents = await FileSystem.readAsStringAsync(getImportSessionFile());
-    const persistedSession = normalizePersistedImportSession(
-      JSON.parse(contents),
-    );
-
-    if (!persistedSession) {
-      await clearPersistedImportSessionState();
-      return null;
-    }
-
-    const songs = await filterExistingDrafts(persistedSession.songs);
-    if (songs.length === 0) {
-      await clearPersistedImportSessionState();
-      return null;
-    }
-
-    return {
-      error: null,
-      phase: "reviewing",
-      progress: {
-        current: songs.length,
-        total: songs.length,
-      },
-      saveSummary: null,
-      selectedSongId:
-        songs.some((song) => song.id === persistedSession.selectedSongId)
-          ? persistedSession.selectedSongId
-          : songs[0]?.id ?? null,
-      shouldSaveToLibrary: persistedSession.shouldSaveToLibrary,
-      songs,
-      source: persistedSession.source,
-    };
-  } catch {
-    return null;
-  }
+  return loadPersistedImportSessionStateWithDependencies(
+    importSessionPersistenceDependencies,
+  );
 }
 
 export async function savePersistedImportSessionState(
   state: ImportSessionState,
 ) {
-  if (state.songs.length === 0) {
-    await clearPersistedImportSessionState();
-    return;
-  }
-
-  await ensureImportSessionDirectory();
-  await FileSystem.writeAsStringAsync(
-    getImportSessionFile(),
-    JSON.stringify(toPersistedImportSession(state), null, 2),
-  );
+  await savePersistedImportSessionStateWithDependencies({
+    dependencies: importSessionPersistenceDependencies,
+    state,
+  });
 }
 
 export async function clearPersistedImportSessionState() {
-  try {
-    await FileSystem.deleteAsync(getImportSessionFile(), { idempotent: true });
-  } catch {
-    // Cleanup should be best-effort when the document directory is unavailable.
-  }
+  await clearPersistedImportSessionStateWithDependencies(
+    importSessionPersistenceDependencies,
+  );
 }

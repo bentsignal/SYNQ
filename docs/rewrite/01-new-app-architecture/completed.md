@@ -165,3 +165,5 @@
   executor with pure filename helpers.
 - Moved import file-cache copy/write/delete orchestration behind an injectable
   executor so file picker and Wi-Fi import staging share one cache boundary.
+- Moved persisted import-session load/save/clear behavior behind an injectable
+  executor so restored draft validation is testable without Expo filesystem.

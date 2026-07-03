@@ -44,3 +44,6 @@
 - Added import file-cache executor smoke coverage for sanitized filenames,
   cache directory reset, picked-file copies, Wi-Fi base64 writes, cleanup error
   wrapping, draft cache deletion, and unavailable cache directories.
+- Added persisted import-session executor smoke coverage for missing files,
+  corrupt JSON, cached draft filtering, selected-song fallback, empty-state
+  clears, saves, and best-effort cleanup.

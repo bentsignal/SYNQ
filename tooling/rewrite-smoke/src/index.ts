@@ -175,6 +175,14 @@ import {
   toPersistedImportSession,
 } from "../../../apps/new/src/features/import/services/import-session-persistence-normalizer-service";
 import {
+  clearPersistedImportSessionStateWithDependencies,
+  getImportSessionDirectoryWithDependencies,
+  getImportSessionFileWithDependencies,
+  loadPersistedImportSessionStateWithDependencies,
+  savePersistedImportSessionStateWithDependencies,
+  type ImportSessionPersistenceDependencies,
+} from "../../../apps/new/src/features/import/services/import-session-persistence-executor-service";
+import {
   buildEditedImportSongDraft,
   getImportSongEditActionState,
   getImportSongEditErrorMessage,
@@ -6663,6 +6671,162 @@ async function assertImportFileCacheExecutorSmoke() {
   assert.throws(() => getImportCacheDirectory(dependencies), /unavailable/);
 }
 
+async function assertImportSessionPersistenceExecutorSmoke() {
+  const calls: string[] = [];
+  const files = new Map<string, string>();
+  const existingPaths = new Set<string>();
+  let documentDirectory: string | null = "file:///documents/";
+  let failClear = false;
+  const sessionFile = "file:///documents/import/session.json";
+  const dependencies: ImportSessionPersistenceDependencies = {
+    deletePath: async (path, options) => {
+      calls.push(`delete:${path}:${String(options.idempotent)}`);
+      if (failClear) {
+        throw new Error("Delete failed.");
+      }
+      files.delete(path);
+    },
+    get documentDirectory() {
+      return documentDirectory;
+    },
+    getInfo: async (path) => {
+      calls.push(`info:${path}`);
+      return { exists: files.has(path) || existingPaths.has(path) };
+    },
+    makeDirectory: async (path, options) => {
+      calls.push(`mkdir:${path}:${String(options.intermediates)}`);
+    },
+    readAsString: async (path) => {
+      calls.push(`read:${path}`);
+      const contents = files.get(path);
+      if (contents === undefined) {
+        throw new Error("Missing file.");
+      }
+
+      return contents;
+    },
+    writeAsString: async (path, contents) => {
+      calls.push(`write:${path}:${contents}`);
+      files.set(path, contents);
+    },
+  };
+  const first = importDraft(101);
+  const second = importDraft(102);
+  const reviewingState = {
+    error: null,
+    phase: "reviewing" as const,
+    progress: { current: 2, total: 2 },
+    saveSummary: null,
+    selectedSongId: first.id,
+    shouldSaveToLibrary: true,
+    songs: [first, second],
+    source: "files" as const,
+  };
+
+  assert.equal(
+    getImportSessionDirectoryWithDependencies(dependencies),
+    "file:///documents/import",
+  );
+  assert.equal(
+    getImportSessionFileWithDependencies(dependencies),
+    sessionFile,
+  );
+  assert.equal(
+    await loadPersistedImportSessionStateWithDependencies(dependencies),
+    null,
+  );
+  assert.deepEqual(calls, [`info:${sessionFile}`]);
+
+  calls.length = 0;
+  files.set(sessionFile, "{not-json");
+  assert.equal(
+    await loadPersistedImportSessionStateWithDependencies(dependencies),
+    null,
+  );
+  assert.deepEqual(calls, [`info:${sessionFile}`, `read:${sessionFile}`]);
+
+  calls.length = 0;
+  files.set(
+    sessionFile,
+    JSON.stringify({
+      selectedSongId: second.id,
+      shouldSaveToLibrary: false,
+      songs: [first, second],
+      source: "wifi",
+    }),
+  );
+  existingPaths.add(first.cacheUri);
+  assert.deepEqual(
+    await loadPersistedImportSessionStateWithDependencies(dependencies),
+    {
+      error: null,
+      phase: "reviewing",
+      progress: { current: 1, total: 1 },
+      saveSummary: null,
+      selectedSongId: first.id,
+      shouldSaveToLibrary: false,
+      songs: [first],
+      source: "wifi",
+    },
+  );
+  assert.deepEqual(calls, [
+    `info:${sessionFile}`,
+    `read:${sessionFile}`,
+    `info:${first.cacheUri}`,
+    `info:${second.cacheUri}`,
+  ]);
+
+  calls.length = 0;
+  existingPaths.clear();
+  assert.equal(
+    await loadPersistedImportSessionStateWithDependencies(dependencies),
+    null,
+  );
+  assert.deepEqual(calls, [
+    `info:${sessionFile}`,
+    `read:${sessionFile}`,
+    `info:${first.cacheUri}`,
+    `info:${second.cacheUri}`,
+    `delete:${sessionFile}:true`,
+  ]);
+
+  calls.length = 0;
+  await savePersistedImportSessionStateWithDependencies({
+    dependencies,
+    state: reviewingState,
+  });
+  assert.deepEqual(calls, [
+    "mkdir:file:///documents/import:true",
+    `write:${sessionFile}:${JSON.stringify(
+      toPersistedImportSession(reviewingState),
+      null,
+      2,
+    )}`,
+  ]);
+
+  calls.length = 0;
+  await savePersistedImportSessionStateWithDependencies({
+    dependencies,
+    state: { ...reviewingState, songs: [] },
+  });
+  assert.deepEqual(calls, [`delete:${sessionFile}:true`]);
+
+  calls.length = 0;
+  failClear = true;
+  await clearPersistedImportSessionStateWithDependencies(dependencies);
+  assert.deepEqual(calls, [`delete:${sessionFile}:true`]);
+
+  documentDirectory = null;
+  assert.throws(
+    () => getImportSessionDirectoryWithDependencies(dependencies),
+    /Document directory is unavailable/,
+  );
+  assert.equal(
+    await loadPersistedImportSessionStateWithDependencies(dependencies),
+    null,
+  );
+}
+
 async function assertImportLibrarySavePlanSmoke() {
   assert.equal(hasMeaningfulImportLibraryName("Unknown"), false);
   assert.equal(hasMeaningfulImportLibraryName("Unknown Artist"), false);
@@ -8178,6 +8342,7 @@ assertPlaybackNativeCommandPlanSmoke();
 assertPlaybackPlayerStateSmoke();
 void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertImportFileCacheExecutorSmoke();
+  await assertImportSessionPersistenceExecutorSmoke();
   await assertWifiImportRequestSmoke();
   await assertBackupCommandExecutorSmoke();
   await assertPremiumPurchaseExecutorSmoke();

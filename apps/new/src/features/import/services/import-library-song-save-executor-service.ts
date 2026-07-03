@@ -1,4 +1,9 @@
 import type { ImportSongDraft } from "../types/import-session";
+import {
+  deleteFailedImportLibrarySong,
+  getImportLibrarySongSaveErrorMessage,
+  updateImportLibrarySongCoverFromArtwork,
+} from "./import-library-song-save-step-service";
 
 type ImportSongLibraryLinkResult = {
   linkedAlbum: boolean;
@@ -41,35 +46,6 @@ export type ImportLibrarySongSaveDependencies = {
   }) => Promise<void>;
 };
 
-const getErrorMessage = (error: unknown) =>
-  error instanceof Error ? error.message : String(error);
-
-const deleteLibrarySong = async (
-  songId: number,
-  dependencies: ImportLibrarySongSaveDependencies,
-) => {
-  await dependencies.deleteImportLibrarySongRows(songId);
-  await dependencies.deleteLibrarySongFiles(songId);
-};
-
-const updateSongCover = async ({
-  artwork,
-  dependencies,
-  songId,
-}: {
-  artwork: string | null;
-  dependencies: ImportLibrarySongSaveDependencies;
-  songId: number;
-}) => {
-  const coverImage = await dependencies.saveCoverImage(artwork);
-
-  if (!coverImage) {
-    return;
-  }
-
-  await dependencies.updateImportLibrarySongCover({ coverImage, songId });
-};
-
 export const saveImportSongToLibrary = async (
   song: ImportSongDraft,
   dependencies: ImportLibrarySongSaveDependencies,
@@ -87,8 +63,12 @@ export const saveImportSongToLibrary = async (
       songId,
     });
   } catch (error) {
-    await deleteLibrarySong(songId, dependencies);
-    throw new Error(`Audio file could not be saved: ${getErrorMessage(error)}`);
+    await deleteFailedImportLibrarySong(songId, dependencies);
+    throw new Error(
+      `Audio file could not be saved: ${getImportLibrarySongSaveErrorMessage(
+        error,
+      )}`,
+    );
   }
 
   const { linkedAlbum } = await dependencies.linkImportSongToLibrary({
@@ -97,7 +77,11 @@ export const saveImportSongToLibrary = async (
   });
 
   if (!linkedAlbum) {
-    await updateSongCover({ artwork: song.artwork, dependencies, songId });
+    await updateImportLibrarySongCoverFromArtwork({
+      artwork: song.artwork,
+      dependencies,
+      songId,
+    });
   }
 
   return songId;

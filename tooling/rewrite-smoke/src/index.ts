@@ -254,6 +254,11 @@ import {
   type ImportLibrarySongSaveDependencies,
 } from "../../../apps/new/src/features/import/services/import-library-song-save-executor-service";
 import {
+  deleteFailedImportLibrarySong,
+  getImportLibrarySongSaveErrorMessage,
+  updateImportLibrarySongCoverFromArtwork,
+} from "../../../apps/new/src/features/import/services/import-library-song-save-step-service";
+import {
   deleteImportLibrarySongRowsWithDependencies,
   getImportSongDraftInsertValues,
   insertImportSongDraftWithDependencies,
@@ -9130,6 +9135,44 @@ async function assertImportLibrarySavePlanSmoke() {
     ...importDraft(3),
     artwork: "data:image/jpeg;base64,abc",
   };
+  assert.equal(
+    getImportLibrarySongSaveErrorMessage(new Error("step failure")),
+    "step failure",
+  );
+  assert.equal(
+    getImportLibrarySongSaveErrorMessage("string failure"),
+    "string failure",
+  );
+
+  await deleteFailedImportLibrarySong(
+    41,
+    createDependencies({ linkedAlbum: false }),
+  );
+  assert.deepEqual(calls, ["delete-row-41", "delete-files-41"]);
+  calls.length = 0;
+
+  await updateImportLibrarySongCoverFromArtwork({
+    artwork: "data:image/jpeg;base64,cover",
+    dependencies: createDependencies({ linkedAlbum: false }),
+    songId: 41,
+  });
+  assert.deepEqual(calls, [
+    "save-cover-data:image/jpeg;base64,cover",
+    "update-cover-41-cover-hash",
+  ]);
+  calls.length = 0;
+
+  await updateImportLibrarySongCoverFromArtwork({
+    artwork: null,
+    dependencies: createDependencies({
+      linkedAlbum: false,
+      savedCover: null,
+    }),
+    songId: 41,
+  });
+  assert.deepEqual(calls, ["save-cover-none"]);
+  calls.length = 0;
+
   assert.equal(
     await saveImportSongToLibrary(
       artworkSong,

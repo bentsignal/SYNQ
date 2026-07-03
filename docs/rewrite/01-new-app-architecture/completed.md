@@ -249,3 +249,5 @@
   state service while keeping Expo audio calls in the native registry.
 - Split Wi-Fi import bridge request/response types, JSON response sending, and
   mutable route runtime state out of the route-handler service.
+- Split import library song save rollback, cover persistence, and error
+  normalization steps out of the main save orchestration service.

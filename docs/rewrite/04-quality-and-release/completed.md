@@ -140,3 +140,5 @@
   transitions, replay decisions, and source removal behavior.
 - Preserved Wi-Fi import route-handler smoke coverage while separating bridge
   types, pure JSON response sending, and route runtime state helpers.
+- Added direct import library song save-step smoke coverage for rollback
+  cleanup, cover no-op/update behavior, and error message normalization.

@@ -919,6 +919,10 @@ import {
   toLibrarySongPlaybackItem,
 } from "../../../apps/new/src/features/library/services/library-song-preview-state-service";
 import {
+  runLibrarySongPreviewPlayAction,
+  runLibrarySongPreviewQueueAction,
+} from "../../../apps/new/src/features/library/services/library-song-preview-action-flow-service";
+import {
   backupActionCards,
   getBackupActionState,
   getBackupConfirmationState,
@@ -6847,6 +6851,36 @@ function assertLibrarySongPreviewSmoke() {
   assert.deepEqual(getLibrarySongPreviewQueueCommand(), {
     haptic: "light",
   });
+  const songPreviewActionEvents: unknown[] = [];
+  const previewPlaybackItem = toLibrarySongPlaybackItem(previews[0]!);
+  runLibrarySongPreviewPlayAction({
+    playbackItem: previewPlaybackItem,
+    playSong: (song) => {
+      songPreviewActionEvents.push(["play", song.id]);
+    },
+    pushRoute: (href) => {
+      songPreviewActionEvents.push(["route", href]);
+    },
+    sendHaptic: (haptic) => {
+      songPreviewActionEvents.push(["haptic", haptic]);
+    },
+  });
+  runLibrarySongPreviewQueueAction({
+    addToQueue: (song) => {
+      songPreviewActionEvents.push(["queue", song.id]);
+    },
+    playbackItem: previewPlaybackItem,
+    sendHaptic: (haptic) => {
+      songPreviewActionEvents.push(["haptic", haptic]);
+    },
+  });
+  assert.deepEqual(songPreviewActionEvents, [
+    ["haptic", "light"],
+    ["play", 1],
+    ["route", "/player"],
+    ["haptic", "light"],
+    ["queue", 1],
+  ]);
   assert.deepEqual(getLibrarySongPreviewEmptyState(), {
     body: "Import audio files to start building your song library.",
     link: {

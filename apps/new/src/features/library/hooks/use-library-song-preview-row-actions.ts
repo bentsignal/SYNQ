@@ -2,11 +2,13 @@ import { pushNativeRoute } from "@/src/features/app-shell/services/native-route-
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import type { LibrarySongPreview } from "../services/library-song-preview-service";
 import {
-  getLibrarySongPreviewPlayCommand,
-  getLibrarySongPreviewQueueCommand,
   type LibrarySongPreviewPlaybackItem,
   toLibrarySongPlaybackItem,
 } from "../services/library-song-preview-state-service";
+import {
+  runLibrarySongPreviewPlayAction,
+  runLibrarySongPreviewQueueAction,
+} from "../services/library-song-preview-action-flow-service";
 
 type UseLibrarySongPreviewRowActionsParams = {
   addToQueue: (song: LibrarySongPreviewPlaybackItem) => void;
@@ -23,15 +25,20 @@ export function useLibrarySongPreviewRowActions({
   const playbackItem = toLibrarySongPlaybackItem(song);
 
   const play = () => {
-    const command = getLibrarySongPreviewPlayCommand();
-    sendHaptic(command.haptic);
-    playSong(playbackItem);
-    pushNativeRoute(command.href);
+    runLibrarySongPreviewPlayAction({
+      playbackItem,
+      playSong,
+      pushRoute: pushNativeRoute,
+      sendHaptic,
+    });
   };
 
   const queue = () => {
-    sendHaptic(getLibrarySongPreviewQueueCommand().haptic);
-    addToQueue(playbackItem);
+    runLibrarySongPreviewQueueAction({
+      addToQueue,
+      playbackItem,
+      sendHaptic,
+    });
   };
 
   return {

@@ -373,3 +373,6 @@
   of the React hook and into a focused command-flow service.
 - Moved collection form image pick haptic, dispatch, and failure sequencing out
   of the React hook and into a focused image command-flow service.
+- Moved library song preview-row play/queue haptic, playback, queueing, and
+  navigation sequencing out of the React hook and into a focused action-flow
+  service.

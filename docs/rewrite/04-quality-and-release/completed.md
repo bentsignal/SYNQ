@@ -267,3 +267,5 @@
   successful draft update navigation, and draft-build failure sequencing.
 - Added direct collection form image command-flow smoke coverage for canceled
   image pick, picked image dispatch, and picker failure sequencing.
+- Added direct library song preview action-flow smoke coverage for play and
+  queue haptic/action sequencing.

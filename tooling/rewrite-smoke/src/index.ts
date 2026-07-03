@@ -939,7 +939,9 @@ import {
 } from "../../../apps/new/src/features/library/services/library-song-detail-mutation-service";
 import {
   buildLibrarySongEditFormState,
+  getLibrarySongEditBeginSaveAction,
   getLibrarySongEditChangeFieldAction,
+  getLibrarySongEditFinishSaveAction,
   getLibrarySongEditHydrateAction,
   getInitialLibrarySongEditControllerState,
   type LibrarySongEditControllerAction,
@@ -8557,7 +8559,22 @@ async function assertLibrarySongDetailSmoke() {
     },
   );
   assert.deepEqual(
-    librarySongEditControllerReducer(songEditState, { type: "begin-save" }),
+    getLibrarySongEditBeginSaveAction(),
+    {
+      type: "begin-save",
+    },
+  );
+  assert.deepEqual(
+    getLibrarySongEditFinishSaveAction(),
+    {
+      type: "finish-save",
+    },
+  );
+  assert.deepEqual(
+    librarySongEditControllerReducer(
+      songEditState,
+      getLibrarySongEditBeginSaveAction(),
+    ),
     {
       ...songEditState,
       errorMessage: null,
@@ -8570,7 +8587,7 @@ async function assertLibrarySongDetailSmoke() {
         ...songEditState,
         isSaving: true,
       },
-      { type: "finish-save" },
+      getLibrarySongEditFinishSaveAction(),
     ),
     songEditState,
   );

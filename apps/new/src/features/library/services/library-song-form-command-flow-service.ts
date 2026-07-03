@@ -5,10 +5,12 @@ import {
   getLibrarySongEditFailureCommand,
   getLibrarySongEditSaveSuccessCommand,
 } from "./library-song-form-command-state-service";
-import type {
-  LibrarySongEditControllerAction,
-  LibrarySongEditControllerState,
-  LibrarySongEditCoverImage,
+import {
+  getLibrarySongEditBeginSaveAction,
+  getLibrarySongEditFinishSaveAction,
+  type LibrarySongEditControllerAction,
+  type LibrarySongEditControllerState,
+  type LibrarySongEditCoverImage,
 } from "./library-song-form-service";
 import type { LibrarySongDetailHref } from "./library-song-interaction-service";
 
@@ -82,7 +84,7 @@ export const runLibrarySongEditSaveCommand = async ({
     return;
   }
 
-  dispatch({ type: "begin-save" });
+  dispatch(getLibrarySongEditBeginSaveAction());
 
   try {
     await updateLibrarySongMetadata({
@@ -100,6 +102,6 @@ export const runLibrarySongEditSaveCommand = async ({
     sendHaptic(command.haptic);
     dispatch(command.action);
   } finally {
-    dispatch({ type: "finish-save" });
+    dispatch(getLibrarySongEditFinishSaveAction());
   }
 };

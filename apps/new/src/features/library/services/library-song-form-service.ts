@@ -72,6 +72,16 @@ export const getLibrarySongEditChangeFieldAction = ({
   value,
 });
 
+export const getLibrarySongEditBeginSaveAction =
+  (): LibrarySongEditControllerAction => ({
+    type: "begin-save",
+  });
+
+export const getLibrarySongEditFinishSaveAction =
+  (): LibrarySongEditControllerAction => ({
+    type: "finish-save",
+  });
+
 export const buildLibrarySongEditFormState = (
   detail: LibrarySongDetail,
 ): LibrarySongEditFormState => ({

@@ -456,3 +456,5 @@
   into the playback session service.
 - Moved settings persistence action construction out of command flows and into
   the generic settings persistence state service.
+- Moved library song edit save action construction out of the command flow and
+  into the song edit form service.

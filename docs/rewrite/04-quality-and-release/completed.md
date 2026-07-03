@@ -329,3 +329,4 @@
   coverage.
 - Added direct playback hydrate action-constructor smoke coverage.
 - Added direct settings persistence action-constructor smoke coverage.
+- Added direct library song edit save action-constructor smoke coverage.

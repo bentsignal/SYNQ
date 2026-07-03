@@ -328,3 +328,4 @@
 - Added direct import session saving and hydrate action-constructor smoke
   coverage.
 - Added direct playback hydrate action-constructor smoke coverage.
+- Added direct settings persistence action-constructor smoke coverage.

@@ -1,4 +1,12 @@
-import type { SettingsPersistenceAction } from "./settings-persistence-state-service";
+import {
+  getSettingsPersistenceLoadAction,
+  getSettingsPersistenceLoadFailureAction,
+  getSettingsPersistenceLoadSuccessAction,
+  getSettingsPersistenceSaveAction,
+  getSettingsPersistenceSaveFailureAction,
+  getSettingsPersistenceSaveSuccessAction,
+  type SettingsPersistenceAction,
+} from "./settings-persistence-state-service";
 
 type SettingsPersistenceDispatch<TSettings> = (
   action: SettingsPersistenceAction<TSettings>,
@@ -15,19 +23,16 @@ export const runSettingsLoadCommand = async <TSettings>({
   isCurrent: () => boolean;
   loadSettings: () => Promise<TSettings>;
 }) => {
-  dispatch({ type: "load" });
+  dispatch(getSettingsPersistenceLoadAction());
 
   try {
     const settings = await loadSettings();
     if (isCurrent()) {
-      dispatch({ settings, type: "load-success" });
+      dispatch(getSettingsPersistenceLoadSuccessAction(settings));
     }
   } catch (error) {
     if (isCurrent()) {
-      dispatch({
-        error: getErrorMessage(error),
-        type: "load-failure",
-      });
+      dispatch(getSettingsPersistenceLoadFailureAction(getErrorMessage(error)));
     }
   }
 };
@@ -47,17 +52,16 @@ export const runSettingsSaveCommand = async <TSettings>({
   saveSettings: (settings: TSettings) => Promise<void>;
   settings: TSettings;
 }) => {
-  dispatch({ settings, type: "save" });
+  dispatch(getSettingsPersistenceSaveAction(settings));
 
   try {
     await beforeSave?.();
     await saveSettings(settings);
-    dispatch({ settings, type: "save-success" });
+    dispatch(getSettingsPersistenceSaveSuccessAction(settings));
   } catch (error) {
-    dispatch({
+    dispatch(getSettingsPersistenceSaveFailureAction({
       error: getErrorMessage(error),
       settings: currentSettings,
-      type: "save-failure",
-    });
+    }));
   }
 };

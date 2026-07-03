@@ -454,3 +454,5 @@
   flows and into the import session state service.
 - Moved playback hydrate action construction out of the persistence flow and
   into the playback session service.
+- Moved settings persistence action construction out of command flows and into
+  the generic settings persistence state service.

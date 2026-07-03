@@ -1166,6 +1166,12 @@ import {
 } from "../../../apps/new/src/features/settings/services/settings-support-action-executor-service";
 import {
   createInitialSettingsPersistenceState,
+  getSettingsPersistenceLoadAction,
+  getSettingsPersistenceLoadFailureAction,
+  getSettingsPersistenceLoadSuccessAction,
+  getSettingsPersistenceSaveAction,
+  getSettingsPersistenceSaveFailureAction,
+  getSettingsPersistenceSaveSuccessAction,
   type SettingsPersistenceAction,
   settingsPersistenceReducer,
 } from "../../../apps/new/src/features/settings/services/settings-persistence-state-service";
@@ -14676,9 +14682,39 @@ async function assertSettingsScreenSmoke() {
     status: "idle",
   });
 
-  const loadingState = settingsPersistenceReducer(initialPersistenceState, {
-    type: "load",
+  assert.deepEqual(getSettingsPersistenceLoadAction(), { type: "load" });
+  assert.deepEqual(getSettingsPersistenceLoadSuccessAction(loadedSettings), {
+    settings: loadedSettings,
+    type: "load-success",
   });
+  assert.deepEqual(getSettingsPersistenceLoadFailureAction("Load failed"), {
+    error: "Load failed",
+    type: "load-failure",
+  });
+  assert.deepEqual(getSettingsPersistenceSaveAction(loadedSettings), {
+    settings: loadedSettings,
+    type: "save",
+  });
+  assert.deepEqual(getSettingsPersistenceSaveSuccessAction(loadedSettings), {
+    settings: loadedSettings,
+    type: "save-success",
+  });
+  assert.deepEqual(
+    getSettingsPersistenceSaveFailureAction({
+      error: "Save failed",
+      settings: initialSettings,
+    }),
+    {
+      error: "Save failed",
+      settings: initialSettings,
+      type: "save-failure",
+    },
+  );
+
+  const loadingState = settingsPersistenceReducer(
+    initialPersistenceState,
+    getSettingsPersistenceLoadAction(),
+  );
   assert.deepEqual(loadingState, {
     error: null,
     settings: initialSettings,
@@ -14686,10 +14722,10 @@ async function assertSettingsScreenSmoke() {
   });
 
   assert.deepEqual(
-    settingsPersistenceReducer(loadingState, {
-      settings: loadedSettings,
-      type: "load-success",
-    }),
+    settingsPersistenceReducer(
+      loadingState,
+      getSettingsPersistenceLoadSuccessAction(loadedSettings),
+    ),
     {
       error: null,
       settings: loadedSettings,
@@ -14698,10 +14734,10 @@ async function assertSettingsScreenSmoke() {
   );
 
   assert.deepEqual(
-    settingsPersistenceReducer(loadingState, {
-      error: "Load failed",
-      type: "load-failure",
-    }),
+    settingsPersistenceReducer(
+      loadingState,
+      getSettingsPersistenceLoadFailureAction("Load failed"),
+    ),
     {
       error: "Load failed",
       settings: initialSettings,
@@ -14709,10 +14745,10 @@ async function assertSettingsScreenSmoke() {
     },
   );
 
-  const savingState = settingsPersistenceReducer(initialPersistenceState, {
-    settings: loadedSettings,
-    type: "save",
-  });
+  const savingState = settingsPersistenceReducer(
+    initialPersistenceState,
+    getSettingsPersistenceSaveAction(loadedSettings),
+  );
   assert.deepEqual(savingState, {
     error: null,
     settings: loadedSettings,
@@ -14720,10 +14756,10 @@ async function assertSettingsScreenSmoke() {
   });
 
   assert.deepEqual(
-    settingsPersistenceReducer(savingState, {
-      settings: loadedSettings,
-      type: "save-success",
-    }),
+    settingsPersistenceReducer(
+      savingState,
+      getSettingsPersistenceSaveSuccessAction(loadedSettings),
+    ),
     {
       error: null,
       settings: loadedSettings,
@@ -14732,11 +14768,13 @@ async function assertSettingsScreenSmoke() {
   );
 
   assert.deepEqual(
-    settingsPersistenceReducer(savingState, {
-      error: "Save failed",
-      settings: initialSettings,
-      type: "save-failure",
-    }),
+    settingsPersistenceReducer(
+      savingState,
+      getSettingsPersistenceSaveFailureAction({
+        error: "Save failed",
+        settings: initialSettings,
+      }),
+    ),
     {
       error: "Save failed",
       settings: initialSettings,

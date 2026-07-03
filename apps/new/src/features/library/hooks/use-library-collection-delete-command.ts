@@ -1,5 +1,5 @@
-import { router } from "expo-router";
 import { showNativeConfirmationAlert } from "@/src/features/app-shell/services/native-alert-service";
+import { replaceNativeRoute } from "@/src/features/app-shell/services/native-route-service";
 import type { HapticFeedbackType } from "@/src/features/settings/services/haptic-feedback-service";
 import { deleteLibraryCollectionCommand } from "../services/library-collection-command-service";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
@@ -60,7 +60,7 @@ export function useLibraryCollectionDeleteCommand({
           await deleteLibraryCollectionCommand({ id, kind });
           const command = getCollectionDeleteSuccessCommand({ kind });
           sendHaptic(command.haptic);
-          router.replace(command.href);
+          replaceNativeRoute(command.href);
         } catch (caughtError) {
           const command = getCollectionDetailMutationFailureCommand({
             caughtError,

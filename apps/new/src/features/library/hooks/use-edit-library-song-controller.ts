@@ -1,5 +1,5 @@
 import { useEffect, useReducer } from "react";
-import { router } from "expo-router";
+import { replaceNativeRoute } from "@/src/features/app-shell/services/native-route-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { pickCollectionImage } from "../services/collection-image-picker-service";
 import { updateLibrarySongMetadataCommand } from "../services/library-song-command-service";
@@ -84,7 +84,7 @@ export function useEditLibrarySongController({
       });
       const command = getLibrarySongEditSaveSuccessCommand({ songId });
       sendHaptic(command.haptic);
-      router.replace(command.href);
+      replaceNativeRoute(command.href);
     } catch (caughtError) {
       const command = getLibrarySongEditFailureCommand(caughtError);
       sendHaptic(command.haptic);

@@ -1,5 +1,5 @@
-import { router } from "expo-router";
 import { useCallback } from "react";
+import { pushNativeRoute } from "@/src/features/app-shell/services/native-route-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
   getImportFileRemovalResultCommand,
@@ -27,7 +27,7 @@ export function useImportFilesController() {
     const command = getImportFileSelectionResultCommand(staged);
 
     sendHaptic(command.haptic);
-    router.push(command.href);
+    pushNativeRoute(command.href);
   }, [sendHaptic, startFileImport]);
 
   const removeSong = useCallback(

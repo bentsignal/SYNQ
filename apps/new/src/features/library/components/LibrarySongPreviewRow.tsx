@@ -1,5 +1,6 @@
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 import { Pressable, View } from "react-native";
+import { pushNativeRoute } from "@/src/features/app-shell/services/native-route-service";
 import {
   SongRowActionButton,
   SongRowDuration,
@@ -65,7 +66,7 @@ export function LibrarySongPreviewRow({
             const command = getLibrarySongPreviewPlayCommand();
             sendHaptic(command.haptic);
             playSong(playbackItem);
-            router.push(command.href);
+            pushNativeRoute(command.href);
           }}
           textColor={theme.onAccent}
         />

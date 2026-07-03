@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import { router } from "expo-router";
 import { showNativeConfirmationAlert } from "@/src/features/app-shell/services/native-alert-service";
+import { replaceNativeRoute } from "@/src/features/app-shell/services/native-route-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { deleteLibrarySongCommand } from "../services/library-song-command-service";
 import { type LibrarySongDetail } from "../services/library-song-detail-service";
@@ -59,7 +59,7 @@ export function useLibrarySongDeleteMutation({
           removeFromQueue(songId);
           const command = getLibrarySongDeleteSuccessCommand();
           sendHaptic(command.haptic);
-          router.replace(command.href);
+          replaceNativeRoute(command.href);
         } catch (caughtError) {
           const command = getLibrarySongDetailMutationFailureCommand({
             caughtError,

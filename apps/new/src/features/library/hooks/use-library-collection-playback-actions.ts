@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { pushNativeRoute } from "@/src/features/app-shell/services/native-route-service";
 import { usePlaybackSongActions } from "@/src/features/playback/hooks/use-playback-session-selectors";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
@@ -30,7 +30,7 @@ export function useLibraryCollectionPlaybackActions({
 
     playSong(playbackPlan.firstSong);
     playbackPlan.queuedSongs.forEach(addToQueue);
-    router.push(playbackPlan.playerHref);
+    pushNativeRoute(playbackPlan.playerHref);
   };
 
   const queueCollection = () => {

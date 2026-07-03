@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { pushNativeRoute } from "@/src/features/app-shell/services/native-route-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
   getImportDiscardResultCommand,
@@ -34,7 +34,7 @@ export function useImportSaveSessionActions({
     const succeeded = await saveImportSession();
     const command = getImportFinishResultCommand(succeeded);
     sendHaptic(command.haptic);
-    router.push(command.href);
+    pushNativeRoute(command.href);
   };
 
   const discardImport = async () => {
@@ -42,7 +42,7 @@ export function useImportSaveSessionActions({
     const discarded = await discardSession();
     const command = getImportDiscardResultCommand(discarded);
     sendHaptic(command.haptic);
-    router.push(command.href);
+    pushNativeRoute(command.href);
   };
 
   return {

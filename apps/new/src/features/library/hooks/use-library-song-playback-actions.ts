@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { router } from "expo-router";
+import { pushNativeRoute } from "@/src/features/app-shell/services/native-route-service";
 import { usePlaybackSongActions } from "@/src/features/playback/hooks/use-playback-session-selectors";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
@@ -40,7 +40,7 @@ export function useLibrarySongPlaybackActions({
     const command = getLibrarySongPlayCommand();
     sendHaptic(command.haptic);
     playSong(playbackItem);
-    router.push(command.href);
+    pushNativeRoute(command.href);
   }, [actionState.canPlay, playSong, playbackItem, sendHaptic]);
 
   const queueCurrentSong = useCallback(() => {

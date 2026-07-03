@@ -10,6 +10,7 @@ MAX_NEW_APP_STYLESHEET_CREATE="${MAX_NEW_APP_STYLESHEET_CREATE:-0}"
 MAX_NEW_APP_STYLESHEET_IMPORTS="${MAX_NEW_APP_STYLESHEET_IMPORTS:-0}"
 MAX_NEW_APP_RAW_HAPTIC_CALLS="${MAX_NEW_APP_RAW_HAPTIC_CALLS:-0}"
 MAX_NEW_APP_RAW_ALERT_CALLS="${MAX_NEW_APP_RAW_ALERT_CALLS:-0}"
+MAX_NEW_APP_RAW_ROUTER_CALLS="${MAX_NEW_APP_RAW_ROUTER_CALLS:-0}"
 MAX_NEW_APP_CONTEXT_MODULES="${MAX_NEW_APP_CONTEXT_MODULES:-0}"
 MAX_EXTERNAL_PLAYBACK_SELECTOR_IMPORTS="${MAX_EXTERNAL_PLAYBACK_SELECTOR_IMPORTS:-0}"
 MAX_LIBRARY_HOOK_LIVE_QUERY_MODULES="${MAX_LIBRARY_HOOK_LIVE_QUERY_MODULES:-0}"
@@ -35,6 +36,12 @@ raw_haptic_calls="$(count_matches "sendHaptic\\([\"']" "${NEW_APP_PATHS[@]}")"
 raw_alert_calls="$(
   (rg -n "Alert\\.alert" "${NEW_APP_PATHS[@]}" -g "*.ts" -g "*.tsx" || true) |
     (rg -v "apps/new/src/features/app-shell/services/native-alert-service\\.ts:" || true) |
+    wc -l |
+    tr -d " "
+)"
+raw_router_calls="$(
+  (rg -n "router\\.(push|replace)\\(" "${NEW_APP_PATHS[@]}" -g "*.ts" -g "*.tsx" || true) |
+    (rg -v "apps/new/src/features/app-shell/services/native-route-service\\.ts:" || true) |
     wc -l |
     tr -d " "
 )"
@@ -68,6 +75,8 @@ printf "New app raw haptic calls: %s/%s max\n" \
   "$raw_haptic_calls" "$MAX_NEW_APP_RAW_HAPTIC_CALLS"
 printf "New app raw alert calls: %s/%s max\n" \
   "$raw_alert_calls" "$MAX_NEW_APP_RAW_ALERT_CALLS"
+printf "New app raw router calls: %s/%s max\n" \
+  "$raw_router_calls" "$MAX_NEW_APP_RAW_ROUTER_CALLS"
 printf "New app React context modules: %s/%s max\n" \
   "$context_modules" "$MAX_NEW_APP_CONTEXT_MODULES"
 printf "New app context directories: %s/0 max\n" "$context_directories"
@@ -104,6 +113,14 @@ if (( raw_alert_calls > MAX_NEW_APP_RAW_ALERT_CALLS )); then
   echo "Raw alert calls grew. Route native alert execution through the app-shell alert presenter."
   (rg -n "Alert\\.alert" "${NEW_APP_PATHS[@]}" -g "*.ts" -g "*.tsx" || true) |
     rg -v "apps/new/src/features/app-shell/services/native-alert-service\\.ts:"
+  failed=1
+fi
+
+if (( raw_router_calls > MAX_NEW_APP_RAW_ROUTER_CALLS )); then
+  echo
+  echo "Raw router calls grew. Route imperative navigation through the app-shell route presenter."
+  (rg -n "router\\.(push|replace)\\(" "${NEW_APP_PATHS[@]}" -g "*.ts" -g "*.tsx" || true) |
+    rg -v "apps/new/src/features/app-shell/services/native-route-service\\.ts:"
   failed=1
 fi
 

@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { replaceNativeRoute } from "@/src/features/app-shell/services/native-route-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useCollectionFormImageCommand } from "./use-collection-form-image-command";
 import { updateCollectionFromFormCommand } from "../services/collection-form-command-service";
@@ -27,7 +27,6 @@ export function useEditCollectionFormCommands({
   id,
   kind,
 }: UseEditCollectionFormCommandsParams) {
-  const router = useRouter();
   const { sendHaptic } = useHapticFeedback();
   const pickImage = useCollectionFormImageCommand({
     dispatchFormState,
@@ -55,7 +54,7 @@ export function useEditCollectionFormCommands({
       });
       const command = getCollectionFormSuccessCommand({ id, kind });
       sendHaptic(command.haptic);
-      router.replace(command.href);
+      replaceNativeRoute(command.href);
     } catch (caughtError) {
       const command = getCollectionFormFailureCommand({
         caughtError,

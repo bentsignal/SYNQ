@@ -1,5 +1,5 @@
 import { useReducer } from "react";
-import { router } from "expo-router";
+import { replaceNativeRoute } from "@/src/features/app-shell/services/native-route-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
   buildEditedImportSongDraft,
@@ -61,7 +61,7 @@ export function useEditImportSongController({
       );
       const command = getImportSongEditSaveSuccessCommand();
       sendHaptic(command.haptic);
-      router.replace(command.href);
+      replaceNativeRoute(command.href);
     } catch (caughtError) {
       const command = getImportSongEditSaveFailureCommand(caughtError);
       sendHaptic(command.haptic);

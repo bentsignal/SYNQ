@@ -162,6 +162,14 @@ import {
   runPlaybackCommandPlan,
 } from "../../../apps/new/src/features/playback/services/playback-command-plan-service";
 import {
+  runPlaybackTransportPauseCommand,
+  runPlaybackTransportPlaySongCommand,
+  runPlaybackTransportResumeCommand,
+  runPlaybackTransportSeekCommand,
+  runPlaybackTransportSkipNextCommand,
+  runPlaybackTransportSkipPreviousCommand,
+} from "../../../apps/new/src/features/playback/services/playback-transport-command-flow-service";
+import {
   getClearQueuePlaybackStepPlan,
   getPausePlaybackStepPlan,
   getPlaySongPlaybackStepPlan,
@@ -1963,6 +1971,58 @@ function assertPlaybackNativeCommandPlanSmoke() {
     "started-ad",
   );
   assert.deepEqual(gatedEvents, ["command", "ad"]);
+
+  const transportEvents: unknown[] = [];
+  const runAdGatedTransportCommand = (command: () => void) => {
+    transportEvents.push(["gate"]);
+    command();
+  };
+  const runTransportCommandPlan = (
+    plan: ReturnType<typeof getPausePlaybackCommandPlan>,
+  ) => {
+    transportEvents.push(["plan", plan.action.type, plan.nativeCommand.type]);
+  };
+  runPlaybackTransportPlaySongCommand({
+    runAdGatedCommand: runAdGatedTransportCommand,
+    runCommandPlan: runTransportCommandPlan,
+    song: first,
+  });
+  runPlaybackTransportPauseCommand({
+    runCommandPlan: runTransportCommandPlan,
+  });
+  runPlaybackTransportResumeCommand({
+    runAdGatedCommand: runAdGatedTransportCommand,
+    runCommandPlan: runTransportCommandPlan,
+    state,
+  });
+  runPlaybackTransportSeekCommand({
+    position: 42_000,
+    runAdGatedCommand: runAdGatedTransportCommand,
+    runCommandPlan: runTransportCommandPlan,
+  });
+  runPlaybackTransportSkipNextCommand({
+    runAdGatedCommand: runAdGatedTransportCommand,
+    runCommandPlan: runTransportCommandPlan,
+    state,
+  });
+  runPlaybackTransportSkipPreviousCommand({
+    runAdGatedCommand: runAdGatedTransportCommand,
+    runCommandPlan: runTransportCommandPlan,
+    state,
+  });
+  assert.deepEqual(transportEvents, [
+    ["gate"],
+    ["plan", "play-song", "play"],
+    ["plan", "pause", "pause"],
+    ["gate"],
+    ["plan", "resume", "resume"],
+    ["gate"],
+    ["plan", "seek-to", "seek"],
+    ["gate"],
+    ["plan", "skip-next", "play"],
+    ["gate"],
+    ["plan", "skip-previous", "play"],
+  ]);
 
   const remoteEvents: string[] = [];
   let remoteAllowed = true;

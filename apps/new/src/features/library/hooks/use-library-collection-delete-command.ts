@@ -1,5 +1,6 @@
 import { Alert } from "react-native";
 import { router } from "expo-router";
+import type { HapticFeedbackType } from "@/src/features/settings/services/haptic-feedback-service";
 import { deleteLibraryCollectionCommand } from "../services/library-collection-command-service";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
@@ -7,9 +8,12 @@ import {
   getDeleteCollectionConfirmationCopy,
   type CollectionDetailActionState,
 } from "../services/library-collection-interaction-service";
-import { getCollectionListHref } from "../services/library-collection-navigation-service";
 import {
-  getCollectionDetailMutationErrorMessage,
+  getCollectionDeleteFinishCommand,
+  getCollectionDeleteStartCommand,
+  getCollectionDeleteSuccessCommand,
+  getCollectionDetailMutationBlockedCommand,
+  getCollectionDetailMutationFailureCommand,
   type CollectionDetailMutationAction,
 } from "../services/library-collection-mutation-service";
 
@@ -17,7 +21,7 @@ type CollectionDetailMutationDispatch = (
   action: CollectionDetailMutationAction,
 ) => void;
 
-type HapticSender = (type: "error" | "success") => void;
+type HapticSender = (type: HapticFeedbackType) => void;
 
 export function useLibraryCollectionDeleteCommand({
   actionState,
@@ -36,7 +40,7 @@ export function useLibraryCollectionDeleteCommand({
 }) {
   return () => {
     if (!actionState.canDelete) {
-      sendHaptic("error");
+      sendHaptic(getCollectionDetailMutationBlockedCommand().haptic);
       return;
     }
 
@@ -52,26 +56,22 @@ export function useLibraryCollectionDeleteCommand({
         { style: "cancel", text: confirmationCopy.cancelLabel },
         {
           onPress: async () => {
-            dispatchMutation({ mutation: "delete-collection", type: "begin" });
+            dispatchMutation(getCollectionDeleteStartCommand().action);
 
             try {
               await deleteLibraryCollectionCommand({ id, kind });
-              sendHaptic("success");
-              router.replace(getCollectionListHref(kind));
+              const command = getCollectionDeleteSuccessCommand({ kind });
+              sendHaptic(command.haptic);
+              router.replace(command.href);
             } catch (caughtError) {
-              sendHaptic("error");
-              dispatchMutation({
-                error: getCollectionDetailMutationErrorMessage({
-                  caughtError,
-                  mutation: "delete-collection",
-                }),
-                type: "fail",
-              });
-            } finally {
-              dispatchMutation({
+              const command = getCollectionDetailMutationFailureCommand({
+                caughtError,
                 mutation: "delete-collection",
-                type: "finish",
               });
+              sendHaptic(command.haptic);
+              dispatchMutation(command.action);
+            } finally {
+              dispatchMutation(getCollectionDeleteFinishCommand().action);
             }
           },
           style: "destructive",

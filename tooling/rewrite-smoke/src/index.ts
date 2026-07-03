@@ -233,6 +233,10 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-navigation-service";
 import {
   collectionDetailMutationReducer,
+  getCollectionDeleteFinishCommand,
+  getCollectionDeleteStartCommand,
+  getCollectionDeleteSuccessCommand,
+  getCollectionDetailMutationBlockedCommand,
   getCollectionDetailMutationFailureCommand,
   getCollectionDetailMutationErrorMessage,
   getCollectionSongMoveFinishCommand,
@@ -2358,6 +2362,25 @@ function assertLibraryCollectionInteractionSmoke() {
       mutationError: "Song order could not be saved.",
     },
   );
+  assert.deepEqual(getCollectionDetailMutationBlockedCommand(), {
+    haptic: "error",
+  });
+  assert.deepEqual(getCollectionDeleteStartCommand(), {
+    action: {
+      mutation: "delete-collection",
+      type: "begin",
+    },
+  });
+  assert.deepEqual(getCollectionDeleteSuccessCommand({ kind: "artist" }), {
+    haptic: "success",
+    href: "/(tabs)/library/artists",
+  });
+  assert.deepEqual(getCollectionDeleteFinishCommand(), {
+    action: {
+      mutation: "delete-collection",
+      type: "finish",
+    },
+  });
   assert.deepEqual(getCollectionSongMoveStartCommand(2), {
     action: {
       mutation: "move-song",

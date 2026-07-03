@@ -1,4 +1,9 @@
 import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
+import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
+import {
+  getCollectionListHref,
+  type LibraryCollectionListHref,
+} from "./library-collection-navigation-service";
 
 export type CollectionDetailMutationKind =
   | "delete-collection"
@@ -138,6 +143,41 @@ type CollectionDetailMutationHapticCommand = {
 
 type CollectionDetailMutationFailureCommand =
   CollectionDetailMutationActionCommand & CollectionDetailMutationHapticCommand;
+
+type CollectionDetailMutationNavigationCommand =
+  CollectionDetailMutationHapticCommand & {
+    href: LibraryCollectionListHref;
+  };
+
+export const getCollectionDetailMutationBlockedCommand =
+  (): CollectionDetailMutationHapticCommand => ({
+    haptic: "error",
+  });
+
+export const getCollectionDeleteStartCommand =
+  (): CollectionDetailMutationActionCommand => ({
+    action: {
+      mutation: "delete-collection",
+      type: "begin",
+    },
+  });
+
+export const getCollectionDeleteSuccessCommand = ({
+  kind,
+}: {
+  kind: LibraryCollectionDetailKind;
+}): CollectionDetailMutationNavigationCommand => ({
+  haptic: "success",
+  href: getCollectionListHref(kind),
+});
+
+export const getCollectionDeleteFinishCommand =
+  (): CollectionDetailMutationActionCommand => ({
+    action: {
+      mutation: "delete-collection",
+      type: "finish",
+    },
+  });
 
 export const getCollectionSongMoveStartCommand = (
   songId: number,

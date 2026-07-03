@@ -951,6 +951,7 @@ import {
   getInitialPremiumPurchaseState,
   getInitialPremiumTierLoadState,
   type PremiumPurchaseAction,
+  type PremiumTierLoadAction,
   premiumPurchaseReducer,
   premiumTierLoadReducer,
 } from "../../../apps/new/src/features/premium/services/premium-purchase-state-service";
@@ -961,9 +962,15 @@ import {
   runPremiumTierSelectionCommand,
 } from "../../../apps/new/src/features/premium/services/premium-purchase-command-flow-service";
 import {
+  runPremiumEntitlementApplyCommand,
+  runPremiumEntitlementRefreshCommand,
+} from "../../../apps/new/src/features/premium/services/premium-entitlement-command-flow-service";
+import {
   initialPremiumEntitlementState,
+  type PremiumEntitlementAction,
   premiumEntitlementReducer,
 } from "../../../apps/new/src/features/premium/services/premium-entitlement-state-service";
+import { runPremiumTierLoadCommand } from "../../../apps/new/src/features/premium/services/premium-tier-load-command-flow-service";
 import {
   getTierIdFromProduct,
   hydratePremiumTierPrices,
@@ -11859,6 +11866,55 @@ async function assertPremiumScreenSmoke() {
       tierId: "monthly",
     },
   );
+  const premiumEntitlementCommandEvents: unknown[] = [];
+  const dispatchPremiumEntitlementCommand = (
+    action: PremiumEntitlementAction,
+  ) => {
+    premiumEntitlementCommandEvents.push(action);
+  };
+  runPremiumEntitlementApplyCommand({
+    dispatch: dispatchPremiumEntitlementCommand,
+    status: {
+      active: true,
+      message: "Applied.",
+      tierId: "yearly",
+    },
+  });
+  await runPremiumEntitlementRefreshCommand({
+    checkPremiumEntitlement: async () => ({
+      active: true,
+      message: "Checked.",
+      tierId: "lifetime",
+    }),
+    dispatch: dispatchPremiumEntitlementCommand,
+  });
+  await runPremiumEntitlementRefreshCommand({
+    checkPremiumEntitlement: async () => {
+      throw new Error("Check failed");
+    },
+    dispatch: dispatchPremiumEntitlementCommand,
+  });
+  assert.deepEqual(premiumEntitlementCommandEvents, [
+    {
+      status: {
+        active: true,
+        message: "Applied.",
+        tierId: "yearly",
+      },
+      type: "succeed",
+    },
+    { type: "checking" },
+    {
+      status: {
+        active: true,
+        message: "Checked.",
+        tierId: "lifetime",
+      },
+      type: "succeed",
+    },
+    { type: "checking" },
+    { error: "Check failed", type: "fail" },
+  ]);
   assert.deepEqual(
     getInitialPremiumPurchaseState({
       active: true,
@@ -12016,6 +12072,42 @@ async function assertPremiumScreenSmoke() {
       tiers,
     },
   );
+  const premiumTierLoadCommandEvents: unknown[] = [];
+  const dispatchPremiumTierLoadCommand = (action: PremiumTierLoadAction) => {
+    premiumTierLoadCommandEvents.push(action);
+  };
+  await runPremiumTierLoadCommand({
+    dispatch: dispatchPremiumTierLoadCommand,
+    fallbackTiers: premiumTiers,
+    isCurrent: () => true,
+    loadPremiumTiers: async () => tiers,
+  });
+  await runPremiumTierLoadCommand({
+    dispatch: dispatchPremiumTierLoadCommand,
+    fallbackTiers: premiumTiers,
+    isCurrent: () => true,
+    loadPremiumTiers: async () => {
+      throw new Error("Tier load failed");
+    },
+  });
+  await runPremiumTierLoadCommand({
+    dispatch: dispatchPremiumTierLoadCommand,
+    fallbackTiers: premiumTiers,
+    isCurrent: () => false,
+    loadPremiumTiers: async () => tiers,
+  });
+  await runPremiumTierLoadCommand({
+    dispatch: dispatchPremiumTierLoadCommand,
+    fallbackTiers: premiumTiers,
+    isCurrent: () => false,
+    loadPremiumTiers: async () => {
+      throw new Error("Tier load failed");
+    },
+  });
+  assert.deepEqual(premiumTierLoadCommandEvents, [
+    { tiers, type: "resolve" },
+    { tiers: premiumTiers, type: "resolve" },
+  ]);
   assert.deepEqual(
     premiumTiers.map((tier) => tier.id),
     ["monthly", "yearly", "lifetime"],

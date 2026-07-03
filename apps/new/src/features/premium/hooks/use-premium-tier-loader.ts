@@ -4,6 +4,7 @@ import {
   premiumTiers,
 } from "../services/premium-purchase-service";
 import type { PremiumTierLoadAction } from "../services/premium-purchase-state-service";
+import { runPremiumTierLoadCommand } from "../services/premium-tier-load-command-flow-service";
 
 type UsePremiumTierLoaderParams = {
   dispatchTierState: React.Dispatch<PremiumTierLoadAction>;
@@ -15,26 +16,12 @@ export function usePremiumTierLoader({
   useEffect(() => {
     let isMounted = true;
 
-    const loadTiers = async () => {
-      try {
-        const nextTiers = await loadPremiumTiers();
-        if (isMounted) {
-          dispatchTierState({
-            tiers: nextTiers,
-            type: "resolve",
-          });
-        }
-      } catch {
-        if (isMounted) {
-          dispatchTierState({
-            tiers: premiumTiers,
-            type: "resolve",
-          });
-        }
-      }
-    };
-
-    void loadTiers();
+    void runPremiumTierLoadCommand({
+      dispatch: dispatchTierState,
+      fallbackTiers: premiumTiers,
+      isCurrent: () => isMounted,
+      loadPremiumTiers,
+    });
 
     return () => {
       isMounted = false;

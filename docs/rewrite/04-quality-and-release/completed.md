@@ -238,3 +238,5 @@
   and reset dispatch sequencing.
 - Added direct premium purchase command-flow smoke coverage for selection,
   purchase success/failure, restore success/failure, and reset sequencing.
+- Added direct premium entitlement and tier-load command-flow smoke coverage for
+  apply, refresh success/failure, tier fallback, and canceled-load sequencing.

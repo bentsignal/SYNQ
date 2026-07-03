@@ -347,3 +347,5 @@
   the React hook and into a focused command-flow service.
 - Moved premium tier selection, purchase, restore, and reset dispatch
   sequencing out of the React hook and into a focused command-flow service.
+- Moved premium entitlement apply/refresh and tier-load fallback dispatch
+  sequencing out of React hooks and into focused command-flow services.

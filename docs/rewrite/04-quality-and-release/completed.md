@@ -295,3 +295,5 @@
   error preference, and timestamp merging.
 - Added direct library home query error aggregation smoke coverage for
   cross-query error ordering.
+- Added direct edit collection query mapping smoke coverage for album, artist,
+  and playlist form-state assembly.

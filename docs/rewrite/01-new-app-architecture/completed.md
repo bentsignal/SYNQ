@@ -404,3 +404,5 @@
   hooks and into the edit collection query service.
 - Moved library home cross-query error aggregation out of the React controller
   and into the library home service.
+- Moved edit collection form-state query mapping out of React hooks and into
+  the edit collection query service.

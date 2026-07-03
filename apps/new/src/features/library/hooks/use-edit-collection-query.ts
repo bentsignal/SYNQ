@@ -5,7 +5,9 @@ import {
   useEditPlaylistRowQuery,
 } from "./use-edit-collection-row-query";
 import {
-  buildEditCollectionState,
+  buildEditAlbumCollectionQueryResult,
+  buildEditArtistCollectionQueryResult,
+  buildEditPlaylistCollectionQueryResult,
 } from "../services/edit-collection-query-service";
 
 export type { EditCollectionKind } from "../services/edit-collection-query-service";
@@ -13,60 +15,31 @@ export type { EditCollectionKind } from "../services/edit-collection-query-servi
 const getSmallImagePath = (imageHash: string) =>
   getImagePathFromHash(imageHash).pathToSmallImage;
 
-const mapAlbumEditQuery = (album: ReturnType<typeof useEditAlbumRowQuery>) => ({
-  error: album.error,
-  ...buildEditCollectionState({
-    albumArtistRows: album.artistRows,
-    albumRow: album.row,
-    getImagePath: getSmallImagePath,
-    hasLoaded: Boolean(album.updatedAt),
-    kind: "album" as const,
-  }),
-  updatedAt: album.updatedAt,
-});
-
-const mapArtistEditQuery = (
-  artist: ReturnType<typeof useEditArtistRowQuery>,
-) => ({
-  error: artist.error,
-  ...buildEditCollectionState({
-    artistRow: artist.row,
-    getImagePath: getSmallImagePath,
-    hasLoaded: Boolean(artist.updatedAt),
-    kind: "artist" as const,
-  }),
-  updatedAt: artist.updatedAt,
-});
-
-const mapPlaylistEditQuery = (
-  playlist: ReturnType<typeof useEditPlaylistRowQuery>,
-) => ({
-  error: playlist.error,
-  ...buildEditCollectionState({
-    getImagePath: getSmallImagePath,
-    hasLoaded: Boolean(playlist.updatedAt),
-    kind: "playlist" as const,
-    playlistRow: playlist.row,
-  }),
-  updatedAt: playlist.updatedAt,
-});
-
 export function useEditAlbumCollectionQuery({ id }: { id: number }) {
   const album = useEditAlbumRowQuery(id);
 
-  return mapAlbumEditQuery(album);
+  return buildEditAlbumCollectionQueryResult({
+    album,
+    getImagePath: getSmallImagePath,
+  });
 }
 
 export function useEditArtistCollectionQuery({ id }: { id: number }) {
   const artist = useEditArtistRowQuery(id);
 
-  return mapArtistEditQuery(artist);
+  return buildEditArtistCollectionQueryResult({
+    artist,
+    getImagePath: getSmallImagePath,
+  });
 }
 
 export function useEditPlaylistCollectionQuery({ id }: { id: number }) {
   const playlist = useEditPlaylistRowQuery(id);
 
-  return mapPlaylistEditQuery(playlist);
+  return buildEditPlaylistCollectionQueryResult({
+    getImagePath: getSmallImagePath,
+    playlist,
+  });
 }
 
 export type EditCollectionQueryResult = ReturnType<

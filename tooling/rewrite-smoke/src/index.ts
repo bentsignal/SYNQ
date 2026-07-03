@@ -804,9 +804,12 @@ import {
   getAddCollectionSongsUpdatedLabel,
 } from "../../../apps/new/src/features/library/services/addable-collection-songs-screen-state-service";
 import {
+  buildEditAlbumCollectionQueryResult,
   buildEditAlbumRowQueryResult,
+  buildEditArtistCollectionQueryResult,
   buildEditCollectionRowQueryResult,
   buildEditCollectionState,
+  buildEditPlaylistCollectionQueryResult,
   getEditAlbumRowQueryUpdatedAt,
 } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
 import {
@@ -8931,6 +8934,44 @@ function assertEditCollectionQuerySmoke() {
     profileImage: "artist-profile",
   });
   assert.equal(editArtistRowResult.updatedAt?.getTime(), 40);
+  const editAlbumQueryResult = buildEditAlbumCollectionQueryResult({
+    album: editAlbumRowResult,
+    getImagePath,
+  });
+  assert.equal(editAlbumQueryResult.name, "Smoke Album");
+  assert.equal(editAlbumQueryResult.artistNames, "Alpha Artist, Beta Artist");
+  assert.equal(editAlbumQueryResult.imagePath, "/images/album-cover-small.jpg");
+  assert.equal(editAlbumQueryResult.updatedAt?.getTime(), 30);
+  assert.equal(
+    (editAlbumQueryResult.error as Error).message,
+    "artist rows smoke",
+  );
+  assert.deepEqual(
+    buildEditArtistCollectionQueryResult({
+      artist: editArtistRowResult,
+      getImagePath,
+    }),
+    {
+      artistNames: "",
+      error: editArtistRowResult.error,
+      imagePath: "/images/artist-profile-small.jpg",
+      isMissing: false,
+      name: "Smoke Artist",
+      updatedAt: new Date(40),
+      year: "",
+    },
+  );
+  assert.equal(
+    buildEditPlaylistCollectionQueryResult({
+      getImagePath,
+      playlist: {
+        error: null,
+        row: undefined,
+        updatedAt: new Date(50),
+      },
+    }).isMissing,
+    true,
+  );
 
   const album = buildEditCollectionState({
     albumArtistRows: [

@@ -1,8 +1,6 @@
-import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
 import {
   getAddCollectionSongsBlockedCommand,
-  getAddCollectionSongsFailureCommand,
   getAddCollectionSongsSelectionStartCommand,
   getAddCollectionSongsSelectionSuccessCommand,
   getAddCollectionSongsSongStartCommand,
@@ -13,18 +11,11 @@ import type { AddableSongSelectionState } from "./add-collection-songs-selection
 import {
   getAddCollectionSongsFinishSelectionAction,
   getAddCollectionSongsFinishSongAction,
-  type AddCollectionSongsMutationKind,
-  type AddCollectionSongsControllerAction,
 } from "./add-collection-songs-state-service";
-
-type AddCollectionSongsControllerDispatch = (
-  action: AddCollectionSongsControllerAction,
-) => void;
-
-type AddCollectionSongsFlowDependencies = {
-  dispatchControllerState: AddCollectionSongsControllerDispatch;
-  sendHaptic: (haptic: HapticFeedbackType) => void;
-};
+import {
+  runAddCollectionSongsMutationAttempt,
+  type AddCollectionSongsFlowDependencies,
+} from "./add-collection-songs-mutation-runtime-service";
 
 type AddCollectionSongsBaseCommandParams = AddCollectionSongsFlowDependencies & {
   collectionId: number;
@@ -47,45 +38,6 @@ type AddCollectionSongCommandParams = AddCollectionSongsBaseCommandParams & {
     kind: LibraryCollectionDetailKind;
     songId: number;
   }) => Promise<void>;
-};
-
-type AddCollectionSongsActionCommand = {
-  action: AddCollectionSongsControllerAction;
-  haptic: HapticFeedbackType;
-};
-
-const runAddCollectionSongsMutationAttempt = async ({
-  dispatchControllerState,
-  finishAction,
-  mutation,
-  run,
-  sendHaptic,
-  startCommand,
-  successCommand,
-}: AddCollectionSongsFlowDependencies & {
-  finishAction: AddCollectionSongsControllerAction;
-  mutation: AddCollectionSongsMutationKind;
-  run: () => Promise<void>;
-  startCommand: AddCollectionSongsActionCommand;
-  successCommand: AddCollectionSongsActionCommand;
-}) => {
-  sendHaptic(startCommand.haptic);
-  dispatchControllerState(startCommand.action);
-
-  try {
-    await run();
-    dispatchControllerState(successCommand.action);
-    sendHaptic(successCommand.haptic);
-  } catch (caughtError) {
-    const command = getAddCollectionSongsFailureCommand({
-      caughtError,
-      mutation,
-    });
-    sendHaptic(command.haptic);
-    dispatchControllerState(command.action);
-  } finally {
-    dispatchControllerState(finishAction);
-  }
 };
 
 export const runAddCollectionSongsToggleSelectionCommand = ({

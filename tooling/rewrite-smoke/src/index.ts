@@ -573,6 +573,7 @@ import {
   runAddCollectionSongsSelectionCommand,
   runAddCollectionSongsToggleSelectionCommand,
 } from "../../../apps/new/src/features/library/services/add-collection-songs-command-flow-service";
+import { runAddCollectionSongsMutationAttempt } from "../../../apps/new/src/features/library/services/add-collection-songs-mutation-runtime-service";
 import {
   canEditLibraryCollection,
   canDeleteLibraryCollection,
@@ -6554,6 +6555,51 @@ async function assertLibraryCollectionInteractionSmoke() {
       haptic: "error",
     },
   );
+
+  const attemptEvents: unknown[] = [];
+  await runAddCollectionSongsMutationAttempt({
+    dispatchControllerState: (action) => {
+      attemptEvents.push(["dispatch", action]);
+    },
+    finishAction: getAddCollectionSongsFinishSelectionAction(),
+    mutation: "add-selection",
+    run: async () => {
+      attemptEvents.push(["run"]);
+    },
+    sendHaptic: (haptic) => {
+      attemptEvents.push(["haptic", haptic]);
+    },
+    startCommand: getAddCollectionSongsSelectionStartCommand(),
+    successCommand: getAddCollectionSongsSelectionSuccessCommand(),
+  });
+  await runAddCollectionSongsMutationAttempt({
+    dispatchControllerState: (action) => {
+      attemptEvents.push(["dispatch", action]);
+    },
+    finishAction: getAddCollectionSongsFinishSongAction(),
+    mutation: "add-song",
+    run: async () => {
+      throw new Error("Attempt add failed");
+    },
+    sendHaptic: (haptic) => {
+      attemptEvents.push(["haptic", haptic]);
+    },
+    startCommand: getAddCollectionSongsSongStartCommand(8),
+    successCommand: getAddCollectionSongsSongSuccessCommand(8),
+  });
+  assert.deepEqual(attemptEvents, [
+    ["haptic", "medium"],
+    ["dispatch", { type: "begin-add-selection" }],
+    ["run"],
+    ["dispatch", { type: "clear-selection" }],
+    ["haptic", "success"],
+    ["dispatch", { type: "finish-add-selection" }],
+    ["haptic", "light"],
+    ["dispatch", { songId: 8, type: "begin-add-song" }],
+    ["haptic", "error"],
+    ["dispatch", { error: "Attempt add failed", type: "fail" }],
+    ["dispatch", { type: "finish-add-song" }],
+  ]);
 
   const commandEvents: unknown[] = [];
   const commandDependencies = {

@@ -10,14 +10,8 @@ import {
   runAddCollectionSongsSelectionCommand,
   runAddCollectionSongsToggleSelectionCommand,
 } from "../services/add-collection-songs-command-flow-service";
-import {
-  type AddCollectionSongsControllerAction,
-} from "../services/add-collection-songs-state-service";
+import type { AddCollectionSongsControllerDispatch } from "../services/add-collection-songs-mutation-runtime-service";
 import type { AddableSongSelectionState } from "../services/add-collection-songs-selection-service";
-
-type AddCollectionSongsControllerDispatch = (
-  action: AddCollectionSongsControllerAction,
-) => void;
 
 export function useAddCollectionSongsCommands({
   collectionId,

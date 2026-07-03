@@ -765,6 +765,11 @@ import {
   type ShareExportFilesDependencies,
 } from "../../../apps/new/src/features/export/services/share-export-files-executor-service";
 import {
+  getPlayableLibraryExportSongs,
+  shareLibrarySongsWithDependencies,
+  type LibraryExportShareDependencies,
+} from "../../../apps/new/src/features/export/services/library-export-share-executor-service";
+import {
   buildLibrarySongExportMetadata,
   formatLibraryExportNames,
   loadArtworkTagWithDependencies,
@@ -10268,6 +10273,83 @@ async function assertShareExportFilesExecutorSmoke() {
   ]);
 }
 
+async function assertLibraryExportShareExecutorSmoke() {
+  const calls: unknown[] = [];
+  let sharingAvailable = true;
+  const songs = [
+    { id: 1, pathToFile: "file:///music/first.mp3", title: "First" },
+    { id: 2, pathToFile: null, title: "Missing File" },
+    { id: 3, pathToFile: "file:///music/third.mp3", title: "Third" },
+  ];
+  const dependencies: LibraryExportShareDependencies = {
+    assertSharingAvailable: async () => {
+      calls.push(["available"]);
+
+      if (!sharingAvailable) {
+        throw new Error("Sharing is unavailable on this device.");
+      }
+    },
+    prepareLibrarySongForExport: async (song) => {
+      calls.push(["prepare", song.id]);
+      return `file:///prepared/${song.id}.mp3`;
+    },
+    shareExportFiles: async (params) => {
+      calls.push(["share", params]);
+      return { exported: params.files.length };
+    },
+  };
+
+  assert.deepEqual(
+    getPlayableLibraryExportSongs(songs).map((song) => song.id),
+    [1, 3],
+  );
+  assert.deepEqual(
+    await shareLibrarySongsWithDependencies(songs, dependencies),
+    { exported: 2 },
+  );
+  assert.deepEqual(calls, [
+    ["available"],
+    ["prepare", 1],
+    ["prepare", 3],
+    [
+      "share",
+      {
+        directoryPrefix: "synq-export",
+        files: [
+          { fileNameFallback: "First", sourceUri: "file:///prepared/1.mp3" },
+          { fileNameFallback: "Third", sourceUri: "file:///prepared/3.mp3" },
+        ],
+        noFilesMessage: "No playable songs are available to export.",
+      },
+    ],
+  ]);
+
+  calls.length = 0;
+  await shareLibrarySongsWithDependencies(
+    [{ id: 4, pathToFile: null, title: "Silent" }],
+    dependencies,
+  );
+  assert.deepEqual(calls, [
+    ["available"],
+    [
+      "share",
+      {
+        directoryPrefix: "synq-export",
+        files: [],
+        noFilesMessage: "No playable songs are available to export.",
+      },
+    ],
+  ]);
+
+  calls.length = 0;
+  sharingAvailable = false;
+  await assert.rejects(
+    () => shareLibrarySongsWithDependencies(songs, dependencies),
+    /Sharing is unavailable/,
+  );
+  assert.deepEqual(calls, [["available"]]);
+}
+
 async function assertLibraryExportMetadataExecutorSmoke() {
   const calls: string[] = [];
   let stale = true;
@@ -10601,6 +10683,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertPremiumPurchaseExecutorSmoke();
   await assertSettingsJsonFileStoreSmoke();
   await assertShareExportFilesExecutorSmoke();
+  await assertLibraryExportShareExecutorSmoke();
   await assertLibraryExportMetadataExecutorSmoke();
   await assertImageStorageExecutorSmoke();
   await assertImportSessionSmoke();

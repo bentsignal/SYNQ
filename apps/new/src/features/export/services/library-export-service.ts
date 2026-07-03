@@ -2,21 +2,15 @@ import * as FileSystem from "expo-file-system";
 import { assertSharingAvailable } from "./export-file-service";
 import { prepareLibrarySongForExport } from "./library-export-metadata-service";
 import {
+  shareLibrarySongsWithDependencies,
+  type ExportableLibrarySong,
+} from "./library-export-share-executor-service";
+import {
   shareExportFilesWithDependencies,
   type ShareExportFilesDependencies,
 } from "./share-export-files-executor-service";
 
-export type ExportableLibrarySong = {
-  id: number;
-  pathToFile: string | null;
-  title: string;
-};
-
-const getPlayableSongs = (songs: ExportableLibrarySong[]) =>
-  songs.filter(
-    (song): song is ExportableLibrarySong & { pathToFile: string } =>
-      song.pathToFile !== null,
-  );
+export type { ExportableLibrarySong };
 
 const libraryExportDependencies: ShareExportFilesDependencies = {
   cacheDirectory: FileSystem.cacheDirectory,
@@ -31,20 +25,13 @@ const libraryExportDependencies: ShareExportFilesDependencies = {
 };
 
 export async function shareLibrarySongs(songs: ExportableLibrarySong[]) {
-  await assertSharingAvailable();
-
-  const playableSongs = getPlayableSongs(songs);
-  const files = await Promise.all(
-    playableSongs.map(async (song) => ({
-      fileNameFallback: song.title,
-      sourceUri: await prepareLibrarySongForExport(song),
-    })),
-  );
-
-  return shareExportFilesWithDependencies({
-    dependencies: libraryExportDependencies,
-    directoryPrefix: "synq-export",
-    files,
-    noFilesMessage: "No playable songs are available to export.",
+  return shareLibrarySongsWithDependencies(songs, {
+    assertSharingAvailable,
+    prepareLibrarySongForExport,
+    shareExportFiles: (params) =>
+      shareExportFilesWithDependencies({
+        dependencies: libraryExportDependencies,
+        ...params,
+      }),
   });
 }

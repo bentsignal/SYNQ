@@ -101,3 +101,6 @@
   required names, and duplicate-name failures.
 - Added collection song add executor smoke coverage for album, artist, and
   playlist dispatch plus ordered batched adds.
+- Added library export sharing executor smoke coverage for playable-song
+  filtering, sharing availability, export preparation, and share-file
+  delegation.

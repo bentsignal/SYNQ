@@ -211,3 +211,6 @@
   injectable repository executor.
 - Moved single and batched collection song add dispatch behind an injectable
   repository executor so collection-kind routing is separated from adapters.
+- Moved library song export sharing orchestration behind an injectable executor
+  so playable filtering and export file preparation are separated from Expo
+  sharing adapters.

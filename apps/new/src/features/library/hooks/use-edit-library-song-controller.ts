@@ -1,18 +1,11 @@
 import { useEffect, useReducer } from "react";
-import { replaceNativeRoute } from "@/src/features/app-shell/services/native-route-service";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { pickCollectionImage } from "../services/collection-image-picker-service";
-import { updateLibrarySongMetadataCommand } from "../services/library-song-command-service";
 import {
-  getLibrarySongEditBlockedCommand,
-  getLibrarySongEditCoverPickedCommand,
-  getLibrarySongEditFailureCommand,
-  getLibrarySongEditSaveSuccessCommand,
   getInitialLibrarySongEditControllerState,
   librarySongEditControllerReducer,
 } from "../services/library-song-form-service";
 import { getLibrarySongEditActionState } from "../services/library-song-edit-screen-state-service";
 import { type LibrarySongDetail } from "../services/library-song-detail-service";
+import { useEditLibrarySongCommands } from "./use-edit-library-song-commands";
 
 type UseEditLibrarySongControllerParams = {
   detail: LibrarySongDetail;
@@ -23,7 +16,6 @@ export function useEditLibrarySongController({
   detail,
   songId,
 }: UseEditLibrarySongControllerParams) {
-  const { sendHaptic } = useHapticFeedback();
   const [formState, dispatchFormState] = useReducer(
     librarySongEditControllerReducer,
     undefined,
@@ -44,55 +36,13 @@ export function useEditLibrarySongController({
       dispatchFormState({ field, type: "change-field", value });
     };
 
-  const pickCoverImage = async () => {
-    if (!actionState.canPickCoverImage) {
-      const command = getLibrarySongEditBlockedCommand();
-      sendHaptic(command.haptic);
-      return;
-    }
-
-    try {
-      const pickedImage = await pickCollectionImage();
-      if (pickedImage) {
-        const command = getLibrarySongEditCoverPickedCommand(pickedImage);
-        dispatchFormState(command.action);
-        sendHaptic(command.haptic);
-      }
-    } catch (caughtError) {
-      const command = getLibrarySongEditFailureCommand(caughtError);
-      sendHaptic(command.haptic);
-      dispatchFormState(command.action);
-    }
-  };
-
-  const save = async () => {
-    if (!actionState.canSave) {
-      const command = getLibrarySongEditBlockedCommand();
-      sendHaptic(command.haptic);
-      return;
-    }
-
-    dispatchFormState({ type: "begin-save" });
-
-    try {
-      await updateLibrarySongMetadataCommand({
-        albumNames: formState.albumNames,
-        artistNames: formState.artistNames,
-        coverImageDataUrl: formState.coverImage?.dataUrl,
-        id: songId,
-        title: formState.title,
-      });
-      const command = getLibrarySongEditSaveSuccessCommand({ songId });
-      sendHaptic(command.haptic);
-      replaceNativeRoute(command.href);
-    } catch (caughtError) {
-      const command = getLibrarySongEditFailureCommand(caughtError);
-      sendHaptic(command.haptic);
-      dispatchFormState(command.action);
-    } finally {
-      dispatchFormState({ type: "finish-save" });
-    }
-  };
+  const { pickCoverImage, save } = useEditLibrarySongCommands({
+    canPickCoverImage: actionState.canPickCoverImage,
+    canSave: actionState.canSave,
+    dispatchFormState,
+    formState,
+    songId,
+  });
 
   return {
     actionState,

@@ -81,3 +81,6 @@
   of the screen controller into a dedicated backup effects hook.
 - Moved backup command result copy and document-picker URI normalization into a
   pure service covered by deterministic smoke.
+- Moved edit-library-song cover-pick and save side-effect orchestration out of
+  the form controller into a dedicated command hook aligned with collection
+  form command patterns.

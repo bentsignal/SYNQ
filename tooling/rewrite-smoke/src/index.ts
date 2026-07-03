@@ -159,7 +159,13 @@ import {
   hasMeaningfulImportLibraryName,
   splitImportLibraryNames,
 } from "../../../apps/new/src/features/import/services/import-library-save-plan-service";
-import { getImportFileCommandErrorMessage } from "../../../apps/new/src/features/import/services/import-file-command-service";
+import {
+  getImportFileCommandErrorMessage,
+  getImportFileRemovalResultCommand,
+  getImportFileRemovalStartHaptic,
+  getImportFileSelectionResultCommand,
+  getImportFileSelectionStartHaptic,
+} from "../../../apps/new/src/features/import/services/import-file-command-service";
 import {
   getWifiImportServerStartErrorMessage,
   getWifiStartTransferDecision,
@@ -1447,6 +1453,22 @@ function assertImportSessionSmoke() {
     canChooseFiles: true,
     chooseLabel: "Choose songs",
     isWorking: false,
+  });
+  assert.equal(getImportFileSelectionStartHaptic(), "light");
+  assert.deepEqual(getImportFileSelectionResultCommand(true), {
+    haptic: "success",
+    href: "/(tabs)/import/save",
+  });
+  assert.deepEqual(getImportFileSelectionResultCommand(false), {
+    haptic: "error",
+    href: "/(tabs)/import/failure",
+  });
+  assert.equal(getImportFileRemovalStartHaptic(), "medium");
+  assert.deepEqual(getImportFileRemovalResultCommand(true), {
+    haptic: "success",
+  });
+  assert.deepEqual(getImportFileRemovalResultCommand(false), {
+    haptic: "error",
   });
   assert.equal(
     getImportFileCommandErrorMessage({

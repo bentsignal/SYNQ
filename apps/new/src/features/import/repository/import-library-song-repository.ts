@@ -2,22 +2,58 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
 import type { ImportSongDraft } from "../types/import-session";
+import {
+  deleteImportLibrarySongRowsWithDependencies,
+  insertImportSongDraftWithDependencies,
+  updateImportLibrarySongCoverWithDependencies,
+  updateImportLibrarySongPathWithDependencies,
+  type ImportLibrarySongRowDependencies,
+} from "./import-library-song-executor-repository";
 
-export const insertImportSongDraft = async (song: ImportSongDraft) => {
-  const inserted = await db
-    .insert(schema.songs)
-    .values({
-      duration: song.duration,
-      fileType: song.fileType,
-      ingestComplete: 1,
-      originalFileName: song.fileName,
-      pathToFile: song.cacheUri,
-      title: song.title,
-    })
-    .returning({ id: schema.songs.id });
+const importLibrarySongRowDependencies: ImportLibrarySongRowDependencies = {
+  deleteAlbumSongRows: async (songId) => {
+    await db.delete(schema.albumSongs).where(eq(schema.albumSongs.songId, songId));
+  },
+  deleteArtistSongRows: async (songId) => {
+    await db
+      .delete(schema.artistSongs)
+      .where(eq(schema.artistSongs.songId, songId));
+  },
+  deletePlaylistSongRows: async (songId) => {
+    await db
+      .delete(schema.playlistSongs)
+      .where(eq(schema.playlistSongs.songId, songId));
+  },
+  deleteSongRow: async (songId) => {
+    await db.delete(schema.songs).where(eq(schema.songs.id, songId));
+  },
+  insertSongRow: async (values) => {
+    const inserted = await db
+      .insert(schema.songs)
+      .values(values)
+      .returning({ id: schema.songs.id });
 
-  return inserted[0].id;
+    return inserted[0].id;
+  },
+  updateSongCover: async ({ coverImage, songId }) => {
+    await db
+      .update(schema.songs)
+      .set({ coverImage })
+      .where(eq(schema.songs.id, songId));
+  },
+  updateSongPath: async ({ pathToFile, songId }) => {
+    await db
+      .update(schema.songs)
+      .set({ pathToFile })
+      .where(eq(schema.songs.id, songId));
+  },
 };
+
+export const insertImportSongDraft = async (song: ImportSongDraft) =>
+  insertImportSongDraftWithDependencies(
+    song,
+    importLibrarySongRowDependencies,
+  );
 
 export const updateImportLibrarySongCover = async ({
   coverImage,
@@ -26,10 +62,10 @@ export const updateImportLibrarySongCover = async ({
   coverImage: string;
   songId: number;
 }) => {
-  await db
-    .update(schema.songs)
-    .set({ coverImage })
-    .where(eq(schema.songs.id, songId));
+  await updateImportLibrarySongCoverWithDependencies(
+    { coverImage, songId },
+    importLibrarySongRowDependencies,
+  );
 };
 
 export const updateImportLibrarySongPath = async ({
@@ -39,17 +75,15 @@ export const updateImportLibrarySongPath = async ({
   pathToFile: string;
   songId: number;
 }) => {
-  await db
-    .update(schema.songs)
-    .set({ pathToFile })
-    .where(eq(schema.songs.id, songId));
+  await updateImportLibrarySongPathWithDependencies(
+    { pathToFile, songId },
+    importLibrarySongRowDependencies,
+  );
 };
 
 export const deleteImportLibrarySongRows = async (songId: number) => {
-  await db.delete(schema.albumSongs).where(eq(schema.albumSongs.songId, songId));
-  await db.delete(schema.artistSongs).where(eq(schema.artistSongs.songId, songId));
-  await db
-    .delete(schema.playlistSongs)
-    .where(eq(schema.playlistSongs.songId, songId));
-  await db.delete(schema.songs).where(eq(schema.songs.id, songId));
+  await deleteImportLibrarySongRowsWithDependencies(
+    songId,
+    importLibrarySongRowDependencies,
+  );
 };

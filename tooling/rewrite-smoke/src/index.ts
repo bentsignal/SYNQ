@@ -238,6 +238,14 @@ import {
   type ImportLibrarySongSaveDependencies,
 } from "../../../apps/new/src/features/import/services/import-library-song-save-executor-service";
 import {
+  deleteImportLibrarySongRowsWithDependencies,
+  getImportSongDraftInsertValues,
+  insertImportSongDraftWithDependencies,
+  updateImportLibrarySongCoverWithDependencies,
+  updateImportLibrarySongPathWithDependencies,
+  type ImportLibrarySongRowDependencies,
+} from "../../../apps/new/src/features/import/repository/import-library-song-executor-repository";
+import {
   discardImportSongs,
   saveImportSongsToLibrary,
 } from "../../../apps/new/src/features/import/services/import-library-session-save-executor-service";
@@ -7345,6 +7353,86 @@ async function assertImportLibraryLinkExecutorSmoke() {
   ]);
 }
 
+async function assertImportLibrarySongRowExecutorSmoke() {
+  const calls: unknown[] = [];
+  const dependencies: ImportLibrarySongRowDependencies = {
+    deleteAlbumSongRows: async (songId) => {
+      calls.push(["delete-album-songs", songId]);
+    },
+    deleteArtistSongRows: async (songId) => {
+      calls.push(["delete-artist-songs", songId]);
+    },
+    deletePlaylistSongRows: async (songId) => {
+      calls.push(["delete-playlist-songs", songId]);
+    },
+    deleteSongRow: async (songId) => {
+      calls.push(["delete-song", songId]);
+    },
+    insertSongRow: async (values) => {
+      calls.push(["insert-song", values]);
+      return 42;
+    },
+    updateSongCover: async (params) => {
+      calls.push(["update-cover", params]);
+    },
+    updateSongPath: async (params) => {
+      calls.push(["update-path", params]);
+    },
+  };
+  const song = {
+    ...importDraft(81),
+    cacheUri: "file:///cache/song.mp3",
+    duration: 123_000,
+    fileName: "song.mp3",
+    fileType: "audio/mpeg",
+    title: "Smoke Song",
+  };
+
+  assert.deepEqual(getImportSongDraftInsertValues(song), {
+    duration: 123_000,
+    fileType: "audio/mpeg",
+    ingestComplete: 1,
+    originalFileName: "song.mp3",
+    pathToFile: "file:///cache/song.mp3",
+    title: "Smoke Song",
+  });
+  assert.equal(
+    await insertImportSongDraftWithDependencies(song, dependencies),
+    42,
+  );
+  await updateImportLibrarySongPathWithDependencies(
+    { pathToFile: "file:///documents/library/42/song.mp3", songId: 42 },
+    dependencies,
+  );
+  await updateImportLibrarySongCoverWithDependencies(
+    { coverImage: "cover-hash", songId: 42 },
+    dependencies,
+  );
+  await deleteImportLibrarySongRowsWithDependencies(42, dependencies);
+  assert.deepEqual(calls, [
+    [
+      "insert-song",
+      {
+        duration: 123_000,
+        fileType: "audio/mpeg",
+        ingestComplete: 1,
+        originalFileName: "song.mp3",
+        pathToFile: "file:///cache/song.mp3",
+        title: "Smoke Song",
+      },
+    ],
+    [
+      "update-path",
+      { pathToFile: "file:///documents/library/42/song.mp3", songId: 42 },
+    ],
+    ["update-cover", { coverImage: "cover-hash", songId: 42 }],
+    ["delete-album-songs", 42],
+    ["delete-artist-songs", 42],
+    ["delete-playlist-songs", 42],
+    ["delete-song", 42],
+  ]);
+}
+
 async function assertImportLibrarySavePlanSmoke() {
   assert.equal(hasMeaningfulImportLibraryName("Unknown"), false);
   assert.equal(hasMeaningfulImportLibraryName("Unknown Artist"), false);
@@ -9001,6 +9089,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertImportSessionPersistenceExecutorSmoke();
   await assertImportLibraryFileExecutorSmoke();
   await assertImportLibraryLinkExecutorSmoke();
+  await assertImportLibrarySongRowExecutorSmoke();
   await assertWifiImportRequestSmoke();
   await assertBackupCommandExecutorSmoke();
   await assertPremiumPurchaseExecutorSmoke();

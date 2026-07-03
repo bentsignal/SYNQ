@@ -65,3 +65,5 @@
 - Added import library link executor smoke coverage for normalized artist/album
   reuse and inserts, song relationships, album-cover updates, playlist linking,
   and no-album imports.
+- Added import library song row executor smoke coverage for draft insert values,
+  path/cover updates, and relationship cleanup order.

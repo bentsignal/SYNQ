@@ -181,3 +181,5 @@
   injectable file executor.
 - Moved import library artist, album, cover, and playlist linking orchestration
   behind an injectable executor.
+- Moved import library song row insert, update, and cleanup behavior behind an
+  injectable repository executor.

@@ -185,6 +185,33 @@ export const getCollectionFormBlockedSaveCommand = (
   haptic: "error",
 });
 
+export const getCollectionFormImagePickStartCommand =
+  (): CollectionFormHapticCommand => ({
+    haptic: "light",
+  });
+
+export const getCollectionFormImagePickedCommand = (
+  image: CollectionFormImage,
+): Pick<CollectionFormActionCommand, "action"> => ({
+  action: {
+    image,
+    type: "pick-image",
+  },
+});
+
+export const getCollectionFormImagePickFailureCommand = (
+  caughtError: unknown,
+): CollectionFormActionCommand => ({
+  action: {
+    error: getCollectionFormErrorMessage({
+      caughtError,
+      fallbackMessage: "Image could not be selected.",
+    }),
+    type: "fail",
+  },
+  haptic: "error",
+});
+
 export const getCollectionFormBeginSaveCommand =
   (): Pick<CollectionFormActionCommand, "action"> => ({
     action: {

@@ -277,6 +277,9 @@ import {
   getCollectionFormBlockedSaveCommand,
   getCollectionFormErrorMessage,
   getCollectionFormFailureCommand,
+  getCollectionFormImagePickedCommand,
+  getCollectionFormImagePickFailureCommand,
+  getCollectionFormImagePickStartCommand,
   getCollectionFormSuccessCommand,
   getInitialCollectionFormState,
   parseAlbumYearInput,
@@ -4755,6 +4758,34 @@ function assertCollectionFormSmoke() {
       type: "begin-save",
     },
   });
+  assert.deepEqual(getCollectionFormImagePickStartCommand(), {
+    haptic: "light",
+  });
+  assert.deepEqual(
+    getCollectionFormImagePickedCommand({
+      dataUrl: "data:image/png;base64,smoke",
+      fileName: "smoke.png",
+    }),
+    {
+      action: {
+        image: {
+          dataUrl: "data:image/png;base64,smoke",
+          fileName: "smoke.png",
+        },
+        type: "pick-image",
+      },
+    },
+  );
+  assert.deepEqual(
+    getCollectionFormImagePickFailureCommand(new Error("Image failed")),
+    {
+      action: {
+        error: "Image failed",
+        type: "fail",
+      },
+      haptic: "error",
+    },
+  );
   assert.deepEqual(getCollectionFormSuccessCommand({ id: 42, kind: "album" }), {
     haptic: "success",
     href: "/(tabs)/library/album/42",

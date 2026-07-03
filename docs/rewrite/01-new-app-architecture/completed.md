@@ -125,6 +125,8 @@
   presentation state.
 - Split add-collection-songs command and mutation-error helpers out of reducer
   state.
+- Collapsed repeated add-collection-songs mutation start/failure/finish
+  orchestration into a shared command-flow helper.
 - Split add-collection-songs search state out of controller mutation state.
 - Split edit-library-song command/haptic/navigation helpers out of form
   reducer state.

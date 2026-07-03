@@ -12,8 +12,8 @@ import {
   getLibrarySongDetailMutationFailureCommand,
   getLibrarySongDetailMutationFinishCommand,
   getLibrarySongDetailMutationStartCommand,
-  type LibrarySongDetailMutationAction,
-} from "../services/library-song-detail-mutation-service";
+} from "../services/library-song-detail-mutation-command-state-service";
+import type { LibrarySongDetailMutationAction } from "../services/library-song-detail-mutation-service";
 
 type LibrarySongDetailMutationDispatch = (
   action: LibrarySongDetailMutationAction,

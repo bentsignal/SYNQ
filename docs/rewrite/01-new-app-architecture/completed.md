@@ -126,3 +126,5 @@
 - Split add-collection-songs search state out of controller mutation state.
 - Split edit-library-song command/haptic/navigation helpers out of form
   reducer state.
+- Split library song detail mutation command/haptic/navigation helpers out of
+  reducer state.

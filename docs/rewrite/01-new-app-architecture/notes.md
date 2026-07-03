@@ -19,3 +19,7 @@
   song, artist, album, and relationship database writes live under
   `src/features/import/repository`. `pnpm verify:rewrite` scans import hooks,
   components, and services to keep direct Drizzle imports out of that layer.
+- Image storage now keeps hashing, resizing, and filesystem writes in the
+  service while image table reads/writes live under
+  `src/features/images/repository`. `pnpm verify:rewrite` scans image services
+  to keep direct Drizzle imports out of that layer.

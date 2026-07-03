@@ -62,6 +62,22 @@ scan_import_database_boundaries() {
   fi
 }
 
+scan_image_database_boundaries() {
+  local matches
+
+  matches="$(
+    rg -n "@synq/db|@synq/db/schema|drizzle-orm|\\bdb\\." \
+      apps/new/src/features/images/services \
+      -g "*.ts" -g "*.tsx" || true
+  )"
+
+  if [[ -n "$matches" ]]; then
+    printf "%s\n" "$matches"
+    echo "Image database access must stay behind image repository modules."
+    return 1
+  fi
+}
+
 trap cleanup EXIT
 
 echo "==> Typecheck"
@@ -91,6 +107,9 @@ scan_async_storage_boundaries
 
 echo "==> Import database boundary scan"
 scan_import_database_boundaries
+
+echo "==> Image database boundary scan"
+scan_image_database_boundaries
 
 echo "==> Deterministic rewrite smoke"
 pnpm --filter @synq/rewrite-smoke smoke

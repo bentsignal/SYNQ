@@ -1,10 +1,11 @@
-import { db } from "@synq/db";
-import * as schema from "@synq/db/schema";
-import { eq } from "drizzle-orm";
 import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system";
 import * as ImageManipulator from "expo-image-manipulator";
 import { SaveFormat } from "expo-image-manipulator";
+import {
+  hasStoredImageHash,
+  insertStoredImageHash,
+} from "../repository/image-repository";
 
 const imageDirectory = `${FileSystem.documentDirectory}images`;
 
@@ -39,13 +40,9 @@ const checkIfImageExists = async (hash: string) => {
     FileSystem.getInfoAsync(pathToFullImage),
     FileSystem.getInfoAsync(pathToSmallImage),
   ]);
-  const existingRows = await db
-    .select({ hash: schema.images.hash })
-    .from(schema.images)
-    .where(eq(schema.images.hash, hash))
-    .limit(1);
+  const hasImageRow = await hasStoredImageHash(hash);
 
-  return fullImageFile.exists && smallImageFile.exists && existingRows.length > 0;
+  return fullImageFile.exists && smallImageFile.exists && hasImageRow;
 };
 
 const writeImageVariant = async ({
@@ -116,7 +113,7 @@ export async function saveCoverImage(base64Image?: string | null) {
   }
 
   await writeImageToFileSystem(base64Image, hash);
-  await db.insert(schema.images).values({ hash });
+  await insertStoredImageHash(hash);
 
   return hash;
 }

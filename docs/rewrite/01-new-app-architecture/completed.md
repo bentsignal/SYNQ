@@ -28,3 +28,6 @@
 - Moved import save/link Drizzle writes behind import repository modules and
   added a rewrite verification scan that keeps import hooks, components, and
   services clear of direct database access.
+- Moved image table reads/writes behind an image repository and added a rewrite
+  verification scan that keeps image services focused on filesystem and image
+  transformation work.

@@ -9,6 +9,7 @@ NEW_APP_PATHS=(apps/new/app apps/new/src)
 MAX_NEW_APP_STYLESHEET_CREATE="${MAX_NEW_APP_STYLESHEET_CREATE:-0}"
 MAX_NEW_APP_CONTEXT_MODULES="${MAX_NEW_APP_CONTEXT_MODULES:-0}"
 MAX_EXTERNAL_PLAYBACK_SELECTOR_IMPORTS="${MAX_EXTERNAL_PLAYBACK_SELECTOR_IMPORTS:-0}"
+MAX_LIBRARY_HOOK_LIVE_QUERY_MODULES="${MAX_LIBRARY_HOOK_LIVE_QUERY_MODULES:-7}"
 
 count_matches() {
   local pattern="$1"
@@ -40,6 +41,13 @@ external_playback_selector_imports="$(
     wc -l |
     tr -d " "
 )"
+library_hook_live_query_modules="$(
+  (rg -l "useLiveQuery|drizzle-orm/expo-sqlite" \
+    apps/new/src/features/library/hooks \
+    -g "*.ts" -g "*.tsx" || true) |
+    wc -l |
+    tr -d " "
+)"
 
 printf "New app StyleSheet.create calls: %s/%s max\n" \
   "$stylesheet_creates" "$MAX_NEW_APP_STYLESHEET_CREATE"
@@ -48,6 +56,8 @@ printf "New app React context modules: %s/%s max\n" \
 printf "New app context directories: %s/0 max\n" "$context_directories"
 printf "External playback selector imports: %s/%s max\n" \
   "$external_playback_selector_imports" "$MAX_EXTERNAL_PLAYBACK_SELECTOR_IMPORTS"
+printf "Library hook live-query modules: %s/%s max\n" \
+  "$library_hook_live_query_modules" "$MAX_LIBRARY_HOOK_LIVE_QUERY_MODULES"
 
 failed=0
 
@@ -79,6 +89,15 @@ if (( external_playback_selector_imports > MAX_EXTERNAL_PLAYBACK_SELECTOR_IMPORT
     apps/new/src/features \
     -g "*.ts" -g "*.tsx" || true) |
     rg -v "apps/new/src/features/playback/"
+  failed=1
+fi
+
+if (( library_hook_live_query_modules > MAX_LIBRARY_HOOK_LIVE_QUERY_MODULES )); then
+  echo
+  echo "Library UI hooks should move Drizzle live-query adapters behind library data modules."
+  rg -l "useLiveQuery|drizzle-orm/expo-sqlite" \
+    apps/new/src/features/library/hooks \
+    -g "*.ts" -g "*.tsx"
   failed=1
 fi
 

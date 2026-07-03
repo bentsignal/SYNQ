@@ -39,3 +39,6 @@
 - Added a new-app database boundary scan that keeps direct Drizzle/database
   access limited to repository modules, query hooks, and approved app/backup
   infrastructure boundaries.
+- Moved the song-detail Drizzle live-query adapter out of the UI-facing library
+  hook into a library data module and added a ratchet for remaining library hook
+  live-query modules.

@@ -111,6 +111,7 @@ scan_new_app_database_boundaries() {
   violations="$(
     printf "%s\n" "$matches" |
       rg -v "/repository/" |
+      rg -v "/data/use-[^:]*live-query\\.ts:" |
       rg -v "hooks/use-[^:]*query\\.ts:" |
       rg -v "apps/new/src/features/app-shell/components/AppRoot\\.tsx:" |
       rg -v "apps/new/src/features/backup/services/backup-command-service\\.ts:" || true

@@ -227,3 +227,5 @@
   playlist repositories behind the existing relationship facade.
 - Split collection creation Drizzle insert adapters into album, artist, and
   playlist repositories behind the existing collection-create facade.
+- Split import library artist/album find-or-create behavior into a focused
+  entity-link service used by the import song linking executor.

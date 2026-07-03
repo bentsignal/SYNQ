@@ -116,3 +116,5 @@
   table-specific Drizzle adapters into smaller repository modules.
 - Preserved collection create executor smoke coverage while splitting the
   table-specific insert adapters into smaller repository modules.
+- Added direct import library entity-link smoke coverage for existing artist
+  and album reuse plus new artist and album insertion.

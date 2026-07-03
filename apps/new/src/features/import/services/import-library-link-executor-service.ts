@@ -1,8 +1,9 @@
 import type { ImportSongDraft } from "../types/import-session";
 import {
-  buildImportLibrarySongSavePlan,
-  normalizeImportLibraryName,
-} from "./import-library-save-plan-service";
+  ensureImportLibraryAlbum,
+  ensureImportLibraryArtist,
+} from "./import-library-entity-link-service";
+import { buildImportLibrarySongSavePlan } from "./import-library-save-plan-service";
 
 type ImportSongLibraryLinkResult = {
   linkedAlbum: boolean;
@@ -47,34 +48,6 @@ export type ImportLibraryLinkDependencies = {
   }) => Promise<void>;
 };
 
-const ensureArtist = async (
-  name: string,
-  dependencies: ImportLibraryLinkDependencies,
-) => {
-  const cleanName = normalizeImportLibraryName(name);
-  const existingId = await dependencies.findArtistIdByName(cleanName);
-
-  if (existingId !== null) {
-    return existingId;
-  }
-
-  return dependencies.insertArtist(cleanName);
-};
-
-const ensureAlbum = async (
-  name: string,
-  dependencies: ImportLibraryLinkDependencies,
-) => {
-  const cleanName = normalizeImportLibraryName(name);
-  const existingId = await dependencies.findAlbumIdByName(cleanName);
-
-  if (existingId !== null) {
-    return existingId;
-  }
-
-  return dependencies.insertAlbum(cleanName);
-};
-
 const updateAlbumCover = async ({
   albumId,
   artwork,
@@ -105,7 +78,7 @@ const linkSongArtists = async ({
   const artistIds: number[] = [];
 
   for (const artistName of artistNames) {
-    const artistId = await ensureArtist(artistName, dependencies);
+    const artistId = await ensureImportLibraryArtist(artistName, dependencies);
     artistIds.push(artistId);
     await dependencies.linkSongArtist({ artistId, songId });
   }
@@ -126,7 +99,7 @@ const linkSongAlbum = async ({
   song: ImportSongDraft;
   songId: number;
 }) => {
-  const albumId = await ensureAlbum(albumName, dependencies);
+  const albumId = await ensureImportLibraryAlbum(albumName, dependencies);
   await dependencies.linkSongAlbum({
     albumId,
     songId,

@@ -222,6 +222,10 @@ import {
   splitImportLibraryNames,
 } from "../../../apps/new/src/features/import/services/import-library-save-plan-service";
 import {
+  ensureImportLibraryAlbum,
+  ensureImportLibraryArtist,
+} from "../../../apps/new/src/features/import/services/import-library-entity-link-service";
+import {
   linkImportSongToLibraryWithDependencies,
   type ImportLibraryLinkDependencies,
 } from "../../../apps/new/src/features/import/services/import-library-link-executor-service";
@@ -8655,6 +8659,28 @@ async function assertImportLibraryLinkExecutorSmoke() {
     },
   };
 
+  assert.equal(await ensureImportLibraryArtist(" Alice ", dependencies), 7);
+  assert.equal(await ensureImportLibraryArtist(" Charlie ", dependencies), 100);
+  assert.equal(
+    await ensureImportLibraryAlbum(" Existing Album ", dependencies),
+    70,
+  );
+  assert.equal(
+    await ensureImportLibraryAlbum(" Fresh Album ", dependencies),
+    200,
+  );
+  assert.deepEqual(calls, [
+    "find-artist:Alice",
+    "find-artist:Charlie",
+    "insert-artist:Charlie",
+    "find-album:Existing Album",
+    "find-album:Fresh Album",
+    "insert-album:Fresh Album",
+  ]);
+
+  calls.length = 0;
+  nextArtistId = 101;
+  nextAlbumId = 201;
   assert.deepEqual(
     await linkImportSongToLibraryWithDependencies({
       dependencies,
@@ -8674,14 +8700,14 @@ async function assertImportLibraryLinkExecutorSmoke() {
     "link-song-artist:42:7",
     "find-artist:Bob",
     "insert-artist:Bob",
-    "link-song-artist:42:100",
+    "link-song-artist:42:101",
     "find-album:New Album",
     "insert-album:New Album",
-    "link-song-album:42:200:3",
+    "link-song-album:42:201:3",
     "save-cover:data:image/png;base64,cover",
-    "update-album-cover:200:cover-hash",
-    "link-artist-album:7:200",
-    "link-artist-album:100:200",
+    "update-album-cover:201:cover-hash",
+    "link-artist-album:7:201",
+    "link-artist-album:101:201",
     "link-playlist:42",
   ]);
 

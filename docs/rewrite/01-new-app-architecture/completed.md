@@ -34,3 +34,5 @@
 - Moved export metadata reads behind an export repository and added a rewrite
   verification scan that keeps export services focused on filesystem sharing
   and ID3 writeback orchestration.
+- Slimmed the playback Rostra provider by moving native adapter lifecycle and
+  mutable playback-state ref synchronization into dedicated playback hooks.

@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  type ReactNode,
-} from "react";
+import { useMemo, useReducer, type ReactNode } from "react";
 import { createStore } from "rostra";
 import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
 import { usePlaybackAdGateController } from "../hooks/use-playback-ad-gate-controller";
@@ -12,8 +6,10 @@ import {
   usePlaybackCommandController,
   type PlaybackCommands,
 } from "../hooks/use-playback-command-controller";
+import { usePlaybackNativeAdapter } from "../hooks/use-playback-native-adapter";
 import { usePlaybackNativeStatusListener } from "../hooks/use-playback-native-status-listener";
 import { usePlaybackNativeCommandRunner } from "../hooks/use-playback-native-command-runner";
+import { usePlaybackStateRef } from "../hooks/use-playback-state-ref";
 import { usePlaybackTrackAdvancement } from "../hooks/use-playback-track-advancement";
 import { getActiveTrack } from "../services/playback-queue-service";
 import {
@@ -21,7 +17,6 @@ import {
   playbackReducer,
 } from "../services/playback-session-service";
 import { usePersistedPlaybackSession } from "../hooks/use-persisted-playback-session";
-import { createExpoAudioTrackPlayerAdapter } from "../services/track-player-adapter";
 import type {
   PlaybackQueueItem,
   PlaybackState,
@@ -37,20 +32,9 @@ function usePlaybackSessionStore(): PlaybackSessionValue {
     (store) => store.state.active,
   );
   const [state, dispatch] = useReducer(playbackReducer, initialPlaybackState);
-  const stateRef = useRef(state);
-  const adapterRef = useRef(createExpoAudioTrackPlayerAdapter());
+  const stateRef = usePlaybackStateRef(state);
+  const adapter = usePlaybackNativeAdapter();
   const activeTrack = useMemo(() => getActiveTrack(state), [state]);
-
-  useEffect(() => {
-    stateRef.current = state;
-  }, [state]);
-
-  useEffect(
-    () => () => {
-      void adapterRef.current.destroy();
-    },
-    [],
-  );
 
   const {
     playNativeAdBreak,
@@ -59,7 +43,7 @@ function usePlaybackSessionStore(): PlaybackSessionValue {
     runNativeCommand,
     runNativeCommandPlan,
   } = usePlaybackNativeCommandRunner({
-    adapter: adapterRef.current,
+    adapter,
     dispatch,
   });
 
@@ -84,7 +68,7 @@ function usePlaybackSessionStore(): PlaybackSessionValue {
   });
 
   const finishActiveTrack = usePlaybackTrackAdvancement({
-    adapter: adapterRef.current,
+    adapter,
     beginAdBreak,
     canRunPlaybackCommand,
     dispatch,
@@ -93,7 +77,7 @@ function usePlaybackSessionStore(): PlaybackSessionValue {
   });
 
   usePlaybackNativeStatusListener({
-    adapter: adapterRef.current,
+    adapter,
     dispatch,
     finishActiveTrack,
     premiumActiveRef,

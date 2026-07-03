@@ -76,6 +76,7 @@ export function useImportSessionLifecycleCommands({
   }, [dispatch]);
 
   const resetSession = useCallback(() => {
+    void clearImportCache();
     void clearPersistedImportSessionState();
     dispatch({ type: "reset" });
   }, [dispatch]);

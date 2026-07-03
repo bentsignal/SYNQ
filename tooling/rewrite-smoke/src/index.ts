@@ -5306,6 +5306,16 @@ function assertBackupScreenSmoke() {
   );
   assert.deepEqual(
     getBackupPhaseTransitionEffects({
+      currentState: { ...successState, lastOperation: "erase" },
+      previousPhase: "running",
+    }),
+    {
+      haptic: "success",
+      shouldResetRuntimeSessions: true,
+    },
+  );
+  assert.deepEqual(
+    getBackupPhaseTransitionEffects({
       currentState: failureState,
       previousPhase: "running",
     }),

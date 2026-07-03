@@ -134,17 +134,8 @@ export const createPlaybackNativePlayerRegistry = () => {
       statusListeners.attach(adPlayer, "ad");
     },
     stop: async () => {
-      if (adPlayer) {
-        adPlayer.pause();
-        await adPlayer.seekTo(0);
-      }
-
-      if (libraryPlayer) {
-        libraryPlayer.pause();
-        await libraryPlayer.seekTo(0);
-      }
-
-      activeSource = null;
+      removeAdPlayer();
+      removeLibraryPlayer();
     },
   };
 };

@@ -49,3 +49,24 @@
   pattern while still replacing `artistsAlbums` relationships on save.
 - Seeded system playlist exposure was closed by filtering playlist id `1` from
   previews and blocking its collection mutations.
+
+## Backup And Reset Evidence
+
+- New backup erase clears the document directory through
+  `clearBackupDocumentDirectory`, reconnects the Drizzle database, and then the
+  backup screen controller resets import and playback runtime sessions on the
+  successful erase phase transition.
+- New backup restore stages the selected archive in cache, replaces the document
+  directory with staged archive contents, reconnects the database, cleans the
+  staging directory, and resets import and playback runtime sessions on the
+  successful restore phase transition.
+- Import session persistence lives under `documentDirectory/import/session.json`
+  and playback persistence lives under `documentDirectory/playback/session.json`;
+  replacing or erasing the document directory clears both persisted runtime
+  sessions, while the backup controller reset also clears their in-memory stores.
+- Backup restore/erase also reloads the mounted customization settings store so
+  the live theme/haptics state follows the restored/default file-backed settings
+  without waiting for an app restart.
+- Import session reset now clears both the persisted import session JSON and the
+  staged import cache directory, matching backup reset expectations for
+  realistic partially staged imports.

@@ -1,4 +1,4 @@
-import { useMemo, useReducer } from "react";
+import { useCallback, useMemo, useReducer } from "react";
 import {
   defaultCustomizationSettings,
   loadCustomizationSettings,
@@ -24,6 +24,22 @@ export function useCustomizationSettingsStore() {
     loadSettings: loadCustomizationSettings,
   });
 
+  const reloadSettings = useCallback(async () => {
+    dispatch({ type: "load" });
+
+    try {
+      dispatch({
+        settings: await loadCustomizationSettings(),
+        type: "load-success",
+      });
+    } catch (caughtError) {
+      dispatch({
+        error: getCustomizationSettingsErrorMessage(caughtError),
+        type: "load-failure",
+      });
+    }
+  }, []);
+
   const { setAppIcon, setHapticsEnabled, setTheme } =
     useCustomizationSettingsCommands({
       dispatch,
@@ -32,12 +48,13 @@ export function useCustomizationSettingsStore() {
 
   return useMemo(
     () => ({
+      reloadSettings,
       setAppIcon,
       setHapticsEnabled,
       setTheme,
       state,
     }),
-    [setAppIcon, setHapticsEnabled, setTheme, state],
+    [reloadSettings, setAppIcon, setHapticsEnabled, setTheme, state],
   );
 }
 

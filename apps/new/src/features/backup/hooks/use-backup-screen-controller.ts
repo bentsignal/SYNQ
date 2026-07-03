@@ -4,6 +4,7 @@ import { useImportSessionSelector } from "@/src/features/import/hooks/use-import
 import { usePremiumEntitlementSelector } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { usePlaybackSessionSelector } from "@/src/features/playback/hooks/use-playback-session";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
+import { useCustomizationSettingsSelector } from "@/src/features/settings/context/CustomizationSettingsProvider";
 import {
   getBackupActionState,
   getBackupConfirmationState,
@@ -19,6 +20,9 @@ export function useBackupScreenController() {
   const resetSession = useImportSessionSelector((store) => store.resetSession);
   const resetPlaybackSession = usePlaybackSessionSelector(
     (store) => store.resetPlaybackSession,
+  );
+  const reloadCustomizationSettings = useCustomizationSettingsSelector(
+    (store) => store.reloadSettings,
   );
   const premiumActive = usePremiumEntitlementSelector(
     (store) => store.state.active,
@@ -39,10 +43,17 @@ export function useBackupScreenController() {
     if (effects.shouldResetRuntimeSessions) {
       resetSession();
       resetPlaybackSession();
+      void reloadCustomizationSettings();
     }
 
     previousPhaseRef.current = state.phase;
-  }, [resetPlaybackSession, resetSession, sendHaptic, state]);
+  }, [
+    reloadCustomizationSettings,
+    resetPlaybackSession,
+    resetSession,
+    sendHaptic,
+    state,
+  ]);
 
   const runBackupOperation = (operation: BackupOperation) => {
     sendHaptic(operation === "erase" ? "medium" : "light");

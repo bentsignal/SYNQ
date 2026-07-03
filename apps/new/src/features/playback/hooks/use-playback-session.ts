@@ -1,1 +1,4 @@
-export { usePlaybackSession } from "../context/PlaybackProvider";
+export {
+  usePlaybackSession,
+  usePlaybackSessionSelector,
+} from "../context/PlaybackProvider";

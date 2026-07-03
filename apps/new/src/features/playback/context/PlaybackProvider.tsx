@@ -1,12 +1,11 @@
 import {
-  createContext,
-  useContext,
   useEffect,
   useMemo,
   useReducer,
   useRef,
   type ReactNode,
 } from "react";
+import { createStore } from "rostra";
 import { usePremiumEntitlementSelector } from "@/src/features/premium/context/PremiumEntitlementProvider";
 import { usePlaybackAdGateController } from "../hooks/use-playback-ad-gate-controller";
 import {
@@ -28,14 +27,12 @@ import type {
   PlaybackState,
 } from "../types/playback-state";
 
-type PlaybackSessionValue = PlaybackCommands & {
+export type PlaybackSessionValue = PlaybackCommands & {
   activeTrack: PlaybackQueueItem | null;
   state: PlaybackState;
 };
 
-const PlaybackSessionContext = createContext<PlaybackSessionValue | null>(null);
-
-export function PlaybackProvider({ children }: { children: ReactNode }) {
+function usePlaybackSessionStore(): PlaybackSessionValue {
   const premiumActive = usePremiumEntitlementSelector(
     (store) => store.state.active,
   );
@@ -112,7 +109,7 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     stateRef,
   });
 
-  const value = useMemo<PlaybackSessionValue>(
+  return useMemo<PlaybackSessionValue>(
     () => ({
       activeTrack,
       ...commands,
@@ -120,20 +117,22 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     }),
     [activeTrack, commands, state],
   );
+}
 
-  return (
-    <PlaybackSessionContext.Provider value={value}>
-      {children}
-    </PlaybackSessionContext.Provider>
-  );
+const { Store, useStore } = createStore<object, PlaybackSessionValue>(
+  usePlaybackSessionStore,
+);
+
+export function PlaybackProvider({ children }: { children: ReactNode }) {
+  return <Store>{children}</Store>;
+}
+
+export function usePlaybackSessionSelector<SelectedValue>(
+  selector: (store: PlaybackSessionValue) => SelectedValue,
+) {
+  return useStore(selector);
 }
 
 export function usePlaybackSession() {
-  const value = useContext(PlaybackSessionContext);
-
-  if (!value) {
-    throw new Error("usePlaybackSession must be used inside PlaybackProvider.");
-  }
-
-  return value;
+  return usePlaybackSessionSelector((store) => store);
 }

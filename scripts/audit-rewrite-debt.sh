@@ -7,13 +7,13 @@ cd "$ROOT_DIR"
 
 NEW_APP_PATHS=(apps/new/app apps/new/src)
 MAX_NEW_APP_STYLESHEET_CREATE="${MAX_NEW_APP_STYLESHEET_CREATE:-111}"
-MAX_NEW_APP_CONTEXT_MODULES="${MAX_NEW_APP_CONTEXT_MODULES:-1}"
+MAX_NEW_APP_CONTEXT_MODULES="${MAX_NEW_APP_CONTEXT_MODULES:-0}"
 
 count_matches() {
   local pattern="$1"
   shift
 
-  rg --count-matches "$pattern" "$@" -g "*.ts" -g "*.tsx" |
+  (rg --count-matches "$pattern" "$@" -g "*.ts" -g "*.tsx" || true) |
     awk -F: '{sum += $2} END {print sum + 0}'
 }
 
@@ -21,7 +21,7 @@ count_files() {
   local pattern="$1"
   shift
 
-  rg -l "$pattern" "$@" -g "*.ts" -g "*.tsx" | wc -l | tr -d " "
+  (rg -l "$pattern" "$@" -g "*.ts" -g "*.tsx" || true) | wc -l | tr -d " "
 }
 
 stylesheet_creates="$(count_matches "StyleSheet\\.create" "${NEW_APP_PATHS[@]}")"

@@ -2,18 +2,20 @@ import { useCallback } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { getPlaybackQueueActionState } from "../services/playback-queue-service";
 import type { PlaybackQueueItem } from "../types/playback-state";
-import { usePlaybackSession } from "./use-playback-session";
+import { usePlaybackSessionSelector } from "./use-playback-session";
 
 export function usePlaybackQueueController() {
   const { sendHaptic } = useHapticFeedback();
-  const {
-    activeTrack,
-    clearQueue,
-    moveQueueSong,
-    playSong,
-    removeFromQueue,
-    state,
-  } = usePlaybackSession();
+  const activeTrack = usePlaybackSessionSelector((store) => store.activeTrack);
+  const clearQueue = usePlaybackSessionSelector((store) => store.clearQueue);
+  const moveQueueSong = usePlaybackSessionSelector(
+    (store) => store.moveQueueSong,
+  );
+  const playSong = usePlaybackSessionSelector((store) => store.playSong);
+  const removeFromQueue = usePlaybackSessionSelector(
+    (store) => store.removeFromQueue,
+  );
+  const state = usePlaybackSessionSelector((store) => store.state);
   const adBreakActive = state.adGate.active || state.adGate.due;
   const actionState = getPlaybackQueueActionState({
     queueLength: state.queue.length,

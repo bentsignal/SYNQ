@@ -18,3 +18,6 @@
 - Migrated import session from broad React context to a Rostra store, converted
   import and backup consumers to selector reads, and lowered the context
   ratchet from 2 modules to 1.
+- Migrated playback session from broad React context to a Rostra store,
+  converted playback, library, home, and backup consumers to selector reads,
+  and lowered the context ratchet from 1 module to 0.

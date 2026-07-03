@@ -3,19 +3,19 @@
 ## Rostra State Migration
 
 - [x] Add `rostra` to the new app once the migration slice is ready.
-- [ ] Inventory all React context usage in `apps/new`.
-- [ ] Replace broad React context providers with Rostra stores where selector
+- [x] Inventory all React context usage in `apps/new`.
+- [x] Replace broad React context providers with Rostra stores where selector
   reads reduce rerenders.
 - [ ] Prioritize high-churn providers first:
-  - playback session
+  - done: playback session
   - done: import session
   - done: premium entitlement
   - done: customization settings/theme
-- [ ] Preserve provider ergonomics while using selector functions for
+- [x] Preserve provider ergonomics while using selector functions for
   component reads.
 - [x] Add lint or hygiene scans to prevent new broad React context usage once
   migration is underway.
-- [ ] Ratchet `MAX_NEW_APP_CONTEXT_MODULES` down as providers move to Rostra.
+- [x] Ratchet `MAX_NEW_APP_CONTEXT_MODULES` down as providers move to Rostra.
 
 ## Utility Styling Migration
 
@@ -35,7 +35,7 @@
 
 ## State And Render Performance
 
-- [ ] Audit remaining provider values for unstable object/function identities.
+- [x] Audit remaining provider values for unstable object/function identities.
 - [ ] Continue replacing screen-local orchestration with typed hooks and
   services.
 - [ ] Add profiler/manual notes for high-traffic playback, import, and library

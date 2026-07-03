@@ -1,5 +1,5 @@
 import { useReducer } from "react";
-import { usePlaybackSession } from "@/src/features/playback/hooks/use-playback-session";
+import { usePlaybackSessionSelector } from "@/src/features/playback/hooks/use-playback-session";
 import type { LibrarySongDetail } from "../services/library-song-detail-service";
 import { getLibrarySongDetailActionState } from "../services/library-song-detail-state-service";
 import {
@@ -19,7 +19,9 @@ export function useLibrarySongDetailMutations({
   detail,
   songId,
 }: UseLibrarySongDetailMutationsParams) {
-  const { removeFromQueue } = usePlaybackSession();
+  const removeFromQueue = usePlaybackSessionSelector(
+    (store) => store.removeFromQueue,
+  );
   const [mutationState, dispatchMutation] = useReducer(
     librarySongDetailMutationReducer,
     initialLibrarySongDetailMutationState,

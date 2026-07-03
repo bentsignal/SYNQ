@@ -35,6 +35,14 @@ import {
   runPlaybackQueueRemoveCommand,
 } from "../../../apps/new/src/features/playback/services/playback-queue-command-flow-service";
 import {
+  runPlaybackQueueAddSongCommand,
+  runPlaybackQueueClearSessionCommand,
+  runPlaybackQueueMoveSongCommand,
+  runPlaybackQueueRemoveSongCommand,
+  runPlaybackQueueToggleLoopCommand,
+  runPlaybackQueueToggleShuffleCommand,
+} from "../../../apps/new/src/features/playback/services/playback-queue-session-command-flow-service";
+import {
   getPlaybackQueueRowPresentation,
   getPlaybackQueueRowState,
 } from "../../../apps/new/src/features/playback/services/playback-queue-row-service";
@@ -43,6 +51,7 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-initial-state-service";
 import {
   playbackReducer,
+  type PlaybackAction,
 } from "../../../apps/new/src/features/playback/services/playback-session-service";
 import {
   failPlaybackSession,
@@ -2022,6 +2031,51 @@ function assertPlaybackNativeCommandPlanSmoke() {
     ["plan", "skip-next", "play"],
     ["gate"],
     ["plan", "skip-previous", "play"],
+  ]);
+
+  const queueSessionEvents: unknown[] = [];
+  const dispatchQueueSessionCommand = (action: PlaybackAction) => {
+    queueSessionEvents.push(["dispatch", action.type]);
+  };
+  const runQueueSessionCommandPlan = (
+    plan: ReturnType<typeof getPausePlaybackCommandPlan>,
+  ) => {
+    queueSessionEvents.push([
+      "plan",
+      plan.action.type,
+      plan.nativeCommand.type,
+    ]);
+  };
+  runPlaybackQueueAddSongCommand({
+    dispatch: dispatchQueueSessionCommand,
+    song: second,
+  });
+  runPlaybackQueueMoveSongCommand({
+    direction: "up",
+    dispatch: dispatchQueueSessionCommand,
+    songId: second.id,
+  });
+  runPlaybackQueueToggleLoopCommand({
+    dispatch: dispatchQueueSessionCommand,
+  });
+  runPlaybackQueueToggleShuffleCommand({
+    dispatch: dispatchQueueSessionCommand,
+  });
+  runPlaybackQueueClearSessionCommand({
+    runCommandPlan: runQueueSessionCommandPlan,
+  });
+  runPlaybackQueueRemoveSongCommand({
+    runCommandPlan: runQueueSessionCommandPlan,
+    songId: first.id,
+    state,
+  });
+  assert.deepEqual(queueSessionEvents, [
+    ["dispatch", "add-to-queue"],
+    ["dispatch", "move-queue-song"],
+    ["dispatch", "toggle-loop"],
+    ["dispatch", "toggle-shuffle"],
+    ["plan", "clear-queue", "stop"],
+    ["plan", "remove-from-queue", "play"],
   ]);
 
   const remoteEvents: string[] = [];

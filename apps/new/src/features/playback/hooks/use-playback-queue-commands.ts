@@ -1,8 +1,12 @@
 import { useCallback, useMemo, type RefObject } from "react";
 import {
-  getClearQueuePlaybackCommandPlan,
-  getRemoveFromQueuePlaybackCommandPlan,
-} from "../services/playback-command-plan-service";
+  runPlaybackQueueAddSongCommand,
+  runPlaybackQueueClearSessionCommand,
+  runPlaybackQueueMoveSongCommand,
+  runPlaybackQueueRemoveSongCommand,
+  runPlaybackQueueToggleLoopCommand,
+  runPlaybackQueueToggleShuffleCommand,
+} from "../services/playback-queue-session-command-flow-service";
 import type { PlaybackAction } from "../services/playback-session-service";
 import type {
   PlaybackQueueItem,
@@ -22,35 +26,34 @@ export function usePlaybackQueueCommands({
   stateRef,
 }: UsePlaybackQueueCommandsParams) {
   const addToQueue = useCallback((song: PlaybackQueueItem) => {
-    dispatch({ song, type: "add-to-queue" });
+    runPlaybackQueueAddSongCommand({ dispatch, song });
   }, [dispatch]);
 
   const clearQueue = useCallback(() => {
-    runCommandPlan(getClearQueuePlaybackCommandPlan());
+    runPlaybackQueueClearSessionCommand({ runCommandPlan });
   }, [runCommandPlan]);
 
   const moveQueueSong = useCallback(
     (songId: number, direction: "down" | "up") => {
-      dispatch({ direction, songId, type: "move-queue-song" });
+      runPlaybackQueueMoveSongCommand({ direction, dispatch, songId });
     },
     [dispatch],
   );
 
   const removeFromQueue = useCallback((songId: number) => {
-    runCommandPlan(
-      getRemoveFromQueuePlaybackCommandPlan({
-        songId,
-        state: stateRef.current,
-      }),
-    );
+    runPlaybackQueueRemoveSongCommand({
+      runCommandPlan,
+      songId,
+      state: stateRef.current,
+    });
   }, [runCommandPlan, stateRef]);
 
   const toggleLoop = useCallback(() => {
-    dispatch({ type: "toggle-loop" });
+    runPlaybackQueueToggleLoopCommand({ dispatch });
   }, [dispatch]);
 
   const toggleShuffle = useCallback(() => {
-    dispatch({ type: "toggle-shuffle" });
+    runPlaybackQueueToggleShuffleCommand({ dispatch });
   }, [dispatch]);
 
   return useMemo(

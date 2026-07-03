@@ -214,3 +214,5 @@
   save, discard, reset, and failure sequencing.
 - Added direct playback transport command-flow smoke coverage for play, pause,
   resume, seek, next, and previous sequencing.
+- Added direct playback queue session command-flow smoke coverage for add,
+  move, toggle, clear, and remove sequencing.

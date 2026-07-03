@@ -321,3 +321,5 @@
   into a focused command-flow service.
 - Moved playback transport ad-gated command-plan sequencing out of the React
   hook and into a focused command-flow service.
+- Moved playback queue session mutation and command-plan sequencing out of the
+  React hook and into a focused command-flow service.

@@ -1,8 +1,13 @@
-import { Link } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { SupportScreenController } from "../hooks/use-support-screen-controller";
 import { useCustomizationTheme } from "../hooks/use-customization-theme";
 import { getSupportScreenViewState } from "../services/settings-screen-service";
+import {
+  SettingsBackLink,
+  SettingsInfoPanel,
+  SettingsScreenContent,
+  SettingsScreenHeader,
+} from "./SettingsScreenParts";
 
 type SupportScreenViewProps = SupportScreenController;
 
@@ -14,21 +19,8 @@ export function SupportScreenView({
   const viewState = getSupportScreenViewState();
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.content}
-      style={[styles.scroll, { backgroundColor: theme.background }]}
-    >
-      <View style={styles.header}>
-        <Text style={[styles.kicker, { color: theme.accent }]}>
-          {viewState.header.kicker}
-        </Text>
-        <Text style={[styles.title, { color: theme.primaryText }]}>
-          {viewState.header.title}
-        </Text>
-        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          {viewState.header.subtitle}
-        </Text>
-      </View>
+    <SettingsScreenContent theme={theme}>
+      <SettingsScreenHeader header={viewState.header} theme={theme} />
 
       <View
         style={[
@@ -58,59 +50,14 @@ export function SupportScreenView({
         ))}
       </View>
 
-      <View
-        style={[
-          styles.panel,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-        ]}
-      >
-        <Text style={[styles.panelTitle, { color: theme.primaryText }]}>
-          {viewState.bugReportPanel.title}
-        </Text>
-        <Text style={[styles.panelBody, { color: theme.secondaryText }]}>
-          {viewState.bugReportPanel.body}
-        </Text>
-      </View>
+      <SettingsInfoPanel panel={viewState.bugReportPanel} theme={theme} />
 
-      <Link
-        href={viewState.backLink.href}
-        style={[styles.backLink, { color: theme.accent }]}
-      >
-        {viewState.backLink.label}
-      </Link>
-    </ScrollView>
+      <SettingsBackLink backLink={viewState.backLink} theme={theme} />
+    </SettingsScreenContent>
   );
 }
 
 const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    gap: 18,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-  header: {
-    gap: 8,
-  },
-  kicker: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 40,
-  },
-  subtitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    maxWidth: 560,
-  },
   list: {
     borderRadius: 8,
     borderWidth: 1,
@@ -144,26 +91,5 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "700",
     lineHeight: 32,
-  },
-  panel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 8,
-    padding: 16,
-  },
-  panelTitle: {
-    fontSize: 16,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 22,
-  },
-  panelBody: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  backLink: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
   },
 });

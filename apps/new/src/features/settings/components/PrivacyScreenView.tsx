@@ -1,8 +1,14 @@
-import { Link } from "expo-router";
-import { ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import { StyleSheet, Switch, Text, View } from "react-native";
 import type { PrivacyScreenController } from "../hooks/use-privacy-screen-controller";
 import { useCustomizationTheme } from "../hooks/use-customization-theme";
 import { getPrivacyScreenViewState } from "../services/settings-screen-service";
+import {
+  SettingsBackLink,
+  SettingsInfoPanel,
+  SettingsScreenContent,
+  SettingsScreenHeader,
+  settingsScreenPartStyles,
+} from "./SettingsScreenParts";
 
 type PrivacyScreenViewProps = PrivacyScreenController;
 
@@ -15,24 +21,11 @@ export function PrivacyScreenView({
   const viewState = getPrivacyScreenViewState();
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.content}
-      style={[styles.scroll, { backgroundColor: theme.background }]}
-    >
-      <View style={styles.header}>
-        <Text style={[styles.kicker, { color: theme.accent }]}>
-          {viewState.header.kicker}
-        </Text>
-        <Text style={[styles.title, { color: theme.primaryText }]}>
-          {viewState.header.title}
-        </Text>
-        <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
-          {viewState.header.subtitle}
-        </Text>
-        <Text style={[styles.statusText, { color: theme.accent }]}>
-          {screenState.statusLabel}
-        </Text>
-      </View>
+    <SettingsScreenContent theme={theme}>
+      <SettingsScreenHeader
+        header={{ ...viewState.header, statusLabel: screenState.statusLabel }}
+        theme={theme}
+      />
 
       <View
         style={[
@@ -57,71 +50,20 @@ export function PrivacyScreenView({
         />
       </View>
 
-      <View
-        style={[
-          styles.panel,
-          { backgroundColor: theme.surface, borderColor: theme.border },
-        ]}
-      >
-        <Text style={[styles.panelTitle, { color: theme.primaryText }]}>
-          {viewState.localFirstPanel.title}
-        </Text>
-        <Text style={[styles.panelBody, { color: theme.secondaryText }]}>
-          {viewState.localFirstPanel.body}
-        </Text>
-      </View>
+      <SettingsInfoPanel panel={viewState.localFirstPanel} theme={theme} />
 
       {state.error ? (
-        <Text style={[styles.errorText, { color: theme.danger }]}>
+        <Text style={[settingsScreenPartStyles.errorText, { color: theme.danger }]}>
           {state.error}
         </Text>
       ) : null}
 
-      <Link
-        href={viewState.backLink.href}
-        style={[styles.backLink, { color: theme.accent }]}
-      >
-        {viewState.backLink.label}
-      </Link>
-    </ScrollView>
+      <SettingsBackLink backLink={viewState.backLink} theme={theme} />
+    </SettingsScreenContent>
   );
 }
 
 const styles = StyleSheet.create({
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    gap: 18,
-    paddingHorizontal: 20,
-    paddingVertical: 56,
-  },
-  header: {
-    gap: 8,
-  },
-  kicker: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 40,
-  },
-  subtitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    maxWidth: 560,
-  },
-  statusText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
   preferenceRow: {
     alignItems: "center",
     borderRadius: 8,
@@ -146,31 +88,5 @@ const styles = StyleSheet.create({
   rowDescription: {
     fontSize: 13,
     lineHeight: 19,
-  },
-  panel: {
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 8,
-    padding: 16,
-  },
-  panelTitle: {
-    fontSize: 16,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 22,
-  },
-  panelBody: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  errorText: {
-    fontSize: 13,
-    fontWeight: "800",
-    lineHeight: 18,
-  },
-  backLink: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
   },
 });

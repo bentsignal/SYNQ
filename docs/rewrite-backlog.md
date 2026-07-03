@@ -109,6 +109,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: collection form back/detail destinations now live in a focused
     navigation service instead of the form interaction service owning routing
     and form presentation state together.
+  - Done: shared settings screen chrome now lives in focused presentational
+    parts instead of settings home, customization, privacy, and support screens
+    duplicating header, panel, and back-link layout.
   - Done: collection detail song-row aggregation now lives in a focused song
     detail service instead of the detail shell builder owning song grouping,
     artist/album fallback labels, and track sorting.

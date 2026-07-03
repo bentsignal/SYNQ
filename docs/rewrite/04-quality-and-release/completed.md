@@ -81,3 +81,6 @@
 - Added album artist update executor smoke coverage for name normalization,
   unknown-label filtering, existing/new artist resolution, deduping, and
   relationship replacement.
+- Added song metadata relationship executor smoke coverage for name
+  normalization, unknown-label filtering, deduping, song join replacement, and
+  album-artist link preservation.

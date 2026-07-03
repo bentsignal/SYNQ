@@ -452,6 +452,12 @@ import {
   type AlbumArtistUpdateDependencies,
 } from "../../../apps/new/src/features/library/repository/album-artist-update-executor-repository";
 import {
+  normalizeSongMetadataRelationshipName,
+  replaceLibrarySongMetadataRelationshipsWithDependencies,
+  splitSongMetadataRelationshipNames,
+  type SongMetadataRelationshipDependencies,
+} from "../../../apps/new/src/features/library/repository/song-metadata-relationship-executor-repository";
+import {
   assertSupportedCollectionImageType,
   getCollectionImageMimeType,
   pickCollectionImageWithDependencies,
@@ -6287,6 +6293,132 @@ async function assertAlbumArtistUpdateExecutorSmoke() {
   assert.deepEqual(calls, [["delete-album-artists", 43]]);
 }
 
+async function assertSongMetadataRelationshipExecutorSmoke() {
+  const calls: unknown[] = [];
+  const existingArtists = new Map<string, number>([["Alpha Artist", 7]]);
+  const existingAlbums = new Map<string, number>([["Alpha Album", 8]]);
+  const existingLinks = new Set(["8:7"]);
+  let nextArtistId = 20;
+  let nextAlbumId = 30;
+  const dependencies: SongMetadataRelationshipDependencies = {
+    deleteAlbumSongRows: async (songId) => {
+      calls.push(["delete-album-songs", songId]);
+    },
+    deleteArtistSongRows: async (songId) => {
+      calls.push(["delete-artist-songs", songId]);
+    },
+    findAlbumArtistLinkId: async ({ albumId, artistId }) => {
+      calls.push(["find-album-artist", albumId, artistId]);
+      return existingLinks.has(`${albumId}:${artistId}`) ? 1 : null;
+    },
+    findAlbumIdByName: async (name) => {
+      calls.push(["find-album", name]);
+      return existingAlbums.get(name) ?? null;
+    },
+    findArtistIdByName: async (name) => {
+      calls.push(["find-artist", name]);
+      return existingArtists.get(name) ?? null;
+    },
+    insertAlbum: async (name) => {
+      calls.push(["insert-album", name]);
+      const id = nextAlbumId++;
+      existingAlbums.set(name, id);
+      return id;
+    },
+    insertAlbumArtistRows: async (rows) => {
+      calls.push(["insert-album-artists", rows]);
+      for (const row of rows) {
+        existingLinks.add(`${row.albumId}:${row.artistId}`);
+      }
+    },
+    insertAlbumSongRows: async (rows) => {
+      calls.push(["insert-album-songs", rows]);
+    },
+    insertArtist: async (name) => {
+      calls.push(["insert-artist", name]);
+      const id = nextArtistId++;
+      existingArtists.set(name, id);
+      return id;
+    },
+    insertArtistSongRows: async (rows) => {
+      calls.push(["insert-artist-songs", rows]);
+    },
+  };
+
+  assert.equal(normalizeSongMetadataRelationshipName("  Title  "), "Title");
+  assert.deepEqual(
+    splitSongMetadataRelationshipNames(
+      " Alpha Artist, Unknown Artist, Alpha Artist, Beta Artist, unknown album ",
+    ),
+    ["Alpha Artist", "Beta Artist"],
+  );
+
+  assert.deepEqual(
+    await replaceLibrarySongMetadataRelationshipsWithDependencies(
+      {
+        albumNames: " Alpha Album, Beta Album, Alpha Album, unknown album ",
+        artistNames: " Alpha Artist, Beta Artist, Alpha Artist, unknown ",
+        songId: 42,
+      },
+      dependencies,
+    ),
+    { albumIds: [8, 30], artistIds: [7, 20] },
+  );
+  assert.deepEqual(calls, [
+    ["delete-artist-songs", 42],
+    ["delete-album-songs", 42],
+    ["find-artist", "Alpha Artist"],
+    ["find-artist", "Beta Artist"],
+    ["insert-artist", "Beta Artist"],
+    ["find-album", "Alpha Album"],
+    ["find-album", "Beta Album"],
+    ["insert-album", "Beta Album"],
+    [
+      "insert-artist-songs",
+      [
+        { artistId: 7, songId: 42 },
+        { artistId: 20, songId: 42 },
+      ],
+    ],
+    [
+      "insert-album-songs",
+      [
+        { albumId: 8, songId: 42 },
+        { albumId: 30, songId: 42 },
+      ],
+    ],
+    ["find-album-artist", 8, 7],
+    ["find-album-artist", 8, 20],
+    ["find-album-artist", 30, 7],
+    ["find-album-artist", 30, 20],
+    [
+      "insert-album-artists",
+      [
+        { albumId: 8, artistId: 20 },
+        { albumId: 30, artistId: 7 },
+        { albumId: 30, artistId: 20 },
+      ],
+    ],
+  ]);
+
+  calls.length = 0;
+  assert.deepEqual(
+    await replaceLibrarySongMetadataRelationshipsWithDependencies(
+      {
+        albumNames: "Unknown Album, unknown, ",
+        artistNames: "Unknown Artist, unknown, ",
+        songId: 43,
+      },
+      dependencies,
+    ),
+    { albumIds: [], artistIds: [] },
+  );
+  assert.deepEqual(calls, [
+    ["delete-artist-songs", 43],
+    ["delete-album-songs", 43],
+  ]);
+}
+
 async function assertCollectionFormMutationSmoke() {
   const createCalls: unknown[] = [];
   const createRepository: CollectionFormCreateRepository = {
@@ -9699,6 +9831,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   assertCollectionFormSmoke();
   await assertCollectionImagePickerExecutorSmoke();
   await assertAlbumArtistUpdateExecutorSmoke();
+  await assertSongMetadataRelationshipExecutorSmoke();
   await assertCollectionFormMutationSmoke();
   assertLibraryCollectionListSmoke();
   assertLibraryHomeSmoke();

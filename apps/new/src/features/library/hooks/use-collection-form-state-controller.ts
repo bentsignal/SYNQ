@@ -1,7 +1,10 @@
 import { useEffect, useReducer } from "react";
 import {
   collectionFormReducer,
+  getCollectionFormChangeFieldAction,
+  getCollectionFormHydrateAction,
   getInitialCollectionFormState,
+  type CollectionFormField,
 } from "../services/collection-form-state-service";
 import {
   getCollectionFormControllerResultState,
@@ -45,12 +48,11 @@ export function useCollectionFormStateController({
       return;
     }
 
-    dispatchFormState({
+    dispatchFormState(getCollectionFormHydrateAction({
       artistNames: hydrateFrom.artistNames ?? "",
       name: hydrateFrom.name,
-      type: "hydrate",
       year: hydrateFrom.year,
-    });
+    }));
   }, [
     hydrateFrom?.artistNames,
     hydrateFrom?.name,
@@ -59,8 +61,8 @@ export function useCollectionFormStateController({
   ]);
 
   const updateField =
-    (field: "artistNames" | "name" | "year") => (value: string) => {
-      dispatchFormState({ field, type: "change-field", value });
+    (field: CollectionFormField) => (value: string) => {
+      dispatchFormState(getCollectionFormChangeFieldAction({ field, value }));
     };
 
   return {

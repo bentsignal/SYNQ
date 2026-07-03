@@ -315,3 +315,5 @@
   coverage.
 - Added direct library song edit hydrate and field action-constructor smoke
   coverage.
+- Added direct collection form hydrate and field action-constructor smoke
+  coverage.

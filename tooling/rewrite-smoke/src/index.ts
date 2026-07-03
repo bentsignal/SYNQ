@@ -689,6 +689,8 @@ import {
 import { parseAlbumYearInput } from "../../../apps/new/src/features/library/services/collection-form-domain-service";
 import {
   collectionFormReducer,
+  getCollectionFormChangeFieldAction,
+  getCollectionFormHydrateAction,
   getInitialCollectionFormState,
 } from "../../../apps/new/src/features/library/services/collection-form-state-service";
 import {
@@ -9566,12 +9568,38 @@ async function assertCollectionFormSmoke() {
     },
   );
   assert.deepEqual(
-    collectionFormReducer(collectionFormState, {
+    getCollectionFormHydrateAction({
+      artistNames: "Hydrated Artist",
+      name: "Hydrated Album",
+      year: "2026",
+    }),
+    {
       artistNames: "Hydrated Artist",
       name: "Hydrated Album",
       type: "hydrate",
       year: "2026",
+    },
+  );
+  assert.deepEqual(
+    getCollectionFormChangeFieldAction({
+      field: "name",
+      value: "Smoke Album",
     }),
+    {
+      field: "name",
+      type: "change-field",
+      value: "Smoke Album",
+    },
+  );
+  assert.deepEqual(
+    collectionFormReducer(
+      collectionFormState,
+      getCollectionFormHydrateAction({
+        artistNames: "Hydrated Artist",
+        name: "Hydrated Album",
+        year: "2026",
+      }),
+    ),
     {
       ...collectionFormState,
       artistNames: "Hydrated Artist",
@@ -9586,12 +9614,11 @@ async function assertCollectionFormSmoke() {
         isDirty: true,
         name: "Local Edit",
       },
-      {
+      getCollectionFormHydrateAction({
         artistNames: "Hydrated Artist",
         name: "Hydrated Album",
-        type: "hydrate",
         year: "2026",
-      },
+      }),
     ),
     {
       ...collectionFormState,
@@ -9600,11 +9627,13 @@ async function assertCollectionFormSmoke() {
     },
   );
   assert.deepEqual(
-    collectionFormReducer(collectionFormState, {
-      field: "artistNames",
-      type: "change-field",
-      value: "Alpha Artist, Beta Artist",
-    }),
+    collectionFormReducer(
+      collectionFormState,
+      getCollectionFormChangeFieldAction({
+        field: "artistNames",
+        value: "Alpha Artist, Beta Artist",
+      }),
+    ),
     {
       ...collectionFormState,
       artistNames: "Alpha Artist, Beta Artist",
@@ -9613,11 +9642,13 @@ async function assertCollectionFormSmoke() {
     },
   );
   assert.deepEqual(
-    collectionFormReducer(collectionFormState, {
-      field: "name",
-      type: "change-field",
-      value: "Smoke Album",
-    }),
+    collectionFormReducer(
+      collectionFormState,
+      getCollectionFormChangeFieldAction({
+        field: "name",
+        value: "Smoke Album",
+      }),
+    ),
     {
       ...collectionFormState,
       error: null,

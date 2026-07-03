@@ -436,3 +436,5 @@
   of the React hook and into the import edit form service.
 - Moved library song edit hydrate and field action construction out of the
   React hook and into the song edit form service.
+- Moved shared collection form hydrate and field action construction out of
+  the React hook and into the collection form state service.

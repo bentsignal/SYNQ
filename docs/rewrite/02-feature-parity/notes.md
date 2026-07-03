@@ -75,6 +75,9 @@
 - Backup restore/erase also reloads the mounted customization settings store so
   the live theme/haptics state follows the restored/default file-backed settings
   without waiting for an app restart.
+- Backup restore/erase phase-transition side effects now live in
+  `use-backup-phase-effects`, keeping the runtime reset behavior explicit and
+  isolated from the screen action controller.
 - Import session reset now clears both the persisted import session JSON and the
   staged import cache directory, matching backup reset expectations for
   realistic partially staged imports.

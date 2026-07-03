@@ -56,3 +56,7 @@
 - Import session provider wiring now follows the same shell pattern:
   `ImportSessionProvider` adapts Rostra, while `use-import-session-store` owns
   reducer state, persistence loading/saving, and import command assembly.
+- Backup screen orchestration now keeps phase-transition side effects in
+  `use-backup-phase-effects`; the screen controller exposes actions and status
+  state while the effects hook handles haptics plus import/playback/settings
+  runtime resets after restore or erase.

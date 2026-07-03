@@ -77,3 +77,5 @@
   adapter.
 - Slimmed the import session Rostra provider by moving reducer, persistence,
   and command assembly into a dedicated store hook.
+- Moved backup phase-transition haptics and runtime-session reset effects out
+  of the screen controller into a dedicated backup effects hook.

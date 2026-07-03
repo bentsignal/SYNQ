@@ -143,8 +143,11 @@ import {
   getImportSongEditErrorMessage,
   getImportSongEditFieldState,
   getImportSongEditInitialState,
+  getImportSongEditInvalidSaveCommand,
   getImportSongDraftForEdit,
   getImportSongEditRequiredTitleMessage,
+  getImportSongEditSaveFailureCommand,
+  getImportSongEditSaveSuccessCommand,
   importSongEditFormReducer,
   parseImportTrackInput,
 } from "../../../apps/new/src/features/import/services/import-song-form-service";
@@ -5220,6 +5223,27 @@ function assertImportSongFormSmoke() {
     title: "Song not staged",
   });
   assert.equal(getImportSongEditRequiredTitleMessage(), "Title is required.");
+  assert.deepEqual(getImportSongEditInvalidSaveCommand(), {
+    action: {
+      error: "Title is required.",
+      type: "fail",
+    },
+    haptic: "error",
+  });
+  assert.deepEqual(getImportSongEditSaveSuccessCommand(), {
+    haptic: "success",
+    href: "/(tabs)/import/save",
+  });
+  assert.deepEqual(
+    getImportSongEditSaveFailureCommand(new Error("Edit smoke failure")),
+    {
+      action: {
+        error: "Edit smoke failure",
+        type: "fail",
+      },
+      haptic: "error",
+    },
+  );
   assert.equal(
     getImportSongEditErrorMessage(new Error("Edit import smoke failure")),
     "Edit import smoke failure",

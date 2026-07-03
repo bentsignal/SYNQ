@@ -1,3 +1,8 @@
+import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
+import {
+  getImportSongEditSaveHref,
+  type ImportSongEditHref,
+} from "./import-song-edit-navigation-service";
 import type { ImportSongDraft } from "../types/import-session";
 
 export const getImportSongDraftForEdit = ({
@@ -132,3 +137,43 @@ export const getImportSongEditErrorMessage = (caughtError: unknown) =>
     : "Song could not be updated.";
 
 export const getImportSongEditRequiredTitleMessage = () => "Title is required.";
+
+type ImportSongEditInvalidSaveCommand = {
+  action: ImportSongEditFormAction;
+  haptic: HapticFeedbackType;
+};
+
+type ImportSongEditSaveSuccessCommand = {
+  haptic: HapticFeedbackType;
+  href: ImportSongEditHref;
+};
+
+type ImportSongEditSaveFailureCommand = {
+  action: ImportSongEditFormAction;
+  haptic: HapticFeedbackType;
+};
+
+export const getImportSongEditInvalidSaveCommand =
+  (): ImportSongEditInvalidSaveCommand => ({
+    action: {
+      error: getImportSongEditRequiredTitleMessage(),
+      type: "fail",
+    },
+    haptic: "error",
+  });
+
+export const getImportSongEditSaveSuccessCommand =
+  (): ImportSongEditSaveSuccessCommand => ({
+    haptic: "success",
+    href: getImportSongEditSaveHref(),
+  });
+
+export const getImportSongEditSaveFailureCommand = (
+  caughtError: unknown,
+): ImportSongEditSaveFailureCommand => ({
+  action: {
+    error: getImportSongEditErrorMessage(caughtError),
+    type: "fail",
+  },
+  haptic: "error",
+});

@@ -4,12 +4,12 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import {
   buildEditedImportSongDraft,
   getImportSongEditActionState,
-  getImportSongEditErrorMessage,
+  getImportSongEditInvalidSaveCommand,
   getImportSongEditInitialState,
-  getImportSongEditRequiredTitleMessage,
+  getImportSongEditSaveFailureCommand,
+  getImportSongEditSaveSuccessCommand,
   importSongEditFormReducer,
 } from "../services/import-song-form-service";
-import { getImportSongEditSaveHref } from "../services/import-song-edit-navigation-service";
 import type { ImportSongDraft } from "../types/import-session";
 
 type UseEditImportSongControllerParams = {
@@ -43,11 +43,9 @@ export function useEditImportSongController({
 
   const save = () => {
     if (!actionState.canSave) {
-      sendHaptic("error");
-      dispatchFormState({
-        error: getImportSongEditRequiredTitleMessage(),
-        type: "fail",
-      });
+      const command = getImportSongEditInvalidSaveCommand();
+      sendHaptic(command.haptic);
+      dispatchFormState(command.action);
       return;
     }
 
@@ -61,14 +59,13 @@ export function useEditImportSongController({
           track: formState.track,
         }),
       );
-      sendHaptic("success");
-      router.replace(getImportSongEditSaveHref());
+      const command = getImportSongEditSaveSuccessCommand();
+      sendHaptic(command.haptic);
+      router.replace(command.href);
     } catch (caughtError) {
-      sendHaptic("error");
-      dispatchFormState({
-        error: getImportSongEditErrorMessage(caughtError),
-        type: "fail",
-      });
+      const command = getImportSongEditSaveFailureCommand(caughtError);
+      sendHaptic(command.haptic);
+      dispatchFormState(command.action);
     }
   };
 

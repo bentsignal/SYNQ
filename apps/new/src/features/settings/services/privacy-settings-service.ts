@@ -1,14 +1,26 @@
 import * as FileSystem from "expo-file-system";
 import type { PrivacySettings } from "../types/privacy-settings";
-
-const privacySettingsDirectory = `${FileSystem.documentDirectory}settings`;
-const privacySettingsFile = `${privacySettingsDirectory}/privacy.json`;
+import {
+  loadSettingsFromJsonFileWithDependencies,
+  saveSettingsToJsonFileWithDependencies,
+  type SettingsJsonFileStoreDependencies,
+} from "./settings-json-file-store-service";
 
 export const defaultPrivacySettings: PrivacySettings = {
   allowAnalytics: !__DEV__,
 };
 
-const normalizePrivacySettings = (value: unknown): PrivacySettings => {
+const privacySettingsFileName = "privacy.json";
+
+const privacySettingsDependencies: SettingsJsonFileStoreDependencies = {
+  documentDirectory: FileSystem.documentDirectory,
+  getInfo: FileSystem.getInfoAsync,
+  makeDirectory: FileSystem.makeDirectoryAsync,
+  readAsString: FileSystem.readAsStringAsync,
+  writeAsString: FileSystem.writeAsStringAsync,
+};
+
+export const normalizePrivacySettings = (value: unknown): PrivacySettings => {
   if (!value || typeof value !== "object") {
     return defaultPrivacySettings;
   }
@@ -23,35 +35,20 @@ const normalizePrivacySettings = (value: unknown): PrivacySettings => {
   };
 };
 
-const ensurePrivacySettingsDirectory = async () => {
-  if (!FileSystem.documentDirectory) {
-    throw new Error("The document directory is not available.");
-  }
-
-  await FileSystem.makeDirectoryAsync(privacySettingsDirectory, {
-    intermediates: true,
-  });
-};
-
 export async function loadPrivacySettings(): Promise<PrivacySettings> {
-  try {
-    const fileInfo = await FileSystem.getInfoAsync(privacySettingsFile);
-    if (!fileInfo.exists) {
-      return defaultPrivacySettings;
-    }
-
-    const contents = await FileSystem.readAsStringAsync(privacySettingsFile);
-
-    return normalizePrivacySettings(JSON.parse(contents));
-  } catch {
-    return defaultPrivacySettings;
-  }
+  return loadSettingsFromJsonFileWithDependencies({
+    defaultSettings: defaultPrivacySettings,
+    dependencies: privacySettingsDependencies,
+    fileName: privacySettingsFileName,
+    normalizeSettings: normalizePrivacySettings,
+  });
 }
 
 export async function savePrivacySettings(settings: PrivacySettings) {
-  await ensurePrivacySettingsDirectory();
-  await FileSystem.writeAsStringAsync(
-    privacySettingsFile,
-    JSON.stringify(normalizePrivacySettings(settings), null, 2),
-  );
+  await saveSettingsToJsonFileWithDependencies({
+    dependencies: privacySettingsDependencies,
+    fileName: privacySettingsFileName,
+    normalizeSettings: normalizePrivacySettings,
+    settings,
+  });
 }

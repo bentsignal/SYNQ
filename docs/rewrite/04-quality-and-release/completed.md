@@ -36,3 +36,5 @@
 - Added injectable premium purchase executor smoke coverage for tier price
   loading, purchase activation, restore, entitlement checks, fallback tier
   mapping, and unavailable packages.
+- Added settings JSON file-store smoke coverage for missing files, corrupt JSON,
+  normalized saves, loaded values, and unavailable document-directory failures.

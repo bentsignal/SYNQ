@@ -4,9 +4,11 @@ import type {
   CustomizationOption,
   CustomizationSettings,
 } from "../types/customization-settings";
-
-const customizationSettingsDirectory = `${FileSystem.documentDirectory}settings`;
-const customizationSettingsFile = `${customizationSettingsDirectory}/customization.json`;
+import {
+  loadSettingsFromJsonFileWithDependencies,
+  saveSettingsToJsonFileWithDependencies,
+  type SettingsJsonFileStoreDependencies,
+} from "./settings-json-file-store-service";
 
 export const customizationOptions: CustomizationOption[] = [
   { color: "#77adf8", key: "blue", label: "Blue" },
@@ -28,6 +30,16 @@ export const defaultCustomizationSettings: CustomizationSettings = {
   theme: "blue",
 };
 
+const customizationSettingsFileName = "customization.json";
+
+const customizationSettingsDependencies: SettingsJsonFileStoreDependencies = {
+  documentDirectory: FileSystem.documentDirectory,
+  getInfo: FileSystem.getInfoAsync,
+  makeDirectory: FileSystem.makeDirectoryAsync,
+  readAsString: FileSystem.readAsStringAsync,
+  writeAsString: FileSystem.writeAsStringAsync,
+};
+
 const customizationColorKeys = new Set<CustomizationColorKey>(
   customizationOptions.map((option) => option.key),
 );
@@ -38,7 +50,7 @@ const isCustomizationColorKey = (
   typeof value === "string" &&
   customizationColorKeys.has(value as CustomizationColorKey);
 
-const normalizeCustomizationSettings = (
+export const normalizeCustomizationSettings = (
   value: unknown,
 ): CustomizationSettings => {
   if (!value || typeof value !== "object") {
@@ -61,39 +73,22 @@ const normalizeCustomizationSettings = (
   };
 };
 
-const ensureCustomizationSettingsDirectory = async () => {
-  if (!FileSystem.documentDirectory) {
-    throw new Error("The document directory is not available.");
-  }
-
-  await FileSystem.makeDirectoryAsync(customizationSettingsDirectory, {
-    intermediates: true,
-  });
-};
-
 export async function loadCustomizationSettings(): Promise<CustomizationSettings> {
-  try {
-    const fileInfo = await FileSystem.getInfoAsync(customizationSettingsFile);
-    if (!fileInfo.exists) {
-      return defaultCustomizationSettings;
-    }
-
-    const contents = await FileSystem.readAsStringAsync(
-      customizationSettingsFile,
-    );
-
-    return normalizeCustomizationSettings(JSON.parse(contents));
-  } catch {
-    return defaultCustomizationSettings;
-  }
+  return loadSettingsFromJsonFileWithDependencies({
+    defaultSettings: defaultCustomizationSettings,
+    dependencies: customizationSettingsDependencies,
+    fileName: customizationSettingsFileName,
+    normalizeSettings: normalizeCustomizationSettings,
+  });
 }
 
 export async function saveCustomizationSettings(
   settings: CustomizationSettings,
 ) {
-  await ensureCustomizationSettingsDirectory();
-  await FileSystem.writeAsStringAsync(
-    customizationSettingsFile,
-    JSON.stringify(normalizeCustomizationSettings(settings), null, 2),
-  );
+  await saveSettingsToJsonFileWithDependencies({
+    dependencies: customizationSettingsDependencies,
+    fileName: customizationSettingsFileName,
+    normalizeSettings: normalizeCustomizationSettings,
+    settings,
+  });
 }

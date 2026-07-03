@@ -601,6 +601,11 @@ import {
   createInitialSettingsPersistenceState,
   settingsPersistenceReducer,
 } from "../../../apps/new/src/features/settings/services/settings-persistence-state-service";
+import {
+  loadSettingsFromJsonFileWithDependencies,
+  saveSettingsToJsonFileWithDependencies,
+  type SettingsJsonFileStoreDependencies,
+} from "../../../apps/new/src/features/settings/services/settings-json-file-store-service";
 
 const song = ({
   duration = 180_000,
@@ -7795,6 +7800,113 @@ function assertSettingsScreenSmoke() {
   );
 }
 
+async function assertSettingsJsonFileStoreSmoke() {
+  const calls: string[] = [];
+  const files = new Map<string, string>();
+  let documentDirectory: string | null = "file:///documents/";
+  const dependencies: SettingsJsonFileStoreDependencies = {
+    get documentDirectory() {
+      return documentDirectory;
+    },
+    getInfo: async (path) => {
+      calls.push(`info:${path}`);
+      return { exists: files.has(path) };
+    },
+    makeDirectory: async (path, options) => {
+      calls.push(`mkdir:${path}:${String(options.intermediates)}`);
+    },
+    readAsString: async (path) => {
+      calls.push(`read:${path}`);
+      const contents = files.get(path);
+      if (contents === undefined) {
+        throw new Error("Missing settings file.");
+      }
+
+      return contents;
+    },
+    writeAsString: async (path, contents) => {
+      calls.push(`write:${path}:${contents}`);
+      files.set(path, contents);
+    },
+  };
+  const defaultSettings = {
+    allowAnalytics: false,
+    theme: "blue",
+  };
+  const normalizeSettings = (value: unknown) => {
+    if (!value || typeof value !== "object") {
+      return defaultSettings;
+    }
+
+    const candidate = value as Partial<typeof defaultSettings>;
+
+    return {
+      allowAnalytics:
+        typeof candidate.allowAnalytics === "boolean"
+          ? candidate.allowAnalytics
+          : defaultSettings.allowAnalytics,
+      theme: candidate.theme === "mint" ? "mint" : defaultSettings.theme,
+    };
+  };
+  const loadSettings = () =>
+    loadSettingsFromJsonFileWithDependencies({
+      defaultSettings,
+      dependencies,
+      fileName: "preferences.json",
+      normalizeSettings,
+    });
+  const saveSettings = (settings: typeof defaultSettings) =>
+    saveSettingsToJsonFileWithDependencies({
+      dependencies,
+      fileName: "preferences.json",
+      normalizeSettings,
+      settings,
+    });
+
+  assert.deepEqual(await loadSettings(), defaultSettings);
+  assert.deepEqual(calls, [
+    "info:file:///documents/settings/preferences.json",
+  ]);
+
+  files.set("file:///documents/settings/preferences.json", "{not-json");
+  calls.length = 0;
+  assert.deepEqual(await loadSettings(), defaultSettings);
+  assert.deepEqual(calls, [
+    "info:file:///documents/settings/preferences.json",
+    "read:file:///documents/settings/preferences.json",
+  ]);
+
+  files.set(
+    "file:///documents/settings/preferences.json",
+    JSON.stringify({ allowAnalytics: true, theme: "mint" }),
+  );
+  calls.length = 0;
+  assert.deepEqual(await loadSettings(), {
+    allowAnalytics: true,
+    theme: "mint",
+  });
+  assert.deepEqual(calls, [
+    "info:file:///documents/settings/preferences.json",
+    "read:file:///documents/settings/preferences.json",
+  ]);
+
+  calls.length = 0;
+  await saveSettings({ allowAnalytics: true, theme: "invalid" });
+  assert.deepEqual(calls, [
+    "mkdir:file:///documents/settings:true",
+    `write:file:///documents/settings/preferences.json:${JSON.stringify(
+      { allowAnalytics: true, theme: "blue" },
+      null,
+      2,
+    )}`,
+  ]);
+
+  documentDirectory = null;
+  calls.length = 0;
+  assert.deepEqual(await loadSettings(), defaultSettings);
+  await assert.rejects(() => saveSettings(defaultSettings), /document directory/);
+}
+
 assertDurationFormatSmoke();
 assertRouteParamSmoke();
 assertHomeScreenSmoke();
@@ -7810,6 +7922,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertWifiImportRequestSmoke();
   await assertBackupCommandExecutorSmoke();
   await assertPremiumPurchaseExecutorSmoke();
+  await assertSettingsJsonFileStoreSmoke();
   await assertImportSessionSmoke();
   assertLibraryCollectionDetailSmoke();
   assertLibraryCollectionInteractionSmoke();

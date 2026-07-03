@@ -16,6 +16,7 @@ const getSmallImagePath = (imageHash: string) =>
 const mapAlbumEditQuery = (album: ReturnType<typeof useEditAlbumRowQuery>) => ({
   error: album.error,
   ...buildEditCollectionState({
+    albumArtistRows: album.artistRows,
     albumRow: album.row,
     getImagePath: getSmallImagePath,
     hasLoaded: Boolean(album.updatedAt),

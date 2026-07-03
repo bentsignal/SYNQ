@@ -52,6 +52,7 @@ export function useEditCollectionFormCommands({
 
     try {
       await updateCollectionFromFormCommand({
+        artistNames: formState.artistNames,
         id,
         imageDataUrl: formState.image?.dataUrl,
         kind,

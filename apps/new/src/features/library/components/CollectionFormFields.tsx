@@ -11,9 +11,11 @@ import type {
 
 type CollectionFormFieldsProps = {
   actionState: CollectionFormActionState;
+  artistNames?: string;
   copy: CollectionFormCopy;
   kind: CollectionFormKind;
   name: string;
+  onChangeArtistNames?: (artistNames: string) => void;
   onChangeName: (name: string) => void;
   onChangeYear: (year: string) => void;
   year: string;
@@ -21,9 +23,11 @@ type CollectionFormFieldsProps = {
 
 export function CollectionFormFields({
   actionState,
+  artistNames,
   copy,
   kind,
   name,
+  onChangeArtistNames,
   onChangeName,
   onChangeYear,
   year,
@@ -71,6 +75,28 @@ export function CollectionFormFields({
             returnKeyType={fieldState.yearReturnKeyType}
             style={{ borderColor: theme.border, color: theme.primaryText }}
             value={year}
+          />
+        </>
+      ) : null}
+
+      {fieldState.showsArtistNames ? (
+        <>
+          <Text
+            className="text-xs font-extrabold uppercase"
+            style={{ color: theme.secondaryText }}
+          >
+            Artists
+          </Text>
+          <TextInput
+            autoCapitalize="words"
+            className="min-h-[50px] rounded-lg border px-3.5 text-base font-bold"
+            editable={actionState.canEdit}
+            onChangeText={onChangeArtistNames}
+            placeholder={fieldState.artistNamesPlaceholder}
+            placeholderTextColor={theme.mutedText}
+            returnKeyType={fieldState.artistNamesReturnKeyType}
+            style={{ borderColor: theme.border, color: theme.primaryText }}
+            value={artistNames ?? ""}
           />
         </>
       ) : null}

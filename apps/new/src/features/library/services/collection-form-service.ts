@@ -6,6 +6,7 @@ export type CollectionFormImage = {
 };
 
 export type CollectionFormState = {
+  artistNames: string;
   error: string | null;
   image: CollectionFormImage | null;
   isDirty: boolean;
@@ -16,12 +17,13 @@ export type CollectionFormState = {
 
 export type CollectionFormAction =
   | {
+      artistNames: string;
       name: string;
       type: "hydrate";
       year: string;
     }
   | {
-      field: "name" | "year";
+      field: "artistNames" | "name" | "year";
       type: "change-field";
       value: string;
     }
@@ -44,12 +46,15 @@ export type CollectionFormAction =
     };
 
 export const getInitialCollectionFormState = ({
+  artistNames = "",
   name = "",
   year = "",
 }: {
+  artistNames?: string;
   name?: string;
   year?: string;
 } = {}): CollectionFormState => ({
+  artistNames,
   error: null,
   image: null,
   isDirty: false,
@@ -70,6 +75,7 @@ export const collectionFormReducer = (
 
       return {
         ...state,
+        artistNames: action.artistNames,
         name: action.name,
         year: action.year,
       };

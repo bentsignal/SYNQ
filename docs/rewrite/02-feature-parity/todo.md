@@ -12,8 +12,6 @@
   `/player/edit` behavior.
 - [ ] Verify edit/delete/export behavior for songs, playlists, albums, and
   artists against the old app.
-  - [ ] Restore or explicitly replace old album artist relationship management
-    in the new album edit flow.
 - [ ] Confirm backup restore, erase, and import-session reset behavior with
   realistic data.
 - [ ] Complete final parity audit before declaring the rewrite done.

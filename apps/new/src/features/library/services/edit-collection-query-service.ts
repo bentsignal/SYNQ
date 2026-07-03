@@ -6,6 +6,11 @@ export type EditCollectionAlbumRow = {
   year: number | null;
 };
 
+export type EditCollectionAlbumArtistRow = {
+  id: number;
+  name: string | null;
+};
+
 export type EditCollectionArtistRow = {
   name: string | null;
   profileImage: string | null;
@@ -17,6 +22,7 @@ export type EditCollectionPlaylistRow = {
 };
 
 export type EditCollectionState = {
+  artistNames: string;
   imagePath: string | null;
   isMissing: boolean;
   name: string;
@@ -32,6 +38,7 @@ const imagePathOrNull = ({
 }) => (imageHash ? getImagePath(imageHash) : null);
 
 export const buildEditCollectionState = ({
+  albumArtistRows = [],
   albumRow,
   artistRow,
   getImagePath,
@@ -39,6 +46,7 @@ export const buildEditCollectionState = ({
   kind,
   playlistRow,
 }: {
+  albumArtistRows?: EditCollectionAlbumArtistRow[];
   albumRow?: EditCollectionAlbumRow;
   artistRow?: EditCollectionArtistRow;
   getImagePath: (imageHash: string) => string;
@@ -47,7 +55,13 @@ export const buildEditCollectionState = ({
   playlistRow?: EditCollectionPlaylistRow;
 }): EditCollectionState => {
   if (kind === "album") {
+    const artistNames = albumArtistRows
+      .flatMap((artist) => (artist.name ? [artist.name] : []))
+      .sort((first, second) => first.localeCompare(second))
+      .join(", ");
+
     return {
+      artistNames,
       imagePath: imagePathOrNull({
         getImagePath,
         imageHash: albumRow?.coverImage,
@@ -60,6 +74,7 @@ export const buildEditCollectionState = ({
 
   if (kind === "artist") {
     return {
+      artistNames: "",
       imagePath: imagePathOrNull({
         getImagePath,
         imageHash: artistRow?.profileImage,
@@ -71,6 +86,7 @@ export const buildEditCollectionState = ({
   }
 
   return {
+    artistNames: "",
     imagePath: imagePathOrNull({
       getImagePath,
       imageHash: playlistRow?.coverImage,

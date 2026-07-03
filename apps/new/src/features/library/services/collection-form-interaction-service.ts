@@ -113,7 +113,10 @@ export const getCollectionFormFieldState = (kind: CollectionFormKind) => {
   const showsYear = kind === "album";
 
   return {
+    artistNamesPlaceholder: "Artist names",
+    artistNamesReturnKeyType: "done",
     nameReturnKeyType: showsYear ? "next" : "done",
+    showsArtistNames: kind === "album",
     showsYear,
     yearPlaceholder: "Album year",
     yearReturnKeyType: "done",

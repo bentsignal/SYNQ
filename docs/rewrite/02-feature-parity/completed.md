@@ -27,3 +27,6 @@
 - Restored old song cover editing in the new song edit flow, including picked
   cover previews, image persistence, album-cover fallback, and export snapshot
   invalidation through the existing song metadata save path.
+- Restored old album artist relationship editing in the new album edit flow with
+  a comma-separated Artists field that replaces `artistsAlbums` rows on save and
+  creates missing artist records through the collection update repository.

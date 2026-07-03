@@ -10,6 +10,7 @@ import {
 } from "../services/collection-form-interaction-service";
 
 type CollectionFormHydration = {
+  artistNames?: string;
   name: string;
   updatedAt: Date | undefined;
   year: string;
@@ -54,14 +55,20 @@ export function useCollectionFormStateController({
     }
 
     dispatchFormState({
+      artistNames: hydrateFrom.artistNames ?? "",
       name: hydrateFrom.name,
       type: "hydrate",
       year: hydrateFrom.year,
     });
-  }, [hydrateFrom?.name, hydrateFrom?.updatedAt, hydrateFrom?.year]);
+  }, [
+    hydrateFrom?.artistNames,
+    hydrateFrom?.name,
+    hydrateFrom?.updatedAt,
+    hydrateFrom?.year,
+  ]);
 
   const updateField =
-    (field: "name" | "year") => (value: string) => {
+    (field: "artistNames" | "name" | "year") => (value: string) => {
       dispatchFormState({ field, type: "change-field", value });
     };
 
@@ -71,6 +78,7 @@ export function useCollectionFormStateController({
     formState,
     imageInitial,
     saveLabel: resolvedSaveLabel,
+    updateArtistNames: updateField("artistNames"),
     updateName: updateField("name"),
     updateYear: updateField("year"),
   };

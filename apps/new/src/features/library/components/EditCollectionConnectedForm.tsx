@@ -25,6 +25,7 @@ export function EditCollectionConnectedForm({
 }: EditCollectionConnectedFormProps) {
   const {
     actionState,
+    artistNames,
     error,
     image,
     imageInitial,
@@ -33,6 +34,7 @@ export function EditCollectionConnectedForm({
     pickImage,
     save,
     saveLabel,
+    updateArtistNames,
     updateName,
     updateYear,
     year,
@@ -46,6 +48,7 @@ export function EditCollectionConnectedForm({
   return (
     <EditCollectionFormView
       actionState={actionState}
+      artistNames={artistNames}
       collectionError={Boolean(collection.error)}
       collectionImagePath={collection.imagePath}
       collectionIsMissing={collection.isMissing}
@@ -56,6 +59,7 @@ export function EditCollectionConnectedForm({
       isSaving={isSaving}
       kind={kind}
       name={name}
+      onChangeArtistNames={updateArtistNames}
       onChangeName={updateName}
       onChangeYear={updateYear}
       onPickImage={pickImage}

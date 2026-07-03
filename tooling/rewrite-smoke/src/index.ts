@@ -4021,12 +4021,18 @@ function assertEditCollectionQuerySmoke() {
   const getImagePath = (hash: string) => `/images/${hash}-small.jpg`;
 
   const album = buildEditCollectionState({
+    albumArtistRows: [
+      { id: 2, name: "Beta Artist" },
+      { id: 1, name: "Alpha Artist" },
+      { id: 3, name: null },
+    ],
     albumRow: { coverImage: "album-cover", name: "Smoke Album", year: 2026 },
     getImagePath,
     hasLoaded: true,
     kind: "album",
   });
   assert.equal(album.name, "Smoke Album");
+  assert.equal(album.artistNames, "Alpha Artist, Beta Artist");
   assert.equal(album.year, "2026");
   assert.equal(album.imagePath, "/images/album-cover-small.jpg");
   assert.equal(album.isMissing, false);
@@ -4134,19 +4140,28 @@ function assertCollectionFormSmoke() {
   assert.equal(getCollectionFormImageLabel("artist"), "Profile image");
   assert.equal(getCollectionFormImageLabel("playlist"), "Cover image");
   assert.deepEqual(getCollectionFormFieldState("album"), {
+    artistNamesPlaceholder: "Artist names",
+    artistNamesReturnKeyType: "done",
     nameReturnKeyType: "next",
+    showsArtistNames: true,
     showsYear: true,
     yearPlaceholder: "Album year",
     yearReturnKeyType: "done",
   });
   assert.deepEqual(getCollectionFormFieldState("artist"), {
+    artistNamesPlaceholder: "Artist names",
+    artistNamesReturnKeyType: "done",
     nameReturnKeyType: "done",
+    showsArtistNames: false,
     showsYear: false,
     yearPlaceholder: "Album year",
     yearReturnKeyType: "done",
   });
   assert.deepEqual(getCollectionFormFieldState("playlist"), {
+    artistNamesPlaceholder: "Artist names",
+    artistNamesReturnKeyType: "done",
     nameReturnKeyType: "done",
+    showsArtistNames: false,
     showsYear: false,
     yearPlaceholder: "Album year",
     yearReturnKeyType: "done",
@@ -4223,6 +4238,7 @@ function assertCollectionFormSmoke() {
   );
   const collectionFormState = getInitialCollectionFormState();
   assert.deepEqual(collectionFormState, {
+    artistNames: "",
     error: null,
     image: null,
     isDirty: false,
@@ -4232,12 +4248,14 @@ function assertCollectionFormSmoke() {
   });
   assert.deepEqual(
     collectionFormReducer(collectionFormState, {
+      artistNames: "Hydrated Artist",
       name: "Hydrated Album",
       type: "hydrate",
       year: "2026",
     }),
     {
       ...collectionFormState,
+      artistNames: "Hydrated Artist",
       name: "Hydrated Album",
       year: "2026",
     },
@@ -4250,6 +4268,7 @@ function assertCollectionFormSmoke() {
         name: "Local Edit",
       },
       {
+        artistNames: "Hydrated Artist",
         name: "Hydrated Album",
         type: "hydrate",
         year: "2026",
@@ -4259,6 +4278,19 @@ function assertCollectionFormSmoke() {
       ...collectionFormState,
       isDirty: true,
       name: "Local Edit",
+    },
+  );
+  assert.deepEqual(
+    collectionFormReducer(collectionFormState, {
+      field: "artistNames",
+      type: "change-field",
+      value: "Alpha Artist, Beta Artist",
+    }),
+    {
+      ...collectionFormState,
+      artistNames: "Alpha Artist, Beta Artist",
+      error: null,
+      isDirty: true,
     },
   );
   assert.deepEqual(
@@ -4457,6 +4489,7 @@ async function assertCollectionFormMutationSmoke() {
   };
 
   await updateCollectionFromForm({
+    artistNames: "Alpha Artist, Beta Artist",
     id: 21,
     imageDataUrl: "album-image",
     kind: "album",
@@ -4483,7 +4516,13 @@ async function assertCollectionFormMutationSmoke() {
   assert.deepEqual(updateCalls, [
     [
       "album",
-      { coverImage: "album-image", id: 21, name: "Smoke Album", year: null },
+      {
+        artistNames: "Alpha Artist, Beta Artist",
+        coverImage: "album-image",
+        id: 21,
+        name: "Smoke Album",
+        year: null,
+      },
     ],
     ["artist", { id: 22, name: "Smoke Artist", profileImage: "artist-image" }],
     [

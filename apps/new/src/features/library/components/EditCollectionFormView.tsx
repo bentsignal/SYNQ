@@ -15,6 +15,7 @@ type EditCollectionFormCopy = {
 
 type EditCollectionFormViewProps = {
   actionState: CollectionFormActionState;
+  artistNames?: string;
   collectionError: boolean;
   collectionImagePath: string | null;
   collectionIsMissing: boolean;
@@ -25,6 +26,7 @@ type EditCollectionFormViewProps = {
   isSaving: boolean;
   kind: EditCollectionKind;
   name: string;
+  onChangeArtistNames?: (artistNames: string) => void;
   onChangeName: (name: string) => void;
   onChangeYear: (year: string) => void;
   onPickImage: () => void;
@@ -35,6 +37,7 @@ type EditCollectionFormViewProps = {
 
 export function EditCollectionFormView({
   actionState,
+  artistNames,
   collectionError,
   collectionImagePath,
   collectionIsMissing,
@@ -45,6 +48,7 @@ export function EditCollectionFormView({
   isSaving,
   kind,
   name,
+  onChangeArtistNames,
   onChangeName,
   onChangeYear,
   onPickImage,
@@ -55,6 +59,7 @@ export function EditCollectionFormView({
   return (
     <CollectionFormView
       actionState={actionState}
+      artistNames={artistNames}
       copy={copy}
       errorMessages={[
         collectionIsMissing && "Collection not found.",
@@ -70,6 +75,7 @@ export function EditCollectionFormView({
       isSaving={isSaving}
       kind={kind}
       name={name}
+      onChangeArtistNames={onChangeArtistNames}
       onChangeName={onChangeName}
       onChangeYear={onChangeYear}
       onPickImage={onPickImage}

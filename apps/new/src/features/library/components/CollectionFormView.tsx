@@ -10,6 +10,7 @@ import { getCollectionFormBackLink } from "../services/collection-form-navigatio
 
 export function CollectionFormView({
   actionState,
+  artistNames,
   copy,
   errorMessages = [],
   image,
@@ -19,6 +20,7 @@ export function CollectionFormView({
   isSaving,
   kind,
   name,
+  onChangeArtistNames,
   onChangeName,
   onChangeYear,
   onPickImage,
@@ -43,9 +45,11 @@ export function CollectionFormView({
       >
         <CollectionFormFields
           actionState={actionState}
+          artistNames={artistNames}
           copy={copy}
           kind={kind}
           name={name}
+          onChangeArtistNames={onChangeArtistNames}
           onChangeName={onChangeName}
           onChangeYear={onChangeYear}
           year={year}

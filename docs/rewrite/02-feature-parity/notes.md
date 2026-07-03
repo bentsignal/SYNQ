@@ -43,6 +43,9 @@
   model prefers song-specific cover hashes and falls back to linked album cover
   hashes for display; saves apply picked covers to the first linked album or to
   the song row when the song has no album, matching the old edit behavior.
-- Audit gap retained in todo: old album artist relationship editing. Seeded
-  system playlist exposure was closed by filtering playlist id `1` from
+- Old album artist relationship editing is restored in the new edit-album flow.
+  The old app used an add-artist selection screen; the rewrite intentionally
+  uses a comma-separated Artists field, matching the new song metadata editing
+  pattern while still replacing `artistsAlbums` relationships on save.
+- Seeded system playlist exposure was closed by filtering playlist id `1` from
   previews and blocking its collection mutations.

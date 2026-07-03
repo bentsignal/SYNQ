@@ -15,6 +15,7 @@ export type CollectionFormImage = {
 
 export type CollectionFormViewProps = {
   actionState: CollectionFormActionState;
+  artistNames?: string;
   copy: CollectionFormCopy;
   errorMessages?: (string | false | null | undefined)[];
   image: CollectionFormImage;
@@ -24,6 +25,7 @@ export type CollectionFormViewProps = {
   isSaving: boolean;
   kind: CollectionFormKind;
   name: string;
+  onChangeArtistNames?: (artistNames: string) => void;
   onChangeName: (name: string) => void;
   onChangeYear: (year: string) => void;
   onPickImage: () => void;

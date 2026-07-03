@@ -25,6 +25,7 @@ export type CollectionFormCreateRepository = {
 
 export type CollectionFormUpdateRepository = {
   updateAlbum: (params: {
+    artistNames?: string;
     coverImage?: string | null;
     id: number;
     name: string;
@@ -76,6 +77,7 @@ export const createCollectionFromForm = async ({
 };
 
 export const updateCollectionFromForm = async ({
+  artistNames,
   id,
   imageDataUrl,
   kind,
@@ -83,6 +85,7 @@ export const updateCollectionFromForm = async ({
   repository,
   year,
 }: {
+  artistNames?: string;
   id: number;
   imageDataUrl?: string | null;
   kind: CollectionFormKind;
@@ -93,6 +96,7 @@ export const updateCollectionFromForm = async ({
   switch (kind) {
     case "album":
       return repository.updateAlbum({
+        artistNames,
         coverImage: imageDataUrl,
         id,
         name,

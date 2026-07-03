@@ -15,6 +15,7 @@ import {
 import type { CollectionFormKind } from "./collection-form-service";
 
 type CreateCollectionFromFormCommandParams = {
+  artistNames?: string;
   imageDataUrl?: string | null;
   kind: CollectionFormKind;
   name: string;
@@ -45,6 +46,7 @@ export const createCollectionFromFormCommand = ({
   });
 
 export const updateCollectionFromFormCommand = ({
+  artistNames,
   id,
   imageDataUrl,
   kind,
@@ -52,6 +54,7 @@ export const updateCollectionFromFormCommand = ({
   year,
 }: UpdateCollectionFromFormCommandParams) =>
   updateCollectionFromForm({
+    artistNames,
     id,
     imageDataUrl,
     kind,

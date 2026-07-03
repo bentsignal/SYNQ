@@ -8,6 +8,7 @@ type EditCollectionFormCopy = {
 };
 
 type EditCollectionQueryState = {
+  artistNames?: string;
   imagePath: string | null;
   isMissing: boolean;
   name: string;
@@ -34,6 +35,7 @@ export function useEditCollectionFormController({
     formState,
     imageInitial,
     saveLabel,
+    updateArtistNames,
     updateName,
     updateYear,
   } = useCollectionFormStateController({
@@ -55,6 +57,7 @@ export function useEditCollectionFormController({
 
   return {
     actionState,
+    artistNames: formState.artistNames,
     error: formState.error,
     image: formState.image,
     imageInitial,
@@ -63,6 +66,7 @@ export function useEditCollectionFormController({
     pickImage,
     save,
     saveLabel,
+    updateArtistNames,
     updateName,
     updateYear,
     year: formState.year,

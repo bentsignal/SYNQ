@@ -9,6 +9,8 @@ export type HomeHref =
   | "/player"
   | "/queue"
   | "/(tabs)/import"
+  | "/(tabs)/import/files"
+  | "/(tabs)/import/wifi"
   | "/(tabs)/library"
   | "/(tabs)/settings"
   | `/(tabs)/library/song/${number}`;
@@ -30,9 +32,14 @@ export const getHomeQuickActions = ({
     label: "Library",
   },
   {
-    detail: "Files and Wi-Fi",
-    href: "/(tabs)/import",
-    label: "Import",
+    detail: "Import from files",
+    href: "/(tabs)/import/files",
+    label: "Files",
+  },
+  {
+    detail: "Import from computer",
+    href: "/(tabs)/import/wifi",
+    label: "Wi-Fi",
   },
   {
     detail: "Theme and backup",

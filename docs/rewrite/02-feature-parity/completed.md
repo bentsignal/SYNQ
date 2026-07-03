@@ -32,3 +32,6 @@
   creates missing artist records through the collection update repository.
 - Restored old settings review/support parity in the new Support screen,
   including native store review prompting plus support and social links.
+- Restored old Home direct import-entry parity by exposing separate Files and
+  Wi-Fi quick actions that route to the new import feature's file and network
+  screens.

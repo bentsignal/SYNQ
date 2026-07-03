@@ -12,6 +12,10 @@
   save screen. The new screen owns draft export via
   `use-import-save-export-actions.ts` and `ImportSaveActions.tsx` alongside
   save/discard actions.
+- Old Home `Files` and `Network` import entry points are restored as direct
+  new Home quick actions to `/(tabs)/import/files` and
+  `/(tabs)/import/wifi`. The generic import hub remains available through the
+  tab bar and nested import routes.
 - Old `/ingest/*` was an earlier import stack with placeholder export/save
   steps plus direct file-browser processing. It is intentionally replaced by
   the new import feature; `apps/new/app/ingest/*` now exists only as

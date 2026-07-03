@@ -4844,9 +4844,14 @@ function assertHomeScreenSmoke() {
       label: "Library",
     },
     {
-      detail: "Files and Wi-Fi",
-      href: "/(tabs)/import",
-      label: "Import",
+      detail: "Import from files",
+      href: "/(tabs)/import/files",
+      label: "Files",
+    },
+    {
+      detail: "Import from computer",
+      href: "/(tabs)/import/wifi",
+      label: "Wi-Fi",
     },
     {
       detail: "Theme and backup",

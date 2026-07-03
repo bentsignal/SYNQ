@@ -139,3 +139,5 @@
   navigation and relationship view state.
 - Split import session initial state out of the reducer module so the session
   store can depend on defaults without importing reducer actions.
+- Extracted import library session save/discard execution behind an injectable
+  executor with deterministic smoke coverage for summaries and cache cleanup.

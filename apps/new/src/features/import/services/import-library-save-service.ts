@@ -16,47 +16,36 @@ import {
 } from "./import-library-file-service";
 import { linkImportSongToLibrary } from "./import-library-link-service";
 import {
-  saveImportSongToLibrary,
-  type ImportLibrarySongSaveDependencies,
-} from "./import-library-song-save-executor-service";
+  discardImportSongs,
+  saveImportSongsToLibrary,
+  type ImportLibrarySessionSaveDependencies,
+} from "./import-library-session-save-executor-service";
 
-const importLibrarySongSaveDependencies: ImportLibrarySongSaveDependencies = {
-  deleteImportLibrarySongRows,
-  deleteLibrarySongFiles,
-  insertImportSongDraft,
-  linkImportSongToLibrary,
-  moveImportAudioToLibrary,
-  saveCoverImage,
-  updateImportLibrarySongCover,
-  updateImportLibrarySongPath,
+const importLibrarySessionSaveDependencies: ImportLibrarySessionSaveDependencies =
+  {
+    deleteImportDraftCacheFiles,
+    deleteImportLibrarySongRows,
+    deleteLibrarySongFiles,
+    insertImportSongDraft,
+    linkImportSongToLibrary,
+    moveImportAudioToLibrary,
+    saveCoverImage,
+    updateImportLibrarySongCover,
+    updateImportLibrarySongPath,
+  };
+
+const importDraftDiscardDependencies = {
+  deleteImportDraftCacheFiles,
 };
 
 export async function saveImportSessionToLibrary(
   songs: ImportSongDraft[],
 ): Promise<ImportSaveSummary> {
-  const savedSongIds: number[] = [];
-
-  for (const song of songs) {
-    savedSongIds.push(
-      await saveImportSongToLibrary(song, importLibrarySongSaveDependencies),
-    );
-  }
-
-  return {
-    discarded: 0,
-    saved: savedSongIds.length,
-    savedSongIds,
-  };
+  return saveImportSongsToLibrary(songs, importLibrarySessionSaveDependencies);
 }
 
 export async function discardImportSession(
   songs: ImportSongDraft[],
 ): Promise<ImportSaveSummary> {
-  await deleteImportDraftCacheFiles(songs);
-
-  return {
-    discarded: songs.length,
-    saved: 0,
-    savedSongIds: [],
-  };
+  return discardImportSongs(songs, importDraftDiscardDependencies);
 }

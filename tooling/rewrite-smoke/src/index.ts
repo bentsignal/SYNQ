@@ -196,6 +196,10 @@ import {
   type ImportLibrarySongSaveDependencies,
 } from "../../../apps/new/src/features/import/services/import-library-song-save-executor-service";
 import {
+  discardImportSongs,
+  saveImportSongsToLibrary,
+} from "../../../apps/new/src/features/import/services/import-library-session-save-executor-service";
+import {
   getImportFileCommandErrorMessage,
   getImportFileRemovalResultCommand,
   getImportFileRemovalStartHaptic,
@@ -6203,6 +6207,52 @@ async function assertImportLibrarySavePlanSmoke() {
     "delete-row-42",
     "delete-files-42",
   ]);
+  calls.length = 0;
+
+  assert.deepEqual(
+    await saveImportSongsToLibrary(
+      [importDraft(5), importDraft(6)],
+      {
+        ...createDependencies({ linkedAlbum: true }),
+        deleteImportDraftCacheFiles: async (songs) => {
+          calls.push(`delete-cache-${songs.length}`);
+        },
+      },
+    ),
+    {
+      discarded: 0,
+      saved: 2,
+      savedSongIds: [42, 42],
+    },
+  );
+  assert.deepEqual(calls, [
+    "insert-5",
+    "move-42-import-5.mp3-/tmp/import-5.mp3",
+    "update-path-42-/library/42.mp3",
+    "link-42",
+    "insert-6",
+    "move-42-import-6.mp3-/tmp/import-6.mp3",
+    "update-path-42-/library/42.mp3",
+    "link-42",
+  ]);
+  calls.length = 0;
+
+  assert.deepEqual(
+    await discardImportSongs(
+      [importDraft(7), importDraft(8)],
+      {
+        deleteImportDraftCacheFiles: async (songs) => {
+          calls.push(`delete-cache-${songs.map((song) => song.id).join(",")}`);
+        },
+      },
+    ),
+    {
+      discarded: 2,
+      saved: 0,
+      savedSongIds: [],
+    },
+  );
+  assert.deepEqual(calls, ["delete-cache-7,8"]);
 }
 
 function assertBackupScreenSmoke() {

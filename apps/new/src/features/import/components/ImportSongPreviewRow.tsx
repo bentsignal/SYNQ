@@ -5,7 +5,6 @@ import {
   SongRowDuration,
   SongRowShell,
   SongRowTextStack,
-  songRowPartStyles,
 } from "@/src/features/app-shell/components/SongRowParts";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { getImportSongEditHref } from "../services/import-song-edit-navigation-service";
@@ -42,7 +41,7 @@ export function ImportSongPreviewRow({
       </SongRowTextStack>
       <SongRowDuration duration={song.duration} theme={theme} />
       {showActions ? (
-        <View style={[songRowPartStyles.actionGroup, styles.actionGroup]}>
+        <View className="flex-row gap-2" style={styles.actionGroup}>
           {canEditSongs ? (
             <Link asChild href={editHref}>
               <Pressable

@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import {
   Pressable,
-  StyleSheet,
   Text,
   type TextStyle,
   View,
@@ -31,8 +30,8 @@ export function SongRowShell({
 }) {
   return (
     <View
+      className="flex-row items-center gap-3 border-b px-3.5 py-2.5"
       style={[
-        styles.row,
         { borderBottomColor: theme.borderSubtle, minHeight },
         isActive ? { backgroundColor: theme.borderSubtle } : null,
         style,
@@ -63,16 +62,18 @@ export function SongRowTextStack({
   theme: SongRowTheme;
 }) {
   const content = (
-    <View style={[styles.rowText, wrapperStyle]}>
+    <View className="min-w-0 flex-1 gap-1" style={wrapperStyle}>
       <Text
         numberOfLines={1}
-        style={[styles.songTitle, { color: theme.primaryText }, titleStyle]}
+        className="text-[15px] font-extrabold leading-5"
+        style={[{ color: theme.primaryText }, titleStyle]}
       >
         {title}
       </Text>
       <Text
         numberOfLines={1}
-        style={[styles.songMeta, { color: theme.secondaryText }, metaStyle]}
+        className="text-[13px] leading-[18px]"
+        style={[{ color: theme.secondaryText }, metaStyle]}
       >
         {meta}
       </Text>
@@ -91,7 +92,10 @@ export function SongRowDuration({
   theme: SongRowTheme;
 }) {
   return (
-    <Text style={[styles.duration, { color: theme.primaryText }]}>
+    <Text
+      className="min-w-11 text-right text-[13px] font-extrabold"
+      style={{ color: theme.primaryText }}
+    >
       {formatDurationMs(duration)}
     </Text>
   );
@@ -122,8 +126,8 @@ export function SongRowActionButton({
       accessibilityRole="button"
       disabled={disabled}
       onPress={onPress}
+      className="min-h-9 items-center justify-center rounded-lg border px-2.5"
       style={[
-        styles.actionButton,
         {
           backgroundColor,
           borderColor: borderColor ?? backgroundColor,
@@ -132,67 +136,18 @@ export function SongRowActionButton({
         disabled ? styles.disabled : null,
       ]}
     >
-      <Text style={[styles.actionText, { color: textColor }]}>{label}</Text>
+      <Text
+        className="text-xs font-extrabold uppercase"
+        style={{ color: textColor }}
+      >
+        {label}
+      </Text>
     </Pressable>
   );
 }
 
-export const songRowPartStyles = StyleSheet.create({
-  actionGroup: {
-    flexDirection: "row",
-    gap: 8,
-  },
+const styles = {
   disabled: {
     opacity: 0.45,
   },
-});
-
-const styles = StyleSheet.create({
-  actionButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    justifyContent: "center",
-    minHeight: 36,
-    paddingHorizontal: 10,
-  },
-  actionText: {
-    fontSize: 12,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  disabled: {
-    opacity: 0.45,
-  },
-  duration: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    minWidth: 44,
-    textAlign: "right",
-  },
-  row: {
-    alignItems: "center",
-    borderBottomWidth: 1,
-    flexDirection: "row",
-    gap: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  rowText: {
-    flex: 1,
-    gap: 4,
-    minWidth: 0,
-  },
-  songMeta: {
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  songTitle: {
-    fontSize: 15,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 20,
-  },
-});
+} satisfies Record<string, ViewStyle>;

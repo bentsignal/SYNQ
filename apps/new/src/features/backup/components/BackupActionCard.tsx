@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { BackupActionCard as BackupActionCardConfig } from "../services/backup-screen-service";
 import type { BackupOperation } from "../types/backup-session";
@@ -25,28 +25,27 @@ export function BackupActionCard({
 
   return (
     <View
-      style={[
-        styles.card,
-        { backgroundColor: theme.surface, borderColor: theme.border },
-      ]}
+      className="gap-3.5 rounded-lg border p-4"
+      style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
-      <View style={styles.cardText}>
-        <View style={styles.cardTitleRow}>
-          <Text style={[styles.cardTitle, { color: theme.primaryText }]}>
+      <View className="gap-2">
+        <View className="flex-row flex-wrap items-center gap-2.5">
+          <Text
+            className="shrink text-lg font-extrabold leading-6"
+            style={{ color: theme.primaryText }}
+          >
             {action.title}
           </Text>
           {actionState.showPremiumBadge ? (
             <Text
-              style={[
-                styles.premiumPill,
-                { borderColor: theme.border, color: theme.accent },
-              ]}
+              className="overflow-hidden rounded-lg border bg-[#e8f3ef] px-2 py-1 text-[11px] font-extrabold uppercase"
+              style={{ borderColor: theme.border, color: theme.accent }}
             >
               Premium
             </Text>
           ) : null}
         </View>
-        <Text style={[styles.cardBody, { color: theme.secondaryText }]}>
+        <Text className="text-sm leading-5" style={{ color: theme.secondaryText }}>
           {action.body}
         </Text>
       </View>
@@ -54,84 +53,20 @@ export function BackupActionCard({
         accessibilityRole="button"
         disabled={actionState.isDisabled}
         onPress={() => onRunOperation(action.operation)}
-        style={[
-          actionState.isDanger ? styles.dangerButton : styles.primaryButton,
-          {
-            backgroundColor: actionState.isDanger
-              ? theme.danger
-              : theme.accent,
-          },
-          actionState.isDisabled ? styles.disabled : null,
-        ]}
+        className={`min-h-11 items-center justify-center rounded-lg px-3.5 ${
+          actionState.isDisabled ? "opacity-50" : ""
+        }`}
+        style={{
+          backgroundColor: actionState.isDanger ? theme.danger : theme.accent,
+        }}
       >
-        <Text style={[styles.buttonText, { color: theme.onAccent }]}>
+        <Text
+          className="text-[13px] font-extrabold uppercase"
+          style={{ color: theme.onAccent }}
+        >
           {actionState.buttonLabel}
         </Text>
       </Pressable>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 14,
-    padding: 16,
-  },
-  cardText: {
-    gap: 8,
-  },
-  cardTitleRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-  },
-  cardTitle: {
-    flexShrink: 1,
-    fontSize: 18,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 24,
-  },
-  premiumPill: {
-    backgroundColor: "#e8f3ef",
-    borderRadius: 8,
-    borderWidth: 1,
-    fontSize: 11,
-    fontWeight: "800",
-    letterSpacing: 0,
-    overflow: "hidden",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    textTransform: "uppercase",
-  },
-  cardBody: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  primaryButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    justifyContent: "center",
-    minHeight: 44,
-    paddingHorizontal: 14,
-  },
-  dangerButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    justifyContent: "center",
-    minHeight: 44,
-    paddingHorizontal: 14,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  buttonText: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-});

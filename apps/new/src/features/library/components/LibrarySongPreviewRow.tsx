@@ -5,7 +5,6 @@ import {
   SongRowDuration,
   SongRowShell,
   SongRowTextStack,
-  songRowPartStyles,
 } from "@/src/features/app-shell/components/SongRowParts";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
@@ -52,7 +51,7 @@ export function LibrarySongPreviewRow({
         theme={theme}
       />
       <SongRowDuration duration={song.duration} theme={theme} />
-      <View style={songRowPartStyles.actionGroup}>
+      <View className="flex-row gap-2">
         <SongRowActionButton
           accessibilityLabel={`Play ${song.title}`}
           backgroundColor={theme.accent}

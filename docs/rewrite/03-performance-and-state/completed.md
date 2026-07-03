@@ -26,3 +26,6 @@
   classes, lowering the StyleSheet ratchet from 111 calls to 106.
 - Converted another app-shell/backup presentation batch to utility classes,
   lowering the StyleSheet ratchet from 106 calls to 101.
+- Converted the remaining eligible backup action card plus app-shell row
+  presentation styles to utility classes, lowering the StyleSheet ratchet from
+  101 calls to 96.

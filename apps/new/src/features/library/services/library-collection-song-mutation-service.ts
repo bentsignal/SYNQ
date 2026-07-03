@@ -83,3 +83,7 @@ export const getCollectionSongRowActionState = ({
     upLabel: isMoving ? "Moving" : "Up",
   };
 };
+
+export type CollectionSongRowActionState = ReturnType<
+  typeof getCollectionSongRowActionState
+>;

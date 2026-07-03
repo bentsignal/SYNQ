@@ -341,3 +341,5 @@
 - Moved library song detail play/queue haptic, playback, queueing, and
   navigation sequencing out of the React hook and into a focused action-flow
   service.
+- Moved backup operation confirmation, haptic, run, and reset sequencing out
+  of the screen controller and into a focused action-flow service.

@@ -3,12 +3,12 @@ import { usePremiumEntitlementSelector } from "@/src/features/premium/state/Prem
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
   getBackupActionState,
-  getBackupConfirmationState,
-  getBackupOperationConfirmCommand,
-  getBackupOperationStartCommand,
-  getBackupResetStatusCommand,
   getBackupStatusState,
 } from "../services/backup-screen-service";
+import {
+  runBackupOperationAction,
+  runBackupResetStatusAction,
+} from "../services/backup-screen-action-flow-service";
 import type { BackupOperation } from "../types/backup-session";
 import { useBackupPhaseEffects } from "./use-backup-phase-effects";
 import { useBackupSession } from "./use-backup-session";
@@ -24,33 +24,18 @@ export function useBackupScreenController() {
   useBackupPhaseEffects(state);
 
   const runBackupOperation = (operation: BackupOperation) => {
-    sendHaptic(getBackupOperationStartCommand(operation).haptic);
-
-    if (operation === "backup") {
-      void runOperation(operation);
-      return;
-    }
-
-    const confirmation = getBackupConfirmationState(operation);
-    if (!confirmation) {
-      return;
-    }
-
-    showNativeConfirmationAlert({
-      body: confirmation.body,
-      cancelLabel: "Cancel",
-      confirmLabel: confirmation.confirmLabel,
-      onConfirm: () => {
-        sendHaptic(getBackupOperationConfirmCommand(operation).haptic);
-        void runOperation(operation);
+    runBackupOperationAction({
+      operation,
+      runOperation: (nextOperation) => {
+        void runOperation(nextOperation);
       },
-      title: confirmation.title,
+      sendHaptic,
+      showConfirmation: showNativeConfirmationAlert,
     });
   };
 
   const resetStatus = () => {
-    sendHaptic(getBackupResetStatusCommand().haptic);
-    reset();
+    runBackupResetStatusAction({ reset, sendHaptic });
   };
 
   const getActionState = (operation: BackupOperation) =>

@@ -897,6 +897,10 @@ import {
   getBackupStatusState,
 } from "../../../apps/new/src/features/backup/services/backup-screen-service";
 import {
+  runBackupOperationAction,
+  runBackupResetStatusAction,
+} from "../../../apps/new/src/features/backup/services/backup-screen-action-flow-service";
+import {
   getBackupPhaseTransitionEffects,
 } from "../../../apps/new/src/features/backup/services/backup-phase-effect-service";
 import {
@@ -11309,6 +11313,51 @@ function assertBackupScreenSmoke() {
   assert.deepEqual(getBackupResetStatusCommand(), {
     haptic: "light",
   });
+  const backupScreenActionEvents: unknown[] = [];
+  const backupScreenActionDependencies = {
+    runOperation: (operation: string) => {
+      backupScreenActionEvents.push(["run", operation]);
+    },
+    sendHaptic: (haptic: string) => {
+      backupScreenActionEvents.push(["haptic", haptic]);
+    },
+    showConfirmation: (params: { onConfirm: () => void; title: string }) => {
+      backupScreenActionEvents.push(["confirm", params.title]);
+      params.onConfirm();
+    },
+  };
+  runBackupOperationAction({
+    operation: "backup",
+    ...backupScreenActionDependencies,
+  });
+  runBackupOperationAction({
+    operation: "restore",
+    ...backupScreenActionDependencies,
+  });
+  runBackupOperationAction({
+    operation: "erase",
+    ...backupScreenActionDependencies,
+  });
+  runBackupResetStatusAction({
+    reset: () => {
+      backupScreenActionEvents.push(["reset"]);
+    },
+    sendHaptic: backupScreenActionDependencies.sendHaptic,
+  });
+  assert.deepEqual(backupScreenActionEvents, [
+    ["haptic", "light"],
+    ["run", "backup"],
+    ["haptic", "light"],
+    ["confirm", "Restore library"],
+    ["haptic", "medium"],
+    ["run", "restore"],
+    ["haptic", "medium"],
+    ["confirm", "Erase library"],
+    ["haptic", "heavy"],
+    ["run", "erase"],
+    ["haptic", "light"],
+    ["reset"],
+  ]);
   assert.deepEqual(getBackupStatusState(idleState), {
     canReset: false,
     isFailure: false,

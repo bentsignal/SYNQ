@@ -232,3 +232,5 @@
   blocked and successful play/queue sequencing.
 - Added direct library song detail playback action-flow smoke coverage for
   blocked and successful play/queue sequencing.
+- Added direct backup screen action-flow smoke coverage for immediate,
+  confirmed, destructive, and reset sequencing.

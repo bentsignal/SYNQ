@@ -88,6 +88,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: playback native status subscription bookkeeping now lives in a
     focused listener registry instead of the track-player adapter owning player
     lifecycle and event-listener replacement together.
+  - Done: playback native ad/library player ownership now lives in a focused
+    player registry instead of the track-player adapter owning player
+    lifecycle, loaded-song bookkeeping, and command orchestration together.
   - Done: library collection song row remove/reorder controls now live in a
     focused row-actions component instead of the row renderer owning every
     collection-song control surface.

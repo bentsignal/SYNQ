@@ -1,20 +1,10 @@
-import {
-  createAudioPlayer,
-  type AudioPlayer,
-} from "expo-audio";
 import type {
   PlaybackQueueItem,
   PlaybackState,
 } from "../types/playback-state";
-import {
-  type TrackPlayerSource,
-  type TrackPlayerStatusSnapshot,
-} from "./playback-native-status-service";
-import {
-  configurePlaybackAudio,
-  playbackAdAudio,
-} from "./playback-native-audio-service";
-import { createTrackPlayerStatusListenerRegistry } from "./playback-native-status-listener-service";
+import { configurePlaybackAudio } from "./playback-native-audio-service";
+import { createPlaybackNativePlayerRegistry } from "./playback-native-player-service";
+import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
 
 export type TrackPlayerAdapter = {
   destroy: () => Promise<void>;
@@ -45,106 +35,21 @@ export const createUnavailableTrackPlayerAdapter = (): TrackPlayerAdapter => ({
 });
 
 export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
-  let adPlayer: AudioPlayer | null = null;
-  let libraryPlayer: AudioPlayer | null = null;
-  let loadedSongId: number | null = null;
-  let activeSource: TrackPlayerSource | null = null;
-  const statusListeners = createTrackPlayerStatusListenerRegistry({
-    getLoadedSongId: () => loadedSongId,
-  });
-
-  const removeAdPlayer = () => {
-    statusListeners.removeAd();
-
-    if (adPlayer) {
-      adPlayer.remove();
-      adPlayer = null;
-    }
-
-    if (activeSource === "ad") {
-      activeSource = null;
-    }
-  };
-
-  const removeLibraryPlayer = () => {
-    statusListeners.removeLibrary();
-
-    if (libraryPlayer) {
-      libraryPlayer.remove();
-      libraryPlayer = null;
-      loadedSongId = null;
-    }
-
-    if (activeSource === "library") {
-      activeSource = null;
-    }
-  };
-
-  const unloadAllSounds = async () => {
-    removeAdPlayer();
-    removeLibraryPlayer();
-  };
+  const playerRegistry = createPlaybackNativePlayerRegistry();
 
   const playSong = async (song: PlaybackQueueItem) => {
-    if (!song.pathToFile) {
-      throw new Error("This song does not have a playable file path.");
-    }
-
     await configurePlaybackAudio();
-    removeAdPlayer();
-
-    if (libraryPlayer && loadedSongId === song.id) {
-      activeSource = "library";
-      await libraryPlayer.seekTo(0);
-      libraryPlayer.play();
-      return;
-    }
-
-    removeLibraryPlayer();
-
-    libraryPlayer = createAudioPlayer({ uri: song.pathToFile });
-    loadedSongId = song.id;
-    activeSource = "library";
-    statusListeners.attach(libraryPlayer, "library");
-    libraryPlayer.play();
+    await playerRegistry.playLibrarySong(song);
   };
 
   const playAd = async () => {
     await configurePlaybackAudio();
-
-    if (libraryPlayer) {
-      libraryPlayer.pause();
-    }
-
-    removeAdPlayer();
-
-    adPlayer = createAudioPlayer(playbackAdAudio);
-    activeSource = "ad";
-    statusListeners.attach(adPlayer, "ad");
-    adPlayer.play();
-  };
-
-  const resumeLibrary = async () => {
-    removeAdPlayer();
-
-    if (libraryPlayer) {
-      activeSource = "library";
-      libraryPlayer.play();
-    }
+    playerRegistry.playAd();
   };
 
   return {
-    destroy: unloadAllSounds,
-    pause: async () => {
-      if (activeSource === "ad" && adPlayer) {
-        adPlayer.pause();
-        return;
-      }
-
-      if (libraryPlayer) {
-        libraryPlayer.pause();
-      }
-    },
+    destroy: playerRegistry.destroy,
+    pause: playerRegistry.pause,
     play: playSong,
     playAd,
     restore: async (state) => {
@@ -157,44 +62,10 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
         await playSong(activeSong);
       }
     },
-    resume: async () => {
-      if (activeSource === "ad" && adPlayer) {
-        adPlayer.play();
-        return;
-      }
-
-      if (libraryPlayer) {
-        activeSource = "library";
-        libraryPlayer.play();
-      }
-    },
-    resumeLibrary,
-    seekTo: async (position) => {
-      if (libraryPlayer) {
-        await libraryPlayer.seekTo(position / 1000);
-      }
-    },
-    setStatusListener: (listener) => {
-      statusListeners.setListener(listener);
-
-      if (!listener) {
-        return;
-      }
-
-      statusListeners.attach(libraryPlayer, "library");
-      statusListeners.attach(adPlayer, "ad");
-    },
-    stop: async () => {
-      if (adPlayer) {
-        adPlayer.pause();
-        await adPlayer.seekTo(0);
-      }
-
-      if (libraryPlayer) {
-        libraryPlayer.pause();
-        await libraryPlayer.seekTo(0);
-      }
-      activeSource = null;
-    },
+    resume: playerRegistry.resume,
+    resumeLibrary: playerRegistry.resumeLibrary,
+    seekTo: playerRegistry.seekLibraryTo,
+    setStatusListener: playerRegistry.setStatusListener,
+    stop: playerRegistry.stop,
   };
 };

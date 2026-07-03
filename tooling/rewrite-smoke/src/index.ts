@@ -242,6 +242,12 @@ import {
   type ImportLibraryLinkDependencies,
 } from "../../../apps/new/src/features/import/services/import-library-link-executor-service";
 import {
+  getImportAlbumCoverUpdateParams,
+  getImportArtistAlbumLinkParams,
+  getImportSongAlbumLinkParams,
+  getImportSongArtistLinkParams,
+} from "../../../apps/new/src/features/import/services/import-library-link-step-service";
+import {
   deleteLibrarySongFilesWithDependencies,
   getImportLibraryDirectoryWithDependencies,
   getImportLibrarySongDirectory,
@@ -9214,6 +9220,30 @@ async function assertImportLibraryLinkExecutorSmoke() {
       calls.push(`update-album-cover:${albumId}:${coverImage}`);
     },
   };
+
+  assert.deepEqual(
+    getImportSongArtistLinkParams({ artistId: 7, songId: 42 }),
+    { artistId: 7, songId: 42 },
+  );
+  assert.deepEqual(
+    getImportSongAlbumLinkParams({ albumId: 70, songId: 42, track: null }),
+    { albumId: 70, songId: 42, track: null },
+  );
+  assert.deepEqual(
+    getImportArtistAlbumLinkParams({ albumId: 70, artistId: 7 }),
+    { albumId: 70, artistId: 7 },
+  );
+  assert.deepEqual(
+    getImportAlbumCoverUpdateParams({
+      albumId: 70,
+      coverImage: "cover-hash",
+    }),
+    { albumId: 70, coverImage: "cover-hash" },
+  );
+  assert.equal(
+    getImportAlbumCoverUpdateParams({ albumId: 70, coverImage: null }),
+    null,
+  );
 
   assert.equal(await ensureImportLibraryArtist(" Alice ", dependencies), 7);
   assert.equal(await ensureImportLibraryArtist(" Charlie ", dependencies), 100);

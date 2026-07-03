@@ -3,6 +3,12 @@ import {
   ensureImportLibraryAlbum,
   ensureImportLibraryArtist,
 } from "./import-library-entity-link-service";
+import {
+  getImportAlbumCoverUpdateParams,
+  getImportArtistAlbumLinkParams,
+  getImportSongAlbumLinkParams,
+  getImportSongArtistLinkParams,
+} from "./import-library-link-step-service";
 import { buildImportLibrarySongSavePlan } from "./import-library-save-plan-service";
 
 type ImportSongLibraryLinkResult = {
@@ -57,13 +63,16 @@ const updateAlbumCover = async ({
   artwork: string | null;
   dependencies: ImportLibraryLinkDependencies;
 }) => {
-  const coverImage = await dependencies.saveCoverImage(artwork);
+  const params = getImportAlbumCoverUpdateParams({
+    albumId,
+    coverImage: await dependencies.saveCoverImage(artwork),
+  });
 
-  if (!coverImage) {
+  if (!params) {
     return;
   }
 
-  await dependencies.updateAlbumCover({ albumId, coverImage });
+  await dependencies.updateAlbumCover(params);
 };
 
 const linkSongArtists = async ({
@@ -80,7 +89,9 @@ const linkSongArtists = async ({
   for (const artistName of artistNames) {
     const artistId = await ensureImportLibraryArtist(artistName, dependencies);
     artistIds.push(artistId);
-    await dependencies.linkSongArtist({ artistId, songId });
+    await dependencies.linkSongArtist(
+      getImportSongArtistLinkParams({ artistId, songId }),
+    );
   }
 
   return artistIds;
@@ -100,15 +111,19 @@ const linkSongAlbum = async ({
   songId: number;
 }) => {
   const albumId = await ensureImportLibraryAlbum(albumName, dependencies);
-  await dependencies.linkSongAlbum({
-    albumId,
-    songId,
-    track: song.track,
-  });
+  await dependencies.linkSongAlbum(
+    getImportSongAlbumLinkParams({
+      albumId,
+      songId,
+      track: song.track,
+    }),
+  );
   await updateAlbumCover({ albumId, artwork: song.artwork, dependencies });
 
   for (const artistId of artistIds) {
-    await dependencies.linkArtistAlbum({ albumId, artistId });
+    await dependencies.linkArtistAlbum(
+      getImportArtistAlbumLinkParams({ albumId, artistId }),
+    );
   }
 
   return true;

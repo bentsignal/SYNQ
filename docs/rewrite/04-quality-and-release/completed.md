@@ -160,3 +160,5 @@
   liked-delete parameter planning.
 - Added direct import file selection step smoke coverage for cached-file MIME
   fallback and Wi-Fi file type fallback.
+- Added direct import library link step smoke coverage for song/album/artist
+  link parameter planning and nullable cover update planning.

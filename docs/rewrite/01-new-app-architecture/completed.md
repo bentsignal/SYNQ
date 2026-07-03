@@ -268,3 +268,5 @@
   helpers out of the main membership executor.
 - Split import file selection cached-file and Wi-Fi process parameter planning
   out of the main file selection executor.
+- Split import library song, album, artist-album, and cover update link
+  parameter planning out of the main library link executor.

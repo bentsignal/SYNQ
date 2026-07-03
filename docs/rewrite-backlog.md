@@ -64,6 +64,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
     repository.
   - Done: collection create/update writes now live in focused repository
     modules instead of one broad collection mutation repository.
+  - Done: library song liked and delete writes now live in focused
+    repositories instead of the metadata edit repository owning playlist and
+    file-storage side effects.
   - Done: collection detail song-row aggregation now lives in a focused song
     detail service instead of the detail shell builder owning song grouping,
     artist/album fallback labels, and track sorting.

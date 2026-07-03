@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { Alert } from "react-native";
 import { router } from "expo-router";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { deleteLibrarySong } from "../repository/song-metadata-repository";
+import { deleteLibrarySong } from "../repository/library-song-delete-repository";
 import {
   type LibrarySongDetail,
 } from "../services/library-song-detail-service";

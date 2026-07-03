@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { setLibrarySongLiked } from "../repository/song-metadata-repository";
+import { setLibrarySongLiked } from "../repository/library-song-liked-repository";
 import {
   type LibrarySongDetail,
 } from "../services/library-song-detail-service";

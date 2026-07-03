@@ -146,3 +146,5 @@
   relationship cleanup adapters into smaller repository modules.
 - Added direct collection update step smoke coverage for uniqueness/name
   preparation, optional image patches, and protected playlist guards.
+- Added direct collection create step smoke coverage for uniqueness/name
+  preparation, created-id assertions, and image preparation.

@@ -1,4 +1,9 @@
-import { assertCollectionName } from "../services/collection-metadata-service";
+import {
+  assertCreatedCollectionId,
+  getOptionalCollectionProfileImageCreate,
+  getRequiredCollectionCoverCreate,
+  getUniqueCollectionCreateName,
+} from "./collection-create-step-repository";
 
 export type CollectionCreateDependencies = {
   assertUniqueCollectionName: (params: {
@@ -21,20 +26,6 @@ export type CollectionCreateDependencies = {
   saveCoverImage: (coverImage?: string | null) => Promise<string | null>;
 };
 
-const assertCreatedCollectionId = ({
-  id,
-  kind,
-}: {
-  id: number | null;
-  kind: "Album" | "Artist" | "Playlist";
-}) => {
-  if (!id) {
-    throw new Error(`${kind} could not be created.`);
-  }
-
-  return id;
-};
-
 export async function createAlbumWithDependencies(
   {
     coverImage,
@@ -47,16 +38,18 @@ export async function createAlbumWithDependencies(
   },
   dependencies: CollectionCreateDependencies,
 ) {
-  const cleanName = assertCollectionName({ kind: "album", name });
-
-  await dependencies.assertUniqueCollectionName({
+  const cleanName = await getUniqueCollectionCreateName({
+    dependencies,
     kind: "album",
-    name: cleanName,
+    name,
   });
 
   const id = assertCreatedCollectionId({
     id: await dependencies.insertAlbumRow({
-      coverImage: await dependencies.saveCoverImage(coverImage),
+      coverImage: await getRequiredCollectionCoverCreate({
+        coverImage,
+        dependencies,
+      }),
       name: cleanName,
       year,
     }),
@@ -80,18 +73,18 @@ export async function createArtistWithDependencies(
   },
   dependencies: CollectionCreateDependencies,
 ) {
-  const cleanName = assertCollectionName({ kind: "artist", name });
-
-  await dependencies.assertUniqueCollectionName({
+  const cleanName = await getUniqueCollectionCreateName({
+    dependencies,
     kind: "artist",
-    name: cleanName,
+    name,
   });
 
   const id = assertCreatedCollectionId({
     id: await dependencies.insertArtistRow({
-      ...(profileImage !== undefined
-        ? { profileImage: await dependencies.saveCoverImage(profileImage) }
-        : {}),
+      ...(await getOptionalCollectionProfileImageCreate({
+        dependencies,
+        profileImage,
+      })),
       name: cleanName,
     }),
     kind: "Artist",
@@ -113,16 +106,18 @@ export async function createPlaylistWithDependencies(
   },
   dependencies: CollectionCreateDependencies,
 ) {
-  const cleanName = assertCollectionName({ kind: "playlist", name });
-
-  await dependencies.assertUniqueCollectionName({
+  const cleanName = await getUniqueCollectionCreateName({
+    dependencies,
     kind: "playlist",
-    name: cleanName,
+    name,
   });
 
   const id = assertCreatedCollectionId({
     id: await dependencies.insertPlaylistRow({
-      coverImage: await dependencies.saveCoverImage(coverImage),
+      coverImage: await getRequiredCollectionCoverCreate({
+        coverImage,
+        dependencies,
+      }),
       name: cleanName,
     }),
     kind: "Playlist",

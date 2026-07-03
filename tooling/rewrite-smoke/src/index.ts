@@ -508,6 +508,12 @@ import {
   type CollectionCreateDependencies,
 } from "../../../apps/new/src/features/library/repository/collection-create-executor-repository";
 import {
+  assertCreatedCollectionId,
+  getOptionalCollectionProfileImageCreate,
+  getRequiredCollectionCoverCreate,
+  getUniqueCollectionCreateName,
+} from "../../../apps/new/src/features/library/repository/collection-create-step-repository";
+import {
   updateAlbumWithDependencies,
   updateArtistWithDependencies,
   updatePlaylistWithDependencies,
@@ -7414,6 +7420,48 @@ async function assertCollectionCreateExecutorSmoke() {
     },
   };
 
+  assert.equal(
+    await getUniqueCollectionCreateName({
+      dependencies,
+      kind: "album",
+      name: "  Helper Album  ",
+    }),
+    "Helper Album",
+  );
+  assert.deepEqual(calls, [
+    ["unique", { kind: "album", name: "Helper Album" }],
+  ]);
+
+  calls.length = 0;
+  assert.equal(assertCreatedCollectionId({ id: 29, kind: "Album" }), 29);
+  assert.throws(
+    () => assertCreatedCollectionId({ id: null, kind: "Playlist" }),
+    /Playlist could not be created/,
+  );
+  assert.deepEqual(calls, []);
+
+  assert.equal(
+    await getRequiredCollectionCoverCreate({
+      coverImage: "cover-helper",
+      dependencies,
+    }),
+    "saved-image",
+  );
+  assert.deepEqual(calls, [["save-image", "cover-helper"]]);
+
+  calls.length = 0;
+  savedImage = null;
+  assert.deepEqual(
+    await getOptionalCollectionProfileImageCreate({
+      dependencies,
+      profileImage: "profile-helper",
+    }),
+    { profileImage: null },
+  );
+  assert.deepEqual(calls, [["save-image", "profile-helper"]]);
+
+  calls.length = 0;
+  savedImage = "saved-image";
   assert.deepEqual(
     await createAlbumWithDependencies(
       {

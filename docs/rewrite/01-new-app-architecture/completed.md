@@ -255,3 +255,5 @@
   repositories behind the existing collection delete facade.
 - Split collection update name validation, optional image persistence, and
   protected-playlist guard steps out of the main update executor.
+- Split collection create name validation, required/optional image preparation,
+  and created-id assertion steps out of the main create executor.

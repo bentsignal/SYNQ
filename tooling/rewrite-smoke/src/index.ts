@@ -606,6 +606,15 @@ import {
   saveSettingsToJsonFileWithDependencies,
   type SettingsJsonFileStoreDependencies,
 } from "../../../apps/new/src/features/settings/services/settings-json-file-store-service";
+import {
+  getExportFileNameFromPath,
+  sanitizeExportFileName,
+} from "../../../apps/new/src/features/export/services/export-file-name-service";
+import {
+  getShareExportFileName,
+  shareExportFilesWithDependencies,
+  type ShareExportFilesDependencies,
+} from "../../../apps/new/src/features/export/services/share-export-files-executor-service";
 
 const song = ({
   duration = 180_000,
@@ -7907,6 +7916,117 @@ async function assertSettingsJsonFileStoreSmoke() {
   await assert.rejects(() => saveSettings(defaultSettings), /document directory/);
 }
 
+async function assertShareExportFilesExecutorSmoke() {
+  const calls: string[] = [];
+  let cacheDirectory: string | null = "file:///cache/";
+  let failCopyFrom: string | null = null;
+  const dependencies: ShareExportFilesDependencies = {
+    get cacheDirectory() {
+      return cacheDirectory;
+    },
+    copyFile: async ({ from, to }) => {
+      calls.push(`copy:${from}:${to}`);
+      if (from === failCopyFrom) {
+        throw new Error("Copy failed.");
+      }
+    },
+    deletePath: async (path, options) => {
+      calls.push(`delete:${path}:${String(options.idempotent)}`);
+    },
+    makeDirectory: async (path, options) => {
+      calls.push(`mkdir:${path}:${String(options.intermediates)}`);
+    },
+    now: () => 12345,
+    sharePath: async (path) => {
+      calls.push(`share:${path}`);
+    },
+  };
+  const shareFiles = (files: { fileNameFallback: string; sourceUri: string }[]) =>
+    shareExportFilesWithDependencies({
+      dependencies,
+      directoryPrefix: "synq-smoke-export",
+      files,
+      noFilesMessage: "No smoke files are available.",
+    });
+
+  assert.equal(sanitizeExportFileName("  Smoke Song!.mp3  "), "Smoke-Song-.mp3");
+  assert.equal(sanitizeExportFileName("   "), "song");
+  assert.equal(
+    getExportFileNameFromPath("file:///cache/My%20Song.m4a", "Fallback Song"),
+    "My-Song.m4a",
+  );
+  assert.equal(
+    getShareExportFileName(
+      { fileNameFallback: "Fallback Song", sourceUri: "file:///tmp/Track 1.mp3" },
+      0,
+    ),
+    "1-Track-1.mp3",
+  );
+
+  await assert.rejects(() => shareFiles([]), /No smoke files/);
+
+  assert.deepEqual(
+    await shareFiles([
+      {
+        fileNameFallback: "Only Song",
+        sourceUri: "file:///tmp/only.mp3",
+      },
+    ]),
+    { exported: 1 },
+  );
+  assert.deepEqual(calls, ["share:file:///tmp/only.mp3"]);
+
+  calls.length = 0;
+  assert.deepEqual(
+    await shareFiles([
+      {
+        fileNameFallback: "First Song",
+        sourceUri: "file:///tmp/first.mp3",
+      },
+      {
+        fileNameFallback: "Second Song",
+        sourceUri: "file:///tmp/second song.mp3",
+      },
+    ]),
+    { exported: 2 },
+  );
+  assert.deepEqual(calls, [
+    "mkdir:file:///cache/synq-smoke-export-12345:true",
+    "copy:file:///tmp/first.mp3:file:///cache/synq-smoke-export-12345/1-first.mp3",
+    "copy:file:///tmp/second song.mp3:file:///cache/synq-smoke-export-12345/2-second-song.mp3",
+    "share:file:///cache/synq-smoke-export-12345",
+    "delete:file:///cache/synq-smoke-export-12345:true",
+  ]);
+
+  cacheDirectory = null;
+  await assert.rejects(
+    () =>
+      shareFiles([
+        { fileNameFallback: "First Song", sourceUri: "file:///tmp/first.mp3" },
+        { fileNameFallback: "Second Song", sourceUri: "file:///tmp/second.mp3" },
+      ]),
+    /Cache directory is unavailable/,
+  );
+
+  cacheDirectory = "file:///cache/";
+  calls.length = 0;
+  failCopyFrom = "file:///tmp/second.mp3";
+  await assert.rejects(
+    () =>
+      shareFiles([
+        { fileNameFallback: "First Song", sourceUri: "file:///tmp/first.mp3" },
+        { fileNameFallback: "Second Song", sourceUri: "file:///tmp/second.mp3" },
+      ]),
+    /Copy failed/,
+  );
+  assert.deepEqual(calls, [
+    "mkdir:file:///cache/synq-smoke-export-12345:true",
+    "copy:file:///tmp/first.mp3:file:///cache/synq-smoke-export-12345/1-first.mp3",
+    "copy:file:///tmp/second.mp3:file:///cache/synq-smoke-export-12345/2-second.mp3",
+    "delete:file:///cache/synq-smoke-export-12345:true",
+  ]);
+}
+
 assertDurationFormatSmoke();
 assertRouteParamSmoke();
 assertHomeScreenSmoke();
@@ -7923,6 +8043,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertBackupCommandExecutorSmoke();
   await assertPremiumPurchaseExecutorSmoke();
   await assertSettingsJsonFileStoreSmoke();
+  await assertShareExportFilesExecutorSmoke();
   await assertImportSessionSmoke();
   assertLibraryCollectionDetailSmoke();
   assertLibraryCollectionInteractionSmoke();

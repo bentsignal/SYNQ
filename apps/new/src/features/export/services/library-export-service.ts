@@ -1,10 +1,10 @@
 import * as FileSystem from "expo-file-system";
-import * as Sharing from "expo-sharing";
-import {
-  assertSharingAvailable,
-  getExportFileNameFromPath,
-} from "./export-file-service";
+import { assertSharingAvailable } from "./export-file-service";
 import { prepareLibrarySongForExport } from "./library-export-metadata-service";
+import {
+  shareExportFilesWithDependencies,
+  type ShareExportFilesDependencies,
+} from "./share-export-files-executor-service";
 
 export type ExportableLibrarySong = {
   id: number;
@@ -18,50 +18,33 @@ const getPlayableSongs = (songs: ExportableLibrarySong[]) =>
       song.pathToFile !== null,
   );
 
+const libraryExportDependencies: ShareExportFilesDependencies = {
+  cacheDirectory: FileSystem.cacheDirectory,
+  copyFile: FileSystem.copyAsync,
+  deletePath: FileSystem.deleteAsync,
+  makeDirectory: FileSystem.makeDirectoryAsync,
+  now: Date.now,
+  sharePath: async (path) => {
+    const Sharing = await import("expo-sharing");
+    await Sharing.shareAsync(path);
+  },
+};
+
 export async function shareLibrarySongs(songs: ExportableLibrarySong[]) {
   await assertSharingAvailable();
 
   const playableSongs = getPlayableSongs(songs);
+  const files = await Promise.all(
+    playableSongs.map(async (song) => ({
+      fileNameFallback: song.title,
+      sourceUri: await prepareLibrarySongForExport(song),
+    })),
+  );
 
-  if (playableSongs.length === 0) {
-    throw new Error("No playable songs are available to export.");
-  }
-
-  if (playableSongs.length === 1) {
-    await Sharing.shareAsync(await prepareLibrarySongForExport(playableSongs[0]));
-    return {
-      exported: 1,
-    };
-  }
-
-  if (!FileSystem.cacheDirectory) {
-    throw new Error("Cache directory is unavailable.");
-  }
-
-  const exportDirectory = `${FileSystem.cacheDirectory}synq-export-${Date.now()}`;
-  await FileSystem.makeDirectoryAsync(exportDirectory, { intermediates: true });
-
-  try {
-    for (let index = 0; index < playableSongs.length; index += 1) {
-      const song = playableSongs[index];
-      const preparedPath = await prepareLibrarySongForExport(song);
-      const fileName = getExportFileNameFromPath(
-        preparedPath,
-        `${index + 1}-${song.title}`,
-      );
-
-      await FileSystem.copyAsync({
-        from: preparedPath,
-        to: `${exportDirectory}/${index + 1}-${fileName}`,
-      });
-    }
-
-    await Sharing.shareAsync(exportDirectory);
-
-    return {
-      exported: playableSongs.length,
-    };
-  } finally {
-    await FileSystem.deleteAsync(exportDirectory, { idempotent: true });
-  }
+  return shareExportFilesWithDependencies({
+    dependencies: libraryExportDependencies,
+    directoryPrefix: "synq-export",
+    files,
+    noFilesMessage: "No playable songs are available to export.",
+  });
 }

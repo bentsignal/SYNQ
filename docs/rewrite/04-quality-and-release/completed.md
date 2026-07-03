@@ -38,3 +38,6 @@
   mapping, and unavailable packages.
 - Added settings JSON file-store smoke coverage for missing files, corrupt JSON,
   normalized saves, loaded values, and unavailable document-directory failures.
+- Added shared export-file executor smoke coverage for sanitized filenames,
+  single-file sharing, multi-file copy/share cleanup, cache failures, and copy
+  failure cleanup.

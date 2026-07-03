@@ -1,13 +1,9 @@
 import * as Sharing from "expo-sharing";
 
-export const sanitizeExportFileName = (value: string) =>
-  value.replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "") || "song";
-
-export const getExportFileNameFromPath = (path: string, fallback: string) => {
-  const rawName = decodeURIComponent(path.split("/").filter(Boolean).at(-1) ?? "");
-
-  return sanitizeExportFileName(rawName || fallback);
-};
+export {
+  getExportFileNameFromPath,
+  sanitizeExportFileName,
+} from "./export-file-name-service";
 
 export const assertSharingAvailable = async () => {
   const available = await Sharing.isAvailableAsync();

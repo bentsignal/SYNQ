@@ -161,3 +161,5 @@
 - Moved settings JSON file persistence behind a shared injectable store so
   privacy and customization services keep normalization separate from
   filesystem wiring.
+- Moved import-draft and library song export sharing through a shared injectable
+  executor with pure filename helpers.

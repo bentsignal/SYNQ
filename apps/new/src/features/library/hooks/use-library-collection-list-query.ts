@@ -1,11 +1,6 @@
 import { useMemo } from "react";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
-import {
-  buildAlbumPreviewRowsQuery,
-  buildArtistPreviewRowsQuery,
-  buildPlaylistPreviewRowsQuery,
-} from "../repository/collection-preview-query-repository";
+import { useLibraryCollectionListLiveQuery } from "../data/use-library-collection-list-live-query";
 import {
   rowsToCollectionListPreviews,
   type LibraryCollectionListPreviewRow,
@@ -14,18 +9,6 @@ import type { CollectionKind } from "../services/library-collection-preview-serv
 
 const getSmallImagePath = (imageHash: string) =>
   getImagePathFromHash(imageHash).pathToSmallImage;
-
-const buildCollectionListRowsQuery = (kind: CollectionKind) => {
-  switch (kind) {
-    case "albums":
-      return buildAlbumPreviewRowsQuery();
-    case "artists":
-      return buildArtistPreviewRowsQuery();
-    case "playlists":
-    default:
-      return buildPlaylistPreviewRowsQuery();
-  }
-};
 
 type LibraryCollectionListQueryOptions = {
   kind: CollectionKind;
@@ -36,9 +19,7 @@ export function useLibraryCollectionListQuery({
   kind,
   limit = null,
 }: LibraryCollectionListQueryOptions) {
-  const { data, error, updatedAt } = useLiveQuery(
-    buildCollectionListRowsQuery(kind),
-  );
+  const { data, error, updatedAt } = useLibraryCollectionListLiveQuery(kind);
 
   const collections = useMemo(
     () =>

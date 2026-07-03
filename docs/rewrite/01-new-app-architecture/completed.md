@@ -369,3 +369,5 @@
   a focused collection form mutation command-flow service.
 - Moved song edit cover-pick and save sequencing out of the React hook and into
   a focused song form command-flow service.
+- Moved import song edit save, haptic, failure, and navigation sequencing out
+  of the React hook and into a focused command-flow service.

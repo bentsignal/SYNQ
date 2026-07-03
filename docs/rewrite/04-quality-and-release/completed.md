@@ -263,3 +263,5 @@
   saves, create/update success navigation, and failure dispatch sequencing.
 - Added direct song form command-flow smoke coverage for blocked cover pick,
   canceled pick, cover-pick success/failure, and save success/failure sequencing.
+- Added direct import song edit command-flow smoke coverage for invalid save,
+  successful draft update navigation, and draft-build failure sequencing.

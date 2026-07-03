@@ -343,6 +343,7 @@ import {
   getImportSongEditFieldState,
   getImportSongEditInitialState,
   getImportSongEditRequiredTitleMessage,
+  type ImportSongEditFormAction,
   importSongEditFormReducer,
   parseImportTrackInput,
 } from "../../../apps/new/src/features/import/services/import-song-edit-form-state-service";
@@ -355,6 +356,7 @@ import {
   getImportSongEditSaveFailureCommand,
   getImportSongEditSaveSuccessCommand,
 } from "../../../apps/new/src/features/import/services/import-song-edit-command-service";
+import { runImportSongEditSaveCommand } from "../../../apps/new/src/features/import/services/import-song-edit-command-flow-service";
 import {
   getImportSongEditBackLinks,
   getImportSongEditFilesHref,
@@ -10925,6 +10927,86 @@ function assertImportSongFormSmoke() {
     getImportSongEditErrorMessage(null),
     "Song could not be updated.",
   );
+
+  const importSongEditCommandEvents: unknown[] = [];
+  const dispatchImportSongEditCommand = (action: ImportSongEditFormAction) => {
+    importSongEditCommandEvents.push(["dispatch", action]);
+  };
+  const sendImportSongEditHaptic = (haptic: string) => {
+    importSongEditCommandEvents.push(["haptic", haptic]);
+  };
+  const replaceImportSongEditRoute = (href: string) => {
+    importSongEditCommandEvents.push(["route", href]);
+  };
+  runImportSongEditSaveCommand({
+    canSave: false,
+    dispatch: dispatchImportSongEditCommand,
+    formState: editFormState,
+    replaceRoute: replaceImportSongEditRoute,
+    sendHaptic: sendImportSongEditHaptic,
+    song: importDraft(8),
+    updateImportSong: () => {
+      importSongEditCommandEvents.push(["unexpected-update"]);
+    },
+  });
+  runImportSongEditSaveCommand({
+    canSave: true,
+    dispatch: dispatchImportSongEditCommand,
+    formState: {
+      album: "  Smoke Album  ",
+      artist: "  Smoke Artist  ",
+      error: null,
+      title: "  Edited Smoke  ",
+      track: " 7 ",
+    },
+    replaceRoute: replaceImportSongEditRoute,
+    sendHaptic: sendImportSongEditHaptic,
+    song: importDraft(8),
+    updateImportSong: (song) => {
+      importSongEditCommandEvents.push(["update", song]);
+    },
+  });
+  runImportSongEditSaveCommand({
+    canSave: true,
+    dispatch: dispatchImportSongEditCommand,
+    formState: {
+      album: "Smoke Album",
+      artist: "Smoke Artist",
+      error: null,
+      title: "Edited Smoke",
+      track: "bad-track",
+    },
+    replaceRoute: replaceImportSongEditRoute,
+    sendHaptic: sendImportSongEditHaptic,
+    song: importDraft(9),
+    updateImportSong: () => {
+      importSongEditCommandEvents.push(["unexpected-bad-track-update"]);
+    },
+  });
+  assert.deepEqual(importSongEditCommandEvents, [
+    ["haptic", "error"],
+    ["dispatch", { error: "Title is required.", type: "fail" }],
+    [
+      "update",
+      {
+        ...importDraft(8),
+        album: "Smoke Album",
+        artist: "Smoke Artist",
+        title: "Edited Smoke",
+        track: 7,
+      },
+    ],
+    ["haptic", "success"],
+    ["route", "/(tabs)/import/save"],
+    ["haptic", "error"],
+    [
+      "dispatch",
+      {
+        error: "Track must be a positive whole number.",
+        type: "fail",
+      },
+    ],
+  ]);
 
   const edited = buildEditedImportSongDraft({
     album: "  ",

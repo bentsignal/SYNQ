@@ -103,8 +103,10 @@ import {
 } from "../../../apps/new/src/features/import/services/import-files-screen-state-service";
 import {
   getImportHomeState,
+} from "../../../apps/new/src/features/import/services/import-home-screen-state-service";
+import {
   getImportPremiumGateState,
-} from "../../../apps/new/src/features/import/services/import-screen-state-service";
+} from "../../../apps/new/src/features/import/services/import-premium-gate-state-service";
 import {
   getImportWifiActionState,
   getImportWifiState,

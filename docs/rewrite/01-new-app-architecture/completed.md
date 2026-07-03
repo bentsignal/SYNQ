@@ -237,3 +237,5 @@
   repositories behind the existing import-library link facade.
 - Split import library song Drizzle adapters into song-row and relationship
   cleanup repositories behind the existing import-library song facade.
+- Split library export metadata writeback into focused metadata builder,
+  artwork, and audio tag services behind the existing export executor facade.

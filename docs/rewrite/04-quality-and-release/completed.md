@@ -126,3 +126,5 @@
   relationship table adapters into smaller repository modules.
 - Preserved import library song-row smoke coverage while splitting song-row
   writes and relationship cleanup into smaller repository modules.
+- Preserved library export metadata smoke coverage while extracting metadata,
+  artwork, and audio tag helpers into smaller services.

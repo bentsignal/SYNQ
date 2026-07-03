@@ -22,6 +22,12 @@ import {
   playbackReducer,
 } from "../../../apps/new/src/features/playback/services/playback-session-service";
 import {
+  addPlaybackQueueSong,
+  clearPlaybackQueue,
+  movePlaybackQueueSong,
+  removePlaybackQueueSong,
+} from "../../../apps/new/src/features/playback/services/playback-session-queue-service";
+import {
   getFreeListeningRemainingMs,
   getPlaybackAdBreakPanelState,
   getPlaybackMiniPlayerState,
@@ -401,6 +407,35 @@ function assertPlaybackSessionSmoke() {
     [1, 2, 3],
   );
   assert.equal(state.queueRevision, 3);
+
+  const directQueuedState = addPlaybackQueueSong({
+    song: third,
+    state: addPlaybackQueueSong({
+      song: second,
+      state: playbackReducer(initialPlaybackState, {
+        song: first,
+        type: "play-song",
+      }),
+    }),
+  });
+  assert.deepEqual(
+    directQueuedState.queue.map((item) => item.id),
+    [1, 2, 3],
+  );
+  assert.equal(
+    movePlaybackQueueSong({
+      direction: "up",
+      songId: third.id,
+      state: directQueuedState,
+    }).queue[1]?.id,
+    third.id,
+  );
+  const directRemovedState = removePlaybackQueueSong({
+    songId: first.id,
+    state: directQueuedState,
+  });
+  assert.equal(directRemovedState.activeTrackId, second.id);
+  assert.equal(clearPlaybackQueue(directQueuedState).queue.length, 0);
 
   state = playbackReducer(state, { type: "pause" });
   assert.equal(state.isPlaying, false);

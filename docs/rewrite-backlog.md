@@ -364,6 +364,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: playback queue indexing, active/previous/replacement-track lookup,
     row action state, and queue filter defaults now live in a dedicated queue
     service instead of the session reducer service.
+  - Done: playback queue add, clear, remove, move, and queue-revision
+    transitions now live in a dedicated session queue service with direct smoke
+    coverage instead of the playback reducer owning every queue branch inline.
   - Done: playback native status, native-finished, ad-break, and Premium sync
     transitions now live in a dedicated native transition service instead of
     the session reducer body.

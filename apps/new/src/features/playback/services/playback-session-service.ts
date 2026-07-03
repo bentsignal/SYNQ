@@ -1,8 +1,5 @@
 import type { PlaybackQueueItem, PlaybackState } from "../types/playback-state";
-import {
-  initialPlaybackAdGateState,
-  resetPlaybackAdGate,
-} from "./playback-ad-gate-service";
+import { initialPlaybackAdGateState } from "./playback-ad-gate-service";
 import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
 import {
   applyPlaybackNativeStatus,
@@ -12,12 +9,15 @@ import {
   syncPlaybackPremiumState,
 } from "./playback-native-transition-service";
 import {
-  getReplacementTrackAfterRemoval,
   initialPlaybackQueueFilter,
-  findQueueIndex,
-  moveQueueItem,
-  upsertQueueItem,
 } from "./playback-queue-service";
+import {
+  addPlaybackQueueSong,
+  bumpPlaybackQueueRevision,
+  clearPlaybackQueue,
+  movePlaybackQueueSong,
+  removePlaybackQueueSong,
+} from "./playback-session-queue-service";
 import {
   pausePlayback,
   playPlaybackSong,
@@ -74,11 +74,6 @@ export const initialPlaybackState: PlaybackState = {
   source: null,
 };
 
-const bumpQueueRevision = (state: PlaybackState) => ({
-  ...state,
-  queueRevision: state.queueRevision + 1,
-});
-
 export const playbackReducer = (
   state: PlaybackState,
   action: PlaybackAction,
@@ -93,7 +88,7 @@ export const playbackReducer = (
     case "reset":
       return initialPlaybackState;
     case "play-song": {
-      return bumpQueueRevision(
+      return bumpPlaybackQueueRevision(
         playPlaybackSong({ song: action.song, state }),
       );
     }
@@ -111,78 +106,17 @@ export const playbackReducer = (
     case "skip-previous":
       return skipToPreviousPlaybackTrack(state);
     case "add-to-queue":
-      return bumpQueueRevision({
-        ...state,
-        queue: upsertQueueItem({ queue: state.queue, song: action.song }),
-      });
+      return addPlaybackQueueSong({ song: action.song, state });
     case "clear-queue":
-      return bumpQueueRevision({
-        ...state,
-        activeQueueIndex: null,
-        activeTrackId: null,
-        adGate: resetPlaybackAdGate(state.adGate),
-        duration: 0,
-        isPlaying: false,
-        position: 0,
-        queue: [],
-        source: null,
-      });
-    case "remove-from-queue": {
-      const replacementTrack = state.isPlaying
-        ? getReplacementTrackAfterRemoval({
-            songId: action.songId,
-            state,
-          })
-        : null;
-      const queue = state.queue.filter((song) => song.id !== action.songId);
-      const activeQueueIndex =
-        state.activeTrackId === action.songId
-          ? replacementTrack
-            ? findQueueIndex({ queue, songId: replacementTrack.id })
-            : null
-          : findQueueIndex({ queue, songId: state.activeTrackId ?? -1 });
-      const nextActiveTrack =
-        activeQueueIndex === null || activeQueueIndex < 0
-          ? null
-          : queue[activeQueueIndex] ?? null;
-
-      return bumpQueueRevision({
-        ...state,
-        activeQueueIndex: nextActiveTrack ? activeQueueIndex : null,
-        activeTrackId: nextActiveTrack?.id ?? null,
-        duration: nextActiveTrack?.duration ?? 0,
-        isPlaying: nextActiveTrack ? state.isPlaying : false,
-        position: state.activeTrackId === action.songId ? 0 : state.position,
-        queue,
-      });
-    }
-    case "move-queue-song": {
-      const fromIndex = findQueueIndex({
-        queue: state.queue,
+      return clearPlaybackQueue(state);
+    case "remove-from-queue":
+      return removePlaybackQueueSong({ songId: action.songId, state });
+    case "move-queue-song":
+      return movePlaybackQueueSong({
+        direction: action.direction,
         songId: action.songId,
+        state,
       });
-      const toIndex =
-        action.direction === "up" ? fromIndex - 1 : fromIndex + 1;
-      const queue = moveQueueItem({
-        fromIndex,
-        queue: state.queue,
-        toIndex,
-      });
-      const activeQueueIndex =
-        state.activeTrackId === null
-          ? null
-          : findQueueIndex({ queue, songId: state.activeTrackId });
-      const normalizedActiveQueueIndex =
-        activeQueueIndex !== null && activeQueueIndex >= 0
-          ? activeQueueIndex
-          : null;
-
-      return bumpQueueRevision({
-        ...state,
-        activeQueueIndex: normalizedActiveQueueIndex,
-        queue,
-      });
-    }
     case "begin-ad-break":
       return beginPlaybackAdBreakTransition(state);
     case "complete-ad-break":

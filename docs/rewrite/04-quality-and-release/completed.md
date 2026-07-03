@@ -31,3 +31,5 @@
   export, and metadata update forwarding.
 - Added injectable library collection command smoke coverage for export,
   delete, move, remove, and add forwarding.
+- Added Wi-Fi import route-handler smoke coverage for transfer start, upload,
+  duplicate upload, failure, finish, and reset runtime transitions.

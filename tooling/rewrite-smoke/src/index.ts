@@ -236,6 +236,12 @@ import {
   initialWifiImportServerState,
   wifiImportServerReducer,
 } from "../../../apps/new/src/features/import/services/wifi-import-server-state-service";
+import {
+  createWifiImportRouteHandlers,
+  createWifiImportRouteRuntimeState,
+  type WifiBridgeRequest,
+  type WifiBridgeResponse,
+} from "../../../apps/new/src/features/import/services/wifi-import-route-handler-service";
 import type { ImportSongDraft } from "../../../apps/new/src/features/import/types/import-session";
 import {
   buildAlbumDetail,
@@ -2281,7 +2287,7 @@ async function assertImportSessionSmoke() {
   assert.equal(state.songs.length, 0);
 }
 
-function assertWifiImportRequestSmoke() {
+async function assertWifiImportRequestSmoke() {
   let serverState = wifiImportServerReducer(initialWifiImportServerState, {
     ipAddress: "192.168.1.4",
     type: "resolve-address",
@@ -2471,6 +2477,180 @@ function assertWifiImportRequestSmoke() {
   assert.deepEqual(getWifiUploadFailureResponse("Disk full"), {
     message: "ERROR - Failed to upload song: Disk full",
     status: 500,
+  });
+
+  const responses: unknown[] = [];
+  const htmlResponses: string[] = [];
+  const callbackCalls: unknown[] = [];
+  let allowTransfer = false;
+  let canBeginTransfer = true;
+  let stageShouldFail = false;
+  const runtimeState = createWifiImportRouteRuntimeState();
+  const response = {
+    html: (html: string) => {
+      htmlResponses.push(html);
+    },
+    json: (payload: unknown, status: number) => {
+      responses.push({ payload, status });
+    },
+  } as WifiBridgeResponse;
+  const request = (postData?: unknown) =>
+    ({ postData }) as WifiBridgeRequest;
+  const routeHandlers = createWifiImportRouteHandlers({
+    dependencies: () => ({
+      allowTransfer,
+      beginWifiTransfer: async (transferSize) => {
+        callbackCalls.push(["begin", transferSize]);
+
+        return canBeginTransfer;
+      },
+      failSession: (message) => {
+        callbackCalls.push(["fail", message]);
+      },
+      finishWifiTransfer: () => {
+        callbackCalls.push(["finish"]);
+      },
+      getConnectionResponse: () => ({ deviceName: "Smoke Device" }),
+      getTransferPage: () => "<!DOCTYPE html><html><body>Smoke</body></html>",
+      receiveWifiSong: (song) => {
+        callbackCalls.push(["receive", song.id, song.fileName]);
+      },
+      stageWifiImportFile: async ({ id, name, type }) => {
+        callbackCalls.push(["stage", id, name, type]);
+
+        if (stageShouldFail) {
+          throw new Error("stage failed");
+        }
+
+        return importDraft(id);
+      },
+    }),
+    runtimeState,
+  });
+
+  await routeHandlers.handleRoot(request(), response);
+  assert.equal(htmlResponses.length, 1);
+  assert.equal(htmlResponses[0]?.includes("<!DOCTYPE html>"), true);
+
+  await routeHandlers.handleStartTransfer(request({ size: 2 }), response);
+  assert.equal(runtimeState.isMidTransfer, false);
+  assert.deepEqual(responses.pop(), {
+    payload: {
+      message: "Must be on Wifi Transfer page in app",
+      status: 400,
+    },
+    status: 400,
+  });
+  assert.deepEqual(callbackCalls, []);
+
+  allowTransfer = true;
+  canBeginTransfer = false;
+  runtimeState.receivedIds.add(99);
+  await routeHandlers.handleStartTransfer(request({ size: 2 }), response);
+  assert.equal(runtimeState.isMidTransfer, false);
+  assert.equal(runtimeState.receivedIds.has(99), false);
+  assert.deepEqual(callbackCalls, [["begin", 2]]);
+  assert.deepEqual(responses.pop(), {
+    payload: wifiImportPrepareFailureResponse,
+    status: 500,
+  });
+  callbackCalls.length = 0;
+
+  canBeginTransfer = true;
+  await routeHandlers.handleStartTransfer(request({ size: 2 }), response);
+  assert.equal(runtimeState.isMidTransfer, true);
+  assert.deepEqual(callbackCalls, [["begin", 2]]);
+  assert.deepEqual(responses.pop(), {
+    payload: {
+      message: "OK - READY TO TRANSFER",
+      status: 200,
+    },
+    status: 200,
+  });
+  callbackCalls.length = 0;
+
+  await routeHandlers.handleFileUpload(
+    request({
+      data: "YmFzZTY0",
+      id: 7,
+      name: "song.mp3",
+      type: "audio/mpeg",
+    }),
+    response,
+  );
+  assert.equal(runtimeState.receivedIds.has(7), true);
+  assert.deepEqual(callbackCalls, [
+    ["stage", 7, "song.mp3", "audio/mpeg"],
+    ["receive", 7, "import-7.mp3"],
+  ]);
+  assert.deepEqual(responses.pop(), {
+    payload: {
+      message: "OK - song.mp3 RECEIVED",
+      status: 200,
+    },
+    status: 200,
+  });
+  callbackCalls.length = 0;
+
+  await routeHandlers.handleFileUpload(
+    request({
+      data: "YmFzZTY0",
+      id: 7,
+      name: "song.mp3",
+      type: "audio/mpeg",
+    }),
+    response,
+  );
+  assert.deepEqual(callbackCalls, []);
+  assert.deepEqual(responses.pop(), {
+    payload: {
+      message: "ERROR - Bad data from song.mp3",
+      status: 409,
+    },
+    status: 409,
+  });
+
+  stageShouldFail = true;
+  await routeHandlers.handleFileUpload(
+    request({
+      data: "YmFzZTY0",
+      id: 8,
+      name: "broken.mp3",
+      type: "audio/mpeg",
+    }),
+    response,
+  );
+  assert.equal(runtimeState.receivedIds.has(8), false);
+  assert.deepEqual(callbackCalls, [
+    ["stage", 8, "broken.mp3", "audio/mpeg"],
+    ["fail", "stage failed"],
+  ]);
+  assert.deepEqual(responses.pop(), {
+    payload: {
+      message: "ERROR - Failed to upload song: stage failed",
+      status: 500,
+    },
+    status: 500,
+  });
+  callbackCalls.length = 0;
+
+  await routeHandlers.handleFinishTransfer(request(), response);
+  assert.equal(runtimeState.isMidTransfer, false);
+  assert.deepEqual(callbackCalls, [["finish"]]);
+  assert.deepEqual(responses.pop(), {
+    payload: wifiImportFinishResponse,
+    status: 200,
+  });
+  callbackCalls.length = 0;
+
+  runtimeState.isMidTransfer = true;
+  runtimeState.receivedIds.add(7);
+  await routeHandlers.handleReset(request(), response);
+  assert.equal(runtimeState.isMidTransfer, false);
+  assert.deepEqual(Array.from(runtimeState.receivedIds), []);
+  assert.deepEqual(responses.pop(), {
+    payload: wifiImportResetResponse,
+    status: 200,
   });
 }
 
@@ -7468,7 +7648,6 @@ assertDurationFormatSmoke();
 assertRouteParamSmoke();
 assertHomeScreenSmoke();
 assertImportSongFormSmoke();
-assertWifiImportRequestSmoke();
 assertBackupScreenSmoke();
 assertPremiumScreenSmoke();
 assertSettingsScreenSmoke();
@@ -7477,6 +7656,7 @@ assertPlaybackNativeStatusSmoke();
 assertPlaybackNativeCommandPlanSmoke();
 assertPlaybackPlayerStateSmoke();
 void assertImportLibrarySavePlanSmoke().then(async () => {
+  await assertWifiImportRequestSmoke();
   await assertBackupCommandExecutorSmoke();
   await assertImportSessionSmoke();
   assertLibraryCollectionDetailSmoke();

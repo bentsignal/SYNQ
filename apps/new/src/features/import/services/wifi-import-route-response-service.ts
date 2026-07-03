@@ -1,7 +1,7 @@
 import * as Device from "expo-device";
 import type { WifiImportJsonResponse } from "./wifi-import-request-service";
 import { getWifiTransferPage } from "./wifi-transfer-page";
-import type { WifiBridgeResponse } from "./wifi-import-server-route-service";
+import type { WifiBridgeResponse } from "./wifi-import-route-handler-service";
 
 export const getWifiImportConnectionResponse = () => ({
   deviceName: Device.deviceName ?? "SYNQ",

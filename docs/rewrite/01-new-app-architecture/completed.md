@@ -428,3 +428,5 @@
   construction out of React hooks and into feature state services.
 - Centralized library small-image path resolution behind feature services
   instead of duplicating image-storage adapters across query hooks.
+- Moved playback ad-gate action construction out of hooks and into the
+  playback ad-gate service.

@@ -54,6 +54,11 @@ import {
   type PlaybackAction,
 } from "../../../apps/new/src/features/playback/services/playback-session-service";
 import {
+  getBeginPlaybackAdBreakAction,
+  getCompletePlaybackAdBreakAction,
+  getSyncPlaybackPremiumAction,
+} from "../../../apps/new/src/features/playback/services/playback-ad-gate-service";
+import {
   failPlaybackSession,
   hydratePlaybackSession,
   togglePlaybackLoopMode,
@@ -1797,7 +1802,18 @@ async function assertPlaybackSessionSmoke() {
   });
   assert.equal(state.adGate.due, true);
 
-  state = playbackReducer(state, { type: "begin-ad-break" });
+  assert.deepEqual(getBeginPlaybackAdBreakAction(), {
+    type: "begin-ad-break",
+  });
+  assert.deepEqual(getCompletePlaybackAdBreakAction(), {
+    type: "complete-ad-break",
+  });
+  assert.deepEqual(getSyncPlaybackPremiumAction(true), {
+    premiumActive: true,
+    type: "sync-premium",
+  });
+
+  state = playbackReducer(state, getBeginPlaybackAdBreakAction());
   assert.equal(state.adGate.active, true);
   assert.equal(state.isPlaying, false);
 
@@ -1835,7 +1851,7 @@ async function assertPlaybackSessionSmoke() {
   assert.equal(state.isPlaying, false);
 
   state = playbackReducer(state, { error: "Ad failure", type: "native-failure" });
-  state = playbackReducer(state, { type: "complete-ad-break" });
+  state = playbackReducer(state, getCompletePlaybackAdBreakAction());
   assert.equal(state.adGate.active, false);
   assert.equal(state.adGate.due, false);
   assert.equal(state.error, null);
@@ -1852,8 +1868,8 @@ async function assertPlaybackSessionSmoke() {
   assert.equal(state.position, state.duration);
   assert.equal(state.isPlaying, false);
 
-  state = playbackReducer(state, { type: "begin-ad-break" });
-  state = playbackReducer(state, { premiumActive: true, type: "sync-premium" });
+  state = playbackReducer(state, getBeginPlaybackAdBreakAction());
+  state = playbackReducer(state, getSyncPlaybackPremiumAction(true));
   assert.equal(state.adGate.active, false);
   assert.equal(state.adGate.due, false);
   assert.equal(state.isPlaying, true);

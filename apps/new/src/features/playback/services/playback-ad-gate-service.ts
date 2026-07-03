@@ -1,4 +1,5 @@
 import type { PlaybackAdGateState } from "../types/playback-state";
+import type { PlaybackAction } from "./playback-session-service";
 
 export const playbackAdThresholdMs = 600_000;
 export const playbackAdProgressIntervalMs = 5_000;
@@ -12,6 +13,21 @@ export const initialPlaybackAdGateState: PlaybackAdGateState = {
   lastTrackedPosition: null,
   thresholdMs: playbackAdThresholdMs,
 };
+
+export const getBeginPlaybackAdBreakAction = (): PlaybackAction => ({
+  type: "begin-ad-break",
+});
+
+export const getCompletePlaybackAdBreakAction = (): PlaybackAction => ({
+  type: "complete-ad-break",
+});
+
+export const getSyncPlaybackPremiumAction = (
+  premiumActive: boolean,
+): PlaybackAction => ({
+  premiumActive,
+  type: "sync-premium",
+});
 
 export const resetPlaybackAdGate = (
   state: PlaybackAdGateState = initialPlaybackAdGateState,

@@ -4,6 +4,10 @@ import type {
   PlaybackQueueItem,
   PlaybackState,
 } from "../types/playback-state";
+import {
+  getBeginPlaybackAdBreakAction,
+  getSyncPlaybackPremiumAction,
+} from "../services/playback-ad-gate-service";
 
 export function usePlaybackAdGateController({
   activeTrack,
@@ -26,11 +30,11 @@ export function usePlaybackAdGateController({
 
   useEffect(() => {
     premiumActiveRef.current = premiumActive;
-    dispatch({ premiumActive, type: "sync-premium" });
+    dispatch(getSyncPlaybackPremiumAction(premiumActive));
   }, [dispatch, premiumActive]);
 
   const beginAdBreak = useCallback(() => {
-    dispatch({ type: "begin-ad-break" });
+    dispatch(getBeginPlaybackAdBreakAction());
     onBeginAdBreak();
   }, [dispatch, onBeginAdBreak]);
 

@@ -1,4 +1,5 @@
 import { useEffect, type RefObject } from "react";
+import { getCompletePlaybackAdBreakAction } from "../services/playback-ad-gate-service";
 import type { PlaybackAction } from "../services/playback-session-service";
 import type { TrackPlayerAdapter } from "../services/track-player-adapter";
 
@@ -21,7 +22,7 @@ export function usePlaybackNativeStatusListener({
     adapter.setStatusListener((status) => {
       if (status.didJustFinish) {
         if (status.source === "ad") {
-          dispatch({ type: "complete-ad-break" });
+          dispatch(getCompletePlaybackAdBreakAction());
           runNativeCommand(() => adapter.resumeLibrary());
           return;
         }

@@ -1,7 +1,9 @@
 import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import type { ImportSessionState } from "../types/import-session";
 import {
+  getImportSaveExportBeginAction,
   getImportSaveExportFailureCommand,
+  getImportSaveExportFinishAction,
   getImportSaveExportSuccessCommand,
   type ImportSaveExportAction,
 } from "./import-save-export-state-service";
@@ -19,7 +21,7 @@ export const runImportSaveExportAction = async ({
   ) => Promise<unknown>;
   state: Pick<ImportSessionState, "songs">;
 }) => {
-  dispatch({ type: "begin" });
+  dispatch(getImportSaveExportBeginAction());
 
   try {
     await shareImportDraftSongs(state.songs);
@@ -32,6 +34,6 @@ export const runImportSaveExportAction = async ({
       dispatch(command.action);
     }
   } finally {
-    dispatch({ type: "finish" });
+    dispatch(getImportSaveExportFinishAction());
   }
 };

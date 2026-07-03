@@ -22,6 +22,16 @@ export const initialImportSaveExportState: ImportSaveExportState = {
   isExporting: false,
 };
 
+export const getImportSaveExportBeginAction =
+  (): ImportSaveExportAction => ({
+    type: "begin",
+  });
+
+export const getImportSaveExportFinishAction =
+  (): ImportSaveExportAction => ({
+    type: "finish",
+  });
+
 export const importSaveExportReducer = (
   state: ImportSaveExportState,
   action: ImportSaveExportAction,

@@ -214,7 +214,9 @@ import {
 } from "../../../apps/new/src/features/import/services/import-navigation-service";
 import {
   getImportSaveExportErrorMessage,
+  getImportSaveExportBeginAction,
   getImportSaveExportFailureCommand,
+  getImportSaveExportFinishAction,
   getImportSaveExportSuccessCommand,
   importSaveExportReducer,
   initialImportSaveExportState,
@@ -3833,8 +3835,13 @@ async function assertImportSessionSmoke() {
     error: null,
     isExporting: false,
   });
+  assert.deepEqual(getImportSaveExportBeginAction(), { type: "begin" });
+  assert.deepEqual(getImportSaveExportFinishAction(), { type: "finish" });
   assert.deepEqual(
-    importSaveExportReducer(initialImportSaveExportState, { type: "begin" }),
+    importSaveExportReducer(
+      initialImportSaveExportState,
+      getImportSaveExportBeginAction(),
+    ),
     {
       error: null,
       isExporting: true,
@@ -3846,7 +3853,7 @@ async function assertImportSessionSmoke() {
         error: null,
         isExporting: true,
       },
-      { type: "finish" },
+      getImportSaveExportFinishAction(),
     ),
     initialImportSaveExportState,
   );

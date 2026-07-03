@@ -322,3 +322,5 @@
 - Added direct backup session action-constructor smoke coverage.
 - Added direct premium entitlement and tier-load action-constructor smoke
   coverage.
+- Added direct import save/export begin and finish action-constructor smoke
+  coverage.

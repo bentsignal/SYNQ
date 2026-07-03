@@ -45,13 +45,31 @@ export const getWifiTransferSize = (postData: unknown) => {
   return Number.isInteger(value) && value > 0 ? value : 0;
 };
 
+export const isWifiImportTransferPathname = (pathname: string) =>
+  pathname === "/(tabs)/import/wifi" ||
+  pathname === "/import/wifi" ||
+  pathname === "/ingest/from-network";
+
 export const getWifiStartTransferDecision = ({
+  allowTransfer,
   isMidTransfer,
   postData,
 }: {
+  allowTransfer: boolean;
   isMidTransfer: boolean;
   postData: unknown;
 }): WifiStartTransferDecision => {
+  if (!allowTransfer) {
+    return {
+      response: {
+        message: "Must be on Wifi Transfer page in app",
+        status: 400,
+      },
+      shouldStart: false,
+      transferSize: 0,
+    };
+  }
+
   if (isMidTransfer) {
     return {
       response: {

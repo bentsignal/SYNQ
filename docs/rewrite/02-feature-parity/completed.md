@@ -38,3 +38,5 @@
 - Restored old Home instruction content as a new setup guide section covering
   Spotify setup, export flow, and network transfer without reintroducing
   app-shell modal context.
+- Restored the old Wi-Fi import route guard so remote `/startTransfer` requests
+  are rejected unless the app is currently showing a Wi-Fi import route.

@@ -1,4 +1,5 @@
 import * as Network from "expo-network";
+import { usePathname } from "expo-router";
 import { useEffect, useReducer } from "react";
 import {
   startWifiImportBridgeServer,
@@ -13,11 +14,16 @@ import {
   initialWifiImportServerState,
   wifiImportServerReducer,
 } from "../services/wifi-import-server-state-service";
-import { getWifiImportServerStartErrorMessage } from "../services/wifi-import-request-service";
+import {
+  getWifiImportServerStartErrorMessage,
+  isWifiImportTransferPathname,
+} from "../services/wifi-import-request-service";
 import { useImportSessionSelector } from "./use-import-session";
 import { useWifiImportRouteDependencies } from "./use-wifi-import-route-dependencies";
 
 export function useWifiImportServer() {
+  const pathname = usePathname();
+  const allowTransfer = isWifiImportTransferPathname(pathname);
   const beginWifiTransfer = useImportSessionSelector(
     (store) => store.beginWifiTransfer,
   );
@@ -33,6 +39,7 @@ export function useWifiImportServer() {
     initialWifiImportServerState,
   );
   const getRouteDependencies = useWifiImportRouteDependencies({
+    allowTransfer,
     beginWifiTransfer,
     failSession,
     finishWifiTransfer,

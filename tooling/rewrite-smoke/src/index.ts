@@ -158,6 +158,7 @@ import {
   getWifiTransferSize,
   getWifiUploadDecision,
   getWifiUploadFailureResponse,
+  isWifiImportTransferPathname,
   wifiImportFinishResponse,
   wifiImportPrepareFailureResponse,
   wifiImportResetResponse,
@@ -1830,8 +1831,28 @@ function assertWifiImportRequestSmoke() {
     getWifiImportServerStartErrorMessage(null),
     "Wi-Fi transfer server could not start.",
   );
+  assert.equal(isWifiImportTransferPathname("/(tabs)/import/wifi"), true);
+  assert.equal(isWifiImportTransferPathname("/import/wifi"), true);
+  assert.equal(isWifiImportTransferPathname("/ingest/from-network"), true);
+  assert.equal(isWifiImportTransferPathname("/(tabs)/library"), false);
   assert.deepEqual(
     getWifiStartTransferDecision({
+      allowTransfer: false,
+      isMidTransfer: false,
+      postData: { size: 3 },
+    }),
+    {
+      response: {
+        message: "Must be on Wifi Transfer page in app",
+        status: 400,
+      },
+      shouldStart: false,
+      transferSize: 0,
+    },
+  );
+  assert.deepEqual(
+    getWifiStartTransferDecision({
+      allowTransfer: true,
       isMidTransfer: true,
       postData: { size: 3 },
     }),
@@ -1846,6 +1867,7 @@ function assertWifiImportRequestSmoke() {
   );
   assert.deepEqual(
     getWifiStartTransferDecision({
+      allowTransfer: true,
       isMidTransfer: false,
       postData: { size: 0 },
     }),
@@ -1860,6 +1882,7 @@ function assertWifiImportRequestSmoke() {
   );
   assert.deepEqual(
     getWifiStartTransferDecision({
+      allowTransfer: true,
       isMidTransfer: false,
       postData: { size: "2" },
     }),

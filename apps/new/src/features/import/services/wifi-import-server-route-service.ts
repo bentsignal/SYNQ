@@ -46,6 +46,7 @@ export type WifiImportRouteHandlers = {
 };
 
 type WifiImportRouteHandlerDependencies = {
+  allowTransfer: boolean;
   beginWifiTransfer: (transferSize: number) => Promise<boolean>;
   failSession: (message: string) => void;
   finishWifiTransfer: () => void;
@@ -120,7 +121,9 @@ export const createWifiImportRouteHandlers = ({
     sendWifiImportTransferPage(response);
   },
   handleStartTransfer: async (request, response) => {
+    const routeDependencies = dependencies();
     const decision = getWifiStartTransferDecision({
+      allowTransfer: routeDependencies.allowTransfer,
       isMidTransfer: runtimeState.isMidTransfer,
       postData: request.postData,
     });
@@ -131,7 +134,7 @@ export const createWifiImportRouteHandlers = ({
     }
 
     runtimeState.receivedIds.clear();
-    const canStart = await dependencies().beginWifiTransfer(
+    const canStart = await routeDependencies.beginWifiTransfer(
       decision.transferSize,
     );
 

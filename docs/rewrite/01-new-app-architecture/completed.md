@@ -345,3 +345,5 @@
   of the screen controller and into a focused action-flow service.
 - Moved backup session start/success/failure/reset dispatch sequencing out of
   the React hook and into a focused command-flow service.
+- Moved premium tier selection, purchase, restore, and reset dispatch
+  sequencing out of the React hook and into a focused command-flow service.

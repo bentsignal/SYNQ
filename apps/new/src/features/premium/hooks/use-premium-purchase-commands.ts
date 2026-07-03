@@ -3,8 +3,12 @@ import {
   purchasePremiumTier,
   restorePremiumPurchase,
 } from "../services/premium-purchase-service";
+import {
+  runPremiumPurchaseCommand,
+  runPremiumPurchaseResetCommand,
+  runPremiumRestoreCommand,
+} from "../services/premium-purchase-command-flow-service";
 import type { PremiumPurchaseAction } from "../services/premium-purchase-state-service";
-import { getPremiumMutationErrorMessage } from "../services/premium-screen-service";
 import type {
   PremiumEntitlementStatus,
   PremiumTierId,
@@ -22,43 +26,24 @@ export function usePremiumPurchaseCommands({
   selectedTierId,
 }: UsePremiumPurchaseCommandsParams) {
   const purchaseSelectedTier = useCallback(async () => {
-    dispatch({ type: "start" });
-
-    try {
-      const result = await purchasePremiumTier(selectedTierId);
-      applyStatus(result);
-      dispatch({ result, type: "succeed" });
-    } catch (caughtError) {
-      dispatch({
-        error: getPremiumMutationErrorMessage({
-          caughtError,
-          mutation: "purchase-tier",
-        }),
-        type: "fail",
-      });
-    }
+    await runPremiumPurchaseCommand({
+      applyStatus,
+      dispatch,
+      purchasePremiumTier,
+      selectedTierId,
+    });
   }, [applyStatus, dispatch, selectedTierId]);
 
   const restorePurchase = useCallback(async () => {
-    dispatch({ type: "start" });
-
-    try {
-      const result = await restorePremiumPurchase();
-      applyStatus(result);
-      dispatch({ result, type: "succeed" });
-    } catch (caughtError) {
-      dispatch({
-        error: getPremiumMutationErrorMessage({
-          caughtError,
-          mutation: "restore-purchase",
-        }),
-        type: "fail",
-      });
-    }
+    await runPremiumRestoreCommand({
+      applyStatus,
+      dispatch,
+      restorePremiumPurchase,
+    });
   }, [applyStatus, dispatch]);
 
   const reset = useCallback(() => {
-    dispatch({ type: "reset" });
+    runPremiumPurchaseResetCommand({ dispatch });
   }, [dispatch]);
 
   return useMemo(

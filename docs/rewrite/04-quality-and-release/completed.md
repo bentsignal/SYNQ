@@ -236,3 +236,5 @@
   confirmed, destructive, and reset sequencing.
 - Added direct backup session command-flow smoke coverage for success, failure,
   and reset dispatch sequencing.
+- Added direct premium purchase command-flow smoke coverage for selection,
+  purchase success/failure, restore success/failure, and reset sequencing.

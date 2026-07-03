@@ -950,9 +950,16 @@ import {
 import {
   getInitialPremiumPurchaseState,
   getInitialPremiumTierLoadState,
+  type PremiumPurchaseAction,
   premiumPurchaseReducer,
   premiumTierLoadReducer,
 } from "../../../apps/new/src/features/premium/services/premium-purchase-state-service";
+import {
+  runPremiumPurchaseCommand,
+  runPremiumPurchaseResetCommand,
+  runPremiumRestoreCommand,
+  runPremiumTierSelectionCommand,
+} from "../../../apps/new/src/features/premium/services/premium-purchase-command-flow-service";
 import {
   initialPremiumEntitlementState,
   premiumEntitlementReducer,
@@ -973,6 +980,7 @@ import {
   type PremiumPurchasePackage,
 } from "../../../apps/new/src/features/premium/services/premium-purchase-executor-service";
 import type {
+  PremiumEntitlementStatus,
   PremiumPurchaseState,
   PremiumTier,
 } from "../../../apps/new/src/features/premium/types/premium-purchase";
@@ -11780,7 +11788,7 @@ async function assertBackupCommandExecutorSmoke() {
   ]);
 }
 
-function assertPremiumScreenSmoke() {
+async function assertPremiumScreenSmoke() {
   const tiers: PremiumTier[] = [
     {
       description: "Monthly access.",
@@ -11922,6 +11930,80 @@ function assertPremiumScreenSmoke() {
       selectedTierId: "yearly",
     },
   );
+  const premiumPurchaseCommandEvents: unknown[] = [];
+  const dispatchPremiumPurchaseCommand = (action: PremiumPurchaseAction) => {
+    premiumPurchaseCommandEvents.push(["dispatch", action]);
+  };
+  const applyPremiumStatus = (status: PremiumEntitlementStatus) => {
+    premiumPurchaseCommandEvents.push(["apply", status]);
+  };
+  runPremiumTierSelectionCommand({
+    dispatch: dispatchPremiumPurchaseCommand,
+    tierId: "yearly",
+  });
+  await runPremiumPurchaseCommand({
+    applyStatus: applyPremiumStatus,
+    dispatch: dispatchPremiumPurchaseCommand,
+    purchasePremiumTier: async (tierId) => ({
+      active: true,
+      message: "Purchased.",
+      tierId,
+    }),
+    selectedTierId: "monthly",
+  });
+  await runPremiumPurchaseCommand({
+    applyStatus: applyPremiumStatus,
+    dispatch: dispatchPremiumPurchaseCommand,
+    purchasePremiumTier: async () => {
+      throw new Error("Purchase failed");
+    },
+    selectedTierId: "lifetime",
+  });
+  await runPremiumRestoreCommand({
+    applyStatus: applyPremiumStatus,
+    dispatch: dispatchPremiumPurchaseCommand,
+    restorePremiumPurchase: async () => ({
+      active: true,
+      message: "Restored.",
+      tierId: "yearly",
+    }),
+  });
+  await runPremiumRestoreCommand({
+    applyStatus: applyPremiumStatus,
+    dispatch: dispatchPremiumPurchaseCommand,
+    restorePremiumPurchase: async () => {
+      throw new Error("Restore failed");
+    },
+  });
+  runPremiumPurchaseResetCommand({
+    dispatch: dispatchPremiumPurchaseCommand,
+  });
+  assert.deepEqual(premiumPurchaseCommandEvents, [
+    ["dispatch", { tierId: "yearly", type: "select" }],
+    ["dispatch", { type: "start" }],
+    ["apply", { active: true, message: "Purchased.", tierId: "monthly" }],
+    [
+      "dispatch",
+      {
+        result: { active: true, message: "Purchased.", tierId: "monthly" },
+        type: "succeed",
+      },
+    ],
+    ["dispatch", { type: "start" }],
+    ["dispatch", { error: "Purchase failed", type: "fail" }],
+    ["dispatch", { type: "start" }],
+    ["apply", { active: true, message: "Restored.", tierId: "yearly" }],
+    [
+      "dispatch",
+      {
+        result: { active: true, message: "Restored.", tierId: "yearly" },
+        type: "succeed",
+      },
+    ],
+    ["dispatch", { type: "start" }],
+    ["dispatch", { error: "Restore failed", type: "fail" }],
+    ["dispatch", { type: "reset" }],
+  ]);
   assert.deepEqual(getInitialPremiumTierLoadState(tiers), {
     tiers,
   });
@@ -13224,7 +13306,6 @@ assertDurationFormatSmoke();
 assertRouteParamSmoke();
 assertHomeScreenSmoke();
 assertImportSongFormSmoke();
-assertPremiumScreenSmoke();
 assertPlaybackSessionSmoke();
 assertPlaybackNativeStatusSmoke();
 assertPlaybackNativePlayerStateSmoke();
@@ -13232,6 +13313,7 @@ assertPlaybackNativeCommandPlanSmoke();
 assertPlaybackPlayerStateSmoke();
 void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertBackupScreenSmoke();
+  await assertPremiumScreenSmoke();
   await assertSettingsScreenSmoke();
   await assertPlaybackPersistenceExecutorSmoke();
   await assertImportFileCacheExecutorSmoke();

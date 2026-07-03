@@ -1,14 +1,11 @@
 import { useMemo } from "react";
-import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
 import { useLibraryCollectionListLiveQuery } from "../data/use-library-collection-list-live-query";
 import {
   type LibraryCollectionListPreviewRow,
 } from "../services/library-collection-list-query-service";
 import { buildLibraryCollectionListQueryResult } from "../services/library-collection-list-query-result-service";
 import type { CollectionKind } from "../services/library-collection-preview-service";
-
-const getSmallImagePath = (imageHash: string) =>
-  getImagePathFromHash(imageHash).pathToSmallImage;
+import { getLibrarySmallImagePath } from "../services/library-image-path-service";
 
 type LibraryCollectionListQueryOptions = {
   kind: CollectionKind;
@@ -25,7 +22,7 @@ export function useLibraryCollectionListQuery({
     () =>
       buildLibraryCollectionListQueryResult({
         error,
-        getImagePath: getSmallImagePath,
+        getImagePath: getLibrarySmallImagePath,
         kind,
         limit,
         rows: (data ?? []) as LibraryCollectionListPreviewRow[],

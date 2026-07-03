@@ -1,18 +1,15 @@
 import { useMemo } from "react";
-import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
 import {
   buildAlbumDetailResult,
   buildArtistDetailResult,
   buildPlaylistDetailResult,
 } from "../services/library-collection-detail-result-service";
+import { getLibrarySmallImagePath } from "../services/library-image-path-service";
 import type {
   useAlbumCollectionDetailRowsQuery,
   useArtistCollectionDetailRowsQuery,
   usePlaylistCollectionDetailRowsQuery,
 } from "./use-library-collection-detail-rows-query";
-
-const getSmallImagePath = (imageHash: string) =>
-  getImagePathFromHash(imageHash).pathToSmallImage;
 
 export function usePlaylistCollectionDetailResult(
   playlist: ReturnType<typeof usePlaylistCollectionDetailRowsQuery>,
@@ -21,7 +18,7 @@ export function usePlaylistCollectionDetailResult(
     () =>
       buildPlaylistDetailResult({
         collectionError: playlist.collectionError,
-        getImagePath: getSmallImagePath,
+        getImagePath: getLibrarySmallImagePath,
         playlistRows: playlist.playlistRows,
         playlistUpdatedAt: playlist.playlistUpdatedAt,
         songRows: playlist.songRows,
@@ -50,7 +47,7 @@ export function useAlbumCollectionDetailResult(
         albumRows: album.albumRows,
         albumUpdatedAt: album.albumUpdatedAt,
         collectionError: album.collectionError,
-        getImagePath: getSmallImagePath,
+        getImagePath: getLibrarySmallImagePath,
         songRows: album.songRows,
         songsError: album.songsError,
         songsUpdatedAt: album.songsUpdatedAt,
@@ -77,7 +74,7 @@ export function useArtistCollectionDetailResult(
         artistRows: artist.artistRows,
         artistUpdatedAt: artist.artistUpdatedAt,
         collectionError: artist.collectionError,
-        getImagePath: getSmallImagePath,
+        getImagePath: getLibrarySmallImagePath,
         songRows: artist.songRows,
         songsError: artist.songsError,
         songsUpdatedAt: artist.songsUpdatedAt,

@@ -1,4 +1,3 @@
-import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
 import {
   useEditAlbumRowQuery,
   useEditArtistRowQuery,
@@ -9,18 +8,16 @@ import {
   buildEditArtistCollectionQueryResult,
   buildEditPlaylistCollectionQueryResult,
 } from "../services/edit-collection-query-service";
+import { getLibrarySmallImagePath } from "../services/library-image-path-service";
 
 export type { EditCollectionKind } from "../services/edit-collection-query-service";
-
-const getSmallImagePath = (imageHash: string) =>
-  getImagePathFromHash(imageHash).pathToSmallImage;
 
 export function useEditAlbumCollectionQuery({ id }: { id: number }) {
   const album = useEditAlbumRowQuery(id);
 
   return buildEditAlbumCollectionQueryResult({
     album,
-    getImagePath: getSmallImagePath,
+    getImagePath: getLibrarySmallImagePath,
   });
 }
 
@@ -29,7 +26,7 @@ export function useEditArtistCollectionQuery({ id }: { id: number }) {
 
   return buildEditArtistCollectionQueryResult({
     artist,
-    getImagePath: getSmallImagePath,
+    getImagePath: getLibrarySmallImagePath,
   });
 }
 
@@ -37,7 +34,7 @@ export function useEditPlaylistCollectionQuery({ id }: { id: number }) {
   const playlist = useEditPlaylistRowQuery(id);
 
   return buildEditPlaylistCollectionQueryResult({
-    getImagePath: getSmallImagePath,
+    getImagePath: getLibrarySmallImagePath,
     playlist,
   });
 }

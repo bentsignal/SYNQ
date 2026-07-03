@@ -852,6 +852,9 @@ import {
   libraryHomeControlReducer,
 } from "../../../apps/new/src/features/library/services/library-home-service";
 import {
+  getLibrarySmallImagePathWithResolver,
+} from "../../../apps/new/src/features/library/services/library-image-path-state-service";
+import {
   buildLibrarySummaryQueryResult,
   getLibrarySummaryQueryUpdatedAt,
 } from "../../../apps/new/src/features/library/services/library-summary-query-result-service";
@@ -4879,6 +4882,15 @@ function assertLibraryCollectionDetailSmoke() {
   });
   assert.equal(playlistResult.detail.title, "Result Playlist");
   assert.equal(playlistResult.detail.imagePath, "/small/playlist-hash");
+  assert.equal(
+    getLibrarySmallImagePathWithResolver({
+      getImagePath: (imageHash) => ({
+        pathToSmallImage: `/small/${imageHash}`,
+      }),
+      imageHash: "playlist-hash",
+    }),
+    "/small/playlist-hash",
+  );
   assert.equal(playlistResult.detail.updatedAt, 13);
   assert.equal(
     playlistResult.errors[0] instanceof Error

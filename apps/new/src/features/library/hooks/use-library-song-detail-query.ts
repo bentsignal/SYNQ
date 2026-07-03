@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
 import { useLibrarySongDetailLiveQuery } from "../data/use-library-song-detail-live-query";
 import {
   type LibrarySongDetailAlbumRow,
@@ -9,11 +8,9 @@ import {
   type LibrarySongDetailSongRow,
 } from "../services/library-song-detail-service";
 import { buildLibrarySongDetailQueryResult } from "../services/library-song-detail-query-result-service";
+import { getLibrarySmallImagePath } from "../services/library-image-path-service";
 
 export type { LibrarySongDetail } from "../services/library-song-detail-service";
-
-const getSmallImagePath = (imageHash: string) =>
-  getImagePathFromHash(imageHash).pathToSmallImage;
 
 export function useLibrarySongDetailQuery(songId: number) {
   const { albums, artists, liked, playlists, song } =
@@ -28,7 +25,7 @@ export function useLibrarySongDetailQuery(songId: number) {
         artistError: artists.error,
         artistRows: (artists.data ?? []) as LibrarySongDetailArtistRow[],
         artistUpdatedAt: artists.updatedAt,
-        getImagePath: getSmallImagePath,
+        getImagePath: getLibrarySmallImagePath,
         likedError: liked.error,
         likedRows: (liked.data ?? []) as LibrarySongDetailLikedRow[],
         likedUpdatedAt: liked.updatedAt,

@@ -308,3 +308,4 @@
 - Added direct song detail mutation controller-state smoke coverage.
 - Added direct library home, collection list, and add-songs search control
   action-constructor smoke coverage.
+- Added direct library small-image path resolver smoke coverage.

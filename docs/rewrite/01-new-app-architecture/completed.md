@@ -426,3 +426,5 @@
   into the song detail state service.
 - Moved library home, collection list, and add-songs search control action
   construction out of React hooks and into feature state services.
+- Centralized library small-image path resolution behind feature services
+  instead of duplicating image-storage adapters across query hooks.

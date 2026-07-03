@@ -70,6 +70,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: playback native audio mode setup and ad asset ownership now live in a
     focused native-audio service instead of the track-player adapter owning
     every native setup detail.
+  - Done: playback queue row action state, labels, metadata, and duration
+    presentation now live in a focused row service with deterministic smoke
+    coverage instead of the row component and generic queue mechanics service.
   - Done: collection detail song-row aggregation now lives in a focused song
     detail service instead of the detail shell builder owning song grouping,
     artist/album fallback labels, and track sorting.

@@ -15,8 +15,11 @@ import {
   getActiveTrack,
   getNextQueueIndex,
   getPlaybackQueueActionState,
-  getPlaybackQueueRowState,
 } from "../../../apps/new/src/features/playback/services/playback-queue-service";
+import {
+  getPlaybackQueueRowPresentation,
+  getPlaybackQueueRowState,
+} from "../../../apps/new/src/features/playback/services/playback-queue-row-service";
 import {
   initialPlaybackState,
   playbackReducer,
@@ -569,6 +572,29 @@ function assertPlaybackSessionSmoke() {
       canMoveUp: true,
       canPlay: false,
       isActive: false,
+    },
+  );
+  assert.deepEqual(
+    getPlaybackQueueRowPresentation({
+      activeTrackId: first.id,
+      adBreakActive: false,
+      index: 0,
+      queueLength: state.queue.length,
+      song: first,
+    }),
+    {
+      canMoveDown: true,
+      canMoveUp: false,
+      canPlay: true,
+      durationLabel: "3:00",
+      indexLabel: "1",
+      isActive: true,
+      metadataLabel: "Smoke Artist / Smoke Album",
+      moveDownAccessibilityLabel: "Move First down",
+      moveDownLabel: "Down",
+      moveUpAccessibilityLabel: "Move First up",
+      moveUpLabel: "Up",
+      removeLabel: "Remove",
     },
   );
 

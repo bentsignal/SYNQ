@@ -1,7 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getPlaybackQueueRowState } from "../services/playback-queue-service";
+import { getPlaybackQueueRowPresentation } from "../services/playback-queue-row-service";
 import type { PlaybackQueueItem } from "../types/playback-state";
 
 type PlaybackQueueRowProps = {
@@ -26,30 +25,29 @@ export function PlaybackQueueRow({
   song,
 }: PlaybackQueueRowProps) {
   const theme = useCustomizationTheme();
-  const { canMoveDown, canMoveUp, canPlay, isActive } =
-    getPlaybackQueueRowState({
-      activeTrackId,
-      adBreakActive,
-      index,
-      queueLength,
-      songId: song.id,
-    });
+  const rowState = getPlaybackQueueRowPresentation({
+    activeTrackId,
+    adBreakActive,
+    index,
+    queueLength,
+    song,
+  });
 
   return (
     <View style={[styles.row, { borderBottomColor: theme.borderSubtle }]}>
       <Pressable
         accessibilityRole="button"
-        disabled={!canPlay}
+        disabled={!rowState.canPlay}
         onPress={() => onPlaySong(song)}
-        style={[styles.rowMain, !canPlay ? styles.disabled : null]}
+        style={[styles.rowMain, !rowState.canPlay ? styles.disabled : null]}
       >
         <Text
           style={[
-            isActive ? styles.activeIndex : styles.index,
-            { color: isActive ? theme.accent : theme.mutedText },
+            rowState.isActive ? styles.activeIndex : styles.index,
+            { color: rowState.isActive ? theme.accent : theme.mutedText },
           ]}
         >
-          {index + 1}
+          {rowState.indexLabel}
         </Text>
         <View style={styles.rowText}>
           <Text
@@ -62,11 +60,11 @@ export function PlaybackQueueRow({
             numberOfLines={1}
             style={[styles.songMeta, { color: theme.secondaryText }]}
           >
-            {song.artist} / {song.album}
+            {rowState.metadataLabel}
           </Text>
         </View>
         <Text style={[styles.duration, { color: theme.primaryText }]}>
-          {formatDurationMs(song.duration)}
+          {rowState.durationLabel}
         </Text>
       </Pressable>
       <Pressable
@@ -75,35 +73,39 @@ export function PlaybackQueueRow({
         style={[styles.removeButton, { borderColor: theme.border }]}
       >
         <Text style={[styles.removeText, { color: theme.danger }]}>
-          Remove
+          {rowState.removeLabel}
         </Text>
       </Pressable>
       <View style={styles.moveButtons}>
         <Pressable
-          accessibilityLabel={`Move ${song.title} up`}
+          accessibilityLabel={rowState.moveUpAccessibilityLabel}
           accessibilityRole="button"
-          disabled={!canMoveUp}
+          disabled={!rowState.canMoveUp}
           onPress={() => onMoveSong(song.id, "up")}
           style={[
             styles.moveButton,
             { borderColor: theme.border },
-            !canMoveUp ? styles.disabled : null,
+            !rowState.canMoveUp ? styles.disabled : null,
           ]}
         >
-          <Text style={[styles.moveText, { color: theme.accent }]}>Up</Text>
+          <Text style={[styles.moveText, { color: theme.accent }]}>
+            {rowState.moveUpLabel}
+          </Text>
         </Pressable>
         <Pressable
-          accessibilityLabel={`Move ${song.title} down`}
+          accessibilityLabel={rowState.moveDownAccessibilityLabel}
           accessibilityRole="button"
-          disabled={!canMoveDown}
+          disabled={!rowState.canMoveDown}
           onPress={() => onMoveSong(song.id, "down")}
           style={[
             styles.moveButton,
             { borderColor: theme.border },
-            !canMoveDown ? styles.disabled : null,
+            !rowState.canMoveDown ? styles.disabled : null,
           ]}
         >
-          <Text style={[styles.moveText, { color: theme.accent }]}>Down</Text>
+          <Text style={[styles.moveText, { color: theme.accent }]}>
+            {rowState.moveDownLabel}
+          </Text>
         </Pressable>
       </View>
     </View>

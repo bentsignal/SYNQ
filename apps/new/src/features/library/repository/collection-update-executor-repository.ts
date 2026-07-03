@@ -1,4 +1,9 @@
-import { assertCollectionName } from "../services/collection-metadata-service";
+import {
+  assertCanUpdatePlaylist,
+  getOptionalCollectionCoverUpdate,
+  getOptionalCollectionProfileImageUpdate,
+  getUniqueCollectionUpdateName,
+} from "./collection-update-step-repository";
 
 type CollectionUpdateBaseDependencies = {
   assertUniqueCollectionName: (params: {
@@ -55,18 +60,15 @@ export async function updateAlbumWithDependencies(
   },
   dependencies: AlbumUpdateDependencies,
 ) {
-  const cleanName = assertCollectionName({ kind: "album", name });
-
-  await dependencies.assertUniqueCollectionName({
-    excludeId: id,
+  const cleanName = await getUniqueCollectionUpdateName({
+    dependencies,
+    id,
     kind: "album",
-    name: cleanName,
+    name,
   });
 
   await dependencies.updateAlbumRow({
-    ...(coverImage !== undefined
-      ? { coverImage: await dependencies.saveCoverImage(coverImage) }
-      : {}),
+    ...(await getOptionalCollectionCoverUpdate({ coverImage, dependencies })),
     id,
     name: cleanName,
     year,
@@ -95,18 +97,18 @@ export async function updateArtistWithDependencies(
   },
   dependencies: ArtistUpdateDependencies,
 ) {
-  const cleanName = assertCollectionName({ kind: "artist", name });
-
-  await dependencies.assertUniqueCollectionName({
-    excludeId: id,
+  const cleanName = await getUniqueCollectionUpdateName({
+    dependencies,
+    id,
     kind: "artist",
-    name: cleanName,
+    name,
   });
 
   await dependencies.updateArtistRow({
-    ...(profileImage !== undefined
-      ? { profileImage: await dependencies.saveCoverImage(profileImage) }
-      : {}),
+    ...(await getOptionalCollectionProfileImageUpdate({
+      dependencies,
+      profileImage,
+    })),
     id,
     name: cleanName,
   });
@@ -129,22 +131,20 @@ export async function updatePlaylistWithDependencies(
   },
   dependencies: PlaylistUpdateDependencies,
 ) {
-  if (dependencies.isProtectedPlaylistId(id)) {
-    throw new Error("This protected playlist cannot be edited.");
-  }
+  assertCanUpdatePlaylist({
+    id,
+    isProtectedPlaylistId: dependencies.isProtectedPlaylistId,
+  });
 
-  const cleanName = assertCollectionName({ kind: "playlist", name });
-
-  await dependencies.assertUniqueCollectionName({
-    excludeId: id,
+  const cleanName = await getUniqueCollectionUpdateName({
+    dependencies,
+    id,
     kind: "playlist",
-    name: cleanName,
+    name,
   });
 
   await dependencies.updatePlaylistRow({
-    ...(coverImage !== undefined
-      ? { coverImage: await dependencies.saveCoverImage(coverImage) }
-      : {}),
+    ...(await getOptionalCollectionCoverUpdate({ coverImage, dependencies })),
     id,
     name: cleanName,
   });

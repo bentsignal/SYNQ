@@ -516,6 +516,12 @@ import {
   type PlaylistUpdateDependencies,
 } from "../../../apps/new/src/features/library/repository/collection-update-executor-repository";
 import {
+  assertCanUpdatePlaylist,
+  getOptionalCollectionCoverUpdate,
+  getOptionalCollectionProfileImageUpdate,
+  getUniqueCollectionUpdateName,
+} from "../../../apps/new/src/features/library/repository/collection-update-step-repository";
+import {
   normalizeAlbumArtistName,
   replaceAlbumArtistsWithDependencies,
   splitAlbumArtistNames,
@@ -7193,6 +7199,64 @@ async function assertCollectionUpdateExecutorSmoke() {
     },
   };
 
+  assert.equal(
+    await getUniqueCollectionUpdateName({
+      dependencies: baseDependencies,
+      id: 8,
+      kind: "album",
+      name: "  Helper Album  ",
+    }),
+    "Helper Album",
+  );
+  assert.deepEqual(calls, [
+    ["unique", { excludeId: 8, kind: "album", name: "Helper Album" }],
+  ]);
+
+  calls.length = 0;
+  assert.deepEqual(
+    await getOptionalCollectionCoverUpdate({
+      coverImage: undefined,
+      dependencies: baseDependencies,
+    }),
+    {},
+  );
+  assert.deepEqual(calls, []);
+
+  assert.deepEqual(
+    await getOptionalCollectionCoverUpdate({
+      coverImage: "cover-smoke",
+      dependencies: baseDependencies,
+    }),
+    { coverImage: "saved-image" },
+  );
+  assert.deepEqual(calls, [["save-image", "cover-smoke"]]);
+
+  calls.length = 0;
+  savedImage = null;
+  assert.deepEqual(
+    await getOptionalCollectionProfileImageUpdate({
+      dependencies: baseDependencies,
+      profileImage: "profile-smoke",
+    }),
+    { profileImage: null },
+  );
+  assert.deepEqual(calls, [["save-image", "profile-smoke"]]);
+
+  calls.length = 0;
+  assert.throws(
+    () =>
+      assertCanUpdatePlaylist({
+        id: 1,
+        isProtectedPlaylistId: playlistDependencies.isProtectedPlaylistId,
+      }),
+    /protected playlist/,
+  );
+  assertCanUpdatePlaylist({
+    id: 2,
+    isProtectedPlaylistId: playlistDependencies.isProtectedPlaylistId,
+  });
+
+  savedImage = "saved-image";
   assert.deepEqual(
     await updateAlbumWithDependencies(
       {

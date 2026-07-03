@@ -253,3 +253,5 @@
   normalization steps out of the main save orchestration service.
 - Split collection delete Drizzle adapters into row and relationship cleanup
   repositories behind the existing collection delete facade.
+- Split collection update name validation, optional image persistence, and
+  protected-playlist guard steps out of the main update executor.

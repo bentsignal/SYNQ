@@ -144,3 +144,5 @@
   cleanup, cover no-op/update behavior, and error message normalization.
 - Preserved collection delete executor smoke coverage while splitting row and
   relationship cleanup adapters into smaller repository modules.
+- Added direct collection update step smoke coverage for uniqueness/name
+  preparation, optional image patches, and protected playlist guards.

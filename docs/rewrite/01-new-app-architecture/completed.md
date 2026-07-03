@@ -221,3 +221,5 @@
   dependencies.
 - Split customization and privacy settings defaults/normalizers into pure
   domain services so filesystem-backed settings modules only wire persistence.
+- Split Wi-Fi import request handling into focused response, transfer-decision,
+  and upload-decision services so route handlers compose narrower policies.

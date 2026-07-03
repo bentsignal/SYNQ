@@ -110,3 +110,5 @@
   cache setup, per-file skip behavior, MIME fallback, and Wi-Fi staging.
 - Added settings domain smoke coverage for customization defaults/options,
   customization normalization fallbacks, and privacy normalization fallbacks.
+- Preserved Wi-Fi import route-handler smoke coverage across the request
+  service split for transfer gating, upload acceptance, and response copy.

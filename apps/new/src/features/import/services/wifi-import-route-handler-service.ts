@@ -1,13 +1,13 @@
 import type { ImportSongDraft } from "../types/import-session";
 import {
-  getWifiStartTransferDecision,
-  getWifiUploadDecision,
   getWifiUploadFailureResponse,
-  type WifiImportJsonResponse,
   wifiImportFinishResponse,
   wifiImportPrepareFailureResponse,
   wifiImportResetResponse,
-} from "./wifi-import-request-service";
+  type WifiImportJsonResponse,
+} from "./wifi-import-response-service";
+import { getWifiStartTransferDecision } from "./wifi-import-transfer-decision-service";
+import { getWifiUploadDecision } from "./wifi-import-upload-decision-service";
 
 export type WifiBridgeRequest = {
   postData?: unknown;

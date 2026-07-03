@@ -1,5 +1,5 @@
 import * as Device from "expo-device";
-import type { WifiImportJsonResponse } from "./wifi-import-request-service";
+import type { WifiImportJsonResponse } from "./wifi-import-response-service";
 import { getWifiTransferPage } from "./wifi-transfer-page";
 import type { WifiBridgeResponse } from "./wifi-import-route-handler-service";
 

@@ -275,15 +275,19 @@ import {
 } from "../../../apps/new/src/features/import/services/import-file-command-service";
 import {
   getWifiImportServerStartErrorMessage,
-  getWifiStartTransferDecision,
-  getWifiTransferSize,
-  getWifiUploadDecision,
   getWifiUploadFailureResponse,
-  isWifiImportTransferPathname,
   wifiImportFinishResponse,
   wifiImportPrepareFailureResponse,
   wifiImportResetResponse,
-} from "../../../apps/new/src/features/import/services/wifi-import-request-service";
+} from "../../../apps/new/src/features/import/services/wifi-import-response-service";
+import {
+  getWifiStartTransferDecision,
+  getWifiTransferSize,
+  isWifiImportTransferPathname,
+} from "../../../apps/new/src/features/import/services/wifi-import-transfer-decision-service";
+import {
+  getWifiUploadDecision,
+} from "../../../apps/new/src/features/import/services/wifi-import-upload-decision-service";
 import {
   getWifiImportServerAddress,
   initialWifiImportServerState,

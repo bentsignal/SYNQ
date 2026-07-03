@@ -14,10 +14,8 @@ import {
   initialWifiImportServerState,
   wifiImportServerReducer,
 } from "../services/wifi-import-server-state-service";
-import {
-  getWifiImportServerStartErrorMessage,
-  isWifiImportTransferPathname,
-} from "../services/wifi-import-request-service";
+import { getWifiImportServerStartErrorMessage } from "../services/wifi-import-response-service";
+import { isWifiImportTransferPathname } from "../services/wifi-import-transfer-decision-service";
 import { useImportSessionSelector } from "./use-import-session";
 import { useWifiImportRouteDependencies } from "./use-wifi-import-route-dependencies";
 

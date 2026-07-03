@@ -1,17 +1,16 @@
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import {
-  buildAlbumLinkedSongRowsQuery,
-  buildAllAddableSongRowsQuery,
-  buildArtistLinkedSongRowsQuery,
-  buildPlaylistLinkedSongRowsQuery,
-} from "../repository/addable-collection-songs-query-repository";
+  useAlbumLinkedSongRowsLiveQuery,
+  useAllAddableSongRowsLiveQuery,
+  useArtistLinkedSongRowsLiveQuery,
+  usePlaylistLinkedSongRowsLiveQuery,
+} from "../data/use-addable-collection-song-rows-live-query";
 import type {
   AddableCollectionLinkedSongRow,
   AddableCollectionSongRow,
 } from "../services/addable-collection-songs-service";
 
 export function useAllAddableSongRowsQuery() {
-  const songs = useLiveQuery(buildAllAddableSongRowsQuery());
+  const songs = useAllAddableSongRowsLiveQuery();
 
   return {
     error: songs.error,
@@ -21,7 +20,7 @@ export function useAllAddableSongRowsQuery() {
 }
 
 export function usePlaylistLinkedSongRowsQuery(collectionId: number) {
-  const linkedSongs = useLiveQuery(buildPlaylistLinkedSongRowsQuery(collectionId));
+  const linkedSongs = usePlaylistLinkedSongRowsLiveQuery(collectionId);
 
   return {
     error: linkedSongs.error,
@@ -31,7 +30,7 @@ export function usePlaylistLinkedSongRowsQuery(collectionId: number) {
 }
 
 export function useAlbumLinkedSongRowsQuery(collectionId: number) {
-  const linkedSongs = useLiveQuery(buildAlbumLinkedSongRowsQuery(collectionId));
+  const linkedSongs = useAlbumLinkedSongRowsLiveQuery(collectionId);
 
   return {
     error: linkedSongs.error,
@@ -41,7 +40,7 @@ export function useAlbumLinkedSongRowsQuery(collectionId: number) {
 }
 
 export function useArtistLinkedSongRowsQuery(collectionId: number) {
-  const linkedSongs = useLiveQuery(buildArtistLinkedSongRowsQuery(collectionId));
+  const linkedSongs = useArtistLinkedSongRowsLiveQuery(collectionId);
 
   return {
     error: linkedSongs.error,

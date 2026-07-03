@@ -4,6 +4,7 @@ import {
   useLibraryCollectionListQuery,
 } from "./use-library-collection-list-query";
 import {
+  getLibraryCollectionListSetQueryAction,
   initialLibraryCollectionListControlState,
   libraryCollectionListControlReducer,
 } from "../services/library-collection-list-control-state-service";
@@ -38,7 +39,7 @@ export function useLibraryCollectionListController({
   });
 
   const setQuery = (query: string) => {
-    dispatchControls({ query, type: "set-query" });
+    dispatchControls(getLibraryCollectionListSetQueryAction(query));
   };
 
   return {

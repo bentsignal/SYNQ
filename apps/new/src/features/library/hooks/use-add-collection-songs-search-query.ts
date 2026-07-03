@@ -1,6 +1,7 @@
 import { useReducer } from "react";
 import {
   addCollectionSongsSearchReducer,
+  getAddCollectionSongsSearchSetQueryAction,
   initialAddCollectionSongsSearchState,
 } from "../services/add-collection-songs-search-state-service";
 
@@ -11,7 +12,7 @@ export function useAddCollectionSongsSearchQuery() {
   );
 
   const setQuery = (query: string) => {
-    dispatch({ query, type: "set-query" });
+    dispatch(getAddCollectionSongsSearchSetQueryAction(query));
   };
 
   return {

@@ -306,3 +306,5 @@
 - Added direct create/edit collection form controller view-state smoke coverage.
 - Added direct collection detail mutation controller-state smoke coverage.
 - Added direct song detail mutation controller-state smoke coverage.
+- Added direct library home, collection list, and add-songs search control
+  action-constructor smoke coverage.

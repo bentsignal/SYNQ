@@ -12,6 +12,13 @@ export const initialAddCollectionSongsSearchState: AddCollectionSongsSearchState
     query: "",
   };
 
+export const getAddCollectionSongsSearchSetQueryAction = (
+  query: string,
+): AddCollectionSongsSearchAction => ({
+  query,
+  type: "set-query",
+});
+
 export const addCollectionSongsSearchReducer = (
   state: AddCollectionSongsSearchState,
   action: AddCollectionSongsSearchAction,

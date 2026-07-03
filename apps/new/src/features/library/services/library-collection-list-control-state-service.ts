@@ -12,6 +12,13 @@ export const initialLibraryCollectionListControlState: LibraryCollectionListCont
     query: "",
   };
 
+export const getLibraryCollectionListSetQueryAction = (
+  query: string,
+): LibraryCollectionListControlAction => ({
+  query,
+  type: "set-query",
+});
+
 export const libraryCollectionListControlReducer = (
   state: LibraryCollectionListControlState,
   action: LibraryCollectionListControlAction,

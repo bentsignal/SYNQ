@@ -527,6 +527,7 @@ import {
 } from "../../../apps/new/src/features/library/services/add-collection-songs-state-service";
 import {
   addCollectionSongsSearchReducer,
+  getAddCollectionSongsSearchSetQueryAction,
   initialAddCollectionSongsSearchState,
 } from "../../../apps/new/src/features/library/services/add-collection-songs-search-state-service";
 import {
@@ -827,6 +828,7 @@ import {
   getLibraryCollectionListState,
 } from "../../../apps/new/src/features/library/services/library-collection-list-service";
 import {
+  getLibraryCollectionListSetQueryAction,
   initialLibraryCollectionListControlState,
   libraryCollectionListControlReducer,
 } from "../../../apps/new/src/features/library/services/library-collection-list-control-state-service";
@@ -842,6 +844,9 @@ import {
   getLibraryHomeHeaderState,
   getLibraryHomeImportHref,
   getLibraryHomeQueryErrors,
+  getLibraryHomeSetOrderAction,
+  getLibraryHomeSetQueryAction,
+  getLibraryHomeSetSortAction,
   getLibraryHomeStatusState,
   initialLibraryHomeControlState,
   libraryHomeControlReducer,
@@ -6184,11 +6189,15 @@ async function assertLibraryCollectionInteractionSmoke() {
   assert.deepEqual(initialAddCollectionSongsSearchState, {
     query: "",
   });
+  assert.deepEqual(getAddCollectionSongsSearchSetQueryAction("ambient"), {
+    query: "ambient",
+    type: "set-query",
+  });
   assert.deepEqual(
-    addCollectionSongsSearchReducer(initialAddCollectionSongsSearchState, {
-      query: "ambient",
-      type: "set-query",
-    }),
+    addCollectionSongsSearchReducer(
+      initialAddCollectionSongsSearchState,
+      getAddCollectionSongsSearchSetQueryAction("ambient"),
+    ),
     {
       query: "ambient",
     },
@@ -11297,13 +11306,14 @@ function assertLibraryCollectionListSmoke() {
   assert.deepEqual(initialLibraryCollectionListControlState, {
     query: "",
   });
+  assert.deepEqual(getLibraryCollectionListSetQueryAction("jazz"), {
+    query: "jazz",
+    type: "set-query",
+  });
   assert.deepEqual(
     libraryCollectionListControlReducer(
       initialLibraryCollectionListControlState,
-      {
-        query: "jazz",
-        type: "set-query",
-      },
+      getLibraryCollectionListSetQueryAction("jazz"),
     ),
     {
       query: "jazz",
@@ -11355,29 +11365,38 @@ function assertLibraryHomeSmoke() {
     ["summary smoke", "collection smoke", "song smoke"],
   );
 
-  let controls = libraryHomeControlReducer(initialLibraryHomeControlState, {
+  assert.deepEqual(getLibraryHomeSetQueryAction("pulse"), {
     query: "pulse",
     type: "set-query",
   });
+  assert.deepEqual(getLibraryHomeSetSortAction("title"), {
+    sort: "title",
+    type: "set-sort",
+  });
+  assert.deepEqual(getLibraryHomeSetOrderAction("asc"), {
+    order: "asc",
+    type: "set-order",
+  });
+  let controls = libraryHomeControlReducer(
+    initialLibraryHomeControlState,
+    getLibraryHomeSetQueryAction("pulse"),
+  );
   assert.deepEqual(controls, {
     order: "desc",
     query: "pulse",
     sort: "recent",
   });
-  controls = libraryHomeControlReducer(controls, {
-    sort: "title",
-    type: "set-sort",
-  });
+  controls = libraryHomeControlReducer(
+    controls,
+    getLibraryHomeSetSortAction("title"),
+  );
   assert.deepEqual(controls, {
     order: "desc",
     query: "pulse",
     sort: "title",
   });
   assert.deepEqual(
-    libraryHomeControlReducer(controls, {
-      order: "asc",
-      type: "set-order",
-    }),
+    libraryHomeControlReducer(controls, getLibraryHomeSetOrderAction("asc")),
     {
       order: "asc",
       query: "pulse",

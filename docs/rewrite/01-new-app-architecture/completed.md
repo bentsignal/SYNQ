@@ -424,3 +424,5 @@
   hook and into the collection action-state service.
 - Moved song detail mutation controller-state shaping out of the React hook and
   into the song detail state service.
+- Moved library home, collection list, and add-songs search control action
+  construction out of React hooks and into feature state services.

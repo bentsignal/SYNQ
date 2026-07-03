@@ -4,6 +4,9 @@ import { useLibrarySongPreviewQuery } from "./use-library-song-preview-query";
 import { useLibrarySummaryQuery } from "./use-library-summary-query";
 import {
   getLibraryHomeQueryErrors,
+  getLibraryHomeSetOrderAction,
+  getLibraryHomeSetQueryAction,
+  getLibraryHomeSetSortAction,
   getLibraryHomeStatusState,
   initialLibraryHomeControlState,
   libraryHomeControlReducer,
@@ -33,13 +36,13 @@ export function useLibraryHomeController() {
   });
 
   const setQuery = (query: string) => {
-    dispatchControls({ query, type: "set-query" });
+    dispatchControls(getLibraryHomeSetQueryAction(query));
   };
   const setSort = (sort: LibrarySongPreviewSort) => {
-    dispatchControls({ sort, type: "set-sort" });
+    dispatchControls(getLibraryHomeSetSortAction(sort));
   };
   const setOrder = (order: LibrarySongPreviewOrder) => {
-    dispatchControls({ order, type: "set-order" });
+    dispatchControls(getLibraryHomeSetOrderAction(order));
   };
 
   return {

@@ -46,6 +46,27 @@ export const initialLibraryHomeControlState: LibraryHomeControlState = {
   sort: "recent",
 };
 
+export const getLibraryHomeSetQueryAction = (
+  query: string,
+): LibraryHomeControlAction => ({
+  query,
+  type: "set-query",
+});
+
+export const getLibraryHomeSetSortAction = (
+  sort: LibrarySongPreviewSort,
+): LibraryHomeControlAction => ({
+  sort,
+  type: "set-sort",
+});
+
+export const getLibraryHomeSetOrderAction = (
+  order: LibrarySongPreviewOrder,
+): LibraryHomeControlAction => ({
+  order,
+  type: "set-order",
+});
+
 export const libraryHomeControlReducer = (
   state: LibraryHomeControlState,
   action: LibraryHomeControlAction,

@@ -112,6 +112,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: import library audio file placement and rollback file cleanup now
     live in a focused file service instead of the save-to-library service
     mixing database writes with document-directory operations.
+  - Done: Wi-Fi import route response helpers now live in a focused response
+    service instead of the route-handler factory owning JSON/page/device
+    response details.
   - Done: backup document/cache directory paths, staging cleanup, and restore
     replacement writes now live in a focused filesystem service instead of the
     backup command service owning low-level file operations and command flow

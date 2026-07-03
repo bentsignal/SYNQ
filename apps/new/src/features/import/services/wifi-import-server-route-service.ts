@@ -1,4 +1,3 @@
-import * as Device from "expo-device";
 import type { Request, Response } from "react-native-http-bridge-refurbished";
 import { stageWifiImportFile } from "./import-file-service";
 import {
@@ -9,7 +8,11 @@ import {
   wifiImportPrepareFailureResponse,
   wifiImportResetResponse,
 } from "./wifi-import-request-service";
-import { getWifiTransferPage } from "./wifi-transfer-page";
+import {
+  getWifiImportConnectionResponse,
+  sendWifiImportJsonResponse,
+  sendWifiImportTransferPage,
+} from "./wifi-import-route-response-service";
 import type { ImportSongDraft } from "../types/import-session";
 
 export type WifiBridgeRequest = Request<unknown>;
@@ -54,13 +57,6 @@ export type WifiImportRouteRuntimeState = {
   receivedIds: Set<number>;
 };
 
-const sendJson = (
-  response: WifiBridgeResponse,
-  payload: { message: string; status: number },
-) => {
-  response.json(payload, payload.status);
-};
-
 export const createWifiImportRouteRuntimeState =
   (): WifiImportRouteRuntimeState => ({
     isMidTransfer: false,
@@ -75,12 +71,7 @@ export const createWifiImportRouteHandlers = ({
   runtimeState: WifiImportRouteRuntimeState;
 }): WifiImportRouteHandlers => ({
   handleConnection: async (_request, response) => {
-    response.json(
-      {
-        deviceName: Device.deviceName ?? "SYNQ",
-      },
-      200,
-    );
+    response.json(getWifiImportConnectionResponse(), 200);
   },
   handleFileUpload: async (request, response) => {
     try {
@@ -90,7 +81,7 @@ export const createWifiImportRouteHandlers = ({
       });
 
       if (!decision.shouldAccept) {
-        sendJson(response, decision.response);
+        sendWifiImportJsonResponse(response, decision.response);
         return;
       }
 
@@ -103,27 +94,30 @@ export const createWifiImportRouteHandlers = ({
 
       runtimeState.receivedIds.add(decision.upload.id);
       dependencies().receiveWifiSong(song);
-      sendJson(response, decision.response);
+      sendWifiImportJsonResponse(response, decision.response);
     } catch (caughtError) {
       const message =
         caughtError instanceof Error ? caughtError.message : String(caughtError);
 
       dependencies().failSession(message);
-      sendJson(response, getWifiUploadFailureResponse(message));
+      sendWifiImportJsonResponse(
+        response,
+        getWifiUploadFailureResponse(message),
+      );
     }
   },
   handleFinishTransfer: async (_request, response) => {
     runtimeState.isMidTransfer = false;
     dependencies().finishWifiTransfer();
-    sendJson(response, wifiImportFinishResponse);
+    sendWifiImportJsonResponse(response, wifiImportFinishResponse);
   },
   handleReset: async (_request, response) => {
     runtimeState.receivedIds.clear();
     runtimeState.isMidTransfer = false;
-    sendJson(response, wifiImportResetResponse);
+    sendWifiImportJsonResponse(response, wifiImportResetResponse);
   },
   handleRoot: async (_request, response) => {
-    response.html(getWifiTransferPage());
+    sendWifiImportTransferPage(response);
   },
   handleStartTransfer: async (request, response) => {
     const decision = getWifiStartTransferDecision({
@@ -132,7 +126,7 @@ export const createWifiImportRouteHandlers = ({
     });
 
     if (!decision.shouldStart) {
-      sendJson(response, decision.response);
+      sendWifiImportJsonResponse(response, decision.response);
       return;
     }
 
@@ -142,11 +136,11 @@ export const createWifiImportRouteHandlers = ({
     );
 
     if (!canStart) {
-      sendJson(response, wifiImportPrepareFailureResponse);
+      sendWifiImportJsonResponse(response, wifiImportPrepareFailureResponse);
       return;
     }
 
     runtimeState.isMidTransfer = true;
-    sendJson(response, decision.response);
+    sendWifiImportJsonResponse(response, decision.response);
   },
 });

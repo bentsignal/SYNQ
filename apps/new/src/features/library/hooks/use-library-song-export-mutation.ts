@@ -1,11 +1,8 @@
 import { useCallback } from "react";
-import { shareLibrarySongs } from "@/src/features/export/services/library-export-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import {
-  type LibrarySongDetail,
-} from "../services/library-song-detail-service";
+import { exportLibrarySongCommand } from "../services/library-song-command-service";
+import { type LibrarySongDetail } from "../services/library-song-detail-service";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
-import { toLibrarySongExportItem } from "../services/library-song-interaction-service";
 import {
   getLibrarySongDetailMutationErrorMessage,
   type LibrarySongDetailMutationAction,
@@ -39,7 +36,7 @@ export function useLibrarySongExportMutation({
     dispatchMutation({ mutation: "export-song", type: "begin" });
 
     try {
-      await shareLibrarySongs([toLibrarySongExportItem({ detail, songId })]);
+      await exportLibrarySongCommand({ detail, songId });
       sendHaptic("success");
     } catch (caughtError) {
       sendHaptic("error");

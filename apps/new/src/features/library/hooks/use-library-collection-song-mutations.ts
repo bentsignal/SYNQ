@@ -1,15 +1,14 @@
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
-  removeSongFromCollection,
-  updateCollectionSongOrder,
-} from "../repository/relationship-repository";
+  moveLibraryCollectionSongCommand,
+  removeLibraryCollectionSongCommand,
+} from "../services/library-collection-command-service";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
   getCollectionDetailMutationErrorMessage,
   type CollectionDetailMutationAction,
 } from "../services/library-collection-mutation-service";
-import { getCollectionSongOrderUpdate } from "../services/library-collection-song-mutation-service";
 
 type CollectionDetailMutationDispatch = (
   action: CollectionDetailMutationAction,
@@ -34,16 +33,12 @@ export function useLibraryCollectionSongMutations({
     dispatchMutation({ mutation: "move-song", songId, type: "begin" });
 
     try {
-      const orderUpdate = getCollectionSongOrderUpdate({
+      await moveLibraryCollectionSongCommand({
+        collectionId: id,
         direction,
+        kind,
         songId,
         songs: detail.songs,
-      });
-
-      await updateCollectionSongOrder({
-        collectionId: id,
-        kind,
-        songIds: orderUpdate.songIds,
       });
       sendHaptic("light");
     } catch (caughtError) {
@@ -64,7 +59,7 @@ export function useLibraryCollectionSongMutations({
     dispatchMutation({ mutation: "remove-song", songId, type: "begin" });
 
     try {
-      await removeSongFromCollection({
+      await removeLibraryCollectionSongCommand({
         collectionId: id,
         kind,
         songId,

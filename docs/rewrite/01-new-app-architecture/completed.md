@@ -20,3 +20,6 @@
 - Moved library song preview, song detail, and summary Drizzle query builders
   out of UI hooks and into repository modules, clearing direct database/schema
   imports from `apps/new/src/features/library/hooks`.
+- Added command services for collection form, song, and collection mutations so
+  hooks keep UI side effects while services own concrete repository/export
+  wiring.

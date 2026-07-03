@@ -2,9 +2,9 @@ import { useCallback } from "react";
 import type { HapticFeedbackType } from "@/src/features/settings/services/haptic-feedback-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
-  addSongToCollection,
-  addSongsToCollection,
-} from "../repository/collection-song-add-repository";
+  addLibraryCollectionSongCommand,
+  addLibraryCollectionSongsCommand,
+} from "../services/library-collection-command-service";
 import {
   getAddCollectionSongsMutationErrorMessage,
   type AddCollectionSongsControllerAction,
@@ -38,7 +38,7 @@ export function useAddCollectionSongsCommands({
     dispatchControllerState({ type: "begin-add-selection" });
 
     try {
-      await addSongsToCollection({
+      await addLibraryCollectionSongsCommand({
         collectionId,
         kind,
         songIds: selectionState.selectedAddableSongIds,
@@ -65,7 +65,7 @@ export function useAddCollectionSongsCommands({
       dispatchControllerState({ songId, type: "begin-add-song" });
 
       try {
-        await addSongToCollection({
+        await addLibraryCollectionSongCommand({
           collectionId,
           kind,
           songId,

@@ -1,16 +1,14 @@
 import { useEffect, useReducer } from "react";
 import { router } from "expo-router";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { updateLibrarySongMetadata } from "../repository/song-metadata-repository";
+import { updateLibrarySongMetadataCommand } from "../services/library-song-command-service";
 import {
   getLibrarySongEditErrorMessage,
   getInitialLibrarySongEditControllerState,
   librarySongEditControllerReducer,
 } from "../services/library-song-form-service";
 import { getLibrarySongEditActionState } from "../services/library-song-edit-screen-state-service";
-import {
-  type LibrarySongDetail,
-} from "../services/library-song-detail-service";
+import { type LibrarySongDetail } from "../services/library-song-detail-service";
 import { getLibrarySongDetailHref } from "../services/library-song-interaction-service";
 
 type UseEditLibrarySongControllerParams = {
@@ -52,7 +50,7 @@ export function useEditLibrarySongController({
     dispatchFormState({ type: "begin-save" });
 
     try {
-      await updateLibrarySongMetadata({
+      await updateLibrarySongMetadataCommand({
         albumNames: formState.albumNames,
         artistNames: formState.artistNames,
         id: songId,

@@ -2,10 +2,8 @@ import { useCallback } from "react";
 import { Alert } from "react-native";
 import { router } from "expo-router";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { deleteLibrarySong } from "../repository/library-song-delete-repository";
-import {
-  type LibrarySongDetail,
-} from "../services/library-song-detail-service";
+import { deleteLibrarySongCommand } from "../services/library-song-command-service";
+import { type LibrarySongDetail } from "../services/library-song-detail-service";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
 import {
   getLibrarySongDeleteConfirmationCopy,
@@ -52,7 +50,7 @@ export function useLibrarySongDeleteMutation({
           dispatchMutation({ mutation: "delete-song", type: "begin" });
 
           try {
-            await deleteLibrarySong(songId);
+            await deleteLibrarySongCommand(songId);
             removeFromQueue(songId);
             sendHaptic("success");
             router.replace(getLibrarySongDeleteSuccessHref());

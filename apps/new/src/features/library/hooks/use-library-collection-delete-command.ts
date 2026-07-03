@@ -1,6 +1,6 @@
 import { Alert } from "react-native";
 import { router } from "expo-router";
-import { deleteCollection } from "../repository/collection-delete-repository";
+import { deleteLibraryCollectionCommand } from "../services/library-collection-command-service";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
@@ -55,7 +55,7 @@ export function useLibraryCollectionDeleteCommand({
             dispatchMutation({ mutation: "delete-collection", type: "begin" });
 
             try {
-              await deleteCollection({ id, kind });
+              await deleteLibraryCollectionCommand({ id, kind });
               sendHaptic("success");
               router.replace(getCollectionListHref(kind));
             } catch (caughtError) {

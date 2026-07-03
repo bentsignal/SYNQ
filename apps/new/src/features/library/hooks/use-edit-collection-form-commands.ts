@@ -1,12 +1,7 @@
 import { useRouter } from "expo-router";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import {
-  updateAlbum,
-  updateArtist,
-  updatePlaylist,
-} from "../repository/collection-update-repository";
 import { useCollectionFormImageCommand } from "./use-collection-form-image-command";
-import { updateCollectionFromForm } from "../services/collection-form-mutation-service";
+import { updateCollectionFromFormCommand } from "../services/collection-form-command-service";
 import { getCollectionDetailHref } from "../services/collection-form-navigation-service";
 import {
   getCollectionFormErrorMessage,
@@ -56,16 +51,11 @@ export function useEditCollectionFormCommands({
     dispatchFormState({ type: "begin-save" });
 
     try {
-      await updateCollectionFromForm({
+      await updateCollectionFromFormCommand({
         id,
         imageDataUrl: formState.image?.dataUrl,
         kind,
         name: formState.name,
-        repository: {
-          updateAlbum,
-          updateArtist,
-          updatePlaylist,
-        },
         year: formState.year,
       });
       sendHaptic("success");

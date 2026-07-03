@@ -1,9 +1,7 @@
 import { useCallback } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { setLibrarySongLiked } from "../repository/library-song-liked-repository";
-import {
-  type LibrarySongDetail,
-} from "../services/library-song-detail-service";
+import { toggleLibrarySongLikedCommand } from "../services/library-song-command-service";
+import { type LibrarySongDetail } from "../services/library-song-detail-service";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
 import {
   getLibrarySongDetailMutationErrorMessage,
@@ -38,7 +36,7 @@ export function useLibrarySongLikedMutation({
     dispatchMutation({ mutation: "toggle-liked", type: "begin" });
 
     try {
-      await setLibrarySongLiked({
+      await toggleLibrarySongLikedCommand({
         liked: !detail.isLiked,
         songId,
       });

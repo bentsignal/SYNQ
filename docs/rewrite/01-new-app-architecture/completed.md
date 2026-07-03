@@ -152,3 +152,5 @@
   preserving the public collection command API.
 - Split collection update persistence into album, artist, and playlist
   repositories behind the existing collection update facade.
+- Split library song metadata relationship rewrites out of the song metadata
+  repository.

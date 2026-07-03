@@ -3,7 +3,7 @@ import type {
 } from "../hooks/use-addable-collection-songs-query";
 import { useAddCollectionSongsController } from "../hooks/use-add-collection-songs-controller";
 import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
-import { getAddCollectionSongsStatusState } from "../services/addable-collection-songs-service";
+import { getAddCollectionSongsStatusState } from "../services/addable-collection-songs-screen-state-service";
 import { AddCollectionSongsFormView } from "./AddCollectionSongsFormView";
 
 type AddCollectionSongsConnectedFormProps = {

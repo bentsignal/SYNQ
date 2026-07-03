@@ -1,11 +1,11 @@
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import type { AddableCollectionSong } from "../services/addable-collection-songs-service";
 import {
   getAddCollectionSongsBackLink,
-  type AddableCollectionSong,
   type AddCollectionSongsStatusState,
-} from "../services/addable-collection-songs-service";
+} from "../services/addable-collection-songs-screen-state-service";
 import type { AddableSongSelectionState } from "../services/add-collection-songs-selection-service";
 import type { LibraryCollectionDetailKind } from "../hooks/use-library-collection-detail-query";
 import { AddCollectionSongsHeader } from "./AddCollectionSongsHeader";

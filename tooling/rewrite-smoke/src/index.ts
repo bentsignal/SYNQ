@@ -239,14 +239,16 @@ import {
   normalizeCollectionName,
 } from "../../../apps/new/src/features/library/services/collection-metadata-service";
 import {
+  rowsToLinkedSongIds,
+  rowsToAddableCollectionSongs,
+} from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
+import {
   getAddCollectionSongsBackHref,
   getAddCollectionSongsBackLink,
   getAddCollectionSongsHeaderState,
   getAddCollectionSongsStatusState,
   getAddCollectionSongsUpdatedLabel,
-  rowsToLinkedSongIds,
-  rowsToAddableCollectionSongs,
-} from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
+} from "../../../apps/new/src/features/library/services/addable-collection-songs-screen-state-service";
 import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
 import {
   filterCollectionPreviews,

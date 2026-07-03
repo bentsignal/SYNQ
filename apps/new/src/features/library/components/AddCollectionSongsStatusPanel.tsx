@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { AddCollectionSongsStatusState } from "../services/addable-collection-songs-service";
+import type { AddCollectionSongsStatusState } from "../services/addable-collection-songs-screen-state-service";
 
 type AddCollectionSongsStatusPanelProps = {
   statusState: AddCollectionSongsStatusState;

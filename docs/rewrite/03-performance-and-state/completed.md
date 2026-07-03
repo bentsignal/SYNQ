@@ -29,3 +29,5 @@
 - Converted the remaining eligible backup action card plus app-shell row
   presentation styles to utility classes, lowering the StyleSheet ratchet from
   101 calls to 96.
+- Converted import edit/save/Wi-Fi headers and source panel presentation styles
+  to utility classes, lowering the StyleSheet ratchet from 96 calls to 92.

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { getImportSaveHeaderState } from "../services/import-save-screen-state-service";
 
@@ -7,39 +7,25 @@ export function ImportSaveHeader() {
   const headerState = getImportSaveHeaderState();
 
   return (
-    <View style={styles.header}>
-      <Text style={[styles.kicker, { color: theme.accent }]}>
+    <View className="gap-2">
+      <Text
+        className="text-[13px] font-extrabold uppercase"
+        style={{ color: theme.accent }}
+      >
         {headerState.kicker}
       </Text>
-      <Text style={[styles.title, { color: theme.primaryText }]}>
+      <Text
+        className="text-[34px] font-extrabold leading-10"
+        style={{ color: theme.primaryText }}
+      >
         {headerState.title}
       </Text>
-      <Text style={[styles.subtitle, { color: theme.secondaryText }]}>
+      <Text
+        className="max-w-[520px] text-[15px] leading-[22px]"
+        style={{ color: theme.secondaryText }}
+      >
         {headerState.subtitle}
       </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    gap: 8,
-  },
-  kicker: {
-    fontSize: 13,
-    fontWeight: "800",
-    letterSpacing: 0,
-    textTransform: "uppercase",
-  },
-  subtitle: {
-    fontSize: 15,
-    lineHeight: 22,
-    maxWidth: 520,
-  },
-  title: {
-    fontSize: 34,
-    fontWeight: "800",
-    letterSpacing: 0,
-    lineHeight: 40,
-  },
-});

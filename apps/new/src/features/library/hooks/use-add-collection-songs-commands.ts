@@ -6,7 +6,12 @@ import {
   addLibraryCollectionSongsCommand,
 } from "../services/library-collection-command-service";
 import {
-  getAddCollectionSongsMutationErrorMessage,
+  getAddCollectionSongsBlockedCommand,
+  getAddCollectionSongsFailureCommand,
+  getAddCollectionSongsSelectionStartCommand,
+  getAddCollectionSongsSelectionSuccessCommand,
+  getAddCollectionSongsSongStartCommand,
+  getAddCollectionSongsSongSuccessCommand,
   type AddCollectionSongsControllerAction,
 } from "../services/add-collection-songs-state-service";
 import type { AddableSongSelectionState } from "../services/add-collection-songs-selection-service";
@@ -30,12 +35,14 @@ export function useAddCollectionSongsCommands({
 }) {
   const addSelectedSongs = useCallback(async () => {
     if (!selectionState.canBulkAdd) {
-      sendHaptic("error");
+      const command = getAddCollectionSongsBlockedCommand();
+      sendHaptic(command.haptic);
       return;
     }
 
-    sendHaptic("medium");
-    dispatchControllerState({ type: "begin-add-selection" });
+    const startCommand = getAddCollectionSongsSelectionStartCommand();
+    sendHaptic(startCommand.haptic);
+    dispatchControllerState(startCommand.action);
 
     try {
       await addLibraryCollectionSongsCommand({
@@ -43,17 +50,16 @@ export function useAddCollectionSongsCommands({
         kind,
         songIds: selectionState.selectedAddableSongIds,
       });
-      dispatchControllerState({ type: "clear-selection" });
-      sendHaptic("success");
+      const command = getAddCollectionSongsSelectionSuccessCommand();
+      dispatchControllerState(command.action);
+      sendHaptic(command.haptic);
     } catch (caughtError) {
-      sendHaptic("error");
-      dispatchControllerState({
-        error: getAddCollectionSongsMutationErrorMessage({
-          caughtError,
-          mutation: "add-selection",
-        }),
-        type: "fail",
+      const command = getAddCollectionSongsFailureCommand({
+        caughtError,
+        mutation: "add-selection",
       });
+      sendHaptic(command.haptic);
+      dispatchControllerState(command.action);
     } finally {
       dispatchControllerState({ type: "finish-add-selection" });
     }
@@ -61,8 +67,9 @@ export function useAddCollectionSongsCommands({
 
   const addSong = useCallback(
     async (songId: number) => {
-      sendHaptic("light");
-      dispatchControllerState({ songId, type: "begin-add-song" });
+      const startCommand = getAddCollectionSongsSongStartCommand(songId);
+      sendHaptic(startCommand.haptic);
+      dispatchControllerState(startCommand.action);
 
       try {
         await addLibraryCollectionSongCommand({
@@ -70,17 +77,16 @@ export function useAddCollectionSongsCommands({
           kind,
           songId,
         });
-        dispatchControllerState({ songId, type: "remove-selection" });
-        sendHaptic("success");
+        const command = getAddCollectionSongsSongSuccessCommand(songId);
+        dispatchControllerState(command.action);
+        sendHaptic(command.haptic);
       } catch (caughtError) {
-        sendHaptic("error");
-        dispatchControllerState({
-          error: getAddCollectionSongsMutationErrorMessage({
-            caughtError,
-            mutation: "add-song",
-          }),
-          type: "fail",
+        const command = getAddCollectionSongsFailureCommand({
+          caughtError,
+          mutation: "add-song",
         });
+        sendHaptic(command.haptic);
+        dispatchControllerState(command.action);
       } finally {
         dispatchControllerState({ type: "finish-add-song" });
       }

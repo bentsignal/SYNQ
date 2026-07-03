@@ -1,3 +1,4 @@
+import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import {
   removeSongIdSelection,
   toggleSongIdSelection,
@@ -152,3 +153,69 @@ export const getAddCollectionSongsMutationErrorMessage = ({
       return "Song could not be added.";
   }
 };
+
+type AddCollectionSongsHapticCommand = {
+  haptic: HapticFeedbackType;
+};
+
+type AddCollectionSongsActionCommand = AddCollectionSongsHapticCommand & {
+  action: AddCollectionSongsControllerAction;
+};
+
+export const getAddCollectionSongsBlockedCommand =
+  (): AddCollectionSongsHapticCommand => ({
+    haptic: "error",
+  });
+
+export const getAddCollectionSongsSelectionStartCommand =
+  (): AddCollectionSongsActionCommand => ({
+    action: {
+      type: "begin-add-selection",
+    },
+    haptic: "medium",
+  });
+
+export const getAddCollectionSongsSelectionSuccessCommand =
+  (): AddCollectionSongsActionCommand => ({
+    action: {
+      type: "clear-selection",
+    },
+    haptic: "success",
+  });
+
+export const getAddCollectionSongsSongStartCommand = (
+  songId: number,
+): AddCollectionSongsActionCommand => ({
+  action: {
+    songId,
+    type: "begin-add-song",
+  },
+  haptic: "light",
+});
+
+export const getAddCollectionSongsSongSuccessCommand = (
+  songId: number,
+): AddCollectionSongsActionCommand => ({
+  action: {
+    songId,
+    type: "remove-selection",
+  },
+  haptic: "success",
+});
+
+export const getAddCollectionSongsFailureCommand = ({
+  caughtError,
+  mutation,
+}: {
+  caughtError: unknown;
+  mutation: AddCollectionSongsMutationKind;
+}): AddCollectionSongsActionCommand => ({
+  action: {
+    error: getAddCollectionSongsMutationErrorMessage({
+      caughtError,
+      mutation,
+    }),
+    type: "fail",
+  },
+  haptic: "error",
+});

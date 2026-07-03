@@ -203,7 +203,13 @@ import {
 import {
   addCollectionSongsControllerReducer,
   addCollectionSongsSearchReducer,
+  getAddCollectionSongsBlockedCommand,
+  getAddCollectionSongsFailureCommand,
   getAddCollectionSongsMutationErrorMessage,
+  getAddCollectionSongsSelectionStartCommand,
+  getAddCollectionSongsSelectionSuccessCommand,
+  getAddCollectionSongsSongStartCommand,
+  getAddCollectionSongsSongSuccessCommand,
   initialAddCollectionSongsControllerState,
   initialAddCollectionSongsSearchState,
 } from "../../../apps/new/src/features/library/services/add-collection-songs-state-service";
@@ -2945,6 +2951,48 @@ function assertLibraryCollectionInteractionSmoke() {
       mutation: "add-song",
     }),
     "Song could not be added.",
+  );
+  assert.deepEqual(getAddCollectionSongsBlockedCommand(), {
+    haptic: "error",
+  });
+  assert.deepEqual(getAddCollectionSongsSelectionStartCommand(), {
+    action: {
+      type: "begin-add-selection",
+    },
+    haptic: "medium",
+  });
+  assert.deepEqual(getAddCollectionSongsSelectionSuccessCommand(), {
+    action: {
+      type: "clear-selection",
+    },
+    haptic: "success",
+  });
+  assert.deepEqual(getAddCollectionSongsSongStartCommand(3), {
+    action: {
+      songId: 3,
+      type: "begin-add-song",
+    },
+    haptic: "light",
+  });
+  assert.deepEqual(getAddCollectionSongsSongSuccessCommand(3), {
+    action: {
+      songId: 3,
+      type: "remove-selection",
+    },
+    haptic: "success",
+  });
+  assert.deepEqual(
+    getAddCollectionSongsFailureCommand({
+      caughtError: new Error("Add smoke failure"),
+      mutation: "add-song",
+    }),
+    {
+      action: {
+        error: "Add smoke failure",
+        type: "fail",
+      },
+      haptic: "error",
+    },
   );
 
   const selected = toggleSongIdSelection({

@@ -10,4 +10,5 @@
 - Added import-review draft export and save-to-library behavior.
 - Reset live playback and staged import provider state after backup
   restore/erase.
-
+- Completed a first-pass old/new route and primary-screen audit across import,
+  ingest, library, playback, settings, backup, and premium.

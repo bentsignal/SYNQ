@@ -1,6 +1,10 @@
 import { useCallback } from "react";
 import type { HapticFeedbackType } from "@/src/features/settings/services/haptic-feedback-service";
-import { getSeekTargetPosition } from "../services/playback-player-state-service";
+import {
+  getPlaybackPlayerButtonCommand,
+  getPlaybackPlayerPlayPauseCommand,
+  getPlaybackPlayerSeekCommand,
+} from "../services/playback-player-state-service";
 import type { PlaybackState } from "../types/playback-state";
 
 type PlaybackPlayerSessionCommands = {
@@ -28,35 +32,40 @@ export function usePlaybackPlayerCommands({
   state: Pick<PlaybackState, "duration" | "isPlaying" | "position">;
 }) {
   const rewind = useCallback(() => {
-    sendHaptic("light");
-    seekTo(
-      getSeekTargetPosition({
-        direction: "backward",
+    const command = getPlaybackPlayerSeekCommand({
+      direction: "backward",
+      state: {
         duration: state.duration,
         position: state.position,
-      }),
-    );
+      },
+    });
+    sendHaptic(command.haptic);
+    seekTo(command.targetPosition);
   }, [seekTo, sendHaptic, state.duration, state.position]);
 
   const fastForward = useCallback(() => {
-    sendHaptic("light");
-    seekTo(
-      getSeekTargetPosition({
-        direction: "forward",
+    const command = getPlaybackPlayerSeekCommand({
+      direction: "forward",
+      state: {
         duration: state.duration,
         position: state.position,
-      }),
-    );
+      },
+    });
+    sendHaptic(command.haptic);
+    seekTo(command.targetPosition);
   }, [seekTo, sendHaptic, state.duration, state.position]);
 
   const skipBack = useCallback(() => {
-    sendHaptic("light");
+    sendHaptic(getPlaybackPlayerButtonCommand().haptic);
     skipPrevious();
   }, [sendHaptic, skipPrevious]);
 
   const togglePlayPause = useCallback(() => {
-    sendHaptic(state.isPlaying ? "soft" : "light");
-    if (state.isPlaying) {
+    const command = getPlaybackPlayerPlayPauseCommand({
+      isPlaying: state.isPlaying,
+    });
+    sendHaptic(command.haptic);
+    if (command.action === "pause") {
       pause();
       return;
     }
@@ -65,17 +74,17 @@ export function usePlaybackPlayerCommands({
   }, [pause, resume, sendHaptic, state.isPlaying]);
 
   const skipForward = useCallback(() => {
-    sendHaptic("light");
+    sendHaptic(getPlaybackPlayerButtonCommand().haptic);
     skipNext();
   }, [sendHaptic, skipNext]);
 
   const toggleShuffleMode = useCallback(() => {
-    sendHaptic("light");
+    sendHaptic(getPlaybackPlayerButtonCommand().haptic);
     toggleShuffle();
   }, [sendHaptic, toggleShuffle]);
 
   const toggleLoopMode = useCallback(() => {
-    sendHaptic("light");
+    sendHaptic(getPlaybackPlayerButtonCommand().haptic);
     toggleLoop();
   }, [sendHaptic, toggleLoop]);
 

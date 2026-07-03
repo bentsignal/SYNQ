@@ -37,7 +37,10 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-persistence-codec-service";
 import {
   getFreeListeningRemainingMs,
+  getPlaybackPlayerButtonCommand,
   getPlaybackPlayerActionState,
+  getPlaybackPlayerPlayPauseCommand,
+  getPlaybackPlayerSeekCommand,
   getPlaybackPlayerViewState,
   getPlaybackProgressPercent,
   getSeekTargetPosition,
@@ -1114,6 +1117,37 @@ function assertPlaybackPlayerStateSmoke() {
     }),
     70_000,
   );
+  assert.deepEqual(getPlaybackPlayerButtonCommand(), {
+    haptic: "light",
+  });
+  assert.deepEqual(
+    getPlaybackPlayerSeekCommand({
+      direction: "backward",
+      state: { duration: 120_000, position: 5_000 },
+    }),
+    {
+      haptic: "light",
+      targetPosition: 0,
+    },
+  );
+  assert.deepEqual(
+    getPlaybackPlayerSeekCommand({
+      direction: "forward",
+      state: { duration: 120_000, position: 110_000 },
+    }),
+    {
+      haptic: "light",
+      targetPosition: 120_000,
+    },
+  );
+  assert.deepEqual(getPlaybackPlayerPlayPauseCommand({ isPlaying: true }), {
+    action: "pause",
+    haptic: "soft",
+  });
+  assert.deepEqual(getPlaybackPlayerPlayPauseCommand({ isPlaying: false }), {
+    action: "resume",
+    haptic: "light",
+  });
   assert.deepEqual(
     getPlaybackPlayerActionState({
       activeTrack: null,

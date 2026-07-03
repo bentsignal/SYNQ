@@ -115,7 +115,9 @@ import {
 } from "../../../apps/new/src/features/import/services/import-save-screen-state-service";
 import {
   getImportFailureState,
+  getImportFailureViewState,
   getImportSuccessState,
+  getImportSuccessViewState,
 } from "../../../apps/new/src/features/import/services/import-result-screen-state-service";
 import {
   getImportFilesActionState,
@@ -1715,6 +1717,26 @@ function assertImportSessionSmoke() {
     },
   );
   assert.deepEqual(
+    getImportSuccessViewState({
+      ...state,
+      phase: "success",
+      progress: { current: 3, total: 4 },
+      saveSummary: { discarded: 1, saved: 2, savedSongIds: [1, 2] },
+      shouldSaveToLibrary: true,
+    }),
+    {
+      backHref: "/(tabs)/library",
+      backLabel: "Open Library",
+      kicker: "Import complete",
+      panelHint: "Saved songs are ready in Library.",
+      panelLabel: "Library save",
+      panelText: "2 saved to library",
+      subtitle: "3 of 4 songs processed.",
+      title: "Success",
+      tone: "accent",
+    },
+  );
+  assert.deepEqual(
     getImportSuccessState({
       ...state,
       phase: "success",
@@ -1737,6 +1759,23 @@ function assertImportSessionSmoke() {
     {
       errorLabel: "Import smoke failure",
       phaseLabel: "failure",
+    },
+  );
+  assert.deepEqual(
+    getImportFailureViewState({
+      ...state,
+      error: "Import smoke failure",
+      phase: "failure",
+    }),
+    {
+      backHref: "/(tabs)/import/files",
+      backLabel: "Back to files",
+      kicker: "Import stopped",
+      panelLabel: "Phase",
+      panelText: "failure",
+      subtitle: "Import smoke failure",
+      title: "Failure",
+      tone: "danger",
     },
   );
   assert.deepEqual(

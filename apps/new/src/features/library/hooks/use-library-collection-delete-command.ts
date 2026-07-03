@@ -5,14 +5,7 @@ import { deleteLibraryCollectionCommand } from "../services/library-collection-c
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import type { CollectionDetailActionState } from "../services/library-collection-action-state-service";
-import { getDeleteCollectionConfirmationCopy } from "../services/library-collection-interaction-service";
-import {
-  getCollectionDeleteFinishCommand,
-  getCollectionDeleteStartCommand,
-  getCollectionDeleteSuccessCommand,
-  getCollectionDetailMutationBlockedCommand,
-  getCollectionDetailMutationFailureCommand,
-} from "../services/library-collection-mutation-service";
+import { runLibraryCollectionDeleteCommand } from "../services/library-collection-mutation-command-flow-service";
 import type { CollectionDetailMutationAction } from "../services/library-collection-mutation-state-service";
 
 type CollectionDetailMutationDispatch = (
@@ -36,41 +29,16 @@ export function useLibraryCollectionDeleteCommand({
   kind: LibraryCollectionDetailKind;
   sendHaptic: HapticSender;
 }) {
-  return () => {
-    if (!actionState.canDelete) {
-      sendHaptic(getCollectionDetailMutationBlockedCommand().haptic);
-      return;
-    }
-
-    const confirmationCopy = getDeleteCollectionConfirmationCopy({
-      eyebrow: detail.eyebrow,
-      title: detail.title,
+  return () =>
+    runLibraryCollectionDeleteCommand({
+      actionState,
+      deleteLibraryCollection: deleteLibraryCollectionCommand,
+      detail,
+      dispatch: dispatchMutation,
+      id,
+      kind,
+      replaceRoute: replaceNativeRoute,
+      sendHaptic,
+      showConfirmation: showNativeConfirmationAlert,
     });
-
-    showNativeConfirmationAlert({
-      body: confirmationCopy.message,
-      cancelLabel: confirmationCopy.cancelLabel,
-      confirmLabel: confirmationCopy.confirmLabel,
-      onConfirm: async () => {
-        dispatchMutation(getCollectionDeleteStartCommand().action);
-
-        try {
-          await deleteLibraryCollectionCommand({ id, kind });
-          const command = getCollectionDeleteSuccessCommand({ kind });
-          sendHaptic(command.haptic);
-          replaceNativeRoute(command.href);
-        } catch (caughtError) {
-          const command = getCollectionDetailMutationFailureCommand({
-            caughtError,
-            mutation: "delete-collection",
-          });
-          sendHaptic(command.haptic);
-          dispatchMutation(command.action);
-        } finally {
-          dispatchMutation(getCollectionDeleteFinishCommand().action);
-        }
-      },
-      title: confirmationCopy.title,
-    });
-  };
 }

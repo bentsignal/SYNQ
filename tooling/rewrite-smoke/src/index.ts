@@ -567,6 +567,7 @@ import {
   getCollectionSongRemovalSuccessCommand,
 } from "../../../apps/new/src/features/library/services/library-collection-mutation-service";
 import {
+  runLibraryCollectionDeleteCommand,
   runLibraryCollectionExportCommand,
   runLibraryCollectionSongMoveCommand,
   runLibraryCollectionSongRemoveCommand,
@@ -5101,6 +5102,77 @@ async function assertLibraryCollectionInteractionSmoke() {
     kind: "playlist",
     songs,
   });
+  const deleteActionState = {
+    ...playableActionState,
+    canDelete: true,
+  };
+  const showCollectionDeleteConfirmation = async (
+    shouldConfirm: boolean,
+    shouldFailDelete = false,
+  ) => {
+    const confirmations: Promise<void>[] = [];
+    runLibraryCollectionDeleteCommand({
+      actionState: deleteActionState,
+      deleteLibraryCollection: async (params) => {
+        collectionMutationCommandEvents.push(["delete", params.id, params.kind]);
+
+        if (shouldFailDelete) {
+          throw new Error("Delete failed");
+        }
+      },
+      detail: {
+        eyebrow: "Playlist",
+        title: "Smoke Mix",
+      },
+      dispatch: dispatchCollectionMutationCommand,
+      id: 7,
+      kind: "playlist",
+      replaceRoute: (href) => {
+        collectionMutationCommandEvents.push(["route", href]);
+      },
+      sendHaptic: sendCollectionMutationHaptic,
+      showConfirmation: (params) => {
+        collectionMutationCommandEvents.push([
+          "confirm",
+          params.title,
+          params.body,
+          params.cancelLabel,
+          params.confirmLabel,
+        ]);
+
+        if (shouldConfirm) {
+          confirmations.push(Promise.resolve(params.onConfirm()));
+        }
+      },
+    });
+    await Promise.all(confirmations);
+  };
+  runLibraryCollectionDeleteCommand({
+    actionState: {
+      ...deleteActionState,
+      canDelete: false,
+    },
+    deleteLibraryCollection: async () => {
+      collectionMutationCommandEvents.push(["unexpected-delete"]);
+    },
+    detail: {
+      eyebrow: "Playlist",
+      title: "Smoke Mix",
+    },
+    dispatch: dispatchCollectionMutationCommand,
+    id: 7,
+    kind: "playlist",
+    replaceRoute: (href) => {
+      collectionMutationCommandEvents.push(["unexpected-route", href]);
+    },
+    sendHaptic: sendCollectionMutationHaptic,
+    showConfirmation: () => {
+      collectionMutationCommandEvents.push(["unexpected-confirm"]);
+    },
+  });
+  await showCollectionDeleteConfirmation(false);
+  await showCollectionDeleteConfirmation(true);
+  await showCollectionDeleteConfirmation(true, true);
   await runLibraryCollectionExportCommand({
     actionState: {
       ...playableActionState,
@@ -5186,6 +5258,50 @@ async function assertLibraryCollectionInteractionSmoke() {
     songId: songs[1]!.id,
   });
   assert.deepEqual(collectionMutationCommandEvents, [
+    ["haptic", "error"],
+    [
+      "confirm",
+      "Delete playlist",
+      "Delete Smoke Mix? Songs will stay in your library.",
+      "Cancel",
+      "Delete",
+    ],
+    [
+      "confirm",
+      "Delete playlist",
+      "Delete Smoke Mix? Songs will stay in your library.",
+      "Cancel",
+      "Delete",
+    ],
+    [
+      "dispatch",
+      { mutation: "delete-collection", type: "begin" },
+    ],
+    ["delete", 7, "playlist"],
+    ["haptic", "success"],
+    ["route", "/(tabs)/library/playlists"],
+    [
+      "dispatch",
+      { mutation: "delete-collection", type: "finish" },
+    ],
+    [
+      "confirm",
+      "Delete playlist",
+      "Delete Smoke Mix? Songs will stay in your library.",
+      "Cancel",
+      "Delete",
+    ],
+    [
+      "dispatch",
+      { mutation: "delete-collection", type: "begin" },
+    ],
+    ["delete", 7, "playlist"],
+    ["haptic", "error"],
+    ["dispatch", { error: "Delete failed", type: "fail" }],
+    [
+      "dispatch",
+      { mutation: "delete-collection", type: "finish" },
+    ],
     ["haptic", "error"],
     [
       "dispatch",

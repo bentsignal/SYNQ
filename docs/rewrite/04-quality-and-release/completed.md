@@ -254,3 +254,5 @@
 - Added direct collection mutation command-flow smoke coverage for blocked
   export, export success/failure, song move success/failure, and song remove
   success/failure sequencing.
+- Added direct collection delete command-flow smoke coverage for blocked,
+  canceled confirmation, success navigation, failure, and finish sequencing.

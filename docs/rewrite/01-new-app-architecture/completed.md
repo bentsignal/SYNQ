@@ -361,3 +361,5 @@
   command-flow service so initial and manual load paths share one boundary.
 - Moved collection export, song move, and song remove mutation sequencing out
   of React hooks and into a focused collection mutation command-flow service.
+- Moved collection delete confirmation, success navigation, failure, and finish
+  sequencing out of the React hook and into the collection mutation flow service.

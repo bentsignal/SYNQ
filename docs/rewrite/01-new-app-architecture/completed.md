@@ -94,3 +94,5 @@
   so the field group stays focused on form composition.
 - Extracted import save-screen action button rendering into a small reusable
   button component.
+- Moved add-collection-songs selection haptic orchestration into the command
+  hook so the controller focuses on reducer state and derived selection state.

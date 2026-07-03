@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import type { HapticFeedbackType } from "@/src/features/settings/services/haptic-feedback-service";
+import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
   addLibraryCollectionSongCommand,
@@ -12,6 +12,7 @@ import {
   getAddCollectionSongsSelectionSuccessCommand,
   getAddCollectionSongsSongStartCommand,
   getAddCollectionSongsSongSuccessCommand,
+  getAddCollectionSongsToggleSelectionCommand,
   type AddCollectionSongsControllerAction,
 } from "../services/add-collection-songs-state-service";
 import type { AddableSongSelectionState } from "../services/add-collection-songs-selection-service";
@@ -25,14 +26,23 @@ export function useAddCollectionSongsCommands({
   dispatchControllerState,
   kind,
   selectionState,
-  sendHaptic,
 }: {
   collectionId: number;
   dispatchControllerState: AddCollectionSongsControllerDispatch;
   kind: LibraryCollectionDetailKind;
   selectionState: AddableSongSelectionState;
-  sendHaptic: (type: HapticFeedbackType) => void;
 }) {
+  const { sendHaptic } = useHapticFeedback();
+
+  const toggleSongSelection = useCallback(
+    (songId: number) => {
+      const command = getAddCollectionSongsToggleSelectionCommand(songId);
+      sendHaptic(command.haptic);
+      dispatchControllerState(command.action);
+    },
+    [dispatchControllerState, sendHaptic],
+  );
+
   const addSelectedSongs = useCallback(async () => {
     if (!selectionState.canBulkAdd) {
       const command = getAddCollectionSongsBlockedCommand();
@@ -97,5 +107,6 @@ export function useAddCollectionSongsCommands({
   return {
     addSelectedSongs,
     addSong,
+    toggleSongSelection,
   };
 }

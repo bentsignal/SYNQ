@@ -1,9 +1,15 @@
-import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import type { CollectionDetailActionState } from "./library-collection-action-state-service";
 import type {
   LibraryCollectionDetail,
   LibraryCollectionDetailSong,
 } from "./library-collection-detail-service";
+import {
+  runCollectionDetailMutationAttempt,
+  type CollectionDetailMutationDispatch,
+  type CollectionDetailMutationHapticSender,
+  type NativeConfirmationPresenter,
+  type NativeRouteReplacer,
+} from "./library-collection-detail-mutation-runtime-service";
 import { getDeleteCollectionConfirmationCopy } from "./library-collection-interaction-service";
 import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
 import {
@@ -11,7 +17,6 @@ import {
   getCollectionDeleteStartCommand,
   getCollectionDeleteSuccessCommand,
   getCollectionDetailMutationBlockedCommand,
-  getCollectionDetailMutationFailureCommand,
   getCollectionExportFinishCommand,
   getCollectionExportStartCommand,
   getCollectionExportSuccessCommand,
@@ -22,60 +27,6 @@ import {
   getCollectionSongRemovalStartCommand,
   getCollectionSongRemovalSuccessCommand,
 } from "./library-collection-mutation-service";
-import type {
-  CollectionDetailMutationAction,
-  CollectionDetailMutationKind,
-} from "./library-collection-mutation-state-service";
-
-type CollectionDetailMutationDispatch = (
-  action: CollectionDetailMutationAction,
-) => void;
-
-type HapticSender = (type: HapticFeedbackType) => void;
-
-type NativeConfirmationPresenter = (params: {
-  body: string;
-  cancelLabel: string;
-  confirmLabel: string;
-  onConfirm: () => Promise<void> | void;
-  title: string;
-}) => void;
-
-type NativeRouteReplacer = (href: string) => void;
-
-const runCollectionDetailMutationAttempt = async ({
-  dispatch,
-  finishAction,
-  mutation,
-  onSuccess,
-  run,
-  sendHaptic,
-  startAction,
-}: {
-  dispatch: CollectionDetailMutationDispatch;
-  finishAction: CollectionDetailMutationAction;
-  mutation: CollectionDetailMutationKind;
-  onSuccess: () => void;
-  run: () => Promise<void>;
-  sendHaptic: HapticSender;
-  startAction: CollectionDetailMutationAction;
-}) => {
-  dispatch(startAction);
-
-  try {
-    await run();
-    onSuccess();
-  } catch (caughtError) {
-    const command = getCollectionDetailMutationFailureCommand({
-      caughtError,
-      mutation,
-    });
-    sendHaptic(command.haptic);
-    dispatch(command.action);
-  } finally {
-    dispatch(finishAction);
-  }
-};
 
 export const runLibraryCollectionDeleteCommand = ({
   actionState,
@@ -98,7 +49,7 @@ export const runLibraryCollectionDeleteCommand = ({
   id: number;
   kind: LibraryCollectionDetailKind;
   replaceRoute: NativeRouteReplacer;
-  sendHaptic: HapticSender;
+  sendHaptic: CollectionDetailMutationHapticSender;
   showConfirmation: NativeConfirmationPresenter;
 }) => {
   if (!actionState.canDelete) {
@@ -145,7 +96,7 @@ export const runLibraryCollectionExportCommand = async ({
   exportLibraryCollection: (
     songs: CollectionDetailActionState["playableSongs"],
   ) => Promise<unknown>;
-  sendHaptic: HapticSender;
+  sendHaptic: CollectionDetailMutationHapticSender;
 }) => {
   if (!actionState.canExport) {
     sendHaptic(getCollectionDetailMutationBlockedCommand().haptic);
@@ -189,7 +140,7 @@ export const runLibraryCollectionSongMoveCommand = async ({
     songId: number;
     songs: LibraryCollectionDetailSong[];
   }) => Promise<void>;
-  sendHaptic: HapticSender;
+  sendHaptic: CollectionDetailMutationHapticSender;
   songId: number;
 }) => {
   await runCollectionDetailMutationAttempt({
@@ -228,7 +179,7 @@ export const runLibraryCollectionSongRemoveCommand = async ({
     kind: LibraryCollectionDetailKind;
     songId: number;
   }) => Promise<void>;
-  sendHaptic: HapticSender;
+  sendHaptic: CollectionDetailMutationHapticSender;
   songId: number;
 }) => {
   await runCollectionDetailMutationAttempt({

@@ -1,18 +1,14 @@
 import { showNativeConfirmationAlert } from "@/src/features/app-shell/services/native-alert-service";
 import { replaceNativeRoute } from "@/src/features/app-shell/services/native-route-service";
-import type { HapticFeedbackType } from "@/src/features/settings/services/haptic-feedback-service";
 import { deleteLibraryCollectionCommand } from "../services/library-collection-command-service";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import type { CollectionDetailActionState } from "../services/library-collection-action-state-service";
+import type {
+  CollectionDetailMutationDispatch,
+  CollectionDetailMutationHapticSender,
+} from "../services/library-collection-detail-mutation-runtime-service";
 import { runLibraryCollectionDeleteCommand } from "../services/library-collection-mutation-command-flow-service";
-import type { CollectionDetailMutationAction } from "../services/library-collection-mutation-state-service";
-
-type CollectionDetailMutationDispatch = (
-  action: CollectionDetailMutationAction,
-) => void;
-
-type HapticSender = (type: HapticFeedbackType) => void;
 
 export function useLibraryCollectionDeleteCommand({
   actionState,
@@ -27,7 +23,7 @@ export function useLibraryCollectionDeleteCommand({
   dispatchMutation: CollectionDetailMutationDispatch;
   id: number;
   kind: LibraryCollectionDetailKind;
-  sendHaptic: HapticSender;
+  sendHaptic: CollectionDetailMutationHapticSender;
 }) {
   return () =>
     runLibraryCollectionDeleteCommand({

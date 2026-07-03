@@ -5,15 +5,11 @@ import {
 } from "../services/library-collection-command-service";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
+import type { CollectionDetailMutationDispatch } from "../services/library-collection-detail-mutation-runtime-service";
 import {
   runLibraryCollectionSongMoveCommand,
   runLibraryCollectionSongRemoveCommand,
 } from "../services/library-collection-mutation-command-flow-service";
-import type { CollectionDetailMutationAction } from "../services/library-collection-mutation-state-service";
-
-type CollectionDetailMutationDispatch = (
-  action: CollectionDetailMutationAction,
-) => void;
 
 type UseLibraryCollectionSongMutationsParams = {
   detail: LibraryCollectionDetail;

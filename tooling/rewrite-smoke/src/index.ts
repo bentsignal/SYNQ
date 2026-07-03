@@ -611,6 +611,7 @@ import {
   getCollectionSongRemovalStartCommand,
   getCollectionSongRemovalSuccessCommand,
 } from "../../../apps/new/src/features/library/services/library-collection-mutation-service";
+import { runCollectionDetailMutationAttempt } from "../../../apps/new/src/features/library/services/library-collection-detail-mutation-runtime-service";
 import {
   runLibraryCollectionDeleteCommand,
   runLibraryCollectionExportCommand,
@@ -5456,6 +5457,66 @@ async function assertLibraryCollectionInteractionSmoke() {
       type: "finish",
     },
   });
+  const collectionMutationAttemptEvents: unknown[] = [];
+  await runCollectionDetailMutationAttempt({
+    dispatch: (action) => {
+      collectionMutationAttemptEvents.push(["dispatch", action]);
+    },
+    finishAction: getCollectionExportFinishCommand().action,
+    mutation: "export-collection",
+    onSuccess: () => {
+      collectionMutationAttemptEvents.push(["success"]);
+    },
+    run: async () => {
+      collectionMutationAttemptEvents.push(["run"]);
+    },
+    sendHaptic: (haptic) => {
+      collectionMutationAttemptEvents.push(["haptic", haptic]);
+    },
+    startAction: getCollectionExportStartCommand().action,
+  });
+  await runCollectionDetailMutationAttempt({
+    dispatch: (action) => {
+      collectionMutationAttemptEvents.push(["dispatch", action]);
+    },
+    finishAction: getCollectionSongMoveFinishCommand().action,
+    mutation: "move-song",
+    onSuccess: () => {
+      collectionMutationAttemptEvents.push(["unexpected-success"]);
+    },
+    run: async () => {
+      throw new Error("Move failed");
+    },
+    sendHaptic: (haptic) => {
+      collectionMutationAttemptEvents.push(["haptic", haptic]);
+    },
+    startAction: getCollectionSongMoveStartCommand(4).action,
+  });
+  assert.deepEqual(collectionMutationAttemptEvents, [
+    [
+      "dispatch",
+      { mutation: "export-collection", type: "begin" },
+    ],
+    ["run"],
+    ["success"],
+    [
+      "dispatch",
+      { mutation: "export-collection", type: "finish" },
+    ],
+    [
+      "dispatch",
+      { mutation: "move-song", songId: 4, type: "begin" },
+    ],
+    ["haptic", "error"],
+    [
+      "dispatch",
+      { error: "Move failed", type: "fail" },
+    ],
+    [
+      "dispatch",
+      { mutation: "move-song", type: "finish" },
+    ],
+  ]);
   const collectionMutationCommandEvents: unknown[] = [];
   const dispatchCollectionMutationCommand = (
     action: CollectionDetailMutationAction,

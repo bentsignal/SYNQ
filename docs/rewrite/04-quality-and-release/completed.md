@@ -106,3 +106,5 @@
   delegation.
 - Added import draft export executor smoke coverage for staged-song file
   mapping, sharing availability, and share-file delegation.
+- Added import file-selection executor smoke coverage for canceled picks,
+  cache setup, per-file skip behavior, MIME fallback, and Wi-Fi staging.

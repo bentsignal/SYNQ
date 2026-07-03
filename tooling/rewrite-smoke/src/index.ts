@@ -262,6 +262,11 @@ import {
   type ImportFileCacheDependencies,
 } from "../../../apps/new/src/features/import/services/import-file-cache-executor-service";
 import {
+  selectImportFilesWithDependencies,
+  stageWifiImportFileWithDependencies,
+  type ImportFileSelectionDependencies,
+} from "../../../apps/new/src/features/import/services/import-file-selection-executor-service";
+import {
   getImportFileCommandErrorMessage,
   getImportFileRemovalResultCommand,
   getImportFileRemovalStartHaptic,
@@ -8210,6 +8215,130 @@ async function assertImportFileCacheExecutorSmoke() {
   assert.throws(() => getImportCacheDirectory(dependencies), /unavailable/);
 }
 
+async function assertImportFileSelectionExecutorSmoke() {
+  type SmokeAsset = {
+    mimeType?: string | null;
+    name: string;
+    uri: string;
+  };
+
+  const calls: string[] = [];
+  let pickResult:
+    | { canceled: true }
+    | { assets: SmokeAsset[]; canceled: false } = { canceled: true };
+  let failingCopyIndex: number | null = null;
+  const dependencies: ImportFileSelectionDependencies<SmokeAsset> = {
+    copyAssetToImportCache: async ({ asset, index }) => {
+      calls.push(`copy:${asset.name}:${asset.uri}:${index}`);
+      if (failingCopyIndex === index) {
+        throw new Error("Copy failed.");
+      }
+
+      return {
+        destination: `/cache/${asset.name}`,
+        fileName: `cached-${asset.name}`,
+      };
+    },
+    createImportCacheDirectory: async () => {
+      calls.push("mkdir");
+    },
+    now: () => 1_000,
+    pickImportFiles: async () => {
+      calls.push("pick");
+      return pickResult;
+    },
+    processCachedImportFile: async ({ cacheUri, fileName, fileType, id }) => {
+      calls.push(`process:${cacheUri}:${fileName}:${fileType}:${id}`);
+      return {
+        ...importDraft(id),
+        cacheUri,
+        fileName,
+        fileType,
+      };
+    },
+    writeBase64AssetToImportCache: async ({ data, id, name }) => {
+      calls.push(`write:${name}:${data}:${id}`);
+      return {
+        destination: `/cache/${name}`,
+        fileName: `cached-${name}`,
+      };
+    },
+  };
+
+  assert.deepEqual(await selectImportFilesWithDependencies(dependencies), {
+    drafts: [],
+    skipped: 0,
+  });
+  assert.deepEqual(calls, ["pick"]);
+
+  calls.length = 0;
+  failingCopyIndex = 2;
+  pickResult = {
+    assets: [
+      { mimeType: "audio/mpeg", name: "one.mp3", uri: "file:///one.mp3" },
+      { mimeType: null, name: "two.wav", uri: "file:///two.wav" },
+      { mimeType: "audio/aac", name: "bad.m4a", uri: "file:///bad.m4a" },
+    ],
+    canceled: false,
+  };
+  const selected = await selectImportFilesWithDependencies(dependencies);
+  assert.equal(selected.skipped, 1);
+  assert.deepEqual(
+    selected.drafts.map(({ cacheUri, fileName, fileType, id }) => ({
+      cacheUri,
+      fileName,
+      fileType,
+      id,
+    })),
+    [
+      {
+        cacheUri: "/cache/one.mp3",
+        fileName: "cached-one.mp3",
+        fileType: "audio/mpeg",
+        id: 1_000,
+      },
+      {
+        cacheUri: "/cache/two.wav",
+        fileName: "cached-two.wav",
+        fileType: "cached-two.wav",
+        id: 1_001,
+      },
+    ],
+  );
+  assert.deepEqual(calls, [
+    "pick",
+    "mkdir",
+    "copy:one.mp3:file:///one.mp3:0",
+    "process:/cache/one.mp3:cached-one.mp3:audio/mpeg:1000",
+    "copy:two.wav:file:///two.wav:1",
+    "process:/cache/two.wav:cached-two.wav:cached-two.wav:1001",
+    "copy:bad.m4a:file:///bad.m4a:2",
+  ]);
+
+  calls.length = 0;
+  assert.deepEqual(
+    await stageWifiImportFileWithDependencies(
+      {
+        data: "U09ORw==",
+        id: 77,
+        name: "wifi.mp3",
+        type: "",
+      },
+      dependencies,
+    ),
+    {
+      ...importDraft(77),
+      cacheUri: "/cache/wifi.mp3",
+      fileName: "cached-wifi.mp3",
+      fileType: "cached-wifi.mp3",
+    },
+  );
+  assert.deepEqual(calls, [
+    "write:wifi.mp3:U09ORw==:77",
+    "process:/cache/wifi.mp3:cached-wifi.mp3:cached-wifi.mp3:77",
+  ]);
+}
+
 async function assertImportSessionPersistenceExecutorSmoke() {
   const calls: string[] = [];
   const files = new Map<string, string>();
@@ -10748,6 +10877,7 @@ assertPlaybackPlayerStateSmoke();
 void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertPlaybackPersistenceExecutorSmoke();
   await assertImportFileCacheExecutorSmoke();
+  await assertImportFileSelectionExecutorSmoke();
   await assertImportSessionPersistenceExecutorSmoke();
   await assertImportLibraryFileExecutorSmoke();
   await assertImportLibraryLinkExecutorSmoke();

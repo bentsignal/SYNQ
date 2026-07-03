@@ -216,3 +216,6 @@
   sharing adapters.
 - Moved import draft export sharing orchestration behind an injectable executor
   so staged-song file mapping is separated from Expo sharing adapters.
+- Moved import file picking and Wi-Fi staging orchestration behind an
+  injectable executor so the Expo document-picker adapter only wires native
+  dependencies.

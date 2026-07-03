@@ -352,7 +352,14 @@ import {
   toLibrarySongExportItem,
 } from "../../../apps/new/src/features/library/services/library-song-interaction-service";
 import {
+  getLibrarySongDeleteSuccessCommand,
+  getLibrarySongDetailMutationBlockedCommand,
   getLibrarySongDetailMutationErrorMessage,
+  getLibrarySongDetailMutationFailureCommand,
+  getLibrarySongDetailMutationFinishCommand,
+  getLibrarySongDetailMutationStartCommand,
+  getLibrarySongExportSuccessCommand,
+  getLibrarySongLikedSuccessCommand,
   initialLibrarySongDetailMutationState,
   librarySongDetailMutationReducer,
 } from "../../../apps/new/src/features/library/services/library-song-detail-mutation-service";
@@ -3849,6 +3856,31 @@ function assertLibrarySongDetailSmoke() {
       error: "Song could not be deleted.",
     },
   );
+  assert.deepEqual(getLibrarySongDetailMutationBlockedCommand(), {
+    haptic: "error",
+  });
+  assert.deepEqual(getLibrarySongDetailMutationStartCommand("export-song"), {
+    action: {
+      mutation: "export-song",
+      type: "begin",
+    },
+  });
+  assert.deepEqual(getLibrarySongDetailMutationFinishCommand("toggle-liked"), {
+    action: {
+      mutation: "toggle-liked",
+      type: "finish",
+    },
+  });
+  assert.deepEqual(getLibrarySongDeleteSuccessCommand(), {
+    haptic: "success",
+    href: "/(tabs)/library",
+  });
+  assert.deepEqual(getLibrarySongExportSuccessCommand(), {
+    haptic: "success",
+  });
+  assert.deepEqual(getLibrarySongLikedSuccessCommand(), {
+    haptic: "light",
+  });
   assert.deepEqual(
     getLibrarySongDetailStatusState({
       actionState: playableActionState,
@@ -4155,6 +4187,19 @@ function assertLibrarySongDetailSmoke() {
       mutation: "delete-song",
     }),
     "Song could not be deleted.",
+  );
+  assert.deepEqual(
+    getLibrarySongDetailMutationFailureCommand({
+      caughtError: new Error("Song detail mutation failed"),
+      mutation: "delete-song",
+    }),
+    {
+      action: {
+        error: "Song detail mutation failed",
+        type: "fail",
+      },
+      haptic: "error",
+    },
   );
 
   const missing = buildLibrarySongDetail({

@@ -4,7 +4,11 @@ import { exportLibrarySongCommand } from "../services/library-song-command-servi
 import { type LibrarySongDetail } from "../services/library-song-detail-service";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
 import {
-  getLibrarySongDetailMutationErrorMessage,
+  getLibrarySongDetailMutationBlockedCommand,
+  getLibrarySongDetailMutationFailureCommand,
+  getLibrarySongDetailMutationFinishCommand,
+  getLibrarySongDetailMutationStartCommand,
+  getLibrarySongExportSuccessCommand,
   type LibrarySongDetailMutationAction,
 } from "../services/library-song-detail-mutation-service";
 
@@ -29,26 +33,29 @@ export function useLibrarySongExportMutation({
 
   return useCallback(async () => {
     if (!actionState.canExport) {
-      sendHaptic("error");
+      const command = getLibrarySongDetailMutationBlockedCommand();
+      sendHaptic(command.haptic);
       return;
     }
 
-    dispatchMutation({ mutation: "export-song", type: "begin" });
+    dispatchMutation(
+      getLibrarySongDetailMutationStartCommand("export-song").action,
+    );
 
     try {
       await exportLibrarySongCommand({ detail, songId });
-      sendHaptic("success");
+      sendHaptic(getLibrarySongExportSuccessCommand().haptic);
     } catch (caughtError) {
-      sendHaptic("error");
-      dispatchMutation({
-        error: getLibrarySongDetailMutationErrorMessage({
-          caughtError,
-          mutation: "export-song",
-        }),
-        type: "fail",
+      const command = getLibrarySongDetailMutationFailureCommand({
+        caughtError,
+        mutation: "export-song",
       });
+      sendHaptic(command.haptic);
+      dispatchMutation(command.action);
     } finally {
-      dispatchMutation({ mutation: "export-song", type: "finish" });
+      dispatchMutation(
+        getLibrarySongDetailMutationFinishCommand("export-song").action,
+      );
     }
   }, [actionState.canExport, detail, dispatchMutation, sendHaptic, songId]);
 }

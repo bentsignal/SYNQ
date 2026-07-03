@@ -4,7 +4,11 @@ import { toggleLibrarySongLikedCommand } from "../services/library-song-command-
 import { type LibrarySongDetail } from "../services/library-song-detail-service";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
 import {
-  getLibrarySongDetailMutationErrorMessage,
+  getLibrarySongDetailMutationBlockedCommand,
+  getLibrarySongDetailMutationFailureCommand,
+  getLibrarySongDetailMutationFinishCommand,
+  getLibrarySongDetailMutationStartCommand,
+  getLibrarySongLikedSuccessCommand,
   type LibrarySongDetailMutationAction,
 } from "../services/library-song-detail-mutation-service";
 
@@ -29,29 +33,32 @@ export function useLibrarySongLikedMutation({
 
   return useCallback(async () => {
     if (!actionState.canToggleLiked) {
-      sendHaptic("error");
+      const command = getLibrarySongDetailMutationBlockedCommand();
+      sendHaptic(command.haptic);
       return;
     }
 
-    dispatchMutation({ mutation: "toggle-liked", type: "begin" });
+    dispatchMutation(
+      getLibrarySongDetailMutationStartCommand("toggle-liked").action,
+    );
 
     try {
       await toggleLibrarySongLikedCommand({
         liked: !detail.isLiked,
         songId,
       });
-      sendHaptic("light");
+      sendHaptic(getLibrarySongLikedSuccessCommand().haptic);
     } catch (caughtError) {
-      sendHaptic("error");
-      dispatchMutation({
-        error: getLibrarySongDetailMutationErrorMessage({
-          caughtError,
-          mutation: "toggle-liked",
-        }),
-        type: "fail",
+      const command = getLibrarySongDetailMutationFailureCommand({
+        caughtError,
+        mutation: "toggle-liked",
       });
+      sendHaptic(command.haptic);
+      dispatchMutation(command.action);
     } finally {
-      dispatchMutation({ mutation: "toggle-liked", type: "finish" });
+      dispatchMutation(
+        getLibrarySongDetailMutationFinishCommand("toggle-liked").action,
+      );
     }
   }, [
     actionState.canToggleLiked,

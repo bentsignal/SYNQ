@@ -5,12 +5,13 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import { deleteLibrarySongCommand } from "../services/library-song-command-service";
 import { type LibrarySongDetail } from "../services/library-song-detail-service";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
+import { getLibrarySongDeleteConfirmationCopy } from "../services/library-song-interaction-service";
 import {
-  getLibrarySongDeleteConfirmationCopy,
-  getLibrarySongDeleteSuccessHref,
-} from "../services/library-song-interaction-service";
-import {
-  getLibrarySongDetailMutationErrorMessage,
+  getLibrarySongDeleteSuccessCommand,
+  getLibrarySongDetailMutationBlockedCommand,
+  getLibrarySongDetailMutationFailureCommand,
+  getLibrarySongDetailMutationFinishCommand,
+  getLibrarySongDetailMutationStartCommand,
   type LibrarySongDetailMutationAction,
 } from "../services/library-song-detail-mutation-service";
 
@@ -37,7 +38,8 @@ export function useLibrarySongDeleteMutation({
 
   return useCallback(() => {
     if (!actionState.canDelete) {
-      sendHaptic("error");
+      const command = getLibrarySongDetailMutationBlockedCommand();
+      sendHaptic(command.haptic);
       return;
     }
 
@@ -47,24 +49,27 @@ export function useLibrarySongDeleteMutation({
       { text: confirmation.cancelLabel, style: "cancel" },
       {
         onPress: async () => {
-          dispatchMutation({ mutation: "delete-song", type: "begin" });
+          dispatchMutation(
+            getLibrarySongDetailMutationStartCommand("delete-song").action,
+          );
 
           try {
             await deleteLibrarySongCommand(songId);
             removeFromQueue(songId);
-            sendHaptic("success");
-            router.replace(getLibrarySongDeleteSuccessHref());
+            const command = getLibrarySongDeleteSuccessCommand();
+            sendHaptic(command.haptic);
+            router.replace(command.href);
           } catch (caughtError) {
-            sendHaptic("error");
-            dispatchMutation({
-              error: getLibrarySongDetailMutationErrorMessage({
-                caughtError,
-                mutation: "delete-song",
-              }),
-              type: "fail",
+            const command = getLibrarySongDetailMutationFailureCommand({
+              caughtError,
+              mutation: "delete-song",
             });
+            sendHaptic(command.haptic);
+            dispatchMutation(command.action);
           } finally {
-            dispatchMutation({ mutation: "delete-song", type: "finish" });
+            dispatchMutation(
+              getLibrarySongDetailMutationFinishCommand("delete-song").action,
+            );
           }
         },
         style: "destructive",

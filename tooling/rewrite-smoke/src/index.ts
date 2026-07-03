@@ -59,6 +59,12 @@ import {
   toPersistedPlaybackState,
 } from "../../../apps/new/src/features/playback/services/playback-persistence-codec-service";
 import {
+  finiteNumber,
+  isRecord,
+  normalizeQueueItem,
+  numberOrNull,
+} from "../../../apps/new/src/features/playback/services/playback-persistence-step-service";
+import {
   clearPersistedPlaybackStateWithDependencies,
   getPlaybackStateDirectoryWithDependencies,
   getPlaybackStateFileWithDependencies,
@@ -986,6 +992,28 @@ function assertPlaybackSessionSmoke() {
   const first = song({ id: 1, title: "First" });
   const second = song({ id: 2, title: "Second" });
   const third = song({ id: 3, title: "Third" });
+
+  assert.equal(isRecord({ id: 1 }), true);
+  assert.equal(isRecord(["nope"]), false);
+  assert.equal(numberOrNull(42), 42);
+  assert.equal(numberOrNull(Number.NaN), null);
+  assert.equal(finiteNumber("bad", 7), 7);
+  assert.deepEqual(
+    normalizeQueueItem({
+      duration: null,
+      id: 20,
+      title: "Persisted Smoke",
+    }),
+    {
+      album: "Unknown",
+      artist: "Unknown",
+      duration: null,
+      id: 20,
+      pathToFile: null,
+      title: "Persisted Smoke",
+    },
+  );
+  assert.equal(normalizeQueueItem({ title: "Missing id" }), null);
 
   assert.deepEqual(
     hydratePlaybackSession({

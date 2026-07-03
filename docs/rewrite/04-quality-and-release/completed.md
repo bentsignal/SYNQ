@@ -192,3 +192,5 @@
   planning into a focused step service.
 - Added direct import session persistence step smoke coverage for path planning
   and persisted-session restore decisions.
+- Added direct playback persistence step smoke coverage for primitive and
+  queue-item normalization.

@@ -299,3 +299,5 @@
   cache executor.
 - Split import session persistence path planning and restore-state derivation
   out of the filesystem persistence executor.
+- Split playback persistence primitive and queue-item normalization into a
+  focused persistence step service.

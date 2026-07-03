@@ -1,5 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
-import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
+import { useNumericRouteParam } from "@/src/features/app-shell/hooks/use-numeric-route-param";
 import { AddCollectionSongsConnectedForm } from "../components/AddCollectionSongsConnectedForm";
 import { LibraryInvalidCollectionState } from "../components/LibraryInvalidCollectionState";
 import { useAddCollectionSongsSearchQuery } from "../hooks/use-add-collection-songs-search-query";
@@ -17,8 +16,7 @@ type AddCollectionSongsScreenProps = {
 export function AddCollectionSongsScreen({
   kind,
 }: AddCollectionSongsScreenProps) {
-  const params = useLocalSearchParams<{ id?: string }>();
-  const id = parseNumericRouteParam(params.id);
+  const id = useNumericRouteParam();
 
   if (id === null) {
     return <LibraryInvalidCollectionState />;

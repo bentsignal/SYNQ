@@ -1,6 +1,5 @@
 import { useMemo } from "react";
-import { useLocalSearchParams } from "expo-router";
-import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
+import { useNumericRouteParam } from "@/src/features/app-shell/hooks/use-numeric-route-param";
 import {
   getImportSongEditScreenState,
   type ImportSongEditScreenState,
@@ -17,8 +16,7 @@ export type EditImportSongScreenController =
     };
 
 export function useEditImportSongScreenController(): EditImportSongScreenController {
-  const params = useLocalSearchParams<{ id?: string }>();
-  const songId = parseNumericRouteParam(params.id);
+  const songId = useNumericRouteParam();
   const state = useImportSessionSelector((store) => store.state);
   const updateImportSong = useImportSessionSelector(
     (store) => store.updateImportSong,

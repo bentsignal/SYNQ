@@ -42,3 +42,6 @@
   `use-edit-import-song-screen-controller`, then delegates invalid-id,
   not-staged, and ready-state derivation to `getImportSongEditScreenState`.
   Deterministic smoke covers all three outcomes.
+- Route screens that need numeric IDs should use
+  `useNumericRouteParam`; direct `useLocalSearchParams` plus
+  `parseNumericRouteParam` is now isolated to the app-shell hook boundary.

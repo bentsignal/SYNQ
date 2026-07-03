@@ -1,13 +1,11 @@
-import { useLocalSearchParams } from "expo-router";
-import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
+import { useNumericRouteParam } from "@/src/features/app-shell/hooks/use-numeric-route-param";
 import { EditLibrarySongFormView } from "../components/EditLibrarySongFormView";
 import { LibraryInvalidSongState } from "../components/LibraryInvalidSongState";
 import { useEditLibrarySongController } from "../hooks/use-edit-library-song-controller";
 import { useLibrarySongDetailQuery } from "../hooks/use-library-song-detail-query";
 
 export function EditLibrarySongScreen() {
-  const params = useLocalSearchParams<{ id?: string }>();
-  const id = parseNumericRouteParam(params.id);
+  const id = useNumericRouteParam();
 
   if (id === null) {
     return <LibraryInvalidSongState />;

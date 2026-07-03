@@ -68,3 +68,5 @@
 - Moved the edit-import-song route behind a screen controller and pure
   edit-screen state helper, including invalid-id and not-staged state
   derivation.
+- Centralized numeric route parameter parsing behind an app-shell hook and
+  removed repeated `useLocalSearchParams` parsing from import/library screens.

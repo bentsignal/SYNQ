@@ -1,5 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
-import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
+import { useNumericRouteParam } from "@/src/features/app-shell/hooks/use-numeric-route-param";
 import { EditCollectionConnectedForm } from "../components/EditCollectionConnectedForm";
 import { LibraryInvalidCollectionState } from "../components/LibraryInvalidCollectionState";
 import {
@@ -17,8 +16,7 @@ type EditCollectionScreenProps = {
 };
 
 export function EditCollectionScreen({ kind }: EditCollectionScreenProps) {
-  const params = useLocalSearchParams<{ id?: string }>();
-  const id = parseNumericRouteParam(params.id);
+  const id = useNumericRouteParam();
   const copy = getEditCollectionFormCopy(kind);
 
   if (id === null) {

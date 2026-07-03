@@ -1,5 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
-import { parseNumericRouteParam } from "@/src/features/app-shell/services/route-param-service";
+import { useNumericRouteParam } from "@/src/features/app-shell/hooks/use-numeric-route-param";
 import { LibraryCollectionDetailView } from "../components/LibraryCollectionDetailView";
 import { LibraryInvalidCollectionState } from "../components/LibraryInvalidCollectionState";
 import {
@@ -16,8 +15,7 @@ type LibraryCollectionDetailScreenProps = {
 export function LibraryCollectionDetailScreen({
   kind,
 }: LibraryCollectionDetailScreenProps) {
-  const params = useLocalSearchParams<{ id?: string }>();
-  const id = parseNumericRouteParam(params.id);
+  const id = useNumericRouteParam();
 
   if (id === null) {
     return <LibraryInvalidCollectionState />;

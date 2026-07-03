@@ -860,6 +860,42 @@ function assertPlaybackSessionSmoke() {
   assert.equal(state.adGate.active, true);
   assert.equal(state.isPlaying, false);
 
+  state = playbackReducer(state, {
+    premiumActive: false,
+    status: {
+      didJustFinish: false,
+      duration: 30_000,
+      isLoaded: true,
+      isPlaying: true,
+      position: 12_000,
+      songId: null,
+      source: "ad",
+    },
+    type: "native-status",
+  });
+  assert.equal(state.adGate.playbackDuration, 30_000);
+  assert.equal(state.adGate.playbackPosition, 12_000);
+  assert.equal(state.isPlaying, false);
+
+  state = playbackReducer(state, { error: "Ad failure", type: "native-failure" });
+  state = playbackReducer(state, { type: "complete-ad-break" });
+  assert.equal(state.adGate.active, false);
+  assert.equal(state.adGate.due, false);
+  assert.equal(state.error, null);
+  assert.equal(state.isPlaying, true);
+
+  state = playbackReducer(state, { targetIndex: 1, type: "native-finished" });
+  assert.equal(state.activeTrackId, second.id);
+  assert.equal(state.activeQueueIndex, 1);
+  assert.equal(state.position, 0);
+  assert.equal(state.isPlaying, true);
+
+  state = playbackReducer(state, { targetIndex: null, type: "native-finished" });
+  assert.equal(state.activeTrackId, second.id);
+  assert.equal(state.position, state.duration);
+  assert.equal(state.isPlaying, false);
+
+  state = playbackReducer(state, { type: "begin-ad-break" });
   state = playbackReducer(state, { premiumActive: true, type: "sync-premium" });
   assert.equal(state.adGate.active, false);
   assert.equal(state.adGate.due, false);

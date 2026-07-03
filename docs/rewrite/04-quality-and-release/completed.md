@@ -25,3 +25,5 @@
   restore, erase, cancellation, sharing availability, and restore cleanup.
 - Added import save-to-library session smoke coverage for successful draft
   cache cleanup and failure-safe cleanup skipping.
+- Expanded playback reducer smoke coverage for ad native status, ad completion,
+  and native-finished advance/end transitions.

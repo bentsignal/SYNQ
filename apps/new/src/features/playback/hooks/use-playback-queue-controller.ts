@@ -1,4 +1,4 @@
-import { getPlaybackQueueActionState } from "../services/playback-queue-service";
+import { getPlaybackQueueActionState } from "../services/playback-queue-action-state-service";
 import { usePlaybackQueueActions } from "./use-playback-queue-actions";
 import { usePlaybackSessionSelector } from "./use-playback-session";
 

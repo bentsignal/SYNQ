@@ -15,8 +15,10 @@ import { parseNumericRouteParam } from "../../../apps/new/src/features/app-shell
 import {
   getActiveTrack,
   getNextQueueIndex,
-  getPlaybackQueueActionState,
 } from "../../../apps/new/src/features/playback/services/playback-queue-service";
+import {
+  getPlaybackQueueActionState,
+} from "../../../apps/new/src/features/playback/services/playback-queue-action-state-service";
 import {
   getPlaybackQueueClearCommand,
   getPlaybackQueueMoveCommand,

@@ -145,3 +145,4 @@
   hooks dispatch typed command helpers instead of raw reducer objects.
 - Split playback player haptic/seek command state out of player view-state
   derivation.
+- Split playback queue action-state derivation out of queue algorithms.

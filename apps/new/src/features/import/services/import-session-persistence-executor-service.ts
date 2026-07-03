@@ -1,4 +1,5 @@
-import type { ImportSessionState, ImportSongDraft } from "../types/import-session";
+import type { ImportSessionState } from "../types/import-session";
+import { filterExistingImportDraftsWithDependencies } from "./import-session-persistence-filter-service";
 import {
   normalizePersistedImportSession,
   toPersistedImportSession,
@@ -36,25 +37,6 @@ export const getImportSessionFileWithDependencies = (
   dependencies: Pick<ImportSessionPersistenceDependencies, "documentDirectory">,
 ) => getImportSessionFile(dependencies);
 
-const filterExistingDraftsWithDependencies = async ({
-  dependencies,
-  songs,
-}: {
-  dependencies: ImportSessionPersistenceDependencies;
-  songs: ImportSongDraft[];
-}) => {
-  const existingSongs: ImportSongDraft[] = [];
-
-  for (const song of songs) {
-    const fileInfo = await dependencies.getInfo(song.cacheUri);
-    if (fileInfo.exists) {
-      existingSongs.push(song);
-    }
-  }
-
-  return existingSongs;
-};
-
 export async function clearPersistedImportSessionStateWithDependencies(
   dependencies: ImportSessionPersistenceDependencies,
 ) {
@@ -89,7 +71,7 @@ export async function loadPersistedImportSessionStateWithDependencies(
       return null;
     }
 
-    const songs = await filterExistingDraftsWithDependencies({
+    const songs = await filterExistingImportDraftsWithDependencies({
       dependencies,
       songs: persistedSession.songs,
     });

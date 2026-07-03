@@ -352,6 +352,7 @@ import {
   savePersistedImportSessionStateWithDependencies,
   type ImportSessionPersistenceDependencies,
 } from "../../../apps/new/src/features/import/services/import-session-persistence-executor-service";
+import { filterExistingImportDraftsWithDependencies } from "../../../apps/new/src/features/import/services/import-session-persistence-filter-service";
 import {
   runImportSessionHydrateCommand,
   runImportSessionPersistenceCommand,
@@ -12794,6 +12795,20 @@ async function assertImportSessionPersistenceExecutorSmoke() {
     }),
     null,
   );
+  const filterCalls: string[] = [];
+  assert.deepEqual(
+    await filterExistingImportDraftsWithDependencies({
+      dependencies: {
+        getInfo: async (path) => {
+          filterCalls.push(path);
+          return { exists: path === first.cacheUri };
+        },
+      },
+      songs: [first, second],
+    }),
+    [first],
+  );
+  assert.deepEqual(filterCalls, [first.cacheUri, second.cacheUri]);
   assert.equal(
     await loadPersistedImportSessionStateWithDependencies(dependencies),
     null,

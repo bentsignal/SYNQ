@@ -57,3 +57,5 @@
   and lowered the remaining library hook live-query ratchet from 2 modules to 1.
 - Moved the collection-detail row live-query adapters into a library data module
   and lowered the remaining library hook live-query ratchet from 1 module to 0.
+- Tightened the new-app database boundary scan so hook modules are no longer an
+  approved Drizzle/database boundary after the library data-module migration.

@@ -112,14 +112,13 @@ scan_new_app_database_boundaries() {
     printf "%s\n" "$matches" |
       rg -v "/repository/" |
       rg -v "/data/use-[^:]*live-query\\.ts:" |
-      rg -v "hooks/use-[^:]*query\\.ts:" |
       rg -v "apps/new/src/features/app-shell/components/AppRoot\\.tsx:" |
       rg -v "apps/new/src/features/backup/services/backup-command-service\\.ts:" || true
   )"
 
   if [[ -n "$violations" ]]; then
     printf "%s\n" "$violations"
-    echo "New app database access must stay behind repository modules, query hooks, or the approved app/backup boundaries."
+    echo "New app database access must stay behind repository modules, data live-query modules, or the approved app/backup boundaries."
     return 1
   fi
 }

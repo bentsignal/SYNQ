@@ -246,6 +246,8 @@
   and reset dispatch sequencing.
 - Added direct premium purchase command-flow smoke coverage for selection,
   purchase success/failure, restore success/failure, and reset sequencing.
+- Preserved premium purchase command-flow smoke coverage while collapsing
+  repeated purchase/restore start/success/failure orchestration.
 - Added direct premium entitlement and tier-load command-flow smoke coverage for
   apply, refresh success/failure, tier fallback, and canceled-load sequencing.
 - Added direct settings persistence save command-flow smoke coverage for

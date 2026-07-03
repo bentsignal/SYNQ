@@ -3,7 +3,10 @@ import type {
   PremiumPurchaseResult,
   PremiumTierId,
 } from "../types/premium-purchase";
-import { getPremiumMutationErrorMessage } from "./premium-screen-service";
+import {
+  getPremiumMutationErrorMessage,
+  type PremiumMutationKind,
+} from "./premium-screen-service";
 import {
   getPremiumPurchaseFailAction,
   getPremiumPurchaseResetAction,
@@ -14,6 +17,35 @@ import {
 } from "./premium-purchase-state-service";
 
 type PremiumPurchaseDispatch = (action: PremiumPurchaseAction) => void;
+
+const runPremiumPurchaseMutationAttempt = async ({
+  applyStatus,
+  dispatch,
+  mutation,
+  run,
+}: {
+  applyStatus: (status: PremiumEntitlementStatus) => void;
+  dispatch: PremiumPurchaseDispatch;
+  mutation: Extract<PremiumMutationKind, "purchase-tier" | "restore-purchase">;
+  run: () => Promise<PremiumPurchaseResult>;
+}) => {
+  dispatch(getPremiumPurchaseStartAction());
+
+  try {
+    const result = await run();
+    applyStatus(result);
+    dispatch(getPremiumPurchaseSucceedAction(result));
+  } catch (caughtError) {
+    dispatch(
+      getPremiumPurchaseFailAction(
+        getPremiumMutationErrorMessage({
+          caughtError,
+          mutation,
+        }),
+      ),
+    );
+  }
+};
 
 export const runPremiumTierSelectionCommand = ({
   dispatch,
@@ -36,22 +68,12 @@ export const runPremiumPurchaseCommand = async ({
   purchasePremiumTier: (tierId: PremiumTierId) => Promise<PremiumPurchaseResult>;
   selectedTierId: PremiumTierId;
 }) => {
-  dispatch(getPremiumPurchaseStartAction());
-
-  try {
-    const result = await purchasePremiumTier(selectedTierId);
-    applyStatus(result);
-    dispatch(getPremiumPurchaseSucceedAction(result));
-  } catch (caughtError) {
-    dispatch(
-      getPremiumPurchaseFailAction(
-        getPremiumMutationErrorMessage({
-          caughtError,
-          mutation: "purchase-tier",
-        }),
-      ),
-    );
-  }
+  await runPremiumPurchaseMutationAttempt({
+    applyStatus,
+    dispatch,
+    mutation: "purchase-tier",
+    run: () => purchasePremiumTier(selectedTierId),
+  });
 };
 
 export const runPremiumRestoreCommand = async ({
@@ -63,22 +85,12 @@ export const runPremiumRestoreCommand = async ({
   dispatch: PremiumPurchaseDispatch;
   restorePremiumPurchase: () => Promise<PremiumPurchaseResult>;
 }) => {
-  dispatch(getPremiumPurchaseStartAction());
-
-  try {
-    const result = await restorePremiumPurchase();
-    applyStatus(result);
-    dispatch(getPremiumPurchaseSucceedAction(result));
-  } catch (caughtError) {
-    dispatch(
-      getPremiumPurchaseFailAction(
-        getPremiumMutationErrorMessage({
-          caughtError,
-          mutation: "restore-purchase",
-        }),
-      ),
-    );
-  }
+  await runPremiumPurchaseMutationAttempt({
+    applyStatus,
+    dispatch,
+    mutation: "restore-purchase",
+    run: restorePremiumPurchase,
+  });
 };
 
 export const runPremiumPurchaseResetCommand = ({

@@ -176,3 +176,5 @@
   and stop planning.
 - Added direct playback native command step smoke coverage for resume, previous,
   and replacement-track planning.
+- Added direct playback command step smoke coverage for simple transport,
+  queue-clear/reset, seek, and remote-failure plan construction.

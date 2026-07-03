@@ -284,3 +284,5 @@
   plan service.
 - Moved playback native resume, previous-track, and queue-removal command
   decisions into the native command step service.
+- Split simple playback command action/native plan construction into a focused
+  command step service.

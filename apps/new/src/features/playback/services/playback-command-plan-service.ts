@@ -1,5 +1,18 @@
 import type { PlaybackAction } from "./playback-session-service";
 import {
+  getClearQueuePlaybackStepPlan,
+  getPausePlaybackStepPlan,
+  getPlaySongPlaybackStepPlan,
+  getRemoteFailurePlaybackStepPlan,
+  getRemoveFromQueuePlaybackStepPlan,
+  getResetPlaybackStepPlan,
+  getResumePlaybackStepPlan,
+  getSeekToPlaybackStepPlan,
+  getSkipNextPlaybackStepPlan,
+  getSkipPreviousPlaybackStepPlan,
+  type PlaybackCommandPlan,
+} from "./playback-command-step-service";
+import {
   getRemoveFromQueueNativeCommandPlan,
   getResumeNativeCommandPlan,
   getSkipNextNativeCommandPlan,
@@ -11,10 +24,7 @@ import type {
   PlaybackState,
 } from "../types/playback-state";
 
-export type PlaybackCommandPlan = {
-  action: PlaybackAction;
-  nativeCommand: PlaybackNativeCommandPlan;
-};
+export type { PlaybackCommandPlan } from "./playback-command-step-service";
 
 export const runPlaybackCommandPlan = ({
   dispatch,
@@ -31,57 +41,45 @@ export const runPlaybackCommandPlan = ({
 
 export const getPlaySongPlaybackCommandPlan = (
   song: PlaybackQueueItem,
-): PlaybackCommandPlan => ({
-  action: { song, type: "play-song" },
-  nativeCommand: { track: song, type: "play" },
-});
+): PlaybackCommandPlan => getPlaySongPlaybackStepPlan(song);
 
-export const getPausePlaybackCommandPlan = (): PlaybackCommandPlan => ({
-  action: { type: "pause" },
-  nativeCommand: { type: "pause" },
-});
+export const getPausePlaybackCommandPlan = (): PlaybackCommandPlan =>
+  getPausePlaybackStepPlan();
 
 export const getResumePlaybackCommandPlan = (
   state: PlaybackState,
-): PlaybackCommandPlan => ({
-  action: { type: "resume" },
-  nativeCommand: getResumeNativeCommandPlan(state),
-});
+): PlaybackCommandPlan =>
+  getResumePlaybackStepPlan({
+    nativeCommand: getResumeNativeCommandPlan(state),
+  });
 
 export const getSeekToPlaybackCommandPlan = (
   position: number,
-): PlaybackCommandPlan => ({
-  action: { position, type: "seek-to" },
-  nativeCommand: { position, type: "seek" },
-});
+): PlaybackCommandPlan => getSeekToPlaybackStepPlan(position);
 
 export const getSkipNextPlaybackCommandPlan = (
   state: PlaybackState,
 ): PlaybackCommandPlan => {
   const { command, targetIndex } = getSkipNextNativeCommandPlan(state);
 
-  return {
-    action: { targetIndex, type: "skip-next" },
+  return getSkipNextPlaybackStepPlan({
     nativeCommand: command,
-  };
+    targetIndex,
+  });
 };
 
 export const getSkipPreviousPlaybackCommandPlan = (
   state: PlaybackState,
-): PlaybackCommandPlan => ({
-  action: { type: "skip-previous" },
-  nativeCommand: getSkipPreviousNativeCommandPlan(state),
-});
+): PlaybackCommandPlan =>
+  getSkipPreviousPlaybackStepPlan({
+    nativeCommand: getSkipPreviousNativeCommandPlan(state),
+  });
 
-export const getClearQueuePlaybackCommandPlan = (): PlaybackCommandPlan => ({
-  action: { type: "clear-queue" },
-  nativeCommand: { type: "stop" },
-});
+export const getClearQueuePlaybackCommandPlan = (): PlaybackCommandPlan =>
+  getClearQueuePlaybackStepPlan();
 
-export const getResetPlaybackCommandPlan = (): PlaybackCommandPlan => ({
-  action: { type: "reset" },
-  nativeCommand: { type: "stop" },
-});
+export const getResetPlaybackCommandPlan = (): PlaybackCommandPlan =>
+  getResetPlaybackStepPlan();
 
 export const getRemoveFromQueuePlaybackCommandPlan = ({
   songId,
@@ -89,14 +87,12 @@ export const getRemoveFromQueuePlaybackCommandPlan = ({
 }: {
   songId: number;
   state: PlaybackState;
-}): PlaybackCommandPlan => ({
-  action: { songId, type: "remove-from-queue" },
-  nativeCommand: getRemoveFromQueueNativeCommandPlan({ songId, state }),
-});
+}): PlaybackCommandPlan =>
+  getRemoveFromQueuePlaybackStepPlan({
+    nativeCommand: getRemoveFromQueueNativeCommandPlan({ songId, state }),
+    songId,
+  });
 
 export const getRemoteFailurePlaybackCommandPlan = (
   message: string,
-): PlaybackCommandPlan => ({
-  action: { error: message, type: "remote-failure" },
-  nativeCommand: { type: "stop" },
-});
+): PlaybackCommandPlan => getRemoteFailurePlaybackStepPlan(message);

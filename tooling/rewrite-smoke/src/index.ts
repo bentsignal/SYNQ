@@ -129,6 +129,14 @@ import {
   getSkipPreviousPlaybackCommandPlan,
   runPlaybackCommandPlan,
 } from "../../../apps/new/src/features/playback/services/playback-command-plan-service";
+import {
+  getClearQueuePlaybackStepPlan,
+  getPausePlaybackStepPlan,
+  getPlaySongPlaybackStepPlan,
+  getRemoteFailurePlaybackStepPlan,
+  getResetPlaybackStepPlan,
+  getSeekToPlaybackStepPlan,
+} from "../../../apps/new/src/features/playback/services/playback-command-step-service";
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
   getImportDiscardResultHref,
@@ -1860,11 +1868,26 @@ function assertPlaybackNativeCommandPlanSmoke() {
     action: { type: "pause" },
     nativeCommand: { type: "pause" },
   });
+  assert.deepEqual(getPlaySongPlaybackStepPlan(first), {
+    action: {
+      song: first,
+      type: "play-song",
+    },
+    nativeCommand: { track: first, type: "play" },
+  });
+  assert.deepEqual(getPausePlaybackStepPlan(), {
+    action: { type: "pause" },
+    nativeCommand: { type: "pause" },
+  });
   assert.deepEqual(getResumePlaybackCommandPlan(state), {
     action: { type: "resume" },
     nativeCommand: { type: "resume" },
   });
   assert.deepEqual(getSeekToPlaybackCommandPlan(42_000), {
+    action: { position: 42_000, type: "seek-to" },
+    nativeCommand: { position: 42_000, type: "seek" },
+  });
+  assert.deepEqual(getSeekToPlaybackStepPlan(42_000), {
     action: { position: 42_000, type: "seek-to" },
     nativeCommand: { position: 42_000, type: "seek" },
   });
@@ -1888,7 +1911,15 @@ function assertPlaybackNativeCommandPlanSmoke() {
     action: { type: "clear-queue" },
     nativeCommand: { type: "stop" },
   });
+  assert.deepEqual(getClearQueuePlaybackStepPlan(), {
+    action: { type: "clear-queue" },
+    nativeCommand: { type: "stop" },
+  });
   assert.deepEqual(getResetPlaybackCommandPlan(), {
+    action: { type: "reset" },
+    nativeCommand: { type: "stop" },
+  });
+  assert.deepEqual(getResetPlaybackStepPlan(), {
     action: { type: "reset" },
     nativeCommand: { type: "stop" },
   });
@@ -1912,6 +1943,13 @@ function assertPlaybackNativeCommandPlanSmoke() {
   assert.deepEqual(plannedActions, [{ type: "pause" }]);
   assert.deepEqual(plannedNativeCommands, [{ type: "pause" }]);
   assert.deepEqual(getRemoteFailurePlaybackCommandPlan("Remote smoke failure"), {
+    action: {
+      error: "Remote smoke failure",
+      type: "remote-failure",
+    },
+    nativeCommand: { type: "stop" },
+  });
+  assert.deepEqual(getRemoteFailurePlaybackStepPlan("Remote smoke failure"), {
     action: {
       error: "Remote smoke failure",
       type: "remote-failure",

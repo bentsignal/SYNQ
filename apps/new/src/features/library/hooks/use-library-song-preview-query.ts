@@ -1,6 +1,5 @@
 import { useMemo } from "react";
-import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { buildLibrarySongPreviewRowsQuery } from "../repository/library-song-preview-query-repository";
+import { useLibrarySongPreviewLiveQuery } from "../data/use-library-song-preview-live-query";
 import {
   rowsToSongPreviews,
   type LibrarySongPreviewOrder,
@@ -27,9 +26,7 @@ export function useLibrarySongPreviewQuery({
   query,
   sort = "recent",
 }: LibrarySongPreviewQueryOptions = {}) {
-  const { data, error, updatedAt } = useLiveQuery(
-    buildLibrarySongPreviewRowsQuery(),
-  );
+  const { data, error, updatedAt } = useLibrarySongPreviewLiveQuery();
 
   const songs = useMemo(
     () =>

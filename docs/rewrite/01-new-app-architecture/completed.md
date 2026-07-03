@@ -44,3 +44,5 @@
   live-query modules.
 - Moved the library summary live-query adapter into a library data module and
   lowered the remaining library hook live-query ratchet from 7 modules to 6.
+- Moved the song-preview live-query adapter into a library data module and
+  lowered the remaining library hook live-query ratchet from 6 modules to 5.

@@ -4,7 +4,7 @@ import type { LibrarySongDetail } from "../hooks/use-library-song-detail-query";
 import {
   getLibrarySongEditStatusState,
   type LibrarySongEditActionState,
-} from "../services/library-song-form-service";
+} from "../services/library-song-edit-screen-state-service";
 import { EditLibrarySongActions } from "./EditLibrarySongActions";
 import { EditLibrarySongFields } from "./EditLibrarySongFields";
 import { EditLibrarySongHeader } from "./EditLibrarySongHeader";

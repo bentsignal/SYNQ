@@ -160,6 +160,9 @@ work already done; this section is the shorter "are we close yet?" dashboard.
   - Done: song detail action availability and status labels now live in a
     focused state service instead of the detail read-model builder owning
     mutation/UI state.
+  - Done: edit-song field copy, save action state, and status presentation now
+    live in a focused screen-state service instead of the song form reducer
+    service owning controller state and UI presentation together.
   - Done: edit-collection query state and singular collection kind typing now
     live in a library service instead of depending on the edit screen.
   - Done: edit-collection SQL builders and row subscriptions now live in

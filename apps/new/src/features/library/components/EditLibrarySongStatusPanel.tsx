@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { LibrarySongEditStatusState } from "../services/library-song-form-service";
+import type { LibrarySongEditStatusState } from "../services/library-song-edit-screen-state-service";
 
 type EditLibrarySongStatusPanelProps = {
   statusState: LibrarySongEditStatusState;

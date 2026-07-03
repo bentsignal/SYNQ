@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getLibrarySongEditFieldState } from "../services/library-song-form-service";
+import { getLibrarySongEditFieldState } from "../services/library-song-edit-screen-state-service";
 
 type EditLibrarySongFieldsProps = {
   albumNames: string;

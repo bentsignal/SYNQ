@@ -251,3 +251,6 @@
   paused-state save decisions.
 - Reused existing settings load command-flow smoke coverage for customization
   manual reload sequencing after moving the hook to the shared service.
+- Added direct collection mutation command-flow smoke coverage for blocked
+  export, export success/failure, song move success/failure, and song remove
+  success/failure sequencing.

@@ -359,3 +359,5 @@
   out of the React persistence hook and into a focused command-flow service.
 - Routed manual customization settings reloads through the shared settings load
   command-flow service so initial and manual load paths share one boundary.
+- Moved collection export, song move, and song remove mutation sequencing out
+  of React hooks and into a focused collection mutation command-flow service.

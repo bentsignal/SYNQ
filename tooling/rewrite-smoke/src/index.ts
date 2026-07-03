@@ -567,9 +567,15 @@ import {
   getCollectionSongRemovalSuccessCommand,
 } from "../../../apps/new/src/features/library/services/library-collection-mutation-service";
 import {
+  runLibraryCollectionExportCommand,
+  runLibraryCollectionSongMoveCommand,
+  runLibraryCollectionSongRemoveCommand,
+} from "../../../apps/new/src/features/library/services/library-collection-mutation-command-flow-service";
+import {
   collectionDetailMutationReducer,
   getCollectionDetailMutationErrorMessage,
   initialCollectionDetailMutationState,
+  type CollectionDetailMutationAction,
 } from "../../../apps/new/src/features/library/services/library-collection-mutation-state-service";
 import {
   type LibraryCollectionCommandDependencies,
@@ -5078,6 +5084,158 @@ async function assertLibraryCollectionInteractionSmoke() {
       type: "finish",
     },
   });
+  const collectionMutationCommandEvents: unknown[] = [];
+  const dispatchCollectionMutationCommand = (
+    action: CollectionDetailMutationAction,
+  ) => {
+    collectionMutationCommandEvents.push(["dispatch", action]);
+  };
+  const sendCollectionMutationHaptic = (haptic: string) => {
+    collectionMutationCommandEvents.push(["haptic", haptic]);
+  };
+  const playableActionState = getCollectionDetailActionState({
+    id: 7,
+    isDeleting: false,
+    isExporting: false,
+    isMissing: false,
+    kind: "playlist",
+    songs,
+  });
+  await runLibraryCollectionExportCommand({
+    actionState: {
+      ...playableActionState,
+      canExport: false,
+    },
+    dispatch: dispatchCollectionMutationCommand,
+    exportLibraryCollection: async () => {
+      collectionMutationCommandEvents.push(["unexpected-export"]);
+    },
+    sendHaptic: sendCollectionMutationHaptic,
+  });
+  await runLibraryCollectionExportCommand({
+    actionState: playableActionState,
+    dispatch: dispatchCollectionMutationCommand,
+    exportLibraryCollection: async (playableSongs) => {
+      collectionMutationCommandEvents.push([
+        "export",
+        playableSongs.map((song) => song.id),
+      ]);
+    },
+    sendHaptic: sendCollectionMutationHaptic,
+  });
+  await runLibraryCollectionExportCommand({
+    actionState: playableActionState,
+    dispatch: dispatchCollectionMutationCommand,
+    exportLibraryCollection: async () => {
+      throw new Error("Export failed");
+    },
+    sendHaptic: sendCollectionMutationHaptic,
+  });
+  await runLibraryCollectionSongMoveCommand({
+    collectionId: 7,
+    detail: { songs },
+    direction: "down",
+    dispatch: dispatchCollectionMutationCommand,
+    kind: "playlist",
+    moveLibraryCollectionSong: async (params) => {
+      collectionMutationCommandEvents.push([
+        "move",
+        params.collectionId,
+        params.songId,
+        params.direction,
+        params.songs.map((song) => song.id),
+      ]);
+    },
+    sendHaptic: sendCollectionMutationHaptic,
+    songId: songs[0]!.id,
+  });
+  await runLibraryCollectionSongMoveCommand({
+    collectionId: 7,
+    detail: { songs },
+    direction: "up",
+    dispatch: dispatchCollectionMutationCommand,
+    kind: "playlist",
+    moveLibraryCollectionSong: async () => {
+      throw new Error("Move failed");
+    },
+    sendHaptic: sendCollectionMutationHaptic,
+    songId: songs[1]!.id,
+  });
+  await runLibraryCollectionSongRemoveCommand({
+    collectionId: 7,
+    dispatch: dispatchCollectionMutationCommand,
+    kind: "playlist",
+    removeLibraryCollectionSong: async (params) => {
+      collectionMutationCommandEvents.push([
+        "remove",
+        params.collectionId,
+        params.songId,
+      ]);
+    },
+    sendHaptic: sendCollectionMutationHaptic,
+    songId: songs[0]!.id,
+  });
+  await runLibraryCollectionSongRemoveCommand({
+    collectionId: 7,
+    dispatch: dispatchCollectionMutationCommand,
+    kind: "playlist",
+    removeLibraryCollectionSong: async () => {
+      throw new Error("Remove failed");
+    },
+    sendHaptic: sendCollectionMutationHaptic,
+    songId: songs[1]!.id,
+  });
+  assert.deepEqual(collectionMutationCommandEvents, [
+    ["haptic", "error"],
+    [
+      "dispatch",
+      { mutation: "export-collection", type: "begin" },
+    ],
+    ["export", [1, 3]],
+    ["haptic", "success"],
+    [
+      "dispatch",
+      { mutation: "export-collection", type: "finish" },
+    ],
+    [
+      "dispatch",
+      { mutation: "export-collection", type: "begin" },
+    ],
+    ["haptic", "error"],
+    ["dispatch", { error: "Export failed", type: "fail" }],
+    [
+      "dispatch",
+      { mutation: "export-collection", type: "finish" },
+    ],
+    [
+      "dispatch",
+      { mutation: "move-song", songId: 1, type: "begin" },
+    ],
+    ["move", 7, 1, "down", [1, 2, 3]],
+    ["haptic", "light"],
+    ["dispatch", { mutation: "move-song", type: "finish" }],
+    [
+      "dispatch",
+      { mutation: "move-song", songId: 2, type: "begin" },
+    ],
+    ["haptic", "error"],
+    ["dispatch", { error: "Move failed", type: "fail" }],
+    ["dispatch", { mutation: "move-song", type: "finish" }],
+    [
+      "dispatch",
+      { mutation: "remove-song", songId: 1, type: "begin" },
+    ],
+    ["remove", 7, 1],
+    ["haptic", "medium"],
+    ["dispatch", { mutation: "remove-song", type: "finish" }],
+    [
+      "dispatch",
+      { mutation: "remove-song", songId: 2, type: "begin" },
+    ],
+    ["haptic", "error"],
+    ["dispatch", { error: "Remove failed", type: "fail" }],
+    ["dispatch", { mutation: "remove-song", type: "finish" }],
+  ]);
   assert.deepEqual(
     getCollectionDetailStatusState({
       errors: [],

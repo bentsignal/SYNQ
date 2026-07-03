@@ -4,13 +4,7 @@ import { exportLibraryCollectionCommand } from "../services/library-collection-c
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import type { CollectionDetailActionState } from "../services/library-collection-action-state-service";
-import {
-  getCollectionDetailMutationBlockedCommand,
-  getCollectionDetailMutationFailureCommand,
-  getCollectionExportFinishCommand,
-  getCollectionExportStartCommand,
-  getCollectionExportSuccessCommand,
-} from "../services/library-collection-mutation-service";
+import { runLibraryCollectionExportCommand } from "../services/library-collection-mutation-command-flow-service";
 import type { CollectionDetailMutationAction } from "../services/library-collection-mutation-state-service";
 
 type CollectionDetailMutationDispatch = (
@@ -35,26 +29,12 @@ export function useLibraryCollectionCollectionMutations({
   const { sendHaptic } = useHapticFeedback();
 
   const exportCollection = async () => {
-    if (!actionState.canExport) {
-      sendHaptic(getCollectionDetailMutationBlockedCommand().haptic);
-      return;
-    }
-
-    dispatchMutation(getCollectionExportStartCommand().action);
-
-    try {
-      await exportLibraryCollectionCommand(actionState.playableSongs);
-      sendHaptic(getCollectionExportSuccessCommand().haptic);
-    } catch (caughtError) {
-      const command = getCollectionDetailMutationFailureCommand({
-        caughtError,
-        mutation: "export-collection",
-      });
-      sendHaptic(command.haptic);
-      dispatchMutation(command.action);
-    } finally {
-      dispatchMutation(getCollectionExportFinishCommand().action);
-    }
+    await runLibraryCollectionExportCommand({
+      actionState,
+      dispatch: dispatchMutation,
+      exportLibraryCollection: exportLibraryCollectionCommand,
+      sendHaptic,
+    });
   };
 
   const deleteCurrentCollection = useLibraryCollectionDeleteCommand({

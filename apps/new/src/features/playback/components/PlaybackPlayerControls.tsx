@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import type { PlaybackPlayerActionState } from "../services/playback-player-state-service";
+import type { PlaybackPlayerActionState } from "../services/playback-player-action-state-service";
 import { PlaybackPlayerControlButton } from "./PlaybackPlayerControlButton";
 
 type PlaybackPlayerControlsProps = {

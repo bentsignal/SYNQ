@@ -146,3 +146,5 @@
 - Split playback player haptic/seek command state out of player view-state
   derivation.
 - Split playback queue action-state derivation out of queue algorithms.
+- Split playback player action-state derivation out of player progress and
+  view-state helpers.

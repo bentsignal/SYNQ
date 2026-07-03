@@ -2,9 +2,9 @@ import { useMemo } from "react";
 import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
 import { useLibraryCollectionListLiveQuery } from "../data/use-library-collection-list-live-query";
 import {
-  rowsToCollectionListPreviews,
   type LibraryCollectionListPreviewRow,
 } from "../services/library-collection-list-query-service";
+import { buildLibraryCollectionListQueryResult } from "../services/library-collection-list-query-result-service";
 import type { CollectionKind } from "../services/library-collection-preview-service";
 
 const getSmallImagePath = (imageHash: string) =>
@@ -21,23 +21,18 @@ export function useLibraryCollectionListQuery({
 }: LibraryCollectionListQueryOptions) {
   const { data, error, updatedAt } = useLibraryCollectionListLiveQuery(kind);
 
-  const collections = useMemo(
+  return useMemo(
     () =>
-      rowsToCollectionListPreviews({
+      buildLibraryCollectionListQueryResult({
+        error,
         getImagePath: getSmallImagePath,
         kind,
         limit,
         rows: (data ?? []) as LibraryCollectionListPreviewRow[],
+        updatedAt,
       }),
-    [data, kind, limit],
+    [data, error, kind, limit, updatedAt],
   );
-
-  return {
-    collections,
-    error,
-    isEmpty: collections.length === 0,
-    updatedAt: updatedAt?.getTime() ?? 0,
-  };
 }
 
 export type { CollectionKind } from "../services/library-collection-preview-service";

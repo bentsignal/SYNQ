@@ -815,6 +815,10 @@ import {
   rowsToCollectionListPreviews,
 } from "../../../apps/new/src/features/library/services/library-collection-list-query-service";
 import {
+  buildLibraryCollectionListQueryResult,
+  getLibraryCollectionListQueryUpdatedAt,
+} from "../../../apps/new/src/features/library/services/library-collection-list-query-result-service";
+import {
   getLibraryHomeHeaderActions,
   getLibraryHomeHeaderState,
   getLibraryHomeImportHref,
@@ -10745,6 +10749,32 @@ function assertLibraryCollectionListSmoke() {
       },
     ],
   );
+  const collectionListQueryResult = buildLibraryCollectionListQueryResult({
+    error: new Error("collection list smoke"),
+    kind: "artists",
+    limit: null,
+    rows: [
+      {
+        albumId: 7,
+        artistId: 9,
+        artistName: "Single Kind Artist",
+        profileImage: "profile",
+        songId: 4,
+      },
+    ],
+    updatedAt: new Date(77),
+  });
+  assert.deepEqual(
+    collectionListQueryResult.collections.map((collection) => collection.id),
+    [9],
+  );
+  assert.equal(collectionListQueryResult.isEmpty, false);
+  assert.equal(collectionListQueryResult.updatedAt, 77);
+  assert.equal(
+    (collectionListQueryResult.error as Error).message,
+    "collection list smoke",
+  );
+  assert.equal(getLibraryCollectionListQueryUpdatedAt(undefined), 0);
 
   assert.deepEqual(
     filterCollectionPreviews({ collections, query: "" }).map(

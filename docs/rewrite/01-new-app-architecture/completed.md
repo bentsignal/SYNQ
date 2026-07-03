@@ -394,3 +394,5 @@
   out of the React hook and into a focused preview query result service.
 - Moved library summary counts, query errors, and timestamp assembly out of the
   React hook and into a focused summary query result service.
+- Moved library collection list result, empty-state, error, and timestamp
+  assembly out of the React hook and into a focused query result service.

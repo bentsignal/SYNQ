@@ -285,3 +285,5 @@
   error forwarding, empty-state, and timestamp normalization.
 - Added direct library summary query result smoke coverage for count
   aggregation, error ordering, and timestamp normalization.
+- Added direct collection list query result smoke coverage for preview
+  assembly, error forwarding, empty-state, and timestamp normalization.

@@ -1016,8 +1016,10 @@ import {
 } from "../../../apps/new/src/features/settings/services/settings-support-action-executor-service";
 import {
   createInitialSettingsPersistenceState,
+  type SettingsPersistenceAction,
   settingsPersistenceReducer,
 } from "../../../apps/new/src/features/settings/services/settings-persistence-state-service";
+import { runSettingsSaveCommand } from "../../../apps/new/src/features/settings/services/settings-persistence-command-flow-service";
 import {
   customizationOptions,
   defaultCustomizationSettings,
@@ -12482,6 +12484,69 @@ async function assertSettingsScreenSmoke() {
       status: "error",
     },
   );
+  const settingsSaveCommandEvents: unknown[] = [];
+  const dispatchSettingsSaveCommand = (
+    action: SettingsPersistenceAction<typeof initialSettings>,
+  ) => {
+    settingsSaveCommandEvents.push(["dispatch", action]);
+  };
+  await runSettingsSaveCommand({
+    beforeSave: () => {
+      settingsSaveCommandEvents.push(["before-save"]);
+    },
+    currentSettings: initialSettings,
+    dispatch: dispatchSettingsSaveCommand,
+    getErrorMessage: getCustomizationSettingsErrorMessage,
+    saveSettings: async (settings) => {
+      settingsSaveCommandEvents.push(["save", settings]);
+    },
+    settings: loadedSettings,
+  });
+  await runSettingsSaveCommand({
+    currentSettings: initialSettings,
+    dispatch: dispatchSettingsSaveCommand,
+    getErrorMessage: getCustomizationSettingsErrorMessage,
+    saveSettings: async () => {
+      throw new Error("Save command failed");
+    },
+    settings: loadedSettings,
+  });
+  await runSettingsSaveCommand({
+    beforeSave: () => {
+      throw new Error("Before-save failed");
+    },
+    currentSettings: initialSettings,
+    dispatch: dispatchSettingsSaveCommand,
+    getErrorMessage: getCustomizationSettingsErrorMessage,
+    saveSettings: async (settings) => {
+      settingsSaveCommandEvents.push(["skipped-save", settings]);
+    },
+    settings: loadedSettings,
+  });
+  assert.deepEqual(settingsSaveCommandEvents, [
+    ["dispatch", { settings: loadedSettings, type: "save" }],
+    ["before-save"],
+    ["save", loadedSettings],
+    ["dispatch", { settings: loadedSettings, type: "save-success" }],
+    ["dispatch", { settings: loadedSettings, type: "save" }],
+    [
+      "dispatch",
+      {
+        error: "Save command failed",
+        settings: initialSettings,
+        type: "save-failure",
+      },
+    ],
+    ["dispatch", { settings: loadedSettings, type: "save" }],
+    [
+      "dispatch",
+      {
+        error: "Before-save failed",
+        settings: initialSettings,
+        type: "save-failure",
+      },
+    ],
+  ]);
 
   assert.equal(getSettingsHomeHref(), "/(tabs)/settings");
   assert.equal(getSettingsPremiumHref(), "/premium");

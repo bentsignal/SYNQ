@@ -9,6 +9,7 @@ import {
   createInitialSettingsPersistenceState,
   settingsPersistenceReducer,
 } from "../services/settings-persistence-state-service";
+import { runSettingsSaveCommand } from "../services/settings-persistence-command-flow-service";
 import type { PrivacySettings } from "../types/privacy-settings";
 import { useSettingsPersistenceLoader } from "./use-settings-persistence-loader";
 
@@ -31,18 +32,13 @@ export function usePrivacySettings() {
         ...state.settings,
         allowAnalytics,
       };
-      dispatch({ settings, type: "save" });
-
-      try {
-        await savePrivacySettings(settings);
-        dispatch({ settings, type: "save-success" });
-      } catch (error) {
-        dispatch({
-          error: getPrivacySettingsErrorMessage(error),
-          settings: previousSettings,
-          type: "save-failure",
-        });
-      }
+      await runSettingsSaveCommand({
+        currentSettings: previousSettings,
+        dispatch,
+        getErrorMessage: getPrivacySettingsErrorMessage,
+        saveSettings: savePrivacySettings,
+        settings,
+      });
     },
     [state.settings],
   );

@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { saveCustomizationSettings } from "../services/customization-settings-service";
 import { setNativeAppIcon } from "../services/native-app-icon-service";
+import { runSettingsSaveCommand } from "../services/settings-persistence-command-flow-service";
 import { getCustomizationSettingsErrorMessage } from "../services/settings-screen-service";
 import type { SettingsPersistenceAction } from "../services/settings-persistence-state-service";
 import type {
@@ -22,19 +23,14 @@ export function useCustomizationSettingsCommands({
       settings: CustomizationSettings,
       beforeSave?: () => void | Promise<void>,
     ) => {
-      dispatch({ settings, type: "save" });
-
-      try {
-        await beforeSave?.();
-        await saveCustomizationSettings(settings);
-        dispatch({ settings, type: "save-success" });
-      } catch (error) {
-        dispatch({
-          error: getCustomizationSettingsErrorMessage(error),
-          settings: currentSettings,
-          type: "save-failure",
-        });
-      }
+      await runSettingsSaveCommand({
+        beforeSave,
+        currentSettings,
+        dispatch,
+        getErrorMessage: getCustomizationSettingsErrorMessage,
+        saveSettings: saveCustomizationSettings,
+        settings,
+      });
     },
     [currentSettings, dispatch],
   );

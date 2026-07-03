@@ -349,3 +349,5 @@
   sequencing out of the React hook and into a focused command-flow service.
 - Moved premium entitlement apply/refresh and tier-load fallback dispatch
   sequencing out of React hooks and into focused command-flow services.
+- Moved customization and privacy settings save dispatch sequencing out of
+  React hooks and into a shared settings persistence command-flow service.

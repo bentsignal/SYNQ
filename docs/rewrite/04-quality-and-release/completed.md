@@ -240,3 +240,5 @@
   purchase success/failure, restore success/failure, and reset sequencing.
 - Added direct premium entitlement and tier-load command-flow smoke coverage for
   apply, refresh success/failure, tier fallback, and canceled-load sequencing.
+- Added direct settings persistence save command-flow smoke coverage for
+  success, save failure rollback, and before-save failure rollback sequencing.

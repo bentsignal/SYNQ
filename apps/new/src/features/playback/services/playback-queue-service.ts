@@ -3,7 +3,6 @@ import type {
   PlaybackQueueItem,
   PlaybackState,
 } from "../types/playback-state";
-import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 
 export const initialPlaybackQueueFilter: PlaybackQueueFilter = {
   order: "desc",
@@ -143,24 +142,4 @@ export const getPlaybackQueueActionState = ({
   queueLength: number;
 }) => ({
   canClearQueue: queueLength > 0,
-});
-
-type PlaybackQueueCommand = {
-  haptic: HapticFeedbackType;
-};
-
-export const getPlaybackQueuePlayCommand = (): PlaybackQueueCommand => ({
-  haptic: "light",
-});
-
-export const getPlaybackQueueMoveCommand = (): PlaybackQueueCommand => ({
-  haptic: "light",
-});
-
-export const getPlaybackQueueRemoveCommand = (): PlaybackQueueCommand => ({
-  haptic: "medium",
-});
-
-export const getPlaybackQueueClearCommand = (): PlaybackQueueCommand => ({
-  haptic: "medium",
 });

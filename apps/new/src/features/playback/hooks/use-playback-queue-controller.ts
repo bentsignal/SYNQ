@@ -1,17 +1,8 @@
-import { useCallback } from "react";
-import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import {
-  getPlaybackQueueActionState,
-  getPlaybackQueueClearCommand,
-  getPlaybackQueueMoveCommand,
-  getPlaybackQueuePlayCommand,
-  getPlaybackQueueRemoveCommand,
-} from "../services/playback-queue-service";
-import type { PlaybackQueueItem } from "../types/playback-state";
+import { getPlaybackQueueActionState } from "../services/playback-queue-service";
+import { usePlaybackQueueActions } from "./use-playback-queue-actions";
 import { usePlaybackSessionSelector } from "./use-playback-session";
 
 export function usePlaybackQueueController() {
-  const { sendHaptic } = useHapticFeedback();
   const activeTrack = usePlaybackSessionSelector((store) => store.activeTrack);
   const clearQueue = usePlaybackSessionSelector((store) => store.clearQueue);
   const moveQueueSong = usePlaybackSessionSelector(
@@ -26,29 +17,17 @@ export function usePlaybackQueueController() {
   const actionState = getPlaybackQueueActionState({
     queueLength: state.queue.length,
   });
-
-  const playQueuedSong = useCallback((song: PlaybackQueueItem) => {
-    sendHaptic(getPlaybackQueuePlayCommand().haptic);
-    playSong(song);
-  }, [playSong, sendHaptic]);
-
-  const removeQueuedSong = useCallback((songId: number) => {
-    sendHaptic(getPlaybackQueueRemoveCommand().haptic);
-    removeFromQueue(songId);
-  }, [removeFromQueue, sendHaptic]);
-
-  const moveQueuedSong = useCallback(
-    (songId: number, direction: "down" | "up") => {
-      sendHaptic(getPlaybackQueueMoveCommand().haptic);
-      moveQueueSong(songId, direction);
-    },
-    [moveQueueSong, sendHaptic],
-  );
-
-  const clearQueuedSongs = useCallback(() => {
-    sendHaptic(getPlaybackQueueClearCommand().haptic);
-    clearQueue();
-  }, [clearQueue, sendHaptic]);
+  const {
+    clearQueuedSongs,
+    moveQueuedSong,
+    playQueuedSong,
+    removeQueuedSong,
+  } = usePlaybackQueueActions({
+    clearQueue,
+    moveQueueSong,
+    playSong,
+    removeFromQueue,
+  });
 
   return {
     actionState,

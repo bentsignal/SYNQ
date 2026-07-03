@@ -129,3 +129,5 @@
 - Split library song detail mutation command/haptic/navigation helpers out of
   reducer state.
 - Split edit-import-song screen lookup state from form reducer/domain state.
+- Moved playback queue haptic action orchestration behind a dedicated action
+  hook and split queue command state out of queue algorithms.

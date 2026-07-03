@@ -16,11 +16,13 @@ import {
   getActiveTrack,
   getNextQueueIndex,
   getPlaybackQueueActionState,
+} from "../../../apps/new/src/features/playback/services/playback-queue-service";
+import {
   getPlaybackQueueClearCommand,
   getPlaybackQueueMoveCommand,
   getPlaybackQueuePlayCommand,
   getPlaybackQueueRemoveCommand,
-} from "../../../apps/new/src/features/playback/services/playback-queue-service";
+} from "../../../apps/new/src/features/playback/services/playback-queue-command-state-service";
 import {
   getPlaybackQueueRowPresentation,
   getPlaybackQueueRowState,

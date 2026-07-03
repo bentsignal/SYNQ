@@ -3,6 +3,7 @@ import type {
   SettingsPersistenceAction,
   SettingsPersistenceState,
 } from "../services/settings-persistence-state-service";
+import { runSettingsLoadCommand } from "../services/settings-persistence-command-flow-service";
 
 type SettingsPersistenceLoaderOptions<TSettings> = {
   dispatch: React.Dispatch<SettingsPersistenceAction<TSettings>>;
@@ -18,25 +19,12 @@ export function useSettingsPersistenceLoader<TSettings>({
   useEffect(() => {
     let isMounted = true;
 
-    const loadPersistedSettings = async () => {
-      dispatch({ type: "load" });
-
-      try {
-        const settings = await loadSettings();
-        if (isMounted) {
-          dispatch({ settings, type: "load-success" });
-        }
-      } catch (error) {
-        if (isMounted) {
-          dispatch({
-            error: getErrorMessage(error),
-            type: "load-failure",
-          });
-        }
-      }
-    };
-
-    void loadPersistedSettings();
+    void runSettingsLoadCommand({
+      dispatch,
+      getErrorMessage,
+      isCurrent: () => isMounted,
+      loadSettings,
+    });
 
     return () => {
       isMounted = false;

@@ -1019,7 +1019,10 @@ import {
   type SettingsPersistenceAction,
   settingsPersistenceReducer,
 } from "../../../apps/new/src/features/settings/services/settings-persistence-state-service";
-import { runSettingsSaveCommand } from "../../../apps/new/src/features/settings/services/settings-persistence-command-flow-service";
+import {
+  runSettingsLoadCommand,
+  runSettingsSaveCommand,
+} from "../../../apps/new/src/features/settings/services/settings-persistence-command-flow-service";
 import {
   customizationOptions,
   defaultCustomizationSettings,
@@ -12484,6 +12487,48 @@ async function assertSettingsScreenSmoke() {
       status: "error",
     },
   );
+  const settingsLoadCommandEvents: unknown[] = [];
+  const dispatchSettingsLoadCommand = (
+    action: SettingsPersistenceAction<typeof initialSettings>,
+  ) => {
+    settingsLoadCommandEvents.push(action);
+  };
+  await runSettingsLoadCommand({
+    dispatch: dispatchSettingsLoadCommand,
+    getErrorMessage: getCustomizationSettingsErrorMessage,
+    isCurrent: () => true,
+    loadSettings: async () => loadedSettings,
+  });
+  await runSettingsLoadCommand({
+    dispatch: dispatchSettingsLoadCommand,
+    getErrorMessage: getCustomizationSettingsErrorMessage,
+    isCurrent: () => true,
+    loadSettings: async () => {
+      throw new Error("Load command failed");
+    },
+  });
+  await runSettingsLoadCommand({
+    dispatch: dispatchSettingsLoadCommand,
+    getErrorMessage: getCustomizationSettingsErrorMessage,
+    isCurrent: () => false,
+    loadSettings: async () => loadedSettings,
+  });
+  await runSettingsLoadCommand({
+    dispatch: dispatchSettingsLoadCommand,
+    getErrorMessage: getCustomizationSettingsErrorMessage,
+    isCurrent: () => false,
+    loadSettings: async () => {
+      throw new Error("Stale load failed");
+    },
+  });
+  assert.deepEqual(settingsLoadCommandEvents, [
+    { type: "load" },
+    { settings: loadedSettings, type: "load-success" },
+    { type: "load" },
+    { error: "Load command failed", type: "load-failure" },
+    { type: "load" },
+    { type: "load" },
+  ]);
   const settingsSaveCommandEvents: unknown[] = [];
   const dispatchSettingsSaveCommand = (
     action: SettingsPersistenceAction<typeof initialSettings>,

@@ -351,3 +351,5 @@
   sequencing out of React hooks and into focused command-flow services.
 - Moved customization and privacy settings save dispatch sequencing out of
   React hooks and into a shared settings persistence command-flow service.
+- Moved settings persistence load success/failure and stale-result dispatch
+  sequencing out of the loader hook and into the shared command-flow service.

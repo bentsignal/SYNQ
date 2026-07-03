@@ -164,3 +164,5 @@
   link parameter planning and nullable cover update planning.
 - Added direct import library link operation smoke coverage for artist linking,
   album linking, and nullable album-cover update behavior.
+- Added direct playback queue step smoke coverage for removal replacement state
+  and move active-index derivation.

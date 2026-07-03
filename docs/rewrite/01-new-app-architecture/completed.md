@@ -272,3 +272,5 @@
   parameter planning out of the main library link executor.
 - Split import library artist linking, album linking, and album-cover update
   operations out of the main library link executor.
+- Split playback queue removal and move state derivation out of the queue
+  mutation service.

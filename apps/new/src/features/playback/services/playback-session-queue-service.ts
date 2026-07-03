@@ -1,11 +1,12 @@
 import type { PlaybackQueueItem, PlaybackState } from "../types/playback-state";
 import {
-  findQueueIndex,
-  getReplacementTrackAfterRemoval,
-  moveQueueItem,
   upsertQueueItem,
 } from "./playback-queue-service";
 import { resetPlaybackAdGate } from "./playback-ad-gate-service";
+import {
+  getPlaybackQueueMoveUpdate,
+  getPlaybackQueueRemovalUpdate,
+} from "./playback-session-queue-step-service";
 
 export const bumpPlaybackQueueRevision = (state: PlaybackState) => ({
   ...state,
@@ -44,32 +45,11 @@ export const removePlaybackQueueSong = ({
   songId: number;
   state: PlaybackState;
 }) => {
-  const replacementTrack = state.isPlaying
-    ? getReplacementTrackAfterRemoval({
-        songId,
-        state,
-      })
-    : null;
-  const queue = state.queue.filter((song) => song.id !== songId);
-  const activeQueueIndex =
-    state.activeTrackId === songId
-      ? replacementTrack
-        ? findQueueIndex({ queue, songId: replacementTrack.id })
-        : null
-      : findQueueIndex({ queue, songId: state.activeTrackId ?? -1 });
-  const nextActiveTrack =
-    activeQueueIndex === null || activeQueueIndex < 0
-      ? null
-      : queue[activeQueueIndex] ?? null;
+  const update = getPlaybackQueueRemovalUpdate({ songId, state });
 
   return bumpPlaybackQueueRevision({
     ...state,
-    activeQueueIndex: nextActiveTrack ? activeQueueIndex : null,
-    activeTrackId: nextActiveTrack?.id ?? null,
-    duration: nextActiveTrack?.duration ?? 0,
-    isPlaying: nextActiveTrack ? state.isPlaying : false,
-    position: state.activeTrackId === songId ? 0 : state.position,
-    queue,
+    ...update,
   });
 };
 
@@ -82,26 +62,10 @@ export const movePlaybackQueueSong = ({
   songId: number;
   state: PlaybackState;
 }) => {
-  const fromIndex = findQueueIndex({
-    queue: state.queue,
-    songId,
-  });
-  const toIndex = direction === "up" ? fromIndex - 1 : fromIndex + 1;
-  const queue = moveQueueItem({
-    fromIndex,
-    queue: state.queue,
-    toIndex,
-  });
-  const activeQueueIndex =
-    state.activeTrackId === null
-      ? null
-      : findQueueIndex({ queue, songId: state.activeTrackId });
-  const normalizedActiveQueueIndex =
-    activeQueueIndex !== null && activeQueueIndex >= 0 ? activeQueueIndex : null;
+  const update = getPlaybackQueueMoveUpdate({ direction, songId, state });
 
   return bumpPlaybackQueueRevision({
     ...state,
-    activeQueueIndex: normalizedActiveQueueIndex,
-    queue,
+    ...update,
   });
 };

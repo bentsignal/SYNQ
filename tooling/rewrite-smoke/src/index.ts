@@ -42,6 +42,10 @@ import {
   removePlaybackQueueSong,
 } from "../../../apps/new/src/features/playback/services/playback-session-queue-service";
 import {
+  getPlaybackQueueMoveUpdate,
+  getPlaybackQueueRemovalUpdate,
+} from "../../../apps/new/src/features/playback/services/playback-session-queue-step-service";
+import {
   normalizePlaybackState,
   toPersistedPlaybackState,
 } from "../../../apps/new/src/features/playback/services/playback-persistence-codec-service";
@@ -983,6 +987,32 @@ function assertPlaybackSessionSmoke() {
     }).queue[1]?.id,
     third.id,
   );
+  assert.deepEqual(
+    getPlaybackQueueMoveUpdate({
+      direction: "up",
+      songId: third.id,
+      state: directQueuedState,
+    }).queue.map((item) => item.id),
+    [1, 3, 2],
+  );
+  assert.equal(
+    getPlaybackQueueMoveUpdate({
+      direction: "up",
+      songId: third.id,
+      state: directQueuedState,
+    }).activeQueueIndex,
+    0,
+  );
+  const removalUpdate = getPlaybackQueueRemovalUpdate({
+    songId: first.id,
+    state: directQueuedState,
+  });
+  assert.deepEqual(
+    removalUpdate.queue.map((item) => item.id),
+    [2, 3],
+  );
+  assert.equal(removalUpdate.activeTrackId, second.id);
+  assert.equal(removalUpdate.activeQueueIndex, 0);
   const directRemovedState = removePlaybackQueueSong({
     songId: first.id,
     state: directQueuedState,

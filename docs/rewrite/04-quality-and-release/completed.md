@@ -50,3 +50,6 @@
 - Added image-storage executor smoke coverage for data URL parsing, image path
   planning, variant write plans, duplicate detection, invalid formats, null
   inputs, writes, and stored-image row inserts.
+- Added collection image-picker executor smoke coverage for canceled picks,
+  empty asset results, MIME fallback/validation, base64 reads, and data URL
+  assembly.

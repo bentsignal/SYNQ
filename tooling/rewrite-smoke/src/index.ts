@@ -413,6 +413,14 @@ import {
   updateCollectionFormCommandFactory,
 } from "../../../apps/new/src/features/library/services/collection-form-command-factory-service";
 import {
+  assertSupportedCollectionImageType,
+  getCollectionImageMimeType,
+  pickCollectionImageWithDependencies,
+  supportedCollectionImageTypes,
+  type CollectionImagePickerDependencies,
+  type CollectionImagePickerResult,
+} from "../../../apps/new/src/features/library/services/collection-image-picker-executor-service";
+import {
   assertCollectionName,
   getCollectionDuplicateNameMessage,
   getCollectionRequiredNameMessage,
@@ -5686,6 +5694,83 @@ function assertCollectionFormSmoke() {
   );
 }
 
+async function assertCollectionImagePickerExecutorSmoke() {
+  const calls: string[] = [];
+  let result: CollectionImagePickerResult = {
+    assets: [],
+    canceled: true,
+  };
+  const dependencies: CollectionImagePickerDependencies = {
+    pickImage: async () => {
+      calls.push("pick");
+      return result;
+    },
+    readBase64File: async (uri) => {
+      calls.push(`read:${uri}`);
+      return "base64-image";
+    },
+  };
+
+  assert.deepEqual(supportedCollectionImageTypes, ["image/jpeg", "image/png"]);
+  assert.equal(
+    getCollectionImageMimeType({
+      name: "cover.jpg",
+      uri: "file:///cover.jpg",
+    }),
+    "image/jpeg",
+  );
+  assert.doesNotThrow(() => assertSupportedCollectionImageType("image/png"));
+  assert.throws(
+    () => assertSupportedCollectionImageType("image/gif"),
+    /Choose a JPEG or PNG image/,
+  );
+
+  assert.equal(await pickCollectionImageWithDependencies(dependencies), null);
+  assert.deepEqual(calls, ["pick"]);
+
+  calls.length = 0;
+  result = {
+    assets: [],
+    canceled: false,
+  };
+  assert.equal(await pickCollectionImageWithDependencies(dependencies), null);
+  assert.deepEqual(calls, ["pick"]);
+
+  calls.length = 0;
+  result = {
+    assets: [
+      {
+        mimeType: "image/png",
+        name: "smoke cover.png",
+        uri: "file:///picked/cover.png",
+      },
+    ],
+    canceled: false,
+  };
+  assert.deepEqual(await pickCollectionImageWithDependencies(dependencies), {
+    dataUrl: "data:image/png;base64,base64-image",
+    fileName: "smoke cover.png",
+  });
+  assert.deepEqual(calls, ["pick", "read:file:///picked/cover.png"]);
+
+  calls.length = 0;
+  result = {
+    assets: [
+      {
+        mimeType: "image/gif",
+        name: "bad.gif",
+        uri: "file:///picked/bad.gif",
+      },
+    ],
+    canceled: false,
+  };
+  await assert.rejects(
+    () => pickCollectionImageWithDependencies(dependencies),
+    /Choose a JPEG or PNG image/,
+  );
+  assert.deepEqual(calls, ["pick"]);
+}
+
 async function assertCollectionFormMutationSmoke() {
   const createCalls: unknown[] = [];
   const createRepository: CollectionFormCreateRepository = {
@@ -8505,6 +8590,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   assertLibrarySongDetailSmoke();
   assertEditCollectionQuerySmoke();
   assertCollectionFormSmoke();
+  await assertCollectionImagePickerExecutorSmoke();
   await assertCollectionFormMutationSmoke();
   assertLibraryCollectionListSmoke();
   assertLibraryHomeSmoke();

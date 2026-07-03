@@ -169,3 +169,6 @@
   executor so restored draft validation is testable without Expo filesystem.
 - Moved cover-image storage validation, duplicate detection, path planning, and
   variant write orchestration behind an injectable executor.
+- Moved collection/song image picker result handling behind an injectable
+  executor so MIME validation and base64 conversion are testable without native
+  picker modules.

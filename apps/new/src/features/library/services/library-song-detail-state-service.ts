@@ -46,6 +46,24 @@ export const getLibrarySongDetailMutationActionState = ({
     isTogglingLiked: mutationState.isTogglingLiked,
   });
 
+export const getLibrarySongDetailMutationControllerState = ({
+  detail,
+  mutationState,
+}: {
+  detail: LibrarySongDetail;
+  mutationState: LibrarySongDetailMutationState;
+}) => ({
+  actionState: getLibrarySongDetailMutationActionState({
+    detail,
+    mutationState,
+  }),
+  error: mutationState.error,
+});
+
+export type LibrarySongDetailMutationControllerState = ReturnType<
+  typeof getLibrarySongDetailMutationControllerState
+>;
+
 export type LibrarySongDetailStatusState = {
   isError: boolean;
   statusLabel: string;

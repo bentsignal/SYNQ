@@ -860,6 +860,7 @@ import {
 import {
   getLibrarySongDetailActionState,
   getLibrarySongDetailMutationActionState,
+  getLibrarySongDetailMutationControllerState,
   getLibrarySongDetailStatusState,
 } from "../../../apps/new/src/features/library/services/library-song-detail-state-service";
 import {
@@ -8016,6 +8017,29 @@ async function assertLibrarySongDetailSmoke() {
       deleteLabel: "Deleting",
       exportLabel: "Exporting",
       likedLabel: "Unlike",
+    },
+  );
+  assert.deepEqual(
+    getLibrarySongDetailMutationControllerState({
+      detail,
+      mutationState: {
+        error: "Song mutation failed.",
+        isDeleting: false,
+        isExporting: true,
+        isTogglingLiked: false,
+      },
+    }),
+    {
+      actionState: {
+        canDelete: true,
+        canExport: false,
+        canPlay: true,
+        canToggleLiked: true,
+        deleteLabel: "Delete",
+        exportLabel: "Exporting",
+        likedLabel: "Unlike",
+      },
+      error: "Song mutation failed.",
     },
   );
   assert.deepEqual(initialLibrarySongDetailMutationState, {

@@ -422,3 +422,5 @@
   hooks and into the collection form interaction service.
 - Moved collection detail mutation controller-state shaping out of the React
   hook and into the collection action-state service.
+- Moved song detail mutation controller-state shaping out of the React hook and
+  into the song detail state service.

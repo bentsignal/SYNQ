@@ -142,3 +142,5 @@
   types, pure JSON response sending, and route runtime state helpers.
 - Added direct import library song save-step smoke coverage for rollback
   cleanup, cover no-op/update behavior, and error message normalization.
+- Preserved collection delete executor smoke coverage while splitting row and
+  relationship cleanup adapters into smaller repository modules.

@@ -1,8 +1,6 @@
 import { useCallback, useMemo, useReducer } from "react";
-import {
-  defaultCustomizationSettings,
-  loadCustomizationSettings,
-} from "../services/customization-settings-service";
+import { defaultCustomizationSettings } from "../services/customization-settings-domain-service";
+import { loadCustomizationSettings } from "../services/customization-settings-service";
 import { getCustomizationSettingsErrorMessage } from "../services/settings-screen-service";
 import {
   createInitialSettingsPersistenceState,

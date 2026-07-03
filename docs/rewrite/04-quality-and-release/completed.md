@@ -108,3 +108,5 @@
   mapping, sharing availability, and share-file delegation.
 - Added import file-selection executor smoke coverage for canceled picks,
   cache setup, per-file skip behavior, MIME fallback, and Wi-Fi staging.
+- Added settings domain smoke coverage for customization defaults/options,
+  customization normalization fallbacks, and privacy normalization fallbacks.

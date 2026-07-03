@@ -219,3 +219,5 @@
 - Moved import file picking and Wi-Fi staging orchestration behind an
   injectable executor so the Expo document-picker adapter only wires native
   dependencies.
+- Split customization and privacy settings defaults/normalizers into pure
+  domain services so filesystem-backed settings modules only wire persistence.

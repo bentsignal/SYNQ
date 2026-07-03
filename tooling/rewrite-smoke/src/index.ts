@@ -746,6 +746,16 @@ import {
   settingsPersistenceReducer,
 } from "../../../apps/new/src/features/settings/services/settings-persistence-state-service";
 import {
+  customizationOptions,
+  defaultCustomizationSettings,
+  getCustomizationOption,
+  normalizeCustomizationSettings,
+} from "../../../apps/new/src/features/settings/services/customization-settings-domain-service";
+import {
+  defaultPrivacySettings,
+  normalizePrivacySettings,
+} from "../../../apps/new/src/features/settings/services/privacy-settings-domain-service";
+import {
   loadSettingsFromJsonFileWithDependencies,
   saveSettingsToJsonFileWithDependencies,
   type SettingsJsonFileStoreDependencies,
@@ -9960,6 +9970,48 @@ async function assertPremiumPurchaseExecutorSmoke() {
 function assertSettingsScreenSmoke() {
   const initialSettings = { allowAnalytics: true };
   const loadedSettings = { allowAnalytics: false };
+
+  assert.deepEqual(defaultCustomizationSettings, {
+    appIcon: "blue",
+    hapticsEnabled: true,
+    theme: "blue",
+  });
+  assert.deepEqual(
+    customizationOptions.map((option) => option.key),
+    ["blue", "mint", "orange", "pink", "purple", "red", "yellow"],
+  );
+  assert.equal(getCustomizationOption("mint").color, "#61ae7f");
+  assert.equal(getCustomizationOption("blue").label, "Blue");
+  assert.deepEqual(normalizeCustomizationSettings(null), {
+    appIcon: "blue",
+    hapticsEnabled: true,
+    theme: "blue",
+  });
+  assert.deepEqual(
+    normalizeCustomizationSettings({
+      appIcon: "not-a-color",
+      hapticsEnabled: false,
+      theme: "pink",
+    }),
+    {
+      appIcon: "blue",
+      hapticsEnabled: false,
+      theme: "pink",
+    },
+  );
+  assert.deepEqual(defaultPrivacySettings, {
+    allowAnalytics: true,
+  });
+  assert.deepEqual(normalizePrivacySettings(null), {
+    allowAnalytics: true,
+  });
+  assert.deepEqual(normalizePrivacySettings({ allowAnalytics: false }), {
+    allowAnalytics: false,
+  });
+  assert.deepEqual(normalizePrivacySettings({ allowAnalytics: "yes" }), {
+    allowAnalytics: true,
+  });
+
   const initialPersistenceState =
     createInitialSettingsPersistenceState(initialSettings);
 

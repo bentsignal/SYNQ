@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useReducer } from "react";
+import { defaultPrivacySettings } from "../services/privacy-settings-domain-service";
 import {
-  defaultPrivacySettings,
   loadPrivacySettings,
   savePrivacySettings,
 } from "../services/privacy-settings-service";

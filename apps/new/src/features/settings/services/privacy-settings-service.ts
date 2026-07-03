@@ -1,14 +1,14 @@
 import * as FileSystem from "expo-file-system";
 import type { PrivacySettings } from "../types/privacy-settings";
 import {
+  defaultPrivacySettings,
+  normalizePrivacySettings,
+} from "./privacy-settings-domain-service";
+import {
   loadSettingsFromJsonFileWithDependencies,
   saveSettingsToJsonFileWithDependencies,
   type SettingsJsonFileStoreDependencies,
 } from "./settings-json-file-store-service";
-
-export const defaultPrivacySettings: PrivacySettings = {
-  allowAnalytics: !__DEV__,
-};
 
 const privacySettingsFileName = "privacy.json";
 
@@ -18,21 +18,6 @@ const privacySettingsDependencies: SettingsJsonFileStoreDependencies = {
   makeDirectory: FileSystem.makeDirectoryAsync,
   readAsString: FileSystem.readAsStringAsync,
   writeAsString: FileSystem.writeAsStringAsync,
-};
-
-export const normalizePrivacySettings = (value: unknown): PrivacySettings => {
-  if (!value || typeof value !== "object") {
-    return defaultPrivacySettings;
-  }
-
-  const partialValue = value as Partial<PrivacySettings>;
-
-  return {
-    allowAnalytics:
-      typeof partialValue.allowAnalytics === "boolean"
-        ? partialValue.allowAnalytics
-        : defaultPrivacySettings.allowAnalytics,
-  };
 };
 
 export async function loadPrivacySettings(): Promise<PrivacySettings> {

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useCustomizationSettingsSelector } from "../state/CustomizationSettingsProvider";
-import { getCustomizationOption } from "../services/customization-settings-service";
+import { getCustomizationOption } from "../services/customization-settings-domain-service";
 
 export type CustomizationTheme = {
   accent: string;

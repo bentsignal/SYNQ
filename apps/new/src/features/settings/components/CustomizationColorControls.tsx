@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import type { CustomizationTheme } from "../hooks/use-customization-theme";
-import { customizationOptions } from "../services/customization-settings-service";
+import { customizationOptions } from "../services/customization-settings-domain-service";
 import { getCustomizationOptionState } from "../services/settings-screen-service";
 import type { CustomizationColorKey } from "../types/customization-settings";
 

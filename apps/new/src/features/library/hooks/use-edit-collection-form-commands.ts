@@ -2,12 +2,7 @@ import { replaceNativeRoute } from "@/src/features/app-shell/services/native-rou
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useCollectionFormImageCommand } from "./use-collection-form-image-command";
 import { updateCollectionFromFormCommand } from "../services/collection-form-command-service";
-import {
-  getCollectionFormBeginSaveCommand,
-  getCollectionFormBlockedSaveCommand,
-  getCollectionFormFailureCommand,
-  getCollectionFormSuccessCommand,
-} from "../services/collection-form-command-state-service";
+import { runEditCollectionFormSaveCommand } from "../services/collection-form-mutation-command-flow-service";
 import {
   type CollectionFormAction,
   type CollectionFormState,
@@ -36,38 +31,16 @@ export function useEditCollectionFormCommands({
   });
 
   const save = async () => {
-    if (!canSave) {
-      const command = getCollectionFormBlockedSaveCommand(kind);
-      sendHaptic(command.haptic);
-      dispatchFormState(command.action);
-      return;
-    }
-
-    dispatchFormState(getCollectionFormBeginSaveCommand().action);
-
-    try {
-      await updateCollectionFromFormCommand({
-        artistNames: formState.artistNames,
-        id,
-        imageDataUrl: formState.image?.dataUrl,
-        kind,
-        name: formState.name,
-        year: formState.year,
-      });
-      const command = getCollectionFormSuccessCommand({ id, kind });
-      sendHaptic(command.haptic);
-      replaceNativeRoute(command.href);
-    } catch (caughtError) {
-      const command = getCollectionFormFailureCommand({
-        caughtError,
-        kind,
-        operation: "update",
-      });
-      sendHaptic(command.haptic);
-      dispatchFormState(command.action);
-    } finally {
-      dispatchFormState({ type: "finish-save" });
-    }
+    await runEditCollectionFormSaveCommand({
+      canSave,
+      dispatch: dispatchFormState,
+      formState,
+      id,
+      kind,
+      replaceRoute: replaceNativeRoute,
+      sendHaptic,
+      updateCollectionFromForm: updateCollectionFromFormCommand,
+    });
   };
 
   return {

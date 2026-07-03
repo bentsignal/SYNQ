@@ -666,6 +666,10 @@ import {
   getCollectionFormSuccessCommand,
 } from "../../../apps/new/src/features/library/services/collection-form-command-state-service";
 import {
+  runCreateCollectionFormSaveCommand,
+  runEditCollectionFormSaveCommand,
+} from "../../../apps/new/src/features/library/services/collection-form-mutation-command-flow-service";
+import {
   getCollectionFormActionState,
   getCollectionFormFieldState,
   getCollectionFormImageLabel,
@@ -8384,7 +8388,7 @@ function assertEditCollectionQuerySmoke() {
   assert.equal(playlist.name, "");
 }
 
-function assertCollectionFormSmoke() {
+async function assertCollectionFormSmoke() {
   assert.equal(getCollectionFormBackHref(), "/(tabs)/library");
   assert.deepEqual(getCollectionFormBackLink(), {
     href: "/(tabs)/library",
@@ -8859,6 +8863,145 @@ function assertCollectionFormSmoke() {
     () => parseAlbumYearInput("future-ish"),
     /Album year must be a positive whole number/,
   );
+
+  const collectionFormCommandEvents: unknown[] = [];
+  const commandFormState = getInitialCollectionFormState({
+    artistNames: "Alpha Artist, Beta Artist",
+    name: "Smoke Album",
+    year: "2026",
+  });
+  const formStateWithImage = {
+    ...commandFormState,
+    image: {
+      dataUrl: "data:image/png;base64,smoke",
+      fileName: "smoke.png",
+    },
+  };
+  const dispatchCollectionFormCommand = (action: {
+    [key: string]: unknown;
+    type: string;
+  }) => {
+    collectionFormCommandEvents.push(["dispatch", action]);
+  };
+  const sendCollectionFormHaptic = (haptic: string) => {
+    collectionFormCommandEvents.push(["haptic", haptic]);
+  };
+  const replaceCollectionFormRoute = (href: string) => {
+    collectionFormCommandEvents.push(["route", href]);
+  };
+  await runCreateCollectionFormSaveCommand({
+    canSave: false,
+    createCollectionFromForm: async () => {
+      collectionFormCommandEvents.push(["unexpected-create"]);
+      return { id: 1 };
+    },
+    dispatch: dispatchCollectionFormCommand,
+    formState: commandFormState,
+    kind: "album",
+    replaceRoute: replaceCollectionFormRoute,
+    sendHaptic: sendCollectionFormHaptic,
+  });
+  await runCreateCollectionFormSaveCommand({
+    canSave: true,
+    createCollectionFromForm: async (params) => {
+      collectionFormCommandEvents.push(["create", params]);
+      return { id: 51 };
+    },
+    dispatch: dispatchCollectionFormCommand,
+    formState: formStateWithImage,
+    kind: "album",
+    replaceRoute: replaceCollectionFormRoute,
+    sendHaptic: sendCollectionFormHaptic,
+  });
+  await runCreateCollectionFormSaveCommand({
+    canSave: true,
+    createCollectionFromForm: async () => {
+      throw new Error("Create flow failed");
+    },
+    dispatch: dispatchCollectionFormCommand,
+    formState: commandFormState,
+    kind: "playlist",
+    replaceRoute: replaceCollectionFormRoute,
+    sendHaptic: sendCollectionFormHaptic,
+  });
+  await runEditCollectionFormSaveCommand({
+    canSave: false,
+    dispatch: dispatchCollectionFormCommand,
+    formState: commandFormState,
+    id: 61,
+    kind: "artist",
+    replaceRoute: replaceCollectionFormRoute,
+    sendHaptic: sendCollectionFormHaptic,
+    updateCollectionFromForm: async () => {
+      collectionFormCommandEvents.push(["unexpected-update"]);
+    },
+  });
+  await runEditCollectionFormSaveCommand({
+    canSave: true,
+    dispatch: dispatchCollectionFormCommand,
+    formState: formStateWithImage,
+    id: 62,
+    kind: "album",
+    replaceRoute: replaceCollectionFormRoute,
+    sendHaptic: sendCollectionFormHaptic,
+    updateCollectionFromForm: async (params) => {
+      collectionFormCommandEvents.push(["update", params]);
+    },
+  });
+  await runEditCollectionFormSaveCommand({
+    canSave: true,
+    dispatch: dispatchCollectionFormCommand,
+    formState: commandFormState,
+    id: 63,
+    kind: "artist",
+    replaceRoute: replaceCollectionFormRoute,
+    sendHaptic: sendCollectionFormHaptic,
+    updateCollectionFromForm: async () => {
+      throw new Error("Update flow failed");
+    },
+  });
+  assert.deepEqual(collectionFormCommandEvents, [
+    ["haptic", "error"],
+    ["dispatch", { error: "Album name is required.", type: "fail" }],
+    ["dispatch", { type: "begin-save" }],
+    [
+      "create",
+      {
+        imageDataUrl: "data:image/png;base64,smoke",
+        kind: "album",
+        name: "Smoke Album",
+        year: "2026",
+      },
+    ],
+    ["haptic", "success"],
+    ["route", "/(tabs)/library/album/51"],
+    ["dispatch", { type: "finish-save" }],
+    ["dispatch", { type: "begin-save" }],
+    ["haptic", "error"],
+    ["dispatch", { error: "Create flow failed", type: "fail" }],
+    ["dispatch", { type: "finish-save" }],
+    ["haptic", "error"],
+    ["dispatch", { error: "Artist name is required.", type: "fail" }],
+    ["dispatch", { type: "begin-save" }],
+    [
+      "update",
+      {
+        artistNames: "Alpha Artist, Beta Artist",
+        id: 62,
+        imageDataUrl: "data:image/png;base64,smoke",
+        kind: "album",
+        name: "Smoke Album",
+        year: "2026",
+      },
+    ],
+    ["haptic", "success"],
+    ["route", "/(tabs)/library/album/62"],
+    ["dispatch", { type: "finish-save" }],
+    ["dispatch", { type: "begin-save" }],
+    ["haptic", "error"],
+    ["dispatch", { error: "Update flow failed", type: "fail" }],
+    ["dispatch", { type: "finish-save" }],
+  ]);
 }
 
 async function assertCollectionImagePickerExecutorSmoke() {
@@ -14196,7 +14339,7 @@ void assertImportLibrarySavePlanSmoke().then(async () => {
   await assertLibrarySongDeleteExecutorSmoke();
   await assertLibrarySongExportSnapshotExecutorSmoke();
   assertEditCollectionQuerySmoke();
-  assertCollectionFormSmoke();
+  await assertCollectionFormSmoke();
   await assertCollectionImagePickerExecutorSmoke();
   await assertAlbumArtistUpdateExecutorSmoke();
   await assertSongMetadataRelationshipExecutorSmoke();

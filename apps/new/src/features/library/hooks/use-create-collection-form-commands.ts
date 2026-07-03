@@ -2,12 +2,7 @@ import { replaceNativeRoute } from "@/src/features/app-shell/services/native-rou
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useCollectionFormImageCommand } from "./use-collection-form-image-command";
 import { createCollectionFromFormCommand } from "../services/collection-form-command-service";
-import {
-  getCollectionFormBeginSaveCommand,
-  getCollectionFormBlockedSaveCommand,
-  getCollectionFormFailureCommand,
-  getCollectionFormSuccessCommand,
-} from "../services/collection-form-command-state-service";
+import { runCreateCollectionFormSaveCommand } from "../services/collection-form-mutation-command-flow-service";
 import {
   type CollectionFormAction,
   type CollectionFormState,
@@ -34,39 +29,15 @@ export function useCreateCollectionFormCommands({
   });
 
   const create = async () => {
-    if (!canSave) {
-      const command = getCollectionFormBlockedSaveCommand(kind);
-      sendHaptic(command.haptic);
-      dispatchFormState(command.action);
-      return;
-    }
-
-    dispatchFormState(getCollectionFormBeginSaveCommand().action);
-
-    try {
-      const collection = await createCollectionFromFormCommand({
-        imageDataUrl: formState.image?.dataUrl,
-        kind,
-        name: formState.name,
-        year: formState.year,
-      });
-      const command = getCollectionFormSuccessCommand({
-        id: collection.id,
-        kind,
-      });
-      sendHaptic(command.haptic);
-      replaceNativeRoute(command.href);
-    } catch (caughtError) {
-      const command = getCollectionFormFailureCommand({
-        caughtError,
-        kind,
-        operation: "create",
-      });
-      sendHaptic(command.haptic);
-      dispatchFormState(command.action);
-    } finally {
-      dispatchFormState({ type: "finish-save" });
-    }
+    await runCreateCollectionFormSaveCommand({
+      canSave,
+      createCollectionFromForm: createCollectionFromFormCommand,
+      dispatch: dispatchFormState,
+      formState,
+      kind,
+      replaceRoute: replaceNativeRoute,
+      sendHaptic,
+    });
   };
 
   return {

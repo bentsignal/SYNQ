@@ -259,3 +259,5 @@
 - Added direct song detail mutation command-flow smoke coverage for blocked,
   canceled delete confirmation, delete/export/liked success, and failure
   sequencing.
+- Added direct collection form mutation command-flow smoke coverage for blocked
+  saves, create/update success navigation, and failure dispatch sequencing.

@@ -218,6 +218,8 @@
   move, toggle, clear, and remove sequencing.
 - Added direct import session command-flow smoke coverage for basic file-pick,
   failure, review, save-toggle, and song-update dispatch sequencing.
+- Preserved library collection mutation command-flow smoke coverage while
+  collapsing repeated start/failure/finish orchestration into a shared helper.
 - Added direct Wi-Fi import session command-flow smoke coverage for cache-prep
   success/failure, receive, review finish, and empty-transfer failure
   sequencing.

@@ -22,7 +22,10 @@ import {
   getCollectionSongRemovalStartCommand,
   getCollectionSongRemovalSuccessCommand,
 } from "./library-collection-mutation-service";
-import type { CollectionDetailMutationAction } from "./library-collection-mutation-state-service";
+import type {
+  CollectionDetailMutationAction,
+  CollectionDetailMutationKind,
+} from "./library-collection-mutation-state-service";
 
 type CollectionDetailMutationDispatch = (
   action: CollectionDetailMutationAction,
@@ -39,6 +42,40 @@ type NativeConfirmationPresenter = (params: {
 }) => void;
 
 type NativeRouteReplacer = (href: string) => void;
+
+const runCollectionDetailMutationAttempt = async ({
+  dispatch,
+  finishAction,
+  mutation,
+  onSuccess,
+  run,
+  sendHaptic,
+  startAction,
+}: {
+  dispatch: CollectionDetailMutationDispatch;
+  finishAction: CollectionDetailMutationAction;
+  mutation: CollectionDetailMutationKind;
+  onSuccess: () => void;
+  run: () => Promise<void>;
+  sendHaptic: HapticSender;
+  startAction: CollectionDetailMutationAction;
+}) => {
+  dispatch(startAction);
+
+  try {
+    await run();
+    onSuccess();
+  } catch (caughtError) {
+    const command = getCollectionDetailMutationFailureCommand({
+      caughtError,
+      mutation,
+    });
+    sendHaptic(command.haptic);
+    dispatch(command.action);
+  } finally {
+    dispatch(finishAction);
+  }
+};
 
 export const runLibraryCollectionDeleteCommand = ({
   actionState,
@@ -79,23 +116,19 @@ export const runLibraryCollectionDeleteCommand = ({
     cancelLabel: confirmationCopy.cancelLabel,
     confirmLabel: confirmationCopy.confirmLabel,
     onConfirm: async () => {
-      dispatch(getCollectionDeleteStartCommand().action);
-
-      try {
-        await deleteLibraryCollection({ id, kind });
-        const command = getCollectionDeleteSuccessCommand({ kind });
-        sendHaptic(command.haptic);
-        replaceRoute(command.href);
-      } catch (caughtError) {
-        const command = getCollectionDetailMutationFailureCommand({
-          caughtError,
-          mutation: "delete-collection",
-        });
-        sendHaptic(command.haptic);
-        dispatch(command.action);
-      } finally {
-        dispatch(getCollectionDeleteFinishCommand().action);
-      }
+      await runCollectionDetailMutationAttempt({
+        dispatch,
+        finishAction: getCollectionDeleteFinishCommand().action,
+        mutation: "delete-collection",
+        onSuccess: () => {
+          const command = getCollectionDeleteSuccessCommand({ kind });
+          sendHaptic(command.haptic);
+          replaceRoute(command.href);
+        },
+        run: () => deleteLibraryCollection({ id, kind }),
+        sendHaptic,
+        startAction: getCollectionDeleteStartCommand().action,
+      });
     },
     title: confirmationCopy.title,
   });
@@ -119,21 +152,19 @@ export const runLibraryCollectionExportCommand = async ({
     return;
   }
 
-  dispatch(getCollectionExportStartCommand().action);
-
-  try {
-    await exportLibraryCollection(actionState.playableSongs);
-    sendHaptic(getCollectionExportSuccessCommand().haptic);
-  } catch (caughtError) {
-    const command = getCollectionDetailMutationFailureCommand({
-      caughtError,
-      mutation: "export-collection",
-    });
-    sendHaptic(command.haptic);
-    dispatch(command.action);
-  } finally {
-    dispatch(getCollectionExportFinishCommand().action);
-  }
+  await runCollectionDetailMutationAttempt({
+    dispatch,
+    finishAction: getCollectionExportFinishCommand().action,
+    mutation: "export-collection",
+    onSuccess: () => {
+      sendHaptic(getCollectionExportSuccessCommand().haptic);
+    },
+    run: async () => {
+      await exportLibraryCollection(actionState.playableSongs);
+    },
+    sendHaptic,
+    startAction: getCollectionExportStartCommand().action,
+  });
 };
 
 export const runLibraryCollectionSongMoveCommand = async ({
@@ -161,27 +192,24 @@ export const runLibraryCollectionSongMoveCommand = async ({
   sendHaptic: HapticSender;
   songId: number;
 }) => {
-  dispatch(getCollectionSongMoveStartCommand(songId).action);
-
-  try {
-    await moveLibraryCollectionSong({
-      collectionId,
-      direction,
-      kind,
-      songId,
-      songs: detail.songs,
-    });
-    sendHaptic(getCollectionSongMoveSuccessCommand().haptic);
-  } catch (caughtError) {
-    const command = getCollectionDetailMutationFailureCommand({
-      caughtError,
-      mutation: "move-song",
-    });
-    sendHaptic(command.haptic);
-    dispatch(command.action);
-  } finally {
-    dispatch(getCollectionSongMoveFinishCommand().action);
-  }
+  await runCollectionDetailMutationAttempt({
+    dispatch,
+    finishAction: getCollectionSongMoveFinishCommand().action,
+    mutation: "move-song",
+    onSuccess: () => {
+      sendHaptic(getCollectionSongMoveSuccessCommand().haptic);
+    },
+    run: () =>
+      moveLibraryCollectionSong({
+        collectionId,
+        direction,
+        kind,
+        songId,
+        songs: detail.songs,
+      }),
+    sendHaptic,
+    startAction: getCollectionSongMoveStartCommand(songId).action,
+  });
 };
 
 export const runLibraryCollectionSongRemoveCommand = async ({
@@ -203,23 +231,20 @@ export const runLibraryCollectionSongRemoveCommand = async ({
   sendHaptic: HapticSender;
   songId: number;
 }) => {
-  dispatch(getCollectionSongRemovalStartCommand(songId).action);
-
-  try {
-    await removeLibraryCollectionSong({
-      collectionId,
-      kind,
-      songId,
-    });
-    sendHaptic(getCollectionSongRemovalSuccessCommand().haptic);
-  } catch (caughtError) {
-    const command = getCollectionDetailMutationFailureCommand({
-      caughtError,
-      mutation: "remove-song",
-    });
-    sendHaptic(command.haptic);
-    dispatch(command.action);
-  } finally {
-    dispatch(getCollectionSongRemovalFinishCommand().action);
-  }
+  await runCollectionDetailMutationAttempt({
+    dispatch,
+    finishAction: getCollectionSongRemovalFinishCommand().action,
+    mutation: "remove-song",
+    onSuccess: () => {
+      sendHaptic(getCollectionSongRemovalSuccessCommand().haptic);
+    },
+    run: () =>
+      removeLibraryCollectionSong({
+        collectionId,
+        kind,
+        songId,
+      }),
+    sendHaptic,
+    startAction: getCollectionSongRemovalStartCommand(songId).action,
+  });
 };

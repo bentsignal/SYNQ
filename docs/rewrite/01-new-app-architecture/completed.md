@@ -313,3 +313,5 @@
   React hook and into a focused command-flow service.
 - Moved Wi-Fi import server address resolution and bridge startup result
   mapping out of the React hook and into a focused command service.
+- Moved playback player haptic/action sequencing out of the React hook and
+  into a focused command-flow service.

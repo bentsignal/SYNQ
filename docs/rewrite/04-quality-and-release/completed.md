@@ -206,3 +206,5 @@
   cancellation/skipped files, picker failure, removal, and removal failure.
 - Added direct Wi-Fi import server command smoke coverage for IP resolution and
   bridge startup success/failure mapping.
+- Added direct playback player command-flow smoke coverage for seek, button,
+  pause, and resume sequencing.

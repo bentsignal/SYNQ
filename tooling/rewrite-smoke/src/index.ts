@@ -96,6 +96,11 @@ import {
   getPlaybackPlayerSeekCommand,
 } from "../../../apps/new/src/features/playback/services/playback-player-command-state-service";
 import {
+  runPlaybackPlayerButtonCommand,
+  runPlaybackPlayerPlayPauseCommand,
+  runPlaybackPlayerSeekCommand,
+} from "../../../apps/new/src/features/playback/services/playback-player-command-flow-service";
+import {
   getPlaybackAdBreakPanelState,
   getPlaybackMiniPlayerState,
   getPlaybackPlayerHref,
@@ -2273,6 +2278,57 @@ function assertPlaybackPlayerStateSmoke() {
     action: "resume",
     haptic: "light",
   });
+  const playerCommandEvents: unknown[] = [];
+  const sendPlayerCommandHaptic = (haptic: string) => {
+    playerCommandEvents.push(["haptic", haptic]);
+  };
+  runPlaybackPlayerSeekCommand({
+    direction: "forward",
+    seekTo: (position) => {
+      playerCommandEvents.push(["seek", position]);
+    },
+    sendHaptic: sendPlayerCommandHaptic,
+    state: {
+      duration: 120_000,
+      position: 110_000,
+    },
+  });
+  runPlaybackPlayerButtonCommand({
+    action: () => {
+      playerCommandEvents.push(["button-action"]);
+    },
+    sendHaptic: sendPlayerCommandHaptic,
+  });
+  runPlaybackPlayerPlayPauseCommand({
+    isPlaying: true,
+    pause: () => {
+      playerCommandEvents.push(["pause"]);
+    },
+    resume: () => {
+      playerCommandEvents.push(["resume"]);
+    },
+    sendHaptic: sendPlayerCommandHaptic,
+  });
+  runPlaybackPlayerPlayPauseCommand({
+    isPlaying: false,
+    pause: () => {
+      playerCommandEvents.push(["pause"]);
+    },
+    resume: () => {
+      playerCommandEvents.push(["resume"]);
+    },
+    sendHaptic: sendPlayerCommandHaptic,
+  });
+  assert.deepEqual(playerCommandEvents, [
+    ["haptic", "light"],
+    ["seek", 120_000],
+    ["haptic", "light"],
+    ["button-action"],
+    ["haptic", "soft"],
+    ["pause"],
+    ["haptic", "light"],
+    ["resume"],
+  ]);
   assert.deepEqual(
     getPlaybackPlayerActionState({
       activeTrack: null,

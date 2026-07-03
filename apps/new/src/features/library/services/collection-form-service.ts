@@ -1,10 +1,3 @@
-import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
-import {
-  getCollectionDetailHref,
-  type CollectionDetailHref,
-} from "./collection-form-navigation-service";
-import { getCollectionRequiredNameMessage } from "./collection-metadata-service";
-
 export type CollectionFormKind = "album" | "artist" | "playlist";
 
 export type CollectionFormImage = {
@@ -149,20 +142,7 @@ export const getCollectionFormErrorMessage = ({
 }) => (caughtError instanceof Error ? caughtError.message : fallbackMessage);
 
 type CollectionFormOperation = "create" | "update";
-
-type CollectionFormHapticCommand = {
-  haptic: HapticFeedbackType;
-};
-
-type CollectionFormActionCommand = CollectionFormHapticCommand & {
-  action: CollectionFormAction;
-};
-
-type CollectionFormSuccessCommand = CollectionFormHapticCommand & {
-  href: CollectionDetailHref;
-};
-
-const getCollectionFormFallbackMessage = ({
+export const getCollectionFormFallbackMessage = ({
   kind,
   operation,
 }: {
@@ -174,77 +154,3 @@ const getCollectionFormFallbackMessage = ({
 
   return `${noun} could not be ${verb}.`;
 };
-
-export const getCollectionFormBlockedSaveCommand = (
-  kind: CollectionFormKind,
-): CollectionFormActionCommand => ({
-  action: {
-    error: getCollectionRequiredNameMessage(kind),
-    type: "fail",
-  },
-  haptic: "error",
-});
-
-export const getCollectionFormImagePickStartCommand =
-  (): CollectionFormHapticCommand => ({
-    haptic: "light",
-  });
-
-export const getCollectionFormImagePickedCommand = (
-  image: CollectionFormImage,
-): Pick<CollectionFormActionCommand, "action"> => ({
-  action: {
-    image,
-    type: "pick-image",
-  },
-});
-
-export const getCollectionFormImagePickFailureCommand = (
-  caughtError: unknown,
-): CollectionFormActionCommand => ({
-  action: {
-    error: getCollectionFormErrorMessage({
-      caughtError,
-      fallbackMessage: "Image could not be selected.",
-    }),
-    type: "fail",
-  },
-  haptic: "error",
-});
-
-export const getCollectionFormBeginSaveCommand =
-  (): Pick<CollectionFormActionCommand, "action"> => ({
-    action: {
-      type: "begin-save",
-    },
-  });
-
-export const getCollectionFormSuccessCommand = ({
-  id,
-  kind,
-}: {
-  id: number;
-  kind: CollectionFormKind;
-}): CollectionFormSuccessCommand => ({
-  haptic: "success",
-  href: getCollectionDetailHref({ id, kind }),
-});
-
-export const getCollectionFormFailureCommand = ({
-  caughtError,
-  kind,
-  operation,
-}: {
-  caughtError: unknown;
-  kind: CollectionFormKind;
-  operation: CollectionFormOperation;
-}): CollectionFormActionCommand => ({
-  action: {
-    error: getCollectionFormErrorMessage({
-      caughtError,
-      fallbackMessage: getCollectionFormFallbackMessage({ kind, operation }),
-    }),
-    type: "fail",
-  },
-  haptic: "error",
-});

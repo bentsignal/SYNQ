@@ -302,17 +302,20 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import {
   collectionFormReducer,
+  getCollectionFormErrorMessage,
+  getCollectionFormFallbackMessage,
+  getInitialCollectionFormState,
+  parseAlbumYearInput,
+} from "../../../apps/new/src/features/library/services/collection-form-service";
+import {
   getCollectionFormBeginSaveCommand,
   getCollectionFormBlockedSaveCommand,
-  getCollectionFormErrorMessage,
   getCollectionFormFailureCommand,
   getCollectionFormImagePickedCommand,
   getCollectionFormImagePickFailureCommand,
   getCollectionFormImagePickStartCommand,
   getCollectionFormSuccessCommand,
-  getInitialCollectionFormState,
-  parseAlbumYearInput,
-} from "../../../apps/new/src/features/library/services/collection-form-service";
+} from "../../../apps/new/src/features/library/services/collection-form-command-state-service";
 import {
   getCollectionFormActionState,
   getCollectionFormFieldState,
@@ -5046,6 +5049,20 @@ function assertCollectionFormSmoke() {
       fallbackMessage: "Album could not be created.",
     }),
     "Album could not be created.",
+  );
+  assert.equal(
+    getCollectionFormFallbackMessage({
+      kind: "album",
+      operation: "create",
+    }),
+    "Album could not be created.",
+  );
+  assert.equal(
+    getCollectionFormFallbackMessage({
+      kind: "playlist",
+      operation: "update",
+    }),
+    "Playlist could not be updated.",
   );
   assert.deepEqual(getCollectionFormBlockedSaveCommand("album"), {
     action: {

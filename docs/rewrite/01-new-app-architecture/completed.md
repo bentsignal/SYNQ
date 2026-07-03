@@ -111,3 +111,5 @@
   injectable service covered by deterministic smoke.
 - Split import library one-song save execution out of the session save loop,
   including deterministic smoke coverage for cover handling and rollback.
+- Split collection form command/haptic state helpers out of the reducer and
+  validation service.

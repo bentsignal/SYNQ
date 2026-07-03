@@ -261,3 +261,5 @@
   helpers out of the main relationship replace executor.
 - Split song metadata update title validation and cover update target selection
   out of the main metadata update executor.
+- Split collection song relationship order and remove operation planning out of
+  the main relationship executor.

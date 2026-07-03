@@ -430,6 +430,10 @@ import {
   type CollectionSongRelationshipDependencies,
 } from "../../../apps/new/src/features/library/repository/collection-song-relationship-executor-repository";
 import {
+  getCollectionSongOrderOperations,
+  getCollectionSongRemoveOperation,
+} from "../../../apps/new/src/features/library/repository/collection-song-relationship-step-repository";
+import {
   getCollectionSongListState,
   getCollectionSongOrderUpdate,
   getCollectionSongRowActionState,
@@ -4675,6 +4679,26 @@ async function assertCollectionSongRelationshipExecutorSmoke() {
       calls.push(["order-playlist", params]);
     },
   };
+
+  assert.deepEqual(
+    getCollectionSongOrderOperations({
+      collectionId: 9,
+      kind: "artist",
+      songIds: [5, 3],
+    }),
+    [
+      { collectionId: 9, kind: "artist", order: 1, songId: 5 },
+      { collectionId: 9, kind: "artist", order: 2, songId: 3 },
+    ],
+  );
+  assert.deepEqual(
+    getCollectionSongRemoveOperation({
+      collectionId: 9,
+      kind: "playlist",
+      songId: 5,
+    }),
+    { collectionId: 9, kind: "playlist", songId: 5 },
+  );
 
   await updateCollectionSongOrderWithDependencies(
     { collectionId: 10, kind: "album", songIds: [3, 1] },

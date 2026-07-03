@@ -152,3 +152,5 @@
   ensure helpers and album-artist link insertion planning.
 - Added direct song metadata update step smoke coverage for title validation and
   album-vs-song cover target selection.
+- Added direct collection song relationship step smoke coverage for order and
+  remove operation planning.

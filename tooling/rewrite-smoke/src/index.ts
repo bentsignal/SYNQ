@@ -324,12 +324,14 @@ import {
   getCollectionFormImageLabel,
   getCollectionFormPreviewInitial,
   getCollectionFormSaveLabel,
+  getSavedCollectionFormImageLabel,
+} from "../../../apps/new/src/features/library/services/collection-form-interaction-service";
+import {
   getCreateCollectionFormCopy,
   getCreateCollectionFormSubtitle,
   getEditCollectionFormCopy,
   getEditCollectionFormSubtitle,
-  getSavedCollectionFormImageLabel,
-} from "../../../apps/new/src/features/library/services/collection-form-interaction-service";
+} from "../../../apps/new/src/features/library/services/collection-form-copy-service";
 import {
   getCollectionDetailHref,
   getCollectionFormBackHref,

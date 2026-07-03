@@ -6,7 +6,7 @@ import {
   useEditArtistCollectionQuery,
   useEditPlaylistCollectionQuery,
 } from "../hooks/use-edit-collection-query";
-import { getEditCollectionFormCopy } from "../services/collection-form-interaction-service";
+import { getEditCollectionFormCopy } from "../services/collection-form-copy-service";
 import type { EditCollectionKind } from "../services/edit-collection-query-service";
 
 export type CollectionKind = EditCollectionKind;

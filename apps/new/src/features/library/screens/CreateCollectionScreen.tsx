@@ -4,7 +4,7 @@ import type { CollectionFormKind } from "../services/collection-form-domain-serv
 import {
   getCreateCollectionFormCopy,
   getCreateCollectionFormSubtitle,
-} from "../services/collection-form-interaction-service";
+} from "../services/collection-form-copy-service";
 
 type CreateCollectionKind = CollectionFormKind;
 

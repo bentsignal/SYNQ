@@ -119,3 +119,5 @@
   service.
 - Added a collection form command factory so command wiring can be smoke-tested
   without importing real database repositories.
+- Split collection form create/edit copy helpers out of field and action
+  presentation state.

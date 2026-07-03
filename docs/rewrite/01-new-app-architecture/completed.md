@@ -266,3 +266,5 @@
 - Split collection song add operation planning out of the main add executor.
 - Split collection song membership order, guard, insert, and liked-delete
   helpers out of the main membership executor.
+- Split import file selection cached-file and Wi-Fi process parameter planning
+  out of the main file selection executor.

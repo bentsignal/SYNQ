@@ -158,3 +158,5 @@
   operation planning.
 - Added direct collection song membership step smoke coverage for insert and
   liked-delete parameter planning.
+- Added direct import file selection step smoke coverage for cached-file MIME
+  fallback and Wi-Fi file type fallback.

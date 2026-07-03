@@ -1,4 +1,8 @@
 import type { ImportSongDraft } from "../types/import-session";
+import {
+  getCachedImportFileProcessParams,
+  getWifiImportFileProcessParams,
+} from "./import-file-selection-step-service";
 
 export type ImportFileSelectionAsset = {
   mimeType?: string | null;
@@ -73,12 +77,14 @@ const processImportAssetWithDependencies = async <
     index,
   });
 
-  return dependencies.processCachedImportFile({
-    cacheUri: destination,
-    fileName,
-    fileType: asset.mimeType ?? fileName,
-    id: dependencies.now() + index,
-  });
+  return dependencies.processCachedImportFile(
+    getCachedImportFileProcessParams({
+      asset,
+      destination,
+      fileName,
+      id: dependencies.now() + index,
+    }),
+  );
 };
 
 export async function selectImportFilesWithDependencies<
@@ -137,10 +143,12 @@ export async function stageWifiImportFileWithDependencies<
       name,
     });
 
-  return dependencies.processCachedImportFile({
-    cacheUri: destination,
-    fileName,
-    fileType: type || fileName,
-    id,
-  });
+  return dependencies.processCachedImportFile(
+    getWifiImportFileProcessParams({
+      destination,
+      fileName,
+      id,
+      type,
+    }),
+  );
 }

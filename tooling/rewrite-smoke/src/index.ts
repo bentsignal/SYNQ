@@ -288,6 +288,10 @@ import {
   type ImportFileSelectionDependencies,
 } from "../../../apps/new/src/features/import/services/import-file-selection-executor-service";
 import {
+  getCachedImportFileProcessParams,
+  getWifiImportFileProcessParams,
+} from "../../../apps/new/src/features/import/services/import-file-selection-step-service";
+import {
   getImportFileCommandErrorMessage,
   getImportFileRemovalResultCommand,
   getImportFileRemovalStartHaptic,
@@ -8791,6 +8795,49 @@ async function assertImportFileSelectionExecutorSmoke() {
       };
     },
   };
+
+  assert.deepEqual(
+    getCachedImportFileProcessParams({
+      asset: { mimeType: "audio/mpeg", name: "song.mp3", uri: "file://song" },
+      destination: "/cache/song.mp3",
+      fileName: "cached-song.mp3",
+      id: 50,
+    }),
+    {
+      cacheUri: "/cache/song.mp3",
+      fileName: "cached-song.mp3",
+      fileType: "audio/mpeg",
+      id: 50,
+    },
+  );
+  assert.deepEqual(
+    getCachedImportFileProcessParams({
+      asset: { mimeType: null, name: "song.wav", uri: "file://song" },
+      destination: "/cache/song.wav",
+      fileName: "cached-song.wav",
+      id: 51,
+    }),
+    {
+      cacheUri: "/cache/song.wav",
+      fileName: "cached-song.wav",
+      fileType: "cached-song.wav",
+      id: 51,
+    },
+  );
+  assert.deepEqual(
+    getWifiImportFileProcessParams({
+      destination: "/cache/wifi.mp3",
+      fileName: "cached-wifi.mp3",
+      id: 52,
+      type: "",
+    }),
+    {
+      cacheUri: "/cache/wifi.mp3",
+      fileName: "cached-wifi.mp3",
+      fileType: "cached-wifi.mp3",
+      id: 52,
+    },
+  );
 
   assert.deepEqual(await selectImportFilesWithDependencies(dependencies), {
     drafts: [],

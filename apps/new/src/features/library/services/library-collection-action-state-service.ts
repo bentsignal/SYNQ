@@ -1,7 +1,9 @@
 import type {
+  LibraryCollectionDetail,
   LibraryCollectionDetailSong,
 } from "./library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
+import type { CollectionDetailMutationState } from "./library-collection-mutation-state-service";
 import { isProtectedPlaylistId } from "./library-playlist-constants-service";
 
 export const canDeleteLibraryCollection = ({
@@ -88,3 +90,23 @@ export const getCollectionDetailActionState = ({
 export type CollectionDetailActionState = ReturnType<
   typeof getCollectionDetailActionState
 >;
+
+export const getCollectionDetailMutationActionState = ({
+  detail,
+  id,
+  kind,
+  mutationState,
+}: {
+  detail: Pick<LibraryCollectionDetail, "isMissing" | "songs">;
+  id: number;
+  kind: LibraryCollectionDetailKind;
+  mutationState: Pick<CollectionDetailMutationState, "isDeleting" | "isExporting">;
+}) =>
+  getCollectionDetailActionState({
+    id,
+    isDeleting: mutationState.isDeleting,
+    isExporting: mutationState.isExporting,
+    isMissing: detail.isMissing,
+    kind,
+    songs: detail.songs,
+  });

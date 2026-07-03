@@ -4,7 +4,7 @@ import { useLibraryCollectionSongMutations } from "./use-library-collection-song
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
-  getCollectionDetailActionState,
+  getCollectionDetailMutationActionState,
 } from "../services/library-collection-action-state-service";
 import {
   collectionDetailMutationReducer,
@@ -28,21 +28,17 @@ export function useLibraryCollectionDetailMutations({
   );
   const actionState = useMemo(
     () =>
-      getCollectionDetailActionState({
+      getCollectionDetailMutationActionState({
+        detail,
         id,
-        isDeleting: mutationState.isDeleting,
-        isExporting: mutationState.isExporting,
-        isMissing: detail.isMissing,
         kind,
-        songs: detail.songs,
+        mutationState,
       }),
     [
-      detail.isMissing,
-      detail.songs,
+      detail,
       id,
       kind,
-      mutationState.isDeleting,
-      mutationState.isExporting,
+      mutationState,
     ],
   );
   const collectionMutations = useLibraryCollectionCollectionMutations({

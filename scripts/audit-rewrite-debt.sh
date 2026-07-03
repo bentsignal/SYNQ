@@ -7,6 +7,8 @@ cd "$ROOT_DIR"
 
 NEW_APP_PATHS=(apps/new/app apps/new/src)
 MAX_NEW_APP_STYLESHEET_CREATE="${MAX_NEW_APP_STYLESHEET_CREATE:-0}"
+MAX_NEW_APP_STYLESHEET_IMPORTS="${MAX_NEW_APP_STYLESHEET_IMPORTS:-0}"
+MAX_NEW_APP_RAW_HAPTIC_CALLS="${MAX_NEW_APP_RAW_HAPTIC_CALLS:-0}"
 MAX_NEW_APP_CONTEXT_MODULES="${MAX_NEW_APP_CONTEXT_MODULES:-0}"
 MAX_EXTERNAL_PLAYBACK_SELECTOR_IMPORTS="${MAX_EXTERNAL_PLAYBACK_SELECTOR_IMPORTS:-0}"
 MAX_LIBRARY_HOOK_LIVE_QUERY_MODULES="${MAX_LIBRARY_HOOK_LIVE_QUERY_MODULES:-0}"
@@ -27,6 +29,8 @@ count_files() {
 }
 
 stylesheet_creates="$(count_matches "StyleSheet\\.create" "${NEW_APP_PATHS[@]}")"
+stylesheet_imports="$(count_matches "\\bStyleSheet\\b" "${NEW_APP_PATHS[@]}")"
+raw_haptic_calls="$(count_matches "sendHaptic\\([\"']" "${NEW_APP_PATHS[@]}")"
 context_modules="$(count_files "\\b(createContext|useContext)\\b" "${NEW_APP_PATHS[@]}")"
 context_directories="$(
   find apps/new/src/features -type d -name context -print | wc -l | tr -d " "
@@ -51,6 +55,10 @@ library_hook_live_query_modules="$(
 
 printf "New app StyleSheet.create calls: %s/%s max\n" \
   "$stylesheet_creates" "$MAX_NEW_APP_STYLESHEET_CREATE"
+printf "New app StyleSheet references: %s/%s max\n" \
+  "$stylesheet_imports" "$MAX_NEW_APP_STYLESHEET_IMPORTS"
+printf "New app raw haptic calls: %s/%s max\n" \
+  "$raw_haptic_calls" "$MAX_NEW_APP_RAW_HAPTIC_CALLS"
 printf "New app React context modules: %s/%s max\n" \
   "$context_modules" "$MAX_NEW_APP_CONTEXT_MODULES"
 printf "New app context directories: %s/0 max\n" "$context_directories"
@@ -65,6 +73,20 @@ if (( stylesheet_creates > MAX_NEW_APP_STYLESHEET_CREATE )); then
   echo
   echo "StyleSheet.create usage grew. Convert styles to utility classes or lower the ratchet after cleanup."
   rg -n "StyleSheet\\.create" "${NEW_APP_PATHS[@]}" -g "*.ts" -g "*.tsx"
+  failed=1
+fi
+
+if (( stylesheet_imports > MAX_NEW_APP_STYLESHEET_IMPORTS )); then
+  echo
+  echo "StyleSheet references grew. Use utility classes and keep StyleSheet behind the lint guardrail."
+  rg -n "\\bStyleSheet\\b" "${NEW_APP_PATHS[@]}" -g "*.ts" -g "*.tsx"
+  failed=1
+fi
+
+if (( raw_haptic_calls > MAX_NEW_APP_RAW_HAPTIC_CALLS )); then
+  echo
+  echo "Raw haptic decisions grew. Move haptic choices into feature service command helpers."
+  rg -n "sendHaptic\\([\"']" "${NEW_APP_PATHS[@]}" -g "*.ts" -g "*.tsx"
   failed=1
 fi
 

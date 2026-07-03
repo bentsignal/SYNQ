@@ -355,3 +355,5 @@
   sequencing out of the loader hook and into the shared command-flow service.
 - Moved import session hydrate plus save/clear persistence decisions out of the
   React persistence hook and into a focused command-flow service.
+- Moved playback hydrate, restore-playing, and throttled persistence decisions
+  out of the React persistence hook and into a focused command-flow service.

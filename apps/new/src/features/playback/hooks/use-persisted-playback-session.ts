@@ -3,6 +3,10 @@ import {
   loadPersistedPlaybackState,
   savePersistedPlaybackState,
 } from "../services/playback-persistence-service";
+import {
+  runPlaybackHydrateCommand,
+  runPlaybackPersistenceCommand,
+} from "../services/playback-persistence-command-flow-service";
 import type { PlaybackAction } from "../services/playback-session-service";
 import type { PlaybackState } from "../types/playback-state";
 
@@ -21,21 +25,16 @@ export function usePersistedPlaybackSession({
   useEffect(() => {
     let isMounted = true;
 
-    const hydratePlaybackState = async () => {
-      const persistedState = await loadPersistedPlaybackState();
-      if (!isMounted) {
-        return;
+    void runPlaybackHydrateCommand({
+      dispatch,
+      isCurrent: () => isMounted,
+      loadPersistedPlaybackState,
+      onRestorePlayingState,
+    }).then((didHydrate) => {
+      if (didHydrate) {
+        hasHydratedRef.current = true;
       }
-
-      hasHydratedRef.current = true;
-      dispatch({ state: persistedState, type: "hydrate" });
-
-      if (persistedState.isPlaying) {
-        onRestorePlayingState(persistedState);
-      }
-    };
-
-    void hydratePlaybackState();
+    });
 
     return () => {
       isMounted = false;
@@ -43,19 +42,14 @@ export function usePersistedPlaybackSession({
   }, [dispatch, onRestorePlayingState]);
 
   useEffect(() => {
-    if (!hasHydratedRef.current) {
-      return;
-    }
-
-    const now = Date.now();
-    const shouldPersistImmediately = !state.isPlaying;
-    const shouldPersistProgress = now - lastPersistedAtRef.current > 5000;
-
-    if (!shouldPersistImmediately && !shouldPersistProgress) {
-      return;
-    }
-
-    lastPersistedAtRef.current = now;
-    void savePersistedPlaybackState(state);
+    void runPlaybackPersistenceCommand({
+      hasHydrated: hasHydratedRef.current,
+      lastPersistedAt: lastPersistedAtRef.current,
+      now: Date.now(),
+      savePersistedPlaybackState,
+      state,
+    }).then((lastPersistedAt) => {
+      lastPersistedAtRef.current = lastPersistedAt;
+    });
   }, [state]);
 }

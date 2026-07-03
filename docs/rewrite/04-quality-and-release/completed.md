@@ -246,3 +246,6 @@
   success, failure, and stale-load suppression sequencing.
 - Added direct import session persistence command-flow smoke coverage for
   hydrate dispatch, null/stale suppression, save, clear, and no-op decisions.
+- Added direct playback persistence command-flow smoke coverage for hydrate,
+  stale suppression, restore-playing, pre-hydrate skip, throttle, and immediate
+  paused-state save decisions.

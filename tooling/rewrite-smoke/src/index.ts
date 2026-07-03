@@ -97,6 +97,10 @@ import {
   type PlaybackPersistenceDependencies,
 } from "../../../apps/new/src/features/playback/services/playback-persistence-executor-service";
 import {
+  runPlaybackHydrateCommand,
+  runPlaybackPersistenceCommand,
+} from "../../../apps/new/src/features/playback/services/playback-persistence-command-flow-service";
+import {
   getFreeListeningRemainingMs,
   getPlaybackPlayerViewState,
   getPlaybackProgressPercent,
@@ -1115,7 +1119,7 @@ const importDraft = (id: number): ImportSongDraft => ({
   track: id,
 });
 
-function assertPlaybackSessionSmoke() {
+async function assertPlaybackSessionSmoke() {
   const first = song({ id: 1, title: "First" });
   const second = song({ id: 2, title: "Second" });
   const third = song({ id: 3, title: "Third" });
@@ -1169,6 +1173,125 @@ function assertPlaybackSessionSmoke() {
   );
   assert.equal(togglePlaybackLoopMode(initialPlaybackState).mode.loop, true);
   assert.equal(togglePlaybackShuffleMode(initialPlaybackState).mode.shuffle, true);
+  const playbackPersistenceEvents: unknown[] = [];
+  const dispatchPlaybackPersistenceCommand = (action: PlaybackAction) => {
+    playbackPersistenceEvents.push(["dispatch", action]);
+  };
+  assert.equal(
+    await runPlaybackHydrateCommand({
+      dispatch: dispatchPlaybackPersistenceCommand,
+      isCurrent: () => true,
+      loadPersistedPlaybackState: async () => ({
+        ...initialPlaybackState,
+        activeTrackId: first.id,
+        isPlaying: true,
+        queue: [first],
+      }),
+      onRestorePlayingState: (restoredState) => {
+        playbackPersistenceEvents.push([
+          "restore-playing",
+          restoredState.activeTrackId,
+        ]);
+      },
+    }),
+    true,
+  );
+  assert.equal(
+    await runPlaybackHydrateCommand({
+      dispatch: dispatchPlaybackPersistenceCommand,
+      isCurrent: () => false,
+      loadPersistedPlaybackState: async () => ({
+        ...initialPlaybackState,
+        activeTrackId: second.id,
+        isPlaying: true,
+        queue: [second],
+      }),
+      onRestorePlayingState: (restoredState) => {
+        playbackPersistenceEvents.push([
+          "stale-restore-playing",
+          restoredState.activeTrackId,
+        ]);
+      },
+    }),
+    false,
+  );
+  assert.equal(
+    await runPlaybackPersistenceCommand({
+      hasHydrated: false,
+      lastPersistedAt: 100,
+      now: 1000,
+      savePersistedPlaybackState: async (persistedState) => {
+        playbackPersistenceEvents.push([
+          "unexpected-save-before-hydrate",
+          persistedState.activeTrackId,
+        ]);
+      },
+      state: initialPlaybackState,
+    }),
+    100,
+  );
+  assert.equal(
+    await runPlaybackPersistenceCommand({
+      hasHydrated: true,
+      lastPersistedAt: 100,
+      now: 1000,
+      savePersistedPlaybackState: async (persistedState) => {
+        playbackPersistenceEvents.push(["save", persistedState.isPlaying]);
+      },
+      state: {
+        ...initialPlaybackState,
+        isPlaying: true,
+      },
+    }),
+    100,
+  );
+  assert.equal(
+    await runPlaybackPersistenceCommand({
+      hasHydrated: true,
+      lastPersistedAt: 100,
+      now: 6001,
+      savePersistedPlaybackState: async (persistedState) => {
+        playbackPersistenceEvents.push(["save", persistedState.isPlaying]);
+      },
+      state: {
+        ...initialPlaybackState,
+        isPlaying: true,
+      },
+    }),
+    6001,
+  );
+  assert.equal(
+    await runPlaybackPersistenceCommand({
+      hasHydrated: true,
+      lastPersistedAt: 6001,
+      now: 6200,
+      savePersistedPlaybackState: async (persistedState) => {
+        playbackPersistenceEvents.push(["save", persistedState.isPlaying]);
+      },
+      state: {
+        ...initialPlaybackState,
+        isPlaying: false,
+      },
+    }),
+    6200,
+  );
+  assert.deepEqual(playbackPersistenceEvents, [
+    [
+      "dispatch",
+      {
+        state: {
+          ...initialPlaybackState,
+          activeTrackId: first.id,
+          isPlaying: true,
+          queue: [first],
+        },
+        type: "hydrate",
+      },
+    ],
+    ["restore-playing", first.id],
+    ["save", true],
+    ["save", false],
+  ]);
 
   let state = playbackReducer(initialPlaybackState, {
     song: first,
@@ -13574,12 +13697,12 @@ assertDurationFormatSmoke();
 assertRouteParamSmoke();
 assertHomeScreenSmoke();
 assertImportSongFormSmoke();
-assertPlaybackSessionSmoke();
 assertPlaybackNativeStatusSmoke();
 assertPlaybackNativePlayerStateSmoke();
 assertPlaybackNativeCommandPlanSmoke();
 assertPlaybackPlayerStateSmoke();
 void assertImportLibrarySavePlanSmoke().then(async () => {
+  await assertPlaybackSessionSmoke();
   await assertBackupScreenSmoke();
   await assertPremiumScreenSmoke();
   await assertSettingsScreenSmoke();

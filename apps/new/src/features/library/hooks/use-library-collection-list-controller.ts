@@ -7,7 +7,10 @@ import {
   initialLibraryCollectionListControlState,
   libraryCollectionListControlReducer,
 } from "../services/library-collection-list-control-state-service";
-import { getLibraryCollectionListState } from "../services/library-collection-list-service";
+import {
+  getLibraryCollectionListErrors,
+  getLibraryCollectionListState,
+} from "../services/library-collection-list-service";
 
 type UseLibraryCollectionListControllerParams = {
   emptyLabel: string;
@@ -29,7 +32,7 @@ export function useLibraryCollectionListController({
   const listState = getLibraryCollectionListState({
     collections,
     emptyLabel,
-    errors: error ? [error] : [],
+    errors: getLibraryCollectionListErrors(error),
     query: controls.query,
     updatedAt,
   });

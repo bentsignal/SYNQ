@@ -814,6 +814,7 @@ import {
 } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
 import {
   filterCollectionPreviews,
+  getLibraryCollectionListErrors,
   getLibraryCollectionCreateHref,
   getLibraryCollectionListBackHref,
   getLibraryCollectionListCopy,
@@ -10985,6 +10986,13 @@ function assertLibraryCollectionListSmoke() {
     filterCollectionPreviews({ collections, query: "missing" }),
     [],
   );
+  assert.deepEqual(
+    getLibraryCollectionListErrors(new Error("collection query smoke")).map(
+      (error) => (error as Error).message,
+    ),
+    ["collection query smoke"],
+  );
+  assert.deepEqual(getLibraryCollectionListErrors(null), []);
   assert.deepEqual(
     getLibraryCollectionListState({
       collections,

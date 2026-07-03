@@ -99,6 +99,9 @@ export const filterCollectionPreviews = ({
   );
 };
 
+export const getLibraryCollectionListErrors = (error: unknown) =>
+  error ? [error] : [];
+
 export const getLibraryCollectionListState = ({
   collections,
   emptyLabel,

@@ -406,3 +406,5 @@
   and into the library home service.
 - Moved edit collection form-state query mapping out of React hooks and into
   the edit collection query service.
+- Moved library collection list query-error normalization out of the React
+  controller and into the collection list service.

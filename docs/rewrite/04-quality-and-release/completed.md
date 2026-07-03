@@ -188,3 +188,5 @@
   planning into a focused step service.
 - Added direct import file selection operation smoke coverage for single-asset
   cache copy and draft processing.
+- Kept direct import cache smoke coverage while moving filename and destination
+  planning into a focused step service.

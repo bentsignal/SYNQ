@@ -337,13 +337,15 @@ import {
   copyAssetToImportCacheWithDependencies,
   createImportCacheDirectoryWithDependencies,
   deleteImportDraftCacheFilesWithDependencies,
+  writeBase64AssetToImportCacheWithDependencies,
+  type ImportFileCacheDependencies,
+} from "../../../apps/new/src/features/import/services/import-file-cache-executor-service";
+import {
   getBase64ImportCacheDestination,
   getCopyImportCacheDestination,
   getImportCacheDirectory,
   sanitizeImportCacheFileName,
-  writeBase64AssetToImportCacheWithDependencies,
-  type ImportFileCacheDependencies,
-} from "../../../apps/new/src/features/import/services/import-file-cache-executor-service";
+} from "../../../apps/new/src/features/import/services/import-file-cache-step-service";
 import {
   selectImportFilesWithDependencies,
   stageWifiImportFileWithDependencies,

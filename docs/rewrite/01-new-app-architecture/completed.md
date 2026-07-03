@@ -295,3 +295,5 @@
   the filesystem executor.
 - Split import file selection single-asset copy/process orchestration out of
   the main file selection executor.
+- Split import cache filename and destination planning out of the filesystem
+  cache executor.

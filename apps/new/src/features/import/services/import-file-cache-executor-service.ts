@@ -1,4 +1,9 @@
 import type { ImportSongDraft } from "../types/import-session";
+import {
+  getBase64ImportCacheDestination,
+  getCopyImportCacheDestination,
+  getImportCacheDirectory,
+} from "./import-file-cache-step-service";
 
 export type ImportFileCacheDependencies = {
   cacheDirectory: string | null;
@@ -31,45 +36,6 @@ type WriteImportAssetParams = {
 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : String(error);
-
-export const sanitizeImportCacheFileName = (name: string) =>
-  name.replaceAll(/[^a-zA-Z0-9._-]/g, "_");
-
-export const getImportCacheDirectory = ({
-  cacheDirectory,
-}: Pick<ImportFileCacheDependencies, "cacheDirectory">) => {
-  if (!cacheDirectory) {
-    throw new Error("Import cache directory is unavailable.");
-  }
-
-  return `${cacheDirectory}import`;
-};
-
-export const getCopyImportCacheDestination = ({
-  dependencies,
-  index,
-  name,
-}: Omit<CopyImportAssetParams, "uri">) => {
-  const fileName = sanitizeImportCacheFileName(name || `song-${index + 1}`);
-
-  return {
-    destination: `${getImportCacheDirectory(dependencies)}/${dependencies.now()}-${index}-${fileName}`,
-    fileName,
-  };
-};
-
-export const getBase64ImportCacheDestination = ({
-  dependencies,
-  id,
-  name,
-}: Omit<WriteImportAssetParams, "data">) => {
-  const fileName = sanitizeImportCacheFileName(name || `song-${id}`);
-
-  return {
-    destination: `${getImportCacheDirectory(dependencies)}/${id}-${fileName}`,
-    fileName,
-  };
-};
 
 export const createImportCacheDirectoryWithDependencies = async (
   dependencies: ImportFileCacheDependencies,

@@ -823,6 +823,10 @@ import {
   libraryHomeControlReducer,
 } from "../../../apps/new/src/features/library/services/library-home-service";
 import {
+  buildLibrarySummaryQueryResult,
+  getLibrarySummaryQueryUpdatedAt,
+} from "../../../apps/new/src/features/library/services/library-summary-query-result-service";
+import {
   buildLibrarySongDetail,
 } from "../../../apps/new/src/features/library/services/library-song-detail-service";
 import {
@@ -10814,6 +10818,41 @@ function assertLibraryCollectionListSmoke() {
 }
 
 function assertLibraryHomeSmoke() {
+  const librarySummaryResult = buildLibrarySummaryQueryResult({
+    albumError: new Error("album smoke"),
+    albumRows: [{ id: 1 }],
+    albumUpdatedAt: new Date(20),
+    artistError: null,
+    artistRows: [{ id: 1 }, { id: 2 }],
+    artistUpdatedAt: new Date(30),
+    playlistError: new Error("playlist smoke"),
+    playlistRows: [],
+    playlistUpdatedAt: new Date(10),
+    songError: null,
+    songRows: [{ id: 1 }, { id: 2 }, { id: 3 }],
+    songUpdatedAt: new Date(40),
+  });
+  assert.deepEqual(librarySummaryResult.counts, {
+    albums: 1,
+    artists: 2,
+    playlists: 0,
+    songs: 3,
+  });
+  assert.deepEqual(
+    librarySummaryResult.errors.map((error) => (error as Error).message),
+    ["playlist smoke", "album smoke"],
+  );
+  assert.equal(librarySummaryResult.updatedAt, 40);
+  assert.equal(
+    getLibrarySummaryQueryUpdatedAt({
+      albumUpdatedAt: null,
+      artistUpdatedAt: null,
+      playlistUpdatedAt: null,
+      songUpdatedAt: null,
+    }),
+    0,
+  );
+
   let controls = libraryHomeControlReducer(initialLibraryHomeControlState, {
     query: "pulse",
     type: "set-query",

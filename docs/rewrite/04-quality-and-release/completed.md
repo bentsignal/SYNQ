@@ -283,3 +283,5 @@
   preview counts, totals, error ordering, empty-state, and timestamp merging.
 - Added direct song preview query result smoke coverage for list ordering,
   error forwarding, empty-state, and timestamp normalization.
+- Added direct library summary query result smoke coverage for count
+  aggregation, error ordering, and timestamp normalization.

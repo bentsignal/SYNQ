@@ -122,3 +122,5 @@
   artwork-embedded ID3 payload construction.
 - Preserved backup phase-transition smoke coverage while moving the effect
   decision helper behind a dedicated service boundary.
+- Preserved import library link smoke coverage while splitting entity and
+  relationship table adapters into smaller repository modules.

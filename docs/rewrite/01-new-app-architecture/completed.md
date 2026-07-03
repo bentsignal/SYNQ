@@ -233,3 +233,5 @@
   export metadata writeback orchestration.
 - Split backup phase-transition side-effect decisions out of the backup screen
   state service and into a focused phase-effect service.
+- Split import library link Drizzle adapters into entity and relationship
+  repositories behind the existing import-library link facade.

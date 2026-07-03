@@ -381,3 +381,5 @@
 - Moved settings support/privacy/customization interaction haptics and haptics
   toggle sequencing out of React hooks and into a focused interaction
   action-flow service.
+- Moved import home route-select and premium-gate haptic sequencing out of
+  React hooks and into a focused import interaction action-flow service.

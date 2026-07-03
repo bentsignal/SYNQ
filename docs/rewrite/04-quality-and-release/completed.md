@@ -273,3 +273,5 @@
   selection and order toggle sequencing.
 - Added direct settings interaction action-flow smoke coverage for generic
   interactions and conditional haptics-toggle sequencing.
+- Added direct import interaction action-flow smoke coverage for home route and
+  premium gate haptic sequencing.

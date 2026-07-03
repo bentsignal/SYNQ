@@ -249,6 +249,10 @@ import {
   getImportPremiumGateState,
 } from "../../../apps/new/src/features/import/services/import-premium-gate-state-service";
 import {
+  runImportHomeRouteSelectAction,
+  runImportPremiumGateAction,
+} from "../../../apps/new/src/features/import/services/import-interaction-action-flow-service";
+import {
   getImportWifiActionState,
   getImportWifiReviewSaveHaptic,
   getImportWifiState,
@@ -3132,6 +3136,21 @@ async function assertImportSessionSmoke() {
   assert.deepEqual(getImportPremiumGateActionCommand(), {
     haptic: "light",
   });
+  const importInteractionEvents: unknown[] = [];
+  runImportPremiumGateAction({
+    sendHaptic: (haptic) => {
+      importInteractionEvents.push(["premium-gate", haptic]);
+    },
+  });
+  runImportHomeRouteSelectAction({
+    sendHaptic: (haptic) => {
+      importInteractionEvents.push(["home-route", haptic]);
+    },
+  });
+  assert.deepEqual(importInteractionEvents, [
+    ["premium-gate", "light"],
+    ["home-route", "light"],
+  ]);
   assert.deepEqual(
     getImportSaveActionState({ isExporting: false, state }),
     {

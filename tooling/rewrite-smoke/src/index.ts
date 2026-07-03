@@ -243,6 +243,7 @@ import {
 } from "../../../apps/new/src/features/import/services/import-wifi-screen-state-service";
 import {
   importSessionReducer,
+  type ImportSessionAction,
 } from "../../../apps/new/src/features/import/services/import-session-state-service";
 import {
   beginImportFilePick,
@@ -278,6 +279,13 @@ import {
   getSetImportSaveToLibraryAction,
   getUpdateImportSongAction,
 } from "../../../apps/new/src/features/import/services/import-session-command-service";
+import {
+  runBeginImportFilePickCommand,
+  runFailImportSessionCommand,
+  runReviewImportSongsCommand,
+  runSetImportSaveToLibraryCommand,
+  runUpdateImportSongCommand,
+} from "../../../apps/new/src/features/import/services/import-session-command-flow-service";
 import {
   discardImportSessionLifecycle,
   getFinishImportSessionAction,
@@ -3536,6 +3544,36 @@ async function assertImportSessionSmoke() {
     song: importDraft(90),
     type: "update-song",
   });
+  const importSessionCommandEvents: string[] = [];
+  const dispatchImportSessionCommand = (action: ImportSessionAction) => {
+    importSessionCommandEvents.push(action.type);
+  };
+  runBeginImportFilePickCommand({
+    dispatch: dispatchImportSessionCommand,
+  });
+  runFailImportSessionCommand({
+    dispatch: dispatchImportSessionCommand,
+    error: "Nope",
+  });
+  runReviewImportSongsCommand({
+    dispatch: dispatchImportSessionCommand,
+    songs: [importDraft(91)],
+  });
+  runSetImportSaveToLibraryCommand({
+    dispatch: dispatchImportSessionCommand,
+    shouldSaveToLibrary: true,
+  });
+  runUpdateImportSongCommand({
+    dispatch: dispatchImportSessionCommand,
+    song: importDraft(92),
+  });
+  assert.deepEqual(importSessionCommandEvents, [
+    "begin-file-pick",
+    "fail",
+    "review",
+    "set-save-to-library",
+    "update-song",
+  ]);
   assert.equal(
     getImportSessionCommandErrorMessage({
       caughtError: new Error("Import command failed"),

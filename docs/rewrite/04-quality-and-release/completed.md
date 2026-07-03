@@ -216,3 +216,5 @@
   resume, seek, next, and previous sequencing.
 - Added direct playback queue session command-flow smoke coverage for add,
   move, toggle, clear, and remove sequencing.
+- Added direct import session command-flow smoke coverage for basic file-pick,
+  failure, review, save-toggle, and song-update dispatch sequencing.

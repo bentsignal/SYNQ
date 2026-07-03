@@ -323,3 +323,5 @@
   hook and into a focused command-flow service.
 - Moved playback queue session mutation and command-plan sequencing out of the
   React hook and into a focused command-flow service.
+- Moved basic import session transition dispatching out of the aggregate React
+  command hook and into a focused command-flow service.

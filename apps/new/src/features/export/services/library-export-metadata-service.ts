@@ -1,13 +1,15 @@
 import * as FileSystem from "expo-file-system";
 import { writeId3TagsToAudioFile, type AudioMetadataTags } from "@synq/audio";
-import { db } from "@synq/db";
-import * as schema from "@synq/db/schema";
-import { eq } from "drizzle-orm";
 import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
 import {
   isLibrarySongSnapshotStale,
   markLibrarySongAsExported,
 } from "@/src/features/library/repository/library-song-export-snapshot-repository";
+import {
+  loadLibraryExportAlbumMetadataRows,
+  loadLibraryExportArtistMetadataRows,
+  loadLibraryExportSongMetadataRow,
+} from "../repository/library-export-metadata-repository";
 import type { ExportableLibrarySong } from "./library-export-service";
 
 const formatNames = (names: string[]) =>
@@ -38,35 +40,16 @@ const loadArtworkTag = async (coverImage: string | null) => {
 };
 
 const loadLibrarySongExportMetadata = async (songId: number) => {
-  const songRows = await db
-    .select({
-      coverImage: schema.songs.coverImage,
-      fileType: schema.songs.fileType,
-      pathToFile: schema.songs.pathToFile,
-      title: schema.songs.title,
-    })
-    .from(schema.songs)
-    .where(eq(schema.songs.id, songId))
-    .limit(1);
-  const song = songRows[0];
+  const song = await loadLibraryExportSongMetadataRow(songId);
 
   if (!song) {
     return null;
   }
 
-  const artists = await db
-    .select({ name: schema.artists.name })
-    .from(schema.artistSongs)
-    .innerJoin(schema.artists, eq(schema.artistSongs.artistId, schema.artists.id))
-    .where(eq(schema.artistSongs.songId, songId));
-  const albums = await db
-    .select({
-      coverImage: schema.albums.coverImage,
-      name: schema.albums.name,
-    })
-    .from(schema.albumSongs)
-    .innerJoin(schema.albums, eq(schema.albumSongs.albumId, schema.albums.id))
-    .where(eq(schema.albumSongs.songId, songId));
+  const [artists, albums] = await Promise.all([
+    loadLibraryExportArtistMetadataRows(songId),
+    loadLibraryExportAlbumMetadataRows(songId),
+  ]);
 
   return {
     album: formatNames(albums.flatMap((album) => album.name ?? [])),

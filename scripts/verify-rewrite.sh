@@ -78,6 +78,22 @@ scan_image_database_boundaries() {
   fi
 }
 
+scan_export_database_boundaries() {
+  local matches
+
+  matches="$(
+    rg -n "@synq/db|@synq/db/schema|drizzle-orm|\\bdb\\." \
+      apps/new/src/features/export/services \
+      -g "*.ts" -g "*.tsx" || true
+  )"
+
+  if [[ -n "$matches" ]]; then
+    printf "%s\n" "$matches"
+    echo "Export database access must stay behind export repository modules."
+    return 1
+  fi
+}
+
 trap cleanup EXIT
 
 echo "==> Typecheck"
@@ -110,6 +126,9 @@ scan_import_database_boundaries
 
 echo "==> Image database boundary scan"
 scan_image_database_boundaries
+
+echo "==> Export database boundary scan"
+scan_export_database_boundaries
 
 echo "==> Deterministic rewrite smoke"
 pnpm --filter @synq/rewrite-smoke smoke

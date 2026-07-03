@@ -23,3 +23,7 @@
   service while image table reads/writes live under
   `src/features/images/repository`. `pnpm verify:rewrite` scans image services
   to keep direct Drizzle imports out of that layer.
+- Export metadata services now keep artwork loading and ID3 writeback
+  orchestration while song, artist, and album metadata reads live under
+  `src/features/export/repository`. `pnpm verify:rewrite` scans export services
+  to keep direct Drizzle imports out of that layer.

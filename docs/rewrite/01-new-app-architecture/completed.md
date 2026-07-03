@@ -31,3 +31,6 @@
 - Moved image table reads/writes behind an image repository and added a rewrite
   verification scan that keeps image services focused on filesystem and image
   transformation work.
+- Moved export metadata reads behind an export repository and added a rewrite
+  verification scan that keeps export services focused on filesystem sharing
+  and ID3 writeback orchestration.

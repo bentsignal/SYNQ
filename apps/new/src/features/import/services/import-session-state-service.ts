@@ -39,6 +39,22 @@ export type ImportSessionAction =
   | { type: "discard" }
   | { type: "reset" };
 
+export type ImportSessionHydrateAction = Extract<
+  ImportSessionAction,
+  { type: "hydrate" }
+>;
+
+export const getHydrateImportSessionAction = (
+  state: ImportSessionState,
+): ImportSessionHydrateAction => ({
+  state,
+  type: "hydrate",
+});
+
+export const getSavingImportSessionAction = (): ImportSessionAction => ({
+  type: "saving",
+});
+
 export const importSessionReducer = (
   state: ImportSessionState,
   action: ImportSessionAction,

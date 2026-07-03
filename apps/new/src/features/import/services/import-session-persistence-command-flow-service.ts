@@ -1,4 +1,7 @@
-import type { ImportSessionAction } from "./import-session-state-service";
+import {
+  getHydrateImportSessionAction,
+  type ImportSessionAction,
+} from "./import-session-state-service";
 import type { ImportSessionState } from "../types/import-session";
 
 type ImportSessionHydrateAction = Extract<
@@ -21,7 +24,7 @@ export const runImportSessionHydrateCommand = async ({
   const persistedState = await loadPersistedImportSessionState();
 
   if (isCurrent() && persistedState) {
-    dispatch({ state: persistedState, type: "hydrate" });
+    dispatch(getHydrateImportSessionAction(persistedState));
   }
 };
 

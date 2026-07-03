@@ -9,7 +9,10 @@ import {
   saveImportSessionLifecycle,
   type ImportSessionLifecycleDependencies,
 } from "./import-session-lifecycle-service";
-import type { ImportSessionAction } from "./import-session-state-service";
+import {
+  getSavingImportSessionAction,
+  type ImportSessionAction,
+} from "./import-session-state-service";
 
 type ImportSessionLifecycleDispatch = (action: ImportSessionAction) => void;
 
@@ -34,7 +37,7 @@ export const runSaveImportSessionCommand = async ({
   shouldSaveToLibrary: boolean;
   songs: ImportSessionState["songs"];
 }) => {
-  dispatch({ type: "saving" });
+  dispatch(getSavingImportSessionAction());
 
   const result = await saveImportSessionLifecycle(
     {
@@ -54,7 +57,7 @@ export const runDiscardImportSessionCommand = async ({
   dependencies: ImportSessionLifecycleDependencies;
   dispatch: ImportSessionLifecycleDispatch;
 }) => {
-  dispatch({ type: "saving" });
+  dispatch(getSavingImportSessionAction());
 
   const result = await discardImportSessionLifecycle(dependencies);
   dispatch(result.action);

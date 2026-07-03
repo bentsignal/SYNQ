@@ -274,6 +274,8 @@ import {
   getImportWifiState,
 } from "../../../apps/new/src/features/import/services/import-wifi-screen-state-service";
 import {
+  getHydrateImportSessionAction,
+  getSavingImportSessionAction,
   importSessionReducer,
   type ImportSessionAction,
 } from "../../../apps/new/src/features/import/services/import-session-state-service";
@@ -3712,6 +3714,7 @@ async function assertImportSessionSmoke() {
     summary: lifecycleSummary,
     type: "finish",
   });
+  assert.deepEqual(getSavingImportSessionAction(), { type: "saving" });
   assert.deepEqual(
     await saveImportSessionLifecycle(
       {
@@ -4113,6 +4116,10 @@ async function assertImportSessionSmoke() {
     phase: "reviewing" as const,
     songs: [importDraft(93)],
   };
+  assert.deepEqual(getHydrateImportSessionAction(persistedImportSession), {
+    state: persistedImportSession,
+    type: "hydrate",
+  });
   await runImportSessionHydrateCommand({
     dispatch: dispatchImportSessionPersistenceCommand,
     isCurrent: () => true,

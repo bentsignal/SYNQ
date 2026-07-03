@@ -325,3 +325,5 @@
 - Added direct import save/export begin and finish action-constructor smoke
   coverage.
 - Added direct playback queue action-constructor smoke coverage.
+- Added direct import session saving and hydrate action-constructor smoke
+  coverage.

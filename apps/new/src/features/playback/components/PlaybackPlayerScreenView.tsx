@@ -1,6 +1,9 @@
 import { Link } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
-import { getLibrarySongEditHref } from "@/src/features/library/services/library-song-interaction-service";
+import {
+  getLibrarySongDetailHref,
+  getLibrarySongEditHref,
+} from "@/src/features/library/services/library-song-interaction-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { PlaybackPlayerController } from "../hooks/use-playback-player-controller";
 import { getPlaybackPlayerScreenState } from "../services/playback-screen-state-service";
@@ -86,6 +89,16 @@ export function PlaybackPlayerScreenView({
       />
 
       {state.error ? <PlaybackErrorPanel error={state.error} /> : null}
+
+      {activeTrack && actionState.canOpenActiveTrackDetails ? (
+        <Link
+          className="text-[15px] font-extrabold"
+          href={getLibrarySongDetailHref({ songId: activeTrack.id })}
+          style={{ color: theme.accent }}
+        >
+          Song details
+        </Link>
+      ) : null}
 
       {activeTrack && actionState.canEditActiveTrack ? (
         <Link

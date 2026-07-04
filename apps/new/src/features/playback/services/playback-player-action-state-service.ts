@@ -19,6 +19,7 @@ export const getPlaybackPlayerActionState = ({
     canEditActiveTrack: canRunTrackCommand,
     canFastForward:
       canRunTrackCommand && state.duration > 0 && state.position < state.duration,
+    canOpenActiveTrackDetails: canRunTrackCommand,
     canPlayPause: canRunTrackCommand,
     canRewind: canRunTrackCommand && state.position > 0,
     canSkipNext: canRunTrackCommand,

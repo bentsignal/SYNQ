@@ -66,13 +66,24 @@ export const getLibrarySongPreviewEmptyState = () => ({
 });
 
 export const getLibrarySongPreviewListState = ({
+  activeTrackId,
   songs,
 }: {
+  activeTrackId: number | null;
   songs: LibrarySongPreview[];
 }) => ({
   meta: `${songs.length} shown`,
+  rows: songs.map((song) => ({
+    detailHref: getLibrarySongPreviewDetailHref(song),
+    rowState: getLibrarySongPreviewRowState({ activeTrackId, song }),
+    song,
+  })),
   title: "Recent Songs",
 });
+
+export type LibrarySongPreviewRowViewState = ReturnType<
+  typeof getLibrarySongPreviewListState
+>["rows"][number];
 
 export const getLibrarySongListControlsState = ({
   order,

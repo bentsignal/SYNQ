@@ -7,33 +7,26 @@ import {
   SongRowTextStack,
 } from "@/src/features/app-shell/components/SongRowParts";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { LibrarySongPreview } from "../hooks/use-library-song-preview-query";
 import { useLibrarySongPreviewRowActions } from "../hooks/use-library-song-preview-row-actions";
 import {
-  getLibrarySongPreviewDetailHref,
-  getLibrarySongPreviewRowState,
+  type LibrarySongPreviewRowViewState,
   toLibrarySongPlaybackItem,
 } from "../services/library-song-preview-state-service";
 
 type LibrarySongPreviewRowProps = {
-  activeTrackId: number | null;
   addToQueue: (song: ReturnType<typeof toLibrarySongPlaybackItem>) => void;
   playSong: (song: ReturnType<typeof toLibrarySongPlaybackItem>) => void;
-  song: LibrarySongPreview;
+  row: LibrarySongPreviewRowViewState;
 };
 
 export function LibrarySongPreviewRow({
-  activeTrackId,
   addToQueue,
   playSong,
-  song,
+  row,
 }: LibrarySongPreviewRowProps) {
   const theme = useCustomizationTheme();
-  const { canPlay, isActive } = getLibrarySongPreviewRowState({
-    activeTrackId,
-    song,
-  });
-  const detailHref = getLibrarySongPreviewDetailHref(song);
+  const { detailHref, rowState, song } = row;
+  const { canPlay, isActive } = rowState;
   const { play, queue } = useLibrarySongPreviewRowActions({
     addToQueue,
     playSong,

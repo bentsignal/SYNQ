@@ -39,7 +39,10 @@ export function LibrarySongPreviewList({
   const theme = useCustomizationTheme();
   const activeTrack = usePlaybackActiveTrack();
   const { addToQueue, playSong } = usePlaybackSongActions();
-  const listState = getLibrarySongPreviewListState({ songs });
+  const listState = getLibrarySongPreviewListState({
+    activeTrackId: activeTrack?.id ?? null,
+    songs,
+  });
 
   return (
     <View className="gap-3">
@@ -61,13 +64,12 @@ export function LibrarySongPreviewList({
           className="overflow-hidden rounded-lg border"
           style={{ backgroundColor: theme.surface, borderColor: theme.border }}
         >
-          {songs.map((song) => (
+          {listState.rows.map((row) => (
             <LibrarySongPreviewRow
-              activeTrackId={activeTrack?.id ?? null}
               addToQueue={addToQueue}
-              key={song.id}
+              key={row.song.id}
               playSong={playSong}
-              song={song}
+              row={row}
             />
           ))}
         </View>

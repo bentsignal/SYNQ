@@ -7772,10 +7772,26 @@ function assertLibrarySongPreviewSmoke() {
     },
     title: "No songs yet",
   });
-  assert.deepEqual(getLibrarySongPreviewListState({ songs: previews }), {
-    meta: "1 shown",
-    title: "Recent Songs",
-  });
+  assert.deepEqual(
+    getLibrarySongPreviewListState({
+      activeTrackId: previews[0]!.id,
+      songs: previews,
+    }),
+    {
+      meta: "1 shown",
+      rows: [
+        {
+          detailHref: "/(tabs)/library/song/1",
+          rowState: {
+            canPlay: true,
+            isActive: true,
+          },
+          song: previews[0],
+        },
+      ],
+      title: "Recent Songs",
+    },
+  );
   assert.deepEqual(
     getLibrarySongListControlsState({ order: "asc", sort: "artist" }),
     {

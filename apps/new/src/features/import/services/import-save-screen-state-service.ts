@@ -1,5 +1,6 @@
 import type { ImportSessionState } from "../types/import-session";
 import { getImportFilesHref } from "./import-navigation-service";
+import { getImportSongPreviewEmptyState } from "./import-song-preview-state-service";
 
 export const getImportSaveActionState = ({
   isExporting,
@@ -44,11 +45,6 @@ export const getImportSaveBackLink = () => ({
   label: "Back to files",
 });
 
-export const getImportSongPreviewEmptyState = () => ({
-  body: "Choose songs to review them before saving.",
-  title: "No songs staged",
-});
-
 export const getImportSaveViewState = ({
   isExporting,
   state,
@@ -60,6 +56,7 @@ export const getImportSaveViewState = ({
   backLink: getImportSaveBackLink(),
   headerState: getImportSaveHeaderState(),
   libraryToggleState: getImportSaveLibraryToggleState(),
+  songPreviewEmptyState: getImportSongPreviewEmptyState(),
 });
 
 export type ImportSaveHeaderState = ReturnType<

@@ -14,6 +14,7 @@ export function ImportWifiScreenView({
   removeSong,
   reviewSave,
   serverState,
+  songPreviewEmptyState,
   state,
   wifiState,
 }: ImportWifiScreenViewProps) {
@@ -34,6 +35,7 @@ export function ImportWifiScreenView({
       <ImportWifiProgressPanel progressLabel={progressLabel} />
       <ImportSongPreviewList
         canEditSongs
+        emptyState={songPreviewEmptyState}
         onRemoveSong={removeSong}
         songs={state.songs}
       />

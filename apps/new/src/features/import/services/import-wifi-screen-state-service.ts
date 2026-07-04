@@ -4,6 +4,7 @@ import {
   getImportHomeHref,
   getImportSaveHref,
 } from "./import-navigation-service";
+import { getImportSongPreviewEmptyState } from "./import-song-preview-state-service";
 
 export const getImportWifiState = ({
   error,
@@ -59,6 +60,7 @@ export const getImportWifiViewState = ({
   state: ImportSessionState;
 }) => ({
   actionState: getImportWifiActionState(),
+  songPreviewEmptyState: getImportSongPreviewEmptyState(),
   wifiState: getImportWifiState({ error, isReady, state }),
 });
 

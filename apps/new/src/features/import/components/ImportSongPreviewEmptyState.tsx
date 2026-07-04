@@ -1,10 +1,15 @@
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getImportSongPreviewEmptyState } from "../services/import-save-screen-state-service";
+import type { ImportSongPreviewEmptyState as ImportSongPreviewEmptyStateConfig } from "../services/import-song-preview-state-service";
 
-export function ImportSongPreviewEmptyState() {
+type ImportSongPreviewEmptyStateProps = {
+  emptyState: ImportSongPreviewEmptyStateConfig;
+};
+
+export function ImportSongPreviewEmptyState({
+  emptyState,
+}: ImportSongPreviewEmptyStateProps) {
   const theme = useCustomizationTheme();
-  const emptyState = getImportSongPreviewEmptyState();
 
   return (
     <View

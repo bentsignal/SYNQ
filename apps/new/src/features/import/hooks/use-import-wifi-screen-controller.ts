@@ -12,11 +12,12 @@ export function useImportWifiScreenController() {
   const state = useImportSessionSelector((store) => store.state);
   const { sendHaptic } = useHapticFeedback();
   const serverState = useWifiImportServer();
-  const { actionState, wifiState } = getImportWifiViewState({
-    error: serverState.error,
-    isReady: serverState.isReady,
-    state,
-  });
+  const { actionState, songPreviewEmptyState, wifiState } =
+    getImportWifiViewState({
+      error: serverState.error,
+      isReady: serverState.isReady,
+      state,
+    });
 
   const removeSong = async (songId: number) => {
     await runImportFilesRemoveAction({
@@ -35,6 +36,7 @@ export function useImportWifiScreenController() {
     removeSong,
     reviewSave,
     serverState,
+    songPreviewEmptyState,
     state,
     wifiState,
   };

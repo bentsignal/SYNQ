@@ -255,8 +255,10 @@ import {
   getImportSaveHeaderState,
   getImportSaveLibraryToggleState,
   getImportSaveViewState,
-  getImportSongPreviewEmptyState,
 } from "../../../apps/new/src/features/import/services/import-save-screen-state-service";
+import {
+  getImportSongPreviewEmptyState,
+} from "../../../apps/new/src/features/import/services/import-song-preview-state-service";
 import {
   getImportFailureState,
   getImportFailureViewState,
@@ -3441,6 +3443,7 @@ async function assertImportSessionSmoke() {
     backLink: getImportSaveBackLink(),
     headerState: getImportSaveHeaderState(),
     libraryToggleState: getImportSaveLibraryToggleState(),
+    songPreviewEmptyState: getImportSongPreviewEmptyState(),
   });
   assert.deepEqual(
     getImportSaveToggleCommand({ shouldSaveToLibrary: false }),
@@ -4554,6 +4557,7 @@ async function assertImportSessionSmoke() {
     }),
     {
       actionState: getImportWifiActionState(),
+      songPreviewEmptyState: getImportSongPreviewEmptyState(),
       wifiState: getImportWifiState({
         error: null,
         isReady: true,

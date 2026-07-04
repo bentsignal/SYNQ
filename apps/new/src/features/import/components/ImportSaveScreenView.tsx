@@ -40,6 +40,7 @@ export function ImportSaveScreenView({
         />
         <ImportSongPreviewList
           canEditSongs
+          emptyState={viewState.songPreviewEmptyState}
           onRemoveSong={actionState.canRemoveSongs ? removeSong : undefined}
           songs={state.songs}
         />

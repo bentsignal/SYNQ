@@ -12,6 +12,7 @@ export function ImportFilesScreenView({
   actionState,
   chooseFiles,
   removeSong,
+  songPreviewEmptyState,
   state,
 }: ImportFilesScreenViewProps) {
   const theme = useCustomizationTheme();
@@ -64,6 +65,7 @@ export function ImportFilesScreenView({
 
       <ImportSongPreviewList
         canEditSongs
+        emptyState={songPreviewEmptyState}
         onRemoveSong={removeSong}
         songs={state.songs}
       />

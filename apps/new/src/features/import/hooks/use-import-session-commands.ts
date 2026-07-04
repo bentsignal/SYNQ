@@ -1,14 +1,8 @@
-import { useCallback, useMemo } from "react";
-import {
-  runBeginImportFilePickCommand,
-  runFailImportSessionCommand,
-  runReviewImportSongsCommand,
-  runSetImportSaveToLibraryCommand,
-  runUpdateImportSongCommand,
-} from "../services/import-session-command-flow-service";
+import { useMemo } from "react";
 import type { ImportSessionAction } from "../services/import-session-state-service";
-import type { ImportSessionState, ImportSongDraft } from "../types/import-session";
+import type { ImportSessionState } from "../types/import-session";
 import { useImportFileCommands } from "./use-import-file-commands";
+import { useImportSessionBasicCommands } from "./use-import-session-basic-commands";
 import { useImportSessionLifecycleCommands } from "./use-import-session-lifecycle-commands";
 import { useImportSessionWifiCommands } from "./use-import-session-wifi-commands";
 
@@ -25,30 +19,13 @@ export function useImportSessionCommands({
     dispatch,
     songs: state.songs,
   });
-
-  const beginFilePick = useCallback(() => {
-    runBeginImportFilePickCommand({ dispatch });
-  }, [dispatch]);
-
-  const failSession = useCallback((error: string) => {
-    runFailImportSessionCommand({ dispatch, error });
-  }, [dispatch]);
-
-  const reviewSongs = useCallback((songs: ImportSongDraft[]) => {
-    runReviewImportSongsCommand({ dispatch, songs });
-  }, [dispatch]);
-
-  const setShouldSaveToLibrary = useCallback(
-    (shouldSaveToLibrary: boolean) => {
-      runSetImportSaveToLibraryCommand({ dispatch, shouldSaveToLibrary });
-    },
-    [dispatch],
-  );
-
-  const updateImportSong = useCallback((song: ImportSongDraft) => {
-    runUpdateImportSongCommand({ dispatch, song });
-  }, [dispatch]);
-
+  const {
+    beginFilePick,
+    failSession,
+    reviewSongs,
+    setShouldSaveToLibrary,
+    updateImportSong,
+  } = useImportSessionBasicCommands({ dispatch });
   const { beginWifiTransfer, finishWifiTransfer, receiveWifiSong } =
     useImportSessionWifiCommands({
       dispatch,

@@ -10,6 +10,7 @@ import {
   getHomeNowPlayingState,
   getHomeQuickActions,
   getHomeRecentSongHref,
+  getHomeRecentSongsSectionState,
 } from "../../../apps/new/src/features/app-shell/services/home-screen-service";
 import { parseNumericRouteParam } from "../../../apps/new/src/features/app-shell/services/route-param-service";
 import {
@@ -12404,6 +12405,51 @@ function assertHomeScreenSmoke() {
   assert.equal(
     getHomeRecentSongHref({ songId: 9 }),
     "/(tabs)/library/song/9",
+  );
+  assert.deepEqual(
+    getHomeRecentSongsSectionState({
+      hasLibrary: true,
+      songs: [
+        {
+          album: "Smoke Album",
+          artist: "Smoke Artist",
+          duration: 65_000,
+          id: 9,
+          pathToFile: "/tmp/smoke.mp3",
+          title: "Smoke Song",
+        },
+      ],
+    }),
+    {
+      emptyState: {
+        body: "Import audio files to see recent songs here.",
+        title: "Build your library",
+      },
+      libraryHref: "/(tabs)/library",
+      rows: [
+        {
+          detailLabel: "Smoke Artist - Smoke Album",
+          durationLabel: "1:05",
+          href: "/(tabs)/library/song/9",
+          song: {
+            album: "Smoke Album",
+            artist: "Smoke Artist",
+            duration: 65_000,
+            id: 9,
+            pathToFile: "/tmp/smoke.mp3",
+            title: "Smoke Song",
+          },
+        },
+      ],
+      title: "Recent Songs",
+    },
+  );
+  assert.deepEqual(
+    getHomeRecentSongsSectionState({
+      hasLibrary: false,
+      songs: [],
+    }).rows,
+    [],
   );
 
   assert.deepEqual(

@@ -32,7 +32,11 @@ export function LibraryCollectionDetailView({
 }: LibraryCollectionDetailViewProps) {
   const { detail, errors } = collection;
   const theme = useCustomizationTheme();
-  const viewState = getCollectionDetailViewState({ songs: detail.songs });
+  const viewState = getCollectionDetailViewState({
+    id,
+    kind,
+    songs: detail.songs,
+  });
   const {
     actionState,
     deleteCurrentCollection,
@@ -67,10 +71,9 @@ export function LibraryCollectionDetailView({
       />
 
       <LibraryCollectionDetailActions
+        actionLinks={viewState.actionLinks}
         actionState={actionState}
         detail={detail}
-        id={id}
-        kind={kind}
         onDelete={deleteCurrentCollection}
         onExport={exportCollection}
         onPlay={playCollection}

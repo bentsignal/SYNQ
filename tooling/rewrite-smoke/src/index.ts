@@ -6366,7 +6366,11 @@ async function assertLibraryCollectionInteractionSmoke() {
   assert.equal(getCollectionListHref("artist"), "/(tabs)/library/artists");
   assert.equal(getCollectionListHref("playlist"), "/(tabs)/library/playlists");
   assert.equal(getLibraryCollectionBackHref(), "/(tabs)/library");
-  assert.deepEqual(getCollectionDetailViewState({ songs }), {
+  assert.deepEqual(getCollectionDetailViewState({ id: 7, kind: "album", songs }), {
+    actionLinks: {
+      addHref: "/(tabs)/library/album/add/7",
+      editHref: "/(tabs)/library/album/edit/7",
+    },
     backLink: {
       href: "/(tabs)/library",
       label: "Back to Library",

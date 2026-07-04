@@ -1,22 +1,17 @@
 import { Link } from "expo-router";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
-import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import type { CollectionDetailActionState } from "../services/library-collection-action-state-service";
-import {
-  getCollectionAddSongsHref,
-  getCollectionEditHref,
-} from "../services/library-collection-navigation-service";
+import type { getCollectionDetailViewState } from "../services/library-collection-interaction-service";
 import {
   LibraryActionButton,
   LibraryActionRow,
 } from "./LibraryActionParts";
 
 type LibraryCollectionDetailActionsProps = {
+  actionLinks: ReturnType<typeof getCollectionDetailViewState>["actionLinks"];
   actionState: CollectionDetailActionState;
   detail: LibraryCollectionDetail;
-  id: number;
-  kind: LibraryCollectionDetailKind;
   onDelete: () => void;
   onExport: () => void;
   onPlay: () => void;
@@ -24,18 +19,15 @@ type LibraryCollectionDetailActionsProps = {
 };
 
 export function LibraryCollectionDetailActions({
+  actionLinks,
   actionState,
   detail,
-  id,
-  kind,
   onDelete,
   onExport,
   onPlay,
   onQueue,
 }: LibraryCollectionDetailActionsProps) {
   const theme = useCustomizationTheme();
-  const editHref = getCollectionEditHref({ id, kind });
-  const addHref = getCollectionAddSongsHref({ id, kind });
 
   return (
     <LibraryActionRow alignItems="center">
@@ -57,7 +49,7 @@ export function LibraryCollectionDetailActions({
       {actionState.canEdit ? (
         <Link
           className="text-sm font-extrabold uppercase"
-          href={editHref}
+          href={actionLinks.editHref}
           style={{ color: theme.accent }}
         >
           Edit {detail.eyebrow.toLowerCase()}
@@ -66,7 +58,7 @@ export function LibraryCollectionDetailActions({
       {actionState.canMutateSongs ? (
         <Link
           className="text-sm font-extrabold uppercase"
-          href={addHref}
+          href={actionLinks.addHref}
           style={{ color: theme.accent }}
         >
           Add songs

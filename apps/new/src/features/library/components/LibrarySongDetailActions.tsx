@@ -1,33 +1,30 @@
 import { Link } from "expo-router";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
-import {
-  getLibrarySongAddToPlaylistHref,
-  getLibrarySongEditHref,
-} from "../services/library-song-interaction-service";
+import type { getLibrarySongDetailViewState } from "../services/library-song-interaction-service";
 import {
   LibraryActionButton,
   LibraryActionRow,
 } from "./LibraryActionParts";
 
 type LibrarySongDetailActionsProps = {
+  actionLinks: ReturnType<typeof getLibrarySongDetailViewState>["actionLinks"];
   actionState: LibrarySongDetailActionState;
   onDelete: () => void;
   onExport: () => void;
   onPlay: () => void;
   onQueue: () => void;
   onToggleLiked: () => void;
-  songId: number;
 };
 
 export function LibrarySongDetailActions({
+  actionLinks,
   actionState,
   onDelete,
   onExport,
   onPlay,
   onQueue,
   onToggleLiked,
-  songId,
 }: LibrarySongDetailActionsProps) {
   const theme = useCustomizationTheme();
 
@@ -60,7 +57,7 @@ export function LibrarySongDetailActions({
       />
       <Link
         className="min-h-11 flex-grow overflow-hidden rounded-lg border px-3.5 text-center text-[13px] font-extrabold uppercase leading-[42px]"
-        href={getLibrarySongAddToPlaylistHref({ songId })}
+        href={actionLinks.addToPlaylistHref}
         style={{
           backgroundColor: theme.surface,
           borderColor: theme.border,
@@ -72,7 +69,7 @@ export function LibrarySongDetailActions({
       </Link>
       <Link
         className="min-h-11 flex-grow overflow-hidden rounded-lg border px-3.5 text-center text-[13px] font-extrabold uppercase leading-[42px]"
-        href={getLibrarySongEditHref({ songId })}
+        href={actionLinks.editHref}
         style={{
           backgroundColor: theme.surface,
           borderColor: theme.border,

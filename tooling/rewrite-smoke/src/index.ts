@@ -8475,7 +8475,11 @@ async function assertLibrarySongDetailSmoke() {
     kicker: "Song",
     title: "Invalid song",
   });
-  assert.deepEqual(getLibrarySongDetailViewState(detail), {
+  assert.deepEqual(getLibrarySongDetailViewState({ detail, songId: 42 }), {
+    actionLinks: {
+      addToPlaylistHref: "/(tabs)/library/song/add-to-playlist/42",
+      editHref: "/(tabs)/library/song/edit/42",
+    },
     backLink: {
       href: "/(tabs)/library",
       label: "Back to Library",

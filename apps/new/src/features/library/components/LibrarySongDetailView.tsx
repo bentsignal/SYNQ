@@ -32,7 +32,7 @@ export function LibrarySongDetailView({
   toggleLiked,
 }: LibrarySongDetailViewProps) {
   const theme = useCustomizationTheme();
-  const viewState = getLibrarySongDetailViewState(detail);
+  const viewState = getLibrarySongDetailViewState({ detail, songId });
   const statusState = getLibrarySongDetailStatusState({
     actionState,
     detail,
@@ -49,13 +49,13 @@ export function LibrarySongDetailView({
       <LibrarySongDetailHeader detail={detail} />
 
       <LibrarySongDetailActions
+        actionLinks={viewState.actionLinks}
         actionState={actionState}
         onDelete={deleteCurrentSong}
         onExport={exportCurrentSong}
         onPlay={playCurrentSong}
         onQueue={queueCurrentSong}
         onToggleLiked={toggleLiked}
-        songId={songId}
       />
 
       <LibrarySongRelationshipSection

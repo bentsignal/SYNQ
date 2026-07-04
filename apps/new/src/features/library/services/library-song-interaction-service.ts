@@ -48,9 +48,17 @@ export const getLibraryInvalidSongState = () => ({
   title: "Invalid song",
 });
 
-export const getLibrarySongDetailViewState = (
-  detail: LibrarySongDetail,
-) => ({
+export const getLibrarySongDetailViewState = ({
+  detail,
+  songId,
+}: {
+  detail: LibrarySongDetail;
+  songId: number;
+}) => ({
+  actionLinks: {
+    addToPlaylistHref: getLibrarySongAddToPlaylistHref({ songId }),
+    editHref: getLibrarySongEditHref({ songId }),
+  },
   backLink: {
     href: getLibrarySongDetailBackHref(),
     label: "Back to Library",

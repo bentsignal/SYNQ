@@ -10,6 +10,7 @@ export type LibrarySongRelationshipHref =
 export type LibrarySongDetailHref =
   | "/player"
   | "/(tabs)/library"
+  | `/(tabs)/library/song/add-to-playlist/${number}`
   | `/(tabs)/library/song/${number}`
   | `/(tabs)/library/song/edit/${number}`;
 
@@ -94,6 +95,12 @@ export const getLibrarySongEditHref = ({
 }: {
   songId: number;
 }): LibrarySongDetailHref => `/(tabs)/library/song/edit/${songId}`;
+
+export const getLibrarySongAddToPlaylistHref = ({
+  songId,
+}: {
+  songId: number;
+}): LibrarySongDetailHref => `/(tabs)/library/song/add-to-playlist/${songId}`;
 
 export const getLibrarySongDeleteSuccessHref = (): LibrarySongDetailHref =>
   getLibrarySongDetailBackHref();

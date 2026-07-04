@@ -1,7 +1,10 @@
 import { Link } from "expo-router";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
-import { getLibrarySongEditHref } from "../services/library-song-interaction-service";
+import {
+  getLibrarySongAddToPlaylistHref,
+  getLibrarySongEditHref,
+} from "../services/library-song-interaction-service";
 import {
   LibraryActionButton,
   LibraryActionRow,
@@ -55,6 +58,18 @@ export function LibrarySongDetailActions({
         theme={theme}
         variant="secondary"
       />
+      <Link
+        className="min-h-11 flex-grow overflow-hidden rounded-lg border px-3.5 text-center text-[13px] font-extrabold uppercase leading-[42px]"
+        href={getLibrarySongAddToPlaylistHref({ songId })}
+        style={{
+          backgroundColor: theme.surface,
+          borderColor: theme.border,
+          color: theme.accent,
+          minWidth: 164,
+        }}
+      >
+        Add to playlist
+      </Link>
       <Link
         className="min-h-11 flex-grow overflow-hidden rounded-lg border px-3.5 text-center text-[13px] font-extrabold uppercase leading-[42px]"
         href={getLibrarySongEditHref({ songId })}

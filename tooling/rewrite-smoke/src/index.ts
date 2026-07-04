@@ -923,6 +923,7 @@ import {
 } from "../../../apps/new/src/features/library/services/library-song-detail-state-service";
 import {
   getLibraryInvalidSongState,
+  getLibrarySongAddToPlaylistHref,
   getLibrarySongDeleteConfirmationCopy,
   getLibrarySongDeleteSuccessHref,
   getLibrarySongDetailBackHref,
@@ -932,6 +933,12 @@ import {
   getLibrarySongEditHref,
   getLibrarySongRelationshipHref,
 } from "../../../apps/new/src/features/library/services/library-song-interaction-service";
+import {
+  getSelectableSongPlaylists,
+  getSongAddToPlaylistBackLink,
+  getSongAddToPlaylistStatusLabel,
+  initialSongAddToPlaylistMutationState,
+} from "../../../apps/new/src/features/library/services/song-add-to-playlist-service";
 import {
   getLibrarySongPlaybackBlockedCommand,
   getLibrarySongPlayCommand,
@@ -8335,6 +8342,72 @@ async function assertLibrarySongDetailSmoke() {
   assert.equal(
     getLibrarySongEditHref({ songId: 42 }),
     "/(tabs)/library/song/edit/42",
+  );
+  assert.equal(
+    getLibrarySongAddToPlaylistHref({ songId: 42 }),
+    "/(tabs)/library/song/add-to-playlist/42",
+  );
+  assert.deepEqual(getSongAddToPlaylistBackLink({ songId: 42 }), {
+    href: "/(tabs)/library/song/42",
+    label: "Song details",
+  });
+  assert.deepEqual(
+    getSelectableSongPlaylists([
+      {
+        detail: "2 songs",
+        id: 1,
+        imagePath: null,
+        kind: "playlists",
+        meta: "Playlist",
+        title: "System",
+      },
+      {
+        detail: "1 song",
+        id: 2,
+        imagePath: null,
+        kind: "playlists",
+        meta: "Playlist",
+        title: "Liked Songs",
+      },
+      {
+        detail: "3 songs",
+        id: 7,
+        imagePath: null,
+        kind: "playlists",
+        meta: "Playlist",
+        title: "Road Trip",
+      },
+    ]),
+    [
+      {
+        detail: "3 songs",
+        id: 7,
+        imagePath: null,
+        kind: "playlists",
+        meta: "Playlist",
+        title: "Road Trip",
+      },
+    ],
+  );
+  assert.equal(
+    getSongAddToPlaylistStatusLabel({
+      mutationState: initialSongAddToPlaylistMutationState,
+      playlistCount: 0,
+      updatedAt: 0,
+    }),
+    "Create a playlist before adding this song.",
+  );
+  assert.equal(
+    getSongAddToPlaylistStatusLabel({
+      mutationState: {
+        error: null,
+        pendingPlaylistId: null,
+        successPlaylistId: 7,
+      },
+      playlistCount: 1,
+      updatedAt: 0,
+    }),
+    "Added to playlist",
   );
   assert.equal(getLibrarySongDeleteSuccessHref(), "/(tabs)/library");
   assert.deepEqual(getLibrarySongDeleteConfirmationCopy(detail), {

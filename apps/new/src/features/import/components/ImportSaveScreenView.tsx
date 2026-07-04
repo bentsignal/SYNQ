@@ -2,7 +2,6 @@ import { Link } from "expo-router";
 import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportSaveController } from "../hooks/use-import-save-controller";
-import { getImportSaveBackLink } from "../services/import-save-screen-state-service";
 import { ImportPremiumGate } from "./ImportPremiumGate";
 import { ImportSaveActions } from "./ImportSaveActions";
 import { ImportSaveExportErrorPanel } from "./ImportSaveExportErrorPanel";
@@ -21,9 +20,9 @@ export function ImportSaveScreenView({
   removeSong,
   state,
   toggleShouldSaveToLibrary,
+  viewState,
 }: ImportSaveScreenViewProps) {
   const theme = useCustomizationTheme();
-  const backLink = getImportSaveBackLink();
 
   return (
     <ScrollView
@@ -31,12 +30,13 @@ export function ImportSaveScreenView({
       contentContainerClassName="gap-5 px-5 py-14"
       style={{ backgroundColor: theme.background }}
     >
-      <ImportSaveHeader />
+      <ImportSaveHeader headerState={viewState.headerState} />
 
       <ImportPremiumGate>
         <ImportSaveLibraryToggle
           shouldSaveToLibrary={state.shouldSaveToLibrary}
           toggleShouldSaveToLibrary={toggleShouldSaveToLibrary}
+          toggleState={viewState.libraryToggleState}
         />
         <ImportSongPreviewList
           canEditSongs
@@ -54,10 +54,10 @@ export function ImportSaveScreenView({
 
       <Link
         className="text-[15px] font-extrabold"
-        href={backLink.href}
+        href={viewState.backLink.href}
         style={{ color: theme.accent }}
       >
-        {backLink.label}
+        {viewState.backLink.label}
       </Link>
     </ScrollView>
   );

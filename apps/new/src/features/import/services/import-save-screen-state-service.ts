@@ -48,3 +48,24 @@ export const getImportSongPreviewEmptyState = () => ({
   body: "Choose songs to review them before saving.",
   title: "No songs staged",
 });
+
+export const getImportSaveViewState = ({
+  isExporting,
+  state,
+}: {
+  isExporting: boolean;
+  state: ImportSessionState;
+}) => ({
+  actionState: getImportSaveActionState({ isExporting, state }),
+  backLink: getImportSaveBackLink(),
+  headerState: getImportSaveHeaderState(),
+  libraryToggleState: getImportSaveLibraryToggleState(),
+});
+
+export type ImportSaveHeaderState = ReturnType<
+  typeof getImportSaveHeaderState
+>;
+
+export type ImportSaveLibraryToggleState = ReturnType<
+  typeof getImportSaveLibraryToggleState
+>;

@@ -1,10 +1,13 @@
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getImportSaveHeaderState } from "../services/import-save-screen-state-service";
+import type { ImportSaveHeaderState } from "../services/import-save-screen-state-service";
 
-export function ImportSaveHeader() {
+type ImportSaveHeaderProps = {
+  headerState: ImportSaveHeaderState;
+};
+
+export function ImportSaveHeader({ headerState }: ImportSaveHeaderProps) {
   const theme = useCustomizationTheme();
-  const headerState = getImportSaveHeaderState();
 
   return (
     <View className="gap-2">

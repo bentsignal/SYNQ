@@ -254,6 +254,7 @@ import {
   getImportSaveActionState,
   getImportSaveHeaderState,
   getImportSaveLibraryToggleState,
+  getImportSaveViewState,
   getImportSongPreviewEmptyState,
 } from "../../../apps/new/src/features/import/services/import-save-screen-state-service";
 import {
@@ -3433,6 +3434,12 @@ async function assertImportSessionSmoke() {
   assert.deepEqual(getImportSaveBackLink(), {
     href: "/(tabs)/import/files",
     label: "Back to files",
+  });
+  assert.deepEqual(getImportSaveViewState({ isExporting: false, state }), {
+    actionState: getImportSaveActionState({ isExporting: false, state }),
+    backLink: getImportSaveBackLink(),
+    headerState: getImportSaveHeaderState(),
+    libraryToggleState: getImportSaveLibraryToggleState(),
   });
   assert.deepEqual(
     getImportSaveToggleCommand({ shouldSaveToLibrary: false }),

@@ -1124,6 +1124,7 @@ import {
   getPremiumMutationErrorMessage,
   getPremiumScreenState,
   getPremiumStatusState,
+  getPremiumViewState,
   getSelectedPremiumTier,
   premiumFeatureCopy,
 } from "../../../apps/new/src/features/premium/services/premium-screen-service";
@@ -15115,6 +15116,19 @@ async function assertPremiumScreenSmoke() {
     canReset: true,
     isFailure: true,
     message: "Premium purchase failed.",
+  });
+  assert.deepEqual(getPremiumViewState({ state: idleState, tiers }), {
+    actionState: {
+      canPurchase: true,
+      canRestore: true,
+      purchaseLabel: "Choose Yearly",
+    },
+    screenState: getPremiumScreenState(),
+    statusState: {
+      canReset: false,
+      isFailure: false,
+      message: "Choose a plan or restore a previous purchase.",
+    },
   });
   assert.equal(
     getPremiumMutationErrorMessage({

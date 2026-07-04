@@ -1,9 +1,5 @@
 import { usePremiumPurchaseSession } from "./use-premium-purchase-session";
-import {
-  getPremiumActionState,
-  getPremiumStatusState,
-  getSelectedPremiumTier,
-} from "../services/premium-screen-service";
+import { getPremiumViewState } from "../services/premium-screen-service";
 
 export function usePremiumScreenController() {
   const {
@@ -14,9 +10,10 @@ export function usePremiumScreenController() {
     selectTier,
     state,
   } = usePremiumPurchaseSession();
-  const selectedTier = getSelectedPremiumTier({ state, tiers: premiumTiers });
-  const actionState = getPremiumActionState({ selectedTier, state });
-  const statusState = getPremiumStatusState(state);
+  const { actionState, screenState, statusState } = getPremiumViewState({
+    state,
+    tiers: premiumTiers,
+  });
 
   const purchase = () => {
     void purchaseSelectedTier();
@@ -32,6 +29,7 @@ export function usePremiumScreenController() {
     purchase,
     reset,
     restore,
+    screenState,
     selectTier,
     state,
     statusState,

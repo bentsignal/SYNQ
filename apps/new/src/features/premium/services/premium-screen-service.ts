@@ -59,6 +59,22 @@ export const getPremiumStatusState = (state: PremiumPurchaseState) => ({
 
 export type PremiumStatusState = ReturnType<typeof getPremiumStatusState>;
 
+export const getPremiumViewState = ({
+  state,
+  tiers,
+}: {
+  state: PremiumPurchaseState;
+  tiers: PremiumTier[];
+}) => {
+  const selectedTier = getSelectedPremiumTier({ state, tiers });
+
+  return {
+    actionState: getPremiumActionState({ selectedTier, state }),
+    screenState: getPremiumScreenState(),
+    statusState: getPremiumStatusState(state),
+  };
+};
+
 export type PremiumMutationKind =
   | "check-entitlement"
   | "purchase-tier"

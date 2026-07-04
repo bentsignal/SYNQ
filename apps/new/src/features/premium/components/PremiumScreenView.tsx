@@ -2,7 +2,6 @@ import { Link } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { PremiumScreenController } from "../hooks/use-premium-screen-controller";
-import { getPremiumScreenState } from "../services/premium-screen-service";
 import { PremiumActionRow } from "./PremiumActionRow";
 import { PremiumFeatureList } from "./PremiumFeatureList";
 import { PremiumStatusPanel } from "./PremiumStatusPanel";
@@ -16,12 +15,12 @@ export function PremiumScreenView({
   purchase,
   reset,
   restore,
+  screenState,
   selectTier,
   state,
   statusState,
 }: PremiumScreenViewProps) {
   const theme = useCustomizationTheme();
-  const screenState = getPremiumScreenState();
 
   return (
     <ScrollView

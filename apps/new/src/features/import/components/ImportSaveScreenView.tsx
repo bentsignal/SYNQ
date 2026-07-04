@@ -18,6 +18,7 @@ export function ImportSaveScreenView({
   exportError,
   exportSongs,
   finishImport,
+  removeSong,
   state,
   toggleShouldSaveToLibrary,
 }: ImportSaveScreenViewProps) {
@@ -37,7 +38,11 @@ export function ImportSaveScreenView({
           shouldSaveToLibrary={state.shouldSaveToLibrary}
           toggleShouldSaveToLibrary={toggleShouldSaveToLibrary}
         />
-        <ImportSongPreviewList canEditSongs songs={state.songs} />
+        <ImportSongPreviewList
+          canEditSongs
+          onRemoveSong={actionState.canRemoveSongs ? removeSong : undefined}
+          songs={state.songs}
+        />
         <ImportSaveActions
           actionState={actionState}
           discardImport={discardImport}

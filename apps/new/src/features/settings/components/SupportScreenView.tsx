@@ -1,8 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import type { SupportScreenController } from "../hooks/use-support-screen-controller";
 import { useCustomizationTheme } from "../hooks/use-customization-theme";
-import { getSupportScreenViewState } from "../services/settings-screen-service";
-import { getSupportActionKey } from "../services/settings-navigation-service";
 import {
   SettingsBackLink,
   SettingsInfoPanel,
@@ -13,11 +11,11 @@ import {
 type SupportScreenViewProps = SupportScreenController;
 
 export function SupportScreenView({
+  actionRows,
   runSupportAction,
-  supportActions,
+  viewState,
 }: SupportScreenViewProps) {
   const theme = useCustomizationTheme();
-  const viewState = getSupportScreenViewState();
 
   return (
     <SettingsScreenContent theme={theme}>
@@ -27,10 +25,10 @@ export function SupportScreenView({
         className="overflow-hidden rounded-lg border"
         style={{ backgroundColor: theme.surface, borderColor: theme.border }}
       >
-        {supportActions.map((action) => (
+        {actionRows.map((action) => (
           <Pressable
             accessibilityRole="link"
-            key={getSupportActionKey(action)}
+            key={action.key}
             onPress={() => runSupportAction(action)}
             className="min-h-[78px] flex-row items-center gap-3.5 border-b px-4 py-3.5"
             style={{ borderBottomColor: theme.borderSubtle }}

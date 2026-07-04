@@ -1,13 +1,14 @@
 import {
-  supportActions,
   type SupportAction,
 } from "../services/settings-navigation-service";
 import { runSettingsInteractionAction } from "../services/settings-interaction-action-flow-service";
+import { getSupportScreenControllerViewState } from "../services/settings-screen-service";
 import { runSettingsSupportAction } from "../services/settings-support-action-service";
 import { useHapticFeedback } from "./use-haptic-feedback";
 
 export function useSupportScreenController() {
   const { sendHaptic } = useHapticFeedback();
+  const { actionRows, viewState } = getSupportScreenControllerViewState();
 
   const runSupportAction = (action: SupportAction) => {
     void runSettingsInteractionAction({
@@ -17,8 +18,9 @@ export function useSupportScreenController() {
   };
 
   return {
+    actionRows,
     runSupportAction,
-    supportActions,
+    viewState,
   };
 }
 

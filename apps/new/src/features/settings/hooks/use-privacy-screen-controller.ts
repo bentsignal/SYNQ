@@ -1,5 +1,5 @@
 import {
-  getPrivacyScreenState,
+  getPrivacyScreenControllerViewState,
 } from "../services/settings-screen-service";
 import { runSettingsInteractionAction } from "../services/settings-interaction-action-flow-service";
 import { useHapticFeedback } from "./use-haptic-feedback";
@@ -8,7 +8,9 @@ import { usePrivacySettings } from "./use-privacy-settings";
 export function usePrivacyScreenController() {
   const { sendHaptic } = useHapticFeedback();
   const { setAllowAnalytics, state } = usePrivacySettings();
-  const screenState = getPrivacyScreenState({ status: state.status });
+  const { screenState, viewState } = getPrivacyScreenControllerViewState({
+    status: state.status,
+  });
 
   const updateAllowAnalytics = (allowAnalytics: boolean) => {
     void runSettingsInteractionAction({
@@ -21,6 +23,7 @@ export function usePrivacyScreenController() {
     screenState,
     state,
     updateAllowAnalytics,
+    viewState,
   };
 }
 

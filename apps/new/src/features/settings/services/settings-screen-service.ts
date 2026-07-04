@@ -4,7 +4,11 @@ import type {
 } from "../types/customization-settings";
 import type { HapticFeedbackType } from "./haptic-feedback-service";
 import type { PrivacySettingsStatus } from "../types/privacy-settings";
-import { getSettingsBackLink } from "./settings-navigation-service";
+import {
+  getSettingsBackLink,
+  getSupportActionKey,
+  supportActions,
+} from "./settings-navigation-service";
 
 export const getPrivacyScreenViewState = () => ({
   backLink: getSettingsBackLink(),
@@ -50,7 +54,24 @@ export const getPrivacyScreenState = ({
       ? "Loading"
       : status === "saving"
         ? "Saving"
-        : "Saved locally",
+      : "Saved locally",
+});
+
+export const getPrivacyScreenControllerViewState = ({
+  status,
+}: {
+  status: PrivacySettingsStatus;
+}) => ({
+  screenState: getPrivacyScreenState({ status }),
+  viewState: getPrivacyScreenViewState(),
+});
+
+export const getSupportScreenControllerViewState = () => ({
+  actionRows: supportActions.map((action) => ({
+    ...action,
+    key: getSupportActionKey(action),
+  })),
+  viewState: getSupportScreenViewState(),
 });
 
 export const getSettingsHomeState = ({

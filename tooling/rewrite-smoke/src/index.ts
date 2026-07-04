@@ -1196,10 +1196,12 @@ import {
   getCustomizationHapticsToggleCommand,
   getCustomizationOptionState,
   getCustomizationScreenState,
+  getPrivacyScreenControllerViewState,
   getPrivacyScreenViewState,
   getPrivacyScreenState,
   getPrivacySettingsErrorMessage,
   getSettingsInteractionCommand,
+  getSupportScreenControllerViewState,
   getSupportScreenViewState,
   isSettingsDeveloperPremiumToggleVisible,
   shouldSendHapticForHapticsToggle,
@@ -15649,6 +15651,16 @@ async function assertSettingsScreenSmoke() {
       title: "Analytics",
     },
   });
+  assert.deepEqual(
+    getPrivacyScreenControllerViewState({ status: "saving" }),
+    {
+      screenState: {
+        isAnalyticsDisabled: false,
+        statusLabel: "Saving",
+      },
+      viewState: getPrivacyScreenViewState(),
+    },
+  );
   assert.deepEqual(getSupportScreenViewState(), {
     backLink: {
       href: "/(tabs)/settings",
@@ -15664,6 +15676,13 @@ async function assertSettingsScreenSmoke() {
       subtitle: "Get help, send feedback, or follow along with the project.",
       title: "Support",
     },
+  });
+  assert.deepEqual(getSupportScreenControllerViewState(), {
+    actionRows: supportActions.map((action) => ({
+      ...action,
+      key: action.type === "url" ? action.url : action.type,
+    })),
+    viewState: getSupportScreenViewState(),
   });
   assert.deepEqual(
     supportActions.map((action) => action.label),

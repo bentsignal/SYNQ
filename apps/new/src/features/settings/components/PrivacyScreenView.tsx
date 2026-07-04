@@ -1,7 +1,6 @@
 import { Text } from "react-native";
 import type { PrivacyScreenController } from "../hooks/use-privacy-screen-controller";
 import { useCustomizationTheme } from "../hooks/use-customization-theme";
-import { getPrivacyScreenViewState } from "../services/settings-screen-service";
 import {
   SettingsBackLink,
   SettingsInfoPanel,
@@ -16,9 +15,9 @@ export function PrivacyScreenView({
   screenState,
   state,
   updateAllowAnalytics,
+  viewState,
 }: PrivacyScreenViewProps) {
   const theme = useCustomizationTheme();
-  const viewState = getPrivacyScreenViewState();
 
   return (
     <SettingsScreenContent theme={theme}>

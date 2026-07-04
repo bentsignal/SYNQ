@@ -1181,6 +1181,7 @@ import type {
   PremiumTier,
 } from "../../../apps/new/src/features/premium/types/premium-purchase";
 import {
+  getSettingsDeveloperPremiumToggleState,
   getCustomizationSettingsErrorMessage,
   getCustomizationHapticsToggleCommand,
   getCustomizationOptionState,
@@ -1190,6 +1191,7 @@ import {
   getPrivacySettingsErrorMessage,
   getSettingsInteractionCommand,
   getSupportScreenViewState,
+  isSettingsDeveloperPremiumToggleVisible,
   shouldSendHapticForHapticsToggle,
 } from "../../../apps/new/src/features/settings/services/settings-screen-service";
 import {
@@ -15393,6 +15395,28 @@ async function assertSettingsScreenSmoke() {
     href: "/(tabs)/settings",
     label: "Back to Settings",
   });
+  assert.equal(
+    isSettingsDeveloperPremiumToggleVisible({ isDev: true }),
+    true,
+  );
+  assert.equal(
+    isSettingsDeveloperPremiumToggleVisible({ isDev: true, showToggle: false }),
+    false,
+  );
+  assert.equal(
+    isSettingsDeveloperPremiumToggleVisible({ isDev: false }),
+    false,
+  );
+  assert.deepEqual(
+    getSettingsDeveloperPremiumToggleState({ premiumActive: true }),
+    {
+      description:
+        "Override premium entitlement while running a development build.",
+      disabled: false,
+      title: "Developer Premium Toggle",
+      value: true,
+    },
+  );
   assert.deepEqual(getPrivacyScreenViewState(), {
     backLink: {
       href: "/(tabs)/settings",

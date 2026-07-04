@@ -6,12 +6,15 @@ import {
   SettingsScreenContent,
   SettingsScreenHeader,
 } from "./SettingsScreenParts";
+import { SettingsSwitchRow } from "./SettingsSwitchRow";
 
 type SettingsHomeViewProps = SettingsHomeController;
 
 export function SettingsHomeView({
+  developerPremiumToggleState,
   routes,
   screenState,
+  setDeveloperPremiumActive,
 }: SettingsHomeViewProps) {
   const theme = useCustomizationTheme();
 
@@ -62,6 +65,17 @@ export function SettingsHomeView({
           </Link>
         ))}
       </View>
+
+      {developerPremiumToggleState ? (
+        <SettingsSwitchRow
+          description={developerPremiumToggleState.description}
+          disabled={developerPremiumToggleState.disabled}
+          onChange={setDeveloperPremiumActive}
+          theme={theme}
+          title={developerPremiumToggleState.title}
+          value={developerPremiumToggleState.value}
+        />
+      ) : null}
     </SettingsScreenContent>
   );
 }

@@ -61,6 +61,25 @@ export const getSettingsHomeState = ({
   premiumStatusLabel: premiumActive ? "Premium active" : "Premium inactive",
 });
 
+export const isSettingsDeveloperPremiumToggleVisible = ({
+  isDev,
+  showToggle = true,
+}: {
+  isDev: boolean;
+  showToggle?: boolean;
+}) => isDev && showToggle;
+
+export const getSettingsDeveloperPremiumToggleState = ({
+  premiumActive,
+}: {
+  premiumActive: boolean;
+}) => ({
+  description: "Override premium entitlement while running a development build.",
+  disabled: false,
+  title: "Developer Premium Toggle",
+  value: premiumActive,
+});
+
 export const getCustomizationScreenState = ({
   premiumActive,
   status,

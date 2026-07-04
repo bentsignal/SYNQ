@@ -1,4 +1,7 @@
-import type { LibraryCollectionPreview } from "./library-collection-preview-service";
+import {
+  getLibraryCollectionPreviewHref,
+  type LibraryCollectionPreview,
+} from "./library-collection-preview-service";
 
 export type LibraryCollectionListKind = "albums" | "artists" | "playlists";
 
@@ -133,6 +136,10 @@ export const getLibraryCollectionListState = ({
         ? `Updated ${formatUpdatedAt(updatedAt)}`
         : "Waiting for library data",
     visibleCollections,
+    visibleRows: visibleCollections.map((collection) => ({
+      collection,
+      href: getLibraryCollectionPreviewHref(collection),
+    })),
   };
 };
 

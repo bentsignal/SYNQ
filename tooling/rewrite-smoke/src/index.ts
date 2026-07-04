@@ -12157,6 +12157,7 @@ function assertLibraryCollectionListSmoke() {
       hasErrors: false,
       statusLabel: "Updated time:123",
       visibleCollections: [],
+      visibleRows: [],
     },
   );
   assert.deepEqual(
@@ -12172,6 +12173,20 @@ function assertLibraryCollectionListSmoke() {
       hasErrors: true,
       statusLabel: "One or more collection queries failed.",
       visibleCollections: collections,
+      visibleRows: [
+        {
+          collection: collections[0],
+          href: "/(tabs)/library/album/1",
+        },
+        {
+          collection: collections[1],
+          href: "/(tabs)/library/artist/2",
+        },
+        {
+          collection: collections[2],
+          href: "/(tabs)/library/playlist/3",
+        },
+      ],
     },
   );
 

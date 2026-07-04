@@ -2,9 +2,9 @@ import * as FileSystem from "expo-file-system";
 import { writeId3TagsToAudioFile } from "@synq/audio";
 import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
 import {
-  isLibrarySongSnapshotStale,
-  markLibrarySongAsExported,
-} from "@/src/features/library/repository/library-song-export-snapshot-repository";
+  isLibrarySongExportSnapshotStale,
+  markLibrarySongExportSnapshot,
+} from "@/src/features/library/services/library-song-export-snapshot-service";
 import {
   loadLibraryExportAlbumMetadataRows,
   loadLibraryExportArtistMetadataRows,
@@ -19,11 +19,11 @@ import {
 const libraryExportMetadataDependencies: LibraryExportMetadataDependencies = {
   getImagePathFromHash,
   getInfo: FileSystem.getInfoAsync,
-  isLibrarySongSnapshotStale,
+  isLibrarySongSnapshotStale: isLibrarySongExportSnapshotStale,
   loadAlbumRows: loadLibraryExportAlbumMetadataRows,
   loadArtistRows: loadLibraryExportArtistMetadataRows,
   loadSongRow: loadLibraryExportSongMetadataRow,
-  markLibrarySongAsExported,
+  markLibrarySongAsExported: markLibrarySongExportSnapshot,
   readAsString: (path, options) =>
     FileSystem.readAsStringAsync(path, options),
   writeTags: writeId3TagsToAudioFile,

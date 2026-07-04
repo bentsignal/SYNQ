@@ -939,7 +939,10 @@ import {
 import {
   getSelectableSongPlaylists,
   getSongAddToPlaylistBackLink,
+  getSongAddToPlaylistHeaderState,
+  getSongAddToPlaylistRowState,
   getSongAddToPlaylistStatusLabel,
+  getSongAddToPlaylistStatusState,
   initialSongAddToPlaylistMutationState,
 } from "../../../apps/new/src/features/library/services/song-add-to-playlist-service";
 import {
@@ -8400,6 +8403,63 @@ async function assertLibrarySongDetailSmoke() {
     href: "/(tabs)/library/song/42",
     label: "Song details",
   });
+  assert.deepEqual(getSongAddToPlaylistHeaderState({ songId: 42 }), {
+    backLink: {
+      href: "/(tabs)/library/song/42",
+      label: "Song details",
+    },
+    copy: {
+      emptyLabel: "No playlists available",
+      kicker: "Library",
+      placeholder: "Search playlists",
+      title: "Add to playlist",
+    },
+  });
+  assert.deepEqual(
+    getSongAddToPlaylistRowState({
+      mutationState: {
+        error: null,
+        pendingPlaylistId: 7,
+        successPlaylistId: null,
+      },
+      playlist: {
+        detail: "3 songs",
+        id: 7,
+        imagePath: null,
+        kind: "playlists",
+        meta: "Playlist",
+        title: "Road Trip",
+      },
+    }),
+    {
+      detailLabel: "Adding",
+      imageInitial: "R",
+      isAdded: false,
+      isDisabled: true,
+      isPending: true,
+      metaLabel: "Playlist",
+      playlist: {
+        detail: "3 songs",
+        id: 7,
+        imagePath: null,
+        kind: "playlists",
+        meta: "Playlist",
+        title: "Road Trip",
+      },
+    },
+  );
+  assert.deepEqual(
+    getSongAddToPlaylistStatusState({
+      hasListErrors: true,
+      listStatusLabel: "Playlist query failed.",
+      mutationState: initialSongAddToPlaylistMutationState,
+      statusLabel: "Waiting for library data",
+    }),
+    {
+      hasError: true,
+      label: "Playlist query failed.",
+    },
+  );
   assert.deepEqual(
     getSelectableSongPlaylists([
       {

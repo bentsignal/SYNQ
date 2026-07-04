@@ -2,45 +2,41 @@ import { Link } from "expo-router";
 import { Image, Pressable, Text, View } from "react-native";
 import type { CustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionListState } from "../services/library-collection-list-service";
-import type { LibraryCollectionPreview } from "../services/library-collection-preview-service";
 import {
-  getSongAddToPlaylistBackLink,
-  getSongAddToPlaylistCopy,
-  type SongAddToPlaylistMutationState,
+  type getSongAddToPlaylistHeaderState,
+  type SongAddToPlaylistRowState,
+  type SongAddToPlaylistStatusState,
 } from "../services/song-add-to-playlist-service";
 
 type SongAddToPlaylistHeaderProps = {
-  songId: number;
+  headerState: ReturnType<typeof getSongAddToPlaylistHeaderState>;
   theme: CustomizationTheme;
 };
 
 export function SongAddToPlaylistHeader({
-  songId,
+  headerState,
   theme,
 }: SongAddToPlaylistHeaderProps) {
-  const copy = getSongAddToPlaylistCopy();
-  const backLink = getSongAddToPlaylistBackLink({ songId });
-
   return (
     <View className="gap-2">
       <Text
         className="text-[13px] font-extrabold uppercase"
         style={{ color: theme.accent }}
       >
-        {copy.kicker}
+        {headerState.copy.kicker}
       </Text>
       <Text
         className="text-[34px] font-extrabold leading-10"
         style={{ color: theme.primaryText }}
       >
-        {copy.title}
+        {headerState.copy.title}
       </Text>
       <Link
         className="text-sm font-extrabold uppercase"
-        href={backLink.href}
+        href={headerState.backLink.href}
         style={{ color: theme.accent }}
       >
-        {backLink.label}
+        {headerState.backLink.label}
       </Link>
     </View>
   );
@@ -49,14 +45,14 @@ export function SongAddToPlaylistHeader({
 type SongAddToPlaylistListProps = {
   addToPlaylist: (playlistId: number) => void;
   listState: LibraryCollectionListState;
-  mutationState: SongAddToPlaylistMutationState;
+  rowStates: SongAddToPlaylistRowState[];
   theme: CustomizationTheme;
 };
 
 export function SongAddToPlaylistList({
   addToPlaylist,
   listState,
-  mutationState,
+  rowStates,
   theme,
 }: SongAddToPlaylistListProps) {
   return (
@@ -72,12 +68,11 @@ export function SongAddToPlaylistList({
           {listState.emptyLabel}
         </Text>
       ) : (
-        listState.visibleCollections.map((playlist) => (
+        rowStates.map((rowState) => (
           <SongAddToPlaylistRow
             addToPlaylist={addToPlaylist}
-            key={playlist.id}
-            mutationState={mutationState}
-            playlist={playlist}
+            key={rowState.playlist.id}
+            rowState={rowState}
             theme={theme}
           />
         ))
@@ -88,27 +83,24 @@ export function SongAddToPlaylistList({
 
 type SongAddToPlaylistRowProps = {
   addToPlaylist: (playlistId: number) => void;
-  mutationState: SongAddToPlaylistMutationState;
-  playlist: LibraryCollectionPreview;
+  rowState: SongAddToPlaylistRowState;
   theme: CustomizationTheme;
 };
 
 function SongAddToPlaylistRow({
   addToPlaylist,
-  mutationState,
-  playlist,
+  rowState,
   theme,
 }: SongAddToPlaylistRowProps) {
-  const pending = mutationState.pendingPlaylistId === playlist.id;
-  const added = mutationState.successPlaylistId === playlist.id;
+  const { playlist } = rowState;
 
   return (
     <Pressable
       accessibilityRole="button"
       className={`min-h-16 flex-row items-center gap-3 border-b px-3.5 py-2.5 ${
-        pending ? "opacity-[0.55]" : ""
+        rowState.isPending ? "opacity-[0.55]" : ""
       }`}
-      disabled={pending}
+      disabled={rowState.isDisabled}
       onPress={() => addToPlaylist(playlist.id)}
       style={{ borderBottomColor: theme.borderSubtle }}
     >
@@ -126,7 +118,7 @@ function SongAddToPlaylistRow({
             className="text-base font-extrabold leading-[21px]"
             style={{ color: theme.accent }}
           >
-            {playlist.title.slice(0, 1).toUpperCase()}
+            {rowState.imageInitial}
           </Text>
         </View>
       )}
@@ -143,46 +135,40 @@ function SongAddToPlaylistRow({
           numberOfLines={1}
           style={{ color: theme.secondaryText }}
         >
-          {added ? "Added" : playlist.meta}
+          {rowState.metaLabel}
         </Text>
       </View>
       <Text
         className="max-w-[118px] text-right text-xs font-extrabold"
-        style={{ color: added ? theme.accent : theme.primaryText }}
+        style={{ color: rowState.isAdded ? theme.accent : theme.primaryText }}
       >
-        {pending ? "Adding" : playlist.detail}
+        {rowState.detailLabel}
       </Text>
     </Pressable>
   );
 }
 
 type SongAddToPlaylistStatusProps = {
-  listState: LibraryCollectionListState;
-  mutationState: SongAddToPlaylistMutationState;
-  statusLabel: string;
+  statusState: SongAddToPlaylistStatusState;
   theme: CustomizationTheme;
 };
 
 export function SongAddToPlaylistStatus({
-  listState,
-  mutationState,
-  statusLabel,
+  statusState,
   theme,
 }: SongAddToPlaylistStatusProps) {
-  const hasError = mutationState.error || listState.hasErrors;
-
   return (
     <View
       className="rounded-lg border p-4"
       style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
       <Text
-        className={`text-sm leading-5 ${hasError ? "font-bold" : ""}`}
+        className={`text-sm leading-5 ${statusState.hasError ? "font-bold" : ""}`}
         style={{
-          color: hasError ? theme.danger : theme.secondaryText,
+          color: statusState.hasError ? theme.danger : theme.secondaryText,
         }}
       >
-        {listState.hasErrors ? listState.statusLabel : statusLabel}
+        {statusState.label}
       </Text>
     </View>
   );

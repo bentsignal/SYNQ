@@ -11,9 +11,13 @@ import {
 } from "../services/library-collection-list-service";
 import { addLibraryCollectionSongCommand } from "../services/library-collection-command-service";
 import {
+  getSongAddToPlaylistCopy,
   getSelectableSongPlaylists,
   getSongAddToPlaylistFailureCommand,
+  getSongAddToPlaylistHeaderState,
+  getSongAddToPlaylistRowState,
   getSongAddToPlaylistStatusLabel,
+  getSongAddToPlaylistStatusState,
   getSongAddToPlaylistSuccessCommand,
   initialSongAddToPlaylistMutationState,
   type SongAddToPlaylistMutationState,
@@ -51,6 +55,19 @@ export function useSongAddToPlaylistController({ songId }: { songId: number }) {
     playlistCount: playlists.length,
     updatedAt,
   });
+  const rowStates = listState.visibleCollections.map((playlist) =>
+    getSongAddToPlaylistRowState({
+      mutationState,
+      playlist,
+    }),
+  );
+  const statusState = getSongAddToPlaylistStatusState({
+    hasListErrors: listState.hasErrors,
+    listStatusLabel: listState.statusLabel,
+    mutationState,
+    statusLabel,
+  });
+  const copy = getSongAddToPlaylistCopy();
 
   const setQuery = (query: string) => {
     dispatchControls(getLibraryCollectionListSetQueryAction(query));
@@ -90,10 +107,13 @@ export function useSongAddToPlaylistController({ songId }: { songId: number }) {
 
   return {
     addToPlaylist,
+    copy,
+    headerState: getSongAddToPlaylistHeaderState({ songId }),
     listState,
     mutationState,
     query: controls.query,
+    rowStates,
     setQuery,
-    statusLabel,
+    statusState,
   };
 }

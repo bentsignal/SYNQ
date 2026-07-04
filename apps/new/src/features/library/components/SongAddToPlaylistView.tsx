@@ -2,8 +2,9 @@ import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionListState } from "../services/library-collection-list-service";
 import {
-  getSongAddToPlaylistCopy,
-  type SongAddToPlaylistMutationState,
+  type getSongAddToPlaylistHeaderState,
+  type SongAddToPlaylistRowState,
+  type SongAddToPlaylistStatusState,
 } from "../services/song-add-to-playlist-service";
 import { LibraryCollectionListSearch } from "./LibraryCollectionListSearch";
 import {
@@ -14,25 +15,26 @@ import {
 
 type SongAddToPlaylistViewProps = {
   addToPlaylist: (playlistId: number) => void;
+  copy: ReturnType<typeof getSongAddToPlaylistHeaderState>["copy"];
+  headerState: ReturnType<typeof getSongAddToPlaylistHeaderState>;
   listState: LibraryCollectionListState;
-  mutationState: SongAddToPlaylistMutationState;
   query: string;
+  rowStates: SongAddToPlaylistRowState[];
   setQuery: (query: string) => void;
-  songId: number;
-  statusLabel: string;
+  statusState: SongAddToPlaylistStatusState;
 };
 
 export function SongAddToPlaylistView({
   addToPlaylist,
+  copy,
+  headerState,
   listState,
-  mutationState,
   query,
+  rowStates,
   setQuery,
-  songId,
-  statusLabel,
+  statusState,
 }: SongAddToPlaylistViewProps) {
   const theme = useCustomizationTheme();
-  const copy = getSongAddToPlaylistCopy();
 
   return (
     <ScrollView
@@ -40,7 +42,7 @@ export function SongAddToPlaylistView({
       contentContainerClassName="gap-[18px] px-5 py-14"
       style={{ backgroundColor: theme.background }}
     >
-      <SongAddToPlaylistHeader songId={songId} theme={theme} />
+      <SongAddToPlaylistHeader headerState={headerState} theme={theme} />
 
       <LibraryCollectionListSearch
         onChangeQuery={setQuery}
@@ -51,16 +53,11 @@ export function SongAddToPlaylistView({
       <SongAddToPlaylistList
         addToPlaylist={addToPlaylist}
         listState={listState}
-        mutationState={mutationState}
+        rowStates={rowStates}
         theme={theme}
       />
 
-      <SongAddToPlaylistStatus
-        listState={listState}
-        mutationState={mutationState}
-        statusLabel={statusLabel}
-        theme={theme}
-      />
+      <SongAddToPlaylistStatus statusState={statusState} theme={theme} />
     </ScrollView>
   );
 }

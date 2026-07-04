@@ -16,5 +16,5 @@ export function SongAddToPlaylistScreen() {
 function SongAddToPlaylistContent({ songId }: { songId: number }) {
   const controller = useSongAddToPlaylistController({ songId });
 
-  return <SongAddToPlaylistView songId={songId} {...controller} />;
+  return <SongAddToPlaylistView {...controller} />;
 }

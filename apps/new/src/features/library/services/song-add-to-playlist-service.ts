@@ -54,6 +54,63 @@ export const getSelectableSongPlaylists = (
   playlists: LibraryCollectionPreview[],
 ) => playlists.filter((playlist) => !isProtectedPlaylistId(playlist.id));
 
+export const getSongAddToPlaylistHeaderState = ({
+  songId,
+}: {
+  songId: number;
+}) => ({
+  backLink: getSongAddToPlaylistBackLink({ songId }),
+  copy: getSongAddToPlaylistCopy(),
+});
+
+export const getSongAddToPlaylistRowState = ({
+  mutationState,
+  playlist,
+}: {
+  mutationState: SongAddToPlaylistMutationState;
+  playlist: LibraryCollectionPreview;
+}) => {
+  const isPending = mutationState.pendingPlaylistId === playlist.id;
+  const isAdded = mutationState.successPlaylistId === playlist.id;
+
+  return {
+    detailLabel: isPending ? "Adding" : playlist.detail,
+    imageInitial: playlist.title.slice(0, 1).toUpperCase(),
+    isAdded,
+    isDisabled: isPending,
+    isPending,
+    metaLabel: isAdded ? "Added" : playlist.meta,
+    playlist,
+  };
+};
+
+export type SongAddToPlaylistRowState = ReturnType<
+  typeof getSongAddToPlaylistRowState
+>;
+
+export const getSongAddToPlaylistStatusState = ({
+  hasListErrors,
+  listStatusLabel,
+  mutationState,
+  statusLabel,
+}: {
+  hasListErrors: boolean;
+  listStatusLabel: string;
+  mutationState: SongAddToPlaylistMutationState;
+  statusLabel: string;
+}) => {
+  const hasError = mutationState.error !== null || hasListErrors;
+
+  return {
+    hasError,
+    label: hasListErrors ? listStatusLabel : statusLabel,
+  };
+};
+
+export type SongAddToPlaylistStatusState = ReturnType<
+  typeof getSongAddToPlaylistStatusState
+>;
+
 export const getSongAddToPlaylistStatusLabel = ({
   mutationState,
   playlistCount,

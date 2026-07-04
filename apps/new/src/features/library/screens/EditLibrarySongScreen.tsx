@@ -47,7 +47,6 @@ function EditLibrarySongContent({ songId }: { songId: number }) {
       onChangeTitle={setTitle}
       onPickCoverImage={pickCoverImage}
       onSave={save}
-      songId={songId}
       title={title}
     />
   );

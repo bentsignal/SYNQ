@@ -25,7 +25,6 @@ type EditLibrarySongFormViewProps = {
   onChangeTitle: (title: string) => void;
   onPickCoverImage: () => void;
   onSave: () => void;
-  songId: number;
   title: string;
 };
 
@@ -42,7 +41,6 @@ export function EditLibrarySongFormView({
   onChangeTitle,
   onPickCoverImage,
   onSave,
-  songId,
   title,
 }: EditLibrarySongFormViewProps) {
   const theme = useCustomizationTheme();
@@ -76,7 +74,6 @@ export function EditLibrarySongFormView({
       <EditLibrarySongActions
         actionState={actionState}
         onSave={onSave}
-        songId={songId}
       />
       <EditLibrarySongStatusPanel statusState={statusState} />
     </ScrollView>

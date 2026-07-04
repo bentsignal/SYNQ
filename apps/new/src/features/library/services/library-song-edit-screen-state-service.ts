@@ -1,5 +1,6 @@
 import type { LibrarySongDetail } from "./library-song-detail-service";
 import type { LibrarySongEditControllerState } from "./library-song-form-service";
+import { getLibrarySongDetailHref } from "./library-song-interaction-service";
 
 export const getLibrarySongEditFieldState = () =>
   ({
@@ -23,12 +24,15 @@ export const getLibrarySongEditFieldState = () =>
 export const getLibrarySongEditActionState = ({
   detail,
   isSaving,
+  songId,
   title,
 }: {
   detail: LibrarySongDetail;
   isSaving: boolean;
+  songId: number;
   title: string;
 }) => ({
+  cancelHref: getLibrarySongDetailHref({ songId }),
   canPickCoverImage: !detail.isMissing && !isSaving,
   canSave: !detail.isMissing && title.trim().length > 0 && !isSaving,
   saveLabel: isSaving ? "Saving" : "Save",
@@ -41,13 +45,16 @@ export type LibrarySongEditActionState = ReturnType<
 export const getLibrarySongEditControllerResultState = ({
   detail,
   formState,
+  songId,
 }: {
   detail: LibrarySongDetail;
   formState: LibrarySongEditControllerState;
+  songId: number;
 }) => ({
   actionState: getLibrarySongEditActionState({
     detail,
     isSaving: formState.isSaving,
+    songId,
     title: formState.title,
   }),
   albumNames: formState.albumNames,

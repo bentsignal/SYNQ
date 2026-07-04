@@ -9277,25 +9277,43 @@ async function assertLibrarySongDetailSmoke() {
     getLibrarySongEditActionState({
       detail,
       isSaving: false,
+      songId: 42,
       title: " Alpha ",
     }),
-    { canPickCoverImage: true, canSave: true, saveLabel: "Save" },
+    {
+      cancelHref: "/(tabs)/library/song/42",
+      canPickCoverImage: true,
+      canSave: true,
+      saveLabel: "Save",
+    },
   );
   assert.deepEqual(
     getLibrarySongEditActionState({
       detail,
       isSaving: false,
+      songId: 42,
       title: "   ",
     }),
-    { canPickCoverImage: true, canSave: false, saveLabel: "Save" },
+    {
+      cancelHref: "/(tabs)/library/song/42",
+      canPickCoverImage: true,
+      canSave: false,
+      saveLabel: "Save",
+    },
   );
   assert.deepEqual(
     getLibrarySongEditActionState({
       detail,
       isSaving: true,
+      songId: 42,
       title: "Alpha",
     }),
-    { canPickCoverImage: false, canSave: false, saveLabel: "Saving" },
+    {
+      cancelHref: "/(tabs)/library/song/42",
+      canPickCoverImage: false,
+      canSave: false,
+      saveLabel: "Saving",
+    },
   );
   assert.deepEqual(
     getLibrarySongEditControllerResultState({
@@ -9308,9 +9326,11 @@ async function assertLibrarySongDetailSmoke() {
         isSaving: true,
         title: "Controller Title",
       },
+      songId: 42,
     }),
     {
       actionState: {
+        cancelHref: "/(tabs)/library/song/42",
         canPickCoverImage: false,
         canSave: false,
         saveLabel: "Saving",
@@ -9629,9 +9649,15 @@ async function assertLibrarySongDetailSmoke() {
     getLibrarySongEditActionState({
       detail: missing,
       isSaving: false,
+      songId: 404,
       title: "Recovered title",
     }),
-    { canPickCoverImage: false, canSave: false, saveLabel: "Save" },
+    {
+      cancelHref: "/(tabs)/library/song/404",
+      canPickCoverImage: false,
+      canSave: false,
+      saveLabel: "Save",
+    },
   );
   assert.deepEqual(
     missingActionState,

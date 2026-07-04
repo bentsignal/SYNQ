@@ -1,6 +1,5 @@
 import { Link } from "expo-router";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getLibrarySongDetailHref } from "../services/library-song-interaction-service";
 import type { LibrarySongEditActionState } from "../services/library-song-edit-screen-state-service";
 import {
   LibraryActionButton,
@@ -10,13 +9,11 @@ import {
 type EditLibrarySongActionsProps = {
   actionState: LibrarySongEditActionState;
   onSave: () => void;
-  songId: number;
 };
 
 export function EditLibrarySongActions({
   actionState,
   onSave,
-  songId,
 }: EditLibrarySongActionsProps) {
   const theme = useCustomizationTheme();
 
@@ -33,7 +30,7 @@ export function EditLibrarySongActions({
       />
       <Link
         className="min-h-11 flex-grow overflow-hidden rounded-lg border px-3.5 text-center text-[13px] font-extrabold uppercase leading-[42px]"
-        href={getLibrarySongDetailHref({ songId })}
+        href={actionState.cancelHref}
         style={{
           backgroundColor: theme.surface,
           borderColor: theme.border,

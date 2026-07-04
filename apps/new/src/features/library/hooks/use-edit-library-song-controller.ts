@@ -27,6 +27,7 @@ export function useEditLibrarySongController({
   const resultState = getLibrarySongEditControllerResultState({
     detail,
     formState,
+    songId,
   });
 
   useEffect(() => {

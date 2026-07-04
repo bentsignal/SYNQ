@@ -1,4 +1,5 @@
 import type { ImportSongDraft } from "../types/import-session";
+import { getImportSongEditBackLinks } from "./import-song-edit-navigation-service";
 
 export {
   buildEditedImportSongDraft,
@@ -112,6 +113,7 @@ export const getImportSongEditControllerResultState = ({
   }),
   album: formState.album,
   artist: formState.artist,
+  backLinks: getImportSongEditBackLinks(),
   error: formState.error,
   title: formState.title,
   track: formState.track,

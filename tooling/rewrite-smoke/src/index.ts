@@ -12745,6 +12745,16 @@ function assertImportSongFormSmoke() {
       },
       album: "Smoke Album",
       artist: "Smoke Artist",
+      backLinks: [
+        {
+          href: "/(tabs)/import/save",
+          label: "Back to save",
+        },
+        {
+          href: "/(tabs)/import/files",
+          label: "Back to files",
+        },
+      ],
       error: null,
       title: "Import 8",
       track: "8",

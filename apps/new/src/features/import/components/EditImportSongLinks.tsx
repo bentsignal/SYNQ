@@ -1,11 +1,14 @@
 import { Link } from "expo-router";
 import { View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getImportSongEditBackLinks } from "../services/import-song-edit-navigation-service";
+import type { ImportSongEditControllerResultState } from "../services/import-song-edit-form-state-service";
 
-export function EditImportSongLinks() {
+type EditImportSongLinksProps = {
+  links: ImportSongEditControllerResultState["backLinks"];
+};
+
+export function EditImportSongLinks({ links }: EditImportSongLinksProps) {
   const theme = useCustomizationTheme();
-  const links = getImportSongEditBackLinks();
 
   return (
     <View className="flex-row flex-wrap gap-4">

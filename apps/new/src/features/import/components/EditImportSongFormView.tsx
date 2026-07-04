@@ -1,6 +1,9 @@
 import { ScrollView, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { ImportSongEditActionState } from "../services/import-song-edit-form-state-service";
+import type {
+  ImportSongEditActionState,
+  ImportSongEditControllerResultState,
+} from "../services/import-song-edit-form-state-service";
 import type { ImportSongDraft } from "../types/import-session";
 import { EditImportSongActions } from "./EditImportSongActions";
 import { EditImportSongFields } from "./EditImportSongFields";
@@ -12,6 +15,7 @@ type EditImportSongFormViewProps = {
   actionState: ImportSongEditActionState;
   album: string;
   artist: string;
+  backLinks: ImportSongEditControllerResultState["backLinks"];
   error: string | null;
   onChangeAlbum: (album: string) => void;
   onChangeArtist: (artist: string) => void;
@@ -27,6 +31,7 @@ export function EditImportSongFormView({
   actionState,
   album,
   artist,
+  backLinks,
   error,
   onChangeAlbum,
   onChangeArtist,
@@ -69,7 +74,7 @@ export function EditImportSongFormView({
         />
       </View>
 
-      <EditImportSongLinks />
+      <EditImportSongLinks links={backLinks} />
     </ScrollView>
   );
 }

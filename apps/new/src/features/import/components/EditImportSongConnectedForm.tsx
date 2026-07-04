@@ -15,6 +15,7 @@ export function EditImportSongConnectedForm({
     actionState,
     album,
     artist,
+    backLinks,
     error,
     save,
     setAlbum,
@@ -30,6 +31,7 @@ export function EditImportSongConnectedForm({
       actionState={actionState}
       album={album}
       artist={artist}
+      backLinks={backLinks}
       error={error}
       onChangeAlbum={setAlbum}
       onChangeArtist={setArtist}

@@ -688,6 +688,7 @@ import {
   getCollectionSongListState,
   getCollectionSongOrderUpdate,
   getCollectionSongRowActionState,
+  getCollectionSongRowViewState,
   reorderCollectionSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-song-mutation-service";
 import {
@@ -6270,6 +6271,28 @@ async function assertLibraryCollectionInteractionSmoke() {
       totalSongs: songs.length,
     }).canMoveDown,
     false,
+  );
+  assert.deepEqual(
+    getCollectionSongRowViewState({
+      index: 1,
+      movingSongId: null,
+      removingSongId: null,
+      songId: 2,
+      totalSongs: songs.length,
+    }),
+    {
+      detailHref: "/(tabs)/library/song/2",
+      rowState: {
+        canMoveDown: true,
+        canMoveUp: true,
+        canRemove: true,
+        downLabel: "Down",
+        isMoving: false,
+        isRemoving: false,
+        removeLabel: "Remove",
+        upLabel: "Up",
+      },
+    },
   );
   assert.equal(getCollectionListHref("album"), "/(tabs)/library/albums");
   assert.equal(getCollectionListHref("artist"), "/(tabs)/library/artists");

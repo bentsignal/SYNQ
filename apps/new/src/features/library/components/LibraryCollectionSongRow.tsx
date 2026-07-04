@@ -3,8 +3,7 @@ import { Pressable, Text, View } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionDetailSong } from "../hooks/use-library-collection-detail-query";
-import { getCollectionSongRowActionState } from "../services/library-collection-song-mutation-service";
-import { getLibrarySongDetailHref } from "../services/library-song-interaction-service";
+import { getCollectionSongRowViewState } from "../services/library-collection-song-mutation-service";
 import { LibraryCollectionSongRowActions } from "./LibraryCollectionSongRowActions";
 
 type LibraryCollectionSongRowProps = {
@@ -29,7 +28,7 @@ export function LibraryCollectionSongRow({
   totalSongs,
 }: LibraryCollectionSongRowProps) {
   const theme = useCustomizationTheme();
-  const rowState = getCollectionSongRowActionState({
+  const viewState = getCollectionSongRowViewState({
     canMutateSongs,
     index,
     movingSongId: movingSongId ?? null,
@@ -43,7 +42,7 @@ export function LibraryCollectionSongRow({
       className="min-h-[66px] flex-row items-center gap-3 border-b px-3.5 py-2.5"
       style={{ borderBottomColor: theme.borderSubtle }}
     >
-      <Link asChild href={getLibrarySongDetailHref({ songId: song.id })}>
+      <Link asChild href={viewState.detailHref}>
         <Pressable className="min-w-0 flex-1 flex-row items-center gap-3">
           <Text
             className="min-w-6 text-right text-xs font-extrabold tracking-normal"
@@ -80,7 +79,7 @@ export function LibraryCollectionSongRow({
           onMoveSong ? (direction) => onMoveSong(song.id, direction) : undefined
         }
         onRemoveSong={onRemoveSong ? () => onRemoveSong(song.id) : undefined}
-        rowState={rowState}
+        rowState={viewState.rowState}
         songTitle={song.title}
       />
     </View>

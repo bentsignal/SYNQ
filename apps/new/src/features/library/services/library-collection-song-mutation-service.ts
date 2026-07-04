@@ -1,4 +1,5 @@
 import type { LibraryCollectionDetailSong } from "./library-collection-detail-service";
+import { getLibrarySongDetailHref } from "./library-song-interaction-service";
 
 export const reorderCollectionSongs = ({
   direction,
@@ -89,3 +90,29 @@ export const getCollectionSongRowActionState = ({
 export type CollectionSongRowActionState = ReturnType<
   typeof getCollectionSongRowActionState
 >;
+
+export const getCollectionSongRowViewState = ({
+  canMutateSongs,
+  index,
+  movingSongId,
+  removingSongId,
+  songId,
+  totalSongs,
+}: {
+  canMutateSongs?: boolean;
+  index: number;
+  movingSongId: number | null;
+  removingSongId: number | null;
+  songId: number;
+  totalSongs: number;
+}) => ({
+  detailHref: getLibrarySongDetailHref({ songId }),
+  rowState: getCollectionSongRowActionState({
+    canMutateSongs,
+    index,
+    movingSongId,
+    removingSongId,
+    songId,
+    totalSongs,
+  }),
+});

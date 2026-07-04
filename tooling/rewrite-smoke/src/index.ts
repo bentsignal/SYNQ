@@ -8551,11 +8551,13 @@ async function assertLibrarySongDetailSmoke() {
         items: [
           {
             detail: "Album / track 2",
+            href: "/(tabs)/library/album/2",
             id: 2,
             title: "Beta Album",
           },
           {
             detail: "2026 / track 1",
+            href: "/(tabs)/library/album/1",
             id: 1,
             title: "Alpha Album",
           },
@@ -8566,8 +8568,16 @@ async function assertLibrarySongDetailSmoke() {
       artists: {
         emptyLabel: "No artists linked",
         items: [
-          { id: 2, title: "Beta Artist" },
-          { id: 1, title: "Alpha Artist" },
+          {
+            href: "/(tabs)/library/artist/2",
+            id: 2,
+            title: "Beta Artist",
+          },
+          {
+            href: "/(tabs)/library/artist/1",
+            id: 1,
+            title: "Alpha Artist",
+          },
         ],
         kind: "artist",
         title: "Artists",
@@ -8575,8 +8585,16 @@ async function assertLibrarySongDetailSmoke() {
       playlists: {
         emptyLabel: "No playlists linked",
         items: [
-          { id: 5, title: "Smoke Playlist" },
-          { id: 6, title: "Untitled playlist" },
+          {
+            href: "/(tabs)/library/playlist/5",
+            id: 5,
+            title: "Smoke Playlist",
+          },
+          {
+            href: "/(tabs)/library/playlist/6",
+            id: 6,
+            title: "Untitled playlist",
+          },
         ],
         kind: "playlist",
         title: "Playlists",

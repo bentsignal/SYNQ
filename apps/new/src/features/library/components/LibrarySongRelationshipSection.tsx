@@ -1,22 +1,16 @@
 import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import {
-  getLibrarySongRelationshipHref,
-  type LibrarySongRelationshipKind,
-} from "../services/library-song-interaction-service";
 
 type LibrarySongRelationshipSectionProps = {
   emptyLabel: string;
-  items: { detail?: string; id: number; title: string }[];
-  kind: LibrarySongRelationshipKind;
+  items: { detail?: string; href: string; id: number; title: string }[];
   title: string;
 };
 
 export function LibrarySongRelationshipSection({
   emptyLabel,
   items,
-  kind,
   title,
 }: LibrarySongRelationshipSectionProps) {
   const theme = useCustomizationTheme();
@@ -44,7 +38,7 @@ export function LibrarySongRelationshipSection({
           items.map((item) => (
             <Link
               asChild
-              href={getLibrarySongRelationshipHref({ id: item.id, kind })}
+              href={item.href}
               key={item.id}
             >
               <Pressable

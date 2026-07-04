@@ -61,19 +61,16 @@ export function LibrarySongDetailView({
       <LibrarySongRelationshipSection
         emptyLabel={viewState.relationshipSections.artists.emptyLabel}
         items={viewState.relationshipSections.artists.items}
-        kind={viewState.relationshipSections.artists.kind}
         title={viewState.relationshipSections.artists.title}
       />
       <LibrarySongRelationshipSection
         emptyLabel={viewState.relationshipSections.albums.emptyLabel}
         items={viewState.relationshipSections.albums.items}
-        kind={viewState.relationshipSections.albums.kind}
         title={viewState.relationshipSections.albums.title}
       />
       <LibrarySongRelationshipSection
         emptyLabel={viewState.relationshipSections.playlists.emptyLabel}
         items={viewState.relationshipSections.playlists.items}
-        kind={viewState.relationshipSections.playlists.kind}
         title={viewState.relationshipSections.playlists.title}
       />
 

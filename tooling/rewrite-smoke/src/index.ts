@@ -1070,6 +1070,7 @@ import {
   getBackupResetStatusCommand,
   getBackupScreenState,
   getBackupStatusState,
+  getBackupViewState,
 } from "../../../apps/new/src/features/backup/services/backup-screen-service";
 import {
   runBackupOperationAction,
@@ -14106,6 +14107,39 @@ async function assertBackupScreenSmoke() {
       showPremiumBadge: false,
     },
   );
+  assert.deepEqual(getBackupViewState({ premiumActive: false, state: idleState }), {
+    actionCards: [
+      {
+        ...backupActionCards[0],
+        actionState: {
+          buttonLabel: "Backup",
+          isDanger: false,
+          isDisabled: false,
+          showPremiumBadge: true,
+        },
+      },
+      {
+        ...backupActionCards[1],
+        actionState: {
+          buttonLabel: "Restore",
+          isDanger: false,
+          isDisabled: false,
+          showPremiumBadge: true,
+        },
+      },
+      {
+        ...backupActionCards[2],
+        actionState: {
+          buttonLabel: "Erase",
+          isDanger: true,
+          isDisabled: false,
+          showPremiumBadge: true,
+        },
+      },
+    ],
+    screenState: getBackupScreenState(),
+    statusState: getBackupStatusState(idleState),
+  });
   assert.equal(getBackupConfirmationState("backup"), null);
   assert.deepEqual(getBackupConfirmationState("restore"), {
     body: "This replaces the current local library with the selected backup archive.",

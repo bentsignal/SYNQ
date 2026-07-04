@@ -100,3 +100,26 @@ export const getBackupStatusState = (state: BackupSessionState) => ({
       ? `${getBackupOperationLabel(state.lastOperation)} ${state.phase}`
       : "No backup operation has run."),
 });
+
+export const getBackupViewState = ({
+  premiumActive,
+  state,
+}: {
+  premiumActive: boolean;
+  state: BackupSessionState;
+}) => ({
+  actionCards: backupActionCards.map((action) => ({
+    ...action,
+    actionState: getBackupActionState({
+      operation: action.operation,
+      premiumActive,
+      state,
+    }),
+  })),
+  screenState: getBackupScreenState(),
+  statusState: getBackupStatusState(state),
+});
+
+export type BackupActionCardViewState = ReturnType<
+  typeof getBackupViewState
+>["actionCards"][number];

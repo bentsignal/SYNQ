@@ -2,7 +2,6 @@ import { Link } from "expo-router";
 import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { BackupScreenController } from "../hooks/use-backup-screen-controller";
-import { getBackupScreenState } from "../services/backup-screen-service";
 import { BackupActionList } from "./BackupActionList";
 import { BackupScreenHeader } from "./BackupScreenHeader";
 import { BackupStatusPanel } from "./BackupStatusPanel";
@@ -10,13 +9,13 @@ import { BackupStatusPanel } from "./BackupStatusPanel";
 type BackupScreenViewProps = BackupScreenController;
 
 export function BackupScreenView({
-  getActionState,
+  actionCards,
   resetStatus,
   runBackupOperation,
+  screenState,
   statusState,
 }: BackupScreenViewProps) {
   const theme = useCustomizationTheme();
-  const screenState = getBackupScreenState();
 
   return (
     <ScrollView
@@ -26,7 +25,7 @@ export function BackupScreenView({
     >
       <BackupScreenHeader />
       <BackupActionList
-        getActionState={getActionState}
+        actionCards={actionCards}
         runBackupOperation={runBackupOperation}
       />
       <BackupStatusPanel resetStatus={resetStatus} statusState={statusState} />

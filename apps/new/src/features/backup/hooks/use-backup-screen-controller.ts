@@ -1,10 +1,7 @@
 import { showNativeConfirmationAlert } from "@/src/features/app-shell/services/native-alert-service";
 import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import {
-  getBackupActionState,
-  getBackupStatusState,
-} from "../services/backup-screen-service";
+import { getBackupViewState } from "../services/backup-screen-service";
 import {
   runBackupOperationAction,
   runBackupResetStatusAction,
@@ -19,7 +16,10 @@ export function useBackupScreenController() {
   const premiumActive = usePremiumEntitlementSelector(
     (store) => store.state.active,
   );
-  const statusState = getBackupStatusState(state);
+  const { actionCards, screenState, statusState } = getBackupViewState({
+    premiumActive,
+    state,
+  });
 
   useBackupPhaseEffects(state);
 
@@ -38,17 +38,11 @@ export function useBackupScreenController() {
     runBackupResetStatusAction({ reset, sendHaptic });
   };
 
-  const getActionState = (operation: BackupOperation) =>
-    getBackupActionState({
-      operation,
-      premiumActive,
-      state,
-    });
-
   return {
-    getActionState,
+    actionCards,
     resetStatus,
     runBackupOperation,
+    screenState,
     statusState,
   };
 }

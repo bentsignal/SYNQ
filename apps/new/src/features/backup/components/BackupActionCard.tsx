@@ -1,27 +1,19 @@
 import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { BackupActionCard as BackupActionCardConfig } from "../services/backup-screen-service";
+import type { BackupActionCardViewState } from "../services/backup-screen-service";
 import type { BackupOperation } from "../types/backup-session";
 
-type BackupActionState = {
-  buttonLabel: string;
-  isDanger: boolean;
-  isDisabled: boolean;
-  showPremiumBadge: boolean;
-};
-
 type BackupActionCardProps = {
-  action: BackupActionCardConfig;
-  actionState: BackupActionState;
+  action: BackupActionCardViewState;
   onRunOperation: (operation: BackupOperation) => void;
 };
 
 export function BackupActionCard({
   action,
-  actionState,
   onRunOperation,
 }: BackupActionCardProps) {
   const theme = useCustomizationTheme();
+  const { actionState } = action;
 
   return (
     <View

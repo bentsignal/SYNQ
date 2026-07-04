@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionPreview } from "../hooks/use-library-collection-preview-query";
+import { getLibraryCollectionPreviewRows } from "../services/library-collection-preview-service";
 import { LibraryCollectionPreviewRow } from "./LibraryCollectionPreviewRow";
 
 type LibraryCollectionPreviewColumnProps = {
@@ -21,6 +22,7 @@ export function LibraryCollectionPreviewColumn({
   viewAllHref,
 }: LibraryCollectionPreviewColumnProps) {
   const theme = useCustomizationTheme();
+  const rows = getLibraryCollectionPreviewRows(collections);
 
   return (
     <View className="gap-2">
@@ -53,10 +55,10 @@ export function LibraryCollectionPreviewColumn({
             None yet
           </Text>
         ) : (
-          collections.map((collection) => (
+          rows.map((row) => (
             <LibraryCollectionPreviewRow
-              collection={collection}
-              key={`${collection.kind}-${collection.id}`}
+              key={`${row.collection.kind}-${row.collection.id}`}
+              row={row}
             />
           ))
         )}

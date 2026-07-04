@@ -28,6 +28,18 @@ export const getLibraryCollectionPreviewHref = (
   }
 };
 
+export const getLibraryCollectionPreviewRows = (
+  collections: LibraryCollectionPreview[],
+) =>
+  collections.map((collection) => ({
+    collection,
+    href: getLibraryCollectionPreviewHref(collection),
+  }));
+
+export type LibraryCollectionPreviewRowState = ReturnType<
+  typeof getLibraryCollectionPreviewRows
+>[number];
+
 export const getLibraryCollectionPreviewEmptyState = () => ({
   body: "Create a playlist, album, or artist once you have songs to organize.",
   title: "No collections yet",

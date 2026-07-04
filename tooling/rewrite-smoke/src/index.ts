@@ -717,6 +717,7 @@ import {
 import {
   getLibraryCollectionPreviewEmptyState,
   getLibraryCollectionPreviewHref,
+  getLibraryCollectionPreviewRows,
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import {
   buildLibraryCollectionPreviewQueryResult,
@@ -7576,6 +7577,23 @@ function assertLibraryCollectionPreviewSmoke() {
       kind: "artists",
     }),
     "/(tabs)/library/artist/1",
+  );
+  assert.deepEqual(
+    getLibraryCollectionPreviewRows([albums[0]!, artists[0]!, playlists[0]!]),
+    [
+      {
+        collection: albums[0],
+        href: "/(tabs)/library/album/1",
+      },
+      {
+        collection: artists[0],
+        href: "/(tabs)/library/artist/1",
+      },
+      {
+        collection: playlists[0],
+        href: "/(tabs)/library/playlist/2",
+      },
+    ],
   );
   assert.equal(
     getLibraryCollectionPreviewUpdatedAt({

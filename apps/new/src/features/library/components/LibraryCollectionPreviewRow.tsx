@@ -1,22 +1,22 @@
 import { Link } from "expo-router";
 import { Image, Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { LibraryCollectionPreview } from "../hooks/use-library-collection-preview-query";
-import { getLibraryCollectionPreviewHref } from "../services/library-collection-preview-service";
+import type { LibraryCollectionPreviewRowState } from "../services/library-collection-preview-service";
 
 type LibraryCollectionPreviewRowProps = {
-  collection: LibraryCollectionPreview;
+  row: LibraryCollectionPreviewRowState;
 };
 
 export function LibraryCollectionPreviewRow({
-  collection,
+  row,
 }: LibraryCollectionPreviewRowProps) {
   const theme = useCustomizationTheme();
+  const { collection } = row;
 
   return (
     <Link
       asChild
-      href={getLibraryCollectionPreviewHref(collection)}
+      href={row.href}
       key={`${collection.kind}-${collection.id}`}
     >
       <Pressable

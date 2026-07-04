@@ -49,4 +49,21 @@ export const getImportWifiActionState = () => ({
   },
 });
 
+export const getImportWifiViewState = ({
+  error,
+  isReady,
+  state,
+}: {
+  error: string | null;
+  isReady: boolean;
+  state: ImportSessionState;
+}) => ({
+  actionState: getImportWifiActionState(),
+  wifiState: getImportWifiState({ error, isReady, state }),
+});
+
+export type ImportWifiActionState = ReturnType<
+  typeof getImportWifiActionState
+>;
+
 export const getImportWifiReviewSaveHaptic = (): HapticFeedbackType => "light";

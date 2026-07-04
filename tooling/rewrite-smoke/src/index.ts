@@ -286,6 +286,7 @@ import {
   getImportWifiActionState,
   getImportWifiReviewSaveHaptic,
   getImportWifiState,
+  getImportWifiViewState,
 } from "../../../apps/new/src/features/import/services/import-wifi-screen-state-service";
 import {
   getHydrateImportSessionAction,
@@ -4545,6 +4546,21 @@ async function assertImportSessionSmoke() {
       label: "Review save",
     },
   });
+  assert.deepEqual(
+    getImportWifiViewState({
+      error: null,
+      isReady: true,
+      state,
+    }),
+    {
+      actionState: getImportWifiActionState(),
+      wifiState: getImportWifiState({
+        error: null,
+        isReady: true,
+        state,
+      }),
+    },
+  );
   assert.equal(getImportWifiReviewSaveHaptic(), "light");
   const importWifiActionEvents: unknown[] = [];
   runImportWifiReviewSaveAction({

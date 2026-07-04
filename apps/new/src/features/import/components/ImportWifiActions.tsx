@@ -1,19 +1,20 @@
 import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getImportWifiActionState } from "../services/import-wifi-screen-state-service";
+import type { ImportWifiActionState } from "../services/import-wifi-screen-state-service";
 
 type ImportWifiActionsProps = {
+  actionState: ImportWifiActionState;
   canReviewSave: boolean;
   reviewSave: () => void;
 };
 
 export function ImportWifiActions({
+  actionState,
   canReviewSave,
   reviewSave,
 }: ImportWifiActionsProps) {
   const theme = useCustomizationTheme();
-  const actionState = getImportWifiActionState();
 
   return (
     <View className="flex-row flex-wrap items-center gap-4">

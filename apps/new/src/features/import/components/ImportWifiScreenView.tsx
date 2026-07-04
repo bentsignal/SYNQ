@@ -10,6 +10,7 @@ import { ImportWifiProgressPanel } from "./ImportWifiProgressPanel";
 type ImportWifiScreenViewProps = ImportWifiScreenController;
 
 export function ImportWifiScreenView({
+  actionState,
   removeSong,
   reviewSave,
   serverState,
@@ -37,6 +38,7 @@ export function ImportWifiScreenView({
         songs={state.songs}
       />
       <ImportWifiActions
+        actionState={actionState}
         canReviewSave={canReviewSave}
         reviewSave={reviewSave}
       />

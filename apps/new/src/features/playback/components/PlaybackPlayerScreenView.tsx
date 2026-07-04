@@ -1,12 +1,7 @@
 import { Link } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
-import {
-  getLibrarySongDetailHref,
-  getLibrarySongEditHref,
-} from "@/src/features/library/services/library-song-interaction-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { PlaybackPlayerController } from "../hooks/use-playback-player-controller";
-import { getPlaybackPlayerScreenState } from "../services/playback-screen-state-service";
 import { PlaybackAdBreakPanel } from "./PlaybackAdBreakPanel";
 import { PlaybackNowPlayingPanel } from "./PlaybackNowPlayingPanel";
 import { PlaybackPlayerControls } from "./PlaybackPlayerControls";
@@ -17,11 +12,14 @@ type PlaybackPlayerScreenViewProps = PlaybackPlayerController;
 export function PlaybackPlayerScreenView({
   actionState,
   activeTrack,
+  activeTrackDetailLink,
+  activeTrackEditLink,
   adProgressPercent,
   fastForward,
   freeListeningRemainingMs,
   progressPercent,
   rewind,
+  screenState,
   skipBack,
   skipForward,
   state,
@@ -30,7 +28,6 @@ export function PlaybackPlayerScreenView({
   toggleShuffleMode,
 }: PlaybackPlayerScreenViewProps) {
   const theme = useCustomizationTheme();
-  const screenState = getPlaybackPlayerScreenState();
 
   return (
     <ScrollView
@@ -90,23 +87,23 @@ export function PlaybackPlayerScreenView({
 
       {state.error ? <PlaybackErrorPanel error={state.error} /> : null}
 
-      {activeTrack && actionState.canOpenActiveTrackDetails ? (
+      {activeTrackDetailLink ? (
         <Link
           className="text-[15px] font-extrabold"
-          href={getLibrarySongDetailHref({ songId: activeTrack.id })}
+          href={activeTrackDetailLink.href}
           style={{ color: theme.accent }}
         >
-          Song details
+          {activeTrackDetailLink.label}
         </Link>
       ) : null}
 
-      {activeTrack && actionState.canEditActiveTrack ? (
+      {activeTrackEditLink ? (
         <Link
           className="text-[15px] font-extrabold"
-          href={getLibrarySongEditHref({ songId: activeTrack.id })}
+          href={activeTrackEditLink.href}
           style={{ color: theme.accent }}
         >
-          Edit song
+          {activeTrackEditLink.label}
         </Link>
       ) : null}
 

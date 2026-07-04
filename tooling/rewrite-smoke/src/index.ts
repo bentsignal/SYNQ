@@ -3058,9 +3058,29 @@ function assertPlaybackPlayerStateSmoke() {
         playPauseLabel: "Pause",
         shuffleLabel: "Shuffle Off",
       },
+      activeTrackDetailLink: {
+        href: "/(tabs)/library/song/10",
+        label: "Song details",
+      },
+      activeTrackEditLink: {
+        href: "/(tabs)/library/song/edit/10",
+        label: "Edit song",
+      },
       adProgressPercent: 25,
       freeListeningRemainingMs: 480_000,
       progressPercent: 25,
+      screenState: {
+        header: {
+          kicker: "Now Playing",
+          subtitle:
+            "Control playback, queue movement, shuffle, repeat, and free-listening ad breaks.",
+          title: "Player",
+        },
+        queueLink: {
+          href: "/queue",
+          label: "Open queue",
+        },
+      },
     },
   );
   assert.deepEqual(

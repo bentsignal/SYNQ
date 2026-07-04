@@ -2,7 +2,12 @@ import type {
   PlaybackQueueItem,
   PlaybackState,
 } from "../types/playback-state";
+import {
+  getLibrarySongDetailHref,
+  getLibrarySongEditHref,
+} from "../../library/services/library-song-interaction-service";
 import { getPlaybackPlayerActionState } from "./playback-player-action-state-service";
+import { getPlaybackPlayerScreenState } from "./playback-screen-state-service";
 
 export const playerSeekStepMs = 15_000;
 
@@ -50,18 +55,38 @@ export const getPlaybackPlayerViewState = ({
 }: {
   activeTrack: PlaybackQueueItem | null;
   state: PlaybackState;
-}) => ({
-  actionState: getPlaybackPlayerActionState({ activeTrack, state }),
-  adProgressPercent: getPlaybackProgressPercent({
-    duration: state.adGate.playbackDuration,
-    position: state.adGate.playbackPosition,
-  }),
-  freeListeningRemainingMs: getFreeListeningRemainingMs({
-    accumulatedMs: state.adGate.accumulatedMs,
-    thresholdMs: state.adGate.thresholdMs,
-  }),
-  progressPercent: getPlaybackProgressPercent({
-    duration: state.duration,
-    position: state.position,
-  }),
-});
+}) => {
+  const actionState = getPlaybackPlayerActionState({ activeTrack, state });
+  const activeTrackId = activeTrack?.id ?? null;
+
+  return {
+    actionState,
+    activeTrackDetailLink:
+      activeTrackId !== null && actionState.canOpenActiveTrackDetails
+        ? {
+            href: getLibrarySongDetailHref({ songId: activeTrackId }),
+            label: "Song details",
+          }
+        : null,
+    activeTrackEditLink:
+      activeTrackId !== null && actionState.canEditActiveTrack
+        ? {
+            href: getLibrarySongEditHref({ songId: activeTrackId }),
+            label: "Edit song",
+          }
+        : null,
+    adProgressPercent: getPlaybackProgressPercent({
+      duration: state.adGate.playbackDuration,
+      position: state.adGate.playbackPosition,
+    }),
+    freeListeningRemainingMs: getFreeListeningRemainingMs({
+      accumulatedMs: state.adGate.accumulatedMs,
+      thresholdMs: state.adGate.thresholdMs,
+    }),
+    progressPercent: getPlaybackProgressPercent({
+      duration: state.duration,
+      position: state.position,
+    }),
+    screenState: getPlaybackPlayerScreenState(),
+  };
+};

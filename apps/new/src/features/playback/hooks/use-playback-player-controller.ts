@@ -20,9 +20,12 @@ export function usePlaybackPlayerController() {
   );
   const {
     actionState,
+    activeTrackDetailLink,
+    activeTrackEditLink,
     adProgressPercent,
     freeListeningRemainingMs,
     progressPercent,
+    screenState,
   } = getPlaybackPlayerViewState({ activeTrack, state });
   const commands = usePlaybackPlayerCommands({
     pause,
@@ -39,9 +42,12 @@ export function usePlaybackPlayerController() {
   return {
     actionState,
     activeTrack,
+    activeTrackDetailLink,
+    activeTrackEditLink,
     adProgressPercent,
     freeListeningRemainingMs,
     progressPercent,
+    screenState,
     state,
     ...commands,
   };

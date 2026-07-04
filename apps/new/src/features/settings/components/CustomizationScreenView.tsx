@@ -33,7 +33,10 @@ export function CustomizationScreenView({
       />
 
       {screenState.showPremiumPanel && (
-        <CustomizationPremiumPanel theme={theme} />
+        <CustomizationPremiumPanel
+          panel={screenState.premiumPanel}
+          theme={theme}
+        />
       )}
 
       <CustomizationColorControls

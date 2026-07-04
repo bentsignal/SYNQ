@@ -6,6 +6,7 @@ import type { HapticFeedbackType } from "./haptic-feedback-service";
 import type { PrivacySettingsStatus } from "../types/privacy-settings";
 import {
   getSettingsBackLink,
+  getSettingsPremiumHref,
   getSupportActionKey,
   supportActions,
 } from "./settings-navigation-service";
@@ -109,6 +110,11 @@ export const getCustomizationScreenState = ({
   status: CustomizationSettingsStatus;
 }) => ({
   hapticsDisabled: status === "loading",
+  premiumPanel: {
+    body: "Unlock theme and app icon choices with Premium.",
+    href: getSettingsPremiumHref(),
+    title: "Premium customization locked",
+  },
   showPremiumPanel: !premiumActive,
   statusLabel: status === "saving" ? "Saving" : "Preferences saved locally",
   themeControlsDisabled: !premiumActive || status === "loading",

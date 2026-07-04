@@ -1,13 +1,15 @@
 import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import type { CustomizationTheme } from "../hooks/use-customization-theme";
-import { getSettingsPremiumHref } from "../services/settings-navigation-service";
+import type { getCustomizationScreenState } from "../services/settings-screen-service";
 
 type CustomizationPremiumPanelProps = {
+  panel: ReturnType<typeof getCustomizationScreenState>["premiumPanel"];
   theme: CustomizationTheme;
 };
 
 export function CustomizationPremiumPanel({
+  panel,
   theme,
 }: CustomizationPremiumPanelProps) {
   return (
@@ -20,16 +22,16 @@ export function CustomizationPremiumPanel({
           className="text-base font-extrabold leading-[22px]"
           style={{ color: theme.primaryText }}
         >
-          Premium customization locked
+          {panel.title}
         </Text>
         <Text
           className="text-[13px] leading-[19px]"
           style={{ color: theme.secondaryText }}
         >
-          Unlock theme and app icon choices with Premium.
+          {panel.body}
         </Text>
       </View>
-      <Link asChild href={getSettingsPremiumHref()}>
+      <Link asChild href={panel.href}>
         <Pressable
           className="min-h-10 items-center justify-center rounded-lg px-3.5"
           style={{ backgroundColor: theme.accent }}

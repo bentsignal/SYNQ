@@ -15984,6 +15984,11 @@ async function assertSettingsScreenSmoke() {
     getCustomizationScreenState({ premiumActive: false, status: "idle" }),
     {
       hapticsDisabled: false,
+      premiumPanel: {
+        body: "Unlock theme and app icon choices with Premium.",
+        href: "/premium",
+        title: "Premium customization locked",
+      },
       showPremiumPanel: true,
       statusLabel: "Preferences saved locally",
       themeControlsDisabled: true,
@@ -15993,6 +15998,11 @@ async function assertSettingsScreenSmoke() {
     getCustomizationScreenState({ premiumActive: true, status: "loading" }),
     {
       hapticsDisabled: true,
+      premiumPanel: {
+        body: "Unlock theme and app icon choices with Premium.",
+        href: "/premium",
+        title: "Premium customization locked",
+      },
       showPremiumPanel: false,
       statusLabel: "Preferences saved locally",
       themeControlsDisabled: true,
@@ -16002,6 +16012,11 @@ async function assertSettingsScreenSmoke() {
     getCustomizationScreenState({ premiumActive: true, status: "saving" }),
     {
       hapticsDisabled: false,
+      premiumPanel: {
+        body: "Unlock theme and app icon choices with Premium.",
+        href: "/premium",
+        title: "Premium customization locked",
+      },
       showPremiumPanel: false,
       statusLabel: "Saving",
       themeControlsDisabled: false,

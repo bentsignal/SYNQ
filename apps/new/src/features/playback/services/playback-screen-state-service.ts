@@ -126,3 +126,16 @@ export const getPlaybackMiniPlayerState = ({
     title: activeTrack.title,
   };
 };
+
+export const getPlaybackMiniPlayerViewState = ({
+  activeTrack,
+  pathname,
+  state,
+}: {
+  activeTrack: PlaybackQueueItem | null;
+  pathname: string;
+  state: PlaybackState;
+}) => ({
+  miniPlayer: getPlaybackMiniPlayerState({ activeTrack, pathname, state }),
+  playerHref: getPlaybackPlayerHref(),
+});

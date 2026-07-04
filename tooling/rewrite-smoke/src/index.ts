@@ -134,6 +134,7 @@ import {
 import {
   getPlaybackAdBreakPanelState,
   getPlaybackMiniPlayerState,
+  getPlaybackMiniPlayerViewState,
   getPlaybackPlayerHref,
   getPlaybackPlayerScreenState,
   getPlaybackPremiumHref,
@@ -3146,6 +3147,29 @@ function assertPlaybackPlayerStateSmoke() {
       metaLabel: "Smoke Artist - -2:00",
       playLabel: "Play",
       title: "Mini Track",
+    },
+  );
+  assert.deepEqual(
+    getPlaybackMiniPlayerViewState({
+      activeTrack,
+      pathname: "/(tabs)",
+      state: {
+        ...initialPlaybackState,
+        duration: 180_000,
+        isPlaying: false,
+        position: 60_000,
+      },
+    }),
+    {
+      miniPlayer: {
+        blockedByAd: false,
+        canTogglePlayback: true,
+        isVisible: true,
+        metaLabel: "Smoke Artist - -2:00",
+        playLabel: "Play",
+        title: "Mini Track",
+      },
+      playerHref: "/player",
     },
   );
   assert.deepEqual(

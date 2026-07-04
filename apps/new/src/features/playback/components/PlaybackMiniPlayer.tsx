@@ -1,28 +1,12 @@
-import { Link, usePathname } from "expo-router";
+import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import {
-  usePlaybackActiveTrack,
-  usePlaybackState,
-  usePlaybackToggleActions,
-} from "../hooks/use-playback-session-selectors";
-import {
-  getPlaybackMiniPlayerState,
-  getPlaybackPlayerHref,
-} from "../services/playback-screen-state-service";
+import { usePlaybackMiniPlayerController } from "../hooks/use-playback-mini-player-controller";
 
 export function PlaybackMiniPlayer() {
   const theme = useCustomizationTheme();
-  const pathname = usePathname();
-  const activeTrack = usePlaybackActiveTrack();
-  const { pause, resume } = usePlaybackToggleActions();
-  const state = usePlaybackState();
-  const miniPlayer = getPlaybackMiniPlayerState({
-    activeTrack,
-    pathname,
-    state,
-  });
-  const playerHref = getPlaybackPlayerHref();
+  const { miniPlayer, pause, playerHref, resume, state } =
+    usePlaybackMiniPlayerController();
 
   if (!miniPlayer.isVisible) {
     return null;

@@ -243,6 +243,12 @@ import {
   runImportSaveToggleAction,
 } from "../../../apps/new/src/features/import/services/import-save-session-action-flow-service";
 import {
+  getImportReviewRequestAttemptState,
+  normalizeImportReviewRequestState,
+  requestImportReviewIfEligibleWithDependencies,
+  type ImportReviewRequestState,
+} from "../../../apps/new/src/features/import/services/import-review-request-executor-service";
+import {
   getImportSaveBackLink,
   getImportSaveActionState,
   getImportSaveHeaderState,
@@ -3417,6 +3423,10 @@ async function assertImportSessionSmoke() {
   });
   await runImportFinishAction({
     navigate: navigateSaveSessionAction,
+    requestReviewIfEligible: async () => {
+      saveSessionActionEvents.push(["review"]);
+      return true;
+    },
     saveImportSession: async () => true,
     sendHaptic: sendSaveSessionActionHaptic,
   });
@@ -3439,6 +3449,7 @@ async function assertImportSessionSmoke() {
     ["haptic", "light"],
     ["set-save", true],
     ["haptic", "medium"],
+    ["review"],
     ["haptic", "success"],
     ["navigate", "/(tabs)/import/success"],
     ["haptic", "medium"],
@@ -3450,6 +3461,73 @@ async function assertImportSessionSmoke() {
     ["haptic", "medium"],
     ["haptic", "error"],
     ["navigate", "/(tabs)/import/failure"],
+  ]);
+  assert.deepEqual(normalizeImportReviewRequestState(null), {
+    importCount: 0,
+    reviewAlreadyRequested: false,
+  });
+  assert.deepEqual(
+    normalizeImportReviewRequestState({
+      importCount: 1.8,
+      reviewAlreadyRequested: true,
+    }),
+    {
+      importCount: 1,
+      reviewAlreadyRequested: true,
+    },
+  );
+  assert.deepEqual(
+    getImportReviewRequestAttemptState({
+      options: { premiumActive: true, showReviewAfter: 3 },
+      state: { importCount: 0, reviewAlreadyRequested: false },
+    }),
+    {
+      nextState: { importCount: 0, reviewAlreadyRequested: false },
+      shouldRequest: true,
+    },
+  );
+  assert.deepEqual(
+    getImportReviewRequestAttemptState({
+      options: { premiumActive: false, showReviewAfter: 3 },
+      state: { importCount: 1, reviewAlreadyRequested: false },
+    }),
+    {
+      nextState: { importCount: 2, reviewAlreadyRequested: false },
+      shouldRequest: false,
+    },
+  );
+  const importReviewCalls: unknown[] = [];
+  let importReviewState: ImportReviewRequestState = {
+    importCount: 2,
+    reviewAlreadyRequested: false,
+  };
+  await requestImportReviewIfEligibleWithDependencies({
+    dependencies: {
+      isReviewAvailable: async () => {
+        importReviewCalls.push("available");
+        return true;
+      },
+      loadState: async () => importReviewState,
+      requestReview: async () => {
+        importReviewCalls.push("request");
+      },
+      saveState: async (state) => {
+        importReviewCalls.push(["save", state]);
+        importReviewState = state;
+      },
+    },
+    options: { premiumActive: false, showReviewAfter: 3 },
+  });
+  assert.deepEqual(importReviewCalls, [
+    "available",
+    "request",
+    [
+      "save",
+      {
+        importCount: 3,
+        reviewAlreadyRequested: true,
+      },
+    ],
   ]);
   assert.deepEqual(getImportSongPreviewEmptyState(), {
     body: "Choose songs to review them before saving.",

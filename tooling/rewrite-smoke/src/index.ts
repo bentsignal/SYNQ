@@ -140,6 +140,7 @@ import {
   getPlaybackQueueEmptyState,
   getPlaybackQueueHref,
   getPlaybackQueueScreenState,
+  getPlaybackQueueViewState,
 } from "../../../apps/new/src/features/playback/services/playback-screen-state-service";
 import { audioStatusToTrackPlayerSnapshot } from "../../../apps/new/src/features/playback/services/playback-native-status-service";
 import {
@@ -2785,6 +2786,18 @@ function assertPlaybackPlayerStateSmoke() {
         "Reorder upcoming songs, remove tracks, or jump to a different song.",
       title: "Now Playing",
     },
+  });
+  assert.deepEqual(getPlaybackQueueViewState({ queueLength: 0 }), {
+    actionState: {
+      canClearQueue: false,
+    },
+    screenState: getPlaybackQueueScreenState(),
+  });
+  assert.deepEqual(getPlaybackQueueViewState({ queueLength: 2 }), {
+    actionState: {
+      canClearQueue: true,
+    },
+    screenState: getPlaybackQueueScreenState(),
   });
   assert.deepEqual(
     getPlaybackAdBreakPanelState({

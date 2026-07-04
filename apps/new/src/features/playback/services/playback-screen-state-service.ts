@@ -6,6 +6,7 @@ import type {
   PlaybackQueueItem,
   PlaybackState,
 } from "../types/playback-state";
+import { getPlaybackQueueActionState } from "./playback-queue-action-state-service";
 
 export type PlaybackHref = "/player" | "/premium" | "/queue";
 
@@ -42,6 +43,15 @@ export const getPlaybackQueueScreenState = () => ({
       "Reorder upcoming songs, remove tracks, or jump to a different song.",
     title: "Now Playing",
   },
+});
+
+export const getPlaybackQueueViewState = ({
+  queueLength,
+}: {
+  queueLength: number;
+}) => ({
+  actionState: getPlaybackQueueActionState({ queueLength }),
+  screenState: getPlaybackQueueScreenState(),
 });
 
 export const getPlaybackPlayerScreenState = () => ({

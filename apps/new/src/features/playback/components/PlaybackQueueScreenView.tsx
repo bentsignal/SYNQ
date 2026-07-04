@@ -2,7 +2,6 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { PlaybackQueueController } from "../hooks/use-playback-queue-controller";
-import { getPlaybackQueueScreenState } from "../services/playback-screen-state-service";
 import { PlaybackQueueAdBreakPanel } from "./PlaybackQueueAdBreakPanel";
 import { PlaybackQueueList } from "./PlaybackQueueList";
 
@@ -16,10 +15,10 @@ export function PlaybackQueueScreenView({
   moveQueuedSong,
   playQueuedSong,
   removeQueuedSong,
+  screenState,
   state,
 }: PlaybackQueueScreenViewProps) {
   const theme = useCustomizationTheme();
-  const screenState = getPlaybackQueueScreenState();
 
   return (
     <ScrollView

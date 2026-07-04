@@ -1,4 +1,4 @@
-import { getPlaybackQueueActionState } from "../services/playback-queue-action-state-service";
+import { getPlaybackQueueViewState } from "../services/playback-screen-state-service";
 import { usePlaybackQueueActions } from "./use-playback-queue-actions";
 import { usePlaybackSessionSelector } from "./use-playback-session";
 
@@ -14,7 +14,7 @@ export function usePlaybackQueueController() {
   );
   const state = usePlaybackSessionSelector((store) => store.state);
   const adBreakActive = state.adGate.active || state.adGate.due;
-  const actionState = getPlaybackQueueActionState({
+  const { actionState, screenState } = getPlaybackQueueViewState({
     queueLength: state.queue.length,
   });
   const {
@@ -37,6 +37,7 @@ export function usePlaybackQueueController() {
     moveQueuedSong,
     playQueuedSong,
     removeQueuedSong,
+    screenState,
     state,
   };
 }

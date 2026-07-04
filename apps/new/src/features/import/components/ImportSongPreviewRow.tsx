@@ -7,23 +7,22 @@ import {
   SongRowTextStack,
 } from "@/src/features/app-shell/components/SongRowParts";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getImportSongEditHref } from "../services/import-song-edit-navigation-service";
-import type { ImportSongDraft } from "../types/import-session";
+import type { ImportSongPreviewRowState } from "../services/import-song-preview-state-service";
 
 type ImportSongPreviewRowProps = {
   canEditSongs: boolean;
   onRemoveSong?: (songId: number) => Promise<void> | void;
-  song: ImportSongDraft;
+  row: ImportSongPreviewRowState;
 };
 
 export function ImportSongPreviewRow({
   canEditSongs,
   onRemoveSong,
-  song,
+  row,
 }: ImportSongPreviewRowProps) {
   const theme = useCustomizationTheme();
+  const { song } = row;
   const showActions = canEditSongs || onRemoveSong !== undefined;
-  const editHref = getImportSongEditHref({ songId: song.id });
 
   return (
     <SongRowShell minHeight={76} theme={theme}>
@@ -44,7 +43,7 @@ export function ImportSongPreviewRow({
       {showActions ? (
         <View className="max-w-[168px] flex-row flex-wrap justify-end gap-2">
           {canEditSongs ? (
-            <Link asChild href={editHref}>
+            <Link asChild href={row.editHref}>
               <Pressable
                 accessibilityRole="button"
                 className="min-h-9 min-w-[58px] items-center justify-center rounded-lg border px-2.5"

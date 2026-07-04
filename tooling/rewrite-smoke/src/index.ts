@@ -260,6 +260,7 @@ import {
 } from "../../../apps/new/src/features/import/services/import-save-screen-state-service";
 import {
   getImportSongPreviewEmptyState,
+  getImportSongPreviewListState,
 } from "../../../apps/new/src/features/import/services/import-song-preview-state-service";
 import {
   getImportFailureState,
@@ -3627,6 +3628,47 @@ async function assertImportSessionSmoke() {
     body: "Choose songs to review them before saving.",
     title: "No songs staged",
   });
+  assert.deepEqual(
+    getImportSongPreviewListState({
+      songs: [
+        {
+          album: "Smoke Album",
+          artist: "Smoke Artist",
+          artwork: null,
+          cacheUri: "file:///tmp/smoke.mp3",
+          duration: 65_000,
+          fileName: "smoke.mp3",
+          fileType: "audio/mpeg",
+          id: 5,
+          title: "Smoke Song",
+          track: null,
+        },
+      ],
+    }),
+    {
+      emptyState: {
+        body: "Choose songs to review them before saving.",
+        title: "No songs staged",
+      },
+      rows: [
+        {
+          editHref: "/import/edit/5",
+          song: {
+            album: "Smoke Album",
+            artist: "Smoke Artist",
+            artwork: null,
+            cacheUri: "file:///tmp/smoke.mp3",
+            duration: 65_000,
+            fileName: "smoke.mp3",
+            fileType: "audio/mpeg",
+            id: 5,
+            title: "Smoke Song",
+            track: null,
+          },
+        },
+      ],
+    },
+  );
   assert.deepEqual(getImportHomeRouteSelectCommand(), {
     haptic: "light",
   });

@@ -1,6 +1,9 @@
 import { View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { ImportSongPreviewEmptyState as ImportSongPreviewEmptyStateConfig } from "../services/import-song-preview-state-service";
+import {
+  getImportSongPreviewListState,
+  type ImportSongPreviewEmptyState as ImportSongPreviewEmptyStateConfig,
+} from "../services/import-song-preview-state-service";
 import type { ImportSongDraft } from "../types/import-session";
 import { ImportSongPreviewEmptyState } from "./ImportSongPreviewEmptyState";
 import { ImportSongPreviewRow } from "./ImportSongPreviewRow";
@@ -19,6 +22,7 @@ export function ImportSongPreviewList({
   songs,
 }: ImportSongPreviewListProps) {
   const theme = useCustomizationTheme();
+  const listState = getImportSongPreviewListState({ songs });
 
   if (songs.length === 0) {
     return <ImportSongPreviewEmptyState emptyState={emptyState} />;
@@ -29,12 +33,12 @@ export function ImportSongPreviewList({
       className="overflow-hidden rounded-lg border"
       style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
-      {songs.map((song) => (
+      {listState.rows.map((row) => (
         <ImportSongPreviewRow
           canEditSongs={canEditSongs}
-          key={song.id}
+          key={row.song.id}
           onRemoveSong={onRemoveSong}
-          song={song}
+          row={row}
         />
       ))}
     </View>

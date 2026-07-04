@@ -4,6 +4,7 @@ import type {
   ImportSaveSummary,
   ImportSessionState,
 } from "../types/import-session";
+import { getPremiumScopedImportSongs } from "./import-premium-access-service";
 
 type ImportSessionLifecycleResult = {
   action: ImportSessionAction;
@@ -30,17 +31,23 @@ export const getFinishImportSessionAction = (
 
 export const saveImportSessionLifecycle = async (
   {
+    premiumActive,
     shouldSaveToLibrary,
     songs,
   }: {
+    premiumActive: boolean;
     shouldSaveToLibrary: boolean;
     songs: ImportSessionState["songs"];
   },
   dependencies: ImportSessionLifecycleDependencies,
 ): Promise<ImportSessionLifecycleResult> => {
   try {
+    const scopedSongs = getPremiumScopedImportSongs({
+      premiumActive,
+      songs,
+    });
     const summary = shouldSaveToLibrary
-      ? await dependencies.saveImportSessionToLibrary(songs)
+      ? await dependencies.saveImportSessionToLibrary(scopedSongs)
       : await dependencies.discardImportSession(songs);
 
     await dependencies.clearPersistedImportSessionState();

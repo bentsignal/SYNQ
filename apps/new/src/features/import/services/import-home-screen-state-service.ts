@@ -2,7 +2,6 @@ import type { ImportSessionState } from "../types/import-session";
 import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import {
   getImportFilesHref,
-  getImportPremiumHref,
   getImportSaveHref,
   getImportWifiHref,
   type ImportNavigationHref,
@@ -31,32 +30,30 @@ export const getImportHomeState = ({
   premiumActive: boolean;
   state: ImportSessionState;
 }) => {
-  const importLocked = !premiumActive;
-
   return {
-    importLocked,
+    importLocked: false,
     routes: [
       {
         description: "Select local audio and review staged songs.",
-        href: importLocked ? getImportPremiumHref() : getImportFilesHref(),
+        href: getImportFilesHref(),
         label: "Files",
-        metaLabel: importLocked ? "Premium" : `${state.songs.length} staged`,
+        metaLabel: premiumActive ? `${state.songs.length} staged` : "Free",
       },
       {
         description: "Receive audio from a browser on the same network.",
-        href: importLocked ? getImportPremiumHref() : getImportWifiHref(),
+        href: getImportWifiHref(),
         label: "Wi-Fi",
-        metaLabel: importLocked
-          ? "Premium"
-          : state.source === "wifi"
+        metaLabel: state.source === "wifi"
             ? state.progress.current.toString()
-            : "Local",
+            : premiumActive
+              ? "Local"
+              : "Free",
       },
       {
         description: "Finish or discard the current import session.",
-        href: importLocked ? getImportPremiumHref() : getImportSaveHref(),
+        href: getImportSaveHref(),
         label: "Save",
-        metaLabel: importLocked ? "Premium" : state.phase,
+        metaLabel: premiumActive ? state.phase : "First song",
       },
     ] satisfies ImportHomeRoute[],
   };

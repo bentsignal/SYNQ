@@ -8,11 +8,13 @@ import { useImportSessionWifiCommands } from "./use-import-session-wifi-commands
 
 type UseImportSessionCommandsParams = {
   dispatch: (action: ImportSessionAction) => void;
+  premiumActive: boolean;
   state: ImportSessionState;
 };
 
 export function useImportSessionCommands({
   dispatch,
+  premiumActive,
   state,
 }: UseImportSessionCommandsParams) {
   const { removeImportSongs, startFileImport } = useImportFileCommands({
@@ -35,6 +37,7 @@ export function useImportSessionCommands({
   const { discardSession, finishSession, resetSession, saveImportSession } =
     useImportSessionLifecycleCommands({
       dispatch,
+      premiumActive,
       shouldSaveToLibrary: state.shouldSaveToLibrary,
       songs: state.songs,
     });

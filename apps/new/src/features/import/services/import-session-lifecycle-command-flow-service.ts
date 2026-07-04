@@ -48,11 +48,13 @@ export const runFinishImportSessionCommand = ({
 export const runSaveImportSessionCommand = async ({
   dependencies,
   dispatch,
+  premiumActive,
   shouldSaveToLibrary,
   songs,
 }: {
   dependencies: ImportSessionLifecycleDependencies;
   dispatch: ImportSessionLifecycleDispatch;
+  premiumActive: boolean;
   shouldSaveToLibrary: boolean;
   songs: ImportSessionState["songs"];
 }) => {
@@ -61,6 +63,7 @@ export const runSaveImportSessionCommand = async ({
     run: () =>
       saveImportSessionLifecycle(
         {
+          premiumActive,
           shouldSaveToLibrary,
           songs,
         },

@@ -9,10 +9,12 @@ import {
 import type { ImportSessionState } from "../types/import-session";
 
 type UseImportSaveExportActionsParams = {
+  premiumActive: boolean;
   state: ImportSessionState;
 };
 
 export function useImportSaveExportActions({
+  premiumActive,
   state,
 }: UseImportSaveExportActionsParams) {
   const { sendHaptic } = useHapticFeedback();
@@ -24,6 +26,7 @@ export function useImportSaveExportActions({
   const exportSongs = async () => {
     await runImportSaveExportAction({
       dispatch: dispatchExportState,
+      premiumActive,
       sendHaptic,
       shareImportDraftSongs,
       state,

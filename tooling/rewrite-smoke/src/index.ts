@@ -274,6 +274,9 @@ import {
   getImportPremiumGateState,
 } from "../../../apps/new/src/features/import/services/import-premium-gate-state-service";
 import {
+  getPremiumScopedImportSongs,
+} from "../../../apps/new/src/features/import/services/import-premium-access-service";
+import {
   runImportHomeRouteSelectAction,
   runImportPremiumGateAction,
 } from "../../../apps/new/src/features/import/services/import-interaction-action-flow-service";
@@ -3303,11 +3306,11 @@ async function assertImportSessionSmoke() {
         href: "/premium",
         label: "Open Premium",
       },
-      body: "Unlock file and Wi-Fi import before staging new songs.",
-      canAccessImport: false,
+      body: "Premium unlocks full batch import. Free imports save or export the first staged song.",
+      canAccessImport: true,
       error: null,
       kicker: "Checking premium",
-      title: "Import is a Premium feature",
+      title: "Free import available",
     },
   );
   assert.deepEqual(
@@ -3321,11 +3324,11 @@ async function assertImportSessionSmoke() {
         href: "/premium",
         label: "Open Premium",
       },
-      body: "Unlock file and Wi-Fi import before staging new songs.",
-      canAccessImport: false,
+      body: "Premium unlocks full batch import. Free imports save or export the first staged song.",
+      canAccessImport: true,
       error: "Premium check failed.",
       kicker: "Premium import",
-      title: "Import is a Premium feature",
+      title: "Free import available",
     },
   );
   assert.deepEqual(
@@ -3339,11 +3342,11 @@ async function assertImportSessionSmoke() {
         href: "/premium",
         label: "Open Premium",
       },
-      body: "Unlock file and Wi-Fi import before staging new songs.",
+      body: "Premium unlocks full batch import. Free imports save or export the first staged song.",
       canAccessImport: true,
       error: null,
       kicker: "Premium import",
-      title: "Import is a Premium feature",
+      title: "Premium import active",
     },
   );
   assert.deepEqual(getImportPremiumGateActionCommand(), {
@@ -3557,9 +3560,9 @@ async function assertImportSessionSmoke() {
       metaLabel: route.metaLabel,
     })),
     [
-      { href: "/premium", label: "Files", metaLabel: "Premium" },
-      { href: "/premium", label: "Wi-Fi", metaLabel: "Premium" },
-      { href: "/premium", label: "Save", metaLabel: "Premium" },
+      { href: "/(tabs)/import/files", label: "Files", metaLabel: "Free" },
+      { href: "/(tabs)/import/wifi", label: "Wi-Fi", metaLabel: "Free" },
+      { href: "/(tabs)/import/save", label: "Save", metaLabel: "First song" },
     ],
   );
 
@@ -3818,6 +3821,20 @@ async function assertImportSessionSmoke() {
       isWorking: true,
     },
   );
+  assert.deepEqual(
+    getPremiumScopedImportSongs({
+      premiumActive: false,
+      songs: [first, second],
+    }),
+    [first],
+  );
+  assert.deepEqual(
+    getPremiumScopedImportSongs({
+      premiumActive: true,
+      songs: [first, second],
+    }),
+    [first, second],
+  );
   const lifecycleSummary = {
     discarded: 0,
     saved: 2,
@@ -3853,6 +3870,7 @@ async function assertImportSessionSmoke() {
   assert.deepEqual(
     await saveImportSessionLifecycle(
       {
+        premiumActive: true,
         shouldSaveToLibrary: true,
         songs: [first, second],
       },
@@ -3871,6 +3889,26 @@ async function assertImportSessionSmoke() {
   assert.deepEqual(
     await saveImportSessionLifecycle(
       {
+        premiumActive: false,
+        shouldSaveToLibrary: true,
+        songs: [first, second],
+      },
+      lifecycleDependencies,
+    ),
+    {
+      action: {
+        summary: lifecycleSummary,
+        type: "finish",
+      },
+      succeeded: true,
+    },
+  );
+  assert.deepEqual(lifecycleCalls, ["save-1", "clear-persisted"]);
+  lifecycleCalls.length = 0;
+  assert.deepEqual(
+    await saveImportSessionLifecycle(
+      {
+        premiumActive: false,
         shouldSaveToLibrary: false,
         songs: [first],
       },
@@ -3917,6 +3955,7 @@ async function assertImportSessionSmoke() {
   assert.deepEqual(
     await saveImportSessionLifecycle(
       {
+        premiumActive: true,
         shouldSaveToLibrary: true,
         songs: [first],
       },
@@ -3952,6 +3991,7 @@ async function assertImportSessionSmoke() {
     await runSaveImportSessionCommand({
       dependencies: lifecycleDependencies,
       dispatch: dispatchLifecycleCommand,
+      premiumActive: true,
       shouldSaveToLibrary: true,
       songs: [first, second],
     }),
@@ -3967,6 +4007,7 @@ async function assertImportSessionSmoke() {
     await runSaveImportSessionCommand({
       dependencies: failingLifecycleDependencies,
       dispatch: dispatchLifecycleCommand,
+      premiumActive: true,
       shouldSaveToLibrary: true,
       songs: [first],
     }),
@@ -4057,6 +4098,7 @@ async function assertImportSessionSmoke() {
     dispatch: (action) => {
       importSaveExportActionEvents.push(["dispatch", action]);
     },
+    premiumActive: false,
     sendHaptic: (haptic) => {
       importSaveExportActionEvents.push(["haptic", haptic]);
     },
@@ -4069,6 +4111,7 @@ async function assertImportSessionSmoke() {
     dispatch: (action) => {
       importSaveExportActionEvents.push(["dispatch", action]);
     },
+    premiumActive: true,
     sendHaptic: (haptic) => {
       importSaveExportActionEvents.push(["haptic", haptic]);
     },
@@ -4079,7 +4122,7 @@ async function assertImportSessionSmoke() {
   });
   assert.deepEqual(importSaveExportActionEvents, [
     ["dispatch", { type: "begin" }],
-    ["share", state.songs.length],
+    ["share", 1],
     ["haptic", "success"],
     ["dispatch", { type: "finish" }],
     ["dispatch", { type: "begin" }],

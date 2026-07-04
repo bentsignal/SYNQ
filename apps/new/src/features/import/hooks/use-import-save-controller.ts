@@ -24,7 +24,7 @@ export function useImportSaveController() {
     (store) => store.state.active,
   );
   const { sendHaptic } = useHapticFeedback();
-  const exportActions = useImportSaveExportActions({ state });
+  const exportActions = useImportSaveExportActions({ premiumActive, state });
   const sessionActions = useImportSaveSessionActions({
     discardSession,
     premiumActive,

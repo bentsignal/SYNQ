@@ -23,9 +23,9 @@ export const getImportPremiumGateState = ({
     href: getImportPremiumHref(),
     label: "Open Premium",
   },
-  body: "Unlock file and Wi-Fi import before staging new songs.",
-  canAccessImport: active,
+  body: "Premium unlocks full batch import. Free imports save or export the first staged song.",
+  canAccessImport: true,
   error,
   kicker: phase === "checking" ? "Checking premium" : "Premium import",
-  title: "Import is a Premium feature",
+  title: active ? "Premium import active" : "Free import available",
 });

@@ -1,5 +1,6 @@
 import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import type { ImportSessionState } from "../types/import-session";
+import { getPremiumScopedImportSongs } from "./import-premium-access-service";
 import {
   getImportSaveExportBeginAction,
   getImportSaveExportFailureCommand,
@@ -10,11 +11,13 @@ import {
 
 export const runImportSaveExportAction = async ({
   dispatch,
+  premiumActive,
   sendHaptic,
   shareImportDraftSongs,
   state,
 }: {
   dispatch: (action: ImportSaveExportAction) => void;
+  premiumActive: boolean;
   sendHaptic: (type: HapticFeedbackType) => void;
   shareImportDraftSongs: (
     songs: ImportSessionState["songs"],
@@ -24,7 +27,12 @@ export const runImportSaveExportAction = async ({
   dispatch(getImportSaveExportBeginAction());
 
   try {
-    await shareImportDraftSongs(state.songs);
+    await shareImportDraftSongs(
+      getPremiumScopedImportSongs({
+        premiumActive,
+        songs: state.songs,
+      }),
+    );
     const command = getImportSaveExportSuccessCommand();
     sendHaptic(command.haptic);
   } catch (caughtError) {

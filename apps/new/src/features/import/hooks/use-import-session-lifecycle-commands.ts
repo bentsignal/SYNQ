@@ -22,12 +22,14 @@ import type {
 
 type UseImportSessionLifecycleCommandsParams = {
   dispatch: (action: ImportSessionAction) => void;
+  premiumActive: boolean;
   shouldSaveToLibrary: boolean;
   songs: ImportSessionState["songs"];
 };
 
 export function useImportSessionLifecycleCommands({
   dispatch,
+  premiumActive,
   shouldSaveToLibrary,
   songs,
 }: UseImportSessionLifecycleCommandsParams) {
@@ -55,10 +57,11 @@ export function useImportSessionLifecycleCommands({
     return runSaveImportSessionCommand({
       dependencies,
       dispatch,
+      premiumActive,
       shouldSaveToLibrary,
       songs,
     });
-  }, [dependencies, dispatch, shouldSaveToLibrary, songs]);
+  }, [dependencies, dispatch, premiumActive, shouldSaveToLibrary, songs]);
 
   const discardSession = useCallback(async () => {
     return runDiscardImportSessionCommand({

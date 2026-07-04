@@ -1,4 +1,5 @@
 import { useMemo, useReducer } from "react";
+import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
 import { initialImportSessionState } from "../services/import-session-initial-state-service";
 import {
   importSessionReducer,
@@ -21,8 +22,12 @@ export function useImportSessionStore(): ImportSessionValue {
   );
 
   usePersistedImportSession({ dispatch, state });
+  const premiumActive = usePremiumEntitlementSelector(
+    (store) => store.state.active,
+  );
   const commands = useImportSessionCommands({
     dispatch,
+    premiumActive,
     state,
   });
 

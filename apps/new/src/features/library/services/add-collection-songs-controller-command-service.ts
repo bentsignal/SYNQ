@@ -2,8 +2,8 @@ import type { LibraryCollectionDetailKind } from "./library-collection-kind-serv
 import { runAddCollectionSongCommand } from "./add-collection-song-command-flow-service";
 import {
   runAddCollectionSongsSelectionCommand,
-  runAddCollectionSongsToggleSelectionCommand,
 } from "./add-collection-songs-command-flow-service";
+import { runAddCollectionSongsToggleSelectionCommand } from "./add-collection-songs-toggle-command-flow-service";
 import type {
   AddCollectionSongsControllerDispatch,
   AddCollectionSongsHapticSender,

@@ -3,7 +3,6 @@ import {
   getAddCollectionSongsBlockedCommand,
   getAddCollectionSongsSelectionStartCommand,
   getAddCollectionSongsSelectionSuccessCommand,
-  getAddCollectionSongsToggleSelectionCommand,
 } from "./add-collection-songs-command-state-service";
 import type { AddableSongSelectionState } from "./add-collection-songs-selection-service";
 import { getAddCollectionSongsFinishSelectionAction } from "./add-collection-songs-action-service";
@@ -26,18 +25,6 @@ type AddCollectionSongsSelectionCommandParams =
     }) => Promise<void>;
     selectionState: AddableSongSelectionState;
   };
-
-export const runAddCollectionSongsToggleSelectionCommand = ({
-  dispatchControllerState,
-  sendHaptic,
-  songId,
-}: AddCollectionSongsFlowDependencies & {
-  songId: number;
-}) => {
-  const command = getAddCollectionSongsToggleSelectionCommand(songId);
-  sendHaptic(command.haptic);
-  dispatchControllerState(command.action);
-};
 
 export const runAddCollectionSongsSelectionCommand = async ({
   addCollectionSongs,

@@ -1045,8 +1045,11 @@ import {
   getLibrarySongDetailMutationActionState,
   getLibrarySongDetailMutationControllerState,
   getLibrarySongDetailScreenViewState,
-  getLibrarySongDetailStatusState,
 } from "../../../apps/new/src/features/library/services/library-song-detail-state-service";
+import {
+  getLibrarySongDetailStatusState,
+  getLibrarySongDetailUpdatedLabel,
+} from "../../../apps/new/src/features/library/services/library-song-detail-status-state-service";
 import {
   getLibraryInvalidSongState,
   getLibrarySongAddToPlaylistHref,
@@ -10702,6 +10705,13 @@ async function assertLibrarySongDetailSmoke() {
       statusLabel: "Export failed.",
       updatedLabel: "Updated time:42",
     },
+  );
+  assert.equal(
+    getLibrarySongDetailUpdatedLabel({
+      formatUpdatedAt: (updatedAt) => `time:${updatedAt}`,
+      updatedAt: 0,
+    }),
+    "Waiting for song data",
   );
   const librarySongDetailScreenViewState = getLibrarySongDetailScreenViewState({
     actionState: playableActionState,

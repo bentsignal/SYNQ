@@ -3,7 +3,7 @@ import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customi
 import type {
   LibrarySongDetail,
 } from "../services/library-song-detail-service";
-import type { LibrarySongDetailStatusState } from "../services/library-song-detail-state-service";
+import type { LibrarySongDetailStatusState } from "../services/library-song-detail-status-state-service";
 
 type LibrarySongSourcePanelProps = {
   detail: LibrarySongDetail;

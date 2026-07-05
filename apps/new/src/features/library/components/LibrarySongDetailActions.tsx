@@ -1,6 +1,6 @@
 import { Link } from "expo-router";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
+import type { LibrarySongDetailActionState } from "../services/library-song-detail-action-state-service";
 import type { getLibrarySongDetailViewState } from "../services/library-song-detail-view-state-service";
 import {
   LibraryActionButton,

@@ -1,5 +1,5 @@
 import type { LibrarySongDetail } from "./library-song-detail-service";
-import type { LibrarySongDetailActionState } from "./library-song-detail-state-service";
+import type { LibrarySongDetailActionState } from "./library-song-detail-action-state-service";
 
 export type LibrarySongDetailStatusState = {
   isError: boolean;

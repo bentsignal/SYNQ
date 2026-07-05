@@ -3,7 +3,7 @@ import { LibraryInvalidSongState } from "../components/LibraryInvalidSongState";
 import { LibrarySongDetailView } from "../components/LibrarySongDetailView";
 import { useLibrarySongDetailController } from "../hooks/use-library-song-detail-controller";
 import { useLibrarySongDetailQuery } from "../hooks/use-library-song-detail-query";
-import { getLibrarySongDetailScreenViewState } from "../services/library-song-detail-state-service";
+import { getLibrarySongDetailScreenViewState } from "../services/library-song-detail-screen-view-state-service";
 import { getLibraryInvalidSongState } from "../services/library-song-invalid-state-service";
 
 export function LibrarySongDetailScreen() {

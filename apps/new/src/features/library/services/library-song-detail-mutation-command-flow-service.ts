@@ -15,7 +15,7 @@ import {
   type NativeSongDeleteConfirmationPresenter,
   type NativeSongDetailRouteReplacer,
 } from "./library-song-detail-mutation-runtime-service";
-import type { LibrarySongDetailActionState } from "./library-song-detail-state-service";
+import type { LibrarySongDetailActionState } from "./library-song-detail-action-state-service";
 
 export const runLibrarySongDeleteCommand = ({
   actionState,

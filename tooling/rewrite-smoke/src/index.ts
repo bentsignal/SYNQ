@@ -1070,10 +1070,14 @@ import {
 } from "../../../apps/new/src/features/library/services/library-song-detail-query-result-service";
 import {
   getLibrarySongDetailActionState,
+} from "../../../apps/new/src/features/library/services/library-song-detail-action-state-service";
+import {
   getLibrarySongDetailMutationActionState,
   getLibrarySongDetailMutationControllerState,
+} from "../../../apps/new/src/features/library/services/library-song-detail-mutation-controller-state-service";
+import {
   getLibrarySongDetailScreenViewState,
-} from "../../../apps/new/src/features/library/services/library-song-detail-state-service";
+} from "../../../apps/new/src/features/library/services/library-song-detail-screen-view-state-service";
 import {
   getLibrarySongDetailStatusState,
   getLibrarySongDetailUpdatedLabel,

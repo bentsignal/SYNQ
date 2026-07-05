@@ -5,7 +5,7 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import {
   type LibrarySongDetail,
 } from "../services/library-song-detail-service";
-import type { LibrarySongDetailActionState } from "../services/library-song-detail-state-service";
+import type { LibrarySongDetailActionState } from "../services/library-song-detail-action-state-service";
 import {
   runLibrarySongPlayAction,
   runLibrarySongQueueAction,

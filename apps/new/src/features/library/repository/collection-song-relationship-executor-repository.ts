@@ -6,37 +6,13 @@ import {
   getCollectionSongOrderOperations,
   getCollectionSongRemoveOperation,
 } from "./collection-song-relationship-step-repository";
+import type {
+  CollectionSongRelationshipDependencies,
+} from "./collection-song-relationship-dependencies-repository";
 
-export type CollectionSongRelationshipDependencies = {
-  protectedPlaylistIds: Set<number>;
-  removeAlbumSong: (params: {
-    collectionId: number;
-    songId: number;
-  }) => Promise<void>;
-  removeArtistSong: (params: {
-    collectionId: number;
-    songId: number;
-  }) => Promise<void>;
-  removePlaylistSong: (params: {
-    collectionId: number;
-    songId: number;
-  }) => Promise<void>;
-  updateAlbumSongOrder: (params: {
-    collectionId: number;
-    order: number;
-    songId: number;
-  }) => Promise<void>;
-  updateArtistSongOrder: (params: {
-    collectionId: number;
-    order: number;
-    songId: number;
-  }) => Promise<void>;
-  updatePlaylistSongOrder: (params: {
-    collectionId: number;
-    order: number;
-    songId: number;
-  }) => Promise<void>;
-};
+export type {
+  CollectionSongRelationshipDependencies,
+} from "./collection-song-relationship-dependencies-repository";
 
 export async function updateCollectionSongOrderWithDependencies(
   {

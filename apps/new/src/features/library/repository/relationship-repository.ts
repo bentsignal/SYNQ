@@ -15,6 +15,9 @@ import {
   removeSongFromCollectionWithDependencies,
   updateCollectionSongOrderWithDependencies,
 } from "./collection-song-relationship-executor-repository";
+import type {
+  CollectionSongRelationshipDependencies,
+} from "./collection-song-relationship-dependencies-repository";
 import {
   removePlaylistSong,
   updatePlaylistSongOrder,
@@ -22,15 +25,16 @@ import {
 
 const protectedPlaylistIds = new Set([systemPlaylistId, likedSongsPlaylistId]);
 
-const collectionSongRelationshipDependencies = {
-  protectedPlaylistIds,
-  removeAlbumSong,
-  removeArtistSong,
-  removePlaylistSong,
-  updateAlbumSongOrder,
-  updateArtistSongOrder,
-  updatePlaylistSongOrder,
-};
+const collectionSongRelationshipDependencies: CollectionSongRelationshipDependencies =
+  {
+    protectedPlaylistIds,
+    removeAlbumSong,
+    removeArtistSong,
+    removePlaylistSong,
+    updateAlbumSongOrder,
+    updateArtistSongOrder,
+    updatePlaylistSongOrder,
+  };
 
 export async function updateCollectionSongOrder({
   collectionId,

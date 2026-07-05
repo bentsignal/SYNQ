@@ -840,8 +840,10 @@ import {
 import {
   removeSongFromCollectionWithDependencies,
   updateCollectionSongOrderWithDependencies,
-  type CollectionSongRelationshipDependencies,
 } from "../../../apps/new/src/features/library/repository/collection-song-relationship-executor-repository";
+import type {
+  CollectionSongRelationshipDependencies,
+} from "../../../apps/new/src/features/library/repository/collection-song-relationship-dependencies-repository";
 import {
   getCollectionSongOrderOperations,
   getCollectionSongRemoveOperation,

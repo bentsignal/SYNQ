@@ -1,8 +1,8 @@
-import { Link } from "expo-router";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongEditActionState } from "../services/library-song-edit-action-state-service";
 import {
   LibraryActionButton,
+  LibraryActionLink,
   LibraryActionRow,
 } from "./library-action";
 
@@ -28,18 +28,12 @@ export function EditLibrarySongActions({
         theme={theme}
         variant="primary"
       />
-      <Link
-        className="min-h-11 flex-grow overflow-hidden rounded-lg border px-3.5 text-center text-[13px] font-extrabold uppercase leading-[42px]"
+      <LibraryActionLink
         href={actionState.cancelHref}
-        style={{
-          backgroundColor: theme.surface,
-          borderColor: theme.border,
-          color: theme.accent,
-          minWidth: 112,
-        }}
-      >
-        Cancel
-      </Link>
+        label="Cancel"
+        minWidth={112}
+        theme={theme}
+      />
     </LibraryActionRow>
   );
 }

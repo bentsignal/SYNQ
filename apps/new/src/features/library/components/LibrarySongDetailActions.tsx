@@ -1,9 +1,9 @@
-import { Link } from "expo-router";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-action-state-service";
 import type { getLibrarySongDetailViewState } from "../services/library-song-detail-view-state-service";
 import {
   LibraryActionButton,
+  LibraryActionLink,
   LibraryActionRow,
 } from "./library-action";
 
@@ -55,30 +55,18 @@ export function LibrarySongDetailActions({
         theme={theme}
         variant="secondary"
       />
-      <Link
-        className="min-h-11 flex-grow overflow-hidden rounded-lg border px-3.5 text-center text-[13px] font-extrabold uppercase leading-[42px]"
+      <LibraryActionLink
         href={actionLinks.addToPlaylistHref}
-        style={{
-          backgroundColor: theme.surface,
-          borderColor: theme.border,
-          color: theme.accent,
-          minWidth: 164,
-        }}
-      >
-        Add to playlist
-      </Link>
-      <Link
-        className="min-h-11 flex-grow overflow-hidden rounded-lg border px-3.5 text-center text-[13px] font-extrabold uppercase leading-[42px]"
+        label="Add to playlist"
+        minWidth={164}
+        theme={theme}
+      />
+      <LibraryActionLink
         href={actionLinks.editHref}
-        style={{
-          backgroundColor: theme.surface,
-          borderColor: theme.border,
-          color: theme.accent,
-          minWidth: 132,
-        }}
-      >
-        Edit
-      </Link>
+        label="Edit"
+        minWidth={132}
+        theme={theme}
+      />
       <LibraryActionButton
         disabled={!actionState.canExport}
         flexGrow={1}

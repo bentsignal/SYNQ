@@ -11,6 +11,7 @@ import {
   getHomeQuickActions,
   getHomeRecentSongHref,
   getHomeRecentSongsSectionState,
+  getHomeScreenViewState,
 } from "../../../apps/new/src/features/app-shell/services/home-screen-service";
 import {
   rewriteFeatures,
@@ -13014,6 +13015,38 @@ function assertHomeScreenSmoke() {
     }).playbackLabel,
     "Playing now",
   );
+  const homeScreenState = getHomeScreenViewState({
+    activeTrack,
+    recentSongs: [
+      {
+        album: "Smoke Album",
+        artist: "Smoke Artist",
+        duration: 65_000,
+        id: 9,
+        pathToFile: "/tmp/smoke.mp3",
+        title: "Smoke Song",
+      },
+    ],
+    state: {
+      ...initialPlaybackState,
+      isPlaying: true,
+    },
+    summary: {
+      counts: {
+        albums: 1,
+        artists: 1,
+        playlists: 1,
+        songs: 3,
+      },
+      errors: [],
+      updatedAt: 10,
+    },
+  });
+  assert.equal(homeScreenState.guideSections.length, 3);
+  assert.equal(homeScreenState.nowPlaying.playbackLabel, "Playing now");
+  assert.equal(homeScreenState.nowPlayingActions.length, 2);
+  assert.equal(homeScreenState.quickActions[0]?.detail, "3 songs");
+  assert.equal(homeScreenState.recentSongsSectionState.rows[0]?.href, "/(tabs)/library/song/9");
 }
 
 function assertImportSongFormSmoke() {

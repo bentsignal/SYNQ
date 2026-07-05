@@ -4,26 +4,22 @@ import {
   usePlaybackActiveTrack,
   usePlaybackState,
 } from "@/src/features/playback/hooks/use-playback-session-selectors";
-import {
-  getHomeGuideSections,
-  getHomeNowPlayingState,
-} from "../services/home-screen-service";
+import { getHomeScreenViewState } from "../services/home-screen-service";
 
 export function useHomeScreenController() {
   const summary = useLibrarySummaryQuery();
   const recentSongs = useLibrarySongPreviewQuery({ limit: 4 });
   const activeTrack = usePlaybackActiveTrack();
   const state = usePlaybackState();
-  const guideSections = getHomeGuideSections();
-  const hasLibrary = summary.counts.songs > 0;
-  const nowPlaying = getHomeNowPlayingState({ activeTrack, state });
+  const viewState = getHomeScreenViewState({
+    activeTrack,
+    recentSongs: recentSongs.songs,
+    state,
+    summary,
+  });
 
   return {
-    guideSections,
-    hasLibrary,
-    nowPlaying,
-    recentSongs,
-    summary,
+    viewState,
   };
 }
 

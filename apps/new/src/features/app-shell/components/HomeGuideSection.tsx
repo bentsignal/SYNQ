@@ -1,8 +1,10 @@
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { HomeScreenController } from "../hooks/use-home-screen-controller";
+import type { HomeScreenViewState } from "../services/home-screen-service";
 
-type HomeGuideSectionProps = Pick<HomeScreenController, "guideSections">;
+type HomeGuideSectionProps = {
+  guideSections: HomeScreenViewState["guideSections"];
+};
 
 export function HomeGuideSection({ guideSections }: HomeGuideSectionProps) {
   const theme = useCustomizationTheme();

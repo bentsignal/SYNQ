@@ -1,4 +1,8 @@
 import {
+  parseSettingsJsonWithFallback,
+  stringifySettingsJson,
+} from "./settings-json-codec-service";
+import {
   getSettingsDirectoryWithDependencies,
   getSettingsFileWithDependencies,
 } from "./settings-json-file-path-service";
@@ -7,6 +11,10 @@ export {
   getSettingsDirectoryWithDependencies,
   getSettingsFileWithDependencies,
 } from "./settings-json-file-path-service";
+export {
+  parseSettingsJsonWithFallback,
+  stringifySettingsJson,
+} from "./settings-json-codec-service";
 
 export type SettingsJsonFileInfo = {
   exists: boolean;
@@ -57,7 +65,11 @@ export async function loadSettingsFromJsonFileWithDependencies<TSettings>({
 
     const contents = await dependencies.readAsString(settingsFile);
 
-    return normalizeSettings(JSON.parse(contents));
+    return parseSettingsJsonWithFallback({
+      contents,
+      defaultSettings,
+      normalizeSettings,
+    });
   } catch {
     return defaultSettings;
   }
@@ -77,6 +89,9 @@ export async function saveSettingsToJsonFileWithDependencies<TSettings>({
   });
   await dependencies.writeAsString(
     `${settingsDirectory}/${fileName}`,
-    JSON.stringify(normalizeSettings(settings), null, 2),
+    stringifySettingsJson({
+      normalizeSettings,
+      settings,
+    }),
   );
 }

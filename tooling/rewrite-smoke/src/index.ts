@@ -1593,6 +1593,10 @@ import {
   getSettingsFileWithDependencies,
 } from "../../../apps/new/src/features/settings/services/settings-json-file-path-service";
 import {
+  parseSettingsJsonWithFallback,
+  stringifySettingsJson,
+} from "../../../apps/new/src/features/settings/services/settings-json-codec-service";
+import {
   checkStoredImageExistsWithDependencies,
   getImagePathFromHashWithDependencies,
   saveCoverImageWithDependencies,
@@ -18495,6 +18499,21 @@ async function assertSettingsJsonFileStoreSmoke() {
       fileName: "preferences.json",
     }),
     "file:///documents/settings/preferences.json",
+  );
+  assert.deepEqual(
+    parseSettingsJsonWithFallback({
+      contents: "{not-json",
+      defaultSettings,
+      normalizeSettings,
+    }),
+    defaultSettings,
+  );
+  assert.equal(
+    stringifySettingsJson({
+      normalizeSettings,
+      settings: { allowAnalytics: true, theme: "invalid" },
+    }),
+    JSON.stringify({ allowAnalytics: true, theme: "blue" }, null, 2),
   );
 
   assert.deepEqual(await loadSettings(), defaultSettings);

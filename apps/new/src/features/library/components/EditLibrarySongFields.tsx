@@ -2,6 +2,10 @@ import { Text, TextInput, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { getLibrarySongEditFieldState } from "../services/library-song-edit-field-state-service";
 
+type EditLibrarySongFieldState = ReturnType<
+  typeof getLibrarySongEditFieldState
+>[keyof ReturnType<typeof getLibrarySongEditFieldState>];
+
 type EditLibrarySongFieldsProps = {
   albumNames: string;
   artistNames: string;
@@ -30,61 +34,75 @@ export function EditLibrarySongFields({
 
   return (
     <View className="gap-3.5">
-      <View className="gap-2">
-        <Text
-          className="text-xs font-extrabold uppercase"
-          style={{ color: theme.secondaryText }}
-        >
-          {fieldState.title.label}
-        </Text>
-        <TextInput
-          className="min-h-[46px] rounded-lg border px-3.5 text-[15px]"
-          onChangeText={onChangeTitle}
-          placeholder={fieldState.title.placeholder}
-          placeholderTextColor={theme.mutedText}
-          returnKeyType={fieldState.title.returnKeyType}
-          style={inputStyle}
-          value={title}
-        />
-      </View>
+      <EditLibrarySongFieldInput
+        fieldState={fieldState.title}
+        inputStyle={inputStyle}
+        onChangeText={onChangeTitle}
+        placeholderTextColor={theme.mutedText}
+        secondaryTextColor={theme.secondaryText}
+        value={title}
+      />
+      <EditLibrarySongFieldInput
+        autoCapitalize="words"
+        fieldState={fieldState.artistNames}
+        inputStyle={inputStyle}
+        onChangeText={onChangeArtistNames}
+        placeholderTextColor={theme.mutedText}
+        secondaryTextColor={theme.secondaryText}
+        value={artistNames}
+      />
+      <EditLibrarySongFieldInput
+        autoCapitalize="words"
+        fieldState={fieldState.albumNames}
+        inputStyle={inputStyle}
+        onChangeText={onChangeAlbumNames}
+        placeholderTextColor={theme.mutedText}
+        secondaryTextColor={theme.secondaryText}
+        value={albumNames}
+      />
+    </View>
+  );
+}
 
-      <View className="gap-2">
-        <Text
-          className="text-xs font-extrabold uppercase"
-          style={{ color: theme.secondaryText }}
-        >
-          {fieldState.artistNames.label}
-        </Text>
-        <TextInput
-          autoCapitalize="words"
-          className="min-h-[46px] rounded-lg border px-3.5 text-[15px]"
-          onChangeText={onChangeArtistNames}
-          placeholder={fieldState.artistNames.placeholder}
-          placeholderTextColor={theme.mutedText}
-          returnKeyType={fieldState.artistNames.returnKeyType}
-          style={inputStyle}
-          value={artistNames}
-        />
-      </View>
-
-      <View className="gap-2">
-        <Text
-          className="text-xs font-extrabold uppercase"
-          style={{ color: theme.secondaryText }}
-        >
-          {fieldState.albumNames.label}
-        </Text>
-        <TextInput
-          autoCapitalize="words"
-          className="min-h-[46px] rounded-lg border px-3.5 text-[15px]"
-          onChangeText={onChangeAlbumNames}
-          placeholder={fieldState.albumNames.placeholder}
-          placeholderTextColor={theme.mutedText}
-          returnKeyType={fieldState.albumNames.returnKeyType}
-          style={inputStyle}
-          value={albumNames}
-        />
-      </View>
+function EditLibrarySongFieldInput({
+  autoCapitalize,
+  fieldState,
+  inputStyle,
+  onChangeText,
+  placeholderTextColor,
+  secondaryTextColor,
+  value,
+}: {
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
+  fieldState: EditLibrarySongFieldState;
+  inputStyle: {
+    backgroundColor: string;
+    borderColor: string;
+    color: string;
+  };
+  onChangeText: (value: string) => void;
+  placeholderTextColor: string;
+  secondaryTextColor: string;
+  value: string;
+}) {
+  return (
+    <View className="gap-2">
+      <Text
+        className="text-xs font-extrabold uppercase"
+        style={{ color: secondaryTextColor }}
+      >
+        {fieldState.label}
+      </Text>
+      <TextInput
+        autoCapitalize={autoCapitalize}
+        className="min-h-[46px] rounded-lg border px-3.5 text-[15px]"
+        onChangeText={onChangeText}
+        placeholder={fieldState.placeholder}
+        placeholderTextColor={placeholderTextColor}
+        returnKeyType={fieldState.returnKeyType}
+        style={inputStyle}
+        value={value}
+      />
     </View>
   );
 }

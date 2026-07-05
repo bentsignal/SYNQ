@@ -12,6 +12,7 @@ import {
 type CustomizationScreenViewProps = CustomizationScreenController;
 
 export function CustomizationScreenView({
+  colorControlsState,
   customizationState,
   screenState,
   updateAppIcon,
@@ -40,12 +41,11 @@ export function CustomizationScreenView({
       )}
 
       <CustomizationColorControls
-        appIcon={customizationState.settings.appIcon}
         disabled={screenState.themeControlsDisabled}
         onSelectAppIcon={updateAppIcon}
         onSelectTheme={updateTheme}
+        state={colorControlsState}
         theme={theme}
-        themeKey={customizationState.settings.theme}
       />
 
       <HapticsPreferenceRow

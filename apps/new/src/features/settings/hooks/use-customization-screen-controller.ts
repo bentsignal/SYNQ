@@ -1,6 +1,7 @@
 import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
 import { useCustomizationSettingsSelector } from "../state/CustomizationSettingsProvider";
 import {
+  getCustomizationColorControlsState,
   getCustomizationScreenState,
 } from "../services/settings-screen-service";
 import {
@@ -29,6 +30,11 @@ export function useCustomizationScreenController() {
     premiumActive,
     status: customizationState.status,
   });
+  const colorControlsState = getCustomizationColorControlsState({
+    appIcon: customizationState.settings.appIcon,
+    disabled: screenState.themeControlsDisabled,
+    themeKey: customizationState.settings.theme,
+  });
 
   const updateTheme = (themeKey: CustomizationColorKey) => {
     void runSettingsInteractionAction({
@@ -54,6 +60,7 @@ export function useCustomizationScreenController() {
   };
 
   return {
+    colorControlsState,
     customizationState,
     screenState,
     updateAppIcon,

@@ -1200,6 +1200,7 @@ import type {
   PremiumTier,
 } from "../../../apps/new/src/features/premium/types/premium-purchase";
 import {
+  getCustomizationColorControlsState,
   getSettingsDeveloperPremiumToggleState,
   getCustomizationSettingsErrorMessage,
   getCustomizationHapticsToggleCommand,
@@ -16107,6 +16108,46 @@ async function assertSettingsScreenSmoke() {
       accessibilityState: { disabled: true, selected: false },
       isSelected: false,
     },
+  );
+  const customizationColorControlsState = getCustomizationColorControlsState({
+    appIcon: "red",
+    disabled: true,
+    themeKey: "mint",
+  });
+  assert.equal(customizationColorControlsState.rows.length, 2);
+  assert.equal(customizationColorControlsState.rows[0].title, "Theme");
+  assert.equal(customizationColorControlsState.rows[1].title, "App Icon");
+  assert.equal(customizationColorControlsState.rows[0].options.length, 7);
+  assert.deepEqual(
+    customizationColorControlsState.rows[0].options.map((option) => ({
+      isSelected: option.optionState.isSelected,
+      key: option.key,
+    })),
+    [
+      { isSelected: false, key: "blue" },
+      { isSelected: true, key: "mint" },
+      { isSelected: false, key: "orange" },
+      { isSelected: false, key: "pink" },
+      { isSelected: false, key: "purple" },
+      { isSelected: false, key: "red" },
+      { isSelected: false, key: "yellow" },
+    ],
+  );
+  assert.deepEqual(
+    customizationColorControlsState.rows[1].options.map((option) => ({
+      disabled: option.optionState.accessibilityState.disabled,
+      isSelected: option.optionState.isSelected,
+      key: option.key,
+    })),
+    [
+      { disabled: true, isSelected: false, key: "blue" },
+      { disabled: true, isSelected: false, key: "mint" },
+      { disabled: true, isSelected: false, key: "orange" },
+      { disabled: true, isSelected: false, key: "pink" },
+      { disabled: true, isSelected: false, key: "purple" },
+      { disabled: true, isSelected: true, key: "red" },
+      { disabled: true, isSelected: false, key: "yellow" },
+    ],
   );
   assert.equal(
     shouldSendHapticForHapticsToggle({ hapticsEnabled: true }),

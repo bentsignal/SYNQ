@@ -1,8 +1,7 @@
 import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
 import { useCustomizationSettingsSelector } from "../state/CustomizationSettingsProvider";
 import {
-  getCustomizationColorControlsState,
-  getCustomizationScreenState,
+  getCustomizationScreenControllerViewState,
 } from "../services/settings-screen-service";
 import {
   runCustomizationHapticsToggleAction,
@@ -26,15 +25,12 @@ export function useCustomizationScreenController() {
     (store) => store.state,
   );
   const { sendHaptic } = useHapticFeedback();
-  const screenState = getCustomizationScreenState({
-    premiumActive,
-    status: customizationState.status,
-  });
-  const colorControlsState = getCustomizationColorControlsState({
-    appIcon: customizationState.settings.appIcon,
-    disabled: screenState.themeControlsDisabled,
-    themeKey: customizationState.settings.theme,
-  });
+  const { colorControlsState, screenState } =
+    getCustomizationScreenControllerViewState({
+      premiumActive,
+      settings: customizationState.settings,
+      status: customizationState.status,
+    });
 
   const updateTheme = (themeKey: CustomizationColorKey) => {
     void runSettingsInteractionAction({

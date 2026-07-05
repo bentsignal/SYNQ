@@ -1,5 +1,6 @@
 import type {
   CustomizationColorKey,
+  CustomizationSettings,
   CustomizationSettingsStatus,
 } from "../types/customization-settings";
 import type { PrivacySettingsStatus } from "../types/privacy-settings";
@@ -172,3 +173,31 @@ export const getCustomizationColorControlsState = ({
     },
   ],
 });
+
+export const getCustomizationScreenControllerViewState = ({
+  premiumActive,
+  settings,
+  status,
+}: {
+  premiumActive: boolean;
+  settings: CustomizationSettings;
+  status: CustomizationSettingsStatus;
+}) => {
+  const screenState = getCustomizationScreenState({
+    premiumActive,
+    status,
+  });
+
+  return {
+    colorControlsState: getCustomizationColorControlsState({
+      appIcon: settings.appIcon,
+      disabled: screenState.themeControlsDisabled,
+      themeKey: settings.theme,
+    }),
+    screenState,
+  };
+};
+
+export type CustomizationScreenControllerViewState = ReturnType<
+  typeof getCustomizationScreenControllerViewState
+>;

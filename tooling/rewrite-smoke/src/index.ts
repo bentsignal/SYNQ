@@ -1213,6 +1213,7 @@ import type {
 } from "../../../apps/new/src/features/premium/types/premium-purchase";
 import {
   getCustomizationColorControlsState,
+  getCustomizationScreenControllerViewState,
   getSettingsDeveloperPremiumToggleState,
   getCustomizationOptionState,
   getCustomizationScreenState,
@@ -16524,6 +16525,32 @@ async function assertSettingsScreenSmoke() {
       { disabled: true, isSelected: true, key: "red" },
       { disabled: true, isSelected: false, key: "yellow" },
     ],
+  );
+  const customizationControllerState =
+    getCustomizationScreenControllerViewState({
+      premiumActive: true,
+      settings: {
+        appIcon: "red",
+        hapticsEnabled: true,
+        theme: "mint",
+      },
+      status: "idle",
+    });
+  assert.equal(
+    customizationControllerState.screenState.themeControlsDisabled,
+    false,
+  );
+  assert.equal(
+    customizationControllerState.colorControlsState.rows[0].options.find(
+      (option) => option.key === "mint",
+    )?.optionState.isSelected,
+    true,
+  );
+  assert.equal(
+    customizationControllerState.colorControlsState.rows[1].options.find(
+      (option) => option.key === "red",
+    )?.optionState.isSelected,
+    true,
   );
   assert.equal(
     shouldSendHapticForHapticsToggle({ hapticsEnabled: true }),

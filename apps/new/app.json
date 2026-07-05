@@ -17,7 +17,7 @@
       ],
       "@synq/native-audio",
       [
-        "expo-icon-handler",
+        "./expo-plugins/with-ios-alternate-icons.cjs",
         {
           "icons": [
             {

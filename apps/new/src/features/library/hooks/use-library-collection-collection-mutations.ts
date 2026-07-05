@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { useLibraryCollectionDeleteCommand } from "./use-library-collection-delete-command";
 import { exportLibraryCollectionCommand } from "../services/library-collection-command-service";
@@ -24,14 +25,14 @@ export function useLibraryCollectionCollectionMutations({
 }: UseLibraryCollectionCollectionMutationsParams) {
   const { sendHaptic } = useHapticFeedback();
 
-  const exportCollection = async () => {
+  const exportCollection = useCallback(async () => {
     await runLibraryCollectionExportCommand({
       actionState,
       dispatch: dispatchMutation,
       exportLibraryCollection: exportLibraryCollectionCommand,
       sendHaptic,
     });
-  };
+  }, [actionState, dispatchMutation, sendHaptic]);
 
   const deleteCurrentCollection = useLibraryCollectionDeleteCommand({
     actionState,

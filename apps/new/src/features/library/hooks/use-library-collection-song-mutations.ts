@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
   moveLibraryCollectionSongCommand,
@@ -26,29 +27,35 @@ export function useLibraryCollectionSongMutations({
 }: UseLibraryCollectionSongMutationsParams) {
   const { sendHaptic } = useHapticFeedback();
 
-  const moveSong = async (songId: number, direction: "down" | "up") => {
-    await runLibraryCollectionSongMoveCommand({
-      collectionId: id,
-      detail,
-      direction,
-      dispatch: dispatchMutation,
-      kind,
-      moveLibraryCollectionSong: moveLibraryCollectionSongCommand,
-      sendHaptic,
-      songId,
-    });
-  };
+  const moveSong = useCallback(
+    async (songId: number, direction: "down" | "up") => {
+      await runLibraryCollectionSongMoveCommand({
+        collectionId: id,
+        detail,
+        direction,
+        dispatch: dispatchMutation,
+        kind,
+        moveLibraryCollectionSong: moveLibraryCollectionSongCommand,
+        sendHaptic,
+        songId,
+      });
+    },
+    [detail, dispatchMutation, id, kind, sendHaptic],
+  );
 
-  const removeSong = async (songId: number) => {
-    await runLibraryCollectionSongRemoveCommand({
-      collectionId: id,
-      dispatch: dispatchMutation,
-      kind,
-      removeLibraryCollectionSong: removeLibraryCollectionSongCommand,
-      sendHaptic,
-      songId,
-    });
-  };
+  const removeSong = useCallback(
+    async (songId: number) => {
+      await runLibraryCollectionSongRemoveCommand({
+        collectionId: id,
+        dispatch: dispatchMutation,
+        kind,
+        removeLibraryCollectionSong: removeLibraryCollectionSongCommand,
+        sendHaptic,
+        songId,
+      });
+    },
+    [dispatchMutation, id, kind, sendHaptic],
+  );
 
   return {
     moveSong,

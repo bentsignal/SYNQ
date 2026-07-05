@@ -1,10 +1,8 @@
 import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionListState } from "../services/library-collection-list-service";
-import {
-  type getSongAddToPlaylistHeaderState,
-  type SongAddToPlaylistRowState,
-} from "../services/song-add-to-playlist-service";
+import type { getSongAddToPlaylistHeaderState } from "../services/song-add-to-playlist-header-state-service";
+import type { SongAddToPlaylistRowState } from "../services/song-add-to-playlist-service";
 import type { SongAddToPlaylistStatusState } from "../services/song-add-to-playlist-status-state-service";
 import { LibraryCollectionListSearch } from "./LibraryCollectionListSearch";
 import {

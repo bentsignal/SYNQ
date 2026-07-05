@@ -1068,11 +1068,13 @@ import {
 } from "../../../apps/new/src/features/library/services/library-song-interaction-service";
 import {
   getSelectableSongPlaylists,
-  getSongAddToPlaylistBackLink,
   getSongAddToPlaylistControllerViewState,
-  getSongAddToPlaylistHeaderState,
   getSongAddToPlaylistRowState,
 } from "../../../apps/new/src/features/library/services/song-add-to-playlist-service";
+import {
+  getSongAddToPlaylistBackLink,
+  getSongAddToPlaylistHeaderState,
+} from "../../../apps/new/src/features/library/services/song-add-to-playlist-header-state-service";
 import { getSongAddToPlaylistStatusState } from "../../../apps/new/src/features/library/services/song-add-to-playlist-status-state-service";
 import {
   getSongAddToPlaylistStatusLabel,

@@ -5,9 +5,9 @@ import {
 } from "./library-collection-list-service";
 import { isProtectedPlaylistId } from "./library-playlist-constants-service";
 import {
-  getLibrarySongDetailHref,
-  type LibrarySongDetailHref,
-} from "./library-song-interaction-service";
+  getSongAddToPlaylistCopy,
+  getSongAddToPlaylistHeaderState,
+} from "./song-add-to-playlist-header-state-service";
 import {
   getSongAddToPlaylistStatusLabel,
   type SongAddToPlaylistMutationState,
@@ -26,35 +26,15 @@ export {
   getSongAddToPlaylistStatusState,
   type SongAddToPlaylistStatusState,
 } from "./song-add-to-playlist-status-state-service";
-
-export const getSongAddToPlaylistBackLink = ({
-  songId,
-}: {
-  songId: number;
-}): { href: LibrarySongDetailHref; label: string } => ({
-  href: getLibrarySongDetailHref({ songId }),
-  label: "Song details",
-});
-
-export const getSongAddToPlaylistCopy = () => ({
-  emptyLabel: "No playlists available",
-  kicker: "Library",
-  placeholder: "Search playlists",
-  title: "Add to playlist",
-});
+export {
+  getSongAddToPlaylistBackLink,
+  getSongAddToPlaylistCopy,
+  getSongAddToPlaylistHeaderState,
+} from "./song-add-to-playlist-header-state-service";
 
 export const getSelectableSongPlaylists = (
   playlists: LibraryCollectionPreview[],
 ) => playlists.filter((playlist) => !isProtectedPlaylistId(playlist.id));
-
-export const getSongAddToPlaylistHeaderState = ({
-  songId,
-}: {
-  songId: number;
-}) => ({
-  backLink: getSongAddToPlaylistBackLink({ songId }),
-  copy: getSongAddToPlaylistCopy(),
-});
 
 export const getSongAddToPlaylistRowState = ({
   mutationState,

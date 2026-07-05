@@ -1174,7 +1174,7 @@ import {
   getInitialLibrarySongEditControllerState,
   type LibrarySongEditControllerAction,
   librarySongEditControllerReducer,
-} from "../../../apps/new/src/features/library/services/library-song-form-service";
+} from "../../../apps/new/src/features/library/services/library-song-edit-controller-reducer-service";
 import { buildLibrarySongEditFormState } from "../../../apps/new/src/features/library/services/library-song-edit-form-state-service";
 import {
   getLibrarySongEditBlockedCommand,

@@ -1,5 +1,5 @@
 import type { LibrarySongDetail } from "./library-song-detail-types-service";
-import type { LibrarySongEditControllerState } from "./library-song-form-service";
+import type { LibrarySongEditControllerState } from "./library-song-edit-controller-reducer-service";
 import { getLibrarySongDetailHref } from "./library-song-navigation-service";
 
 export const getLibrarySongEditFieldState = () =>

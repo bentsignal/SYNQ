@@ -5,7 +5,7 @@ import { updateLibrarySongMetadataCommand } from "../services/library-song-comma
 import type {
   LibrarySongEditControllerAction,
   LibrarySongEditControllerState,
-} from "../services/library-song-form-service";
+} from "../services/library-song-edit-controller-reducer-service";
 import {
   runLibrarySongEditCoverPickCommand,
   runLibrarySongEditSaveCommand,

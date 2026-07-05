@@ -1,11 +1,19 @@
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getLibraryCollectionSongEmptyState } from "../services/library-collection-interaction-service";
+import type { getCollectionDetailViewState } from "../services/library-collection-interaction-service";
 
-export function LibraryCollectionSongEmptyState() {
+type LibraryCollectionSongEmptyStateModel = ReturnType<
+  typeof getCollectionDetailViewState
+>["songSection"]["emptyState"];
+
+type LibraryCollectionSongEmptyStateProps = {
+  emptyState: LibraryCollectionSongEmptyStateModel;
+};
+
+export function LibraryCollectionSongEmptyState({
+  emptyState,
+}: LibraryCollectionSongEmptyStateProps) {
   const theme = useCustomizationTheme();
-  const emptyState = getLibraryCollectionSongEmptyState();
-
   return (
     <View
       className="gap-2 rounded-lg border p-4"

@@ -1,11 +1,17 @@
 import { View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionDetailSong } from "../hooks/use-library-collection-detail-query";
+import type { getCollectionDetailViewState } from "../services/library-collection-interaction-service";
 import { LibraryCollectionSongEmptyState } from "./LibraryCollectionSongEmptyState";
 import { LibraryCollectionSongRow } from "./LibraryCollectionSongRow";
 
+type LibraryCollectionSongEmptyStateModel = ReturnType<
+  typeof getCollectionDetailViewState
+>["songSection"]["emptyState"];
+
 type LibraryCollectionSongListProps = {
   canMutateSongs?: boolean;
+  emptyState: LibraryCollectionSongEmptyStateModel;
   movingSongId?: number | null;
   onMoveSong?: (songId: number, direction: "down" | "up") => void;
   onRemoveSong?: (songId: number) => void;
@@ -15,6 +21,7 @@ type LibraryCollectionSongListProps = {
 
 export function LibraryCollectionSongList({
   canMutateSongs = true,
+  emptyState,
   movingSongId,
   onMoveSong,
   onRemoveSong,
@@ -24,7 +31,7 @@ export function LibraryCollectionSongList({
   const theme = useCustomizationTheme();
 
   if (songs.length === 0) {
-    return <LibraryCollectionSongEmptyState />;
+    return <LibraryCollectionSongEmptyState emptyState={emptyState} />;
   }
 
   return (

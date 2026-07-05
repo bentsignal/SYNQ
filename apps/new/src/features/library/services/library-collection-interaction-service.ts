@@ -31,6 +31,7 @@ export const getCollectionDetailViewState = ({
     label: "Back to Library",
   },
   songSection: {
+    emptyState: getLibraryCollectionSongEmptyState(),
     meta: `${songs.length} songs`,
     title: "Songs",
   },

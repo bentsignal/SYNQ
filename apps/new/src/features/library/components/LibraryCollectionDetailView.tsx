@@ -87,6 +87,7 @@ export function LibraryCollectionDetailView({
 
       <LibraryCollectionSongList
         canMutateSongs={actionState.canMutateSongs}
+        emptyState={viewState.songSection.emptyState}
         movingSongId={movingSongId}
         onMoveSong={moveSong}
         onRemoveSong={removeSong}

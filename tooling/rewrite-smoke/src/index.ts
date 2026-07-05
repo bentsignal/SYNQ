@@ -6438,6 +6438,10 @@ async function assertLibraryCollectionInteractionSmoke() {
       label: "Back to Library",
     },
     songSection: {
+      emptyState: {
+        body: "Add songs from your library to build this collection.",
+        title: "No songs here yet",
+      },
       meta: "3 songs",
       title: "Songs",
     },

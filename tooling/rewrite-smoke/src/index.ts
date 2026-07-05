@@ -1613,6 +1613,9 @@ import type {
   ImageStorageDependencies,
 } from "../../../apps/new/src/features/images/services/image-storage-dependencies-service";
 import {
+  getImageDirectoryWithDependencies,
+} from "../../../apps/new/src/features/images/services/image-storage-path-service";
+import {
   getImagePathFromDirectory,
   getImageStorageVariants,
   splitImageData,
@@ -19135,6 +19138,12 @@ async function assertImageStorageExecutorSmoke() {
     }),
     paths,
   );
+  assert.equal(
+    getImageDirectoryWithDependencies({
+      documentDirectory: "file:///documents/",
+    }),
+    "file:///documents/images",
+  );
   assert.deepEqual(getImagePathFromHashWithDependencies("hash-123", dependencies), paths);
   assert.deepEqual(getImageStorageVariants({ base64: "abc123", paths }), [
     {
@@ -19219,6 +19228,10 @@ async function assertImageStorageExecutorSmoke() {
   assert.deepEqual(calls, []);
 
   imageDirectory = null;
+  assert.throws(
+    () => getImageDirectoryWithDependencies({ documentDirectory: null }),
+    /Document directory is unavailable/,
+  );
   assert.throws(
     () => getImagePathFromHashWithDependencies("hash-123", dependencies),
     /Document directory is unavailable/,

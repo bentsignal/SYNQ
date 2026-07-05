@@ -13,9 +13,12 @@ import {
 import type {
   ImageStorageDependencies,
 } from "./image-storage-dependencies-service";
+import { getImageDirectoryWithDependencies } from "./image-storage-path-service";
 import { getImagePathFromDirectory } from "./image-storage-step-service";
 
-const imageDirectory = `${FileSystem.documentDirectory}images`;
+const imageDirectory = getImageDirectoryWithDependencies({
+  documentDirectory: FileSystem.documentDirectory,
+});
 
 const writeImageVariant = async ({
   base64,

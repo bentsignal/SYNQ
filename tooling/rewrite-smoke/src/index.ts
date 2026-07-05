@@ -549,8 +549,10 @@ import {
 } from "../../../apps/new/src/features/import/services/import-library-link-executor-service";
 import {
   linkImportLibrarySongAlbum,
-  linkImportLibrarySongArtists,
   updateImportLibraryAlbumCover,
+} from "../../../apps/new/src/features/import/services/import-library-album-link-operation-service";
+import {
+  linkImportLibrarySongArtists,
 } from "../../../apps/new/src/features/import/services/import-library-link-operation-service";
 import {
   getImportAlbumCoverUpdateParams,

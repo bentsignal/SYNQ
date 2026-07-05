@@ -1,3 +1,8 @@
+import {
+  beginCollectionDetailMutation,
+  finishCollectionDetailMutation,
+} from "./library-collection-mutation-step-service";
+
 export type CollectionDetailMutationKind =
   | "delete-collection"
   | "export-collection"
@@ -46,55 +51,16 @@ export const collectionDetailMutationReducer = (
 ): CollectionDetailMutationState => {
   switch (action.type) {
     case "begin":
-      switch (action.mutation) {
-        case "delete-collection":
-          return {
-            ...state,
-            isDeleting: true,
-            mutationError: null,
-          };
-        case "export-collection":
-          return {
-            ...state,
-            isExporting: true,
-            mutationError: null,
-          };
-        case "move-song":
-          return {
-            ...state,
-            movingSongId: action.songId,
-            mutationError: null,
-          };
-        case "remove-song":
-          return {
-            ...state,
-            mutationError: null,
-            removingSongId: action.songId,
-          };
-      }
+      return beginCollectionDetailMutation({
+        mutation: action.mutation,
+        songId: "songId" in action ? action.songId : undefined,
+        state,
+      });
     case "finish":
-      switch (action.mutation) {
-        case "delete-collection":
-          return {
-            ...state,
-            isDeleting: false,
-          };
-        case "export-collection":
-          return {
-            ...state,
-            isExporting: false,
-          };
-        case "move-song":
-          return {
-            ...state,
-            movingSongId: null,
-          };
-        case "remove-song":
-          return {
-            ...state,
-            removingSongId: null,
-          };
-      }
+      return finishCollectionDetailMutation({
+        mutation: action.mutation,
+        state,
+      });
     case "fail":
       return {
         ...state,

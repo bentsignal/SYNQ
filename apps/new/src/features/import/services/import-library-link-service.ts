@@ -1,33 +1,6 @@
-import { saveCoverImage } from "../../images/services/image-storage-service";
-import {
-  findImportLibraryAlbumIdByName,
-  findImportLibraryArtistIdByName,
-  insertImportLibraryAlbum,
-  insertImportLibraryArtist,
-  linkImportArtistAlbum,
-  linkImportSongAlbum,
-  linkImportSongArtist,
-  linkImportSongToLibraryPlaylist,
-  updateImportLibraryAlbumCover,
-} from "../repository/import-library-link-repository";
 import type { ImportSongDraft } from "../types/import-session";
-import {
-  linkImportSongToLibraryWithDependencies,
-  type ImportLibraryLinkDependencies,
-} from "./import-library-link-executor-service";
-
-const importLibraryLinkDependencies: ImportLibraryLinkDependencies = {
-  findAlbumIdByName: findImportLibraryAlbumIdByName,
-  findArtistIdByName: findImportLibraryArtistIdByName,
-  insertAlbum: insertImportLibraryAlbum,
-  insertArtist: insertImportLibraryArtist,
-  linkArtistAlbum: linkImportArtistAlbum,
-  linkSongAlbum: linkImportSongAlbum,
-  linkSongArtist: linkImportSongArtist,
-  linkSongToLibraryPlaylist: linkImportSongToLibraryPlaylist,
-  saveCoverImage,
-  updateAlbumCover: updateImportLibraryAlbumCover,
-};
+import { getImportLibraryLinkDependencies } from "./import-library-link-dependencies-service";
+import { linkImportSongToLibraryWithDependencies } from "./import-library-link-executor-service";
 
 export const linkImportSongToLibrary = async ({
   song,
@@ -37,7 +10,7 @@ export const linkImportSongToLibrary = async ({
   songId: number;
 }) => {
   return linkImportSongToLibraryWithDependencies({
-    dependencies: importLibraryLinkDependencies,
+    dependencies: getImportLibraryLinkDependencies(),
     songId,
     song,
   });

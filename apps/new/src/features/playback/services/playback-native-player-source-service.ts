@@ -8,10 +8,10 @@ import { getPlaybackNativeLibraryAudioSource } from "./playback-native-library-s
 import {
   getPlaybackNativePlayerPlayAdState,
   getPlaybackNativePlayerPlayLibraryState,
-  getPlaybackNativePlayerRemoveSourceState,
   getPlaybackNativePlayerResumeLibraryState,
   type PlaybackNativePlayerRegistryState,
 } from "./playback-native-player-state-service";
+import { removePlaybackNativePlayerSource } from "./playback-native-player-removal-service";
 import {
   getPlaybackNativeLibraryPlaybackTarget,
   getPlaybackNativePlayerControlTarget,
@@ -39,35 +39,23 @@ export const createPlaybackNativePlayerSources = ({
   });
 
   const removeAdPlayer = () => {
-    statusListeners.removeAd();
-
-    if (adPlayer) {
-      adPlayer.remove();
-      adPlayer = null;
-    }
-
-    setRegistryState(
-      getPlaybackNativePlayerRemoveSourceState({
-        source: "ad",
-        state: getRegistryState(),
-      }),
-    );
+    adPlayer = removePlaybackNativePlayerSource({
+      getRegistryState,
+      player: adPlayer,
+      setRegistryState,
+      source: "ad",
+      statusListeners,
+    });
   };
 
   const removeLibraryPlayer = () => {
-    statusListeners.removeLibrary();
-
-    if (libraryPlayer) {
-      libraryPlayer.remove();
-      libraryPlayer = null;
-    }
-
-    setRegistryState(
-      getPlaybackNativePlayerRemoveSourceState({
-        source: "library",
-        state: getRegistryState(),
-      }),
-    );
+    libraryPlayer = removePlaybackNativePlayerSource({
+      getRegistryState,
+      player: libraryPlayer,
+      setRegistryState,
+      source: "library",
+      statusListeners,
+    });
   };
 
   return {

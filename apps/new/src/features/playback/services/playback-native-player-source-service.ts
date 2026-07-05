@@ -7,12 +7,15 @@ import { playbackAdAudio } from "./playback-native-audio-service";
 import { getPlaybackNativeLibraryAudioSource } from "./playback-native-library-source-service";
 import {
   getPlaybackNativePlayerPlayAdState,
-  getPlaybackNativePlayerPlayLibraryPlan,
   getPlaybackNativePlayerPlayLibraryState,
   getPlaybackNativePlayerRemoveSourceState,
   getPlaybackNativePlayerResumeLibraryState,
   type PlaybackNativePlayerRegistryState,
 } from "./playback-native-player-state-service";
+import {
+  getPlaybackNativeLibraryPlaybackTarget,
+  getPlaybackNativePlayerControlTarget,
+} from "./playback-native-player-target-service";
 import { createTrackPlayerStatusListenerRegistry } from "./playback-native-status-listener-service";
 import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
 
@@ -69,7 +72,10 @@ export const createPlaybackNativePlayerSources = ({
 
   return {
     pauseActive: () => {
-      if (getRegistryState().activeSource === "ad" && adPlayer) {
+      if (
+        getPlaybackNativePlayerControlTarget(getRegistryState()) === "ad" &&
+        adPlayer
+      ) {
         adPlayer.pause();
         return;
       }
@@ -90,11 +96,12 @@ export const createPlaybackNativePlayerSources = ({
 
       removeAdPlayer();
 
-      const plan = getPlaybackNativePlayerPlayLibraryPlan({
+      const plan = getPlaybackNativeLibraryPlaybackTarget({
+        hasLibraryPlayer: Boolean(libraryPlayer),
         songId: song.id,
         state: getRegistryState(),
       });
-      if (libraryPlayer && plan.type === "replay-loaded-song") {
+      if (plan.type === "replay-loaded-song" && libraryPlayer) {
         setRegistryState(
           getPlaybackNativePlayerPlayLibraryState({
             songId: song.id,
@@ -119,7 +126,10 @@ export const createPlaybackNativePlayerSources = ({
       libraryPlayer.play();
     },
     resumeActive: () => {
-      if (getRegistryState().activeSource === "ad" && adPlayer) {
+      if (
+        getPlaybackNativePlayerControlTarget(getRegistryState()) === "ad" &&
+        adPlayer
+      ) {
         adPlayer.play();
         return;
       }

@@ -212,6 +212,10 @@ import {
   initialPlaybackNativePlayerRegistryState,
 } from "../../../apps/new/src/features/playback/services/playback-native-player-state-service";
 import {
+  getPlaybackNativeLibraryPlaybackTarget,
+  getPlaybackNativePlayerControlTarget,
+} from "../../../apps/new/src/features/playback/services/playback-native-player-target-service";
+import {
   getPlaybackNativeCommandErrorMessage,
   getRemoveFromQueueNativeCommandPlan,
   getResumeNativeCommandPlan,
@@ -2704,6 +2708,22 @@ function assertPlaybackNativePlayerStateSmoke() {
     { type: "replace-library-player" },
   );
   assert.deepEqual(
+    getPlaybackNativeLibraryPlaybackTarget({
+      hasLibraryPlayer: true,
+      songId: 10,
+      state: firstLibraryState,
+    }),
+    { type: "replay-loaded-song" },
+  );
+  assert.deepEqual(
+    getPlaybackNativeLibraryPlaybackTarget({
+      hasLibraryPlayer: false,
+      songId: 10,
+      state: firstLibraryState,
+    }),
+    { type: "replace-library-player" },
+  );
+  assert.deepEqual(
     getPlaybackNativeLibraryAudioSource({
       id: 10,
       pathToFile: "/tmp/playable.mp3",
@@ -2720,6 +2740,11 @@ function assertPlaybackNativePlayerStateSmoke() {
     activeSource: "ad",
     loadedSongId: 10,
   });
+  assert.equal(getPlaybackNativePlayerControlTarget(adState), "ad");
+  assert.equal(
+    getPlaybackNativePlayerControlTarget(firstLibraryState),
+    "library",
+  );
   assert.deepEqual(getPlaybackNativePlayerResumeLibraryState(adState), {
     activeSource: "library",
     loadedSongId: 10,

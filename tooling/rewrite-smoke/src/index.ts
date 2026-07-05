@@ -44,6 +44,9 @@ import {
   runPlaybackQueueRemoveCommand,
 } from "../../../apps/new/src/features/playback/services/playback-queue-command-flow-service";
 import {
+  createPlaybackQueueActions,
+} from "../../../apps/new/src/features/playback/services/playback-queue-action-service";
+import {
   runPlaybackQueueAddSongCommand,
   runPlaybackQueueClearSessionCommand,
   runPlaybackQueueMoveSongCommand,
@@ -1694,6 +1697,38 @@ async function assertPlaybackSessionSmoke() {
     ["play", first.id],
     ["haptic", "light"],
     ["move", second.id, "down"],
+    ["haptic", "medium"],
+    ["remove", third.id],
+    ["haptic", "medium"],
+    ["clear"],
+  ]);
+  const queueActionEvents: unknown[] = [];
+  const queueActions = createPlaybackQueueActions({
+    clearQueue: () => {
+      queueActionEvents.push(["clear"]);
+    },
+    moveQueueSong: (songId, direction) => {
+      queueActionEvents.push(["move", songId, direction]);
+    },
+    playSong: (song) => {
+      queueActionEvents.push(["play", song.id]);
+    },
+    removeFromQueue: (songId) => {
+      queueActionEvents.push(["remove", songId]);
+    },
+    sendHaptic: (haptic) => {
+      queueActionEvents.push(["haptic", haptic]);
+    },
+  });
+  queueActions.playQueuedSong(first);
+  queueActions.moveQueuedSong(second.id, "up");
+  queueActions.removeQueuedSong(third.id);
+  queueActions.clearQueuedSongs();
+  assert.deepEqual(queueActionEvents, [
+    ["haptic", "light"],
+    ["play", first.id],
+    ["haptic", "light"],
+    ["move", second.id, "up"],
     ["haptic", "medium"],
     ["remove", third.id],
     ["haptic", "medium"],

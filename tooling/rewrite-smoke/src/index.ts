@@ -413,18 +413,22 @@ import {
   initialImportSessionState,
 } from "../../../apps/new/src/features/import/services/import-session-initial-state-service";
 import {
-  createImportSessionCommands,
   getBeginFilePickAction,
   getBeginWifiTransferAction,
   getFailImportSessionAction,
   getFinishWifiTransferAction,
-  getImportSessionCommandErrorMessage,
   getReceiveWifiSongAction,
   getRemoveImportSongsAction,
   getReviewImportSongsAction,
   getSetImportSaveToLibraryAction,
   getUpdateImportSongAction,
-} from "../../../apps/new/src/features/import/services/import-session-command-service";
+} from "../../../apps/new/src/features/import/services/import-session-action-service";
+import {
+  createImportSessionCommands,
+} from "../../../apps/new/src/features/import/services/import-session-command-composer-service";
+import {
+  getImportSessionCommandErrorMessage,
+} from "../../../apps/new/src/features/import/services/import-session-command-error-service";
 import {
   runBeginImportFilePickCommand,
   runFailImportSessionCommand,

@@ -4,7 +4,7 @@ import {
   getFailImportSessionAction,
   getRemoveImportSongsAction,
   getReviewImportSongsAction,
-} from "./import-session-command-service";
+} from "./import-session-action-service";
 import type { ImportSessionAction } from "./import-session-state-service";
 import type { ImportSongDraft } from "../types/import-session";
 

@@ -2,9 +2,9 @@ import {
   getBeginWifiTransferAction,
   getFailImportSessionAction,
   getFinishWifiTransferAction,
-  getImportSessionCommandErrorMessage,
   getReceiveWifiSongAction,
-} from "./import-session-command-service";
+} from "./import-session-action-service";
+import { getImportSessionCommandErrorMessage } from "./import-session-command-error-service";
 import type { ImportSessionAction } from "./import-session-state-service";
 import type { ImportSongDraft } from "../types/import-session";
 

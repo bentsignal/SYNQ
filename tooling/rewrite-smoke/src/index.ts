@@ -983,14 +983,17 @@ import {
 } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
 import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-state-service";
 import {
-  filterCollectionPreviews,
-  getLibraryCollectionListErrors,
   getLibraryCollectionCreateHref,
   getLibraryCollectionListBackHref,
   getLibraryCollectionListControllerViewState,
   getLibraryCollectionListCopy,
-  getLibraryCollectionListState,
 } from "../../../apps/new/src/features/library/services/library-collection-list-service";
+import {
+  filterCollectionPreviews,
+  getLibraryCollectionListErrors,
+  getLibraryCollectionListState,
+  getLibraryCollectionListStatusLabel,
+} from "../../../apps/new/src/features/library/services/library-collection-list-state-service";
 import {
   getLibraryCollectionListSetQueryAction,
   initialLibraryCollectionListControlState,
@@ -13780,6 +13783,14 @@ function assertLibraryCollectionListSmoke() {
     ["collection query smoke"],
   );
   assert.deepEqual(getLibraryCollectionListErrors(null), []);
+  assert.equal(
+    getLibraryCollectionListStatusLabel({
+      errors: [],
+      formatUpdatedAt: (updatedAt) => `time:${updatedAt}`,
+      updatedAt: 456,
+    }),
+    "Updated time:456",
+  );
   assert.deepEqual(
     getLibraryCollectionListState({
       collections,

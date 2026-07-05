@@ -1,7 +1,6 @@
 import type { ImportSongDraft } from "../types/import-session";
+import { saveImportLibrarySongAudio } from "./import-library-song-audio-save-service";
 import {
-  deleteFailedImportLibrarySong,
-  getImportLibrarySongSaveErrorMessage,
   updateImportLibrarySongCoverFromArtwork,
 } from "./import-library-song-save-step-service";
 
@@ -52,24 +51,12 @@ export const saveImportSongToLibrary = async (
 ) => {
   const songId = await dependencies.insertImportSongDraft(song);
 
-  try {
-    const libraryPath = await dependencies.moveImportAudioToLibrary({
-      cacheUri: song.cacheUri,
-      fileName: song.fileName,
-      songId,
-    });
-    await dependencies.updateImportLibrarySongPath({
-      pathToFile: libraryPath,
-      songId,
-    });
-  } catch (error) {
-    await deleteFailedImportLibrarySong(songId, dependencies);
-    throw new Error(
-      `Audio file could not be saved: ${getImportLibrarySongSaveErrorMessage(
-        error,
-      )}`,
-    );
-  }
+  await saveImportLibrarySongAudio({
+    cacheUri: song.cacheUri,
+    dependencies,
+    fileName: song.fileName,
+    songId,
+  });
 
   const { linkedAlbum } = await dependencies.linkImportSongToLibrary({
     song,

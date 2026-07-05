@@ -1051,6 +1051,7 @@ import {
 import { runSongAddToPlaylistCommand } from "../../../apps/new/src/features/library/services/song-add-to-playlist-command-flow-service";
 import {
   createSongAddToPlaylistControllerCommands,
+  getSongAddToPlaylistController,
 } from "../../../apps/new/src/features/library/services/song-add-to-playlist-controller-service";
 import {
   getLibrarySongPlaybackBlockedCommand,
@@ -10229,6 +10230,24 @@ async function assertLibrarySongDetailSmoke() {
       { error: null, pendingPlaylistId: null, successPlaylistId: 7 },
     ],
   ]);
+  const assembledAddToPlaylistController = getSongAddToPlaylistController({
+    commands: addToPlaylistCommands,
+    query: "road",
+    viewState: addToPlaylistControllerState,
+  });
+  assert.equal(assembledAddToPlaylistController.query, "road");
+  assert.deepEqual(
+    assembledAddToPlaylistController.headerState,
+    addToPlaylistControllerState.headerState,
+  );
+  assert.equal(
+    assembledAddToPlaylistController.addToPlaylist,
+    addToPlaylistCommands.addToPlaylist,
+  );
+  assert.equal(
+    assembledAddToPlaylistController.setQuery,
+    addToPlaylistCommands.setQuery,
+  );
   assert.equal(getLibrarySongDeleteSuccessHref(), "/(tabs)/library");
   assert.deepEqual(getLibrarySongDeleteConfirmationCopy(detail), {
     body: "Delete Alpha?",

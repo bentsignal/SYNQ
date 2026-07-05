@@ -7,6 +7,7 @@ import {
 import { addLibraryCollectionSongCommand } from "../services/library-collection-command-service";
 import {
   createSongAddToPlaylistControllerCommands,
+  getSongAddToPlaylistController,
 } from "../services/song-add-to-playlist-controller-service";
 import {
   getSongAddToPlaylistControllerViewState,
@@ -54,10 +55,9 @@ export function useSongAddToPlaylistController({ songId }: { songId: number }) {
     [collections, controls.query, error, mutationState, songId, updatedAt],
   );
 
-  return {
-    addToPlaylist: commands.addToPlaylist,
-    ...viewState,
+  return getSongAddToPlaylistController({
+    commands,
     query: controls.query,
-    setQuery: commands.setQuery,
-  };
+    viewState,
+  });
 }

@@ -4,7 +4,10 @@ import {
   type LibraryCollectionListControlAction,
 } from "./library-collection-list-control-state-service";
 import { runSongAddToPlaylistCommand } from "./song-add-to-playlist-command-flow-service";
-import type { SongAddToPlaylistMutationState } from "./song-add-to-playlist-service";
+import type {
+  SongAddToPlaylistControllerViewState,
+  SongAddToPlaylistMutationState,
+} from "./song-add-to-playlist-service";
 
 type SongAddToPlaylistMutationStateSetter = (
   state: SongAddToPlaylistMutationState,
@@ -28,6 +31,23 @@ export type SongAddToPlaylistControllerCommands = {
   addToPlaylist: (playlistId: number) => Promise<void>;
   setQuery: (query: string) => void;
 };
+
+type GetSongAddToPlaylistControllerParams = {
+  commands: SongAddToPlaylistControllerCommands;
+  query: string;
+  viewState: SongAddToPlaylistControllerViewState;
+};
+
+export const getSongAddToPlaylistController = ({
+  commands,
+  query,
+  viewState,
+}: GetSongAddToPlaylistControllerParams) => ({
+  addToPlaylist: commands.addToPlaylist,
+  ...viewState,
+  query,
+  setQuery: commands.setQuery,
+});
 
 export const createSongAddToPlaylistControllerCommands = ({
   addLibraryCollectionSong,

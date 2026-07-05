@@ -7,32 +7,16 @@ import type {
   AddableCollectionSong,
   AddableCollectionSongRow,
 } from "./addable-collection-songs-types-service";
+import {
+  getAddableCollectionSongsErrors,
+  getAddableCollectionSongsUpdatedAt,
+} from "./addable-collection-songs-result-metadata-service";
 
 export type AddableCollectionSongsResult = {
   errors: unknown[];
   songs: AddableCollectionSong[];
   updatedAt: number;
 };
-
-export const getAddableCollectionSongsErrors = ({
-  linkedRowsError,
-  songRowsError,
-}: {
-  linkedRowsError: unknown;
-  songRowsError: unknown;
-}) => [songRowsError, linkedRowsError].filter(Boolean);
-
-export const getAddableCollectionSongsUpdatedAt = ({
-  linkedRowsUpdatedAt,
-  songRowsUpdatedAt,
-}: {
-  linkedRowsUpdatedAt: Date | null | undefined;
-  songRowsUpdatedAt: Date | null | undefined;
-}) =>
-  Math.max(
-    songRowsUpdatedAt?.getTime() ?? 0,
-    linkedRowsUpdatedAt?.getTime() ?? 0,
-  );
 
 export const buildAddableCollectionSongsResult = ({
   linkedRows,
@@ -65,3 +49,8 @@ export const buildAddableCollectionSongsResult = ({
     songRowsUpdatedAt,
   }),
 });
+
+export {
+  getAddableCollectionSongsErrors,
+  getAddableCollectionSongsUpdatedAt,
+} from "./addable-collection-songs-result-metadata-service";

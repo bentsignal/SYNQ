@@ -37,6 +37,7 @@ export const getPlaybackQueueScreenState = () => ({
     label: "Back to player",
   },
   clearQueueLabel: "Clear queue",
+  emptyState: getPlaybackQueueEmptyState(),
   header: {
     kicker: "Playback queue",
     subtitle:

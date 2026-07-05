@@ -2793,6 +2793,10 @@ function assertPlaybackPlayerStateSmoke() {
       label: "Back to player",
     },
     clearQueueLabel: "Clear queue",
+    emptyState: {
+      body: "Open a song from Library to start listening.",
+      title: "Queue is empty",
+    },
     header: {
       kicker: "Playback queue",
       subtitle:

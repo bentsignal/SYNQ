@@ -54,6 +54,7 @@ export function PlaybackQueueScreenView({
       <PlaybackQueueList
         activeTrackId={activeTrack?.id ?? null}
         adBreakActive={adBreakActive}
+        emptyState={screenState.emptyState}
         onMoveSong={moveQueuedSong}
         onPlaySong={playQueuedSong}
         onRemoveSong={removeQueuedSong}

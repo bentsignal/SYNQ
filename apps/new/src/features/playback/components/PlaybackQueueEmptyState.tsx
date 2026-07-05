@@ -1,11 +1,19 @@
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getPlaybackQueueEmptyState } from "../services/playback-screen-state-service";
+import type { getPlaybackQueueScreenState } from "../services/playback-screen-state-service";
 
-export function PlaybackQueueEmptyState() {
+type PlaybackQueueEmptyStateModel = ReturnType<
+  typeof getPlaybackQueueScreenState
+>["emptyState"];
+
+type PlaybackQueueEmptyStateProps = {
+  emptyState: PlaybackQueueEmptyStateModel;
+};
+
+export function PlaybackQueueEmptyState({
+  emptyState,
+}: PlaybackQueueEmptyStateProps) {
   const theme = useCustomizationTheme();
-  const emptyState = getPlaybackQueueEmptyState();
-
   return (
     <View
       className="gap-2 rounded-lg border p-4"

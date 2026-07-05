@@ -1,10 +1,12 @@
 import {
   rowsToSongPreviews,
-  type LibrarySongPreview,
-  type LibrarySongPreviewOrder,
-  type LibrarySongPreviewRow,
-  type LibrarySongPreviewSort,
-} from "./library-song-preview-service";
+} from "./library-song-preview-row-mapper-service";
+import type {
+  LibrarySongPreview,
+  LibrarySongPreviewOrder,
+  LibrarySongPreviewRow,
+  LibrarySongPreviewSort,
+} from "./library-song-preview-types-service";
 
 export type LibrarySongPreviewQueryResult = {
   error: unknown;

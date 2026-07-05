@@ -1257,7 +1257,7 @@ import {
 } from "../../../apps/new/src/features/library/repository/library-song-export-snapshot-executor-repository";
 import {
   rowsToSongPreviews,
-} from "../../../apps/new/src/features/library/services/library-song-preview-service";
+} from "../../../apps/new/src/features/library/services/library-song-preview-row-mapper-service";
 import {
   buildLibrarySongPreviewQueryResult,
   getLibrarySongPreviewQueryUpdatedAt,

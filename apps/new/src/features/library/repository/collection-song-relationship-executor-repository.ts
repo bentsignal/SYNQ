@@ -9,6 +9,10 @@ import {
 import type {
   CollectionSongRelationshipDependencies,
 } from "./collection-song-relationship-dependencies-repository";
+import {
+  executeCollectionSongOrderOperation,
+  executeCollectionSongRemoveOperation,
+} from "./collection-song-relationship-operation-executor-repository";
 
 export type {
   CollectionSongRelationshipDependencies,
@@ -38,19 +42,7 @@ export async function updateCollectionSongOrderWithDependencies(
     kind,
     songIds,
   })) {
-    const { kind: operationKind, ...params } = operation;
-
-    switch (operationKind) {
-      case "album":
-        await dependencies.updateAlbumSongOrder(params);
-        break;
-      case "artist":
-        await dependencies.updateArtistSongOrder(params);
-        break;
-      case "playlist":
-        await dependencies.updatePlaylistSongOrder(params);
-        break;
-    }
+    await executeCollectionSongOrderOperation(operation, dependencies);
   }
 }
 
@@ -72,20 +64,12 @@ export async function removeSongFromCollectionWithDependencies(
     songId,
   });
 
-  const { kind: operationKind, ...params } = operation;
-
-  switch (operationKind) {
-    case "album":
-      await dependencies.removeAlbumSong(params);
-      return;
-    case "artist":
-      await dependencies.removeArtistSong(params);
-      return;
-    case "playlist":
-      assertCanMutatePlaylistMembership({
-        playlistId: params.collectionId,
-        protectedPlaylistIds: dependencies.protectedPlaylistIds,
-      });
-      await dependencies.removePlaylistSong(params);
+  if (operation.kind === "playlist") {
+    assertCanMutatePlaylistMembership({
+      playlistId: operation.collectionId,
+      protectedPlaylistIds: dependencies.protectedPlaylistIds,
+    });
   }
+
+  await executeCollectionSongRemoveOperation(operation, dependencies);
 }

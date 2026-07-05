@@ -1,13 +1,13 @@
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 
-type CollectionSongRelationshipOrderOperation = {
+export type CollectionSongRelationshipOrderOperation = {
   collectionId: number;
   kind: LibraryCollectionDetailKind;
   order: number;
   songId: number;
 };
 
-type CollectionSongRelationshipRemoveOperation = {
+export type CollectionSongRelationshipRemoveOperation = {
   collectionId: number;
   kind: LibraryCollectionDetailKind;
   songId: number;

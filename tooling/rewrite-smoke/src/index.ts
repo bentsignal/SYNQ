@@ -524,6 +524,7 @@ import {
   runImportFilesRemoveAction,
 } from "../../../apps/new/src/features/import/services/import-files-action-flow-service";
 import {
+  runImportWifiRemoveSongAction,
   runImportWifiReviewSaveAction,
 } from "../../../apps/new/src/features/import/services/import-wifi-action-flow-service";
 import {
@@ -4993,7 +4994,34 @@ async function assertImportSessionSmoke() {
       importWifiActionEvents.push(["haptic", haptic]);
     },
   });
-  assert.deepEqual(importWifiActionEvents, [["haptic", "light"]]);
+  await runImportWifiRemoveSongAction({
+    canRemoveSongs: false,
+    removeImportSongs: async (songIds) => {
+      importWifiActionEvents.push(["remove", songIds]);
+      return true;
+    },
+    sendHaptic: (haptic) => {
+      importWifiActionEvents.push(["haptic", haptic]);
+    },
+    songId: 41,
+  });
+  await runImportWifiRemoveSongAction({
+    canRemoveSongs: true,
+    removeImportSongs: async (songIds) => {
+      importWifiActionEvents.push(["remove", songIds]);
+      return true;
+    },
+    sendHaptic: (haptic) => {
+      importWifiActionEvents.push(["haptic", haptic]);
+    },
+    songId: 42,
+  });
+  assert.deepEqual(importWifiActionEvents, [
+    ["haptic", "light"],
+    ["haptic", "medium"],
+    ["remove", [42]],
+    ["haptic", "success"],
+  ]);
   assert.deepEqual(
     getImportHomeState({ premiumActive: true, state }).routes.map((route) => ({
       href: route.href,

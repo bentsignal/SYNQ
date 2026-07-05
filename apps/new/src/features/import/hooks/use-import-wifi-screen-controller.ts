@@ -1,6 +1,8 @@
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { runImportFilesRemoveAction } from "../services/import-files-action-flow-service";
-import { runImportWifiReviewSaveAction } from "../services/import-wifi-action-flow-service";
+import {
+  runImportWifiRemoveSongAction,
+  runImportWifiReviewSaveAction,
+} from "../services/import-wifi-action-flow-service";
 import { getImportWifiViewState } from "../services/import-wifi-screen-state-service";
 import { useImportSessionSelector } from "./use-import-session";
 import { useWifiImportServer } from "./use-wifi-import-server";
@@ -20,7 +22,8 @@ export function useImportWifiScreenController() {
     });
 
   const removeSong = async (songId: number) => {
-    await runImportFilesRemoveAction({
+    await runImportWifiRemoveSongAction({
+      canRemoveSongs: wifiState.canReviewSave,
       removeImportSongs,
       sendHaptic,
       songId,

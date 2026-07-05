@@ -7,6 +7,7 @@ import {
   useAddableArtistCollectionSongsQuery,
   useAddablePlaylistCollectionSongsQuery,
 } from "../hooks/use-addable-collection-songs-query";
+import { getLibraryInvalidCollectionState } from "../services/library-collection-navigation-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 
 type AddCollectionSongsScreenProps = {
@@ -19,7 +20,11 @@ export function AddCollectionSongsScreen({
   const id = useNumericRouteParam();
 
   if (id === null) {
-    return <LibraryInvalidCollectionState />;
+    return (
+      <LibraryInvalidCollectionState
+        state={getLibraryInvalidCollectionState()}
+      />
+    );
   }
 
   return <AddCollectionSongsContent id={id} kind={kind} />;

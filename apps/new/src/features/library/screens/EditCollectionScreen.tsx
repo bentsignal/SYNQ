@@ -7,6 +7,7 @@ import {
   useEditPlaylistCollectionQuery,
 } from "../hooks/use-edit-collection-query";
 import { getEditCollectionFormCopy } from "../services/collection-form-copy-service";
+import { getLibraryInvalidCollectionState } from "../services/library-collection-navigation-service";
 import type { EditCollectionKind } from "../services/edit-collection-state-service";
 
 export type CollectionKind = EditCollectionKind;
@@ -20,7 +21,11 @@ export function EditCollectionScreen({ kind }: EditCollectionScreenProps) {
   const copy = getEditCollectionFormCopy(kind);
 
   if (id === null) {
-    return <LibraryInvalidCollectionState kicker={copy.kicker} />;
+    return (
+      <LibraryInvalidCollectionState
+        state={getLibraryInvalidCollectionState({ kicker: copy.kicker })}
+      />
+    );
   }
 
   return <EditCollectionContent id={id} kind={kind} />;

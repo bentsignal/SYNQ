@@ -1,17 +1,19 @@
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getLibraryInvalidCollectionState } from "../services/library-collection-navigation-service";
+import type { getLibraryInvalidCollectionState } from "../services/library-collection-navigation-service";
+
+type LibraryInvalidCollectionStateModel = ReturnType<
+  typeof getLibraryInvalidCollectionState
+>;
 
 type LibraryInvalidCollectionStateProps = {
-  kicker?: string;
+  state: LibraryInvalidCollectionStateModel;
 };
-
 export function LibraryInvalidCollectionState({
-  kicker = "Library",
+  state,
 }: LibraryInvalidCollectionStateProps) {
   const theme = useCustomizationTheme();
-  const state = getLibraryInvalidCollectionState({ kicker });
 
   return (
     <View

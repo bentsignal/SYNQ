@@ -6,6 +6,7 @@ import {
   useArtistCollectionDetailQuery,
   usePlaylistCollectionDetailQuery,
 } from "../hooks/use-library-collection-detail-query";
+import { getLibraryInvalidCollectionState } from "../services/library-collection-navigation-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 
 type LibraryCollectionDetailScreenProps = {
@@ -18,7 +19,11 @@ export function LibraryCollectionDetailScreen({
   const id = useNumericRouteParam();
 
   if (id === null) {
-    return <LibraryInvalidCollectionState />;
+    return (
+      <LibraryInvalidCollectionState
+        state={getLibraryInvalidCollectionState()}
+      />
+    );
   }
 
   return <LibraryCollectionDetailContent id={id} kind={kind} />;

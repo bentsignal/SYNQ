@@ -14,8 +14,9 @@ const withSynqNativeAudio = (config) => {
 
   return withAndroidManifest(withIosAudioBackgroundMode, (nextConfig) => {
     const manifest = nextConfig.modResults.manifest;
+    manifest["uses-permission"] ??= [];
     manifest["uses-permission"] = AndroidConfig.Permissions.ensurePermissions(
-      manifest,
+      nextConfig.modResults,
       [
         "android.permission.FOREGROUND_SERVICE",
         "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",

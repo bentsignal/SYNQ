@@ -59,6 +59,7 @@
           }
         }
       ],
+      "./expo-plugins/with-ios-pods-deployment-target.cjs",
       "expo-splash-screen",
       "expo-sqlite",
       "expo-asset"
@@ -68,7 +69,8 @@
       "bundleIdentifier": "com.directedbyshawn.synq-new",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "buildNumber": "4"
     },
     "android": {
       "permissions": [

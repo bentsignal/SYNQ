@@ -3,6 +3,11 @@ import type {
   BackupOperation,
   BackupSessionState,
 } from "../types/backup-session";
+import {
+  getFailedBackupSessionState,
+  getStartedBackupSessionState,
+  getSucceededBackupSessionState,
+} from "./backup-session-transition-service";
 
 export type BackupSessionAction =
   | { operation: BackupOperation; type: "start" }
@@ -59,29 +64,21 @@ export const backupSessionReducer = (
 ): BackupSessionState => {
   switch (action.type) {
     case "start":
-      return {
-        ...state,
-        error: null,
-        lastOperation: action.operation,
-        message: null,
-        phase: "running",
-      };
+      return getStartedBackupSessionState({
+        operation: action.operation,
+        state,
+      });
     case "succeed":
-      return {
-        ...state,
-        error: null,
-        lastOperation: action.result.operation,
-        message: action.result.message,
-        phase: "success",
-      };
+      return getSucceededBackupSessionState({
+        result: action.result,
+        state,
+      });
     case "fail":
-      return {
-        ...state,
+      return getFailedBackupSessionState({
         error: action.error,
-        lastOperation: action.operation,
-        message: null,
-        phase: "failure",
-      };
+        operation: action.operation,
+        state,
+      });
     case "reset":
       return initialBackupSessionState;
   }

@@ -1389,6 +1389,11 @@ import {
   type BackupSessionAction,
 } from "../../../apps/new/src/features/backup/services/backup-session-state-service";
 import {
+  getFailedBackupSessionState,
+  getStartedBackupSessionState,
+  getSucceededBackupSessionState,
+} from "../../../apps/new/src/features/backup/services/backup-session-transition-service";
+import {
   runBackupSessionOperationCommand,
   runBackupSessionResetCommand,
 } from "../../../apps/new/src/features/backup/services/backup-session-command-flow-service";
@@ -16379,6 +16384,31 @@ async function assertBackupScreenSmoke() {
     phase: "running",
     requiresPremium: true,
   });
+  assert.deepEqual(
+    getStartedBackupSessionState({
+      operation: "backup",
+      state: initialBackupSessionState,
+    }),
+    startedBackupState,
+  );
+  assert.deepEqual(
+    getSucceededBackupSessionState({
+      result: {
+        message: "Backup complete.",
+        operation: "backup",
+      },
+      state: startedBackupState,
+    }),
+    successState,
+  );
+  assert.deepEqual(
+    getFailedBackupSessionState({
+      error: "Restore failed.",
+      operation: "restore",
+      state: startedBackupState,
+    }),
+    failureState,
+  );
   assert.deepEqual(
     backupSessionReducer(
       startedBackupState,

@@ -2,7 +2,7 @@ import { usePremiumEntitlementSelector } from "@/src/features/premium/state/Prem
 import { useCustomizationSettingsSelector } from "../state/CustomizationSettingsProvider";
 import {
   getCustomizationScreenControllerViewState,
-} from "../services/settings-screen-service";
+} from "../services/customization-screen-state-service";
 import {
   runCustomizationHapticsToggleAction,
   runSettingsInteractionAction,

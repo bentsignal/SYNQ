@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import type { CustomizationTheme } from "../hooks/use-customization-theme";
-import type { getCustomizationColorControlsState } from "../services/settings-screen-service";
+import type { getCustomizationColorControlsState } from "../services/customization-screen-state-service";
 import type { CustomizationColorKey } from "../types/customization-settings";
 
 type CustomizationColorControlsState = ReturnType<

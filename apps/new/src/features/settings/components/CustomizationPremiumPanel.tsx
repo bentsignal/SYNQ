@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import type { CustomizationTheme } from "../hooks/use-customization-theme";
-import type { getCustomizationScreenState } from "../services/settings-screen-service";
+import type { getCustomizationScreenState } from "../services/customization-screen-state-service";
 
 type CustomizationPremiumPanelProps = {
   panel: ReturnType<typeof getCustomizationScreenState>["premiumPanel"];

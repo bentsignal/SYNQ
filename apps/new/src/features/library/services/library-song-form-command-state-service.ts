@@ -5,7 +5,7 @@ import {
 } from "./library-song-navigation-service";
 import type {
   LibrarySongEditControllerAction,
-} from "./library-song-edit-controller-reducer-service";
+} from "./library-song-edit-controller-action-service";
 import type { LibrarySongEditCoverImage } from "./library-song-edit-form-state-service";
 import { getLibrarySongEditErrorMessage } from "./library-song-edit-error-service";
 

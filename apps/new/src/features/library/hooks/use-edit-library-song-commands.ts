@@ -2,10 +2,8 @@ import { replaceNativeRoute } from "@/src/features/app-shell/services/native-rou
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { pickCollectionImage } from "../services/collection-image-picker-service";
 import { updateLibrarySongMetadataCommand } from "../services/library-song-command-service";
-import type {
-  LibrarySongEditControllerAction,
-  LibrarySongEditControllerState,
-} from "../services/library-song-edit-controller-reducer-service";
+import type { LibrarySongEditControllerAction } from "../services/library-song-edit-controller-action-service";
+import type { LibrarySongEditControllerState } from "../services/library-song-edit-controller-reducer-service";
 import {
   runLibrarySongEditCoverPickCommand,
   runLibrarySongEditSaveCommand,

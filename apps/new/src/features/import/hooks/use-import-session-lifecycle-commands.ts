@@ -1,14 +1,8 @@
 import { useMemo } from "react";
-import { clearImportCache } from "../services/import-file-cache-service";
-import {
-  discardImportSession,
-  saveImportSessionToLibrary,
-} from "../services/import-library-save-service";
 import {
   createImportSessionLifecycleCommands,
 } from "../services/import-session-lifecycle-command-service";
-import type { ImportSessionLifecycleDependencies } from "../services/import-session-lifecycle-service";
-import { clearPersistedImportSessionState } from "../services/import-session-persistence-service";
+import { importSessionLifecycleDependencies } from "../services/import-session-lifecycle-dependencies-service";
 import type { ImportSessionAction } from "../services/import-session-state-service";
 import type { ImportSessionState } from "../types/import-session";
 
@@ -25,25 +19,15 @@ export function useImportSessionLifecycleCommands({
   shouldSaveToLibrary,
   songs,
 }: UseImportSessionLifecycleCommandsParams) {
-  const dependencies = useMemo<ImportSessionLifecycleDependencies>(
-    () => ({
-      clearImportCache,
-      clearPersistedImportSessionState,
-      discardImportSession,
-      saveImportSessionToLibrary,
-    }),
-    [],
-  );
-
   return useMemo(
     () =>
       createImportSessionLifecycleCommands({
-        dependencies,
+        dependencies: importSessionLifecycleDependencies,
         dispatch,
         premiumActive,
         shouldSaveToLibrary,
         songs,
       }),
-    [dependencies, dispatch, premiumActive, shouldSaveToLibrary, songs],
+    [dispatch, premiumActive, shouldSaveToLibrary, songs],
   );
 }

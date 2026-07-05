@@ -9,31 +9,10 @@ import {
   saveImportSessionLifecycle,
   type ImportSessionLifecycleDependencies,
 } from "./import-session-lifecycle-service";
-import {
-  getSavingImportSessionAction,
-  type ImportSessionAction,
-} from "./import-session-action-service";
+import type { ImportSessionAction } from "./import-session-action-service";
+import { runImportSessionLifecycleAttempt } from "./import-session-lifecycle-command-runtime-service";
 
 type ImportSessionLifecycleDispatch = (action: ImportSessionAction) => void;
-
-type ImportSessionLifecycleCommandResult = {
-  action: ImportSessionAction;
-  succeeded: boolean;
-};
-
-const runImportSessionLifecycleAttempt = async ({
-  dispatch,
-  run,
-}: {
-  dispatch: ImportSessionLifecycleDispatch;
-  run: () => Promise<ImportSessionLifecycleCommandResult>;
-}) => {
-  dispatch(getSavingImportSessionAction());
-
-  const result = await run();
-  dispatch(result.action);
-  return result.succeeded;
-};
 
 export const runFinishImportSessionCommand = ({
   dispatch,

@@ -1,14 +1,12 @@
 import type { PlaybackAdGateState } from "../types/playback-state";
-import {
-  getPlaybackAdProgressUpdate,
-  playbackAdThresholdMs,
-} from "./playback-ad-gate-progress-service";
+import { playbackAdThresholdMs } from "./playback-ad-gate-progress-service";
 
 export {
   getPlaybackAdProgressUpdate,
   playbackAdProgressIntervalMs,
   playbackAdThresholdMs,
 } from "./playback-ad-gate-progress-service";
+export { trackPlaybackAdProgress } from "./playback-ad-gate-tracking-service";
 
 export const initialPlaybackAdGateState: PlaybackAdGateState = {
   accumulatedMs: 0,
@@ -59,46 +57,3 @@ export const updatePlaybackAdBreakProgress = ({
   playbackDuration: Math.max(0, duration ?? state.playbackDuration),
   playbackPosition: Math.max(0, position),
 });
-
-export const trackPlaybackAdProgress = ({
-  currentPosition,
-  gate,
-  premiumActive,
-}: {
-  currentPosition: number;
-  gate: PlaybackAdGateState;
-  premiumActive: boolean;
-}): PlaybackAdGateState => {
-  if (premiumActive) {
-    return resetPlaybackAdGate(gate);
-  }
-
-  if (gate.active || gate.due) {
-    return gate;
-  }
-
-  const progressUpdate = getPlaybackAdProgressUpdate({
-    currentPosition,
-    gate,
-  });
-  if (!progressUpdate) {
-    return gate;
-  }
-
-  if (
-    progressUpdate.accumulatedMs === gate.accumulatedMs &&
-    progressUpdate.lastTrackedPosition !== gate.lastTrackedPosition
-  ) {
-    return {
-      ...gate,
-      lastTrackedPosition: progressUpdate.lastTrackedPosition,
-    };
-  }
-
-  return {
-    ...gate,
-    accumulatedMs: progressUpdate.accumulatedMs,
-    due: progressUpdate.due,
-    lastTrackedPosition: progressUpdate.lastTrackedPosition,
-  };
-};

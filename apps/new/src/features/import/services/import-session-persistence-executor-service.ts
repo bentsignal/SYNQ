@@ -3,9 +3,7 @@ import type {
   ImportSessionPersistenceDependencies,
 } from "./import-session-persistence-dependencies-service";
 import { loadPersistedImportSessionStateFromFile } from "./import-session-persistence-loader-service";
-import {
-  toPersistedImportSession,
-} from "./import-session-persistence-normalizer-service";
+import { writePersistedImportSessionState } from "./import-session-persistence-writer-service";
 import {
   getImportSessionDirectory,
   getImportSessionFile,
@@ -14,8 +12,6 @@ import {
 export type {
   ImportSessionPersistenceDependencies,
 } from "./import-session-persistence-dependencies-service";
-
-const importSessionFileName = "session.json";
 
 export const getImportSessionDirectoryWithDependencies = ({
   documentDirectory,
@@ -77,11 +73,9 @@ export async function savePersistedImportSessionStateWithDependencies({
 
   const importSessionDirectory =
     getImportSessionDirectoryWithDependencies(dependencies);
-  await dependencies.makeDirectory(importSessionDirectory, {
-    intermediates: true,
+  await writePersistedImportSessionState({
+    dependencies,
+    importSessionDirectory,
+    state,
   });
-  await dependencies.writeAsString(
-    `${importSessionDirectory}/${importSessionFileName}`,
-    JSON.stringify(toPersistedImportSession(state), null, 2),
-  );
 }

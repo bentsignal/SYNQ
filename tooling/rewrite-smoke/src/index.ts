@@ -999,6 +999,9 @@ import {
 } from "../../../apps/new/src/features/library/services/song-add-to-playlist-service";
 import { runSongAddToPlaylistCommand } from "../../../apps/new/src/features/library/services/song-add-to-playlist-command-flow-service";
 import {
+  createSongAddToPlaylistControllerCommands,
+} from "../../../apps/new/src/features/library/services/song-add-to-playlist-controller-service";
+import {
   getLibrarySongPlaybackBlockedCommand,
   getLibrarySongPlayCommand,
   getLibrarySongQueueCommand,
@@ -9703,6 +9706,42 @@ async function assertLibrarySongDetailSmoke() {
         pendingPlaylistId: null,
         successPlaylistId: null,
       },
+    ],
+  ]);
+  const addToPlaylistControllerCommandEvents: unknown[] = [];
+  const addToPlaylistCommands = createSongAddToPlaylistControllerCommands({
+    addLibraryCollectionSong: async ({ collectionId, kind, songId }) => {
+      addToPlaylistControllerCommandEvents.push([
+        "add",
+        collectionId,
+        kind,
+        songId,
+      ]);
+    },
+    dispatchControls: (action) => {
+      addToPlaylistControllerCommandEvents.push(["control", action]);
+    },
+    sendHaptic: (haptic) => {
+      addToPlaylistControllerCommandEvents.push(["haptic", haptic]);
+    },
+    setMutationState: (state) => {
+      addToPlaylistControllerCommandEvents.push(["state", state]);
+    },
+    songId: 42,
+  });
+  addToPlaylistCommands.setQuery("road");
+  await addToPlaylistCommands.addToPlaylist(7);
+  assert.deepEqual(addToPlaylistControllerCommandEvents, [
+    ["control", { query: "road", type: "set-query" }],
+    [
+      "state",
+      { error: null, pendingPlaylistId: 7, successPlaylistId: null },
+    ],
+    ["add", 7, "playlist", 42],
+    ["haptic", "success"],
+    [
+      "state",
+      { error: null, pendingPlaylistId: null, successPlaylistId: 7 },
     ],
   ]);
   assert.equal(getLibrarySongDeleteSuccessHref(), "/(tabs)/library");

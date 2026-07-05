@@ -1,17 +1,18 @@
-import { useCallback, useMemo, useReducer, useState } from "react";
+import { useMemo, useReducer, useState } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
-  getLibraryCollectionListSetQueryAction,
   initialLibraryCollectionListControlState,
   libraryCollectionListControlReducer,
 } from "../services/library-collection-list-control-state-service";
 import { addLibraryCollectionSongCommand } from "../services/library-collection-command-service";
 import {
+  createSongAddToPlaylistControllerCommands,
+} from "../services/song-add-to-playlist-controller-service";
+import {
   getSongAddToPlaylistControllerViewState,
   initialSongAddToPlaylistMutationState,
   type SongAddToPlaylistMutationState,
 } from "../services/song-add-to-playlist-service";
-import { runSongAddToPlaylistCommand } from "../services/song-add-to-playlist-command-flow-service";
 import { useLibraryCollectionListQuery } from "./use-library-collection-list-query";
 
 export function useSongAddToPlaylistController({ songId }: { songId: number }) {
@@ -28,6 +29,17 @@ export function useSongAddToPlaylistController({ songId }: { songId: number }) {
     kind: "playlists",
     limit: null,
   });
+  const commands = useMemo(
+    () =>
+      createSongAddToPlaylistControllerCommands({
+        addLibraryCollectionSong: addLibraryCollectionSongCommand,
+        dispatchControls,
+        sendHaptic,
+        setMutationState,
+        songId,
+      }),
+    [sendHaptic, songId],
+  );
 
   const viewState = useMemo(
     () =>
@@ -42,27 +54,10 @@ export function useSongAddToPlaylistController({ songId }: { songId: number }) {
     [collections, controls.query, error, mutationState, songId, updatedAt],
   );
 
-  const setQuery = (query: string) => {
-    dispatchControls(getLibraryCollectionListSetQueryAction(query));
-  };
-
-  const addToPlaylist = useCallback(
-    async (playlistId: number) => {
-      await runSongAddToPlaylistCommand({
-        addLibraryCollectionSong: addLibraryCollectionSongCommand,
-        playlistId,
-        sendHaptic,
-        setMutationState,
-        songId,
-      });
-    },
-    [sendHaptic, songId],
-  );
-
   return {
-    addToPlaylist,
+    addToPlaylist: commands.addToPlaylist,
     ...viewState,
     query: controls.query,
-    setQuery,
+    setQuery: commands.setQuery,
   };
 }

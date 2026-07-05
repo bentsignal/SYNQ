@@ -3,7 +3,7 @@ import { saveCustomizationSettings } from "../services/customization-settings-se
 import { setNativeAppIcon } from "../services/native-app-icon-service";
 import { runSettingsSaveCommand } from "../services/settings-persistence-command-flow-service";
 import { getCustomizationSettingsErrorMessage } from "../services/settings-error-service";
-import type { SettingsPersistenceAction } from "../services/settings-persistence-state-service";
+import type { SettingsPersistenceAction } from "../services/settings-persistence-action-service";
 import type {
   CustomizationColorKey,
   CustomizationSettings,

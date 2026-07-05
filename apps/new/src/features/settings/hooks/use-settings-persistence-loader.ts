@@ -1,8 +1,6 @@
 import { useEffect } from "react";
-import type {
-  SettingsPersistenceAction,
-  SettingsPersistenceState,
-} from "../services/settings-persistence-state-service";
+import type { SettingsPersistenceAction } from "../services/settings-persistence-action-service";
+import type { SettingsPersistenceState } from "../services/settings-persistence-state-service";
 import { runSettingsLoadCommand } from "../services/settings-persistence-command-flow-service";
 
 type SettingsPersistenceLoaderOptions<TSettings> = {

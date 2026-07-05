@@ -6,7 +6,7 @@ import {
   getSettingsPersistenceSaveFailureAction,
   getSettingsPersistenceSaveSuccessAction,
   type SettingsPersistenceAction,
-} from "./settings-persistence-state-service";
+} from "./settings-persistence-action-service";
 
 type SettingsPersistenceDispatch<TSettings> = (
   action: SettingsPersistenceAction<TSettings>,

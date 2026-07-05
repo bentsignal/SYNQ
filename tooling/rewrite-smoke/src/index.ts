@@ -1507,6 +1507,9 @@ import {
 } from "../../../apps/new/src/features/settings/services/settings-support-action-executor-service";
 import {
   createInitialSettingsPersistenceState,
+  settingsPersistenceReducer,
+} from "../../../apps/new/src/features/settings/services/settings-persistence-state-service";
+import {
   getSettingsPersistenceLoadAction,
   getSettingsPersistenceLoadFailureAction,
   getSettingsPersistenceLoadSuccessAction,
@@ -1514,8 +1517,7 @@ import {
   getSettingsPersistenceSaveFailureAction,
   getSettingsPersistenceSaveSuccessAction,
   type SettingsPersistenceAction,
-  settingsPersistenceReducer,
-} from "../../../apps/new/src/features/settings/services/settings-persistence-state-service";
+} from "../../../apps/new/src/features/settings/services/settings-persistence-action-service";
 import {
   runSettingsLoadCommand,
   runSettingsSaveCommand,

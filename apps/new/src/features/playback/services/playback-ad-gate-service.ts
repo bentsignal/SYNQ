@@ -3,6 +3,7 @@ import type { PlaybackAction } from "./playback-session-action-service";
 export {
   beginPlaybackAdBreak,
   completePlaybackAdBreak,
+  getPlaybackAdProgressUpdate,
   initialPlaybackAdGateState,
   playbackAdProgressIntervalMs,
   playbackAdThresholdMs,

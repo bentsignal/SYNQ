@@ -93,6 +93,8 @@ import {
 import {
   getBeginPlaybackAdBreakAction,
   getCompletePlaybackAdBreakAction,
+  getPlaybackAdProgressUpdate,
+  playbackAdProgressIntervalMs,
   getSyncPlaybackPremiumAction,
 } from "../../../apps/new/src/features/playback/services/playback-ad-gate-service";
 import {
@@ -2405,6 +2407,47 @@ async function assertPlaybackSessionSmoke() {
     premiumActive: true,
     type: "sync-premium",
   });
+  assert.deepEqual(
+    getPlaybackAdProgressUpdate({
+      currentPosition: 12_000,
+      gate: {
+        accumulatedMs: 0,
+        lastTrackedPosition: null,
+        thresholdMs: 20_000,
+      },
+    }),
+    {
+      accumulatedMs: 0,
+      due: false,
+      lastTrackedPosition: 12_000,
+    },
+  );
+  assert.equal(
+    getPlaybackAdProgressUpdate({
+      currentPosition: 12_000 + playbackAdProgressIntervalMs - 1,
+      gate: {
+        accumulatedMs: 0,
+        lastTrackedPosition: 12_000,
+        thresholdMs: 20_000,
+      },
+    }),
+    null,
+  );
+  assert.deepEqual(
+    getPlaybackAdProgressUpdate({
+      currentPosition: 23_000,
+      gate: {
+        accumulatedMs: 15_000,
+        lastTrackedPosition: 12_000,
+        thresholdMs: 20_000,
+      },
+    }),
+    {
+      accumulatedMs: 25_000,
+      due: true,
+      lastTrackedPosition: 22_000,
+    },
+  );
   assert.equal(
     canRunPlaybackWithAdGate({
       gate: { active: false, due: false },

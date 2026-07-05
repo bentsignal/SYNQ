@@ -1,7 +1,14 @@
 import type { PlaybackAdGateState } from "../types/playback-state";
+import {
+  getPlaybackAdProgressUpdate,
+  playbackAdThresholdMs,
+} from "./playback-ad-gate-progress-service";
 
-export const playbackAdThresholdMs = 600_000;
-export const playbackAdProgressIntervalMs = 5_000;
+export {
+  getPlaybackAdProgressUpdate,
+  playbackAdProgressIntervalMs,
+  playbackAdThresholdMs,
+} from "./playback-ad-gate-progress-service";
 
 export const initialPlaybackAdGateState: PlaybackAdGateState = {
   accumulatedMs: 0,
@@ -70,30 +77,28 @@ export const trackPlaybackAdProgress = ({
     return gate;
   }
 
-  const lastTrackedPosition = gate.lastTrackedPosition;
-  if (lastTrackedPosition === null || currentPosition < lastTrackedPosition) {
-    return {
-      ...gate,
-      lastTrackedPosition: currentPosition,
-    };
-  }
-
-  const elapsedMs = currentPosition - lastTrackedPosition;
-  if (elapsedMs < playbackAdProgressIntervalMs) {
+  const progressUpdate = getPlaybackAdProgressUpdate({
+    currentPosition,
+    gate,
+  });
+  if (!progressUpdate) {
     return gate;
   }
 
-  const intervals = Math.floor(elapsedMs / playbackAdProgressIntervalMs);
-  const nextAccumulatedMs =
-    gate.accumulatedMs + intervals * playbackAdProgressIntervalMs;
-  const nextTrackedPosition =
-    lastTrackedPosition + intervals * playbackAdProgressIntervalMs;
-  const due = nextAccumulatedMs >= gate.thresholdMs;
+  if (
+    progressUpdate.accumulatedMs === gate.accumulatedMs &&
+    progressUpdate.lastTrackedPosition !== gate.lastTrackedPosition
+  ) {
+    return {
+      ...gate,
+      lastTrackedPosition: progressUpdate.lastTrackedPosition,
+    };
+  }
 
   return {
     ...gate,
-    accumulatedMs: nextAccumulatedMs,
-    due,
-    lastTrackedPosition: nextTrackedPosition,
+    accumulatedMs: progressUpdate.accumulatedMs,
+    due: progressUpdate.due,
+    lastTrackedPosition: progressUpdate.lastTrackedPosition,
   };
 };

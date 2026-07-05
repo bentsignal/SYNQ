@@ -2,8 +2,8 @@ import type { LibraryCollectionDetailKind } from "../services/library-collection
 import {
   getCollectionSongAddOperation,
   getCollectionSongAddOperations,
-  type CollectionSongAddOperation,
 } from "./collection-song-add-step-repository";
+import { executeCollectionSongAddOperation } from "./collection-song-add-operation-executor-repository";
 
 export type CollectionSongAddDependencies = {
   addSongToAlbum: (params: {
@@ -20,30 +20,7 @@ export type CollectionSongAddDependencies = {
   }) => Promise<void>;
 };
 
-const executeCollectionSongAddOperation = async (
-  operation: CollectionSongAddOperation,
-  dependencies: CollectionSongAddDependencies,
-) => {
-  switch (operation.kind) {
-    case "album":
-      await dependencies.addSongToAlbum({
-        albumId: operation.albumId,
-        songId: operation.songId,
-      });
-      return;
-    case "artist":
-      await dependencies.addSongToArtist({
-        artistId: operation.artistId,
-        songId: operation.songId,
-      });
-      return;
-    case "playlist":
-      await dependencies.addSongToPlaylist({
-        playlistId: operation.playlistId,
-        songId: operation.songId,
-      });
-  }
-};
+export { executeCollectionSongAddOperation };
 
 export async function addSongToCollectionWithDependencies(
   {

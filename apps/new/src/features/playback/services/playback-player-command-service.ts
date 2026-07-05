@@ -1,10 +1,7 @@
 import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import type { PlaybackState } from "../types/playback-state";
-import {
-  runPlaybackPlayerButtonCommand,
-  runPlaybackPlayerPlayPauseCommand,
-} from "./playback-player-command-flow-service";
-import { runPlaybackPlayerSeekFromStateCommand } from "./playback-player-seek-command-service";
+import { createPlaybackPlayerButtonControls } from "./playback-player-button-controls-service";
+import { createPlaybackPlayerSeekControls } from "./playback-player-seek-controls-service";
 
 type PlaybackPlayerSessionCommands = {
   pause: () => void;
@@ -42,52 +39,19 @@ export const createPlaybackPlayerCommands = ({
   toggleLoop,
   toggleShuffle,
 }: CreatePlaybackPlayerCommandsParams): PlaybackPlayerCommands => ({
-  fastForward: () => {
-    runPlaybackPlayerSeekFromStateCommand({
-      direction: "forward",
-      seekTo,
-      sendHaptic,
-      state: getState(),
-    });
-  },
-  rewind: () => {
-    runPlaybackPlayerSeekFromStateCommand({
-      direction: "backward",
-      seekTo,
-      sendHaptic,
-      state: getState(),
-    });
-  },
-  skipBack: () => {
-    runPlaybackPlayerButtonCommand({
-      action: skipPrevious,
-      sendHaptic,
-    });
-  },
-  skipForward: () => {
-    runPlaybackPlayerButtonCommand({
-      action: skipNext,
-      sendHaptic,
-    });
-  },
-  toggleLoopMode: () => {
-    runPlaybackPlayerButtonCommand({
-      action: toggleLoop,
-      sendHaptic,
-    });
-  },
-  togglePlayPause: () => {
-    runPlaybackPlayerPlayPauseCommand({
-      isPlaying: getState().isPlaying,
-      pause,
-      resume,
-      sendHaptic,
-    });
-  },
-  toggleShuffleMode: () => {
-    runPlaybackPlayerButtonCommand({
-      action: toggleShuffle,
-      sendHaptic,
-    });
-  },
+  ...createPlaybackPlayerSeekControls({
+    getState,
+    seekTo,
+    sendHaptic,
+  }),
+  ...createPlaybackPlayerButtonControls({
+    getState,
+    pause,
+    resume,
+    sendHaptic,
+    skipNext,
+    skipPrevious,
+    toggleLoop,
+    toggleShuffle,
+  }),
 });

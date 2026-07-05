@@ -1,7 +1,7 @@
 import { useNumericRouteParam } from "@/src/features/app-shell/hooks/use-numeric-route-param";
 import { AddCollectionSongsFormView } from "../components/AddCollectionSongsFormView";
 import { LibraryInvalidCollectionState } from "../components/LibraryInvalidCollectionState";
-import { useAddCollectionSongsController } from "../hooks/use-add-collection-songs-controller";
+import { useAddCollectionSongsFormController } from "../hooks/use-add-collection-songs-form-controller";
 import { useAddCollectionSongsSearchQuery } from "../hooks/use-add-collection-songs-search-query";
 import type { AddableCollectionSongsQueryResult } from "../hooks/use-addable-collection-songs-query";
 import {
@@ -9,7 +9,6 @@ import {
   useAddableArtistCollectionSongsQuery,
   useAddablePlaylistCollectionSongsQuery,
 } from "../hooks/use-addable-collection-songs-query";
-import { getAddCollectionSongsFormViewState } from "../services/addable-collection-songs-screen-state-service";
 import { getLibraryInvalidCollectionState } from "../services/library-collection-navigation-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 
@@ -118,44 +117,13 @@ function AddCollectionSongsConnectedContent({
   onChangeQuery: (query: string) => void;
   query: string;
 }) {
-  const { errors, songs, updatedAt } = addable;
-  const {
-    addSelectedSongs,
-    addSong,
-    mutationError,
-    savingSongId,
-    selectedSongIds,
-    selectionState,
-    toggleSongSelection,
-  } = useAddCollectionSongsController({
+  const controller = useAddCollectionSongsFormController({
+    addable,
     collectionId,
     kind,
-    songs,
-  });
-  const viewState = getAddCollectionSongsFormViewState({
-    collectionId,
-    errors,
-    kind,
-    mutationError,
-    savingSongId,
-    selectedSongIds,
-    selectionState,
-    songs,
-    updatedAt,
+    onChangeQuery,
+    query,
   });
 
-  return (
-    <AddCollectionSongsFormView
-      formState={viewState.formState}
-      onAddSelectedSongs={addSelectedSongs}
-      onAddSong={addSong}
-      onChangeQuery={onChangeQuery}
-      onToggleSongSelection={toggleSongSelection}
-      query={query}
-      rows={viewState.rows}
-      selectionState={selectionState}
-      statusState={viewState.statusState}
-      updatedLabel={viewState.updatedLabel}
-    />
-  );
+  return <AddCollectionSongsFormView {...controller} />;
 }

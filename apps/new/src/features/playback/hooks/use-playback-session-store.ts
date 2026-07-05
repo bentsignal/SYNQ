@@ -7,14 +7,9 @@ import {
   getPlaybackSessionValue,
   type PlaybackSessionValue,
 } from "../services/playback-session-value-service";
-import { usePersistedPlaybackSession } from "./use-persisted-playback-session";
-import { usePlaybackAdGateController } from "./use-playback-ad-gate-controller";
 import { usePlaybackCommandController } from "./use-playback-command-controller";
-import { usePlaybackNativeAdapter } from "./use-playback-native-adapter";
-import { usePlaybackNativeCommandRunner } from "./use-playback-native-command-runner";
-import { usePlaybackNativeStatusListener } from "./use-playback-native-status-listener";
+import { usePlaybackNativeLifecycle } from "./use-playback-native-lifecycle";
 import { usePlaybackStateRef } from "./use-playback-state-ref";
-import { usePlaybackTrackAdvancement } from "./use-playback-track-advancement";
 
 export type { PlaybackSessionValue };
 
@@ -24,55 +19,19 @@ export function usePlaybackSessionStore(): PlaybackSessionValue {
   );
   const [state, dispatch] = useReducer(playbackReducer, initialPlaybackState);
   const stateRef = usePlaybackStateRef(state);
-  const adapter = usePlaybackNativeAdapter();
   const activeTrack = useMemo(() => getActiveTrack(state), [state]);
 
   const {
-    playNativeAdBreak,
-    restorePersistedPlaybackState,
-    resumeNativeLibraryAfterPremium,
-    runNativeCommand,
-    runNativeCommandPlan,
-  } = usePlaybackNativeCommandRunner({
-    adapter,
-    dispatch,
-  });
-
-  usePersistedPlaybackSession({
-    dispatch,
-    onRestorePlayingState: restorePersistedPlaybackState,
-    state,
-  });
-
-  const {
     beginAdBreak,
     canRunPlaybackCommand,
-    premiumActiveRef,
-  } = usePlaybackAdGateController({
+    finishActiveTrack,
+    runNativeCommandPlan,
+  } = usePlaybackNativeLifecycle({
     activeTrack,
     dispatch,
-    onBeginAdBreak: playNativeAdBreak,
-    onResumeLibraryAfterPremium: resumeNativeLibraryAfterPremium,
     premiumActive,
     state,
     stateRef,
-  });
-
-  const finishActiveTrack = usePlaybackTrackAdvancement({
-    adapter,
-    beginAdBreak,
-    canRunPlaybackCommand,
-    dispatch,
-    runNativeCommand,
-    stateRef,
-  });
-
-  usePlaybackNativeStatusListener({
-    adapter,
-    dispatch,
-    finishActiveTrack,
-    premiumActiveRef,
-    runNativeCommand,
   });
 
   const commands = usePlaybackCommandController({

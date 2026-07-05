@@ -1,145 +1,21 @@
-import type { CollectionFormKind } from "./collection-form-domain-service";
-import type { CollectionFormState } from "./collection-form-state-service";
-
-export const getCollectionFormPreviewInitial = ({
-  fallback,
-  name,
-}: {
-  fallback: string;
-  name: string;
-}) => name.trim().slice(0, 1).toUpperCase() || fallback;
-
-export const getCollectionFormSaveLabel = ({
-  defaultLabel,
-  isSaving,
-  savingLabel,
-}: {
-  defaultLabel: string;
-  isSaving: boolean;
-  savingLabel: string;
-}) => (isSaving ? savingLabel : defaultLabel);
-
-export const getCollectionFormImageLabel = (kind: CollectionFormKind) =>
-  kind === "artist" ? "Profile image" : "Cover image";
-
-export const getSavedCollectionFormImageLabel = (
-  kind: CollectionFormKind,
-) => `Saved ${getCollectionFormImageLabel(kind).toLowerCase()}`;
-
-export const getCollectionFormFieldState = (kind: CollectionFormKind) => {
-  const showsYear = kind === "album";
-
-  return {
-    artistNamesPlaceholder: "Artist names",
-    artistNamesReturnKeyType: "done",
-    nameReturnKeyType: showsYear ? "next" : "done",
-    showsArtistNames: kind === "album",
-    showsYear,
-    yearPlaceholder: "Album year",
-    yearReturnKeyType: "done",
-  } as const;
-};
-
-export const getCollectionFormActionState = ({
-  isMissing = false,
-  isSaving,
-  name,
-}: {
-  isMissing?: boolean;
-  isSaving: boolean;
-  name: string;
-}) => {
-  const hasName = name.trim().length > 0;
-  const canEdit = !isSaving && !isMissing;
-  const canSave = hasName && canEdit;
-
-  return {
-    canEdit,
-    canPickImage: canEdit,
-    canSave,
-    hasName,
-  };
-};
-
-export type CollectionFormActionState = ReturnType<
-  typeof getCollectionFormActionState
->;
-
-export const getCollectionFormControllerResultState = ({
-  fallbackInitial,
-  formState,
-  isMissing,
-  saveLabel,
-  savingLabel,
-}: {
-  fallbackInitial: string;
-  formState: CollectionFormState;
-  isMissing?: boolean;
-  saveLabel: string;
-  savingLabel: string;
-}) => ({
-  actionState: getCollectionFormActionState({
-    isMissing,
-    isSaving: formState.isSaving,
-    name: formState.name,
-  }),
-  imageInitial: getCollectionFormPreviewInitial({
-    fallback: fallbackInitial,
-    name: formState.name,
-  }),
-  saveLabel: getCollectionFormSaveLabel({
-    defaultLabel: saveLabel,
-    isSaving: formState.isSaving,
-    savingLabel,
-  }),
-});
-
-export type CollectionFormControllerResultState = ReturnType<
-  typeof getCollectionFormControllerResultState
->;
-
-type CollectionFormControllerViewStateParams = {
-  actionState: CollectionFormActionState;
-  formState: CollectionFormState;
-  imageInitial: string;
-  saveLabel: string;
-};
-
-export const getCreateCollectionFormControllerViewState = ({
-  actionState,
-  formState,
-  imageInitial,
-  saveLabel,
-}: CollectionFormControllerViewStateParams) => ({
-  actionState,
-  error: formState.error,
-  image: formState.image,
-  imageInitial,
-  isSaving: formState.isSaving,
-  name: formState.name,
-  saveLabel,
-  year: formState.year,
-});
-
-export type CreateCollectionFormControllerViewState = ReturnType<
-  typeof getCreateCollectionFormControllerViewState
->;
-
-export const getEditCollectionFormControllerViewState = ({
-  actionState,
-  formState,
-  imageInitial,
-  saveLabel,
-}: CollectionFormControllerViewStateParams) => ({
-  ...getCreateCollectionFormControllerViewState({
-    actionState,
-    formState,
-    imageInitial,
-    saveLabel,
-  }),
-  artistNames: formState.artistNames,
-});
-
-export type EditCollectionFormControllerViewState = ReturnType<
-  typeof getEditCollectionFormControllerViewState
->;
+export {
+  getCollectionFormActionState,
+  type CollectionFormActionState,
+} from "./collection-form-action-state-service";
+export {
+  getCreateCollectionFormControllerViewState,
+  getEditCollectionFormControllerViewState,
+  type CreateCollectionFormControllerViewState,
+  type EditCollectionFormControllerViewState,
+} from "./collection-form-controller-view-state-service";
+export {
+  getCollectionFormFieldState,
+  getCollectionFormImageLabel,
+  getSavedCollectionFormImageLabel,
+} from "./collection-form-field-state-service";
+export {
+  getCollectionFormControllerResultState,
+  getCollectionFormPreviewInitial,
+  getCollectionFormSaveLabel,
+  type CollectionFormControllerResultState,
+} from "./collection-form-result-state-service";

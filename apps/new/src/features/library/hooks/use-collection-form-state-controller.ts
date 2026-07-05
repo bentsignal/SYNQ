@@ -10,7 +10,7 @@ import {
 } from "../services/collection-form-action-service";
 import {
   getCollectionFormControllerResultState,
-} from "../services/collection-form-interaction-service";
+} from "../services/collection-form-result-state-service";
 
 type CollectionFormHydration = {
   artistNames?: string;

@@ -874,15 +874,21 @@ import {
 import { runCollectionFormSaveAttempt } from "../../../apps/new/src/features/library/services/collection-form-mutation-runtime-service";
 import {
   getCollectionFormActionState,
-  getCollectionFormControllerResultState,
+} from "../../../apps/new/src/features/library/services/collection-form-action-state-service";
+import {
   getCreateCollectionFormControllerViewState,
   getEditCollectionFormControllerViewState,
+} from "../../../apps/new/src/features/library/services/collection-form-controller-view-state-service";
+import {
   getCollectionFormFieldState,
   getCollectionFormImageLabel,
+  getSavedCollectionFormImageLabel,
+} from "../../../apps/new/src/features/library/services/collection-form-field-state-service";
+import {
+  getCollectionFormControllerResultState,
   getCollectionFormPreviewInitial,
   getCollectionFormSaveLabel,
-  getSavedCollectionFormImageLabel,
-} from "../../../apps/new/src/features/library/services/collection-form-interaction-service";
+} from "../../../apps/new/src/features/library/services/collection-form-result-state-service";
 import {
   getCreateCollectionFormCopy,
   getCreateCollectionFormSubtitle,

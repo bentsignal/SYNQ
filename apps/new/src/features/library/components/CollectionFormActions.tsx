@@ -4,7 +4,7 @@ import {
   Text,
 } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { CollectionFormActionState } from "../services/collection-form-interaction-service";
+import type { CollectionFormActionState } from "../services/collection-form-action-state-service";
 
 type CollectionFormActionsProps = {
   actionState: CollectionFormActionState;

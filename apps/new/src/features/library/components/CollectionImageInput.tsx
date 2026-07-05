@@ -1,6 +1,6 @@
 import { Image, Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { CollectionFormActionState } from "../services/collection-form-interaction-service";
+import type { CollectionFormActionState } from "../services/collection-form-action-state-service";
 import type { CollectionFormImage } from "./collection-form-types";
 
 type CollectionImageInputProps = {

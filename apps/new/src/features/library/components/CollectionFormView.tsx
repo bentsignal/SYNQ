@@ -9,7 +9,7 @@ import type { CollectionFormViewProps } from "./collection-form-types";
 import {
   getCollectionFormFieldState,
   getCollectionFormImageLabel,
-} from "../services/collection-form-interaction-service";
+} from "../services/collection-form-field-state-service";
 
 export function CollectionFormView({
   actionState,

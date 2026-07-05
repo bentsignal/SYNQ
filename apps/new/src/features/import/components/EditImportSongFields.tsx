@@ -1,5 +1,5 @@
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { ImportSongEditControllerResultState } from "../services/import-song-edit-form-state-service";
+import type { ImportSongEditControllerResultState } from "../services/import-song-edit-controller-result-state-service";
 import { EditImportSongTextField } from "./EditImportSongTextField";
 
 type EditImportSongFieldsProps = {

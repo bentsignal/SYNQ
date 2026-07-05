@@ -6,8 +6,8 @@ import {
 import {
   getImportSongEditErrorMessage,
   getImportSongEditRequiredTitleMessage,
-  type ImportSongEditFormAction,
-} from "./import-song-edit-form-state-service";
+} from "./import-song-edit-error-copy-service";
+import type { ImportSongEditFormAction } from "./import-song-edit-form-reducer-service";
 
 type ImportSongEditInvalidSaveCommand = {
   action: ImportSongEditFormAction;

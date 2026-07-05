@@ -1,11 +1,11 @@
 import { useReducer } from "react";
+import { getImportSongEditControllerResultState } from "../services/import-song-edit-controller-result-state-service";
 import {
   getImportSongEditChangeFieldAction,
-  getImportSongEditControllerResultState,
   type ImportSongEditFormField,
   getImportSongEditInitialState,
   importSongEditFormReducer,
-} from "../services/import-song-edit-form-state-service";
+} from "../services/import-song-edit-form-reducer-service";
 import type { ImportSongDraft } from "../types/import-session";
 import { useEditImportSongCommands } from "./use-edit-import-song-commands";
 

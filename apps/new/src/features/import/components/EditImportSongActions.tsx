@@ -1,6 +1,6 @@
 import { Pressable, Text } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { ImportSongEditActionState } from "../services/import-song-edit-form-state-service";
+import type { ImportSongEditActionState } from "../services/import-song-edit-action-state-service";
 
 type EditImportSongActionsProps = {
   actionState: ImportSongEditActionState;

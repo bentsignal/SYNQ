@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { ImportSongEditControllerResultState } from "../services/import-song-edit-form-state-service";
+import type { ImportSongEditControllerResultState } from "../services/import-song-edit-controller-result-state-service";
 
 type EditImportSongLinksProps = {
   links: ImportSongEditControllerResultState["backLinks"];

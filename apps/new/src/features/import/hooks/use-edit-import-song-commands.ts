@@ -4,7 +4,7 @@ import { runImportSongEditSaveCommand } from "../services/import-song-edit-comma
 import type {
   ImportSongEditFormAction,
   ImportSongEditFormState,
-} from "../services/import-song-edit-form-state-service";
+} from "../services/import-song-edit-form-reducer-service";
 import type { ImportSongDraft } from "../types/import-session";
 
 type UseEditImportSongCommandsParams = {

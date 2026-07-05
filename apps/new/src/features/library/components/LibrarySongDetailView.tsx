@@ -1,16 +1,16 @@
-import { Link } from "expo-router";
 import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetailController } from "../hooks/use-library-song-detail-controller";
 import type { LibrarySongDetail } from "../services/library-song-detail-types-service";
 import type { LibrarySongDetailScreenViewState } from "../services/library-song-detail-screen-view-state-service";
 import { LibrarySongDetailActions } from "./LibrarySongDetailActions";
+import { LibrarySongDetailBackLink } from "./LibrarySongDetailBackLink";
 import { LibrarySongDetailHeader } from "./LibrarySongDetailHeader";
 import {
   LibrarySongSourcePanel,
   LibrarySongStatusPanel,
 } from "./LibrarySongDetailPanels";
-import { LibrarySongRelationshipSection } from "./LibrarySongRelationshipSection";
+import { LibrarySongRelationshipSections } from "./LibrarySongRelationshipSections";
 
 type LibrarySongDetailViewProps = LibrarySongDetailController & {
   detail: LibrarySongDetail;
@@ -48,33 +48,15 @@ export function LibrarySongDetailView({
         onToggleLiked={toggleLiked}
       />
 
-      <LibrarySongRelationshipSection
-        emptyLabel={viewState.relationshipSections.artists.emptyLabel}
-        items={viewState.relationshipSections.artists.items}
-        title={viewState.relationshipSections.artists.title}
-      />
-      <LibrarySongRelationshipSection
-        emptyLabel={viewState.relationshipSections.albums.emptyLabel}
-        items={viewState.relationshipSections.albums.items}
-        title={viewState.relationshipSections.albums.title}
-      />
-      <LibrarySongRelationshipSection
-        emptyLabel={viewState.relationshipSections.playlists.emptyLabel}
-        items={viewState.relationshipSections.playlists.items}
-        title={viewState.relationshipSections.playlists.title}
+      <LibrarySongRelationshipSections
+        sections={viewState.relationshipSections}
       />
 
       <LibrarySongSourcePanel detail={detail} />
 
       <LibrarySongStatusPanel statusState={statusState} />
 
-      <Link
-        className="text-[15px] font-extrabold"
-        href={viewState.backLink.href}
-        style={{ color: theme.accent }}
-      >
-        {viewState.backLink.label}
-      </Link>
+      <LibrarySongDetailBackLink backLink={viewState.backLink} />
     </ScrollView>
   );
 }

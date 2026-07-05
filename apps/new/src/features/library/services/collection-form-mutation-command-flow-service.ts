@@ -2,18 +2,18 @@ import {
   getCollectionFormBlockedSaveCommand,
   getCollectionFormSuccessCommand,
 } from "./collection-form-command-state-service";
-import type { CollectionFormKind } from "./collection-form-domain-service";
-import {
-  type CollectionFormState,
-} from "./collection-form-state-service";
 import {
   runCollectionFormSaveAttempt,
-  type CollectionFormCreateCommand,
-  type CollectionFormDispatch,
-  type CollectionFormHapticSender,
-  type CollectionFormRouteReplacer,
-  type CollectionFormUpdateCommand,
 } from "./collection-form-mutation-runtime-service";
+import type {
+  CreateCollectionFormSaveCommandParams,
+  EditCollectionFormSaveCommandParams,
+} from "./collection-form-mutation-command-flow-types-service";
+
+export type {
+  CreateCollectionFormSaveCommandParams,
+  EditCollectionFormSaveCommandParams,
+} from "./collection-form-mutation-command-flow-types-service";
 
 export const runCreateCollectionFormSaveCommand = async ({
   canSave,
@@ -23,15 +23,7 @@ export const runCreateCollectionFormSaveCommand = async ({
   kind,
   replaceRoute,
   sendHaptic,
-}: {
-  canSave: boolean;
-  createCollectionFromForm: CollectionFormCreateCommand;
-  dispatch: CollectionFormDispatch;
-  formState: CollectionFormState;
-  kind: CollectionFormKind;
-  replaceRoute: CollectionFormRouteReplacer;
-  sendHaptic: CollectionFormHapticSender;
-}) => {
+}: CreateCollectionFormSaveCommandParams) => {
   if (!canSave) {
     const command = getCollectionFormBlockedSaveCommand(kind);
     sendHaptic(command.haptic);
@@ -71,16 +63,7 @@ export const runEditCollectionFormSaveCommand = async ({
   replaceRoute,
   sendHaptic,
   updateCollectionFromForm,
-}: {
-  canSave: boolean;
-  dispatch: CollectionFormDispatch;
-  formState: CollectionFormState;
-  id: number;
-  kind: CollectionFormKind;
-  replaceRoute: CollectionFormRouteReplacer;
-  sendHaptic: CollectionFormHapticSender;
-  updateCollectionFromForm: CollectionFormUpdateCommand;
-}) => {
+}: EditCollectionFormSaveCommandParams) => {
   if (!canSave) {
     const command = getCollectionFormBlockedSaveCommand(kind);
     sendHaptic(command.haptic);

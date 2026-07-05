@@ -1,5 +1,5 @@
 import type { PlaybackQueueItem, PlaybackState } from "../types/playback-state";
-import { getPlaybackNativeFinishedAction } from "./playback-native-transition-service";
+import { getPlaybackNativeFinishedAction } from "./playback-native-transition-action-service";
 import { getNextQueueIndex } from "./playback-queue-selection-service";
 import type { PlaybackAction } from "./playback-session-action-service";
 

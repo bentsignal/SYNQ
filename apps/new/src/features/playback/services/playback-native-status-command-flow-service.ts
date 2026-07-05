@@ -3,7 +3,7 @@ import {
 } from "./playback-ad-gate-service";
 import {
   getPlaybackNativeStatusAction,
-} from "./playback-native-transition-service";
+} from "./playback-native-transition-action-service";
 import type { PlaybackAction } from "./playback-session-action-service";
 import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
 

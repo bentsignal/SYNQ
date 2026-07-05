@@ -3,7 +3,7 @@ import {
   runPlaybackNativeCommandPlan,
   type PlaybackNativeCommandPlan,
 } from "./playback-native-command-plan-service";
-import { getPlaybackNativeFailureAction } from "./playback-native-transition-service";
+import { getPlaybackNativeFailureAction } from "./playback-native-transition-action-service";
 import type { PlaybackAction } from "./playback-session-action-service";
 import type { TrackPlayerAdapter } from "./track-player-adapter";
 import type { PlaybackState } from "../types/playback-state";

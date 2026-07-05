@@ -202,7 +202,7 @@ import {
   getPlaybackNativeFailureAction,
   getPlaybackNativeFinishedAction,
   getPlaybackNativeStatusAction,
-} from "../../../apps/new/src/features/playback/services/playback-native-transition-service";
+} from "../../../apps/new/src/features/playback/services/playback-native-transition-action-service";
 import { runPlaybackNativeStatusCommand } from "../../../apps/new/src/features/playback/services/playback-native-status-command-flow-service";
 import {
   getPlaybackNativeLibraryAudioSource,

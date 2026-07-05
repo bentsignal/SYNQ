@@ -1,5 +1,4 @@
 import type { PlaybackState } from "../types/playback-state";
-import type { PlaybackAction } from "./playback-session-action-service";
 import {
   beginPlaybackAdBreak,
   completePlaybackAdBreak,
@@ -11,32 +10,6 @@ import {
   getPlaybackAdStatusUpdate,
   getPlaybackLibraryStatusUpdate,
 } from "./playback-native-transition-step-service";
-
-export const getPlaybackNativeFailureAction = (
-  error: string,
-): PlaybackAction => ({
-  error,
-  type: "native-failure",
-});
-
-export const getPlaybackNativeStatusAction = ({
-  premiumActive,
-  status,
-}: {
-  premiumActive: boolean;
-  status: TrackPlayerStatusSnapshot;
-}): PlaybackAction => ({
-  premiumActive,
-  status,
-  type: "native-status",
-});
-
-export const getPlaybackNativeFinishedAction = (
-  targetIndex: number | null,
-): PlaybackAction => ({
-  targetIndex,
-  type: "native-finished",
-});
 
 export const beginPlaybackAdBreakTransition = (
   state: PlaybackState,

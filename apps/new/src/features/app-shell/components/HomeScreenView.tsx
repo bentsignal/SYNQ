@@ -1,6 +1,11 @@
 import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { HomeScreenController } from "../hooks/use-home-screen-controller";
+import {
+  getHomeNowPlayingActions,
+  getHomeQuickActions,
+  getHomeRecentSongsSectionState,
+} from "../services/home-screen-service";
 import { HomeGuideSection } from "./HomeGuideSection";
 import { HomeHero } from "./HomeHero";
 import { HomeNowPlayingPanel } from "./HomeNowPlayingPanel";
@@ -17,6 +22,14 @@ export function HomeScreenView({
   summary,
 }: HomeScreenViewProps) {
   const theme = useCustomizationTheme();
+  const nowPlayingActions = getHomeNowPlayingActions();
+  const quickActions = getHomeQuickActions({
+    songCount: summary.counts.songs,
+  });
+  const recentSongsSectionState = getHomeRecentSongsSectionState({
+    hasLibrary,
+    songs: recentSongs.songs,
+  });
 
   return (
     <ScrollView
@@ -25,13 +38,13 @@ export function HomeScreenView({
       style={{ backgroundColor: theme.background }}
     >
       <HomeHero />
-      <HomeNowPlayingPanel nowPlaying={nowPlaying} />
-      <HomeQuickActions summary={summary} />
-      <HomeGuideSection guideSections={guideSections} />
-      <HomeRecentSongsSection
-        hasLibrary={hasLibrary}
-        recentSongs={recentSongs}
+      <HomeNowPlayingPanel
+        actions={nowPlayingActions}
+        nowPlaying={nowPlaying}
       />
+      <HomeQuickActions actions={quickActions} />
+      <HomeGuideSection guideSections={guideSections} />
+      <HomeRecentSongsSection sectionState={recentSongsSectionState} />
     </ScrollView>
   );
 }

@@ -1,19 +1,13 @@
 import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { HomeScreenController } from "../hooks/use-home-screen-controller";
-import {
-  getHomeQuickActions,
-  type HomeAction as HomeActionState,
-} from "../services/home-screen-service";
+import type { HomeAction as HomeActionState } from "../services/home-screen-service";
 
 type HomeQuickActionsProps = {
-  summary: HomeScreenController["summary"];
+  actions: HomeActionState[];
 };
 
-export function HomeQuickActions({ summary }: HomeQuickActionsProps) {
-  const actions = getHomeQuickActions({ songCount: summary.counts.songs });
-
+export function HomeQuickActions({ actions }: HomeQuickActionsProps) {
   return (
     <View className="flex-row flex-wrap gap-3">
       {actions.map((action) => (

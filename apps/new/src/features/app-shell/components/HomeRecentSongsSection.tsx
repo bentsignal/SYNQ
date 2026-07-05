@@ -1,24 +1,17 @@
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { HomeScreenController } from "../hooks/use-home-screen-controller";
-import { getHomeRecentSongsSectionState } from "../services/home-screen-service";
+import type { HomeRecentSongsSectionState } from "../services/home-screen-service";
 import { HomeRecentSongList } from "./HomeRecentSongList";
 
-type HomeRecentSongsSectionProps = Pick<
-  HomeScreenController,
-  "hasLibrary" | "recentSongs"
->;
+type HomeRecentSongsSectionProps = {
+  sectionState: HomeRecentSongsSectionState;
+};
 
 export function HomeRecentSongsSection({
-  hasLibrary,
-  recentSongs,
+  sectionState,
 }: HomeRecentSongsSectionProps) {
   const theme = useCustomizationTheme();
-  const state = getHomeRecentSongsSectionState({
-    hasLibrary,
-    songs: recentSongs.songs,
-  });
 
   return (
     <>
@@ -27,11 +20,11 @@ export function HomeRecentSongsSection({
           className="text-[22px] font-extrabold leading-7"
           style={{ color: theme.primaryText }}
         >
-          {state.title}
+          {sectionState.title}
         </Text>
         <Link
           className="text-[13px] font-extrabold uppercase"
-          href={state.libraryHref}
+          href={sectionState.libraryHref}
           style={{ color: theme.accent }}
         >
           View library
@@ -39,8 +32,8 @@ export function HomeRecentSongsSection({
       </View>
 
       <HomeRecentSongList
-        emptyState={state.emptyState}
-        rows={state.rows}
+        emptyState={sectionState.emptyState}
+        rows={sectionState.rows}
       />
     </>
   );

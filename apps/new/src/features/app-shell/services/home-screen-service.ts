@@ -135,6 +135,10 @@ export const getHomeRecentSongsSectionState = ({
   title: "Recent Songs",
 });
 
+export type HomeRecentSongsSectionState = ReturnType<
+  typeof getHomeRecentSongsSectionState
+>;
+
 export const getHomeNowPlayingState = ({
   activeTrack,
   state,
@@ -158,3 +162,5 @@ export const getHomeNowPlayingState = ({
     title: activeTrack.title,
   };
 };
+
+export type HomeNowPlayingState = ReturnType<typeof getHomeNowPlayingState>;

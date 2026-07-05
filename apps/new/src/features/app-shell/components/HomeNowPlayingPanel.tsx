@@ -1,18 +1,21 @@
 import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { HomeScreenController } from "../hooks/use-home-screen-controller";
-import { getHomeNowPlayingActions } from "../services/home-screen-service";
+import type {
+  HomeAction,
+  HomeNowPlayingState,
+} from "../services/home-screen-service";
 
 type HomeNowPlayingPanelProps = {
-  nowPlaying: HomeScreenController["nowPlaying"];
+  actions: HomeAction[];
+  nowPlaying: HomeNowPlayingState;
 };
 
 export function HomeNowPlayingPanel({
+  actions,
   nowPlaying,
 }: HomeNowPlayingPanelProps) {
   const theme = useCustomizationTheme();
-  const actions = getHomeNowPlayingActions();
   const [playerAction, queueAction] = actions;
 
   return (

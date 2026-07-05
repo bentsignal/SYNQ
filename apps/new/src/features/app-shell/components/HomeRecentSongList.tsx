@@ -1,11 +1,11 @@
 import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { getHomeRecentSongsSectionState } from "../services/home-screen-service";
+import type { HomeRecentSongsSectionState } from "../services/home-screen-service";
 
 type HomeRecentSongListProps = {
-  emptyState: ReturnType<typeof getHomeRecentSongsSectionState>["emptyState"];
-  rows: ReturnType<typeof getHomeRecentSongsSectionState>["rows"];
+  emptyState: HomeRecentSongsSectionState["emptyState"];
+  rows: HomeRecentSongsSectionState["rows"];
 };
 
 export function HomeRecentSongList({

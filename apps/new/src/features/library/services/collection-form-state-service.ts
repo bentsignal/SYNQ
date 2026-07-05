@@ -2,6 +2,15 @@ import type {
   CollectionFormAction,
   CollectionFormImage,
 } from "./collection-form-action-service";
+import {
+  reduceCollectionFormBeginSaveAction,
+  reduceCollectionFormChangeFieldAction,
+  reduceCollectionFormClearErrorAction,
+  reduceCollectionFormFailAction,
+  reduceCollectionFormFinishSaveAction,
+  reduceCollectionFormHydrateAction,
+  reduceCollectionFormPickImageAction,
+} from "./collection-form-state-transition-service";
 
 export {
   getCollectionFormChangeFieldAction,
@@ -46,50 +55,18 @@ export const collectionFormReducer = (
 ): CollectionFormState => {
   switch (action.type) {
     case "hydrate":
-      if (state.isDirty) {
-        return state;
-      }
-
-      return {
-        ...state,
-        artistNames: action.artistNames,
-        name: action.name,
-        year: action.year,
-      };
+      return reduceCollectionFormHydrateAction(state, action);
     case "change-field":
-      return {
-        ...state,
-        [action.field]: action.value,
-        error: null,
-        isDirty: true,
-      };
+      return reduceCollectionFormChangeFieldAction(state, action);
     case "pick-image":
-      return {
-        ...state,
-        error: null,
-        image: action.image,
-        isDirty: true,
-      };
+      return reduceCollectionFormPickImageAction(state, action);
     case "fail":
-      return {
-        ...state,
-        error: action.error,
-      };
+      return reduceCollectionFormFailAction(state, action);
     case "begin-save":
-      return {
-        ...state,
-        error: null,
-        isSaving: true,
-      };
+      return reduceCollectionFormBeginSaveAction(state);
     case "finish-save":
-      return {
-        ...state,
-        isSaving: false,
-      };
+      return reduceCollectionFormFinishSaveAction(state);
     case "clear-error":
-      return {
-        ...state,
-        error: null,
-      };
+      return reduceCollectionFormClearErrorAction(state);
   }
 };

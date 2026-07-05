@@ -127,6 +127,7 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-persistence-command-flow-service";
 import {
   getFreeListeningRemainingMs,
+  getPlaybackPlayerControllerViewState,
   getPlaybackPlayerViewState,
   getPlaybackProgressPercent,
   getSeekTargetPosition,
@@ -3087,6 +3088,36 @@ function assertPlaybackPlayerStateSmoke() {
   assert.equal(playbackQueueControllerViewState.adBreakActive, true);
   assert.equal(playbackQueueControllerViewState.rows[0]?.rowState.canPlay, false);
   assert.equal(playbackQueueControllerViewState.actionState.canClearQueue, true);
+  const playbackPlayerControllerViewState =
+    getPlaybackPlayerControllerViewState({
+      activeTrack,
+      state: {
+        ...initialPlaybackState,
+        activeQueueIndex: 0,
+        activeTrackId: activeTrack.id,
+        adGate: {
+          ...initialPlaybackState.adGate,
+          accumulatedMs: 7_000,
+          playbackDuration: 30_000,
+          playbackPosition: 15_000,
+          thresholdMs: 10_000,
+        },
+        duration: 200_000,
+        position: 50_000,
+        queue: [activeTrack],
+      },
+    });
+  assert.equal(playbackPlayerControllerViewState.progressPercent, 25);
+  assert.equal(playbackPlayerControllerViewState.adProgressPercent, 50);
+  assert.equal(playbackPlayerControllerViewState.freeListeningRemainingMs, 3_000);
+  assert.deepEqual(playbackPlayerControllerViewState.activeTrackDetailLink, {
+    href: "/(tabs)/library/song/10",
+    label: "Song details",
+  });
+  assert.deepEqual(playbackPlayerControllerViewState.activeTrackEditLink, {
+    href: "/(tabs)/library/song/edit/10",
+    label: "Edit song",
+  });
   assert.deepEqual(
     getPlaybackAdBreakPanelState({
       state: {

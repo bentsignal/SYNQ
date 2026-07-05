@@ -94,3 +94,15 @@ export const getPlaybackPlayerViewState = ({
     screenState: getPlaybackPlayerScreenState(),
   };
 };
+
+export const getPlaybackPlayerControllerViewState = ({
+  activeTrack,
+  state,
+}: {
+  activeTrack: PlaybackQueueItem | null;
+  state: PlaybackState;
+}) => getPlaybackPlayerViewState({ activeTrack, state });
+
+export type PlaybackPlayerControllerViewState = ReturnType<
+  typeof getPlaybackPlayerControllerViewState
+>;

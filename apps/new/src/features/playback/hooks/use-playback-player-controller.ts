@@ -1,5 +1,5 @@
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { getPlaybackPlayerViewState } from "../services/playback-player-state-service";
+import { getPlaybackPlayerControllerViewState } from "../services/playback-player-state-service";
 import { usePlaybackPlayerCommands } from "./use-playback-player-commands";
 import { usePlaybackSessionSelector } from "./use-playback-session";
 
@@ -27,7 +27,7 @@ export function usePlaybackPlayerController() {
     freeListeningRemainingMs,
     progressPercent,
     screenState,
-  } = getPlaybackPlayerViewState({ activeTrack, state });
+  } = getPlaybackPlayerControllerViewState({ activeTrack, state });
   const commands = usePlaybackPlayerCommands({
     pause,
     resume,

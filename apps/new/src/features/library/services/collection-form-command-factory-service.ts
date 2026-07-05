@@ -1,23 +1,20 @@
-import type { CollectionFormKind } from "./collection-form-domain-service";
 import {
   createCollectionFromForm,
   updateCollectionFromForm,
-  type CollectionFormCreateRepository,
-  type CollectionFormUpdateRepository,
 } from "./collection-form-mutation-service";
+import type {
+  CollectionFormCreateRepository,
+  CollectionFormUpdateRepository,
+} from "./collection-form-mutation-repository-service";
+import type {
+  CreateCollectionFromFormCommandParams,
+  UpdateCollectionFromFormCommandParams,
+} from "./collection-form-command-factory-types-service";
 
-type CreateCollectionFromFormCommandParams = {
-  artistNames?: string;
-  imageDataUrl?: string | null;
-  kind: CollectionFormKind;
-  name: string;
-  year: string;
-};
-
-type UpdateCollectionFromFormCommandParams =
-  CreateCollectionFromFormCommandParams & {
-    id: number;
-  };
+export type {
+  CreateCollectionFromFormCommandParams,
+  UpdateCollectionFromFormCommandParams,
+} from "./collection-form-command-factory-types-service";
 
 export const createCollectionFormCommandFactory =
   (repository: CollectionFormCreateRepository) =>

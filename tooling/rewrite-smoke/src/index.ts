@@ -943,9 +943,11 @@ import {
 import {
   createCollectionFromForm,
   updateCollectionFromForm,
+} from "../../../apps/new/src/features/library/services/collection-form-mutation-service";
+import {
   type CollectionFormCreateRepository,
   type CollectionFormUpdateRepository,
-} from "../../../apps/new/src/features/library/services/collection-form-mutation-service";
+} from "../../../apps/new/src/features/library/services/collection-form-mutation-repository-service";
 import {
   createCollectionFormCommandFactory,
   updateCollectionFormCommandFactory,

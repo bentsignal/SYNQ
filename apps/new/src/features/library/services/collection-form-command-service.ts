@@ -11,21 +11,9 @@ import {
 import {
   createCollectionFormCommandFactory,
   updateCollectionFormCommandFactory,
+  type CreateCollectionFromFormCommandParams,
+  type UpdateCollectionFromFormCommandParams,
 } from "./collection-form-command-factory-service";
-import type { CollectionFormKind } from "./collection-form-domain-service";
-
-type CreateCollectionFromFormCommandParams = {
-  artistNames?: string;
-  imageDataUrl?: string | null;
-  kind: CollectionFormKind;
-  name: string;
-  year: string;
-};
-
-type UpdateCollectionFromFormCommandParams =
-  CreateCollectionFromFormCommandParams & {
-    id: number;
-  };
 
 const createCollectionFromFormWithRepository =
   createCollectionFormCommandFactory({

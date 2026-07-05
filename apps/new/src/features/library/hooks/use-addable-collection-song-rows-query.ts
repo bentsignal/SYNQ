@@ -7,7 +7,7 @@ import {
 import type {
   AddableCollectionLinkedSongRow,
   AddableCollectionSongRow,
-} from "../services/addable-collection-songs-service";
+} from "../services/addable-collection-songs-types-service";
 
 export function useAllAddableSongRowsQuery() {
   const songs = useAllAddableSongRowsLiveQuery();

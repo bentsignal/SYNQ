@@ -1,10 +1,12 @@
 import {
   rowsToAddableCollectionSongs,
   rowsToLinkedSongIds,
-  type AddableCollectionLinkedSongRow,
-  type AddableCollectionSong,
-  type AddableCollectionSongRow,
 } from "./addable-collection-songs-service";
+import type {
+  AddableCollectionLinkedSongRow,
+  AddableCollectionSong,
+  AddableCollectionSongRow,
+} from "./addable-collection-songs-types-service";
 
 export type AddableCollectionSongsResult = {
   errors: unknown[];

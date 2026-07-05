@@ -1,5 +1,5 @@
 import { useReducer } from "react";
-import type { AddableCollectionSong } from "../services/addable-collection-songs-service";
+import type { AddableCollectionSong } from "../services/addable-collection-songs-types-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import { useAddCollectionSongsCommands } from "./use-add-collection-songs-commands";
 import {

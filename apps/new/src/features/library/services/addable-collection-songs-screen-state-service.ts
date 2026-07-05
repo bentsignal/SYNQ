@@ -1,4 +1,4 @@
-import type { AddableCollectionSong } from "./addable-collection-songs-service";
+import type { AddableCollectionSong } from "./addable-collection-songs-types-service";
 import {
   getAddableSongRows,
   type AddableSongSelectionState,

@@ -6,7 +6,7 @@ import {
 } from "./use-addable-collection-song-rows-query";
 import { useAddableCollectionSongsResult } from "./use-addable-collection-songs-result";
 
-export type { AddableCollectionSong } from "../services/addable-collection-songs-service";
+export type { AddableCollectionSong } from "../services/addable-collection-songs-types-service";
 
 export function useAddableAlbumCollectionSongsQuery({
   collectionId,

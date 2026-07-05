@@ -1,4 +1,4 @@
-import type { AddableCollectionSong } from "./addable-collection-songs-service";
+import type { AddableCollectionSong } from "./addable-collection-songs-types-service";
 import type { AddCollectionSongsControllerState } from "./add-collection-songs-state-service";
 
 export const getSelectedAddableSongIds = ({

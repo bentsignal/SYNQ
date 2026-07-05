@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import {
   type AddableCollectionLinkedSongRow,
-} from "../services/addable-collection-songs-service";
+} from "../services/addable-collection-songs-types-service";
 import { buildAddableCollectionSongsResult } from "../services/addable-collection-songs-result-service";
 import type { useAllAddableSongRowsQuery } from "./use-addable-collection-song-rows-query";
 

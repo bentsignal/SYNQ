@@ -2,10 +2,9 @@ import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customi
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-action-state-service";
 import type { getLibrarySongDetailViewState } from "../services/library-song-detail-view-state-service";
 import { LibraryActionRow } from "./library-action";
-import {
-  LibrarySongDetailActionButton,
-  LibrarySongDetailActionLink,
-} from "./LibrarySongDetailActionButton";
+import { LibrarySongDetailMutationActions } from "./LibrarySongDetailMutationActions";
+import { LibrarySongDetailNavigationActions } from "./LibrarySongDetailNavigationActions";
+import { LibrarySongDetailPlaybackActions } from "./LibrarySongDetailPlaybackActions";
 
 type LibrarySongDetailActionsProps = {
   actionLinks: ReturnType<typeof getLibrarySongDetailViewState>["actionLinks"];
@@ -30,59 +29,22 @@ export function LibrarySongDetailActions({
 
   return (
     <LibraryActionRow>
-      <LibrarySongDetailActionButton
-        disabled={!actionState.canPlay}
-        flexGrow={1}
-        label="Play"
-        minWidth={112}
-        onPress={onPlay}
-        theme={theme}
-        variant="primary"
-      />
-      <LibrarySongDetailActionButton
-        disabled={!actionState.canPlay}
-        flexGrow={1}
-        label="Add to queue"
-        onPress={onQueue}
-        theme={theme}
-        variant="secondary"
-      />
-      <LibrarySongDetailActionButton
-        disabled={!actionState.canToggleLiked}
-        flexGrow={1}
-        label={actionState.likedLabel}
-        onPress={onToggleLiked}
-        theme={theme}
-        variant="secondary"
-      />
-      <LibrarySongDetailActionLink
-        href={actionLinks.addToPlaylistHref}
-        label="Add to playlist"
-        minWidth={164}
+      <LibrarySongDetailPlaybackActions
+        actionState={actionState}
+        onPlay={onPlay}
+        onQueue={onQueue}
+        onToggleLiked={onToggleLiked}
         theme={theme}
       />
-      <LibrarySongDetailActionLink
-        href={actionLinks.editHref}
-        label="Edit"
-        minWidth={132}
+      <LibrarySongDetailNavigationActions
+        actionLinks={actionLinks}
         theme={theme}
       />
-      <LibrarySongDetailActionButton
-        disabled={!actionState.canExport}
-        flexGrow={1}
-        label={actionState.exportLabel}
-        onPress={onExport}
+      <LibrarySongDetailMutationActions
+        actionState={actionState}
+        onDelete={onDelete}
+        onExport={onExport}
         theme={theme}
-        variant="secondary"
-      />
-      <LibrarySongDetailActionButton
-        disabled={!actionState.canDelete}
-        flexGrow={1}
-        label={actionState.deleteLabel}
-        minWidth={112}
-        onPress={onDelete}
-        theme={theme}
-        variant="danger"
       />
     </LibraryActionRow>
   );

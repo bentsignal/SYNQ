@@ -3,7 +3,7 @@ import {
   getCollectionPlaybackCommandPlan,
   getCollectionQueueCommandPlan,
 } from "./library-collection-playback-service";
-import type { CollectionDetailActionState } from "./library-collection-action-state-service";
+import type { CollectionDetailActionState } from "./library-collection-detail-action-state-service";
 import type { LibraryCollectionDetailSong } from "./library-collection-detail-service";
 
 type LibraryCollectionPlaybackActionDependencies = {

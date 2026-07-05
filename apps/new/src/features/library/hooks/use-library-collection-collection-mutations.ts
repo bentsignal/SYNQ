@@ -4,7 +4,7 @@ import { useLibraryCollectionDeleteCommand } from "./use-library-collection-dele
 import { exportLibraryCollectionCommand } from "../services/library-collection-command-service";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
-import type { CollectionDetailActionState } from "../services/library-collection-action-state-service";
+import type { CollectionDetailActionState } from "../services/library-collection-detail-action-state-service";
 import type { CollectionDetailMutationDispatch } from "../services/library-collection-detail-mutation-runtime-service";
 import { runLibraryCollectionExportCommand } from "../services/library-collection-detail-collection-command-flow-service";
 

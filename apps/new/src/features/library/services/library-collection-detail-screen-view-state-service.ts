@@ -1,4 +1,4 @@
-import type { CollectionDetailActionState } from "./library-collection-action-state-service";
+import type { CollectionDetailActionState } from "./library-collection-detail-action-state-service";
 import type { LibraryCollectionDetail } from "./library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
 import { getCollectionSongRowsViewState } from "./library-collection-song-mutation-service";

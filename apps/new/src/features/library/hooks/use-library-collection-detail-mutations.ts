@@ -5,7 +5,7 @@ import type { LibraryCollectionDetail } from "../services/library-collection-det
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
   getCollectionDetailMutationControllerState,
-} from "../services/library-collection-action-state-service";
+} from "../services/library-collection-detail-mutation-controller-state-service";
 import {
   collectionDetailMutationReducer,
   initialCollectionDetailMutationState,

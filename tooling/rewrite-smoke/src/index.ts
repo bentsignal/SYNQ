@@ -713,10 +713,12 @@ import {
   canDeleteLibraryCollection,
   canMutateLibraryCollectionMembership,
   getCollectionDetailActionState,
+  getPlayableCollectionSongs,
+} from "../../../apps/new/src/features/library/services/library-collection-detail-action-state-service";
+import {
   getCollectionDetailMutationActionState,
   getCollectionDetailMutationControllerState,
-  getPlayableCollectionSongs,
-} from "../../../apps/new/src/features/library/services/library-collection-action-state-service";
+} from "../../../apps/new/src/features/library/services/library-collection-detail-mutation-controller-state-service";
 import {
   getCollectionDetailScreenViewState,
 } from "../../../apps/new/src/features/library/services/library-collection-detail-screen-view-state-service";

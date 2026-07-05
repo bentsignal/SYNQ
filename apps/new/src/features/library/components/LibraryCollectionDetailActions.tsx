@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
-import type { CollectionDetailActionState } from "../services/library-collection-action-state-service";
+import type { CollectionDetailActionState } from "../services/library-collection-detail-action-state-service";
 import type { getCollectionDetailViewState } from "../services/library-collection-detail-view-state-service";
 import {
   LibraryActionButton,

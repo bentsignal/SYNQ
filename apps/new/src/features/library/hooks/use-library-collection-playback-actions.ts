@@ -5,7 +5,7 @@ import {
   runLibraryCollectionPlayAction,
   runLibraryCollectionQueueAction,
 } from "../services/library-collection-playback-action-flow-service";
-import type { CollectionDetailActionState } from "../services/library-collection-action-state-service";
+import type { CollectionDetailActionState } from "../services/library-collection-detail-action-state-service";
 
 type UseLibraryCollectionPlaybackActionsParams = {
   actionState: CollectionDetailActionState;

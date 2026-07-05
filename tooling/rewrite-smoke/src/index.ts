@@ -232,6 +232,9 @@ import {
   runPlaybackTransportSkipPreviousCommand,
 } from "../../../apps/new/src/features/playback/services/playback-transport-command-flow-service";
 import {
+  createPlaybackTransportCommands,
+} from "../../../apps/new/src/features/playback/services/playback-transport-command-service";
+import {
   getClearQueuePlaybackStepPlan,
   getPausePlaybackStepPlan,
   getPlaySongPlaybackStepPlan,
@@ -2853,6 +2856,40 @@ function assertPlaybackNativeCommandPlanSmoke() {
     state,
   });
   assert.deepEqual(transportEvents, [
+    ["gate"],
+    ["plan", "play-song", "play"],
+    ["plan", "pause", "pause"],
+    ["gate"],
+    ["plan", "resume", "resume"],
+    ["gate"],
+    ["plan", "seek-to", "seek"],
+    ["gate"],
+    ["plan", "skip-next", "play"],
+    ["gate"],
+    ["plan", "skip-previous", "play"],
+  ]);
+  const assembledTransportEvents: unknown[] = [];
+  const transportCommands = createPlaybackTransportCommands({
+    getState: () => state,
+    runAdGatedCommand: (command) => {
+      assembledTransportEvents.push(["gate"]);
+      command();
+    },
+    runCommandPlan: (plan) => {
+      assembledTransportEvents.push([
+        "plan",
+        plan.action.type,
+        plan.nativeCommand.type,
+      ]);
+    },
+  });
+  transportCommands.playSong(first);
+  transportCommands.pause();
+  transportCommands.resume();
+  transportCommands.seekTo(42_000);
+  transportCommands.skipNext();
+  transportCommands.skipPrevious();
+  assert.deepEqual(assembledTransportEvents, [
     ["gate"],
     ["plan", "play-song", "play"],
     ["plan", "pause", "pause"],

@@ -1,16 +1,8 @@
 import { useCallback, useMemo, type RefObject } from "react";
 import {
-  runPlaybackTransportPauseCommand,
-  runPlaybackTransportPlaySongCommand,
-  runPlaybackTransportResumeCommand,
-  runPlaybackTransportSeekCommand,
-  runPlaybackTransportSkipNextCommand,
-  runPlaybackTransportSkipPreviousCommand,
-} from "../services/playback-transport-command-flow-service";
-import type {
-  PlaybackQueueItem,
-  PlaybackState,
-} from "../types/playback-state";
+  createPlaybackTransportCommands,
+} from "../services/playback-transport-command-service";
+import type { PlaybackState } from "../types/playback-state";
 import { usePlaybackResetCommand } from "./use-playback-reset-command";
 import type {
   PlaybackRunAdGatedCommand,
@@ -28,76 +20,23 @@ export function usePlaybackTransportCommands({
   runCommandPlan,
   stateRef,
 }: UsePlaybackTransportCommandsParams) {
-  const playSong = useCallback(
-    (song: PlaybackQueueItem) => {
-      runPlaybackTransportPlaySongCommand({
+  const getState = useCallback(() => stateRef.current, [stateRef]);
+  const transportCommands = useMemo(
+    () =>
+      createPlaybackTransportCommands({
+        getState,
         runAdGatedCommand,
         runCommandPlan,
-        song,
-      });
-    },
-    [runAdGatedCommand, runCommandPlan],
+      }),
+    [getState, runAdGatedCommand, runCommandPlan],
   );
-
-  const pause = useCallback(() => {
-    runPlaybackTransportPauseCommand({ runCommandPlan });
-  }, [runCommandPlan]);
-
-  const resume = useCallback(() => {
-    runPlaybackTransportResumeCommand({
-      runAdGatedCommand,
-      runCommandPlan,
-      state: stateRef.current,
-    });
-  }, [runAdGatedCommand, runCommandPlan, stateRef]);
-
-  const seekTo = useCallback(
-    (position: number) => {
-      runPlaybackTransportSeekCommand({
-        position,
-        runAdGatedCommand,
-        runCommandPlan,
-      });
-    },
-    [runAdGatedCommand, runCommandPlan],
-  );
-
-  const skipNext = useCallback(() => {
-    runPlaybackTransportSkipNextCommand({
-      runAdGatedCommand,
-      runCommandPlan,
-      state: stateRef.current,
-    });
-  }, [runAdGatedCommand, runCommandPlan, stateRef]);
-
-  const skipPrevious = useCallback(() => {
-    runPlaybackTransportSkipPreviousCommand({
-      runAdGatedCommand,
-      runCommandPlan,
-      state: stateRef.current,
-    });
-  }, [runAdGatedCommand, runCommandPlan, stateRef]);
-
   const resetPlaybackSession = usePlaybackResetCommand({ runCommandPlan });
 
   return useMemo(
     () => ({
-      pause,
-      playSong,
+      ...transportCommands,
       resetPlaybackSession,
-      resume,
-      seekTo,
-      skipNext,
-      skipPrevious,
     }),
-    [
-      pause,
-      playSong,
-      resetPlaybackSession,
-      resume,
-      seekTo,
-      skipNext,
-      skipPrevious,
-    ],
+    [resetPlaybackSession, transportCommands],
   );
 }

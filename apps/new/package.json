@@ -6,7 +6,8 @@
   "scripts": {
     "build": "expo export --platform web",
     "clean": "rm -rf .cache .expo dist",
-    "dev": "expo start",
+    "dev": "portless \"$(../../scripts/portless-app-name.sh mobile.synq)\" node ../../scripts/expo-portless-bridge.mjs expo start --dev-client",
+    "dev:lan": "expo start --dev-client --host lan",
     "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

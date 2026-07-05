@@ -60,6 +60,7 @@
         }
       ],
       "./expo-plugins/with-ios-pods-deployment-target.cjs",
+      "./expo-plugins/with-ios-scene-lifecycle.cjs",
       "expo-splash-screen",
       "expo-sqlite",
       "expo-asset"
@@ -70,7 +71,7 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "4"
+      "buildNumber": "5"
     },
     "android": {
       "permissions": [

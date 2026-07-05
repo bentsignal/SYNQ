@@ -7,6 +7,10 @@ import type {
   LibrarySongDetailPlaylistRow,
   LibrarySongDetailSongRow,
 } from "./library-song-detail-types-service";
+import {
+  getQueryResultErrors,
+  getQueryResultUpdatedAt,
+} from "./library-query-result-metadata-service";
 
 type SongDetailImagePathResolver = (imageHash: string) => string;
 
@@ -28,9 +32,13 @@ export const getLibrarySongDetailQueryErrors = ({
   playlistError: unknown;
   songError: unknown;
 }) =>
-  [songError, artistError, albumError, playlistError, likedError].filter(
-    Boolean,
-  );
+  getQueryResultErrors([
+    songError,
+    artistError,
+    albumError,
+    playlistError,
+    likedError,
+  ]);
 
 export const getLibrarySongDetailQueryUpdatedAt = ({
   albumUpdatedAt,
@@ -45,13 +53,13 @@ export const getLibrarySongDetailQueryUpdatedAt = ({
   playlistUpdatedAt: Date | null | undefined;
   songUpdatedAt: Date | null | undefined;
 }) =>
-  Math.max(
-    songUpdatedAt?.getTime() ?? 0,
-    artistUpdatedAt?.getTime() ?? 0,
-    albumUpdatedAt?.getTime() ?? 0,
-    playlistUpdatedAt?.getTime() ?? 0,
-    likedUpdatedAt?.getTime() ?? 0,
-  );
+  getQueryResultUpdatedAt([
+    songUpdatedAt,
+    artistUpdatedAt,
+    albumUpdatedAt,
+    playlistUpdatedAt,
+    likedUpdatedAt,
+  ]);
 
 export const buildLibrarySongDetailQueryResult = ({
   albumError,

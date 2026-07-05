@@ -9,6 +9,10 @@ import {
   type LibraryCollectionDetailSongRow,
   type PlaylistDetailRow,
 } from "./library-collection-detail-service";
+import {
+  getQueryResultErrors,
+  getQueryResultUpdatedAt,
+} from "./library-query-result-metadata-service";
 
 export type LibraryCollectionDetailResult = {
   detail: LibraryCollectionDetail;
@@ -19,12 +23,12 @@ export const getCollectionDetailResultUpdatedAt = (
   collectionUpdatedAt: Date | null | undefined,
   songsUpdatedAt: Date | null | undefined,
 ) =>
-  Math.max(collectionUpdatedAt?.getTime() ?? 0, songsUpdatedAt?.getTime() ?? 0);
+  getQueryResultUpdatedAt([collectionUpdatedAt, songsUpdatedAt]);
 
 export const getCollectionDetailResultErrors = (
   collectionError: unknown,
   songsError: unknown,
-) => [collectionError, songsError].filter(Boolean);
+) => getQueryResultErrors([collectionError, songsError]);
 
 export const buildPlaylistDetailResult = ({
   collectionError,

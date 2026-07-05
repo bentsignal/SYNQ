@@ -8,7 +8,7 @@ import {
   runPremiumPurchaseResetCommand,
   runPremiumRestoreCommand,
 } from "../services/premium-purchase-command-flow-service";
-import type { PremiumPurchaseAction } from "../services/premium-purchase-state-service";
+import type { PremiumPurchaseAction } from "../services/premium-purchase-action-service";
 import type {
   PremiumEntitlementStatus,
   PremiumTierId,

@@ -14,7 +14,7 @@ import {
   getPremiumPurchaseStartAction,
   getPremiumPurchaseSucceedAction,
   type PremiumPurchaseAction,
-} from "./premium-purchase-state-service";
+} from "./premium-purchase-action-service";
 
 type PremiumPurchaseDispatch = (action: PremiumPurchaseAction) => void;
 

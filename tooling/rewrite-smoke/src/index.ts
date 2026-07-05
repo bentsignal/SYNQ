@@ -1386,7 +1386,6 @@ import {
 } from "../../../apps/new/src/features/premium/services/premium-screen-service";
 import { getPremiumStatusState } from "../../../apps/new/src/features/premium/services/premium-status-state-service";
 import {
-  getInitialPremiumPurchaseState,
   getPremiumPurchaseFailAction,
   getPremiumPurchaseResetAction,
   getPremiumPurchaseSelectAction,
@@ -1394,6 +1393,9 @@ import {
   getPremiumPurchaseSucceedAction,
   getPremiumPurchaseSyncEntitlementAction,
   type PremiumPurchaseAction,
+} from "../../../apps/new/src/features/premium/services/premium-purchase-action-service";
+import {
+  getInitialPremiumPurchaseState,
   premiumPurchaseReducer,
 } from "../../../apps/new/src/features/premium/services/premium-purchase-state-service";
 import {

@@ -1,10 +1,12 @@
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import {
-  buildAlbumRowsQuery,
-  buildAlbumSongRowsQuery,
   buildArtistRowsQuery,
   buildArtistSongRowsQuery,
 } from "../repository/collection-detail-query-repository";
+import {
+  buildAlbumRowsQuery,
+  buildAlbumSongRowsQuery,
+} from "../repository/album-detail-query-repository";
 import {
   buildPlaylistRowsQuery,
   buildPlaylistSongRowsQuery,

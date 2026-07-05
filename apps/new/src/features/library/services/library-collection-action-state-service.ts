@@ -3,9 +3,9 @@ export {
   canEditLibraryCollection,
   canMutateLibraryCollectionMembership,
   getCollectionDetailActionState,
-  getPlayableCollectionSongs,
   type CollectionDetailActionState,
 } from "./library-collection-detail-action-state-service";
+export { getPlayableCollectionSongs } from "./library-collection-playable-songs-service";
 export {
   getCollectionDetailMutationActionState,
   getCollectionDetailMutationControllerState,

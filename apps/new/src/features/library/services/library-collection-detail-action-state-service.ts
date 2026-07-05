@@ -1,5 +1,6 @@
 import type { LibraryCollectionDetailSong } from "./library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
+import { getPlayableCollectionSongs } from "./library-collection-playable-songs-service";
 import { isProtectedPlaylistId } from "./library-playlist-constants-service";
 
 export const canDeleteLibraryCollection = ({
@@ -31,10 +32,6 @@ export const canEditLibraryCollection = ({
   isMissing: boolean;
   kind: LibraryCollectionDetailKind;
 }) => canMutateLibraryCollectionMembership({ id, isMissing, kind });
-
-export const getPlayableCollectionSongs = (
-  songs: LibraryCollectionDetailSong[],
-) => songs.filter((song) => song.pathToFile !== null);
 
 export const getCollectionDetailActionState = ({
   id,

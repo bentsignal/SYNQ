@@ -732,8 +732,8 @@ import {
   canDeleteLibraryCollection,
   canMutateLibraryCollectionMembership,
   getCollectionDetailActionState,
-  getPlayableCollectionSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-detail-action-state-service";
+import { getPlayableCollectionSongs } from "../../../apps/new/src/features/library/services/library-collection-playable-songs-service";
 import {
   getCollectionDetailMutationActionState,
   getCollectionDetailMutationControllerState,

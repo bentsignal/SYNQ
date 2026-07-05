@@ -115,6 +115,7 @@ export const getImportSongEditControllerResultState = ({
   artist: formState.artist,
   backLinks: getImportSongEditBackLinks(),
   error: formState.error,
+  fieldState: getImportSongEditFieldState(),
   title: formState.title,
   track: formState.track,
 });

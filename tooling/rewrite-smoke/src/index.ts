@@ -12831,6 +12831,7 @@ function assertImportSongFormSmoke() {
         },
       ],
       error: null,
+      fieldState: getImportSongEditFieldState(),
       title: "Import 8",
       track: "8",
     },

@@ -1,10 +1,11 @@
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getImportSongEditFieldState } from "../services/import-song-edit-form-state-service";
+import type { ImportSongEditControllerResultState } from "../services/import-song-edit-form-state-service";
 import { EditImportSongTextField } from "./EditImportSongTextField";
 
 type EditImportSongFieldsProps = {
   album: string;
   artist: string;
+  fieldState: ImportSongEditControllerResultState["fieldState"];
   onChangeAlbum: (album: string) => void;
   onChangeArtist: (artist: string) => void;
   onChangeTitle: (title: string) => void;
@@ -16,6 +17,7 @@ type EditImportSongFieldsProps = {
 export function EditImportSongFields({
   album,
   artist,
+  fieldState,
   onChangeAlbum,
   onChangeArtist,
   onChangeTitle,
@@ -24,7 +26,6 @@ export function EditImportSongFields({
   track,
 }: EditImportSongFieldsProps) {
   const theme = useCustomizationTheme();
-  const fieldState = getImportSongEditFieldState();
 
   return (
     <>

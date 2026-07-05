@@ -17,6 +17,7 @@ type EditImportSongFormViewProps = {
   artist: string;
   backLinks: ImportSongEditControllerResultState["backLinks"];
   error: string | null;
+  fieldState: ImportSongEditControllerResultState["fieldState"];
   onChangeAlbum: (album: string) => void;
   onChangeArtist: (artist: string) => void;
   onChangeTitle: (title: string) => void;
@@ -33,6 +34,7 @@ export function EditImportSongFormView({
   artist,
   backLinks,
   error,
+  fieldState,
   onChangeAlbum,
   onChangeArtist,
   onChangeTitle,
@@ -59,6 +61,7 @@ export function EditImportSongFormView({
         <EditImportSongFields
           album={album}
           artist={artist}
+          fieldState={fieldState}
           onChangeAlbum={onChangeAlbum}
           onChangeArtist={onChangeArtist}
           onChangeTitle={onChangeTitle}

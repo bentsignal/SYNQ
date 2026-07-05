@@ -17,6 +17,7 @@ export function EditImportSongConnectedForm({
     artist,
     backLinks,
     error,
+    fieldState,
     save,
     setAlbum,
     setArtist,
@@ -33,6 +34,7 @@ export function EditImportSongConnectedForm({
       artist={artist}
       backLinks={backLinks}
       error={error}
+      fieldState={fieldState}
       onChangeAlbum={setAlbum}
       onChangeArtist={setArtist}
       onChangeTitle={updateTitle}

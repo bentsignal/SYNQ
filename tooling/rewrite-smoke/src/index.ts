@@ -369,6 +369,9 @@ import {
   runUpdateImportSongCommand,
 } from "../../../apps/new/src/features/import/services/import-session-command-flow-service";
 import {
+  createImportSessionBasicCommands,
+} from "../../../apps/new/src/features/import/services/import-session-basic-command-service";
+import {
   runBeginWifiTransferCommand,
   runFinishWifiTransferCommand,
   runReceiveWifiSongCommand,
@@ -4905,6 +4908,22 @@ async function assertImportSessionSmoke() {
     dispatch: dispatchImportSessionCommand,
     song: importDraft(92),
   });
+  assert.deepEqual(importSessionCommandEvents, [
+    "begin-file-pick",
+    "fail",
+    "review",
+    "set-save-to-library",
+    "update-song",
+  ]);
+  importSessionCommandEvents.length = 0;
+  const importSessionBasicCommands = createImportSessionBasicCommands({
+    dispatch: dispatchImportSessionCommand,
+  });
+  importSessionBasicCommands.beginFilePick();
+  importSessionBasicCommands.failSession("Nope");
+  importSessionBasicCommands.reviewSongs([importDraft(93)]);
+  importSessionBasicCommands.setShouldSaveToLibrary(false);
+  importSessionBasicCommands.updateImportSong(importDraft(94));
   assert.deepEqual(importSessionCommandEvents, [
     "begin-file-pick",
     "fail",

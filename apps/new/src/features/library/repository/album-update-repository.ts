@@ -6,7 +6,7 @@ import { replaceAlbumArtists } from "./album-artist-update-repository";
 import { assertUniqueCollectionName } from "./collection-uniqueness-repository";
 import {
   updateAlbumWithDependencies,
-} from "./collection-update-executor-repository";
+} from "./album-update-executor-repository";
 
 export async function updateAlbum({
   artistNames,

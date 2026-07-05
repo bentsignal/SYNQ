@@ -954,6 +954,9 @@ import {
 } from "../../../apps/new/src/features/library/repository/collection-uniqueness-executor-repository";
 import {
   createAlbumWithDependencies,
+  type AlbumCreateDependencies,
+} from "../../../apps/new/src/features/library/repository/album-create-executor-repository";
+import {
   createArtistWithDependencies,
   createPlaylistWithDependencies,
   type CollectionCreateDependencies,
@@ -966,9 +969,11 @@ import {
 } from "../../../apps/new/src/features/library/repository/collection-create-step-repository";
 import {
   updateAlbumWithDependencies,
+  type AlbumUpdateDependencies,
+} from "../../../apps/new/src/features/library/repository/album-update-executor-repository";
+import {
   updateArtistWithDependencies,
   updatePlaylistWithDependencies,
-  type AlbumUpdateDependencies,
   type ArtistUpdateDependencies,
   type PlaylistUpdateDependencies,
 } from "../../../apps/new/src/features/library/repository/collection-update-executor-repository";

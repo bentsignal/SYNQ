@@ -4,6 +4,10 @@ import {
   getOptionalCollectionProfileImageUpdate,
   getUniqueCollectionUpdateName,
 } from "./collection-update-step-repository";
+import {
+  updateAlbumWithDependencies,
+  type AlbumUpdateDependencies,
+} from "./album-update-executor-repository";
 
 type CollectionUpdateBaseDependencies = {
   assertUniqueCollectionName: (params: {
@@ -12,19 +16,6 @@ type CollectionUpdateBaseDependencies = {
     name: string;
   }) => Promise<void>;
   saveCoverImage: (coverImage?: string | null) => Promise<string | null>;
-};
-
-export type AlbumUpdateDependencies = CollectionUpdateBaseDependencies & {
-  replaceAlbumArtists: (params: {
-    albumId: number;
-    artistNames: string;
-  }) => Promise<void>;
-  updateAlbumRow: (params: {
-    coverImage?: string | null;
-    id: number;
-    name: string;
-    year?: number | null;
-  }) => Promise<void>;
 };
 
 export type ArtistUpdateDependencies = CollectionUpdateBaseDependencies & {
@@ -43,47 +34,6 @@ export type PlaylistUpdateDependencies = CollectionUpdateBaseDependencies & {
     name: string;
   }) => Promise<void>;
 };
-
-export async function updateAlbumWithDependencies(
-  {
-    artistNames,
-    coverImage,
-    id,
-    name,
-    year,
-  }: {
-    artistNames?: string;
-    coverImage?: string | null;
-    id: number;
-    name: string;
-    year?: number | null;
-  },
-  dependencies: AlbumUpdateDependencies,
-) {
-  const cleanName = await getUniqueCollectionUpdateName({
-    dependencies,
-    id,
-    kind: "album",
-    name,
-  });
-
-  await dependencies.updateAlbumRow({
-    ...(await getOptionalCollectionCoverUpdate({ coverImage, dependencies })),
-    id,
-    name: cleanName,
-    year,
-  });
-
-  if (artistNames !== undefined) {
-    await dependencies.replaceAlbumArtists({ albumId: id, artistNames });
-  }
-
-  return {
-    id,
-    name: cleanName,
-    year,
-  };
-}
 
 export async function updateArtistWithDependencies(
   {
@@ -154,3 +104,5 @@ export async function updatePlaylistWithDependencies(
     name: cleanName,
   };
 }
+
+export { updateAlbumWithDependencies, type AlbumUpdateDependencies };

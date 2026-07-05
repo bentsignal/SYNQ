@@ -1,20 +1,19 @@
 import {
+  createAlbumWithDependencies,
+  type AlbumCreateDependencies,
+} from "./album-create-executor-repository";
+import {
   assertCreatedCollectionId,
   getOptionalCollectionProfileImageCreate,
   getRequiredCollectionCoverCreate,
   getUniqueCollectionCreateName,
 } from "./collection-create-step-repository";
 
-export type CollectionCreateDependencies = {
+export type CollectionCreateDependencies = AlbumCreateDependencies & {
   assertUniqueCollectionName: (params: {
     kind: "album" | "artist" | "playlist";
     name: string;
   }) => Promise<void>;
-  insertAlbumRow: (params: {
-    coverImage: string | null;
-    name: string;
-    year?: number;
-  }) => Promise<number | null>;
   insertArtistRow: (params: {
     name: string;
     profileImage?: string | null;
@@ -23,45 +22,7 @@ export type CollectionCreateDependencies = {
     coverImage: string | null;
     name: string;
   }) => Promise<number | null>;
-  saveCoverImage: (coverImage?: string | null) => Promise<string | null>;
 };
-
-export async function createAlbumWithDependencies(
-  {
-    coverImage,
-    name,
-    year,
-  }: {
-    coverImage?: string | null;
-    name: string;
-    year?: number;
-  },
-  dependencies: CollectionCreateDependencies,
-) {
-  const cleanName = await getUniqueCollectionCreateName({
-    dependencies,
-    kind: "album",
-    name,
-  });
-
-  const id = assertCreatedCollectionId({
-    id: await dependencies.insertAlbumRow({
-      coverImage: await getRequiredCollectionCoverCreate({
-        coverImage,
-        dependencies,
-      }),
-      name: cleanName,
-      year,
-    }),
-    kind: "Album",
-  });
-
-  return {
-    id,
-    name: cleanName,
-    year,
-  };
-}
 
 export async function createArtistWithDependencies(
   {
@@ -128,3 +89,5 @@ export async function createPlaylistWithDependencies(
     name: cleanName,
   };
 }
+
+export { createAlbumWithDependencies, type AlbumCreateDependencies };

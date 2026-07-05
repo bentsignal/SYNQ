@@ -73,9 +73,3 @@ export const wifiImportServerReducer = (
       };
   }
 };
-
-export const getWifiImportServerAddress = ({
-  ipAddress,
-  port,
-}: Pick<WifiImportServerState, "ipAddress" | "port">) =>
-  ipAddress && port ? `http://${ipAddress}:${port}` : "";

@@ -647,11 +647,11 @@ import {
   getWifiUploadDecision,
 } from "../../../apps/new/src/features/import/services/wifi-import-upload-decision-service";
 import {
-  getWifiImportServerAddress,
   getWifiImportServerStopAction,
   initialWifiImportServerState,
   wifiImportServerReducer,
 } from "../../../apps/new/src/features/import/services/wifi-import-server-state-service";
+import { getWifiImportServerAddress } from "../../../apps/new/src/features/import/services/wifi-import-server-view-state-service";
 import {
   resolveWifiImportServerAddressAction,
   startWifiImportServerWithDependencies,

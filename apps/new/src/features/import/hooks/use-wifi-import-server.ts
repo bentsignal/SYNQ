@@ -9,10 +9,10 @@ import {
   createWifiImportRouteRuntimeState,
 } from "../services/wifi-import-server-route-service";
 import {
-  getWifiImportServerAddress,
   initialWifiImportServerState,
   wifiImportServerReducer,
 } from "../services/wifi-import-server-state-service";
+import { getWifiImportServerAddress } from "../services/wifi-import-server-view-state-service";
 import {
   runWifiImportServerAddressLoadCommand,
   runWifiImportServerStartupCommand,

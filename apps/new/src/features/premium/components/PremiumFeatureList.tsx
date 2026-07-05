@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 import type { CustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { premiumFeatureCopy } from "../services/premium-screen-service";
+import { premiumFeatureCopy } from "../services/premium-feature-copy-service";
 
 type PremiumFeatureListProps = {
   theme: CustomizationTheme;

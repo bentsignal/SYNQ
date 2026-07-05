@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import type { CustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { PremiumStatusState } from "../services/premium-screen-service";
+import type { PremiumStatusState } from "../services/premium-status-state-service";
 
 type PremiumStatusPanelProps = {
   onReset: () => void;

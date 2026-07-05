@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import type { CustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { PremiumActionState } from "../services/premium-screen-service";
+import type { PremiumActionState } from "../services/premium-action-state-service";
 
 type PremiumActionRowProps = {
   actionState: PremiumActionState;

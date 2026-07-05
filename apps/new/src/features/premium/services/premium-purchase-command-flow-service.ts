@@ -6,7 +6,7 @@ import type {
 import {
   getPremiumMutationErrorMessage,
   type PremiumMutationKind,
-} from "./premium-screen-service";
+} from "./premium-mutation-error-service";
 import {
   getPremiumPurchaseFailAction,
   getPremiumPurchaseResetAction,

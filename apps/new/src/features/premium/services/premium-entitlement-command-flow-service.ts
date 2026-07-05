@@ -5,7 +5,7 @@ import {
   getPremiumEntitlementSucceedAction,
   type PremiumEntitlementAction,
 } from "./premium-entitlement-state-service";
-import { getPremiumMutationErrorMessage } from "./premium-screen-service";
+import { getPremiumMutationErrorMessage } from "./premium-mutation-error-service";
 
 type PremiumEntitlementDispatch = (action: PremiumEntitlementAction) => void;
 

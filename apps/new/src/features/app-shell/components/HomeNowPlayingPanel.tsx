@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { HomeAction } from "../services/home-screen-service";
+import type { HomeAction } from "../services/home-action-service";
 import type { HomeNowPlayingState } from "../services/home-now-playing-service";
 
 type HomeNowPlayingPanelProps = {

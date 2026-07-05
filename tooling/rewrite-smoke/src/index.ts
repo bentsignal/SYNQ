@@ -4,10 +4,10 @@ import {
   formatRemainingDurationMs,
 } from "../../../apps/new/src/features/app-shell/services/duration-format-service";
 import {
-  getHomeGuideSections,
-  getHomeQuickActions,
   getHomeScreenViewState,
 } from "../../../apps/new/src/features/app-shell/services/home-screen-service";
+import { getHomeGuideSections } from "../../../apps/new/src/features/app-shell/services/home-guide-service";
+import { getHomeQuickActions } from "../../../apps/new/src/features/app-shell/services/home-action-service";
 import {
   getHomeNowPlayingActions,
   getHomeNowPlayingState,

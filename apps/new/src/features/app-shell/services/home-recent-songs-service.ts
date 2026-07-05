@@ -1,6 +1,6 @@
 import { formatDurationMs } from "./duration-format-service";
 import type { LibrarySongPreview } from "../../library/services/library-song-preview-service";
-import type { HomeHref } from "./home-screen-service";
+import type { HomeHref } from "./home-action-service";
 
 export const getHomeLibraryHref = (): HomeHref => "/(tabs)/library";
 

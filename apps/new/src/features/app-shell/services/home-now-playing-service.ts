@@ -3,7 +3,7 @@ import type {
   PlaybackQueueItem,
   PlaybackState,
 } from "../../playback/types/playback-state";
-import type { HomeAction } from "./home-screen-service";
+import type { HomeAction } from "./home-action-service";
 
 export const getHomeNowPlayingActions = (): HomeAction[] => [
   {

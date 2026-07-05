@@ -1204,15 +1204,17 @@ import {
 import {
   backupActionCards,
   getBackupActionState,
-  getBackupConfirmationState,
-  getBackupOperationConfirmCommand,
   getBackupOperationLabel,
+} from "../../../apps/new/src/features/backup/services/backup-action-state-service";
+import { getBackupConfirmationState } from "../../../apps/new/src/features/backup/services/backup-confirmation-state-service";
+import {
+  getBackupOperationConfirmCommand,
   getBackupOperationStartCommand,
   getBackupResetStatusCommand,
-  getBackupScreenState,
-  getBackupStatusState,
-  getBackupViewState,
-} from "../../../apps/new/src/features/backup/services/backup-screen-service";
+} from "../../../apps/new/src/features/backup/services/backup-interaction-command-service";
+import { getBackupScreenState } from "../../../apps/new/src/features/backup/services/backup-screen-state-service";
+import { getBackupStatusState } from "../../../apps/new/src/features/backup/services/backup-status-state-service";
+import { getBackupViewState } from "../../../apps/new/src/features/backup/services/backup-view-state-service";
 import {
   runBackupOperationAction,
   runBackupResetStatusAction,

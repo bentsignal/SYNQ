@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { BackupActionCardViewState } from "../services/backup-screen-service";
+import type { BackupActionCardViewState } from "../services/backup-view-state-service";
 import type { BackupOperation } from "../types/backup-session";
 
 type BackupActionCardProps = {

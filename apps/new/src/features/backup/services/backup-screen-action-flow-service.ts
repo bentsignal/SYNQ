@@ -1,11 +1,11 @@
 import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import type { BackupOperation } from "../types/backup-session";
+import { getBackupConfirmationState } from "./backup-confirmation-state-service";
 import {
-  getBackupConfirmationState,
   getBackupOperationConfirmCommand,
   getBackupOperationStartCommand,
   getBackupResetStatusCommand,
-} from "./backup-screen-service";
+} from "./backup-interaction-command-service";
 
 type BackupConfirmationAlertParams = {
   body: string;

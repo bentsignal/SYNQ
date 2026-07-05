@@ -1,7 +1,7 @@
 import { showNativeConfirmationAlert } from "@/src/features/app-shell/services/native-alert-service";
 import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
-import { getBackupViewState } from "../services/backup-screen-service";
+import { getBackupViewState } from "../services/backup-view-state-service";
 import {
   runBackupOperationAction,
   runBackupResetStatusAction,

@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import type { BackupViewState } from "../services/backup-screen-service";
+import type { BackupViewState } from "../services/backup-view-state-service";
 import type { BackupOperation } from "../types/backup-session";
 import { BackupActionCard } from "./BackupActionCard";
 

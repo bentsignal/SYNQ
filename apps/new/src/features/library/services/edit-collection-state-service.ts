@@ -1,4 +1,6 @@
-import { getEditCollectionImagePath } from "./edit-collection-image-service";
+import { buildEditAlbumCollectionState } from "./edit-album-collection-state-service";
+import { buildEditArtistCollectionState } from "./edit-artist-collection-state-service";
+import { buildEditPlaylistCollectionState } from "./edit-playlist-collection-state-service";
 
 export type EditCollectionKind = "album" | "artist" | "playlist";
 
@@ -49,44 +51,25 @@ export const buildEditCollectionState = ({
   playlistRow?: EditCollectionPlaylistRow;
 }): EditCollectionState => {
   if (kind === "album") {
-    const artistNames = albumArtistRows
-      .flatMap((artist) => (artist.name ? [artist.name] : []))
-      .sort((first, second) => first.localeCompare(second))
-      .join(", ");
-
-    return {
-      artistNames,
-      imagePath: getEditCollectionImagePath({
-        getImagePath,
-        imageHash: albumRow?.coverImage,
-      }),
-      isMissing: hasLoaded && !albumRow,
-      name: albumRow?.name ?? "",
-      year: albumRow?.year?.toString() ?? "",
-    };
+    return buildEditAlbumCollectionState({
+      albumArtistRows,
+      albumRow,
+      getImagePath,
+      hasLoaded,
+    });
   }
 
   if (kind === "artist") {
-    return {
-      artistNames: "",
-      imagePath: getEditCollectionImagePath({
-        getImagePath,
-        imageHash: artistRow?.profileImage,
-      }),
-      isMissing: hasLoaded && !artistRow,
-      name: artistRow?.name ?? "",
-      year: "",
-    };
+    return buildEditArtistCollectionState({
+      artistRow,
+      getImagePath,
+      hasLoaded,
+    });
   }
 
-  return {
-    artistNames: "",
-    imagePath: getEditCollectionImagePath({
-      getImagePath,
-      imageHash: playlistRow?.coverImage,
-    }),
-    isMissing: hasLoaded && !playlistRow,
-    name: playlistRow?.name ?? "",
-    year: "",
-  };
+  return buildEditPlaylistCollectionState({
+    getImagePath,
+    hasLoaded,
+    playlistRow,
+  });
 };

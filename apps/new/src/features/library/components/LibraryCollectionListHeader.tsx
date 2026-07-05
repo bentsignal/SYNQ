@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { LibraryCollectionListHref } from "../services/library-collection-list-service";
+import type { LibraryCollectionListHref } from "../services/library-collection-list-copy-service";
 
 type LibraryCollectionListHeaderProps = {
   backLink: {

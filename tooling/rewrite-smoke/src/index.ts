@@ -1084,11 +1084,13 @@ import {
 import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-state-service";
 import { getEditCollectionImagePath } from "../../../apps/new/src/features/library/services/edit-collection-image-service";
 import {
+  getLibraryCollectionListControllerViewState,
+} from "../../../apps/new/src/features/library/services/library-collection-list-service";
+import {
   getLibraryCollectionCreateHref,
   getLibraryCollectionListBackHref,
-  getLibraryCollectionListControllerViewState,
   getLibraryCollectionListCopy,
-} from "../../../apps/new/src/features/library/services/library-collection-list-service";
+} from "../../../apps/new/src/features/library/services/library-collection-list-copy-service";
 import {
   getLibraryCollectionListErrors,
   getLibraryCollectionListState,

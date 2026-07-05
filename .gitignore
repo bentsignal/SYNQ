@@ -27,6 +27,10 @@ assets/appIcons/icon.psd
 .vscode/
 ios
 android
+!packages/native-audio/ios/
+!packages/native-audio/ios/**
+!packages/native-audio/android/
+!packages/native-audio/android/**
 .env
 
 # macOS

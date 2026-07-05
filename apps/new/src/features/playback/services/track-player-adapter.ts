@@ -68,18 +68,27 @@ const getSnapshotFromState = ({
 }: {
   source: "ad" | "library" | null;
   state: SynqPlaybackState;
-}): TrackPlayerStatusSnapshot => ({
-  didJustFinish: state.status === "ended",
-  duration: state.durationMs || null,
-  isLoaded: Boolean(state.activeTrack),
-  isPlaying: state.status === "playing" || state.status === "buffering",
-  position: state.positionMs,
-  songId:
-    source === "library" && state.activeTrack
-      ? Number(state.activeTrack.id)
-      : null,
-  source,
-});
+}): TrackPlayerStatusSnapshot => {
+  const duration = Number.isFinite(state.durationMs)
+    ? Math.max(0, state.durationMs)
+    : (state.activeTrack?.durationMs ?? 0);
+  const position = Number.isFinite(state.positionMs)
+    ? Math.max(0, state.positionMs)
+    : 0;
+
+  return {
+    didJustFinish: state.status === "ended",
+    duration: duration || null,
+    isLoaded: Boolean(state.activeTrack),
+    isPlaying: state.status === "playing" || state.status === "buffering",
+    position,
+    songId:
+      source === "library" && state.activeTrack
+        ? Number(state.activeTrack.id)
+        : null,
+    source,
+  };
+};
 
 const shouldEmitState = (event: PlaybackEvent): event is Extract<
   PlaybackEvent,
@@ -92,6 +101,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
   let statusListener: ((status: TrackPlayerStatusSnapshot) => void) | null =
     null;
   let eventSubscription: { remove: () => void } | null = null;
+  let statePoll: ReturnType<typeof setInterval> | null = null;
 
   const emitState = (state: SynqPlaybackState) => {
     statusListener?.(
@@ -112,6 +122,36 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
         emitState(event.state);
       }
     });
+  };
+
+  const stopPollingState = () => {
+    if (statePoll) {
+      clearInterval(statePoll);
+      statePoll = null;
+    }
+  };
+
+  const syncState = async () => {
+    const state = await playbackRuntime.getState();
+    emitState(state);
+
+    if (state.status !== "playing" && state.status !== "buffering") {
+      stopPollingState();
+    }
+
+    return state;
+  };
+
+  const startPollingState = () => {
+    if (statePoll) {
+      return;
+    }
+
+    statePoll = setInterval(() => {
+      void syncState().catch(() => {
+        stopPollingState();
+      });
+    }, 1000);
   };
 
   const configureNativePlayback = async () => {
@@ -143,6 +183,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
     });
     emitState(state);
     emitState(await playbackRuntime.runCommand({ _tag: "Play", trackId: track.id }));
+    startPollingState();
   };
 
   const playAd = async () => {
@@ -159,17 +200,20 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
     });
     emitState(state);
     emitState(await playbackRuntime.runCommand({ _tag: "Play", trackId: track.id }));
+    startPollingState();
   };
 
   return {
     destroy: async () => {
       eventSubscription?.remove();
       eventSubscription = null;
+      stopPollingState();
       activeSource = null;
       activeLibraryTrack = null;
       emitState(await playbackRuntime.runCommand({ _tag: "Stop" }));
     },
     pause: async () => {
+      stopPollingState();
       emitState(await playbackRuntime.runCommand({ _tag: "Pause" }));
     },
     play: playSong,
@@ -186,6 +230,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
     },
     resume: async () => {
       emitState(await playbackRuntime.runCommand({ _tag: "Play" }));
+      startPollingState();
     },
     resumeLibrary: async () => {
       if (activeLibraryTrack) {
@@ -195,6 +240,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
 
       activeSource = "library";
       emitState(await playbackRuntime.runCommand({ _tag: "Play" }));
+      startPollingState();
     },
     seekTo: async (position) => {
       emitState(
@@ -209,6 +255,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
       }
     },
     stop: async () => {
+      stopPollingState();
       activeSource = null;
       emitState(await playbackRuntime.runCommand({ _tag: "Stop" }));
     },

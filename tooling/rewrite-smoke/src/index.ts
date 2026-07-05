@@ -328,6 +328,9 @@ import {
   getImportWifiViewState,
 } from "../../../apps/new/src/features/import/services/import-wifi-screen-state-service";
 import {
+  createImportWifiControllerActions,
+} from "../../../apps/new/src/features/import/services/import-wifi-controller-action-service";
+import {
   getHydrateImportSessionAction,
   getSavingImportSessionAction,
   importSessionReducer,
@@ -5333,10 +5336,26 @@ async function assertImportSessionSmoke() {
     },
     songId: 42,
   });
+  const importWifiActions = createImportWifiControllerActions({
+    canRemoveSongs: true,
+    removeImportSongs: async (songIds) => {
+      importWifiActionEvents.push(["controller-remove", songIds]);
+      return true;
+    },
+    sendHaptic: (haptic) => {
+      importWifiActionEvents.push(["haptic", haptic]);
+    },
+  });
+  importWifiActions.reviewSave();
+  await importWifiActions.removeSong(43);
   assert.deepEqual(importWifiActionEvents, [
     ["haptic", "light"],
     ["haptic", "medium"],
     ["remove", [42]],
+    ["haptic", "success"],
+    ["haptic", "light"],
+    ["haptic", "medium"],
+    ["controller-remove", [43]],
     ["haptic", "success"],
   ]);
   assert.deepEqual(

@@ -1,9 +1,8 @@
-import { useCallback } from "react";
+import { useMemo } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
-  runImportWifiRemoveSongAction,
-  runImportWifiReviewSaveAction,
-} from "../services/import-wifi-action-flow-service";
+  createImportWifiControllerActions,
+} from "../services/import-wifi-controller-action-service";
 import { getImportWifiViewState } from "../services/import-wifi-screen-state-service";
 import { useImportSessionSelector } from "./use-import-session";
 import { useWifiImportServer } from "./use-wifi-import-server";
@@ -22,21 +21,15 @@ export function useImportWifiScreenController() {
       state,
     });
 
-  const removeSong = useCallback(
-    async (songId: number) => {
-      await runImportWifiRemoveSongAction({
+  const { removeSong, reviewSave } = useMemo(
+    () =>
+      createImportWifiControllerActions({
         canRemoveSongs: wifiState.canReviewSave,
         removeImportSongs,
         sendHaptic,
-        songId,
-      });
-    },
+      }),
     [removeImportSongs, sendHaptic, wifiState.canReviewSave],
   );
-
-  const reviewSave = useCallback(() => {
-    runImportWifiReviewSaveAction({ sendHaptic });
-  }, [sendHaptic]);
 
   return {
     actionState,

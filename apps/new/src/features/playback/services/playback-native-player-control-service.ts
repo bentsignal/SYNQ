@@ -51,3 +51,20 @@ export const resumePlaybackNativeActivePlayer = ({
     libraryPlayer.play();
   }
 };
+
+export const resumePlaybackNativeLibraryPlayer = ({
+  getRegistryState,
+  libraryPlayer,
+  setRegistryState,
+}: {
+  getRegistryState: () => PlaybackNativePlayerRegistryState;
+  libraryPlayer: AudioPlayer | null;
+  setRegistryState: (state: PlaybackNativePlayerRegistryState) => void;
+}) => {
+  if (libraryPlayer) {
+    setRegistryState(
+      getPlaybackNativePlayerResumeLibraryState(getRegistryState()),
+    );
+    libraryPlayer.play();
+  }
+};

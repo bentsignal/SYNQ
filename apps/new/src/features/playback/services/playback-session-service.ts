@@ -9,12 +9,9 @@ import {
 } from "./playback-native-transition-service";
 import { initialPlaybackState } from "./playback-initial-state-service";
 import {
-  addPlaybackQueueSong,
   bumpPlaybackQueueRevision,
-  clearPlaybackQueue,
-  movePlaybackQueueSong,
-  removePlaybackQueueSong,
 } from "./playback-session-queue-service";
+import { reducePlaybackQueueAction } from "./playback-session-queue-reducer-service";
 import {
   pausePlayback,
   playPlaybackSong,
@@ -60,17 +57,10 @@ export const playbackReducer = (
     case "skip-previous":
       return skipToPreviousPlaybackTrack(state);
     case "add-to-queue":
-      return addPlaybackQueueSong({ song: action.song, state });
     case "clear-queue":
-      return clearPlaybackQueue(state);
     case "remove-from-queue":
-      return removePlaybackQueueSong({ songId: action.songId, state });
     case "move-queue-song":
-      return movePlaybackQueueSong({
-        direction: action.direction,
-        songId: action.songId,
-        state,
-      });
+      return reducePlaybackQueueAction({ action, state });
     case "begin-ad-break":
       return beginPlaybackAdBreakTransition(state);
     case "complete-ad-break":

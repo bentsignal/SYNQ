@@ -1037,12 +1037,14 @@ import {
 } from "../../../apps/new/src/features/library/services/add-collection-songs-status-state-service";
 import {
   buildEditAlbumCollectionQueryResult,
-  buildEditAlbumRowQueryResult,
   buildEditArtistCollectionQueryResult,
-  buildEditCollectionRowQueryResult,
   buildEditPlaylistCollectionQueryResult,
-  getEditAlbumRowQueryUpdatedAt,
 } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
+import {
+  buildEditAlbumRowQueryResult,
+  buildEditCollectionRowQueryResult,
+  getEditAlbumRowQueryUpdatedAt,
+} from "../../../apps/new/src/features/library/services/edit-collection-row-query-service";
 import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-state-service";
 import { getEditCollectionImagePath } from "../../../apps/new/src/features/library/services/edit-collection-image-service";
 import {

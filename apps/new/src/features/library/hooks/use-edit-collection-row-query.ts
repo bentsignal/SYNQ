@@ -6,7 +6,7 @@ import {
 import {
   buildEditAlbumRowQueryResult,
   buildEditCollectionRowQueryResult,
-} from "../services/edit-collection-query-service";
+} from "../services/edit-collection-row-query-service";
 import type {
   EditCollectionAlbumArtistRow,
   EditCollectionAlbumRow,

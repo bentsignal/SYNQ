@@ -1049,11 +1049,11 @@ import {
   getLibraryCollectionListCopy,
 } from "../../../apps/new/src/features/library/services/library-collection-list-service";
 import {
-  filterCollectionPreviews,
   getLibraryCollectionListErrors,
   getLibraryCollectionListState,
   getLibraryCollectionListStatusLabel,
 } from "../../../apps/new/src/features/library/services/library-collection-list-state-service";
+import { filterCollectionPreviews } from "../../../apps/new/src/features/library/services/library-collection-list-search-service";
 import {
   getLibraryCollectionListSetQueryAction,
   initialLibraryCollectionListControlState,

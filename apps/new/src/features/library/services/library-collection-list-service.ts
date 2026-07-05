@@ -5,12 +5,12 @@ import {
 } from "./library-collection-list-state-service";
 
 export {
-  filterCollectionPreviews,
   getLibraryCollectionListErrors,
   getLibraryCollectionListState,
   getLibraryCollectionListStatusLabel,
   type LibraryCollectionListState,
 } from "./library-collection-list-state-service";
+export { filterCollectionPreviews } from "./library-collection-list-search-service";
 
 export type LibraryCollectionListKind = "albums" | "artists" | "playlists";
 

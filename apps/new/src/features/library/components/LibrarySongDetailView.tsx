@@ -3,8 +3,7 @@ import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetailController } from "../hooks/use-library-song-detail-controller";
 import type { LibrarySongDetail } from "../services/library-song-detail-service";
-import { getLibrarySongDetailStatusState } from "../services/library-song-detail-state-service";
-import { getLibrarySongDetailViewState } from "../services/library-song-interaction-service";
+import type { LibrarySongDetailScreenViewState } from "../services/library-song-detail-state-service";
 import { LibrarySongDetailActions } from "./LibrarySongDetailActions";
 import { LibrarySongDetailHeader } from "./LibrarySongDetailHeader";
 import {
@@ -15,30 +14,21 @@ import { LibrarySongRelationshipSection } from "./LibrarySongRelationshipSection
 
 type LibrarySongDetailViewProps = LibrarySongDetailController & {
   detail: LibrarySongDetail;
-  errors: unknown[];
-  songId: number;
+  screenViewState: LibrarySongDetailScreenViewState;
 };
 
 export function LibrarySongDetailView({
   actionState,
   deleteCurrentSong,
   detail,
-  error,
-  errors,
   exportCurrentSong,
   playCurrentSong,
   queueCurrentSong,
-  songId,
+  screenViewState,
   toggleLiked,
 }: LibrarySongDetailViewProps) {
   const theme = useCustomizationTheme();
-  const viewState = getLibrarySongDetailViewState({ detail, songId });
-  const statusState = getLibrarySongDetailStatusState({
-    actionState,
-    detail,
-    errors,
-    mutationError: error,
-  });
+  const { statusState, viewState } = screenViewState;
 
   return (
     <ScrollView

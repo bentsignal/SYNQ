@@ -947,6 +947,7 @@ import {
   getLibrarySongDetailActionState,
   getLibrarySongDetailMutationActionState,
   getLibrarySongDetailMutationControllerState,
+  getLibrarySongDetailScreenViewState,
   getLibrarySongDetailStatusState,
 } from "../../../apps/new/src/features/library/services/library-song-detail-state-service";
 import {
@@ -9537,6 +9538,18 @@ async function assertLibrarySongDetailSmoke() {
       updatedLabel: "Updated time:42",
     },
   );
+  const librarySongDetailScreenViewState = getLibrarySongDetailScreenViewState({
+    actionState: playableActionState,
+    detail,
+    errors: [],
+    mutationError: null,
+    songId: 42,
+  });
+  assert.equal(
+    librarySongDetailScreenViewState.viewState.actionLinks.editHref,
+    "/(tabs)/library/song/edit/42",
+  );
+  assert.equal(librarySongDetailScreenViewState.statusState.isError, false);
   assert.deepEqual(buildLibrarySongEditFormState(detail), {
     albumNames: "Alpha Album, Beta Album",
     artistNames: "Alpha Artist, Beta Artist",

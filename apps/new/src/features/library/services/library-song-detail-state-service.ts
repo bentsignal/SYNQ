@@ -1,5 +1,6 @@
 import type { LibrarySongDetail } from "./library-song-detail-service";
 import type { LibrarySongDetailMutationState } from "./library-song-detail-mutation-service";
+import { getLibrarySongDetailViewState } from "./library-song-interaction-service";
 
 export const getLibrarySongDetailActionState = ({
   detail,
@@ -127,3 +128,29 @@ export const getLibrarySongDetailStatusState = ({
     updatedLabel,
   };
 };
+
+export const getLibrarySongDetailScreenViewState = ({
+  actionState,
+  detail,
+  errors,
+  mutationError,
+  songId,
+}: {
+  actionState: LibrarySongDetailActionState;
+  detail: LibrarySongDetail;
+  errors: readonly unknown[];
+  mutationError: string | null;
+  songId: number;
+}) => ({
+  statusState: getLibrarySongDetailStatusState({
+    actionState,
+    detail,
+    errors,
+    mutationError,
+  }),
+  viewState: getLibrarySongDetailViewState({ detail, songId }),
+});
+
+export type LibrarySongDetailScreenViewState = ReturnType<
+  typeof getLibrarySongDetailScreenViewState
+>;

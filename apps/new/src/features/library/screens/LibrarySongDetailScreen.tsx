@@ -3,6 +3,7 @@ import { LibraryInvalidSongState } from "../components/LibraryInvalidSongState";
 import { LibrarySongDetailView } from "../components/LibrarySongDetailView";
 import { useLibrarySongDetailController } from "../hooks/use-library-song-detail-controller";
 import { useLibrarySongDetailQuery } from "../hooks/use-library-song-detail-query";
+import { getLibrarySongDetailScreenViewState } from "../services/library-song-detail-state-service";
 import { getLibraryInvalidSongState } from "../services/library-song-interaction-service";
 
 export function LibrarySongDetailScreen() {
@@ -21,12 +22,18 @@ function LibrarySongDetailContent({ songId }: { songId: number }) {
     detail,
     songId,
   });
+  const viewState = getLibrarySongDetailScreenViewState({
+    actionState: controller.actionState,
+    detail,
+    errors,
+    mutationError: controller.error,
+    songId,
+  });
 
   return (
     <LibrarySongDetailView
       detail={detail}
-      errors={errors}
-      songId={songId}
+      screenViewState={viewState}
       {...controller}
     />
   );

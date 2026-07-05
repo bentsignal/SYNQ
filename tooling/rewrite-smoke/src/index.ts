@@ -1630,6 +1630,9 @@ import {
   type ShareExportFilesDependencies,
 } from "../../../apps/new/src/features/export/services/share-export-files-executor-service";
 import {
+  getShareExportDirectoryWithDependencies,
+} from "../../../apps/new/src/features/export/services/share-export-files-path-service";
+import {
   getImportDraftExportFiles,
   shareImportDraftSongsWithDependencies,
   type ImportDraftExportDependencies,
@@ -18657,6 +18660,14 @@ async function assertShareExportFilesExecutorSmoke() {
     ),
     "1-Track-1.mp3",
   );
+  assert.equal(
+    getShareExportDirectoryWithDependencies({
+      cacheDirectory,
+      directoryPrefix: "synq-smoke-export",
+      now: dependencies.now,
+    }),
+    "file:///cache/synq-smoke-export-12345",
+  );
 
   await assert.rejects(() => shareFiles([]), /No smoke files/);
 
@@ -18694,6 +18705,15 @@ async function assertShareExportFilesExecutorSmoke() {
   ]);
 
   cacheDirectory = null;
+  assert.throws(
+    () =>
+      getShareExportDirectoryWithDependencies({
+        cacheDirectory,
+        directoryPrefix: "synq-smoke-export",
+        now: dependencies.now,
+      }),
+    /Cache directory is unavailable/,
+  );
   await assert.rejects(
     () =>
       shareFiles([

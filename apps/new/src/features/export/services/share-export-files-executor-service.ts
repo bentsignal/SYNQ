@@ -1,4 +1,5 @@
 import { getExportFileNameFromPath } from "./export-file-name-service";
+import { getShareExportDirectoryWithDependencies } from "./share-export-files-path-service";
 
 export type ShareExportFile = {
   fileNameFallback: string;
@@ -53,11 +54,11 @@ export async function shareExportFilesWithDependencies({
     };
   }
 
-  if (!dependencies.cacheDirectory) {
-    throw new Error("Cache directory is unavailable.");
-  }
-
-  const exportDirectory = `${dependencies.cacheDirectory}${directoryPrefix}-${dependencies.now()}`;
+  const exportDirectory = getShareExportDirectoryWithDependencies({
+    cacheDirectory: dependencies.cacheDirectory,
+    directoryPrefix,
+    now: dependencies.now,
+  });
   await dependencies.makeDirectory(exportDirectory, { intermediates: true });
 
   try {

@@ -18054,9 +18054,11 @@ async function assertSettingsScreenSmoke() {
   assert.equal(customizationColorControlsState.rows.length, 2);
   assert.equal(customizationColorControlsState.rows[0].title, "Theme");
   assert.equal(customizationColorControlsState.rows[1].title, "App Icon");
+  assert.equal(customizationColorControlsState.themeRow.title, "Theme");
+  assert.equal(customizationColorControlsState.appIconRow.title, "App Icon");
   assert.equal(customizationColorControlsState.rows[0].options.length, 7);
   assert.deepEqual(
-    customizationColorControlsState.rows[0].options.map((option) => ({
+    customizationColorControlsState.themeRow.options.map((option) => ({
       isSelected: option.optionState.isSelected,
       key: option.key,
     })),
@@ -18071,7 +18073,7 @@ async function assertSettingsScreenSmoke() {
     ],
   );
   assert.deepEqual(
-    customizationColorControlsState.rows[1].options.map((option) => ({
+    customizationColorControlsState.appIconRow.options.map((option) => ({
       disabled: option.optionState.accessibilityState.disabled,
       isSelected: option.optionState.isSelected,
       key: option.key,
@@ -18101,13 +18103,13 @@ async function assertSettingsScreenSmoke() {
     false,
   );
   assert.equal(
-    customizationControllerState.colorControlsState.rows[0].options.find(
+    customizationControllerState.colorControlsState.themeRow.options.find(
       (option) => option.key === "mint",
     )?.optionState.isSelected,
     true,
   );
   assert.equal(
-    customizationControllerState.colorControlsState.rows[1].options.find(
+    customizationControllerState.colorControlsState.appIconRow.options.find(
       (option) => option.key === "red",
     )?.optionState.isSelected,
     true,

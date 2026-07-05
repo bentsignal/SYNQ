@@ -888,11 +888,13 @@ import {
   getCollectionFormBeginSaveCommand,
   getCollectionFormBlockedSaveCommand,
   getCollectionFormFailureCommand,
+  getCollectionFormSuccessCommand,
+} from "../../../apps/new/src/features/library/services/collection-form-command-state-service";
+import {
   getCollectionFormImagePickedCommand,
   getCollectionFormImagePickFailureCommand,
   getCollectionFormImagePickStartCommand,
-  getCollectionFormSuccessCommand,
-} from "../../../apps/new/src/features/library/services/collection-form-command-state-service";
+} from "../../../apps/new/src/features/library/services/collection-form-image-command-state-service";
 import { runCollectionFormImagePickCommand } from "../../../apps/new/src/features/library/services/collection-form-image-command-flow-service";
 import {
   runCreateCollectionFormSaveCommand,

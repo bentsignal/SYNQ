@@ -3,7 +3,7 @@ import {
   getCollectionFormImagePickedCommand,
   getCollectionFormImagePickFailureCommand,
   getCollectionFormImagePickStartCommand,
-} from "./collection-form-command-state-service";
+} from "./collection-form-image-command-state-service";
 import type {
   CollectionFormAction,
   CollectionFormImage,

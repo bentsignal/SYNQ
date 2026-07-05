@@ -11,7 +11,7 @@ import type { AddableSongSelectionState } from "./add-collection-songs-selection
 import {
   getAddCollectionSongsFinishSelectionAction,
   getAddCollectionSongsFinishSongAction,
-} from "./add-collection-songs-state-service";
+} from "./add-collection-songs-action-service";
 import {
   runAddCollectionSongsMutationAttempt,
   type AddCollectionSongsFlowDependencies,

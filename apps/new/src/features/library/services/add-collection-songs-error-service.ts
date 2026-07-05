@@ -1,4 +1,4 @@
-import type { AddCollectionSongsMutationKind } from "./add-collection-songs-state-service";
+import type { AddCollectionSongsMutationKind } from "./add-collection-songs-action-service";
 
 export const getAddCollectionSongsMutationErrorMessage = ({
   caughtError,

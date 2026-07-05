@@ -3,7 +3,7 @@ import { getAddCollectionSongsFailureCommand } from "./add-collection-songs-comm
 import type {
   AddCollectionSongsControllerAction,
   AddCollectionSongsMutationKind,
-} from "./add-collection-songs-state-service";
+} from "./add-collection-songs-action-service";
 
 export type AddCollectionSongsControllerDispatch = (
   action: AddCollectionSongsControllerAction,

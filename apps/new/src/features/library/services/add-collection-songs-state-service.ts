@@ -2,8 +2,16 @@ import {
   removeSongIdSelection,
   toggleSongIdSelection,
 } from "./add-collection-songs-selection-mutation-service";
+import type { AddCollectionSongsControllerAction } from "./add-collection-songs-action-service";
 
-export type AddCollectionSongsMutationKind = "add-selection" | "add-song";
+export type {
+  AddCollectionSongsControllerAction,
+  AddCollectionSongsMutationKind,
+} from "./add-collection-songs-action-service";
+export {
+  getAddCollectionSongsFinishSelectionAction,
+  getAddCollectionSongsFinishSongAction,
+} from "./add-collection-songs-action-service";
 
 export type AddCollectionSongsControllerState = {
   isAddingSelection: boolean;
@@ -12,36 +20,6 @@ export type AddCollectionSongsControllerState = {
   selectedSongIds: Set<number>;
 };
 
-export type AddCollectionSongsControllerAction =
-  | {
-      songId: number;
-      type: "toggle-selection";
-    }
-  | {
-      songId: number;
-      type: "remove-selection";
-    }
-  | {
-      type: "clear-selection";
-    }
-  | {
-      type: "begin-add-selection";
-    }
-  | {
-      songId: number;
-      type: "begin-add-song";
-    }
-  | {
-      type: "finish-add-selection";
-    }
-  | {
-      type: "finish-add-song";
-    }
-  | {
-      error: string;
-      type: "fail";
-    };
-
 export const initialAddCollectionSongsControllerState: AddCollectionSongsControllerState =
   {
     isAddingSelection: false,
@@ -49,16 +27,6 @@ export const initialAddCollectionSongsControllerState: AddCollectionSongsControl
     savingSongId: null,
     selectedSongIds: new Set(),
   };
-
-export const getAddCollectionSongsFinishSelectionAction =
-  (): AddCollectionSongsControllerAction => ({
-    type: "finish-add-selection",
-  });
-
-export const getAddCollectionSongsFinishSongAction =
-  (): AddCollectionSongsControllerAction => ({
-    type: "finish-add-song",
-  });
 
 export const addCollectionSongsControllerReducer = (
   state: AddCollectionSongsControllerState,

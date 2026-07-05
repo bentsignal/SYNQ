@@ -3,7 +3,7 @@ import { getAddCollectionSongsMutationErrorMessage } from "./add-collection-song
 import type {
   AddCollectionSongsControllerAction,
   AddCollectionSongsMutationKind,
-} from "./add-collection-songs-state-service";
+} from "./add-collection-songs-action-service";
 
 type AddCollectionSongsHapticCommand = {
   haptic: HapticFeedbackType;

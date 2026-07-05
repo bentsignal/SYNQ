@@ -4,7 +4,7 @@ import { usePlaybackSongActions } from "@/src/features/playback/hooks/use-playba
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
   type LibrarySongDetail,
-} from "../services/library-song-detail-service";
+} from "../services/library-song-detail-types-service";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-action-state-service";
 import {
   runLibrarySongPlayAction,

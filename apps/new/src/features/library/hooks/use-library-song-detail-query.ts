@@ -6,11 +6,11 @@ import {
   type LibrarySongDetailLikedRow,
   type LibrarySongDetailPlaylistRow,
   type LibrarySongDetailSongRow,
-} from "../services/library-song-detail-service";
+} from "../services/library-song-detail-types-service";
 import { buildLibrarySongDetailQueryResult } from "../services/library-song-detail-query-result-service";
 import { getLibrarySmallImagePath } from "../services/library-image-path-service";
 
-export type { LibrarySongDetail } from "../services/library-song-detail-service";
+export type { LibrarySongDetail } from "../services/library-song-detail-types-service";
 
 export function useLibrarySongDetailQuery(songId: number) {
   const { albums, artists, liked, playlists, song } =

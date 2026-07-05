@@ -2,7 +2,7 @@ import { shareLibrarySongs } from "@/src/features/export/services/library-export
 import { setLibrarySongLiked } from "../repository/library-song-liked-repository";
 import { updateLibrarySongMetadata } from "../repository/song-metadata-repository";
 import { deleteLibrarySong } from "./library-song-delete-service";
-import type { LibrarySongDetail } from "./library-song-detail-service";
+import type { LibrarySongDetail } from "./library-song-detail-types-service";
 import {
   deleteLibrarySongCommandWithDependencies,
   exportLibrarySongCommandWithDependencies,

@@ -1,5 +1,5 @@
 import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
-import type { LibrarySongDetail } from "./library-song-detail-service";
+import type { LibrarySongDetail } from "./library-song-detail-types-service";
 import {
   getLibrarySongDetailPlayerHref,
   type LibrarySongDetailHref,

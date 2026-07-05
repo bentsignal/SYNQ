@@ -7,7 +7,7 @@ import {
   librarySongEditControllerReducer,
 } from "../services/library-song-form-service";
 import { getLibrarySongEditControllerResultState } from "../services/library-song-edit-screen-state-service";
-import { type LibrarySongDetail } from "../services/library-song-detail-service";
+import { type LibrarySongDetail } from "../services/library-song-detail-types-service";
 import { useEditLibrarySongCommands } from "./use-edit-library-song-commands";
 
 type UseEditLibrarySongControllerParams = {

@@ -1,6 +1,6 @@
 import { useReducer } from "react";
 import { usePlaybackRemoveFromQueue } from "@/src/features/playback/hooks/use-playback-session-selectors";
-import type { LibrarySongDetail } from "../services/library-song-detail-service";
+import type { LibrarySongDetail } from "../services/library-song-detail-types-service";
 import { getLibrarySongDetailMutationControllerState } from "../services/library-song-detail-mutation-controller-state-service";
 import {
   initialLibrarySongDetailMutationState,

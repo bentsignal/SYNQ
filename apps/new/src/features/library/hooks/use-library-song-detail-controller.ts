@@ -1,6 +1,6 @@
 import { useLibrarySongDetailMutations } from "./use-library-song-detail-mutations";
 import { useLibrarySongPlaybackActions } from "./use-library-song-playback-actions";
-import type { LibrarySongDetail } from "../services/library-song-detail-service";
+import type { LibrarySongDetail } from "../services/library-song-detail-types-service";
 
 export function useLibrarySongDetailController({
   detail,

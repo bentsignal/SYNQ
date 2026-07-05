@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { LibrarySongDetail } from "../services/library-song-detail-service";
+import type { LibrarySongDetail } from "../services/library-song-detail-types-service";
 
 type LibrarySongDetailHeaderProps = {
   detail: LibrarySongDetail;

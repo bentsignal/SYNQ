@@ -1,4 +1,4 @@
-import type { LibrarySongDetail } from "./library-song-detail-service";
+import type { LibrarySongDetail } from "./library-song-detail-types-service";
 import type { LibrarySongDetailActionState } from "./library-song-detail-action-state-service";
 
 export type LibrarySongDetailStatusState = {

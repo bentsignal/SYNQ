@@ -1,4 +1,4 @@
-import type { LibrarySongDetail } from "./library-song-detail-service";
+import type { LibrarySongDetail } from "./library-song-detail-types-service";
 import type { LibrarySongDetailMutationState } from "./library-song-detail-mutation-service";
 import { getLibrarySongDetailActionState } from "./library-song-detail-action-state-service";
 

@@ -1,12 +1,12 @@
-import {
-  buildLibrarySongDetail,
-  type LibrarySongDetail,
-  type LibrarySongDetailAlbumRow,
-  type LibrarySongDetailArtistRow,
-  type LibrarySongDetailLikedRow,
-  type LibrarySongDetailPlaylistRow,
-  type LibrarySongDetailSongRow,
-} from "./library-song-detail-service";
+import { buildLibrarySongDetail } from "./library-song-detail-service";
+import type {
+  LibrarySongDetail,
+  LibrarySongDetailAlbumRow,
+  LibrarySongDetailArtistRow,
+  LibrarySongDetailLikedRow,
+  LibrarySongDetailPlaylistRow,
+  LibrarySongDetailSongRow,
+} from "./library-song-detail-types-service";
 
 type SongDetailImagePathResolver = (imageHash: string) => string;
 

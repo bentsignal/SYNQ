@@ -1,5 +1,5 @@
 import type { LibrarySongDetailActionState } from "./library-song-detail-action-state-service";
-import type { LibrarySongDetail } from "./library-song-detail-service";
+import type { LibrarySongDetail } from "./library-song-detail-types-service";
 import { getLibrarySongDetailStatusState } from "./library-song-detail-status-state-service";
 import { getLibrarySongDetailViewState } from "./library-song-detail-view-state-service";
 

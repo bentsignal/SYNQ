@@ -1,7 +1,7 @@
 import {
   getSavedCollectionFormImageLabel,
-  type CollectionFormActionState,
-} from "../services/collection-form-interaction-service";
+} from "../services/collection-form-field-state-service";
+import type { CollectionFormActionState } from "../services/collection-form-action-state-service";
 import { getEditCollectionFormSubtitle } from "../services/collection-form-copy-service";
 import { getCollectionFormBackLink } from "../services/collection-form-navigation-service";
 import type { EditCollectionKind } from "../services/edit-collection-state-service";

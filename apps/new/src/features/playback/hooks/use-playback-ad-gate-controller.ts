@@ -1,15 +1,16 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { PlaybackAction } from "../services/playback-session-action-service";
 import type {
   PlaybackQueueItem,
   PlaybackState,
 } from "../types/playback-state";
 import {
-  canRunPlaybackWithAdGate,
-  getBeginPlaybackAdBreakAction,
   getPlaybackAdGateControllerDecisions,
   getSyncPlaybackPremiumAction,
 } from "../services/playback-ad-gate-service";
+import {
+  createPlaybackAdGateControls,
+} from "../services/playback-ad-gate-controller-service";
 
 export function usePlaybackAdGateController({
   activeTrack,
@@ -35,19 +36,16 @@ export function usePlaybackAdGateController({
     dispatch(getSyncPlaybackPremiumAction(premiumActive));
   }, [dispatch, premiumActive]);
 
-  const beginAdBreak = useCallback(() => {
-    dispatch(getBeginPlaybackAdBreakAction());
-    onBeginAdBreak();
-  }, [dispatch, onBeginAdBreak]);
-
-  const canRunPlaybackCommand = useCallback(() => {
-    const adGate = stateRef.current.adGate;
-
-    return canRunPlaybackWithAdGate({
-      gate: adGate,
-      premiumActive: premiumActiveRef.current,
-    });
-  }, [stateRef]);
+  const { beginAdBreak, canRunPlaybackCommand } = useMemo(
+    () =>
+      createPlaybackAdGateControls({
+        dispatch,
+        onBeginAdBreak,
+        premiumActiveRef,
+        stateRef,
+      }),
+    [dispatch, onBeginAdBreak, stateRef],
+  );
 
   const adGateActive = state.adGate.active;
   const adGateDue = state.adGate.due;

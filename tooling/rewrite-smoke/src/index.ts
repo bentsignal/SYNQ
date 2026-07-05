@@ -90,6 +90,9 @@ import {
   shouldStartPlaybackAdBreak,
 } from "../../../apps/new/src/features/playback/services/playback-ad-gate-service";
 import {
+  createPlaybackAdGateControls,
+} from "../../../apps/new/src/features/playback/services/playback-ad-gate-controller-service";
+import {
   failPlaybackSession,
   hydratePlaybackSession,
   togglePlaybackLoopMode,
@@ -2250,6 +2253,32 @@ async function assertPlaybackSessionSmoke() {
       shouldResumeAfterPremium: true,
     },
   );
+  const adGateControlEvents: unknown[] = [];
+  const adGateControls = createPlaybackAdGateControls({
+    dispatch: (action) => {
+      adGateControlEvents.push(["dispatch", action.type]);
+    },
+    onBeginAdBreak: () => {
+      adGateControlEvents.push(["native-ad"]);
+    },
+    premiumActiveRef: { current: false },
+    stateRef: {
+      current: {
+        ...state,
+        adGate: {
+          ...state.adGate,
+          active: false,
+          due: true,
+        },
+      },
+    },
+  });
+  assert.equal(adGateControls.canRunPlaybackCommand(), false);
+  adGateControls.beginAdBreak();
+  assert.deepEqual(adGateControlEvents, [
+    ["dispatch", "begin-ad-break"],
+    ["native-ad"],
+  ]);
 
   state = playbackReducer(state, getBeginPlaybackAdBreakAction());
   assert.equal(state.adGate.active, true);

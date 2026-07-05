@@ -1218,6 +1218,7 @@ import {
   getCustomizationColorControlsState,
   getCustomizationScreenControllerViewState,
   getSettingsDeveloperPremiumToggleState,
+  getSettingsHomeControllerViewState,
   getCustomizationOptionState,
   getCustomizationScreenState,
   getPrivacyScreenControllerViewState,
@@ -1245,6 +1246,7 @@ import {
   getSettingsHomeHref,
   getSettingsPremiumHref,
   getSupportActionKey,
+  settingsRoutes,
   supportActions,
 } from "../../../apps/new/src/features/settings/services/settings-navigation-service";
 import {
@@ -16399,6 +16401,27 @@ async function assertSettingsScreenSmoke() {
       title: "Developer Premium Toggle",
       value: true,
     },
+  );
+  assert.deepEqual(
+    getSettingsHomeControllerViewState({
+      isDev: true,
+      premiumActive: true,
+    }),
+    {
+      developerPremiumToggleState:
+        getSettingsDeveloperPremiumToggleState({ premiumActive: true }),
+      routes: settingsRoutes,
+      screenState: {
+        premiumStatusLabel: "Premium active",
+      },
+    },
+  );
+  assert.equal(
+    getSettingsHomeControllerViewState({
+      isDev: false,
+      premiumActive: false,
+    }).developerPremiumToggleState,
+    null,
   );
   assert.deepEqual(getPrivacyScreenViewState(), {
     backLink: {

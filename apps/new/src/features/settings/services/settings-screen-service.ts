@@ -8,6 +8,7 @@ import {
   getSettingsBackLink,
   getSettingsPremiumHref,
   getSupportActionKey,
+  settingsRoutes,
   supportActions,
 } from "./settings-navigation-service";
 import { customizationOptions } from "./customization-settings-domain-service";
@@ -102,6 +103,32 @@ export const getSettingsDeveloperPremiumToggleState = ({
   title: "Developer Premium Toggle",
   value: premiumActive,
 });
+
+export const getSettingsHomeControllerViewState = ({
+  isDev,
+  premiumActive,
+}: {
+  isDev: boolean;
+  premiumActive: boolean;
+}) => {
+  const showDeveloperPremiumToggle = isSettingsDeveloperPremiumToggleVisible({
+    isDev,
+  });
+
+  return {
+    developerPremiumToggleState: showDeveloperPremiumToggle
+      ? getSettingsDeveloperPremiumToggleState({ premiumActive })
+      : null,
+    routes: settingsRoutes,
+    screenState: getSettingsHomeState({
+      premiumActive,
+    }),
+  };
+};
+
+export type SettingsHomeControllerViewState = ReturnType<
+  typeof getSettingsHomeControllerViewState
+>;
 
 export const getCustomizationScreenState = ({
   premiumActive,

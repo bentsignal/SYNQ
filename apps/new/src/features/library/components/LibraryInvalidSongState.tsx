@@ -1,12 +1,20 @@
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getLibraryInvalidSongState } from "../services/library-song-interaction-service";
+import type { getLibraryInvalidSongState } from "../services/library-song-interaction-service";
 
-export function LibraryInvalidSongState() {
+type LibraryInvalidSongStateModel = ReturnType<
+  typeof getLibraryInvalidSongState
+>;
+
+type LibraryInvalidSongStateProps = {
+  state: LibraryInvalidSongStateModel;
+};
+
+export function LibraryInvalidSongState({
+  state,
+}: LibraryInvalidSongStateProps) {
   const theme = useCustomizationTheme();
-  const state = getLibraryInvalidSongState();
-
   return (
     <View
       className="flex-1 gap-2.5 px-5 py-14"

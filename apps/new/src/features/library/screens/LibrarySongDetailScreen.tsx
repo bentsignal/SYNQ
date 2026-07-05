@@ -3,12 +3,13 @@ import { LibraryInvalidSongState } from "../components/LibraryInvalidSongState";
 import { LibrarySongDetailView } from "../components/LibrarySongDetailView";
 import { useLibrarySongDetailController } from "../hooks/use-library-song-detail-controller";
 import { useLibrarySongDetailQuery } from "../hooks/use-library-song-detail-query";
+import { getLibraryInvalidSongState } from "../services/library-song-interaction-service";
 
 export function LibrarySongDetailScreen() {
   const id = useNumericRouteParam();
 
   if (id === null) {
-    return <LibraryInvalidSongState />;
+    return <LibraryInvalidSongState state={getLibraryInvalidSongState()} />;
   }
 
   return <LibrarySongDetailContent songId={id} />;

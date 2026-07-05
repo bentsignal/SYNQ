@@ -2,12 +2,13 @@ import { useNumericRouteParam } from "@/src/features/app-shell/hooks/use-numeric
 import { LibraryInvalidSongState } from "../components/LibraryInvalidSongState";
 import { SongAddToPlaylistView } from "../components/SongAddToPlaylistView";
 import { useSongAddToPlaylistController } from "../hooks/use-song-add-to-playlist-controller";
+import { getLibraryInvalidSongState } from "../services/library-song-interaction-service";
 
 export function SongAddToPlaylistScreen() {
   const id = useNumericRouteParam();
 
   if (id === null) {
-    return <LibraryInvalidSongState />;
+    return <LibraryInvalidSongState state={getLibraryInvalidSongState()} />;
   }
 
   return <SongAddToPlaylistContent songId={id} />;

@@ -69,9 +69,18 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.directedbyshawn.synq-new",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocalNetworkUsageDescription": "SYNQ needs local network access to connect to the development server on your Mac.",
+        "NSBonjourServices": [
+          "_expo._tcp",
+          "_react-native-packager._tcp",
+          "_http._tcp"
+        ],
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        }
       },
-      "buildNumber": "5"
+      "buildNumber": "6"
     },
     "android": {
       "permissions": [

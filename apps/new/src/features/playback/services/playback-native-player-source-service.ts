@@ -1,22 +1,16 @@
-import {
-  createAudioPlayer,
-  type AudioPlayer,
-} from "expo-audio";
+import type { AudioPlayer } from "expo-audio";
 import type { PlaybackQueueItem } from "../types/playback-state";
-import { playbackAdAudio } from "./playback-native-audio-service";
-import { getPlaybackNativeLibraryAudioSource } from "./playback-native-library-source-service";
-import {
-  getPlaybackNativePlayerPlayAdState,
-  getPlaybackNativePlayerPlayLibraryState,
-  type PlaybackNativePlayerRegistryState,
-} from "./playback-native-player-state-service";
+import type { PlaybackNativePlayerRegistryState } from "./playback-native-player-state-service";
 import {
   pausePlaybackNativeActivePlayer,
   resumePlaybackNativeActivePlayer,
   resumePlaybackNativeLibraryPlayer,
 } from "./playback-native-player-control-service";
 import { removePlaybackNativePlayerSource } from "./playback-native-player-removal-service";
-import { getPlaybackNativeLibraryPlaybackTarget } from "./playback-native-player-target-service";
+import {
+  playPlaybackNativeAdSource,
+  playPlaybackNativeLibrarySource,
+} from "./playback-native-player-play-service";
 import { createTrackPlayerStatusListenerRegistry } from "./playback-native-status-listener-service";
 import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
 
@@ -68,47 +62,24 @@ export const createPlaybackNativePlayerSources = ({
       });
     },
     playAd: () => {
-      libraryPlayer?.pause();
-      removeAdPlayer();
-
-      adPlayer = createAudioPlayer(playbackAdAudio);
-      setRegistryState(getPlaybackNativePlayerPlayAdState(getRegistryState()));
-      statusListeners.attach(adPlayer, "ad");
-      adPlayer.play();
+      adPlayer = playPlaybackNativeAdSource({
+        getRegistryState,
+        libraryPlayer,
+        removeAdPlayer,
+        setRegistryState,
+        statusListeners,
+      });
     },
     playLibrarySong: async (song: PlaybackQueueItem) => {
-      const source = getPlaybackNativeLibraryAudioSource(song);
-
-      removeAdPlayer();
-
-      const plan = getPlaybackNativeLibraryPlaybackTarget({
-        hasLibraryPlayer: Boolean(libraryPlayer),
-        songId: song.id,
-        state: getRegistryState(),
+      libraryPlayer = await playPlaybackNativeLibrarySource({
+        getRegistryState,
+        libraryPlayer,
+        removeAdPlayer,
+        removeLibraryPlayer,
+        setRegistryState,
+        song,
+        statusListeners,
       });
-      if (plan.type === "replay-loaded-song" && libraryPlayer) {
-        setRegistryState(
-          getPlaybackNativePlayerPlayLibraryState({
-            songId: song.id,
-            state: getRegistryState(),
-          }),
-        );
-        await libraryPlayer.seekTo(0);
-        libraryPlayer.play();
-        return;
-      }
-
-      removeLibraryPlayer();
-
-      libraryPlayer = createAudioPlayer(source);
-      setRegistryState(
-        getPlaybackNativePlayerPlayLibraryState({
-          songId: song.id,
-          state: getRegistryState(),
-        }),
-      );
-      statusListeners.attach(libraryPlayer, "library");
-      libraryPlayer.play();
     },
     resumeActive: () => {
       resumePlaybackNativeActivePlayer({

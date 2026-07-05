@@ -370,9 +370,13 @@ import {
 import {
   getImportWifiActionState,
   getImportWifiReviewSaveHaptic,
+} from "../../../apps/new/src/features/import/services/import-wifi-action-state-service";
+import {
   getImportWifiState,
+} from "../../../apps/new/src/features/import/services/import-wifi-status-state-service";
+import {
   getImportWifiViewState,
-} from "../../../apps/new/src/features/import/services/import-wifi-screen-state-service";
+} from "../../../apps/new/src/features/import/services/import-wifi-view-state-service";
 import {
   createImportWifiControllerActions,
 } from "../../../apps/new/src/features/import/services/import-wifi-controller-action-service";

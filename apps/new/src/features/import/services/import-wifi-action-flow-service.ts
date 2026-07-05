@@ -1,6 +1,6 @@
 import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import { runImportFilesRemoveAction } from "./import-files-action-flow-service";
-import { getImportWifiReviewSaveHaptic } from "./import-wifi-screen-state-service";
+import { getImportWifiReviewSaveHaptic } from "./import-wifi-action-state-service";
 
 export const runImportWifiRemoveSongAction = async ({
   canRemoveSongs,

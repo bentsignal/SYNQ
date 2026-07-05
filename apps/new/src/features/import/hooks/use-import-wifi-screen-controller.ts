@@ -3,7 +3,7 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import {
   createImportWifiControllerActions,
 } from "../services/import-wifi-controller-action-service";
-import { getImportWifiViewState } from "../services/import-wifi-screen-state-service";
+import { getImportWifiViewState } from "../services/import-wifi-view-state-service";
 import { useImportSessionSelector } from "./use-import-session";
 import { useWifiImportServer } from "./use-wifi-import-server";
 

@@ -1,12 +1,8 @@
-import type {
-  LibraryExportAlbumMetadataRow,
-  LibraryExportArtistMetadataRow,
-  LibraryExportSongMetadataRow,
-} from "../repository/library-export-metadata-repository";
 import type { LibraryExportArtworkDependencies } from "./library-export-artwork-service";
 import {
-  buildLibrarySongExportMetadata,
-} from "./library-export-metadata-builder-service";
+  loadLibrarySongExportMetadataWithDependencies,
+  type LibraryExportMetadataLoaderDependencies,
+} from "./library-export-metadata-loader-service";
 import {
   writeLibrarySongExportMetadataWithDependencies,
   type LibraryExportWritebackDependencies,
@@ -25,6 +21,10 @@ export {
   formatLibraryExportNames,
   type LibraryExportMetadata,
 } from "./library-export-metadata-builder-service";
+export {
+  loadLibrarySongExportMetadataWithDependencies,
+  type LibraryExportMetadataLoaderDependencies,
+} from "./library-export-metadata-loader-service";
 
 export type LibraryExportMetadataSong = {
   id: number;
@@ -33,33 +33,8 @@ export type LibraryExportMetadataSong = {
 
 export type LibraryExportMetadataDependencies = LibraryExportArtworkDependencies & {
   isLibrarySongSnapshotStale: (songId: number) => Promise<boolean | null>;
-  loadAlbumRows: (songId: number) => Promise<LibraryExportAlbumMetadataRow[]>;
-  loadArtistRows: (songId: number) => Promise<LibraryExportArtistMetadataRow[]>;
-  loadSongRow: (
-    songId: number,
-  ) => Promise<LibraryExportSongMetadataRow | null>;
-} & LibraryExportWritebackDependencies;
-
-export const loadLibrarySongExportMetadataWithDependencies = async (
-  songId: number,
-  dependencies: Pick<
-    LibraryExportMetadataDependencies,
-    "loadAlbumRows" | "loadArtistRows" | "loadSongRow"
-  >,
-) => {
-  const song = await dependencies.loadSongRow(songId);
-
-  if (!song) {
-    return null;
-  }
-
-  const [artists, albums] = await Promise.all([
-    dependencies.loadArtistRows(songId),
-    dependencies.loadAlbumRows(songId),
-  ]);
-
-  return buildLibrarySongExportMetadata({ albums, artists, song });
-};
+} & LibraryExportMetadataLoaderDependencies &
+  LibraryExportWritebackDependencies;
 
 export const prepareLibrarySongForExportWithDependencies = async (
   song: LibraryExportMetadataSong,

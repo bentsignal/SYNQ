@@ -1,10 +1,10 @@
 import {
-  formatCollectionDetailNames,
   rowsToCollectionDetailSongs,
   type LibraryCollectionDetailSongRow,
 } from "./library-collection-detail-song-service";
 import {
   formatCollectionDetailCount,
+  formatCollectionDetailNames,
   type CollectionImagePathResolver,
   type LibraryCollectionDetail,
 } from "./library-collection-detail-shared-service";

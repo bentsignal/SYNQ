@@ -20,3 +20,13 @@ export const formatCollectionDetailCount = (
   singular: string,
   plural = `${singular}s`,
 ) => `${count} ${count === 1 ? singular : plural}`;
+
+export const formatCollectionDetailNames = (names: Set<string>) => {
+  if (names.size === 0) {
+    return "Unknown";
+  }
+
+  return Array.from(names).sort((first, second) =>
+    first.localeCompare(second),
+  ).join(", ");
+};

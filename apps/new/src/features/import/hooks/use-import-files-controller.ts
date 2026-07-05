@@ -6,10 +6,8 @@ import {
   runImportFilesRemoveAction,
 } from "../services/import-files-action-flow-service";
 import {
-  getImportFilesActionLinks,
-  getImportFilesActionState,
+  getImportFilesViewState,
 } from "../services/import-files-screen-state-service";
-import { getImportSongPreviewEmptyState } from "../services/import-song-preview-state-service";
 import { useImportSessionSelector } from "./use-import-session";
 
 export function useImportFilesController() {
@@ -21,9 +19,7 @@ export function useImportFilesController() {
   );
   const state = useImportSessionSelector((store) => store.state);
   const { sendHaptic } = useHapticFeedback();
-  const actionLinks = getImportFilesActionLinks();
-  const actionState = getImportFilesActionState(state);
-  const songPreviewEmptyState = getImportSongPreviewEmptyState();
+  const viewState = getImportFilesViewState(state);
 
   const chooseFiles = useCallback(async () => {
     await runImportFilesChooseAction({
@@ -45,12 +41,10 @@ export function useImportFilesController() {
   );
 
   return {
-    actionLinks,
-    actionState,
     chooseFiles,
     removeSong,
-    songPreviewEmptyState,
     state,
+    viewState,
   };
 }
 

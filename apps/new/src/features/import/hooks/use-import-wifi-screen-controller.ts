@@ -12,7 +12,7 @@ export function useImportWifiScreenController() {
   const state = useImportSessionSelector((store) => store.state);
   const { sendHaptic } = useHapticFeedback();
   const serverState = useWifiImportServer();
-  const { actionState, songPreviewEmptyState, wifiState } =
+  const { actionState, songPreviewEmptyState, songPreviewListState, wifiState } =
     getImportWifiViewState({
       error: serverState.error,
       isReady: serverState.isReady,
@@ -37,6 +37,7 @@ export function useImportWifiScreenController() {
     reviewSave,
     serverState,
     songPreviewEmptyState,
+    songPreviewListState,
     state,
     wifiState,
   };

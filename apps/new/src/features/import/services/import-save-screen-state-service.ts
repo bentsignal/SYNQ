@@ -1,6 +1,9 @@
 import type { ImportSessionState } from "../types/import-session";
 import { getImportFilesHref } from "./import-navigation-service";
-import { getImportSongPreviewEmptyState } from "./import-song-preview-state-service";
+import {
+  getImportSongPreviewEmptyState,
+  getImportSongPreviewListState,
+} from "./import-song-preview-state-service";
 
 export const getImportSaveActionState = ({
   isExporting,
@@ -57,6 +60,9 @@ export const getImportSaveViewState = ({
   headerState: getImportSaveHeaderState(),
   libraryToggleState: getImportSaveLibraryToggleState(),
   songPreviewEmptyState: getImportSongPreviewEmptyState(),
+  songPreviewListState: getImportSongPreviewListState({
+    songs: state.songs,
+  }),
 });
 
 export type ImportSaveHeaderState = ReturnType<

@@ -279,6 +279,7 @@ import {
 import {
   getImportFilesActionState,
   getImportFilesActionLinks,
+  getImportFilesViewState,
 } from "../../../apps/new/src/features/import/services/import-files-screen-state-service";
 import {
   getImportHomeRouteSelectCommand,
@@ -3431,6 +3432,14 @@ async function assertImportSessionSmoke() {
       label: "Back to import",
     },
   ]);
+  assert.deepEqual(getImportFilesViewState(state), {
+    actionLinks: getImportFilesActionLinks(),
+    actionState: getImportFilesActionState(state),
+    songPreviewEmptyState: getImportSongPreviewEmptyState(),
+    songPreviewListState: getImportSongPreviewListState({
+      songs: state.songs,
+    }),
+  });
   assert.equal(getImportFilesResultHref(true), "/(tabs)/import/save");
   assert.equal(getImportFilesResultHref(false), "/(tabs)/import/failure");
   assert.equal(getImportFinishResultHref(true), "/(tabs)/import/success");
@@ -3541,6 +3550,9 @@ async function assertImportSessionSmoke() {
     headerState: getImportSaveHeaderState(),
     libraryToggleState: getImportSaveLibraryToggleState(),
     songPreviewEmptyState: getImportSongPreviewEmptyState(),
+    songPreviewListState: getImportSongPreviewListState({
+      songs: state.songs,
+    }),
   });
   assert.deepEqual(
     getImportSaveToggleCommand({ shouldSaveToLibrary: false }),
@@ -4696,6 +4708,9 @@ async function assertImportSessionSmoke() {
     {
       actionState: getImportWifiActionState(),
       songPreviewEmptyState: getImportSongPreviewEmptyState(),
+      songPreviewListState: getImportSongPreviewListState({
+        songs: state.songs,
+      }),
       wifiState: getImportWifiState({
         error: null,
         isReady: true,

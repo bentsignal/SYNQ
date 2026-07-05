@@ -2,24 +2,19 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportFilesController } from "../hooks/use-import-files-controller";
-import { getImportSongPreviewListState } from "../services/import-song-preview-state-service";
 import { ImportPremiumGate } from "./ImportPremiumGate";
 import { ImportSongPreviewList } from "./ImportSongPreviewList";
 
 type ImportFilesScreenViewProps = ImportFilesController;
 
 export function ImportFilesScreenView({
-  actionLinks,
-  actionState,
   chooseFiles,
   removeSong,
-  songPreviewEmptyState,
-  state,
+  viewState,
 }: ImportFilesScreenViewProps) {
   const theme = useCustomizationTheme();
-  const songPreviewListState = getImportSongPreviewListState({
-    songs: state.songs,
-  });
+  const { actionLinks, actionState, songPreviewEmptyState, songPreviewListState } =
+    viewState;
 
   return (
     <ScrollView

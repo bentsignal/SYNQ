@@ -4,7 +4,10 @@ import {
   getImportHomeHref,
   getImportSaveHref,
 } from "./import-navigation-service";
-import { getImportSongPreviewEmptyState } from "./import-song-preview-state-service";
+import {
+  getImportSongPreviewEmptyState,
+  getImportSongPreviewListState,
+} from "./import-song-preview-state-service";
 
 export const getImportWifiState = ({
   error,
@@ -61,6 +64,9 @@ export const getImportWifiViewState = ({
 }) => ({
   actionState: getImportWifiActionState(),
   songPreviewEmptyState: getImportSongPreviewEmptyState(),
+  songPreviewListState: getImportSongPreviewListState({
+    songs: state.songs,
+  }),
   wifiState: getImportWifiState({ error, isReady, state }),
 });
 

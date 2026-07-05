@@ -796,12 +796,14 @@ import {
 } from "../../../apps/new/src/features/library/repository/collection-song-relationship-step-repository";
 import {
   getCollectionSongListState,
-  getCollectionSongOrderUpdate,
   getCollectionSongRowActionState,
   getCollectionSongRowsViewState,
   getCollectionSongRowViewState,
-  reorderCollectionSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-song-mutation-service";
+import {
+  getCollectionSongOrderUpdate,
+  reorderCollectionSongs,
+} from "../../../apps/new/src/features/library/services/library-collection-song-order-service";
 import {
   getCollectionPlaybackCommandPlan,
   getCollectionPlaybackPlan,

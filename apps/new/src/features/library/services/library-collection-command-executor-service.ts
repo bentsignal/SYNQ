@@ -2,7 +2,7 @@ import type {
   LibraryCollectionDetailSong,
 } from "./library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
-import { getCollectionSongOrderUpdate } from "./library-collection-song-mutation-service";
+import { getCollectionSongOrderUpdate } from "./library-collection-song-order-service";
 
 type ExportableLibrarySong = {
   id: number;

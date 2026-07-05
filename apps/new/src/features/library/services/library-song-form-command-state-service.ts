@@ -7,6 +7,7 @@ import type {
   LibrarySongEditControllerAction,
 } from "./library-song-edit-controller-reducer-service";
 import type { LibrarySongEditCoverImage } from "./library-song-edit-form-state-service";
+import { getLibrarySongEditErrorMessage } from "./library-song-edit-error-service";
 
 type LibrarySongEditHapticCommand = {
   haptic: HapticFeedbackType;
@@ -19,11 +20,6 @@ type LibrarySongEditActionCommand = LibrarySongEditHapticCommand & {
 type LibrarySongEditNavigationCommand = LibrarySongEditHapticCommand & {
   href: LibrarySongDetailHref;
 };
-
-export const getLibrarySongEditErrorMessage = (caughtError: unknown) =>
-  caughtError instanceof Error
-    ? caughtError.message
-    : "Song could not be saved.";
 
 export const getLibrarySongEditBlockedCommand =
   (): LibrarySongEditHapticCommand => ({

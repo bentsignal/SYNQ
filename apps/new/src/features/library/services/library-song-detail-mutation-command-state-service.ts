@@ -7,6 +7,7 @@ import type {
   LibrarySongDetailMutationAction,
   LibrarySongDetailMutationKind,
 } from "./library-song-detail-mutation-service";
+import { getLibrarySongDetailMutationErrorMessage } from "./library-song-detail-mutation-error-service";
 
 type LibrarySongDetailMutationHapticCommand = {
   haptic: HapticFeedbackType;
@@ -23,27 +24,6 @@ type LibrarySongDetailMutationNavigationCommand =
   LibrarySongDetailMutationHapticCommand & {
     href: LibrarySongDetailHref;
   };
-
-export const getLibrarySongDetailMutationErrorMessage = ({
-  caughtError,
-  mutation,
-}: {
-  caughtError: unknown;
-  mutation: LibrarySongDetailMutationKind;
-}) => {
-  if (caughtError instanceof Error) {
-    return caughtError.message;
-  }
-
-  switch (mutation) {
-    case "delete-song":
-      return "Song could not be deleted.";
-    case "export-song":
-      return "Song could not be exported.";
-    case "toggle-liked":
-      return "Liked Songs could not be updated.";
-  }
-};
 
 export const getLibrarySongDetailMutationBlockedCommand =
   (): LibrarySongDetailMutationHapticCommand => ({

@@ -7,7 +7,7 @@ import {
 import type {
   CollectionFormAction,
   CollectionFormImage,
-} from "./collection-form-state-service";
+} from "./collection-form-action-service";
 
 type CollectionFormDispatch = (action: CollectionFormAction) => void;
 

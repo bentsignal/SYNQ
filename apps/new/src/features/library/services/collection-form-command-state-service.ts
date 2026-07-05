@@ -11,7 +11,7 @@ import type { CollectionFormKind } from "./collection-form-domain-service";
 import type {
   CollectionFormAction,
   CollectionFormImage,
-} from "./collection-form-state-service";
+} from "./collection-form-action-service";
 import { getCollectionRequiredNameMessage } from "./collection-metadata-service";
 
 type CollectionFormOperation = "create" | "update";

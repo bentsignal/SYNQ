@@ -1,11 +1,13 @@
 import { useEffect, useReducer } from "react";
 import {
   collectionFormReducer,
+  getInitialCollectionFormState,
+} from "../services/collection-form-state-service";
+import {
   getCollectionFormChangeFieldAction,
   getCollectionFormHydrateAction,
-  getInitialCollectionFormState,
   type CollectionFormField,
-} from "../services/collection-form-state-service";
+} from "../services/collection-form-action-service";
 import {
   getCollectionFormControllerResultState,
 } from "../services/collection-form-interaction-service";

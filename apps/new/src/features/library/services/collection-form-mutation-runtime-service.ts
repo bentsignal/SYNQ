@@ -8,7 +8,7 @@ import type { CollectionFormKind } from "./collection-form-domain-service";
 import {
   getCollectionFormFinishSaveAction,
   type CollectionFormAction,
-} from "./collection-form-state-service";
+} from "./collection-form-action-service";
 
 export type CollectionFormDispatch = (action: CollectionFormAction) => void;
 

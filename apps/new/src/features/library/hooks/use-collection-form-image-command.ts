@@ -4,7 +4,7 @@ import { pickCollectionImage } from "../services/collection-image-picker-service
 import { runCollectionFormImagePickCommand } from "../services/collection-form-image-command-flow-service";
 import {
   type CollectionFormAction,
-} from "../services/collection-form-state-service";
+} from "../services/collection-form-action-service";
 
 type CollectionFormDispatch = React.Dispatch<CollectionFormAction>;
 

@@ -367,8 +367,10 @@ import {
 } from "../../../apps/new/src/features/import/services/import-premium-access-service";
 import {
   runImportHomeRouteSelectAction,
+} from "../../../apps/new/src/features/import/services/import-home-route-select-action-flow-service";
+import {
   runImportPremiumGateAction,
-} from "../../../apps/new/src/features/import/services/import-interaction-action-flow-service";
+} from "../../../apps/new/src/features/import/services/import-premium-gate-action-flow-service";
 import {
   getImportWifiActionState,
   getImportWifiReviewSaveHaptic,

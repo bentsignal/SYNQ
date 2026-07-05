@@ -1,3 +1,5 @@
+import { ensureSongMetadataRelationshipEntity } from "./song-metadata-relationship-entity-step-repository";
+
 export type SongMetadataRelationshipDependencies = {
   deleteAlbumSongRows: (songId: number) => Promise<void>;
   deleteArtistSongRows: (songId: number) => Promise<void>;
@@ -26,16 +28,11 @@ export const ensureSongMetadataArtist = async (
     SongMetadataRelationshipDependencies,
     "findArtistIdByName" | "insertArtist"
   >,
-) => {
-  const cleanName = name.trim();
-  const existingId = await dependencies.findArtistIdByName(cleanName);
-
-  if (existingId !== null) {
-    return existingId;
-  }
-
-  return dependencies.insertArtist(cleanName);
-};
+) =>
+  ensureSongMetadataRelationshipEntity(name, {
+    findIdByName: dependencies.findArtistIdByName,
+    insert: dependencies.insertArtist,
+  });
 
 export const ensureSongMetadataAlbum = async (
   name: string,
@@ -43,16 +40,11 @@ export const ensureSongMetadataAlbum = async (
     SongMetadataRelationshipDependencies,
     "findAlbumIdByName" | "insertAlbum"
   >,
-) => {
-  const cleanName = name.trim();
-  const existingId = await dependencies.findAlbumIdByName(cleanName);
-
-  if (existingId !== null) {
-    return existingId;
-  }
-
-  return dependencies.insertAlbum(cleanName);
-};
+) =>
+  ensureSongMetadataRelationshipEntity(name, {
+    findIdByName: dependencies.findAlbumIdByName,
+    insert: dependencies.insertAlbum,
+  });
 
 export const ensureSongMetadataAlbumArtistLinks = async (
   {

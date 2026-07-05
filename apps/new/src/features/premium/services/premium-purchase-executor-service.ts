@@ -6,7 +6,6 @@ import type {
 } from "../types/premium-purchase";
 import {
   hydratePremiumTierPrices,
-  premiumOfferingNames,
 } from "./premium-catalog-service";
 import {
   getPremiumEntitlementStatusResult,
@@ -14,26 +13,21 @@ import {
   getPremiumRestoreResult,
   type PremiumCustomerInfo,
 } from "./premium-entitlement-result-service";
+import {
+  getPremiumPackageForTier,
+  getPremiumPriceString,
+  type PremiumOfferingsResult,
+  type PremiumPurchasePackage,
+} from "./premium-purchase-package-service";
 
 export type { PremiumCustomerInfo } from "./premium-entitlement-result-service";
-
-export type PremiumPurchasePackage = {
-  product: {
-    priceString?: string | null;
-  };
-};
+export type {
+  PremiumOfferingsResult,
+  PremiumPurchasePackage,
+} from "./premium-purchase-package-service";
 
 export type PremiumPurchaseExecutorDependencies = {
-  getOfferings: () => Promise<{
-    all: Partial<
-      Record<
-        string,
-        {
-          availablePackages: PremiumPurchasePackage[];
-        }
-      >
-    >;
-  }>;
+  getOfferings: () => Promise<PremiumOfferingsResult>;
   getCustomerInfo: () => Promise<PremiumCustomerInfo>;
   purchasePackage: (
     purchasePackage: PremiumPurchasePackage,
@@ -46,14 +40,7 @@ const getPackageForTierWithDependencies = async (
   dependencies: PremiumPurchaseExecutorDependencies,
 ) => {
   const offerings = await dependencies.getOfferings();
-  const premiumOffering = offerings.all[premiumOfferingNames[tierId]];
-  const purchasePackage = premiumOffering?.availablePackages[0];
-
-  if (!purchasePackage) {
-    throw new Error(`${premiumOfferingNames[tierId]} is unavailable.`);
-  }
-
-  return purchasePackage;
+  return getPremiumPackageForTier(tierId, offerings);
 };
 
 export async function loadPremiumTiersWithDependencies(
@@ -62,15 +49,9 @@ export async function loadPremiumTiersWithDependencies(
   const offerings = await dependencies.getOfferings();
 
   return hydratePremiumTierPrices({
-    lifetime:
-      offerings.all[premiumOfferingNames.lifetime]?.availablePackages[0]
-        ?.product.priceString ?? undefined,
-    monthly:
-      offerings.all[premiumOfferingNames.monthly]?.availablePackages[0]?.product
-        .priceString ?? undefined,
-    yearly:
-      offerings.all[premiumOfferingNames.yearly]?.availablePackages[0]?.product
-        .priceString ?? undefined,
+    lifetime: getPremiumPriceString(offerings, "lifetime"),
+    monthly: getPremiumPriceString(offerings, "monthly"),
+    yearly: getPremiumPriceString(offerings, "yearly"),
   });
 }
 

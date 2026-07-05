@@ -1,18 +1,21 @@
 import type {
-  LibraryCollectionDetailSong,
-} from "./library-collection-detail-service";
-import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
-import { getCollectionSongOrderUpdate } from "./library-collection-song-order-service";
-import type {
-  CollectionCommandParams,
+  CollectionSongCommandParams,
+  CollectionSongsCommandParams,
+  DeleteLibraryCollectionCommandParams,
   ExportableLibrarySong,
   LibraryCollectionCommandDependencies,
+  MoveLibraryCollectionSongCommandParams,
 } from "./library-collection-command-dependencies-service";
+import { getCollectionSongOrderUpdate } from "./library-collection-song-order-service";
 
 export type {
   CollectionCommandParams,
+  CollectionSongCommandParams,
+  CollectionSongsCommandParams,
+  DeleteLibraryCollectionCommandParams,
   ExportableLibrarySong,
   LibraryCollectionCommandDependencies,
+  MoveLibraryCollectionSongCommandParams,
 } from "./library-collection-command-dependencies-service";
 
 export const exportLibraryCollectionCommandWithDependencies = (
@@ -21,13 +24,7 @@ export const exportLibraryCollectionCommandWithDependencies = (
 ) => shareLibrarySongs(songs);
 
 export const deleteLibraryCollectionCommandWithDependencies = (
-  {
-    id,
-    kind,
-  }: {
-    id: number;
-    kind: LibraryCollectionDetailKind;
-  },
+  { id, kind }: DeleteLibraryCollectionCommandParams,
   { deleteCollection }: LibraryCollectionCommandDependencies,
 ) => deleteCollection({ id, kind });
 
@@ -38,11 +35,7 @@ export const moveLibraryCollectionSongCommandWithDependencies = (
     kind,
     songId,
     songs,
-  }: CollectionCommandParams & {
-    direction: "down" | "up";
-    songId: number;
-    songs: LibraryCollectionDetailSong[];
-  },
+  }: MoveLibraryCollectionSongCommandParams,
   { updateCollectionSongOrder }: LibraryCollectionCommandDependencies,
 ) => {
   const orderUpdate = getCollectionSongOrderUpdate({
@@ -59,28 +52,16 @@ export const moveLibraryCollectionSongCommandWithDependencies = (
 };
 
 export const removeLibraryCollectionSongCommandWithDependencies = (
-  {
-    collectionId,
-    kind,
-    songId,
-  }: CollectionCommandParams & { songId: number },
+  { collectionId, kind, songId }: CollectionSongCommandParams,
   { removeSongFromCollection }: LibraryCollectionCommandDependencies,
 ) => removeSongFromCollection({ collectionId, kind, songId });
 
 export const addLibraryCollectionSongCommandWithDependencies = (
-  {
-    collectionId,
-    kind,
-    songId,
-  }: CollectionCommandParams & { songId: number },
+  { collectionId, kind, songId }: CollectionSongCommandParams,
   { addSongToCollection }: LibraryCollectionCommandDependencies,
 ) => addSongToCollection({ collectionId, kind, songId });
 
 export const addLibraryCollectionSongsCommandWithDependencies = (
-  {
-    collectionId,
-    kind,
-    songIds,
-  }: CollectionCommandParams & { songIds: number[] },
+  { collectionId, kind, songIds }: CollectionSongsCommandParams,
   { addSongsToCollection }: LibraryCollectionCommandDependencies,
 ) => addSongsToCollection({ collectionId, kind, songIds });

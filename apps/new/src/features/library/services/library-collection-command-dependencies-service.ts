@@ -1,6 +1,9 @@
 import type {
   LibraryCollectionDetailKind,
 } from "./library-collection-kind-service";
+import type {
+  LibraryCollectionDetailSong,
+} from "./library-collection-detail-service";
 
 export type ExportableLibrarySong = {
   id: number;
@@ -13,22 +16,37 @@ export type CollectionCommandParams = {
   kind: LibraryCollectionDetailKind;
 };
 
+export type DeleteLibraryCollectionCommandParams = {
+  id: number;
+  kind: LibraryCollectionDetailKind;
+};
+
+export type MoveLibraryCollectionSongCommandParams =
+  CollectionCommandParams & {
+    direction: "down" | "up";
+    songId: number;
+    songs: LibraryCollectionDetailSong[];
+  };
+
+export type CollectionSongCommandParams = CollectionCommandParams & {
+  songId: number;
+};
+
+export type CollectionSongsCommandParams = CollectionCommandParams & {
+  songIds: number[];
+};
+
 export type LibraryCollectionCommandDependencies = {
-  addSongToCollection: (
-    params: CollectionCommandParams & { songId: number },
+  addSongToCollection: (params: CollectionSongCommandParams) => Promise<void>;
+  addSongsToCollection: (params: CollectionSongsCommandParams) => Promise<void>;
+  deleteCollection: (
+    params: DeleteLibraryCollectionCommandParams,
   ) => Promise<void>;
-  addSongsToCollection: (
-    params: CollectionCommandParams & { songIds: number[] },
-  ) => Promise<void>;
-  deleteCollection: (params: {
-    id: number;
-    kind: LibraryCollectionDetailKind;
-  }) => Promise<void>;
   removeSongFromCollection: (
-    params: CollectionCommandParams & { songId: number },
+    params: CollectionSongCommandParams,
   ) => Promise<void>;
   shareLibrarySongs: (songs: ExportableLibrarySong[]) => Promise<unknown>;
   updateCollectionSongOrder: (
-    params: CollectionCommandParams & { songIds: number[] },
+    params: CollectionSongsCommandParams,
   ) => Promise<void>;
 };

@@ -11,10 +11,13 @@ import {
   getPlaybackNativePlayerResumeLibraryState,
   type PlaybackNativePlayerRegistryState,
 } from "./playback-native-player-state-service";
+import {
+  pausePlaybackNativeActivePlayer,
+  resumePlaybackNativeActivePlayer,
+} from "./playback-native-player-control-service";
 import { removePlaybackNativePlayerSource } from "./playback-native-player-removal-service";
 import {
   getPlaybackNativeLibraryPlaybackTarget,
-  getPlaybackNativePlayerControlTarget,
 } from "./playback-native-player-target-service";
 import { createTrackPlayerStatusListenerRegistry } from "./playback-native-status-listener-service";
 import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
@@ -60,15 +63,11 @@ export const createPlaybackNativePlayerSources = ({
 
   return {
     pauseActive: () => {
-      if (
-        getPlaybackNativePlayerControlTarget(getRegistryState()) === "ad" &&
-        adPlayer
-      ) {
-        adPlayer.pause();
-        return;
-      }
-
-      libraryPlayer?.pause();
+      pausePlaybackNativeActivePlayer({
+        adPlayer,
+        getRegistryState,
+        libraryPlayer,
+      });
     },
     playAd: () => {
       libraryPlayer?.pause();
@@ -114,20 +113,12 @@ export const createPlaybackNativePlayerSources = ({
       libraryPlayer.play();
     },
     resumeActive: () => {
-      if (
-        getPlaybackNativePlayerControlTarget(getRegistryState()) === "ad" &&
-        adPlayer
-      ) {
-        adPlayer.play();
-        return;
-      }
-
-      if (libraryPlayer) {
-        setRegistryState(
-          getPlaybackNativePlayerResumeLibraryState(getRegistryState()),
-        );
-        libraryPlayer.play();
-      }
+      resumePlaybackNativeActivePlayer({
+        adPlayer,
+        getRegistryState,
+        libraryPlayer,
+        setRegistryState,
+      });
     },
     resumeLibrary: () => {
       removeAdPlayer();

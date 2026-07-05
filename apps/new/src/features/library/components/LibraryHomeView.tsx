@@ -1,6 +1,7 @@
 import { ScrollView, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryHomeController } from "../hooks/use-library-home-controller";
+import { getLibraryCollectionPreviewSectionState } from "../services/library-collection-preview-service";
 import { getLibraryHomeHeaderState } from "../services/library-home-header-service";
 import { getLibrarySongPreviewListState } from "../services/library-song-preview-state-service";
 import { LibraryCollectionPreviewSection } from "./LibraryCollectionPreviewSection";
@@ -29,6 +30,11 @@ export function LibraryHomeView({
     activeTrackId,
     songs: songPreview.songs,
   });
+  const collectionPreviewSectionState =
+    getLibraryCollectionPreviewSectionState({
+      collections: collectionPreview.collections,
+      totals: collectionPreview.totals,
+    });
 
   return (
     <ScrollView
@@ -52,9 +58,8 @@ export function LibraryHomeView({
       />
 
       <LibraryCollectionPreviewSection
-        collections={collectionPreview.collections}
         isEmpty={collectionPreview.isEmpty}
-        totals={collectionPreview.totals}
+        sectionState={collectionPreviewSectionState}
       />
 
       <View

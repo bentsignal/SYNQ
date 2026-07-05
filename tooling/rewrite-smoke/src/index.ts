@@ -7607,13 +7607,50 @@ function assertLibraryCollectionPreviewSmoke() {
     body: "Create a playlist, album, or artist once you have songs to organize.",
     title: "No collections yet",
   });
-  assert.deepEqual(getLibraryCollectionPreviewSectionState(), {
+  assert.deepEqual(
+    getLibraryCollectionPreviewSectionState({
+      collections: {
+        albums: [],
+        artists: [],
+        playlists: [],
+      },
+      totals: {
+        albums: 0,
+        artists: 0,
+        playlists: 0,
+      },
+    }),
+    {
+      columns: [
+        {
+          key: "playlists",
+          rows: [],
+          title: "Playlists",
+          total: 0,
+          viewAllHref: "/(tabs)/library/playlists",
+        },
+        {
+          key: "albums",
+          rows: [],
+          title: "Albums",
+          total: 0,
+          viewAllHref: "/(tabs)/library/albums",
+        },
+        {
+          key: "artists",
+          rows: [],
+          title: "Artists",
+          total: 0,
+          viewAllHref: "/(tabs)/library/artists",
+        },
+      ],
     emptyState: {
       body:
         "Create a playlist, album, or artist once you have songs to organize.",
       title: "No collections yet",
     },
-  });
+    },
+  );
 
   const playlists = playlistRowsToPreview({
     getImagePath,
@@ -7750,6 +7787,66 @@ function assertLibraryCollectionPreviewSmoke() {
       {
         collection: playlists[0],
         href: "/(tabs)/library/playlist/2",
+      },
+    ],
+  );
+  assert.deepEqual(
+    getLibraryCollectionPreviewSectionState({
+      collections: {
+        albums,
+        artists,
+        playlists,
+      },
+      totals: {
+        albums: 4,
+        artists: 3,
+        playlists: 2,
+      },
+    }).columns,
+    [
+      {
+        key: "playlists",
+        rows: [
+          {
+            collection: playlists[0],
+            href: "/(tabs)/library/playlist/2",
+          },
+        ],
+        title: "Playlists",
+        total: 2,
+        viewAllHref: "/(tabs)/library/playlists",
+      },
+      {
+        key: "albums",
+        rows: [
+          {
+            collection: albums[0],
+            href: "/(tabs)/library/album/1",
+          },
+          {
+            collection: albums[1],
+            href: "/(tabs)/library/album/2",
+          },
+        ],
+        title: "Albums",
+        total: 4,
+        viewAllHref: "/(tabs)/library/albums",
+      },
+      {
+        key: "artists",
+        rows: [
+          {
+            collection: artists[0],
+            href: "/(tabs)/library/artist/1",
+          },
+          {
+            collection: artists[1],
+            href: "/(tabs)/library/artist/2",
+          },
+        ],
+        title: "Artists",
+        total: 3,
+        viewAllHref: "/(tabs)/library/artists",
       },
     ],
   );

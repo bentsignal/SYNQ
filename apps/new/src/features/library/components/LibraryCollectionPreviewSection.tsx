@@ -1,53 +1,19 @@
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { LibraryCollectionPreview } from "../hooks/use-library-collection-preview-query";
-import { getLibraryCollectionPreviewSectionState } from "../services/library-collection-preview-service";
+import type { LibraryCollectionPreviewSectionState } from "../services/library-collection-preview-service";
 import { LibraryCollectionPreviewColumn } from "./LibraryCollectionPreviewColumn";
 import { LibraryCollectionPreviewEmptyState } from "./LibraryCollectionPreviewEmptyState";
 
 type LibraryCollectionPreviewSectionProps = {
-  collections: {
-    albums: LibraryCollectionPreview[];
-    artists: LibraryCollectionPreview[];
-    playlists: LibraryCollectionPreview[];
-  };
   isEmpty: boolean;
-  totals: {
-    albums: number;
-    artists: number;
-    playlists: number;
-  };
+  sectionState: LibraryCollectionPreviewSectionState;
 };
 
-const sections: {
-  key: keyof LibraryCollectionPreviewSectionProps["collections"];
-  title: string;
-  viewAllHref: "/(tabs)/library/albums" | "/(tabs)/library/artists" | "/(tabs)/library/playlists";
-}[] = [
-  {
-    key: "playlists",
-    title: "Playlists",
-    viewAllHref: "/(tabs)/library/playlists",
-  },
-  {
-    key: "albums",
-    title: "Albums",
-    viewAllHref: "/(tabs)/library/albums",
-  },
-  {
-    key: "artists",
-    title: "Artists",
-    viewAllHref: "/(tabs)/library/artists",
-  },
-];
-
 export function LibraryCollectionPreviewSection({
-  collections,
   isEmpty,
-  totals,
+  sectionState,
 }: LibraryCollectionPreviewSectionProps) {
   const theme = useCustomizationTheme();
-  const sectionState = getLibraryCollectionPreviewSectionState();
 
   return (
     <View className="gap-3">
@@ -70,13 +36,10 @@ export function LibraryCollectionPreviewSection({
         <LibraryCollectionPreviewEmptyState emptyState={sectionState.emptyState} />
       ) : (
         <View className="gap-3">
-          {sections.map((section) => (
+          {sectionState.columns.map((column) => (
             <LibraryCollectionPreviewColumn
-              collections={collections[section.key]}
-              key={section.key}
-              title={section.title}
-              total={totals[section.key]}
-              viewAllHref={section.viewAllHref}
+              column={column}
+              key={column.key}
             />
           ))}
         </View>

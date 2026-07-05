@@ -3,18 +3,11 @@ import {
   type ImportSongEditInvalidReason,
 } from "./import-song-edit-navigation-service";
 import type { ImportSongDraft } from "../types/import-session";
+import { getImportSongDraftForEdit } from "./import-song-edit-draft-selector-service";
 
 export type ImportSongEditInvalidState = ReturnType<
   typeof getImportSongEditInvalidState
 >;
-
-export const getImportSongDraftForEdit = ({
-  songId,
-  songs,
-}: {
-  songId: number;
-  songs: ImportSongDraft[];
-}) => songs.find((draft) => draft.id === songId) ?? null;
 
 export type ImportSongEditScreenState =
   | {

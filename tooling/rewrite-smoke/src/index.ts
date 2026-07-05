@@ -512,9 +512,9 @@ import {
   parseImportTrackInput,
 } from "../../../apps/new/src/features/import/services/import-song-edit-draft-service";
 import {
-  getImportSongDraftForEdit,
   getImportSongEditScreenState,
 } from "../../../apps/new/src/features/import/services/import-song-edit-screen-state-service";
+import { getImportSongDraftForEdit } from "../../../apps/new/src/features/import/services/import-song-edit-draft-selector-service";
 import {
   getImportSongEditInvalidSaveCommand,
   getImportSongEditSaveFailureCommand,

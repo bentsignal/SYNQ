@@ -17,10 +17,15 @@ export type {
   AddCollectionSongsSearchState,
 } from "./add-collection-songs-search-state-service";
 export {
+  getAddableSongRows,
   getAddableSongRowState,
   getAddableSongSelectionState,
   getSelectedAddableSongIds,
   removeSongIdSelection,
   toggleSongIdSelection,
 } from "./add-collection-songs-selection-service";
-export type { AddableSongSelectionState } from "./add-collection-songs-selection-service";
+export type {
+  AddableSongRowModel,
+  AddableSongRowState,
+  AddableSongSelectionState,
+} from "./add-collection-songs-selection-service";

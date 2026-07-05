@@ -7,29 +7,23 @@ import {
 } from "@/src/features/app-shell/components/SongRowParts";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { AddableCollectionSong } from "../hooks/use-addable-collection-songs-query";
-import { getAddableSongRowState } from "../services/add-collection-songs-selection-service";
+import type { AddableSongRowState } from "../services/add-collection-songs-selection-service";
 
 type AddableSongRowProps = {
   onAddSong: (songId: number) => void;
   onToggleSongSelection: (songId: number) => void;
-  savingSongId: number | null;
-  selectedSongIds: Set<number>;
+  rowState: AddableSongRowState;
   song: AddableCollectionSong;
 };
 
 export function AddableSongRow({
   onAddSong,
   onToggleSongSelection,
-  savingSongId,
-  selectedSongIds,
+  rowState,
   song,
 }: AddableSongRowProps) {
   const theme = useCustomizationTheme();
-  const { addLabel, isDisabled, isSelected } = getAddableSongRowState({
-    savingSongId,
-    selectedSongIds,
-    song,
-  });
+  const { addLabel, isDisabled, isSelected } = rowState;
 
   return (
     <SongRowShell theme={theme}>

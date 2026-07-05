@@ -6,6 +6,7 @@ import {
   getAddCollectionSongsFormState,
   getAddCollectionSongsStatusState,
 } from "../services/addable-collection-songs-screen-state-service";
+import { getAddableSongRows } from "../services/add-collection-songs-selection-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import { AddCollectionSongsFormView } from "./AddCollectionSongsFormView";
 
@@ -47,6 +48,11 @@ export function AddCollectionSongsConnectedForm({
     collectionId,
     kind,
   });
+  const rows = getAddableSongRows({
+    savingSongId,
+    selectedSongIds,
+    songs,
+  });
 
   return (
     <AddCollectionSongsFormView
@@ -57,10 +63,8 @@ export function AddCollectionSongsConnectedForm({
       onChangeQuery={onChangeQuery}
       onToggleSongSelection={toggleSongSelection}
       query={query}
-      savingSongId={savingSongId}
-      selectedSongIds={selectedSongIds}
+      rows={rows}
       selectionState={selectionState}
-      songs={songs}
       statusState={statusState}
       updatedLabel={statusState.updatedLabel}
     />

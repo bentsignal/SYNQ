@@ -1,12 +1,14 @@
 import { Link } from "expo-router";
 import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { AddableCollectionSong } from "../services/addable-collection-songs-service";
 import {
   type AddCollectionSongsFormState,
   type AddCollectionSongsStatusState,
 } from "../services/addable-collection-songs-screen-state-service";
-import type { AddableSongSelectionState } from "../services/add-collection-songs-selection-service";
+import type {
+  AddableSongRowModel,
+  AddableSongSelectionState,
+} from "../services/add-collection-songs-selection-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import { AddCollectionSongsHeader } from "./AddCollectionSongsHeader";
 import { AddCollectionSongsSectionHeader } from "./AddCollectionSongsSectionHeader";
@@ -22,10 +24,8 @@ type AddCollectionSongsFormViewProps = {
   onChangeQuery: (query: string) => void;
   onToggleSongSelection: (songId: number) => void;
   query: string;
-  savingSongId: number | null;
-  selectedSongIds: Set<number>;
+  rows: AddableSongRowModel[];
   selectionState: AddableSongSelectionState;
-  songs: AddableCollectionSong[];
   statusState: AddCollectionSongsStatusState;
   updatedLabel: string;
 };
@@ -38,10 +38,8 @@ export function AddCollectionSongsFormView({
   onChangeQuery,
   onToggleSongSelection,
   query,
-  savingSongId,
-  selectedSongIds,
+  rows,
   selectionState,
-  songs,
   statusState,
   updatedLabel,
 }: AddCollectionSongsFormViewProps) {
@@ -69,9 +67,7 @@ export function AddCollectionSongsFormView({
       <AddableSongList
         onAddSong={onAddSong}
         onToggleSongSelection={onToggleSongSelection}
-        selectedSongIds={selectedSongIds}
-        savingSongId={savingSongId}
-        songs={songs}
+        rows={rows}
       />
 
       <AddCollectionSongsStatusPanel

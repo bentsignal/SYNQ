@@ -120,3 +120,27 @@ export const getAddableSongRowState = ({
     isSelected,
   };
 };
+
+export type AddableSongRowState = ReturnType<typeof getAddableSongRowState>;
+
+export const getAddableSongRows = ({
+  savingSongId,
+  selectedSongIds,
+  songs,
+}: {
+  savingSongId: number | null;
+  selectedSongIds: Set<number>;
+  songs: AddableCollectionSong[];
+}) =>
+  songs.map((song) => ({
+    rowState: getAddableSongRowState({
+      savingSongId,
+      selectedSongIds,
+      song,
+    }),
+    song,
+  }));
+
+export type AddableSongRowModel = ReturnType<
+  typeof getAddableSongRows
+>[number];

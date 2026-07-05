@@ -1,27 +1,23 @@
 import { View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { AddableCollectionSong } from "../hooks/use-addable-collection-songs-query";
+import type { AddableSongRowModel } from "../services/add-collection-songs-selection-service";
 import { AddableSongEmptyState } from "./AddableSongEmptyState";
 import { AddableSongRow } from "./AddableSongRow";
 
 type AddableSongListProps = {
   onAddSong: (songId: number) => void;
   onToggleSongSelection: (songId: number) => void;
-  selectedSongIds: Set<number>;
-  savingSongId: number | null;
-  songs: AddableCollectionSong[];
+  rows: AddableSongRowModel[];
 };
 
 export function AddableSongList({
   onAddSong,
   onToggleSongSelection,
-  selectedSongIds,
-  savingSongId,
-  songs,
+  rows,
 }: AddableSongListProps) {
   const theme = useCustomizationTheme();
 
-  if (songs.length === 0) {
+  if (rows.length === 0) {
     return <AddableSongEmptyState />;
   }
 
@@ -30,13 +26,12 @@ export function AddableSongList({
       className="overflow-hidden rounded-lg border"
       style={{ backgroundColor: theme.surface, borderColor: theme.border }}
     >
-      {songs.map((song) => (
+      {rows.map(({ rowState, song }) => (
         <AddableSongRow
           key={song.id}
           onAddSong={onAddSong}
           onToggleSongSelection={onToggleSongSelection}
-          savingSongId={savingSongId}
-          selectedSongIds={selectedSongIds}
+          rowState={rowState}
           song={song}
         />
       ))}

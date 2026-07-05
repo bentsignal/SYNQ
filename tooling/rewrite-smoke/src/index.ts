@@ -562,6 +562,7 @@ import {
 import { rowsToCollectionDetailSongs } from "../../../apps/new/src/features/library/services/library-collection-detail-song-service";
 import {
   getAddCollectionSongsControllerResultState,
+  getAddableSongRows,
   getAddableSongRowState,
   getAddableSongSelectionState,
   getSelectedAddableSongIds,
@@ -7106,6 +7107,42 @@ async function assertLibraryCollectionInteractionSmoke() {
       isSaving: false,
       isSelected: false,
     },
+  );
+  assert.deepEqual(
+    getAddableSongRows({
+      savingSongId: 1,
+      selectedSongIds: new Set([1, 2]),
+      songs: addableSongs,
+    }),
+    [
+      {
+        rowState: {
+          addLabel: "Adding",
+          isDisabled: true,
+          isSaving: true,
+          isSelected: true,
+        },
+        song: addableSongs[0],
+      },
+      {
+        rowState: {
+          addLabel: "Added",
+          isDisabled: true,
+          isSaving: false,
+          isSelected: false,
+        },
+        song: addableSongs[1],
+      },
+      {
+        rowState: {
+          addLabel: "Add",
+          isDisabled: false,
+          isSaving: false,
+          isSelected: false,
+        },
+        song: addableSongs[2],
+      },
+    ],
   );
 }
 

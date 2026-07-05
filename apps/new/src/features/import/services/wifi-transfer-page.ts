@@ -1,7 +1,5 @@
-import {
-  wifiTransferPageScript,
-  wifiTransferPageStyles,
-} from "./wifi-transfer-page-assets-service";
+import { wifiTransferPageScript } from "./wifi-transfer-page-script-service";
+import { wifiTransferPageStyles } from "./wifi-transfer-page-style-service";
 
 export function getWifiTransferPage() {
   return `<!DOCTYPE html>

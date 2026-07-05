@@ -1,13 +1,11 @@
 import type { PlaybackQueueItem } from "../types/playback-state";
 import { createPlaybackNativePlayerSources } from "./playback-native-player-source-service";
+import type {
+  TrackPlayerStatusListener,
+} from "./playback-native-player-source-types-service";
 import {
   initialPlaybackNativePlayerRegistryState,
 } from "./playback-native-player-state-service";
-import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
-
-type TrackPlayerStatusListener = (
-  status: TrackPlayerStatusSnapshot,
-) => void;
 
 export const createPlaybackNativePlayerRegistry = () => {
   let registryState = initialPlaybackNativePlayerRegistryState();

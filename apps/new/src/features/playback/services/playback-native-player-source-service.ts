@@ -1,6 +1,5 @@
 import type { AudioPlayer } from "expo-audio";
 import type { PlaybackQueueItem } from "../types/playback-state";
-import type { PlaybackNativePlayerRegistryState } from "./playback-native-player-state-service";
 import {
   pausePlaybackNativeActivePlayer,
   resumePlaybackNativeActivePlayer,
@@ -11,17 +10,16 @@ import {
   playPlaybackNativeAdSource,
   playPlaybackNativeLibrarySource,
 } from "./playback-native-player-play-service";
+import type {
+  PlaybackNativePlayerSourceParams,
+  TrackPlayerStatusListener,
+} from "./playback-native-player-source-types-service";
 import { createTrackPlayerStatusListenerRegistry } from "./playback-native-status-listener-service";
-import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
 
-type TrackPlayerStatusListener = (
-  status: TrackPlayerStatusSnapshot,
-) => void;
-
-type PlaybackNativePlayerSourceParams = {
-  getRegistryState: () => PlaybackNativePlayerRegistryState;
-  setRegistryState: (state: PlaybackNativePlayerRegistryState) => void;
-};
+export type {
+  PlaybackNativePlayerSourceParams,
+  TrackPlayerStatusListener,
+} from "./playback-native-player-source-types-service";
 
 export const createPlaybackNativePlayerSources = ({
   getRegistryState,

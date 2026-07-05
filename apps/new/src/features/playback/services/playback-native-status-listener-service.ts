@@ -5,14 +5,12 @@ import {
 import {
   audioStatusToTrackPlayerSnapshot,
   type TrackPlayerSource,
-  type TrackPlayerStatusSnapshot,
 } from "./playback-native-status-service";
+import type {
+  TrackPlayerStatusListener,
+} from "./playback-native-player-source-types-service";
 
 type AudioPlayerSubscription = ReturnType<AudioPlayer["addListener"]>;
-
-type TrackPlayerStatusListener = (
-  status: TrackPlayerStatusSnapshot,
-) => void;
 
 export const createTrackPlayerStatusListenerRegistry = ({
   getLoadedSongId,

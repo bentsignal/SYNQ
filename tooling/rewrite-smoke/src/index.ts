@@ -357,9 +357,9 @@ import {
   getImportFilesViewState,
 } from "../../../apps/new/src/features/import/services/import-files-view-state-service";
 import {
-  getImportHomeRouteSelectCommand,
   getImportHomeState,
 } from "../../../apps/new/src/features/import/services/import-home-screen-state-service";
+import { getImportHomeRouteSelectCommand } from "../../../apps/new/src/features/import/services/import-home-action-state-service";
 import {
   getImportPremiumGateActionCommand,
   getImportPremiumGateState,

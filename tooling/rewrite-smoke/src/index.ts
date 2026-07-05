@@ -958,6 +958,9 @@ import {
 } from "../../../apps/new/src/features/library/repository/album-create-executor-repository";
 import {
   createArtistWithDependencies,
+  type ArtistCreateDependencies,
+} from "../../../apps/new/src/features/library/repository/artist-create-executor-repository";
+import {
   createPlaylistWithDependencies,
   type CollectionCreateDependencies,
 } from "../../../apps/new/src/features/library/repository/collection-create-executor-repository";
@@ -973,8 +976,10 @@ import {
 } from "../../../apps/new/src/features/library/repository/album-update-executor-repository";
 import {
   updateArtistWithDependencies,
-  updatePlaylistWithDependencies,
   type ArtistUpdateDependencies,
+} from "../../../apps/new/src/features/library/repository/artist-update-executor-repository";
+import {
+  updatePlaylistWithDependencies,
   type PlaylistUpdateDependencies,
 } from "../../../apps/new/src/features/library/repository/collection-update-executor-repository";
 import {

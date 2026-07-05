@@ -1,13 +1,16 @@
 import {
   assertCanUpdatePlaylist,
   getOptionalCollectionCoverUpdate,
-  getOptionalCollectionProfileImageUpdate,
   getUniqueCollectionUpdateName,
 } from "./collection-update-step-repository";
 import {
   updateAlbumWithDependencies,
   type AlbumUpdateDependencies,
 } from "./album-update-executor-repository";
+import {
+  updateArtistWithDependencies,
+  type ArtistUpdateDependencies,
+} from "./artist-update-executor-repository";
 
 type CollectionUpdateBaseDependencies = {
   assertUniqueCollectionName: (params: {
@@ -18,14 +21,6 @@ type CollectionUpdateBaseDependencies = {
   saveCoverImage: (coverImage?: string | null) => Promise<string | null>;
 };
 
-export type ArtistUpdateDependencies = CollectionUpdateBaseDependencies & {
-  updateArtistRow: (params: {
-    id: number;
-    name: string;
-    profileImage?: string | null;
-  }) => Promise<void>;
-};
-
 export type PlaylistUpdateDependencies = CollectionUpdateBaseDependencies & {
   isProtectedPlaylistId: (id: number) => boolean;
   updatePlaylistRow: (params: {
@@ -34,40 +29,6 @@ export type PlaylistUpdateDependencies = CollectionUpdateBaseDependencies & {
     name: string;
   }) => Promise<void>;
 };
-
-export async function updateArtistWithDependencies(
-  {
-    id,
-    name,
-    profileImage,
-  }: {
-    id: number;
-    name: string;
-    profileImage?: string | null;
-  },
-  dependencies: ArtistUpdateDependencies,
-) {
-  const cleanName = await getUniqueCollectionUpdateName({
-    dependencies,
-    id,
-    kind: "artist",
-    name,
-  });
-
-  await dependencies.updateArtistRow({
-    ...(await getOptionalCollectionProfileImageUpdate({
-      dependencies,
-      profileImage,
-    })),
-    id,
-    name: cleanName,
-  });
-
-  return {
-    id,
-    name: cleanName,
-  };
-}
 
 export async function updatePlaylistWithDependencies(
   {
@@ -105,4 +66,9 @@ export async function updatePlaylistWithDependencies(
   };
 }
 
-export { updateAlbumWithDependencies, type AlbumUpdateDependencies };
+export {
+  updateAlbumWithDependencies,
+  type AlbumUpdateDependencies,
+  updateArtistWithDependencies,
+  type ArtistUpdateDependencies,
+};

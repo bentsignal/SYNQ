@@ -5,7 +5,7 @@ import { saveCoverImage } from "@/src/features/images/services/image-storage-ser
 import { assertUniqueCollectionName } from "./collection-uniqueness-repository";
 import {
   updateArtistWithDependencies,
-} from "./collection-update-executor-repository";
+} from "./artist-update-executor-repository";
 
 export async function updateArtist({
   id,

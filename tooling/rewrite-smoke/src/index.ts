@@ -973,8 +973,10 @@ import {
 } from "../../../apps/new/src/features/library/services/collection-form-navigation-service";
 import {
   createCollectionFromForm,
+} from "../../../apps/new/src/features/library/services/create-collection-form-mutation-service";
+import {
   updateCollectionFromForm,
-} from "../../../apps/new/src/features/library/services/collection-form-mutation-service";
+} from "../../../apps/new/src/features/library/services/update-collection-form-mutation-service";
 import {
   type CollectionFormCreateRepository,
   type CollectionFormUpdateRepository,

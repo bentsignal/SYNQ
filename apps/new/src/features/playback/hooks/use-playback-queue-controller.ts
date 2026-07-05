@@ -14,8 +14,10 @@ export function usePlaybackQueueController() {
   );
   const state = usePlaybackSessionSelector((store) => store.state);
   const adBreakActive = state.adGate.active || state.adGate.due;
-  const { actionState, screenState } = getPlaybackQueueViewState({
-    queueLength: state.queue.length,
+  const { actionState, rows, screenState } = getPlaybackQueueViewState({
+    activeTrackId: activeTrack?.id ?? null,
+    adBreakActive,
+    queue: state.queue,
   });
   const {
     clearQueuedSongs,
@@ -37,6 +39,7 @@ export function usePlaybackQueueController() {
     moveQueuedSong,
     playQueuedSong,
     removeQueuedSong,
+    rows,
     screenState,
     state,
   };

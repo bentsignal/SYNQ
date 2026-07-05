@@ -7,6 +7,7 @@ import type {
   PlaybackState,
 } from "../types/playback-state";
 import { getPlaybackQueueActionState } from "./playback-queue-action-state-service";
+import { getPlaybackQueueRowPresentation } from "./playback-queue-row-service";
 
 export type PlaybackHref = "/player" | "/premium" | "/queue";
 
@@ -47,11 +48,25 @@ export const getPlaybackQueueScreenState = () => ({
 });
 
 export const getPlaybackQueueViewState = ({
-  queueLength,
+  activeTrackId,
+  adBreakActive,
+  queue,
 }: {
-  queueLength: number;
+  activeTrackId: number | null;
+  adBreakActive: boolean;
+  queue: PlaybackQueueItem[];
 }) => ({
-  actionState: getPlaybackQueueActionState({ queueLength }),
+  actionState: getPlaybackQueueActionState({ queueLength: queue.length }),
+  rows: queue.map((song, index) => ({
+    rowState: getPlaybackQueueRowPresentation({
+      activeTrackId,
+      adBreakActive,
+      index,
+      queueLength: queue.length,
+      song,
+    }),
+    song,
+  })),
   screenState: getPlaybackQueueScreenState(),
 });
 

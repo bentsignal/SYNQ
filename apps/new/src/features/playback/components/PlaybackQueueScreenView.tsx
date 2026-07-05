@@ -9,14 +9,13 @@ type PlaybackQueueScreenViewProps = PlaybackQueueController;
 
 export function PlaybackQueueScreenView({
   actionState,
-  activeTrack,
   adBreakActive,
   clearQueuedSongs,
   moveQueuedSong,
   playQueuedSong,
   removeQueuedSong,
+  rows,
   screenState,
-  state,
 }: PlaybackQueueScreenViewProps) {
   const theme = useCustomizationTheme();
 
@@ -52,13 +51,11 @@ export function PlaybackQueueScreenView({
       ) : null}
 
       <PlaybackQueueList
-        activeTrackId={activeTrack?.id ?? null}
-        adBreakActive={adBreakActive}
         emptyState={screenState.emptyState}
         onMoveSong={moveQueuedSong}
         onPlaySong={playQueuedSong}
         onRemoveSong={removeQueuedSong}
-        songs={state.queue}
+        rows={rows}
       />
 
       <View className="flex-row flex-wrap items-center gap-3">

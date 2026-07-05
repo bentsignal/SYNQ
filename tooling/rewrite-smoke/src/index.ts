@@ -2806,18 +2806,52 @@ function assertPlaybackPlayerStateSmoke() {
       title: "Now Playing",
     },
   });
-  assert.deepEqual(getPlaybackQueueViewState({ queueLength: 0 }), {
-    actionState: {
-      canClearQueue: false,
+  assert.deepEqual(
+    getPlaybackQueueViewState({
+      activeTrackId: null,
+      adBreakActive: false,
+      queue: [],
+    }),
+    {
+      actionState: {
+        canClearQueue: false,
+      },
+      rows: [],
+      screenState: getPlaybackQueueScreenState(),
     },
-    screenState: getPlaybackQueueScreenState(),
-  });
-  assert.deepEqual(getPlaybackQueueViewState({ queueLength: 2 }), {
-    actionState: {
-      canClearQueue: true,
+  );
+  assert.deepEqual(
+    getPlaybackQueueViewState({
+      activeTrackId: activeTrack.id,
+      adBreakActive: true,
+      queue: [activeTrack],
+    }),
+    {
+      actionState: {
+        canClearQueue: true,
+      },
+      rows: [
+        {
+          rowState: {
+            canMoveDown: false,
+            canMoveUp: false,
+            canPlay: false,
+            durationLabel: "3:00",
+            indexLabel: "1",
+            isActive: true,
+            metadataLabel: "Smoke Artist / Smoke Album",
+            moveDownAccessibilityLabel: "Move Mini Track down",
+            moveDownLabel: "Down",
+            moveUpAccessibilityLabel: "Move Mini Track up",
+            moveUpLabel: "Up",
+            removeLabel: "Remove",
+          },
+          song: activeTrack,
+        },
+      ],
+      screenState: getPlaybackQueueScreenState(),
     },
-    screenState: getPlaybackQueueScreenState(),
-  });
+  );
   assert.deepEqual(
     getPlaybackAdBreakPanelState({
       state: {

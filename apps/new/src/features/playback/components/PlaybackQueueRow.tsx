@@ -1,38 +1,25 @@
 import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getPlaybackQueueRowPresentation } from "../services/playback-queue-row-service";
+import type { PlaybackQueueRowPresentation } from "../services/playback-queue-row-service";
 import type { PlaybackQueueItem } from "../types/playback-state";
 import { PlaybackQueueRowActions } from "./PlaybackQueueRowActions";
 
 type PlaybackQueueRowProps = {
-  activeTrackId: number | null;
-  adBreakActive: boolean;
-  index: number;
   onMoveSong: (songId: number, direction: "down" | "up") => void;
   onPlaySong: (song: PlaybackQueueItem) => void;
   onRemoveSong: (songId: number) => void;
-  queueLength: number;
+  rowState: PlaybackQueueRowPresentation;
   song: PlaybackQueueItem;
 };
 
 export function PlaybackQueueRow({
-  activeTrackId,
-  adBreakActive,
-  index,
   onMoveSong,
   onPlaySong,
   onRemoveSong,
-  queueLength,
+  rowState,
   song,
 }: PlaybackQueueRowProps) {
   const theme = useCustomizationTheme();
-  const rowState = getPlaybackQueueRowPresentation({
-    activeTrackId,
-    adBreakActive,
-    index,
-    queueLength,
-    song,
-  });
 
   return (
     <View

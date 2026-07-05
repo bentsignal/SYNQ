@@ -1,4 +1,3 @@
-import type { AudioPlayer } from "expo-audio";
 import type { PlaybackQueueItem } from "../types/playback-state";
 import { setPlaybackNativePlayerStatusListener } from "./playback-native-player-listener-command-service";
 import { createPlaybackNativePlayerControlCommands } from "./playback-native-player-control-command-service";
@@ -11,6 +10,7 @@ import type {
   PlaybackNativePlayerSourceParams,
   TrackPlayerStatusListener,
 } from "./playback-native-player-source-types-service";
+import { createPlaybackNativePlayerRefs } from "./playback-native-player-ref-service";
 import { createTrackPlayerStatusListenerRegistry } from "./playback-native-status-listener-service";
 
 export type {
@@ -22,31 +22,23 @@ export const createPlaybackNativePlayerSources = ({
   getRegistryState,
   setRegistryState,
 }: PlaybackNativePlayerSourceParams) => {
-  let adPlayer: AudioPlayer | null = null;
-  let libraryPlayer: AudioPlayer | null = null;
+  const playerRefs = createPlaybackNativePlayerRefs();
   const statusListeners = createTrackPlayerStatusListenerRegistry({
     getLoadedSongId: () => getRegistryState().loadedSongId,
   });
 
   const { removeAdPlayer, removeLibraryPlayer } =
     createPlaybackNativePlayerSourceRemovers({
-      getPlayer: (source) => (source === "ad" ? adPlayer : libraryPlayer),
+      getPlayer: playerRefs.getPlayer,
       getRegistryState,
-      setPlayer: (source, player) => {
-        if (source === "ad") {
-          adPlayer = player;
-          return;
-        }
-
-        libraryPlayer = player;
-      },
+      setPlayer: playerRefs.setPlayer,
       setRegistryState,
       statusListeners,
     });
 
   const controlCommands = createPlaybackNativePlayerControlCommands({
-    getAdPlayer: () => adPlayer,
-    getLibraryPlayer: () => libraryPlayer,
+    getAdPlayer: playerRefs.getAdPlayer,
+    getLibraryPlayer: playerRefs.getLibraryPlayer,
     getRegistryState,
     removeAdPlayer,
     removeLibraryPlayer,
@@ -56,32 +48,36 @@ export const createPlaybackNativePlayerSources = ({
   return {
     pauseActive: controlCommands.pauseActive,
     playAd: () => {
-      adPlayer = playPlaybackNativeAdSource({
-        getRegistryState,
-        libraryPlayer,
-        removeAdPlayer,
-        setRegistryState,
-        statusListeners,
-      });
+      playerRefs.setAdPlayer(
+        playPlaybackNativeAdSource({
+          getRegistryState,
+          libraryPlayer: playerRefs.getLibraryPlayer(),
+          removeAdPlayer,
+          setRegistryState,
+          statusListeners,
+        }),
+      );
     },
     playLibrarySong: async (song: PlaybackQueueItem) => {
-      libraryPlayer = await playPlaybackNativeLibrarySource({
-        getRegistryState,
-        libraryPlayer,
-        removeAdPlayer,
-        removeLibraryPlayer,
-        setRegistryState,
-        song,
-        statusListeners,
-      });
+      playerRefs.setLibraryPlayer(
+        await playPlaybackNativeLibrarySource({
+          getRegistryState,
+          libraryPlayer: playerRefs.getLibraryPlayer(),
+          removeAdPlayer,
+          removeLibraryPlayer,
+          setRegistryState,
+          song,
+          statusListeners,
+        }),
+      );
     },
     resumeActive: controlCommands.resumeActive,
     resumeLibrary: controlCommands.resumeLibrary,
     seekLibraryTo: controlCommands.seekLibraryTo,
     setStatusListener: (listener: TrackPlayerStatusListener | null) => {
       setPlaybackNativePlayerStatusListener({
-        adPlayer,
-        libraryPlayer,
+        adPlayer: playerRefs.getAdPlayer(),
+        libraryPlayer: playerRefs.getLibraryPlayer(),
         listener,
         statusListeners,
       });

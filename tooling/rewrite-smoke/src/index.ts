@@ -223,6 +223,9 @@ import {
   initialPlaybackNativePlayerRegistryState,
 } from "../../../apps/new/src/features/playback/services/playback-native-player-state-service";
 import {
+  createPlaybackNativePlayerRefs,
+} from "../../../apps/new/src/features/playback/services/playback-native-player-ref-service";
+import {
   getPlaybackNativeLibraryPlaybackTarget,
   getPlaybackNativePlayerControlTarget,
 } from "../../../apps/new/src/features/playback/services/playback-native-player-target-service";
@@ -2913,6 +2916,23 @@ function assertPlaybackNativeStatusSmoke() {
 
 function assertPlaybackNativePlayerStateSmoke() {
   const emptyState = initialPlaybackNativePlayerRegistryState();
+  const adPlayerRef = { id: "ad" } as never;
+  const libraryPlayerRef = { id: "library" } as never;
+  const playerRefs = createPlaybackNativePlayerRefs();
+  assert.equal(playerRefs.getAdPlayer(), null);
+  assert.equal(playerRefs.getLibraryPlayer(), null);
+  assert.equal(playerRefs.getPlayer("ad"), null);
+  assert.equal(playerRefs.getPlayer("library"), null);
+  playerRefs.setAdPlayer(adPlayerRef);
+  playerRefs.setLibraryPlayer(libraryPlayerRef);
+  assert.equal(playerRefs.getAdPlayer(), adPlayerRef);
+  assert.equal(playerRefs.getLibraryPlayer(), libraryPlayerRef);
+  assert.equal(playerRefs.getPlayer("ad"), adPlayerRef);
+  assert.equal(playerRefs.getPlayer("library"), libraryPlayerRef);
+  playerRefs.setPlayer("ad", null);
+  playerRefs.setPlayer("library", null);
+  assert.equal(playerRefs.getAdPlayer(), null);
+  assert.equal(playerRefs.getLibraryPlayer(), null);
   assert.deepEqual(emptyState, {
     activeSource: null,
     loadedSongId: null,

@@ -5,19 +5,10 @@ import {
   initialLibraryCollectionListControlState,
   libraryCollectionListControlReducer,
 } from "../services/library-collection-list-control-state-service";
-import {
-  getLibraryCollectionListErrors,
-  getLibraryCollectionListState,
-} from "../services/library-collection-list-service";
 import { addLibraryCollectionSongCommand } from "../services/library-collection-command-service";
 import {
-  getSongAddToPlaylistCopy,
-  getSelectableSongPlaylists,
   getSongAddToPlaylistFailureCommand,
-  getSongAddToPlaylistHeaderState,
-  getSongAddToPlaylistRowState,
-  getSongAddToPlaylistStatusLabel,
-  getSongAddToPlaylistStatusState,
+  getSongAddToPlaylistControllerViewState,
   getSongAddToPlaylistSuccessCommand,
   initialSongAddToPlaylistMutationState,
   type SongAddToPlaylistMutationState,
@@ -39,35 +30,18 @@ export function useSongAddToPlaylistController({ songId }: { songId: number }) {
     limit: null,
   });
 
-  const playlists = useMemo(
-    () => getSelectableSongPlaylists(collections),
-    [collections],
+  const viewState = useMemo(
+    () =>
+      getSongAddToPlaylistControllerViewState({
+        collections,
+        error,
+        mutationState,
+        query: controls.query,
+        songId,
+        updatedAt,
+      }),
+    [collections, controls.query, error, mutationState, songId, updatedAt],
   );
-  const listState = getLibraryCollectionListState({
-    collections: playlists,
-    emptyLabel: "No playlists available",
-    errors: getLibraryCollectionListErrors(error),
-    query: controls.query,
-    updatedAt,
-  });
-  const statusLabel = getSongAddToPlaylistStatusLabel({
-    mutationState,
-    playlistCount: playlists.length,
-    updatedAt,
-  });
-  const rowStates = listState.visibleCollections.map((playlist) =>
-    getSongAddToPlaylistRowState({
-      mutationState,
-      playlist,
-    }),
-  );
-  const statusState = getSongAddToPlaylistStatusState({
-    hasListErrors: listState.hasErrors,
-    listStatusLabel: listState.statusLabel,
-    mutationState,
-    statusLabel,
-  });
-  const copy = getSongAddToPlaylistCopy();
 
   const setQuery = (query: string) => {
     dispatchControls(getLibraryCollectionListSetQueryAction(query));
@@ -107,13 +81,8 @@ export function useSongAddToPlaylistController({ songId }: { songId: number }) {
 
   return {
     addToPlaylist,
-    copy,
-    headerState: getSongAddToPlaylistHeaderState({ songId }),
-    listState,
-    mutationState,
+    ...viewState,
     query: controls.query,
-    rowStates,
     setQuery,
-    statusState,
   };
 }

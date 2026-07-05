@@ -960,6 +960,7 @@ import {
 import {
   getSelectableSongPlaylists,
   getSongAddToPlaylistBackLink,
+  getSongAddToPlaylistControllerViewState,
   getSongAddToPlaylistHeaderState,
   getSongAddToPlaylistRowState,
   getSongAddToPlaylistStatusLabel,
@@ -9027,6 +9028,46 @@ async function assertLibrarySongDetailSmoke() {
     }),
     "Added to playlist",
   );
+  const addToPlaylistControllerState = getSongAddToPlaylistControllerViewState({
+    collections: [
+      {
+        detail: "2 songs",
+        id: 1,
+        imagePath: null,
+        kind: "playlists",
+        meta: "Playlist",
+        title: "System",
+      },
+      {
+        detail: "3 songs",
+        id: 7,
+        imagePath: null,
+        kind: "playlists",
+        meta: "Playlist",
+        title: "Road Trip",
+      },
+    ],
+    error: null,
+    mutationState: {
+      error: null,
+      pendingPlaylistId: null,
+      successPlaylistId: 7,
+    },
+    query: "road",
+    songId: 42,
+    updatedAt: 1_000,
+  });
+  assert.equal(addToPlaylistControllerState.copy.placeholder, "Search playlists");
+  assert.equal(
+    addToPlaylistControllerState.headerState.backLink.href,
+    "/(tabs)/library/song/42",
+  );
+  assert.equal(
+    addToPlaylistControllerState.listState.visibleCollections.length,
+    1,
+  );
+  assert.equal(addToPlaylistControllerState.rowStates[0]?.isAdded, true);
+  assert.equal(addToPlaylistControllerState.statusState.label, "Added to playlist");
   assert.equal(getLibrarySongDeleteSuccessHref(), "/(tabs)/library");
   assert.deepEqual(getLibrarySongDeleteConfirmationCopy(detail), {
     body: "Delete Alpha?",

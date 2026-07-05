@@ -973,6 +973,7 @@ import {
   getSongAddToPlaylistStatusState,
   initialSongAddToPlaylistMutationState,
 } from "../../../apps/new/src/features/library/services/song-add-to-playlist-service";
+import { runSongAddToPlaylistCommand } from "../../../apps/new/src/features/library/services/song-add-to-playlist-command-flow-service";
 import {
   getLibrarySongPlaybackBlockedCommand,
   getLibrarySongPlayCommand,
@@ -9164,6 +9165,58 @@ async function assertLibrarySongDetailSmoke() {
   );
   assert.equal(addToPlaylistControllerState.rowStates[0]?.isAdded, true);
   assert.equal(addToPlaylistControllerState.statusState.label, "Added to playlist");
+  const addToPlaylistEvents: unknown[] = [];
+  await runSongAddToPlaylistCommand({
+    addLibraryCollectionSong: async ({ collectionId, kind, songId }) => {
+      addToPlaylistEvents.push(["add", collectionId, kind, songId]);
+    },
+    playlistId: 7,
+    sendHaptic: (haptic) => {
+      addToPlaylistEvents.push(["haptic", haptic]);
+    },
+    setMutationState: (state) => {
+      addToPlaylistEvents.push(["state", state]);
+    },
+    songId: 42,
+  });
+  await runSongAddToPlaylistCommand({
+    addLibraryCollectionSong: async () => {
+      throw new Error("playlist failed");
+    },
+    playlistId: 8,
+    sendHaptic: (haptic) => {
+      addToPlaylistEvents.push(["haptic", haptic]);
+    },
+    setMutationState: (state) => {
+      addToPlaylistEvents.push(["state", state]);
+    },
+    songId: 42,
+  });
+  assert.deepEqual(addToPlaylistEvents, [
+    [
+      "state",
+      { error: null, pendingPlaylistId: 7, successPlaylistId: null },
+    ],
+    ["add", 7, "playlist", 42],
+    ["haptic", "success"],
+    [
+      "state",
+      { error: null, pendingPlaylistId: null, successPlaylistId: 7 },
+    ],
+    [
+      "state",
+      { error: null, pendingPlaylistId: 8, successPlaylistId: null },
+    ],
+    ["haptic", "error"],
+    [
+      "state",
+      {
+        error: new Error("playlist failed"),
+        pendingPlaylistId: null,
+        successPlaylistId: null,
+      },
+    ],
+  ]);
   assert.equal(getLibrarySongDeleteSuccessHref(), "/(tabs)/library");
   assert.deepEqual(getLibrarySongDeleteConfirmationCopy(detail), {
     body: "Delete Alpha?",

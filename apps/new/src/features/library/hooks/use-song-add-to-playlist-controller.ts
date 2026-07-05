@@ -7,12 +7,11 @@ import {
 } from "../services/library-collection-list-control-state-service";
 import { addLibraryCollectionSongCommand } from "../services/library-collection-command-service";
 import {
-  getSongAddToPlaylistFailureCommand,
   getSongAddToPlaylistControllerViewState,
-  getSongAddToPlaylistSuccessCommand,
   initialSongAddToPlaylistMutationState,
   type SongAddToPlaylistMutationState,
 } from "../services/song-add-to-playlist-service";
+import { runSongAddToPlaylistCommand } from "../services/song-add-to-playlist-command-flow-service";
 import { useLibraryCollectionListQuery } from "./use-library-collection-list-query";
 
 export function useSongAddToPlaylistController({ songId }: { songId: number }) {
@@ -49,32 +48,13 @@ export function useSongAddToPlaylistController({ songId }: { songId: number }) {
 
   const addToPlaylist = useCallback(
     async (playlistId: number) => {
-      setMutationState({
-        error: null,
-        pendingPlaylistId: playlistId,
-        successPlaylistId: null,
+      await runSongAddToPlaylistCommand({
+        addLibraryCollectionSong: addLibraryCollectionSongCommand,
+        playlistId,
+        sendHaptic,
+        setMutationState,
+        songId,
       });
-
-      try {
-        await addLibraryCollectionSongCommand({
-          collectionId: playlistId,
-          kind: "playlist",
-          songId,
-        });
-        sendHaptic(getSongAddToPlaylistSuccessCommand().haptic);
-        setMutationState({
-          error: null,
-          pendingPlaylistId: null,
-          successPlaylistId: playlistId,
-        });
-      } catch (caughtError) {
-        sendHaptic(getSongAddToPlaylistFailureCommand().haptic);
-        setMutationState({
-          error: caughtError,
-          pendingPlaylistId: null,
-          successPlaylistId: null,
-        });
-      }
     },
     [sendHaptic, songId],
   );

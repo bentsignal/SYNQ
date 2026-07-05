@@ -1,6 +1,6 @@
 import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
+import { runAddCollectionSongCommand } from "./add-collection-song-command-flow-service";
 import {
-  runAddCollectionSongCommand,
   runAddCollectionSongsSelectionCommand,
   runAddCollectionSongsToggleSelectionCommand,
 } from "./add-collection-songs-command-flow-service";

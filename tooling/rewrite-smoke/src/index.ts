@@ -732,10 +732,10 @@ import {
 } from "../../../apps/new/src/features/library/services/add-collection-songs-command-state-service";
 import { getAddCollectionSongsMutationErrorMessage } from "../../../apps/new/src/features/library/services/add-collection-songs-error-service";
 import {
-  runAddCollectionSongCommand,
   runAddCollectionSongsSelectionCommand,
   runAddCollectionSongsToggleSelectionCommand,
 } from "../../../apps/new/src/features/library/services/add-collection-songs-command-flow-service";
+import { runAddCollectionSongCommand } from "../../../apps/new/src/features/library/services/add-collection-song-command-flow-service";
 import {
   createAddCollectionSongsCommands,
 } from "../../../apps/new/src/features/library/services/add-collection-songs-controller-command-service";

@@ -3,15 +3,10 @@ import {
   getAddCollectionSongsBlockedCommand,
   getAddCollectionSongsSelectionStartCommand,
   getAddCollectionSongsSelectionSuccessCommand,
-  getAddCollectionSongsSongStartCommand,
-  getAddCollectionSongsSongSuccessCommand,
   getAddCollectionSongsToggleSelectionCommand,
 } from "./add-collection-songs-command-state-service";
 import type { AddableSongSelectionState } from "./add-collection-songs-selection-service";
-import {
-  getAddCollectionSongsFinishSelectionAction,
-  getAddCollectionSongsFinishSongAction,
-} from "./add-collection-songs-action-service";
+import { getAddCollectionSongsFinishSelectionAction } from "./add-collection-songs-action-service";
 import {
   runAddCollectionSongsMutationAttempt,
   type AddCollectionSongsFlowDependencies,
@@ -31,14 +26,6 @@ type AddCollectionSongsSelectionCommandParams =
     }) => Promise<void>;
     selectionState: AddableSongSelectionState;
   };
-
-type AddCollectionSongCommandParams = AddCollectionSongsBaseCommandParams & {
-  addCollectionSong: (params: {
-    collectionId: number;
-    kind: LibraryCollectionDetailKind;
-    songId: number;
-  }) => Promise<void>;
-};
 
 export const runAddCollectionSongsToggleSelectionCommand = ({
   dispatchControllerState,
@@ -79,31 +66,5 @@ export const runAddCollectionSongsSelectionCommand = async ({
     sendHaptic,
     startCommand: getAddCollectionSongsSelectionStartCommand(),
     successCommand: getAddCollectionSongsSelectionSuccessCommand(),
-  });
-};
-
-export const runAddCollectionSongCommand = async ({
-  addCollectionSong,
-  collectionId,
-  dispatchControllerState,
-  kind,
-  sendHaptic,
-  songId,
-}: AddCollectionSongCommandParams & {
-  songId: number;
-}) => {
-  await runAddCollectionSongsMutationAttempt({
-    dispatchControllerState,
-    finishAction: getAddCollectionSongsFinishSongAction(),
-    mutation: "add-song",
-    run: () =>
-      addCollectionSong({
-        collectionId,
-        kind,
-        songId,
-      }),
-    sendHaptic,
-    startCommand: getAddCollectionSongsSongStartCommand(songId),
-    successCommand: getAddCollectionSongsSongSuccessCommand(songId),
   });
 };

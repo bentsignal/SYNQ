@@ -9,7 +9,7 @@ import {
   SongAddToPlaylistHeader,
   SongAddToPlaylistList,
   SongAddToPlaylistStatus,
-} from "./SongAddToPlaylistParts";
+} from "./song-add-to-playlist";
 
 type SongAddToPlaylistViewProps = {
   addToPlaylist: (playlistId: number) => void;

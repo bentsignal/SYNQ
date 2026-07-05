@@ -1,10 +1,10 @@
 import type { HapticFeedbackType } from "./haptic-feedback-service";
 
-type SettingsInteractionCommand = {
+type SettingsHapticCommand = {
   haptic: HapticFeedbackType;
 };
 
-export const getSettingsInteractionCommand = (): SettingsInteractionCommand => ({
+export const getSettingsHapticCommand = (): SettingsHapticCommand => ({
   haptic: "light",
 });
 
@@ -18,7 +18,7 @@ export const getCustomizationHapticsToggleCommand = ({
   hapticsEnabled,
 }: {
   hapticsEnabled: boolean;
-}): SettingsInteractionCommand | null =>
+}): SettingsHapticCommand | null =>
   shouldSendHapticForHapticsToggle({ hapticsEnabled })
-    ? getSettingsInteractionCommand()
+    ? getSettingsHapticCommand()
     : null;

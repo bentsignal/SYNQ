@@ -1,8 +1,8 @@
 import type { HapticFeedbackType } from "./haptic-feedback-service";
 import {
   getCustomizationHapticsToggleCommand,
-  getSettingsInteractionCommand,
-} from "./settings-interaction-service";
+  getSettingsHapticCommand,
+} from "./settings-haptic-command-service";
 
 type HapticSender = (type: HapticFeedbackType) => void;
 
@@ -13,7 +13,7 @@ export const runSettingsInteractionAction = ({
   action: () => unknown;
   sendHaptic: HapticSender;
 }) => {
-  sendHaptic(getSettingsInteractionCommand().haptic);
+  sendHaptic(getSettingsHapticCommand().haptic);
   return action();
 };
 

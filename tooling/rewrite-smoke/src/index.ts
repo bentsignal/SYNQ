@@ -1393,9 +1393,9 @@ import {
 } from "../../../apps/new/src/features/settings/services/settings-error-service";
 import {
   getCustomizationHapticsToggleCommand,
-  getSettingsInteractionCommand,
+  getSettingsHapticCommand,
   shouldSendHapticForHapticsToggle,
-} from "../../../apps/new/src/features/settings/services/settings-interaction-service";
+} from "../../../apps/new/src/features/settings/services/settings-haptic-command-service";
 import {
   runCustomizationHapticsToggleAction,
   runSettingsInteractionAction,
@@ -17921,7 +17921,7 @@ async function assertSettingsScreenSmoke() {
     shouldSendHapticForHapticsToggle({ hapticsEnabled: false }),
     false,
   );
-  assert.deepEqual(getSettingsInteractionCommand(), {
+  assert.deepEqual(getSettingsHapticCommand(), {
     haptic: "light",
   });
   assert.deepEqual(

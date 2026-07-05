@@ -1,9 +1,7 @@
-import { useCallback } from "react";
-import { getRemoteFailurePlaybackCommandPlan } from "../services/playback-command-plan-service";
+import { useMemo } from "react";
 import {
-  handlePlaybackRemoteCommand,
-  type PlaybackRemoteCommand,
-} from "../services/playback-remote-command-service";
+  createPlaybackRemoteCommandHandler,
+} from "../services/playback-remote-command-handler-service";
 import type { PlaybackRunCommandPlan } from "./use-playback-command-runners";
 
 type UsePlaybackRemoteCommandControllerParams = {
@@ -29,33 +27,26 @@ export function usePlaybackRemoteCommandController({
   skipNext,
   skipPrevious,
 }: UsePlaybackRemoteCommandControllerParams) {
-  const failFromRemoteCommand = useCallback((message: string) => {
-    runCommandPlan(getRemoteFailurePlaybackCommandPlan(message));
-  }, [runCommandPlan]);
-
-  return useCallback(
-    (command: PlaybackRemoteCommand) =>
-      handlePlaybackRemoteCommand({
-        command,
-        handlers: {
-          beginAdBreak,
-          canRunPlaybackCommand,
-          fail: failFromRemoteCommand,
-          pause,
-          queueEnded: finishActiveTrack,
-          resume,
-          seekTo,
-          skipNext,
-          skipPrevious,
-        },
+  return useMemo(
+    () =>
+      createPlaybackRemoteCommandHandler({
+        beginAdBreak,
+        canRunPlaybackCommand,
+        finishActiveTrack,
+        pause,
+        resume,
+        runCommandPlan,
+        seekTo,
+        skipNext,
+        skipPrevious,
       }),
     [
       beginAdBreak,
       canRunPlaybackCommand,
-      failFromRemoteCommand,
       finishActiveTrack,
       pause,
       resume,
+      runCommandPlan,
       seekTo,
       skipNext,
       skipPrevious,

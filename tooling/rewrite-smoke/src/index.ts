@@ -217,6 +217,9 @@ import {
   type PlaybackRemoteCommandHandlers,
 } from "../../../apps/new/src/features/playback/services/playback-remote-command-service";
 import {
+  createPlaybackRemoteCommandHandler,
+} from "../../../apps/new/src/features/playback/services/playback-remote-command-handler-service";
+import {
   getClearQueuePlaybackCommandPlan,
   getPausePlaybackCommandPlan,
   getPlaySongPlaybackCommandPlan,
@@ -3185,6 +3188,31 @@ function assertPlaybackNativeCommandPlanSmoke() {
     "handled",
   );
   assert.deepEqual(remoteEvents, ["pause", "fail:Remote smoke failure"]);
+  const assembledRemoteEvents: string[] = [];
+  const assembledRemoteHandler = createPlaybackRemoteCommandHandler({
+    beginAdBreak: () => assembledRemoteEvents.push("ad"),
+    canRunPlaybackCommand: () => true,
+    finishActiveTrack: () => assembledRemoteEvents.push("queue-ended"),
+    pause: () => assembledRemoteEvents.push("pause"),
+    resume: () => assembledRemoteEvents.push("resume"),
+    runCommandPlan: (plan) =>
+      assembledRemoteEvents.push(`plan:${plan.action.type}`),
+    seekTo: (position) => assembledRemoteEvents.push(`seek:${position}`),
+    skipNext: () => assembledRemoteEvents.push("next"),
+    skipPrevious: () => assembledRemoteEvents.push("previous"),
+  });
+  assert.equal(assembledRemoteHandler({ type: "play" }), "handled");
+  assert.equal(
+    assembledRemoteHandler({
+      message: "Assembled remote failure",
+      type: "error",
+    }),
+    "handled",
+  );
+  assert.deepEqual(assembledRemoteEvents, [
+    "resume",
+    "plan:remote-failure",
+  ]);
 
   assert.deepEqual(getPlaySongPlaybackCommandPlan(first), {
     action: {

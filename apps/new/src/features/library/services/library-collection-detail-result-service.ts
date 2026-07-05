@@ -10,9 +10,11 @@ import type {
   PlaylistDetailResultParams,
 } from "./library-collection-detail-result-types-service";
 import {
-  getQueryResultErrors,
-  getQueryResultUpdatedAt,
-} from "./library-query-result-metadata-service";
+  buildLibraryCollectionDetailResult,
+} from "./library-collection-detail-result-builder-service";
+import {
+  getCollectionDetailResultUpdatedAt,
+} from "./library-collection-detail-result-metadata-service";
 
 export type {
   AlbumDetailResultParams,
@@ -21,17 +23,10 @@ export type {
   LibraryCollectionDetailResultMetadataParams,
   PlaylistDetailResultParams,
 } from "./library-collection-detail-result-types-service";
-
-export const getCollectionDetailResultUpdatedAt = (
-  collectionUpdatedAt: Date | null | undefined,
-  songsUpdatedAt: Date | null | undefined,
-) =>
-  getQueryResultUpdatedAt([collectionUpdatedAt, songsUpdatedAt]);
-
-export const getCollectionDetailResultErrors = (
-  collectionError: unknown,
-  songsError: unknown,
-) => getQueryResultErrors([collectionError, songsError]);
+export {
+  getCollectionDetailResultErrors,
+  getCollectionDetailResultUpdatedAt,
+} from "./library-collection-detail-result-metadata-service";
 
 export const buildPlaylistDetailResult = ({
   collectionError,
@@ -41,18 +36,23 @@ export const buildPlaylistDetailResult = ({
   songRows,
   songsError,
   songsUpdatedAt,
-}: PlaylistDetailResultParams): LibraryCollectionDetailResult => ({
-  detail: buildPlaylistDetail({
-    getImagePath,
-    playlistRows,
-    songRows,
-    updatedAt: getCollectionDetailResultUpdatedAt(
-      playlistUpdatedAt,
+}: PlaylistDetailResultParams): LibraryCollectionDetailResult =>
+  buildLibraryCollectionDetailResult({
+    detail: buildPlaylistDetail({
+      getImagePath,
+      playlistRows,
+      songRows,
+      updatedAt: getCollectionDetailResultUpdatedAt(
+        playlistUpdatedAt,
+        songsUpdatedAt,
+      ),
+    }),
+    metadata: {
+      collectionError,
+      songsError,
       songsUpdatedAt,
-    ),
-  }),
-  errors: getCollectionDetailResultErrors(collectionError, songsError),
-});
+    },
+  });
 
 export const buildAlbumDetailResult = ({
   albumRows,
@@ -62,18 +62,23 @@ export const buildAlbumDetailResult = ({
   songRows,
   songsError,
   songsUpdatedAt,
-}: AlbumDetailResultParams): LibraryCollectionDetailResult => ({
-  detail: buildAlbumDetail({
-    albumRows,
-    getImagePath,
-    songRows,
-    updatedAt: getCollectionDetailResultUpdatedAt(
-      albumUpdatedAt,
+}: AlbumDetailResultParams): LibraryCollectionDetailResult =>
+  buildLibraryCollectionDetailResult({
+    detail: buildAlbumDetail({
+      albumRows,
+      getImagePath,
+      songRows,
+      updatedAt: getCollectionDetailResultUpdatedAt(
+        albumUpdatedAt,
+        songsUpdatedAt,
+      ),
+    }),
+    metadata: {
+      collectionError,
+      songsError,
       songsUpdatedAt,
-    ),
-  }),
-  errors: getCollectionDetailResultErrors(collectionError, songsError),
-});
+    },
+  });
 
 export const buildArtistDetailResult = ({
   artistRows,
@@ -83,15 +88,20 @@ export const buildArtistDetailResult = ({
   songRows,
   songsError,
   songsUpdatedAt,
-}: ArtistDetailResultParams): LibraryCollectionDetailResult => ({
-  detail: buildArtistDetail({
-    artistRows,
-    getImagePath,
-    songRows,
-    updatedAt: getCollectionDetailResultUpdatedAt(
-      artistUpdatedAt,
+}: ArtistDetailResultParams): LibraryCollectionDetailResult =>
+  buildLibraryCollectionDetailResult({
+    detail: buildArtistDetail({
+      artistRows,
+      getImagePath,
+      songRows,
+      updatedAt: getCollectionDetailResultUpdatedAt(
+        artistUpdatedAt,
+        songsUpdatedAt,
+      ),
+    }),
+    metadata: {
+      collectionError,
+      songsError,
       songsUpdatedAt,
-    ),
-  }),
-  errors: getCollectionDetailResultErrors(collectionError, songsError),
-});
+    },
+  });

@@ -692,9 +692,11 @@ import {
   getAddableSongRowState,
   getAddableSongSelectionState,
   getSelectedAddableSongIds,
+} from "../../../apps/new/src/features/library/services/add-collection-songs-selection-service";
+import {
   removeSongIdSelection,
   toggleSongIdSelection,
-} from "../../../apps/new/src/features/library/services/add-collection-songs-selection-service";
+} from "../../../apps/new/src/features/library/services/add-collection-songs-selection-mutation-service";
 import {
   addCollectionSongsControllerReducer,
   getAddCollectionSongsFinishSelectionAction,

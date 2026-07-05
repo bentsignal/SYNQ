@@ -1,7 +1,7 @@
 import {
   removeSongIdSelection,
   toggleSongIdSelection,
-} from "./add-collection-songs-selection-service";
+} from "./add-collection-songs-selection-mutation-service";
 
 export type AddCollectionSongsMutationKind = "add-selection" | "add-song";
 

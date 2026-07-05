@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { ImportSaveHeaderState } from "../services/import-save-screen-state-service";
+import type { ImportSaveHeaderState } from "../services/import-save-header-state-service";
 
 type ImportSaveHeaderProps = {
   headerState: ImportSaveHeaderState;

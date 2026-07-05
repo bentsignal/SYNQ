@@ -7,7 +7,7 @@ import { usePremiumEntitlementSelector } from "@/src/features/premium/state/Prem
 import {
   createImportSaveControllerActions,
 } from "../services/import-save-controller-action-service";
-import { getImportSaveViewState } from "../services/import-save-screen-state-service";
+import { getImportSaveViewState } from "../services/import-save-view-state-service";
 
 export function useImportSaveController() {
   const discardSession = useImportSessionSelector(

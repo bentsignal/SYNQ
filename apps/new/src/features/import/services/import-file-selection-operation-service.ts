@@ -2,7 +2,7 @@ import type { ImportSongDraft } from "../types/import-session";
 import type {
   ImportFileSelectionAsset,
   ImportFileSelectionDependencies,
-} from "./import-file-selection-executor-service";
+} from "./import-file-selection-types-service";
 import { getCachedImportFileProcessParams } from "./import-file-selection-step-service";
 
 export const processImportAssetWithDependencies = async <

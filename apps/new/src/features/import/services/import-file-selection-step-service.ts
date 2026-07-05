@@ -1,4 +1,4 @@
-import type { ImportFileSelectionAsset } from "./import-file-selection-executor-service";
+import type { ImportFileSelectionAsset } from "./import-file-selection-types-service";
 
 export const getCachedImportFileProcessParams = <
   Asset extends ImportFileSelectionAsset,

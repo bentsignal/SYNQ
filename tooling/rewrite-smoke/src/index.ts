@@ -154,6 +154,9 @@ import {
   runPlaybackPlayerSeekCommand,
 } from "../../../apps/new/src/features/playback/services/playback-player-command-flow-service";
 import {
+  createPlaybackPlayerCommands,
+} from "../../../apps/new/src/features/playback/services/playback-player-command-service";
+import {
   getPlaybackAdBreakPanelState,
   getPlaybackMiniPlayerState,
   getPlaybackMiniPlayerViewState,
@@ -3386,6 +3389,47 @@ function assertPlaybackPlayerStateSmoke() {
     ["pause"],
     ["haptic", "light"],
     ["resume"],
+  ]);
+  const assembledPlayerCommandEvents: unknown[] = [];
+  const assembledPlayerCommands = createPlaybackPlayerCommands({
+    getState: () => ({
+      duration: 120_000,
+      isPlaying: true,
+      position: 60_000,
+    }),
+    pause: () => assembledPlayerCommandEvents.push(["pause"]),
+    resume: () => assembledPlayerCommandEvents.push(["resume"]),
+    seekTo: (position) => assembledPlayerCommandEvents.push(["seek", position]),
+    sendHaptic: (haptic) => {
+      assembledPlayerCommandEvents.push(["haptic", haptic]);
+    },
+    skipNext: () => assembledPlayerCommandEvents.push(["skip-next"]),
+    skipPrevious: () => assembledPlayerCommandEvents.push(["skip-previous"]),
+    toggleLoop: () => assembledPlayerCommandEvents.push(["toggle-loop"]),
+    toggleShuffle: () => assembledPlayerCommandEvents.push(["toggle-shuffle"]),
+  });
+  assembledPlayerCommands.rewind();
+  assembledPlayerCommands.fastForward();
+  assembledPlayerCommands.skipBack();
+  assembledPlayerCommands.skipForward();
+  assembledPlayerCommands.togglePlayPause();
+  assembledPlayerCommands.toggleLoopMode();
+  assembledPlayerCommands.toggleShuffleMode();
+  assert.deepEqual(assembledPlayerCommandEvents, [
+    ["haptic", "light"],
+    ["seek", 45_000],
+    ["haptic", "light"],
+    ["seek", 75_000],
+    ["haptic", "light"],
+    ["skip-previous"],
+    ["haptic", "light"],
+    ["skip-next"],
+    ["haptic", "soft"],
+    ["pause"],
+    ["haptic", "light"],
+    ["toggle-loop"],
+    ["haptic", "light"],
+    ["toggle-shuffle"],
   ]);
   assert.deepEqual(
     getPlaybackPlayerActionState({

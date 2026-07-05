@@ -394,7 +394,6 @@ import {
   getBeginFilePickAction,
   getBeginWifiTransferAction,
   getFailImportSessionAction,
-  getFinishWifiTransferAction,
   getHydrateImportSessionAction,
   getReceiveWifiSongAction,
   getRemoveImportSongsAction,
@@ -404,6 +403,9 @@ import {
   getUpdateImportSongAction,
   type ImportSessionAction,
 } from "../../../apps/new/src/features/import/services/import-session-action-service";
+import {
+  getFinishWifiTransferAction,
+} from "../../../apps/new/src/features/import/services/import-session-wifi-action-service";
 import {
   importSessionReducer,
 } from "../../../apps/new/src/features/import/services/import-session-state-service";

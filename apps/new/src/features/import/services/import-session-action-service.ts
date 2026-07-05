@@ -87,10 +87,3 @@ export const getUpdateImportSongAction = (
 export const getSavingImportSessionAction = (): ImportSessionAction => ({
   type: "saving",
 });
-
-export const getFinishWifiTransferAction = (
-  songs: ImportSongDraft[],
-): ImportSessionAction =>
-  songs.length > 0
-    ? { songs, type: "review" }
-    : { error: "No Wi-Fi songs were received.", type: "fail" };

@@ -1,6 +1,9 @@
-import { Link, type Href } from "expo-router";
-import { ScrollView, Text, View } from "react-native";
+import type { Href } from "expo-router";
+import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { ImportResultBackLink } from "./ImportResultBackLink";
+import { ImportResultHeader } from "./ImportResultHeader";
+import { ImportResultPanel } from "./ImportResultPanel";
 
 type ImportResultScreenViewProps = {
   backHref: Href;
@@ -33,57 +36,22 @@ export function ImportResultScreenView({
       contentContainerClassName="gap-5 px-5 py-14"
       style={{ backgroundColor: theme.background }}
     >
-      <View className="gap-2">
-        <Text
-          className="text-[13px] font-extrabold uppercase"
-          style={{ color: theme[tone] }}
-        >
-          {kicker}
-        </Text>
-        <Text
-          className="text-[34px] font-extrabold leading-10"
-          style={{ color: theme.primaryText }}
-        >
-          {title}
-        </Text>
-        <Text
-          className="max-w-[520px] text-[15px] leading-[22px]"
-          style={{ color: theme.secondaryText }}
-        >
-          {subtitle}
-        </Text>
-      </View>
+      <ImportResultHeader
+        kicker={kicker}
+        subtitle={subtitle}
+        theme={theme}
+        title={title}
+        tone={tone}
+      />
 
-      <View
-        className="gap-2 rounded-lg border p-4"
-        style={{ backgroundColor: theme.surface, borderColor: theme.border }}
-      >
-        <Text
-          className="text-xs font-extrabold uppercase"
-          style={{ color: theme.secondaryText }}
-        >
-          {panelLabel}
-        </Text>
-        <Text className="text-sm leading-5" style={{ color: theme.primaryText }}>
-          {panelText}
-        </Text>
-        {panelHint ? (
-          <Text
-            className="text-xs leading-[17px]"
-            style={{ color: theme.mutedText }}
-          >
-            {panelHint}
-          </Text>
-        ) : null}
-      </View>
+      <ImportResultPanel
+        panelHint={panelHint}
+        panelLabel={panelLabel}
+        panelText={panelText}
+        theme={theme}
+      />
 
-      <Link
-        className="text-[15px] font-extrabold"
-        href={backHref}
-        style={{ color: theme.accent }}
-      >
-        {backLabel}
-      </Link>
+      <ImportResultBackLink href={backHref} label={backLabel} theme={theme} />
     </ScrollView>
   );
 }

@@ -4,8 +4,8 @@ import type { LibraryCollectionListState } from "../services/library-collection-
 import {
   type getSongAddToPlaylistHeaderState,
   type SongAddToPlaylistRowState,
-  type SongAddToPlaylistStatusState,
 } from "../services/song-add-to-playlist-service";
+import type { SongAddToPlaylistStatusState } from "../services/song-add-to-playlist-status-state-service";
 import { LibraryCollectionListSearch } from "./LibraryCollectionListSearch";
 import {
   SongAddToPlaylistHeader,

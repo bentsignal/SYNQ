@@ -12,6 +12,7 @@ import {
   getSongAddToPlaylistStatusLabel,
   type SongAddToPlaylistMutationState,
 } from "./song-add-to-playlist-mutation-state-service";
+import { getSongAddToPlaylistStatusState } from "./song-add-to-playlist-status-state-service";
 
 export {
   getSongAddToPlaylistErrorMessage,
@@ -21,6 +22,10 @@ export {
   initialSongAddToPlaylistMutationState,
   type SongAddToPlaylistMutationState,
 } from "./song-add-to-playlist-mutation-state-service";
+export {
+  getSongAddToPlaylistStatusState,
+  type SongAddToPlaylistStatusState,
+} from "./song-add-to-playlist-status-state-service";
 
 export const getSongAddToPlaylistBackLink = ({
   songId,
@@ -74,29 +79,6 @@ export const getSongAddToPlaylistRowState = ({
 
 export type SongAddToPlaylistRowState = ReturnType<
   typeof getSongAddToPlaylistRowState
->;
-
-export const getSongAddToPlaylistStatusState = ({
-  hasListErrors,
-  listStatusLabel,
-  mutationState,
-  statusLabel,
-}: {
-  hasListErrors: boolean;
-  listStatusLabel: string;
-  mutationState: SongAddToPlaylistMutationState;
-  statusLabel: string;
-}) => {
-  const hasError = mutationState.error !== null || hasListErrors;
-
-  return {
-    hasError,
-    label: hasListErrors ? listStatusLabel : statusLabel,
-  };
-};
-
-export type SongAddToPlaylistStatusState = ReturnType<
-  typeof getSongAddToPlaylistStatusState
 >;
 
 export const getSongAddToPlaylistControllerViewState = ({

@@ -5,12 +5,12 @@ import {
   resumePlaybackNativeActivePlayer,
   resumePlaybackNativeLibraryPlayer,
 } from "./playback-native-player-control-service";
-import { removePlaybackNativePlayerSource } from "./playback-native-player-removal-service";
 import {
   playPlaybackNativeAdSource,
   playPlaybackNativeLibrarySource,
 } from "./playback-native-player-play-service";
 import { seekPlaybackNativeLibraryPlayer } from "./playback-native-player-seek-service";
+import { createPlaybackNativePlayerSourceRemovers } from "./playback-native-player-source-removal-service";
 import type {
   PlaybackNativePlayerSourceParams,
   TrackPlayerStatusListener,
@@ -32,25 +32,21 @@ export const createPlaybackNativePlayerSources = ({
     getLoadedSongId: () => getRegistryState().loadedSongId,
   });
 
-  const removeAdPlayer = () => {
-    adPlayer = removePlaybackNativePlayerSource({
+  const { removeAdPlayer, removeLibraryPlayer } =
+    createPlaybackNativePlayerSourceRemovers({
+      getPlayer: (source) => (source === "ad" ? adPlayer : libraryPlayer),
       getRegistryState,
-      player: adPlayer,
-      setRegistryState,
-      source: "ad",
-      statusListeners,
-    });
-  };
+      setPlayer: (source, player) => {
+        if (source === "ad") {
+          adPlayer = player;
+          return;
+        }
 
-  const removeLibraryPlayer = () => {
-    libraryPlayer = removePlaybackNativePlayerSource({
-      getRegistryState,
-      player: libraryPlayer,
+        libraryPlayer = player;
+      },
       setRegistryState,
-      source: "library",
       statusListeners,
     });
-  };
 
   return {
     pauseActive: () => {

@@ -143,12 +143,14 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-persistence-domain-service";
 import {
   clearPersistedPlaybackStateWithDependencies,
-  getPlaybackStateDirectoryWithDependencies,
-  getPlaybackStateFileWithDependencies,
   loadPersistedPlaybackStateWithDependencies,
   savePersistedPlaybackStateWithDependencies,
   type PlaybackPersistenceDependencies,
 } from "../../../apps/new/src/features/playback/services/playback-persistence-executor-service";
+import {
+  getPlaybackStateDirectoryWithDependencies,
+  getPlaybackStateFileWithDependencies,
+} from "../../../apps/new/src/features/playback/services/playback-persistence-path-service";
 import {
   runPlaybackHydrateCommand,
   runPlaybackPersistenceCommand,

@@ -3,7 +3,16 @@ import {
   normalizePlaybackState,
   toPersistedPlaybackState,
 } from "./playback-persistence-codec-service";
+import {
+  getPlaybackStateDirectoryWithDependencies,
+  getPlaybackStateFileWithDependencies,
+} from "./playback-persistence-path-service";
 import type { PlaybackState } from "../types/playback-state";
+
+export {
+  getPlaybackStateDirectoryWithDependencies,
+  getPlaybackStateFileWithDependencies,
+} from "./playback-persistence-path-service";
 
 export type PlaybackPersistenceDependencies = {
   deletePath: (
@@ -19,26 +28,6 @@ export type PlaybackPersistenceDependencies = {
   readAsString: (path: string) => Promise<string>;
   writeAsString: (path: string, contents: string) => Promise<void>;
 };
-
-const playbackStateDirectoryName = "playback";
-const playbackStateFileName = "session.json";
-
-export const getPlaybackStateDirectoryWithDependencies = ({
-  documentDirectory,
-}: Pick<PlaybackPersistenceDependencies, "documentDirectory">) => {
-  if (!documentDirectory) {
-    throw new Error("The document directory is not available.");
-  }
-
-  return `${documentDirectory}${playbackStateDirectoryName}`;
-};
-
-export const getPlaybackStateFileWithDependencies = (
-  dependencies: Pick<PlaybackPersistenceDependencies, "documentDirectory">,
-) =>
-  `${getPlaybackStateDirectoryWithDependencies(
-    dependencies,
-  )}/${playbackStateFileName}`;
 
 export async function loadPersistedPlaybackStateWithDependencies(
   dependencies: PlaybackPersistenceDependencies,
@@ -71,7 +60,7 @@ export async function savePersistedPlaybackStateWithDependencies({
     intermediates: true,
   });
   await dependencies.writeAsString(
-    `${playbackStateDirectory}/${playbackStateFileName}`,
+    getPlaybackStateFileWithDependencies(dependencies),
     JSON.stringify(toPersistedPlaybackState(state)),
   );
 }

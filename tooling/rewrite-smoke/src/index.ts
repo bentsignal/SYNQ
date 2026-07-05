@@ -1041,6 +1041,7 @@ import {
   getEditAlbumRowQueryUpdatedAt,
 } from "../../../apps/new/src/features/library/services/edit-collection-query-service";
 import { buildEditCollectionState } from "../../../apps/new/src/features/library/services/edit-collection-state-service";
+import { getEditCollectionImagePath } from "../../../apps/new/src/features/library/services/edit-collection-image-service";
 import {
   getLibraryCollectionCreateHref,
   getLibraryCollectionListBackHref,
@@ -11735,6 +11736,20 @@ function assertEditCollectionQuerySmoke() {
   assert.equal(artist.name, "");
   assert.equal(artist.year, "");
   assert.equal(artist.imagePath, "/images/artist-profile-small.jpg");
+  assert.equal(
+    getEditCollectionImagePath({
+      getImagePath,
+      imageHash: "edit-image",
+    }),
+    "/images/edit-image-small.jpg",
+  );
+  assert.equal(
+    getEditCollectionImagePath({
+      getImagePath,
+      imageHash: undefined,
+    }),
+    null,
+  );
 
   const playlist = buildEditCollectionState({
     getImagePath,

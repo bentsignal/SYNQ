@@ -1,3 +1,5 @@
+import { getEditCollectionImagePath } from "./edit-collection-image-service";
+
 export type EditCollectionKind = "album" | "artist" | "playlist";
 
 export type EditCollectionAlbumRow = {
@@ -29,14 +31,6 @@ export type EditCollectionState = {
   year: string;
 };
 
-const imagePathOrNull = ({
-  getImagePath,
-  imageHash,
-}: {
-  getImagePath: (imageHash: string) => string;
-  imageHash: string | null | undefined;
-}) => (imageHash ? getImagePath(imageHash) : null);
-
 export const buildEditCollectionState = ({
   albumArtistRows = [],
   albumRow,
@@ -62,7 +56,7 @@ export const buildEditCollectionState = ({
 
     return {
       artistNames,
-      imagePath: imagePathOrNull({
+      imagePath: getEditCollectionImagePath({
         getImagePath,
         imageHash: albumRow?.coverImage,
       }),
@@ -75,7 +69,7 @@ export const buildEditCollectionState = ({
   if (kind === "artist") {
     return {
       artistNames: "",
-      imagePath: imagePathOrNull({
+      imagePath: getEditCollectionImagePath({
         getImagePath,
         imageHash: artistRow?.profileImage,
       }),
@@ -87,7 +81,7 @@ export const buildEditCollectionState = ({
 
   return {
     artistNames: "",
-    imagePath: imagePathOrNull({
+    imagePath: getEditCollectionImagePath({
       getImagePath,
       imageHash: playlistRow?.coverImage,
     }),

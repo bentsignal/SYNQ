@@ -10,15 +10,13 @@ import {
 } from "../services/wifi-import-server-route-service";
 import {
   getWifiImportServerAddress,
-  getWifiImportServerStopAction,
   initialWifiImportServerState,
   wifiImportServerReducer,
 } from "../services/wifi-import-server-state-service";
 import {
-  resolveWifiImportServerAddressAction,
-  startWifiImportServerWithDependencies,
-  type WifiImportServerStartup,
-} from "../services/wifi-import-server-command-service";
+  runWifiImportServerAddressLoadCommand,
+  runWifiImportServerStartupCommand,
+} from "../services/wifi-import-server-command-flow-service";
 import { isWifiImportTransferPathname } from "../services/wifi-import-transfer-decision-service";
 import { useImportSessionSelector } from "./use-import-session";
 import { useWifiImportRouteDependencies } from "./use-wifi-import-route-dependencies";
@@ -51,17 +49,11 @@ export function useWifiImportServer() {
   useEffect(() => {
     let isMounted = true;
 
-    const loadIpAddress = async () => {
-      const action = await resolveWifiImportServerAddressAction({
-        getIpAddress: Network.getIpAddressAsync,
-      });
-
-      if (isMounted) {
-        dispatchServerState(action);
-      }
-    };
-
-    void loadIpAddress();
+    void runWifiImportServerAddressLoadCommand({
+      dispatch: dispatchServerState,
+      getIpAddress: Network.getIpAddressAsync,
+      isActive: () => isMounted,
+    });
 
     return () => {
       isMounted = false;
@@ -69,20 +61,13 @@ export function useWifiImportServer() {
   }, []);
 
   useEffect(() => {
-    const startup = startWifiImportServerWithDependencies({
+    return runWifiImportServerStartupCommand({
       createRouteHandlers: createWifiImportRouteHandlers,
       createRuntimeState: createWifiImportRouteRuntimeState,
+      dispatch: dispatchServerState,
       getRouteDependencies,
       startServer: startWifiImportBridgeServer,
     });
-    let activeServer: WifiImportServerStartup["server"] | null =
-      startup.server;
-    dispatchServerState(startup.action);
-
-    return () => {
-      dispatchServerState(getWifiImportServerStopAction());
-      activeServer?.stop();
-    };
   }, [getRouteDependencies]);
 
   return {

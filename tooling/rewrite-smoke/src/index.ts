@@ -544,6 +544,10 @@ import {
   startWifiImportServerWithDependencies,
 } from "../../../apps/new/src/features/import/services/wifi-import-server-command-service";
 import {
+  runWifiImportServerAddressLoadCommand,
+  runWifiImportServerStartupCommand,
+} from "../../../apps/new/src/features/import/services/wifi-import-server-command-flow-service";
+import {
   createWifiImportRouteHandlers,
   type WifiImportRouteHandlerDependencies,
 } from "../../../apps/new/src/features/import/services/wifi-import-route-handler-service";
@@ -4900,6 +4904,24 @@ async function assertWifiImportRequestSmoke() {
     }),
     { type: "clear-address" },
   );
+  const addressLoadEvents: unknown[] = [];
+  await runWifiImportServerAddressLoadCommand({
+    dispatch: (action) => {
+      addressLoadEvents.push(action);
+    },
+    getIpAddress: async () => "10.0.0.8",
+    isActive: () => true,
+  });
+  await runWifiImportServerAddressLoadCommand({
+    dispatch: (action) => {
+      addressLoadEvents.push(action);
+    },
+    getIpAddress: async () => "10.0.0.9",
+    isActive: () => false,
+  });
+  assert.deepEqual(addressLoadEvents, [
+    { ipAddress: "10.0.0.8", type: "resolve-address" },
+  ]);
   const emptyWifiRouteDependencies =
     {} as WifiImportRouteHandlerDependencies;
   const startupEvents: unknown[] = [];
@@ -4941,6 +4963,34 @@ async function assertWifiImportRequestSmoke() {
   assert.deepEqual(startupEvents, [
     ["routes", false, 0],
     ["start", true],
+    ["stop"],
+  ]);
+  const startupCommandEvents: unknown[] = [];
+  const cleanupWifiImportServer = runWifiImportServerStartupCommand({
+    createRouteHandlers: () => {
+      startupCommandEvents.push(["routes"]);
+
+      return {} as ReturnType<typeof createWifiImportRouteHandlers>;
+    },
+    createRuntimeState: createWifiImportRouteRuntimeState,
+    dispatch: (action) => {
+      startupCommandEvents.push(["dispatch", action]);
+    },
+    getRouteDependencies: () => emptyWifiRouteDependencies,
+    startServer: () => ({
+      port: 3020,
+      server: {
+        stop: () => {
+          startupCommandEvents.push(["stop"]);
+        },
+      },
+    }),
+  });
+  cleanupWifiImportServer();
+  assert.deepEqual(startupCommandEvents, [
+    ["routes"],
+    ["dispatch", { port: 3020, type: "start" }],
+    ["dispatch", { type: "stop" }],
     ["stop"],
   ]);
   assert.deepEqual(

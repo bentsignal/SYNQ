@@ -170,8 +170,6 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-player-command-service";
 import {
   getPlaybackAdBreakPanelState,
-  getPlaybackMiniPlayerState,
-  getPlaybackMiniPlayerViewState,
   getPlaybackPlayerHref,
   getPlaybackPlayerScreenState,
   getPlaybackPremiumHref,
@@ -181,6 +179,10 @@ import {
   getPlaybackQueueScreenState,
   getPlaybackQueueViewState,
 } from "../../../apps/new/src/features/playback/services/playback-screen-state-service";
+import {
+  getPlaybackMiniPlayerState,
+  getPlaybackMiniPlayerViewState,
+} from "../../../apps/new/src/features/playback/services/playback-mini-player-state-service";
 import { audioStatusToTrackPlayerSnapshot } from "../../../apps/new/src/features/playback/services/playback-native-status-service";
 import {
   getPlaybackAdStatusUpdate,

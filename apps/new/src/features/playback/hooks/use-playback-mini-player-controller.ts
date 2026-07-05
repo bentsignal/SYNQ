@@ -1,5 +1,5 @@
 import { usePathname } from "expo-router";
-import { getPlaybackMiniPlayerViewState } from "../services/playback-screen-state-service";
+import { getPlaybackMiniPlayerViewState } from "../services/playback-mini-player-state-service";
 import {
   usePlaybackActiveTrack,
   usePlaybackState,

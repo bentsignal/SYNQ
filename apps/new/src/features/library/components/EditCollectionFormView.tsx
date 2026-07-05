@@ -1,7 +1,5 @@
 import type { CollectionFormActionState } from "../services/collection-form-action-state-service";
-import {
-  getEditCollectionFormPresentationState,
-} from "../services/collection-form-controller-view-state-service";
+import type { EditCollectionFormPresentationState } from "../services/collection-form-controller-view-state-service";
 import type { EditCollectionKind } from "../services/edit-collection-state-service";
 import { CollectionFormView } from "./CollectionFormView";
 import type { CollectionFormImage } from "./collection-form-types";
@@ -15,11 +13,7 @@ type EditCollectionFormCopy = {
 type EditCollectionFormViewProps = {
   actionState: CollectionFormActionState;
   artistNames?: string;
-  collectionError: boolean;
-  collectionImagePath: string | null;
-  collectionIsMissing: boolean;
   copy: EditCollectionFormCopy;
-  error: string | null;
   image: CollectionFormImage;
   imageInitial: string;
   isSaving: boolean;
@@ -30,6 +24,7 @@ type EditCollectionFormViewProps = {
   onChangeYear: (year: string) => void;
   onPickImage: () => void;
   onSave: () => void;
+  presentationState: EditCollectionFormPresentationState;
   saveLabel: string;
   year: string;
 };
@@ -37,11 +32,7 @@ type EditCollectionFormViewProps = {
 export function EditCollectionFormView({
   actionState,
   artistNames,
-  collectionError,
-  collectionImagePath,
-  collectionIsMissing,
   copy,
-  error,
   image,
   imageInitial,
   isSaving,
@@ -52,17 +43,10 @@ export function EditCollectionFormView({
   onChangeYear,
   onPickImage,
   onSave,
+  presentationState,
   saveLabel,
   year,
 }: EditCollectionFormViewProps) {
-  const presentationState = getEditCollectionFormPresentationState({
-    collectionError,
-    collectionImagePath,
-    collectionIsMissing,
-    error,
-    kind,
-  });
-
   return (
     <CollectionFormView
       actionState={actionState}

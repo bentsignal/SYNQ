@@ -1,5 +1,8 @@
 import { useEditCollectionFormController } from "../hooks/use-edit-collection-form-controller";
 import type { EditCollectionQueryResult } from "../hooks/use-edit-collection-query";
+import {
+  getEditCollectionFormPresentationState,
+} from "../services/collection-form-controller-view-state-service";
 import type { EditCollectionKind } from "../services/edit-collection-state-service";
 import { EditCollectionFormView } from "./EditCollectionFormView";
 
@@ -44,16 +47,19 @@ export function EditCollectionConnectedForm({
     id,
     kind,
   });
+  const presentationState = getEditCollectionFormPresentationState({
+    collectionError: Boolean(collection.error),
+    collectionImagePath: collection.imagePath,
+    collectionIsMissing: collection.isMissing,
+    error,
+    kind,
+  });
 
   return (
     <EditCollectionFormView
       actionState={actionState}
       artistNames={artistNames}
-      collectionError={Boolean(collection.error)}
-      collectionImagePath={collection.imagePath}
-      collectionIsMissing={collection.isMissing}
       copy={copy}
-      error={error}
       image={image}
       imageInitial={imageInitial}
       isSaving={isSaving}
@@ -64,6 +70,7 @@ export function EditCollectionConnectedForm({
       onChangeYear={updateYear}
       onPickImage={pickImage}
       onSave={save}
+      presentationState={presentationState}
       saveLabel={saveLabel}
       year={year}
     />

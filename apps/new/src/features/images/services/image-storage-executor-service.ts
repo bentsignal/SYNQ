@@ -3,6 +3,7 @@ import {
   getImageStorageVariants,
   splitImageData,
 } from "./image-storage-step-service";
+import { assertImageDirectoryExistsWithDependencies } from "./image-storage-directory-service";
 import type {
   ImageStorageDependencies,
 } from "./image-storage-dependencies-service";
@@ -26,18 +27,6 @@ export const getImagePathFromHashWithDependencies = (
   return getImagePathFromDirectory({
     hash,
     imageDirectory: dependencies.imageDirectory,
-  });
-};
-
-const assertImageDirectoryExists = async (
-  dependencies: ImageStorageDependencies,
-) => {
-  if (!dependencies.imageDirectory) {
-    throw new Error("Document directory is unavailable.");
-  }
-
-  await dependencies.createDirectory(dependencies.imageDirectory, {
-    intermediates: true,
   });
 };
 
@@ -88,7 +77,7 @@ export async function saveCoverImageWithDependencies(
     return null;
   }
 
-  await assertImageDirectoryExists(dependencies);
+  await assertImageDirectoryExistsWithDependencies(dependencies);
 
   const hash = await dependencies.digestImageSample(base64Image.slice(0, 100));
 

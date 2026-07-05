@@ -1562,6 +1562,7 @@ import {
   saveCoverImageWithDependencies,
   writeImageToFileSystemWithDependencies,
 } from "../../../apps/new/src/features/images/services/image-storage-executor-service";
+import { assertImageDirectoryExistsWithDependencies } from "../../../apps/new/src/features/images/services/image-storage-directory-service";
 import type {
   ImageStorageDependencies,
 } from "../../../apps/new/src/features/images/services/image-storage-dependencies-service";
@@ -18835,6 +18836,10 @@ async function assertImageStorageExecutorSmoke() {
       width: 200,
     },
   ]);
+
+  await assertImageDirectoryExistsWithDependencies(dependencies);
+  assert.deepEqual(calls, ["mkdir:file:///documents/images:true"]);
+  calls.length = 0;
 
   assert.equal(await saveCoverImageWithDependencies(null, dependencies), null);
   assert.deepEqual(calls, []);

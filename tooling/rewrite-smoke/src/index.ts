@@ -781,10 +781,10 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-detail-song-command-flow-service";
 import {
   collectionDetailMutationReducer,
-  getCollectionDetailMutationErrorMessage,
   initialCollectionDetailMutationState,
   type CollectionDetailMutationAction,
 } from "../../../apps/new/src/features/library/services/library-collection-mutation-state-service";
+import { getCollectionDetailMutationErrorMessage } from "../../../apps/new/src/features/library/services/library-collection-mutation-error-copy-service";
 import {
   type LibraryCollectionCommandDependencies,
   addLibraryCollectionSongCommandWithDependencies,

@@ -5,10 +5,10 @@ import {
   type LibraryCollectionListHref,
 } from "./library-collection-navigation-service";
 import {
-  getCollectionDetailMutationErrorMessage,
   type CollectionDetailMutationAction,
   type CollectionDetailMutationKind,
 } from "./library-collection-mutation-state-service";
+import { getCollectionDetailMutationErrorMessage } from "./library-collection-mutation-error-copy-service";
 
 type CollectionDetailMutationActionCommand = {
   action: CollectionDetailMutationAction;

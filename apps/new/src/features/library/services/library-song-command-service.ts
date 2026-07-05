@@ -1,7 +1,4 @@
-import { shareLibrarySongs } from "@/src/features/export/services/library-export-service";
-import { setLibrarySongLiked } from "../repository/library-song-liked-repository";
-import { updateLibrarySongMetadata } from "../repository/song-metadata-repository";
-import { deleteLibrarySong } from "./library-song-delete-service";
+import { librarySongCommandDependencies } from "./library-song-command-dependencies-service";
 import type { LibrarySongDetail } from "./library-song-detail-types-service";
 import {
   deleteLibrarySongCommandWithDependencies,
@@ -9,13 +6,6 @@ import {
   toggleLibrarySongLikedCommandWithDependencies,
   updateLibrarySongMetadataCommandWithDependencies,
 } from "./library-song-command-executor-service";
-
-const librarySongCommandDependencies = {
-  deleteLibrarySong,
-  setLibrarySongLiked,
-  shareLibrarySongs,
-  updateLibrarySongMetadata,
-};
 
 export const toggleLibrarySongLikedCommand = ({
   liked,

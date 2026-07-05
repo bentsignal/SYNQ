@@ -1,4 +1,7 @@
 import type { ImportSessionState } from "../types/import-session";
+import type {
+  ImportSessionPersistenceDependencies,
+} from "./import-session-persistence-dependencies-service";
 import { filterExistingImportDraftsWithDependencies } from "./import-session-persistence-filter-service";
 import {
   normalizePersistedImportSession,
@@ -10,20 +13,9 @@ import {
   getRestoredImportSessionState,
 } from "./import-session-persistence-step-service";
 
-export type ImportSessionPersistenceDependencies = {
-  deletePath: (
-    path: string,
-    options: { idempotent: true },
-  ) => Promise<void>;
-  documentDirectory: string | null;
-  getInfo: (path: string) => Promise<{ exists: boolean }>;
-  makeDirectory: (
-    path: string,
-    options: { intermediates: true },
-  ) => Promise<void>;
-  readAsString: (path: string) => Promise<string>;
-  writeAsString: (path: string, contents: string) => Promise<void>;
-};
+export type {
+  ImportSessionPersistenceDependencies,
+} from "./import-session-persistence-dependencies-service";
 
 const importSessionFileName = "session.json";
 

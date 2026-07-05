@@ -478,8 +478,10 @@ import {
   getImportSessionFileWithDependencies,
   loadPersistedImportSessionStateWithDependencies,
   savePersistedImportSessionStateWithDependencies,
-  type ImportSessionPersistenceDependencies,
 } from "../../../apps/new/src/features/import/services/import-session-persistence-executor-service";
+import type {
+  ImportSessionPersistenceDependencies,
+} from "../../../apps/new/src/features/import/services/import-session-persistence-dependencies-service";
 import { filterExistingImportDraftsWithDependencies } from "../../../apps/new/src/features/import/services/import-session-persistence-filter-service";
 import {
   runImportSessionHydrateCommand,

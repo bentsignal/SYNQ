@@ -3,8 +3,10 @@ import {
   clearPersistedImportSessionStateWithDependencies,
   loadPersistedImportSessionStateWithDependencies,
   savePersistedImportSessionStateWithDependencies,
-  type ImportSessionPersistenceDependencies,
 } from "./import-session-persistence-executor-service";
+import type {
+  ImportSessionPersistenceDependencies,
+} from "./import-session-persistence-dependencies-service";
 import type { ImportSessionState } from "../types/import-session";
 
 const importSessionPersistenceDependencies: ImportSessionPersistenceDependencies =

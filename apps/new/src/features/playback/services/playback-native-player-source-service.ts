@@ -10,6 +10,7 @@ import {
   playPlaybackNativeAdSource,
   playPlaybackNativeLibrarySource,
 } from "./playback-native-player-play-service";
+import { seekPlaybackNativeLibraryPlayer } from "./playback-native-player-seek-service";
 import type {
   PlaybackNativePlayerSourceParams,
   TrackPlayerStatusListener,
@@ -95,11 +96,8 @@ export const createPlaybackNativePlayerSources = ({
         setRegistryState,
       });
     },
-    seekLibraryTo: async (position: number) => {
-      if (libraryPlayer) {
-        await libraryPlayer.seekTo(position / 1000);
-      }
-    },
+    seekLibraryTo: (position: number) =>
+      seekPlaybackNativeLibraryPlayer({ libraryPlayer, position }),
     setStatusListener: (listener: TrackPlayerStatusListener | null) => {
       statusListeners.setListener(listener);
 

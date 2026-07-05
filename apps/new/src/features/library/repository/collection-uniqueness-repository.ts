@@ -1,31 +1,10 @@
 import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
-import { and, eq, ne } from "drizzle-orm";
 import {
   assertUniqueCollectionNameWithDependencies,
   type UniqueCollectionNameParams,
 } from "./collection-uniqueness-executor-repository";
-
-const buildUniqueNameFilter = ({
-  excludeId,
-  idColumn,
-  name,
-  nameColumn,
-}: {
-  excludeId?: number;
-  idColumn:
-    | typeof schema.albums.id
-    | typeof schema.artists.id
-    | typeof schema.playlists.id;
-  name: string;
-  nameColumn:
-    | typeof schema.albums.name
-    | typeof schema.artists.name
-    | typeof schema.playlists.name;
-}) =>
-  excludeId
-    ? and(eq(nameColumn, name), ne(idColumn, excludeId))
-    : eq(nameColumn, name);
+import { buildUniqueCollectionNameFilter } from "./collection-uniqueness-filter-repository";
 
 export const assertUniqueCollectionName = async ({
   excludeId,
@@ -40,7 +19,7 @@ export const assertUniqueCollectionName = async ({
           .select({ id: schema.albums.id })
           .from(schema.albums)
           .where(
-            buildUniqueNameFilter({
+            buildUniqueCollectionNameFilter({
               excludeId,
               idColumn: schema.albums.id,
               name,
@@ -56,7 +35,7 @@ export const assertUniqueCollectionName = async ({
           .select({ id: schema.artists.id })
           .from(schema.artists)
           .where(
-            buildUniqueNameFilter({
+            buildUniqueCollectionNameFilter({
               excludeId,
               idColumn: schema.artists.id,
               name,
@@ -72,7 +51,7 @@ export const assertUniqueCollectionName = async ({
           .select({ id: schema.playlists.id })
           .from(schema.playlists)
           .where(
-            buildUniqueNameFilter({
+            buildUniqueCollectionNameFilter({
               excludeId,
               idColumn: schema.playlists.id,
               name,

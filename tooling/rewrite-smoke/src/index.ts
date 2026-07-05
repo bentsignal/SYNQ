@@ -1044,6 +1044,11 @@ import {
   rowsToAddableCollectionSongs,
 } from "../../../apps/new/src/features/library/services/addable-collection-songs-service";
 import {
+  compareAddableCollectionSongs,
+  matchesAddableCollectionSongQuery,
+  normalizeAddableCollectionSongQuery,
+} from "../../../apps/new/src/features/library/services/addable-collection-songs-filter-service";
+import {
   buildAddableCollectionSongsResult,
   getAddableCollectionSongsUpdatedAt,
 } from "../../../apps/new/src/features/library/services/addable-collection-songs-result-service";
@@ -9787,6 +9792,18 @@ function assertAddableCollectionSongsSmoke() {
       rowsToLinkedSongIds([{ songId: 7 }, { songId: null }, { songId: 9 }]),
     ),
     [7, 9],
+  );
+  assert.equal(normalizeAddableCollectionSongQuery("  Feat "), "feat");
+  assert.equal(
+    matchesAddableCollectionSongQuery(sorted[0]!, "beta"),
+    true,
+  );
+  assert.equal(
+    compareAddableCollectionSongs(
+      { ...sorted[0]!, isLinked: true },
+      { ...sorted[1]!, isLinked: false },
+    ),
+    1,
   );
 }
 

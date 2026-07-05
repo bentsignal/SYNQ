@@ -3,12 +3,22 @@ import type {
   AddableCollectionSong,
   AddableCollectionSongRow,
 } from "./addable-collection-songs-types-service";
+import {
+  compareAddableCollectionSongs,
+  matchesAddableCollectionSongQuery,
+  normalizeAddableCollectionSongQuery,
+} from "./addable-collection-songs-filter-service";
 
 export type {
   AddableCollectionLinkedSongRow,
   AddableCollectionSong,
   AddableCollectionSongRow,
 } from "./addable-collection-songs-types-service";
+export {
+  compareAddableCollectionSongs,
+  matchesAddableCollectionSongQuery,
+  normalizeAddableCollectionSongQuery,
+} from "./addable-collection-songs-filter-service";
 
 type AddableSongAccumulator = {
   albumNames: Set<string>;
@@ -30,18 +40,6 @@ const formatNames = (names: Set<string>) => {
   ).join(", ");
 };
 
-const normalizeQuery = (query?: string) => query?.trim().toLowerCase() ?? "";
-
-const matchesQuery = (song: AddableCollectionSong, query: string) => {
-  if (!query) {
-    return true;
-  }
-
-  return [song.title, song.artist, song.album].some((value) =>
-    value.toLowerCase().includes(query),
-  );
-};
-
 export const rowsToLinkedSongIds = (
   rows: readonly AddableCollectionLinkedSongRow[] = [],
 ) =>
@@ -61,7 +59,7 @@ export const rowsToAddableCollectionSongs = ({
   rows: AddableCollectionSongRow[];
 }) => {
   const songMap = new Map<number, AddableSongAccumulator>();
-  const normalizedQuery = normalizeQuery(query);
+  const normalizedQuery = normalizeAddableCollectionSongQuery(query);
 
   rows.forEach((row) => {
     const song =
@@ -94,15 +92,9 @@ export const rowsToAddableCollectionSongs = ({
       isLinked: linkedSongIds.has(song.id),
       title: song.title,
     }))
-    .filter((song) => matchesQuery(song, normalizedQuery))
-    .sort((first, second) => {
-      if (first.isLinked !== second.isLinked) {
-        return first.isLinked ? 1 : -1;
-      }
-
-      return first.title.localeCompare(second.title, undefined, {
-        sensitivity: "base",
-      });
-    })
+    .filter((song) =>
+      matchesAddableCollectionSongQuery(song, normalizedQuery),
+    )
+    .sort(compareAddableCollectionSongs)
     .slice(0, limit);
 };

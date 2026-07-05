@@ -1250,10 +1250,8 @@ import {
   getLibrarySongEditSaveSuccessCommand,
 } from "../../../apps/new/src/features/library/services/library-song-form-command-state-service";
 import { getLibrarySongEditErrorMessage } from "../../../apps/new/src/features/library/services/library-song-edit-error-service";
-import {
-  runLibrarySongEditCoverPickCommand,
-  runLibrarySongEditSaveCommand,
-} from "../../../apps/new/src/features/library/services/library-song-form-command-flow-service";
+import { runLibrarySongEditCoverPickCommand } from "../../../apps/new/src/features/library/services/library-song-cover-pick-command-flow-service";
+import { runLibrarySongEditSaveCommand } from "../../../apps/new/src/features/library/services/library-song-form-command-flow-service";
 import {
   getLibrarySongEditActionState,
 } from "../../../apps/new/src/features/library/services/library-song-edit-action-state-service";

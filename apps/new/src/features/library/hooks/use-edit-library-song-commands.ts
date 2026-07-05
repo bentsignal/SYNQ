@@ -4,10 +4,8 @@ import { pickCollectionImage } from "../services/collection-image-picker-service
 import { updateLibrarySongMetadataCommand } from "../services/library-song-command-service";
 import type { LibrarySongEditControllerAction } from "../services/library-song-edit-controller-action-service";
 import type { LibrarySongEditControllerState } from "../services/library-song-edit-controller-reducer-service";
-import {
-  runLibrarySongEditCoverPickCommand,
-  runLibrarySongEditSaveCommand,
-} from "../services/library-song-form-command-flow-service";
+import { runLibrarySongEditCoverPickCommand } from "../services/library-song-cover-pick-command-flow-service";
+import { runLibrarySongEditSaveCommand } from "../services/library-song-form-command-flow-service";
 
 type UseEditLibrarySongCommandsParams = {
   canPickCoverImage: boolean;

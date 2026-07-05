@@ -1,4 +1,3 @@
-import type { PlaybackAction } from "./playback-session-action-service";
 import {
   getClearQueuePlaybackStepPlan,
   getPausePlaybackStepPlan,
@@ -17,7 +16,6 @@ import {
   getResumeNativeCommandPlan,
   getSkipNextNativeCommandPlan,
   getSkipPreviousNativeCommandPlan,
-  type PlaybackNativeCommandPlan,
 } from "./playback-native-command-plan-service";
 import type {
   PlaybackQueueItem,
@@ -25,19 +23,7 @@ import type {
 } from "../types/playback-state";
 
 export type { PlaybackCommandPlan } from "./playback-command-step-service";
-
-export const runPlaybackCommandPlan = ({
-  dispatch,
-  plan,
-  runNativeCommandPlan,
-}: {
-  dispatch: (action: PlaybackAction) => void;
-  plan: PlaybackCommandPlan;
-  runNativeCommandPlan: (plan: PlaybackNativeCommandPlan) => void;
-}) => {
-  dispatch(plan.action);
-  runNativeCommandPlan(plan.nativeCommand);
-};
+export { runPlaybackCommandPlan } from "./playback-command-plan-runner-service";
 
 export const getPlaySongPlaybackCommandPlan = (
   song: PlaybackQueueItem,

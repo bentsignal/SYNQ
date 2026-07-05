@@ -1,4 +1,4 @@
-import { getPlaybackQueueControllerViewState } from "../services/playback-screen-state-service";
+import { getPlaybackQueueControllerViewState } from "../services/playback-queue-screen-state-service";
 import { usePlaybackQueueActions } from "./use-playback-queue-actions";
 import { usePlaybackSessionSelector } from "./use-playback-session";
 

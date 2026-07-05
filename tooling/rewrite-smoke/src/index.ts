@@ -177,12 +177,14 @@ import {
   getPlaybackPlayerHref,
   getPlaybackPlayerScreenState,
   getPlaybackPremiumHref,
-  getPlaybackQueueEmptyState,
   getPlaybackQueueHref,
+} from "../../../apps/new/src/features/playback/services/playback-screen-state-service";
+import {
+  getPlaybackQueueEmptyState,
   getPlaybackQueueControllerViewState,
   getPlaybackQueueScreenState,
   getPlaybackQueueViewState,
-} from "../../../apps/new/src/features/playback/services/playback-screen-state-service";
+} from "../../../apps/new/src/features/playback/services/playback-queue-screen-state-service";
 import {
   getPlaybackMiniPlayerState,
   getPlaybackMiniPlayerViewState,

@@ -3,7 +3,7 @@ import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customi
 import type {
   getPlaybackQueueScreenState,
   getPlaybackQueueViewState,
-} from "../services/playback-screen-state-service";
+} from "../services/playback-queue-screen-state-service";
 import type { PlaybackQueueItem } from "../types/playback-state";
 import { PlaybackQueueEmptyState } from "./PlaybackQueueEmptyState";
 import { PlaybackQueueRow } from "./PlaybackQueueRow";

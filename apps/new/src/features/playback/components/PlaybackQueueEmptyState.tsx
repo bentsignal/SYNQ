@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { getPlaybackQueueScreenState } from "../services/playback-screen-state-service";
+import type { getPlaybackQueueScreenState } from "../services/playback-queue-screen-state-service";
 
 type PlaybackQueueEmptyStateModel = ReturnType<
   typeof getPlaybackQueueScreenState

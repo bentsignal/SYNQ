@@ -7,7 +7,7 @@ import {
 } from "@/src/features/app-shell/components/song-row";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { AddableCollectionSong } from "../hooks/use-addable-collection-songs-query";
-import type { AddableSongRowState } from "../services/add-collection-songs-selection-service";
+import type { AddableSongRowState } from "../services/add-collection-songs-row-state-service";
 
 type AddableSongRowProps = {
   onAddSong: (songId: number) => void;

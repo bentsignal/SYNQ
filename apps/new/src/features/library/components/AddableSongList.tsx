@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { AddableSongRowModel } from "../services/add-collection-songs-selection-service";
+import type { AddableSongRowModel } from "../services/add-collection-songs-row-state-service";
 import { AddableSongEmptyState } from "./AddableSongEmptyState";
 import { AddableSongRow } from "./AddableSongRow";
 

@@ -3,10 +3,8 @@ import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { AddCollectionSongsFormState } from "../services/add-collection-songs-form-state-service";
 import type { AddCollectionSongsStatusState } from "../services/add-collection-songs-status-state-service";
-import type {
-  AddableSongRowModel,
-  AddableSongSelectionState,
-} from "../services/add-collection-songs-selection-service";
+import type { AddableSongSelectionState } from "../services/add-collection-songs-selection-service";
+import type { AddableSongRowModel } from "../services/add-collection-songs-row-state-service";
 import { AddCollectionSongsHeader } from "./AddCollectionSongsHeader";
 import { AddCollectionSongsSectionHeader } from "./AddCollectionSongsSectionHeader";
 import { AddCollectionSongsSelectionPanel } from "./AddCollectionSongsSelectionPanel";

@@ -693,11 +693,13 @@ import {
 import { rowsToCollectionDetailSongs } from "../../../apps/new/src/features/library/services/library-collection-detail-song-service";
 import {
   getAddCollectionSongsControllerResultState,
-  getAddableSongRows,
-  getAddableSongRowState,
   getAddableSongSelectionState,
   getSelectedAddableSongIds,
 } from "../../../apps/new/src/features/library/services/add-collection-songs-selection-service";
+import {
+  getAddableSongRows,
+  getAddableSongRowState,
+} from "../../../apps/new/src/features/library/services/add-collection-songs-row-state-service";
 import {
   removeSongIdSelection,
   toggleSongIdSelection,

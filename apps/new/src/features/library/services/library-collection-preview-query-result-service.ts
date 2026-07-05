@@ -1,12 +1,13 @@
 import {
-  albumRowsToPreview,
-  artistRowsToPreview,
-  playlistRowsToPreview,
   type AlbumPreviewRow,
   type ArtistPreviewRow,
   type CollectionPreviewImagePathResolver,
   type PlaylistPreviewRow,
 } from "./library-collection-preview-row-service";
+import {
+  buildLibraryCollectionPreviewGroup,
+  getLibraryCollectionPreviewTotals,
+} from "./library-collection-preview-query-builder-service";
 import {
   isLibraryCollectionPreviewGroupEmpty,
   type CollectionPreviewGroup,
@@ -53,23 +54,13 @@ export const buildLibraryCollectionPreviewQueryResult = ({
   playlistRows: PlaylistPreviewRow[];
   playlistUpdatedAt: Date | null | undefined;
 }): LibraryCollectionPreviewQueryResult => {
-  const collections = {
-    albums: albumRowsToPreview({
-      getImagePath,
-      limit,
-      rows: albumRows,
-    }),
-    artists: artistRowsToPreview({
-      getImagePath,
-      limit,
-      rows: artistRows,
-    }),
-    playlists: playlistRowsToPreview({
-      getImagePath,
-      limit,
-      rows: playlistRows,
-    }),
-  };
+  const collections = buildLibraryCollectionPreviewGroup({
+    albumRows,
+    artistRows,
+    getImagePath,
+    limit,
+    playlistRows,
+  });
 
   return {
     collections,
@@ -79,12 +70,11 @@ export const buildLibraryCollectionPreviewQueryResult = ({
       playlistError,
     }),
     isEmpty: isLibraryCollectionPreviewGroupEmpty(collections),
-    totals: {
-      albums: albumRowsToPreview({ limit: null, rows: albumRows }).length,
-      artists: artistRowsToPreview({ limit: null, rows: artistRows }).length,
-      playlists: playlistRowsToPreview({ limit: null, rows: playlistRows })
-        .length,
-    },
+    totals: getLibraryCollectionPreviewTotals({
+      albumRows,
+      artistRows,
+      playlistRows,
+    }),
     updatedAt: getLibraryCollectionPreviewUpdatedAt({
       albumUpdatedAt,
       artistUpdatedAt,
@@ -99,3 +89,7 @@ export {
   getLibraryCollectionPreviewErrors,
   getLibraryCollectionPreviewUpdatedAt,
 } from "./library-collection-preview-query-metadata-service";
+export {
+  buildLibraryCollectionPreviewGroup,
+  getLibraryCollectionPreviewTotals,
+} from "./library-collection-preview-query-builder-service";

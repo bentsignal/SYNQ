@@ -1315,9 +1315,11 @@ import {
 } from "../../../apps/new/src/features/library/services/library-song-delete-executor-service";
 import {
   deleteLibrarySongFilesWithDependencies as deleteLibrarySongFilesForLibraryWithDependencies,
-  getLibrarySongDirectoryPath,
   type LibrarySongFileDependencies,
 } from "../../../apps/new/src/features/library/services/library-song-file-executor-service";
+import {
+  getLibrarySongDirectoryPath,
+} from "../../../apps/new/src/features/library/services/library-song-file-path-service";
 import {
   isLibrarySongSnapshotStaleWithDependencies,
   markLibrarySongAsExportedWithDependencies,

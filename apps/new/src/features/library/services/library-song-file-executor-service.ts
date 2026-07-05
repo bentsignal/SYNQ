@@ -1,3 +1,5 @@
+import { getLibrarySongDirectoryPath } from "./library-song-file-path-service";
+
 export type LibrarySongFileDependencies = {
   deletePath: (
     path: string,
@@ -6,13 +8,7 @@ export type LibrarySongFileDependencies = {
   documentDirectory: string | null;
 };
 
-export const getLibrarySongDirectoryPath = ({
-  documentDirectory,
-  songId,
-}: {
-  documentDirectory: string;
-  songId: number;
-}) => `${documentDirectory}library/${songId}`;
+export { getLibrarySongDirectoryPath } from "./library-song-file-path-service";
 
 export const deleteLibrarySongFilesWithDependencies = async (
   songId: number,

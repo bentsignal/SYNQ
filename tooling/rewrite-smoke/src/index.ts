@@ -1191,8 +1191,10 @@ import {
 } from "../../../apps/new/src/features/library/services/song-add-to-playlist-header-state-service";
 import { getSongAddToPlaylistStatusState } from "../../../apps/new/src/features/library/services/song-add-to-playlist-status-state-service";
 import {
+  getSetSongAddToPlaylistMutationAction,
   getSongAddToPlaylistStatusLabel,
   initialSongAddToPlaylistMutationState,
+  songAddToPlaylistMutationReducer,
 } from "../../../apps/new/src/features/library/services/song-add-to-playlist-mutation-state-service";
 import { runSongAddToPlaylistCommand } from "../../../apps/new/src/features/library/services/song-add-to-playlist-command-flow-service";
 import {
@@ -10417,6 +10419,30 @@ async function assertLibrarySongDetailSmoke() {
       updatedAt: 0,
     }),
     "Added to playlist",
+  );
+  const setAddToPlaylistMutationAction = getSetSongAddToPlaylistMutationAction({
+    error: null,
+    pendingPlaylistId: null,
+    successPlaylistId: 7,
+  });
+  assert.deepEqual(setAddToPlaylistMutationAction, {
+    state: {
+      error: null,
+      pendingPlaylistId: null,
+      successPlaylistId: 7,
+    },
+    type: "set",
+  });
+  assert.deepEqual(
+    songAddToPlaylistMutationReducer(
+      initialSongAddToPlaylistMutationState,
+      setAddToPlaylistMutationAction,
+    ),
+    {
+      error: null,
+      pendingPlaylistId: null,
+      successPlaylistId: 7,
+    },
   );
   const addToPlaylistControllerState = getSongAddToPlaylistControllerViewState({
     collections: [

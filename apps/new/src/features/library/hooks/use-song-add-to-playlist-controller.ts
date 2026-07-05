@@ -1,4 +1,4 @@
-import { useMemo, useReducer, useState } from "react";
+import { useMemo, useReducer } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
   initialLibraryCollectionListControlState,
@@ -10,8 +10,9 @@ import {
   getSongAddToPlaylistController,
 } from "../services/song-add-to-playlist-controller-service";
 import {
+  getSetSongAddToPlaylistMutationAction,
   initialSongAddToPlaylistMutationState,
-  type SongAddToPlaylistMutationState,
+  songAddToPlaylistMutationReducer,
 } from "../services/song-add-to-playlist-mutation-state-service";
 import { getSongAddToPlaylistControllerViewState } from "../services/song-add-to-playlist-service";
 import { useLibraryCollectionListQuery } from "./use-library-collection-list-query";
@@ -22,10 +23,10 @@ export function useSongAddToPlaylistController({ songId }: { songId: number }) {
     libraryCollectionListControlReducer,
     initialLibraryCollectionListControlState,
   );
-  const [mutationState, setMutationState] =
-    useState<SongAddToPlaylistMutationState>(
-      initialSongAddToPlaylistMutationState,
-    );
+  const [mutationState, dispatchMutation] = useReducer(
+    songAddToPlaylistMutationReducer,
+    initialSongAddToPlaylistMutationState,
+  );
   const { collections, error, updatedAt } = useLibraryCollectionListQuery({
     kind: "playlists",
     limit: null,
@@ -36,7 +37,9 @@ export function useSongAddToPlaylistController({ songId }: { songId: number }) {
         addLibraryCollectionSong: addLibraryCollectionSongCommand,
         dispatchControls,
         sendHaptic,
-        setMutationState,
+        setMutationState: (state) => {
+          dispatchMutation(getSetSongAddToPlaylistMutationAction(state));
+        },
         songId,
       }),
     [sendHaptic, songId],

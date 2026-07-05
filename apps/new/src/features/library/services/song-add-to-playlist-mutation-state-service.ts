@@ -6,12 +6,34 @@ export type SongAddToPlaylistMutationState = {
   successPlaylistId: number | null;
 };
 
+export type SongAddToPlaylistMutationAction = {
+  state: SongAddToPlaylistMutationState;
+  type: "set";
+};
+
 export const initialSongAddToPlaylistMutationState: SongAddToPlaylistMutationState =
   {
     error: null,
     pendingPlaylistId: null,
     successPlaylistId: null,
   };
+
+export const getSetSongAddToPlaylistMutationAction = (
+  state: SongAddToPlaylistMutationState,
+): SongAddToPlaylistMutationAction => ({
+  state,
+  type: "set",
+});
+
+export const songAddToPlaylistMutationReducer = (
+  _state: SongAddToPlaylistMutationState,
+  action: SongAddToPlaylistMutationAction,
+): SongAddToPlaylistMutationState => {
+  switch (action.type) {
+    case "set":
+      return action.state;
+  }
+};
 
 export const getSongAddToPlaylistErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Playlist could not be updated.";

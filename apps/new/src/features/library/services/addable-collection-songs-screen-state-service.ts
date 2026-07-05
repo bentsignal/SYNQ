@@ -88,3 +88,17 @@ export const getAddCollectionSongsBackLink = ({
   href: getAddCollectionSongsBackHref({ collectionId, kind }),
   label: "Back to collection",
 });
+
+export const getAddCollectionSongsFormState = ({
+  collectionId,
+  kind,
+}: {
+  collectionId: number;
+  kind: AddCollectionSongsCollectionKind;
+}) => ({
+  backLink: getAddCollectionSongsBackLink({ collectionId, kind }),
+});
+
+export type AddCollectionSongsFormState = ReturnType<
+  typeof getAddCollectionSongsFormState
+>;

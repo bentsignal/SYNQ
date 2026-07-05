@@ -3,7 +3,7 @@ import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { AddableCollectionSong } from "../services/addable-collection-songs-service";
 import {
-  getAddCollectionSongsBackLink,
+  type AddCollectionSongsFormState,
   type AddCollectionSongsStatusState,
 } from "../services/addable-collection-songs-screen-state-service";
 import type { AddableSongSelectionState } from "../services/add-collection-songs-selection-service";
@@ -15,7 +15,7 @@ import { AddCollectionSongsStatusPanel } from "./AddCollectionSongsStatusPanel";
 import { AddableSongList } from "./AddableSongList";
 
 type AddCollectionSongsFormViewProps = {
-  collectionId: number;
+  formState: AddCollectionSongsFormState;
   kind: LibraryCollectionDetailKind;
   onAddSelectedSongs: () => void;
   onAddSong: (songId: number) => void;
@@ -31,7 +31,7 @@ type AddCollectionSongsFormViewProps = {
 };
 
 export function AddCollectionSongsFormView({
-  collectionId,
+  formState,
   kind,
   onAddSelectedSongs,
   onAddSong,
@@ -46,7 +46,6 @@ export function AddCollectionSongsFormView({
   updatedLabel,
 }: AddCollectionSongsFormViewProps) {
   const theme = useCustomizationTheme();
-  const backLink = getAddCollectionSongsBackLink({ collectionId, kind });
 
   return (
     <ScrollView
@@ -81,10 +80,10 @@ export function AddCollectionSongsFormView({
 
       <Link
         className="text-[15px] font-extrabold"
-        href={backLink.href}
+        href={formState.backLink.href}
         style={{ color: theme.accent }}
       >
-        {backLink.label}
+        {formState.backLink.label}
       </Link>
     </ScrollView>
   );

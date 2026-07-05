@@ -865,6 +865,7 @@ import {
 import {
   getAddCollectionSongsBackHref,
   getAddCollectionSongsBackLink,
+  getAddCollectionSongsFormState,
   getAddCollectionSongsHeaderState,
   getAddCollectionSongsStatusState,
   getAddCollectionSongsUpdatedLabel,
@@ -8057,6 +8058,18 @@ function assertAddableCollectionSongsSmoke() {
     {
       href: "/(tabs)/library/playlist/7",
       label: "Back to collection",
+    },
+  );
+  assert.deepEqual(
+    getAddCollectionSongsFormState({
+      collectionId: 7,
+      kind: "playlist",
+    }),
+    {
+      backLink: {
+        href: "/(tabs)/library/playlist/7",
+        label: "Back to collection",
+      },
     },
   );
   assert.deepEqual(getAddCollectionSongsHeaderState({ kind: "album" }), {

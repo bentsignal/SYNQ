@@ -2,7 +2,10 @@ import type {
   AddableCollectionSongsQueryResult,
 } from "../hooks/use-addable-collection-songs-query";
 import { useAddCollectionSongsController } from "../hooks/use-add-collection-songs-controller";
-import { getAddCollectionSongsStatusState } from "../services/addable-collection-songs-screen-state-service";
+import {
+  getAddCollectionSongsFormState,
+  getAddCollectionSongsStatusState,
+} from "../services/addable-collection-songs-screen-state-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import { AddCollectionSongsFormView } from "./AddCollectionSongsFormView";
 
@@ -40,10 +43,14 @@ export function AddCollectionSongsConnectedForm({
     mutationError,
     updatedAt,
   });
+  const formState = getAddCollectionSongsFormState({
+    collectionId,
+    kind,
+  });
 
   return (
     <AddCollectionSongsFormView
-      collectionId={collectionId}
+      formState={formState}
       kind={kind}
       onAddSelectedSongs={addSelectedSongs}
       onAddSong={addSong}

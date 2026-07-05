@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportSaveController } from "../hooks/use-import-save-controller";
+import { getImportSongPreviewListState } from "../services/import-song-preview-state-service";
 import { ImportPremiumGate } from "./ImportPremiumGate";
 import { ImportSaveActions } from "./ImportSaveActions";
 import { ImportSaveExportErrorPanel } from "./ImportSaveExportErrorPanel";
@@ -23,6 +24,9 @@ export function ImportSaveScreenView({
   viewState,
 }: ImportSaveScreenViewProps) {
   const theme = useCustomizationTheme();
+  const songPreviewListState = getImportSongPreviewListState({
+    songs: state.songs,
+  });
 
   return (
     <ScrollView
@@ -42,7 +46,7 @@ export function ImportSaveScreenView({
           canEditSongs
           emptyState={viewState.songPreviewEmptyState}
           onRemoveSong={actionState.canRemoveSongs ? removeSong : undefined}
-          songs={state.songs}
+          rows={songPreviewListState.rows}
         />
         <ImportSaveActions
           actionState={actionState}

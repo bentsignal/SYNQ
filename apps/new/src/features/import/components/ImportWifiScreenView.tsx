@@ -1,6 +1,7 @@
 import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportWifiScreenController } from "../hooks/use-import-wifi-screen-controller";
+import { getImportSongPreviewListState } from "../services/import-song-preview-state-service";
 import { ImportSongPreviewList } from "./ImportSongPreviewList";
 import { ImportWifiActions } from "./ImportWifiActions";
 import { ImportWifiAddressPanel } from "./ImportWifiAddressPanel";
@@ -20,6 +21,9 @@ export function ImportWifiScreenView({
 }: ImportWifiScreenViewProps) {
   const theme = useCustomizationTheme();
   const { canReviewSave, progressLabel, statusLabel } = wifiState;
+  const songPreviewListState = getImportSongPreviewListState({
+    songs: state.songs,
+  });
 
   return (
     <ScrollView
@@ -37,7 +41,7 @@ export function ImportWifiScreenView({
         canEditSongs
         emptyState={songPreviewEmptyState}
         onRemoveSong={removeSong}
-        songs={state.songs}
+        rows={songPreviewListState.rows}
       />
       <ImportWifiActions
         actionState={actionState}

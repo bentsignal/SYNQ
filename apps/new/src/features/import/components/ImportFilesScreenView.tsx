@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportFilesController } from "../hooks/use-import-files-controller";
+import { getImportSongPreviewListState } from "../services/import-song-preview-state-service";
 import { ImportPremiumGate } from "./ImportPremiumGate";
 import { ImportSongPreviewList } from "./ImportSongPreviewList";
 
@@ -16,6 +17,9 @@ export function ImportFilesScreenView({
   state,
 }: ImportFilesScreenViewProps) {
   const theme = useCustomizationTheme();
+  const songPreviewListState = getImportSongPreviewListState({
+    songs: state.songs,
+  });
 
   return (
     <ScrollView
@@ -67,7 +71,7 @@ export function ImportFilesScreenView({
         canEditSongs
         emptyState={songPreviewEmptyState}
         onRemoveSong={removeSong}
-        songs={state.songs}
+        rows={songPreviewListState.rows}
       />
 
       <View className="flex-row flex-wrap gap-4">

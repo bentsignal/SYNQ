@@ -1,11 +1,11 @@
 import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { BackupScreenController } from "../hooks/use-backup-screen-controller";
+import type { BackupViewState } from "../services/backup-screen-service";
 
-type BackupStatusPanelProps = Pick<
-  BackupScreenController,
-  "resetStatus" | "statusState"
->;
+type BackupStatusPanelProps = {
+  resetStatus: () => void;
+  statusState: BackupViewState["statusState"];
+};
 
 export function BackupStatusPanel({
   resetStatus,

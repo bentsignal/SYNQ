@@ -16,7 +16,7 @@ export function useBackupScreenController() {
   const premiumActive = usePremiumEntitlementSelector(
     (store) => store.state.active,
   );
-  const { actionCards, screenState, statusState } = getBackupViewState({
+  const viewState = getBackupViewState({
     premiumActive,
     state,
   });
@@ -39,11 +39,9 @@ export function useBackupScreenController() {
   };
 
   return {
-    actionCards,
     resetStatus,
     runBackupOperation,
-    screenState,
-    statusState,
+    viewState,
   };
 }
 

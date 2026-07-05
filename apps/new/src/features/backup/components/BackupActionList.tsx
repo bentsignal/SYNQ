@@ -1,11 +1,12 @@
 import { View } from "react-native";
-import type { BackupScreenController } from "../hooks/use-backup-screen-controller";
+import type { BackupViewState } from "../services/backup-screen-service";
+import type { BackupOperation } from "../types/backup-session";
 import { BackupActionCard } from "./BackupActionCard";
 
-type BackupActionListProps = Pick<
-  BackupScreenController,
-  "actionCards" | "runBackupOperation"
->;
+type BackupActionListProps = {
+  actionCards: BackupViewState["actionCards"];
+  runBackupOperation: (operation: BackupOperation) => void;
+};
 
 export function BackupActionList({
   actionCards,

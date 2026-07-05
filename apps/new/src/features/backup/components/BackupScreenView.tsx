@@ -9,11 +9,9 @@ import { BackupStatusPanel } from "./BackupStatusPanel";
 type BackupScreenViewProps = BackupScreenController;
 
 export function BackupScreenView({
-  actionCards,
   resetStatus,
   runBackupOperation,
-  screenState,
-  statusState,
+  viewState,
 }: BackupScreenViewProps) {
   const theme = useCustomizationTheme();
 
@@ -25,17 +23,20 @@ export function BackupScreenView({
     >
       <BackupScreenHeader />
       <BackupActionList
-        actionCards={actionCards}
+        actionCards={viewState.actionCards}
         runBackupOperation={runBackupOperation}
       />
-      <BackupStatusPanel resetStatus={resetStatus} statusState={statusState} />
+      <BackupStatusPanel
+        resetStatus={resetStatus}
+        statusState={viewState.statusState}
+      />
 
       <Link
         className="text-[15px] font-extrabold"
-        href={screenState.backLink.href}
+        href={viewState.screenState.backLink.href}
         style={{ color: theme.accent }}
       >
-        {screenState.backLink.label}
+        {viewState.screenState.backLink.label}
       </Link>
     </ScrollView>
   );

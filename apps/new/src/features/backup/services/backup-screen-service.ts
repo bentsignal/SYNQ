@@ -123,3 +123,5 @@ export const getBackupViewState = ({
 export type BackupActionCardViewState = ReturnType<
   typeof getBackupViewState
 >["actionCards"][number];
+
+export type BackupViewState = ReturnType<typeof getBackupViewState>;

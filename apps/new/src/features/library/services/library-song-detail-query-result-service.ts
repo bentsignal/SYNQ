@@ -1,14 +1,12 @@
 import { buildLibrarySongDetail } from "./library-song-detail-service";
 import type {
-  LibrarySongDetailQueryErrorParams,
   LibrarySongDetailQueryResult,
   LibrarySongDetailQueryResultParams,
-  LibrarySongDetailQueryUpdatedAtParams,
 } from "./library-song-detail-query-result-types-service";
 import {
-  getQueryResultErrors,
-  getQueryResultUpdatedAt,
-} from "./library-query-result-metadata-service";
+  getLibrarySongDetailQueryErrors,
+  getLibrarySongDetailQueryUpdatedAt,
+} from "./library-song-detail-query-metadata-service";
 
 export type {
   LibrarySongDetailQueryErrorParams,
@@ -17,36 +15,6 @@ export type {
   LibrarySongDetailQueryUpdatedAtParams,
   SongDetailImagePathResolver,
 } from "./library-song-detail-query-result-types-service";
-
-export const getLibrarySongDetailQueryErrors = ({
-  albumError,
-  artistError,
-  likedError,
-  playlistError,
-  songError,
-}: LibrarySongDetailQueryErrorParams) =>
-  getQueryResultErrors([
-    songError,
-    artistError,
-    albumError,
-    playlistError,
-    likedError,
-  ]);
-
-export const getLibrarySongDetailQueryUpdatedAt = ({
-  albumUpdatedAt,
-  artistUpdatedAt,
-  likedUpdatedAt,
-  playlistUpdatedAt,
-  songUpdatedAt,
-}: LibrarySongDetailQueryUpdatedAtParams) =>
-  getQueryResultUpdatedAt([
-    songUpdatedAt,
-    artistUpdatedAt,
-    albumUpdatedAt,
-    playlistUpdatedAt,
-    likedUpdatedAt,
-  ]);
 
 export const buildLibrarySongDetailQueryResult = ({
   albumError,
@@ -89,3 +57,8 @@ export const buildLibrarySongDetailQueryResult = ({
     songError,
   }),
 });
+
+export {
+  getLibrarySongDetailQueryErrors,
+  getLibrarySongDetailQueryUpdatedAt,
+} from "./library-song-detail-query-metadata-service";

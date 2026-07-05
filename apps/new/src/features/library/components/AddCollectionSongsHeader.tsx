@@ -1,6 +1,6 @@
 import { Text, TextInput, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { AddCollectionSongsFormState } from "../services/addable-collection-songs-screen-state-service";
+import type { AddCollectionSongsFormState } from "../services/add-collection-songs-form-state-service";
 
 type AddCollectionSongsHeaderProps = {
   header: AddCollectionSongsFormState["header"];

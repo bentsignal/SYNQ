@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { getCollectionDetailViewState } from "../services/library-collection-interaction-service";
+import type { getCollectionDetailViewState } from "../services/library-collection-detail-view-state-service";
 import type { CollectionSongRowViewModel } from "../services/library-collection-song-mutation-service";
 import { LibraryCollectionSongEmptyState } from "./LibraryCollectionSongEmptyState";
 import { LibraryCollectionSongRow } from "./LibraryCollectionSongRow";

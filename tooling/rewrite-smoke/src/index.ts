@@ -719,11 +719,17 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-action-state-service";
 import {
   getCollectionDetailScreenViewState,
+} from "../../../apps/new/src/features/library/services/library-collection-detail-screen-view-state-service";
+import {
   getCollectionDetailStatusState,
+} from "../../../apps/new/src/features/library/services/library-collection-detail-status-state-service";
+import {
   getCollectionDetailViewState,
-  getDeleteCollectionConfirmationCopy,
   getLibraryCollectionSongEmptyState,
-} from "../../../apps/new/src/features/library/services/library-collection-interaction-service";
+} from "../../../apps/new/src/features/library/services/library-collection-detail-view-state-service";
+import {
+  getDeleteCollectionConfirmationCopy,
+} from "../../../apps/new/src/features/library/services/library-collection-delete-confirmation-service";
 import {
   getCollectionAddSongsHref,
   getCollectionEditHref,

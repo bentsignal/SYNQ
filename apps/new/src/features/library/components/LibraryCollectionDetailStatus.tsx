@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { CollectionDetailStatusState } from "../services/library-collection-interaction-service";
+import type { CollectionDetailStatusState } from "../services/library-collection-detail-status-state-service";
 
 type LibraryCollectionDetailStatusProps = {
   statusState: CollectionDetailStatusState;

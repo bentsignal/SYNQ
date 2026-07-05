@@ -3,7 +3,7 @@ import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { useLibraryCollectionDetailController } from "../hooks/use-library-collection-detail-controller";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
-import type { CollectionDetailScreenViewState } from "../services/library-collection-interaction-service";
+import type { CollectionDetailScreenViewState } from "../services/library-collection-detail-screen-view-state-service";
 import { LibraryCollectionDetailActions } from "./LibraryCollectionDetailActions";
 import { LibraryCollectionDetailHeader } from "./LibraryCollectionDetailHeader";
 import { LibraryCollectionDetailStatus } from "./LibraryCollectionDetailStatus";

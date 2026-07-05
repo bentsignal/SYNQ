@@ -1,7 +1,7 @@
 import { useLibraryCollectionDetailController } from "./use-library-collection-detail-controller";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
-import { getCollectionDetailScreenViewState } from "../services/library-collection-interaction-service";
+import { getCollectionDetailScreenViewState } from "../services/library-collection-detail-screen-view-state-service";
 
 export type LibraryCollectionDetailQueryResult = {
   detail: LibraryCollectionDetail;

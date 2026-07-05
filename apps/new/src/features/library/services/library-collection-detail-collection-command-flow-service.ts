@@ -7,7 +7,7 @@ import {
   type NativeConfirmationPresenter,
   type NativeRouteReplacer,
 } from "./library-collection-detail-mutation-runtime-service";
-import { getDeleteCollectionConfirmationCopy } from "./library-collection-interaction-service";
+import { getDeleteCollectionConfirmationCopy } from "./library-collection-delete-confirmation-service";
 import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
 import {
   getCollectionDeleteFinishCommand,

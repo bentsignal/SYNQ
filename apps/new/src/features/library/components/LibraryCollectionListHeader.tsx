@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionListHref } from "../services/library-collection-list-copy-service";
+import { LibraryBackLink } from "./LibraryBackLink";
 
 type LibraryCollectionListHeaderProps = {
   backLink: {
@@ -39,13 +40,11 @@ export function LibraryCollectionListHeader({
         {title}
       </Text>
       <View className="flex-row flex-wrap gap-3">
-        <Link
-          className="text-sm font-extrabold uppercase"
-          href={backLink.href}
-          style={{ color: theme.accent }}
-        >
-          {backLink.label}
-        </Link>
+        <LibraryBackLink
+          backLink={backLink}
+          theme={theme}
+          variant="header"
+        />
         <Link
           className="text-sm font-extrabold uppercase"
           href={createLink.href}

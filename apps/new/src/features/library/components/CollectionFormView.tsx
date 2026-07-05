@@ -1,6 +1,6 @@
-import { Link } from "expo-router";
 import { View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import { LibraryBackLink } from "./LibraryBackLink";
 import { CollectionFormHeader } from "./CollectionFormHeader";
 import { CollectionFormPanel } from "./CollectionFormPanel";
 import type { CollectionFormViewProps } from "./collection-form-types";
@@ -66,13 +66,7 @@ export function CollectionFormView({
         year={year}
       />
 
-      <Link
-        className="text-[15px] font-extrabold"
-        href={backLink.href}
-        style={{ color: theme.accent }}
-      >
-        {backLink.label}
-      </Link>
+      <LibraryBackLink backLink={backLink} theme={theme} />
     </View>
   );
 }

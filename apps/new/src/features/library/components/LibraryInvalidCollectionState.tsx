@@ -1,7 +1,7 @@
-import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { getLibraryInvalidCollectionState } from "../services/library-collection-navigation-service";
+import { LibraryBackLink } from "./LibraryBackLink";
 
 type LibraryInvalidCollectionStateModel = ReturnType<
   typeof getLibraryInvalidCollectionState
@@ -38,13 +38,7 @@ export function LibraryInvalidCollectionState({
       >
         {state.body}
       </Text>
-      <Link
-        className="text-[15px] font-extrabold tracking-normal"
-        href={state.backLink.href}
-        style={{ color: theme.accent }}
-      >
-        {state.backLink.label}
-      </Link>
+      <LibraryBackLink backLink={state.backLink} theme={theme} />
     </View>
   );
 }

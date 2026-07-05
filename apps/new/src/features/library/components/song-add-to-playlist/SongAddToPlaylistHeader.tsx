@@ -1,7 +1,7 @@
-import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import type { CustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { getSongAddToPlaylistHeaderState } from "../../services/song-add-to-playlist-header-state-service";
+import { LibraryBackLink } from "../LibraryBackLink";
 
 type SongAddToPlaylistHeaderProps = {
   headerState: ReturnType<typeof getSongAddToPlaylistHeaderState>;
@@ -26,14 +26,11 @@ export function SongAddToPlaylistHeader({
       >
         {headerState.copy.title}
       </Text>
-      <Link
-        className="text-sm font-extrabold uppercase"
-        href={headerState.backLink.href}
-        style={{ color: theme.accent }}
-      >
-        {headerState.backLink.label}
-      </Link>
+      <LibraryBackLink
+        backLink={headerState.backLink}
+        theme={theme}
+        variant="header"
+      />
     </View>
   );
 }
-

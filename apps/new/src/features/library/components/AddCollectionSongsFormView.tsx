@@ -1,4 +1,3 @@
-import { Link } from "expo-router";
 import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { AddCollectionSongsFormState } from "../services/add-collection-songs-form-state-service";
@@ -10,6 +9,7 @@ import { AddCollectionSongsSectionHeader } from "./AddCollectionSongsSectionHead
 import { AddCollectionSongsSelectionPanel } from "./AddCollectionSongsSelectionPanel";
 import { AddCollectionSongsStatusPanel } from "./AddCollectionSongsStatusPanel";
 import { AddableSongList } from "./AddableSongList";
+import { LibraryBackLink } from "./LibraryBackLink";
 
 type AddCollectionSongsFormViewProps = {
   formState: AddCollectionSongsFormState;
@@ -67,13 +67,7 @@ export function AddCollectionSongsFormView({
         statusState={statusState}
       />
 
-      <Link
-        className="text-[15px] font-extrabold"
-        href={formState.backLink.href}
-        style={{ color: theme.accent }}
-      >
-        {formState.backLink.label}
-      </Link>
+      <LibraryBackLink backLink={formState.backLink} theme={theme} />
     </ScrollView>
   );
 }

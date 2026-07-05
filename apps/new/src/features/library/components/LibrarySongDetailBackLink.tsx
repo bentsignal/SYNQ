@@ -1,6 +1,6 @@
-import { Link } from "expo-router";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { getLibrarySongDetailViewState } from "../services/library-song-detail-view-state-service";
+import { LibraryBackLink } from "./LibraryBackLink";
 
 type LibrarySongDetailBackLinkState = ReturnType<
   typeof getLibrarySongDetailViewState
@@ -15,13 +15,5 @@ export function LibrarySongDetailBackLink({
 }: LibrarySongDetailBackLinkProps) {
   const theme = useCustomizationTheme();
 
-  return (
-    <Link
-      className="text-[15px] font-extrabold"
-      href={backLink.href}
-      style={{ color: theme.accent }}
-    >
-      {backLink.label}
-    </Link>
-  );
+  return <LibraryBackLink backLink={backLink} theme={theme} />;
 }

@@ -1,4 +1,3 @@
-import { Link } from "expo-router";
 import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { useLibraryCollectionDetailController } from "../hooks/use-library-collection-detail-controller";
@@ -8,6 +7,7 @@ import { LibraryCollectionDetailActions } from "./LibraryCollectionDetailActions
 import { LibraryCollectionDetailHeader } from "./LibraryCollectionDetailHeader";
 import { LibraryCollectionDetailStatus } from "./LibraryCollectionDetailStatus";
 import { LibraryCollectionSongList } from "./LibraryCollectionSongList";
+import { LibraryBackLink } from "./LibraryBackLink";
 import { LibrarySectionHeader } from "./LibrarySectionHeader";
 
 type LibraryCollectionDetailResult = {
@@ -74,13 +74,7 @@ export function LibraryCollectionDetailView({
 
       <LibraryCollectionDetailStatus statusState={statusState} />
 
-      <Link
-        className="text-[15px] font-extrabold"
-        href={viewState.backLink.href}
-        style={{ color: theme.accent }}
-      >
-        {viewState.backLink.label}
-      </Link>
+      <LibraryBackLink backLink={viewState.backLink} theme={theme} />
     </ScrollView>
   );
 }

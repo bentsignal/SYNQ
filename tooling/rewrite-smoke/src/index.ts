@@ -377,6 +377,9 @@ import {
   runReceiveWifiSongCommand,
 } from "../../../apps/new/src/features/import/services/import-session-wifi-command-flow-service";
 import {
+  createImportSessionWifiCommands,
+} from "../../../apps/new/src/features/import/services/import-session-wifi-command-service";
+import {
   discardImportSessionLifecycle,
   getFinishImportSessionAction,
   resetImportSessionLifecycle,
@@ -5040,6 +5043,20 @@ async function assertImportSessionSmoke() {
     ["receive-wifi-song", null],
     ["review", null],
     ["fail", "No Wi-Fi songs were received."],
+  ]);
+  importSessionWifiCommandEvents.length = 0;
+  const importSessionWifiCommands = createImportSessionWifiCommands({
+    dispatch: dispatchImportSessionWifiCommand,
+    prepareWifiImportCache: async () => {},
+    songs: [importDraft(95)],
+  });
+  assert.equal(await importSessionWifiCommands.beginWifiTransfer(2), true);
+  importSessionWifiCommands.receiveWifiSong(importDraft(96));
+  importSessionWifiCommands.finishWifiTransfer();
+  assert.deepEqual(importSessionWifiCommandEvents, [
+    ["begin-wifi-transfer", null],
+    ["receive-wifi-song", null],
+    ["review", null],
   ]);
   assert.equal(
     getImportSessionCommandErrorMessage({

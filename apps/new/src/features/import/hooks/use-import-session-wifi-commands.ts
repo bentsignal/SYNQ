@@ -1,10 +1,8 @@
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { createImportCacheDirectory } from "../services/import-file-cache-service";
 import {
-  runBeginWifiTransferCommand,
-  runFinishWifiTransferCommand,
-  runReceiveWifiSongCommand,
-} from "../services/import-session-wifi-command-flow-service";
+  createImportSessionWifiCommands,
+} from "../services/import-session-wifi-command-service";
 import type { ImportSessionAction } from "../services/import-session-state-service";
 import type { ImportSongDraft } from "../types/import-session";
 
@@ -17,33 +15,13 @@ export function useImportSessionWifiCommands({
   dispatch,
   songs,
 }: UseImportSessionWifiCommandsParams) {
-  const beginWifiTransfer = useCallback(
-    (total: number) =>
-      runBeginWifiTransferCommand({
+  return useMemo(
+    () =>
+      createImportSessionWifiCommands({
         dispatch,
         prepareWifiImportCache: createImportCacheDirectory,
-        total,
+        songs,
       }),
-    [dispatch],
-  );
-
-  const receiveWifiSong = useCallback(
-    (song: ImportSongDraft) => {
-      runReceiveWifiSongCommand({ dispatch, song });
-    },
-    [dispatch],
-  );
-
-  const finishWifiTransfer = useCallback(() => {
-    runFinishWifiTransferCommand({ dispatch, songs });
-  }, [dispatch, songs]);
-
-  return useMemo(
-    () => ({
-      beginWifiTransfer,
-      finishWifiTransfer,
-      receiveWifiSong,
-    }),
-    [beginWifiTransfer, finishWifiTransfer, receiveWifiSong],
+    [dispatch, songs],
   );
 }

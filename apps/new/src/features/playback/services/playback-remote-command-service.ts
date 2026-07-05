@@ -1,3 +1,8 @@
+import {
+  runAdGatedRemoteCommand,
+  runSeekRemoteCommand,
+} from "./playback-remote-ad-gate-service";
+
 export type PlaybackRemoteCommand =
   | { type: "error"; message: string }
   | { type: "next" }
@@ -22,22 +27,6 @@ export type PlaybackRemoteCommandHandlers = {
   seekTo: (position: number) => void;
   skipNext: () => void;
   skipPrevious: () => void;
-};
-
-const runAdGatedRemoteCommand = ({
-  command,
-  handlers,
-}: {
-  command: () => void;
-  handlers: PlaybackRemoteCommandHandlers;
-}): PlaybackRemoteCommandResult => {
-  if (!handlers.canRunPlaybackCommand()) {
-    handlers.beginAdBreak();
-    return "started-ad";
-  }
-
-  command();
-  return "handled";
 };
 
 export const handlePlaybackRemoteCommand = ({
@@ -67,12 +56,10 @@ export const handlePlaybackRemoteCommand = ({
         handlers,
       });
     case "seek":
-      if (!handlers.canRunPlaybackCommand()) {
-        return "blocked-by-ad";
-      }
-
-      handlers.seekTo(command.position);
-      return "handled";
+      return runSeekRemoteCommand({
+        handlers,
+        position: command.position,
+      });
     case "queue-ended":
       return runAdGatedRemoteCommand({
         command: handlers.queueEnded,

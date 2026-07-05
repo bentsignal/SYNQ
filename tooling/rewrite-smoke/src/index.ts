@@ -244,6 +244,10 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-native-command-step-service";
 import { runAdGatedPlaybackCommand } from "../../../apps/new/src/features/playback/services/playback-command-gate-service";
 import {
+  runAdGatedRemoteCommand,
+  runSeekRemoteCommand,
+} from "../../../apps/new/src/features/playback/services/playback-remote-ad-gate-service";
+import {
   handlePlaybackRemoteCommand,
   type PlaybackRemoteCommandHandlers,
 } from "../../../apps/new/src/features/playback/services/playback-remote-command-service";
@@ -3390,6 +3394,22 @@ function assertPlaybackNativeCommandPlanSmoke() {
     skipPrevious: () => remoteEvents.push("previous"),
   };
   assert.equal(
+    runAdGatedRemoteCommand({
+      command: () => remoteEvents.push("direct-gated"),
+      handlers: remoteHandlers,
+    }),
+    "handled",
+  );
+  assert.equal(
+    runSeekRemoteCommand({
+      handlers: remoteHandlers,
+      position: 32_000,
+    }),
+    "handled",
+  );
+  assert.deepEqual(remoteEvents, ["direct-gated", "seek:32000"]);
+  remoteEvents.length = 0;
+  assert.equal(
     handlePlaybackRemoteCommand({
       command: { type: "play" },
       handlers: remoteHandlers,
@@ -3434,6 +3454,22 @@ function assertPlaybackNativeCommandPlanSmoke() {
   ]);
 
   remoteAllowed = false;
+  remoteEvents.length = 0;
+  assert.equal(
+    runAdGatedRemoteCommand({
+      command: () => remoteEvents.push("unexpected-gated"),
+      handlers: remoteHandlers,
+    }),
+    "started-ad",
+  );
+  assert.equal(
+    runSeekRemoteCommand({
+      handlers: remoteHandlers,
+      position: 48_000,
+    }),
+    "blocked-by-ad",
+  );
+  assert.deepEqual(remoteEvents, ["ad"]);
   remoteEvents.length = 0;
   assert.equal(
     handlePlaybackRemoteCommand({

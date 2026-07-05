@@ -3,7 +3,7 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import { exportLibrarySongCommand } from "../services/library-song-command-service";
 import { type LibrarySongDetail } from "../services/library-song-detail-types-service";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-action-state-service";
-import { runLibrarySongExportCommand } from "../services/library-song-detail-mutation-command-flow-service";
+import { runLibrarySongExportCommand } from "../services/library-song-export-command-flow-service";
 import type { LibrarySongDetailMutationDispatch } from "../services/library-song-detail-mutation-runtime-service";
 
 type UseLibrarySongExportMutationParams = {

@@ -5,7 +5,7 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import { deleteLibrarySongCommand } from "../services/library-song-command-service";
 import { type LibrarySongDetail } from "../services/library-song-detail-types-service";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-action-state-service";
-import { runLibrarySongDeleteCommand } from "../services/library-song-detail-mutation-command-flow-service";
+import { runLibrarySongDeleteCommand } from "../services/library-song-delete-command-flow-service";
 import type { LibrarySongDetailMutationDispatch } from "../services/library-song-detail-mutation-runtime-service";
 
 type UseLibrarySongDeleteMutationParams = {

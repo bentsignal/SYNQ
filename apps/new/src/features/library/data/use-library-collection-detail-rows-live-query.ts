@@ -2,7 +2,7 @@ import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import {
   buildArtistRowsQuery,
   buildArtistSongRowsQuery,
-} from "../repository/collection-detail-query-repository";
+} from "../repository/artist-detail-query-repository";
 import {
   buildAlbumRowsQuery,
   buildAlbumSongRowsQuery,

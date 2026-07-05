@@ -1,10 +1,11 @@
-import { Pressable, Text, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type {
   LibrarySongPreviewOrder,
   LibrarySongPreviewSort,
 } from "../hooks/use-library-song-preview-query";
 import { useLibrarySongListControls } from "../hooks/use-library-song-list-controls";
+import { LibrarySongListControlButton } from "./LibrarySongListControlButton";
 
 type LibrarySongListControlsProps = {
   order: LibrarySongPreviewOrder;
@@ -52,47 +53,22 @@ export function LibrarySongListControls({
       <View className="flex-row flex-wrap gap-2">
         {controlsState.sortOptions.map((option) => {
           return (
-            <Pressable
+            <LibrarySongListControlButton
               key={option.value}
-              accessibilityRole="button"
-              accessibilityState={{ selected: option.isActive }}
+              isActive={option.isActive}
+              label={option.label}
               onPress={() => selectSort(option.value)}
-              className="min-h-[38px] min-w-[72px] items-center justify-center rounded-lg border px-3"
-              style={{
-                backgroundColor: option.isActive
-                  ? theme.accent
-                  : theme.surface,
-                borderColor: option.isActive ? theme.accent : theme.border,
-              }}
-            >
-              <Text
-                className="text-xs font-extrabold uppercase"
-                style={{
-                  color: option.isActive ? theme.onAccent : theme.secondaryText,
-                }}
-              >
-                {option.label}
-              </Text>
-            </Pressable>
+              theme={theme}
+            />
           );
         })}
 
-        <Pressable
-          accessibilityRole="button"
+        <LibrarySongListControlButton
+          label={controlsState.orderButton.label}
           onPress={toggleOrder}
-          className="min-h-[38px] min-w-[72px] items-center justify-center rounded-lg border px-3"
-          style={{
-            backgroundColor: theme.primaryText,
-            borderColor: theme.primaryText,
-          }}
-        >
-          <Text
-            className="text-xs font-extrabold uppercase"
-            style={{ color: theme.surface }}
-          >
-            {controlsState.orderButton.label}
-          </Text>
-        </Pressable>
+          theme={theme}
+          variant="toggle"
+        />
       </View>
     </View>
   );

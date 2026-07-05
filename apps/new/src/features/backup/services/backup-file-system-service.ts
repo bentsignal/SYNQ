@@ -1,15 +1,19 @@
 import * as FileSystem from "expo-file-system";
 import {
-  assertBackupRestoreStagingDirectoryHasFilesWithDependencies,
-  cleanupBackupRestoreStagingDirectoryWithDependencies,
-  clearBackupDocumentDirectoryWithDependencies,
+  type BackupFileSystemDependencies,
+} from "./backup-file-system-dependencies-service";
+import { clearBackupDocumentDirectoryWithDependencies } from "./backup-file-system-document-executor-service";
+import {
   getBackupArchivePathWithDependencies,
   getBackupDocumentDirectoryWithDependencies,
   getBackupRestoreStagingDirectoryWithDependencies,
+} from "./backup-file-system-path-service";
+import {
+  assertBackupRestoreStagingDirectoryHasFilesWithDependencies,
+  cleanupBackupRestoreStagingDirectoryWithDependencies,
   prepareBackupRestoreStagingDirectoryWithDependencies,
   replaceBackupDocumentDirectoryWithStagedItemsWithDependencies,
-  type BackupFileSystemDependencies,
-} from "./backup-file-system-executor-service";
+} from "./backup-file-system-restore-executor-service";
 
 const backupFileSystemDependencies: BackupFileSystemDependencies = {
   cacheDirectory: FileSystem.cacheDirectory,

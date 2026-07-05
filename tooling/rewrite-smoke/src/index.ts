@@ -1363,16 +1363,20 @@ import {
   getBackupRestoreStagedItemMoves,
 } from "../../../apps/new/src/features/backup/services/backup-file-system-plan-service";
 import {
-  assertBackupRestoreStagingDirectoryHasFilesWithDependencies,
-  cleanupBackupRestoreStagingDirectoryWithDependencies,
-  clearBackupDocumentDirectoryWithDependencies,
+  type BackupFileSystemDependencies,
+} from "../../../apps/new/src/features/backup/services/backup-file-system-dependencies-service";
+import { clearBackupDocumentDirectoryWithDependencies } from "../../../apps/new/src/features/backup/services/backup-file-system-document-executor-service";
+import {
   getBackupArchivePathWithDependencies,
   getBackupDocumentDirectoryWithDependencies,
   getBackupRestoreStagingDirectoryWithDependencies,
+} from "../../../apps/new/src/features/backup/services/backup-file-system-path-service";
+import {
+  assertBackupRestoreStagingDirectoryHasFilesWithDependencies,
+  cleanupBackupRestoreStagingDirectoryWithDependencies,
   prepareBackupRestoreStagingDirectoryWithDependencies,
   replaceBackupDocumentDirectoryWithStagedItemsWithDependencies,
-  type BackupFileSystemDependencies,
-} from "../../../apps/new/src/features/backup/services/backup-file-system-executor-service";
+} from "../../../apps/new/src/features/backup/services/backup-file-system-restore-executor-service";
 import type { BackupSessionState } from "../../../apps/new/src/features/backup/types/backup-session";
 import {
   getPremiumActionState,

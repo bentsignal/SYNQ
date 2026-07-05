@@ -1,16 +1,24 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useRef, type RefObject } from "react";
 import type { PlaybackAction } from "../services/playback-session-action-service";
 import type {
   PlaybackQueueItem,
   PlaybackState,
 } from "../types/playback-state";
 import {
-  getSyncPlaybackPremiumAction,
-} from "../services/playback-ad-gate-service";
-import { getPlaybackAdGateControllerDecisions } from "../services/playback-ad-gate-decision-service";
-import {
   createPlaybackAdGateControls,
 } from "../services/playback-ad-gate-controller-service";
+import { usePlaybackAdGateAutoTransitions } from "./use-playback-ad-gate-auto-transitions";
+import { usePlaybackPremiumGateSync } from "./use-playback-premium-gate-sync";
+
+type UsePlaybackAdGateControllerParams = {
+  activeTrack: PlaybackQueueItem | null;
+  dispatch: (action: PlaybackAction) => void;
+  onBeginAdBreak: () => void;
+  onResumeLibraryAfterPremium: () => void;
+  premiumActive: boolean;
+  state: PlaybackState;
+  stateRef: RefObject<PlaybackState>;
+};
 
 export function usePlaybackAdGateController({
   activeTrack,
@@ -20,21 +28,14 @@ export function usePlaybackAdGateController({
   premiumActive,
   stateRef,
   state,
-}: {
-  activeTrack: PlaybackQueueItem | null;
-  dispatch: (action: PlaybackAction) => void;
-  onBeginAdBreak: () => void;
-  onResumeLibraryAfterPremium: () => void;
-  premiumActive: boolean;
-  state: PlaybackState;
-  stateRef: React.RefObject<PlaybackState>;
-}) {
+}: UsePlaybackAdGateControllerParams) {
   const premiumActiveRef = useRef(premiumActive);
 
-  useEffect(() => {
-    premiumActiveRef.current = premiumActive;
-    dispatch(getSyncPlaybackPremiumAction(premiumActive));
-  }, [dispatch, premiumActive]);
+  usePlaybackPremiumGateSync({
+    dispatch,
+    premiumActive,
+    premiumActiveRef,
+  });
 
   const { beginAdBreak, canRunPlaybackCommand } = useMemo(
     () =>
@@ -47,32 +48,13 @@ export function usePlaybackAdGateController({
     [dispatch, onBeginAdBreak, stateRef],
   );
 
-  const adGateActive = state.adGate.active;
-  const adGateDue = state.adGate.due;
-  const { shouldBeginAdBreak, shouldResumeAfterPremium } =
-    getPlaybackAdGateControllerDecisions({
-      hasActiveTrack: activeTrack !== null,
-      premiumActive,
-      state,
-    });
-
-  useEffect(() => {
-    if (shouldBeginAdBreak) {
-      beginAdBreak();
-    }
-  }, [adGateActive, adGateDue, beginAdBreak, premiumActive, shouldBeginAdBreak]);
-
-  useEffect(() => {
-    if (shouldResumeAfterPremium) {
-      onResumeLibraryAfterPremium();
-    }
-  }, [
+  usePlaybackAdGateAutoTransitions({
     activeTrack,
-    adGateActive,
+    beginAdBreak,
     onResumeLibraryAfterPremium,
     premiumActive,
-    shouldResumeAfterPremium,
-  ]);
+    state,
+  });
 
   return {
     beginAdBreak,

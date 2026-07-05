@@ -44,26 +44,32 @@ export function CollectionFormView({
 
       <CollectionFormPanel
         actionState={actionState}
-        artistNames={artistNames}
         borderColor={theme.border}
-        copy={copy}
-        errorMessages={errorMessages}
-        fieldState={fieldState}
-        image={image}
-        imageFallbackName={imageFallbackName}
-        imageFallbackUri={imageFallbackUri}
-        imageInitial={imageInitial}
-        imageLabel={imageLabel}
-        isSaving={isSaving}
-        name={name}
-        onChangeArtistNames={onChangeArtistNames}
-        onChangeName={onChangeName}
-        onChangeYear={onChangeYear}
-        onPickImage={onPickImage}
-        onSave={onSave}
-        saveLabel={saveLabel}
+        fields={{
+          artistNames,
+          copy,
+          fieldState,
+          name,
+          onChangeArtistNames,
+          onChangeName,
+          onChangeYear,
+          year,
+        }}
+        formAction={{
+          errorMessages,
+          isSaving,
+          onSave,
+          saveLabel,
+        }}
+        imageInput={{
+          image,
+          imageFallbackName,
+          imageFallbackUri,
+          imageInitial,
+          imageLabel,
+          onPickImage,
+        }}
         surfaceColor={theme.surface}
-        year={year}
       />
 
       <LibraryBackLink backLink={backLink} theme={theme} />

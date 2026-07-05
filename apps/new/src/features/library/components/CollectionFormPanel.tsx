@@ -11,50 +11,41 @@ import { CollectionImageInput } from "./CollectionImageInput";
 
 type CollectionFormPanelProps = {
   actionState: CollectionFormActionState;
-  artistNames?: string;
   borderColor: string;
-  copy: CollectionFormCopy;
-  errorMessages: (string | false | null | undefined)[];
-  fieldState: CollectionFormFieldState;
-  image: CollectionFormImage;
-  imageFallbackName?: string | null;
-  imageFallbackUri?: string | null;
-  imageInitial: string;
-  imageLabel: string;
-  isSaving: boolean;
-  name: string;
-  onChangeArtistNames?: (artistNames: string) => void;
-  onChangeName: (name: string) => void;
-  onChangeYear: (year: string) => void;
-  onPickImage: () => void;
-  onSave: () => void;
-  saveLabel: string;
+  fields: {
+    artistNames?: string;
+    copy: CollectionFormCopy;
+    fieldState: CollectionFormFieldState;
+    name: string;
+    onChangeArtistNames?: (artistNames: string) => void;
+    onChangeName: (name: string) => void;
+    onChangeYear: (year: string) => void;
+    year: string;
+  };
+  formAction: {
+    errorMessages: (string | false | null | undefined)[];
+    isSaving: boolean;
+    onSave: () => void;
+    saveLabel: string;
+  };
+  imageInput: {
+    image: CollectionFormImage;
+    imageFallbackName?: string | null;
+    imageFallbackUri?: string | null;
+    imageInitial: string;
+    imageLabel: string;
+    onPickImage: () => void;
+  };
   surfaceColor: string;
-  year: string;
 };
 
 export function CollectionFormPanel({
   actionState,
-  artistNames,
   borderColor,
-  copy,
-  errorMessages,
-  fieldState,
-  image,
-  imageFallbackName,
-  imageFallbackUri,
-  imageInitial,
-  imageLabel,
-  isSaving,
-  name,
-  onChangeArtistNames,
-  onChangeName,
-  onChangeYear,
-  onPickImage,
-  onSave,
-  saveLabel,
+  fields,
+  formAction,
+  imageInput,
   surfaceColor,
-  year,
 }: CollectionFormPanelProps) {
   return (
     <View
@@ -63,30 +54,30 @@ export function CollectionFormPanel({
     >
       <CollectionFormFields
         actionState={actionState}
-        artistNames={artistNames}
-        copy={copy}
-        fieldState={fieldState}
-        name={name}
-        onChangeArtistNames={onChangeArtistNames}
-        onChangeName={onChangeName}
-        onChangeYear={onChangeYear}
-        year={year}
+        artistNames={fields.artistNames}
+        copy={fields.copy}
+        fieldState={fields.fieldState}
+        name={fields.name}
+        onChangeArtistNames={fields.onChangeArtistNames}
+        onChangeName={fields.onChangeName}
+        onChangeYear={fields.onChangeYear}
+        year={fields.year}
       />
       <CollectionImageInput
         actionState={actionState}
-        image={image}
-        imageFallbackName={imageFallbackName}
-        imageFallbackUri={imageFallbackUri}
-        imageInitial={imageInitial}
-        imageLabel={imageLabel}
-        onPickImage={onPickImage}
+        image={imageInput.image}
+        imageFallbackName={imageInput.imageFallbackName}
+        imageFallbackUri={imageInput.imageFallbackUri}
+        imageInitial={imageInput.imageInitial}
+        imageLabel={imageInput.imageLabel}
+        onPickImage={imageInput.onPickImage}
       />
       <CollectionFormActions
         actionState={actionState}
-        errorMessages={errorMessages}
-        isSaving={isSaving}
-        onSave={onSave}
-        saveLabel={saveLabel}
+        errorMessages={formAction.errorMessages}
+        isSaving={formAction.isSaving}
+        onSave={formAction.onSave}
+        saveLabel={formAction.saveLabel}
       />
     </View>
   );

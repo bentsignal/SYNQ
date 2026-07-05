@@ -15,7 +15,7 @@ import {
   getCollectionSongRemovalFinishCommand,
   getCollectionSongRemovalStartCommand,
   getCollectionSongRemovalSuccessCommand,
-} from "./library-collection-mutation-service";
+} from "./library-collection-mutation-song-command-service";
 
 export const runLibraryCollectionSongMoveCommand = async ({
   collectionId,

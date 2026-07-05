@@ -765,18 +765,22 @@ import {
   getCollectionDeleteFinishCommand,
   getCollectionDeleteStartCommand,
   getCollectionDeleteSuccessCommand,
-  getCollectionDetailMutationBlockedCommand,
-  getCollectionDetailMutationFailureCommand,
   getCollectionExportFinishCommand,
   getCollectionExportStartCommand,
   getCollectionExportSuccessCommand,
+} from "../../../apps/new/src/features/library/services/library-collection-mutation-collection-command-service";
+import {
+  getCollectionDetailMutationBlockedCommand,
+  getCollectionDetailMutationFailureCommand,
+} from "../../../apps/new/src/features/library/services/library-collection-mutation-common-command-service";
+import {
   getCollectionSongMoveFinishCommand,
   getCollectionSongMoveStartCommand,
   getCollectionSongMoveSuccessCommand,
   getCollectionSongRemovalFinishCommand,
   getCollectionSongRemovalStartCommand,
   getCollectionSongRemovalSuccessCommand,
-} from "../../../apps/new/src/features/library/services/library-collection-mutation-service";
+} from "../../../apps/new/src/features/library/services/library-collection-mutation-song-command-service";
 import { runCollectionDetailMutationAttempt } from "../../../apps/new/src/features/library/services/library-collection-detail-mutation-runtime-service";
 import {
   runLibraryCollectionDeleteCommand,

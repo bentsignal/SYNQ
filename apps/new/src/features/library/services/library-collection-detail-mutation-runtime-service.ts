@@ -1,5 +1,5 @@
 import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
-import { getCollectionDetailMutationFailureCommand } from "./library-collection-mutation-service";
+import { getCollectionDetailMutationFailureCommand } from "./library-collection-mutation-common-command-service";
 import type {
   CollectionDetailMutationAction,
   CollectionDetailMutationKind,

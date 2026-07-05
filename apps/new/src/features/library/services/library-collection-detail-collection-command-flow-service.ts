@@ -13,11 +13,11 @@ import {
   getCollectionDeleteFinishCommand,
   getCollectionDeleteStartCommand,
   getCollectionDeleteSuccessCommand,
-  getCollectionDetailMutationBlockedCommand,
   getCollectionExportFinishCommand,
   getCollectionExportStartCommand,
   getCollectionExportSuccessCommand,
-} from "./library-collection-mutation-service";
+} from "./library-collection-mutation-collection-command-service";
+import { getCollectionDetailMutationBlockedCommand } from "./library-collection-mutation-common-command-service";
 
 export const runLibraryCollectionDeleteCommand = ({
   actionState,

@@ -1,11 +1,9 @@
 import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetail } from "../hooks/use-library-song-detail-query";
-import {
-  type LibrarySongEditActionState,
-  type LibrarySongEditScreenViewState,
-} from "../services/library-song-edit-screen-state-service";
+import type { LibrarySongEditActionState } from "../services/library-song-edit-action-state-service";
 import type { LibrarySongEditFormState } from "../services/library-song-edit-form-state-service";
+import type { LibrarySongEditScreenViewState } from "../services/library-song-edit-screen-state-service";
 import { EditLibrarySongActions } from "./EditLibrarySongActions";
 import { EditLibrarySongCoverInput } from "./EditLibrarySongCoverInput";
 import { EditLibrarySongFields } from "./EditLibrarySongFields";

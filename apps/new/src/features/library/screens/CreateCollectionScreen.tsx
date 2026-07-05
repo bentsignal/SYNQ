@@ -5,6 +5,7 @@ import {
   getCreateCollectionFormCopy,
   getCreateCollectionFormSubtitle,
 } from "../services/collection-form-copy-service";
+import { getCollectionFormBackLink } from "../services/collection-form-navigation-service";
 
 type CreateCollectionKind = CollectionFormKind;
 
@@ -32,6 +33,7 @@ export function CreateCollectionScreen({ kind }: CreateCollectionScreenProps) {
   return (
     <CollectionFormView
       actionState={actionState}
+      backLink={getCollectionFormBackLink()}
       copy={copy}
       errorMessages={[error]}
       image={image}

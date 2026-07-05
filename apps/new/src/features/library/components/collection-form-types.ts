@@ -1,5 +1,6 @@
 import type { CollectionFormActionState } from "../services/collection-form-interaction-service";
 import type { CollectionFormKind } from "../services/collection-form-domain-service";
+import type { getCollectionFormBackLink } from "../services/collection-form-navigation-service";
 
 export type { CollectionFormKind } from "../services/collection-form-domain-service";
 
@@ -17,6 +18,7 @@ export type CollectionFormImage = {
 export type CollectionFormViewProps = {
   actionState: CollectionFormActionState;
   artistNames?: string;
+  backLink: ReturnType<typeof getCollectionFormBackLink>;
   copy: CollectionFormCopy;
   errorMessages?: (string | false | null | undefined)[];
   image: CollectionFormImage;

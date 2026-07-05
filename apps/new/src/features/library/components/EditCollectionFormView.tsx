@@ -3,6 +3,7 @@ import {
   type CollectionFormActionState,
 } from "../services/collection-form-interaction-service";
 import { getEditCollectionFormSubtitle } from "../services/collection-form-copy-service";
+import { getCollectionFormBackLink } from "../services/collection-form-navigation-service";
 import type { EditCollectionKind } from "../services/edit-collection-state-service";
 import { CollectionFormView } from "./CollectionFormView";
 import type { CollectionFormImage } from "./collection-form-types";
@@ -60,6 +61,7 @@ export function EditCollectionFormView({
     <CollectionFormView
       actionState={actionState}
       artistNames={artistNames}
+      backLink={getCollectionFormBackLink()}
       copy={copy}
       errorMessages={[
         collectionIsMissing && "Collection not found.",

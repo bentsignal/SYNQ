@@ -1,14 +1,11 @@
 import { useNumericRouteParam } from "@/src/features/app-shell/hooks/use-numeric-route-param";
 import { AddCollectionSongsFormView } from "../components/AddCollectionSongsFormView";
 import { LibraryInvalidCollectionState } from "../components/LibraryInvalidCollectionState";
-import { useAddCollectionSongsFormController } from "../hooks/use-add-collection-songs-form-controller";
-import { useAddCollectionSongsSearchQuery } from "../hooks/use-add-collection-songs-search-query";
-import type { AddableCollectionSongsQueryResult } from "../hooks/use-addable-collection-songs-query";
 import {
-  useAddableAlbumCollectionSongsQuery,
-  useAddableArtistCollectionSongsQuery,
-  useAddablePlaylistCollectionSongsQuery,
-} from "../hooks/use-addable-collection-songs-query";
+  useAddAlbumCollectionSongsConnectedController,
+  useAddArtistCollectionSongsConnectedController,
+  useAddPlaylistCollectionSongsConnectedController,
+} from "../hooks/use-add-collection-songs-connected-controller";
 import { getLibraryInvalidCollectionState } from "../services/library-collection-navigation-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 
@@ -51,79 +48,26 @@ function AddCollectionSongsContent({
 }
 
 function AddAlbumCollectionSongsContent({ id }: { id: number }) {
-  const { query, setQuery } = useAddCollectionSongsSearchQuery();
-  const addable = useAddableAlbumCollectionSongsQuery({
+  const controller = useAddAlbumCollectionSongsConnectedController({
     collectionId: id,
-    query,
   });
 
-  return (
-    <AddCollectionSongsConnectedContent
-      addable={addable}
-      collectionId={id}
-      kind="album"
-      onChangeQuery={setQuery}
-      query={query}
-    />
-  );
+  return <AddCollectionSongsFormView {...controller} />;
 }
 
 function AddArtistCollectionSongsContent({ id }: { id: number }) {
-  const { query, setQuery } = useAddCollectionSongsSearchQuery();
-  const addable = useAddableArtistCollectionSongsQuery({
+  const controller = useAddArtistCollectionSongsConnectedController({
     collectionId: id,
-    query,
   });
 
-  return (
-    <AddCollectionSongsConnectedContent
-      addable={addable}
-      collectionId={id}
-      kind="artist"
-      onChangeQuery={setQuery}
-      query={query}
-    />
-  );
+  return <AddCollectionSongsFormView {...controller} />;
 }
 
 function AddPlaylistCollectionSongsContent({ id }: { id: number }) {
-  const { query, setQuery } = useAddCollectionSongsSearchQuery();
-  const addable = useAddablePlaylistCollectionSongsQuery({
+  const controller = useAddPlaylistCollectionSongsConnectedController({
     collectionId: id,
-    query,
   });
 
-  return (
-    <AddCollectionSongsConnectedContent
-      addable={addable}
-      collectionId={id}
-      kind="playlist"
-      onChangeQuery={setQuery}
-      query={query}
-    />
-  );
-}
-
-function AddCollectionSongsConnectedContent({
-  addable,
-  collectionId,
-  kind,
-  onChangeQuery,
-  query,
-}: {
-  addable: AddableCollectionSongsQueryResult;
-  collectionId: number;
-  kind: LibraryCollectionDetailKind;
-  onChangeQuery: (query: string) => void;
-  query: string;
-}) {
-  const controller = useAddCollectionSongsFormController({
-    addable,
-    collectionId,
-    kind,
-    onChangeQuery,
-    query,
-  });
 
   return <AddCollectionSongsFormView {...controller} />;
 }

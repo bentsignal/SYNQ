@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Image, Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { LibraryCollectionPreviewRowState } from "../services/library-collection-preview-service";
+import type { LibraryCollectionPreviewRowState } from "../services/library-collection-preview-navigation-service";
 
 type LibraryCollectionPreviewRowProps = {
   row: LibraryCollectionPreviewRowState;

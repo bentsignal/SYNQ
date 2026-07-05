@@ -871,10 +871,12 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-preview-row-service";
 import {
   getLibraryCollectionPreviewEmptyState,
-  getLibraryCollectionPreviewHref,
-  getLibraryCollectionPreviewRows,
   getLibraryCollectionPreviewSectionState,
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
+import {
+  getLibraryCollectionPreviewHref,
+  getLibraryCollectionPreviewRows,
+} from "../../../apps/new/src/features/library/services/library-collection-preview-navigation-service";
 import {
   buildLibraryCollectionPreviewQueryResult,
 } from "../../../apps/new/src/features/library/services/library-collection-preview-query-result-service";

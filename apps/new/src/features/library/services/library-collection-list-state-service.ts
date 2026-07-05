@@ -1,7 +1,7 @@
 import {
   getLibraryCollectionPreviewHref,
-  type LibraryCollectionPreview,
-} from "./library-collection-preview-service";
+} from "./library-collection-preview-navigation-service";
+import type { LibraryCollectionPreview } from "./library-collection-preview-service";
 import {
   filterCollectionPreviews,
   normalizeLibraryCollectionListQuery,

@@ -8,9 +8,11 @@ import {
 } from "../repository/image-repository";
 import {
   saveCoverImageWithDependencies,
-  type ImageStorageDependencies,
   type ImageStorageVariant,
 } from "./image-storage-executor-service";
+import type {
+  ImageStorageDependencies,
+} from "./image-storage-dependencies-service";
 import { getImagePathFromDirectory } from "./image-storage-step-service";
 
 const imageDirectory = `${FileSystem.documentDirectory}images`;

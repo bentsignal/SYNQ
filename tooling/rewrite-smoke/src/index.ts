@@ -1559,8 +1559,10 @@ import {
   getImagePathFromHashWithDependencies,
   saveCoverImageWithDependencies,
   writeImageToFileSystemWithDependencies,
-  type ImageStorageDependencies,
 } from "../../../apps/new/src/features/images/services/image-storage-executor-service";
+import type {
+  ImageStorageDependencies,
+} from "../../../apps/new/src/features/images/services/image-storage-dependencies-service";
 import {
   getImagePathFromDirectory,
   getImageStorageVariants,

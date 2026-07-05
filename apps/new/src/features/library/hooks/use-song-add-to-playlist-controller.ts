@@ -10,10 +10,10 @@ import {
   getSongAddToPlaylistController,
 } from "../services/song-add-to-playlist-controller-service";
 import {
-  getSongAddToPlaylistControllerViewState,
   initialSongAddToPlaylistMutationState,
   type SongAddToPlaylistMutationState,
-} from "../services/song-add-to-playlist-service";
+} from "../services/song-add-to-playlist-mutation-state-service";
+import { getSongAddToPlaylistControllerViewState } from "../services/song-add-to-playlist-service";
 import { useLibraryCollectionListQuery } from "./use-library-collection-list-query";
 
 export function useSongAddToPlaylistController({ songId }: { songId: number }) {

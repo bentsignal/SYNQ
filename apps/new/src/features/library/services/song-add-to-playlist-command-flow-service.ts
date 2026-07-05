@@ -3,7 +3,7 @@ import {
   getSongAddToPlaylistFailureCommand,
   getSongAddToPlaylistSuccessCommand,
   type SongAddToPlaylistMutationState,
-} from "./song-add-to-playlist-service";
+} from "./song-add-to-playlist-mutation-state-service";
 
 type SongAddToPlaylistMutationStateSetter = (
   state: SongAddToPlaylistMutationState,

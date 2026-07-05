@@ -1,15 +1,13 @@
 import { View } from "react-native";
 import {
-  usePlaybackActiveTrack,
   usePlaybackSongActions,
 } from "@/src/features/playback/hooks/use-playback-session-selectors";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type {
-  LibrarySongPreview,
   LibrarySongPreviewOrder,
   LibrarySongPreviewSort,
 } from "../hooks/use-library-song-preview-query";
-import { getLibrarySongPreviewListState } from "../services/library-song-preview-state-service";
+import type { LibrarySongPreviewListState } from "../services/library-song-preview-state-service";
 import { LibrarySongListControls } from "./LibrarySongListControls";
 import { LibrarySongPreviewEmptyState } from "./LibrarySongPreviewEmptyState";
 import { LibrarySongPreviewRow } from "./LibrarySongPreviewRow";
@@ -22,7 +20,7 @@ type LibrarySongPreviewListProps = {
   setOrder: (order: LibrarySongPreviewOrder) => void;
   setQuery: (query: string) => void;
   setSort: (sort: LibrarySongPreviewSort) => void;
-  songs: LibrarySongPreview[];
+  listState: LibrarySongPreviewListState;
   sort: LibrarySongPreviewSort;
 };
 
@@ -33,16 +31,11 @@ export function LibrarySongPreviewList({
   setOrder,
   setQuery,
   setSort,
-  songs,
+  listState,
   sort,
 }: LibrarySongPreviewListProps) {
   const theme = useCustomizationTheme();
-  const activeTrack = usePlaybackActiveTrack();
   const { addToQueue, playSong } = usePlaybackSongActions();
-  const listState = getLibrarySongPreviewListState({
-    activeTrackId: activeTrack?.id ?? null,
-    songs,
-  });
 
   return (
     <View className="gap-3">

@@ -86,6 +86,10 @@ export type LibrarySongPreviewRowViewState = ReturnType<
   typeof getLibrarySongPreviewListState
 >["rows"][number];
 
+export type LibrarySongPreviewListState = ReturnType<
+  typeof getLibrarySongPreviewListState
+>;
+
 export const getLibrarySongListControlsState = ({
   order,
   sort,

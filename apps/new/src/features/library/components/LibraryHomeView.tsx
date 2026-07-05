@@ -2,6 +2,7 @@ import { ScrollView, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryHomeController } from "../hooks/use-library-home-controller";
 import { getLibraryHomeHeaderState } from "../services/library-home-header-service";
+import { getLibrarySongPreviewListState } from "../services/library-song-preview-state-service";
 import { LibraryCollectionPreviewSection } from "./LibraryCollectionPreviewSection";
 import { LibraryHomeHeader } from "./LibraryHomeHeader";
 import { LibrarySongPreviewList } from "./LibrarySongPreviewList";
@@ -10,6 +11,7 @@ import { LibrarySummaryGrid } from "./LibrarySummaryGrid";
 type LibraryHomeViewProps = LibraryHomeController;
 
 export function LibraryHomeView({
+  activeTrackId,
   collectionPreview,
   order,
   query,
@@ -23,6 +25,10 @@ export function LibraryHomeView({
 }: LibraryHomeViewProps) {
   const theme = useCustomizationTheme();
   const headerState = getLibraryHomeHeaderState();
+  const songPreviewListState = getLibrarySongPreviewListState({
+    activeTrackId,
+    songs: songPreview.songs,
+  });
 
   return (
     <ScrollView
@@ -41,7 +47,7 @@ export function LibraryHomeView({
         setOrder={setOrder}
         setQuery={setQuery}
         setSort={setSort}
-        songs={songPreview.songs}
+        listState={songPreviewListState}
         sort={sort}
       />
 

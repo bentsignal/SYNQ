@@ -1,4 +1,5 @@
 import { useReducer } from "react";
+import { usePlaybackActiveTrack } from "@/src/features/playback/hooks/use-playback-session-selectors";
 import { useLibraryCollectionPreviewQuery } from "./use-library-collection-preview-query";
 import { useLibrarySongPreviewQuery } from "./use-library-song-preview-query";
 import { useLibrarySummaryQuery } from "./use-library-summary-query";
@@ -26,6 +27,7 @@ export function useLibraryHomeController() {
   const summary = useLibrarySummaryQuery();
   const collectionPreview = useLibraryCollectionPreviewQuery();
   const songPreview = useLibrarySongPreviewQuery(controls);
+  const activeTrack = usePlaybackActiveTrack();
   const statusState = getLibraryHomeStatusState({
     collectionUpdatedAt: collectionPreview.updatedAt,
     errors: getLibraryHomeQueryErrors({
@@ -48,6 +50,7 @@ export function useLibraryHomeController() {
   };
 
   return {
+    activeTrackId: activeTrack?.id ?? null,
     collectionPreview,
     order: controls.order,
     query: controls.query,

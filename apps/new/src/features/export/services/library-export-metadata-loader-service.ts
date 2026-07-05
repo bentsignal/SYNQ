@@ -2,7 +2,7 @@ import type {
   LibraryExportAlbumMetadataRow,
   LibraryExportArtistMetadataRow,
   LibraryExportSongMetadataRow,
-} from "../repository/library-export-metadata-repository";
+} from "./library-export-metadata-row-types-service";
 import {
   buildLibrarySongExportMetadata,
 } from "./library-export-metadata-builder-service";

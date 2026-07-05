@@ -1653,10 +1653,8 @@ import {
   loadArtworkTagWithDependencies,
   prepareLibrarySongForExportWithDependencies,
   type LibraryExportMetadataDependencies,
+  type LibraryExportSongMetadataRow,
 } from "../../../apps/new/src/features/export/services/library-export-metadata-executor-service";
-import type {
-  LibraryExportSongMetadataRow,
-} from "../../../apps/new/src/features/export/repository/library-export-metadata-repository";
 
 const song = ({
   duration = 180_000,

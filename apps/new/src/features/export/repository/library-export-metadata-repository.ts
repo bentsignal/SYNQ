@@ -2,21 +2,11 @@ import { db } from "@synq/db";
 import * as schema from "@synq/db/schema";
 import { eq } from "drizzle-orm";
 
-export type LibraryExportSongMetadataRow = {
-  coverImage: string | null;
-  fileType: string | null;
-  pathToFile: string | null;
-  title: string | null;
-};
-
-export type LibraryExportArtistMetadataRow = {
-  name: string | null;
-};
-
-export type LibraryExportAlbumMetadataRow = {
-  coverImage: string | null;
-  name: string | null;
-};
+export type {
+  LibraryExportAlbumMetadataRow,
+  LibraryExportArtistMetadataRow,
+  LibraryExportSongMetadataRow,
+} from "../services/library-export-metadata-row-types-service";
 
 export const loadLibraryExportSongMetadataRow = async (songId: number) => {
   const songRows = await db

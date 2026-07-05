@@ -21,6 +21,11 @@ export {
   formatLibraryExportNames,
   type LibraryExportMetadata,
 } from "./library-export-metadata-builder-service";
+export type {
+  LibraryExportAlbumMetadataRow,
+  LibraryExportArtistMetadataRow,
+  LibraryExportSongMetadataRow,
+} from "./library-export-metadata-row-types-service";
 export {
   loadLibrarySongExportMetadataWithDependencies,
   type LibraryExportMetadataLoaderDependencies,

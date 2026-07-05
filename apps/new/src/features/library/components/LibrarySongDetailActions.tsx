@@ -5,7 +5,7 @@ import type { getLibrarySongDetailViewState } from "../services/library-song-det
 import {
   LibraryActionButton,
   LibraryActionRow,
-} from "./LibraryActionParts";
+} from "./library-action";
 
 type LibrarySongDetailActionsProps = {
   actionLinks: ReturnType<typeof getLibrarySongDetailViewState>["actionLinks"];

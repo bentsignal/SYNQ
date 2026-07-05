@@ -4,7 +4,7 @@ import type { LibrarySongEditActionState } from "../services/library-song-edit-a
 import {
   LibraryActionButton,
   LibraryActionRow,
-} from "./LibraryActionParts";
+} from "./library-action";
 
 type EditLibrarySongActionsProps = {
   actionState: LibrarySongEditActionState;

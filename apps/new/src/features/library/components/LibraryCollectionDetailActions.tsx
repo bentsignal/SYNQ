@@ -6,7 +6,7 @@ import type { getCollectionDetailViewState } from "../services/library-collectio
 import {
   LibraryActionButton,
   LibraryActionRow,
-} from "./LibraryActionParts";
+} from "./library-action";
 
 type LibraryCollectionDetailActionsProps = {
   actionLinks: ReturnType<typeof getCollectionDetailViewState>["actionLinks"];

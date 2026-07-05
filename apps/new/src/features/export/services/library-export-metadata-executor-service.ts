@@ -1,17 +1,16 @@
-import type { AudioMetadataTags } from "@synq/audio";
 import type {
   LibraryExportAlbumMetadataRow,
   LibraryExportArtistMetadataRow,
   LibraryExportSongMetadataRow,
 } from "../repository/library-export-metadata-repository";
-import {
-  loadArtworkTagWithDependencies,
-  type LibraryExportArtworkDependencies,
-} from "./library-export-artwork-service";
-import { buildLibraryExportAudioTags } from "./library-export-audio-tag-service";
+import type { LibraryExportArtworkDependencies } from "./library-export-artwork-service";
 import {
   buildLibrarySongExportMetadata,
 } from "./library-export-metadata-builder-service";
+import {
+  writeLibrarySongExportMetadataWithDependencies,
+  type LibraryExportWritebackDependencies,
+} from "./library-export-writeback-service";
 
 export {
   buildLibraryExportAudioTags,
@@ -39,13 +38,7 @@ export type LibraryExportMetadataDependencies = LibraryExportArtworkDependencies
   loadSongRow: (
     songId: number,
   ) => Promise<LibraryExportSongMetadataRow | null>;
-  markLibrarySongAsExported: (songId: number) => Promise<void>;
-  writeTags: (params: {
-    filePath: string;
-    fileType: string | null;
-    tags: AudioMetadataTags;
-  }) => Promise<unknown>;
-};
+} & LibraryExportWritebackDependencies;
 
 export const loadLibrarySongExportMetadataWithDependencies = async (
   songId: number,
@@ -86,22 +79,14 @@ export const prepareLibrarySongForExportWithDependencies = async (
     return song.pathToFile;
   }
 
-  const artwork = await loadArtworkTagWithDependencies(
-    metadata.coverImage,
+  await writeLibrarySongExportMetadataWithDependencies({
     dependencies,
-  );
-  const tags = buildLibraryExportAudioTags({ artwork, metadata });
-
-  try {
-    await dependencies.writeTags({
-      filePath: metadata.pathToFile,
-      fileType: metadata.fileType,
-      tags,
-    });
-    await dependencies.markLibrarySongAsExported(song.id);
-  } catch {
-    // Export should still share the playable file when metadata writeback fails.
-  }
+    metadata: {
+      ...metadata,
+      pathToFile: metadata.pathToFile,
+    },
+    songId: song.id,
+  });
 
   return metadata.pathToFile;
 };

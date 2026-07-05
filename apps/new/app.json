@@ -7,7 +7,6 @@
     "icon": "./src/assets/appIcons/icon-blue.png",
     "scheme": "synq-new",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "plugins": [
       "expo-router",
       [
@@ -16,36 +15,37 @@
           "enableBackgroundPlayback": true
         }
       ],
+      "@synq/native-audio",
       [
         "expo-icon-handler",
         {
           "icons": [
             {
-              "name": "icon-blue",
+              "name": "icon_blue",
               "path": "./src/assets/appIcons/icon-blue.png"
             },
             {
-              "name": "icon-mint",
+              "name": "icon_mint",
               "path": "./src/assets/appIcons/icon-mint.png"
             },
             {
-              "name": "icon-orange",
+              "name": "icon_orange",
               "path": "./src/assets/appIcons/icon-orange.png"
             },
             {
-              "name": "icon-pink",
+              "name": "icon_pink",
               "path": "./src/assets/appIcons/icon-pink.png"
             },
             {
-              "name": "icon-purple",
+              "name": "icon_purple",
               "path": "./src/assets/appIcons/icon-purple.png"
             },
             {
-              "name": "icon-red",
+              "name": "icon_red",
               "path": "./src/assets/appIcons/icon-red.png"
             },
             {
-              "name": "icon-yellow",
+              "name": "icon_yellow",
               "path": "./src/assets/appIcons/icon-yellow.png"
             }
           ]
@@ -55,21 +55,26 @@
         "expo-build-properties",
         {
           "ios": {
-            "deploymentTarget": "15.5"
+            "deploymentTarget": "16.4"
           }
         }
-      ]
+      ],
+      "expo-splash-screen",
+      "expo-sqlite",
+      "expo-asset"
     ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.directedbyshawn.synq-new"
     },
     "android": {
-      "edgeToEdgeEnabled": true,
       "permissions": [
         "android.permission.RECORD_AUDIO",
-        "android.permission.MODIFY_AUDIO_SETTINGS"
-      ]
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ],
+      "package": "com.directedbyshawn.synqnew"
     },
     "web": {
       "bundler": "metro",

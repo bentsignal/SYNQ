@@ -1,4 +1,4 @@
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { fromByteArray, toByteArray } from "react-native-quick-base64";
 import { writeExpo, type NodeId3Tags } from "./vendor/node-id3";
 

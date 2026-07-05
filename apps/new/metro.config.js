@@ -16,4 +16,7 @@ config.resolver.nodeModulesPaths = [
 
 config.resolver.sourceExts.push("sql");
 
-module.exports = withNativeWind(config, { input: "./globals.css" });
+module.exports = withNativeWind(config, {
+  configPath: path.resolve(projectRoot, "tailwind.config.js"),
+  input: "./globals.css",
+});

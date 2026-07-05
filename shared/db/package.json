@@ -16,15 +16,19 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "drizzle-orm": "^0.44.5",
-    "expo-drizzle-studio-plugin": "^0.2.0",
-    "expo-sqlite": "~15.2.14"
+    "drizzle-orm": "^0.44.5"
+  },
+  "peerDependencies": {
+    "expo-drizzle-studio-plugin": "^0.2.1",
+    "expo-sqlite": "~57.0.0"
   },
   "devDependencies": {
     "drizzle-kit": "^0.31.4",
     "eslint": "^9.36.0",
-    "eslint-config-expo": "~9.2.0",
+    "eslint-config-expo": "~57.0.0",
+    "expo-drizzle-studio-plugin": "^0.2.1",
+    "expo-sqlite": "~57.0.0",
     "prettier": "^3.6.2",
-    "typescript": "~5.8.3"
+    "typescript": "~6.0.3"
   }
 }

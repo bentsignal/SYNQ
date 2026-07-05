@@ -1,4 +1,4 @@
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { writeId3TagsToAudioFile } from "@synq/audio";
 import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
 import {

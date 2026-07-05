@@ -1,5 +1,5 @@
 import type * as DocumentPicker from "expo-document-picker";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import type { ImportSongDraft } from "../types/import-session";
 import type { ImportFileCacheDependencies } from "./import-file-cache-dependencies-service";
 import {

@@ -1,19 +1,51 @@
-import { Audio } from "expo-av";
+import {
+  createAudioPlayer,
+  type AudioPlayer,
+  type AudioStatus,
+} from "expo-audio";
+
+type PlaybackStatusPlayer = AudioPlayer & {
+  addListener: (
+    event: "playbackStatusUpdate",
+    listener: (status: AudioStatus) => void,
+  ) => { remove: () => void };
+};
+
+const waitForDuration = (player: AudioPlayer) =>
+  new Promise<number>((resolve) => {
+    if (Number.isFinite(player.duration) && player.duration > 0) {
+      resolve(player.duration);
+      return;
+    }
+
+    let settled = false;
+    const finish = (duration: number) => {
+      if (settled) return;
+      settled = true;
+      subscription.remove();
+      clearTimeout(timeout);
+      resolve(duration);
+    };
+
+    const subscription = (player as PlaybackStatusPlayer).addListener(
+      "playbackStatusUpdate",
+      (status) => {
+        if (Number.isFinite(status.duration) && status.duration > 0) {
+          finish(status.duration);
+        }
+      },
+    );
+    const timeout = setTimeout(() => {
+      finish(Number.isFinite(player.duration) ? player.duration : 0);
+    }, 2000);
+  });
 
 export const getAudioDurationFromFile = async (filePath: string) => {
-  let sound: Audio.Sound | null = null;
+  const player = createAudioPlayer({ uri: filePath }, { updateInterval: 250 });
   try {
-    const { sound: loadedSound } = await Audio.Sound.createAsync({
-      uri: filePath,
-    });
-    sound = loadedSound;
-    const status = await loadedSound.getStatusAsync();
-    if (!status.isLoaded) return 0;
-    const duration = status.durationMillis ?? 0;
-    return Math.floor(duration / 1000);
+    const duration = await waitForDuration(player);
+    return Math.floor(duration);
   } finally {
-    if (sound) {
-      await sound.unloadAsync();
-    }
+    player.remove();
   }
 };

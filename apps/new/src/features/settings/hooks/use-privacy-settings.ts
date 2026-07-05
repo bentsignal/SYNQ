@@ -4,7 +4,7 @@ import {
   loadPrivacySettings,
   savePrivacySettings,
 } from "../services/privacy-settings-service";
-import { getPrivacySettingsErrorMessage } from "../services/settings-screen-service";
+import { getPrivacySettingsErrorMessage } from "../services/settings-error-service";
 import {
   createInitialSettingsPersistenceState,
   settingsPersistenceReducer,

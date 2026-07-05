@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { saveCustomizationSettings } from "../services/customization-settings-service";
 import { setNativeAppIcon } from "../services/native-app-icon-service";
 import { runSettingsSaveCommand } from "../services/settings-persistence-command-flow-service";
-import { getCustomizationSettingsErrorMessage } from "../services/settings-screen-service";
+import { getCustomizationSettingsErrorMessage } from "../services/settings-error-service";
 import type { SettingsPersistenceAction } from "../services/settings-persistence-state-service";
 import type {
   CustomizationColorKey,

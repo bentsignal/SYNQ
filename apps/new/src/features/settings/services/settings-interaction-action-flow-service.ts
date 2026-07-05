@@ -2,7 +2,7 @@ import type { HapticFeedbackType } from "./haptic-feedback-service";
 import {
   getCustomizationHapticsToggleCommand,
   getSettingsInteractionCommand,
-} from "./settings-screen-service";
+} from "./settings-interaction-service";
 
 type HapticSender = (type: HapticFeedbackType) => void;
 

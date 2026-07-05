@@ -1212,20 +1212,24 @@ import type {
 import {
   getCustomizationColorControlsState,
   getSettingsDeveloperPremiumToggleState,
-  getCustomizationSettingsErrorMessage,
-  getCustomizationHapticsToggleCommand,
   getCustomizationOptionState,
   getCustomizationScreenState,
   getPrivacyScreenControllerViewState,
   getPrivacyScreenViewState,
   getPrivacyScreenState,
-  getPrivacySettingsErrorMessage,
-  getSettingsInteractionCommand,
   getSupportScreenControllerViewState,
   getSupportScreenViewState,
   isSettingsDeveloperPremiumToggleVisible,
-  shouldSendHapticForHapticsToggle,
 } from "../../../apps/new/src/features/settings/services/settings-screen-service";
+import {
+  getCustomizationSettingsErrorMessage,
+  getPrivacySettingsErrorMessage,
+} from "../../../apps/new/src/features/settings/services/settings-error-service";
+import {
+  getCustomizationHapticsToggleCommand,
+  getSettingsInteractionCommand,
+  shouldSendHapticForHapticsToggle,
+} from "../../../apps/new/src/features/settings/services/settings-interaction-service";
 import {
   runCustomizationHapticsToggleAction,
   runSettingsInteractionAction,

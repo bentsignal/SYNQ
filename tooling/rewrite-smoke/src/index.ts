@@ -57,6 +57,9 @@ import {
 import {
   createPlaybackQueueCommands,
 } from "../../../apps/new/src/features/playback/services/playback-queue-command-service";
+import {
+  createPlaybackCommands,
+} from "../../../apps/new/src/features/playback/services/playback-command-controller-service";
 import { runPlaybackTrackAdvancementCommand } from "../../../apps/new/src/features/playback/services/playback-track-advancement-command-flow-service";
 import {
   createPlaybackTrackAdvancementCommand,
@@ -3240,6 +3243,42 @@ function assertPlaybackNativeCommandPlanSmoke() {
   assert.deepEqual(assembledRemoteEvents, [
     "resume",
     "plan:remote-failure",
+  ]);
+  const assembledCommandEvents: unknown[] = [];
+  const assembledCommands = createPlaybackCommands({
+    handleRemoteCommand: (command) => {
+      assembledCommandEvents.push(["remote", command.type]);
+      return "handled";
+    },
+    queueCommands: {
+      addToQueue: (song) => assembledCommandEvents.push(["add", song.id]),
+      clearQueue: () => assembledCommandEvents.push(["clear"]),
+      moveQueueSong: (songId, direction) =>
+        assembledCommandEvents.push(["move", songId, direction]),
+      removeFromQueue: (songId) =>
+        assembledCommandEvents.push(["remove", songId]),
+      toggleLoop: () => assembledCommandEvents.push(["loop"]),
+      toggleShuffle: () => assembledCommandEvents.push(["shuffle"]),
+    },
+    transportCommands: {
+      pause: () => assembledCommandEvents.push(["pause"]),
+      playSong: (song) => assembledCommandEvents.push(["play", song.id]),
+      resetPlaybackSession: () => assembledCommandEvents.push(["reset"]),
+      resume: () => assembledCommandEvents.push(["resume"]),
+      seekTo: (position) => assembledCommandEvents.push(["seek", position]),
+      skipNext: () => assembledCommandEvents.push(["next"]),
+      skipPrevious: () => assembledCommandEvents.push(["previous"]),
+    },
+  });
+  assembledCommands.addToQueue(first);
+  assembledCommands.playSong(second);
+  assembledCommands.resetPlaybackSession();
+  assert.equal(assembledCommands.handleRemoteCommand({ type: "pause" }), "handled");
+  assert.deepEqual(assembledCommandEvents, [
+    ["add", first.id],
+    ["play", second.id],
+    ["reset"],
+    ["remote", "pause"],
   ]);
 
   assert.deepEqual(getPlaySongPlaybackCommandPlan(first), {

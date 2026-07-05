@@ -1,4 +1,5 @@
 import { useMemo, type RefObject } from "react";
+import { createPlaybackCommands } from "../services/playback-command-controller-service";
 import type { PlaybackNativeCommandPlan } from "../services/playback-native-command-plan-service";
 import type { PlaybackAction } from "../services/playback-session-action-service";
 import type { PlaybackCommands } from "../services/playback-session-value-service";
@@ -55,11 +56,12 @@ export function usePlaybackCommandController({
   });
 
   return useMemo(
-    () => ({
-      handleRemoteCommand,
-      ...queueCommands,
-      ...transportCommands,
-    }),
+    () =>
+      createPlaybackCommands({
+        handleRemoteCommand,
+        queueCommands,
+        transportCommands,
+      }),
     [
       handleRemoteCommand,
       queueCommands,

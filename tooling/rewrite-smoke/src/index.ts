@@ -392,6 +392,9 @@ import {
   runSaveImportSessionCommand,
 } from "../../../apps/new/src/features/import/services/import-session-lifecycle-command-flow-service";
 import {
+  createImportSessionLifecycleCommands,
+} from "../../../apps/new/src/features/import/services/import-session-lifecycle-command-service";
+import {
   normalizePersistedImportSession,
   toPersistedImportSession,
 } from "../../../apps/new/src/features/import/services/import-session-persistence-normalizer-service";
@@ -4699,6 +4702,27 @@ async function assertImportSessionSmoke() {
   });
   await Promise.resolve();
   assert.deepEqual(lifecycleCommandEvents, [["dispatch", { type: "reset" }]]);
+  lifecycleCommandEvents.length = 0;
+  const importSessionLifecycleCommands = createImportSessionLifecycleCommands({
+    dependencies: lifecycleDependencies,
+    dispatch: dispatchLifecycleCommand,
+    premiumActive: true,
+    shouldSaveToLibrary: true,
+    songs: [first, second],
+  });
+  importSessionLifecycleCommands.finishSession(lifecycleSummary);
+  assert.equal(await importSessionLifecycleCommands.saveImportSession(), true);
+  assert.equal(await importSessionLifecycleCommands.discardSession(), true);
+  importSessionLifecycleCommands.resetSession();
+  await Promise.resolve();
+  assert.deepEqual(lifecycleCommandEvents, [
+    ["dispatch", { summary: lifecycleSummary, type: "finish" }],
+    ["dispatch", { type: "saving" }],
+    ["dispatch", { summary: lifecycleSummary, type: "finish" }],
+    ["dispatch", { type: "saving" }],
+    ["dispatch", { type: "discard" }],
+    ["dispatch", { type: "reset" }],
+  ]);
   assert.deepEqual(initialImportSaveExportState, {
     error: null,
     isExporting: false,

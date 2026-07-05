@@ -1,4 +1,7 @@
-import type { CollectionFormActionState } from "../services/collection-form-interaction-service";
+import type {
+  CollectionFormActionState,
+  getCollectionFormFieldState,
+} from "../services/collection-form-interaction-service";
 import type { CollectionFormKind } from "../services/collection-form-domain-service";
 import type { getCollectionFormBackLink } from "../services/collection-form-navigation-service";
 
@@ -9,6 +12,10 @@ export type CollectionFormCopy = {
   namePlaceholder: string;
   title: string;
 };
+
+export type CollectionFormFieldState = ReturnType<
+  typeof getCollectionFormFieldState
+>;
 
 export type CollectionFormImage = {
   dataUrl: string;

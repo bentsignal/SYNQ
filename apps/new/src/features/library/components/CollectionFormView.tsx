@@ -6,7 +6,10 @@ import { CollectionFormFields } from "./CollectionFormFields";
 import { CollectionFormHeader } from "./CollectionFormHeader";
 import { CollectionImageInput } from "./CollectionImageInput";
 import type { CollectionFormViewProps } from "./collection-form-types";
-import { getCollectionFormImageLabel } from "../services/collection-form-interaction-service";
+import {
+  getCollectionFormFieldState,
+  getCollectionFormImageLabel,
+} from "../services/collection-form-interaction-service";
 
 export function CollectionFormView({
   actionState,
@@ -31,6 +34,7 @@ export function CollectionFormView({
   year,
 }: CollectionFormViewProps) {
   const theme = useCustomizationTheme();
+  const fieldState = getCollectionFormFieldState(kind);
   const imageLabel = getCollectionFormImageLabel(kind);
 
   return (
@@ -48,7 +52,7 @@ export function CollectionFormView({
           actionState={actionState}
           artistNames={artistNames}
           copy={copy}
-          kind={kind}
+          fieldState={fieldState}
           name={name}
           onChangeArtistNames={onChangeArtistNames}
           onChangeName={onChangeName}

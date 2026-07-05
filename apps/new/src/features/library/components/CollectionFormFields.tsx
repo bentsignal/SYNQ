@@ -1,19 +1,16 @@
 import { Text, TextInput } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import {
-  getCollectionFormFieldState,
-  type CollectionFormActionState,
-} from "../services/collection-form-interaction-service";
+import { type CollectionFormActionState } from "../services/collection-form-interaction-service";
 import type {
   CollectionFormCopy,
-  CollectionFormKind,
+  CollectionFormFieldState,
 } from "./collection-form-types";
 
 type CollectionFormFieldsProps = {
   actionState: CollectionFormActionState;
   artistNames?: string;
   copy: CollectionFormCopy;
-  kind: CollectionFormKind;
+  fieldState: CollectionFormFieldState;
   name: string;
   onChangeArtistNames?: (artistNames: string) => void;
   onChangeName: (name: string) => void;
@@ -25,7 +22,7 @@ export function CollectionFormFields({
   actionState,
   artistNames,
   copy,
-  kind,
+  fieldState,
   name,
   onChangeArtistNames,
   onChangeName,
@@ -33,7 +30,6 @@ export function CollectionFormFields({
   year,
 }: CollectionFormFieldsProps) {
   const theme = useCustomizationTheme();
-  const fieldState = getCollectionFormFieldState(kind);
 
   return (
     <>

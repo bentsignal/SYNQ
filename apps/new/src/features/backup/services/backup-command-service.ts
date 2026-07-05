@@ -1,5 +1,5 @@
-import { resetDatabaseConnection } from "@synq/db";
 import type { BackupOperation } from "../types/backup-session";
+import { resetBackupDatabaseConnection } from "../repository/backup-database-reset-repository";
 import { pickBackupArchive } from "./backup-archive-picker-service";
 import {
   isBackupArchiveSharingAvailable,
@@ -35,7 +35,7 @@ export async function runBackupCommand(
     prepareRestoreStagingDirectory: prepareBackupRestoreStagingDirectory,
     replaceDocumentDirectoryWithStagedItems:
       replaceBackupDocumentDirectoryWithStagedItems,
-    resetDatabaseConnection,
+    resetDatabaseConnection: resetBackupDatabaseConnection,
     shareArchive: shareBackupArchive,
     unzipArchive: unzipBackupArchive,
     zipDirectory: zipBackupDirectory,

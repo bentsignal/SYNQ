@@ -95,6 +95,14 @@ export const getPlaybackPlayerViewState = ({
   };
 };
 
+export type PlaybackPlayerViewState = ReturnType<
+  typeof getPlaybackPlayerViewState
+>;
+
+export type PlaybackPlayerLink = NonNullable<
+  PlaybackPlayerViewState["activeTrackDetailLink"]
+>;
+
 export const getPlaybackPlayerControllerViewState = ({
   activeTrack,
   state,

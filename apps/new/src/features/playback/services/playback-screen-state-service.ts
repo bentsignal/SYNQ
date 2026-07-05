@@ -22,6 +22,14 @@ export const getPlaybackPlayerScreenState = () => ({
   },
 });
 
+export type PlaybackPlayerScreenState = ReturnType<
+  typeof getPlaybackPlayerScreenState
+>;
+
+export type PlaybackPlayerHeaderState = PlaybackPlayerScreenState["header"];
+
+export type PlaybackQueueLink = PlaybackPlayerScreenState["queueLink"];
+
 export const getPlaybackAdBreakPanelState = ({
   state,
 }: {

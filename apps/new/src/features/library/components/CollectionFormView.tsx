@@ -6,6 +6,7 @@ import { CollectionFormFields } from "./CollectionFormFields";
 import { CollectionFormHeader } from "./CollectionFormHeader";
 import { CollectionImageInput } from "./CollectionImageInput";
 import type { CollectionFormViewProps } from "./collection-form-types";
+import { getCollectionFormImageLabel } from "../services/collection-form-interaction-service";
 
 export function CollectionFormView({
   actionState,
@@ -30,6 +31,7 @@ export function CollectionFormView({
   year,
 }: CollectionFormViewProps) {
   const theme = useCustomizationTheme();
+  const imageLabel = getCollectionFormImageLabel(kind);
 
   return (
     <View
@@ -59,7 +61,7 @@ export function CollectionFormView({
           imageFallbackName={imageFallbackName}
           imageFallbackUri={imageFallbackUri}
           imageInitial={imageInitial}
-          kind={kind}
+          imageLabel={imageLabel}
           onPickImage={onPickImage}
         />
         <CollectionFormActions

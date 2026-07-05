@@ -1,13 +1,7 @@
 import { Image, Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import {
-  getCollectionFormImageLabel,
-  type CollectionFormActionState,
-} from "../services/collection-form-interaction-service";
-import type {
-  CollectionFormImage,
-  CollectionFormKind,
-} from "./collection-form-types";
+import type { CollectionFormActionState } from "../services/collection-form-interaction-service";
+import type { CollectionFormImage } from "./collection-form-types";
 
 type CollectionImageInputProps = {
   actionState: CollectionFormActionState;
@@ -15,7 +9,7 @@ type CollectionImageInputProps = {
   imageFallbackName?: string | null;
   imageFallbackUri?: string | null;
   imageInitial: string;
-  kind: CollectionFormKind;
+  imageLabel: string;
   onPickImage: () => void;
 };
 
@@ -25,11 +19,10 @@ export function CollectionImageInput({
   imageFallbackName,
   imageFallbackUri,
   imageInitial,
-  kind,
+  imageLabel,
   onPickImage,
 }: CollectionImageInputProps) {
   const theme = useCustomizationTheme();
-  const imageLabel = getCollectionFormImageLabel(kind);
   const imageUri = image?.dataUrl ?? imageFallbackUri;
   const imageName =
     image?.fileName ??

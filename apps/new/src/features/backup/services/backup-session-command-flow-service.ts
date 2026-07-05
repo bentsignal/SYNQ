@@ -9,7 +9,7 @@ import {
   getBackupSessionStartAction,
   getBackupSessionSucceedAction,
   type BackupSessionAction,
-} from "./backup-session-state-service";
+} from "./backup-session-action-service";
 
 type BackupSessionCommandDispatch = (action: BackupSessionAction) => void;
 

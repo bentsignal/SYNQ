@@ -1,7 +1,7 @@
 import {
   getImportFailureViewState,
   getImportSuccessViewState,
-} from "../services/import-result-screen-state-service";
+} from "../services/import-result-view-state-service";
 import { useImportSessionSelector } from "./use-import-session";
 
 export function useImportSuccessController() {

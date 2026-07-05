@@ -339,10 +339,12 @@ import {
 } from "../../../apps/new/src/features/import/services/import-song-preview-state-service";
 import {
   getImportFailureState,
-  getImportFailureViewState,
   getImportSuccessState,
+} from "../../../apps/new/src/features/import/services/import-result-state-service";
+import {
+  getImportFailureViewState,
   getImportSuccessViewState,
-} from "../../../apps/new/src/features/import/services/import-result-screen-state-service";
+} from "../../../apps/new/src/features/import/services/import-result-view-state-service";
 import {
   getImportFilesActionState,
 } from "../../../apps/new/src/features/import/services/import-files-action-state-service";

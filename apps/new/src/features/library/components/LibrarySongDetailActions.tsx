@@ -1,11 +1,11 @@
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetailActionState } from "../services/library-song-detail-action-state-service";
 import type { getLibrarySongDetailViewState } from "../services/library-song-detail-view-state-service";
+import { LibraryActionRow } from "./library-action";
 import {
-  LibraryActionButton,
-  LibraryActionLink,
-  LibraryActionRow,
-} from "./library-action";
+  LibrarySongDetailActionButton,
+  LibrarySongDetailActionLink,
+} from "./LibrarySongDetailActionButton";
 
 type LibrarySongDetailActionsProps = {
   actionLinks: ReturnType<typeof getLibrarySongDetailViewState>["actionLinks"];
@@ -30,7 +30,7 @@ export function LibrarySongDetailActions({
 
   return (
     <LibraryActionRow>
-      <LibraryActionButton
+      <LibrarySongDetailActionButton
         disabled={!actionState.canPlay}
         flexGrow={1}
         label="Play"
@@ -39,7 +39,7 @@ export function LibrarySongDetailActions({
         theme={theme}
         variant="primary"
       />
-      <LibraryActionButton
+      <LibrarySongDetailActionButton
         disabled={!actionState.canPlay}
         flexGrow={1}
         label="Add to queue"
@@ -47,7 +47,7 @@ export function LibrarySongDetailActions({
         theme={theme}
         variant="secondary"
       />
-      <LibraryActionButton
+      <LibrarySongDetailActionButton
         disabled={!actionState.canToggleLiked}
         flexGrow={1}
         label={actionState.likedLabel}
@@ -55,19 +55,19 @@ export function LibrarySongDetailActions({
         theme={theme}
         variant="secondary"
       />
-      <LibraryActionLink
+      <LibrarySongDetailActionLink
         href={actionLinks.addToPlaylistHref}
         label="Add to playlist"
         minWidth={164}
         theme={theme}
       />
-      <LibraryActionLink
+      <LibrarySongDetailActionLink
         href={actionLinks.editHref}
         label="Edit"
         minWidth={132}
         theme={theme}
       />
-      <LibraryActionButton
+      <LibrarySongDetailActionButton
         disabled={!actionState.canExport}
         flexGrow={1}
         label={actionState.exportLabel}
@@ -75,7 +75,7 @@ export function LibrarySongDetailActions({
         theme={theme}
         variant="secondary"
       />
-      <LibraryActionButton
+      <LibrarySongDetailActionButton
         disabled={!actionState.canDelete}
         flexGrow={1}
         label={actionState.deleteLabel}

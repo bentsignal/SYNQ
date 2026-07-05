@@ -1,9 +1,7 @@
-import {
-  getSavedCollectionFormImageLabel,
-} from "../services/collection-form-field-state-service";
 import type { CollectionFormActionState } from "../services/collection-form-action-state-service";
-import { getEditCollectionFormSubtitle } from "../services/collection-form-copy-service";
-import { getCollectionFormBackLink } from "../services/collection-form-navigation-service";
+import {
+  getEditCollectionFormPresentationState,
+} from "../services/collection-form-controller-view-state-service";
 import type { EditCollectionKind } from "../services/edit-collection-state-service";
 import { CollectionFormView } from "./CollectionFormView";
 import type { CollectionFormImage } from "./collection-form-types";
@@ -57,22 +55,24 @@ export function EditCollectionFormView({
   saveLabel,
   year,
 }: EditCollectionFormViewProps) {
+  const presentationState = getEditCollectionFormPresentationState({
+    collectionError,
+    collectionImagePath,
+    collectionIsMissing,
+    error,
+    kind,
+  });
+
   return (
     <CollectionFormView
       actionState={actionState}
       artistNames={artistNames}
-      backLink={getCollectionFormBackLink()}
+      backLink={presentationState.backLink}
       copy={copy}
-      errorMessages={[
-        collectionIsMissing && "Collection not found.",
-        collectionError && "Collection query failed.",
-        error,
-      ]}
+      errorMessages={presentationState.errorMessages}
       image={image}
-      imageFallbackName={
-        collectionImagePath ? getSavedCollectionFormImageLabel(kind) : null
-      }
-      imageFallbackUri={collectionImagePath}
+      imageFallbackName={presentationState.imageFallbackName}
+      imageFallbackUri={presentationState.imageFallbackUri}
       imageInitial={imageInitial}
       isSaving={isSaving}
       kind={kind}
@@ -83,7 +83,7 @@ export function EditCollectionFormView({
       onPickImage={onPickImage}
       onSave={onSave}
       saveLabel={saveLabel}
-      subtitle={getEditCollectionFormSubtitle()}
+      subtitle={presentationState.subtitle}
       year={year}
     />
   );

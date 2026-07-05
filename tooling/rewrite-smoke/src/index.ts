@@ -948,6 +948,7 @@ import {
 import {
   getCreateCollectionFormControllerViewState,
   getEditCollectionFormControllerViewState,
+  getEditCollectionFormPresentationState,
 } from "../../../apps/new/src/features/library/services/collection-form-controller-view-state-service";
 import {
   getCollectionFormFieldState,
@@ -12329,6 +12330,46 @@ async function assertCollectionFormSmoke() {
       name: "Seed Collection",
       saveLabel: "Save collection",
       year: "1999",
+    },
+  );
+  assert.deepEqual(
+    getEditCollectionFormPresentationState({
+      collectionError: true,
+      collectionImagePath: "file:///covers/album.jpg",
+      collectionIsMissing: false,
+      error: "Save failed.",
+      kind: "album",
+    }),
+    {
+      backLink: {
+        href: "/(tabs)/library",
+        label: "Back to Library",
+      },
+      errorMessages: [false, "Collection query failed.", "Save failed."],
+      imageFallbackName: "Saved cover image",
+      imageFallbackUri: "file:///covers/album.jpg",
+      subtitle:
+        "Update the name, artwork, and details shown across your library.",
+    },
+  );
+  assert.deepEqual(
+    getEditCollectionFormPresentationState({
+      collectionError: false,
+      collectionImagePath: null,
+      collectionIsMissing: true,
+      error: null,
+      kind: "artist",
+    }),
+    {
+      backLink: {
+        href: "/(tabs)/library",
+        label: "Back to Library",
+      },
+      errorMessages: ["Collection not found.", false, null],
+      imageFallbackName: null,
+      imageFallbackUri: null,
+      subtitle:
+        "Update the name, artwork, and details shown across your library.",
     },
   );
   assert.deepEqual(

@@ -583,12 +583,14 @@ import {
 } from "../../../apps/new/src/features/import/services/import-library-session-save-executor-service";
 import {
   clearImportCacheWithDependencies,
+  deleteImportDraftCacheFilesWithDependencies,
+} from "../../../apps/new/src/features/import/services/import-file-cache-cleanup-executor-service";
+import type { ImportFileCacheDependencies } from "../../../apps/new/src/features/import/services/import-file-cache-dependencies-service";
+import {
   copyAssetToImportCacheWithDependencies,
   createImportCacheDirectoryWithDependencies,
-  deleteImportDraftCacheFilesWithDependencies,
   writeBase64AssetToImportCacheWithDependencies,
-  type ImportFileCacheDependencies,
-} from "../../../apps/new/src/features/import/services/import-file-cache-executor-service";
+} from "../../../apps/new/src/features/import/services/import-file-cache-staging-executor-service";
 import {
   getBase64ImportCacheDestination,
   getCopyImportCacheDestination,

@@ -1,6 +1,6 @@
 ---
 name: synq-expo-build
-description: Use for SYNQ Expo React Native app build, install, and testing work, including EAS CLI builds, Expo dev clients, iOS Simulator testing, physical iPhone installs, native audio validation, provisioning/signing through EAS, and avoiding edits to generated app native folders.
+description: Use for SYNQ Expo React Native app build, install, and testing work, including local EAS CLI builds, Expo dev clients, iOS Simulator testing, physical iPhone installs, native audio validation, provisioning/signing through EAS, and avoiding edits to generated app native folders. Always use local EAS builds unless the user explicitly asks for cloud/remote builds.
 ---
 
 # SYNQ Expo Build
@@ -8,6 +8,8 @@ description: Use for SYNQ Expo React Native app build, install, and testing work
 ## Core Rule
 
 `apps/new` is an Expo-managed React Native app. Build and install it through Expo and EAS.
+
+Use local EAS builds by default. Do not run a cloud/remote EAS build unless the user explicitly asks for remote/cloud EAS.
 
 Do not edit `apps/new/ios` or `apps/new/android` as source. Treat those folders as generated artifacts for inspection, diagnostics, and temporary local build output only. If native app behavior needs to change, use Expo config, config plugins, EAS configuration, or package source.
 
@@ -45,11 +47,11 @@ Useful profiles for this repo should include:
 
 ## Simulator Build
 
-Use EAS for build validation:
+Use local EAS for build validation:
 
 ```bash
 cd apps/new
-pnpm exec eas build --platform ios --profile development-client-simulator
+pnpm exec eas build --local --platform ios --profile development-client-simulator
 ```
 
 Use local Expo only for JS iteration against an installed development client:
@@ -67,14 +69,14 @@ Confirm the paired device:
 xcrun devicectl list devices
 ```
 
-Build a device `.ipa` with EAS:
+Build a device `.ipa` with local EAS:
 
 ```bash
 cd apps/new
-pnpm exec eas build --platform ios --profile development-client
+pnpm exec eas build --local --platform ios --profile development-client
 ```
 
-Download the EAS artifact if needed, then install the `.ipa`:
+Install the generated local `.ipa`:
 
 ```bash
 xcrun devicectl device install app --device <device-uuid> <path-to-ipa>
@@ -84,4 +86,4 @@ If signing/provisioning fails, fix EAS credentials or profiles. Do not patch `ap
 
 ## Reporting
 
-Always report the EAS profile used, artifact type (`.ipa` or simulator build), device id when installing, and any EAS signing/provisioning blocker exactly.
+Always report whether the build was local or remote, the EAS profile used, artifact type (`.ipa` or simulator build), device id when installing, and any EAS signing/provisioning blocker exactly.

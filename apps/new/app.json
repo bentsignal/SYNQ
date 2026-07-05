@@ -65,7 +65,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.directedbyshawn.synq-new"
+      "bundleIdentifier": "com.directedbyshawn.synq-new",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "permissions": [
@@ -79,6 +82,13 @@
     "web": {
       "bundler": "metro",
       "output": "static"
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7f55149f-5c7c-4317-93d4-45555ce3a5d0"
+      }
+    },
+    "owner": "directedbyshawn"
   }
 }

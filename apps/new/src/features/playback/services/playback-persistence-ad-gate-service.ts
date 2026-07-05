@@ -1,7 +1,7 @@
 import {
   initialPlaybackAdGateState,
   resetPlaybackAdGate,
-} from "./playback-ad-gate-service";
+} from "./playback-ad-gate-state-service";
 import type { PlaybackAdGateState } from "../types/playback-state";
 import {
   finiteNumber,

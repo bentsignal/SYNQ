@@ -1,6 +1,6 @@
 import type { PlaybackQueueItem, PlaybackState } from "../types/playback-state";
 import { upsertQueueItem } from "./playback-queue-mutation-service";
-import { resetPlaybackAdGate } from "./playback-ad-gate-service";
+import { resetPlaybackAdGate } from "./playback-ad-gate-state-service";
 import {
   getPlaybackQueueMoveUpdate,
   getPlaybackQueueRemovalUpdate,

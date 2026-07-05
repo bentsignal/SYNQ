@@ -2,7 +2,7 @@ import type { PlaybackState } from "../types/playback-state";
 import {
   trackPlaybackAdProgress,
   updatePlaybackAdBreakProgress,
-} from "./playback-ad-gate-service";
+} from "./playback-ad-gate-state-service";
 import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
 
 export const getPlaybackAdStatusUpdate = ({

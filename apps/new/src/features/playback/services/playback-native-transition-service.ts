@@ -4,7 +4,7 @@ import {
   beginPlaybackAdBreak,
   completePlaybackAdBreak,
   resetPlaybackAdGate,
-} from "./playback-ad-gate-service";
+} from "./playback-ad-gate-state-service";
 import { setPlaybackActiveQueueIndex } from "./playback-active-track-service";
 import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
 import {

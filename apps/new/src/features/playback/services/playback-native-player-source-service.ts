@@ -1,16 +1,11 @@
 import type { AudioPlayer } from "expo-audio";
 import type { PlaybackQueueItem } from "../types/playback-state";
 import { setPlaybackNativePlayerStatusListener } from "./playback-native-player-listener-command-service";
-import {
-  pausePlaybackNativeActivePlayer,
-  resumePlaybackNativeActivePlayer,
-  resumePlaybackNativeLibraryPlayer,
-} from "./playback-native-player-control-service";
+import { createPlaybackNativePlayerControlCommands } from "./playback-native-player-control-command-service";
 import {
   playPlaybackNativeAdSource,
   playPlaybackNativeLibrarySource,
 } from "./playback-native-player-play-service";
-import { seekPlaybackNativeLibraryPlayer } from "./playback-native-player-seek-service";
 import { createPlaybackNativePlayerSourceRemovers } from "./playback-native-player-source-removal-service";
 import type {
   PlaybackNativePlayerSourceParams,
@@ -49,14 +44,17 @@ export const createPlaybackNativePlayerSources = ({
       statusListeners,
     });
 
+  const controlCommands = createPlaybackNativePlayerControlCommands({
+    getAdPlayer: () => adPlayer,
+    getLibraryPlayer: () => libraryPlayer,
+    getRegistryState,
+    removeAdPlayer,
+    removeLibraryPlayer,
+    setRegistryState,
+  });
+
   return {
-    pauseActive: () => {
-      pausePlaybackNativeActivePlayer({
-        adPlayer,
-        getRegistryState,
-        libraryPlayer,
-      });
-    },
+    pauseActive: controlCommands.pauseActive,
     playAd: () => {
       adPlayer = playPlaybackNativeAdSource({
         getRegistryState,
@@ -77,24 +75,9 @@ export const createPlaybackNativePlayerSources = ({
         statusListeners,
       });
     },
-    resumeActive: () => {
-      resumePlaybackNativeActivePlayer({
-        adPlayer,
-        getRegistryState,
-        libraryPlayer,
-        setRegistryState,
-      });
-    },
-    resumeLibrary: () => {
-      removeAdPlayer();
-      resumePlaybackNativeLibraryPlayer({
-        getRegistryState,
-        libraryPlayer,
-        setRegistryState,
-      });
-    },
-    seekLibraryTo: (position: number) =>
-      seekPlaybackNativeLibraryPlayer({ libraryPlayer, position }),
+    resumeActive: controlCommands.resumeActive,
+    resumeLibrary: controlCommands.resumeLibrary,
+    seekLibraryTo: controlCommands.seekLibraryTo,
     setStatusListener: (listener: TrackPlayerStatusListener | null) => {
       setPlaybackNativePlayerStatusListener({
         adPlayer,
@@ -103,9 +86,6 @@ export const createPlaybackNativePlayerSources = ({
         statusListeners,
       });
     },
-    stop: () => {
-      removeAdPlayer();
-      removeLibraryPlayer();
-    },
+    stop: controlCommands.stop,
   };
 };

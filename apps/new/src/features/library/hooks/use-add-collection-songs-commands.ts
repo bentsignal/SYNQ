@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useMemo } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import {
@@ -6,10 +6,8 @@ import {
   addLibraryCollectionSongsCommand,
 } from "../services/library-collection-command-service";
 import {
-  runAddCollectionSongCommand,
-  runAddCollectionSongsSelectionCommand,
-  runAddCollectionSongsToggleSelectionCommand,
-} from "../services/add-collection-songs-command-flow-service";
+  createAddCollectionSongsCommands,
+} from "../services/add-collection-songs-controller-command-service";
 import type { AddCollectionSongsControllerDispatch } from "../services/add-collection-songs-mutation-runtime-service";
 import type { AddableSongSelectionState } from "../services/add-collection-songs-selection-service";
 
@@ -26,45 +24,17 @@ export function useAddCollectionSongsCommands({
 }) {
   const { sendHaptic } = useHapticFeedback();
 
-  const toggleSongSelection = useCallback(
-    (songId: number) => {
-      runAddCollectionSongsToggleSelectionCommand({
-        dispatchControllerState,
-        sendHaptic,
-        songId,
-      });
-    },
-    [dispatchControllerState, sendHaptic],
-  );
-
-  const addSelectedSongs = useCallback(async () => {
-    await runAddCollectionSongsSelectionCommand({
-      addCollectionSongs: addLibraryCollectionSongsCommand,
-      collectionId,
-      dispatchControllerState,
-      kind,
-      selectionState,
-      sendHaptic,
-    });
-  }, [collectionId, dispatchControllerState, kind, selectionState, sendHaptic]);
-
-  const addSong = useCallback(
-    async (songId: number) => {
-      await runAddCollectionSongCommand({
+  return useMemo(
+    () =>
+      createAddCollectionSongsCommands({
         addCollectionSong: addLibraryCollectionSongCommand,
+        addCollectionSongs: addLibraryCollectionSongsCommand,
         collectionId,
         dispatchControllerState,
         kind,
+        selectionState,
         sendHaptic,
-        songId,
-      });
-    },
-    [collectionId, dispatchControllerState, kind, sendHaptic],
+      }),
+    [collectionId, dispatchControllerState, kind, selectionState, sendHaptic],
   );
-
-  return {
-    addSelectedSongs,
-    addSong,
-    toggleSongSelection,
-  };
 }

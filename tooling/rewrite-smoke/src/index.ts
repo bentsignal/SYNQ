@@ -628,6 +628,9 @@ import {
   runAddCollectionSongsSelectionCommand,
   runAddCollectionSongsToggleSelectionCommand,
 } from "../../../apps/new/src/features/library/services/add-collection-songs-command-flow-service";
+import {
+  createAddCollectionSongsCommands,
+} from "../../../apps/new/src/features/library/services/add-collection-songs-controller-command-service";
 import { runAddCollectionSongsMutationAttempt } from "../../../apps/new/src/features/library/services/add-collection-songs-mutation-runtime-service";
 import {
   canEditLibraryCollection,
@@ -7673,6 +7676,29 @@ async function assertLibraryCollectionInteractionSmoke() {
     ["dispatch", { songId: 6, type: "begin-add-song" }],
     ["haptic", "error"],
     ["dispatch", { error: "add failed", type: "fail" }],
+    ["dispatch", { type: "finish-add-song" }],
+  ]);
+  commandEvents.length = 0;
+  const assembledAddCollectionSongsCommands = createAddCollectionSongsCommands(
+    commandDependencies,
+  );
+  assembledAddCollectionSongsCommands.toggleSongSelection(4);
+  await assembledAddCollectionSongsCommands.addSelectedSongs();
+  await assembledAddCollectionSongsCommands.addSong(6);
+  assert.deepEqual(commandEvents, [
+    ["haptic", "light"],
+    ["dispatch", { songId: 4, type: "toggle-selection" }],
+    ["haptic", "medium"],
+    ["dispatch", { type: "begin-add-selection" }],
+    ["add-songs", 9, "playlist", [1, 3]],
+    ["dispatch", { type: "clear-selection" }],
+    ["haptic", "success"],
+    ["dispatch", { type: "finish-add-selection" }],
+    ["haptic", "light"],
+    ["dispatch", { songId: 6, type: "begin-add-song" }],
+    ["add-song", 9, "playlist", 6],
+    ["dispatch", { songId: 6, type: "remove-selection" }],
+    ["haptic", "success"],
     ["dispatch", { type: "finish-add-song" }],
   ]);
 

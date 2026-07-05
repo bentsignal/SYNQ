@@ -1,6 +1,7 @@
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionPreview } from "../hooks/use-library-collection-preview-query";
+import { getLibraryCollectionPreviewSectionState } from "../services/library-collection-preview-service";
 import { LibraryCollectionPreviewColumn } from "./LibraryCollectionPreviewColumn";
 import { LibraryCollectionPreviewEmptyState } from "./LibraryCollectionPreviewEmptyState";
 
@@ -46,6 +47,7 @@ export function LibraryCollectionPreviewSection({
   totals,
 }: LibraryCollectionPreviewSectionProps) {
   const theme = useCustomizationTheme();
+  const sectionState = getLibraryCollectionPreviewSectionState();
 
   return (
     <View className="gap-3">
@@ -65,7 +67,7 @@ export function LibraryCollectionPreviewSection({
       </View>
 
       {isEmpty ? (
-        <LibraryCollectionPreviewEmptyState />
+        <LibraryCollectionPreviewEmptyState emptyState={sectionState.emptyState} />
       ) : (
         <View className="gap-3">
           {sections.map((section) => (

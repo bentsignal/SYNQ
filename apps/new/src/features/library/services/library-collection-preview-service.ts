@@ -44,3 +44,7 @@ export const getLibraryCollectionPreviewEmptyState = () => ({
   body: "Create a playlist, album, or artist once you have songs to organize.",
   title: "No collections yet",
 });
+
+export const getLibraryCollectionPreviewSectionState = () => ({
+  emptyState: getLibraryCollectionPreviewEmptyState(),
+});

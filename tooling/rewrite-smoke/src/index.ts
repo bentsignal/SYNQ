@@ -718,6 +718,7 @@ import {
   getLibraryCollectionPreviewEmptyState,
   getLibraryCollectionPreviewHref,
   getLibraryCollectionPreviewRows,
+  getLibraryCollectionPreviewSectionState,
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import {
   buildLibraryCollectionPreviewQueryResult,
@@ -7472,6 +7473,13 @@ function assertLibraryCollectionPreviewSmoke() {
   assert.deepEqual(getLibraryCollectionPreviewEmptyState(), {
     body: "Create a playlist, album, or artist once you have songs to organize.",
     title: "No collections yet",
+  });
+  assert.deepEqual(getLibraryCollectionPreviewSectionState(), {
+    emptyState: {
+      body:
+        "Create a playlist, album, or artist once you have songs to organize.",
+      title: "No collections yet",
+    },
   });
 
   const playlists = playlistRowsToPreview({

@@ -1,11 +1,19 @@
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getLibraryCollectionPreviewEmptyState } from "../services/library-collection-preview-service";
+import type { getLibraryCollectionPreviewSectionState } from "../services/library-collection-preview-service";
 
-export function LibraryCollectionPreviewEmptyState() {
+type LibraryCollectionPreviewEmptyStateModel = ReturnType<
+  typeof getLibraryCollectionPreviewSectionState
+>["emptyState"];
+
+type LibraryCollectionPreviewEmptyStateProps = {
+  emptyState: LibraryCollectionPreviewEmptyStateModel;
+};
+
+export function LibraryCollectionPreviewEmptyState({
+  emptyState,
+}: LibraryCollectionPreviewEmptyStateProps) {
   const theme = useCustomizationTheme();
-  const emptyState = getLibraryCollectionPreviewEmptyState();
-
   return (
     <View
       className="gap-2 rounded-lg border p-4"

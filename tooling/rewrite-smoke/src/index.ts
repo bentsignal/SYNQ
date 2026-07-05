@@ -168,6 +168,9 @@ import {
   getPlaybackPlayerActionState,
 } from "../../../apps/new/src/features/playback/services/playback-player-action-state-service";
 import {
+  getPlaybackPlayerActiveTrackLinks,
+} from "../../../apps/new/src/features/playback/services/playback-player-link-service";
+import {
   getPlaybackPlayerButtonCommand,
   getPlaybackPlayerPlayPauseCommand,
   getPlaybackPlayerSeekCommand,
@@ -3795,6 +3798,22 @@ function assertPlaybackPlayerStateSmoke() {
   assert.equal(playbackPlayerControllerViewState.progressPercent, 25);
   assert.equal(playbackPlayerControllerViewState.adProgressPercent, 50);
   assert.equal(playbackPlayerControllerViewState.freeListeningRemainingMs, 3_000);
+  assert.deepEqual(
+    getPlaybackPlayerActiveTrackLinks({
+      actionState: playbackPlayerControllerViewState.actionState,
+      activeTrackId: activeTrack.id,
+    }),
+    {
+      activeTrackDetailLink: {
+        href: "/(tabs)/library/song/10",
+        label: "Song details",
+      },
+      activeTrackEditLink: {
+        href: "/(tabs)/library/song/edit/10",
+        label: "Edit song",
+      },
+    },
+  );
   assert.deepEqual(playbackPlayerControllerViewState.activeTrackDetailLink, {
     href: "/(tabs)/library/song/10",
     label: "Song details",

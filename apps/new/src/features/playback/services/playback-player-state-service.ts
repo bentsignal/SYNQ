@@ -2,11 +2,8 @@ import type {
   PlaybackQueueItem,
   PlaybackState,
 } from "../types/playback-state";
-import {
-  getLibrarySongDetailHref,
-  getLibrarySongEditHref,
-} from "../../library/services/library-song-navigation-service";
 import { getPlaybackPlayerActionState } from "./playback-player-action-state-service";
+import { getPlaybackPlayerActiveTrackLinks } from "./playback-player-link-service";
 import {
   getPlaybackAdBreakPanelState,
   getPlaybackPlayerScreenState,
@@ -35,20 +32,7 @@ export const getPlaybackPlayerViewState = ({
 
   return {
     actionState,
-    activeTrackDetailLink:
-      activeTrackId !== null && actionState.canOpenActiveTrackDetails
-        ? {
-            href: getLibrarySongDetailHref({ songId: activeTrackId }),
-            label: "Song details",
-          }
-        : null,
-    activeTrackEditLink:
-      activeTrackId !== null && actionState.canEditActiveTrack
-        ? {
-            href: getLibrarySongEditHref({ songId: activeTrackId }),
-            label: "Edit song",
-          }
-        : null,
+    ...getPlaybackPlayerActiveTrackLinks({ actionState, activeTrackId }),
     adProgressPercent: getPlaybackProgressPercent({
       duration: state.adGate.playbackDuration,
       position: state.adGate.playbackPosition,

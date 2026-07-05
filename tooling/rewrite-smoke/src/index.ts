@@ -233,6 +233,9 @@ import {
   runPlaybackCommandPlan,
 } from "../../../apps/new/src/features/playback/services/playback-command-plan-service";
 import {
+  createPlaybackCommandRunners,
+} from "../../../apps/new/src/features/playback/services/playback-command-runner-service";
+import {
   runPlaybackTransportPauseCommand,
   runPlaybackTransportPlaySongCommand,
   runPlaybackTransportResumeCommand,
@@ -3299,6 +3302,20 @@ function assertPlaybackNativeCommandPlanSmoke() {
   });
   assert.deepEqual(plannedActions, [{ type: "pause" }]);
   assert.deepEqual(plannedNativeCommands, [{ type: "pause" }]);
+  const runnerEvents: unknown[] = [];
+  const commandRunners = createPlaybackCommandRunners({
+    beginAdBreak: () => runnerEvents.push(["ad"]),
+    canRunPlaybackCommand: () => true,
+    dispatch: (action) => runnerEvents.push(["dispatch", action.type]),
+    runNativeCommandPlan: (plan) => runnerEvents.push(["native", plan.type]),
+  });
+  commandRunners.runCommandPlan(getPausePlaybackCommandPlan());
+  commandRunners.runAdGatedCommand(() => runnerEvents.push(["command"]));
+  assert.deepEqual(runnerEvents, [
+    ["dispatch", "pause"],
+    ["native", "pause"],
+    ["command"],
+  ]);
   assert.deepEqual(getRemoteFailurePlaybackCommandPlan("Remote smoke failure"), {
     action: {
       error: "Remote smoke failure",

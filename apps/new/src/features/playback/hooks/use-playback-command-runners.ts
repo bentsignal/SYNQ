@@ -1,9 +1,7 @@
-import { useCallback } from "react";
-import { runAdGatedPlaybackCommand } from "../services/playback-command-gate-service";
+import { useMemo } from "react";
 import {
-  runPlaybackCommandPlan,
-  type PlaybackCommandPlan,
-} from "../services/playback-command-plan-service";
+  createPlaybackCommandRunners,
+} from "../services/playback-command-runner-service";
 import type { PlaybackNativeCommandPlan } from "../services/playback-native-command-plan-service";
 import type { PlaybackAction } from "../services/playback-session-action-service";
 
@@ -20,28 +18,16 @@ export function usePlaybackCommandRunners({
   dispatch,
   runNativeCommandPlan,
 }: UsePlaybackCommandRunnersParams) {
-  const runCommandPlan = useCallback(
-    (plan: PlaybackCommandPlan) => {
-      runPlaybackCommandPlan({ dispatch, plan, runNativeCommandPlan });
-    },
-    [dispatch, runNativeCommandPlan],
-  );
-
-  const runAdGatedCommand = useCallback(
-    (command: () => void) => {
-      runAdGatedPlaybackCommand({
+  return useMemo(
+    () =>
+      createPlaybackCommandRunners({
         beginAdBreak,
         canRunPlaybackCommand,
-        command,
-      });
-    },
-    [beginAdBreak, canRunPlaybackCommand],
+        dispatch,
+        runNativeCommandPlan,
+      }),
+    [beginAdBreak, canRunPlaybackCommand, dispatch, runNativeCommandPlan],
   );
-
-  return {
-    runAdGatedCommand,
-    runCommandPlan,
-  };
 }
 
 export type PlaybackRunAdGatedCommand = ReturnType<

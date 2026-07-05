@@ -27,6 +27,10 @@ const configureRevenueCat = () => {
     return;
   }
 
+  Purchases.setLogHandler((level, message) => {
+    console.warn(`[RevenueCat] ${level}: ${message}`);
+  });
+  void Purchases.setLogLevel(Purchases.LOG_LEVEL.WARN);
   Purchases.configure({
     apiKey: publicRevenueCatKey,
     appUserID: null,

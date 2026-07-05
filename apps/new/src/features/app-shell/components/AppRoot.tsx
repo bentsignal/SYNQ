@@ -12,10 +12,12 @@ export function AppRoot() {
   if (error) {
     return (
       <>
-        <DatabaseStateScreen
-          detail={error.message}
-          title="Database migration failed"
-        />
+        <CustomizationSettingsProvider>
+          <DatabaseStateScreen
+            detail={error.message}
+            title="Database migration failed"
+          />
+        </CustomizationSettingsProvider>
         <StatusBar style="dark" />
       </>
     );
@@ -24,11 +26,13 @@ export function AppRoot() {
   if (!success) {
     return (
       <>
-        <DatabaseStateScreen
-          detail="Applying local database migrations."
-          showSpinner
-          title="Preparing library"
-        />
+        <CustomizationSettingsProvider>
+          <DatabaseStateScreen
+            detail="Applying local database migrations."
+            showSpinner
+            title="Preparing library"
+          />
+        </CustomizationSettingsProvider>
         <StatusBar style="dark" />
       </>
     );

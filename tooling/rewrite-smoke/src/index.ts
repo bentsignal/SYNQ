@@ -124,6 +124,8 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-session-queue-step-service";
 import {
   normalizePlaybackState,
+  parsePersistedPlaybackState,
+  stringifyPersistedPlaybackState,
   toPersistedPlaybackState,
 } from "../../../apps/new/src/features/playback/services/playback-persistence-codec-service";
 import {
@@ -2693,6 +2695,27 @@ async function assertPlaybackPersistenceExecutorSmoke() {
   assert.equal(
     getPlaybackStateFileWithDependencies(dependencies),
     playbackFile,
+  );
+  assert.deepEqual(parsePersistedPlaybackState("{not-json"), initialPlaybackState);
+  assert.equal(
+    stringifyPersistedPlaybackState({
+      ...initialPlaybackState,
+      activeQueueIndex: 0,
+      activeTrackId: first.id,
+      error: "Do not serialize this error.",
+      isPlaying: true,
+      queue: [first],
+    }),
+    JSON.stringify(
+      toPersistedPlaybackState({
+        ...initialPlaybackState,
+        activeQueueIndex: 0,
+        activeTrackId: first.id,
+        error: "Do not serialize this error.",
+        isPlaying: true,
+        queue: [first],
+      }),
+    ),
   );
   assert.deepEqual(
     await loadPersistedPlaybackStateWithDependencies(dependencies),

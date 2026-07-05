@@ -1,7 +1,7 @@
 import { initialPlaybackState } from "./playback-initial-state-service";
 import {
-  normalizePlaybackState,
-  toPersistedPlaybackState,
+  parsePersistedPlaybackState,
+  stringifyPersistedPlaybackState,
 } from "./playback-persistence-codec-service";
 import {
   getPlaybackStateDirectoryWithDependencies,
@@ -41,7 +41,7 @@ export async function loadPersistedPlaybackStateWithDependencies(
 
     const contents = await dependencies.readAsString(playbackStateFile);
 
-    return normalizePlaybackState(JSON.parse(contents));
+    return parsePersistedPlaybackState(contents);
   } catch {
     return initialPlaybackState;
   }
@@ -61,7 +61,7 @@ export async function savePersistedPlaybackStateWithDependencies({
   });
   await dependencies.writeAsString(
     getPlaybackStateFileWithDependencies(dependencies),
-    JSON.stringify(toPersistedPlaybackState(state)),
+    stringifyPersistedPlaybackState(state),
   );
 }
 

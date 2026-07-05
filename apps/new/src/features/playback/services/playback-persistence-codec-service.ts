@@ -79,3 +79,14 @@ export const normalizePlaybackState = (value: unknown): PlaybackState => {
     source: normalizeSource(value.source),
   };
 };
+
+export const parsePersistedPlaybackState = (contents: string): PlaybackState => {
+  try {
+    return normalizePlaybackState(JSON.parse(contents));
+  } catch {
+    return initialPlaybackState;
+  }
+};
+
+export const stringifyPersistedPlaybackState = (state: PlaybackState) =>
+  JSON.stringify(toPersistedPlaybackState(state));

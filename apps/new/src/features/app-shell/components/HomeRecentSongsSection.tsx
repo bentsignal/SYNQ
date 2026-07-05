@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { HomeRecentSongsSectionState } from "../services/home-screen-service";
+import type { HomeRecentSongsSectionState } from "../services/home-recent-songs-service";
 import { HomeRecentSongList } from "./HomeRecentSongList";
 
 type HomeRecentSongsSectionProps = {

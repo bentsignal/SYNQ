@@ -5,14 +5,16 @@ import {
 } from "../../../apps/new/src/features/app-shell/services/duration-format-service";
 import {
   getHomeGuideSections,
-  getHomeLibraryHref,
   getHomeNowPlayingActions,
   getHomeNowPlayingState,
   getHomeQuickActions,
-  getHomeRecentSongHref,
-  getHomeRecentSongsSectionState,
   getHomeScreenViewState,
 } from "../../../apps/new/src/features/app-shell/services/home-screen-service";
+import {
+  getHomeLibraryHref,
+  getHomeRecentSongHref,
+  getHomeRecentSongsSectionState,
+} from "../../../apps/new/src/features/app-shell/services/home-recent-songs-service";
 import {
   rewriteFeatures,
   rewriteManualSmokeAreas,

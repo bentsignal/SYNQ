@@ -1,3 +1,13 @@
+import {
+  getSettingsDirectoryWithDependencies,
+  getSettingsFileWithDependencies,
+} from "./settings-json-file-path-service";
+
+export {
+  getSettingsDirectoryWithDependencies,
+  getSettingsFileWithDependencies,
+} from "./settings-json-file-path-service";
+
 export type SettingsJsonFileInfo = {
   exists: boolean;
 };
@@ -29,26 +39,6 @@ type SaveSettingsJsonFileStoreOptions<TSettings> =
     settings: TSettings;
   };
 
-const settingsDirectoryName = "settings";
-
-const getSettingsDirectory = ({
-  dependencies,
-}: Pick<SettingsJsonFileStoreOptions<unknown>, "dependencies">) => {
-  if (!dependencies.documentDirectory) {
-    throw new Error("The document directory is not available.");
-  }
-
-  return `${dependencies.documentDirectory}${settingsDirectoryName}`;
-};
-
-const getSettingsFile = <TSettings>({
-  dependencies,
-  fileName,
-}: Pick<
-  SettingsJsonFileStoreOptions<TSettings>,
-  "dependencies" | "fileName"
->) => `${getSettingsDirectory({ dependencies })}/${fileName}`;
-
 export async function loadSettingsFromJsonFileWithDependencies<TSettings>({
   defaultSettings,
   dependencies,
@@ -56,7 +46,10 @@ export async function loadSettingsFromJsonFileWithDependencies<TSettings>({
   normalizeSettings,
 }: LoadSettingsJsonFileStoreOptions<TSettings>): Promise<TSettings> {
   try {
-    const settingsFile = getSettingsFile({ dependencies, fileName });
+    const settingsFile = getSettingsFileWithDependencies({
+      documentDirectory: dependencies.documentDirectory,
+      fileName,
+    });
     const fileInfo = await dependencies.getInfo(settingsFile);
     if (!fileInfo.exists) {
       return defaultSettings;
@@ -76,7 +69,9 @@ export async function saveSettingsToJsonFileWithDependencies<TSettings>({
   normalizeSettings,
   settings,
 }: SaveSettingsJsonFileStoreOptions<TSettings>) {
-  const settingsDirectory = getSettingsDirectory({ dependencies });
+  const settingsDirectory = getSettingsDirectoryWithDependencies({
+    documentDirectory: dependencies.documentDirectory,
+  });
   await dependencies.makeDirectory(settingsDirectory, {
     intermediates: true,
   });

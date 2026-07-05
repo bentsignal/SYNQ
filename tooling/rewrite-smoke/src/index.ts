@@ -1589,6 +1589,10 @@ import {
   type SettingsJsonFileStoreDependencies,
 } from "../../../apps/new/src/features/settings/services/settings-json-file-store-service";
 import {
+  getSettingsDirectoryWithDependencies,
+  getSettingsFileWithDependencies,
+} from "../../../apps/new/src/features/settings/services/settings-json-file-path-service";
+import {
   checkStoredImageExistsWithDependencies,
   getImagePathFromHashWithDependencies,
   saveCoverImageWithDependencies,
@@ -18478,6 +18482,20 @@ async function assertSettingsJsonFileStoreSmoke() {
       normalizeSettings,
       settings,
     });
+
+  assert.equal(
+    getSettingsDirectoryWithDependencies({
+      documentDirectory: dependencies.documentDirectory,
+    }),
+    "file:///documents/settings",
+  );
+  assert.equal(
+    getSettingsFileWithDependencies({
+      documentDirectory: dependencies.documentDirectory,
+      fileName: "preferences.json",
+    }),
+    "file:///documents/settings/preferences.json",
+  );
 
   assert.deepEqual(await loadSettings(), defaultSettings);
   assert.deepEqual(calls, [

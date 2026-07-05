@@ -1,15 +1,15 @@
-import { getImportSessionCommandErrorMessage } from "./import-session-command-error-service";
-import type { ImportSessionAction } from "./import-session-action-service";
 import type {
   ImportSaveSummary,
   ImportSessionState,
 } from "../types/import-session";
+import type { ImportSessionAction } from "./import-session-action-service";
 import { getPremiumScopedImportSongs } from "./import-premium-access-service";
-
-type ImportSessionLifecycleResult = {
-  action: ImportSessionAction;
-  succeeded: boolean;
-};
+import {
+  getFailedImportSessionLifecycleResult,
+  getFinishImportSessionAction,
+  getSucceededImportSessionLifecycleResult,
+  type ImportSessionLifecycleResult,
+} from "./import-session-lifecycle-result-service";
 
 export type ImportSessionLifecycleDependencies = {
   clearImportCache: () => Promise<void>;
@@ -22,12 +22,7 @@ export type ImportSessionLifecycleDependencies = {
   ) => Promise<ImportSaveSummary>;
 };
 
-export const getFinishImportSessionAction = (
-  summary: ImportSaveSummary,
-): ImportSessionAction => ({
-  summary,
-  type: "finish",
-});
+export { getFinishImportSessionAction };
 
 export const saveImportSessionLifecycle = async (
   {
@@ -51,21 +46,14 @@ export const saveImportSessionLifecycle = async (
       : await dependencies.discardImportSession(songs);
 
     await dependencies.clearPersistedImportSessionState();
-    return {
-      action: getFinishImportSessionAction(summary),
-      succeeded: true,
-    };
+    return getSucceededImportSessionLifecycleResult(
+      getFinishImportSessionAction(summary),
+    );
   } catch (caughtError) {
-    return {
-      action: {
-        error: getImportSessionCommandErrorMessage({
-          caughtError,
-          mutation: "save-session",
-        }),
-        type: "fail",
-      },
-      succeeded: false,
-    };
+    return getFailedImportSessionLifecycleResult({
+      caughtError,
+      mutation: "save-session",
+    });
   }
 };
 
@@ -75,21 +63,12 @@ export const discardImportSessionLifecycle = async (
   try {
     await dependencies.clearImportCache();
     await dependencies.clearPersistedImportSessionState();
-    return {
-      action: { type: "discard" },
-      succeeded: true,
-    };
+    return getSucceededImportSessionLifecycleResult({ type: "discard" });
   } catch (caughtError) {
-    return {
-      action: {
-        error: getImportSessionCommandErrorMessage({
-          caughtError,
-          mutation: "discard-session",
-        }),
-        type: "fail",
-      },
-      succeeded: false,
-    };
+    return getFailedImportSessionLifecycleResult({
+      caughtError,
+      mutation: "discard-session",
+    });
   }
 };
 

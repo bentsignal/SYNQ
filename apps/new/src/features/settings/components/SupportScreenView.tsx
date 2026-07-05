@@ -6,7 +6,7 @@ import {
   SettingsInfoPanel,
   SettingsScreenContent,
   SettingsScreenHeader,
-} from "./SettingsScreenParts";
+} from "./settings-screen";
 
 type SupportScreenViewProps = SupportScreenController;
 

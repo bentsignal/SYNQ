@@ -7,7 +7,7 @@ import { HapticsPreferenceRow } from "./HapticsPreferenceRow";
 import {
   SettingsScreenContent,
   SettingsScreenHeader,
-} from "./SettingsScreenParts";
+} from "./settings-screen";
 
 type CustomizationScreenViewProps = CustomizationScreenController;
 

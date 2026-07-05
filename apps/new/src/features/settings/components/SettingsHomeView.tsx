@@ -5,7 +5,7 @@ import { useCustomizationTheme } from "../hooks/use-customization-theme";
 import {
   SettingsScreenContent,
   SettingsScreenHeader,
-} from "./SettingsScreenParts";
+} from "./settings-screen";
 import { SettingsSwitchRow } from "./SettingsSwitchRow";
 
 type SettingsHomeViewProps = SettingsHomeController;

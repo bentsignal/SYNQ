@@ -3,26 +3,20 @@ import { usePremiumEntitlementSelector } from "@/src/features/premium/state/Prem
 import { initialPlaybackState } from "../services/playback-initial-state-service";
 import { getActiveTrack } from "../services/playback-queue-selection-service";
 import { playbackReducer } from "../services/playback-session-service";
-import type {
-  PlaybackQueueItem,
-  PlaybackState,
-} from "../types/playback-state";
+import {
+  getPlaybackSessionValue,
+  type PlaybackSessionValue,
+} from "../services/playback-session-value-service";
 import { usePersistedPlaybackSession } from "./use-persisted-playback-session";
 import { usePlaybackAdGateController } from "./use-playback-ad-gate-controller";
-import {
-  usePlaybackCommandController,
-  type PlaybackCommands,
-} from "./use-playback-command-controller";
+import { usePlaybackCommandController } from "./use-playback-command-controller";
 import { usePlaybackNativeAdapter } from "./use-playback-native-adapter";
 import { usePlaybackNativeCommandRunner } from "./use-playback-native-command-runner";
 import { usePlaybackNativeStatusListener } from "./use-playback-native-status-listener";
 import { usePlaybackStateRef } from "./use-playback-state-ref";
 import { usePlaybackTrackAdvancement } from "./use-playback-track-advancement";
 
-export type PlaybackSessionValue = PlaybackCommands & {
-  activeTrack: PlaybackQueueItem | null;
-  state: PlaybackState;
-};
+export type { PlaybackSessionValue };
 
 export function usePlaybackSessionStore(): PlaybackSessionValue {
   const premiumActive = usePremiumEntitlementSelector(
@@ -91,9 +85,9 @@ export function usePlaybackSessionStore(): PlaybackSessionValue {
   });
 
   return useMemo<PlaybackSessionValue>(
-    () => ({
+    () => getPlaybackSessionValue({
       activeTrack,
-      ...commands,
+      commands,
       state,
     }),
     [activeTrack, commands, state],

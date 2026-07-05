@@ -71,6 +71,10 @@ import {
   playbackReducer,
 } from "../../../apps/new/src/features/playback/services/playback-session-service";
 import {
+  getPlaybackSessionValue,
+  type PlaybackCommands,
+} from "../../../apps/new/src/features/playback/services/playback-session-value-service";
+import {
   canRunPlaybackWithAdGate,
   getBeginPlaybackAdBreakAction,
   getCompletePlaybackAdBreakAction,
@@ -1432,6 +1436,45 @@ async function assertPlaybackSessionSmoke() {
   const dispatchPlaybackPersistenceCommand = (action: PlaybackAction) => {
     playbackPersistenceEvents.push(["dispatch", action]);
   };
+  const noopPlaybackCommand = () => undefined;
+  const playbackCommands: PlaybackCommands = {
+    addToQueue: noopPlaybackCommand,
+    clearQueue: noopPlaybackCommand,
+    handleRemoteCommand: () => "handled",
+    moveQueueSong: noopPlaybackCommand,
+    pause: noopPlaybackCommand,
+    playSong: noopPlaybackCommand,
+    removeFromQueue: noopPlaybackCommand,
+    resetPlaybackSession: noopPlaybackCommand,
+    resume: noopPlaybackCommand,
+    seekTo: noopPlaybackCommand,
+    skipNext: noopPlaybackCommand,
+    skipPrevious: noopPlaybackCommand,
+    toggleLoop: noopPlaybackCommand,
+    toggleShuffle: noopPlaybackCommand,
+  };
+  assert.deepEqual(
+    getPlaybackSessionValue({
+      activeTrack: first,
+      commands: playbackCommands,
+      state: {
+        ...initialPlaybackState,
+        activeQueueIndex: 0,
+        activeTrackId: first.id,
+        queue: [first],
+      },
+    }),
+    {
+      activeTrack: first,
+      ...playbackCommands,
+      state: {
+        ...initialPlaybackState,
+        activeQueueIndex: 0,
+        activeTrackId: first.id,
+        queue: [first],
+      },
+    },
+  );
   assert.deepEqual(getHydratePlaybackAction(initialPlaybackState), {
     state: initialPlaybackState,
     type: "hydrate",

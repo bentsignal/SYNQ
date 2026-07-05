@@ -1,37 +1,12 @@
 import { useMemo, type RefObject } from "react";
-import {
-  type PlaybackRemoteCommand,
-  type PlaybackRemoteCommandResult,
-} from "../services/playback-remote-command-service";
 import type { PlaybackNativeCommandPlan } from "../services/playback-native-command-plan-service";
 import type { PlaybackAction } from "../services/playback-session-action-service";
-import type {
-  PlaybackQueueItem,
-  PlaybackState,
-} from "../types/playback-state";
+import type { PlaybackCommands } from "../services/playback-session-value-service";
+import type { PlaybackState } from "../types/playback-state";
 import { usePlaybackCommandRunners } from "./use-playback-command-runners";
 import { usePlaybackQueueCommands } from "./use-playback-queue-commands";
 import { usePlaybackRemoteCommandController } from "./use-playback-remote-command-controller";
 import { usePlaybackTransportCommands } from "./use-playback-transport-commands";
-
-export type PlaybackCommands = {
-  addToQueue: (song: PlaybackQueueItem) => void;
-  clearQueue: () => void;
-  handleRemoteCommand: (
-    command: PlaybackRemoteCommand,
-  ) => PlaybackRemoteCommandResult;
-  moveQueueSong: (songId: number, direction: "down" | "up") => void;
-  pause: () => void;
-  playSong: (song: PlaybackQueueItem) => void;
-  removeFromQueue: (songId: number) => void;
-  resetPlaybackSession: () => void;
-  resume: () => void;
-  seekTo: (position: number) => void;
-  skipNext: () => void;
-  skipPrevious: () => void;
-  toggleLoop: () => void;
-  toggleShuffle: () => void;
-};
 
 type UsePlaybackCommandControllerParams = {
   beginAdBreak: () => void;

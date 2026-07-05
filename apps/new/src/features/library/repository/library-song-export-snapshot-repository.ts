@@ -5,8 +5,8 @@ import * as Crypto from "expo-crypto";
 import {
   isLibrarySongSnapshotStaleWithDependencies,
   markLibrarySongAsExportedWithDependencies,
-  type LibrarySongExportSnapshotDependencies,
 } from "./library-song-export-snapshot-executor-repository";
+import type { LibrarySongExportSnapshotDependencies } from "./library-song-export-snapshot-types-repository";
 
 const librarySongExportSnapshotDependencies: LibrarySongExportSnapshotDependencies =
   {

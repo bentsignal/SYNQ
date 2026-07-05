@@ -1,6 +1,6 @@
 import { Image, Pressable, Text, View } from "react-native";
 import type { CustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { SongAddToPlaylistRowState } from "../services/song-add-to-playlist-service";
+import type { SongAddToPlaylistRowState } from "../services/song-add-to-playlist-row-state-service";
 
 type SongAddToPlaylistRowProps = {
   addToPlaylist: (playlistId: number) => void;

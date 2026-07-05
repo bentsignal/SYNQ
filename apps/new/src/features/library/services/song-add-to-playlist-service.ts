@@ -3,7 +3,6 @@ import {
   getLibraryCollectionListErrors,
   getLibraryCollectionListState,
 } from "./library-collection-list-service";
-import { isProtectedPlaylistId } from "./library-playlist-constants-service";
 import {
   getSongAddToPlaylistCopy,
   getSongAddToPlaylistHeaderState,
@@ -12,6 +11,10 @@ import {
   getSongAddToPlaylistStatusLabel,
   type SongAddToPlaylistMutationState,
 } from "./song-add-to-playlist-mutation-state-service";
+import {
+  getSelectableSongPlaylists,
+  getSongAddToPlaylistRowState,
+} from "./song-add-to-playlist-row-state-service";
 import { getSongAddToPlaylistStatusState } from "./song-add-to-playlist-status-state-service";
 
 export {
@@ -31,35 +34,11 @@ export {
   getSongAddToPlaylistCopy,
   getSongAddToPlaylistHeaderState,
 } from "./song-add-to-playlist-header-state-service";
-
-export const getSelectableSongPlaylists = (
-  playlists: LibraryCollectionPreview[],
-) => playlists.filter((playlist) => !isProtectedPlaylistId(playlist.id));
-
-export const getSongAddToPlaylistRowState = ({
-  mutationState,
-  playlist,
-}: {
-  mutationState: SongAddToPlaylistMutationState;
-  playlist: LibraryCollectionPreview;
-}) => {
-  const isPending = mutationState.pendingPlaylistId === playlist.id;
-  const isAdded = mutationState.successPlaylistId === playlist.id;
-
-  return {
-    detailLabel: isPending ? "Adding" : playlist.detail,
-    imageInitial: playlist.title.slice(0, 1).toUpperCase(),
-    isAdded,
-    isDisabled: isPending,
-    isPending,
-    metaLabel: isAdded ? "Added" : playlist.meta,
-    playlist,
-  };
-};
-
-export type SongAddToPlaylistRowState = ReturnType<
-  typeof getSongAddToPlaylistRowState
->;
+export {
+  getSelectableSongPlaylists,
+  getSongAddToPlaylistRowState,
+  type SongAddToPlaylistRowState,
+} from "./song-add-to-playlist-row-state-service";
 
 export const getSongAddToPlaylistControllerViewState = ({
   collections,

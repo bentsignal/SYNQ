@@ -91,14 +91,16 @@ import {
   type PlaybackCommands,
 } from "../../../apps/new/src/features/playback/services/playback-session-value-service";
 import {
-  canRunPlaybackWithAdGate,
   getBeginPlaybackAdBreakAction,
   getCompletePlaybackAdBreakAction,
-  getPlaybackAdGateControllerDecisions,
   getSyncPlaybackPremiumAction,
+} from "../../../apps/new/src/features/playback/services/playback-ad-gate-service";
+import {
+  canRunPlaybackWithAdGate,
+  getPlaybackAdGateControllerDecisions,
   shouldResumePlaybackAfterPremium,
   shouldStartPlaybackAdBreak,
-} from "../../../apps/new/src/features/playback/services/playback-ad-gate-service";
+} from "../../../apps/new/src/features/playback/services/playback-ad-gate-decision-service";
 import {
   createPlaybackAdGateControls,
 } from "../../../apps/new/src/features/playback/services/playback-ad-gate-controller-service";

@@ -5,9 +5,9 @@ import type {
   PlaybackState,
 } from "../types/playback-state";
 import {
-  getPlaybackAdGateControllerDecisions,
   getSyncPlaybackPremiumAction,
 } from "../services/playback-ad-gate-service";
+import { getPlaybackAdGateControllerDecisions } from "../services/playback-ad-gate-decision-service";
 import {
   createPlaybackAdGateControls,
 } from "../services/playback-ad-gate-controller-service";

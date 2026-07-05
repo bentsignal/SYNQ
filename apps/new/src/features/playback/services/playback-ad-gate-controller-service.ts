@@ -1,8 +1,6 @@
 import type { RefObject } from "react";
-import {
-  canRunPlaybackWithAdGate,
-  getBeginPlaybackAdBreakAction,
-} from "./playback-ad-gate-service";
+import { getBeginPlaybackAdBreakAction } from "./playback-ad-gate-service";
+import { canRunPlaybackWithAdGate } from "./playback-ad-gate-decision-service";
 import type { PlaybackAction } from "./playback-session-action-service";
 import type { PlaybackState } from "../types/playback-state";
 

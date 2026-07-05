@@ -1,5 +1,8 @@
 import type { CollectionDetailActionState } from "./library-collection-detail-action-state-service";
 import type { LibraryCollectionDetail } from "./library-collection-detail-service";
+import type {
+  DeleteLibraryCollectionCommandParams,
+} from "./library-collection-command-dependencies-service";
 import {
   runCollectionDetailMutationAttempt,
   type CollectionDetailMutationDispatch,
@@ -8,7 +11,6 @@ import {
   type NativeRouteReplacer,
 } from "./library-collection-detail-mutation-runtime-service";
 import { getDeleteCollectionConfirmationCopy } from "./library-collection-delete-confirmation-service";
-import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
 import {
   getCollectionDeleteFinishCommand,
   getCollectionDeleteStartCommand,
@@ -31,14 +33,13 @@ export const runLibraryCollectionDeleteCommand = ({
   showConfirmation,
 }: {
   actionState: CollectionDetailActionState;
-  deleteLibraryCollection: (params: {
-    id: number;
-    kind: LibraryCollectionDetailKind;
-  }) => Promise<void>;
+  deleteLibraryCollection: (
+    params: DeleteLibraryCollectionCommandParams,
+  ) => Promise<void>;
   detail: Pick<LibraryCollectionDetail, "eyebrow" | "title">;
   dispatch: CollectionDetailMutationDispatch;
-  id: number;
-  kind: LibraryCollectionDetailKind;
+  id: DeleteLibraryCollectionCommandParams["id"];
+  kind: DeleteLibraryCollectionCommandParams["kind"];
   replaceRoute: NativeRouteReplacer;
   sendHaptic: CollectionDetailMutationHapticSender;
   showConfirmation: NativeConfirmationPresenter;

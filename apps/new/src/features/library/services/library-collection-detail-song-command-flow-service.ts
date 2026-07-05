@@ -1,13 +1,15 @@
 import type {
   LibraryCollectionDetail,
-  LibraryCollectionDetailSong,
 } from "./library-collection-detail-service";
+import type {
+  CollectionSongCommandParams,
+  MoveLibraryCollectionSongCommandParams,
+} from "./library-collection-command-dependencies-service";
 import {
   runCollectionDetailMutationAttempt,
   type CollectionDetailMutationDispatch,
   type CollectionDetailMutationHapticSender,
 } from "./library-collection-detail-mutation-runtime-service";
-import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
 import {
   getCollectionSongMoveFinishCommand,
   getCollectionSongMoveStartCommand,
@@ -27,20 +29,16 @@ export const runLibraryCollectionSongMoveCommand = async ({
   sendHaptic,
   songId,
 }: {
-  collectionId: number;
+  collectionId: MoveLibraryCollectionSongCommandParams["collectionId"];
   detail: Pick<LibraryCollectionDetail, "songs">;
-  direction: "down" | "up";
+  direction: MoveLibraryCollectionSongCommandParams["direction"];
   dispatch: CollectionDetailMutationDispatch;
-  kind: LibraryCollectionDetailKind;
-  moveLibraryCollectionSong: (params: {
-    collectionId: number;
-    direction: "down" | "up";
-    kind: LibraryCollectionDetailKind;
-    songId: number;
-    songs: LibraryCollectionDetailSong[];
-  }) => Promise<void>;
+  kind: MoveLibraryCollectionSongCommandParams["kind"];
+  moveLibraryCollectionSong: (
+    params: MoveLibraryCollectionSongCommandParams,
+  ) => Promise<void>;
   sendHaptic: CollectionDetailMutationHapticSender;
-  songId: number;
+  songId: MoveLibraryCollectionSongCommandParams["songId"];
 }) => {
   await runCollectionDetailMutationAttempt({
     dispatch,
@@ -70,16 +68,14 @@ export const runLibraryCollectionSongRemoveCommand = async ({
   sendHaptic,
   songId,
 }: {
-  collectionId: number;
+  collectionId: CollectionSongCommandParams["collectionId"];
   dispatch: CollectionDetailMutationDispatch;
-  kind: LibraryCollectionDetailKind;
-  removeLibraryCollectionSong: (params: {
-    collectionId: number;
-    kind: LibraryCollectionDetailKind;
-    songId: number;
-  }) => Promise<void>;
+  kind: CollectionSongCommandParams["kind"];
+  removeLibraryCollectionSong: (
+    params: CollectionSongCommandParams,
+  ) => Promise<void>;
   sendHaptic: CollectionDetailMutationHapticSender;
-  songId: number;
+  songId: CollectionSongCommandParams["songId"];
 }) => {
   await runCollectionDetailMutationAttempt({
     dispatch,

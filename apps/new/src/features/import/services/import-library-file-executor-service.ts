@@ -1,3 +1,15 @@
+import {
+  getImportLibraryDirectoryWithDependencies,
+  getImportLibrarySongDirectory,
+  getImportLibrarySongFile,
+} from "./import-library-file-path-service";
+
+export {
+  getImportLibraryDirectoryWithDependencies,
+  getImportLibrarySongDirectory,
+  getImportLibrarySongFile,
+} from "./import-library-file-path-service";
+
 export type ImportLibraryFileDependencies = {
   copyFile: ({ from, to }: { from: string; to: string }) => Promise<void>;
   deletePath: (
@@ -10,32 +22,6 @@ export type ImportLibraryFileDependencies = {
     options?: { intermediates?: boolean },
   ) => Promise<void>;
 };
-
-export const getImportLibraryDirectoryWithDependencies = (
-  dependencies: Pick<ImportLibraryFileDependencies, "documentDirectory">,
-) => {
-  if (!dependencies.documentDirectory) {
-    throw new Error("Document directory is unavailable.");
-  }
-
-  return `${dependencies.documentDirectory}library`;
-};
-
-export const getImportLibrarySongDirectory = ({
-  libraryDirectory,
-  songId,
-}: {
-  libraryDirectory: string;
-  songId: number;
-}) => `${libraryDirectory}/${songId}`;
-
-export const getImportLibrarySongFile = ({
-  fileName,
-  songDirectory,
-}: {
-  fileName: string;
-  songDirectory: string;
-}) => `${songDirectory}/${fileName}`;
 
 export const deleteLibrarySongFilesWithDependencies = async (
   songId: number,

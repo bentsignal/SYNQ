@@ -12,7 +12,7 @@ import {
 } from "../services/library-song-playback-action-flow-service";
 import {
   toLibrarySongDetailPlaybackItem,
-} from "../services/library-song-playback-state-service";
+} from "../services/library-song-playback-item-service";
 
 type UseLibrarySongPlaybackActionsParams = {
   actionState: LibrarySongDetailActionState;

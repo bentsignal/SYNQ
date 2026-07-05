@@ -3,8 +3,8 @@ import {
   getLibrarySongPlaybackBlockedCommand,
   getLibrarySongPlayCommand,
   getLibrarySongQueueCommand,
-  type LibrarySongDetailPlaybackItem,
 } from "./library-song-playback-state-service";
+import type { LibrarySongDetailPlaybackItem } from "./library-song-playback-item-service";
 import type { LibrarySongDetailHref } from "./library-song-navigation-service";
 
 type LibrarySongPlaybackActionDependencies = {

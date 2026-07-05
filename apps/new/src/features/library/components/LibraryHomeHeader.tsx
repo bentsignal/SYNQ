@@ -1,9 +1,7 @@
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import type { CustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getLibraryHomeHeaderState } from "../services/library-home-header-service";
-
-type LibraryHomeHeaderState = ReturnType<typeof getLibraryHomeHeaderState>;
+import type { LibraryHomeHeaderState } from "../services/library-home-header-service";
 
 type LibraryHomeHeaderProps = {
   headerState: LibraryHomeHeaderState;

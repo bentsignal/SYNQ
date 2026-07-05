@@ -50,3 +50,7 @@ export const getLibraryHomeHeaderState = () => ({
     "Browse your songs, playlists, albums, and artists as your collection grows.",
   title: "Library",
 });
+
+export type LibraryHomeHeaderState = ReturnType<
+  typeof getLibraryHomeHeaderState
+>;

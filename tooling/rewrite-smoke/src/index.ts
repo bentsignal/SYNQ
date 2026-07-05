@@ -203,6 +203,9 @@ import {
   getSkipPreviousNativeCommandPlan,
 } from "../../../apps/new/src/features/playback/services/playback-native-command-plan-service";
 import {
+  createPlaybackNativeCommandRunner,
+} from "../../../apps/new/src/features/playback/services/playback-native-command-runner-service";
+import {
   getPlaybackNativePreviousCommandPlan,
   getPlaybackNativeReplacementCommandPlan,
   getPlaybackNativeResumeCommandPlan,
@@ -2720,6 +2723,70 @@ function assertPlaybackNativeCommandPlanSmoke() {
     getPlaybackNativeCommandErrorMessage("unknown native failure"),
     "Playback command failed.",
   );
+  const nativeRunnerEvents: unknown[] = [];
+  const nativeRunner = createPlaybackNativeCommandRunner({
+    adapter: {
+      destroy: () => Promise.resolve(),
+      pause: () => {
+        nativeRunnerEvents.push(["adapter", "pause"]);
+        return Promise.resolve();
+      },
+      play: (song) => {
+        nativeRunnerEvents.push(["adapter", "play", song.id]);
+        return Promise.resolve();
+      },
+      playAd: () => {
+        nativeRunnerEvents.push(["adapter", "play-ad"]);
+        return Promise.resolve();
+      },
+      restore: (restoredState) => {
+        nativeRunnerEvents.push([
+          "adapter",
+          "restore",
+          restoredState.activeTrackId,
+        ]);
+        return Promise.resolve();
+      },
+      resume: () => {
+        nativeRunnerEvents.push(["adapter", "resume"]);
+        return Promise.resolve();
+      },
+      resumeLibrary: () => {
+        nativeRunnerEvents.push(["adapter", "resume-library"]);
+        return Promise.resolve();
+      },
+      seekTo: (position) => {
+        nativeRunnerEvents.push(["adapter", "seek", position]);
+        return Promise.resolve();
+      },
+      setStatusListener: () => {},
+      stop: () => {
+        nativeRunnerEvents.push(["adapter", "stop"]);
+        return Promise.resolve();
+      },
+    },
+    dispatch: (action) => {
+      nativeRunnerEvents.push(["dispatch", action.type]);
+    },
+  });
+  nativeRunner.runNativeCommandPlan({ type: "pause" });
+  nativeRunner.runNativeCommandPlan({ track: first, type: "play" });
+  nativeRunner.runNativeCommandPlan({ type: "resume" });
+  nativeRunner.runNativeCommandPlan({ position: 1234, type: "seek" });
+  nativeRunner.runNativeCommandPlan({ type: "stop" });
+  nativeRunner.restorePersistedPlaybackState(state);
+  nativeRunner.playNativeAdBreak();
+  nativeRunner.resumeNativeLibraryAfterPremium();
+  assert.deepEqual(nativeRunnerEvents, [
+    ["adapter", "pause"],
+    ["adapter", "play", first.id],
+    ["adapter", "resume"],
+    ["adapter", "seek", 1234],
+    ["adapter", "stop"],
+    ["adapter", "restore", first.id],
+    ["adapter", "play-ad"],
+    ["adapter", "resume-library"],
+  ]);
   assert.deepEqual(
     getPlaybackNativeTargetCommandPlan({
       queue: [first, second],

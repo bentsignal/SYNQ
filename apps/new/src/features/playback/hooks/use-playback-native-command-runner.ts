@@ -1,13 +1,9 @@
-import { useCallback } from "react";
+import { useMemo } from "react";
 import {
-  getPlaybackNativeCommandErrorMessage,
-  type PlaybackNativeCommandPlan,
-} from "../services/playback-native-command-plan-service";
-import { getPlaybackNativeFailureAction } from "../services/playback-native-transition-service";
-import { runPlaybackNativeCommandPlan } from "../services/playback-native-command-plan-service";
+  createPlaybackNativeCommandRunner,
+} from "../services/playback-native-command-runner-service";
 import type { PlaybackAction } from "../services/playback-session-action-service";
 import type { TrackPlayerAdapter } from "../services/track-player-adapter";
-import type { PlaybackState } from "../types/playback-state";
 
 type UsePlaybackNativeCommandRunnerParams = {
   adapter: TrackPlayerAdapter;
@@ -18,46 +14,8 @@ export function usePlaybackNativeCommandRunner({
   adapter,
   dispatch,
 }: UsePlaybackNativeCommandRunnerParams) {
-  const runNativeCommand = useCallback(
-    (command: () => Promise<void>) => {
-      void command().catch((error) => {
-        dispatch(
-          getPlaybackNativeFailureAction(
-            getPlaybackNativeCommandErrorMessage(error),
-          ),
-        );
-      });
-    },
-    [dispatch],
+  return useMemo(
+    () => createPlaybackNativeCommandRunner({ adapter, dispatch }),
+    [adapter, dispatch],
   );
-
-  const runNativeCommandPlan = useCallback(
-    (plan: PlaybackNativeCommandPlan) => {
-      runPlaybackNativeCommandPlan({ adapter, plan, runNativeCommand });
-    },
-    [adapter, runNativeCommand],
-  );
-
-  const restorePersistedPlaybackState = useCallback(
-    (persistedState: PlaybackState) => {
-      runNativeCommand(() => adapter.restore(persistedState));
-    },
-    [adapter, runNativeCommand],
-  );
-
-  const playNativeAdBreak = useCallback(() => {
-    runNativeCommand(() => adapter.playAd());
-  }, [adapter, runNativeCommand]);
-
-  const resumeNativeLibraryAfterPremium = useCallback(() => {
-    runNativeCommand(() => adapter.resumeLibrary());
-  }, [adapter, runNativeCommand]);
-
-  return {
-    playNativeAdBreak,
-    restorePersistedPlaybackState,
-    resumeNativeLibraryAfterPremium,
-    runNativeCommand,
-    runNativeCommandPlan,
-  };
 }

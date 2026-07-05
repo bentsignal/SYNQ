@@ -4,6 +4,7 @@ import {
   getCopyImportCacheDestination,
   getImportCacheDirectory,
 } from "./import-file-cache-step-service";
+import { getImportFileCacheErrorMessage } from "./import-file-cache-error-service";
 
 export type ImportFileCacheDependencies = {
   cacheDirectory: string | null;
@@ -33,9 +34,6 @@ type WriteImportAssetParams = {
   id: number;
   name: string;
 };
-
-const getErrorMessage = (error: unknown) =>
-  error instanceof Error ? error.message : String(error);
 
 export const createImportCacheDirectoryWithDependencies = async (
   dependencies: ImportFileCacheDependencies,
@@ -92,7 +90,9 @@ export async function clearImportCacheWithDependencies(
       idempotent: true,
     });
   } catch (error) {
-    throw new Error(`Import cache cleanup failed: ${getErrorMessage(error)}`);
+    throw new Error(
+      `Import cache cleanup failed: ${getImportFileCacheErrorMessage(error)}`,
+    );
   }
 }
 
@@ -110,6 +110,8 @@ export async function deleteImportDraftCacheFilesWithDependencies({
       ),
     );
   } catch (error) {
-    throw new Error(`Import file cleanup failed: ${getErrorMessage(error)}`);
+    throw new Error(
+      `Import file cleanup failed: ${getImportFileCacheErrorMessage(error)}`,
+    );
   }
 }

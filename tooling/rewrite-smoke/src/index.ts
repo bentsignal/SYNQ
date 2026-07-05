@@ -595,6 +595,7 @@ import {
   getImportCacheDirectory,
   sanitizeImportCacheFileName,
 } from "../../../apps/new/src/features/import/services/import-file-cache-step-service";
+import { getImportFileCacheErrorMessage } from "../../../apps/new/src/features/import/services/import-file-cache-error-service";
 import {
   selectImportFilesWithDependencies,
   stageWifiImportFileWithDependencies,
@@ -14874,6 +14875,11 @@ async function assertImportFileCacheExecutorSmoke() {
     sanitizeImportCacheFileName("01 Smoke Song!.mp3"),
     "01_Smoke_Song_.mp3",
   );
+  assert.equal(
+    getImportFileCacheErrorMessage(new Error("Smoke failure.")),
+    "Smoke failure.",
+  );
+  assert.equal(getImportFileCacheErrorMessage("String failure."), "String failure.");
   assert.equal(getImportCacheDirectory(dependencies), "file:///cache/import");
   assert.deepEqual(
     getCopyImportCacheDestination({

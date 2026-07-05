@@ -1,10 +1,11 @@
 import { Text, TextInput, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getLibrarySongEditFieldState } from "../services/library-song-edit-screen-state-service";
+import type { getLibrarySongEditFieldState } from "../services/library-song-edit-screen-state-service";
 
 type EditLibrarySongFieldsProps = {
   albumNames: string;
   artistNames: string;
+  fieldState: ReturnType<typeof getLibrarySongEditFieldState>;
   onChangeAlbumNames: (albumNames: string) => void;
   onChangeArtistNames: (artistNames: string) => void;
   onChangeTitle: (title: string) => void;
@@ -14,13 +15,13 @@ type EditLibrarySongFieldsProps = {
 export function EditLibrarySongFields({
   albumNames,
   artistNames,
+  fieldState,
   onChangeAlbumNames,
   onChangeArtistNames,
   onChangeTitle,
   title,
 }: EditLibrarySongFieldsProps) {
   const theme = useCustomizationTheme();
-  const fieldState = getLibrarySongEditFieldState();
   const inputStyle = {
     backgroundColor: theme.surface,
     borderColor: theme.border,

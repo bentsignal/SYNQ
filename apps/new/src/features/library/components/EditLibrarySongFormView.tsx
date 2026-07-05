@@ -2,6 +2,7 @@ import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetail } from "../hooks/use-library-song-detail-query";
 import {
+  getLibrarySongEditFieldState,
   getLibrarySongEditStatusState,
   type LibrarySongEditActionState,
 } from "../services/library-song-edit-screen-state-service";
@@ -44,6 +45,7 @@ export function EditLibrarySongFormView({
   title,
 }: EditLibrarySongFormViewProps) {
   const theme = useCustomizationTheme();
+  const fieldState = getLibrarySongEditFieldState();
   const statusState = getLibrarySongEditStatusState({
     detail,
     errors,
@@ -66,6 +68,7 @@ export function EditLibrarySongFormView({
       <EditLibrarySongFields
         albumNames={albumNames}
         artistNames={artistNames}
+        fieldState={fieldState}
         onChangeAlbumNames={onChangeAlbumNames}
         onChangeArtistNames={onChangeArtistNames}
         onChangeTitle={onChangeTitle}

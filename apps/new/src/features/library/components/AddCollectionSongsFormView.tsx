@@ -3,8 +3,8 @@ import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import {
   type AddCollectionSongsFormState,
-  type AddCollectionSongsStatusState,
 } from "../services/addable-collection-songs-screen-state-service";
+import type { AddCollectionSongsStatusState } from "../services/add-collection-songs-status-state-service";
 import type {
   AddableSongRowModel,
   AddableSongSelectionState,

@@ -146,3 +146,34 @@ export const getLibraryCollectionListState = ({
 export type LibraryCollectionListState = ReturnType<
   typeof getLibraryCollectionListState
 >;
+
+export const getLibraryCollectionListControllerViewState = ({
+  collections,
+  error,
+  kind,
+  query,
+  updatedAt,
+}: {
+  collections: LibraryCollectionPreview[];
+  error: unknown;
+  kind: LibraryCollectionListKind;
+  query: string;
+  updatedAt: number;
+}) => {
+  const copy = getLibraryCollectionListCopy(kind);
+
+  return {
+    copy,
+    listState: getLibraryCollectionListState({
+      collections,
+      emptyLabel: copy.empty,
+      errors: getLibraryCollectionListErrors(error),
+      query,
+      updatedAt,
+    }),
+  };
+};
+
+export type LibraryCollectionListControllerViewState = ReturnType<
+  typeof getLibraryCollectionListControllerViewState
+>;

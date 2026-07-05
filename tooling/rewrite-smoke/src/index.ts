@@ -894,6 +894,7 @@ import {
   getLibraryCollectionListErrors,
   getLibraryCollectionCreateHref,
   getLibraryCollectionListBackHref,
+  getLibraryCollectionListControllerViewState,
   getLibraryCollectionListCopy,
   getLibraryCollectionListState,
 } from "../../../apps/new/src/features/library/services/library-collection-list-service";
@@ -12586,6 +12587,24 @@ function assertLibraryCollectionListSmoke() {
         },
       ],
     },
+  );
+  const collectionListControllerState =
+    getLibraryCollectionListControllerViewState({
+      collections,
+      error: null,
+      kind: "playlists",
+      query: "road",
+      updatedAt: 500,
+    });
+  assert.equal(collectionListControllerState.copy.title, "Playlists");
+  assert.equal(collectionListControllerState.copy.empty, "No playlists in library");
+  assert.equal(
+    collectionListControllerState.listState.emptyLabel,
+    "No matching collections",
+  );
+  assert.deepEqual(
+    collectionListControllerState.listState.visibleRows.map((row) => row.href),
+    ["/(tabs)/library/playlist/3"],
   );
 
   assert.deepEqual(initialLibraryCollectionListControlState, {

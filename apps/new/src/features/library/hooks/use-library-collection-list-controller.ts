@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useMemo, useReducer } from "react";
 import {
   type CollectionKind,
   useLibraryCollectionListQuery,
@@ -9,17 +9,14 @@ import {
   libraryCollectionListControlReducer,
 } from "../services/library-collection-list-control-state-service";
 import {
-  getLibraryCollectionListErrors,
-  getLibraryCollectionListState,
+  getLibraryCollectionListControllerViewState,
 } from "../services/library-collection-list-service";
 
 type UseLibraryCollectionListControllerParams = {
-  emptyLabel: string;
   kind: CollectionKind;
 };
 
 export function useLibraryCollectionListController({
-  emptyLabel,
   kind,
 }: UseLibraryCollectionListControllerParams) {
   const [controls, dispatchControls] = useReducer(
@@ -30,20 +27,24 @@ export function useLibraryCollectionListController({
     kind,
     limit: null,
   });
-  const listState = getLibraryCollectionListState({
-    collections,
-    emptyLabel,
-    errors: getLibraryCollectionListErrors(error),
-    query: controls.query,
-    updatedAt,
-  });
+  const viewState = useMemo(
+    () =>
+      getLibraryCollectionListControllerViewState({
+        collections,
+        error,
+        kind,
+        query: controls.query,
+        updatedAt,
+      }),
+    [collections, controls.query, error, kind, updatedAt],
+  );
 
   const setQuery = (query: string) => {
     dispatchControls(getLibraryCollectionListSetQueryAction(query));
   };
 
   return {
-    listState,
+    ...viewState,
     query: controls.query,
     setQuery,
   };

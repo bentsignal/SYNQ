@@ -1,7 +1,6 @@
 import { LibraryCollectionListView } from "../components/LibraryCollectionListView";
 import { useLibraryCollectionListController } from "../hooks/use-library-collection-list-controller";
 import { type CollectionKind } from "../hooks/use-library-collection-list-query";
-import { getLibraryCollectionListCopy } from "../services/library-collection-list-service";
 
 type LibraryCollectionListScreenProps = {
   kind: CollectionKind;
@@ -10,9 +9,7 @@ type LibraryCollectionListScreenProps = {
 export function LibraryCollectionListScreen({
   kind,
 }: LibraryCollectionListScreenProps) {
-  const copy = getLibraryCollectionListCopy(kind);
-  const { listState, query, setQuery } = useLibraryCollectionListController({
-    emptyLabel: copy.empty,
+  const { copy, listState, query, setQuery } = useLibraryCollectionListController({
     kind,
   });
 

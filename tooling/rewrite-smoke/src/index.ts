@@ -74,6 +74,7 @@ import {
   canRunPlaybackWithAdGate,
   getBeginPlaybackAdBreakAction,
   getCompletePlaybackAdBreakAction,
+  getPlaybackAdGateControllerDecisions,
   getSyncPlaybackPremiumAction,
   shouldResumePlaybackAfterPremium,
   shouldStartPlaybackAdBreak,
@@ -2099,6 +2100,38 @@ async function assertPlaybackSessionSmoke() {
       premiumActive: true,
     }),
     false,
+  );
+  assert.deepEqual(
+    getPlaybackAdGateControllerDecisions({
+      hasActiveTrack: true,
+      premiumActive: false,
+      state: {
+        adGate: {
+          active: false,
+          due: true,
+        },
+      },
+    }),
+    {
+      shouldBeginAdBreak: true,
+      shouldResumeAfterPremium: false,
+    },
+  );
+  assert.deepEqual(
+    getPlaybackAdGateControllerDecisions({
+      hasActiveTrack: true,
+      premiumActive: true,
+      state: {
+        adGate: {
+          active: true,
+          due: true,
+        },
+      },
+    }),
+    {
+      shouldBeginAdBreak: false,
+      shouldResumeAfterPremium: true,
+    },
   );
 
   state = playbackReducer(state, getBeginPlaybackAdBreakAction());

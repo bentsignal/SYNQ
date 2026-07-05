@@ -7,9 +7,8 @@ import type {
 import {
   canRunPlaybackWithAdGate,
   getBeginPlaybackAdBreakAction,
+  getPlaybackAdGateControllerDecisions,
   getSyncPlaybackPremiumAction,
-  shouldResumePlaybackAfterPremium,
-  shouldStartPlaybackAdBreak,
 } from "../services/playback-ad-gate-service";
 
 export function usePlaybackAdGateController({
@@ -52,29 +51,30 @@ export function usePlaybackAdGateController({
 
   const adGateActive = state.adGate.active;
   const adGateDue = state.adGate.due;
+  const { shouldBeginAdBreak, shouldResumeAfterPremium } =
+    getPlaybackAdGateControllerDecisions({
+      hasActiveTrack: activeTrack !== null,
+      premiumActive,
+      state,
+    });
 
   useEffect(() => {
-    if (
-      shouldStartPlaybackAdBreak({
-        gate: { active: adGateActive, due: adGateDue },
-        premiumActive,
-      })
-    ) {
+    if (shouldBeginAdBreak) {
       beginAdBreak();
     }
-  }, [adGateActive, adGateDue, beginAdBreak, premiumActive]);
+  }, [adGateActive, adGateDue, beginAdBreak, premiumActive, shouldBeginAdBreak]);
 
   useEffect(() => {
-    if (
-      shouldResumePlaybackAfterPremium({
-        gate: { active: adGateActive },
-        hasActiveTrack: activeTrack !== null,
-        premiumActive,
-      })
-    ) {
+    if (shouldResumeAfterPremium) {
       onResumeLibraryAfterPremium();
     }
-  }, [activeTrack, adGateActive, onResumeLibraryAfterPremium, premiumActive]);
+  }, [
+    activeTrack,
+    adGateActive,
+    onResumeLibraryAfterPremium,
+    premiumActive,
+    shouldResumeAfterPremium,
+  ]);
 
   return {
     beginAdBreak,

@@ -697,6 +697,7 @@ import {
   getCollectionSongListState,
   getCollectionSongOrderUpdate,
   getCollectionSongRowActionState,
+  getCollectionSongRowsViewState,
   getCollectionSongRowViewState,
   reorderCollectionSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-song-mutation-service";
@@ -6458,6 +6459,63 @@ async function assertLibraryCollectionInteractionSmoke() {
         upLabel: "Up",
       },
     },
+  );
+  assert.deepEqual(
+    getCollectionSongRowsViewState({
+      movingSongId: 2,
+      removingSongId: null,
+      songs,
+    }),
+    [
+      {
+        song: songs[0],
+        viewState: {
+          detailHref: "/(tabs)/library/song/1",
+          rowState: {
+            canMoveDown: false,
+            canMoveUp: false,
+            canRemove: false,
+            downLabel: "Down",
+            isMoving: false,
+            isRemoving: false,
+            removeLabel: "Remove",
+            upLabel: "Up",
+          },
+        },
+      },
+      {
+        song: songs[1],
+        viewState: {
+          detailHref: "/(tabs)/library/song/2",
+          rowState: {
+            canMoveDown: false,
+            canMoveUp: false,
+            canRemove: false,
+            downLabel: "Moving",
+            isMoving: true,
+            isRemoving: false,
+            removeLabel: "Remove",
+            upLabel: "Moving",
+          },
+        },
+      },
+      {
+        song: songs[2],
+        viewState: {
+          detailHref: "/(tabs)/library/song/3",
+          rowState: {
+            canMoveDown: false,
+            canMoveUp: false,
+            canRemove: false,
+            downLabel: "Down",
+            isMoving: false,
+            isRemoving: false,
+            removeLabel: "Remove",
+            upLabel: "Up",
+          },
+        },
+      },
+    ],
   );
   assert.equal(getCollectionListHref("album"), "/(tabs)/library/albums");
   assert.equal(getCollectionListHref("artist"), "/(tabs)/library/artists");

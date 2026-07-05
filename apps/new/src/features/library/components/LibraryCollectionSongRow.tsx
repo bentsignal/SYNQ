@@ -3,39 +3,23 @@ import { Pressable, Text, View } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibraryCollectionDetailSong } from "../hooks/use-library-collection-detail-query";
-import { getCollectionSongRowViewState } from "../services/library-collection-song-mutation-service";
+import type { CollectionSongRowViewState } from "../services/library-collection-song-mutation-service";
 import { LibraryCollectionSongRowActions } from "./LibraryCollectionSongRowActions";
 
 type LibraryCollectionSongRowProps = {
-  canMutateSongs?: boolean;
-  index: number;
-  movingSongId?: number | null;
   onMoveSong?: (songId: number, direction: "down" | "up") => void;
   onRemoveSong?: (songId: number) => void;
-  removingSongId?: number | null;
   song: LibraryCollectionDetailSong;
-  totalSongs: number;
+  viewState: CollectionSongRowViewState;
 };
 
 export function LibraryCollectionSongRow({
-  canMutateSongs = true,
-  index,
-  movingSongId,
   onMoveSong,
   onRemoveSong,
-  removingSongId,
   song,
-  totalSongs,
+  viewState,
 }: LibraryCollectionSongRowProps) {
   const theme = useCustomizationTheme();
-  const viewState = getCollectionSongRowViewState({
-    canMutateSongs,
-    index,
-    movingSongId: movingSongId ?? null,
-    removingSongId: removingSongId ?? null,
-    songId: song.id,
-    totalSongs,
-  });
 
   return (
     <View

@@ -116,3 +116,34 @@ export const getCollectionSongRowViewState = ({
     totalSongs,
   }),
 });
+
+export type CollectionSongRowViewState = ReturnType<
+  typeof getCollectionSongRowViewState
+>;
+
+export const getCollectionSongRowsViewState = ({
+  canMutateSongs,
+  movingSongId,
+  removingSongId,
+  songs,
+}: {
+  canMutateSongs?: boolean;
+  movingSongId: number | null;
+  removingSongId: number | null;
+  songs: LibraryCollectionDetailSong[];
+}) =>
+  songs.map((song, index) => ({
+    song,
+    viewState: getCollectionSongRowViewState({
+      canMutateSongs,
+      index,
+      movingSongId,
+      removingSongId,
+      songId: song.id,
+      totalSongs: songs.length,
+    }),
+  }));
+
+export type CollectionSongRowViewModel = ReturnType<
+  typeof getCollectionSongRowsViewState
+>[number];

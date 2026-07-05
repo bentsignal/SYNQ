@@ -8,6 +8,7 @@ import {
   getCollectionDetailViewState,
   getCollectionDetailStatusState,
 } from "../services/library-collection-interaction-service";
+import { getCollectionSongRowsViewState } from "../services/library-collection-song-mutation-service";
 import { LibraryCollectionDetailActions } from "./LibraryCollectionDetailActions";
 import { LibraryCollectionDetailHeader } from "./LibraryCollectionDetailHeader";
 import { LibraryCollectionDetailStatus } from "./LibraryCollectionDetailStatus";
@@ -58,6 +59,12 @@ export function LibraryCollectionDetailView({
     mutationError,
     updatedAt: detail.updatedAt,
   });
+  const songRows = getCollectionSongRowsViewState({
+    canMutateSongs: actionState.canMutateSongs,
+    movingSongId,
+    removingSongId,
+    songs: detail.songs,
+  });
 
   return (
     <ScrollView
@@ -86,13 +93,10 @@ export function LibraryCollectionDetailView({
       />
 
       <LibraryCollectionSongList
-        canMutateSongs={actionState.canMutateSongs}
         emptyState={viewState.songSection.emptyState}
-        movingSongId={movingSongId}
         onMoveSong={moveSong}
         onRemoveSong={removeSong}
-        removingSongId={removingSongId}
-        songs={detail.songs}
+        rows={songRows}
       />
 
       <LibraryCollectionDetailStatus statusState={statusState} />

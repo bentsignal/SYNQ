@@ -70,9 +70,12 @@ import {
   playbackReducer,
 } from "../../../apps/new/src/features/playback/services/playback-session-service";
 import {
+  canRunPlaybackWithAdGate,
   getBeginPlaybackAdBreakAction,
   getCompletePlaybackAdBreakAction,
   getSyncPlaybackPremiumAction,
+  shouldResumePlaybackAfterPremium,
+  shouldStartPlaybackAdBreak,
 } from "../../../apps/new/src/features/playback/services/playback-ad-gate-service";
 import {
   failPlaybackSession,
@@ -2002,6 +2005,57 @@ async function assertPlaybackSessionSmoke() {
     premiumActive: true,
     type: "sync-premium",
   });
+  assert.equal(
+    canRunPlaybackWithAdGate({
+      gate: { active: false, due: false },
+      premiumActive: false,
+    }),
+    true,
+  );
+  assert.equal(
+    canRunPlaybackWithAdGate({
+      gate: { active: false, due: true },
+      premiumActive: false,
+    }),
+    false,
+  );
+  assert.equal(
+    canRunPlaybackWithAdGate({
+      gate: { active: true, due: true },
+      premiumActive: true,
+    }),
+    true,
+  );
+  assert.equal(
+    shouldStartPlaybackAdBreak({
+      gate: { active: false, due: true },
+      premiumActive: false,
+    }),
+    true,
+  );
+  assert.equal(
+    shouldStartPlaybackAdBreak({
+      gate: { active: true, due: true },
+      premiumActive: false,
+    }),
+    false,
+  );
+  assert.equal(
+    shouldResumePlaybackAfterPremium({
+      gate: { active: true },
+      hasActiveTrack: true,
+      premiumActive: true,
+    }),
+    true,
+  );
+  assert.equal(
+    shouldResumePlaybackAfterPremium({
+      gate: { active: true },
+      hasActiveTrack: false,
+      premiumActive: true,
+    }),
+    false,
+  );
 
   state = playbackReducer(state, getBeginPlaybackAdBreakAction());
   assert.equal(state.adGate.active, true);

@@ -5,8 +5,11 @@ import type {
   PlaybackState,
 } from "../types/playback-state";
 import {
+  canRunPlaybackWithAdGate,
   getBeginPlaybackAdBreakAction,
   getSyncPlaybackPremiumAction,
+  shouldResumePlaybackAfterPremium,
+  shouldStartPlaybackAdBreak,
 } from "../services/playback-ad-gate-service";
 
 export function usePlaybackAdGateController({
@@ -41,25 +44,37 @@ export function usePlaybackAdGateController({
   const canRunPlaybackCommand = useCallback(() => {
     const adGate = stateRef.current.adGate;
 
-    return premiumActiveRef.current || (!adGate.active && !adGate.due);
+    return canRunPlaybackWithAdGate({
+      gate: adGate,
+      premiumActive: premiumActiveRef.current,
+    });
   }, [stateRef]);
 
-  useEffect(() => {
-    if (state.adGate.due && !state.adGate.active && !premiumActive) {
-      beginAdBreak();
-    }
-  }, [beginAdBreak, premiumActive, state.adGate.active, state.adGate.due]);
+  const adGateActive = state.adGate.active;
+  const adGateDue = state.adGate.due;
 
   useEffect(() => {
-    if (premiumActive && state.adGate.active && activeTrack) {
+    if (
+      shouldStartPlaybackAdBreak({
+        gate: { active: adGateActive, due: adGateDue },
+        premiumActive,
+      })
+    ) {
+      beginAdBreak();
+    }
+  }, [adGateActive, adGateDue, beginAdBreak, premiumActive]);
+
+  useEffect(() => {
+    if (
+      shouldResumePlaybackAfterPremium({
+        gate: { active: adGateActive },
+        hasActiveTrack: activeTrack !== null,
+        premiumActive,
+      })
+    ) {
       onResumeLibraryAfterPremium();
     }
-  }, [
-    activeTrack,
-    onResumeLibraryAfterPremium,
-    premiumActive,
-    state.adGate.active,
-  ]);
+  }, [activeTrack, adGateActive, onResumeLibraryAfterPremium, premiumActive]);
 
   return {
     beginAdBreak,

@@ -29,6 +29,32 @@ export const getSyncPlaybackPremiumAction = (
   type: "sync-premium",
 });
 
+export const canRunPlaybackWithAdGate = ({
+  gate,
+  premiumActive,
+}: {
+  gate: Pick<PlaybackAdGateState, "active" | "due">;
+  premiumActive: boolean;
+}) => premiumActive || (!gate.active && !gate.due);
+
+export const shouldStartPlaybackAdBreak = ({
+  gate,
+  premiumActive,
+}: {
+  gate: Pick<PlaybackAdGateState, "active" | "due">;
+  premiumActive: boolean;
+}) => gate.due && !gate.active && !premiumActive;
+
+export const shouldResumePlaybackAfterPremium = ({
+  gate,
+  hasActiveTrack,
+  premiumActive,
+}: {
+  gate: Pick<PlaybackAdGateState, "active">;
+  hasActiveTrack: boolean;
+  premiumActive: boolean;
+}) => premiumActive && gate.active && hasActiveTrack;
+
 export const resetPlaybackAdGate = (
   state: PlaybackAdGateState = initialPlaybackAdGateState,
 ): PlaybackAdGateState => ({

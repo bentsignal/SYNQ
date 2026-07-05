@@ -3,10 +3,8 @@ import type {
 } from "../hooks/use-addable-collection-songs-query";
 import { useAddCollectionSongsController } from "../hooks/use-add-collection-songs-controller";
 import {
-  getAddCollectionSongsFormState,
-  getAddCollectionSongsStatusState,
+  getAddCollectionSongsFormViewState,
 } from "../services/addable-collection-songs-screen-state-service";
-import { getAddableSongRows } from "../services/add-collection-songs-selection-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import { AddCollectionSongsFormView } from "./AddCollectionSongsFormView";
 
@@ -39,33 +37,30 @@ export function AddCollectionSongsConnectedForm({
     kind,
     songs,
   });
-  const statusState = getAddCollectionSongsStatusState({
-    errors,
-    mutationError,
-    updatedAt,
-  });
-  const formState = getAddCollectionSongsFormState({
+  const viewState = getAddCollectionSongsFormViewState({
     collectionId,
+    errors,
     kind,
-  });
-  const rows = getAddableSongRows({
+    mutationError,
     savingSongId,
     selectedSongIds,
+    selectionState,
     songs,
+    updatedAt,
   });
 
   return (
     <AddCollectionSongsFormView
-      formState={formState}
+      formState={viewState.formState}
       onAddSelectedSongs={addSelectedSongs}
       onAddSong={addSong}
       onChangeQuery={onChangeQuery}
       onToggleSongSelection={toggleSongSelection}
       query={query}
-      rows={rows}
+      rows={viewState.rows}
       selectionState={selectionState}
-      statusState={statusState}
-      updatedLabel={statusState.updatedLabel}
+      statusState={viewState.statusState}
+      updatedLabel={viewState.updatedLabel}
     />
   );
 }

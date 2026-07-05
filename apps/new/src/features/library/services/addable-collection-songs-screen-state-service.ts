@@ -1,3 +1,9 @@
+import type { AddableCollectionSong } from "./addable-collection-songs-service";
+import {
+  getAddableSongRows,
+  type AddableSongSelectionState,
+} from "./add-collection-songs-selection-service";
+
 export type AddCollectionSongsCollectionKind = "album" | "artist" | "playlist";
 
 export type AddCollectionSongsStatusState = {
@@ -102,4 +108,50 @@ export const getAddCollectionSongsFormState = ({
 
 export type AddCollectionSongsFormState = ReturnType<
   typeof getAddCollectionSongsFormState
+>;
+
+export const getAddCollectionSongsFormViewState = ({
+  collectionId,
+  errors,
+  kind,
+  mutationError,
+  savingSongId,
+  selectedSongIds,
+  selectionState,
+  songs,
+  updatedAt,
+}: {
+  collectionId: number;
+  errors: readonly unknown[];
+  kind: AddCollectionSongsCollectionKind;
+  mutationError: string | null;
+  savingSongId: number | null;
+  selectedSongIds: Set<number>;
+  selectionState: AddableSongSelectionState;
+  songs: AddableCollectionSong[];
+  updatedAt: number;
+}) => {
+  const statusState = getAddCollectionSongsStatusState({
+    errors,
+    mutationError,
+    updatedAt,
+  });
+
+  return {
+    formState: getAddCollectionSongsFormState({
+      collectionId,
+      kind,
+    }),
+    rows: getAddableSongRows({
+      savingSongId,
+      selectedSongIds,
+      songs,
+    }),
+    statusState,
+    updatedLabel: statusState.updatedLabel,
+  };
+};
+
+export type AddCollectionSongsFormViewState = ReturnType<
+  typeof getAddCollectionSongsFormViewState
 >;

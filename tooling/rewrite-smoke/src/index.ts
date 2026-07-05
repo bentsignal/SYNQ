@@ -876,6 +876,7 @@ import {
 import {
   getAddCollectionSongsBackHref,
   getAddCollectionSongsBackLink,
+  getAddCollectionSongsFormViewState,
   getAddCollectionSongsFormState,
   getAddCollectionSongsHeaderState,
   getAddCollectionSongsStatusState,
@@ -8367,6 +8368,45 @@ function assertAddableCollectionSongsSmoke() {
     subtitle: "Search your songs and add them to this collection.",
     title: "Add to album",
   });
+
+  const addCollectionSongsFormViewState = getAddCollectionSongsFormViewState({
+    collectionId: 7,
+    errors: [],
+    kind: "playlist",
+    mutationError: null,
+    savingSongId: 1,
+    selectedSongIds: new Set([1]),
+    selectionState: {
+      bulkAddLabel: "Add selected",
+      canBulkAdd: true,
+      isMutating: false,
+      selectedAddableSongIds: [1],
+      selectedCount: 1,
+      selectionLabel: "1 selected",
+    },
+    songs: [
+      {
+        album: "First Album",
+        artist: "First Artist",
+        duration: 10_000,
+        id: 1,
+        isLinked: false,
+        title: "Alpha",
+      },
+    ],
+    updatedAt: 123,
+  });
+  assert.equal(
+    addCollectionSongsFormViewState.formState.backLink.href,
+    "/(tabs)/library/playlist/7",
+  );
+  assert.equal(addCollectionSongsFormViewState.rows[0]?.rowState.isSaving, true);
+  assert.equal(
+    addCollectionSongsFormViewState.statusState.statusLabel.startsWith(
+      "Updated ",
+    ),
+    true,
+  );
 
   const songs = rowsToAddableCollectionSongs({
     linkedSongIds: new Set([2]),

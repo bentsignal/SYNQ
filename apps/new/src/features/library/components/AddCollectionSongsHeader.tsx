@@ -1,21 +1,19 @@
 import { Text, TextInput, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getAddCollectionSongsHeaderState } from "../services/addable-collection-songs-screen-state-service";
-import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
+import type { AddCollectionSongsFormState } from "../services/addable-collection-songs-screen-state-service";
 
 type AddCollectionSongsHeaderProps = {
-  kind: LibraryCollectionDetailKind;
+  header: AddCollectionSongsFormState["header"];
   onChangeQuery: (query: string) => void;
   query: string;
 };
 
 export function AddCollectionSongsHeader({
-  kind,
+  header,
   onChangeQuery,
   query,
 }: AddCollectionSongsHeaderProps) {
   const theme = useCustomizationTheme();
-  const state = getAddCollectionSongsHeaderState({ kind });
 
   return (
     <>
@@ -24,19 +22,19 @@ export function AddCollectionSongsHeader({
           className="text-[13px] font-extrabold uppercase"
           style={{ color: theme.accent }}
         >
-          {state.kicker}
+          {header.kicker}
         </Text>
         <Text
           className="text-[34px] font-extrabold leading-10"
           style={{ color: theme.primaryText }}
         >
-          {state.title}
+          {header.title}
         </Text>
         <Text
           className="max-w-[520px] text-[15px] leading-[22px]"
           style={{ color: theme.secondaryText }}
         >
-          {state.subtitle}
+          {header.subtitle}
         </Text>
       </View>
 
@@ -45,9 +43,9 @@ export function AddCollectionSongsHeader({
         clearButtonMode="while-editing"
         className="min-h-12 rounded-lg border px-3.5 text-base"
         onChangeText={onChangeQuery}
-        placeholder={state.searchInput.placeholder}
+        placeholder={header.searchInput.placeholder}
         placeholderTextColor={theme.mutedText}
-        returnKeyType={state.searchInput.returnKeyType}
+        returnKeyType={header.searchInput.returnKeyType}
         style={{
           backgroundColor: theme.surface,
           borderColor: theme.border,

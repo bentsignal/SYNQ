@@ -57,7 +57,6 @@ export function AddCollectionSongsConnectedForm({
   return (
     <AddCollectionSongsFormView
       formState={formState}
-      kind={kind}
       onAddSelectedSongs={addSelectedSongs}
       onAddSong={addSong}
       onChangeQuery={onChangeQuery}

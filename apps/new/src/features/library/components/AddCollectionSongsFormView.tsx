@@ -9,7 +9,6 @@ import type {
   AddableSongRowModel,
   AddableSongSelectionState,
 } from "../services/add-collection-songs-selection-service";
-import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 import { AddCollectionSongsHeader } from "./AddCollectionSongsHeader";
 import { AddCollectionSongsSectionHeader } from "./AddCollectionSongsSectionHeader";
 import { AddCollectionSongsSelectionPanel } from "./AddCollectionSongsSelectionPanel";
@@ -18,7 +17,6 @@ import { AddableSongList } from "./AddableSongList";
 
 type AddCollectionSongsFormViewProps = {
   formState: AddCollectionSongsFormState;
-  kind: LibraryCollectionDetailKind;
   onAddSelectedSongs: () => void;
   onAddSong: (songId: number) => void;
   onChangeQuery: (query: string) => void;
@@ -32,7 +30,6 @@ type AddCollectionSongsFormViewProps = {
 
 export function AddCollectionSongsFormView({
   formState,
-  kind,
   onAddSelectedSongs,
   onAddSong,
   onChangeQuery,
@@ -52,7 +49,7 @@ export function AddCollectionSongsFormView({
       style={{ backgroundColor: theme.background }}
     >
       <AddCollectionSongsHeader
-        kind={kind}
+        header={formState.header}
         onChangeQuery={onChangeQuery}
         query={query}
       />

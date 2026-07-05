@@ -8235,6 +8235,15 @@ function assertAddableCollectionSongsSmoke() {
         href: "/(tabs)/library/playlist/7",
         label: "Back to collection",
       },
+      header: {
+        kicker: "Add songs",
+        searchInput: {
+          placeholder: "Search songs, artists, or albums",
+          returnKeyType: "search",
+        },
+        subtitle: "Search your songs and add them to this collection.",
+        title: "Add to playlist",
+      },
     },
   );
   assert.deepEqual(getAddCollectionSongsHeaderState({ kind: "album" }), {

@@ -97,6 +97,7 @@ export const getAddCollectionSongsFormState = ({
   kind: AddCollectionSongsCollectionKind;
 }) => ({
   backLink: getAddCollectionSongsBackLink({ collectionId, kind }),
+  header: getAddCollectionSongsHeaderState({ kind }),
 });
 
 export type AddCollectionSongsFormState = ReturnType<

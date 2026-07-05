@@ -1,7 +1,9 @@
-import { Link } from "expo-router";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportFilesController } from "../hooks/use-import-files-controller";
+import { ImportFilesActionLinks } from "./ImportFilesActionLinks";
+import { ImportFilesChooseButton } from "./ImportFilesChooseButton";
+import { ImportFilesHeader } from "./ImportFilesHeader";
 import { ImportPremiumGate } from "./ImportPremiumGate";
 import { ImportSongPreviewList } from "./ImportSongPreviewList";
 
@@ -22,44 +24,19 @@ export function ImportFilesScreenView({
       contentContainerClassName="gap-5 px-5 py-14"
       style={{ backgroundColor: theme.background }}
     >
-      <View className="gap-2">
-        <Text
-          className="text-[13px] font-extrabold uppercase"
-          style={{ color: theme.accent }}
-        >
-          Import files
-        </Text>
-        <Text
-          className="text-[34px] font-extrabold leading-10"
-          style={{ color: theme.primaryText }}
-        >
-          Files
-        </Text>
-        <Text
-          className="max-w-[520px] text-[15px] leading-[22px]"
-          style={{ color: theme.secondaryText }}
-        >
-          Stage songs here before choosing whether to save them.
-        </Text>
-      </View>
+      <ImportFilesHeader
+        accentColor={theme.accent}
+        primaryTextColor={theme.primaryText}
+        secondaryTextColor={theme.secondaryText}
+      />
 
       <ImportPremiumGate>
-        <Pressable
-          accessibilityRole="button"
-          disabled={!actionState.canChooseFiles}
-          onPress={chooseFiles}
-          className={`min-h-[46px] items-center justify-center rounded-lg px-4 ${
-            actionState.canChooseFiles ? "" : "opacity-50"
-          }`}
-          style={{ backgroundColor: theme.accent }}
-        >
-          <Text
-            className="text-[13px] font-extrabold uppercase"
-            style={{ color: theme.onAccent }}
-          >
-            {actionState.chooseLabel}
-          </Text>
-        </Pressable>
+        <ImportFilesChooseButton
+          accentColor={theme.accent}
+          actionState={actionState}
+          onAccentColor={theme.onAccent}
+          onChooseFiles={chooseFiles}
+        />
       </ImportPremiumGate>
 
       <ImportSongPreviewList
@@ -69,18 +46,10 @@ export function ImportFilesScreenView({
         rows={songPreviewListState.rows}
       />
 
-      <View className="flex-row flex-wrap gap-4">
-        {actionLinks.map((link) => (
-          <Link
-            className="text-[15px] font-extrabold"
-            href={link.href}
-            key={link.href}
-            style={{ color: theme.accent }}
-          >
-            {link.label}
-          </Link>
-        ))}
-      </View>
+      <ImportFilesActionLinks
+        accentColor={theme.accent}
+        links={actionLinks}
+      />
     </ScrollView>
   );
 }

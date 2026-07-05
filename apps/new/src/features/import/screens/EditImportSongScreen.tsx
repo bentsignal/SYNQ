@@ -6,7 +6,9 @@ export function EditImportSongScreen() {
   const controller = useEditImportSongScreenController();
 
   if (controller.type === "invalid") {
-    return <EditImportSongInvalidState reason={controller.reason} />;
+    return (
+      <EditImportSongInvalidState invalidState={controller.invalidState} />
+    );
   }
 
   return (

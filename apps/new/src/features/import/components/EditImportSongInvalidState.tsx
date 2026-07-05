@@ -1,20 +1,16 @@
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import {
-  getImportSongEditInvalidState,
-  type ImportSongEditInvalidReason,
-} from "../services/import-song-edit-navigation-service";
+import type { ImportSongEditInvalidState as ImportSongEditInvalidStateModel } from "../services/import-song-edit-screen-state-service";
 
 type EditImportSongInvalidStateProps = {
-  reason: ImportSongEditInvalidReason;
+  invalidState: ImportSongEditInvalidStateModel;
 };
 
 export function EditImportSongInvalidState({
-  reason,
+  invalidState,
 }: EditImportSongInvalidStateProps) {
   const theme = useCustomizationTheme();
-  const invalidState = getImportSongEditInvalidState(reason);
 
   return (
     <View

@@ -1,5 +1,12 @@
-import type { ImportSongEditInvalidReason } from "./import-song-edit-navigation-service";
+import {
+  getImportSongEditInvalidState,
+  type ImportSongEditInvalidReason,
+} from "./import-song-edit-navigation-service";
 import type { ImportSongDraft } from "../types/import-session";
+
+export type ImportSongEditInvalidState = ReturnType<
+  typeof getImportSongEditInvalidState
+>;
 
 export const getImportSongDraftForEdit = ({
   songId,
@@ -11,6 +18,7 @@ export const getImportSongDraftForEdit = ({
 
 export type ImportSongEditScreenState =
   | {
+      invalidState: ImportSongEditInvalidState;
       reason: ImportSongEditInvalidReason;
       type: "invalid";
     }
@@ -28,6 +36,7 @@ export const getImportSongEditScreenState = ({
 }): ImportSongEditScreenState => {
   if (songId === null) {
     return {
+      invalidState: getImportSongEditInvalidState("invalid-id"),
       reason: "invalid-id",
       type: "invalid",
     };
@@ -37,6 +46,7 @@ export const getImportSongEditScreenState = ({
 
   if (!song) {
     return {
+      invalidState: getImportSongEditInvalidState("not-staged"),
       reason: "not-staged",
       type: "invalid",
     };

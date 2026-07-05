@@ -12663,6 +12663,17 @@ function assertImportSongFormSmoke() {
       songs: [importDraft(7), importDraft(8)],
     }),
     {
+      invalidState: {
+        kicker: "Import edit",
+        links: [
+          {
+            href: "/(tabs)/import/save",
+            label: "Back to save",
+          },
+        ],
+        subtitle: "This route needs a numeric id.",
+        title: "Invalid song",
+      },
       reason: "invalid-id",
       type: "invalid",
     },
@@ -12683,6 +12694,21 @@ function assertImportSongFormSmoke() {
       songs: [importDraft(7), importDraft(8)],
     }),
     {
+      invalidState: {
+        kicker: "Import edit",
+        links: [
+          {
+            href: "/(tabs)/import/files",
+            label: "Back to files",
+          },
+          {
+            href: "/(tabs)/import/save",
+            label: "Back to save",
+          },
+        ],
+        subtitle: "Choose songs again or return to the current review.",
+        title: "Song not staged",
+      },
       reason: "not-staged",
       type: "invalid",
     },

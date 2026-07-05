@@ -2,22 +2,25 @@ import {
   buildAlbumDetail,
   buildArtistDetail,
   buildPlaylistDetail,
-  type AlbumDetailRow,
-  type ArtistDetailRow,
-  type CollectionImagePathResolver,
-  type LibraryCollectionDetail,
-  type LibraryCollectionDetailSongRow,
-  type PlaylistDetailRow,
 } from "./library-collection-detail-service";
+import type {
+  AlbumDetailResultParams,
+  ArtistDetailResultParams,
+  LibraryCollectionDetailResult,
+  PlaylistDetailResultParams,
+} from "./library-collection-detail-result-types-service";
 import {
   getQueryResultErrors,
   getQueryResultUpdatedAt,
 } from "./library-query-result-metadata-service";
 
-export type LibraryCollectionDetailResult = {
-  detail: LibraryCollectionDetail;
-  errors: unknown[];
-};
+export type {
+  AlbumDetailResultParams,
+  ArtistDetailResultParams,
+  LibraryCollectionDetailResult,
+  LibraryCollectionDetailResultMetadataParams,
+  PlaylistDetailResultParams,
+} from "./library-collection-detail-result-types-service";
 
 export const getCollectionDetailResultUpdatedAt = (
   collectionUpdatedAt: Date | null | undefined,
@@ -38,15 +41,7 @@ export const buildPlaylistDetailResult = ({
   songRows,
   songsError,
   songsUpdatedAt,
-}: {
-  collectionError: unknown;
-  getImagePath: CollectionImagePathResolver;
-  playlistRows: PlaylistDetailRow[];
-  playlistUpdatedAt: Date | null | undefined;
-  songRows: LibraryCollectionDetailSongRow[];
-  songsError: unknown;
-  songsUpdatedAt: Date | null | undefined;
-}): LibraryCollectionDetailResult => ({
+}: PlaylistDetailResultParams): LibraryCollectionDetailResult => ({
   detail: buildPlaylistDetail({
     getImagePath,
     playlistRows,
@@ -67,15 +62,7 @@ export const buildAlbumDetailResult = ({
   songRows,
   songsError,
   songsUpdatedAt,
-}: {
-  albumRows: AlbumDetailRow[];
-  albumUpdatedAt: Date | null | undefined;
-  collectionError: unknown;
-  getImagePath: CollectionImagePathResolver;
-  songRows: LibraryCollectionDetailSongRow[];
-  songsError: unknown;
-  songsUpdatedAt: Date | null | undefined;
-}): LibraryCollectionDetailResult => ({
+}: AlbumDetailResultParams): LibraryCollectionDetailResult => ({
   detail: buildAlbumDetail({
     albumRows,
     getImagePath,
@@ -96,15 +83,7 @@ export const buildArtistDetailResult = ({
   songRows,
   songsError,
   songsUpdatedAt,
-}: {
-  artistRows: ArtistDetailRow[];
-  artistUpdatedAt: Date | null | undefined;
-  collectionError: unknown;
-  getImagePath: CollectionImagePathResolver;
-  songRows: LibraryCollectionDetailSongRow[];
-  songsError: unknown;
-  songsUpdatedAt: Date | null | undefined;
-}): LibraryCollectionDetailResult => ({
+}: ArtistDetailResultParams): LibraryCollectionDetailResult => ({
   detail: buildArtistDetail({
     artistRows,
     getImagePath,

@@ -1,23 +1,22 @@
 import { buildLibrarySongDetail } from "./library-song-detail-service";
 import type {
-  LibrarySongDetail,
-  LibrarySongDetailAlbumRow,
-  LibrarySongDetailArtistRow,
-  LibrarySongDetailLikedRow,
-  LibrarySongDetailPlaylistRow,
-  LibrarySongDetailSongRow,
-} from "./library-song-detail-types-service";
+  LibrarySongDetailQueryErrorParams,
+  LibrarySongDetailQueryResult,
+  LibrarySongDetailQueryResultParams,
+  LibrarySongDetailQueryUpdatedAtParams,
+} from "./library-song-detail-query-result-types-service";
 import {
   getQueryResultErrors,
   getQueryResultUpdatedAt,
 } from "./library-query-result-metadata-service";
 
-type SongDetailImagePathResolver = (imageHash: string) => string;
-
-export type LibrarySongDetailQueryResult = {
-  detail: LibrarySongDetail;
-  errors: unknown[];
-};
+export type {
+  LibrarySongDetailQueryErrorParams,
+  LibrarySongDetailQueryResult,
+  LibrarySongDetailQueryResultParams,
+  LibrarySongDetailQueryUpdatedAtParams,
+  SongDetailImagePathResolver,
+} from "./library-song-detail-query-result-types-service";
 
 export const getLibrarySongDetailQueryErrors = ({
   albumError,
@@ -25,13 +24,7 @@ export const getLibrarySongDetailQueryErrors = ({
   likedError,
   playlistError,
   songError,
-}: {
-  albumError: unknown;
-  artistError: unknown;
-  likedError: unknown;
-  playlistError: unknown;
-  songError: unknown;
-}) =>
+}: LibrarySongDetailQueryErrorParams) =>
   getQueryResultErrors([
     songError,
     artistError,
@@ -46,13 +39,7 @@ export const getLibrarySongDetailQueryUpdatedAt = ({
   likedUpdatedAt,
   playlistUpdatedAt,
   songUpdatedAt,
-}: {
-  albumUpdatedAt: Date | null | undefined;
-  artistUpdatedAt: Date | null | undefined;
-  likedUpdatedAt: Date | null | undefined;
-  playlistUpdatedAt: Date | null | undefined;
-  songUpdatedAt: Date | null | undefined;
-}) =>
+}: LibrarySongDetailQueryUpdatedAtParams) =>
   getQueryResultUpdatedAt([
     songUpdatedAt,
     artistUpdatedAt,
@@ -78,24 +65,7 @@ export const buildLibrarySongDetailQueryResult = ({
   songError,
   songRow,
   songUpdatedAt,
-}: {
-  albumError: unknown;
-  albumRows: LibrarySongDetailAlbumRow[];
-  albumUpdatedAt: Date | null | undefined;
-  artistError: unknown;
-  artistRows: LibrarySongDetailArtistRow[];
-  artistUpdatedAt: Date | null | undefined;
-  getImagePath?: SongDetailImagePathResolver;
-  likedError: unknown;
-  likedRows: LibrarySongDetailLikedRow[];
-  likedUpdatedAt: Date | null | undefined;
-  playlistError: unknown;
-  playlistRows: LibrarySongDetailPlaylistRow[];
-  playlistUpdatedAt: Date | null | undefined;
-  songError: unknown;
-  songRow: LibrarySongDetailSongRow | null;
-  songUpdatedAt: Date | null | undefined;
-}): LibrarySongDetailQueryResult => ({
+}: LibrarySongDetailQueryResultParams): LibrarySongDetailQueryResult => ({
   detail: buildLibrarySongDetail({
     albumRows,
     artistRows,

@@ -242,6 +242,7 @@ import {
 import {
   runImportSaveExportAction,
 } from "../../../apps/new/src/features/import/services/import-save-export-action-flow-service";
+import { runImportSaveRemoveSongAction } from "../../../apps/new/src/features/import/services/import-save-song-action-flow-service";
 import {
   getImportDiscardResultCommand,
   getImportFinishResultCommand,
@@ -3845,6 +3846,24 @@ async function assertImportSessionSmoke() {
     sendHaptic: sendImportFilesActionHaptic,
     songId: second.id,
   });
+  await runImportSaveRemoveSongAction({
+    canRemoveSongs: false,
+    removeImportSongs: async (songIds) => {
+      importFilesActionEvents.push(["guarded-remove", songIds]);
+      return true;
+    },
+    sendHaptic: sendImportFilesActionHaptic,
+    songId: first.id,
+  });
+  await runImportSaveRemoveSongAction({
+    canRemoveSongs: true,
+    removeImportSongs: async (songIds) => {
+      importFilesActionEvents.push(["guarded-remove", songIds]);
+      return true;
+    },
+    sendHaptic: sendImportFilesActionHaptic,
+    songId: second.id,
+  });
   assert.deepEqual(importFilesActionEvents, [
     ["haptic", "light"],
     ["haptic", "success"],
@@ -3858,6 +3877,9 @@ async function assertImportSessionSmoke() {
     ["haptic", "medium"],
     ["remove", [second.id]],
     ["haptic", "error"],
+    ["haptic", "medium"],
+    ["guarded-remove", [second.id]],
+    ["haptic", "success"],
   ]);
   assert.equal(
     getImportFileCommandErrorMessage({

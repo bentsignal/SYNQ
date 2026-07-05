@@ -3,8 +3,8 @@ import { useImportSaveSessionActions } from "./use-import-save-session-actions";
 import { useImportSessionSelector } from "./use-import-session";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
-import { runImportFilesRemoveAction } from "../services/import-files-action-flow-service";
 import { getImportSaveViewState } from "../services/import-save-screen-state-service";
+import { runImportSaveRemoveSongAction } from "../services/import-save-song-action-flow-service";
 
 export function useImportSaveController() {
   const discardSession = useImportSessionSelector(
@@ -38,11 +38,8 @@ export function useImportSaveController() {
   });
   const { actionState } = viewState;
   const removeSong = async (songId: number) => {
-    if (!actionState.canRemoveSongs) {
-      return;
-    }
-
-    await runImportFilesRemoveAction({
+    await runImportSaveRemoveSongAction({
+      canRemoveSongs: actionState.canRemoveSongs,
       removeImportSongs,
       sendHaptic,
       songId,

@@ -70,6 +70,29 @@ export const getPlaybackQueueViewState = ({
   screenState: getPlaybackQueueScreenState(),
 });
 
+export const getPlaybackQueueControllerViewState = ({
+  activeTrack,
+  state,
+}: {
+  activeTrack: PlaybackQueueItem | null;
+  state: PlaybackState;
+}) => {
+  const adBreakActive = state.adGate.active || state.adGate.due;
+
+  return {
+    adBreakActive,
+    ...getPlaybackQueueViewState({
+      activeTrackId: activeTrack?.id ?? null,
+      adBreakActive,
+      queue: state.queue,
+    }),
+  };
+};
+
+export type PlaybackQueueControllerViewState = ReturnType<
+  typeof getPlaybackQueueControllerViewState
+>;
+
 export const getPlaybackPlayerScreenState = () => ({
   header: {
     kicker: "Now Playing",

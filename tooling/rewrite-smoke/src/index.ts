@@ -153,6 +153,7 @@ import {
   getPlaybackPremiumHref,
   getPlaybackQueueEmptyState,
   getPlaybackQueueHref,
+  getPlaybackQueueControllerViewState,
   getPlaybackQueueScreenState,
   getPlaybackQueueViewState,
 } from "../../../apps/new/src/features/playback/services/playback-screen-state-service";
@@ -3070,6 +3071,22 @@ function assertPlaybackPlayerStateSmoke() {
       screenState: getPlaybackQueueScreenState(),
     },
   );
+  const playbackQueueControllerViewState = getPlaybackQueueControllerViewState({
+    activeTrack,
+    state: {
+      ...initialPlaybackState,
+      activeQueueIndex: 0,
+      activeTrackId: activeTrack.id,
+      adGate: {
+        ...initialPlaybackState.adGate,
+        due: true,
+      },
+      queue: [activeTrack],
+    },
+  });
+  assert.equal(playbackQueueControllerViewState.adBreakActive, true);
+  assert.equal(playbackQueueControllerViewState.rows[0]?.rowState.canPlay, false);
+  assert.equal(playbackQueueControllerViewState.actionState.canClearQueue, true);
   assert.deepEqual(
     getPlaybackAdBreakPanelState({
       state: {

@@ -8,18 +8,8 @@ import {
   syncPlaybackPremiumState,
 } from "./playback-native-transition-service";
 import { initialPlaybackState } from "./playback-initial-state-service";
-import {
-  bumpPlaybackQueueRevision,
-} from "./playback-session-queue-service";
 import { reducePlaybackQueueAction } from "./playback-session-queue-reducer-service";
-import {
-  pausePlayback,
-  playPlaybackSong,
-  resumePlayback,
-  seekPlayback,
-  skipToNextPlaybackTrack,
-  skipToPreviousPlaybackTrack,
-} from "./playback-transport-service";
+import { reducePlaybackTransportAction } from "./playback-session-transport-reducer-service";
 import {
   failPlaybackSession,
   hydratePlaybackSession,
@@ -38,24 +28,13 @@ export const playbackReducer = (
       return hydratePlaybackSession(action.state);
     case "reset":
       return initialPlaybackState;
-    case "play-song": {
-      return bumpPlaybackQueueRevision(
-        playPlaybackSong({ song: action.song, state }),
-      );
-    }
+    case "play-song":
     case "pause":
-      return pausePlayback(state);
     case "resume":
-      return resumePlayback(state);
     case "seek-to":
-      return seekPlayback({ position: action.position, state });
     case "skip-next":
-      return skipToNextPlaybackTrack({
-        state,
-        targetIndex: action.targetIndex,
-      });
     case "skip-previous":
-      return skipToPreviousPlaybackTrack(state);
+      return reducePlaybackTransportAction({ action, state });
     case "add-to-queue":
     case "clear-queue":
     case "remove-from-queue":

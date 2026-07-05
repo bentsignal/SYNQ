@@ -1,7 +1,6 @@
 import { useCallback, type RefObject } from "react";
-import { getPlaybackNativeFinishedAction } from "../services/playback-native-transition-service";
-import { getNextQueueIndex } from "../services/playback-queue-selection-service";
 import type { PlaybackAction } from "../services/playback-session-action-service";
+import { runPlaybackTrackAdvancementCommand } from "../services/playback-track-advancement-command-flow-service";
 import type { TrackPlayerAdapter } from "../services/track-player-adapter";
 import type { PlaybackState } from "../types/playback-state";
 
@@ -23,24 +22,14 @@ export function usePlaybackTrackAdvancement({
   stateRef,
 }: UsePlaybackTrackAdvancementParams) {
   return useCallback(() => {
-    if (!canRunPlaybackCommand()) {
-      beginAdBreak();
-      return;
-    }
-
-    const targetIndex = getNextQueueIndex({
-      activeQueueIndex: stateRef.current.activeQueueIndex,
-      loop: stateRef.current.mode.loop,
-      queue: stateRef.current.queue,
-      shuffle: stateRef.current.mode.shuffle,
+    runPlaybackTrackAdvancementCommand({
+      beginAdBreak,
+      canRunPlaybackCommand,
+      dispatch,
+      playNativeTrack: adapter.play,
+      runNativeCommand,
+      state: stateRef.current,
     });
-    const targetTrack =
-      targetIndex === null ? null : stateRef.current.queue[targetIndex] ?? null;
-
-    dispatch(getPlaybackNativeFinishedAction(targetIndex));
-    if (targetTrack) {
-      runNativeCommand(() => adapter.play(targetTrack));
-    }
   }, [
     adapter,
     beginAdBreak,

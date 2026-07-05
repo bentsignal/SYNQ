@@ -51,6 +51,7 @@ import {
   runPlaybackQueueToggleLoopCommand,
   runPlaybackQueueToggleShuffleCommand,
 } from "../../../apps/new/src/features/playback/services/playback-queue-session-command-flow-service";
+import { runPlaybackTrackAdvancementCommand } from "../../../apps/new/src/features/playback/services/playback-track-advancement-command-flow-service";
 import {
   getPlaybackQueueRowPresentation,
   getPlaybackQueueRowState,
@@ -1892,6 +1893,45 @@ async function assertPlaybackSessionSmoke() {
       removeLabel: "Remove",
     },
   );
+  const advancementEvents: unknown[] = [];
+  assert.deepEqual(
+    runPlaybackTrackAdvancementCommand({
+      beginAdBreak: () => advancementEvents.push(["ad"]),
+      canRunPlaybackCommand: () => false,
+      dispatch: (action) => advancementEvents.push(["dispatch", action]),
+      playNativeTrack: async (track) => {
+        advancementEvents.push(["play", track.id]);
+      },
+      runNativeCommand: (command) => {
+        advancementEvents.push(["native"]);
+        void command();
+      },
+      state,
+    }),
+    { result: "started-ad", targetIndex: null },
+  );
+  assert.deepEqual(
+    runPlaybackTrackAdvancementCommand({
+      beginAdBreak: () => advancementEvents.push(["ad"]),
+      canRunPlaybackCommand: () => true,
+      dispatch: (action) => advancementEvents.push(["dispatch", action]),
+      playNativeTrack: async (track) => {
+        advancementEvents.push(["play", track.id]);
+      },
+      runNativeCommand: (command) => {
+        advancementEvents.push(["native"]);
+        void command();
+      },
+      state,
+    }),
+    { result: "advanced", targetIndex: 1 },
+  );
+  assert.deepEqual(advancementEvents, [
+    ["ad"],
+    ["dispatch", { targetIndex: 1, type: "native-finished" }],
+    ["native"],
+    ["play", second.id],
+  ]);
 
   state = playbackReducer(
     state,

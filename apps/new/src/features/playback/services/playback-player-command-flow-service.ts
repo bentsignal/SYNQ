@@ -10,13 +10,15 @@ type PlaybackPlayerCommandDependencies = {
   sendHaptic: (type: HapticFeedbackType) => void;
 };
 
+export type PlaybackPlayerSeekDirection = "backward" | "forward";
+
 export const runPlaybackPlayerSeekCommand = ({
   direction,
   seekTo,
   sendHaptic,
   state,
 }: PlaybackPlayerCommandDependencies & {
-  direction: "backward" | "forward";
+  direction: PlaybackPlayerSeekDirection;
   seekTo: (position: number) => void;
   state: Pick<PlaybackState, "duration" | "position">;
 }) => {

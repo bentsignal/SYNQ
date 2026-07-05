@@ -3,8 +3,8 @@ import type { PlaybackState } from "../types/playback-state";
 import {
   runPlaybackPlayerButtonCommand,
   runPlaybackPlayerPlayPauseCommand,
-  runPlaybackPlayerSeekCommand,
 } from "./playback-player-command-flow-service";
+import { runPlaybackPlayerSeekFromStateCommand } from "./playback-player-seek-command-service";
 
 type PlaybackPlayerSessionCommands = {
   pause: () => void;
@@ -43,27 +43,19 @@ export const createPlaybackPlayerCommands = ({
   toggleShuffle,
 }: CreatePlaybackPlayerCommandsParams): PlaybackPlayerCommands => ({
   fastForward: () => {
-    const state = getState();
-    runPlaybackPlayerSeekCommand({
+    runPlaybackPlayerSeekFromStateCommand({
       direction: "forward",
       seekTo,
       sendHaptic,
-      state: {
-        duration: state.duration,
-        position: state.position,
-      },
+      state: getState(),
     });
   },
   rewind: () => {
-    const state = getState();
-    runPlaybackPlayerSeekCommand({
+    runPlaybackPlayerSeekFromStateCommand({
       direction: "backward",
       seekTo,
       sendHaptic,
-      state: {
-        duration: state.duration,
-        position: state.position,
-      },
+      state: getState(),
     });
   },
   skipBack: () => {

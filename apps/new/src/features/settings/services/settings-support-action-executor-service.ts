@@ -1,4 +1,4 @@
-import type { SupportAction } from "./settings-navigation-service";
+import type { SupportAction } from "./settings-support-navigation-service";
 
 export type SettingsSupportActionDependencies = {
   isReviewAvailable: () => Promise<boolean>;

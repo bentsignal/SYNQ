@@ -1497,10 +1497,12 @@ import {
   getSettingsBackLink,
   getSettingsHomeHref,
   getSettingsPremiumHref,
-  getSupportActionKey,
   settingsRoutes,
-  supportActions,
 } from "../../../apps/new/src/features/settings/services/settings-navigation-service";
+import {
+  getSupportActionKey,
+  supportActions,
+} from "../../../apps/new/src/features/settings/services/settings-support-navigation-service";
 import {
   runSettingsSupportActionWithDependencies,
   type SettingsSupportActionDependencies,

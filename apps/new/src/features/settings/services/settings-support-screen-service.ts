@@ -1,8 +1,10 @@
 import {
   getSettingsBackLink,
+} from "./settings-navigation-service";
+import {
   getSupportActionKey,
   supportActions,
-} from "./settings-navigation-service";
+} from "./settings-support-navigation-service";
 
 export const getSupportScreenViewState = () => ({
   backLink: getSettingsBackLink(),

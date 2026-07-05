@@ -1,6 +1,6 @@
 import * as StoreReview from "expo-store-review";
 import { Linking } from "react-native";
-import type { SupportAction } from "./settings-navigation-service";
+import type { SupportAction } from "./settings-support-navigation-service";
 import {
   runSettingsSupportActionWithDependencies,
   type SettingsSupportActionDependencies,

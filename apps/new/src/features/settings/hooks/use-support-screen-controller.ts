@@ -1,6 +1,6 @@
 import {
   type SupportAction,
-} from "../services/settings-navigation-service";
+} from "../services/settings-support-navigation-service";
 import { runSettingsInteractionAction } from "../services/settings-interaction-action-flow-service";
 import { getSupportScreenControllerViewState } from "../services/settings-support-screen-service";
 import { runSettingsSupportAction } from "../services/settings-support-action-service";

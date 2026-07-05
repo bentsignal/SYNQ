@@ -1,3 +1,8 @@
+import {
+  getQueryResultErrors,
+  getQueryResultUpdatedAt,
+} from "./library-query-result-metadata-service";
+
 export const getLibraryCollectionPreviewErrors = ({
   albumError,
   artistError,
@@ -6,7 +11,7 @@ export const getLibraryCollectionPreviewErrors = ({
   albumError: unknown;
   artistError: unknown;
   playlistError: unknown;
-}) => [playlistError, albumError, artistError].filter(Boolean);
+}) => getQueryResultErrors([playlistError, albumError, artistError]);
 
 export const getLibraryCollectionPreviewUpdatedAt = ({
   albumUpdatedAt,
@@ -17,8 +22,8 @@ export const getLibraryCollectionPreviewUpdatedAt = ({
   artistUpdatedAt: Date | null | undefined;
   playlistUpdatedAt: Date | null | undefined;
 }) =>
-  Math.max(
-    playlistUpdatedAt?.getTime() ?? 0,
-    albumUpdatedAt?.getTime() ?? 0,
-    artistUpdatedAt?.getTime() ?? 0,
-  );
+  getQueryResultUpdatedAt([
+    playlistUpdatedAt,
+    albumUpdatedAt,
+    artistUpdatedAt,
+  ]);

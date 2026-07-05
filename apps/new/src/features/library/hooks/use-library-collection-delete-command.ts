@@ -8,7 +8,7 @@ import type {
   CollectionDetailMutationDispatch,
   CollectionDetailMutationHapticSender,
 } from "../services/library-collection-detail-mutation-runtime-service";
-import { runLibraryCollectionDeleteCommand } from "../services/library-collection-detail-collection-command-flow-service";
+import { runLibraryCollectionDeleteCommand } from "../services/library-collection-detail-delete-command-flow-service";
 
 export function useLibraryCollectionDeleteCommand({
   actionState,

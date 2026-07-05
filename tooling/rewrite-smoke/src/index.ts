@@ -1303,13 +1303,17 @@ import {
   getSettingsHomeControllerViewState,
   getCustomizationOptionState,
   getCustomizationScreenState,
+  isSettingsDeveloperPremiumToggleVisible,
+} from "../../../apps/new/src/features/settings/services/settings-screen-service";
+import {
   getPrivacyScreenControllerViewState,
   getPrivacyScreenViewState,
   getPrivacyScreenState,
+} from "../../../apps/new/src/features/settings/services/settings-privacy-screen-service";
+import {
   getSupportScreenControllerViewState,
   getSupportScreenViewState,
-  isSettingsDeveloperPremiumToggleVisible,
-} from "../../../apps/new/src/features/settings/services/settings-screen-service";
+} from "../../../apps/new/src/features/settings/services/settings-support-screen-service";
 import {
   getCustomizationSettingsErrorMessage,
   getPrivacySettingsErrorMessage,

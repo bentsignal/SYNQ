@@ -1,6 +1,6 @@
 import {
   getPrivacyScreenControllerViewState,
-} from "../services/settings-screen-service";
+} from "../services/settings-privacy-screen-service";
 import { runSettingsInteractionAction } from "../services/settings-interaction-action-flow-service";
 import { useHapticFeedback } from "./use-haptic-feedback";
 import { usePrivacySettings } from "./use-privacy-settings";

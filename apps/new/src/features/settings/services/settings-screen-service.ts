@@ -3,79 +3,11 @@ import type {
   CustomizationSettings,
   CustomizationSettingsStatus,
 } from "../types/customization-settings";
-import type { PrivacySettingsStatus } from "../types/privacy-settings";
 import {
-  getSettingsBackLink,
   getSettingsPremiumHref,
-  getSupportActionKey,
   settingsRoutes,
-  supportActions,
 } from "./settings-navigation-service";
 import { customizationOptions } from "./customization-settings-domain-service";
-
-export const getPrivacyScreenViewState = () => ({
-  backLink: getSettingsBackLink(),
-  header: {
-    kicker: "Preferences",
-    subtitle: "Control local preferences for analytics and diagnostics.",
-    title: "Privacy",
-  },
-  localFirstPanel: {
-    body:
-      "Your library, imports, backups, theme, and privacy preferences are stored on this device unless you choose to export or restore them.",
-    title: "Local-first by default",
-  },
-  preference: {
-    description:
-      "Allow anonymous usage signals to help prioritize reliability and feature work.",
-    title: "Analytics",
-  },
-});
-
-export const getSupportScreenViewState = () => ({
-  backLink: getSettingsBackLink(),
-  bugReportPanel: {
-    body:
-      "Include your device model, iOS or Android version, what you tapped before the issue, and whether the song file lives locally on-device.",
-    title: "Before you send a bug",
-  },
-  header: {
-    kicker: "Help",
-    subtitle: "Get help, send feedback, or follow along with the project.",
-    title: "Support",
-  },
-});
-
-export const getPrivacyScreenState = ({
-  status,
-}: {
-  status: PrivacySettingsStatus;
-}) => ({
-  isAnalyticsDisabled: status === "loading",
-  statusLabel:
-    status === "loading"
-      ? "Loading"
-      : status === "saving"
-        ? "Saving"
-      : "Saved locally",
-});
-
-export const getPrivacyScreenControllerViewState = ({
-  status,
-}: {
-  status: PrivacySettingsStatus;
-}) => ({
-  screenState: getPrivacyScreenState({ status }),
-  viewState: getPrivacyScreenViewState(),
-});
-
-export const getSupportScreenControllerViewState = () => ({
-  actionRows: supportActions.map((action) => ({
-    ...action,
-    key: getSupportActionKey(action),
-  })),
-  viewState: getSupportScreenViewState(),
-});
 
 export const getSettingsHomeState = ({
   premiumActive,

@@ -8,10 +8,8 @@ import {
 } from "@/src/features/app-shell/components/SongRowParts";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import { useLibrarySongPreviewRowActions } from "../hooks/use-library-song-preview-row-actions";
-import {
-  type LibrarySongPreviewRowViewState,
-  toLibrarySongPlaybackItem,
-} from "../services/library-song-preview-state-service";
+import type { LibrarySongPreviewRowViewState } from "../services/library-song-preview-list-state-service";
+import { toLibrarySongPlaybackItem } from "../services/library-song-preview-playback-item-service";
 
 type LibrarySongPreviewRowProps = {
   addToQueue: (song: ReturnType<typeof toLibrarySongPlaybackItem>) => void;

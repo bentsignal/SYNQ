@@ -3,7 +3,7 @@ import type {
   LibrarySongPreviewOrder,
   LibrarySongPreviewSort,
 } from "./library-song-preview-service";
-import { getLibrarySongListControlsState } from "./library-song-preview-state-service";
+import { getLibrarySongListControlsState } from "./library-song-list-controls-state-service";
 
 type HapticSender = (type: HapticFeedbackType) => void;
 

@@ -1,12 +1,10 @@
 import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
-import type {
-  LibrarySongPreviewHref,
-  LibrarySongPreviewPlaybackItem,
-} from "./library-song-preview-state-service";
 import {
   getLibrarySongPreviewPlayCommand,
   getLibrarySongPreviewQueueCommand,
-} from "./library-song-preview-state-service";
+} from "./library-song-preview-command-state-service";
+import type { LibrarySongPreviewHref } from "./library-song-preview-navigation-service";
+import type { LibrarySongPreviewPlaybackItem } from "./library-song-preview-playback-item-service";
 
 type HapticSender = (type: HapticFeedbackType) => void;
 

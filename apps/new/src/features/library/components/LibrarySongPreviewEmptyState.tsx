@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { getLibrarySongPreviewListState } from "../services/library-song-preview-state-service";
+import type { getLibrarySongPreviewListState } from "../services/library-song-preview-list-state-service";
 
 type LibrarySongPreviewEmptyStateModel = ReturnType<
   typeof getLibrarySongPreviewListState

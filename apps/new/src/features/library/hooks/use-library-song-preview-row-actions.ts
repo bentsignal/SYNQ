@@ -4,7 +4,7 @@ import type { LibrarySongPreview } from "../services/library-song-preview-servic
 import {
   type LibrarySongPreviewPlaybackItem,
   toLibrarySongPlaybackItem,
-} from "../services/library-song-preview-state-service";
+} from "../services/library-song-preview-playback-item-service";
 import {
   runLibrarySongPreviewPlayAction,
   runLibrarySongPreviewQueueAction,

@@ -3,7 +3,7 @@ import type {
   LibrarySongPreviewOrder,
   LibrarySongPreviewSort,
 } from "../services/library-song-preview-service";
-import { getLibrarySongListControlsState } from "../services/library-song-preview-state-service";
+import { getLibrarySongListControlsState } from "../services/library-song-list-controls-state-service";
 import {
   runLibrarySongListOrderToggleAction,
   runLibrarySongListSortSelectAction,

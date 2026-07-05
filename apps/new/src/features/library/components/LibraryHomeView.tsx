@@ -3,7 +3,7 @@ import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customi
 import type { LibraryHomeController } from "../hooks/use-library-home-controller";
 import { getLibraryCollectionPreviewSectionState } from "../services/library-collection-preview-service";
 import { getLibraryHomeHeaderState } from "../services/library-home-header-service";
-import { getLibrarySongPreviewListState } from "../services/library-song-preview-state-service";
+import { getLibrarySongPreviewListState } from "../services/library-song-preview-list-state-service";
 import { LibraryCollectionPreviewSection } from "./LibraryCollectionPreviewSection";
 import { LibraryHomeHeader } from "./LibraryHomeHeader";
 import { LibrarySongPreviewList } from "./LibrarySongPreviewList";

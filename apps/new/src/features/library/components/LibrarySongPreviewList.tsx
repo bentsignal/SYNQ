@@ -7,7 +7,7 @@ import type {
   LibrarySongPreviewOrder,
   LibrarySongPreviewSort,
 } from "../hooks/use-library-song-preview-query";
-import type { LibrarySongPreviewListState } from "../services/library-song-preview-state-service";
+import type { LibrarySongPreviewListState } from "../services/library-song-preview-list-state-service";
 import { LibrarySongListControls } from "./LibrarySongListControls";
 import { LibrarySongPreviewEmptyState } from "./LibrarySongPreviewEmptyState";
 import { LibrarySongPreviewRow } from "./LibrarySongPreviewRow";

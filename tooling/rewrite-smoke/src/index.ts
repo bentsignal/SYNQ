@@ -260,6 +260,9 @@ import {
 import {
   runImportSaveExportAction,
 } from "../../../apps/new/src/features/import/services/import-save-export-action-flow-service";
+import {
+  createImportSaveControllerActions,
+} from "../../../apps/new/src/features/import/services/import-save-controller-action-service";
 import { runImportSaveRemoveSongAction } from "../../../apps/new/src/features/import/services/import-save-song-action-flow-service";
 import {
   getImportDiscardResultCommand,
@@ -4307,6 +4310,15 @@ async function assertImportSessionSmoke() {
     sendHaptic: sendImportFilesActionHaptic,
     songId: second.id,
   });
+  const saveControllerActions = createImportSaveControllerActions({
+    canRemoveSongs: true,
+    removeImportSongs: async (songIds) => {
+      importFilesActionEvents.push(["controller-remove", songIds]);
+      return true;
+    },
+    sendHaptic: sendImportFilesActionHaptic,
+  });
+  await saveControllerActions.removeSong(first.id);
   assert.deepEqual(importFilesActionEvents, [
     ["haptic", "light"],
     ["haptic", "success"],
@@ -4322,6 +4334,9 @@ async function assertImportSessionSmoke() {
     ["haptic", "error"],
     ["haptic", "medium"],
     ["guarded-remove", [second.id]],
+    ["haptic", "success"],
+    ["haptic", "medium"],
+    ["controller-remove", [first.id]],
     ["haptic", "success"],
   ]);
   assert.equal(

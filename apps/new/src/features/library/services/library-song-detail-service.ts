@@ -1,4 +1,9 @@
 import { formatDurationMs } from "../../app-shell/services/duration-format-service";
+import {
+  formatLibrarySongDetailCount,
+  formatLibrarySongDetailNames,
+  uniqueLibrarySongDetailRowsById,
+} from "./library-song-detail-format-service";
 import { likedSongsPlaylistId } from "./library-playlist-constants-service";
 import type {
   LibrarySongDetail,
@@ -8,23 +13,6 @@ import type {
   LibrarySongDetailPlaylistRow,
   LibrarySongDetailSongRow,
 } from "./library-song-detail-types-service";
-
-const formatCount = (count: number, singular: string, plural = `${singular}s`) =>
-  `${count} ${count === 1 ? singular : plural}`;
-
-const formatNames = (names: string[]) =>
-  names.length === 0
-    ? "Unknown"
-    : [...names].sort((first, second) => first.localeCompare(second)).join(", ");
-
-const uniqueById = <T extends { id: number }>(rows: T[]) => {
-  const map = new Map<number, T>();
-  rows.forEach((row) => {
-    map.set(row.id, row);
-  });
-
-  return Array.from(map.values());
-};
 
 export const buildLibrarySongDetail = ({
   albumRows,
@@ -43,13 +31,13 @@ export const buildLibrarySongDetail = ({
   songRow: LibrarySongDetailSongRow | null;
   updatedAt: number;
 }): LibrarySongDetail => {
-  const uniqueArtists = uniqueById(artistRows);
-  const uniqueAlbums = uniqueById(albumRows);
-  const uniquePlaylists = uniqueById(playlistRows);
-  const artistLabel = formatNames(
+  const uniqueArtists = uniqueLibrarySongDetailRowsById(artistRows);
+  const uniqueAlbums = uniqueLibrarySongDetailRowsById(albumRows);
+  const uniquePlaylists = uniqueLibrarySongDetailRowsById(playlistRows);
+  const artistLabel = formatLibrarySongDetailNames(
     uniqueArtists.flatMap((artist) => (artist.name ? [artist.name] : [])),
   );
-  const albumLabel = formatNames(
+  const albumLabel = formatLibrarySongDetailNames(
     uniqueAlbums.flatMap((album) => (album.name ? [album.name] : [])),
   );
   const coverImageHash =
@@ -85,9 +73,9 @@ export const buildLibrarySongDetail = ({
       title: playlist.name ?? "Untitled playlist",
     })),
     relationshipSummary: [
-      formatCount(uniqueArtists.length, "artist"),
-      formatCount(uniqueAlbums.length, "album"),
-      formatCount(uniquePlaylists.length, "playlist"),
+      formatLibrarySongDetailCount(uniqueArtists.length, "artist"),
+      formatLibrarySongDetailCount(uniqueAlbums.length, "album"),
+      formatLibrarySongDetailCount(uniquePlaylists.length, "playlist"),
     ].join(" / "),
     title: songRow?.title ?? "Song not found",
     updatedAt,

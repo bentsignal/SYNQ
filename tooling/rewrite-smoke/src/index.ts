@@ -12,6 +12,13 @@ import {
   getHomeRecentSongHref,
   getHomeRecentSongsSectionState,
 } from "../../../apps/new/src/features/app-shell/services/home-screen-service";
+import {
+  rewriteFeatures,
+  rewriteManualSmokeAreas,
+  rewriteReleaseGates,
+  rewriteReleaseReadiness,
+  rewriteStatusTotals,
+} from "../../../apps/new/src/features/rewrite-feature-map";
 import { parseNumericRouteParam } from "../../../apps/new/src/features/app-shell/services/route-param-service";
 import {
   getActiveTrack,
@@ -12751,6 +12758,55 @@ function assertRouteParamSmoke() {
   assert.equal(parseNumericRouteParam(["not-a-number"]), null);
 }
 
+function assertRewriteFeatureMapSmoke() {
+  assert.deepEqual(
+    rewriteFeatures.map((feature) => feature.key),
+    [
+      "app-shell",
+      "library",
+      "playback",
+      "import",
+      "backup",
+      "premium-settings",
+    ],
+  );
+  assert.deepEqual(rewriteStatusTotals, {
+    active: 6,
+    done: 0,
+    pending: 0,
+  });
+  assert.deepEqual(
+    rewriteReleaseGates.map((gate) => [gate.key, gate.kind]),
+    [
+      ["verify-rewrite", "automated"],
+      ["hard-debt-ratchets", "automated"],
+      ["deterministic-parity-smoke", "automated"],
+      ["manual-device-smoke", "manual"],
+      ["old-app-reference", "automated"],
+    ],
+  );
+  assert.deepEqual(
+    rewriteManualSmokeAreas.map((area) => [
+      area.key,
+      area.flows.length,
+    ]),
+    [
+      ["navigation", 3],
+      ["import", 3],
+      ["library", 3],
+      ["playback", 3],
+      ["backup", 3],
+      ["premium-settings", 3],
+    ],
+  );
+  assert.deepEqual(rewriteReleaseReadiness, {
+    automatedGateCount: 4,
+    manualGateCount: 1,
+    manualSmokeFlowCount: 18,
+    readyStatus: "not-ready",
+  });
+}
+
 function assertHomeScreenSmoke() {
   const activeTrack = song({ duration: 125_000, id: 1, title: "Home Track" });
 
@@ -17206,6 +17262,7 @@ async function assertImageStorageExecutorSmoke() {
 
 assertDurationFormatSmoke();
 assertRouteParamSmoke();
+assertRewriteFeatureMapSmoke();
 assertHomeScreenSmoke();
 assertImportSongFormSmoke();
 assertPlaybackNativeStatusSmoke();

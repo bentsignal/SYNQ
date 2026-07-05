@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "description": "Native audio session and playback module for SYNQ",
   "main": "build/index.js",
+  "react-native": "src/index.ts",
+  "source": "src/index.ts",
   "types": "build/index.d.ts",
   "scripts": {
     "build": "node internal/module_scripts/build.js",

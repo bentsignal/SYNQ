@@ -51,6 +51,9 @@ import {
   runPlaybackQueueToggleLoopCommand,
   runPlaybackQueueToggleShuffleCommand,
 } from "../../../apps/new/src/features/playback/services/playback-queue-session-command-flow-service";
+import {
+  createPlaybackQueueCommands,
+} from "../../../apps/new/src/features/playback/services/playback-queue-command-service";
 import { runPlaybackTrackAdvancementCommand } from "../../../apps/new/src/features/playback/services/playback-track-advancement-command-flow-service";
 import {
   getPlaybackQueueRowPresentation,
@@ -2832,6 +2835,35 @@ function assertPlaybackNativeCommandPlanSmoke() {
     state,
   });
   assert.deepEqual(queueSessionEvents, [
+    ["dispatch", "add-to-queue"],
+    ["dispatch", "move-queue-song"],
+    ["dispatch", "toggle-loop"],
+    ["dispatch", "toggle-shuffle"],
+    ["plan", "clear-queue", "stop"],
+    ["plan", "remove-from-queue", "play"],
+  ]);
+
+  const assembledQueueCommandEvents: unknown[] = [];
+  const queueCommands = createPlaybackQueueCommands({
+    dispatch: (action) => {
+      assembledQueueCommandEvents.push(["dispatch", action.type]);
+    },
+    getState: () => state,
+    runCommandPlan: (plan) => {
+      assembledQueueCommandEvents.push([
+        "plan",
+        plan.action.type,
+        plan.nativeCommand.type,
+      ]);
+    },
+  });
+  queueCommands.addToQueue(second);
+  queueCommands.moveQueueSong(second.id, "down");
+  queueCommands.toggleLoop();
+  queueCommands.toggleShuffle();
+  queueCommands.clearQueue();
+  queueCommands.removeFromQueue(first.id);
+  assert.deepEqual(assembledQueueCommandEvents, [
     ["dispatch", "add-to-queue"],
     ["dispatch", "move-queue-song"],
     ["dispatch", "toggle-loop"],

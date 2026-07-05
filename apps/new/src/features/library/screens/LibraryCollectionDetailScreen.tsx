@@ -6,8 +6,10 @@ import {
   useArtistCollectionDetailQuery,
   usePlaylistCollectionDetailQuery,
 } from "../hooks/use-library-collection-detail-query";
-import { useLibraryCollectionDetailController } from "../hooks/use-library-collection-detail-controller";
-import { getCollectionDetailScreenViewState } from "../services/library-collection-interaction-service";
+import {
+  useLibraryCollectionDetailScreenController,
+  type LibraryCollectionDetailQueryResult,
+} from "../hooks/use-library-collection-detail-screen-controller";
 import { getLibraryInvalidCollectionState } from "../services/library-collection-navigation-service";
 import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
 
@@ -85,41 +87,20 @@ function PlaylistCollectionDetailContent({ id }: { id: number }) {
   );
 }
 
-type LibraryCollectionDetailResult = Parameters<
-  typeof LibraryCollectionDetailView
->[0]["collection"];
-
 function LibraryCollectionDetailConnectedView({
   collection,
   id,
   kind,
 }: {
-  collection: LibraryCollectionDetailResult;
+  collection: LibraryCollectionDetailQueryResult;
   id: number;
   kind: LibraryCollectionDetailKind;
 }) {
-  const { detail, errors } = collection;
-  const controller = useLibraryCollectionDetailController({
-    detail,
+  const controller = useLibraryCollectionDetailScreenController({
+    collection,
     id,
     kind,
-  });
-  const screenViewState = getCollectionDetailScreenViewState({
-    actionState: controller.actionState,
-    detail,
-    errors,
-    id,
-    kind,
-    movingSongId: controller.movingSongId,
-    mutationError: controller.mutationError,
-    removingSongId: controller.removingSongId,
   });
 
-  return (
-    <LibraryCollectionDetailView
-      collection={collection}
-      controller={controller}
-      screenViewState={screenViewState}
-    />
-  );
+  return <LibraryCollectionDetailView {...controller} />;
 }

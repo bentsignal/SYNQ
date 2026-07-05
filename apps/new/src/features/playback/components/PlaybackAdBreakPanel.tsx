@@ -1,20 +1,22 @@
 import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getPlaybackAdBreakPanelState } from "../services/playback-screen-state-service";
-import type { PlaybackState } from "../types/playback-state";
+import type { getPlaybackPlayerViewState } from "../services/playback-player-state-service";
+
+type PlaybackAdBreakPanelState = ReturnType<
+  typeof getPlaybackPlayerViewState
+>["adBreakPanel"];
 
 type PlaybackAdBreakPanelProps = {
+  panelState: PlaybackAdBreakPanelState;
   progressPercent: number;
-  state: PlaybackState;
 };
 
 export function PlaybackAdBreakPanel({
+  panelState,
   progressPercent,
-  state,
 }: PlaybackAdBreakPanelProps) {
   const theme = useCustomizationTheme();
-  const panelState = getPlaybackAdBreakPanelState({ state });
 
   return (
     <View className="gap-2.5 rounded-lg border border-[#fed7aa] bg-[#fff7ed] p-4">

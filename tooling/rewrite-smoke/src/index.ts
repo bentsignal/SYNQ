@@ -3098,6 +3098,17 @@ function assertPlaybackPlayerStateSmoke() {
         label: "Edit song",
       },
       adProgressPercent: 25,
+      adBreakPanel: {
+        action: {
+          href: "/premium",
+          label: "Open Premium",
+        },
+        body:
+          "Free playback pauses after 10 minutes of listening. The ad will resume your song when it finishes, or you can open Premium for ad-free listening.",
+        kicker: "Premium gate",
+        progressLabel: "0:08 / 0:30",
+        title: "Ad break required",
+      },
       freeListeningRemainingMs: 480_000,
       progressPercent: 25,
       screenState: {

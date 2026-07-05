@@ -14,6 +14,7 @@ export function PlaybackPlayerScreenView({
   activeTrack,
   activeTrackDetailLink,
   activeTrackEditLink,
+  adBreakPanel,
   adProgressPercent,
   fastForward,
   freeListeningRemainingMs,
@@ -58,8 +59,8 @@ export function PlaybackPlayerScreenView({
 
       {actionState.adBreakActive ? (
         <PlaybackAdBreakPanel
+          panelState={adBreakPanel}
           progressPercent={adProgressPercent}
-          state={state}
         />
       ) : null}
 

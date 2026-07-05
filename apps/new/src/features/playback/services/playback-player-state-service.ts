@@ -7,7 +7,10 @@ import {
   getLibrarySongEditHref,
 } from "../../library/services/library-song-interaction-service";
 import { getPlaybackPlayerActionState } from "./playback-player-action-state-service";
-import { getPlaybackPlayerScreenState } from "./playback-screen-state-service";
+import {
+  getPlaybackAdBreakPanelState,
+  getPlaybackPlayerScreenState,
+} from "./playback-screen-state-service";
 
 export const playerSeekStepMs = 15_000;
 
@@ -79,6 +82,7 @@ export const getPlaybackPlayerViewState = ({
       duration: state.adGate.playbackDuration,
       position: state.adGate.playbackPosition,
     }),
+    adBreakPanel: getPlaybackAdBreakPanelState({ state }),
     freeListeningRemainingMs: getFreeListeningRemainingMs({
       accumulatedMs: state.adGate.accumulatedMs,
       thresholdMs: state.adGate.thresholdMs,

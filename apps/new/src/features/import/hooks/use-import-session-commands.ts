@@ -1,4 +1,8 @@
 import { useMemo } from "react";
+import {
+  createImportSessionCommands,
+  type ImportSessionCommands,
+} from "../services/import-session-command-service";
 import type { ImportSessionAction } from "../services/import-session-state-service";
 import type { ImportSessionState } from "../types/import-session";
 import { useImportFileCommands } from "./use-import-file-commands";
@@ -17,65 +21,33 @@ export function useImportSessionCommands({
   premiumActive,
   state,
 }: UseImportSessionCommandsParams) {
-  const { removeImportSongs, startFileImport } = useImportFileCommands({
+  const fileCommands = useImportFileCommands({
     dispatch,
     songs: state.songs,
   });
-  const {
-    beginFilePick,
-    failSession,
-    reviewSongs,
-    setShouldSaveToLibrary,
-    updateImportSong,
-  } = useImportSessionBasicCommands({ dispatch });
-  const { beginWifiTransfer, finishWifiTransfer, receiveWifiSong } =
-    useImportSessionWifiCommands({
-      dispatch,
-      songs: state.songs,
-    });
+  const basicCommands = useImportSessionBasicCommands({ dispatch });
+  const wifiCommands = useImportSessionWifiCommands({
+    dispatch,
+    songs: state.songs,
+  });
 
-  const { discardSession, finishSession, resetSession, saveImportSession } =
-    useImportSessionLifecycleCommands({
-      dispatch,
-      premiumActive,
-      shouldSaveToLibrary: state.shouldSaveToLibrary,
-      songs: state.songs,
-    });
+  const lifecycleCommands = useImportSessionLifecycleCommands({
+    dispatch,
+    premiumActive,
+    shouldSaveToLibrary: state.shouldSaveToLibrary,
+    songs: state.songs,
+  });
 
-  return useMemo(
-    () => ({
-      beginFilePick,
-      beginWifiTransfer,
-      discardSession,
-      failSession,
-      finishSession,
-      finishWifiTransfer,
-      receiveWifiSong,
-      removeImportSongs,
-      resetSession,
-      reviewSongs,
-      saveImportSession,
-      startFileImport,
-      setShouldSaveToLibrary,
-      updateImportSong,
-    }),
-    [
-      beginFilePick,
-      beginWifiTransfer,
-      discardSession,
-      failSession,
-      finishSession,
-      finishWifiTransfer,
-      receiveWifiSong,
-      removeImportSongs,
-      resetSession,
-      reviewSongs,
-      saveImportSession,
-      startFileImport,
-      setShouldSaveToLibrary,
-      updateImportSong,
-    ],
+  return useMemo<ImportSessionCommands>(
+    () =>
+      createImportSessionCommands({
+        basicCommands,
+        fileCommands,
+        lifecycleCommands,
+        wifiCommands,
+      }),
+    [basicCommands, fileCommands, lifecycleCommands, wifiCommands],
   );
 }
 
-export type ImportSessionCommands = ReturnType<typeof useImportSessionCommands>;
+export type { ImportSessionCommands };

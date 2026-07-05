@@ -413,6 +413,7 @@ import {
   initialImportSessionState,
 } from "../../../apps/new/src/features/import/services/import-session-initial-state-service";
 import {
+  createImportSessionCommands,
   getBeginFilePickAction,
   getBeginWifiTransferAction,
   getFailImportSessionAction,
@@ -5437,6 +5438,37 @@ async function assertImportSessionSmoke() {
     "set-save-to-library",
     "update-song",
   ]);
+  const composedImportSessionCommands = createImportSessionCommands({
+    basicCommands: {
+      beginFilePick: () => "begin",
+      failSession: () => "fail",
+      reviewSongs: () => "review",
+      setShouldSaveToLibrary: () => "save-toggle",
+      updateImportSong: () => "update",
+    },
+    fileCommands: {
+      removeImportSongs: async () => true,
+      startFileImport: async () => false,
+    },
+    lifecycleCommands: {
+      discardSession: async () => false,
+      finishSession: () => "finish",
+      resetSession: () => "reset",
+      saveImportSession: async () => true,
+    },
+    wifiCommands: {
+      beginWifiTransfer: async () => true,
+      finishWifiTransfer: () => "finish-wifi",
+      receiveWifiSong: () => "receive-wifi",
+    },
+  });
+  assert.equal(composedImportSessionCommands.beginFilePick(), "begin");
+  assert.equal(await composedImportSessionCommands.startFileImport(), false);
+  assert.equal(await composedImportSessionCommands.saveImportSession(), true);
+  assert.equal(
+    await composedImportSessionCommands.beginWifiTransfer(2),
+    true,
+  );
   const importSessionPersistenceEvents: unknown[] = [];
   const dispatchImportSessionPersistenceCommand = (
     action: ImportSessionAction,

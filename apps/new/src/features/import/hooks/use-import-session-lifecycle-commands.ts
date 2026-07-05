@@ -3,7 +3,7 @@ import {
   createImportSessionLifecycleCommands,
 } from "../services/import-session-lifecycle-command-service";
 import { importSessionLifecycleDependencies } from "../services/import-session-lifecycle-dependencies-service";
-import type { ImportSessionAction } from "../services/import-session-state-service";
+import type { ImportSessionAction } from "../services/import-session-action-service";
 import type { ImportSessionState } from "../types/import-session";
 
 type UseImportSessionLifecycleCommandsParams = {

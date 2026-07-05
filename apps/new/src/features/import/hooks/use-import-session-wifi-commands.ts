@@ -3,7 +3,7 @@ import { createImportCacheDirectory } from "../services/import-file-cache-servic
 import {
   createImportSessionWifiCommands,
 } from "../services/import-session-wifi-command-service";
-import type { ImportSessionAction } from "../services/import-session-state-service";
+import type { ImportSessionAction } from "../services/import-session-action-service";
 import type { ImportSongDraft } from "../types/import-session";
 
 type UseImportSessionWifiCommandsParams = {

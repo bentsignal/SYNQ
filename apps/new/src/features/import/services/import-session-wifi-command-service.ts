@@ -3,7 +3,7 @@ import {
   runFinishWifiTransferCommand,
   runReceiveWifiSongCommand,
 } from "./import-session-wifi-command-flow-service";
-import type { ImportSessionAction } from "./import-session-state-service";
+import type { ImportSessionAction } from "./import-session-action-service";
 import type { ImportSongDraft } from "../types/import-session";
 
 type CreateImportSessionWifiCommandsParams = {

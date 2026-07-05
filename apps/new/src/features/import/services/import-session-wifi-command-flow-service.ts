@@ -5,7 +5,7 @@ import {
   getReceiveWifiSongAction,
 } from "./import-session-action-service";
 import { getImportSessionCommandErrorMessage } from "./import-session-command-error-service";
-import type { ImportSessionAction } from "./import-session-state-service";
+import type { ImportSessionAction } from "./import-session-action-service";
 import type { ImportSongDraft } from "../types/import-session";
 
 type ImportSessionWifiCommandDispatch = (action: ImportSessionAction) => void;

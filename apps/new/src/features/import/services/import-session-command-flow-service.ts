@@ -5,7 +5,7 @@ import {
   getSetImportSaveToLibraryAction,
   getUpdateImportSongAction,
 } from "./import-session-action-service";
-import type { ImportSessionAction } from "./import-session-state-service";
+import type { ImportSessionAction } from "./import-session-action-service";
 import type { ImportSongDraft } from "../types/import-session";
 
 type ImportSessionCommandDispatch = (action: ImportSessionAction) => void;

@@ -5,7 +5,7 @@ import {
   runSetImportSaveToLibraryCommand,
   runUpdateImportSongCommand,
 } from "./import-session-command-flow-service";
-import type { ImportSessionAction } from "./import-session-state-service";
+import type { ImportSessionAction } from "./import-session-action-service";
 import type { ImportSongDraft } from "../types/import-session";
 
 type CreateImportSessionBasicCommandsParams = {

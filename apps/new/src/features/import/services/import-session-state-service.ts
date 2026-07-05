@@ -1,8 +1,5 @@
-import type {
-  ImportSaveSummary,
-  ImportSessionState,
-  ImportSongDraft,
-} from "../types/import-session";
+import type { ImportSessionState } from "../types/import-session";
+import type { ImportSessionAction } from "./import-session-action-service";
 import { initialImportSessionState } from "./import-session-initial-state-service";
 import {
   beginImportFilePick,
@@ -23,37 +20,6 @@ import {
   setImportSaveToLibrary,
   startImportSessionSave,
 } from "./import-session-save-step-service";
-
-export type ImportSessionAction =
-  | { type: "begin-file-pick" }
-  | { total: number; type: "begin-wifi-transfer" }
-  | { error: string; type: "fail" }
-  | { songs: ImportSongDraft[]; type: "review" }
-  | { song: ImportSongDraft; type: "receive-wifi-song" }
-  | { songIds: number[]; type: "remove-songs" }
-  | { shouldSaveToLibrary: boolean; type: "set-save-to-library" }
-  | { song: ImportSongDraft; type: "update-song" }
-  | { summary: ImportSaveSummary; type: "finish" }
-  | { state: ImportSessionState; type: "hydrate" }
-  | { type: "saving" }
-  | { type: "discard" }
-  | { type: "reset" };
-
-export type ImportSessionHydrateAction = Extract<
-  ImportSessionAction,
-  { type: "hydrate" }
->;
-
-export const getHydrateImportSessionAction = (
-  state: ImportSessionState,
-): ImportSessionHydrateAction => ({
-  state,
-  type: "hydrate",
-});
-
-export const getSavingImportSessionAction = (): ImportSessionAction => ({
-  type: "saving",
-});
 
 export const importSessionReducer = (
   state: ImportSessionState,

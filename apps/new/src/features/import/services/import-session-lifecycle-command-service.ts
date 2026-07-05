@@ -9,7 +9,7 @@ import {
   runSaveImportSessionCommand,
 } from "./import-session-lifecycle-command-flow-service";
 import type { ImportSessionLifecycleDependencies } from "./import-session-lifecycle-service";
-import type { ImportSessionAction } from "./import-session-state-service";
+import type { ImportSessionAction } from "./import-session-action-service";
 
 type CreateImportSessionLifecycleCommandsParams = {
   dependencies: ImportSessionLifecycleDependencies;

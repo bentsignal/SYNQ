@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import {
   createImportSessionBasicCommands,
 } from "../services/import-session-basic-command-service";
-import type { ImportSessionAction } from "../services/import-session-state-service";
+import type { ImportSessionAction } from "../services/import-session-action-service";
 
 type UseImportSessionBasicCommandsParams = {
   dispatch: (action: ImportSessionAction) => void;

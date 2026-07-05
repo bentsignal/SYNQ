@@ -12,7 +12,7 @@ import {
 import {
   getSavingImportSessionAction,
   type ImportSessionAction,
-} from "./import-session-state-service";
+} from "./import-session-action-service";
 
 type ImportSessionLifecycleDispatch = (action: ImportSessionAction) => void;
 

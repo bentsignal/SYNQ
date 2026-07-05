@@ -1,7 +1,7 @@
 import {
   getHydrateImportSessionAction,
   type ImportSessionAction,
-} from "./import-session-state-service";
+} from "./import-session-action-service";
 import type { ImportSessionState } from "../types/import-session";
 
 type ImportSessionHydrateAction = Extract<

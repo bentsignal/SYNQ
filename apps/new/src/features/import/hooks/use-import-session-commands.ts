@@ -3,7 +3,7 @@ import {
   createImportSessionCommands,
   type ImportSessionCommands,
 } from "../services/import-session-command-composer-service";
-import type { ImportSessionAction } from "../services/import-session-state-service";
+import type { ImportSessionAction } from "../services/import-session-action-service";
 import type { ImportSessionState } from "../types/import-session";
 import { useImportFileCommands } from "./use-import-file-commands";
 import { useImportSessionBasicCommands } from "./use-import-session-basic-commands";

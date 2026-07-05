@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useImportSaveExportActions } from "./use-import-save-export-actions";
 import { useImportSaveSessionActions } from "./use-import-save-session-actions";
 import { useImportSessionSelector } from "./use-import-session";
@@ -37,14 +38,17 @@ export function useImportSaveController() {
     state,
   });
   const { actionState } = viewState;
-  const removeSong = async (songId: number) => {
-    await runImportSaveRemoveSongAction({
-      canRemoveSongs: actionState.canRemoveSongs,
-      removeImportSongs,
-      sendHaptic,
-      songId,
-    });
-  };
+  const removeSong = useCallback(
+    async (songId: number) => {
+      await runImportSaveRemoveSongAction({
+        canRemoveSongs: actionState.canRemoveSongs,
+        removeImportSongs,
+        sendHaptic,
+        songId,
+      });
+    },
+    [actionState.canRemoveSongs, removeImportSongs, sendHaptic],
+  );
 
   return {
     actionState,

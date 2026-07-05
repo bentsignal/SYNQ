@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
   runImportWifiRemoveSongAction,
@@ -21,18 +22,21 @@ export function useImportWifiScreenController() {
       state,
     });
 
-  const removeSong = async (songId: number) => {
-    await runImportWifiRemoveSongAction({
-      canRemoveSongs: wifiState.canReviewSave,
-      removeImportSongs,
-      sendHaptic,
-      songId,
-    });
-  };
+  const removeSong = useCallback(
+    async (songId: number) => {
+      await runImportWifiRemoveSongAction({
+        canRemoveSongs: wifiState.canReviewSave,
+        removeImportSongs,
+        sendHaptic,
+        songId,
+      });
+    },
+    [removeImportSongs, sendHaptic, wifiState.canReviewSave],
+  );
 
-  const reviewSave = () => {
+  const reviewSave = useCallback(() => {
     runImportWifiReviewSaveAction({ sendHaptic });
-  };
+  }, [sendHaptic]);
 
   return {
     actionState,

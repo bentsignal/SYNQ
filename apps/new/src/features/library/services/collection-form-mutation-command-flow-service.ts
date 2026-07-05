@@ -1,14 +1,14 @@
 import {
-  getCollectionFormBlockedSaveCommand,
-  getCollectionFormSuccessCommand,
-} from "./collection-form-command-state-service";
-import {
   runCollectionFormSaveAttempt,
 } from "./collection-form-mutation-runtime-service";
 import type {
   CreateCollectionFormSaveCommandParams,
   EditCollectionFormSaveCommandParams,
 } from "./collection-form-mutation-command-flow-types-service";
+import {
+  runCollectionFormBlockedSaveCommand,
+  runCollectionFormSuccessCommand,
+} from "./collection-form-save-command-action-service";
 
 export type {
   CreateCollectionFormSaveCommandParams,
@@ -25,9 +25,7 @@ export const runCreateCollectionFormSaveCommand = async ({
   sendHaptic,
 }: CreateCollectionFormSaveCommandParams) => {
   if (!canSave) {
-    const command = getCollectionFormBlockedSaveCommand(kind);
-    sendHaptic(command.haptic);
-    dispatch(command.action);
+    runCollectionFormBlockedSaveCommand({ dispatch, kind, sendHaptic });
     return;
   }
 
@@ -35,12 +33,12 @@ export const runCreateCollectionFormSaveCommand = async ({
     dispatch,
     kind,
     onSuccess: (id) => {
-      const command = getCollectionFormSuccessCommand({
+      runCollectionFormSuccessCommand({
         id,
         kind,
+        replaceRoute,
+        sendHaptic,
       });
-      sendHaptic(command.haptic);
-      replaceRoute(command.href);
     },
     operation: "create",
     run: () =>
@@ -65,9 +63,7 @@ export const runEditCollectionFormSaveCommand = async ({
   updateCollectionFromForm,
 }: EditCollectionFormSaveCommandParams) => {
   if (!canSave) {
-    const command = getCollectionFormBlockedSaveCommand(kind);
-    sendHaptic(command.haptic);
-    dispatch(command.action);
+    runCollectionFormBlockedSaveCommand({ dispatch, kind, sendHaptic });
     return;
   }
 
@@ -75,12 +71,12 @@ export const runEditCollectionFormSaveCommand = async ({
     dispatch,
     kind,
     onSuccess: (savedId) => {
-      const command = getCollectionFormSuccessCommand({
+      runCollectionFormSuccessCommand({
         id: savedId,
         kind,
+        replaceRoute,
+        sendHaptic,
       });
-      sendHaptic(command.haptic);
-      replaceRoute(command.href);
     },
     operation: "update",
     run: async () => {

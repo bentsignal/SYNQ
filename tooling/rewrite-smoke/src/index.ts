@@ -875,10 +875,12 @@ import {
 } from "../../../apps/new/src/features/library/services/library-collection-preview-service";
 import {
   buildLibraryCollectionPreviewQueryResult,
+} from "../../../apps/new/src/features/library/services/library-collection-preview-query-result-service";
+import { isLibraryCollectionPreviewGroupEmpty } from "../../../apps/new/src/features/library/services/library-collection-preview-query-group-service";
+import {
   getLibraryCollectionPreviewErrors,
   getLibraryCollectionPreviewUpdatedAt,
-  isLibraryCollectionPreviewGroupEmpty,
-} from "../../../apps/new/src/features/library/services/library-collection-preview-query-result-service";
+} from "../../../apps/new/src/features/library/services/library-collection-preview-query-metadata-service";
 import {
   getCollectionFormErrorMessage,
   getCollectionFormFallbackMessage,

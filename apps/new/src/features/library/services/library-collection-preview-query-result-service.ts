@@ -7,13 +7,14 @@ import {
   type CollectionPreviewImagePathResolver,
   type PlaylistPreviewRow,
 } from "./library-collection-preview-row-service";
-import type { LibraryCollectionPreview } from "./library-collection-preview-service";
-
-type CollectionPreviewGroup = {
-  albums: LibraryCollectionPreview[];
-  artists: LibraryCollectionPreview[];
-  playlists: LibraryCollectionPreview[];
-};
+import {
+  isLibraryCollectionPreviewGroupEmpty,
+  type CollectionPreviewGroup,
+} from "./library-collection-preview-query-group-service";
+import {
+  getLibraryCollectionPreviewErrors,
+  getLibraryCollectionPreviewUpdatedAt,
+} from "./library-collection-preview-query-metadata-service";
 
 export type LibraryCollectionPreviewQueryResult = {
   collections: CollectionPreviewGroup;
@@ -26,38 +27,6 @@ export type LibraryCollectionPreviewQueryResult = {
   };
   updatedAt: number;
 };
-
-export const getLibraryCollectionPreviewErrors = ({
-  albumError,
-  artistError,
-  playlistError,
-}: {
-  albumError: unknown;
-  artistError: unknown;
-  playlistError: unknown;
-}) => [playlistError, albumError, artistError].filter(Boolean);
-
-export const getLibraryCollectionPreviewUpdatedAt = ({
-  albumUpdatedAt,
-  artistUpdatedAt,
-  playlistUpdatedAt,
-}: {
-  albumUpdatedAt: Date | null | undefined;
-  artistUpdatedAt: Date | null | undefined;
-  playlistUpdatedAt: Date | null | undefined;
-}) =>
-  Math.max(
-    playlistUpdatedAt?.getTime() ?? 0,
-    albumUpdatedAt?.getTime() ?? 0,
-    artistUpdatedAt?.getTime() ?? 0,
-  );
-
-export const isLibraryCollectionPreviewGroupEmpty = (
-  collections: CollectionPreviewGroup,
-) =>
-  collections.albums.length === 0 &&
-  collections.artists.length === 0 &&
-  collections.playlists.length === 0;
 
 export const buildLibraryCollectionPreviewQueryResult = ({
   albumError,
@@ -123,3 +92,10 @@ export const buildLibraryCollectionPreviewQueryResult = ({
     }),
   };
 };
+
+export { isLibraryCollectionPreviewGroupEmpty } from "./library-collection-preview-query-group-service";
+export type { CollectionPreviewGroup } from "./library-collection-preview-query-group-service";
+export {
+  getLibraryCollectionPreviewErrors,
+  getLibraryCollectionPreviewUpdatedAt,
+} from "./library-collection-preview-query-metadata-service";

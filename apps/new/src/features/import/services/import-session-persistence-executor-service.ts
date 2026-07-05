@@ -2,15 +2,13 @@ import type { ImportSessionState } from "../types/import-session";
 import type {
   ImportSessionPersistenceDependencies,
 } from "./import-session-persistence-dependencies-service";
-import { filterExistingImportDraftsWithDependencies } from "./import-session-persistence-filter-service";
+import { loadPersistedImportSessionStateFromFile } from "./import-session-persistence-loader-service";
 import {
-  normalizePersistedImportSession,
   toPersistedImportSession,
 } from "./import-session-persistence-normalizer-service";
 import {
   getImportSessionDirectory,
   getImportSessionFile,
-  getRestoredImportSessionState,
 } from "./import-session-persistence-step-service";
 
 export type {
@@ -54,25 +52,12 @@ export async function loadPersistedImportSessionStateWithDependencies(
     }
 
     const contents = await dependencies.readAsString(importSessionFile);
-    const persistedSession = normalizePersistedImportSession(
-      JSON.parse(contents),
-    );
-
-    if (!persistedSession) {
-      await clearPersistedImportSessionStateWithDependencies(dependencies);
-      return null;
-    }
-
-    const songs = await filterExistingImportDraftsWithDependencies({
+    return await loadPersistedImportSessionStateFromFile({
+      clearPersistedState: () =>
+        clearPersistedImportSessionStateWithDependencies(dependencies),
+      contents,
       dependencies,
-      songs: persistedSession.songs,
     });
-    if (songs.length === 0) {
-      await clearPersistedImportSessionStateWithDependencies(dependencies);
-      return null;
-    }
-
-    return getRestoredImportSessionState({ persistedSession, songs });
   } catch {
     return null;
   }

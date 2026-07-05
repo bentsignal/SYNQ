@@ -5,7 +5,7 @@ import {
   SongRowDuration,
   SongRowShell,
   SongRowTextStack,
-} from "@/src/features/app-shell/components/SongRowParts";
+} from "@/src/features/app-shell/components/song-row";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { ImportSongPreviewRowState } from "../services/import-song-preview-state-service";
 

@@ -6,7 +6,7 @@ import { isProtectedPlaylistId } from "../services/library-playlist-constants-se
 import { assertUniqueCollectionName } from "./collection-uniqueness-repository";
 import {
   updatePlaylistWithDependencies,
-} from "./collection-update-executor-repository";
+} from "./playlist-update-executor-repository";
 
 export async function updatePlaylist({
   coverImage,

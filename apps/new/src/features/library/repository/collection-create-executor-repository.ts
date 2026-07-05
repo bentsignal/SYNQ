@@ -7,59 +7,19 @@ import {
   type ArtistCreateDependencies,
 } from "./artist-create-executor-repository";
 import {
-  assertCreatedCollectionId,
-  getRequiredCollectionCoverCreate,
-  getUniqueCollectionCreateName,
-} from "./collection-create-step-repository";
+  createPlaylistWithDependencies,
+  type PlaylistCreateDependencies,
+} from "./playlist-create-executor-repository";
 
 export type CollectionCreateDependencies = AlbumCreateDependencies &
-  ArtistCreateDependencies & {
-  assertUniqueCollectionName: (params: {
-    kind: "album" | "artist" | "playlist";
-    name: string;
-  }) => Promise<void>;
-  insertPlaylistRow: (params: {
-    coverImage: string | null;
-    name: string;
-  }) => Promise<number | null>;
-};
-
-export async function createPlaylistWithDependencies(
-  {
-    coverImage,
-    name,
-  }: {
-    coverImage?: string | null;
-    name: string;
-  },
-  dependencies: CollectionCreateDependencies,
-) {
-  const cleanName = await getUniqueCollectionCreateName({
-    dependencies,
-    kind: "playlist",
-    name,
-  });
-
-  const id = assertCreatedCollectionId({
-    id: await dependencies.insertPlaylistRow({
-      coverImage: await getRequiredCollectionCoverCreate({
-        coverImage,
-        dependencies,
-      }),
-      name: cleanName,
-    }),
-    kind: "Playlist",
-  });
-
-  return {
-    id,
-    name: cleanName,
-  };
-}
+  ArtistCreateDependencies &
+  PlaylistCreateDependencies;
 
 export {
   createAlbumWithDependencies,
   type AlbumCreateDependencies,
   createArtistWithDependencies,
   type ArtistCreateDependencies,
+  createPlaylistWithDependencies,
+  type PlaylistCreateDependencies,
 };

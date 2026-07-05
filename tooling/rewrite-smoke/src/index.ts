@@ -962,6 +962,9 @@ import {
 } from "../../../apps/new/src/features/library/repository/artist-create-executor-repository";
 import {
   createPlaylistWithDependencies,
+  type PlaylistCreateDependencies,
+} from "../../../apps/new/src/features/library/repository/playlist-create-executor-repository";
+import {
   type CollectionCreateDependencies,
 } from "../../../apps/new/src/features/library/repository/collection-create-executor-repository";
 import {
@@ -981,7 +984,7 @@ import {
 import {
   updatePlaylistWithDependencies,
   type PlaylistUpdateDependencies,
-} from "../../../apps/new/src/features/library/repository/collection-update-executor-repository";
+} from "../../../apps/new/src/features/library/repository/playlist-update-executor-repository";
 import {
   assertCanUpdatePlaylist,
   getOptionalCollectionCoverUpdate,

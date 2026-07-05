@@ -10,9 +10,9 @@ import { sendWifiImportJsonResponse } from "./wifi-import-bridge-response-servic
 import type { WifiImportRouteRuntimeState } from "./wifi-import-route-runtime-state-service";
 import {
   runWifiImportFileUploadRoute,
-  runWifiImportStartTransferRoute,
   type WifiImportRouteHandlerDependencies,
 } from "./wifi-import-route-operation-service";
+import { runWifiImportStartTransferRoute } from "./wifi-import-start-transfer-route-service";
 
 export type WifiImportRouteHandlers = {
   handleConnection: (

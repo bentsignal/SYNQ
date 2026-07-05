@@ -1,5 +1,4 @@
 import type { PlaybackState } from "../types/playback-state";
-import type { TrackPlayerAdapter } from "./track-player-adapter";
 import {
   getActiveTrack,
   getNextQueueIndex,
@@ -15,39 +14,10 @@ import {
 } from "./playback-native-command-step-service";
 
 export type { PlaybackNativeCommandPlan } from "./playback-native-command-step-service";
+export { runPlaybackNativeCommandPlan } from "./playback-native-command-plan-runner-service";
 
 export const getPlaybackNativeCommandErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : "Playback command failed.";
-
-export const runPlaybackNativeCommandPlan = ({
-  adapter,
-  plan,
-  runNativeCommand,
-}: {
-  adapter: TrackPlayerAdapter;
-  plan: PlaybackNativeCommandPlan;
-  runNativeCommand: (command: () => Promise<void>) => void;
-}) => {
-  switch (plan.type) {
-    case "noop":
-      return;
-    case "pause":
-      runNativeCommand(() => adapter.pause());
-      return;
-    case "play":
-      runNativeCommand(() => adapter.play(plan.track));
-      return;
-    case "resume":
-      runNativeCommand(() => adapter.resume());
-      return;
-    case "seek":
-      runNativeCommand(() => adapter.seekTo(plan.position));
-      return;
-    case "stop":
-      runNativeCommand(() => adapter.stop());
-      return;
-  }
-};
 
 export const getResumeNativeCommandPlan = (
   state: PlaybackState,

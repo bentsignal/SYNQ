@@ -4,8 +4,8 @@ import {
 } from "expo-audio";
 import type { PlaybackQueueItem } from "../types/playback-state";
 import { playbackAdAudio } from "./playback-native-audio-service";
+import { getPlaybackNativeLibraryAudioSource } from "./playback-native-library-source-service";
 import {
-  getPlaybackNativeLibraryAudioSource,
   getPlaybackNativePlayerPlayAdState,
   getPlaybackNativePlayerPlayLibraryPlan,
   getPlaybackNativePlayerPlayLibraryState,

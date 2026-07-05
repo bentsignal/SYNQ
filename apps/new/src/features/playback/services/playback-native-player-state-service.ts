@@ -1,10 +1,5 @@
 import type { TrackPlayerSource } from "./playback-native-status-service";
 
-export type PlaybackNativeLibrarySourceSong = {
-  id: number;
-  pathToFile?: string | null;
-};
-
 export type PlaybackNativePlayerRegistryState = {
   activeSource: TrackPlayerSource | null;
   loadedSongId: number | null;
@@ -67,13 +62,3 @@ export const getPlaybackNativePlayerResumeLibraryState = (
   ...getPlaybackNativePlayerRemoveSourceState({ source: "ad", state }),
   activeSource: "library",
 });
-
-export const getPlaybackNativeLibraryAudioSource = (
-  song: PlaybackNativeLibrarySourceSong,
-) => {
-  if (!song.pathToFile) {
-    throw new Error("This song does not have a playable file path.");
-  }
-
-  return { uri: song.pathToFile };
-};

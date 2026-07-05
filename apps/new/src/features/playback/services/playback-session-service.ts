@@ -1,14 +1,9 @@
 import type { PlaybackState } from "../types/playback-state";
 import type { PlaybackAction } from "./playback-session-action-service";
-import { initialPlaybackState } from "./playback-initial-state-service";
+import { reducePlaybackLifecycleAction } from "./playback-session-lifecycle-reducer-service";
 import { reducePlaybackNativeAction } from "./playback-session-native-reducer-service";
 import { reducePlaybackQueueAction } from "./playback-session-queue-reducer-service";
 import { reducePlaybackTransportAction } from "./playback-session-transport-reducer-service";
-import {
-  hydratePlaybackSession,
-  togglePlaybackLoopMode,
-  togglePlaybackShuffleMode,
-} from "./playback-session-step-service";
 
 export type { PlaybackAction } from "./playback-session-action-service";
 
@@ -18,9 +13,8 @@ export const playbackReducer = (
 ): PlaybackState => {
   switch (action.type) {
     case "hydrate":
-      return hydratePlaybackSession(action.state);
     case "reset":
-      return initialPlaybackState;
+      return reducePlaybackLifecycleAction({ action, state });
     case "play-song":
     case "pause":
     case "resume":
@@ -42,8 +36,7 @@ export const playbackReducer = (
     case "remote-failure":
       return reducePlaybackNativeAction({ action, state });
     case "toggle-loop":
-      return togglePlaybackLoopMode(state);
     case "toggle-shuffle":
-      return togglePlaybackShuffleMode(state);
+      return reducePlaybackLifecycleAction({ action, state });
   }
 };

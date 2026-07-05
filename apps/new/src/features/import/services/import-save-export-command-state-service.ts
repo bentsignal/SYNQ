@@ -1,10 +1,6 @@
 import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
+import { getImportSaveExportErrorMessage } from "./import-save-export-error-service";
 import type { ImportSaveExportAction } from "./import-save-export-state-service";
-
-export const getImportSaveExportErrorMessage = (caughtError: unknown) =>
-  caughtError instanceof Error
-    ? caughtError.message
-    : "Staged songs could not be exported.";
 
 export type ImportSaveExportResultCommand = {
   action?: ImportSaveExportAction;

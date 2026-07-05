@@ -491,6 +491,10 @@ import {
   toPersistedImportSession,
 } from "../../../apps/new/src/features/import/services/import-session-persistence-normalizer-service";
 import {
+  parsePersistedImportSession,
+  stringifyPersistedImportSession,
+} from "../../../apps/new/src/features/import/services/import-session-persistence-codec-service";
+import {
   clearPersistedImportSessionStateWithDependencies,
   getImportSessionDirectoryWithDependencies,
   getImportSessionFileWithDependencies,
@@ -15575,6 +15579,27 @@ async function assertImportSessionPersistenceExecutorSmoke() {
   assert.equal(
     getImportSessionFile({ documentDirectory: "file:///documents/" }),
     sessionFile,
+  );
+  assert.throws(() => parsePersistedImportSession("{not-json"), SyntaxError);
+  assert.deepEqual(
+    parsePersistedImportSession(
+      JSON.stringify({
+        selectedSongId: second.id,
+        shouldSaveToLibrary: false,
+        songs: [first, second],
+        source: "wifi",
+      }),
+    ),
+    {
+      selectedSongId: second.id,
+      shouldSaveToLibrary: false,
+      songs: [first, second],
+      source: "wifi",
+    },
+  );
+  assert.equal(
+    stringifyPersistedImportSession(reviewingState),
+    JSON.stringify(toPersistedImportSession(reviewingState), null, 2),
   );
   assert.deepEqual(
     getRestoredImportSessionState({

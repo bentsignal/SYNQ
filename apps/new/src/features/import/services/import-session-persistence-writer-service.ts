@@ -2,7 +2,9 @@ import type { ImportSessionState } from "../types/import-session";
 import type {
   ImportSessionPersistenceDependencies,
 } from "./import-session-persistence-dependencies-service";
-import { toPersistedImportSession } from "./import-session-persistence-normalizer-service";
+import {
+  stringifyPersistedImportSession,
+} from "./import-session-persistence-codec-service";
 
 const importSessionFileName = "session.json";
 
@@ -20,6 +22,6 @@ export const writePersistedImportSessionState = async ({
   });
   await dependencies.writeAsString(
     `${importSessionDirectory}/${importSessionFileName}`,
-    JSON.stringify(toPersistedImportSession(state), null, 2),
+    stringifyPersistedImportSession(state),
   );
 };

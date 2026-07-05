@@ -3,7 +3,9 @@ import type {
   ImportSessionPersistenceDependencies,
 } from "./import-session-persistence-dependencies-service";
 import { filterExistingImportDraftsWithDependencies } from "./import-session-persistence-filter-service";
-import { normalizePersistedImportSession } from "./import-session-persistence-normalizer-service";
+import {
+  parsePersistedImportSession,
+} from "./import-session-persistence-codec-service";
 import {
   getRestoredImportSessionState,
 } from "./import-session-persistence-step-service";
@@ -17,9 +19,7 @@ export const loadPersistedImportSessionStateFromFile = async ({
   contents: string;
   dependencies: ImportSessionPersistenceDependencies;
 }): Promise<ImportSessionState | null> => {
-  const persistedSession = normalizePersistedImportSession(
-    JSON.parse(contents),
-  );
+  const persistedSession = parsePersistedImportSession(contents);
 
   if (!persistedSession) {
     await clearPersistedState();

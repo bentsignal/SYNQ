@@ -7868,6 +7868,14 @@ function assertLibrarySongPreviewSmoke() {
       songs: previews,
     }),
     {
+      emptyState: {
+        body: "Import audio files to start building your song library.",
+        link: {
+          href: "/(tabs)/import",
+          label: "Import music",
+        },
+        title: "No songs yet",
+      },
       meta: "1 shown",
       rows: [
         {

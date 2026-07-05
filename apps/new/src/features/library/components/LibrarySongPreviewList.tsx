@@ -58,7 +58,7 @@ export function LibrarySongPreviewList({
       />
 
       {isEmpty ? (
-        <LibrarySongPreviewEmptyState />
+        <LibrarySongPreviewEmptyState emptyState={listState.emptyState} />
       ) : (
         <View
           className="overflow-hidden rounded-lg border"

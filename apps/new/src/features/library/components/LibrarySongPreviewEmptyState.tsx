@@ -1,12 +1,20 @@
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { getLibrarySongPreviewEmptyState } from "../services/library-song-preview-state-service";
+import type { getLibrarySongPreviewListState } from "../services/library-song-preview-state-service";
 
-export function LibrarySongPreviewEmptyState() {
+type LibrarySongPreviewEmptyStateModel = ReturnType<
+  typeof getLibrarySongPreviewListState
+>["emptyState"];
+
+type LibrarySongPreviewEmptyStateProps = {
+  emptyState: LibrarySongPreviewEmptyStateModel;
+};
+
+export function LibrarySongPreviewEmptyState({
+  emptyState,
+}: LibrarySongPreviewEmptyStateProps) {
   const theme = useCustomizationTheme();
-  const emptyState = getLibrarySongPreviewEmptyState();
-
   return (
     <View
       className="gap-2 rounded-lg border p-4"

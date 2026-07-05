@@ -72,6 +72,7 @@ export const getLibrarySongPreviewListState = ({
   activeTrackId: number | null;
   songs: LibrarySongPreview[];
 }) => ({
+  emptyState: getLibrarySongPreviewEmptyState(),
   meta: `${songs.length} shown`,
   rows: songs.map((song) => ({
     detailHref: getLibrarySongPreviewDetailHref(song),

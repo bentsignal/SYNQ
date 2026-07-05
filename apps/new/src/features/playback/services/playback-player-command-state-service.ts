@@ -1,6 +1,6 @@
 import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import type { PlaybackState } from "../types/playback-state";
-import { getSeekTargetPosition } from "./playback-player-state-service";
+import { getSeekTargetPosition } from "./playback-player-progress-service";
 
 type PlaybackPlayerCommand = {
   haptic: HapticFeedbackType;

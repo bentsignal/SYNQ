@@ -152,12 +152,14 @@ import {
   runPlaybackPersistenceCommand,
 } from "../../../apps/new/src/features/playback/services/playback-persistence-command-flow-service";
 import {
-  getFreeListeningRemainingMs,
   getPlaybackPlayerControllerViewState,
   getPlaybackPlayerViewState,
+} from "../../../apps/new/src/features/playback/services/playback-player-state-service";
+import {
+  getFreeListeningRemainingMs,
   getPlaybackProgressPercent,
   getSeekTargetPosition,
-} from "../../../apps/new/src/features/playback/services/playback-player-state-service";
+} from "../../../apps/new/src/features/playback/services/playback-player-progress-service";
 import {
   getPlaybackPlayerActionState,
 } from "../../../apps/new/src/features/playback/services/playback-player-action-state-service";

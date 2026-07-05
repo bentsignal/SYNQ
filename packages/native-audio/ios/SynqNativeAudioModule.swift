@@ -48,6 +48,8 @@ public class SynqNativeAudioModule: Module {
         try self.loadActiveTrack(autoplay: true)
       } else if self.player == nil {
         try self.loadActiveTrack(autoplay: true)
+      } else if self.shouldRestartPlaybackFromBeginning() {
+        try self.loadActiveTrack(autoplay: true)
       }
       self.status = "playing"
       self.player?.rate = self.playbackRate
@@ -298,6 +300,15 @@ public class SynqNativeAudioModule: Module {
 
     let seconds = CMTimeGetSeconds(range.start) + CMTimeGetSeconds(range.duration)
     return seconds.isFinite && seconds >= 0 ? seconds * 1000 : 0
+  }
+
+  private func shouldRestartPlaybackFromBeginning() -> Bool {
+    if status == "ended" {
+      return true
+    }
+
+    let duration = durationMs()
+    return duration > 0 && positionMs() >= duration - 250
   }
 
   private func statePayload() -> [String: Any] {

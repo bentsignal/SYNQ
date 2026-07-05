@@ -224,9 +224,28 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
           ? null
           : state.queue[state.activeQueueIndex] ?? null;
 
-      if (activeSong && state.isPlaying) {
-        await playSong(activeSong);
+      if (!activeSong) {
+        return;
       }
+
+      activeSource = "library";
+      activeLibraryTrack = activeSong;
+
+      if (state.isPlaying) {
+        await playSong(activeSong);
+        return;
+      }
+
+      await configureNativePlayback();
+      const track = getSynqNativePlaybackTrack(activeSong);
+      const restoredState = await playbackRuntime.runCommand({
+        _tag: "LoadQueue",
+        queue: {
+          activeTrackId: track.id,
+          tracks: [track],
+        },
+      });
+      emitState(restoredState);
     },
     resume: async () => {
       emitState(await playbackRuntime.runCommand({ _tag: "Play" }));

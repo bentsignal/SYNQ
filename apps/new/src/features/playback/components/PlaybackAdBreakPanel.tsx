@@ -2,6 +2,7 @@ import { Link } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { getPlaybackPlayerViewState } from "../services/playback-player-state-service";
+import { PlaybackProgressBar } from "./PlaybackProgressBar";
 
 type PlaybackAdBreakPanelState = ReturnType<
   typeof getPlaybackPlayerViewState
@@ -32,15 +33,7 @@ export function PlaybackAdBreakPanel({
       <Text className="text-sm leading-5" style={{ color: theme.secondaryText }}>
         {panelState.progressLabel}
       </Text>
-      <View
-        className="h-2 overflow-hidden rounded-full"
-        style={{ backgroundColor: theme.border }}
-      >
-        <View
-          className="h-full rounded-full"
-          style={{ backgroundColor: theme.accent, width: `${progressPercent}%` }}
-        />
-      </View>
+      <PlaybackProgressBar progressPercent={progressPercent} theme={theme} />
       <View className="flex-row flex-wrap gap-3">
         <Link asChild href={panelState.action.href}>
           <Pressable

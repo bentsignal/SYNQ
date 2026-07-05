@@ -166,6 +166,7 @@ import {
   getPlaybackNativeFinishedAction,
   getPlaybackNativeStatusAction,
 } from "../../../apps/new/src/features/playback/services/playback-native-transition-service";
+import { runPlaybackNativeStatusCommand } from "../../../apps/new/src/features/playback/services/playback-native-status-command-flow-service";
 import {
   getPlaybackNativeLibraryAudioSource,
   getPlaybackNativePlayerPlayAdState,
@@ -2344,6 +2345,99 @@ function assertPlaybackNativeStatusSmoke() {
       source: "ad",
     },
   );
+  const nativeStatusEvents: unknown[] = [];
+  const dispatchNativeStatus = (action: PlaybackAction) => {
+    nativeStatusEvents.push(["dispatch", action]);
+  };
+  const runNativeStatusCommand = (command: () => Promise<void>) => {
+    nativeStatusEvents.push(["native"]);
+    void command();
+  };
+  assert.equal(
+    runPlaybackNativeStatusCommand({
+      dispatch: dispatchNativeStatus,
+      finishActiveTrack: () => nativeStatusEvents.push(["finish"]),
+      premiumActive: false,
+      resumeLibrary: async () => {
+        nativeStatusEvents.push(["resume-library"]);
+      },
+      runNativeCommand: runNativeStatusCommand,
+      status: {
+        didJustFinish: false,
+        duration: 180_000,
+        isLoaded: true,
+        isPlaying: true,
+        position: 12_500,
+        songId: 5,
+        source: "library",
+      },
+    }),
+    "updated-status",
+  );
+  assert.equal(
+    runPlaybackNativeStatusCommand({
+      dispatch: dispatchNativeStatus,
+      finishActiveTrack: () => nativeStatusEvents.push(["finish"]),
+      premiumActive: false,
+      resumeLibrary: async () => {
+        nativeStatusEvents.push(["resume-library"]);
+      },
+      runNativeCommand: runNativeStatusCommand,
+      status: {
+        didJustFinish: true,
+        duration: null,
+        isLoaded: true,
+        isPlaying: false,
+        position: 2_000,
+        songId: null,
+        source: "ad",
+      },
+    }),
+    "completed-ad",
+  );
+  assert.equal(
+    runPlaybackNativeStatusCommand({
+      dispatch: dispatchNativeStatus,
+      finishActiveTrack: () => nativeStatusEvents.push(["finish"]),
+      premiumActive: false,
+      resumeLibrary: async () => {
+        nativeStatusEvents.push(["resume-library"]);
+      },
+      runNativeCommand: runNativeStatusCommand,
+      status: {
+        didJustFinish: true,
+        duration: 180_000,
+        isLoaded: true,
+        isPlaying: false,
+        position: 180_000,
+        songId: 5,
+        source: "library",
+      },
+    }),
+    "finished-track",
+  );
+  assert.deepEqual(nativeStatusEvents, [
+    [
+      "dispatch",
+      {
+        premiumActive: false,
+        status: {
+          didJustFinish: false,
+          duration: 180_000,
+          isLoaded: true,
+          isPlaying: true,
+          position: 12_500,
+          songId: 5,
+          source: "library",
+        },
+        type: "native-status",
+      },
+    ],
+    ["dispatch", { type: "complete-ad-break" }],
+    ["native"],
+    ["resume-library"],
+    ["finish"],
+  ]);
 }
 
 function assertPlaybackNativePlayerStateSmoke() {

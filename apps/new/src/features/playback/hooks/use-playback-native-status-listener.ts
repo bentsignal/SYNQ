@@ -1,6 +1,5 @@
 import { useEffect, type RefObject } from "react";
-import { getCompletePlaybackAdBreakAction } from "../services/playback-ad-gate-service";
-import { getPlaybackNativeStatusAction } from "../services/playback-native-transition-service";
+import { runPlaybackNativeStatusCommand } from "../services/playback-native-status-command-flow-service";
 import type { PlaybackAction } from "../services/playback-session-action-service";
 import type { TrackPlayerAdapter } from "../services/track-player-adapter";
 
@@ -21,21 +20,14 @@ export function usePlaybackNativeStatusListener({
 }: UsePlaybackNativeStatusListenerParams) {
   useEffect(() => {
     adapter.setStatusListener((status) => {
-      if (status.didJustFinish) {
-        if (status.source === "ad") {
-          dispatch(getCompletePlaybackAdBreakAction());
-          runNativeCommand(() => adapter.resumeLibrary());
-          return;
-        }
-
-        finishActiveTrack();
-        return;
-      }
-
-      dispatch(getPlaybackNativeStatusAction({
+      runPlaybackNativeStatusCommand({
+        dispatch,
+        finishActiveTrack,
         premiumActive: premiumActiveRef.current,
+        resumeLibrary: adapter.resumeLibrary,
+        runNativeCommand,
         status,
-      }));
+      });
     });
 
     return () => {

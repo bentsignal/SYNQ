@@ -1354,9 +1354,9 @@ import {
   getPickedBackupArchiveUri,
 } from "../../../apps/new/src/features/backup/services/backup-command-result-service";
 import {
-  type BackupCommandExecutorDependencies,
   runBackupCommandWithDependencies,
 } from "../../../apps/new/src/features/backup/services/backup-command-executor-service";
+import type { BackupCommandExecutorDependencies } from "../../../apps/new/src/features/backup/services/backup-command-executor-dependencies-service";
 import {
   assertBackupRestoreStagedItems,
   getBackupDocumentDirectoryDeletePaths,

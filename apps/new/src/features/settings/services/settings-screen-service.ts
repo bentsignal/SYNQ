@@ -1,12 +1,14 @@
 import { settingsRoutes } from "./settings-navigation-service";
 
 export {
-  getCustomizationColorControlsState,
-  getCustomizationOptionState,
   getCustomizationScreenControllerViewState,
   getCustomizationScreenState,
   type CustomizationScreenControllerViewState,
 } from "./customization-screen-state-service";
+export {
+  getCustomizationColorControlsState,
+  getCustomizationOptionState,
+} from "./customization-color-controls-state-service";
 
 export const getSettingsHomeState = ({
   premiumActive,

@@ -1461,11 +1461,13 @@ import type {
   PremiumTier,
 } from "../../../apps/new/src/features/premium/types/premium-purchase";
 import {
-  getCustomizationColorControlsState,
   getCustomizationScreenControllerViewState,
-  getCustomizationOptionState,
   getCustomizationScreenState,
 } from "../../../apps/new/src/features/settings/services/customization-screen-state-service";
+import {
+  getCustomizationColorControlsState,
+  getCustomizationOptionState,
+} from "../../../apps/new/src/features/settings/services/customization-color-controls-state-service";
 import {
   getSettingsDeveloperPremiumToggleState,
   getSettingsHomeControllerViewState,

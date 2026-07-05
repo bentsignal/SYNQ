@@ -1,10 +1,14 @@
 import type {
-  CustomizationColorKey,
   CustomizationSettings,
   CustomizationSettingsStatus,
 } from "../types/customization-settings";
 import { getSettingsPremiumHref } from "./settings-navigation-service";
-import { customizationOptions } from "./customization-settings-domain-service";
+import { getCustomizationColorControlsState } from "./customization-color-controls-state-service";
+
+export {
+  getCustomizationColorControlsState,
+  getCustomizationOptionState,
+} from "./customization-color-controls-state-service";
 
 export const getCustomizationScreenState = ({
   premiumActive,
@@ -22,59 +26,6 @@ export const getCustomizationScreenState = ({
   showPremiumPanel: !premiumActive,
   statusLabel: status === "saving" ? "Saving" : "Preferences saved locally",
   themeControlsDisabled: !premiumActive || status === "loading",
-});
-
-export const getCustomizationOptionState = ({
-  disabled,
-  optionKey,
-  selectedKey,
-}: {
-  disabled: boolean;
-  optionKey: CustomizationColorKey;
-  selectedKey: CustomizationColorKey;
-}) => ({
-  accessibilityState: {
-    disabled,
-    selected: optionKey === selectedKey,
-  },
-  isSelected: optionKey === selectedKey,
-});
-
-export const getCustomizationColorControlsState = ({
-  appIcon,
-  disabled,
-  themeKey,
-}: {
-  appIcon: CustomizationColorKey;
-  disabled: boolean;
-  themeKey: CustomizationColorKey;
-}) => ({
-  rows: [
-    {
-      key: "theme",
-      options: customizationOptions.map((option) => ({
-        ...option,
-        optionState: getCustomizationOptionState({
-          disabled,
-          optionKey: option.key,
-          selectedKey: themeKey,
-        }),
-      })),
-      title: "Theme",
-    },
-    {
-      key: "app-icon",
-      options: customizationOptions.map((option) => ({
-        ...option,
-        optionState: getCustomizationOptionState({
-          disabled,
-          optionKey: option.key,
-          selectedKey: appIcon,
-        }),
-      })),
-      title: "App Icon",
-    },
-  ],
 });
 
 export const getCustomizationScreenControllerViewState = ({

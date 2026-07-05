@@ -1,14 +1,9 @@
 import { Link } from "expo-router";
 import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { useLibraryCollectionDetailController } from "../hooks/use-library-collection-detail-controller";
+import type { useLibraryCollectionDetailController } from "../hooks/use-library-collection-detail-controller";
 import type { LibraryCollectionDetail } from "../services/library-collection-detail-service";
-import type { LibraryCollectionDetailKind } from "../services/library-collection-kind-service";
-import {
-  getCollectionDetailViewState,
-  getCollectionDetailStatusState,
-} from "../services/library-collection-interaction-service";
-import { getCollectionSongRowsViewState } from "../services/library-collection-song-mutation-service";
+import type { CollectionDetailScreenViewState } from "../services/library-collection-interaction-service";
 import { LibraryCollectionDetailActions } from "./LibraryCollectionDetailActions";
 import { LibraryCollectionDetailHeader } from "./LibraryCollectionDetailHeader";
 import { LibraryCollectionDetailStatus } from "./LibraryCollectionDetailStatus";
@@ -22,49 +17,27 @@ type LibraryCollectionDetailResult = {
 
 type LibraryCollectionDetailViewProps = {
   collection: LibraryCollectionDetailResult;
-  id: number;
-  kind: LibraryCollectionDetailKind;
+  controller: ReturnType<typeof useLibraryCollectionDetailController>;
+  screenViewState: CollectionDetailScreenViewState;
 };
 
 export function LibraryCollectionDetailView({
   collection,
-  id,
-  kind,
+  controller,
+  screenViewState,
 }: LibraryCollectionDetailViewProps) {
-  const { detail, errors } = collection;
+  const { detail } = collection;
   const theme = useCustomizationTheme();
-  const viewState = getCollectionDetailViewState({
-    id,
-    kind,
-    songs: detail.songs,
-  });
   const {
     actionState,
     deleteCurrentCollection,
     exportCollection,
     moveSong,
-    movingSongId,
-    mutationError,
     playCollection,
     queueCollection,
     removeSong,
-    removingSongId,
-  } = useLibraryCollectionDetailController({
-    detail,
-    id,
-    kind,
-  });
-  const statusState = getCollectionDetailStatusState({
-    errors,
-    mutationError,
-    updatedAt: detail.updatedAt,
-  });
-  const songRows = getCollectionSongRowsViewState({
-    canMutateSongs: actionState.canMutateSongs,
-    movingSongId,
-    removingSongId,
-    songs: detail.songs,
-  });
+  } = controller;
+  const { songRows, statusState, viewState } = screenViewState;
 
   return (
     <ScrollView

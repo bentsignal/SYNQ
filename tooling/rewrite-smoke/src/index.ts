@@ -615,6 +615,7 @@ import {
   getPlayableCollectionSongs,
 } from "../../../apps/new/src/features/library/services/library-collection-action-state-service";
 import {
+  getCollectionDetailScreenViewState,
   getCollectionDetailStatusState,
   getCollectionDetailViewState,
   getDeleteCollectionConfirmationCopy,
@@ -6573,6 +6574,39 @@ async function assertLibraryCollectionInteractionSmoke() {
       title: "Songs",
     },
   });
+  const collectionDetailScreenViewState = getCollectionDetailScreenViewState({
+    actionState: getCollectionDetailActionState({
+      id: 7,
+      isDeleting: false,
+      isExporting: false,
+      isMissing: false,
+      kind: "album",
+      songs,
+    }),
+    detail: {
+      detail: "3 songs",
+      eyebrow: "Album",
+      imagePath: null,
+      isMissing: false,
+      kind: "album",
+      meta: "3 songs",
+      songs,
+      title: "Alpha",
+      updatedAt: 30,
+    },
+    errors: [],
+    id: 7,
+    kind: "album",
+    movingSongId: null,
+    mutationError: null,
+    removingSongId: null,
+  });
+  assert.equal(
+    collectionDetailScreenViewState.viewState.actionLinks.editHref,
+    "/(tabs)/library/album/edit/7",
+  );
+  assert.equal(collectionDetailScreenViewState.statusState.isError, false);
+  assert.equal(collectionDetailScreenViewState.songRows.length, 3);
   assert.equal(
     getCollectionEditHref({ id: 7, kind: "album" }),
     "/(tabs)/library/album/edit/7",

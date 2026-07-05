@@ -1,10 +1,8 @@
 import { Link } from "expo-router";
 import { View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import { CollectionFormActions } from "./CollectionFormActions";
-import { CollectionFormFields } from "./CollectionFormFields";
 import { CollectionFormHeader } from "./CollectionFormHeader";
-import { CollectionImageInput } from "./CollectionImageInput";
+import { CollectionFormPanel } from "./CollectionFormPanel";
 import type { CollectionFormViewProps } from "./collection-form-types";
 import {
   getCollectionFormFieldState,
@@ -44,38 +42,29 @@ export function CollectionFormView({
     >
       <CollectionFormHeader copy={copy} subtitle={subtitle} />
 
-      <View
-        className="gap-3 rounded-lg border p-4"
-        style={{ backgroundColor: theme.surface, borderColor: theme.border }}
-      >
-        <CollectionFormFields
-          actionState={actionState}
-          artistNames={artistNames}
-          copy={copy}
-          fieldState={fieldState}
-          name={name}
-          onChangeArtistNames={onChangeArtistNames}
-          onChangeName={onChangeName}
-          onChangeYear={onChangeYear}
-          year={year}
-        />
-        <CollectionImageInput
-          actionState={actionState}
-          image={image}
-          imageFallbackName={imageFallbackName}
-          imageFallbackUri={imageFallbackUri}
-          imageInitial={imageInitial}
-          imageLabel={imageLabel}
-          onPickImage={onPickImage}
-        />
-        <CollectionFormActions
-          actionState={actionState}
-          errorMessages={errorMessages}
-          isSaving={isSaving}
-          onSave={onSave}
-          saveLabel={saveLabel}
-        />
-      </View>
+      <CollectionFormPanel
+        actionState={actionState}
+        artistNames={artistNames}
+        borderColor={theme.border}
+        copy={copy}
+        errorMessages={errorMessages}
+        fieldState={fieldState}
+        image={image}
+        imageFallbackName={imageFallbackName}
+        imageFallbackUri={imageFallbackUri}
+        imageInitial={imageInitial}
+        imageLabel={imageLabel}
+        isSaving={isSaving}
+        name={name}
+        onChangeArtistNames={onChangeArtistNames}
+        onChangeName={onChangeName}
+        onChangeYear={onChangeYear}
+        onPickImage={onPickImage}
+        onSave={onSave}
+        saveLabel={saveLabel}
+        surfaceColor={theme.surface}
+        year={year}
+      />
 
       <Link
         className="text-[15px] font-extrabold"

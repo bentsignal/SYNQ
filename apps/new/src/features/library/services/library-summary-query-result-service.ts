@@ -1,3 +1,8 @@
+import {
+  getLibrarySummaryQueryErrors,
+  getLibrarySummaryQueryUpdatedAt,
+} from "./library-summary-query-metadata-service";
+
 type LibrarySummaryQueryRows = readonly unknown[] | undefined;
 
 export type LibrarySummaryCounts = {
@@ -14,36 +19,6 @@ export type LibrarySummaryQueryResult = {
 };
 
 const getCount = (rows: LibrarySummaryQueryRows) => rows?.length ?? 0;
-
-export const getLibrarySummaryQueryErrors = ({
-  albumError,
-  artistError,
-  playlistError,
-  songError,
-}: {
-  albumError: unknown;
-  artistError: unknown;
-  playlistError: unknown;
-  songError: unknown;
-}) => [songError, playlistError, albumError, artistError].filter(Boolean);
-
-export const getLibrarySummaryQueryUpdatedAt = ({
-  albumUpdatedAt,
-  artistUpdatedAt,
-  playlistUpdatedAt,
-  songUpdatedAt,
-}: {
-  albumUpdatedAt: Date | null | undefined;
-  artistUpdatedAt: Date | null | undefined;
-  playlistUpdatedAt: Date | null | undefined;
-  songUpdatedAt: Date | null | undefined;
-}) =>
-  Math.max(
-    songUpdatedAt?.getTime() ?? 0,
-    playlistUpdatedAt?.getTime() ?? 0,
-    albumUpdatedAt?.getTime() ?? 0,
-    artistUpdatedAt?.getTime() ?? 0,
-  );
 
 export const buildLibrarySummaryQueryResult = ({
   albumError,
@@ -91,3 +66,8 @@ export const buildLibrarySummaryQueryResult = ({
     songUpdatedAt,
   }),
 });
+
+export {
+  getLibrarySummaryQueryErrors,
+  getLibrarySummaryQueryUpdatedAt,
+} from "./library-summary-query-metadata-service";

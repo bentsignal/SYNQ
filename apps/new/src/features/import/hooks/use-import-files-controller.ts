@@ -4,9 +4,7 @@ import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feed
 import {
   createImportFilesControllerActions,
 } from "../services/import-files-controller-action-service";
-import {
-  getImportFilesViewState,
-} from "../services/import-files-screen-state-service";
+import { getImportFilesViewState } from "../services/import-files-view-state-service";
 import { useImportSessionSelector } from "./use-import-session";
 
 export function useImportFilesController() {

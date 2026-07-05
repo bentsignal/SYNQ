@@ -345,9 +345,13 @@ import {
 } from "../../../apps/new/src/features/import/services/import-result-screen-state-service";
 import {
   getImportFilesActionState,
+} from "../../../apps/new/src/features/import/services/import-files-action-state-service";
+import {
   getImportFilesActionLinks,
+} from "../../../apps/new/src/features/import/services/import-files-navigation-state-service";
+import {
   getImportFilesViewState,
-} from "../../../apps/new/src/features/import/services/import-files-screen-state-service";
+} from "../../../apps/new/src/features/import/services/import-files-view-state-service";
 import {
   getImportHomeRouteSelectCommand,
   getImportHomeState,

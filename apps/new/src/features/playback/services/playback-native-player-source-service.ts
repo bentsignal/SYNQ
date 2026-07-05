@@ -1,5 +1,6 @@
 import type { AudioPlayer } from "expo-audio";
 import type { PlaybackQueueItem } from "../types/playback-state";
+import { setPlaybackNativePlayerStatusListener } from "./playback-native-player-listener-command-service";
 import {
   pausePlaybackNativeActivePlayer,
   resumePlaybackNativeActivePlayer,
@@ -95,14 +96,12 @@ export const createPlaybackNativePlayerSources = ({
     seekLibraryTo: (position: number) =>
       seekPlaybackNativeLibraryPlayer({ libraryPlayer, position }),
     setStatusListener: (listener: TrackPlayerStatusListener | null) => {
-      statusListeners.setListener(listener);
-
-      if (!listener) {
-        return;
-      }
-
-      statusListeners.attach(libraryPlayer, "library");
-      statusListeners.attach(adPlayer, "ad");
+      setPlaybackNativePlayerStatusListener({
+        adPlayer,
+        libraryPlayer,
+        listener,
+        statusListeners,
+      });
     },
     stop: () => {
       removeAdPlayer();

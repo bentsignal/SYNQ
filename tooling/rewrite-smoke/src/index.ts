@@ -1113,6 +1113,7 @@ import {
 import {
   getLibrarySongDetailViewState,
 } from "../../../apps/new/src/features/library/services/library-song-detail-view-state-service";
+import { getLibrarySongRelationshipSections } from "../../../apps/new/src/features/library/services/library-song-relationship-section-service";
 import { getLibrarySongDeleteConfirmationCopy } from "../../../apps/new/src/features/library/services/library-song-delete-confirmation-service";
 import { getLibraryInvalidSongState } from "../../../apps/new/src/features/library/services/library-song-invalid-state-service";
 import {
@@ -10143,6 +10144,22 @@ async function assertLibrarySongDetailSmoke() {
       },
     },
   });
+  assert.deepEqual(
+    getLibrarySongRelationshipSections(detail).albums.items.map((album) => ({
+      detail: album.detail,
+      href: album.href,
+    })),
+    [
+      {
+        detail: "Album / track 2",
+        href: "/(tabs)/library/album/2",
+      },
+      {
+        detail: "2026 / track 1",
+        href: "/(tabs)/library/album/1",
+      },
+    ],
+  );
   assert.equal(
     getLibrarySongDetailHref({ songId: 42 }),
     "/(tabs)/library/song/42",

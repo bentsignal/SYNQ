@@ -1,10 +1,9 @@
-import { Text, TextInput } from "react-native";
-import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { CollectionFormActionState } from "../services/collection-form-action-state-service";
 import type {
   CollectionFormCopy,
   CollectionFormFieldState,
 } from "./collection-form-types";
+import { CollectionFormTextField } from "./CollectionFormTextField";
 
 type CollectionFormFieldsProps = {
   actionState: CollectionFormActionState;
@@ -29,72 +28,42 @@ export function CollectionFormFields({
   onChangeYear,
   year,
 }: CollectionFormFieldsProps) {
-  const theme = useCustomizationTheme();
-
   return (
     <>
-      <Text
-        className="text-xs font-extrabold uppercase"
-        style={{ color: theme.secondaryText }}
-      >
-        Name
-      </Text>
-      <TextInput
+      <CollectionFormTextField
         autoCapitalize="words"
         autoCorrect={false}
-        className="min-h-[50px] rounded-lg border px-3.5 text-base font-bold"
         editable={actionState.canEdit}
+        label="Name"
         onChangeText={onChangeName}
         placeholder={copy.namePlaceholder}
-        placeholderTextColor={theme.mutedText}
         returnKeyType={fieldState.nameReturnKeyType}
-        style={{ borderColor: theme.border, color: theme.primaryText }}
         value={name}
       />
 
       {fieldState.showsYear ? (
-        <>
-          <Text
-            className="text-xs font-extrabold uppercase"
-            style={{ color: theme.secondaryText }}
-          >
-            Year
-          </Text>
-          <TextInput
-            className="min-h-[50px] rounded-lg border px-3.5 text-base font-bold"
-            editable={actionState.canEdit}
-            inputMode="numeric"
-            keyboardType="number-pad"
-            onChangeText={onChangeYear}
-            placeholder={fieldState.yearPlaceholder}
-            placeholderTextColor={theme.mutedText}
-            returnKeyType={fieldState.yearReturnKeyType}
-            style={{ borderColor: theme.border, color: theme.primaryText }}
-            value={year}
-          />
-        </>
+        <CollectionFormTextField
+          editable={actionState.canEdit}
+          inputMode="numeric"
+          keyboardType="number-pad"
+          label="Year"
+          onChangeText={onChangeYear}
+          placeholder={fieldState.yearPlaceholder}
+          returnKeyType={fieldState.yearReturnKeyType}
+          value={year}
+        />
       ) : null}
 
       {fieldState.showsArtistNames ? (
-        <>
-          <Text
-            className="text-xs font-extrabold uppercase"
-            style={{ color: theme.secondaryText }}
-          >
-            Artists
-          </Text>
-          <TextInput
-            autoCapitalize="words"
-            className="min-h-[50px] rounded-lg border px-3.5 text-base font-bold"
-            editable={actionState.canEdit}
-            onChangeText={onChangeArtistNames}
-            placeholder={fieldState.artistNamesPlaceholder}
-            placeholderTextColor={theme.mutedText}
-            returnKeyType={fieldState.artistNamesReturnKeyType}
-            style={{ borderColor: theme.border, color: theme.primaryText }}
-            value={artistNames ?? ""}
-          />
-        </>
+        <CollectionFormTextField
+          autoCapitalize="words"
+          editable={actionState.canEdit}
+          label="Artists"
+          onChangeText={onChangeArtistNames}
+          placeholder={fieldState.artistNamesPlaceholder}
+          returnKeyType={fieldState.artistNamesReturnKeyType}
+          value={artistNames ?? ""}
+        />
       ) : null}
     </>
   );

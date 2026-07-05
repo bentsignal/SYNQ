@@ -4,9 +4,11 @@ import {
   buildAlbumSongRowsQuery,
   buildArtistRowsQuery,
   buildArtistSongRowsQuery,
+} from "../repository/collection-detail-query-repository";
+import {
   buildPlaylistRowsQuery,
   buildPlaylistSongRowsQuery,
-} from "../repository/collection-detail-query-repository";
+} from "../repository/playlist-detail-query-repository";
 
 export function usePlaylistCollectionDetailRowsLiveQuery(id: number) {
   const playlist = useLiveQuery(buildPlaylistRowsQuery(id));

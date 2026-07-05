@@ -553,6 +553,9 @@ import {
   runImportFilesRemoveAction,
 } from "../../../apps/new/src/features/import/services/import-files-action-flow-service";
 import {
+  createImportFilesControllerActions,
+} from "../../../apps/new/src/features/import/services/import-files-controller-action-service";
+import {
   runImportWifiRemoveSongAction,
   runImportWifiReviewSaveAction,
 } from "../../../apps/new/src/features/import/services/import-wifi-action-flow-service";
@@ -4292,6 +4295,17 @@ async function assertImportSessionSmoke() {
     sendHaptic: sendImportFilesActionHaptic,
     songId: second.id,
   });
+  const importFilesActions = createImportFilesControllerActions({
+    navigate: navigateImportFilesAction,
+    removeImportSongs: async (songIds) => {
+      importFilesActionEvents.push(["controller-remove", songIds]);
+      return true;
+    },
+    sendHaptic: sendImportFilesActionHaptic,
+    startFileImport: async () => true,
+  });
+  await importFilesActions.chooseFiles();
+  await importFilesActions.removeSong(first.id);
   await runImportSaveRemoveSongAction({
     canRemoveSongs: false,
     removeImportSongs: async (songIds) => {
@@ -4313,7 +4327,7 @@ async function assertImportSessionSmoke() {
   const saveControllerActions = createImportSaveControllerActions({
     canRemoveSongs: true,
     removeImportSongs: async (songIds) => {
-      importFilesActionEvents.push(["controller-remove", songIds]);
+      importFilesActionEvents.push(["save-controller-remove", songIds]);
       return true;
     },
     sendHaptic: sendImportFilesActionHaptic,
@@ -4332,11 +4346,17 @@ async function assertImportSessionSmoke() {
     ["haptic", "medium"],
     ["remove", [second.id]],
     ["haptic", "error"],
+    ["haptic", "light"],
+    ["haptic", "success"],
+    ["navigate", "/(tabs)/import/save"],
+    ["haptic", "medium"],
+    ["controller-remove", [first.id]],
+    ["haptic", "success"],
     ["haptic", "medium"],
     ["guarded-remove", [second.id]],
     ["haptic", "success"],
     ["haptic", "medium"],
-    ["controller-remove", [first.id]],
+    ["save-controller-remove", [first.id]],
     ["haptic", "success"],
   ]);
   assert.equal(

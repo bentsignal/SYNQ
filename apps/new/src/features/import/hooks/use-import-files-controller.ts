@@ -1,10 +1,9 @@
-import { useCallback } from "react";
+import { useMemo } from "react";
 import { pushNativeRoute } from "@/src/features/app-shell/services/native-route-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import {
-  runImportFilesChooseAction,
-  runImportFilesRemoveAction,
-} from "../services/import-files-action-flow-service";
+  createImportFilesControllerActions,
+} from "../services/import-files-controller-action-service";
 import {
   getImportFilesViewState,
 } from "../services/import-files-screen-state-service";
@@ -21,23 +20,15 @@ export function useImportFilesController() {
   const { sendHaptic } = useHapticFeedback();
   const viewState = getImportFilesViewState(state);
 
-  const chooseFiles = useCallback(async () => {
-    await runImportFilesChooseAction({
-      navigate: pushNativeRoute,
-      sendHaptic,
-      startFileImport,
-    });
-  }, [sendHaptic, startFileImport]);
-
-  const removeSong = useCallback(
-    async (songId: number) => {
-      await runImportFilesRemoveAction({
+  const { chooseFiles, removeSong } = useMemo(
+    () =>
+      createImportFilesControllerActions({
+        navigate: pushNativeRoute,
         removeImportSongs,
         sendHaptic,
-        songId,
-      });
-    },
-    [removeImportSongs, sendHaptic],
+        startFileImport,
+      }),
+    [removeImportSongs, sendHaptic, startFileImport],
   );
 
   return {

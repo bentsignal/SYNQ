@@ -59,6 +59,9 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-queue-command-service";
 import { runPlaybackTrackAdvancementCommand } from "../../../apps/new/src/features/playback/services/playback-track-advancement-command-flow-service";
 import {
+  createPlaybackTrackAdvancementCommand,
+} from "../../../apps/new/src/features/playback/services/playback-track-advancement-command-service";
+import {
   getPlaybackQueueRowPresentation,
   getPlaybackQueueRowState,
 } from "../../../apps/new/src/features/playback/services/playback-queue-row-service";
@@ -2062,6 +2065,28 @@ async function assertPlaybackSessionSmoke() {
   );
   assert.deepEqual(advancementEvents, [
     ["ad"],
+    ["dispatch", { targetIndex: 1, type: "native-finished" }],
+    ["native"],
+    ["play", second.id],
+  ]);
+  const assembledAdvancementEvents: unknown[] = [];
+  const finishTrack = createPlaybackTrackAdvancementCommand({
+    adapter: {
+      play: async (track) => {
+        assembledAdvancementEvents.push(["play", track.id]);
+      },
+    },
+    beginAdBreak: () => assembledAdvancementEvents.push(["ad"]),
+    canRunPlaybackCommand: () => true,
+    dispatch: (action) => assembledAdvancementEvents.push(["dispatch", action]),
+    runNativeCommand: (command) => {
+      assembledAdvancementEvents.push(["native"]);
+      void command();
+    },
+    stateRef: { current: state },
+  });
+  finishTrack();
+  assert.deepEqual(assembledAdvancementEvents, [
     ["dispatch", { targetIndex: 1, type: "native-finished" }],
     ["native"],
     ["play", second.id],

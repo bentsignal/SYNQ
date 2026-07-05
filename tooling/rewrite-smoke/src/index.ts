@@ -345,8 +345,10 @@ import {
 } from "../../../apps/new/src/features/import/services/import-result-state-service";
 import {
   getImportFailureViewState,
+} from "../../../apps/new/src/features/import/services/import-failure-view-state-service";
+import {
   getImportSuccessViewState,
-} from "../../../apps/new/src/features/import/services/import-result-view-state-service";
+} from "../../../apps/new/src/features/import/services/import-success-view-state-service";
 import {
   getImportFilesActionState,
 } from "../../../apps/new/src/features/import/services/import-files-action-state-service";

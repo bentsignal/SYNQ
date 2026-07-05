@@ -12,6 +12,10 @@ import {
   updateCollectionSongOrder,
 } from "../repository/relationship-repository";
 import type {
+  CollectionCommandParams,
+  LibraryCollectionCommandDependencies,
+} from "./library-collection-command-dependencies-service";
+import type {
   LibraryCollectionDetailSong,
 } from "./library-collection-detail-service";
 import type { LibraryCollectionDetailKind } from "./library-collection-kind-service";
@@ -24,19 +28,15 @@ import {
   removeLibraryCollectionSongCommandWithDependencies,
 } from "./library-collection-command-executor-service";
 
-type CollectionCommandParams = {
-  collectionId: number;
-  kind: LibraryCollectionDetailKind;
-};
-
-const libraryCollectionCommandDependencies = {
-  addSongToCollection,
-  addSongsToCollection,
-  deleteCollection,
-  removeSongFromCollection,
-  shareLibrarySongs,
-  updateCollectionSongOrder,
-};
+const libraryCollectionCommandDependencies: LibraryCollectionCommandDependencies =
+  {
+    addSongToCollection,
+    addSongsToCollection,
+    deleteCollection,
+    removeSongFromCollection,
+    shareLibrarySongs,
+    updateCollectionSongOrder,
+  };
 
 export const exportLibraryCollectionCommand = (
   songs: ExportableLibrarySong[],

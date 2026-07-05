@@ -1,10 +1,8 @@
-import { getExportFileNameFromPath } from "./export-file-name-service";
+import { getShareExportFileName } from "./share-export-file-name-service";
 import { getShareExportDirectoryWithDependencies } from "./share-export-files-path-service";
+import type { ShareExportFile } from "./share-export-files-types-service";
 
-export type ShareExportFile = {
-  fileNameFallback: string;
-  sourceUri: string;
-};
+export type { ShareExportFile } from "./share-export-files-types-service";
 
 export type ShareExportFilesDependencies = {
   cacheDirectory: string | null;
@@ -28,14 +26,7 @@ type ShareExportFilesOptions = {
   noFilesMessage: string;
 };
 
-export const getShareExportFileName = (
-  file: ShareExportFile,
-  index: number,
-) =>
-  `${index + 1}-${getExportFileNameFromPath(
-    file.sourceUri,
-    `${index + 1}-${file.fileNameFallback}`,
-  )}`;
+export { getShareExportFileName } from "./share-export-file-name-service";
 
 export async function shareExportFilesWithDependencies({
   dependencies,

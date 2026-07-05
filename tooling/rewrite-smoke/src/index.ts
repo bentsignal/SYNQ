@@ -1627,10 +1627,12 @@ import {
   sanitizeExportFileName,
 } from "../../../apps/new/src/features/export/services/export-file-name-service";
 import {
-  getShareExportFileName,
   shareExportFilesWithDependencies,
   type ShareExportFilesDependencies,
 } from "../../../apps/new/src/features/export/services/share-export-files-executor-service";
+import {
+  getShareExportFileName,
+} from "../../../apps/new/src/features/export/services/share-export-file-name-service";
 import {
   getShareExportDirectoryWithDependencies,
 } from "../../../apps/new/src/features/export/services/share-export-files-path-service";

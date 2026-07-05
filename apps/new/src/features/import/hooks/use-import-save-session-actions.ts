@@ -1,12 +1,10 @@
-import { useCallback } from "react";
+import { useMemo } from "react";
 import { pushNativeRoute } from "@/src/features/app-shell/services/native-route-service";
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
 import { requestImportReviewIfEligible } from "../services/import-review-request-service";
 import {
-  runImportDiscardAction,
-  runImportFinishAction,
-  runImportSaveToggleAction,
-} from "../services/import-save-session-action-flow-service";
+  createImportSaveSessionActions,
+} from "../services/import-save-session-action-service";
 import type { ImportSessionState } from "../types/import-session";
 
 type UseImportSaveSessionActionsParams = {
@@ -26,35 +24,25 @@ export function useImportSaveSessionActions({
 }: UseImportSaveSessionActionsParams) {
   const { sendHaptic } = useHapticFeedback();
 
-  const toggleShouldSaveToLibrary = useCallback(() => {
-    runImportSaveToggleAction({
+  return useMemo(
+    () =>
+      createImportSaveSessionActions({
+        discardSession,
+        navigate: pushNativeRoute,
+        requestReviewIfEligible: () =>
+          requestImportReviewIfEligible({ premiumActive }),
+        saveImportSession,
+        sendHaptic,
+        setShouldSaveToLibrary,
+        state,
+      }),
+    [
+      discardSession,
+      premiumActive,
+      saveImportSession,
       sendHaptic,
       setShouldSaveToLibrary,
       state,
-    });
-  }, [sendHaptic, setShouldSaveToLibrary, state]);
-
-  const finishImport = useCallback(async () => {
-    await runImportFinishAction({
-      navigate: pushNativeRoute,
-      requestReviewIfEligible: () =>
-        requestImportReviewIfEligible({ premiumActive }),
-      saveImportSession,
-      sendHaptic,
-    });
-  }, [premiumActive, saveImportSession, sendHaptic]);
-
-  const discardImport = useCallback(async () => {
-    await runImportDiscardAction({
-      discardSession,
-      navigate: pushNativeRoute,
-      sendHaptic,
-    });
-  }, [discardSession, sendHaptic]);
-
-  return {
-    discardImport,
-    finishImport,
-    toggleShouldSaveToLibrary,
-  };
+    ],
+  );
 }

@@ -273,6 +273,9 @@ import {
   runImportSaveToggleAction,
 } from "../../../apps/new/src/features/import/services/import-save-session-action-flow-service";
 import {
+  createImportSaveSessionActions,
+} from "../../../apps/new/src/features/import/services/import-save-session-action-service";
+import {
   getImportReviewRequestAttemptState,
   normalizeImportReviewRequestState,
   requestImportReviewIfEligibleWithDependencies,
@@ -4057,6 +4060,39 @@ async function assertImportSessionSmoke() {
     ["haptic", "medium"],
     ["haptic", "error"],
     ["navigate", "/(tabs)/import/failure"],
+  ]);
+  const saveSessionActionsEvents: unknown[] = [];
+  const saveSessionActions = createImportSaveSessionActions({
+    discardSession: async () => true,
+    navigate: (href) => {
+      saveSessionActionsEvents.push(["navigate", href]);
+    },
+    requestReviewIfEligible: async () => {
+      saveSessionActionsEvents.push(["review"]);
+      return true;
+    },
+    saveImportSession: async () => true,
+    sendHaptic: (haptic) => {
+      saveSessionActionsEvents.push(["haptic", haptic]);
+    },
+    setShouldSaveToLibrary: (shouldSaveToLibrary) => {
+      saveSessionActionsEvents.push(["set-save", shouldSaveToLibrary]);
+    },
+    state: { shouldSaveToLibrary: true },
+  });
+  saveSessionActions.toggleShouldSaveToLibrary();
+  await saveSessionActions.finishImport();
+  await saveSessionActions.discardImport();
+  assert.deepEqual(saveSessionActionsEvents, [
+    ["haptic", "light"],
+    ["set-save", false],
+    ["haptic", "medium"],
+    ["review"],
+    ["haptic", "success"],
+    ["navigate", "/(tabs)/import/success"],
+    ["haptic", "medium"],
+    ["haptic", "success"],
+    ["navigate", "/(tabs)/import"],
   ]);
   assert.deepEqual(normalizeImportReviewRequestState(null), {
     importCount: 0,

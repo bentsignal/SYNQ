@@ -1,5 +1,5 @@
 import type { LibraryCollectionDetailSong } from "./library-collection-detail-service";
-import { getLibrarySongDetailHref } from "./library-song-interaction-service";
+import { getLibrarySongDetailHref } from "./library-song-navigation-service";
 
 export {
   getCollectionSongOrderUpdate,

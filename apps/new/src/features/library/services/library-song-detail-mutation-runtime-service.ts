@@ -4,7 +4,7 @@ import {
   getLibrarySongDetailMutationFinishCommand,
   getLibrarySongDetailMutationStartCommand,
 } from "./library-song-detail-mutation-command-state-service";
-import type { LibrarySongDetailHref } from "./library-song-interaction-service";
+import type { LibrarySongDetailHref } from "./library-song-navigation-service";
 import type {
   LibrarySongDetailMutationAction,
   LibrarySongDetailMutationKind,

@@ -5,7 +5,7 @@ import type {
 import {
   getLibrarySongDetailHref,
   getLibrarySongEditHref,
-} from "../../library/services/library-song-interaction-service";
+} from "../../library/services/library-song-navigation-service";
 import { getPlaybackPlayerActionState } from "./playback-player-action-state-service";
 import {
   getPlaybackAdBreakPanelState,

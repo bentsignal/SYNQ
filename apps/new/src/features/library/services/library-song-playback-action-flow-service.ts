@@ -5,7 +5,7 @@ import {
   getLibrarySongQueueCommand,
   type LibrarySongDetailPlaybackItem,
 } from "./library-song-playback-state-service";
-import type { LibrarySongDetailHref } from "./library-song-interaction-service";
+import type { LibrarySongDetailHref } from "./library-song-navigation-service";
 
 type LibrarySongPlaybackActionDependencies = {
   addToQueue: (song: LibrarySongDetailPlaybackItem) => void;

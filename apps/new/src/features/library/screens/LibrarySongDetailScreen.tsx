@@ -4,7 +4,7 @@ import { LibrarySongDetailView } from "../components/LibrarySongDetailView";
 import { useLibrarySongDetailController } from "../hooks/use-library-song-detail-controller";
 import { useLibrarySongDetailQuery } from "../hooks/use-library-song-detail-query";
 import { getLibrarySongDetailScreenViewState } from "../services/library-song-detail-state-service";
-import { getLibraryInvalidSongState } from "../services/library-song-interaction-service";
+import { getLibraryInvalidSongState } from "../services/library-song-invalid-state-service";
 
 export function LibrarySongDetailScreen() {
   const id = useNumericRouteParam();

@@ -1079,17 +1079,19 @@ import {
   getLibrarySongDetailUpdatedLabel,
 } from "../../../apps/new/src/features/library/services/library-song-detail-status-state-service";
 import {
-  getLibraryInvalidSongState,
+  getLibrarySongDetailViewState,
+} from "../../../apps/new/src/features/library/services/library-song-detail-view-state-service";
+import { getLibrarySongDeleteConfirmationCopy } from "../../../apps/new/src/features/library/services/library-song-delete-confirmation-service";
+import { getLibraryInvalidSongState } from "../../../apps/new/src/features/library/services/library-song-invalid-state-service";
+import {
   getLibrarySongAddToPlaylistHref,
-  getLibrarySongDeleteConfirmationCopy,
   getLibrarySongDeleteSuccessHref,
   getLibrarySongDetailBackHref,
   getLibrarySongDetailHref,
   getLibrarySongDetailPlayerHref,
-  getLibrarySongDetailViewState,
   getLibrarySongEditHref,
   getLibrarySongRelationshipHref,
-} from "../../../apps/new/src/features/library/services/library-song-interaction-service";
+} from "../../../apps/new/src/features/library/services/library-song-navigation-service";
 import {
   getSongAddToPlaylistControllerViewState,
 } from "../../../apps/new/src/features/library/services/song-add-to-playlist-service";

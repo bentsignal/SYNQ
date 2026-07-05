@@ -3,7 +3,7 @@ import type { LibrarySongDetail } from "./library-song-detail-service";
 import {
   getLibrarySongDetailPlayerHref,
   type LibrarySongDetailHref,
-} from "./library-song-interaction-service";
+} from "./library-song-navigation-service";
 
 type LibrarySongPlaybackCommand = {
   haptic: HapticFeedbackType;

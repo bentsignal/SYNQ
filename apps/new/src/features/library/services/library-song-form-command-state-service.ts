@@ -2,7 +2,7 @@ import type { HapticFeedbackType } from "../../settings/services/haptic-feedback
 import {
   getLibrarySongDetailHref,
   type LibrarySongDetailHref,
-} from "./library-song-interaction-service";
+} from "./library-song-navigation-service";
 import type {
   LibrarySongEditControllerAction,
 } from "./library-song-form-service";

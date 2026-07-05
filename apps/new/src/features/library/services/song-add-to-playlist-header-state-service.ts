@@ -1,7 +1,7 @@
 import {
   getLibrarySongDetailHref,
   type LibrarySongDetailHref,
-} from "./library-song-interaction-service";
+} from "./library-song-navigation-service";
 
 export const getSongAddToPlaylistBackLink = ({
   songId,

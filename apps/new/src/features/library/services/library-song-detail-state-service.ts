@@ -1,7 +1,7 @@
 import type { LibrarySongDetail } from "./library-song-detail-service";
 import type { LibrarySongDetailMutationState } from "./library-song-detail-mutation-service";
 import { getLibrarySongDetailStatusState } from "./library-song-detail-status-state-service";
-import { getLibrarySongDetailViewState } from "./library-song-interaction-service";
+import { getLibrarySongDetailViewState } from "./library-song-detail-view-state-service";
 
 export {
   getLibrarySongDetailStatusState,

@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
-import type { getLibraryInvalidSongState } from "../services/library-song-interaction-service";
+import type { getLibraryInvalidSongState } from "../services/library-song-invalid-state-service";
 
 type LibraryInvalidSongStateModel = ReturnType<
   typeof getLibraryInvalidSongState

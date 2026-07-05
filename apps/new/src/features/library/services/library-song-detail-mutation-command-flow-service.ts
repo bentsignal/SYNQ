@@ -1,7 +1,7 @@
 import type { LibrarySongDetail } from "./library-song-detail-service";
 import {
   getLibrarySongDeleteConfirmationCopy,
-} from "./library-song-interaction-service";
+} from "./library-song-delete-confirmation-service";
 import {
   getLibrarySongDeleteSuccessCommand,
   getLibrarySongDetailMutationBlockedCommand,

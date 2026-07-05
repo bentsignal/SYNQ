@@ -108,3 +108,24 @@ export const getLibrarySongEditStatusState = ({
     statusLabel: "Separate multiple artists or albums with commas.",
   };
 };
+
+export const getLibrarySongEditScreenViewState = ({
+  detail,
+  errors,
+  mutationError,
+}: {
+  detail: LibrarySongDetail;
+  errors: readonly unknown[];
+  mutationError: string | null;
+}) => ({
+  fieldState: getLibrarySongEditFieldState(),
+  statusState: getLibrarySongEditStatusState({
+    detail,
+    errors,
+    mutationError,
+  }),
+});
+
+export type LibrarySongEditScreenViewState = ReturnType<
+  typeof getLibrarySongEditScreenViewState
+>;

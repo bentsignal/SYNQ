@@ -1030,6 +1030,7 @@ import {
   getLibrarySongEditActionState,
   getLibrarySongEditControllerResultState,
   getLibrarySongEditFieldState,
+  getLibrarySongEditScreenViewState,
   getLibrarySongEditStatusState,
 } from "../../../apps/new/src/features/library/services/library-song-edit-screen-state-service";
 import {
@@ -9836,6 +9837,16 @@ async function assertLibrarySongDetailSmoke() {
       statusLabel: "Song save failed.",
     },
   );
+  const librarySongEditScreenViewState = getLibrarySongEditScreenViewState({
+    detail,
+    errors: [],
+    mutationError: null,
+  });
+  assert.equal(
+    librarySongEditScreenViewState.fieldState.title.placeholder,
+    "Song title",
+  );
+  assert.equal(librarySongEditScreenViewState.statusState.isError, false);
   assert.equal(
     getLibrarySongEditErrorMessage(new Error("Song edit smoke failure")),
     "Song edit smoke failure",

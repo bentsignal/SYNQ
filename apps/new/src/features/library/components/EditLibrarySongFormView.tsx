@@ -2,9 +2,8 @@ import { ScrollView } from "react-native";
 import { useCustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type { LibrarySongDetail } from "../hooks/use-library-song-detail-query";
 import {
-  getLibrarySongEditFieldState,
-  getLibrarySongEditStatusState,
   type LibrarySongEditActionState,
+  type LibrarySongEditScreenViewState,
 } from "../services/library-song-edit-screen-state-service";
 import type { LibrarySongEditFormState } from "../services/library-song-edit-form-state-service";
 import { EditLibrarySongActions } from "./EditLibrarySongActions";
@@ -18,14 +17,13 @@ type EditLibrarySongFormViewProps = {
   albumNames: string;
   artistNames: string;
   coverImage: LibrarySongEditFormState["coverImage"];
-  errorMessage: string | null;
-  errors: readonly unknown[];
   detail: LibrarySongDetail;
   onChangeAlbumNames: (albumNames: string) => void;
   onChangeArtistNames: (artistNames: string) => void;
   onChangeTitle: (title: string) => void;
   onPickCoverImage: () => void;
   onSave: () => void;
+  screenViewState: LibrarySongEditScreenViewState;
   title: string;
 };
 
@@ -35,22 +33,16 @@ export function EditLibrarySongFormView({
   artistNames,
   coverImage,
   detail,
-  errorMessage,
-  errors,
   onChangeAlbumNames,
   onChangeArtistNames,
   onChangeTitle,
   onPickCoverImage,
   onSave,
+  screenViewState,
   title,
 }: EditLibrarySongFormViewProps) {
   const theme = useCustomizationTheme();
-  const fieldState = getLibrarySongEditFieldState();
-  const statusState = getLibrarySongEditStatusState({
-    detail,
-    errors,
-    mutationError: errorMessage,
-  });
+  const { fieldState, statusState } = screenViewState;
 
   return (
     <ScrollView

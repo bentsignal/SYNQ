@@ -3,6 +3,7 @@ import { EditLibrarySongFormView } from "../components/EditLibrarySongFormView";
 import { LibraryInvalidSongState } from "../components/LibraryInvalidSongState";
 import { useEditLibrarySongController } from "../hooks/use-edit-library-song-controller";
 import { useLibrarySongDetailQuery } from "../hooks/use-library-song-detail-query";
+import { getLibrarySongEditScreenViewState } from "../services/library-song-edit-screen-state-service";
 import { getLibraryInvalidSongState } from "../services/library-song-interaction-service";
 
 export function EditLibrarySongScreen() {
@@ -33,6 +34,11 @@ function EditLibrarySongContent({ songId }: { songId: number }) {
     detail,
     songId,
   });
+  const screenViewState = getLibrarySongEditScreenViewState({
+    detail,
+    errors,
+    mutationError: errorMessage,
+  });
 
   return (
     <EditLibrarySongFormView
@@ -41,13 +47,12 @@ function EditLibrarySongContent({ songId }: { songId: number }) {
       artistNames={artistNames}
       coverImage={coverImage}
       detail={detail}
-      errorMessage={errorMessage}
-      errors={errors}
       onChangeAlbumNames={setAlbumNames}
       onChangeArtistNames={setArtistNames}
       onChangeTitle={setTitle}
       onPickCoverImage={pickCoverImage}
       onSave={save}
+      screenViewState={screenViewState}
       title={title}
     />
   );

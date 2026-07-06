@@ -5,6 +5,7 @@ type PlaybackPlayerControlButtonProps = {
   disabled?: boolean;
   label: string;
   onPress: () => void;
+  selected?: boolean;
   variant?: "primary" | "secondary";
 };
 
@@ -12,6 +13,7 @@ export function PlaybackPlayerControlButton({
   disabled = false,
   label,
   onPress,
+  selected = false,
   variant = "secondary",
 }: PlaybackPlayerControlButtonProps) {
   const theme = useCustomizationTheme();
@@ -26,14 +28,16 @@ export function PlaybackPlayerControlButton({
       disabled={disabled}
       onPress={onPress}
       style={
-        isPrimary
+        isPrimary || selected
           ? { backgroundColor: theme.accent }
           : { backgroundColor: theme.surface, borderColor: theme.border }
       }
     >
       <Text
         className="text-[13px] font-extrabold uppercase"
-        style={{ color: isPrimary ? theme.onAccent : theme.primaryText }}
+        style={{
+          color: isPrimary || selected ? theme.onAccent : theme.primaryText,
+        }}
       >
         {label}
       </Text>

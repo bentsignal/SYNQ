@@ -1,10 +1,12 @@
 import type { HapticFeedbackType } from "../../settings/services/haptic-feedback-service";
 import type { PlaybackState } from "../types/playback-state";
+import { runPlaybackPlayerSeekToPositionCommand } from "./playback-player-command-flow-service";
 import { runPlaybackPlayerSeekFromStateCommand } from "./playback-player-seek-command-service";
 
 export type PlaybackPlayerSeekControls = {
   fastForward: () => void;
   rewind: () => void;
+  seekToPosition: (position: number) => void;
 };
 
 export const createPlaybackPlayerSeekControls = ({
@@ -27,6 +29,14 @@ export const createPlaybackPlayerSeekControls = ({
   rewind: () => {
     runPlaybackPlayerSeekFromStateCommand({
       direction: "backward",
+      seekTo,
+      sendHaptic,
+      state: getState(),
+    });
+  },
+  seekToPosition: (position) => {
+    runPlaybackPlayerSeekToPositionCommand({
+      position,
       seekTo,
       sendHaptic,
       state: getState(),

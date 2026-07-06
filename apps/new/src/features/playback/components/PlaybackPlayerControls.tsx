@@ -61,10 +61,12 @@ export function PlaybackPlayerControls({
         <PlaybackPlayerControlButton
           label={actionState.shuffleLabel}
           onPress={onToggleShuffleMode}
+          selected={actionState.shuffleActive}
         />
         <PlaybackPlayerControlButton
           label={actionState.loopLabel}
           onPress={onToggleLoopMode}
+          selected={actionState.loopActive}
         />
       </View>
     </>

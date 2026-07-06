@@ -9,12 +9,14 @@ import { PlaybackNowPlayingEmptyState } from "./PlaybackNowPlayingEmptyState";
 
 type PlaybackNowPlayingPanelProps = {
   activeTrack: PlaybackQueueItem | null;
+  onSeekToPosition: (position: number) => void;
   progressPercent: number;
   state: PlaybackState;
 };
 
 export function PlaybackNowPlayingPanel({
   activeTrack,
+  onSeekToPosition,
   progressPercent,
   state,
 }: PlaybackNowPlayingPanelProps) {
@@ -34,6 +36,7 @@ export function PlaybackNowPlayingPanel({
       {activeTrack ? (
         <PlaybackNowPlayingActiveTrack
           activeTrack={activeTrack}
+          onSeekToPosition={onSeekToPosition}
           progressPercent={progressPercent}
           state={state}
           theme={theme}

@@ -9,6 +9,7 @@ import { PlaybackProgressBar } from "./PlaybackProgressBar";
 
 type PlaybackNowPlayingActiveTrackProps = {
   activeTrack: PlaybackQueueItem;
+  onSeekToPosition: (position: number) => void;
   progressPercent: number;
   state: PlaybackState;
   theme: CustomizationTheme;
@@ -16,6 +17,7 @@ type PlaybackNowPlayingActiveTrackProps = {
 
 export function PlaybackNowPlayingActiveTrack({
   activeTrack,
+  onSeekToPosition,
   progressPercent,
   state,
   theme,
@@ -42,7 +44,12 @@ export function PlaybackNowPlayingActiveTrack({
       >
         {formatDurationMs(state.position)} / {formatDurationMs(state.duration)}
       </Text>
-      <PlaybackProgressBar progressPercent={progressPercent} theme={theme} />
+      <PlaybackProgressBar
+        duration={state.duration}
+        onSeek={onSeekToPosition}
+        progressPercent={progressPercent}
+        theme={theme}
+      />
       <Text
         className="text-xs font-extrabold uppercase leading-[17px]"
         style={{ color: theme.secondaryText }}

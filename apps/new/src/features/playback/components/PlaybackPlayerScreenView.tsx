@@ -22,6 +22,7 @@ export function PlaybackPlayerScreenView({
   progressPercent,
   rewind,
   screenState,
+  seekToPosition,
   skipBack,
   skipForward,
   state,
@@ -48,6 +49,7 @@ export function PlaybackPlayerScreenView({
 
       <PlaybackNowPlayingPanel
         activeTrack={activeTrack}
+        onSeekToPosition={seekToPosition}
         progressPercent={progressPercent}
         state={state}
       />

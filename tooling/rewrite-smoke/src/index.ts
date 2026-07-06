@@ -4166,6 +4166,7 @@ function assertPlaybackPlayerStateSmoke() {
   assembledPlayerCommands.togglePlayPause();
   assembledPlayerCommands.toggleLoopMode();
   assembledPlayerCommands.toggleShuffleMode();
+  assembledPlayerCommands.seekToPosition(240_000);
   assert.deepEqual(assembledPlayerCommandEvents, [
     ["haptic", "light"],
     ["seek", 45_000],
@@ -4181,6 +4182,8 @@ function assertPlaybackPlayerStateSmoke() {
     ["toggle-loop"],
     ["haptic", "light"],
     ["toggle-shuffle"],
+    ["haptic", "light"],
+    ["seek", 120_000],
   ]);
   assert.deepEqual(
     getPlaybackPlayerActionState({
@@ -4196,8 +4199,10 @@ function assertPlaybackPlayerStateSmoke() {
       canRewind: false,
       canSkipNext: false,
       canSkipPrevious: false,
+      loopActive: false,
       loopLabel: "Loop Off",
       playPauseLabel: "Play",
+      shuffleActive: false,
       shuffleLabel: "Shuffle Off",
     },
   );
@@ -4221,8 +4226,10 @@ function assertPlaybackPlayerStateSmoke() {
       canRewind: true,
       canSkipNext: true,
       canSkipPrevious: true,
+      loopActive: true,
       loopLabel: "Loop On",
       playPauseLabel: "Pause",
+      shuffleActive: true,
       shuffleLabel: "Shuffle On",
     },
   );
@@ -4259,8 +4266,10 @@ function assertPlaybackPlayerStateSmoke() {
       canRewind: false,
       canSkipNext: false,
       canSkipPrevious: false,
+      loopActive: false,
       loopLabel: "Loop Off",
       playPauseLabel: "Play",
+      shuffleActive: false,
       shuffleLabel: "Shuffle Off",
     },
   );
@@ -4291,8 +4300,10 @@ function assertPlaybackPlayerStateSmoke() {
         canRewind: true,
         canSkipNext: true,
         canSkipPrevious: true,
+        loopActive: false,
         loopLabel: "Loop Off",
         playPauseLabel: "Pause",
+        shuffleActive: false,
         shuffleLabel: "Shuffle Off",
       },
       activeTrackDetailLink: {

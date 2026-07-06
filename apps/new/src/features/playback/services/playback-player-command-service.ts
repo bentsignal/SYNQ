@@ -16,6 +16,7 @@ type PlaybackPlayerSessionCommands = {
 export type PlaybackPlayerCommands = {
   fastForward: () => void;
   rewind: () => void;
+  seekToPosition: (position: number) => void;
   skipBack: () => void;
   skipForward: () => void;
   toggleLoopMode: () => void;

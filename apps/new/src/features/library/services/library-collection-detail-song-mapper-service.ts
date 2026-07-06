@@ -3,7 +3,6 @@ import type {
   LibraryCollectionDetailSongRow,
 } from "./library-collection-detail-song-service";
 import { formatCollectionDetailNames } from "./library-collection-detail-shared-service";
-import { getLibrarySmallImagePath } from "./library-image-path-service";
 
 type CollectionDetailSongAccumulator = {
   albumNames: Set<string>;
@@ -41,7 +40,7 @@ export const rowsToCollectionDetailSongs = (
       {
         albumNames: new Set<string>(),
         artistNames: new Set<string>(),
-        coverImage: row.songCoverImage ?? row.albumCoverImage,
+        coverImage: row.songCoverImage ?? row.albumCoverImage ?? null,
         duration: row.duration,
         id: row.songId,
         pathToFile: row.pathToFile,
@@ -57,7 +56,8 @@ export const rowsToCollectionDetailSongs = (
       song.artistNames.add(row.artistName);
     }
 
-    song.coverImage = song.coverImage ?? row.songCoverImage ?? row.albumCoverImage;
+    song.coverImage =
+      song.coverImage ?? row.songCoverImage ?? row.albumCoverImage ?? null;
 
     songMap.set(row.songId, song);
   });
@@ -65,7 +65,7 @@ export const rowsToCollectionDetailSongs = (
   return Array.from(songMap.values())
     .map<LibraryCollectionDetailSong>((song) => ({
       album: formatCollectionDetailNames(song.albumNames),
-      artworkUri: song.coverImage ? getLibrarySmallImagePath(song.coverImage) : null,
+      ...(song.coverImage ? { artworkUri: song.coverImage } : {}),
       artist: formatCollectionDetailNames(song.artistNames),
       duration: song.duration,
       id: song.id,

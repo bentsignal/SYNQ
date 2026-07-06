@@ -6,6 +6,7 @@ import type {
 import { setAudioModeAsync } from "expo-audio";
 import * as FileSystem from "expo-file-system/legacy";
 
+import { getImagePathFromHash } from "../../images/services/image-storage-service";
 import type { PlaybackQueueItem } from "../types/playback-state";
 
 export const playbackAdAudio =
@@ -29,12 +30,29 @@ const repairPlaybackFileUri = (uri: string | null | undefined) => {
   return `${FileSystem.documentDirectory}${libraryRelativePath}`;
 };
 
+const getPlaybackArtworkUri = (artworkUri: string | null | undefined) => {
+  if (!artworkUri) {
+    return undefined;
+  }
+
+  if (
+    artworkUri.startsWith("file://") ||
+    artworkUri.startsWith("http://") ||
+    artworkUri.startsWith("https://") ||
+    artworkUri.startsWith("/")
+  ) {
+    return artworkUri;
+  }
+
+  return getImagePathFromHash(artworkUri).pathToSmallImage;
+};
+
 export const getSynqNativePlaybackTrack = (
   item: PlaybackQueueItem,
 ): PlaybackTrack => ({
   albumTitle: item.album,
   artistName: item.artist,
-  artworkUri: item.artworkUri ?? undefined,
+  artworkUri: getPlaybackArtworkUri(item.artworkUri),
   durationMs: item.duration ?? undefined,
   id: String(item.id),
   title: item.title,

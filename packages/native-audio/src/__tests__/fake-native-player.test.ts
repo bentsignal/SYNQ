@@ -1,9 +1,31 @@
 import { ManagedRuntime } from "effect";
 
-import type { PlaybackEvent } from "../domain";
+import type { PlaybackEvent, PlaybackQueue } from "../domain";
 import { FakeNativePlayerLayer } from "../fake-native-player";
 import { addPlaybackEventListener } from "../native-player";
 import { makePlaybackCommandRuntime } from "../playback-runtime";
+import {
+  getNextPlaybackTrackId,
+  getPreviousPlaybackTrackId,
+} from "../queue";
+
+const queue: PlaybackQueue = {
+  activeTrackId: "track-1",
+  tracks: [
+    {
+      durationMs: 120_000,
+      id: "track-1",
+      title: "First track",
+      uri: "file://first.mp3",
+    },
+    {
+      durationMs: 90_000,
+      id: "track-2",
+      title: "Second track",
+      uri: "file://second.mp3",
+    },
+  ],
+};
 
 describe("FakeNativePlayerLayer", () => {
   it("runs serialized playback command flows", async () => {
@@ -14,14 +36,7 @@ describe("FakeNativePlayerLayer", () => {
       _tag: "LoadQueue",
       queue: {
         activeTrackId: "track-1",
-        tracks: [
-          {
-            durationMs: 120_000,
-            id: "track-1",
-            title: "First track",
-            uri: "file://first.mp3",
-          },
-        ],
+        tracks: [queue.tracks[0]!],
       },
     });
 
@@ -32,6 +47,54 @@ describe("FakeNativePlayerLayer", () => {
     expect(pausedState.activeTrack?.id).toBe("track-1");
     expect(pausedState.positionMs).toBe(30_000);
     expect(pausedState.status).toBe("paused");
+
+    await runtime.dispose();
+  });
+
+  it("clamps seeks to the active track duration", async () => {
+    const runtime = ManagedRuntime.make(FakeNativePlayerLayer());
+    const player = makePlaybackCommandRuntime(runtime);
+
+    await player.runCommand({
+      _tag: "LoadQueue",
+      queue: {
+        activeTrackId: "track-1",
+        tracks: [queue.tracks[0]!],
+      },
+    });
+    await player.runCommand({ _tag: "Play" });
+
+    const clampedEndState = await player.runCommand({
+      _tag: "SeekTo",
+      positionMs: 999_999,
+    });
+    expect(clampedEndState.positionMs).toBe(120_000);
+
+    const clampedStartState = await player.runCommand({
+      _tag: "SeekTo",
+      positionMs: -1,
+    });
+    expect(clampedStartState.positionMs).toBe(0);
+
+    await runtime.dispose();
+  });
+
+  it("goes idle instead of playing without a track when skipping past the end", async () => {
+    const runtime = ManagedRuntime.make(FakeNativePlayerLayer());
+    const player = makePlaybackCommandRuntime(runtime);
+
+    await player.runCommand({
+      _tag: "LoadQueue",
+      queue: {
+        ...queue,
+        activeTrackId: "track-2",
+      },
+    });
+    const nextState = await player.runCommand({ _tag: "SkipNext" });
+
+    expect(nextState.activeTrack).toBeNull();
+    expect(nextState.queue.activeTrackId).toBeNull();
+    expect(nextState.status).toBe("idle");
 
     await runtime.dispose();
   });
@@ -58,5 +121,24 @@ describe("FakeNativePlayerLayer", () => {
     await runtime.dispose();
     expect(events).toHaveLength(1);
     expect(events[0]?._tag).toBe("StateChanged");
+  });
+});
+
+describe("playback queue helpers", () => {
+  it("returns the next track after the active track", () => {
+    expect(getNextPlaybackTrackId(queue)).toBe("track-2");
+  });
+
+  it("returns null when the active track is the last track", () => {
+    expect(
+      getNextPlaybackTrackId({
+        ...queue,
+        activeTrackId: "track-2",
+      }),
+    ).toBeNull();
+  });
+
+  it("restarts the active track when previous is requested after the start", () => {
+    expect(getPreviousPlaybackTrackId(queue)).toBe("track-1");
   });
 });

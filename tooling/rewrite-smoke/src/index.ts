@@ -259,6 +259,7 @@ import {
 import {
   createPlaybackRemoteCommandHandler,
 } from "../../../apps/new/src/features/playback/services/playback-remote-command-handler-service";
+import { getPlaybackRemoteCommandFromNativeEvent } from "../../../apps/new/src/features/playback/services/playback-native-remote-command-service";
 import {
   getClearQueuePlaybackCommandPlan,
   getPausePlaybackCommandPlan,
@@ -3141,6 +3142,7 @@ function assertPlaybackNativeCommandPlanSmoke() {
         nativeRunnerEvents.push(["adapter", "seek", position]);
         return Promise.resolve();
       },
+      setRemoteCommandListener: () => {},
       setStatusListener: () => {},
       stop: () => {
         nativeRunnerEvents.push(["adapter", "stop"]);
@@ -3624,6 +3626,34 @@ function assertPlaybackNativeCommandPlanSmoke() {
     "resume",
     "plan:remote-failure",
   ]);
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: { _tag: "RemoteCommand", command: "togglePlayPause" },
+      state: { status: "playing" },
+    }),
+    { type: "pause" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: { _tag: "RemoteCommand", command: "togglePlayPause" },
+      state: { status: "paused" },
+    }),
+    { type: "play" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: { _tag: "RemoteCommand", command: "seek", positionMs: 42_000 },
+      state: null,
+    }),
+    { position: 42_000, type: "seek" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: { _tag: "RemoteCommand", command: "seek" },
+      state: { positionMs: 9_000 },
+    }),
+    { position: 9_000, type: "seek" },
+  );
   const assembledCommandEvents: unknown[] = [];
   const assembledCommands = createPlaybackCommands({
     handleRemoteCommand: (command) => {
@@ -10127,6 +10157,7 @@ async function assertLibrarySongDetailSmoke() {
     }),
     {
       album: "Alpha Album, Beta Album",
+      artworkUri: "/images/song-cover-small.jpg",
       artist: "Alpha Artist, Beta Artist",
       duration: 125_000,
       id: 42,

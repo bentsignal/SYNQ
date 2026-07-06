@@ -8,7 +8,7 @@ export const toLibrarySongDetailPlaybackItem = ({
   songId: number;
 }) => ({
   album: detail.albumLabel,
-  artworkUri: detail.coverImagePath,
+  ...(detail.coverImagePath ? { artworkUri: detail.coverImagePath } : {}),
   artist: detail.artistLabel,
   duration: detail.duration,
   id: songId,

@@ -30,11 +30,12 @@ const setActiveTrack = (
   trackId: string | null,
 ): PlaybackState => {
   const queue = setPlaybackQueueActiveTrack(state.queue, trackId);
+  const activeTrack = getPlaybackQueueActiveTrack(queue);
 
   return {
     ...state,
-    activeTrack: getPlaybackQueueActiveTrack(queue),
-    durationMs: getPlaybackQueueActiveTrack(queue)?.durationMs ?? 0,
+    activeTrack,
+    durationMs: activeTrack?.durationMs ?? 0,
     positionMs: 0,
     queue,
   };
@@ -94,21 +95,30 @@ const runFakeCommand = (
         positionMs: Math.max(0, Math.min(command.positionMs, state.durationMs)),
       };
     case "SkipNext":
-      return {
-        ...setActiveTrack(state, getNextPlaybackTrackId(state.queue)),
-        status: "playing",
-      };
+      return setActiveTrackAndStatus(state, getNextPlaybackTrackId(state.queue));
     case "SkipPrevious":
-      return {
-        ...setActiveTrack(state, getPreviousPlaybackTrackId(state.queue)),
-        status: "playing",
-      };
+      return setActiveTrackAndStatus(
+        state,
+        getPreviousPlaybackTrackId(state.queue),
+      );
     case "SetPlaybackRate":
       return {
         ...state,
         playbackRate: command.rate,
       };
   }
+};
+
+const setActiveTrackAndStatus = (
+  state: PlaybackState,
+  trackId: string | null,
+): PlaybackState => {
+  const nextState = setActiveTrack(state, trackId);
+
+  return {
+    ...nextState,
+    status: nextState.activeTrack ? "playing" : "idle",
+  };
 };
 
 export const makeFakeNativePlayer = ({
@@ -158,4 +168,3 @@ export const makeFakeNativePlayer = ({
 
 export const FakeNativePlayerLayer = (options?: FakeNativePlayerOptions) =>
   Layer.succeed(NativePlayer, makeFakeNativePlayer(options));
-

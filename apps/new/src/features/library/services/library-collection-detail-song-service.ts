@@ -10,12 +10,12 @@ export type LibraryCollectionDetailSong = {
 };
 
 export type LibraryCollectionDetailSongRow = {
-  albumCoverImage: string | null;
+  albumCoverImage?: string | null;
   albumName: string | null;
   artistName: string | null;
   duration: number | null;
   pathToFile: string | null;
-  songCoverImage: string | null;
+  songCoverImage?: string | null;
   songId: number;
   title: string | null;
   track: number | null;

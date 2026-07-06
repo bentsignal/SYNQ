@@ -18,6 +18,7 @@ import {
   getSynqNativePlaybackTrack,
   playbackAdAudio,
 } from "./playback-native-audio-service";
+import { getPlaybackRemoteCommandFromNativeEvent } from "./playback-native-remote-command-service";
 import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
 
 export type TrackPlayerAdapter = {
@@ -131,32 +132,12 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
       return;
     }
 
-    switch (event.command) {
-      case "play":
-        remoteCommandListener({ type: "play" });
-        return;
-      case "pause":
-      case "stop":
-        remoteCommandListener({ type: "pause" });
-        return;
-      case "togglePlayPause":
-        remoteCommandListener({
-          type: lastNativeState?.status === "playing" ? "pause" : "play",
-        });
-        return;
-      case "next":
-        remoteCommandListener({ type: "next" });
-        return;
-      case "previous":
-        remoteCommandListener({ type: "previous" });
-        return;
-      case "seek":
-        remoteCommandListener({
-          position: event.positionMs ?? lastNativeState?.positionMs ?? 0,
-          type: "seek",
-        });
-        return;
-    }
+    remoteCommandListener(
+      getPlaybackRemoteCommandFromNativeEvent({
+        event,
+        state: lastNativeState,
+      }),
+    );
   };
 
   const ensureEventSubscription = () => {

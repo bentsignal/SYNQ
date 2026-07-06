@@ -14,7 +14,7 @@ export const toLibrarySongPlaybackItem = (
   song: LibrarySongPreview,
 ): LibrarySongPreviewPlaybackItem => ({
   album: song.album,
-  artworkUri: song.artworkUri,
+  ...(song.artworkUri ? { artworkUri: song.artworkUri } : {}),
   artist: song.artist,
   duration: song.duration,
   id: song.id,

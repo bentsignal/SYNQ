@@ -2,6 +2,7 @@ import type { LibrarySongPreview } from "./library-song-preview-service";
 
 export type LibrarySongPreviewPlaybackItem = {
   album: string;
+  artworkUri?: string | null;
   artist: string;
   duration: number | null;
   id: number;
@@ -13,6 +14,7 @@ export const toLibrarySongPlaybackItem = (
   song: LibrarySongPreview,
 ): LibrarySongPreviewPlaybackItem => ({
   album: song.album,
+  artworkUri: song.artworkUri,
   artist: song.artist,
   duration: song.duration,
   id: song.id,

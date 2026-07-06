@@ -5,8 +5,10 @@ import { eq } from "drizzle-orm";
 export const buildLibrarySongPreviewRowsQuery = () =>
   db
     .select({
+      albumCoverImage: schema.albums.coverImage,
       albumName: schema.albums.name,
       artistName: schema.artists.name,
+      songCoverImage: schema.songs.coverImage,
       duration: schema.songs.duration,
       pathToFile: schema.songs.pathToFile,
       songId: schema.songs.id,

@@ -1,6 +1,7 @@
 import AVFoundation
 import ExpoModulesCore
 import MediaPlayer
+import UIKit
 
 public class SynqNativeAudioModule: Module {
   private var player: AVPlayer?
@@ -9,6 +10,14 @@ public class SynqNativeAudioModule: Module {
   private var activeTrackId: String?
   private var status = "idle"
   private var playbackRate: Float = 1
+  private var notificationsConfigured = false
+  private var remoteCommandsConfigured = false
+  private var playCommandTarget: Any?
+  private var pauseCommandTarget: Any?
+  private var togglePlayPauseCommandTarget: Any?
+  private var nextTrackCommandTarget: Any?
+  private var previousTrackCommandTarget: Any?
+  private var changePlaybackPositionCommandTarget: Any?
 
   public func definition() -> ModuleDefinition {
     Name("SynqNativeAudio")
@@ -109,6 +118,7 @@ public class SynqNativeAudioModule: Module {
 
     OnDestroy {
       self.removeTimeObserver()
+      self.removeRemoteCommandTargets()
       NotificationCenter.default.removeObserver(self)
       MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
     }
@@ -121,6 +131,11 @@ public class SynqNativeAudioModule: Module {
   }
 
   private func configureNotifications() {
+    if notificationsConfigured {
+      return
+    }
+
+    notificationsConfigured = true
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(handlePlayerItemDidEnd),
@@ -142,6 +157,11 @@ public class SynqNativeAudioModule: Module {
   }
 
   private func configureRemoteCommands() {
+    if remoteCommandsConfigured {
+      return
+    }
+
+    remoteCommandsConfigured = true
     let commandCenter = MPRemoteCommandCenter.shared()
 
     commandCenter.playCommand.isEnabled = true
@@ -151,33 +171,67 @@ public class SynqNativeAudioModule: Module {
     commandCenter.previousTrackCommand.isEnabled = true
     commandCenter.changePlaybackPositionCommand.isEnabled = true
 
-    commandCenter.playCommand.addTarget { [weak self] _ in
+    playCommandTarget = commandCenter.playCommand.addTarget { [weak self] _ in
       self?.sendRemoteCommand("play")
       return .success
     }
-    commandCenter.pauseCommand.addTarget { [weak self] _ in
+    pauseCommandTarget = commandCenter.pauseCommand.addTarget { [weak self] _ in
       self?.sendRemoteCommand("pause")
       return .success
     }
-    commandCenter.togglePlayPauseCommand.addTarget { [weak self] _ in
+    togglePlayPauseCommandTarget = commandCenter.togglePlayPauseCommand.addTarget { [weak self] _ in
       self?.sendRemoteCommand("togglePlayPause")
       return .success
     }
-    commandCenter.nextTrackCommand.addTarget { [weak self] _ in
+    nextTrackCommandTarget = commandCenter.nextTrackCommand.addTarget { [weak self] _ in
       self?.sendRemoteCommand("next")
       return .success
     }
-    commandCenter.previousTrackCommand.addTarget { [weak self] _ in
+    previousTrackCommandTarget = commandCenter.previousTrackCommand.addTarget { [weak self] _ in
       self?.sendRemoteCommand("previous")
       return .success
     }
-    commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
+    changePlaybackPositionCommandTarget = commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
       guard let positionEvent = event as? MPChangePlaybackPositionCommandEvent else {
         return .commandFailed
       }
       self?.sendRemoteCommand("seek", positionMs: positionEvent.positionTime * 1000)
       return .success
     }
+  }
+
+  private func removeRemoteCommandTargets() {
+    if !remoteCommandsConfigured {
+      return
+    }
+
+    let commandCenter = MPRemoteCommandCenter.shared()
+    if let playCommandTarget {
+      commandCenter.playCommand.removeTarget(playCommandTarget)
+    }
+    if let pauseCommandTarget {
+      commandCenter.pauseCommand.removeTarget(pauseCommandTarget)
+    }
+    if let togglePlayPauseCommandTarget {
+      commandCenter.togglePlayPauseCommand.removeTarget(togglePlayPauseCommandTarget)
+    }
+    if let nextTrackCommandTarget {
+      commandCenter.nextTrackCommand.removeTarget(nextTrackCommandTarget)
+    }
+    if let previousTrackCommandTarget {
+      commandCenter.previousTrackCommand.removeTarget(previousTrackCommandTarget)
+    }
+    if let changePlaybackPositionCommandTarget {
+      commandCenter.changePlaybackPositionCommand.removeTarget(changePlaybackPositionCommandTarget)
+    }
+
+    playCommandTarget = nil
+    pauseCommandTarget = nil
+    togglePlayPauseCommandTarget = nil
+    nextTrackCommandTarget = nil
+    previousTrackCommandTarget = nil
+    changePlaybackPositionCommandTarget = nil
+    remoteCommandsConfigured = false
   }
 
   private func loadActiveTrack(autoplay: Bool) throws {
@@ -354,7 +408,7 @@ public class SynqNativeAudioModule: Module {
       return
     }
 
-    MPNowPlayingInfoCenter.default().nowPlayingInfo = [
+    var nowPlayingInfo: [String: Any] = [
       MPMediaItemPropertyTitle: track["title"] as? String ?? "",
       MPMediaItemPropertyArtist: track["artistName"] as? String ?? "",
       MPMediaItemPropertyAlbumTitle: track["albumTitle"] as? String ?? "",
@@ -362,6 +416,24 @@ public class SynqNativeAudioModule: Module {
       MPNowPlayingInfoPropertyElapsedPlaybackTime: positionMs() / 1000,
       MPNowPlayingInfoPropertyPlaybackRate: status == "playing" ? playbackRate : 0
     ]
+
+    if let artwork = artworkFromTrack(track) {
+      nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+    }
+
+    MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
+  }
+
+  private func artworkFromTrack(_ track: [String: Any]) -> MPMediaItemArtwork? {
+    guard
+      let artworkUri = track["artworkUri"] as? String,
+      let url = urlFromTrackUri(artworkUri),
+      let image = UIImage(contentsOfFile: url.path)
+    else {
+      return nil
+    }
+
+    return MPMediaItemArtwork(boundsSize: image.size) { _ in image }
   }
 
   @objc private func handlePlayerItemDidEnd() {

@@ -1,6 +1,7 @@
 package app.synq.nativeaudio
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -176,6 +177,7 @@ class SynqNativeAudioModule : Module() {
           MediaMetadata.Builder()
             .setAlbumTitle(track.albumTitle)
             .setArtist(track.artistName)
+            .setArtworkUri(track.artworkUri?.let(Uri::parse))
             .setTitle(track.title)
             .build()
         )

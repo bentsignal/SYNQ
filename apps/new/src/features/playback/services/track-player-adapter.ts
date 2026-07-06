@@ -12,6 +12,7 @@ import type {
   PlaybackQueueItem,
   PlaybackState,
 } from "../types/playback-state";
+import type { PlaybackRemoteCommand } from "./playback-remote-command-service";
 import {
   configurePlaybackAudio,
   getSynqNativePlaybackTrack,
@@ -28,6 +29,9 @@ export type TrackPlayerAdapter = {
   resume: () => Promise<void>;
   resumeLibrary: () => Promise<void>;
   seekTo: (position: number) => Promise<void>;
+  setRemoteCommandListener: (
+    listener: ((command: PlaybackRemoteCommand) => void) | null,
+  ) => void;
   setStatusListener: (
     listener: ((status: TrackPlayerStatusSnapshot) => void) | null,
   ) => void;
@@ -43,6 +47,7 @@ export const createUnavailableTrackPlayerAdapter = (): TrackPlayerAdapter => ({
   resume: () => Promise.resolve(),
   resumeLibrary: () => Promise.resolve(),
   seekTo: () => Promise.resolve(),
+  setRemoteCommandListener: () => {},
   setStatusListener: () => {},
   stop: () => Promise.resolve(),
 });
@@ -95,21 +100,63 @@ const shouldEmitState = (event: PlaybackEvent): event is Extract<
   { _tag: "StateChanged" }
 > => event._tag === "StateChanged";
 
+const shouldHandleRemoteCommand = (event: PlaybackEvent): event is Extract<
+  PlaybackEvent,
+  { _tag: "RemoteCommand" }
+> => event._tag === "RemoteCommand";
+
 export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
   let activeSource: "ad" | "library" | null = null;
   let activeLibraryTrack: PlaybackQueueItem | null = null;
+  let lastNativeState: SynqPlaybackState | null = null;
+  let remoteCommandListener: ((command: PlaybackRemoteCommand) => void) | null =
+    null;
   let statusListener: ((status: TrackPlayerStatusSnapshot) => void) | null =
     null;
   let eventSubscription: { remove: () => void } | null = null;
   let statePoll: ReturnType<typeof setInterval> | null = null;
 
   const emitState = (state: SynqPlaybackState) => {
+    lastNativeState = state;
     statusListener?.(
       getSnapshotFromState({
         source: activeSource,
         state,
       }),
     );
+  };
+
+  const emitRemoteCommand = (event: Extract<PlaybackEvent, { _tag: "RemoteCommand" }>) => {
+    if (!remoteCommandListener) {
+      return;
+    }
+
+    switch (event.command) {
+      case "play":
+        remoteCommandListener({ type: "play" });
+        return;
+      case "pause":
+      case "stop":
+        remoteCommandListener({ type: "pause" });
+        return;
+      case "togglePlayPause":
+        remoteCommandListener({
+          type: lastNativeState?.status === "playing" ? "pause" : "play",
+        });
+        return;
+      case "next":
+        remoteCommandListener({ type: "next" });
+        return;
+      case "previous":
+        remoteCommandListener({ type: "previous" });
+        return;
+      case "seek":
+        remoteCommandListener({
+          position: event.positionMs ?? lastNativeState?.positionMs ?? 0,
+          type: "seek",
+        });
+        return;
+    }
   };
 
   const ensureEventSubscription = () => {
@@ -120,6 +167,11 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
     eventSubscription = playbackRuntime.addEventListener((event) => {
       if (shouldEmitState(event)) {
         emitState(event.state);
+        return;
+      }
+
+      if (shouldHandleRemoteCommand(event)) {
+        emitRemoteCommand(event);
       }
     });
   };
@@ -133,6 +185,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
 
   const syncState = async () => {
     const state = await playbackRuntime.getState();
+    lastNativeState = state;
     emitState(state);
 
     if (state.status !== "playing" && state.status !== "buffering") {
@@ -265,6 +318,12 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
       emitState(
         await playbackRuntime.runCommand({ _tag: "SeekTo", positionMs: position }),
       );
+    },
+    setRemoteCommandListener: (listener) => {
+      remoteCommandListener = listener;
+      if (listener) {
+        ensureEventSubscription();
+      }
     },
     setStatusListener: (listener) => {
       statusListener = listener;

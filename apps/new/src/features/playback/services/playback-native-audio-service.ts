@@ -34,6 +34,7 @@ export const getSynqNativePlaybackTrack = (
 ): PlaybackTrack => ({
   albumTitle: item.album,
   artistName: item.artist,
+  artworkUri: item.artworkUri ?? undefined,
   durationMs: item.duration ?? undefined,
   id: String(item.id),
   title: item.title,

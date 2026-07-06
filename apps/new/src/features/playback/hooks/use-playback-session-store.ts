@@ -1,4 +1,4 @@
-import { useMemo, useReducer } from "react";
+import { useEffect, useMemo, useReducer } from "react";
 import { usePremiumEntitlementSelector } from "@/src/features/premium/state/PremiumEntitlementProvider";
 import { initialPlaybackState } from "../services/playback-initial-state-service";
 import { getActiveTrack } from "../services/playback-queue-selection-service";
@@ -26,6 +26,7 @@ export function usePlaybackSessionStore(): PlaybackSessionValue {
     canRunPlaybackCommand,
     finishActiveTrack,
     runNativeCommandPlan,
+    setRemoteCommandListener,
   } = usePlaybackNativeLifecycle({
     activeTrack,
     dispatch,
@@ -42,6 +43,14 @@ export function usePlaybackSessionStore(): PlaybackSessionValue {
     runNativeCommandPlan,
     stateRef,
   });
+
+  useEffect(() => {
+    setRemoteCommandListener(commands.handleRemoteCommand);
+
+    return () => {
+      setRemoteCommandListener(null);
+    };
+  }, [commands.handleRemoteCommand, setRemoteCommandListener]);
 
   return useMemo<PlaybackSessionValue>(
     () => getPlaybackSessionValue({

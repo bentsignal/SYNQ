@@ -11,6 +11,7 @@ import { usePlaybackNativeAdapter } from "./use-playback-native-adapter";
 import { usePlaybackNativeCommandRunner } from "./use-playback-native-command-runner";
 import { usePlaybackNativeStatusListener } from "./use-playback-native-status-listener";
 import { usePlaybackTrackAdvancement } from "./use-playback-track-advancement";
+import type { TrackPlayerAdapter } from "../services/track-player-adapter";
 
 type UsePlaybackNativeLifecycleParams = {
   activeTrack: PlaybackQueueItem | null;
@@ -25,6 +26,7 @@ export type PlaybackNativeLifecycle = {
   canRunPlaybackCommand: () => boolean;
   finishActiveTrack: () => void;
   runNativeCommandPlan: (plan: PlaybackNativeCommandPlan) => void;
+  setRemoteCommandListener: TrackPlayerAdapter["setRemoteCommandListener"];
 };
 
 export function usePlaybackNativeLifecycle({
@@ -88,5 +90,6 @@ export function usePlaybackNativeLifecycle({
     canRunPlaybackCommand,
     finishActiveTrack,
     runNativeCommandPlan,
+    setRemoteCommandListener: adapter.setRemoteCommandListener,
   };
 }

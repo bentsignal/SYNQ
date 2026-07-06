@@ -7,6 +7,10 @@ public class SynqNativeAudioModule: Module {
   private var player: AVPlayer?
   private var timeObserver: Any?
   private var queue: [[String: Any]] = []
+  private var queueMode: [String: Bool] = [
+    "loop": false,
+    "shuffle": false
+  ]
   private var activeTrackId: String?
   private var status = "idle"
   private var playbackRate: Float = 1
@@ -42,6 +46,7 @@ public class SynqNativeAudioModule: Module {
 
     Function("loadQueue") { (queuePayload: [String: Any]) in
       self.queue = queuePayload["tracks"] as? [[String: Any]] ?? []
+      self.queueMode = self.queueModeFromPayload(queuePayload["mode"])
       self.activeTrackId = queuePayload["activeTrackId"] as? String
       if self.activeTrackId == nil {
         self.activeTrackId = self.queue.first?["id"] as? String
@@ -78,6 +83,7 @@ public class SynqNativeAudioModule: Module {
     Function("stop") {
       self.player?.pause()
       self.player?.seek(to: .zero)
+      self.activeTrackId = nil
       self.status = "idle"
       self.updateNowPlayingInfo()
       self.emitStateChanged()
@@ -95,6 +101,7 @@ public class SynqNativeAudioModule: Module {
     Function("skipNext") {
       self.activeTrackId = self.nextTrackId()
       try self.loadActiveTrack(autoplay: true)
+      self.updateNowPlayingInfo()
       self.emitStateChanged()
       return self.statePayload()
     }
@@ -102,6 +109,13 @@ public class SynqNativeAudioModule: Module {
     Function("skipPrevious") {
       self.activeTrackId = self.previousTrackId()
       try self.loadActiveTrack(autoplay: true)
+      self.emitStateChanged()
+      return self.statePayload()
+    }
+
+    Function("setQueueMode") { (modePayload: [String: Any]) in
+      self.queueMode = self.queueModeFromPayload(modePayload)
+      self.updateNowPlayingInfo()
       self.emitStateChanged()
       return self.statePayload()
     }
@@ -319,9 +333,26 @@ public class SynqNativeAudioModule: Module {
       return nil
     }
 
+    if queueMode["shuffle"] == true {
+      let activeIndex = activeTrackIndex()
+      let playableTracks = queue.enumerated().filter { index, _ in
+        activeIndex == nil || index != activeIndex
+      }.map { _, track in track }
+
+      if let randomTrack = playableTracks.randomElement() {
+        return randomTrack["id"] as? String
+      }
+
+      return queueMode["loop"] == true ? queue.first?["id"] as? String : nil
+    }
+
     let index = activeTrackIndex() ?? -1
     let nextIndex = index + 1
-    return nextIndex < queue.count ? queue[nextIndex]["id"] as? String : nil
+    if nextIndex < queue.count {
+      return queue[nextIndex]["id"] as? String
+    }
+
+    return queueMode["loop"] == true ? queue.first?["id"] as? String : nil
   }
 
   private func previousTrackId() -> String? {
@@ -376,9 +407,19 @@ public class SynqNativeAudioModule: Module {
       "positionMs": positionMs(),
       "queue": [
         "activeTrackId": activeTrackIdPayload,
+        "mode": queueMode,
         "tracks": queue
       ],
       "status": status
+    ]
+  }
+
+  private func queueModeFromPayload(_ payload: Any?) -> [String: Bool] {
+    let mode = payload as? [String: Any] ?? [:]
+
+    return [
+      "loop": mode["loop"] as? Bool ?? false,
+      "shuffle": mode["shuffle"] as? Bool ?? false
     ]
   }
 

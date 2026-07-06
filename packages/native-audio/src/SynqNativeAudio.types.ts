@@ -26,7 +26,13 @@ export type SynqNativeAudioPlaybackTrack = {
 
 export type SynqNativeAudioPlaybackQueue = {
   activeTrackId: string | null;
+  mode: SynqNativeAudioPlaybackQueueMode;
   tracks: ReadonlyArray<SynqNativeAudioPlaybackTrack>;
+};
+
+export type SynqNativeAudioPlaybackQueueMode = {
+  loop: boolean;
+  shuffle: boolean;
 };
 
 export type SynqNativeAudioPlaybackState = {

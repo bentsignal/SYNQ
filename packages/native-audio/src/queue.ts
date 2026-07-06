@@ -20,9 +20,28 @@ export const getNextPlaybackTrackId = (queue: PlaybackQueue): string | null => {
     return null;
   }
 
+  if (queue.mode.shuffle) {
+    const activeIndex = findPlaybackTrackIndex(queue, queue.activeTrackId);
+    const playableTracks = queue.tracks.filter(
+      (_, index) => index !== activeIndex,
+    );
+
+    if (playableTracks.length === 0) {
+      return queue.mode.loop ? (queue.tracks[0]?.id ?? null) : null;
+    }
+
+    return (
+      playableTracks[Math.floor(Math.random() * playableTracks.length)]?.id ??
+      null
+    );
+  }
+
   const activeIndex = findPlaybackTrackIndex(queue, queue.activeTrackId);
   const nextIndex = activeIndex < 0 ? 0 : activeIndex + 1;
-  return queue.tracks[nextIndex]?.id ?? null;
+  return (
+    queue.tracks[nextIndex]?.id ??
+    (queue.mode.loop ? (queue.tracks[0]?.id ?? null) : null)
+  );
 };
 
 export const getPreviousPlaybackTrackId = (
@@ -37,11 +56,19 @@ export const getPreviousPlaybackTrackId = (
   return queue.tracks[previousIndex]?.id ?? null;
 };
 
+export const setPlaybackQueueMode = (
+  queue: PlaybackQueue,
+  mode: PlaybackQueue["mode"],
+): PlaybackQueue => ({
+  ...queue,
+  mode,
+});
+
 export const setPlaybackQueueActiveTrack = (
   queue: PlaybackQueue,
   activeTrackId: string | null,
 ): PlaybackQueue => ({
   activeTrackId,
+  mode: queue.mode,
   tracks: queue.tracks,
 });
-

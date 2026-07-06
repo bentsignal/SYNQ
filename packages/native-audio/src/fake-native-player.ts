@@ -12,6 +12,7 @@ import {
   getNextPlaybackTrackId,
   getPlaybackQueueActiveTrack,
   getPreviousPlaybackTrackId,
+  setPlaybackQueueMode,
   setPlaybackQueueActiveTrack,
 } from "./queue";
 
@@ -101,6 +102,11 @@ const runFakeCommand = (
         state,
         getPreviousPlaybackTrackId(state.queue),
       );
+    case "SetQueueMode":
+      return {
+        ...state,
+        queue: setPlaybackQueueMode(state.queue, command.mode),
+      };
     case "SetPlaybackRate":
       return {
         ...state,

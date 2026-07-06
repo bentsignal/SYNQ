@@ -79,6 +79,8 @@ const runNativeCommand = (command: PlaybackCommand) =>
           return toPlaybackState(
             await SynqNativeAudioModule.seekTo(command.positionMs),
           );
+        case "SetQueueMode":
+          return toPlaybackState(await SynqNativeAudioModule.setQueueMode(command.mode));
         case "SkipNext":
           return toPlaybackState(await SynqNativeAudioModule.skipNext());
         case "SkipPrevious":

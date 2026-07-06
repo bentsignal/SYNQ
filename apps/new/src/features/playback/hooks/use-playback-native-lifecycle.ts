@@ -1,4 +1,4 @@
-import type { RefObject } from "react";
+import { useEffect, type RefObject } from "react";
 import type { PlaybackNativeCommandPlan } from "../services/playback-native-command-plan-service";
 import type { PlaybackAction } from "../services/playback-session-action-service";
 import type {
@@ -84,6 +84,10 @@ export function usePlaybackNativeLifecycle({
     premiumActiveRef,
     runNativeCommand,
   });
+
+  useEffect(() => {
+    void adapter.setPlaybackMode(state.mode);
+  }, [adapter, state.mode]);
 
   return {
     beginAdBreak,

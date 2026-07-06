@@ -14,6 +14,7 @@ declare class SynqNativeAudioModule extends NativeModule<SynqNativeAudioModuleEv
   pause(): Promise<SynqNativeAudioPlaybackState>;
   play(trackId?: string): Promise<SynqNativeAudioPlaybackState>;
   seekTo(positionMs: number): Promise<SynqNativeAudioPlaybackState>;
+  setQueueMode(mode: SynqNativeAudioPlaybackQueue["mode"]): Promise<SynqNativeAudioPlaybackState>;
   setPlaybackRate(rate: number): Promise<SynqNativeAudioPlaybackState>;
   skipNext(): Promise<SynqNativeAudioPlaybackState>;
   skipPrevious(): Promise<SynqNativeAudioPlaybackState>;

@@ -30,6 +30,7 @@ export type TrackPlayerAdapter = {
   resume: () => Promise<void>;
   resumeLibrary: () => Promise<void>;
   seekTo: (position: number) => Promise<void>;
+  setPlaybackMode: (mode: PlaybackState["mode"]) => Promise<void>;
   setRemoteCommandListener: (
     listener: ((command: PlaybackRemoteCommand) => void) | null,
   ) => void;
@@ -48,6 +49,7 @@ export const createUnavailableTrackPlayerAdapter = (): TrackPlayerAdapter => ({
   resume: () => Promise.resolve(),
   resumeLibrary: () => Promise.resolve(),
   seekTo: () => Promise.resolve(),
+  setPlaybackMode: () => Promise.resolve(),
   setRemoteCommandListener: () => {},
   setStatusListener: () => {},
   stop: () => Promise.resolve(),
@@ -110,6 +112,10 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
   let activeSource: "ad" | "library" | null = null;
   let activeLibraryTrack: PlaybackQueueItem | null = null;
   let lastNativeState: SynqPlaybackState | null = null;
+  let currentPlaybackMode: PlaybackState["mode"] = {
+    loop: false,
+    shuffle: false,
+  };
   let remoteCommandListener: ((command: PlaybackRemoteCommand) => void) | null =
     null;
   let statusListener: ((status: TrackPlayerStatusSnapshot) => void) | null =
@@ -212,6 +218,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
       _tag: "LoadQueue",
       queue: {
         activeTrackId: track.id,
+        mode: currentPlaybackMode,
         tracks: [track],
       },
     });
@@ -229,6 +236,10 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
       _tag: "LoadQueue",
       queue: {
         activeTrackId: track.id,
+        mode: {
+          loop: false,
+          shuffle: false,
+        },
         tracks: [track],
       },
     });
@@ -276,6 +287,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
         _tag: "LoadQueue",
         queue: {
           activeTrackId: track.id,
+          mode: currentPlaybackMode,
           tracks: [track],
         },
       });
@@ -298,6 +310,15 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
     seekTo: async (position) => {
       emitState(
         await playbackRuntime.runCommand({ _tag: "SeekTo", positionMs: position }),
+      );
+    },
+    setPlaybackMode: async (mode) => {
+      currentPlaybackMode = mode;
+      emitState(
+        await playbackRuntime.runCommand({
+          _tag: "SetQueueMode",
+          mode,
+        }),
       );
     },
     setRemoteCommandListener: (listener) => {

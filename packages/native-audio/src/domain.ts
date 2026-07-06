@@ -12,7 +12,13 @@ export type PlaybackTrack = {
 
 export type PlaybackQueue = {
   activeTrackId: string | null;
+  mode: PlaybackQueueMode;
   tracks: ReadonlyArray<PlaybackTrack>;
+};
+
+export type PlaybackQueueMode = {
+  loop: boolean;
+  shuffle: boolean;
 };
 
 export type PlaybackStatus =
@@ -43,6 +49,7 @@ export type PlaybackCommand =
   | { readonly _tag: "SeekTo"; readonly positionMs: number }
   | { readonly _tag: "SkipNext" }
   | { readonly _tag: "SkipPrevious" }
+  | { readonly _tag: "SetQueueMode"; readonly mode: PlaybackQueueMode }
   | { readonly _tag: "SetPlaybackRate"; readonly rate: number };
 
 export type PlaybackRemoteCommand =
@@ -71,6 +78,10 @@ export type PlaybackSessionOptions = {
 
 export const initialPlaybackQueue: PlaybackQueue = {
   activeTrackId: null,
+  mode: {
+    loop: false,
+    shuffle: false,
+  },
   tracks: [],
 };
 
@@ -110,4 +121,3 @@ export type PlaybackError =
   | PlaybackInvalidCommandError
   | PlaybackNativeError
   | PlaybackUnsupportedError;
-

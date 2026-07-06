@@ -241,6 +241,7 @@ import {
 import {
   createPlaybackNativeCommandRunner,
 } from "../../../apps/new/src/features/playback/services/playback-native-command-runner-service";
+import type { TrackPlayerAdapter } from "../../../apps/new/src/features/playback/services/track-player-adapter";
 import {
   getPlaybackNativePreviousCommandPlan,
   getPlaybackNativeReplacementCommandPlan,
@@ -3110,48 +3111,53 @@ function assertPlaybackNativeCommandPlanSmoke() {
     "Playback command failed.",
   );
   const nativeRunnerEvents: unknown[] = [];
-  const nativeRunner = createPlaybackNativeCommandRunner({
-    adapter: {
-      destroy: () => Promise.resolve(),
-      pause: () => {
-        nativeRunnerEvents.push(["adapter", "pause"]);
-        return Promise.resolve();
-      },
-      play: (song) => {
-        nativeRunnerEvents.push(["adapter", "play", song.id]);
-        return Promise.resolve();
-      },
-      playAd: () => {
-        nativeRunnerEvents.push(["adapter", "play-ad"]);
-        return Promise.resolve();
-      },
-      restore: (restoredState) => {
-        nativeRunnerEvents.push([
-          "adapter",
-          "restore",
-          restoredState.activeTrackId,
-        ]);
-        return Promise.resolve();
-      },
-      resume: () => {
-        nativeRunnerEvents.push(["adapter", "resume"]);
-        return Promise.resolve();
-      },
-      resumeLibrary: () => {
-        nativeRunnerEvents.push(["adapter", "resume-library"]);
-        return Promise.resolve();
-      },
-      seekTo: (position) => {
-        nativeRunnerEvents.push(["adapter", "seek", position]);
-        return Promise.resolve();
-      },
-      setRemoteCommandListener: () => {},
-      setStatusListener: () => {},
-      stop: () => {
-        nativeRunnerEvents.push(["adapter", "stop"]);
-        return Promise.resolve();
-      },
+  const nativeRunnerAdapter: TrackPlayerAdapter = {
+    destroy: () => Promise.resolve(),
+    pause: () => {
+      nativeRunnerEvents.push(["adapter", "pause"]);
+      return Promise.resolve();
     },
+    play: (song) => {
+      nativeRunnerEvents.push(["adapter", "play", song.id]);
+      return Promise.resolve();
+    },
+    playAd: () => {
+      nativeRunnerEvents.push(["adapter", "play-ad"]);
+      return Promise.resolve();
+    },
+    restore: (restoredState) => {
+      nativeRunnerEvents.push([
+        "adapter",
+        "restore",
+        restoredState.activeTrackId,
+      ]);
+      return Promise.resolve();
+    },
+    resume: () => {
+      nativeRunnerEvents.push(["adapter", "resume"]);
+      return Promise.resolve();
+    },
+    resumeLibrary: () => {
+      nativeRunnerEvents.push(["adapter", "resume-library"]);
+      return Promise.resolve();
+    },
+    seekTo: (position) => {
+      nativeRunnerEvents.push(["adapter", "seek", position]);
+      return Promise.resolve();
+    },
+    setPlaybackMode: (mode) => {
+      nativeRunnerEvents.push(["adapter", "mode", mode]);
+      return Promise.resolve();
+    },
+    setRemoteCommandListener: () => {},
+    setStatusListener: () => {},
+    stop: () => {
+      nativeRunnerEvents.push(["adapter", "stop"]);
+      return Promise.resolve();
+    },
+  };
+  const nativeRunner = createPlaybackNativeCommandRunner({
+    adapter: nativeRunnerAdapter,
     dispatch: (action) => {
       nativeRunnerEvents.push(["dispatch", action.type]);
     },
@@ -3160,6 +3166,7 @@ function assertPlaybackNativeCommandPlanSmoke() {
   nativeRunner.runNativeCommandPlan({ track: first, type: "play" });
   nativeRunner.runNativeCommandPlan({ type: "resume" });
   nativeRunner.runNativeCommandPlan({ position: 1234, type: "seek" });
+  void nativeRunnerAdapter.setPlaybackMode({ loop: true, shuffle: false });
   nativeRunner.runNativeCommandPlan({ type: "stop" });
   nativeRunner.restorePersistedPlaybackState(state);
   nativeRunner.playNativeAdBreak();
@@ -3169,6 +3176,7 @@ function assertPlaybackNativeCommandPlanSmoke() {
     ["adapter", "play", first.id],
     ["adapter", "resume"],
     ["adapter", "seek", 1234],
+    ["adapter", "mode", { loop: true, shuffle: false }],
     ["adapter", "stop"],
     ["adapter", "restore", first.id],
     ["adapter", "play-ad"],

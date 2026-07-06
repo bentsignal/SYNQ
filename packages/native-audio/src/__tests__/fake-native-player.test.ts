@@ -11,6 +11,10 @@ import {
 
 const queue: PlaybackQueue = {
   activeTrackId: "track-1",
+  mode: {
+    loop: false,
+    shuffle: false,
+  },
   tracks: [
     {
       durationMs: 120_000,
@@ -36,6 +40,7 @@ describe("FakeNativePlayerLayer", () => {
       _tag: "LoadQueue",
       queue: {
         activeTrackId: "track-1",
+        mode: queue.mode,
         tracks: [queue.tracks[0]!],
       },
     });
@@ -59,6 +64,7 @@ describe("FakeNativePlayerLayer", () => {
       _tag: "LoadQueue",
       queue: {
         activeTrackId: "track-1",
+        mode: queue.mode,
         tracks: [queue.tracks[0]!],
       },
     });
@@ -113,6 +119,7 @@ describe("FakeNativePlayerLayer", () => {
       _tag: "LoadQueue",
       queue: {
         activeTrackId: null,
+        mode: queue.mode,
         tracks: [],
       },
     });
@@ -136,6 +143,39 @@ describe("playback queue helpers", () => {
         activeTrackId: "track-2",
       }),
     ).toBeNull();
+  });
+
+  it("loops to the first track when loop mode is enabled", () => {
+    expect(
+      getNextPlaybackTrackId({
+        ...queue,
+        activeTrackId: "track-2",
+        mode: {
+          loop: true,
+          shuffle: false,
+        },
+      }),
+    ).toBe("track-1");
+  });
+
+  it("stores queue mode changes", async () => {
+    const runtime = ManagedRuntime.make(FakeNativePlayerLayer());
+    const player = makePlaybackCommandRuntime(runtime);
+
+    const state = await player.runCommand({
+      _tag: "SetQueueMode",
+      mode: {
+        loop: true,
+        shuffle: true,
+      },
+    });
+
+    expect(state.queue.mode).toEqual({
+      loop: true,
+      shuffle: true,
+    });
+
+    await runtime.dispose();
   });
 
   it("restarts the active track when previous is requested after the start", () => {

@@ -14,6 +14,10 @@ const emptyState: SynqNativeAudioPlaybackState = {
   positionMs: 0,
   queue: {
     activeTrackId: null,
+    mode: {
+      loop: false,
+      shuffle: false,
+    },
     tracks: [],
   },
   status: "idle",
@@ -68,6 +72,18 @@ class SynqNativeAudioModule extends NativeModule<SynqNativeAudioModuleEvents> {
     return {
       ...emptyState,
       playbackRate: rate,
+    };
+  }
+
+  async setQueueMode(
+    mode: SynqNativeAudioPlaybackQueue["mode"],
+  ): Promise<SynqNativeAudioPlaybackState> {
+    return {
+      ...emptyState,
+      queue: {
+        ...emptyState.queue,
+        mode,
+      },
     };
   }
 

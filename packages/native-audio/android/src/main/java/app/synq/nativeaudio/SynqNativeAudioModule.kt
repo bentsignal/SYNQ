@@ -32,6 +32,7 @@ internal object SynqNativeAudioHolder {
 class SynqNativeAudioModule : Module() {
   private var player: ExoPlayer? = null
   private var queue: List<SynqTrack> = emptyList()
+  private var queueMode = SynqQueueMode(loop = false, shuffle = false)
   private var activeTrackId: String? = null
   private var playbackRate = 1.0f
 
@@ -56,6 +57,7 @@ class SynqNativeAudioModule : Module() {
 
     Function("loadQueue") { input: Map<String, Any?> ->
       queue = parseTracks(input["tracks"])
+      queueMode = parseQueueMode(input["mode"])
       activeTrackId = input["activeTrackId"] as? String ?: queue.firstOrNull()?.id
       rebuildPlaylist(activeTrackId)
       emitState()
@@ -96,6 +98,9 @@ class SynqNativeAudioModule : Module() {
       if (next != null) {
         rebuildPlaylist(next.id)
         ensurePlayer().play()
+      } else {
+        ensurePlayer().stop()
+        activeTrackId = null
       }
       emitState()
       currentState()
@@ -116,6 +121,13 @@ class SynqNativeAudioModule : Module() {
     Function("setPlaybackRate") { rate: Double ->
       playbackRate = rate.toFloat().coerceIn(0.25f, 4.0f)
       ensurePlayer().playbackParameters = PlaybackParameters(playbackRate)
+      emitState()
+      currentState()
+    }
+
+    Function("setQueueMode") { input: Map<String, Any?> ->
+      queueMode = parseQueueMode(input)
+      applyQueueMode()
       emitState()
       currentState()
     }
@@ -155,6 +167,7 @@ class SynqNativeAudioModule : Module() {
     })
 
     player = created
+    applyQueueMode()
     SynqNativeAudioHolder.mediaSession?.release()
     SynqNativeAudioHolder.mediaSession = MediaSession.Builder(context(), created).build()
     return created
@@ -179,6 +192,7 @@ class SynqNativeAudioModule : Module() {
     }
 
     exoPlayer.setMediaItems(items, startIndex, 0L)
+    applyQueueMode()
     exoPlayer.prepare()
     activeTrackId = queue.getOrNull(startIndex)?.id
   }
@@ -200,12 +214,36 @@ class SynqNativeAudioModule : Module() {
       )
     }
 
+  @Suppress("UNCHECKED_CAST")
+  private fun parseQueueMode(value: Any?): SynqQueueMode {
+    val mode = value as? Map<String, Any?> ?: emptyMap()
+    return SynqQueueMode(
+      loop = mode["loop"] as? Boolean ?: false,
+      shuffle = mode["shuffle"] as? Boolean ?: false
+    )
+  }
+
+  private fun applyQueueMode() {
+    val exoPlayer = player ?: return
+    exoPlayer.repeatMode =
+      if (queueMode.loop) Player.REPEAT_MODE_ALL else Player.REPEAT_MODE_OFF
+    exoPlayer.shuffleModeEnabled = queueMode.shuffle
+  }
+
   private fun currentTrack(): SynqTrack? =
-    queue.firstOrNull { it.id == activeTrackId } ?: queue.firstOrNull()
+    activeTrackId?.let { id -> queue.firstOrNull { it.id == id } }
 
   private fun nextTrack(): SynqTrack? {
+    if (queueMode.shuffle) {
+      val activeIndex = queue.indexOfFirst { it.id == activeTrackId }
+      val playableTracks = queue.filterIndexed { index, _ -> index != activeIndex }
+      return playableTracks.randomOrNull()
+        ?: if (queueMode.loop) queue.firstOrNull() else null
+    }
+
     val index = queue.indexOfFirst { it.id == activeTrackId }
     return queue.getOrNull(index + 1)
+      ?: if (queueMode.loop) queue.firstOrNull() else null
   }
 
   private fun previousTrack(): SynqTrack? {
@@ -228,6 +266,10 @@ class SynqNativeAudioModule : Module() {
       "positionMs" to exoPlayer.currentPosition,
       "queue" to bundleOf(
         "activeTrackId" to activeTrackId,
+        "mode" to bundleOf(
+          "loop" to queueMode.loop,
+          "shuffle" to queueMode.shuffle
+        ),
         "tracks" to ArrayList(queue.map { it.toBundle() })
       ),
       "status" to playbackStatus(exoPlayer)
@@ -277,3 +319,8 @@ class SynqNativeAudioModule : Module() {
     return bundle
   }
 }
+
+private data class SynqQueueMode(
+  val loop: Boolean,
+  val shuffle: Boolean
+)

@@ -2093,7 +2093,8 @@ async function assertPlaybackSessionSmoke() {
     index: null,
     state: directQueuedState,
   });
-  assert.equal(directMissingActivationState.activeTrackId, first.id);
+  assert.equal(directMissingActivationState.activeTrackId, null);
+  assert.equal(directMissingActivationState.activeQueueIndex, null);
   assert.equal(directMissingActivationState.position, directQueuedState.duration);
   assert.equal(directMissingActivationState.isPlaying, false);
   const directRemovedState = removePlaybackQueueSong({
@@ -2653,10 +2654,12 @@ async function assertPlaybackSessionSmoke() {
   assert.equal(state.isPlaying, true);
 
   state = playbackReducer(state, getPlaybackNativeFinishedAction(null));
-  assert.equal(state.activeTrackId, second.id);
+  assert.equal(state.activeTrackId, null);
+  assert.equal(state.activeQueueIndex, null);
   assert.equal(state.position, state.duration);
   assert.equal(state.isPlaying, false);
 
+  state = playbackReducer(state, getPlaybackNativeFinishedAction(1));
   state = playbackReducer(state, getBeginPlaybackAdBreakAction());
   state = playbackReducer(state, getSyncPlaybackPremiumAction(true));
   assert.equal(state.adGate.active, false);
@@ -3236,6 +3239,21 @@ function assertPlaybackNativeCommandPlanSmoke() {
       targetIndex: null,
     },
   );
+  const queueEndState = playbackReducer(
+    {
+      ...state,
+      activeQueueIndex: 1,
+      activeTrackId: second.id,
+      duration: second.duration ?? 0,
+      mode: { loop: false, shuffle: false },
+      position: second.duration ?? 0,
+    },
+    { targetIndex: null, type: "skip-next" },
+  );
+  assert.equal(queueEndState.activeTrackId, null);
+  assert.equal(queueEndState.activeQueueIndex, null);
+  assert.equal(queueEndState.isPlaying, false);
+  assert.equal(queueEndState.position, second.duration ?? 0);
   assert.deepEqual(
     getSkipPreviousNativeCommandPlan({
       ...state,

@@ -68,14 +68,12 @@ class SynqNativeAudioModule : Module() {
         rebuildPlaylist(nextTrackId)
       }
       ensurePlayer().play()
-      emitRemoteCommand("play")
       emitState()
       currentState()
     }
 
     Function("pause") {
       ensurePlayer().pause()
-      emitRemoteCommand("pause")
       emitState()
       currentState()
     }
@@ -83,14 +81,12 @@ class SynqNativeAudioModule : Module() {
     Function("stop") {
       ensurePlayer().stop()
       activeTrackId = null
-      emitRemoteCommand("stop")
       emitState()
       currentState()
     }
 
     Function("seekTo") { positionMs: Double ->
       ensurePlayer().seekTo(max(0L, positionMs.toLong()))
-      emitRemoteCommand("seek", positionMs.toLong())
       emitState()
       currentState()
     }
@@ -101,7 +97,6 @@ class SynqNativeAudioModule : Module() {
         rebuildPlaylist(next.id)
         ensurePlayer().play()
       }
-      emitRemoteCommand("next")
       emitState()
       currentState()
     }
@@ -114,7 +109,6 @@ class SynqNativeAudioModule : Module() {
       } else {
         ensurePlayer().seekTo(0)
       }
-      emitRemoteCommand("previous")
       emitState()
       currentState()
     }
@@ -251,13 +245,6 @@ class SynqNativeAudioModule : Module() {
 
   private fun emitState() {
     sendEvent("onPlaybackEvent", bundleOf("type" to "StateChanged", "state" to currentState()))
-  }
-
-  private fun emitRemoteCommand(command: String, positionMs: Long? = null) {
-    sendEvent(
-      "onPlaybackEvent",
-      bundleOf("type" to "RemoteCommand", "command" to command, "positionMs" to positionMs)
-    )
   }
 
   private fun SynqTrack.toBundle(): Bundle =

@@ -11,6 +11,7 @@ public class SynqNativeAudioModule: Module {
     "loop": false,
     "shuffle": false
   ]
+  private var artworkCache: [String: UIImage] = [:]
   private var activeTrackId: String?
   private var status = "idle"
   private var playbackRate: Float = 1
@@ -136,6 +137,7 @@ public class SynqNativeAudioModule: Module {
     OnDestroy {
       self.removeTimeObserver()
       self.removeRemoteCommandTargets()
+      self.artworkCache.removeAll()
       NotificationCenter.default.removeObserver(self)
       MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
     }
@@ -508,13 +510,37 @@ public class SynqNativeAudioModule: Module {
   private func artworkFromTrack(_ track: [String: Any]) -> MPMediaItemArtwork? {
     guard
       let artworkUri = track["artworkUri"] as? String,
-      let url = urlFromTrackUri(artworkUri),
-      let image = UIImage(contentsOfFile: url.path)
+      let url = urlFromTrackUri(artworkUri)
     else {
       return nil
     }
 
+    if let cachedImage = artworkCache[artworkUri] {
+      return MPMediaItemArtwork(boundsSize: cachedImage.size) { _ in cachedImage }
+    }
+
+    guard let image = imageFromArtworkUrl(url) else {
+      return nil
+    }
+
+    artworkCache[artworkUri] = image
+
     return MPMediaItemArtwork(boundsSize: image.size) { _ in image }
+  }
+
+  private func imageFromArtworkUrl(_ url: URL) -> UIImage? {
+    if url.isFileURL {
+      return UIImage(contentsOfFile: url.path)
+    }
+
+    guard
+      url.scheme == "http" || url.scheme == "https",
+      let data = try? Data(contentsOf: url)
+    else {
+      return nil
+    }
+
+    return UIImage(data: data)
   }
 
   @objc private func handlePlayerItemDidEnd() {

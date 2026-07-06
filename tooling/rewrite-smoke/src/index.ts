@@ -3117,8 +3117,14 @@ function assertPlaybackNativeCommandPlanSmoke() {
       nativeRunnerEvents.push(["adapter", "pause"]);
       return Promise.resolve();
     },
-    play: (song) => {
-      nativeRunnerEvents.push(["adapter", "play", song.id]);
+    play: (song, options) => {
+      nativeRunnerEvents.push([
+        "adapter",
+        "play",
+        song.id,
+        options?.activeTrackId ?? null,
+        options?.queue?.map((item) => item.id) ?? null,
+      ]);
       return Promise.resolve();
     },
     playAd: () => {
@@ -3149,6 +3155,10 @@ function assertPlaybackNativeCommandPlanSmoke() {
       nativeRunnerEvents.push(["adapter", "mode", mode]);
       return Promise.resolve();
     },
+    syncLibraryQueue: (syncedState) => {
+      nativeRunnerEvents.push(["adapter", "sync-queue", syncedState.queue.length]);
+      return Promise.resolve();
+    },
     setRemoteCommandListener: () => {},
     setStatusListener: () => {},
     stop: () => {
@@ -3173,7 +3183,7 @@ function assertPlaybackNativeCommandPlanSmoke() {
   nativeRunner.resumeNativeLibraryAfterPremium();
   assert.deepEqual(nativeRunnerEvents, [
     ["adapter", "pause"],
-    ["adapter", "play", first.id],
+    ["adapter", "play", first.id, null, null],
     ["adapter", "resume"],
     ["adapter", "seek", 1234],
     ["adapter", "mode", { loop: true, shuffle: false }],
@@ -3184,11 +3194,18 @@ function assertPlaybackNativeCommandPlanSmoke() {
   ]);
   assert.deepEqual(
     getPlaybackNativeTargetCommandPlan({
+      mode: state.mode,
       queue: [first, second],
       targetIndex: 1,
     }),
     {
-      command: { track: second, type: "play" },
+      command: {
+        activeTrackId: second.id,
+        mode: state.mode,
+        queue: [first, second],
+        track: second,
+        type: "play",
+      },
       targetIndex: 1,
     },
   );
@@ -3211,7 +3228,13 @@ function assertPlaybackNativeCommandPlanSmoke() {
   });
   assert.deepEqual(
     getPlaybackNativePreviousCommandPlan({ previousTrack: first }),
-    { track: first, type: "play" },
+    {
+      activeTrackId: first.id,
+      mode: undefined,
+      queue: undefined,
+      track: first,
+      type: "play",
+    },
   );
   assert.deepEqual(
     getPlaybackNativePreviousCommandPlan({ previousTrack: null }),
@@ -3222,7 +3245,13 @@ function assertPlaybackNativeCommandPlanSmoke() {
       isPlaying: true,
       replacementTrack: second,
     }),
-    { track: second, type: "play" },
+    {
+      activeTrackId: second.id,
+      mode: undefined,
+      queue: undefined,
+      track: second,
+      type: "play",
+    },
   );
   assert.deepEqual(
     getPlaybackNativeReplacementCommandPlan({
@@ -3232,7 +3261,13 @@ function assertPlaybackNativeCommandPlanSmoke() {
     { type: "stop" },
   );
   assert.deepEqual(getSkipNextNativeCommandPlan(state), {
-    command: { track: second, type: "play" },
+    command: {
+      activeTrackId: second.id,
+      mode: state.mode,
+      queue: state.queue,
+      track: second,
+      type: "play",
+    },
     targetIndex: 1,
   });
   assert.deepEqual(
@@ -3267,7 +3302,13 @@ function assertPlaybackNativeCommandPlanSmoke() {
       ...state,
       position: 3_000,
     }),
-    { track: first, type: "play" },
+    {
+      activeTrackId: first.id,
+      mode: state.mode,
+      queue: state.queue,
+      track: first,
+      type: "play",
+    },
   );
   assert.deepEqual(
     getSkipPreviousNativeCommandPlan({
@@ -3290,7 +3331,13 @@ function assertPlaybackNativeCommandPlanSmoke() {
       songId: first.id,
       state,
     }),
-    { track: second, type: "play" },
+    {
+      activeTrackId: second.id,
+      mode: state.mode,
+      queue: [second],
+      track: second,
+      type: "play",
+    },
   );
   assert.deepEqual(
     getRemoveFromQueueNativeCommandPlan({
@@ -3722,7 +3769,13 @@ function assertPlaybackNativeCommandPlanSmoke() {
       song: first,
       type: "play-song",
     },
-    nativeCommand: { track: first, type: "play" },
+    nativeCommand: {
+      activeTrackId: first.id,
+      mode: undefined,
+      queue: [first],
+      track: first,
+      type: "play",
+    },
   });
   assert.deepEqual(getPausePlaybackCommandPlan(), {
     action: { type: "pause" },
@@ -3733,7 +3786,13 @@ function assertPlaybackNativeCommandPlanSmoke() {
       song: first,
       type: "play-song",
     },
-    nativeCommand: { track: first, type: "play" },
+    nativeCommand: {
+      activeTrackId: first.id,
+      mode: undefined,
+      queue: [first],
+      track: first,
+      type: "play",
+    },
   });
   assert.deepEqual(getPausePlaybackStepPlan(), {
     action: { type: "pause" },
@@ -3753,7 +3812,13 @@ function assertPlaybackNativeCommandPlanSmoke() {
   });
   assert.deepEqual(getSkipNextPlaybackCommandPlan(state), {
     action: { targetIndex: 1, type: "skip-next" },
-    nativeCommand: { track: second, type: "play" },
+    nativeCommand: {
+      activeTrackId: second.id,
+      mode: state.mode,
+      queue: state.queue,
+      track: second,
+      type: "play",
+    },
   });
   assert.deepEqual(
     getSkipPreviousPlaybackCommandPlan({
@@ -3790,7 +3855,13 @@ function assertPlaybackNativeCommandPlanSmoke() {
     }),
     {
       action: { songId: first.id, type: "remove-from-queue" },
-      nativeCommand: { track: second, type: "play" },
+      nativeCommand: {
+        activeTrackId: second.id,
+        mode: state.mode,
+        queue: [second],
+        track: second,
+        type: "play",
+      },
     },
   );
   const plannedActions: unknown[] = [];

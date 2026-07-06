@@ -129,6 +129,45 @@ describe("FakeNativePlayerLayer", () => {
     expect(events).toHaveLength(1);
     expect(events[0]?._tag).toBe("StateChanged");
   });
+
+  it("preserves playback position when loading queue metadata for the same active track", async () => {
+    const runtime = ManagedRuntime.make(FakeNativePlayerLayer());
+    const player = makePlaybackCommandRuntime(runtime);
+
+    await player.runCommand({
+      _tag: "LoadQueue",
+      queue: {
+        activeTrackId: "track-1",
+        mode: queue.mode,
+        tracks: [queue.tracks[0]!],
+      },
+    });
+    await player.runCommand({ _tag: "Play" });
+    await player.runCommand({ _tag: "SeekTo", positionMs: 42_000 });
+
+    const syncedState = await player.runCommand({
+      _tag: "LoadQueue",
+      queue: {
+        activeTrackId: "track-1",
+        mode: {
+          loop: true,
+          shuffle: false,
+        },
+        tracks: queue.tracks,
+      },
+    });
+
+    expect(syncedState.activeTrack?.id).toBe("track-1");
+    expect(syncedState.positionMs).toBe(42_000);
+    expect(syncedState.queue.tracks).toHaveLength(2);
+    expect(syncedState.queue.mode).toEqual({
+      loop: true,
+      shuffle: false,
+    });
+    expect(syncedState.status).toBe("playing");
+
+    await runtime.dispose();
+  });
 });
 
 describe("playback queue helpers", () => {

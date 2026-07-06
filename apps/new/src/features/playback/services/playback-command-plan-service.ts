@@ -26,8 +26,19 @@ export type { PlaybackCommandPlan } from "./playback-command-step-service";
 export { runPlaybackCommandPlan } from "./playback-command-plan-runner-service";
 
 export const getPlaySongPlaybackCommandPlan = (
-  song: PlaybackQueueItem,
-): PlaybackCommandPlan => getPlaySongPlaybackStepPlan(song);
+  input:
+    | PlaybackQueueItem
+    | {
+        song: PlaybackQueueItem;
+        state?: PlaybackState;
+      },
+): PlaybackCommandPlan => {
+  if ("song" in input) {
+    return getPlaySongPlaybackStepPlan(input.song, input.state);
+  }
+
+  return getPlaySongPlaybackStepPlan(input);
+};
 
 export const getPausePlaybackCommandPlan = (): PlaybackCommandPlan =>
   getPausePlaybackStepPlan();

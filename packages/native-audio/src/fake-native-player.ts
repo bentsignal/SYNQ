@@ -50,6 +50,24 @@ const runFakeCommand = (
     case "Configure":
       return state;
     case "LoadQueue":
+      if (
+        command.queue.activeTrackId !== null &&
+        command.queue.activeTrackId === state.queue.activeTrackId &&
+        state.activeTrack
+      ) {
+        const activeTrack =
+          command.queue.tracks.find(
+            (track) => track.id === command.queue.activeTrackId,
+          ) ?? state.activeTrack;
+
+        return {
+          ...state,
+          activeTrack,
+          durationMs: activeTrack.durationMs ?? state.durationMs,
+          queue: command.queue,
+        };
+      }
+
       return {
         ...setActiveTrack(
           {

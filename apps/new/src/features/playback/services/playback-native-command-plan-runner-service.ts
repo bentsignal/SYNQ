@@ -17,7 +17,13 @@ export const runPlaybackNativeCommandPlan = ({
       runNativeCommand(() => adapter.pause());
       return;
     case "play":
-      runNativeCommand(() => adapter.play(plan.track));
+      runNativeCommand(() =>
+        adapter.play(plan.track, {
+          activeTrackId: plan.activeTrackId,
+          mode: plan.mode,
+          queue: plan.queue,
+        }),
+      );
       return;
     case "resume":
       runNativeCommand(() => adapter.resume());

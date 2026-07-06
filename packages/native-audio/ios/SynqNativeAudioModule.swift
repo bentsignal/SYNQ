@@ -48,13 +48,18 @@ public class SynqNativeAudioModule: Module {
     }
 
     Function("loadQueue") { (queuePayload: [String: Any]) in
+      let previousActiveTrackId = self.activeTrackId
       self.queue = queuePayload["tracks"] as? [[String: Any]] ?? []
       self.queueMode = self.queueModeFromPayload(queuePayload["mode"])
       self.activeTrackId = queuePayload["activeTrackId"] as? String
       if self.activeTrackId == nil {
         self.activeTrackId = self.queue.first?["id"] as? String
       }
-      try self.loadActiveTrack(autoplay: false)
+      if self.activeTrackId != previousActiveTrackId || self.player == nil {
+        try self.loadActiveTrack(autoplay: false)
+      } else {
+        self.updateNowPlayingInfo()
+      }
       self.emitStateChanged()
       return self.statePayload()
     }

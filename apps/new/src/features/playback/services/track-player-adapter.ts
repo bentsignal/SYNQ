@@ -24,13 +24,21 @@ import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service
 export type TrackPlayerAdapter = {
   destroy: () => Promise<void>;
   pause: () => Promise<void>;
-  play: (song: PlaybackQueueItem) => Promise<void>;
+  play: (
+    song: PlaybackQueueItem,
+    options?: {
+      activeTrackId?: number | null;
+      mode?: PlaybackState["mode"];
+      queue?: PlaybackQueueItem[];
+    },
+  ) => Promise<void>;
   playAd: () => Promise<void>;
   restore: (state: PlaybackState) => Promise<void>;
   resume: () => Promise<void>;
   resumeLibrary: () => Promise<void>;
   seekTo: (position: number) => Promise<void>;
   setPlaybackMode: (mode: PlaybackState["mode"]) => Promise<void>;
+  syncLibraryQueue: (state: PlaybackState) => Promise<void>;
   setRemoteCommandListener: (
     listener: ((command: PlaybackRemoteCommand) => void) | null,
   ) => void;
@@ -50,6 +58,7 @@ export const createUnavailableTrackPlayerAdapter = (): TrackPlayerAdapter => ({
   resumeLibrary: () => Promise.resolve(),
   seekTo: () => Promise.resolve(),
   setPlaybackMode: () => Promise.resolve(),
+  syncLibraryQueue: () => Promise.resolve(),
   setRemoteCommandListener: () => {},
   setStatusListener: () => {},
   stop: () => Promise.resolve(),
@@ -208,23 +217,66 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
     ensureEventSubscription();
   };
 
-  const playSong = async (song: PlaybackQueueItem) => {
+  const playSong = async (
+    song: PlaybackQueueItem,
+    options: {
+      activeTrackId?: number | null;
+      mode?: PlaybackState["mode"];
+      queue?: PlaybackQueueItem[];
+    } = {},
+  ) => {
     await configureNativePlayback();
     activeSource = "library";
     activeLibraryTrack = song;
 
     const track = getSynqNativePlaybackTrack(song);
+    const queueTracks = (options.queue?.length ? options.queue : [song]).map(
+      getSynqNativePlaybackTrack,
+    );
+    const mode = options.mode ?? currentPlaybackMode;
+    currentPlaybackMode = mode;
     const state = await playbackRuntime.runCommand({
       _tag: "LoadQueue",
       queue: {
-        activeTrackId: track.id,
-        mode: currentPlaybackMode,
-        tracks: [track],
+        activeTrackId: String(options.activeTrackId ?? song.id),
+        mode,
+        tracks: queueTracks,
       },
     });
     emitState(state);
     emitState(await playbackRuntime.runCommand({ _tag: "Play", trackId: track.id }));
     startPollingState();
+  };
+
+  const syncLibraryQueue = async (state: PlaybackState) => {
+    if (state.source?.type !== "library" || state.activeTrackId === null) {
+      return;
+    }
+
+    const activeTrack = state.queue.find((song) => song.id === state.activeTrackId);
+    if (!activeTrack) {
+      return;
+    }
+
+    await configureNativePlayback();
+    activeSource = "library";
+    activeLibraryTrack = activeTrack;
+    currentPlaybackMode = state.mode;
+
+    emitState(
+      await playbackRuntime.runCommand({
+        _tag: "LoadQueue",
+        queue: {
+          activeTrackId: String(state.activeTrackId),
+          mode: state.mode,
+          tracks: state.queue.map(getSynqNativePlaybackTrack),
+        },
+      }),
+    );
+
+    if (state.isPlaying) {
+      startPollingState();
+    }
   };
 
   const playAd = async () => {
@@ -321,6 +373,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
         }),
       );
     },
+    syncLibraryQueue,
     setRemoteCommandListener: (listener) => {
       remoteCommandListener = listener;
       if (listener) {

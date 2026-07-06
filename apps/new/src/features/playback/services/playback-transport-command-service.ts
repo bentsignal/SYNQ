@@ -40,6 +40,7 @@ export const createPlaybackTransportCommands = ({
       runAdGatedCommand,
       runCommandPlan,
       song,
+      state: getState(),
     });
   },
   resume: () => {

@@ -56,10 +56,15 @@ class SynqNativeAudioModule : Module() {
     }
 
     Function("loadQueue") { input: Map<String, Any?> ->
+      val previousActiveTrackId = activeTrackId
       queue = parseTracks(input["tracks"])
       queueMode = parseQueueMode(input["mode"])
       activeTrackId = input["activeTrackId"] as? String ?: queue.firstOrNull()?.id
-      rebuildPlaylist(activeTrackId)
+      if (activeTrackId != previousActiveTrackId || player == null) {
+        rebuildPlaylist(activeTrackId)
+      } else {
+        refreshPlaylistMetadata()
+      }
       emitState()
       currentState()
     }
@@ -176,26 +181,43 @@ class SynqNativeAudioModule : Module() {
   private fun rebuildPlaylist(trackId: String?) {
     val exoPlayer = ensurePlayer()
     val startIndex = queue.indexOfFirst { it.id == trackId }.let { if (it >= 0) it else 0 }
-    val items = queue.map { track ->
-      MediaItem.Builder()
-        .setMediaId(track.id)
-        .setUri(track.uri)
-        .setMediaMetadata(
-          MediaMetadata.Builder()
-            .setAlbumTitle(track.albumTitle)
-            .setArtist(track.artistName)
-            .setArtworkUri(track.artworkUri?.let(Uri::parse))
-            .setTitle(track.title)
-            .build()
-        )
-        .build()
-    }
+    val items = queue.map { it.toMediaItem() }
 
     exoPlayer.setMediaItems(items, startIndex, 0L)
     applyQueueMode()
     exoPlayer.prepare()
     activeTrackId = queue.getOrNull(startIndex)?.id
   }
+
+  private fun refreshPlaylistMetadata() {
+    val exoPlayer = ensurePlayer()
+    val currentPosition = exoPlayer.currentPosition
+    val wasPlaying = exoPlayer.isPlaying
+    val startIndex = queue.indexOfFirst { it.id == activeTrackId }.let { if (it >= 0) it else 0 }
+    val items = queue.map { it.toMediaItem() }
+
+    exoPlayer.setMediaItems(items, startIndex, currentPosition)
+    applyQueueMode()
+    exoPlayer.prepare()
+    if (wasPlaying) {
+      exoPlayer.play()
+    }
+    activeTrackId = queue.getOrNull(startIndex)?.id
+  }
+
+  private fun SynqTrack.toMediaItem(): MediaItem =
+    MediaItem.Builder()
+      .setMediaId(id)
+      .setUri(uri)
+      .setMediaMetadata(
+        MediaMetadata.Builder()
+          .setAlbumTitle(albumTitle)
+          .setArtist(artistName)
+          .setArtworkUri(artworkUri?.let(Uri::parse))
+          .setTitle(title)
+          .build()
+      )
+      .build()
 
   @Suppress("UNCHECKED_CAST")
   private fun parseTracks(value: Any?): List<SynqTrack> =

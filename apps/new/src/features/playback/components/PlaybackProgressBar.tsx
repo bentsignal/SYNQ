@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  Pressable,
   View,
   type GestureResponderEvent,
   type LayoutChangeEvent,
@@ -25,7 +24,7 @@ export function PlaybackProgressBar({
   const handleLayout = (event: LayoutChangeEvent) => {
     setWidth(event.nativeEvent.layout.width);
   };
-  const handlePress = (event: GestureResponderEvent) => {
+  const seekFromEvent = (event: GestureResponderEvent) => {
     if (!canSeek) {
       return;
     }
@@ -35,17 +34,19 @@ export function PlaybackProgressBar({
   };
 
   return (
-    <Pressable
+    <View
       className="h-2 overflow-hidden rounded-full"
-      disabled={!canSeek}
       onLayout={handleLayout}
-      onPress={handlePress}
+      onMoveShouldSetResponder={() => canSeek}
+      onResponderGrant={seekFromEvent}
+      onResponderMove={seekFromEvent}
+      onStartShouldSetResponder={() => canSeek}
       style={{ backgroundColor: theme.border }}
     >
       <View
         className="h-full rounded-full"
         style={{ backgroundColor: theme.accent, width: `${progressPercent}%` }}
       />
-    </Pressable>
+    </View>
   );
 }

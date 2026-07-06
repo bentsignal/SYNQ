@@ -195,15 +195,15 @@ public class SynqNativeAudioModule: Module {
     commandCenter.changePlaybackPositionCommand.isEnabled = true
 
     playCommandTarget = commandCenter.playCommand.addTarget { [weak self] _ in
-      self?.sendRemoteCommand("play")
-      return .success
+      self?.handleRemotePlay()
+      return self?.player == nil ? .commandFailed : .success
     }
     pauseCommandTarget = commandCenter.pauseCommand.addTarget { [weak self] _ in
-      self?.sendRemoteCommand("pause")
+      self?.handleRemotePause()
       return .success
     }
     togglePlayPauseCommandTarget = commandCenter.togglePlayPauseCommand.addTarget { [weak self] _ in
-      self?.sendRemoteCommand("togglePlayPause")
+      self?.handleRemoteTogglePlayPause()
       return .success
     }
     nextTrackCommandTarget = commandCenter.nextTrackCommand.addTarget { [weak self] _ in
@@ -226,7 +226,7 @@ public class SynqNativeAudioModule: Module {
       guard let positionEvent = event as? MPChangePlaybackPositionCommandEvent else {
         return .commandFailed
       }
-      self?.sendRemoteCommand("seek", positionMs: positionEvent.positionTime * 1000)
+      self?.handleRemoteSeek(positionMs: positionEvent.positionTime * 1000)
       return .success
     }
   }
@@ -468,6 +468,70 @@ public class SynqNativeAudioModule: Module {
     sendEvent("onPlaybackEvent", payload)
   }
 
+  private func handleRemotePlay() {
+    if player == nil {
+      try? loadActiveTrack(autoplay: true)
+    }
+
+    guard player != nil else {
+      sendRemoteCommand("play")
+      return
+    }
+
+    status = "playing"
+    player?.rate = playbackRate
+    updateNowPlayingInfo()
+    emitStateChanged()
+    sendRemoteCommand("play")
+  }
+
+  private func handleRemotePause() {
+    player?.pause()
+    status = player == nil ? "idle" : "paused"
+    updateNowPlayingInfo()
+    emitStateChanged()
+    sendRemoteCommand("pause")
+  }
+
+  private func handleRemoteTogglePlayPause() {
+    if status == "playing" {
+      player?.pause()
+      status = player == nil ? "idle" : "paused"
+      updateNowPlayingInfo()
+      emitStateChanged()
+      sendRemoteCommand("pause")
+      return
+    }
+
+    if player == nil {
+      try? loadActiveTrack(autoplay: true)
+    }
+
+    if player != nil {
+      status = "playing"
+      player?.rate = playbackRate
+      updateNowPlayingInfo()
+      emitStateChanged()
+    }
+
+    sendRemoteCommand("play")
+  }
+
+  private func handleRemoteSeek(positionMs: Double) {
+    let duration = durationMs()
+    let target: Double
+    if duration > 0 {
+      target = min(duration, max(0, positionMs))
+    } else {
+      target = max(0, positionMs)
+    }
+
+    player?.seek(to: CMTime(seconds: target / 1000, preferredTimescale: 600))
+    updateNowPlayingInfo()
+    emitStateChanged()
+    sendRemoteCommand("seek", positionMs: target)
+  }
+
   private func sendRelativeSeekCommand(event: MPRemoteCommandEvent, direction: Double) {
     let interval =
       (event as? MPSkipIntervalCommandEvent)?.interval
@@ -482,7 +546,7 @@ public class SynqNativeAudioModule: Module {
       clampedTarget = max(0, target)
     }
 
-    sendRemoteCommand("seek", positionMs: clampedTarget)
+    handleRemoteSeek(positionMs: clampedTarget)
   }
 
   private func updateNowPlayingInfo() {

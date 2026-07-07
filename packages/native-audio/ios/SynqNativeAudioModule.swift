@@ -212,11 +212,11 @@ public class SynqNativeAudioModule: Module {
       return .success
     }
     nextTrackCommandTarget = commandCenter.nextTrackCommand.addTarget { [weak self] _ in
-      self?.sendRemoteCommand("next")
+      self?.handleRemoteSkipNext()
       return .success
     }
     previousTrackCommandTarget = commandCenter.previousTrackCommand.addTarget { [weak self] _ in
-      self?.sendRemoteCommand("previous")
+      self?.handleRemoteSkipPrevious()
       return .success
     }
     skipForwardCommandTarget = commandCenter.skipForwardCommand.addTarget { [weak self] event in
@@ -520,6 +520,45 @@ public class SynqNativeAudioModule: Module {
     }
 
     sendRemoteCommand("play")
+  }
+
+  private func handleRemoteSkipNext() {
+    let targetTrackId = nextTrackId()
+    activeTrackId = targetTrackId
+
+    if targetTrackId == nil {
+      player?.pause()
+      player?.seek(to: .zero)
+      removeTimeObserver()
+      player = nil
+      status = "idle"
+    } else {
+      try? loadActiveTrack(autoplay: true)
+      status = "playing"
+      player?.rate = playbackRate
+    }
+
+    updateNowPlayingInfo()
+    emitStateChanged()
+    sendRemoteCommand("next")
+  }
+
+  private func handleRemoteSkipPrevious() {
+    if positionMs() >= 3000 {
+      player?.seek(to: .zero)
+      updateNowPlayingInfo()
+      emitStateChanged()
+      sendRemoteCommand("previous")
+      return
+    }
+
+    activeTrackId = previousTrackId()
+    try? loadActiveTrack(autoplay: true)
+    status = player == nil ? "idle" : "playing"
+    player?.rate = playbackRate
+    updateNowPlayingInfo()
+    emitStateChanged()
+    sendRemoteCommand("previous")
   }
 
   private func handleRemoteSeek(positionMs: Double) {

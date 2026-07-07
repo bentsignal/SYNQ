@@ -252,6 +252,9 @@ import {
   repairPlaybackFileUriWithDocumentDirectory,
 } from "../../../apps/new/src/features/playback/services/playback-native-track-mapper-service";
 import {
+  shouldHandlePlaybackNativeFinishedStatus,
+} from "../../../apps/new/src/features/playback/services/playback-native-finish-dedupe-service";
+import {
   getPlaybackNativePreviousCommandPlan,
   getPlaybackNativeReplacementCommandPlan,
   getPlaybackNativeResumeCommandPlan,
@@ -2985,6 +2988,47 @@ function assertPlaybackNativeStatusSmoke() {
       },
     }),
     "finished-track",
+  );
+  const finishedTrackStatus = {
+    activeTrackId: 5,
+    didJustFinish: true,
+    duration: 180_000,
+    isLoaded: true,
+    isPlaying: false,
+    position: 180_000,
+    songId: 5,
+    source: "library" as const,
+  };
+  const firstFinishedDecision = shouldHandlePlaybackNativeFinishedStatus({
+    handledKey: null,
+    status: finishedTrackStatus,
+  });
+  assert.equal(firstFinishedDecision.shouldHandle, true);
+  assert.equal(firstFinishedDecision.finishKey, "library:5:180000");
+  assert.deepEqual(
+    shouldHandlePlaybackNativeFinishedStatus({
+      handledKey: firstFinishedDecision.finishKey,
+      status: finishedTrackStatus,
+    }),
+    {
+      finishKey: "library:5:180000",
+      shouldHandle: false,
+    },
+  );
+  assert.deepEqual(
+    shouldHandlePlaybackNativeFinishedStatus({
+      handledKey: firstFinishedDecision.finishKey,
+      status: {
+        ...finishedTrackStatus,
+        didJustFinish: false,
+        isPlaying: true,
+        position: 0,
+      },
+    }),
+    {
+      finishKey: null,
+      shouldHandle: true,
+    },
   );
   assert.deepEqual(nativeStatusEvents, [
     [

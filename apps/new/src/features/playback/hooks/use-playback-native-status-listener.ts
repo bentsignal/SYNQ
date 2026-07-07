@@ -1,4 +1,7 @@
-import { useEffect, type RefObject } from "react";
+import { useEffect, useRef, type RefObject } from "react";
+import {
+  shouldHandlePlaybackNativeFinishedStatus,
+} from "../services/playback-native-finish-dedupe-service";
 import { runPlaybackNativeStatusCommand } from "../services/playback-native-status-command-flow-service";
 import type { PlaybackAction } from "../services/playback-session-action-service";
 import type { TrackPlayerAdapter } from "../services/track-player-adapter";
@@ -18,8 +21,22 @@ export function usePlaybackNativeStatusListener({
   premiumActiveRef,
   runNativeCommand,
 }: UsePlaybackNativeStatusListenerParams) {
+  const handledFinishedStatusKeyRef = useRef<string | null>(null);
+
   useEffect(() => {
     adapter.setStatusListener((status) => {
+      const { finishKey, shouldHandle } =
+        shouldHandlePlaybackNativeFinishedStatus({
+          handledKey: handledFinishedStatusKeyRef.current,
+          status,
+        });
+
+      if (!shouldHandle) {
+        return;
+      }
+
+      handledFinishedStatusKeyRef.current = finishKey;
+
       runPlaybackNativeStatusCommand({
         dispatch,
         finishActiveTrack,
@@ -31,6 +48,7 @@ export function usePlaybackNativeStatusListener({
     });
 
     return () => {
+      handledFinishedStatusKeyRef.current = null;
       adapter.setStatusListener(null);
     };
   }, [adapter, dispatch, finishActiveTrack, premiumActiveRef, runNativeCommand]);

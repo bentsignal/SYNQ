@@ -2311,8 +2311,8 @@ async function assertPlaybackSessionSmoke() {
       beginAdBreak: () => advancementEvents.push(["ad"]),
       canRunPlaybackCommand: () => false,
       dispatch: (action) => advancementEvents.push(["dispatch", action]),
-      playNativeTrack: async (track) => {
-        advancementEvents.push(["play", track.id]);
+      playNativeTrack: async (track, options) => {
+        advancementEvents.push(["play", track.id, options]);
       },
       runNativeCommand: (command) => {
         advancementEvents.push(["native"]);
@@ -2327,8 +2327,8 @@ async function assertPlaybackSessionSmoke() {
       beginAdBreak: () => advancementEvents.push(["ad"]),
       canRunPlaybackCommand: () => true,
       dispatch: (action) => advancementEvents.push(["dispatch", action]),
-      playNativeTrack: async (track) => {
-        advancementEvents.push(["play", track.id]);
+      playNativeTrack: async (track, options) => {
+        advancementEvents.push(["play", track.id, options]);
       },
       runNativeCommand: (command) => {
         advancementEvents.push(["native"]);
@@ -2342,13 +2342,21 @@ async function assertPlaybackSessionSmoke() {
     ["ad"],
     ["dispatch", { targetIndex: 1, type: "native-finished" }],
     ["native"],
-    ["play", second.id],
+    [
+      "play",
+      second.id,
+      {
+        activeTrackId: second.id,
+        mode: state.mode,
+        queue: state.queue,
+      },
+    ],
   ]);
   const assembledAdvancementEvents: unknown[] = [];
   const finishTrack = createPlaybackTrackAdvancementCommand({
     adapter: {
-      play: async (track) => {
-        assembledAdvancementEvents.push(["play", track.id]);
+      play: async (track, options) => {
+        assembledAdvancementEvents.push(["play", track.id, options]);
       },
     },
     beginAdBreak: () => assembledAdvancementEvents.push(["ad"]),
@@ -2364,7 +2372,15 @@ async function assertPlaybackSessionSmoke() {
   assert.deepEqual(assembledAdvancementEvents, [
     ["dispatch", { targetIndex: 1, type: "native-finished" }],
     ["native"],
-    ["play", second.id],
+    [
+      "play",
+      second.id,
+      {
+        activeTrackId: second.id,
+        mode: state.mode,
+        queue: state.queue,
+      },
+    ],
   ]);
 
   state = playbackReducer(

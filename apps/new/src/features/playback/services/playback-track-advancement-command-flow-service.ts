@@ -2,6 +2,7 @@ import type { PlaybackQueueItem, PlaybackState } from "../types/playback-state";
 import { getPlaybackNativeFinishedAction } from "./playback-native-transition-action-service";
 import { getNextQueueIndex } from "./playback-queue-selection-service";
 import type { PlaybackAction } from "./playback-session-action-service";
+import type { TrackPlayerAdapter } from "./track-player-adapter";
 
 export const runPlaybackTrackAdvancementCommand = ({
   beginAdBreak,
@@ -14,7 +15,7 @@ export const runPlaybackTrackAdvancementCommand = ({
   beginAdBreak: () => void;
   canRunPlaybackCommand: () => boolean;
   dispatch: (action: PlaybackAction) => void;
-  playNativeTrack: (track: PlaybackQueueItem) => Promise<void>;
+  playNativeTrack: TrackPlayerAdapter["play"];
   runNativeCommand: (command: () => Promise<void>) => void;
   state: PlaybackState;
 }) => {
@@ -33,7 +34,13 @@ export const runPlaybackTrackAdvancementCommand = ({
 
   dispatch(getPlaybackNativeFinishedAction(targetIndex));
   if (targetTrack) {
-    runNativeCommand(() => playNativeTrack(targetTrack));
+    runNativeCommand(() =>
+      playNativeTrack(targetTrack, {
+        activeTrackId: targetTrack.id,
+        mode: state.mode,
+        queue: state.queue,
+      }),
+    );
   }
 
   return { result: "advanced" as const, targetIndex };

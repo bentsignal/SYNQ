@@ -4,61 +4,12 @@ import SynqNativeAudioModule from "./SynqNativeAudioModule";
 import {
   PlaybackNativeError,
   type PlaybackCommand,
-  type PlaybackEvent,
-  type PlaybackRemoteCommand,
-  type PlaybackState,
-  type PlaybackStatus,
 } from "./domain";
+import {
+  toPlaybackEvent,
+  toPlaybackState,
+} from "./native-module-event-mapper";
 import { NativePlayer, type NativePlayerService } from "./native-player";
-import type {
-  SynqNativeAudioPlaybackEvent,
-  SynqNativeAudioPlaybackState,
-} from "./SynqNativeAudio.types";
-
-const toPlaybackState = (
-  state: SynqNativeAudioPlaybackState,
-): PlaybackState => ({
-  activeTrack: state.activeTrack,
-  bufferedPositionMs: state.bufferedPositionMs,
-  durationMs: state.durationMs,
-  playbackRate: state.playbackRate,
-  positionMs: state.positionMs,
-  queue: state.queue,
-  status: state.status as PlaybackStatus,
-});
-
-const toPlaybackEvent = (
-  event: SynqNativeAudioPlaybackEvent,
-): PlaybackEvent | null => {
-  switch (event.type) {
-    case "StateChanged":
-      return {
-        _tag: "StateChanged",
-        state: toPlaybackState(event.state),
-      };
-    case "RemoteCommand":
-      return {
-        _tag: "RemoteCommand",
-        activeTrackId: event.activeTrackId,
-        command: event.command as PlaybackRemoteCommand,
-        positionMs: event.positionMs,
-      };
-    case "InterruptionBegan":
-      return {
-        _tag: "InterruptionBegan",
-      };
-    case "InterruptionEnded":
-      return {
-        _tag: "InterruptionEnded",
-        shouldResume: event.shouldResume,
-      };
-    case "RouteChanged":
-      return {
-        _tag: "RouteChanged",
-        reason: event.reason,
-      };
-  }
-};
 
 const runNativeCommand = (command: PlaybackCommand) =>
   Effect.tryPromise({

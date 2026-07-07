@@ -21,7 +21,6 @@ export type PlaybackRemoteCommandHandlers = {
   beginAdBreak: () => void;
   canRunPlaybackCommand: () => boolean;
   fail: (message: string) => void;
-  getActiveTrackId: () => number | null;
   pause: () => void;
   queueEnded: () => void;
   resume: () => void;
@@ -47,10 +46,7 @@ export const handlePlaybackRemoteCommand = ({
       handlers.pause();
       return "handled";
     case "next":
-      if (
-        command.targetTrackId !== undefined &&
-        handlers.getActiveTrackId() === command.targetTrackId
-      ) {
+      if (command.targetTrackId !== undefined) {
         return "handled";
       }
 
@@ -60,8 +56,7 @@ export const handlePlaybackRemoteCommand = ({
       });
     case "previous":
       if (
-        command.targetTrackId !== undefined &&
-        handlers.getActiveTrackId() === command.targetTrackId
+        command.targetTrackId !== undefined
       ) {
         return "handled";
       }

@@ -47,7 +47,6 @@ export function usePlaybackCommandController({
     beginAdBreak,
     canRunPlaybackCommand,
     finishActiveTrack,
-    getActiveTrackId: () => stateRef.current.activeTrackId,
     pause: transportCommands.pause,
     runCommandPlan,
     resume: transportCommands.resume,

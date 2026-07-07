@@ -3883,12 +3883,10 @@ function assertPlaybackNativeCommandPlanSmoke() {
 
   const remoteEvents: string[] = [];
   let remoteAllowed = true;
-  let remoteActiveTrackId: number | null = first.id;
   const remoteHandlers: PlaybackRemoteCommandHandlers = {
     beginAdBreak: () => remoteEvents.push("ad"),
     canRunPlaybackCommand: () => remoteAllowed,
     fail: (message) => remoteEvents.push(`fail:${message}`),
-    getActiveTrackId: () => remoteActiveTrackId,
     pause: () => remoteEvents.push("pause"),
     queueEnded: () => remoteEvents.push("queue-ended"),
     resume: () => remoteEvents.push("resume"),
@@ -3957,7 +3955,6 @@ function assertPlaybackNativeCommandPlanSmoke() {
   ]);
 
   remoteEvents.length = 0;
-  remoteActiveTrackId = second.id;
   assert.equal(
     handlePlaybackRemoteCommand({
       command: { targetTrackId: second.id, type: "next" },
@@ -3974,7 +3971,6 @@ function assertPlaybackNativeCommandPlanSmoke() {
   );
   assert.deepEqual(remoteEvents, []);
 
-  remoteActiveTrackId = null;
   assert.equal(
     handlePlaybackRemoteCommand({
       command: { targetTrackId: null, type: "next" },
@@ -4067,7 +4063,6 @@ function assertPlaybackNativeCommandPlanSmoke() {
     beginAdBreak: () => assembledRemoteEvents.push("ad"),
     canRunPlaybackCommand: () => true,
     finishActiveTrack: () => assembledRemoteEvents.push("queue-ended"),
-    getActiveTrackId: () => null,
     pause: () => assembledRemoteEvents.push("pause"),
     resume: () => assembledRemoteEvents.push("resume"),
     runCommandPlan: (plan) =>

@@ -243,6 +243,11 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-native-command-runner-service";
 import type { TrackPlayerAdapter } from "../../../apps/new/src/features/playback/services/track-player-adapter";
 import {
+  shouldEmitState,
+  shouldHandleInterruption,
+  shouldHandleRemoteCommand,
+} from "../../../apps/new/src/features/playback/services/playback-native-event-classifier-service";
+import {
   getTrackPlayerActiveLibraryTrack,
   getTrackPlayerRestoreTarget,
 } from "../../../apps/new/src/features/playback/services/playback-track-player-restore-service";
@@ -3916,6 +3921,44 @@ function assertPlaybackNativeCommandPlanSmoke() {
     "resume",
     "plan:remote-failure",
   ]);
+  assert.equal(
+    shouldEmitState({
+      _tag: "StateChanged",
+      state: {
+        activeTrack: null,
+        bufferedPositionMs: 0,
+        durationMs: 0,
+        playbackRate: 1,
+        positionMs: 0,
+        queue: {
+          activeTrackId: null,
+          mode: {
+            loop: false,
+            shuffle: false,
+          },
+          tracks: [],
+        },
+        status: "idle",
+      },
+    }),
+    true,
+  );
+  assert.equal(
+    shouldHandleRemoteCommand({ _tag: "RemoteCommand", command: "play" }),
+    true,
+  );
+  assert.equal(shouldHandleInterruption({ _tag: "InterruptionBegan" }), true);
+  assert.equal(
+    shouldHandleInterruption({
+      _tag: "InterruptionEnded",
+      shouldResume: true,
+    }),
+    true,
+  );
+  assert.equal(
+    shouldHandleInterruption({ _tag: "RouteChanged", reason: "old-device" }),
+    false,
+  );
   assert.deepEqual(
     getPlaybackRemoteCommandFromNativeEvent({
       event: { _tag: "RemoteCommand", command: "togglePlayPause" },

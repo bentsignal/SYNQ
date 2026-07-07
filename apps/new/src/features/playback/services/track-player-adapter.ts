@@ -18,6 +18,11 @@ import {
   getSynqNativePlaybackTrack,
   playbackAdAudio,
 } from "./playback-native-audio-service";
+import {
+  shouldEmitState,
+  shouldHandleInterruption,
+  shouldHandleRemoteCommand,
+} from "./playback-native-event-classifier-service";
 import { getPlaybackRemoteCommandFromNativeEvent } from "./playback-native-remote-command-service";
 import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
 import {
@@ -115,16 +120,6 @@ const getSnapshotFromState = ({
   };
 };
 
-const shouldEmitState = (event: PlaybackEvent): event is Extract<
-  PlaybackEvent,
-  { _tag: "StateChanged" }
-> => event._tag === "StateChanged";
-
-const shouldHandleRemoteCommand = (event: PlaybackEvent): event is Extract<
-  PlaybackEvent,
-  { _tag: "RemoteCommand" }
-> => event._tag === "RemoteCommand";
-
 export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
   let activeSource: "ad" | "library" | null = null;
   let activeLibraryTrack: PlaybackQueueItem | null = null;
@@ -173,6 +168,32 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
     );
   };
 
+  const handleInterruption = async (
+    event: Extract<
+      PlaybackEvent,
+      { _tag: "InterruptionBegan" | "InterruptionEnded" }
+    >,
+  ) => {
+    if (event._tag === "InterruptionBegan") {
+      stopPollingState();
+      if (lastNativeState) {
+        emitState({
+          ...lastNativeState,
+          status: lastNativeState.activeTrack ? "paused" : "idle",
+        });
+      }
+      return;
+    }
+
+    if (event.shouldResume) {
+      emitState(await playbackRuntime.runCommand({ _tag: "Play" }));
+      startPollingState();
+      return;
+    }
+
+    await syncState();
+  };
+
   const ensureEventSubscription = () => {
     if (eventSubscription) {
       return;
@@ -186,6 +207,13 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
 
       if (shouldHandleRemoteCommand(event)) {
         emitRemoteCommand(event);
+        return;
+      }
+
+      if (shouldHandleInterruption(event)) {
+        void handleInterruption(event).catch(() => {
+          stopPollingState();
+        });
       }
     });
   };

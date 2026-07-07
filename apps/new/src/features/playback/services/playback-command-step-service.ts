@@ -1,4 +1,5 @@
 import type {
+  PlaybackMode,
   PlaybackQueueItem,
   PlaybackState,
 } from "../types/playback-state";
@@ -90,6 +91,32 @@ export const getRemoveFromQueuePlaybackStepPlan = ({
 }): PlaybackCommandPlan => ({
   action: { songId, type: "remove-from-queue" },
   nativeCommand,
+});
+
+export const getToggleLoopPlaybackStepPlan = (
+  mode: PlaybackMode,
+): PlaybackCommandPlan => ({
+  action: { type: "toggle-loop" },
+  nativeCommand: {
+    mode: {
+      ...mode,
+      loop: !mode.loop,
+    },
+    type: "set-mode",
+  },
+});
+
+export const getToggleShufflePlaybackStepPlan = (
+  mode: PlaybackMode,
+): PlaybackCommandPlan => ({
+  action: { type: "toggle-shuffle" },
+  nativeCommand: {
+    mode: {
+      ...mode,
+      shuffle: !mode.shuffle,
+    },
+    type: "set-mode",
+  },
 });
 
 export const getRemoteFailurePlaybackStepPlan = (

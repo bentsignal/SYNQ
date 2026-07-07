@@ -9,6 +9,8 @@ import {
   getSeekToPlaybackStepPlan,
   getSkipNextPlaybackStepPlan,
   getSkipPreviousPlaybackStepPlan,
+  getToggleLoopPlaybackStepPlan,
+  getToggleShufflePlaybackStepPlan,
   type PlaybackCommandPlan,
 } from "./playback-command-step-service";
 import {
@@ -93,3 +95,11 @@ export const getRemoveFromQueuePlaybackCommandPlan = ({
 export const getRemoteFailurePlaybackCommandPlan = (
   message: string,
 ): PlaybackCommandPlan => getRemoteFailurePlaybackStepPlan(message);
+
+export const getToggleLoopPlaybackCommandPlan = (
+  state: PlaybackState,
+): PlaybackCommandPlan => getToggleLoopPlaybackStepPlan(state.mode);
+
+export const getToggleShufflePlaybackCommandPlan = (
+  state: PlaybackState,
+): PlaybackCommandPlan => getToggleShufflePlaybackStepPlan(state.mode);

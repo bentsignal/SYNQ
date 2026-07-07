@@ -15,6 +15,7 @@ export type PlaybackNativeCommandPlan =
     }
   | { type: "resume" }
   | { position: number; type: "seek" }
+  | { mode: PlaybackMode; type: "set-mode" }
   | { type: "stop" };
 
 export const getPlaybackNativeResumeCommandPlan = ({

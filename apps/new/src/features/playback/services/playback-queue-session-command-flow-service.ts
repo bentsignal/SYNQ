@@ -1,13 +1,13 @@
 import {
   getClearQueuePlaybackCommandPlan,
   getRemoveFromQueuePlaybackCommandPlan,
+  getToggleLoopPlaybackCommandPlan,
+  getToggleShufflePlaybackCommandPlan,
   type PlaybackCommandPlan,
 } from "./playback-command-plan-service";
 import {
   getAddPlaybackQueueSongAction,
   getMovePlaybackQueueSongAction,
-  getTogglePlaybackLoopAction,
-  getTogglePlaybackShuffleAction,
   type PlaybackAction,
 } from "./playback-session-action-service";
 import type {
@@ -63,13 +63,19 @@ export const runPlaybackQueueRemoveSongCommand = ({
 };
 
 export const runPlaybackQueueToggleLoopCommand = ({
-  dispatch,
-}: Pick<PlaybackQueueSessionCommandDependencies, "dispatch">) => {
-  dispatch(getTogglePlaybackLoopAction());
+  runCommandPlan,
+  state,
+}: Pick<PlaybackQueueSessionCommandDependencies, "runCommandPlan"> & {
+  state: PlaybackState;
+}) => {
+  runCommandPlan(getToggleLoopPlaybackCommandPlan(state));
 };
 
 export const runPlaybackQueueToggleShuffleCommand = ({
-  dispatch,
-}: Pick<PlaybackQueueSessionCommandDependencies, "dispatch">) => {
-  dispatch(getTogglePlaybackShuffleAction());
+  runCommandPlan,
+  state,
+}: Pick<PlaybackQueueSessionCommandDependencies, "runCommandPlan"> & {
+  state: PlaybackState;
+}) => {
+  runCommandPlan(getToggleShufflePlaybackCommandPlan(state));
 };

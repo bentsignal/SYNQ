@@ -284,6 +284,8 @@ import {
   getSeekToPlaybackCommandPlan,
   getSkipNextPlaybackCommandPlan,
   getSkipPreviousPlaybackCommandPlan,
+  getToggleLoopPlaybackCommandPlan,
+  getToggleShufflePlaybackCommandPlan,
   runPlaybackCommandPlan,
 } from "../../../apps/new/src/features/playback/services/playback-command-plan-service";
 import {
@@ -307,6 +309,8 @@ import {
   getRemoteFailurePlaybackStepPlan,
   getResetPlaybackStepPlan,
   getSeekToPlaybackStepPlan,
+  getToggleLoopPlaybackStepPlan,
+  getToggleShufflePlaybackStepPlan,
 } from "../../../apps/new/src/features/playback/services/playback-command-step-service";
 import type { PlaybackQueueItem } from "../../../apps/new/src/features/playback/types/playback-state";
 import {
@@ -3363,7 +3367,10 @@ function assertPlaybackNativeCommandPlanSmoke() {
   nativeRunner.runNativeCommandPlan({ track: first, type: "play" });
   nativeRunner.runNativeCommandPlan({ type: "resume" });
   nativeRunner.runNativeCommandPlan({ position: 1234, type: "seek" });
-  void nativeRunnerAdapter.setPlaybackMode({ loop: true, shuffle: false });
+  nativeRunner.runNativeCommandPlan({
+    mode: { loop: true, shuffle: false },
+    type: "set-mode",
+  });
   nativeRunner.runNativeCommandPlan({ type: "stop" });
   nativeRunner.restorePersistedPlaybackState(state);
   nativeRunner.playNativeAdBreak();
@@ -3666,10 +3673,12 @@ function assertPlaybackNativeCommandPlanSmoke() {
     songId: second.id,
   });
   runPlaybackQueueToggleLoopCommand({
-    dispatch: dispatchQueueSessionCommand,
+    runCommandPlan: runQueueSessionCommandPlan,
+    state,
   });
   runPlaybackQueueToggleShuffleCommand({
-    dispatch: dispatchQueueSessionCommand,
+    runCommandPlan: runQueueSessionCommandPlan,
+    state,
   });
   runPlaybackQueueClearSessionCommand({
     runCommandPlan: runQueueSessionCommandPlan,
@@ -3682,8 +3691,8 @@ function assertPlaybackNativeCommandPlanSmoke() {
   assert.deepEqual(queueSessionEvents, [
     ["dispatch", "add-to-queue"],
     ["dispatch", "move-queue-song"],
-    ["dispatch", "toggle-loop"],
-    ["dispatch", "toggle-shuffle"],
+    ["plan", "toggle-loop", "set-mode"],
+    ["plan", "toggle-shuffle", "set-mode"],
     ["plan", "clear-queue", "stop"],
     ["plan", "remove-from-queue", "play"],
   ]);
@@ -3711,8 +3720,8 @@ function assertPlaybackNativeCommandPlanSmoke() {
   assert.deepEqual(assembledQueueCommandEvents, [
     ["dispatch", "add-to-queue"],
     ["dispatch", "move-queue-song"],
-    ["dispatch", "toggle-loop"],
-    ["dispatch", "toggle-shuffle"],
+    ["plan", "toggle-loop", "set-mode"],
+    ["plan", "toggle-shuffle", "set-mode"],
     ["plan", "clear-queue", "stop"],
     ["plan", "remove-from-queue", "play"],
   ]);
@@ -4076,6 +4085,43 @@ function assertPlaybackNativeCommandPlanSmoke() {
     action: { position: 42_000, type: "seek-to" },
     nativeCommand: { position: 42_000, type: "seek" },
   });
+  assert.deepEqual(getToggleLoopPlaybackCommandPlan(state), {
+    action: { type: "toggle-loop" },
+    nativeCommand: {
+      mode: {
+        ...state.mode,
+        loop: !state.mode.loop,
+      },
+      type: "set-mode",
+    },
+  });
+  assert.deepEqual(getToggleShufflePlaybackCommandPlan(state), {
+    action: { type: "toggle-shuffle" },
+    nativeCommand: {
+      mode: {
+        ...state.mode,
+        shuffle: !state.mode.shuffle,
+      },
+      type: "set-mode",
+    },
+  });
+  assert.deepEqual(getToggleLoopPlaybackStepPlan({ loop: false, shuffle: true }), {
+    action: { type: "toggle-loop" },
+    nativeCommand: {
+      mode: { loop: true, shuffle: true },
+      type: "set-mode",
+    },
+  });
+  assert.deepEqual(
+    getToggleShufflePlaybackStepPlan({ loop: true, shuffle: false }),
+    {
+      action: { type: "toggle-shuffle" },
+      nativeCommand: {
+        mode: { loop: true, shuffle: true },
+        type: "set-mode",
+      },
+    },
+  );
   assert.deepEqual(getSkipNextPlaybackCommandPlan(state), {
     action: { targetIndex: 1, type: "skip-next" },
     nativeCommand: {

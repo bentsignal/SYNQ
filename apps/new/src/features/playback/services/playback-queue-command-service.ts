@@ -50,9 +50,15 @@ export const createPlaybackQueueCommands = ({
     });
   },
   toggleLoop: () => {
-    runPlaybackQueueToggleLoopCommand({ dispatch });
+    runPlaybackQueueToggleLoopCommand({
+      runCommandPlan,
+      state: getState(),
+    });
   },
   toggleShuffle: () => {
-    runPlaybackQueueToggleShuffleCommand({ dispatch });
+    runPlaybackQueueToggleShuffleCommand({
+      runCommandPlan,
+      state: getState(),
+    });
   },
 });

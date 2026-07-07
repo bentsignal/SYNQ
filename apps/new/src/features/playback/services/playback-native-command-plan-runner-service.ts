@@ -31,6 +31,9 @@ export const runPlaybackNativeCommandPlan = ({
     case "seek":
       runNativeCommand(() => adapter.seekTo(plan.position));
       return;
+    case "set-mode":
+      runNativeCommand(() => adapter.setPlaybackMode(plan.mode));
+      return;
     case "stop":
       runNativeCommand(() => adapter.stop());
       return;

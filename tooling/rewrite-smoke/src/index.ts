@@ -203,6 +203,7 @@ import {
   getPlaybackMiniPlayerViewState,
 } from "../../../apps/new/src/features/playback/services/playback-mini-player-state-service";
 import { audioStatusToTrackPlayerSnapshot } from "../../../apps/new/src/features/playback/services/playback-native-status-service";
+import { getTrackPlayerStatusSnapshotFromNativeState } from "../../../apps/new/src/features/playback/services/playback-native-status-snapshot-service";
 import {
   getPlaybackAdStatusUpdate,
   getPlaybackLibraryStatusUpdate,
@@ -2938,6 +2939,77 @@ function assertPlaybackNativeStatusSmoke() {
       position: 2_000,
       songId: null,
       source: "ad",
+    },
+  );
+  assert.deepEqual(
+    getTrackPlayerStatusSnapshotFromNativeState({
+      source: "library",
+      state: {
+        activeTrack: {
+          durationMs: 120_000,
+          id: "42",
+          title: "Native track",
+          uri: "file://native.mp3",
+        },
+        bufferedPositionMs: 40_000,
+        durationMs: Number.NaN,
+        playbackRate: 1,
+        positionMs: -10,
+        queue: {
+          activeTrackId: "42",
+          mode: {
+            loop: false,
+            shuffle: false,
+          },
+          tracks: [],
+        },
+        status: "buffering",
+      },
+    }),
+    {
+      activeTrackId: 42,
+      didJustFinish: false,
+      duration: 120_000,
+      isLoaded: true,
+      isPlaying: true,
+      position: 0,
+      songId: 42,
+      source: "library",
+    },
+  );
+  assert.deepEqual(
+    getTrackPlayerStatusSnapshotFromNativeState({
+      source: "library",
+      state: {
+        activeTrack: {
+          id: "not-a-number",
+          title: "Malformed native track",
+          uri: "file://bad.mp3",
+        },
+        bufferedPositionMs: 0,
+        durationMs: 0,
+        playbackRate: 1,
+        positionMs: 30_000,
+        queue: {
+          activeTrackId: "not-a-number",
+          mode: {
+            loop: false,
+            shuffle: false,
+          },
+          tracks: [],
+        },
+        status: "ended",
+      },
+    }),
+    {
+      activeTrackId: null,
+      didJustFinish: true,
+      duration: null,
+      isLoaded: true,
+      isPlaying: false,
+      position: 30_000,
+      songId: null,
+      source: "library",
     },
   );
   const nativeStatusEvents: unknown[] = [];

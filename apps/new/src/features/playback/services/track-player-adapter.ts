@@ -25,6 +25,7 @@ import {
 } from "./playback-native-event-classifier-service";
 import { getPlaybackRemoteCommandFromNativeEvent } from "./playback-native-remote-command-service";
 import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
+import { getTrackPlayerStatusSnapshotFromNativeState } from "./playback-native-status-snapshot-service";
 import {
   getTrackPlayerActiveLibraryTrack,
   getTrackPlayerRestoreTarget,
@@ -88,38 +89,6 @@ const getAdPlaybackTrack = async (): Promise<PlaybackTrack> => {
   };
 };
 
-const getSnapshotFromState = ({
-  source,
-  state,
-}: {
-  source: "ad" | "library" | null;
-  state: SynqPlaybackState;
-}): TrackPlayerStatusSnapshot => {
-  const duration = Number.isFinite(state.durationMs)
-    ? Math.max(0, state.durationMs)
-    : (state.activeTrack?.durationMs ?? 0);
-  const position = Number.isFinite(state.positionMs)
-    ? Math.max(0, state.positionMs)
-    : 0;
-
-  return {
-    activeTrackId:
-      source === "library" && state.activeTrack
-        ? Number(state.activeTrack.id)
-        : null,
-    didJustFinish: state.status === "ended",
-    duration: duration || null,
-    isLoaded: Boolean(state.activeTrack),
-    isPlaying: state.status === "playing" || state.status === "buffering",
-    position,
-    songId:
-      source === "library" && state.activeTrack
-        ? Number(state.activeTrack.id)
-        : null,
-    source,
-  };
-};
-
 export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
   let activeSource: "ad" | "library" | null = null;
   let activeLibraryTrack: PlaybackQueueItem | null = null;
@@ -148,7 +117,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
     }
 
     statusListener?.(
-      getSnapshotFromState({
+      getTrackPlayerStatusSnapshotFromNativeState({
         source: activeSource,
         state,
       }),

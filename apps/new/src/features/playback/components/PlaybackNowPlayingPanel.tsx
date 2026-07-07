@@ -8,6 +8,7 @@ import { PlaybackNowPlayingActiveTrack } from "./PlaybackNowPlayingActiveTrack";
 import { PlaybackNowPlayingEmptyState } from "./PlaybackNowPlayingEmptyState";
 
 type PlaybackNowPlayingPanelProps = {
+  activeArtworkUri: string | null;
   activeTrack: PlaybackQueueItem | null;
   onSeekToPosition: (position: number) => void;
   progressPercent: number;
@@ -15,6 +16,7 @@ type PlaybackNowPlayingPanelProps = {
 };
 
 export function PlaybackNowPlayingPanel({
+  activeArtworkUri,
   activeTrack,
   onSeekToPosition,
   progressPercent,
@@ -35,6 +37,7 @@ export function PlaybackNowPlayingPanel({
       </Text>
       {activeTrack ? (
         <PlaybackNowPlayingActiveTrack
+          artworkUri={activeArtworkUri}
           activeTrack={activeTrack}
           onSeekToPosition={onSeekToPosition}
           progressPercent={progressPercent}

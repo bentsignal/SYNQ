@@ -194,6 +194,9 @@ import {
   getPlaybackQueueHref,
 } from "../../../apps/new/src/features/playback/services/playback-screen-state-service";
 import {
+  getPlaybackDisplayArtworkUriWithResolver,
+} from "../../../apps/new/src/features/playback/services/playback-artwork-display-service";
+import {
   getPlaybackQueueEmptyState,
   getPlaybackQueueControllerViewState,
   getPlaybackQueueScreenState,
@@ -4591,6 +4594,44 @@ function assertPlaybackPlayerStateSmoke() {
   assert.equal(
     getPlaybackProgressPercent({ duration: 100_000, position: 150_000 }),
     100,
+  );
+  const resolveArtworkPath = (imageHash: string) => ({
+    pathToSmallImage: `/images/${imageHash}-small.jpg`,
+  });
+  assert.equal(
+    getPlaybackDisplayArtworkUriWithResolver({
+      artworkUri: null,
+      getImagePathFromHash: resolveArtworkPath,
+    }),
+    null,
+  );
+  assert.equal(
+    getPlaybackDisplayArtworkUriWithResolver({
+      artworkUri: "file:///images/cover.jpg",
+      getImagePathFromHash: resolveArtworkPath,
+    }),
+    "file:///images/cover.jpg",
+  );
+  assert.equal(
+    getPlaybackDisplayArtworkUriWithResolver({
+      artworkUri: "/images/cover.jpg",
+      getImagePathFromHash: resolveArtworkPath,
+    }),
+    "/images/cover.jpg",
+  );
+  assert.equal(
+    getPlaybackDisplayArtworkUriWithResolver({
+      artworkUri: "https://example.test/cover.jpg",
+      getImagePathFromHash: resolveArtworkPath,
+    }),
+    "https://example.test/cover.jpg",
+  );
+  assert.equal(
+    getPlaybackDisplayArtworkUriWithResolver({
+      artworkUri: "cover-hash",
+      getImagePathFromHash: resolveArtworkPath,
+    }),
+    "/images/cover-hash-small.jpg",
   );
   assert.equal(
     getSeekPositionFromProgressBar({

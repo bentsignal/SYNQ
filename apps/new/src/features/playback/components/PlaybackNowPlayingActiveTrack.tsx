@@ -1,4 +1,4 @@
-import { Text } from "react-native";
+import { Image, Text, View } from "react-native";
 import { formatDurationMs } from "@/src/features/app-shell/services/duration-format-service";
 import type { CustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
 import type {
@@ -9,6 +9,7 @@ import { PlaybackProgressBar } from "./PlaybackProgressBar";
 
 type PlaybackNowPlayingActiveTrackProps = {
   activeTrack: PlaybackQueueItem;
+  artworkUri: string | null;
   onSeekToPosition: (position: number) => void;
   progressPercent: number;
   state: PlaybackState;
@@ -17,6 +18,7 @@ type PlaybackNowPlayingActiveTrackProps = {
 
 export function PlaybackNowPlayingActiveTrack({
   activeTrack,
+  artworkUri,
   onSeekToPosition,
   progressPercent,
   state,
@@ -24,6 +26,25 @@ export function PlaybackNowPlayingActiveTrack({
 }: PlaybackNowPlayingActiveTrackProps) {
   return (
     <>
+      {artworkUri ? (
+        <Image
+          accessibilityLabel={`${activeTrack.title} artwork`}
+          className="h-28 w-28 rounded-lg"
+          source={{ uri: artworkUri }}
+        />
+      ) : (
+        <View
+          className="h-28 w-28 items-center justify-center rounded-lg"
+          style={{ backgroundColor: theme.border }}
+        >
+          <Text
+            className="text-3xl font-extrabold"
+            style={{ color: theme.secondaryText }}
+          >
+            {activeTrack.title.trim().slice(0, 1).toUpperCase() || "S"}
+          </Text>
+        </View>
+      )}
       <Text
         className="text-[28px] font-extrabold leading-[34px]"
         numberOfLines={2}

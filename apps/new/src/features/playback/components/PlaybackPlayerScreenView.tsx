@@ -12,6 +12,7 @@ type PlaybackPlayerScreenViewProps = PlaybackPlayerController;
 
 export function PlaybackPlayerScreenView({
   actionState,
+  activeArtworkUri,
   activeTrack,
   activeTrackDetailLink,
   activeTrackEditLink,
@@ -48,6 +49,7 @@ export function PlaybackPlayerScreenView({
       ) : null}
 
       <PlaybackNowPlayingPanel
+        activeArtworkUri={activeArtworkUri}
         activeTrack={activeTrack}
         onSeekToPosition={seekToPosition}
         progressPercent={progressPercent}

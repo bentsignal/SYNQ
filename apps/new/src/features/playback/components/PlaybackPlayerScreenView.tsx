@@ -18,10 +18,8 @@ export function PlaybackPlayerScreenView({
   activeTrackEditLink,
   adBreakPanel,
   adProgressPercent,
-  fastForward,
   freeListeningRemainingMs,
   progressPercent,
-  rewind,
   screenState,
   seekToPosition,
   skipBack,
@@ -58,8 +56,6 @@ export function PlaybackPlayerScreenView({
 
       <PlaybackPlayerControls
         actionState={actionState}
-        onFastForward={fastForward}
-        onRewind={rewind}
         onSkipBack={skipBack}
         onSkipForward={skipForward}
         onToggleLoopMode={toggleLoopMode}

@@ -4,8 +4,6 @@ import { PlaybackPlayerControlButton } from "./PlaybackPlayerControlButton";
 
 type PlaybackPlayerControlsProps = {
   actionState: PlaybackPlayerActionState;
-  onFastForward: () => void;
-  onRewind: () => void;
   onSkipBack: () => void;
   onSkipForward: () => void;
   onToggleLoopMode: () => void;
@@ -15,8 +13,6 @@ type PlaybackPlayerControlsProps = {
 
 export function PlaybackPlayerControls({
   actionState,
-  onFastForward,
-  onRewind,
   onSkipBack,
   onSkipForward,
   onToggleLoopMode,
@@ -41,19 +37,6 @@ export function PlaybackPlayerControls({
           disabled={!actionState.canSkipNext}
           label="Next"
           onPress={onSkipForward}
-        />
-      </View>
-
-      <View className="flex-row flex-wrap gap-3">
-        <PlaybackPlayerControlButton
-          disabled={!actionState.canRewind}
-          label="-15s"
-          onPress={onRewind}
-        />
-        <PlaybackPlayerControlButton
-          disabled={!actionState.canFastForward}
-          label="+15s"
-          onPress={onFastForward}
         />
       </View>
 

@@ -22,8 +22,6 @@ public class SynqNativeAudioModule: Module {
   private var togglePlayPauseCommandTarget: Any?
   private var nextTrackCommandTarget: Any?
   private var previousTrackCommandTarget: Any?
-  private var skipForwardCommandTarget: Any?
-  private var skipBackwardCommandTarget: Any?
   private var changePlaybackPositionCommandTarget: Any?
 
   public func definition() -> ModuleDefinition {
@@ -195,10 +193,10 @@ public class SynqNativeAudioModule: Module {
     commandCenter.togglePlayPauseCommand.isEnabled = true
     commandCenter.nextTrackCommand.isEnabled = true
     commandCenter.previousTrackCommand.isEnabled = true
-    commandCenter.skipForwardCommand.isEnabled = true
-    commandCenter.skipForwardCommand.preferredIntervals = [NSNumber(value: 15)]
-    commandCenter.skipBackwardCommand.isEnabled = true
-    commandCenter.skipBackwardCommand.preferredIntervals = [NSNumber(value: 15)]
+    commandCenter.skipForwardCommand.isEnabled = false
+    commandCenter.skipForwardCommand.preferredIntervals = []
+    commandCenter.skipBackwardCommand.isEnabled = false
+    commandCenter.skipBackwardCommand.preferredIntervals = []
     commandCenter.changePlaybackPositionCommand.isEnabled = true
 
     playCommandTarget = commandCenter.playCommand.addTarget { [weak self] _ in
@@ -219,14 +217,6 @@ public class SynqNativeAudioModule: Module {
     }
     previousTrackCommandTarget = commandCenter.previousTrackCommand.addTarget { [weak self] _ in
       self?.handleRemoteSkipPrevious()
-      return .success
-    }
-    skipForwardCommandTarget = commandCenter.skipForwardCommand.addTarget { [weak self] event in
-      self?.sendRelativeSeekCommand(event: event, direction: 1)
-      return .success
-    }
-    skipBackwardCommandTarget = commandCenter.skipBackwardCommand.addTarget { [weak self] event in
-      self?.sendRelativeSeekCommand(event: event, direction: -1)
       return .success
     }
     changePlaybackPositionCommandTarget = commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
@@ -259,12 +249,6 @@ public class SynqNativeAudioModule: Module {
     if let previousTrackCommandTarget {
       commandCenter.previousTrackCommand.removeTarget(previousTrackCommandTarget)
     }
-    if let skipForwardCommandTarget {
-      commandCenter.skipForwardCommand.removeTarget(skipForwardCommandTarget)
-    }
-    if let skipBackwardCommandTarget {
-      commandCenter.skipBackwardCommand.removeTarget(skipBackwardCommandTarget)
-    }
     if let changePlaybackPositionCommandTarget {
       commandCenter.changePlaybackPositionCommand.removeTarget(changePlaybackPositionCommandTarget)
     }
@@ -274,8 +258,6 @@ public class SynqNativeAudioModule: Module {
     togglePlayPauseCommandTarget = nil
     nextTrackCommandTarget = nil
     previousTrackCommandTarget = nil
-    skipForwardCommandTarget = nil
-    skipBackwardCommandTarget = nil
     changePlaybackPositionCommandTarget = nil
     remoteCommandsConfigured = false
   }
@@ -600,23 +582,6 @@ public class SynqNativeAudioModule: Module {
     updateNowPlayingInfo()
     emitStateChanged()
     sendRemoteCommand("seek", positionMs: target)
-  }
-
-  private func sendRelativeSeekCommand(event: MPRemoteCommandEvent, direction: Double) {
-    let interval =
-      (event as? MPSkipIntervalCommandEvent)?.interval
-      ?? MPRemoteCommandCenter.shared().skipForwardCommand.preferredIntervals.first?.doubleValue
-      ?? 15
-    let duration = durationMs()
-    let target = positionMs() + (direction * interval * 1000)
-    let clampedTarget: Double
-    if duration > 0 {
-      clampedTarget = min(duration, max(0, target))
-    } else {
-      clampedTarget = max(0, target)
-    }
-
-    handleRemoteSeek(positionMs: clampedTarget)
   }
 
   private func updateNowPlayingInfo() {

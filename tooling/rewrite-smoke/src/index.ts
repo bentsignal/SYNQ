@@ -243,6 +243,10 @@ import {
 } from "../../../apps/new/src/features/playback/services/playback-native-command-runner-service";
 import type { TrackPlayerAdapter } from "../../../apps/new/src/features/playback/services/track-player-adapter";
 import {
+  getTrackPlayerActiveLibraryTrack,
+  getTrackPlayerRestoreTarget,
+} from "../../../apps/new/src/features/playback/services/playback-track-player-restore-service";
+import {
   getPlaybackNativePreviousCommandPlan,
   getPlaybackNativeReplacementCommandPlan,
   getPlaybackNativeResumeCommandPlan,
@@ -3121,6 +3125,10 @@ function assertPlaybackNativeCommandPlanSmoke() {
     activeTrackId: first.id,
     duration: first.duration ?? 0,
     isPlaying: true,
+    mode: {
+      loop: true,
+      shuffle: true,
+    },
     queue: [first, second],
   };
 
@@ -3137,6 +3145,38 @@ function assertPlaybackNativeCommandPlanSmoke() {
   assert.equal(
     getPlaybackNativeCommandErrorMessage("unknown native failure"),
     "Playback command failed.",
+  );
+  assert.deepEqual(getTrackPlayerRestoreTarget(state), {
+    activeTrack: first,
+    activeTrackId: first.id,
+    mode: {
+      loop: true,
+      shuffle: true,
+    },
+    queue: [first, second],
+  });
+  assert.equal(
+    getTrackPlayerRestoreTarget({
+      ...state,
+      activeTrackId: 999,
+    }),
+    null,
+  );
+  assert.equal(
+    getTrackPlayerActiveLibraryTrack({
+      activeTrackId: String(second.id),
+      currentTrack: first,
+      queue: [first, second],
+    }),
+    second,
+  );
+  assert.equal(
+    getTrackPlayerActiveLibraryTrack({
+      activeTrackId: "missing",
+      currentTrack: first,
+      queue: [first, second],
+    }),
+    first,
   );
   const nativeRunnerEvents: unknown[] = [];
   const nativeRunnerAdapter: TrackPlayerAdapter = {

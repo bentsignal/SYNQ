@@ -247,6 +247,11 @@ import {
   getTrackPlayerRestoreTarget,
 } from "../../../apps/new/src/features/playback/services/playback-track-player-restore-service";
 import {
+  getNativePlaybackTrackWithDependencies,
+  getPlaybackArtworkUriWithResolver,
+  repairPlaybackFileUriWithDocumentDirectory,
+} from "../../../apps/new/src/features/playback/services/playback-native-track-mapper-service";
+import {
   getPlaybackNativePreviousCommandPlan,
   getPlaybackNativeReplacementCommandPlan,
   getPlaybackNativeResumeCommandPlan,
@@ -3177,6 +3182,65 @@ function assertPlaybackNativeCommandPlanSmoke() {
       queue: [first, second],
     }),
     first,
+  );
+  const getImagePathFromHash = (hash: string) => ({
+    pathToFullImage: `file:///documents/images/${hash}-full.jpg`,
+    pathToSmallImage: `file:///documents/images/${hash}-small.jpg`,
+  });
+  assert.equal(
+    repairPlaybackFileUriWithDocumentDirectory({
+      documentDirectory: "file:///current/Documents/",
+      uri: "file:///old/Documents/library/track-10.mp3",
+    }),
+    "file:///current/Documents/library/track-10.mp3",
+  );
+  assert.equal(
+    repairPlaybackFileUriWithDocumentDirectory({
+      documentDirectory: "file:///current/Documents/",
+      uri: "/tmp/track-10.mp3",
+    }),
+    "/tmp/track-10.mp3",
+  );
+  assert.equal(
+    getPlaybackArtworkUriWithResolver({
+      artworkUri: "cover-hash",
+      getImagePathFromHash,
+    }),
+    "file:///documents/images/cover-hash-small.jpg",
+  );
+  assert.equal(
+    getPlaybackArtworkUriWithResolver({
+      artworkUri: "https://example.test/cover.jpg",
+      getImagePathFromHash,
+    }),
+    "https://example.test/cover.jpg",
+  );
+  assert.equal(
+    getPlaybackArtworkUriWithResolver({
+      artworkUri: null,
+      getImagePathFromHash,
+    }),
+    undefined,
+  );
+  assert.deepEqual(
+    getNativePlaybackTrackWithDependencies({
+      documentDirectory: "file:///current/Documents/",
+      getImagePathFromHash,
+      item: {
+        ...first,
+        artworkUri: "cover-hash",
+        pathToFile: "file:///old/Documents/library/track-10.mp3",
+      },
+    }),
+    {
+      albumTitle: "Smoke Album",
+      artistName: "Smoke Artist",
+      artworkUri: "file:///documents/images/cover-hash-small.jpg",
+      durationMs: first.duration,
+      id: String(first.id),
+      title: "First",
+      uri: "file:///current/Documents/library/track-10.mp3",
+    },
   );
   const nativeRunnerEvents: unknown[] = [];
   const nativeRunnerAdapter: TrackPlayerAdapter = {

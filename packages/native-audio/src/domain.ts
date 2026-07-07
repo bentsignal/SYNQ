@@ -100,6 +100,14 @@ export const initialPlaybackState: PlaybackState = {
   status: "idle",
 };
 
+export const clampPlaybackRate = (rate: number): number => {
+  if (!Number.isFinite(rate)) {
+    return 1;
+  }
+
+  return Math.max(0.25, Math.min(rate, 4));
+};
+
 export class PlaybackNativeError extends Data.TaggedError(
   "PlaybackNativeError",
 )<{

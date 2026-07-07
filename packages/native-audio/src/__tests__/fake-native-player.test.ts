@@ -85,6 +85,27 @@ describe("FakeNativePlayerLayer", () => {
     await runtime.dispose();
   });
 
+  it.each([
+    [-1, 0.25],
+    [0.1, 0.25],
+    [2, 2],
+    [99, 4],
+    [Number.NaN, 1],
+    [Number.POSITIVE_INFINITY, 1],
+  ])("clamps playback rate %s to %s", async (rate, expectedRate) => {
+    const runtime = ManagedRuntime.make(FakeNativePlayerLayer());
+    const player = makePlaybackCommandRuntime(runtime);
+
+    const state = await player.runCommand({
+      _tag: "SetPlaybackRate",
+      rate,
+    });
+
+    expect(state.playbackRate).toBe(expectedRate);
+
+    await runtime.dispose();
+  });
+
   it("goes idle instead of playing without a track when skipping past the end", async () => {
     const runtime = ManagedRuntime.make(FakeNativePlayerLayer());
     const player = makePlaybackCommandRuntime(runtime);

@@ -1,6 +1,7 @@
 import { Effect, Layer } from "effect";
 
 import {
+  clampPlaybackRate,
   initialPlaybackState,
   PlaybackInvalidCommandError,
   type PlaybackCommand,
@@ -128,7 +129,7 @@ const runFakeCommand = (
     case "SetPlaybackRate":
       return {
         ...state,
-        playbackRate: command.rate,
+        playbackRate: clampPlaybackRate(command.rate),
       };
   }
 };

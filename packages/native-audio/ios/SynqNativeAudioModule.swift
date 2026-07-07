@@ -130,7 +130,8 @@ public class SynqNativeAudioModule: Module {
     }
 
     Function("setPlaybackRate") { (rate: Double) in
-      self.playbackRate = Float(max(0.25, min(rate, 4)))
+      let requestedRate = rate.isFinite ? rate : 1
+      self.playbackRate = Float(max(0.25, min(requestedRate, 4)))
       if self.status == "playing" {
         self.player?.rate = self.playbackRate
       }

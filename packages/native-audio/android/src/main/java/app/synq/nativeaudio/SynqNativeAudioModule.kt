@@ -124,7 +124,8 @@ class SynqNativeAudioModule : Module() {
     }
 
     Function("setPlaybackRate") { rate: Double ->
-      playbackRate = rate.toFloat().coerceIn(0.25f, 4.0f)
+      val requestedRate = if (rate.isFinite()) rate.toFloat() else 1.0f
+      playbackRate = requestedRate.coerceIn(0.25f, 4.0f)
       ensurePlayer().playbackParameters = PlaybackParameters(playbackRate)
       emitState()
       currentState()

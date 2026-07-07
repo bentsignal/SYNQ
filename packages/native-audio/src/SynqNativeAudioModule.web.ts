@@ -5,6 +5,7 @@ import {
   type SynqNativeAudioPlaybackQueue,
   type SynqNativeAudioPlaybackState,
 } from "./SynqNativeAudio.types";
+import { clampPlaybackRate } from "./domain";
 
 const emptyState: SynqNativeAudioPlaybackState = {
   activeTrack: null,
@@ -71,7 +72,7 @@ class SynqNativeAudioModule extends NativeModule<SynqNativeAudioModuleEvents> {
   async setPlaybackRate(rate: number): Promise<SynqNativeAudioPlaybackState> {
     return {
       ...emptyState,
-      playbackRate: rate,
+      playbackRate: clampPlaybackRate(rate),
     };
   }
 

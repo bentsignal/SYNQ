@@ -14,6 +14,24 @@ export const getPlaybackProgressPercent = ({
   return Math.round(Math.min(1, Math.max(0, position / duration)) * 100);
 };
 
+export const getSeekPositionFromProgressBar = ({
+  duration,
+  locationX,
+  width,
+}: {
+  duration: number;
+  locationX: number;
+  width: number;
+}) => {
+  if (duration <= 0 || width <= 0) {
+    return 0;
+  }
+
+  const ratio = Math.max(0, Math.min(locationX / width, 1));
+
+  return ratio * duration;
+};
+
 export const getFreeListeningRemainingMs = ({
   accumulatedMs,
   thresholdMs,

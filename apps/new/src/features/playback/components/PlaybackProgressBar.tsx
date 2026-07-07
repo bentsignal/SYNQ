@@ -5,6 +5,10 @@ import {
   type LayoutChangeEvent,
 } from "react-native";
 import type { CustomizationTheme } from "@/src/features/settings/hooks/use-customization-theme";
+import {
+  getPlaybackProgressPercent,
+  getSeekPositionFromProgressBar,
+} from "../services/playback-player-progress-service";
 
 type PlaybackProgressBarProps = {
   duration?: number;
@@ -20,33 +24,62 @@ export function PlaybackProgressBar({
   theme,
 }: PlaybackProgressBarProps) {
   const [width, setWidth] = useState(0);
+  const [previewPosition, setPreviewPosition] = useState<number | null>(null);
   const canSeek = Boolean(onSeek) && duration > 0 && width > 0;
+  const displayedProgressPercent =
+    previewPosition === null
+      ? progressPercent
+      : getPlaybackProgressPercent({
+          duration,
+          position: previewPosition,
+        });
   const handleLayout = (event: LayoutChangeEvent) => {
     setWidth(event.nativeEvent.layout.width);
   };
-  const seekFromEvent = (event: GestureResponderEvent) => {
-    if (!canSeek) {
-      return;
+  const getPositionFromEvent = (event: GestureResponderEvent) =>
+    getSeekPositionFromProgressBar({
+      duration,
+      locationX: event.nativeEvent.locationX,
+      width,
+    });
+  const previewSeekFromEvent = (event: GestureResponderEvent) => {
+    if (canSeek) {
+      setPreviewPosition(getPositionFromEvent(event));
+    }
+  };
+  const commitSeekFromEvent = (event: GestureResponderEvent) => {
+    if (canSeek) {
+      onSeek?.(getPositionFromEvent(event));
     }
 
-    const ratio = Math.max(0, Math.min(event.nativeEvent.locationX / width, 1));
-    onSeek?.(ratio * duration);
+    setPreviewPosition(null);
   };
 
   return (
     <View
-      className="h-2 overflow-hidden rounded-full"
+      accessibilityLabel="Playback position"
+      accessibilityRole="adjustable"
+      className="h-8 justify-center"
       onLayout={handleLayout}
       onMoveShouldSetResponder={() => canSeek}
-      onResponderGrant={seekFromEvent}
-      onResponderMove={seekFromEvent}
+      onResponderGrant={previewSeekFromEvent}
+      onResponderMove={previewSeekFromEvent}
+      onResponderRelease={commitSeekFromEvent}
+      onResponderTerminate={() => setPreviewPosition(null)}
       onStartShouldSetResponder={() => canSeek}
-      style={{ backgroundColor: theme.border }}
     >
       <View
-        className="h-full rounded-full"
-        style={{ backgroundColor: theme.accent, width: `${progressPercent}%` }}
-      />
+        className="h-2 overflow-hidden rounded-full"
+        style={{ backgroundColor: theme.border }}
+      >
+        <View
+          className="h-full rounded-full"
+          style={{
+            backgroundColor: theme.accent,
+            width: `${displayedProgressPercent}%`,
+          }}
+        />
+      </View>
     </View>
   );
 }

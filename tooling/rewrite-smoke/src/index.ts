@@ -164,6 +164,7 @@ import {
 import {
   getFreeListeningRemainingMs,
   getPlaybackProgressPercent,
+  getSeekPositionFromProgressBar,
   getSeekTargetPosition,
 } from "../../../apps/new/src/features/playback/services/playback-player-progress-service";
 import {
@@ -4590,6 +4591,38 @@ function assertPlaybackPlayerStateSmoke() {
   assert.equal(
     getPlaybackProgressPercent({ duration: 100_000, position: 150_000 }),
     100,
+  );
+  assert.equal(
+    getSeekPositionFromProgressBar({
+      duration: 120_000,
+      locationX: 50,
+      width: 200,
+    }),
+    30_000,
+  );
+  assert.equal(
+    getSeekPositionFromProgressBar({
+      duration: 120_000,
+      locationX: -50,
+      width: 200,
+    }),
+    0,
+  );
+  assert.equal(
+    getSeekPositionFromProgressBar({
+      duration: 120_000,
+      locationX: 250,
+      width: 200,
+    }),
+    120_000,
+  );
+  assert.equal(
+    getSeekPositionFromProgressBar({
+      duration: 120_000,
+      locationX: 50,
+      width: 0,
+    }),
+    0,
   );
   assert.equal(
     getFreeListeningRemainingMs({

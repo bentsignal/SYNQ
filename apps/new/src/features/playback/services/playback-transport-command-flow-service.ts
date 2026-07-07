@@ -21,11 +21,13 @@ export const runPlaybackTransportPlaySongCommand = ({
   runAdGatedCommand,
   runCommandPlan,
   song,
+  state,
 }: PlaybackTransportCommandDependencies & {
   song: PlaybackQueueItem;
+  state: PlaybackState;
 }) => {
   runAdGatedCommand(() => {
-    runCommandPlan(getPlaySongPlaybackCommandPlan(song));
+    runCommandPlan(getPlaySongPlaybackCommandPlan({ song, state }));
   });
 };
 

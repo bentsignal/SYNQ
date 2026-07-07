@@ -13,6 +13,7 @@ import type {
 type SongPreviewAccumulator = {
   albumNames: Set<string>;
   artistNames: Set<string>;
+  coverImage: string | null;
   duration: number | null;
   pathToFile: string | null;
   songId: number;
@@ -53,6 +54,7 @@ export const rowsToSongPreviews = ({
       {
         albumNames: new Set<string>(),
         artistNames: new Set<string>(),
+        coverImage: row.songCoverImage ?? row.albumCoverImage ?? null,
         duration: row.duration,
         pathToFile: row.pathToFile,
         songId: row.songId,
@@ -67,12 +69,16 @@ export const rowsToSongPreviews = ({
       song.artistNames.add(row.artistName);
     }
 
+    song.coverImage =
+      song.coverImage ?? row.songCoverImage ?? row.albumCoverImage ?? null;
+
     songMap.set(row.songId, song);
   });
 
   const songs = Array.from(songMap.values())
     .map<LibrarySongPreview>((song) => ({
       album: formatNames(song.albumNames),
+      ...(song.coverImage ? { artworkUri: song.coverImage } : {}),
       artist: formatNames(song.artistNames),
       duration: song.duration,
       id: song.songId,

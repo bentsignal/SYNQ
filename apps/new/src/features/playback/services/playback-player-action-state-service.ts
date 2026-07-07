@@ -24,8 +24,10 @@ export const getPlaybackPlayerActionState = ({
     canRewind: canRunTrackCommand && state.position > 0,
     canSkipNext: canRunTrackCommand,
     canSkipPrevious: canRunTrackCommand,
+    loopActive: state.mode.loop,
     loopLabel: state.mode.loop ? "Loop On" : "Loop Off",
     playPauseLabel: state.isPlaying ? "Pause" : "Play",
+    shuffleActive: state.mode.shuffle,
     shuffleLabel: state.mode.shuffle ? "Shuffle On" : "Shuffle Off",
   };
 };

@@ -21,10 +21,12 @@ export const buildAlbumRowsQuery = (id: number) =>
 export const buildAlbumSongRowsQuery = (id: number) =>
   db
     .select({
+      albumCoverImage: schema.albums.coverImage,
       albumName: schema.albums.name,
       artistName: schema.artists.name,
       duration: schema.songs.duration,
       pathToFile: schema.songs.pathToFile,
+      songCoverImage: schema.songs.coverImage,
       songId: schema.songs.id,
       title: schema.songs.title,
       track: schema.albumSongs.track,

@@ -14,6 +14,7 @@ export type PlaybackQueueFilter = {
 
 export type PlaybackQueueItem = {
   album: string;
+  artworkUri?: string | null;
   artist: string;
   duration: number | null;
   id: number;

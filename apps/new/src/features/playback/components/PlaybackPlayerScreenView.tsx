@@ -12,16 +12,16 @@ type PlaybackPlayerScreenViewProps = PlaybackPlayerController;
 
 export function PlaybackPlayerScreenView({
   actionState,
+  activeArtworkUri,
   activeTrack,
   activeTrackDetailLink,
   activeTrackEditLink,
   adBreakPanel,
   adProgressPercent,
-  fastForward,
   freeListeningRemainingMs,
   progressPercent,
-  rewind,
   screenState,
+  seekToPosition,
   skipBack,
   skipForward,
   state,
@@ -47,15 +47,15 @@ export function PlaybackPlayerScreenView({
       ) : null}
 
       <PlaybackNowPlayingPanel
+        activeArtworkUri={activeArtworkUri}
         activeTrack={activeTrack}
+        onSeekToPosition={seekToPosition}
         progressPercent={progressPercent}
         state={state}
       />
 
       <PlaybackPlayerControls
         actionState={actionState}
-        onFastForward={fastForward}
-        onRewind={rewind}
         onSkipBack={skipBack}
         onSkipForward={skipForward}
         onToggleLoopMode={toggleLoopMode}

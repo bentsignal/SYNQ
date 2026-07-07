@@ -7,7 +7,6 @@
     "icon": "./src/assets/appIcons/icon-blue.png",
     "scheme": "synq-new",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "plugins": [
       "expo-router",
       [
@@ -16,36 +15,37 @@
           "enableBackgroundPlayback": true
         }
       ],
+      "@synq/native-audio",
       [
-        "expo-icon-handler",
+        "./expo-plugins/with-ios-alternate-icons.cjs",
         {
           "icons": [
             {
-              "name": "icon-blue",
+              "name": "icon_blue",
               "path": "./src/assets/appIcons/icon-blue.png"
             },
             {
-              "name": "icon-mint",
+              "name": "icon_mint",
               "path": "./src/assets/appIcons/icon-mint.png"
             },
             {
-              "name": "icon-orange",
+              "name": "icon_orange",
               "path": "./src/assets/appIcons/icon-orange.png"
             },
             {
-              "name": "icon-pink",
+              "name": "icon_pink",
               "path": "./src/assets/appIcons/icon-pink.png"
             },
             {
-              "name": "icon-purple",
+              "name": "icon_purple",
               "path": "./src/assets/appIcons/icon-purple.png"
             },
             {
-              "name": "icon-red",
+              "name": "icon_red",
               "path": "./src/assets/appIcons/icon-red.png"
             },
             {
-              "name": "icon-yellow",
+              "name": "icon_yellow",
               "path": "./src/assets/appIcons/icon-yellow.png"
             }
           ]
@@ -55,25 +55,52 @@
         "expo-build-properties",
         {
           "ios": {
-            "deploymentTarget": "15.5"
+            "deploymentTarget": "16.4"
           }
         }
-      ]
+      ],
+      "./expo-plugins/with-ios-pods-deployment-target.cjs",
+      "./expo-plugins/with-ios-scene-lifecycle.cjs",
+      "expo-splash-screen",
+      "expo-sqlite",
+      "expo-asset"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.directedbyshawn.synq-new"
+      "bundleIdentifier": "com.directedbyshawn.synq-new",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocalNetworkUsageDescription": "SYNQ needs local network access to connect to the development server on your Mac.",
+        "NSBonjourServices": [
+          "_expo._tcp",
+          "_react-native-packager._tcp",
+          "_http._tcp"
+        ],
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        }
+      },
+      "buildNumber": "19"
     },
     "android": {
-      "edgeToEdgeEnabled": true,
       "permissions": [
         "android.permission.RECORD_AUDIO",
-        "android.permission.MODIFY_AUDIO_SETTINGS"
-      ]
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ],
+      "package": "com.directedbyshawn.synqnew"
     },
     "web": {
       "bundler": "metro",
       "output": "static"
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7f55149f-5c7c-4317-93d4-45555ce3a5d0"
+      }
+    },
+    "owner": "directedbyshawn"
   }
 }

@@ -1,4 +1,4 @@
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import type { PrivacySettings } from "../types/privacy-settings";
 import {
   defaultPrivacySettings,

@@ -1,11 +1,21 @@
-import type { PlaybackQueueItem } from "../types/playback-state";
+import type {
+  PlaybackMode,
+  PlaybackQueueItem,
+} from "../types/playback-state";
 
 export type PlaybackNativeCommandPlan =
   | { type: "noop" }
   | { type: "pause" }
-  | { type: "play"; track: PlaybackQueueItem }
+  | {
+      activeTrackId?: number | null;
+      mode?: PlaybackMode;
+      queue?: PlaybackQueueItem[];
+      track: PlaybackQueueItem;
+      type: "play";
+    }
   | { type: "resume" }
   | { position: number; type: "seek" }
+  | { mode: PlaybackMode; type: "set-mode" }
   | { type: "stop" };
 
 export const getPlaybackNativeResumeCommandPlan = ({
@@ -16,9 +26,11 @@ export const getPlaybackNativeResumeCommandPlan = ({
   activeTrack ? { type: "resume" } : { type: "noop" };
 
 export const getPlaybackNativeTargetCommandPlan = ({
+  mode,
   queue,
   targetIndex,
 }: {
+  mode?: PlaybackMode;
   queue: PlaybackQueueItem[];
   targetIndex: number | null;
 }): {
@@ -28,27 +40,55 @@ export const getPlaybackNativeTargetCommandPlan = ({
   const nextTrack = targetIndex === null ? null : queue[targetIndex] ?? null;
 
   return {
-    command: nextTrack ? { track: nextTrack, type: "play" } : { type: "stop" },
+    command: nextTrack
+      ? {
+          activeTrackId: nextTrack.id,
+          mode,
+          queue,
+          track: nextTrack,
+          type: "play",
+        }
+      : { type: "stop" },
     targetIndex,
   };
 };
 
 export const getPlaybackNativePreviousCommandPlan = ({
+  mode,
   previousTrack,
+  queue,
 }: {
+  mode?: PlaybackMode;
   previousTrack: PlaybackQueueItem | null;
+  queue?: PlaybackQueueItem[];
 }): PlaybackNativeCommandPlan =>
   previousTrack
-    ? { track: previousTrack, type: "play" }
+    ? {
+        activeTrackId: previousTrack.id,
+        mode,
+        queue,
+        track: previousTrack,
+        type: "play",
+      }
     : { position: 0, type: "seek" };
 
 export const getPlaybackNativeReplacementCommandPlan = ({
   isPlaying,
+  mode,
+  queue,
   replacementTrack,
 }: {
   isPlaying: boolean;
+  mode?: PlaybackMode;
+  queue?: PlaybackQueueItem[];
   replacementTrack: PlaybackQueueItem | null;
 }): PlaybackNativeCommandPlan =>
   replacementTrack && isPlaying
-    ? { track: replacementTrack, type: "play" }
+    ? {
+        activeTrackId: replacementTrack.id,
+        mode,
+        queue,
+        track: replacementTrack,
+        type: "play",
+      }
     : { type: "stop" };

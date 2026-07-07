@@ -35,6 +35,7 @@ export const getSkipNextNativeCommandPlan = (
   });
 
   return getPlaybackNativeTargetCommandPlan({
+    mode: state.mode,
     queue: state.queue,
     targetIndex,
   });
@@ -45,7 +46,11 @@ export const getSkipPreviousNativeCommandPlan = (
 ): PlaybackNativeCommandPlan => {
   const previousTrack = getPreviousTrack(state);
 
-  return getPlaybackNativePreviousCommandPlan({ previousTrack });
+  return getPlaybackNativePreviousCommandPlan({
+    mode: state.mode,
+    previousTrack,
+    queue: state.queue,
+  });
 };
 
 export const getRemoveFromQueueNativeCommandPlan = ({
@@ -66,6 +71,8 @@ export const getRemoveFromQueueNativeCommandPlan = ({
 
   return getPlaybackNativeReplacementCommandPlan({
     isPlaying: state.isPlaying,
+    mode: state.mode,
+    queue: state.queue.filter((song) => song.id !== songId),
     replacementTrack,
   });
 };

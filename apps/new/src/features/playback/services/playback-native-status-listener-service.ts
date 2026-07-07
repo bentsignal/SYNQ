@@ -1,7 +1,4 @@
-import {
-  PLAYBACK_STATUS_UPDATE,
-  type AudioPlayer,
-} from "expo-audio";
+import type { AudioPlayer, AudioStatus } from "expo-audio";
 import {
   audioStatusToTrackPlayerSnapshot,
   type TrackPlayerSource,
@@ -10,7 +7,13 @@ import type {
   TrackPlayerStatusListener,
 } from "./playback-native-player-source-types-service";
 
-type AudioPlayerSubscription = ReturnType<AudioPlayer["addListener"]>;
+type AudioPlayerSubscription = { remove: () => void };
+type PlaybackStatusPlayer = AudioPlayer & {
+  addListener: (
+    event: "playbackStatusUpdate",
+    listener: (status: AudioStatus) => void,
+  ) => { remove: () => void };
+};
 
 export const createTrackPlayerStatusListenerRegistry = ({
   getLoadedSongId,
@@ -25,15 +28,18 @@ export const createTrackPlayerStatusListenerRegistry = ({
     player: AudioPlayer | null,
     source: TrackPlayerSource,
   ) => {
-    const subscription = player?.addListener(PLAYBACK_STATUS_UPDATE, (status) => {
-      statusListener?.(
-        audioStatusToTrackPlayerSnapshot({
-          loadedSongId: getLoadedSongId(),
-          source,
-          status,
-        }),
-      );
-    });
+    const subscription = (player as PlaybackStatusPlayer | null)?.addListener(
+      "playbackStatusUpdate",
+      (status) => {
+        statusListener?.(
+          audioStatusToTrackPlayerSnapshot({
+            loadedSongId: getLoadedSongId(),
+            source,
+            status,
+          }),
+        );
+      },
+    );
 
     if (source === "ad") {
       adStatusSubscription?.remove();

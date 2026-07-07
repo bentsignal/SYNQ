@@ -1,8 +1,8 @@
-import { useMemo, type RefObject } from "react";
+import { useCallback, type RefObject } from "react";
 import type { PlaybackAction } from "../services/playback-session-action-service";
 import {
-  createPlaybackTrackAdvancementCommand,
-} from "../services/playback-track-advancement-command-service";
+  runPlaybackTrackAdvancementCommand,
+} from "../services/playback-track-advancement-command-flow-service";
 import type { TrackPlayerAdapter } from "../services/track-player-adapter";
 import type { PlaybackState } from "../types/playback-state";
 
@@ -23,16 +23,17 @@ export function usePlaybackTrackAdvancement({
   runNativeCommand,
   stateRef,
 }: UsePlaybackTrackAdvancementParams) {
-  return useMemo(
-    () =>
-      createPlaybackTrackAdvancementCommand({
-        adapter,
+  return useCallback(
+    () => {
+      runPlaybackTrackAdvancementCommand({
         beginAdBreak,
         canRunPlaybackCommand,
         dispatch,
+        playNativeTrack: adapter.play,
         runNativeCommand,
-        stateRef,
-      }),
+        state: stateRef.current,
+      });
+    },
     [
       adapter,
       beginAdBreak,

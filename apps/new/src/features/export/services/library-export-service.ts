@@ -1,4 +1,4 @@
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { assertSharingAvailable } from "./export-file-service";
 import { prepareLibrarySongForExport } from "./library-export-metadata-service";
 import {

@@ -1,4 +1,8 @@
-import type { PlaybackQueueItem } from "../types/playback-state";
+import type {
+  PlaybackMode,
+  PlaybackQueueItem,
+  PlaybackState,
+} from "../types/playback-state";
 import type { PlaybackAction } from "./playback-session-action-service";
 import type { PlaybackNativeCommandPlan } from "./playback-native-command-step-service";
 
@@ -9,10 +13,23 @@ export type PlaybackCommandPlan = {
 
 export const getPlaySongPlaybackStepPlan = (
   song: PlaybackQueueItem,
-): PlaybackCommandPlan => ({
-  action: { song, type: "play-song" },
-  nativeCommand: { track: song, type: "play" },
-});
+  state?: PlaybackState,
+): PlaybackCommandPlan => {
+  const queue = state?.queue.some((item) => item.id === song.id)
+    ? state.queue
+    : [...(state?.queue ?? []), song];
+
+  return {
+    action: { song, type: "play-song" },
+    nativeCommand: {
+      activeTrackId: song.id,
+      mode: state?.mode,
+      queue,
+      track: song,
+      type: "play",
+    },
+  };
+};
 
 export const getPausePlaybackStepPlan = (): PlaybackCommandPlan => ({
   action: { type: "pause" },
@@ -74,6 +91,32 @@ export const getRemoveFromQueuePlaybackStepPlan = ({
 }): PlaybackCommandPlan => ({
   action: { songId, type: "remove-from-queue" },
   nativeCommand,
+});
+
+export const getToggleLoopPlaybackStepPlan = (
+  mode: PlaybackMode,
+): PlaybackCommandPlan => ({
+  action: { type: "toggle-loop" },
+  nativeCommand: {
+    mode: {
+      ...mode,
+      loop: !mode.loop,
+    },
+    type: "set-mode",
+  },
+});
+
+export const getToggleShufflePlaybackStepPlan = (
+  mode: PlaybackMode,
+): PlaybackCommandPlan => ({
+  action: { type: "toggle-shuffle" },
+  nativeCommand: {
+    mode: {
+      ...mode,
+      shuffle: !mode.shuffle,
+    },
+    type: "set-mode",
+  },
 });
 
 export const getRemoteFailurePlaybackStepPlan = (

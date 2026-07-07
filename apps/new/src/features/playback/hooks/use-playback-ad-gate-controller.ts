@@ -1,12 +1,11 @@
-import { useMemo, useRef, type RefObject } from "react";
+import { useCallback, useRef, type RefObject } from "react";
 import type { PlaybackAction } from "../services/playback-session-action-service";
 import type {
   PlaybackQueueItem,
   PlaybackState,
 } from "../types/playback-state";
-import {
-  createPlaybackAdGateControls,
-} from "../services/playback-ad-gate-controller-service";
+import { getBeginPlaybackAdBreakAction } from "../services/playback-ad-gate-service";
+import { canRunPlaybackWithAdGate } from "../services/playback-ad-gate-decision-service";
 import { usePlaybackAdGateAutoTransitions } from "./use-playback-ad-gate-auto-transitions";
 import { usePlaybackPremiumGateSync } from "./use-playback-premium-gate-sync";
 
@@ -37,15 +36,17 @@ export function usePlaybackAdGateController({
     premiumActiveRef,
   });
 
-  const { beginAdBreak, canRunPlaybackCommand } = useMemo(
+  const beginAdBreak = useCallback(() => {
+    dispatch(getBeginPlaybackAdBreakAction());
+    onBeginAdBreak();
+  }, [dispatch, onBeginAdBreak]);
+  const canRunPlaybackCommand = useCallback(
     () =>
-      createPlaybackAdGateControls({
-        dispatch,
-        onBeginAdBreak,
-        premiumActiveRef,
-        stateRef,
+      canRunPlaybackWithAdGate({
+        gate: stateRef.current.adGate,
+        premiumActive: premiumActiveRef.current,
       }),
-    [dispatch, onBeginAdBreak, stateRef],
+    [stateRef],
   );
 
   usePlaybackAdGateAutoTransitions({

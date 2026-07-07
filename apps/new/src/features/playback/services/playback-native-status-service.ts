@@ -1,6 +1,7 @@
 export type TrackPlayerSource = "ad" | "library";
 
 export type TrackPlayerStatusSnapshot = {
+  activeTrackId: number | null;
   didJustFinish: boolean;
   duration: number | null;
   isLoaded: boolean;
@@ -32,6 +33,7 @@ export const audioStatusToTrackPlayerSnapshot = ({
 }): TrackPlayerStatusSnapshot => {
   if (!status.isLoaded) {
     return {
+      activeTrackId: loadedSongId,
       didJustFinish: false,
       duration: null,
       isLoaded: false,
@@ -43,6 +45,7 @@ export const audioStatusToTrackPlayerSnapshot = ({
   }
 
   return {
+    activeTrackId: loadedSongId,
     didJustFinish: Boolean(status.didJustFinish),
     duration: secondsToMilliseconds(status.duration),
     isLoaded: true,

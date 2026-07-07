@@ -1,4 +1,8 @@
 import { useHapticFeedback } from "@/src/features/settings/hooks/use-haptic-feedback";
+import { getImagePathFromHash } from "@/src/features/images/services/image-storage-service";
+import {
+  getPlaybackDisplayArtworkUriWithResolver,
+} from "../services/playback-artwork-display-service";
 import { getPlaybackPlayerControllerViewState } from "../services/playback-player-state-service";
 import { usePlaybackPlayerCommands } from "./use-playback-player-commands";
 import { usePlaybackSessionSelector } from "./use-playback-session";
@@ -28,6 +32,10 @@ export function usePlaybackPlayerController() {
     progressPercent,
     screenState,
   } = getPlaybackPlayerControllerViewState({ activeTrack, state });
+  const activeArtworkUri = getPlaybackDisplayArtworkUriWithResolver({
+    artworkUri: activeTrack?.artworkUri,
+    getImagePathFromHash,
+  });
   const commands = usePlaybackPlayerCommands({
     pause,
     resume,
@@ -43,6 +51,7 @@ export function usePlaybackPlayerController() {
   return {
     actionState,
     activeTrack,
+    activeArtworkUri,
     activeTrackDetailLink,
     activeTrackEditLink,
     adBreakPanel,

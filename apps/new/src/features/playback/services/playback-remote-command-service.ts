@@ -5,10 +5,10 @@ import {
 
 export type PlaybackRemoteCommand =
   | { type: "error"; message: string }
-  | { type: "next" }
+  | { targetTrackId?: number | null; type: "next" }
   | { type: "pause" }
   | { type: "play" }
-  | { type: "previous" }
+  | { targetTrackId?: number | null; type: "previous" }
   | { type: "queue-ended" }
   | { position: number; type: "seek" };
 
@@ -46,11 +46,21 @@ export const handlePlaybackRemoteCommand = ({
       handlers.pause();
       return "handled";
     case "next":
+      if (command.targetTrackId !== undefined) {
+        return "handled";
+      }
+
       return runAdGatedRemoteCommand({
         command: handlers.skipNext,
         handlers,
       });
     case "previous":
+      if (
+        command.targetTrackId !== undefined
+      ) {
+        return "handled";
+      }
+
       return runAdGatedRemoteCommand({
         command: handlers.skipPrevious,
         handlers,

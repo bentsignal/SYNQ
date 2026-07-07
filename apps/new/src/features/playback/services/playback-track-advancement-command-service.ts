@@ -1,4 +1,3 @@
-import type { RefObject } from "react";
 import { runPlaybackTrackAdvancementCommand } from "./playback-track-advancement-command-flow-service";
 import type { PlaybackAction } from "./playback-session-action-service";
 import type { TrackPlayerAdapter } from "./track-player-adapter";
@@ -9,8 +8,8 @@ type CreatePlaybackTrackAdvancementCommandParams = {
   beginAdBreak: () => void;
   canRunPlaybackCommand: () => boolean;
   dispatch: (action: PlaybackAction) => void;
+  getState: () => PlaybackState;
   runNativeCommand: (command: () => Promise<void>) => void;
-  stateRef: RefObject<PlaybackState>;
 };
 
 export type PlaybackTrackAdvancementCommand = () => void;
@@ -20,8 +19,8 @@ export const createPlaybackTrackAdvancementCommand = ({
   beginAdBreak,
   canRunPlaybackCommand,
   dispatch,
+  getState,
   runNativeCommand,
-  stateRef,
 }: CreatePlaybackTrackAdvancementCommandParams): PlaybackTrackAdvancementCommand =>
   () => {
     runPlaybackTrackAdvancementCommand({
@@ -30,6 +29,6 @@ export const createPlaybackTrackAdvancementCommand = ({
       dispatch,
       playNativeTrack: adapter.play,
       runNativeCommand,
-      state: stateRef.current,
+      state: getState(),
     });
   };

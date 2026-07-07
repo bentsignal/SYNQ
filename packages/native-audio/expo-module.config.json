@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["SynqNativeAudioModule"]
+  },
+  "android": {
+    "modules": ["app.synq.nativeaudio.SynqNativeAudioModule"]
+  }
+}

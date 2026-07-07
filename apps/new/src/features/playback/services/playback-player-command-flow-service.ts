@@ -30,6 +30,20 @@ export const runPlaybackPlayerSeekCommand = ({
   seekTo(command.targetPosition);
 };
 
+export const runPlaybackPlayerSeekToPositionCommand = ({
+  position,
+  seekTo,
+  sendHaptic,
+  state,
+}: PlaybackPlayerCommandDependencies & {
+  position: number;
+  seekTo: (position: number) => void;
+  state: Pick<PlaybackState, "duration">;
+}) => {
+  sendHaptic("light");
+  seekTo(Math.max(0, Math.min(position, state.duration)));
+};
+
 export const runPlaybackPlayerButtonCommand = ({
   action,
   sendHaptic,

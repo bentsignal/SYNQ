@@ -12,6 +12,8 @@ export const setPlaybackActiveQueueIndex = ({
   if (!track) {
     return {
       ...state,
+      activeQueueIndex: null,
+      activeTrackId: null,
       isPlaying: false,
       position: state.duration,
     };

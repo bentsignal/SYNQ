@@ -1,4 +1,4 @@
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import type { ImportSongDraft } from "@/src/features/import/types/import-session";
 import { assertSharingAvailable } from "./export-file-service";
 import {

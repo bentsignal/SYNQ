@@ -1,4 +1,4 @@
-import type { RefObject } from "react";
+import { useEffect, type RefObject } from "react";
 import type { PlaybackNativeCommandPlan } from "../services/playback-native-command-plan-service";
 import type { PlaybackAction } from "../services/playback-session-action-service";
 import type {
@@ -11,6 +11,7 @@ import { usePlaybackNativeAdapter } from "./use-playback-native-adapter";
 import { usePlaybackNativeCommandRunner } from "./use-playback-native-command-runner";
 import { usePlaybackNativeStatusListener } from "./use-playback-native-status-listener";
 import { usePlaybackTrackAdvancement } from "./use-playback-track-advancement";
+import type { TrackPlayerAdapter } from "../services/track-player-adapter";
 
 type UsePlaybackNativeLifecycleParams = {
   activeTrack: PlaybackQueueItem | null;
@@ -25,6 +26,7 @@ export type PlaybackNativeLifecycle = {
   canRunPlaybackCommand: () => boolean;
   finishActiveTrack: () => void;
   runNativeCommandPlan: (plan: PlaybackNativeCommandPlan) => void;
+  setRemoteCommandListener: TrackPlayerAdapter["setRemoteCommandListener"];
 };
 
 export function usePlaybackNativeLifecycle({
@@ -83,10 +85,15 @@ export function usePlaybackNativeLifecycle({
     runNativeCommand,
   });
 
+  useEffect(() => {
+    void adapter.setPlaybackMode(state.mode);
+  }, [adapter, state.mode]);
+
   return {
     beginAdBreak,
     canRunPlaybackCommand,
     finishActiveTrack,
     runNativeCommandPlan,
+    setRemoteCommandListener: adapter.setRemoteCommandListener,
   };
 }

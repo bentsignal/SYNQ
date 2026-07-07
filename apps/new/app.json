@@ -80,7 +80,7 @@
           "NSAllowsLocalNetworking": true
         }
       },
-      "buildNumber": "10"
+      "buildNumber": "11"
     },
     "android": {
       "permissions": [

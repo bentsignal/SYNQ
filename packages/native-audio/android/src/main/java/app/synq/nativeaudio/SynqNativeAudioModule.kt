@@ -200,13 +200,13 @@ class SynqNativeAudioModule : Module() {
       playerCommands.contains(Player.COMMAND_SEEK_TO_NEXT) ||
       playerCommands.contains(Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
     ) {
-      emitRemoteCommand("next", activeTrackId = activeTrackId)
+      emitRemoteCommand("next", activeTrackId = activeTrackId, includeActiveTrackId = true)
     }
     if (
       playerCommands.contains(Player.COMMAND_SEEK_TO_PREVIOUS) ||
       playerCommands.contains(Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
     ) {
-      emitRemoteCommand("previous", activeTrackId = activeTrackId)
+      emitRemoteCommand("previous", activeTrackId = activeTrackId, includeActiveTrackId = true)
     }
     if (
       playerCommands.contains(Player.COMMAND_SEEK_FORWARD) ||
@@ -220,12 +220,13 @@ class SynqNativeAudioModule : Module() {
   private fun emitRemoteCommand(
     command: String,
     activeTrackId: String? = null,
+    includeActiveTrackId: Boolean = false,
     positionMs: Double? = null
   ) {
     val payload = Bundle()
     payload.putString("type", "RemoteCommand")
     payload.putString("command", command)
-    if (activeTrackId != null) {
+    if (includeActiveTrackId || activeTrackId != null) {
       payload.putString("activeTrackId", activeTrackId)
     }
     if (positionMs != null) {

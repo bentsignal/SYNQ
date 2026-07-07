@@ -25,8 +25,12 @@ const getSeekPosition = ({
 };
 
 const getTargetTrackId = (activeTrackId: string | null | undefined) => {
-  if (activeTrackId === undefined || activeTrackId === null) {
+  if (activeTrackId === undefined) {
     return undefined;
+  }
+
+  if (activeTrackId === null) {
+    return null;
   }
 
   const targetTrackId = Number(activeTrackId);

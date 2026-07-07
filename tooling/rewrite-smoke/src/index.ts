@@ -3912,6 +3912,23 @@ function assertPlaybackNativeCommandPlanSmoke() {
   );
   assert.deepEqual(remoteEvents, []);
 
+  remoteActiveTrackId = null;
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { targetTrackId: null, type: "next" },
+      handlers: remoteHandlers,
+    }),
+    "handled",
+  );
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { targetTrackId: null, type: "previous" },
+      handlers: remoteHandlers,
+    }),
+    "handled",
+  );
+  assert.deepEqual(remoteEvents, []);
+
   remoteAllowed = false;
   remoteEvents.length = 0;
   assert.equal(
@@ -4120,6 +4137,17 @@ function assertPlaybackNativeCommandPlanSmoke() {
       state: null,
     }),
     { position: 0, type: "seek" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: {
+        _tag: "RemoteCommand",
+        activeTrackId: null,
+        command: "next",
+      },
+      state: null,
+    }),
+    { targetTrackId: null, type: "next" },
   );
   assert.deepEqual(
     getPlaybackRemoteCommandFromNativeEvent({

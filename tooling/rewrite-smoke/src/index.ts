@@ -3882,6 +3882,31 @@ function assertPlaybackNativeCommandPlanSmoke() {
   );
   assert.deepEqual(
     getPlaybackRemoteCommandFromNativeEvent({
+      event: { _tag: "RemoteCommand", command: "seek", positionMs: Number.NaN },
+      state: { positionMs: 9_000 },
+    }),
+    { position: 0, type: "seek" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: {
+        _tag: "RemoteCommand",
+        command: "seek",
+        positionMs: Number.POSITIVE_INFINITY,
+      },
+      state: null,
+    }),
+    { position: 0, type: "seek" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: { _tag: "RemoteCommand", command: "seek", positionMs: -42 },
+      state: null,
+    }),
+    { position: 0, type: "seek" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
       event: {
         _tag: "RemoteCommand",
         activeTrackId: String(second.id),
@@ -3890,6 +3915,17 @@ function assertPlaybackNativeCommandPlanSmoke() {
       state: null,
     }),
     { targetTrackId: second.id, type: "next" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: {
+        _tag: "RemoteCommand",
+        activeTrackId: "library-track",
+        command: "next",
+      },
+      state: null,
+    }),
+    { targetTrackId: undefined, type: "next" },
   );
   assert.deepEqual(
     getPlaybackRemoteCommandFromNativeEvent({

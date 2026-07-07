@@ -12,6 +12,18 @@ type NativeRemoteCommandState = {
   status?: string;
 };
 
+const getSeekPosition = ({
+  eventPosition,
+  statePosition,
+}: {
+  eventPosition: number | undefined;
+  statePosition: number | undefined;
+}) => {
+  const position = eventPosition ?? statePosition ?? 0;
+
+  return Number.isFinite(position) ? Math.max(0, position) : 0;
+};
+
 const getTargetTrackId = (activeTrackId: string | null | undefined) => {
   if (activeTrackId === undefined || activeTrackId === null) {
     return undefined;
@@ -51,7 +63,10 @@ export const getPlaybackRemoteCommandFromNativeEvent = ({
       };
     case "seek":
       return {
-        position: event.positionMs ?? state?.positionMs ?? 0,
+        position: getSeekPosition({
+          eventPosition: event.positionMs,
+          statePosition: state?.positionMs,
+        }),
         type: "seek",
       };
   }

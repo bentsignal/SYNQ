@@ -1,14 +1,13 @@
-import type { RefObject } from "react";
 import { getBeginPlaybackAdBreakAction } from "./playback-ad-gate-service";
 import { canRunPlaybackWithAdGate } from "./playback-ad-gate-decision-service";
 import type { PlaybackAction } from "./playback-session-action-service";
-import type { PlaybackState } from "../types/playback-state";
+import type { PlaybackAdGateState } from "../types/playback-state";
 
 type CreatePlaybackAdGateControlsParams = {
   dispatch: (action: PlaybackAction) => void;
+  getAdGate: () => Pick<PlaybackAdGateState, "active" | "due">;
+  getPremiumActive: () => boolean;
   onBeginAdBreak: () => void;
-  premiumActiveRef: RefObject<boolean>;
-  stateRef: RefObject<PlaybackState>;
 };
 
 export type PlaybackAdGateControls = {
@@ -18,9 +17,9 @@ export type PlaybackAdGateControls = {
 
 export const createPlaybackAdGateControls = ({
   dispatch,
+  getAdGate,
+  getPremiumActive,
   onBeginAdBreak,
-  premiumActiveRef,
-  stateRef,
 }: CreatePlaybackAdGateControlsParams): PlaybackAdGateControls => ({
   beginAdBreak: () => {
     dispatch(getBeginPlaybackAdBreakAction());
@@ -28,7 +27,7 @@ export const createPlaybackAdGateControls = ({
   },
   canRunPlaybackCommand: () =>
     canRunPlaybackWithAdGate({
-      gate: stateRef.current.adGate,
-      premiumActive: premiumActiveRef.current,
+      gate: getAdGate(),
+      premiumActive: getPremiumActive(),
     }),
 });

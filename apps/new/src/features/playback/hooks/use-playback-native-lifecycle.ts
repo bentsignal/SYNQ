@@ -94,10 +94,7 @@ export function usePlaybackNativeLifecycle({
   }, [
     adapter,
     runNativeCommand,
-    state.activeTrackId,
-    state.mode,
-    state.queueRevision,
-    state.source,
+    state,
   ]);
 
   return {

@@ -2402,7 +2402,7 @@ async function assertPlaybackSessionSmoke() {
       assembledAdvancementEvents.push(["native"]);
       void command();
     },
-    stateRef: { current: state },
+    getState: () => state,
   });
   finishTrack();
   assert.deepEqual(assembledAdvancementEvents, [
@@ -2684,17 +2684,12 @@ async function assertPlaybackSessionSmoke() {
     onBeginAdBreak: () => {
       adGateControlEvents.push(["native-ad"]);
     },
-    premiumActiveRef: { current: false },
-    stateRef: {
-      current: {
-        ...state,
-        adGate: {
-          ...state.adGate,
-          active: false,
-          due: true,
-        },
-      },
-    },
+    getAdGate: () => ({
+      ...state.adGate,
+      active: false,
+      due: true,
+    }),
+    getPremiumActive: () => false,
   });
   assert.equal(adGateControls.canRunPlaybackCommand(), false);
   adGateControls.beginAdBreak();

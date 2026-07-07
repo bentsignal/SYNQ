@@ -1,18 +1,18 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   createExpoAudioTrackPlayerAdapter,
   type TrackPlayerAdapter,
 } from "../services/track-player-adapter";
 
 export function usePlaybackNativeAdapter(): TrackPlayerAdapter {
-  const adapterRef = useRef(createExpoAudioTrackPlayerAdapter());
+  const [adapter] = useState(createExpoAudioTrackPlayerAdapter);
 
   useEffect(
     () => () => {
-      void adapterRef.current.destroy();
+      void adapter.destroy();
     },
-    [],
+    [adapter],
   );
 
-  return adapterRef.current;
+  return adapter;
 }

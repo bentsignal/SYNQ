@@ -26,6 +26,7 @@ import {
 import { getPlaybackRemoteCommandFromNativeEvent } from "./playback-native-remote-command-service";
 import type { TrackPlayerStatusSnapshot } from "./playback-native-status-service";
 import { getTrackPlayerStatusSnapshotFromNativeState } from "./playback-native-status-snapshot-service";
+import { getTrackPlayerResumeLibraryOptions } from "./playback-track-player-resume-service";
 import {
   getTrackPlayerActiveLibraryTrack,
   getTrackPlayerRestoreTarget,
@@ -368,8 +369,14 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
       startPollingState();
     },
     resumeLibrary: async () => {
-      if (activeLibraryTrack) {
-        await playSong(activeLibraryTrack);
+      const resumeOptions = getTrackPlayerResumeLibraryOptions({
+        activeLibraryQueue,
+        activeLibraryTrack,
+        currentPlaybackMode,
+      });
+
+      if (activeLibraryTrack && resumeOptions) {
+        await playSong(activeLibraryTrack, resumeOptions);
         return;
       }
 

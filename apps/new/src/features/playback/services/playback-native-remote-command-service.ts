@@ -56,6 +56,10 @@ export const getPlaybackRemoteCommandFromNativeEvent = ({
         type: state?.status === "playing" ? "pause" : "play",
       };
     case "next":
+      if (event.activeTrackId === null) {
+        return { type: "queue-ended" };
+      }
+
       return {
         targetTrackId: getTargetTrackId(event.activeTrackId),
         type: "next",

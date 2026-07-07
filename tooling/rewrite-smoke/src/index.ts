@@ -257,6 +257,9 @@ import {
   getTrackPlayerRestoreTarget,
 } from "../../../apps/new/src/features/playback/services/playback-track-player-restore-service";
 import {
+  getTrackPlayerResumeLibraryOptions,
+} from "../../../apps/new/src/features/playback/services/playback-track-player-resume-service";
+import {
   getNativePlaybackTrackWithDependencies,
   getPlaybackArtworkUriWithResolver,
   repairPlaybackFileUriWithDocumentDirectory,
@@ -3356,6 +3359,38 @@ function assertPlaybackNativeCommandPlanSmoke() {
     }),
     first,
   );
+  assert.deepEqual(
+    getTrackPlayerResumeLibraryOptions({
+      activeLibraryQueue: [first, second],
+      activeLibraryTrack: second,
+      currentPlaybackMode: state.mode,
+    }),
+    {
+      activeTrackId: second.id,
+      mode: state.mode,
+      queue: [first, second],
+    },
+  );
+  assert.deepEqual(
+    getTrackPlayerResumeLibraryOptions({
+      activeLibraryQueue: [],
+      activeLibraryTrack: first,
+      currentPlaybackMode: state.mode,
+    }),
+    {
+      activeTrackId: first.id,
+      mode: state.mode,
+      queue: [first],
+    },
+  );
+  assert.equal(
+    getTrackPlayerResumeLibraryOptions({
+      activeLibraryQueue: [first, second],
+      activeLibraryTrack: null,
+      currentPlaybackMode: state.mode,
+    }),
+    null,
+  );
   const getImagePathFromHash = (hash: string) => ({
     pathToFullImage: `file:///documents/images/${hash}-full.jpg`,
     pathToSmallImage: `file:///documents/images/${hash}-small.jpg`,
@@ -4179,7 +4214,7 @@ function assertPlaybackNativeCommandPlanSmoke() {
       },
       state: null,
     }),
-    { targetTrackId: null, type: "next" },
+    { type: "queue-ended" },
   );
   assert.deepEqual(
     getPlaybackRemoteCommandFromNativeEvent({

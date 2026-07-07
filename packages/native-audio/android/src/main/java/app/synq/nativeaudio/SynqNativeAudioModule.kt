@@ -270,7 +270,8 @@ class SynqNativeAudioModule : Module() {
 
   private fun previousTrack(): SynqTrack? {
     val index = queue.indexOfFirst { it.id == activeTrackId }
-    return queue.getOrNull(index - 1)
+    val previousIndex = if (index < 0) 0 else max(0, index - 1)
+    return queue.getOrNull(previousIndex)
   }
 
   private fun currentState(): Bundle {

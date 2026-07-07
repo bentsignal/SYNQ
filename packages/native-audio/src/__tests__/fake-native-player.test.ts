@@ -220,4 +220,22 @@ describe("playback queue helpers", () => {
   it("restarts the active track when previous is requested after the start", () => {
     expect(getPreviousPlaybackTrackId(queue)).toBe("track-1");
   });
+
+  it("keeps the first track active when previous is requested at the queue start", () => {
+    expect(
+      getPreviousPlaybackTrackId({
+        ...queue,
+        activeTrackId: "track-1",
+      }),
+    ).toBe("track-1");
+  });
+
+  it("falls back to the first track when previous is requested without a known active track", () => {
+    expect(
+      getPreviousPlaybackTrackId({
+        ...queue,
+        activeTrackId: "missing-track",
+      }),
+    ).toBe("track-1");
+  });
 });

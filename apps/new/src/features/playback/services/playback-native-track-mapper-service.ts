@@ -13,21 +13,23 @@ export const repairPlaybackFileUriWithDocumentDirectory = ({
     return "";
   }
 
-  const marker = "/Documents/library/";
+  const marker = "/Documents/";
   const markerIndex = uri.indexOf(marker);
 
   if (markerIndex === -1 || !documentDirectory) {
     return uri;
   }
 
-  const libraryRelativePath = uri.slice(markerIndex + "/Documents/".length);
-  return `${documentDirectory}${libraryRelativePath}`;
+  const documentRelativePath = uri.slice(markerIndex + marker.length);
+  return `${documentDirectory}${documentRelativePath}`;
 };
 
 export const getPlaybackArtworkUriWithResolver = ({
   artworkUri,
+  documentDirectory,
   getImagePathFromHash,
 }: {
+  documentDirectory: string | null | undefined;
   artworkUri: string | null | undefined;
   getImagePathFromHash: (hash: string) => ImageStoragePaths;
 }) => {
@@ -37,9 +39,17 @@ export const getPlaybackArtworkUriWithResolver = ({
 
   if (
     artworkUri.startsWith("file://") ||
-    artworkUri.startsWith("http://") ||
-    artworkUri.startsWith("https://") ||
     artworkUri.startsWith("/")
+  ) {
+    return repairPlaybackFileUriWithDocumentDirectory({
+      documentDirectory,
+      uri: artworkUri,
+    });
+  }
+
+  if (
+    artworkUri.startsWith("http://") ||
+    artworkUri.startsWith("https://")
   ) {
     return artworkUri;
   }
@@ -60,6 +70,7 @@ export const getNativePlaybackTrackWithDependencies = ({
   artistName: item.artist,
   artworkUri: getPlaybackArtworkUriWithResolver({
     artworkUri: item.artworkUri,
+    documentDirectory,
     getImagePathFromHash,
   }),
   durationMs: item.duration ?? undefined,

@@ -3204,6 +3204,7 @@ function assertPlaybackNativeCommandPlanSmoke() {
   assert.equal(
     getPlaybackArtworkUriWithResolver({
       artworkUri: "cover-hash",
+      documentDirectory: "file:///current/Documents/",
       getImagePathFromHash,
     }),
     "file:///documents/images/cover-hash-small.jpg",
@@ -3211,13 +3212,23 @@ function assertPlaybackNativeCommandPlanSmoke() {
   assert.equal(
     getPlaybackArtworkUriWithResolver({
       artworkUri: "https://example.test/cover.jpg",
+      documentDirectory: "file:///current/Documents/",
       getImagePathFromHash,
     }),
     "https://example.test/cover.jpg",
   );
   assert.equal(
     getPlaybackArtworkUriWithResolver({
+      artworkUri: "file:///old/Documents/images/cover-hash-small.jpg",
+      documentDirectory: "file:///current/Documents/",
+      getImagePathFromHash,
+    }),
+    "file:///current/Documents/images/cover-hash-small.jpg",
+  );
+  assert.equal(
+    getPlaybackArtworkUriWithResolver({
       artworkUri: null,
+      documentDirectory: "file:///current/Documents/",
       getImagePathFromHash,
     }),
     undefined,

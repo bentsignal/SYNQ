@@ -11,6 +11,7 @@ type CreatePlaybackRemoteCommandHandlerParams = {
   beginAdBreak: () => void;
   canRunPlaybackCommand: () => boolean;
   finishActiveTrack: () => void;
+  getActiveTrackId: () => number | null;
   pause: () => void;
   resume: () => void;
   runCommandPlan: (plan: PlaybackCommandPlan) => void;
@@ -27,6 +28,7 @@ export const createPlaybackRemoteCommandHandler = ({
   beginAdBreak,
   canRunPlaybackCommand,
   finishActiveTrack,
+  getActiveTrackId,
   pause,
   resume,
   runCommandPlan,
@@ -45,6 +47,7 @@ export const createPlaybackRemoteCommandHandler = ({
         beginAdBreak,
         canRunPlaybackCommand,
         fail,
+        getActiveTrackId,
         pause,
         queueEnded: finishActiveTrack,
         resume,

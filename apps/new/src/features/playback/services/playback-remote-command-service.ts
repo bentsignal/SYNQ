@@ -5,10 +5,10 @@ import {
 
 export type PlaybackRemoteCommand =
   | { type: "error"; message: string }
-  | { type: "next" }
+  | { targetTrackId?: number | null; type: "next" }
   | { type: "pause" }
   | { type: "play" }
-  | { type: "previous" }
+  | { targetTrackId?: number | null; type: "previous" }
   | { type: "queue-ended" }
   | { position: number; type: "seek" };
 
@@ -21,6 +21,7 @@ export type PlaybackRemoteCommandHandlers = {
   beginAdBreak: () => void;
   canRunPlaybackCommand: () => boolean;
   fail: (message: string) => void;
+  getActiveTrackId: () => number | null;
   pause: () => void;
   queueEnded: () => void;
   resume: () => void;
@@ -46,11 +47,25 @@ export const handlePlaybackRemoteCommand = ({
       handlers.pause();
       return "handled";
     case "next":
+      if (
+        command.targetTrackId !== undefined &&
+        handlers.getActiveTrackId() === command.targetTrackId
+      ) {
+        return "handled";
+      }
+
       return runAdGatedRemoteCommand({
         command: handlers.skipNext,
         handlers,
       });
     case "previous":
+      if (
+        command.targetTrackId !== undefined &&
+        handlers.getActiveTrackId() === command.targetTrackId
+      ) {
+        return "handled";
+      }
+
       return runAdGatedRemoteCommand({
         command: handlers.skipPrevious,
         handlers,

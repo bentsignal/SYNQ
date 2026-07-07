@@ -39,6 +39,7 @@ const toPlaybackEvent = (
     case "RemoteCommand":
       return {
         _tag: "RemoteCommand",
+        activeTrackId: event.activeTrackId,
         command: event.command as PlaybackRemoteCommand,
         positionMs: event.positionMs,
       };

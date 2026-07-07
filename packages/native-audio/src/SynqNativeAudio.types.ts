@@ -9,7 +9,12 @@ export type ChangeEventPayload = {
 
 export type SynqNativeAudioPlaybackEvent =
   | { type: "StateChanged"; state: SynqNativeAudioPlaybackState }
-  | { positionMs?: number; type: "RemoteCommand"; command: string }
+  | {
+      activeTrackId?: string | null;
+      positionMs?: number;
+      type: "RemoteCommand";
+      command: string;
+    }
   | { type: "InterruptionBegan" }
   | { shouldResume: boolean; type: "InterruptionEnded" }
   | { reason: string; type: "RouteChanged" };

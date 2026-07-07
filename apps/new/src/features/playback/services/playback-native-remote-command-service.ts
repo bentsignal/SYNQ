@@ -2,6 +2,7 @@ import type { PlaybackRemoteCommand } from "./playback-remote-command-service";
 
 type NativeRemoteCommandEvent = {
   _tag: "RemoteCommand";
+  activeTrackId?: string | null;
   command: "next" | "pause" | "play" | "previous" | "seek" | "stop" | "togglePlayPause";
   positionMs?: number;
 };
@@ -9,6 +10,16 @@ type NativeRemoteCommandEvent = {
 type NativeRemoteCommandState = {
   positionMs?: number;
   status?: string;
+};
+
+const getTargetTrackId = (activeTrackId: string | null | undefined) => {
+  if (activeTrackId === undefined || activeTrackId === null) {
+    return undefined;
+  }
+
+  const targetTrackId = Number(activeTrackId);
+
+  return Number.isFinite(targetTrackId) ? targetTrackId : undefined;
 };
 
 export const getPlaybackRemoteCommandFromNativeEvent = ({
@@ -29,9 +40,15 @@ export const getPlaybackRemoteCommandFromNativeEvent = ({
         type: state?.status === "playing" ? "pause" : "play",
       };
     case "next":
-      return { type: "next" };
+      return {
+        targetTrackId: getTargetTrackId(event.activeTrackId),
+        type: "next",
+      };
     case "previous":
-      return { type: "previous" };
+      return {
+        targetTrackId: getTargetTrackId(event.activeTrackId),
+        type: "previous",
+      };
     case "seek":
       return {
         position: event.positionMs ?? state?.positionMs ?? 0,

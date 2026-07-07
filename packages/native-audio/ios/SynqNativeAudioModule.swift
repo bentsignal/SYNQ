@@ -460,7 +460,11 @@ public class SynqNativeAudioModule: Module {
     ])
   }
 
-  private func sendRemoteCommand(_ command: String, positionMs: Double? = nil) {
+  private func sendRemoteCommand(
+    _ command: String,
+    positionMs: Double? = nil,
+    activeTrackId: String? = nil
+  ) {
     var payload: [String: Any] = [
       "type": "RemoteCommand",
       "command": command
@@ -468,6 +472,10 @@ public class SynqNativeAudioModule: Module {
 
     if let positionMs {
       payload["positionMs"] = positionMs
+    }
+
+    if let activeTrackId {
+      payload["activeTrackId"] = activeTrackId
     }
 
     sendEvent("onPlaybackEvent", payload)
@@ -540,7 +548,7 @@ public class SynqNativeAudioModule: Module {
 
     updateNowPlayingInfo()
     emitStateChanged()
-    sendRemoteCommand("next")
+    sendRemoteCommand("next", activeTrackId: targetTrackId)
   }
 
   private func handleRemoteSkipPrevious() {
@@ -548,17 +556,18 @@ public class SynqNativeAudioModule: Module {
       player?.seek(to: .zero)
       updateNowPlayingInfo()
       emitStateChanged()
-      sendRemoteCommand("previous")
+      sendRemoteCommand("previous", activeTrackId: activeTrackId)
       return
     }
 
-    activeTrackId = previousTrackId()
+    let targetTrackId = previousTrackId()
+    activeTrackId = targetTrackId
     try? loadActiveTrack(autoplay: true)
     status = player == nil ? "idle" : "playing"
     player?.rate = playbackRate
     updateNowPlayingInfo()
     emitStateChanged()
-    sendRemoteCommand("previous")
+    sendRemoteCommand("previous", activeTrackId: targetTrackId)
   }
 
   private func handleRemoteSeek(positionMs: Double) {

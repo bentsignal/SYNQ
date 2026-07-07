@@ -3560,10 +3560,12 @@ function assertPlaybackNativeCommandPlanSmoke() {
 
   const remoteEvents: string[] = [];
   let remoteAllowed = true;
+  let remoteActiveTrackId: number | null = first.id;
   const remoteHandlers: PlaybackRemoteCommandHandlers = {
     beginAdBreak: () => remoteEvents.push("ad"),
     canRunPlaybackCommand: () => remoteAllowed,
     fail: (message) => remoteEvents.push(`fail:${message}`),
+    getActiveTrackId: () => remoteActiveTrackId,
     pause: () => remoteEvents.push("pause"),
     queueEnded: () => remoteEvents.push("queue-ended"),
     resume: () => remoteEvents.push("resume"),
@@ -3630,6 +3632,24 @@ function assertPlaybackNativeCommandPlanSmoke() {
     "queue-ended",
     "seek:64000",
   ]);
+
+  remoteEvents.length = 0;
+  remoteActiveTrackId = second.id;
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { targetTrackId: second.id, type: "next" },
+      handlers: remoteHandlers,
+    }),
+    "handled",
+  );
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: { targetTrackId: second.id, type: "previous" },
+      handlers: remoteHandlers,
+    }),
+    "handled",
+  );
+  assert.deepEqual(remoteEvents, []);
 
   remoteAllowed = false;
   remoteEvents.length = 0;
@@ -3707,6 +3727,7 @@ function assertPlaybackNativeCommandPlanSmoke() {
     beginAdBreak: () => assembledRemoteEvents.push("ad"),
     canRunPlaybackCommand: () => true,
     finishActiveTrack: () => assembledRemoteEvents.push("queue-ended"),
+    getActiveTrackId: () => null,
     pause: () => assembledRemoteEvents.push("pause"),
     resume: () => assembledRemoteEvents.push("resume"),
     runCommandPlan: (plan) =>
@@ -3754,6 +3775,28 @@ function assertPlaybackNativeCommandPlanSmoke() {
       state: { positionMs: 9_000 },
     }),
     { position: 9_000, type: "seek" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: {
+        _tag: "RemoteCommand",
+        activeTrackId: String(second.id),
+        command: "next",
+      },
+      state: null,
+    }),
+    { targetTrackId: second.id, type: "next" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: {
+        _tag: "RemoteCommand",
+        activeTrackId: String(first.id),
+        command: "previous",
+      },
+      state: null,
+    }),
+    { targetTrackId: first.id, type: "previous" },
   );
   const assembledCommandEvents: unknown[] = [];
   const assembledCommands = createPlaybackCommands({

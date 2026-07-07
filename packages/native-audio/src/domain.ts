@@ -63,7 +63,12 @@ export type PlaybackRemoteCommand =
 
 export type PlaybackEvent =
   | { readonly _tag: "StateChanged"; readonly state: PlaybackState }
-  | { readonly _tag: "RemoteCommand"; readonly command: PlaybackRemoteCommand; readonly positionMs?: number }
+  | {
+      readonly _tag: "RemoteCommand";
+      readonly activeTrackId?: string | null;
+      readonly command: PlaybackRemoteCommand;
+      readonly positionMs?: number;
+    }
   | { readonly _tag: "InterruptionBegan" }
   | { readonly _tag: "InterruptionEnded"; readonly shouldResume: boolean }
   | { readonly _tag: "RouteChanged"; readonly reason: string }

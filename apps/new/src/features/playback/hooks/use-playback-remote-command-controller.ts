@@ -8,6 +8,7 @@ type UsePlaybackRemoteCommandControllerParams = {
   beginAdBreak: () => void;
   canRunPlaybackCommand: () => boolean;
   finishActiveTrack: () => void;
+  getActiveTrackId: () => number | null;
   pause: () => void;
   runCommandPlan: PlaybackRunCommandPlan;
   resume: () => void;
@@ -20,6 +21,7 @@ export function usePlaybackRemoteCommandController({
   beginAdBreak,
   canRunPlaybackCommand,
   finishActiveTrack,
+  getActiveTrackId,
   pause,
   runCommandPlan,
   resume,
@@ -33,6 +35,7 @@ export function usePlaybackRemoteCommandController({
         beginAdBreak,
         canRunPlaybackCommand,
         finishActiveTrack,
+        getActiveTrackId,
         pause,
         resume,
         runCommandPlan,
@@ -44,6 +47,7 @@ export function usePlaybackRemoteCommandController({
       beginAdBreak,
       canRunPlaybackCommand,
       finishActiveTrack,
+      getActiveTrackId,
       pause,
       resume,
       runCommandPlan,

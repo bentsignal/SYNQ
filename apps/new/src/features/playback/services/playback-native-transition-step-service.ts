@@ -28,15 +28,32 @@ export const getPlaybackLibraryStatusUpdate = ({
   premiumActive: boolean;
   state: PlaybackState;
   status: TrackPlayerStatusSnapshot;
-}) => ({
-  adGate: status.isPlaying
-    ? trackPlaybackAdProgress({
-        currentPosition: status.position,
-        gate: state.adGate,
-        premiumActive,
-      })
-    : state.adGate,
-  duration: status.duration ?? state.duration,
-  isPlaying: status.isPlaying,
-  position: Math.max(0, status.position),
-});
+}) => {
+  const nativeActiveTrackId = status.activeTrackId ?? status.songId;
+  const nativeActiveQueueIndex =
+    nativeActiveTrackId === null
+      ? null
+      : state.queue.findIndex((track) => track.id === nativeActiveTrackId);
+  const nativeActiveTrack =
+    nativeActiveQueueIndex === null || nativeActiveQueueIndex < 0
+      ? null
+      : (state.queue[nativeActiveQueueIndex] ?? null);
+
+  return {
+    activeQueueIndex: nativeActiveTrack
+      ? nativeActiveQueueIndex
+      : state.activeQueueIndex,
+    activeTrackId: nativeActiveTrack?.id ?? state.activeTrackId,
+    adGate: status.isPlaying
+      ? trackPlaybackAdProgress({
+          currentPosition: status.position,
+          gate: state.adGate,
+          premiumActive,
+        })
+      : state.adGate,
+    duration:
+      status.duration ?? nativeActiveTrack?.duration ?? state.duration,
+    isPlaying: status.isPlaying,
+    position: Math.max(0, status.position),
+  };
+};

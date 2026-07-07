@@ -2436,6 +2436,27 @@ async function assertPlaybackSessionSmoke() {
     getPlaybackNativeStatusAction({
       premiumActive: false,
       status: {
+        activeTrackId: second.id,
+        didJustFinish: false,
+        duration: 300_000,
+        isLoaded: true,
+        isPlaying: true,
+        position: 10_000,
+        songId: second.id,
+        source: "library",
+      },
+    }),
+  );
+  assert.equal(state.activeTrackId, second.id);
+  assert.equal(state.activeQueueIndex, 1);
+  assert.equal(state.duration, 300_000);
+  assert.equal(state.position, 10_000);
+
+  state = playbackReducer(
+    state,
+    getPlaybackNativeStatusAction({
+      premiumActive: false,
+      status: {
         didJustFinish: false,
         duration: 600_000,
         isLoaded: true,
@@ -2826,6 +2847,7 @@ function assertPlaybackNativeStatusSmoke() {
       },
     }),
     {
+      activeTrackId: 4,
       didJustFinish: false,
       duration: null,
       isLoaded: false,
@@ -2848,6 +2870,7 @@ function assertPlaybackNativeStatusSmoke() {
       },
     }),
     {
+      activeTrackId: 5,
       didJustFinish: false,
       duration: 180_000,
       isLoaded: true,
@@ -2870,6 +2893,7 @@ function assertPlaybackNativeStatusSmoke() {
       },
     }),
     {
+      activeTrackId: null,
       didJustFinish: true,
       duration: null,
       isLoaded: true,
@@ -2897,6 +2921,7 @@ function assertPlaybackNativeStatusSmoke() {
       },
       runNativeCommand: runNativeStatusCommand,
       status: {
+        activeTrackId: 5,
         didJustFinish: false,
         duration: 180_000,
         isLoaded: true,
@@ -2918,6 +2943,7 @@ function assertPlaybackNativeStatusSmoke() {
       },
       runNativeCommand: runNativeStatusCommand,
       status: {
+        activeTrackId: null,
         didJustFinish: true,
         duration: null,
         isLoaded: true,
@@ -2939,6 +2965,7 @@ function assertPlaybackNativeStatusSmoke() {
       },
       runNativeCommand: runNativeStatusCommand,
       status: {
+        activeTrackId: 5,
         didJustFinish: true,
         duration: 180_000,
         isLoaded: true,
@@ -2956,6 +2983,7 @@ function assertPlaybackNativeStatusSmoke() {
       {
         premiumActive: false,
         status: {
+          activeTrackId: 5,
           didJustFinish: false,
           duration: 180_000,
           isLoaded: true,

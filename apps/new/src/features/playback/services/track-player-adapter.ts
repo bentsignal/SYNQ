@@ -94,6 +94,10 @@ const getSnapshotFromState = ({
     : 0;
 
   return {
+    activeTrackId:
+      source === "library" && state.activeTrack
+        ? Number(state.activeTrack.id)
+        : null,
     didJustFinish: state.status === "ended",
     duration: duration || null,
     isLoaded: Boolean(state.activeTrack),

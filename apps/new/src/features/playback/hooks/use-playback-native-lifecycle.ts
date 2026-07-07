@@ -89,14 +89,6 @@ export function usePlaybackNativeLifecycle({
     void adapter.setPlaybackMode(state.mode);
   }, [adapter, state.mode]);
 
-  useEffect(() => {
-    runNativeCommand(() => adapter.syncLibraryQueue(state));
-  }, [
-    adapter,
-    runNativeCommand,
-    state,
-  ]);
-
   return {
     beginAdBreak,
     canRunPlaybackCommand,

@@ -282,6 +282,8 @@ public class SynqNativeAudioModule: Module {
 
   private func loadActiveTrack(autoplay: Bool) throws {
     guard let track = activeTrack(), let uri = track["uri"] as? String else {
+      player?.pause()
+      removeTimeObserver()
       player = nil
       status = "idle"
       return
@@ -296,6 +298,7 @@ public class SynqNativeAudioModule: Module {
     }
 
     removeTimeObserver()
+    player?.pause()
     let item = AVPlayerItem(url: url)
     player = AVPlayer(playerItem: item)
     addTimeObserver()

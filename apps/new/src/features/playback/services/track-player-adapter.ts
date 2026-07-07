@@ -250,7 +250,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
     const queueTracks = activeLibraryQueue.map(getSynqNativePlaybackTrack);
     const mode = options.mode ?? currentPlaybackMode;
     currentPlaybackMode = mode;
-    const state = await playbackRuntime.runCommand({
+    await playbackRuntime.runCommand({
       _tag: "LoadQueue",
       queue: {
         activeTrackId: String(options.activeTrackId ?? song.id),
@@ -258,7 +258,6 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
         tracks: queueTracks,
       },
     });
-    emitState(state);
     emitState(await playbackRuntime.runCommand({ _tag: "Play", trackId: track.id }));
     startPollingState();
   };
@@ -300,7 +299,7 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
     activeSource = "ad";
 
     const track = await getAdPlaybackTrack();
-    const state = await playbackRuntime.runCommand({
+    await playbackRuntime.runCommand({
       _tag: "LoadQueue",
       queue: {
         activeTrackId: track.id,
@@ -311,7 +310,6 @@ export const createExpoAudioTrackPlayerAdapter = (): TrackPlayerAdapter => {
         tracks: [track],
       },
     });
-    emitState(state);
     emitState(await playbackRuntime.runCommand({ _tag: "Play", trackId: track.id }));
     startPollingState();
   };

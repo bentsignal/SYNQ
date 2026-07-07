@@ -3925,6 +3925,27 @@ function assertPlaybackNativeCommandPlanSmoke() {
   );
   assert.deepEqual(
     getPlaybackRemoteCommandFromNativeEvent({
+      event: { _tag: "RemoteCommand", command: "play" },
+      state: null,
+    }),
+    { type: "play" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: { _tag: "RemoteCommand", command: "pause" },
+      state: null,
+    }),
+    { type: "pause" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: { _tag: "RemoteCommand", command: "stop" },
+      state: null,
+    }),
+    { type: "pause" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
       event: { _tag: "RemoteCommand", command: "togglePlayPause" },
       state: { status: "paused" },
     }),

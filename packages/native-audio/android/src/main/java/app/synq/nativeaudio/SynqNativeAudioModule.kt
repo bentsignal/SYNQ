@@ -175,8 +175,64 @@ class SynqNativeAudioModule : Module() {
     player = created
     applyQueueMode()
     SynqNativeAudioHolder.mediaSession?.release()
-    SynqNativeAudioHolder.mediaSession = MediaSession.Builder(context(), created).build()
+    SynqNativeAudioHolder.mediaSession = MediaSession.Builder(context(), created)
+      .setCallback(createMediaSessionCallback())
+      .build()
     return created
+  }
+
+  private fun createMediaSessionCallback(): MediaSession.Callback =
+    object : MediaSession.Callback {
+      override fun onPlayerInteractionFinished(
+        session: MediaSession,
+        controllerInfo: MediaSession.ControllerInfo,
+        playerCommands: Player.Commands
+      ) {
+        emitRemoteCommandForPlayerCommands(playerCommands)
+      }
+    }
+
+  private fun emitRemoteCommandForPlayerCommands(playerCommands: Player.Commands) {
+    if (playerCommands.contains(Player.COMMAND_PLAY_PAUSE)) {
+      emitRemoteCommand(if (ensurePlayer().isPlaying) "play" else "pause")
+    }
+    if (
+      playerCommands.contains(Player.COMMAND_SEEK_TO_NEXT) ||
+      playerCommands.contains(Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
+    ) {
+      emitRemoteCommand("next", activeTrackId = activeTrackId)
+    }
+    if (
+      playerCommands.contains(Player.COMMAND_SEEK_TO_PREVIOUS) ||
+      playerCommands.contains(Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
+    ) {
+      emitRemoteCommand("previous", activeTrackId = activeTrackId)
+    }
+    if (
+      playerCommands.contains(Player.COMMAND_SEEK_FORWARD) ||
+      playerCommands.contains(Player.COMMAND_SEEK_BACK) ||
+      playerCommands.contains(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM)
+    ) {
+      emitRemoteCommand("seek", positionMs = ensurePlayer().currentPosition.toDouble())
+    }
+  }
+
+  private fun emitRemoteCommand(
+    command: String,
+    activeTrackId: String? = null,
+    positionMs: Double? = null
+  ) {
+    val payload = Bundle()
+    payload.putString("type", "RemoteCommand")
+    payload.putString("command", command)
+    if (activeTrackId != null) {
+      payload.putString("activeTrackId", activeTrackId)
+    }
+    if (positionMs != null) {
+      payload.putDouble("positionMs", positionMs)
+    }
+
+    sendEvent("onPlaybackEvent", payload)
   }
 
   private fun rebuildPlaylist(trackId: String?) {

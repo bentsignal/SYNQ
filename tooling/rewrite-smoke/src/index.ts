@@ -2453,6 +2453,7 @@ async function assertPlaybackSessionSmoke() {
     premiumActive: false,
     state,
     status: {
+      activeTrackId: third.id,
       didJustFinish: false,
       duration: 600_000,
       isLoaded: true,
@@ -2467,6 +2468,7 @@ async function assertPlaybackSessionSmoke() {
   assert.equal(directLibraryStatusUpdate.isPlaying, true);
 
   const libraryNativeStatus = {
+    activeTrackId: third.id,
     didJustFinish: false,
     duration: 600_000,
     isLoaded: true,
@@ -2530,6 +2532,7 @@ async function assertPlaybackSessionSmoke() {
     getPlaybackNativeStatusAction({
       premiumActive: false,
       status: {
+        activeTrackId: third.id,
         didJustFinish: false,
         duration: 600_000,
         isLoaded: true,
@@ -2703,6 +2706,7 @@ async function assertPlaybackSessionSmoke() {
   assert.equal(state.isPlaying, false);
 
   const adNativeStatus = {
+    activeTrackId: null,
     didJustFinish: false,
     duration: 30_000,
     isLoaded: true,
@@ -3180,6 +3184,187 @@ function assertPlaybackNativeStatusSmoke() {
     ["resume-library"],
     ["finish"],
   ]);
+}
+
+function assertPlaybackNativeRemoteCommandSmoke() {
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: {
+        _tag: "RemoteCommand",
+        activeTrackId: null,
+        command: "next",
+      },
+      state: {
+        positionMs: 29_900,
+        status: "playing",
+      },
+    }),
+    { type: "queue-ended" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: {
+        _tag: "RemoteCommand",
+        activeTrackId: "42",
+        command: "next",
+      },
+      state: {
+        positionMs: 12_000,
+        status: "playing",
+      },
+    }),
+    {
+      targetTrackId: 42,
+      type: "next",
+    },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: {
+        _tag: "RemoteCommand",
+        activeTrackId: "not-a-song-id",
+        command: "previous",
+      },
+      state: {
+        positionMs: 2_000,
+        status: "playing",
+      },
+    }),
+    {
+      targetTrackId: undefined,
+      type: "previous",
+    },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: {
+        _tag: "RemoteCommand",
+        command: "seek",
+        positionMs: Number.NaN,
+      },
+      state: {
+        positionMs: 15_000,
+        status: "playing",
+      },
+    }),
+    {
+      position: 0,
+      type: "seek",
+    },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: {
+        _tag: "RemoteCommand",
+        command: "seek",
+      },
+      state: {
+        positionMs: 15_000,
+        status: "playing",
+      },
+    }),
+    {
+      position: 15_000,
+      type: "seek",
+    },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: {
+        _tag: "RemoteCommand",
+        command: "togglePlayPause",
+      },
+      state: {
+        status: "playing",
+      },
+    }),
+    { type: "pause" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: {
+        _tag: "RemoteCommand",
+        command: "togglePlayPause",
+      },
+      state: {
+        status: "paused",
+      },
+    }),
+    { type: "play" },
+  );
+
+  const calls: string[] = [];
+  const handlers = {
+    beginAdBreak: () => calls.push("begin-ad"),
+    canRunPlaybackCommand: () => true,
+    fail: (message: string) => calls.push(`fail:${message}`),
+    pause: () => calls.push("pause"),
+    queueEnded: () => calls.push("queue-ended"),
+    resume: () => calls.push("resume"),
+    seekTo: (position: number) => calls.push(`seek:${position}`),
+    skipNext: () => calls.push("skip-next"),
+    skipPrevious: () => calls.push("skip-previous"),
+  };
+
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: {
+        targetTrackId: 42,
+        type: "next",
+      },
+      handlers,
+    }),
+    "handled",
+  );
+  assert.deepEqual(calls, []);
+
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: {
+        targetTrackId: null,
+        type: "previous",
+      },
+      handlers,
+    }),
+    "handled",
+  );
+  assert.deepEqual(calls, []);
+
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: {
+        type: "next",
+      },
+      handlers,
+    }),
+    "handled",
+  );
+  assert.deepEqual(calls, ["skip-next"]);
+
+  calls.length = 0;
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: {
+        position: 17_500,
+        type: "seek",
+      },
+      handlers,
+    }),
+    "handled",
+  );
+  assert.deepEqual(calls, ["seek:17500"]);
+
+  calls.length = 0;
+  assert.equal(
+    handlePlaybackRemoteCommand({
+      command: {
+        type: "queue-ended",
+      },
+      handlers,
+    }),
+    "handled",
+  );
+  assert.deepEqual(calls, ["queue-ended"]);
 }
 
 function assertPlaybackNativePlayerStateSmoke() {
@@ -3733,6 +3918,7 @@ function assertPlaybackNativeCommandPlanSmoke() {
     runAdGatedCommand: runAdGatedTransportCommand,
     runCommandPlan: runTransportCommandPlan,
     song: first,
+    state,
   });
   runPlaybackTransportPauseCommand({
     runCommandPlan: runTransportCommandPlan,
@@ -3882,21 +4068,24 @@ function assertPlaybackNativeCommandPlanSmoke() {
   ]);
 
   const remoteEvents: string[] = [];
+  const recordRemoteEvent = (event: string) => {
+    (remoteEvents as string[]).push(event);
+  };
   let remoteAllowed = true;
   const remoteHandlers: PlaybackRemoteCommandHandlers = {
-    beginAdBreak: () => remoteEvents.push("ad"),
+    beginAdBreak: () => recordRemoteEvent("ad"),
     canRunPlaybackCommand: () => remoteAllowed,
-    fail: (message) => remoteEvents.push(`fail:${message}`),
-    pause: () => remoteEvents.push("pause"),
-    queueEnded: () => remoteEvents.push("queue-ended"),
-    resume: () => remoteEvents.push("resume"),
-    seekTo: (position) => remoteEvents.push(`seek:${position}`),
-    skipNext: () => remoteEvents.push("next"),
-    skipPrevious: () => remoteEvents.push("previous"),
+    fail: (message) => recordRemoteEvent(`fail:${message}`),
+    pause: () => recordRemoteEvent("pause"),
+    queueEnded: () => recordRemoteEvent("queue-ended"),
+    resume: () => recordRemoteEvent("resume"),
+    seekTo: (position) => recordRemoteEvent(`seek:${position}`),
+    skipNext: () => recordRemoteEvent("next"),
+    skipPrevious: () => recordRemoteEvent("previous"),
   };
   assert.equal(
     runAdGatedRemoteCommand({
-      command: () => remoteEvents.push("direct-gated"),
+      command: () => recordRemoteEvent("direct-gated"),
       handlers: remoteHandlers,
     }),
     "handled",
@@ -3991,7 +4180,9 @@ function assertPlaybackNativeCommandPlanSmoke() {
   remoteEvents.length = 0;
   assert.equal(
     runAdGatedRemoteCommand({
-      command: () => remoteEvents.push("unexpected-gated"),
+      command: () => {
+        recordRemoteEvent("unexpected-gated");
+      },
       handlers: remoteHandlers,
     }),
     "started-ad",
@@ -20035,6 +20226,7 @@ assertRewriteFeatureMapSmoke();
 assertHomeScreenSmoke();
 assertImportSongFormSmoke();
 assertPlaybackNativeStatusSmoke();
+assertPlaybackNativeRemoteCommandSmoke();
 assertPlaybackNativePlayerStateSmoke();
 assertPlaybackNativeCommandPlanSmoke();
 assertPlaybackPlayerStateSmoke();

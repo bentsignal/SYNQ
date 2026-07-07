@@ -2241,6 +2241,34 @@ async function assertPlaybackSessionSmoke() {
   state = playbackReducer(state, { type: "skip-previous" });
   assert.equal(state.activeTrackId, first.id);
   assert.equal(state.activeQueueIndex, 0);
+  assert.equal(
+    getNextQueueIndex({
+      activeQueueIndex: 0,
+      loop: false,
+      queue: [first],
+      shuffle: true,
+    }),
+    null,
+  );
+  assert.equal(
+    getNextQueueIndex({
+      activeQueueIndex: 0,
+      loop: true,
+      queue: [first],
+      shuffle: true,
+    }),
+    0,
+  );
+  assert.equal(
+    getNextQueueIndex({
+      activeQueueIndex: 0,
+      loop: false,
+      queue: [first, second, third],
+      random: () => 0.75,
+      shuffle: true,
+    }),
+    2,
+  );
 
   assert.deepEqual(
     getPlaybackQueueRowState({
@@ -4185,6 +4213,17 @@ function assertPlaybackNativeCommandPlanSmoke() {
       state: null,
     }),
     { targetTrackId: first.id, type: "previous" },
+  );
+  assert.deepEqual(
+    getPlaybackRemoteCommandFromNativeEvent({
+      event: {
+        _tag: "RemoteCommand",
+        activeTrackId: null,
+        command: "previous",
+      },
+      state: null,
+    }),
+    { targetTrackId: null, type: "previous" },
   );
   const assembledCommandEvents: unknown[] = [];
   const assembledCommands = createPlaybackCommands({

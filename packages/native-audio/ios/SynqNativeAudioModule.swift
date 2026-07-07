@@ -89,10 +89,7 @@ public class SynqNativeAudioModule: Module {
     }
 
     Function("stop") {
-      self.player?.pause()
-      self.player?.seek(to: .zero)
-      self.activeTrackId = nil
-      self.status = "idle"
+      self.stopPlayback()
       self.updateNowPlayingInfo()
       self.emitStateChanged()
       return self.statePayload()
@@ -108,7 +105,11 @@ public class SynqNativeAudioModule: Module {
 
     Function("skipNext") {
       self.activeTrackId = self.nextTrackId()
-      try self.loadActiveTrack(autoplay: true)
+      if self.activeTrackId == nil {
+        self.stopPlayback()
+      } else {
+        try self.loadActiveTrack(autoplay: true)
+      }
       self.updateNowPlayingInfo()
       self.emitStateChanged()
       return self.statePayload()
@@ -337,6 +338,15 @@ public class SynqNativeAudioModule: Module {
       player?.removeTimeObserver(timeObserver)
       self.timeObserver = nil
     }
+  }
+
+  private func stopPlayback() {
+    player?.pause()
+    player?.seek(to: .zero)
+    removeTimeObserver()
+    player = nil
+    activeTrackId = nil
+    status = "idle"
   }
 
   private func activeTrack() -> [String: Any]? {

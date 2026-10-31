@@ -130,7 +130,7 @@ export function AppearanceSection() {
   const theme = usePreference("theme");
   const openPaywall = useOpenPaywall();
   const appIcon = useAppIcon();
-  const choose = (id: ThemeId, name: string) => {
+  function choose(id: ThemeId, name: string) {
     if (id === theme) return;
     if (!premium) {
       openPaywall();
@@ -139,7 +139,7 @@ export function AppearanceSection() {
     selectionTick();
     track("theme_change", { theme: name });
     setPreference("theme", id);
-  };
+  }
   return (
     <FieldGroup.Section title="Appearance">
       <UIRow spacing={2}>

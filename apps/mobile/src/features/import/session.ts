@@ -67,7 +67,12 @@ export const PENDING = new Set<ImportItemStatus>([
   "importing",
 ]);
 
-const EMPTY: ImportSessionState = { id: 0, items: [], kind: null, wait: null };
+/** Types a session state (the store's values are built from literals). */
+function sessionState(value: ImportSessionState) {
+  return value;
+}
+
+const EMPTY = sessionState({ id: 0, items: [], kind: null, wait: null });
 let batches = 0;
 
 interface Run {
@@ -81,7 +86,7 @@ interface Run {
 }
 
 let state = EMPTY;
-let run: Run | null = null;
+let run: Run | undefined;
 const listeners = new Set<() => void>();
 
 function publish(next: ImportSessionState) {
@@ -101,6 +106,11 @@ function update(current: Run, key: string, change: Partial<ImportItem>) {
 
 function setWait(current: Run, wait: number | null) {
   if (run === current) publish({ ...state, wait });
+}
+
+/** Read through a call: an `await` may have closed the run meanwhile. */
+function closed(current: Run) {
+  return current.closed;
 }
 
 function delay(ms: number) {
@@ -158,7 +168,7 @@ async function importStep(current: Run, key: string) {
     current.freeSongUsed = true;
     update(current, key, { status: "waiting" });
     await importWait(current);
-    if (current.closed) {
+    if (closed(current)) {
       discardSource(source);
       return;
     }
@@ -216,7 +226,7 @@ function newItem(key: string, name: string, status: ImportItemStatus) {
 /** Adds files to the batch; they're read and imported in order. */
 export function addImportSources(sources: readonly ImportSource[]) {
   const current = run;
-  if (current === null) return;
+  if (current === undefined) return;
   const known = new Set(state.items.map((item) => item.key));
   publish({
     ...state,
@@ -235,22 +245,22 @@ export function addImportSources(sources: readonly ImportSource[]) {
 
 /** Wi-Fi Transfer started receiving a file. */
 export function receivingImport(key: string, name: string) {
-  if (run === null || state.items.some((item) => item.key === key)) return;
+  if (run === undefined || state.items.some((item) => item.key === key)) return;
   publish({ ...state, items: [...state.items, newItem(key, name, "receiving")] });
 }
 
 export function receivedProgress(key: string, received: number) {
-  if (run !== null) update(run, key, { received });
+  if (run !== undefined) update(run, key, { received });
 }
 
 export function receiveFailed(key: string) {
-  if (run !== null) update(run, key, { status: "failed" });
+  if (run !== undefined) update(run, key, { status: "failed" });
 }
 
 /** A file Wi-Fi Transfer received in full. */
 export function receivedImport(source: ImportSource) {
   const current = run;
-  if (current === null) return;
+  if (current === undefined) return;
   update(current, source.key, { name: source.name, received: 1, status: "reading" });
   current.sources.set(source.key, source);
   schedule(current, source.key);
@@ -263,9 +273,9 @@ export function receivedImport(source: ImportSource) {
  */
 export function endImportSession() {
   const current = run;
-  if (current === null) return;
+  if (current === undefined) return;
   current.closed = true;
-  run = null;
+  run = undefined;
   const imported = state.items.filter((item) => item.status === "imported");
   if (imported.length > 0) {
     track("import_finish", { numberOfSongs: imported.length });
@@ -281,14 +291,14 @@ export function endImportSession() {
   }
   publish(EMPTY);
   void Promise.all([current.reading, current.importing]).then(() => {
-    if (run === null) clearImportStaging();
+    if (run === undefined) clearImportStaging();
   });
 }
 
 /** Imports the locked songs once Premium is bought from the sheet. */
 function unlockLocked() {
   const current = run;
-  if (current === null || !isPremium()) return;
+  if (current === undefined || !isPremium()) return;
   for (const item of state.items) {
     if (item.status !== "locked") continue;
     update(current, item.key, { status: "queued" });

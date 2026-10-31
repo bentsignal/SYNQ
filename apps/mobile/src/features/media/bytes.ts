@@ -25,7 +25,7 @@ export function latin1Text(bytes: Uint8Array) {
 }
 
 export function utf8Bytes(text: string) {
-  const out: number[] = [];
+  const out = new Array<number>();
   for (const char of text) {
     const code = char.codePointAt(0) ?? 0;
     if (code < 0x80) out.push(code);
@@ -48,27 +48,30 @@ export function utf8Bytes(text: string) {
   return Uint8Array.from(out);
 }
 
+/** The code point at `index` and its length in bytes (U+FFFD when malformed). */
+function decodeAt(bytes: Uint8Array, index: number) {
+  const byte = bytes[index] ?? 0;
+  if (byte < 0x80) return { code: byte, length: 1 };
+  const length = byte >= 0xf0 ? 4 : byte >= 0xe0 ? 3 : 2;
+  if (byte < 0xc0 || index + length > bytes.length) {
+    return { code: 0xfffd, length: 1 };
+  }
+  let code = byte & (0xff >> (length + 1));
+  for (let next = 1; next < length; next++) {
+    const continuation = bytes[index + next] ?? 0;
+    if ((continuation & 0xc0) !== 0x80) return { code: 0xfffd, length: 1 };
+    code = (code << 6) | (continuation & 0x3f);
+  }
+  return { code, length };
+}
+
 /** Decodes UTF-8, replacing malformed sequences with U+FFFD. */
 export function utf8Text(bytes: Uint8Array) {
-  const codes: number[] = [];
-  let index = 0;
-  while (index < bytes.length) {
-    const byte = bytes[index] ?? 0;
-    const length = byte < 0x80 ? 1 : byte >= 0xf0 ? 4 : byte >= 0xe0 ? 3 : 2;
-    if (length === 1) {
-      codes.push(byte);
-      index += 1;
-      continue;
-    }
-    let code = byte & (0xff >> (length + 1));
-    let valid = byte >= 0xc0 && index + length <= bytes.length;
-    for (let next = 1; valid && next < length; next++) {
-      const continuation = bytes[index + next] ?? 0;
-      if ((continuation & 0xc0) !== 0x80) valid = false;
-      code = (code << 6) | (continuation & 0x3f);
-    }
-    codes.push(valid ? code : 0xfffd);
-    index += valid ? length : 1;
+  const codes = new Array<number>();
+  for (let index = 0; index < bytes.length; ) {
+    const { code, length } = decodeAt(bytes, index);
+    codes.push(code);
+    index += length;
   }
   let text = "";
   for (let start = 0; start < codes.length; start += 4096) {

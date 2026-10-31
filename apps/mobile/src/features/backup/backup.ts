@@ -35,7 +35,7 @@ import {
 const WORK = new Directory(Paths.cache, "backup");
 
 /** A restore whose database is in place but whose folders aren't yet. */
-let pendingFolders: Directory | null = null;
+let pendingFolders: Directory | undefined;
 
 /** A file:// URI as the path react-native-zip-archive and SQLite take. */
 function pathOf(entry: File | Directory) {
@@ -263,7 +263,7 @@ export async function restoreLibrary(
   uri: string,
   onProgress: (fraction: number) => void,
 ) {
-  pendingFolders = null;
+  pendingFolders = undefined;
   resetWork();
   const extracted = new Directory(WORK, "extracted");
   extracted.create({ intermediates: true });
@@ -318,13 +318,13 @@ export async function restoreLibrary(
  * Try Again calls it again.
  */
 export async function finishRestore() {
-  if (pendingFolders === null) return;
+  if (pendingFolders === undefined) return;
   try {
     await replaceFolders(pendingFolders);
   } catch {
     throw new RestoreError("files", "The library's files couldn't be moved.");
   }
-  pendingFolders = null;
+  pendingFolders = undefined;
   clearWork();
 }
 

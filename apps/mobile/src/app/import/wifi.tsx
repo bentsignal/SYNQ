@@ -107,6 +107,27 @@ function Header({ server, onRetry }: { server: Server; onRetry: () => void }) {
   }
 }
 
+/** The device's Wi-Fi address, or null when it isn't on Wi-Fi (or can't serve). */
+function readAddress() {
+  return synqMediaAvailable() ? synqMedia().wifiAddress() : null;
+}
+
+/** What the server is doing, from the address and the latest start's outcome. */
+function serverState(
+  address: string | null,
+  attempt: number,
+  started: { attempt: number; port: number | null } | null,
+) {
+  if (!synqMediaAvailable()) return { state: "failed" } satisfies Server;
+  if (address === null) return { state: "offline" } satisfies Server;
+  if (started?.attempt !== attempt) return { state: "starting" } satisfies Server;
+  if (started.port === null) return { state: "failed" } satisfies Server;
+  return {
+    address: started.port === 80 ? address : `${address}:${String(started.port)}`,
+    state: "ready",
+  } satisfies Server;
+}
+
 /**
  * Wi-Fi Transfer: while this sheet is open, a web server on the local
  * network takes uploads from a computer's browser; each file is imported
@@ -114,13 +135,14 @@ function Header({ server, onRetry }: { server: Server; onRetry: () => void }) {
  */
 export default function ImportWifiScreen() {
   const router = useRouter();
-  const accent = useCSSVariable("--color-accent");
-  const [server, setServer] = useState<Server>({ state: "starting" });
+  const accentValue = useCSSVariable("--color-accent");
+  const accent = typeof accentValue === "string" ? accentValue : "#77adf8";
+  const [address, setAddress] = useState(readAddress);
   const [attempt, setAttempt] = useState(0);
-  const page = transferPage({
-    accent: typeof accent === "string" ? accent : "#77adf8",
-    deviceName: Device.deviceName ?? "your iPhone",
-  });
+  const [started, setStarted] = useState<{
+    attempt: number;
+    port: number | null;
+  } | null>(null);
 
   // eslint-disable-next-line no-restricted-syntax -- The batch lives as long as this sheet.
   useEffect(() => {
@@ -131,12 +153,12 @@ export default function ImportWifiScreen() {
 
   // eslint-disable-next-line no-restricted-syntax -- The web server is an external system that must run exactly while this sheet is open (and restart on Try Again); its uploads arrive as native events.
   useEffect(() => {
-    if (!synqMediaAvailable()) {
-      setServer({ state: "failed" });
-      return;
-    }
+    if (address === null || !synqMediaAvailable()) return;
     const media = synqMedia();
-    const uploads = new Directory(IMPORT_DIRECTORY, "wifi");
+    let live = true;
+    function settle(port: number | null) {
+      if (live) setStarted({ attempt, port });
+    }
     const subscriptions = [
       media.addListener("onTransferStart", ({ id, name }) =>
         receivingImport(id, name),
@@ -148,35 +170,22 @@ export default function ImportWifiScreen() {
       media.addListener("onTransferFile", ({ id, mimeType, name, uri }) =>
         receivedImport({ key: id, mimeType, name, uri }),
       ),
-      media.addListener("onTransferStopped", () => setServer({ state: "failed" })),
+      media.addListener("onTransferStopped", () => settle(null)),
     ];
-    let live = true;
-    const address = media.wifiAddress();
-    if (address === null) {
-      setServer({ state: "offline" });
-    } else {
-      media
-        .startTransferServer(PREFERRED_PORT, page, uploads.uri, TRANSFER_EXTENSIONS)
-        .then(
-          (port) => {
-            if (!live) return;
-            setServer({
-              address: port === 80 ? address : `${address}:${String(port)}`,
-              state: "ready",
-            });
-          },
-          () => {
-            if (live) setServer({ state: "failed" });
-          },
-        );
-    }
+    const page = transferPage({
+      accent,
+      deviceName: Device.deviceName ?? "your iPhone",
+    });
+    const uploads = new Directory(IMPORT_DIRECTORY, "wifi");
+    media
+      .startTransferServer(PREFERRED_PORT, page, uploads.uri, TRANSFER_EXTENSIONS)
+      .then(settle, () => settle(null));
     return () => {
       live = false;
       for (const subscription of subscriptions) subscription.remove();
       media.stopTransferServer();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- The page is built once per start; a theme change mid-transfer needn't restart the server.
-  }, [attempt]);
+  }, [accent, address, attempt]);
 
   return (
     <>
@@ -191,9 +200,9 @@ export default function ImportWifiScreen() {
       <ImportList
         header={
           <Header
-            server={server}
+            server={serverState(address, attempt, started)}
             onRetry={() => {
-              setServer({ state: "starting" });
+              setAddress(readAddress());
               setAttempt((n) => n + 1);
             }}
           />

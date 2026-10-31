@@ -33,23 +33,19 @@ import {
 
 const STORAGE_KEY = "synq.premium";
 
-interface PremiumState {
-  readonly status: PremiumStatus;
-  /** RevenueCat answered during this launch. */
-  readonly confirmed: boolean;
-}
-
-let state: PremiumState = {
-  confirmed: false,
-  status: cachedPremium(readJson(STORAGE_KEY, premiumFromStored), Date.now()),
-};
+let status = cachedPremium(
+  readJson(STORAGE_KEY, premiumFromStored),
+  Date.now(),
+);
+/** RevenueCat answered during this launch. */
+let confirmed = false;
 const listeners = new Set<() => void>();
 
-function publish(next: PremiumState) {
-  const changed = next.status.active !== state.status.active;
-  state = next;
+function publish(next: PremiumStatus) {
+  const changed = next.active !== status.active;
+  status = next;
   for (const listener of listeners) listener();
-  if (changed) setPersonProperties({ premium: next.status.active });
+  if (changed) setPersonProperties({ premium: next.active });
 }
 
 /**
@@ -68,11 +64,12 @@ function resetPremiumAppearance() {
 
 /** Applies what RevenueCat said. */
 export function applyCustomerInfo(info: CustomerInfo) {
-  const status = premiumFromCustomerInfo(info, Date.now());
-  writeJson(STORAGE_KEY, status);
-  publish({ confirmed: true, status });
-  if (!status.active) resetPremiumAppearance();
-  return status;
+  const next = premiumFromCustomerInfo(info, Date.now());
+  writeJson(STORAGE_KEY, next);
+  confirmed = true;
+  publish(next);
+  if (!next.active) resetPremiumAppearance();
+  return next;
 }
 
 /**
@@ -81,24 +78,26 @@ export function applyCustomerInfo(info: CustomerInfo) {
  */
 function adoptLegacyCache() {
   const cache = takeLegacySettings("premiumCache");
-  if (cache === null || state.confirmed) return;
-  const status = premiumFromLegacyCache(cache, Date.now());
-  if (status.active && !state.status.active) {
-    writeJson(STORAGE_KEY, status);
-    publish({ ...state, status });
+  if (cache === null || confirmed) return;
+  const legacy = premiumFromLegacyCache(cache, Date.now());
+  if (legacy.active && !status.active) {
+    writeJson(STORAGE_KEY, legacy);
+    publish(legacy);
   }
 }
 
 /** Runs `adoptLegacyCache` once the library is open (startup applies 2.5.2's settings). */
+function libraryOpened() {
+  return queryClient.getQueryState(["startup"])?.status === "success";
+}
+
 function whenLibraryOpens(run: () => void) {
-  const opened = () =>
-    queryClient.getQueryState(["startup"])?.status === "success";
-  if (opened()) {
+  if (libraryOpened()) {
     run();
     return;
   }
   const unsubscribe = queryClient.getQueryCache().subscribe(() => {
-    if (!opened()) return;
+    if (!libraryOpened()) return;
     unsubscribe();
     run();
   });
@@ -129,12 +128,12 @@ export function startPremium() {
 
 /** The current status, for code outside React (the player's ad). */
 export function getPremium() {
-  return state.status;
+  return status;
 }
 
 /** Whether someone has Premium right now. */
 export function isPremium() {
-  return state.status.active;
+  return status.active;
 }
 
 /** Calls `listener` whenever the status changes; returns an unsubscribe. */
@@ -155,6 +154,6 @@ export function usePremium<Selected = boolean>(
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- The default selector returns `active`, which is what `Selected` defaults to.
     status.active as Selected,
 ) {
-  return useSyncExternalStore(subscribePremium, () => select(state.status));
+  return useSyncExternalStore(subscribePremium, () => select(status));
 }
 

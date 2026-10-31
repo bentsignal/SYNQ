@@ -28,14 +28,14 @@ const JPEG = Uint8Array.of(
   0x01, 0xff, 0xd9,
 );
 
-const TAGS: SongTags = {
+const TAGS = {
   title: "Señorita 🎵",
   artists: ["Shawn Mendes", "Camila Cabello"],
   album: "Romance",
   year: 2019,
   track: 3,
   artwork: JPEG,
-};
+} satisfies SongTags;
 
 void test("UTF-8 survives a round trip, including astral characters", () => {
   const text = "Beyoncé — 東京 🎶";
@@ -48,7 +48,7 @@ void test("reads a JPEG's size from its frame header", () => {
 });
 
 /** An ID3v2.3 tag with the given frames (id, body) and some padding. */
-function id3v23(frames: [string, Uint8Array][]) {
+function id3v23(frames: readonly (readonly [string, Uint8Array])[]) {
   const encoded = concatBytes(
     frames.map(([id, body]) =>
       concatBytes([latin1Bytes(id), uint32BE(body.length), Uint8Array.of(0, 0), body]),
@@ -69,8 +69,8 @@ function id3v23(frames: [string, Uint8Array][]) {
   ]);
 }
 
-function textFrame(id: string, text: string): [string, Uint8Array] {
-  return [id, concatBytes([Uint8Array.of(0), latin1Bytes(text)])];
+function textFrame(id: string, text: string) {
+  return [id, concatBytes([Uint8Array.of(0), latin1Bytes(text)])] as const;
 }
 
 void test("sizes an ID3 tag from its header, and finds none in plain audio", () => {
@@ -85,7 +85,7 @@ void test("an MP3 export replaces SYNQ's frames and keeps the others", () => {
     textFrame("TPE1", "Old Artist"),
     textFrame("TCON", "Pop"),
     textFrame("TYER", "1999"),
-    ["APIC", Uint8Array.of(0, 0x69, 0, 0, 0, 1, 2, 3)],
+    ["APIC", Uint8Array.of(0, 0x69, 0, 0, 0, 1, 2, 3)] as const,
     textFrame("COMM", "keep me"),
   ]);
   const tag = buildId3Tag(TAGS, existing);
@@ -105,7 +105,7 @@ void test("an MP3 export replaces SYNQ's frames and keeps the others", () => {
 });
 
 void test("an MP3 export keeps the file's artwork when SYNQ has none", () => {
-  const existing = id3v23([["APIC", Uint8Array.of(0, 0x69, 0, 0, 0, 9)]]);
+  const existing = id3v23([["APIC", Uint8Array.of(0, 0x69, 0, 0, 0, 9)]] as const);
   const parsed = parseId3Frames(buildId3Tag({ ...TAGS, artwork: null }, existing));
   assert.deepEqual(
     parsed?.frames.map((frame) => frame.id),
@@ -115,16 +115,19 @@ void test("an MP3 export keeps the file's artwork when SYNQ has none", () => {
 
 void test("an MP3 without a tag gets a fresh ID3v2.3 one", () => {
   const parsed = parseId3Frames(buildId3Tag(TAGS, null));
-  assert.equal(parsed?.version, 3);
-  assert.equal(parsed?.frames.length, 6);
+  assert.ok(parsed);
+  assert.equal(parsed.version, 3);
+  assert.equal(parsed.frames.length, 6);
 });
+
+function le(value: number) {
+  return Uint8Array.of(value & 0xff, (value >> 8) & 0xff, (value >> 16) & 0xff, value >>> 24);
+}
 
 /** A FLAC head: STREAMINFO, a Vorbis comment, a picture, and padding. */
 function flacBlocks() {
   const vendor = utf8Bytes("reference libFLAC 1.4.3");
   const comments = ["TITLE=Old", "artist=A", "ARTIST=B", "GENRE=Jazz", "TRACKNUMBER=07"].map(utf8Bytes);
-  const le = (value: number) =>
-    Uint8Array.of(value & 0xff, (value >> 8) & 0xff, (value >> 16) & 0xff, value >>> 24);
   const comment = concatBytes([
     le(vendor.length),
     vendor,

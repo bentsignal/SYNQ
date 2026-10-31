@@ -1,5 +1,6 @@
 import { Directory, File, Paths } from "expo-file-system";
 
+import type { NativeAudioInfo } from "~/features/media/native";
 import type { RawTags } from "~/features/media/song-tags";
 import { addSongs, deleteSongs, setArtwork } from "@synq/db";
 import { documentFile } from "@synq/db/expo";
@@ -43,6 +44,50 @@ function stagingFor(key: string) {
   return new Directory(IMPORT_DIRECTORY, "items", key);
 }
 
+function rawTags(info: NativeAudioInfo) {
+  return {
+    album: info.album ?? null,
+    artist: info.artist ?? null,
+    title: info.title ?? null,
+    track: info.track ?? null,
+    year: info.year ?? null,
+  } satisfies RawTags;
+}
+
+/**
+ * FLAC's Vorbis comments, which AVFoundation doesn't read, fill in the
+ * tags; its cover is written to `artwork` if AVFoundation found none.
+ */
+function withFlacTags(
+  source: ImportSource,
+  raw: RawTags,
+  artwork: File,
+  hasArtwork: boolean,
+) {
+  const flac = readFlacTags(readFlacBlocks(new File(source.uri)).blocks);
+  const tags = {
+    album: raw.album ?? flac.tags.album,
+    artist: raw.artist ?? flac.tags.artist,
+    title: raw.title ?? flac.tags.title,
+    track: raw.track ?? flac.tags.track,
+    year: raw.year ?? flac.tags.year,
+  } satisfies RawTags;
+  if (hasArtwork || flac.artwork === null) return { hasArtwork, tags };
+  artwork.write(flac.artwork);
+  return { hasArtwork: true, tags };
+}
+
+/** Renders the covers from embedded artwork; null if the image is broken. */
+function renderCovers(staging: Directory, artwork: File) {
+  const directory = new Directory(staging, "covers");
+  return synqMedia()
+    .writeCovers(artwork.uri, directory.uri)
+    .then(
+      () => directory,
+      () => null,
+    );
+}
+
 /**
  * Reads a file's tags, duration, and artwork (rendering the covers into
  * its staging folder). Throws when the file isn't playable audio.
@@ -52,38 +97,13 @@ export async function readSource(source: ImportSource) {
   staging.create({ idempotent: true, intermediates: true });
   const artwork = new File(staging, "artwork");
   const info = await synqMedia().readAudioFile(source.uri, artwork.uri);
-  const raw: RawTags = {
-    album: info.album ?? null,
-    artist: info.artist ?? null,
-    title: info.title ?? null,
-    track: info.track ?? null,
-    year: info.year ?? null,
-  };
-  let hasArtwork = info.hasArtwork;
-  if (audioExtension(source.name) === "flac") {
-    // AVFoundation doesn't read Vorbis comments.
-    const flac = readFlacTags(readFlacBlocks(new File(source.uri)).blocks);
-    raw.title ??= flac.tags.title;
-    raw.artist ??= flac.tags.artist;
-    raw.album ??= flac.tags.album;
-    raw.year ??= flac.tags.year;
-    raw.track ??= flac.tags.track;
-    if (!hasArtwork && flac.artwork !== null) {
-      artwork.write(flac.artwork);
-      hasArtwork = true;
-    }
-  }
-  let covers: Directory | null = null;
-  if (hasArtwork) {
-    const directory = new Directory(staging, "covers");
-    // A broken embedded image just means no artwork.
-    covers = await synqMedia()
-      .writeCovers(artwork.uri, directory.uri)
-      .then(() => directory)
-      .catch(() => null);
-  }
+  const read =
+    audioExtension(source.name) === "flac"
+      ? withFlacTags(source, rawTags(info), artwork, info.hasArtwork)
+      : { hasArtwork: info.hasArtwork, tags: rawTags(info) };
+  const covers = read.hasArtwork ? await renderCovers(staging, artwork) : null;
   return {
-    ...cleanTags(source.name, raw),
+    ...cleanTags(source.name, read.tags),
     covers,
     durationMs: info.durationMs,
     mimeType: audioMimeType(source.name, source.mimeType),
@@ -100,6 +120,11 @@ export function stagedCoverUri(read: ReadSong) {
 async function moveInto(file: File, destination: File) {
   if (destination.exists) destination.delete();
   await file.move(destination);
+}
+
+async function copyInto(file: File, destination: File) {
+  if (destination.exists) destination.delete();
+  await file.copy(destination);
 }
 
 /**
@@ -140,8 +165,9 @@ export async function importSong(source: ImportSource, read: ReadSong) {
     try {
       const folder = new Directory(Paths.document, ...target.dir.split("/"));
       folder.create({ idempotent: true, intermediates: true });
+      // Copied: the staged covers stay as the import list's thumbnails.
       for (const name of ["cover_full.jpg", "cover_small.jpg"]) {
-        await moveInto(new File(read.covers, name), new File(folder, name));
+        await copyInto(new File(read.covers, name), new File(folder, name));
       }
     } catch {
       // The song stays; it just has no artwork.

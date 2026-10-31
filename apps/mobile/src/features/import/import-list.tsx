@@ -26,13 +26,16 @@ function waitOf(session: ImportSessionState) {
   return session.wait;
 }
 
+function songs(n: number) {
+  return `${String(n)} ${n === 1 ? "Song" : "Songs"}`;
+}
+
 /** "Importing 3 of 12", "12 Songs Imported", "1 Song Imported · 4 Need Premium". */
 export function progressLine(items: readonly ImportItem[]) {
   const imported = items.filter((item) => item.status === "imported").length;
   const locked = items.filter((item) => item.status === "locked").length;
   const failed = items.filter((item) => item.status === "failed").length;
   const pending = items.some((item) => PENDING.has(item.status));
-  const songs = (n: number) => `${String(n)} ${n === 1 ? "Song" : "Songs"}`;
   if (pending) {
     const total = items.length - failed - locked;
     return `Importing ${String(Math.min(imported + 1, total))} of ${String(total)}`;

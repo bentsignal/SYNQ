@@ -14,11 +14,11 @@ export interface Bookkeeping {
 
 const STORAGE_KEY = "synq.bookkeeping";
 
-const ZERO: Bookkeeping = {
+const ZERO = {
   exportNumber: 0,
   importCount: 0,
   reviewRequested: false,
-};
+} satisfies Bookkeeping;
 
 function count(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) && value > 0

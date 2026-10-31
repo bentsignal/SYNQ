@@ -24,15 +24,12 @@ function read() {
   return APP_ICONS.find((icon) => icon.name === name)?.name ?? PRIMARY;
 }
 
-let current: AppIconName | null = null;
-let loaded = false;
+/** Undefined until first read. */
+let current: AppIconName | null | undefined;
 const listeners = new Set<() => void>();
 
 function snapshot() {
-  if (!loaded) {
-    current = read();
-    loaded = true;
-  }
+  current ??= read();
   return current;
 }
 

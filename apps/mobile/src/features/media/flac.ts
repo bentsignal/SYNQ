@@ -66,23 +66,27 @@ function blockBytes(block: FlacBlock, last: boolean) {
   ]);
 }
 
+/** The length-prefixed (little-endian) string at `offset`, and where the next starts. */
+function lengthPrefixed(body: Uint8Array, offset: number) {
+  const length = readUint32LE(body, offset);
+  return {
+    next: offset + 4 + length,
+    value: body.subarray(offset + 4, offset + 4 + length),
+  };
+}
+
 /** Splits a Vorbis comment block into its vendor string and `KEY=value` fields. */
 export function parseVorbisComment(body: Uint8Array) {
-  let offset = 0;
-  const next = () => {
-    const length = readUint32LE(body, offset);
-    const value = body.subarray(offset + 4, offset + 4 + length);
-    offset += 4 + length;
-    return value;
-  };
-  const vendor = next();
-  const count = readUint32LE(body, offset);
-  offset += 4;
-  const fields: string[] = [];
+  const vendor = lengthPrefixed(body, 0);
+  const count = readUint32LE(body, vendor.next);
+  const fields = new Array<string>();
+  let offset = vendor.next + 4;
   for (let index = 0; index < count && offset + 4 <= body.length; index++) {
-    fields.push(utf8Text(next()));
+    const field = lengthPrefixed(body, offset);
+    fields.push(utf8Text(field.value));
+    offset = field.next;
   }
-  return { vendor, fields };
+  return { fields, vendor: vendor.value };
 }
 
 function vorbisCommentBody(vendor: Uint8Array, fields: readonly string[]) {
@@ -135,38 +139,75 @@ function pictureBody(jpeg: Uint8Array) {
   ]);
 }
 
-/** The tags and front cover in a file's metadata blocks, for import. */
-export function readFlacTags(blocks: readonly FlacBlock[]) {
+/** Every Vorbis comment value by upper-cased name; several ARTIST fields join. */
+function vorbisValues(blocks: readonly FlacBlock[]) {
   const values = new Map<string, string>();
-  for (const block of blocks) {
-    if (block.type !== FLAC_BLOCK.vorbisComment) continue;
-    for (const field of parseVorbisComment(block.body).fields) {
-      const name = fieldName(field);
-      const value = field.slice(field.indexOf("=") + 1).trim();
-      if (value === "") continue;
-      // Several ARTIST fields are several artists.
-      const previous = values.get(name);
-      values.set(
-        name,
-        previous !== undefined && name === "ARTIST"
-          ? `${previous}, ${value}`
-          : (previous ?? value),
-      );
-    }
+  const fields = blocks
+    .filter((block) => block.type === FLAC_BLOCK.vorbisComment)
+    .flatMap((block) => parseVorbisComment(block.body).fields);
+  for (const field of fields) {
+    const name = fieldName(field);
+    const value = field.slice(field.indexOf("=") + 1).trim();
+    const previous = values.get(name);
+    if (value === "") continue;
+    if (previous === undefined) values.set(name, value);
+    else if (name === "ARTIST") values.set(name, `${previous}, ${value}`);
   }
+  return values;
+}
+
+/** The front cover's image bytes (else the first picture's), or null. */
+function frontCover(blocks: readonly FlacBlock[]) {
   const pictures = blocks
     .filter((block) => block.type === FLAC_BLOCK.picture)
     .map((block) => parsePicture(block.body));
-  const cover =
-    pictures.find((picture) => picture.type === 3) ?? pictures[0] ?? null;
-  const tags: RawTags = {
-    title: values.get("TITLE") ?? null,
-    artist: values.get("ARTIST") ?? values.get("ALBUMARTIST") ?? null,
-    album: values.get("ALBUM") ?? null,
-    year: values.get("DATE") ?? values.get("YEAR") ?? null,
-    track: values.get("TRACKNUMBER") ?? null,
+  const cover = pictures.find((picture) => picture.type === 3) ?? pictures[0];
+  return cover === undefined || cover.data.length === 0 ? null : cover.data;
+}
+
+function firstValue(values: Map<string, string>, names: readonly string[]) {
+  for (const name of names) {
+    const value = values.get(name);
+    if (value !== undefined) return value;
+  }
+  return null;
+}
+
+/** The tags and front cover in a file's metadata blocks, for import. */
+export function readFlacTags(blocks: readonly FlacBlock[]) {
+  const values = vorbisValues(blocks);
+  return {
+    artwork: frontCover(blocks),
+    tags: {
+      album: firstValue(values, ["ALBUM"]),
+      artist: firstValue(values, ["ARTIST", "ALBUMARTIST"]),
+      title: firstValue(values, ["TITLE"]),
+      track: firstValue(values, ["TRACKNUMBER"]),
+      year: firstValue(values, ["DATE", "YEAR"]),
+    } satisfies RawTags,
   };
-  return { tags, artwork: cover?.data.length ? cover.data : null };
+}
+
+/** SYNQ's Vorbis comment fields for `tags`. */
+function ownFields(tags: SongTags) {
+  return [
+    tags.title === "" ? null : `TITLE=${tags.title}`,
+    tags.artists.length === 0 ? null : `ARTIST=${tags.artists.join(", ")}`,
+    tags.album === null ? null : `ALBUM=${tags.album}`,
+    tags.year === null ? null : `DATE=${String(tags.year)}`,
+    tags.track === null ? null : `TRACKNUMBER=${String(tags.track)}`,
+  ].filter((field) => field !== null);
+}
+
+/** Blocks an export keeps as they are: all but comments, padding, and a replaced cover. */
+function keptBlock(block: FlacBlock, replacingCover: boolean) {
+  if (block.type === FLAC_BLOCK.vorbisComment) return false;
+  if (block.type === FLAC_BLOCK.padding) return false;
+  return !(
+    replacingCover &&
+    block.type === FLAC_BLOCK.picture &&
+    parsePicture(block.body).type === 3
+  );
 }
 
 /**
@@ -182,33 +223,19 @@ export function buildFlacHead(blocks: readonly FlacBlock[], tags: SongTags) {
   const parsed =
     comment === undefined ? null : parseVorbisComment(comment.body);
   const fields = [
-    ...(tags.title === "" ? [] : [`TITLE=${tags.title}`]),
-    ...(tags.artists.length > 0 ? [`ARTIST=${tags.artists.join(", ")}`] : []),
-    ...(tags.album === null ? [] : [`ALBUM=${tags.album}`]),
-    ...(tags.year === null ? [] : [`DATE=${tags.year}`]),
-    ...(tags.track === null ? [] : [`TRACKNUMBER=${tags.track}`]),
+    ...ownFields(tags),
     ...(parsed?.fields ?? []).filter(
       (field) => !OWN_FIELDS.has(fieldName(field)),
     ),
   ];
   const vendor = parsed?.vendor ?? utf8Bytes("SYNQ");
-  const kept = blocks.filter(
-    (block) =>
-      block.type !== FLAC_BLOCK.vorbisComment &&
-      block.type !== FLAC_BLOCK.padding &&
-      !(
-        block.type === FLAC_BLOCK.picture &&
-        tags.artwork !== null &&
-        parsePicture(block.body).type === 3
-      ),
-  );
-  const out: FlacBlock[] = [
-    ...kept,
-    { type: FLAC_BLOCK.vorbisComment, body: vorbisCommentBody(vendor, fields) },
+  const out = [
+    ...blocks.filter((block) => keptBlock(block, tags.artwork !== null)),
+    { body: vorbisCommentBody(vendor, fields), type: FLAC_BLOCK.vorbisComment },
     ...(tags.artwork === null
       ? []
-      : [{ type: FLAC_BLOCK.picture, body: pictureBody(tags.artwork) }]),
-    { type: FLAC_BLOCK.padding, body: new Uint8Array(PADDING) },
+      : [{ body: pictureBody(tags.artwork), type: FLAC_BLOCK.picture }]),
+    { body: new Uint8Array(PADDING), type: FLAC_BLOCK.padding },
   ];
   return concatBytes([
     latin1Bytes(FLAC_MARKER),

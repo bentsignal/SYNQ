@@ -22,17 +22,17 @@ export interface PaywallPlan {
   intro: PurchasesIntroPrice | null;
 }
 
-const UNITS: Record<string, string> = {
-  DAY: "Day",
-  MONTH: "Month",
-  WEEK: "Week",
-  YEAR: "Year",
-};
+const UNITS = new Map([
+  ["DAY", "Day"],
+  ["MONTH", "Month"],
+  ["WEEK", "Week"],
+  ["YEAR", "Year"],
+]);
 
 /** "1 Month", "3 Months", "1 Week". */
 export function introPeriod(intro: PurchasesIntroPrice) {
   const count = intro.periodNumberOfUnits * Math.max(1, intro.cycles);
-  const unit = UNITS[intro.periodUnit] ?? "Month";
+  const unit = UNITS.get(intro.periodUnit) ?? "Month";
   return `${String(count)} ${unit}${count === 1 ? "" : "s"}`;
 }
 
@@ -66,10 +66,9 @@ export async function loadPaywallPlans() {
 
 function isCancelled(error: unknown) {
   if (typeof error !== "object" || error === null) return false;
-  const code: unknown = Reflect.get(error, "code");
   return (
     Reflect.get(error, "userCancelled") === true ||
-    code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR
+    Reflect.get(error, "code") === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR
   );
 }
 

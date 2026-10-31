@@ -7,23 +7,8 @@ function escapeHtml(text: string) {
   return text.replace(/[&<>"']/g, (char) => `&#${String(char.charCodeAt(0))};`);
 }
 
-/**
- * The page a computer's browser loads from Wi-Fi Transfer: drop or choose
- * audio files, and each uploads (one at a time, as the request body, so
- * the phone streams it to disk) with its own progress. Styled like SYNQ:
- * near-black, the person's accent.
- */
-export function transferPage({ accent, deviceName }: { accent: string; deviceName: string }) {
-  const accept = TRANSFER_EXTENSIONS.map((extension) => `.${extension}`).join(",");
-  const color = /^#[0-9a-f]{6}$/i.test(accent) ? accent : "#77adf8";
-  return `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SYNQ Wi-Fi Transfer</title>
-<style>
-  :root { color-scheme: dark; --accent: ${color}; }
+const STYLE = `
+  :root { color-scheme: dark; }
   * { box-sizing: border-box; }
   body {
     margin: 0; min-height: 100vh; background: #141414; color: #fff;
@@ -59,23 +44,10 @@ export function transferPage({ accent, deviceName }: { accent: string; deviceNam
   .bar { grid-column: 1 / -1; height: 3px; border-radius: 2px; background: rgba(118,118,128,.24); overflow: hidden; }
   .bar i { display: block; height: 100%; width: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); transition: transform .2s linear; }
   .note { margin-top: 28px; color: rgba(235,235,245,.3); font-size: 13px; text-align: center; }
-</style>
-</head>
-<body>
-<main>
-  <h1>SYNQ Wi-Fi Transfer</h1>
-  <p class="sub">Sending to ${escapeHtml(deviceName)}. Keep Wi-Fi Transfer open in SYNQ until your files arrive.</p>
-  <label class="drop" id="drop">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-    <strong>Drop music here</strong>
-    <span>MP3, M4A, AAC, FLAC, or WAV</span>
-    <span class="button">Choose Files</span>
-    <input id="files" type="file" multiple accept="${accept},audio/*" hidden>
-  </label>
-  <ul id="list"></ul>
-  <p class="note">Files go straight to your iPhone over your Wi-Fi, never the internet.</p>
-</main>
-<script>
+`;
+
+/** Uploads one file at a time as the request body, with its progress. */
+const SCRIPT = `
 (() => {
   const allowed = ${JSON.stringify(TRANSFER_EXTENSIONS)};
   const drop = document.getElementById("drop");
@@ -156,7 +128,46 @@ export function transferPage({ accent, deviceName }: { accent: string; deviceNam
   }
   window.addEventListener("drop", (event) => add(event.dataTransfer.files));
 })();
-</script>
+`;
+
+/**
+ * The page a computer's browser loads from Wi-Fi Transfer: drop or choose
+ * audio files, and each uploads (one at a time, as the request body, so
+ * the phone streams it to disk) with its own progress. Styled like SYNQ:
+ * near-black, the person's accent.
+ */
+export function transferPage({
+  accent,
+  deviceName,
+}: {
+  accent: string;
+  deviceName: string;
+}) {
+  const accept = TRANSFER_EXTENSIONS.map((extension) => `.${extension}`).join(",");
+  const color = /^#[0-9a-f]{6}$/i.test(accent) ? accent : "#77adf8";
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SYNQ Wi-Fi Transfer</title>
+<style>${STYLE} :root { --accent: ${color}; }</style>
+</head>
+<body>
+<main>
+  <h1>SYNQ Wi-Fi Transfer</h1>
+  <p class="sub">Sending to ${escapeHtml(deviceName)}. Keep Wi-Fi Transfer open in SYNQ until your files arrive.</p>
+  <label class="drop" id="drop">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    <strong>Drop music here</strong>
+    <span>MP3, M4A, AAC, FLAC, or WAV</span>
+    <span class="button">Choose Files</span>
+    <input id="files" type="file" multiple accept="${accept},audio/*" hidden>
+  </label>
+  <ul id="list"></ul>
+  <p class="note">Files go straight to your iPhone over your Wi-Fi, never the internet.</p>
+</main>
+<script>${SCRIPT}</script>
 </body>
 </html>`;
 }

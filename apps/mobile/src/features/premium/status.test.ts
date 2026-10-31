@@ -13,13 +13,13 @@ import {
 const NOW = Date.parse("2026-10-31T12:00:00Z");
 const DAY = 86_400_000;
 
-const NOTHING: CustomerInfoLike = {
+const NOTHING = {
   activeSubscriptions: [],
   allExpirationDates: {},
   allPurchasedProductIdentifiers: [],
   entitlements: { active: {} },
   nonSubscriptionTransactions: [],
-};
+} satisfies CustomerInfoLike;
 
 void test("a fresh customer is free", () => {
   assert.deepEqual(premiumFromCustomerInfo(NOTHING, NOW), FREE);
@@ -76,11 +76,13 @@ void test("a lifetime transaction alone counts", () => {
 });
 
 void test("a subscription counts until it expires", () => {
-  const info = (expires: number): CustomerInfoLike => ({
-    ...NOTHING,
-    allExpirationDates: { SYNQPremiumMonthly: new Date(expires).toISOString() },
-    allPurchasedProductIdentifiers: ["SYNQPremiumMonthly"],
-  });
+  function info(expires: number) {
+    return {
+      ...NOTHING,
+      allExpirationDates: { SYNQPremiumMonthly: new Date(expires).toISOString() },
+      allPurchasedProductIdentifiers: ["SYNQPremiumMonthly"],
+    } satisfies CustomerInfoLike;
+  }
   assert.equal(premiumFromCustomerInfo(info(NOW + DAY), NOW).active, true);
   assert.equal(premiumFromCustomerInfo(info(NOW - DAY), NOW).active, false);
 });

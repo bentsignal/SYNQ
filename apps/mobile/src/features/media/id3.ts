@@ -67,31 +67,43 @@ export function id3TagLength(header: Uint8Array) {
   return ID3_HEADER_LENGTH + syncsafe(header, 6) + footer;
 }
 
+/** Where a tag's frames start: after the header and any extended header. */
+function framesStart(tag: Uint8Array, version: 3 | 4) {
+  if (((tag[5] ?? 0) & 0x40) === 0) return ID3_HEADER_LENGTH;
+  // The extended header's size excludes itself in 2.3, includes it in 2.4.
+  return (
+    ID3_HEADER_LENGTH +
+    (version === 3
+      ? readUint32BE(tag, ID3_HEADER_LENGTH) + 4
+      : syncsafe(tag, ID3_HEADER_LENGTH))
+  );
+}
+
+function readFrames(tag: Uint8Array, version: 3 | 4) {
+  const end = Math.min(tag.length, ID3_HEADER_LENGTH + syncsafe(tag, 6));
+  const frames = new Array<RawFrame>();
+  let offset = framesStart(tag, version);
+  while (offset + 10 <= end) {
+    const id = latin1Text(tag.subarray(offset, offset + 4));
+    const size =
+      version === 4 ? syncsafe(tag, offset + 4) : readUint32BE(tag, offset + 4);
+    const next = offset + 10 + size;
+    // Padding (zeros) or a damaged frame ends the list.
+    if (!/^[A-Z0-9]{4}$/.test(id) || size === 0 || next > end) break;
+    frames.push({ bytes: tag.slice(offset, next), id });
+    offset = next;
+  }
+  return frames;
+}
+
 /** The frames of a 2.3 or 2.4 tag, or null when they can't be kept as-is. */
 export function parseId3Frames(tag: Uint8Array) {
   if (id3TagLength(tag) === 0) return null;
   const version = tag[3];
-  const flags = tag[5] ?? 0;
-  if ((version !== 3 && version !== 4) || (flags & 0x80) !== 0) return null;
-  const end = Math.min(tag.length, ID3_HEADER_LENGTH + syncsafe(tag, 6));
-  let offset = ID3_HEADER_LENGTH;
-  if ((flags & 0x40) !== 0) {
-    // The extended header's size excludes itself in 2.3, includes it in 2.4.
-    offset +=
-      version === 3 ? readUint32BE(tag, offset) + 4 : syncsafe(tag, offset);
-  }
-  const frames: RawFrame[] = [];
-  while (offset + 10 <= end) {
-    const id = latin1Text(tag.subarray(offset, offset + 4));
-    if (!/^[A-Z0-9]{4}$/.test(id)) break;
-    const size =
-      version === 4 ? syncsafe(tag, offset + 4) : readUint32BE(tag, offset + 4);
-    const next = offset + 10 + size;
-    if (size === 0 || next > end) break;
-    frames.push({ id, bytes: tag.slice(offset, next) });
-    offset = next;
-  }
-  return { version, frames };
+  // Whole-tag unsynchronisation (rare) would need decoding first.
+  const unsynchronised = ((tag[5] ?? 0) & 0x80) !== 0;
+  if ((version !== 3 && version !== 4) || unsynchronised) return null;
+  return { frames: readFrames(tag, version), version };
 }
 
 function frame(id: string, body: Uint8Array, version: 3 | 4) {
@@ -119,6 +131,23 @@ function pictureFrame(jpeg: Uint8Array, version: 3 | 4) {
   return frame("APIC", body, version);
 }
 
+/** SYNQ's frames for `tags`. */
+function ownFrames(tags: SongTags, version: 3 | 4) {
+  const text = [
+    ["TIT2", tags.title === "" ? null : tags.title],
+    ["TPE1", tags.artists.length === 0 ? null : tags.artists.join(", ")],
+    ["TALB", tags.album],
+    [version === 4 ? "TDRC" : "TYER", tags.year === null ? null : String(tags.year)],
+    ["TRCK", tags.track === null ? null : String(tags.track)],
+  ] as const;
+  return [
+    ...text.flatMap(([id, value]) =>
+      value === null ? [] : [textFrame(id, value, version)],
+    ),
+    ...(tags.artwork === null ? [] : [pictureFrame(tags.artwork, version)]),
+  ];
+}
+
 /**
  * A complete ID3v2 tag for `tags`, keeping `existing`'s other frames. The
  * file's own artwork stays unless `tags.artwork` replaces it.
@@ -130,22 +159,10 @@ export function buildId3Tag(tags: SongTags, existing: Uint8Array | null) {
     ({ id }) =>
       !OWN_FRAMES.has(id) && !(id === "APIC" && tags.artwork !== null),
   );
-  const own: Uint8Array[] = [];
-  if (tags.title !== "") own.push(textFrame("TIT2", tags.title, version));
-  if (tags.artists.length > 0) {
-    own.push(textFrame("TPE1", tags.artists.join(", "), version));
-  }
-  if (tags.album !== null) own.push(textFrame("TALB", tags.album, version));
-  if (tags.year !== null) {
-    own.push(
-      textFrame(version === 4 ? "TDRC" : "TYER", String(tags.year), version),
-    );
-  }
-  if (tags.track !== null) {
-    own.push(textFrame("TRCK", String(tags.track), version));
-  }
-  if (tags.artwork !== null) own.push(pictureFrame(tags.artwork, version));
-  const frames = concatBytes([...own, ...kept.map((kept) => kept.bytes)]);
+  const frames = concatBytes([
+    ...ownFrames(tags, version),
+    ...kept.map((frame) => frame.bytes),
+  ]);
   const header = concatBytes([
     latin1Bytes("ID3"),
     Uint8Array.of(version, 0, 0),

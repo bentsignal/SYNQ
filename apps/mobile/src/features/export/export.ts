@@ -58,72 +58,108 @@ function uniqueFile(folder: Directory, name: string) {
 
 function tagsFor(song: SongListItem, cover: File | null) {
   const album = song.albums[0];
+  const year =
+    album === undefined ? null : (getAlbum(libraryDb(), album.id)?.year ?? null);
   return {
     album: album?.name ?? null,
     artists: song.artists.map((artist) => artist.name),
-    artwork: cover?.exists === true ? cover.bytesSync() : null,
+    artwork: cover === null ? null : cover.bytesSync(),
     title: song.title,
     track: album?.track ?? null,
-    year:
-      album === undefined ? null : (getAlbum(libraryDb(), album.id)?.year ?? null),
+    year,
   } satisfies SongTags;
+}
+
+/** The song's audio in the library; throws when it has none. */
+function songFile(song: SongListItem) {
+  const file = song.filePath === null ? null : documentFile(song.filePath);
+  if (!file?.exists) throw new Error("The song's file is missing.");
+  return file;
+}
+
+/** The song's full-size cover, if it has one on disk. */
+function coverFile(song: SongListItem) {
+  if (song.artwork === null) return null;
+  const file = documentFile(artworkPath(song.artwork, "full"));
+  return file.exists ? file : null;
+}
+
+/** MP3: a new ID3 tag in place of the file's, its other frames kept. */
+async function writeMp3(source: File, destination: File, tags: SongTags) {
+  const existing = readId3Tag(source);
+  const head = buildId3Tag(tags, existing);
+  await synqMedia().spliceFile(source.uri, destination.uri, existing?.length ?? 0, head);
+  return true;
+}
+
+/** FLAC: new metadata blocks in place of the file's. */
+async function writeFlac(source: File, destination: File, tags: SongTags) {
+  const { blocks, end } = readFlacBlocks(source);
+  if (blocks.length === 0) return false;
+  const head = buildFlacHead(blocks, tags);
+  await synqMedia().spliceFile(source.uri, destination.uri, end, head);
+  return true;
+}
+
+/** M4A: iTunes atoms, remuxed natively without re-encoding. */
+async function writeMp4(
+  source: File,
+  destination: File,
+  tags: SongTags,
+  cover: File | null,
+) {
+  await synqMedia().tagMp4(
+    source.uri,
+    destination.uri,
+    {
+      album: tags.album,
+      artist: tags.artists.length > 0 ? tags.artists.join(", ") : null,
+      title: tags.title === "" ? null : tags.title,
+      track: tags.track,
+      year: tags.year,
+    },
+    cover?.uri ?? null,
+  );
+  return true;
+}
+
+/**
+ * Writes `tags` into `destination`, a copy of `source`, in the file's own
+ * tag format. False when the format has none worth writing.
+ */
+function writeTagged(
+  source: File,
+  destination: File,
+  tags: SongTags,
+  cover: File | null,
+) {
+  switch (audioExtension(source.name)) {
+    case "mp3":
+      return writeMp3(source, destination, tags);
+    case "flac":
+      return writeFlac(source, destination, tags);
+    case "m4a":
+      return writeMp4(source, destination, tags, cover);
+    case "aac":
+    case "wav":
+    case null:
+      return Promise.resolve(false);
+  }
 }
 
 /** Writes a tagged copy of `song` into `folder`; returns the copy. */
 async function exportCopy(song: SongListItem, folder: Directory) {
-  if (song.filePath === null) throw new Error("The song has no file.");
-  const source = documentFile(song.filePath);
-  if (!source.exists) throw new Error("The song's file is missing.");
+  const source = songFile(song);
   const destination = uniqueFile(folder, source.name);
-  const cover =
-    song.artwork === null ? null : documentFile(artworkPath(song.artwork, "full"));
-  const tags = tagsFor(song, cover);
-  const media = synqMedia();
-  try {
-    switch (audioExtension(source.name)) {
-      case "mp3": {
-        const existing = readId3Tag(source);
-        await media.spliceFile(
-          source.uri,
-          destination.uri,
-          existing?.length ?? 0,
-          buildId3Tag(tags, existing),
-        );
-        return destination;
-      }
-      case "flac": {
-        const { blocks, end } = readFlacBlocks(source);
-        if (blocks.length === 0) break;
-        await media.spliceFile(
-          source.uri,
-          destination.uri,
-          end,
-          buildFlacHead(blocks, tags),
-        );
-        return destination;
-      }
-      case "m4a":
-        await media.tagMp4(
-          source.uri,
-          destination.uri,
-          {
-            album: tags.album,
-            artist: tags.artists.length > 0 ? tags.artists.join(", ") : null,
-            title: tags.title === "" ? null : tags.title,
-            track: tags.track,
-            year: tags.year,
-          },
-          cover?.exists === true ? cover.uri : null,
-        );
-        return destination;
-      default:
-        break;
-    }
-  } catch {
-    // Shared as it is below: the music matters more than the tags.
+  const cover = coverFile(song);
+  // Shared as it is when retagging fails: the music matters more than the tags.
+  const tagged = await writeTagged(source, destination, tagsFor(song, cover), cover).catch(
+    () => false,
+  );
+  if (!tagged) {
     if (destination.exists) destination.delete();
+    await source.copy(destination);
   }
-  await source.copy(destination);
   return destination;
 }
 
@@ -139,19 +175,9 @@ function songsById(ids: readonly number[]) {
  */
 async function shareSongs(songs: readonly SongListItem[], name?: string) {
   if (songs.length === 0) throw new Error("Nothing to export.");
-  if (EXPORT_DIRECTORY.exists) EXPORT_DIRECTORY.delete();
-  let folder = new Directory(EXPORT_DIRECTORY, "batch");
-  if (songs.length > 1) {
-    const number = getBookkeeping().exportNumber + 1;
-    updateBookkeeping({ exportNumber: number });
-    folder = new Directory(
-      EXPORT_DIRECTORY,
-      cleanName(name ?? `SYNQ Export ${String(number)}`),
-    );
-  }
-  folder.create({ idempotent: true, intermediates: true });
-  const exported: number[] = [];
-  let shared: File | null = null;
+  const folder = exportFolder(songs.length, name);
+  const exported = new Array<number>();
+  let shared: File | undefined;
   for (const song of songs) {
     try {
       shared = await exportCopy(song, folder);
@@ -160,13 +186,33 @@ async function shareSongs(songs: readonly SongListItem[], name?: string) {
       // A song whose file is gone is left out.
     }
   }
-  if (shared === null) throw new Error("No songs could be exported.");
-  await Sharing.shareAsync(songs.length > 1 ? folder.uri : shared.uri, {
-    UTI: songs.length > 1 ? "public.folder" : undefined,
+  if (shared === undefined) throw new Error("No songs could be exported.");
+  const many = songs.length > 1;
+  await Sharing.shareAsync(many ? folder.uri : shared.uri, {
+    UTI: many ? "public.folder" : undefined,
   });
   markSongsExported(libraryDb(), exported);
   void queryClient.invalidateQueries({ queryKey: ["library"] });
   if (EXPORT_DIRECTORY.exists) EXPORT_DIRECTORY.delete();
+}
+
+/**
+ * A fresh folder for an export: several songs share a folder named `name`
+ * (else 2.5.2's numbered batch, "SYNQ Export N").
+ */
+function exportFolder(count: number, name: string | undefined) {
+  if (EXPORT_DIRECTORY.exists) EXPORT_DIRECTORY.delete();
+  let folder = new Directory(EXPORT_DIRECTORY, "batch");
+  if (count > 1) {
+    const number = getBookkeeping().exportNumber + 1;
+    updateBookkeeping({ exportNumber: number });
+    folder = new Directory(
+      EXPORT_DIRECTORY,
+      cleanName(name ?? `SYNQ Export ${String(number)}`),
+    );
+  }
+  folder.create({ idempotent: true, intermediates: true });
+  return folder;
 }
 
 /**

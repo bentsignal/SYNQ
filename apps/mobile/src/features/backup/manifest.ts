@@ -17,21 +17,21 @@ export interface BackupManifest {
   readonly createdAt: number;
 }
 
+function positiveInteger(value: unknown) {
+  return typeof value === "number" && Number.isInteger(value) && value > 0
+    ? value
+    : null;
+}
+
 /** A parsed manifest, or null when it isn't a SYNQ backup's. */
 export function manifestFrom(json: unknown) {
   if (typeof json !== "object" || json === null) return null;
-  const version: unknown = Reflect.get(json, "version");
-  const createdAt: unknown = Reflect.get(json, "createdAt");
-  if (
-    Reflect.get(json, "format") !== BACKUP_FORMAT ||
-    typeof version !== "number" ||
-    !Number.isInteger(version) ||
-    version < 1
-  ) {
+  const version = positiveInteger(Reflect.get(json, "version"));
+  if (Reflect.get(json, "format") !== BACKUP_FORMAT || version === null) {
     return null;
   }
   return {
-    createdAt: typeof createdAt === "number" ? createdAt : 0,
+    createdAt: positiveInteger(Reflect.get(json, "createdAt")) ?? 0,
     format: BACKUP_FORMAT,
     version,
   } satisfies BackupManifest;

@@ -17,6 +17,7 @@
   "dependencies": {
     "@expo/ui": "~57.0.21",
     "@legendapp/list": "^3.6.0",
+    "@synq/db": "workspace:*",
     "@tanstack/react-query": "catalog:",
     "expo": "~57.0.26",
     "expo-alternate-app-icons": "^8.0.0",

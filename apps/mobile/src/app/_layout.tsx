@@ -7,6 +7,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { useCSSVariable } from "uniwind";
 
 import { installDevAutomation } from "~/features/dev/automation";
+import { LibraryGate } from "~/features/library/library-gate";
 import { applyStoredPreferences } from "~/features/preferences/store";
 import { queryClient } from "~/lib/query-client";
 
@@ -46,9 +47,11 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={useNavigationTheme()}>
         <QueryClientProvider client={queryClient}>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" />
-          </Stack>
+          <LibraryGate>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(tabs)" />
+            </Stack>
+          </LibraryGate>
         </QueryClientProvider>
       </ThemeProvider>
     </GestureHandlerRootView>

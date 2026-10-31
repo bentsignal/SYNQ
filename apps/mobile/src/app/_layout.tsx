@@ -50,6 +50,21 @@ export default function RootLayout() {
           <LibraryGate>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="(tabs)" />
+              <Stack.Screen
+                name="player"
+                // A sheet over the tabs, closed with a swipe down.
+                options={{ presentation: "modal" }}
+              />
+              <Stack.Screen
+                name="queue"
+                options={{
+                  headerShown: true,
+                  presentation: "formSheet",
+                  sheetAllowedDetents: [0.5, 1],
+                  sheetGrabberVisible: true,
+                  title: "Queue",
+                }}
+              />
             </Stack>
           </LibraryGate>
         </QueryClientProvider>

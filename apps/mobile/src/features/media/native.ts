@@ -37,6 +37,8 @@ interface SynqMediaModule {
     artworkUri: string,
   ) => Promise<NativeAudioInfo>;
   writeCovers: (imageUri: string, directoryUri: string) => Promise<void>;
+  /** A cover's average top and bottom colors (`#rrggbb`), or none. */
+  artworkColors?: (imageUri: string) => Promise<string[]>;
   spliceFile: (
     sourceUri: string,
     destinationUri: string,

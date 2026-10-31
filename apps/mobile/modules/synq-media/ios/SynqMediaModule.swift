@@ -20,6 +20,10 @@ public class SynqMediaModule: Module {
       try Covers.write(imageURL: imageUrl, directoryURL: directoryUrl)
     }
 
+    AsyncFunction("artworkColors") { (imageUrl: URL) -> [String] in
+      ArtworkColors.read(imageURL: imageUrl)
+    }
+
     AsyncFunction("spliceFile") { (sourceUrl: URL, destinationUrl: URL, skip: Int, head: Data) in
       try Files.splice(source: sourceUrl, destination: destinationUrl, skip: skip, head: head)
     }

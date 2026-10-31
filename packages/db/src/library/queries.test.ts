@@ -12,6 +12,7 @@ import {
   listAlbums,
   listAlbumTracks,
   listArtists,
+  listLikedSongIds,
   listPlaylists,
   listPlaylistSongs,
   listSongs,
@@ -94,6 +95,10 @@ describe("playlists", () => {
     );
     assert.deepEqual(ids(listPlaylists(db, { sort: "name", order: "asc" })), [2, 5, 3]);
     assert.deepEqual(ids(listPlaylists(db, { search: "road" })), [3]);
+  });
+
+  test("liked song ids, without loading the songs", () => {
+    assert.deepEqual(listLikedSongIds(db), [1, 3, 5]);
   });
 
   test("playlist songs in position order, reversible, sortable, searchable", () => {

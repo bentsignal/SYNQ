@@ -32,6 +32,7 @@ import {
   reorderAlbumTracks,
   safeFileName,
   setArtwork,
+  setPlaylistOrder,
   setSongLiked,
   setTrackNumber,
   splitArtistNames,
@@ -179,6 +180,14 @@ describe("likes and playlists", () => {
     assert.deepEqual(listPlaylistSongs(db, 3).map((s) => [s.id, s.position]), [[7, 0], [1, 2], [2, 2.5], [6, 3]]);
     assert.equal(moveSongInPlaylist(db, 3, 6, 99).value.position, 3);
     assert.throws(() => moveSongInPlaylist(db, 3, 5, 0), libraryError("not-found"));
+  });
+
+  test("sets a whole new order in one write, keeping unlisted songs after", () => {
+    setPlaylistOrder(db, 3, [7, 6, 999, 7]);
+    assert.deepEqual(listPlaylistSongs(db, 3).map((s) => [s.id, s.position]), [[7, 1], [6, 2], [2, 3], [1, 4]]);
+    setPlaylistOrder(db, 3, [1, 2, 6, 7]);
+    assert.deepEqual(ids(listPlaylistSongs(db, 3)), [1, 2, 6, 7]);
+    assert.throws(() => setPlaylistOrder(db, 999, [1]), libraryError("not-found"));
   });
 
   test("renumbers when repeated moves exhaust the gap, keeping order and uniqueness", () => {

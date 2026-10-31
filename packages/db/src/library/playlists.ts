@@ -135,6 +135,18 @@ export function isSongLiked(db: LibraryDb, songId: number): boolean {
     .get();
 }
 
+/** The ids of every song in Liked Songs, for marking rows without loading the songs. */
+export function listLikedSongIds(db: LibraryDb): number[] {
+  return db
+    .select({ id: playlistSongs.songId })
+    .from(playlistSongs)
+    .innerJoin(playlists, eq(playlists.id, playlistSongs.playlistId))
+    .where(eq(playlists.kind, "liked"))
+    .orderBy(asc(playlistSongs.songId))
+    .all()
+    .map((row) => row.id);
+}
+
 /** Likes or unlikes a song (adds it to the end of Liked Songs, or removes it). */
 export function setSongLiked(db: LibraryDb, songId: number, liked: boolean, options?: WriteOptions): WriteResult<void> {
   return db.transaction((tx) => {
@@ -277,6 +289,31 @@ export function moveSongInPlaylist(
     return target;
   });
   return written({ position }, ["playlist_songs", "playlists"]);
+}
+
+/**
+ * Puts a playlist in the given order (an edit sheet's whole new order) in
+ * one transaction, numbering it 1..n. Songs not listed keep their place
+ * after the listed ones; ids not in the playlist are ignored.
+ */
+export function setPlaylistOrder(
+  db: LibraryDb,
+  playlistId: number,
+  songIds: readonly number[],
+  options?: WriteOptions,
+): WriteResult<void> {
+  db.transaction((tx) => {
+    requirePlaylistRow(tx, playlistId);
+    const entries = orderedEntries(tx, playlistId);
+    const bySong = new Map(entries.map((entry) => [entry.songId, entry]));
+    const listed = uniqueIds(songIds).flatMap((id) => bySong.get(id) ?? []);
+    const listedIds = new Set(listed.map((entry) => entry.songId));
+    const ordered = [...listed, ...entries.filter((entry) => !listedIds.has(entry.songId))];
+    if (ordered.every((entry, index) => entry.id === entries[index]?.id)) return;
+    renumber(tx, ordered);
+    touchPlaylist(tx, playlistId, options);
+  });
+  return written(undefined, ["playlist_songs", "playlists"]);
 }
 
 interface Entry {

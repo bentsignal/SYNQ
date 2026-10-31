@@ -1,0 +1,178 @@
+import { Alert } from "react-native";
+
+import type { LibraryDb, WriteResult } from "@synq/db";
+import {
+  addSongsToPlaylist,
+  deleteAlbum,
+  deleteArtist,
+  deletePlaylist,
+  deleteSongs,
+  LibraryError,
+  removeSongsFromPlaylist,
+  setSongLiked,
+} from "@synq/db";
+
+import { forgetSongs } from "~/features/player/actions";
+import { selectionTick } from "~/lib/haptics";
+import { deleteLibraryFolders } from "./files";
+import { writeLibrary } from "./queries";
+
+/** The app's one failure alert: "Couldn't Delete Song", "Try again." */
+export function failed(title: string, message = "Try again.") {
+  Alert.alert(title, message);
+}
+
+/**
+ * Runs a library write, reporting a failure with an alert instead of
+ * throwing. A name clash gets its own message. Returns the write's value,
+ * or undefined when it failed.
+ */
+export function tryWrite<Value>(
+  title: string,
+  write: (db: LibraryDb) => WriteResult<Value>,
+) {
+  try {
+    return writeLibrary(write);
+  } catch (error) {
+    failed(
+      title,
+      error instanceof LibraryError && error.code === "duplicate-name"
+        ? "That name is already taken."
+        : undefined,
+    );
+    return undefined;
+  }
+}
+
+export function setLiked(songId: number, liked: boolean) {
+  selectionTick();
+  tryWrite(liked ? "Couldn't Love Song" : "Couldn't Remove from Liked", (db) =>
+    setSongLiked(db, songId, liked),
+  );
+}
+
+export function addToPlaylist(playlistId: number, songIds: readonly number[]) {
+  selectionTick();
+  tryWrite("Couldn't Add to Playlist", (db) =>
+    addSongsToPlaylist(db, playlistId, songIds),
+  );
+}
+
+export function removeFromPlaylist(
+  playlistId: number,
+  songIds: readonly number[],
+) {
+  tryWrite("Couldn't Remove from Playlist", (db) =>
+    removeSongsFromPlaylist(db, playlistId, songIds),
+  );
+}
+
+/**
+ * Asks before anything is deleted: Cancel first, the destructive action
+ * second (docs/ui.md), then runs `remove`.
+ */
+function confirm({
+  title,
+  message,
+  action,
+  remove,
+}: {
+  title: string;
+  message: string;
+  action: string;
+  remove: () => void;
+}) {
+  Alert.alert(title, message, [
+    { style: "cancel", text: "Cancel" },
+    { onPress: remove, style: "destructive", text: action },
+  ]);
+}
+
+/**
+ * Deletes songs from the library after a confirmation: their rows, then
+ * their folders (audio and artwork), and drops them from the queue.
+ */
+export function confirmDeleteSongs(
+  songs: readonly { id: number; title: string }[],
+  onDeleted?: () => void,
+) {
+  const [first] = songs;
+  if (first === undefined) return;
+  confirm({
+    action: songs.length === 1 ? "Delete Song" : "Delete Songs",
+    message:
+      songs.length === 1
+        ? `“${first.title}” will be removed from your library and this iPhone.`
+        : `${songs.length} songs will be removed from your library and this iPhone.`,
+    remove: () => {
+      const deleted = tryWrite("Couldn't Delete Song", (db) =>
+        deleteSongs(
+          db,
+          songs.map((song) => song.id),
+        ),
+      );
+      if (deleted === undefined) return;
+      forgetSongs(deleted.ids);
+      deleteLibraryFolders(deleted.deletePaths);
+      onDeleted?.();
+    },
+    title: songs.length === 1 ? "Delete Song?" : "Delete Songs?",
+  });
+}
+
+export function confirmDeletePlaylist(
+  playlist: { id: number; name: string },
+  onDeleted?: () => void,
+) {
+  confirm({
+    action: "Delete Playlist",
+    message: `“${playlist.name}” will be deleted. Its songs stay in your library.`,
+    remove: () => {
+      const deleted = tryWrite("Couldn't Delete Playlist", (db) =>
+        deletePlaylist(db, playlist.id),
+      );
+      if (deleted === undefined) return;
+      onDeleted?.();
+      deleteLibraryFolders(deleted.deletePaths);
+    },
+    title: "Delete Playlist?",
+  });
+}
+
+export function confirmDeleteAlbum(
+  album: { id: number; name: string },
+  onDeleted?: () => void,
+) {
+  confirm({
+    action: "Delete Album",
+    message: `“${album.name}” will be deleted. Its songs stay in your library.`,
+    remove: () => {
+      const deleted = tryWrite("Couldn't Delete Album", (db) =>
+        deleteAlbum(db, album.id),
+      );
+      if (deleted === undefined) return;
+      onDeleted?.();
+      deleteLibraryFolders(deleted.deletePaths);
+    },
+    title: "Delete Album?",
+  });
+}
+
+export function confirmDeleteArtist(
+  artist: { id: number; name: string },
+  onDeleted?: () => void,
+) {
+  confirm({
+    action: "Delete Artist",
+    message: `“${artist.name}” will be deleted. Their songs and albums stay in your library.`,
+    remove: () => {
+      const deleted = tryWrite("Couldn't Delete Artist", (db) =>
+        deleteArtist(db, artist.id),
+      );
+      if (deleted === undefined) return;
+      onDeleted?.();
+      deleteLibraryFolders(deleted.deletePaths);
+    },
+    title: "Delete Artist?",
+  });
+}

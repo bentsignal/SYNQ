@@ -42,15 +42,65 @@ function useNavigationTheme() {
   };
 }
 
+/**
+ * A small sheet whose action is a toolbar button (Vera's `TOOLBAR_SHEET`):
+ * half height, growing to full, over the tabs.
+ */
+const TOOLBAR_SHEET = {
+  headerShown: true,
+  headerTransparent: true,
+  presentation: "formSheet" as const,
+  sheetAllowedDetents: [0.5, 1],
+  sheetGrabberVisible: true,
+};
+
+/**
+ * An edit sheet with its own stack (the form, and the lists it pushes such
+ * as Edit Songs), as a page sheet: a form sheet can't hold a stack.
+ */
+const EDIT_SHEET = { presentation: "modal" } as const;
+
+/** The tabs, with the library's sheets over them (docs/ui.md → Editing). */
+function RootStack() {
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen
+        name="new-playlist"
+        options={{ ...TOOLBAR_SHEET, title: "New Playlist" }}
+      />
+      <Stack.Screen
+        name="new-album"
+        options={{ ...TOOLBAR_SHEET, title: "New Album" }}
+      />
+      <Stack.Screen
+        name="new-artist"
+        options={{ ...TOOLBAR_SHEET, title: "New Artist" }}
+      />
+      <Stack.Screen
+        name="add-to-playlist"
+        options={{
+          ...TOOLBAR_SHEET,
+          sheetAllowedDetents: [0.6, 1],
+          title: "Add to Playlist",
+        }}
+      />
+      <Stack.Screen name="edit-playlist/[id]" options={EDIT_SHEET} />
+      <Stack.Screen name="edit-album/[id]" options={EDIT_SHEET} />
+      <Stack.Screen name="edit-artist/[id]" options={EDIT_SHEET} />
+      <Stack.Screen name="edit-song/[id]" options={EDIT_SHEET} />
+      <Stack.Screen name="import" options={EDIT_SHEET} />
+    </Stack>
+  );
+}
+
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={useNavigationTheme()}>
         <QueryClientProvider client={queryClient}>
           <LibraryGate>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(tabs)" />
-            </Stack>
+            <RootStack />
           </LibraryGate>
         </QueryClientProvider>
       </ThemeProvider>

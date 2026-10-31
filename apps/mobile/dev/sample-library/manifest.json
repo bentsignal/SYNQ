@@ -1,0 +1,272 @@
+{
+  "songs": [
+    {
+      "file": "01-morning-static.m4a",
+      "title": "Morning Static",
+      "artists": "Aurora Fields",
+      "album": "Lowlight",
+      "year": 2021,
+      "track": 1,
+      "durationMs": 10000,
+      "mimeType": "audio/mp4",
+      "cover": "lowlight"
+    },
+    {
+      "file": "02-lowlight.m4a",
+      "title": "Lowlight",
+      "artists": "Aurora Fields",
+      "album": "Lowlight",
+      "year": 2021,
+      "track": 2,
+      "durationMs": 10000,
+      "mimeType": "audio/mp4",
+      "cover": "lowlight"
+    },
+    {
+      "file": "03-small-hours.m4a",
+      "title": "Small Hours",
+      "artists": "Aurora Fields",
+      "album": "Lowlight",
+      "year": 2021,
+      "track": 3,
+      "durationMs": 10000,
+      "mimeType": "audio/mp4",
+      "cover": "lowlight"
+    },
+    {
+      "file": "04-tidewater.m4a",
+      "title": "Tidewater",
+      "artists": "Aurora Fields",
+      "album": "Lowlight",
+      "year": 2021,
+      "track": 4,
+      "durationMs": 10000,
+      "mimeType": "audio/mp4",
+      "cover": "lowlight"
+    },
+    {
+      "file": "05-hollow-bright.m4a",
+      "title": "Hollow Bright",
+      "artists": "Aurora Fields",
+      "album": "Lowlight",
+      "year": 2021,
+      "track": 5,
+      "durationMs": 10000,
+      "mimeType": "audio/mp4",
+      "cover": "lowlight"
+    },
+    {
+      "file": "06-paper-moons.mp3",
+      "title": "Paper Moons",
+      "artists": "The Quiet Hours",
+      "album": "Paper Moons",
+      "year": 2019,
+      "track": 1,
+      "durationMs": 10000,
+      "mimeType": "audio/mpeg",
+      "cover": "paper-moons"
+    },
+    {
+      "file": "07-lantern-street.mp3",
+      "title": "Lantern Street",
+      "artists": "The Quiet Hours",
+      "album": "Paper Moons",
+      "year": 2019,
+      "track": 2,
+      "durationMs": 10000,
+      "mimeType": "audio/mpeg",
+      "cover": "paper-moons"
+    },
+    {
+      "file": "08-weathervane.mp3",
+      "title": "Weathervane",
+      "artists": "The Quiet Hours",
+      "album": "Paper Moons",
+      "year": 2019,
+      "track": 3,
+      "durationMs": 10000,
+      "mimeType": "audio/mpeg",
+      "cover": "paper-moons"
+    },
+    {
+      "file": "09-slow-return.mp3",
+      "title": "Slow Return",
+      "artists": "The Quiet Hours",
+      "album": "Paper Moons",
+      "year": 2019,
+      "track": 4,
+      "durationMs": 10000,
+      "mimeType": "audio/mpeg",
+      "cover": "paper-moons"
+    },
+    {
+      "file": "10-northbound.m4a",
+      "title": "Northbound",
+      "artists": "Mara Lind",
+      "album": "Northbound",
+      "year": 2023,
+      "track": 1,
+      "durationMs": 10000,
+      "mimeType": "audio/mp4",
+      "cover": "northbound"
+    },
+    {
+      "file": "11-cold-light-warm-room.m4a",
+      "title": "Cold Light, Warm Room",
+      "artists": "Mara Lind",
+      "album": "Northbound",
+      "year": 2023,
+      "track": 2,
+      "durationMs": 10000,
+      "mimeType": "audio/mp4",
+      "cover": "northbound"
+    },
+    {
+      "file": "12-fjord.m4a",
+      "title": "Fjord",
+      "artists": "Mara Lind",
+      "album": "Northbound",
+      "year": 2023,
+      "track": 3,
+      "durationMs": 10000,
+      "mimeType": "audio/mp4",
+      "cover": "northbound"
+    },
+    {
+      "file": "13-ferry-song.m4a",
+      "title": "Ferry Song",
+      "artists": "Mara Lind, Kestrel",
+      "album": "Northbound",
+      "year": 2023,
+      "track": 4,
+      "durationMs": 10000,
+      "mimeType": "audio/mp4",
+      "cover": "northbound"
+    },
+    {
+      "file": "14-glasshouse.mp3",
+      "title": "Glasshouse",
+      "artists": "Édith Vale",
+      "album": "Glass Garden",
+      "year": 2020,
+      "track": null,
+      "durationMs": 10000,
+      "mimeType": "audio/mpeg",
+      "cover": null
+    },
+    {
+      "file": "15-verdigris.mp3",
+      "title": "Verdigris",
+      "artists": "Édith Vale",
+      "album": "Glass Garden",
+      "year": 2020,
+      "track": null,
+      "durationMs": 10000,
+      "mimeType": "audio/mpeg",
+      "cover": null
+    },
+    {
+      "file": "16-orangery.mp3",
+      "title": "Orangery",
+      "artists": "Édith Vale",
+      "album": "Glass Garden",
+      "year": 2020,
+      "track": null,
+      "durationMs": 10000,
+      "mimeType": "audio/mpeg",
+      "cover": null
+    },
+    {
+      "file": "17-late-drive.m4a",
+      "title": "Late Drive",
+      "artists": "Kestrel",
+      "album": null,
+      "year": null,
+      "track": null,
+      "durationMs": 10000,
+      "mimeType": "audio/mp4",
+      "cover": "late-drives"
+    },
+    {
+      "file": "18-signal-fires.mp3",
+      "title": "Signal Fires",
+      "artists": "Kestrel",
+      "album": null,
+      "year": null,
+      "track": null,
+      "durationMs": 10000,
+      "mimeType": "audio/mpeg",
+      "cover": null
+    },
+    {
+      "file": "19-aster.m4a",
+      "title": "Aster",
+      "artists": "Noor Halvorsen",
+      "album": null,
+      "year": null,
+      "track": null,
+      "durationMs": 10000,
+      "mimeType": "audio/mp4",
+      "cover": null
+    },
+    {
+      "file": "20-untitled-demo.mp3",
+      "title": "Untitled Demo",
+      "artists": null,
+      "album": null,
+      "year": null,
+      "track": null,
+      "durationMs": 10000,
+      "mimeType": "audio/mpeg",
+      "cover": null
+    }
+  ],
+  "playlists": [
+    {
+      "name": "Late Drives",
+      "cover": "late-drives",
+      "songs": [
+        "17-late-drive.m4a",
+        "04-tidewater.m4a",
+        "13-ferry-song.m4a",
+        "07-lantern-street.mp3",
+        "10-northbound.m4a",
+        "18-signal-fires.mp3"
+      ]
+    },
+    {
+      "name": "Focus",
+      "cover": "glass-garden",
+      "songs": [
+        "01-morning-static.m4a",
+        "03-small-hours.m4a",
+        "14-glasshouse.mp3",
+        "15-verdigris.mp3",
+        "16-orangery.mp3",
+        "19-aster.m4a",
+        "11-cold-light-warm-room.m4a"
+      ]
+    },
+    {
+      "name": "Rainy Sunday",
+      "cover": null,
+      "songs": [
+        "08-weathervane.mp3",
+        "09-slow-return.mp3",
+        "02-lowlight.m4a",
+        "12-fjord.m4a"
+      ]
+    }
+  ],
+  "liked": [
+    "01-morning-static.m4a",
+    "06-paper-moons.mp3",
+    "10-northbound.m4a",
+    "13-ferry-song.m4a",
+    "17-late-drive.m4a"
+  ],
+  "artistCovers": {
+    "Aurora Fields": "aurora-fields",
+    "Kestrel": "kestrel"
+  }
+}

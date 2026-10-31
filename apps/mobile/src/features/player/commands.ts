@@ -97,6 +97,11 @@ export function forgetSongs(songIds: readonly number[]) {
   );
 }
 
+/** Empties the queue, stopping playback (a restore or erase replaced the library). */
+export function clearQueue() {
+  removeFromQueue(getPlayerState().queue.entries.map((_, index) => index));
+}
+
 /** Removes everything after the current entry (the queue's Clear). */
 export function clearUpNext() {
   const { queue } = getPlayerState();

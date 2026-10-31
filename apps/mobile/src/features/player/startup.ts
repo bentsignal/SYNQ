@@ -5,9 +5,10 @@ import type { PlaybackState } from "@synq/audio";
 import * as Audio from "@synq/audio";
 
 import type { PlayerSongs } from "./songs";
+import { onLibraryReplaced } from "~/features/backup/backup";
 import { queryClient } from "~/lib/query-client";
 import { configureAd } from "./ad-config";
-import { forgetSongs } from "./commands";
+import { clearQueue, forgetSongs } from "./commands";
 import { reportPlaybackError } from "./errors";
 import { pushedTrack, resyncNative } from "./native-queue";
 import {
@@ -97,6 +98,8 @@ function startPlayer() {
   configureAd();
   subscribePremiumTier(configureAd);
   watchLibrary();
+  // A restore or erase reuses song ids for other songs, or removes them.
+  onLibraryReplaced(clearQueue);
   AppState.addEventListener("change", (next) => {
     if (next !== "active") saveFromNative();
   });

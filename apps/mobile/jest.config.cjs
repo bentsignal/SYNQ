@@ -9,7 +9,15 @@ module.exports = {
   setupFiles: ["<rootDir>/perf/setup.ts"],
   // Worklets' own resolver, which swaps its native module for a JS one.
   resolver: "react-native-worklets/jest/resolver",
-  moduleNameMapper: { "^~/(.*)$": "<rootDir>/src/$1" },
+  moduleNameMapper: {
+    "^~/(.*)$": "<rootDir>/src/$1",
+    // `expo` opens a dev-server websocket when it loads in development, and
+    // throws when the bundle didn't come from a server, as in Jest. pnpm
+    // installs `expo` once per peer set (the app's and the audio package's),
+    // so a `jest.mock` path reaches only one of them; this reaches both (it
+    // matches the relative request, as `expo` writes it).
+    "^\\./(async-require/)?messageSocket$": "<rootDir>/perf/empty-module.ts",
+  },
   // The React Compiler runs as it does in the app (Metro turns it on with
   // `experiments.reactCompiler`), so render counts are the app's.
   transform: {

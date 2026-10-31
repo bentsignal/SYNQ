@@ -23,23 +23,6 @@ function song(id: number) {
   } satisfies SongListItem;
 }
 
-// Rows read the library through the query cache, seeded below; the
-// database itself is native.
-jest.mock("~/features/library/database", () => ({
-  libraryDb: () => {
-    throw new Error("Seed the query cache instead.");
-  },
-}));
-jest.mock("@synq/db/expo", () => ({ documentFile: jest.fn() }));
-jest.mock("expo-file-system", () => ({}));
-jest.mock("expo-image-manipulator", () => ({}));
-jest.mock("expo-sharing", () => ({}));
-jest.mock("~/lib/kv", () => ({
-  readJson: (_key: string, decode: (stored: unknown) => unknown) =>
-    decode(undefined),
-  writeJson: jest.fn(),
-}));
-
 const SONGS = Array.from({ length: 14 }, (_, index) => song(index + 1));
 
 test("a screenful of song rows renders", async () => {

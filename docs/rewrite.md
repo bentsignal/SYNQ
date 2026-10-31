@@ -68,6 +68,32 @@ React Native built from source (a much slower build) and fixes dictation
 in React Native text inputs, which SYNQ barely has; revisit if editing
 fields need it.
 
+### Import, export, premium (decided with their build)
+
+- **`modules/synq-media`** (a local Expo module in `apps/mobile`, Swift):
+  reads imported audio with AVFoundation (tags, precise duration in ms,
+  embedded artwork), writes covers (`cover_full.jpg` ≤1500 px and
+  `cover_small.jpg` ≤200 px, center-cropped square), splices new tag blocks
+  into export copies, remuxes M4A with iTunes tags (passthrough export),
+  hard-links the library for backups, and runs Wi-Fi Transfer's HTTP server
+  (Network.framework; uploads stream to disk). No file passes through
+  JavaScript as base64. 2.5.2's JavaScript metadata reader
+  (`@missingcore/audio-metadata`) needs the legacy expo-file-system API, and
+  its server (`react-native-http-bridge-refurbished`) is an old-architecture
+  module that sent files as base64 JSON.
+- ID3 (MP3) and FLAC tag blocks are read and written in TypeScript
+  (`src/features/media`, node-tested); AVFoundation doesn't expose FLAC's
+  Vorbis comments. AAC streams and WAV are exported as they are.
+- **react-native-purchases ~10.16**: 11.0 needs a `PurchasesHybridCommon`
+  pod that isn't on CocoaPods yet. Premium is the `Premium` entitlement or
+  any active SYNQ product (2.5.2's rule); purchases are never restored
+  automatically.
+- **react-native-zip-archive** for backups (zip64, SSZipArchive);
+  **react-native-fbsdk-next** initializes Facebook's SDK through its Expo
+  AppDelegate subscriber (SYNQ Dev never logs app events);
+  **posthog-react-native** with `expo-application`, `expo-device`, and
+  `expo-localization` for its device properties.
+
 ## Variants
 
 `apps/mobile/app.config.ts` with `APP_VARIANT`:

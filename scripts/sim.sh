@@ -269,7 +269,8 @@ seed() {
   mkdir -p "$staged"
   cp -R "$MOBILE/dev/sample-library/audio" "$MOBILE/dev/sample-library/covers" \
     "$MOBILE/dev/sample-library/manifest.json" "$staged/"
-  app_eval "globalThis.synqDev.seed({ reset: $reset, songs: $songs })"
+  # Thousands of songs take a while to write.
+  SYNQ_EVAL_TIMEOUT_MS=180000 app_eval "globalThis.synqDev.seed({ reset: $reset, songs: $songs })"
 }
 
 launch() {

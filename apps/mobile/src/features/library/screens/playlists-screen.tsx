@@ -35,7 +35,7 @@ function Empty({ query }: { query: string }) {
 
 /** Playlists, Liked Songs always first, with New Playlist in the toolbar. */
 export default function PlaylistsScreen() {
-  const sort = playlistsSort.use();
+  const sort = playlistsSort.useValue();
   const { items, query, search } = useSearchableList({
     key: ["playlists", sort.key, sort.order],
     read: (db, text) =>

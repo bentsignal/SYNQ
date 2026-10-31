@@ -58,7 +58,7 @@ function sortStore<Key extends string>(
       for (const listener of listeners) listener();
     },
     /** The current sort (pass a playlist's id for its own). */
-    use(id?: number) {
+    useValue(id?: number) {
       return decode(
         useSyncExternalStore(subscribe, () => saved.get(scopeOf(id))),
       );
@@ -70,7 +70,7 @@ export interface SortStore<Key extends string> {
   initial: Sort<Key>;
   keys: readonly { label: string; value: Key }[];
   set: (next: Sort<Key>, id?: number) => void;
-  use: (id?: number) => Sort<Key>;
+  useValue: (id?: number) => Sort<Key>;
 }
 
 /** The sorts of docs/ui.md (Songs, Albums, Artists, Playlists), and 2.5.2's defaults. */

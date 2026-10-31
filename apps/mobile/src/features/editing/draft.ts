@@ -29,7 +29,7 @@ export function createDraft<Value extends object>(name: string) {
       for (const listener of listeners) listener();
     },
     /** The draft, re-rendering when it changes. */
-    use() {
+    useValue() {
       return useSyncExternalStore(subscribe, current);
     },
   };

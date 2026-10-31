@@ -63,7 +63,7 @@ function Form({ song }: { song: SongDetail }) {
       title: song.title,
     }),
   );
-  const edits = draft.use();
+  const edits = draft.useValue();
   return (
     <>
       <SheetToolbar
@@ -131,7 +131,7 @@ export function EditSongScreen() {
 }
 
 export function EditSongArtistsScreen() {
-  const edits = draft.use();
+  const edits = draft.useValue();
   const artists = useArtistOptions();
   return (
     <>
@@ -147,7 +147,7 @@ export function EditSongArtistsScreen() {
 }
 
 export function EditSongAlbumsScreen() {
-  const edits = draft.use();
+  const edits = draft.useValue();
   const albums = useLibraryQuery({
     key: ["albums", "name", "asc"],
     read: (db) => listAlbums(db, { order: "asc", sort: "name" }),

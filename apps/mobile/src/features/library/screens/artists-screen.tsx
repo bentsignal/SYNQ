@@ -24,7 +24,7 @@ function Empty({ query }: { query: string }) {
 }
 
 export default function ArtistsScreen() {
-  const sort = artistSort.use();
+  const sort = artistSort.useValue();
   const { items, query, search } = useSearchableList({
     key: ["artists", sort.key, sort.order],
     read: (db, text) =>

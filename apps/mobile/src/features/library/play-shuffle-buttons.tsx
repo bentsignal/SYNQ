@@ -18,6 +18,7 @@ function Capsule({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={label}
       className="bg-fill h-12 flex-1 flex-row items-center justify-center gap-2 rounded-full active:opacity-70"
       onPress={() => {
         lightImpact();

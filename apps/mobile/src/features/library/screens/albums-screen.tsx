@@ -53,7 +53,7 @@ function Empty({ query }: { query: string }) {
 }
 
 export default function AlbumsScreen() {
-  const sort = albumSort.use();
+  const sort = albumSort.useValue();
   const { items, query, search } = useSearchableList({
     key: ["albums", sort.key, sort.order],
     read: (db, text) => readAlbums(db, sort, text),

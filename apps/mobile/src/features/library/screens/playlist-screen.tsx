@@ -23,7 +23,7 @@ import { playlistSongSort } from "../sort";
 import { sortMenuItems } from "../sort-menu";
 
 function PlaylistMenu({ playlist }: { playlist: PlaylistListItem }) {
-  const sort = playlistSongSort.use(playlist.id);
+  const sort = playlistSongSort.useValue(playlist.id);
   return (
     <Stack.Toolbar placement="right">
       <Stack.Toolbar.Menu icon="ellipsis" accessibilityLabel="More">
@@ -59,7 +59,7 @@ function PlaylistMenu({ playlist }: { playlist: PlaylistListItem }) {
 }
 
 function Playlist({ playlist }: { playlist: PlaylistListItem }) {
-  const sort = playlistSongSort.use(playlist.id);
+  const sort = playlistSongSort.useValue(playlist.id);
   const songs = useLibraryQuery({
     key: ["playlist-songs", playlist.id, sort.key, sort.order],
     read: (db) =>

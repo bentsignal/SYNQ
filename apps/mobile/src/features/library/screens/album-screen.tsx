@@ -25,8 +25,10 @@ import { SONG_ROW_HEIGHT, SongRow } from "../song-row";
  * featured artist); the album's own artists go without saying.
  */
 function trackSubtitle(track: AlbumTrack, album: AlbumListItem) {
-  const credited = names(track.artists);
-  return credited === "" || credited === names(album.artists) ? null : credited;
+  const albumArtists = new Set(album.artists.map((artist) => artist.id));
+  return track.artists.every((artist) => albumArtists.has(artist.id))
+    ? null
+    : names(track.artists);
 }
 
 function AlbumMenu({ album }: { album: AlbumListItem }) {

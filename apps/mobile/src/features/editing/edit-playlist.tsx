@@ -87,7 +87,7 @@ function Form({ playlist }: { playlist: PlaylistListItem }) {
       songsChanged: false,
     }),
   );
-  const edits = draft.use();
+  const edits = draft.useValue();
   return (
     <>
       <SheetToolbar
@@ -146,7 +146,7 @@ export function EditPlaylistScreen() {
 
 /** Edit Songs: drag to reorder, swipe or tap the red control to remove. */
 export function EditPlaylistSongsScreen() {
-  const edits = draft.use();
+  const edits = draft.useValue();
   return (
     <>
       <Stack.Screen options={{ title: "Edit Songs" }} />

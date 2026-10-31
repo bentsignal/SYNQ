@@ -1,13 +1,36 @@
-import { ScrollView, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 
 import { listPlaylists } from "@synq/db";
 
+import { SymbolIcon } from "~/components/symbol-icon";
 import { addToPlaylist } from "~/features/library/actions";
-import { CollectionRow } from "~/features/library/collection-row";
+import {
+  COLLECTION_ROW_HEIGHT,
+  CollectionRow,
+} from "~/features/library/collection-row";
 import { songCount } from "~/features/library/format";
 import { songIdsParam } from "~/features/library/params";
 import { useLibraryQuery } from "~/features/library/queries";
+
+/** The top row: an accent `plus` where a playlist's artwork would be. */
+function NewPlaylistRow({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      className="active:bg-fill flex-row items-center pl-4"
+      style={{ height: COLLECTION_ROW_HEIGHT }}
+      onPress={onPress}
+    >
+      <View className="bg-fill size-14 items-center justify-center rounded-md">
+        <SymbolIcon name="plus" size={22} tintColorClassName="accent-accent" />
+      </View>
+      <View className="border-b-hairline border-separator ml-3 h-full flex-1 justify-center">
+        <Text className="text-body text-accent">New Playlist…</Text>
+      </View>
+    </Pressable>
+  );
+}
 
 /**
  * Adds songs (`songs`, comma-separated ids) to a playlist: Liked Songs
@@ -35,11 +58,7 @@ export default function AddToPlaylistScreen() {
         contentInsetAdjustmentBehavior="automatic"
       >
         <View className="pt-2 pb-8">
-          <CollectionRow
-            artwork={null}
-            placeholder="playlist"
-            name="New Playlist…"
-            chevron={false}
+          <NewPlaylistRow
             onPress={() =>
               router.push({ params: { songs }, pathname: "/new-playlist" })
             }

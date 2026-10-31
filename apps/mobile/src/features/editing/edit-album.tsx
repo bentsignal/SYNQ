@@ -103,7 +103,7 @@ function Form({ album }: { album: AlbumListItem }) {
       year: album.year === null ? "" : String(album.year),
     }),
   );
-  const edits = draft.use();
+  const edits = draft.useValue();
   return (
     <>
       <SheetToolbar
@@ -189,7 +189,7 @@ export function useArtistOptions() {
 }
 
 export function EditAlbumArtistsScreen() {
-  const edits = draft.use();
+  const edits = draft.useValue();
   const artists = useArtistOptions();
   return (
     <>
@@ -206,7 +206,7 @@ export function EditAlbumArtistsScreen() {
 
 /** Reorder Tracks: the order sets track numbers 1 to n (as 2.5.2 did). */
 export function EditAlbumTracksScreen() {
-  const edits = draft.use();
+  const edits = draft.useValue();
   return (
     <>
       <Stack.Screen options={{ title: "Reorder Tracks" }} />

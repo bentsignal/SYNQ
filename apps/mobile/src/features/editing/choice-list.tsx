@@ -13,6 +13,7 @@ import {
   contentShape,
   font,
   foregroundStyle,
+  frame,
   lineLimit,
   listStyle,
   shapes,
@@ -43,11 +44,14 @@ function ChoiceRow({
 }) {
   const accent = useNativeColor("--color-accent");
   return (
-    <Button
-      modifiers={[buttonStyle("plain"), contentShape(shapes.rectangle())]}
-      onPress={onPress}
-    >
-      <HStack>
+    <Button modifiers={[buttonStyle("plain")]} onPress={onPress}>
+      {/* The whole row takes the tap, not just the name. */}
+      <HStack
+        modifiers={[
+          frame({ maxWidth: Infinity }),
+          contentShape(shapes.rectangle()),
+        ]}
+      >
         <Text modifiers={[lineLimit(1)]}>{label}</Text>
         {detail !== undefined && (
           <Text

@@ -31,7 +31,7 @@ function Empty({ query }: { query: string }) {
 
 /** Every song, sortable and searchable, with Play and Shuffle on top. */
 export default function SongsScreen() {
-  const sort = songSort.use();
+  const sort = songSort.useValue();
   const { items, query, search, empty } = useSearchableList({
     key: ["songs", sort.key, sort.order],
     read: (db, text) =>

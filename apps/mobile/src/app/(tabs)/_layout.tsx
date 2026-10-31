@@ -1,6 +1,7 @@
 import { NativeTabs } from "expo-router/unstable-native-tabs";
 import { useCSSVariable } from "uniwind";
 
+import { setLibraryTab } from "~/features/library/links";
 import { MiniPlayer } from "~/features/player/mini-player";
 import {
   blurNativeSearch,
@@ -10,7 +11,8 @@ import {
 /**
  * Library, Settings, and Search (iOS sets it apart as the search tab),
  * each with its own native stack, and the mini player as the tab bar's
- * bottom accessory.
+ * bottom accessory. Library screens open in the Library or Search tab,
+ * whichever is in front (`setLibraryTab`).
  */
 export default function TabsLayout() {
   const accent = useCSSVariable("--color-accent");
@@ -19,7 +21,10 @@ export default function TabsLayout() {
       <NativeTabs.BottomAccessory>
         <MiniPlayer />
       </NativeTabs.BottomAccessory>
-      <NativeTabs.Trigger name="(library)">
+      <NativeTabs.Trigger
+        name="(library)"
+        listeners={{ focus: () => setLibraryTab("library") }}
+      >
         <NativeTabs.Trigger.Label>Library</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
           sf={{
@@ -37,7 +42,13 @@ export default function TabsLayout() {
       <NativeTabs.Trigger
         name="search"
         role="search"
-        listeners={{ blur: blurNativeSearch, focus: focusNativeSearch }}
+        listeners={{
+          blur: blurNativeSearch,
+          focus: () => {
+            setLibraryTab("search");
+            focusNativeSearch();
+          },
+        }}
       >
         <NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="magnifyingglass" />

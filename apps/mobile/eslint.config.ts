@@ -301,8 +301,9 @@ const noLayoutAnimation: Rule.RuleModule = {
 };
 
 export default defineConfig(
-  // Expo config plugins are build-time CommonJS scripts.
-  { ignores: ["plugins/**"] },
+  // Expo config plugins are build-time CommonJS scripts, and dev/ holds the
+  // sample library's generator, a plain Node script.
+  { ignores: ["plugins/**", "dev/**"] },
   baseConfig,
   strictConfig,
   reactConfig,

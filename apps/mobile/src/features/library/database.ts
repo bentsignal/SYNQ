@@ -23,6 +23,7 @@ import { applyLegacySettings } from "./legacy-settings";
 const LEGACY_BUNDLE_ID = "com.directedbyshawn.synq";
 
 let current: LibraryDb | undefined;
+let currentClient: ReturnType<typeof openLibraryDb>["client"] | undefined;
 
 /**
  * The open library database. Only screens behind the startup gate
@@ -31,6 +32,16 @@ let current: LibraryDb | undefined;
 export function libraryDb() {
   if (current === undefined) throw new Error("The library isn't open yet.");
   return current;
+}
+
+/**
+ * The open database's expo-sqlite connection, for development tools that
+ * need SQL the library API doesn't offer (the dev seed). Never for features.
+ */
+export function libraryClientForDev() {
+  if (currentClient === undefined)
+    throw new Error("The library isn't open yet.");
+  return currentClient;
 }
 
 /** Imports a 2.5.2 install's library and settings into the empty 3.0 one. */
@@ -62,7 +73,7 @@ async function importLegacyInstall(db: LibraryDb) {
  * the import and applying them can't lose them.
  */
 export async function openLibrary() {
-  const { db } = openLibraryDb();
+  const { client, db } = openLibraryDb();
   await migrateLibraryDb(db);
   if (hasLegacyDatabase() && getLegacyImport(db) === null) {
     await importLegacyInstall(db);
@@ -73,6 +84,7 @@ export async function openLibrary() {
   }
   ensureLikedPlaylist(db);
   current = db;
+  currentClient = client;
   return true;
 }
 

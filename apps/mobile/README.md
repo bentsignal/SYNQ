@@ -102,9 +102,17 @@ profile (the team's registered iPhones).
   Search (the search role), each with its own native stack (`TabStack`,
   large titles); the mini player is the tab bar's bottom accessory
   (`src/features/player/mini-player.tsx`). Screens above the tabs (the full
-  player, sheets) go in the root stack.
-- `src/features`: screen building blocks grouped by feature. `dev` is the
-  automation hook and frame recorder; `search` the debounced search hooks;
+  player, sheets) go in the root stack. Library screens
+  (`src/features/library/screens`) are routed in both the Library and the
+  Search tab (`search/album/[id].tsx` re-exports the album screen), and
+  `openLibraryScreen` pushes onto whichever is in front, so an album opened
+  from Search stays in Search.
+- `dev/sample-library`: the dev sample library `scripts/sim.sh seed`
+  imports (`src/features/dev/seed.ts`), made by its `generate.mjs` with
+  ffmpeg.
+- `src/features`: screen building blocks grouped by feature. `library` is
+  the library's reads, writes, rows, menus, and screens; `editing` its
+  edit sheets; `dev` is the automation hook, frame recorder, and seed; `search` the debounced search hooks;
   `app-icon` the alternate icons (`expo-alternate-app-icons`, loaded with
   `requireOptionalNativeModule`).
 - `modules/synq-media`: SYNQ's local Expo module (Swift): audio metadata,

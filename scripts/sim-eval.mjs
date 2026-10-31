@@ -31,10 +31,12 @@ if (target === undefined) {
 const socket = new WebSocket(target.webSocketDebuggerUrl, {
   headers: { Origin: `http://127.0.0.1:${port}` },
 });
+// Long-running hooks (the dev seed) raise it with SYNQ_EVAL_TIMEOUT_MS.
+const timeoutMs = Number(process.env.SYNQ_EVAL_TIMEOUT_MS) || 15_000;
 const timer = setTimeout(() => {
   console.error("timed out waiting for the app");
   process.exit(1);
-}, 15_000);
+}, timeoutMs);
 socket.addEventListener("open", () => {
   socket.send(
     JSON.stringify({

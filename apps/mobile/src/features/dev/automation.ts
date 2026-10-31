@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import { env } from "~/env";
 import { frameReport, startFrames, stopFrames } from "./frames";
 import { playerAutomation } from "./player-automation";
+import { seed } from "./seed";
 
 function isAppPath(path: string): path is Href & string {
   return path.startsWith("/");
@@ -26,6 +27,8 @@ export function installDevAutomation() {
       reload() {
         DevSettings.reload();
       },
+      /** `scripts/sim.sh seed`: the dev sample library (see seed.ts). */
+      seed,
       /** `scripts/sim.sh frames start` and `stop`: see frames.ts. */
       frames: { report: frameReport, start: startFrames, stop: stopFrames },
       /** Playback: see player-automation.ts. */

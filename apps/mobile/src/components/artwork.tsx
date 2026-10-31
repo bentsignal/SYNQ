@@ -18,7 +18,7 @@ export type ArtworkPlaceholder =
   | "liked";
 
 const PLACEHOLDER_SYMBOL = {
-  album: "square.stack",
+  album: "music.note",
   artist: "music.microphone",
   liked: "heart.fill",
   playlist: "music.note.list",
@@ -55,7 +55,7 @@ export function Artwork({
       {artwork === null ? (
         <SymbolIcon
           name={PLACEHOLDER_SYMBOL[placeholder]}
-          size={Math.round(size * 0.4)}
+          size={Math.round(size * (size >= 120 ? 0.3 : 0.4))}
           tintColorClassName={
             placeholder === "liked" ? "accent-accent" : "accent-subtle"
           }

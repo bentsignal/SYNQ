@@ -9,10 +9,12 @@ import {
   deletePlaylist,
   ensureLikedPlaylist,
   isSongLiked,
+  listLikedSongIds,
   listPlaylistSongs,
   moveSongInPlaylist,
   removeSongsFromPlaylist,
   renamePlaylist,
+  setPlaylistOrder,
   setSongLiked,
 } from "../index.ts";
 import { playlistSongs } from "../schema.ts";
@@ -150,6 +152,31 @@ void describe("moving songs in a playlist", () => {
     assert.deepEqual(
       [...positions].sort((a, b) => a - b),
       positions,
+    );
+  });
+
+  void test("liked song ids, without loading the songs", () => {
+    const liked = listPlaylistSongs(db, 2).map((song) => song.id);
+    assert.deepEqual(
+      listLikedSongIds(db),
+      [...liked].sort((a, b) => a - b),
+    );
+  });
+
+  void test("sets a whole new order in one write, keeping unlisted songs after", () => {
+    const before = ids(listPlaylistSongs(db, 3));
+    const [first, second, ...rest] = before;
+    if (first === undefined || second === undefined)
+      throw new Error("fixture playlist 3 needs two songs");
+    setPlaylistOrder(db, 3, [second, 999, second, first]);
+    assert.deepEqual(ids(listPlaylistSongs(db, 3)), [second, first, ...rest]);
+    assert.deepEqual(
+      listPlaylistSongs(db, 3).map((song) => song.position),
+      before.map((_, index) => index + 1),
+    );
+    assert.throws(
+      () => setPlaylistOrder(db, 999, [1]),
+      libraryError("not-found"),
     );
   });
 });

@@ -180,6 +180,18 @@ export function isSongLiked(db: LibraryDb, songId: number) {
     .get();
 }
 
+/** The ids of every song in Liked Songs, for marking rows without loading the songs. */
+export function listLikedSongIds(db: LibraryDb) {
+  return db
+    .select({ id: playlistSongs.songId })
+    .from(playlistSongs)
+    .innerJoin(playlists, eq(playlists.id, playlistSongs.playlistId))
+    .where(eq(playlists.kind, "liked"))
+    .orderBy(asc(playlistSongs.songId))
+    .all()
+    .map((row) => row.id);
+}
+
 /** Likes or unlikes a song (adds it to the end of Liked Songs, or removes it). */
 export function setSongLiked(
   db: LibraryDb,

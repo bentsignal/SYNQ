@@ -1,5 +1,5 @@
 // Mocks for native modules the measured components render with.
-/* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access -- Jest's mock factories require() what they use, untyped. */
+/* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access -- Jest's mock factories require() what they use, untyped. */
 require("react-native-gesture-handler/jestSetup");
 
 // Uniwind has no stylesheet here, so it warns about every themed color on
@@ -30,3 +30,43 @@ jest.mock("expo-router", () => ({
   useIsFocused: () => true,
   useRouter: () => ({ push: jest.fn() }),
 }));
+
+// SwiftUI views (rows, menus, forms), drawn as plain views.
+jest.mock("@expo/ui/swift-ui", () => {
+  const { View } = require("react-native");
+  const { createElement } = require("react");
+  function Passthrough({ children }: { children?: unknown }) {
+    return createElement(View, null, children);
+  }
+  const ContextMenu = Object.assign(Passthrough, {
+    Items: Passthrough,
+    Preview: Passthrough,
+    Trigger: Passthrough,
+  });
+  return {
+    Button: Passthrough,
+    ContextMenu,
+    HStack: Passthrough,
+    Image: View,
+    List: Object.assign(Passthrough, { ForEach: Passthrough }),
+    Menu: Passthrough,
+    RNHostView: Passthrough,
+    Section: Passthrough,
+  };
+});
+jest.mock("@expo/ui/swift-ui/modifiers", () => {
+  function modifier() {
+    return {};
+  }
+  return new Proxy(
+    {},
+    {
+      get: (_target, name) =>
+        name === "shapes" ? new Proxy({}, { get: () => modifier }) : modifier,
+    },
+  );
+});
+jest.mock("@expo/ui", () => {
+  const { View } = require("react-native");
+  return { Host: View };
+});

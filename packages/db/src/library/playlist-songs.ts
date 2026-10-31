@@ -143,6 +143,35 @@ interface Entry {
   position: number;
 }
 
+/**
+ * Puts a playlist in the given order (an edit sheet's whole new order) in
+ * one transaction, numbering it 1..n. Songs not listed keep their place
+ * after the listed ones; ids not in the playlist are ignored.
+ */
+export function setPlaylistOrder(
+  db: LibraryDb,
+  playlistId: number,
+  songIds: readonly number[],
+  options?: WriteOptions,
+) {
+  db.transaction((tx) => {
+    requirePlaylistRow(tx, playlistId);
+    const entries = orderedEntries(tx, playlistId);
+    const bySong = new Map(entries.map((entry) => [entry.songId, entry]));
+    const listed = uniqueIds(songIds).flatMap((id) => bySong.get(id) ?? []);
+    const listedIds = new Set(listed.map((entry) => entry.songId));
+    const ordered = [
+      ...listed,
+      ...entries.filter((entry) => !listedIds.has(entry.songId)),
+    ];
+    if (ordered.every((entry, index) => entry.id === entries[index]?.id))
+      return;
+    renumber(tx, ordered);
+    touchPlaylist(tx, playlistId, options);
+  });
+  return written(undefined, ["playlist_songs", "playlists"]);
+}
+
 function orderedEntries(db: LibraryDb, playlistId: number) {
   return db
     .select({

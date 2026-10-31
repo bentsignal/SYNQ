@@ -27,9 +27,10 @@ final class MenuRowView: ExpoView, UIContextMenuInteractionDelegate {
   var buttonColor: UIColor? {
     didSet { button.tintColor = buttonColor }
   }
-  var rowColor: UIColor? {
-    didSet { if !highlighted { content.backgroundColor = rowColor } }
-  }
+  /// The lifted preview's background. At rest the row stays clear, so a
+  /// neighbor that overlaps it by a fraction of a point never covers its
+  /// hairline separator.
+  var rowColor: UIColor?
   var highlightColor: UIColor?
 
   /// Holds the React Native row, under the button. It takes no touches
@@ -132,7 +133,7 @@ final class MenuRowView: ExpoView, UIContextMenuInteractionDelegate {
 
   private func setHighlighted(_ value: Bool) {
     highlighted = value
-    content.backgroundColor = value ? (highlightColor ?? rowColor) : rowColor
+    content.backgroundColor = value ? (highlightColor ?? rowColor) : .clear
   }
 
   private func enclosingScrollViewIsMoving() -> Bool {

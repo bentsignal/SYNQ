@@ -23,14 +23,14 @@
     "@types/node": "^24",
     "@typescript/native-preview": "7.0.0-dev.20260707.2",
     "drizzle-kit": "0.31.11",
-    "typescript": "~6.0.3",
-    "react": "19.2.3",
+    "expo-file-system": "~57.0.7",
     "expo-sqlite": "~57.0.4",
-    "expo-file-system": "~57.0.7"
+    "react": "19.2.3",
+    "typescript": "~6.0.3"
   },
   "peerDependencies": {
-    "expo-sqlite": "*",
-    "expo-file-system": "*"
+    "expo-file-system": "*",
+    "expo-sqlite": "*"
   },
   "peerDependenciesMeta": {
     "expo-sqlite": {

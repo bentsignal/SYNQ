@@ -1,0 +1,9 @@
+# The repo root ignores ios/ (prebuild output); this package's ios/ is source.
+!ios/
+!ios/**
+
+.build/
+.swiftpm/
+node_modules/
+.cache/
+.turbo/

@@ -9,7 +9,7 @@
  * covers into the album's or song's folder), through the same `addSongs`
  * and `setArtwork` writes, so seeded songs behave like imported ones.
  */
-import { Directory, File, Paths } from "expo-file-system";
+import { File, Paths } from "expo-file-system";
 
 import type { LibraryDb, NewSongInput } from "@synq/db";
 import {
@@ -29,99 +29,14 @@ import {
   setSongLiked,
 } from "@synq/db";
 
+import type { SampleManifest, SampleSong } from "./sample-manifest";
 import { libraryClientForDev, libraryDb } from "~/features/library/database";
-import { deleteLibraryFolders, documentDirectory } from "~/features/library/files";
+import {
+  deleteLibraryFolders,
+  documentDirectory,
+} from "~/features/library/files";
 import { queryClient } from "~/lib/query-client";
-
-interface SampleSong {
-  file: string;
-  title: string;
-  artists: string | null;
-  album: string | null;
-  year: number | null;
-  track: number | null;
-  durationMs: number;
-  mimeType: string;
-  cover: string | null;
-}
-
-interface SampleManifest {
-  songs: SampleSong[];
-  playlists: { name: string; cover: string | null; songs: string[] }[];
-  liked: string[];
-  artistCovers: Record<string, string>;
-}
-
-function stagedFolder() {
-  return new Directory(Paths.cache, "synq-seed");
-}
-
-function text(value: unknown) {
-  return typeof value === "string" ? value : null;
-}
-
-function int(value: unknown) {
-  return typeof value === "number" && Number.isFinite(value) ? value : null;
-}
-
-function objects(value: unknown) {
-  return Array.isArray(value)
-    ? value.filter(
-        (item): item is object => typeof item === "object" && item !== null,
-      )
-    : [];
-}
-
-function coverNames(value: unknown) {
-  if (typeof value !== "object" || value === null) return {};
-  return Object.fromEntries(
-    Object.keys(value).flatMap((name) => {
-      const cover = text(Reflect.get(value, name));
-      return cover === null ? [] : [[name, cover]];
-    }),
-  );
-}
-
-function strings(value: unknown) {
-  return Array.isArray(value)
-    ? value.filter((item): item is string => typeof item === "string")
-    : [];
-}
-
-/** The manifest, checked field by field. */
-function decodeManifest(parsed: unknown) {
-  if (typeof parsed !== "object" || parsed === null) {
-    throw new Error("The sample manifest isn't an object.");
-  }
-  return {
-    artistCovers: coverNames(Reflect.get(parsed, "artistCovers")),
-    liked: strings(Reflect.get(parsed, "liked")),
-    playlists: objects(Reflect.get(parsed, "playlists")).map((playlist) => ({
-      cover: text(Reflect.get(playlist, "cover")),
-      name: text(Reflect.get(playlist, "name")) ?? "Playlist",
-      songs: strings(Reflect.get(playlist, "songs")),
-    })),
-    songs: objects(Reflect.get(parsed, "songs")).map((song) => ({
-      album: text(Reflect.get(song, "album")),
-      artists: text(Reflect.get(song, "artists")),
-      cover: text(Reflect.get(song, "cover")),
-      durationMs: int(Reflect.get(song, "durationMs")) ?? 0,
-      file: text(Reflect.get(song, "file")) ?? "",
-      mimeType: text(Reflect.get(song, "mimeType")) ?? "audio/mpeg",
-      title: text(Reflect.get(song, "title")) ?? "Untitled",
-      track: int(Reflect.get(song, "track")),
-      year: int(Reflect.get(song, "year")),
-    })),
-  } satisfies SampleManifest;
-}
-
-function readManifest() {
-  const file = new File(stagedFolder(), "manifest.json");
-  if (!file.exists) {
-    throw new Error("No sample library staged; run `scripts/sim.sh seed`.");
-  }
-  return decodeManifest(JSON.parse(file.textSync()));
-}
+import { readManifest, stagedFolder } from "./sample-manifest";
 
 /** Copies a staged cover into an entity's folder, both sizes. */
 function copyCover(cover: string, dir: string) {
@@ -217,12 +132,54 @@ function seedSamples(db: LibraryDb, manifest: SampleManifest) {
 }
 
 const WORDS = [
-  "Amber", "Arcade", "Atlas", "Blue", "Canyon", "Cinder", "Coast", "Copper",
-  "Delta", "Drift", "Echo", "Ember", "Fable", "Field", "Glass", "Golden",
-  "Harbor", "Hollow", "Iris", "Ivory", "Juniper", "Lantern", "Low", "Lunar",
-  "Meadow", "Mirror", "Neon", "North", "Oak", "Orbit", "Paper", "Pine",
-  "Quiet", "Rain", "River", "Salt", "Signal", "Silver", "Slow", "Static",
-  "Summer", "Tide", "Velvet", "Violet", "Willow", "Winter", "Young", "Zenith",
+  "Amber",
+  "Arcade",
+  "Atlas",
+  "Blue",
+  "Canyon",
+  "Cinder",
+  "Coast",
+  "Copper",
+  "Delta",
+  "Drift",
+  "Echo",
+  "Ember",
+  "Fable",
+  "Field",
+  "Glass",
+  "Golden",
+  "Harbor",
+  "Hollow",
+  "Iris",
+  "Ivory",
+  "Juniper",
+  "Lantern",
+  "Low",
+  "Lunar",
+  "Meadow",
+  "Mirror",
+  "Neon",
+  "North",
+  "Oak",
+  "Orbit",
+  "Paper",
+  "Pine",
+  "Quiet",
+  "Rain",
+  "River",
+  "Salt",
+  "Signal",
+  "Silver",
+  "Slow",
+  "Static",
+  "Summer",
+  "Tide",
+  "Velvet",
+  "Violet",
+  "Willow",
+  "Winter",
+  "Young",
+  "Zenith",
 ];
 
 /** A small seeded random generator (mulberry32), so every run matches. */
@@ -298,7 +255,10 @@ function seedSynthetic(
   });
   added.forEach((song, index) => {
     if (song.artworkTarget === null) return;
-    copyCover(covers[index % covers.length] ?? "lowlight", song.artworkTarget.dir);
+    copyCover(
+      covers[index % covers.length] ?? "lowlight",
+      song.artworkTarget.dir,
+    );
   });
 }
 
@@ -312,7 +272,9 @@ export function seed(options: { songs?: number; reset?: boolean } = {}) {
   const db = libraryDb();
   if (options.reset === true) erase(db);
   if (listSongs(db).length > 0) {
-    throw new Error("The library isn't empty; seed({ reset: true }) erases it.");
+    throw new Error(
+      "The library isn't empty; seed({ reset: true }) erases it.",
+    );
   }
   const manifest = readManifest();
   const samples = seedSamples(db, manifest);

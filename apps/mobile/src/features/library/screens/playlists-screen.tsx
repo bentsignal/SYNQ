@@ -1,4 +1,4 @@
-import { router, Stack } from "expo-router";
+import { Stack } from "expo-router";
 
 import { listPlaylists } from "@synq/db";
 
@@ -7,7 +7,7 @@ import { ScreenList } from "~/components/screen-list";
 import { TabTitle } from "~/components/tab-title";
 import { COLLECTION_ROW_HEIGHT, CollectionRow } from "../collection-row";
 import { songCount } from "../format";
-import { openLibraryScreen } from "../links";
+import { openLibraryScreen, openNewPlaylist } from "../links";
 import {
   LibrarySearchBar,
   NoResults,
@@ -15,11 +15,6 @@ import {
 } from "../searchable-list";
 import { playlistsSort } from "../sort";
 import { sortMenuItems } from "../sort-menu";
-
-/** Opens the New Playlist sheet. */
-export function openNewPlaylist() {
-  router.push("/new-playlist");
-}
 
 function Empty({ query }: { query: string }) {
   if (query !== "") return <NoResults query={query} />;

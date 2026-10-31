@@ -1,8 +1,9 @@
-import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import type { ReactNode } from "react";
+import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { Stack } from "expo-router";
+import { LegendList } from "@legendapp/list/react-native";
 
 import type { AlbumListItem, ArtworkRef } from "@synq/db";
 
@@ -143,35 +144,41 @@ export function SectionTitle({ title }: { title: string }) {
 
 const CARD_SIZE = 140;
 
+function AlbumCard({ album }: { album: AlbumListItem }) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={album.name}
+      className="active:opacity-70"
+      style={{ width: CARD_SIZE }}
+      onPress={() => openLibraryScreen({ id: album.id, screen: "album" })}
+    >
+      <Artwork artwork={album.artwork} placeholder="album" size={CARD_SIZE} />
+      <Text
+        numberOfLines={1}
+        className="text-footnote text-foreground mt-1.5 font-medium"
+      >
+        {album.name}
+      </Text>
+      <Text numberOfLines={1} className="text-footnote text-muted">
+        {dotted(album.year) || " "}
+      </Text>
+    </Pressable>
+  );
+}
+
 /** An artist's albums as a horizontal row of 140 pt cards. */
 export function AlbumCards({ albums }: { albums: readonly AlbumListItem[] }) {
   return (
-    <ScrollView
+    <LegendList
       horizontal
+      data={albums}
+      keyExtractor={(album) => String(album.id)}
+      estimatedItemSize={CARD_SIZE + 12}
       showsHorizontalScrollIndicator={false}
-      contentContainerClassName="gap-3 px-4"
-    >
-      {albums.map((album) => (
-        <Pressable
-          key={album.id}
-          accessibilityRole="button"
-          accessibilityLabel={album.name}
-          className="active:opacity-70"
-          style={{ width: CARD_SIZE }}
-          onPress={() => openLibraryScreen({ id: album.id, screen: "album" })}
-        >
-          <Artwork artwork={album.artwork} placeholder="album" size={CARD_SIZE} />
-          <Text
-            numberOfLines={1}
-            className="text-footnote text-foreground mt-1.5 font-medium"
-          >
-            {album.name}
-          </Text>
-          <Text numberOfLines={1} className="text-footnote text-muted">
-            {dotted(album.year) || " "}
-          </Text>
-        </Pressable>
-      ))}
-    </ScrollView>
+      contentContainerStyle={{ gap: 12, paddingHorizontal: 16 }}
+      style={{ height: CARD_SIZE + 44 }}
+      renderItem={({ item }) => <AlbumCard album={item} />}
+    />
   );
 }

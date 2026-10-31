@@ -21,15 +21,10 @@ import {
 
 import { matchesSearch } from "@synq/db";
 
+import type { Pick } from "./pick";
 import { NativeHost, useNativeColor } from "~/components/native-host";
 import { useSearchText } from "~/features/search/use-search-query";
-
-/** An artist or album to pick: an existing one by id, or a new one by name. */
-export type Pick = { id: number; name: string } | { name: string };
-
-export function pickKey(pick: Pick) {
-  return "id" in pick ? `id:${pick.id}` : `name:${pick.name.toLowerCase()}`;
-}
+import { pickKey } from "./pick";
 
 function ChoiceRow({
   label,
@@ -131,7 +126,9 @@ export function ChoiceList({
                   checked
                   onPress={() =>
                     onChange(
-                      picked.filter((other) => pickKey(other) !== pickKey(pick)),
+                      picked.filter(
+                        (other) => pickKey(other) !== pickKey(pick),
+                      ),
                     )
                   }
                 />

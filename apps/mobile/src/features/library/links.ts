@@ -1,4 +1,5 @@
 import type { Href } from "expo-router";
+import type { SFSymbol } from "expo-symbols";
 import { router } from "expo-router";
 
 /** The tabs whose stacks show library screens. */
@@ -42,3 +43,25 @@ export function libraryHref(
 export function openLibraryScreen(target: LibraryScreen) {
   router.push(libraryHref(target));
 }
+
+/** Opens an import flow (docs/ui.md → Import): the Files picker or Wi-Fi Transfer. */
+export function openImport(kind: "files" | "wifi") {
+  router.push(kind === "files" ? "/import/files" : "/import/wifi");
+}
+
+/** Opens the New Playlist sheet. */
+export function openNewPlaylist() {
+  router.push("/new-playlist");
+}
+
+/** The Library tab's rows, in docs/ui.md's order. */
+export const LIBRARY_ROWS = [
+  { icon: "music.note.list", label: "Playlists", screen: "playlists" },
+  { icon: "music.microphone", label: "Artists", screen: "artists" },
+  { icon: "square.stack", label: "Albums", screen: "albums" },
+  { icon: "music.note", label: "Songs", screen: "songs" },
+] as const satisfies readonly {
+  icon: SFSymbol;
+  label: string;
+  screen: LibraryScreen["screen"];
+}[];

@@ -45,7 +45,9 @@ async function saveCover(
 ) {
   const context = ImageManipulator.manipulate(source);
   const size = Math.min(side, edge);
-  const rendered = await context.resize({ height: size, width: size }).renderAsync();
+  const rendered = await context
+    .resize({ height: size, width: size })
+    .renderAsync();
   const saved = await rendered.saveAsync({
     compress: 0.85,
     format: SaveFormat.JPEG,
@@ -75,8 +77,18 @@ export async function writeArtwork({
 }) {
   const folder = documentDirectory(artworkDir(kind, id));
   if (!folder.exists) folder.create({ intermediates: true });
-  await saveCover(uri, width, COVER_SIZES.full, new File(folder, "cover_full.jpg"));
-  await saveCover(uri, width, COVER_SIZES.small, new File(folder, "cover_small.jpg"));
+  await saveCover(
+    uri,
+    width,
+    COVER_SIZES.full,
+    new File(folder, "cover_full.jpg"),
+  );
+  await saveCover(
+    uri,
+    width,
+    COVER_SIZES.small,
+    new File(folder, "cover_small.jpg"),
+  );
   writeLibrary((db) => setArtwork(db, kind, id, true));
 }
 

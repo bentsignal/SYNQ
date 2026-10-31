@@ -8,20 +8,12 @@ import {
   listRowBackground,
 } from "@expo/ui/swift-ui/modifiers";
 
-import type { ArtworkKind, ArtworkRef } from "@synq/db";
+import type { ArtworkRef } from "@synq/db";
 
+import type { ArtworkChange } from "./artwork-change";
 import type { ArtworkPlaceholder } from "~/components/artwork";
 import { Artwork } from "~/components/artwork";
 import { failed } from "~/features/library/actions";
-import { removeArtwork, writeArtwork } from "~/features/library/files";
-
-/** What an edit sheet will do to the artwork when it's saved. */
-export type ArtworkChange =
-  | { kind: "keep" }
-  | { kind: "picked"; uri: string; width: number }
-  | { kind: "removed" };
-
-export const KEEP_ARTWORK = { kind: "keep" } as const satisfies ArtworkChange;
 
 const SIZE = 160;
 
@@ -105,7 +97,11 @@ export function ArtworkField({
     >
       <RNHostView matchContents>
         <View style={{ height: SIZE, width: SIZE }}>
-          <Preview artwork={artwork} change={change} placeholder={placeholder} />
+          <Preview
+            artwork={artwork}
+            change={change}
+            placeholder={placeholder}
+          />
         </View>
       </RNHostView>
       {hasArtwork ? (
@@ -130,28 +126,5 @@ export function ArtworkField({
         />
       )}
     </VStack>
-  );
-}
-
-/**
- * Saves an artwork change after its sheet has closed, reporting a failure
- * with an alert. Album and song covers mark their songs modified (setArtwork).
- */
-export function saveArtworkChange(
-  change: ArtworkChange,
-  kind: ArtworkKind,
-  id: number,
-) {
-  if (change.kind === "keep") return;
-  if (change.kind === "removed") {
-    try {
-      removeArtwork(kind, id);
-    } catch {
-      failed("Couldn't Remove Artwork");
-    }
-    return;
-  }
-  void writeArtwork({ id, kind, uri: change.uri, width: change.width }).catch(
-    () => failed("Couldn't Save Artwork"),
   );
 }

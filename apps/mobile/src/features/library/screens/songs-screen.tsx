@@ -4,7 +4,7 @@ import { EmptyState } from "~/components/empty-state";
 import { ScreenList } from "~/components/screen-list";
 import { TabTitle } from "~/components/tab-title";
 import { playSongs } from "~/features/player/actions";
-import { openImport } from "../import-links";
+import { openImport } from "../links";
 import { PlayShuffleButtons } from "../play-shuffle-buttons";
 import {
   LibrarySearchBar,
@@ -13,7 +13,7 @@ import {
 } from "../searchable-list";
 import { SONG_ROW_HEIGHT, SongRow } from "../song-row";
 import { songSort } from "../sort";
-import { SortToolbar } from "../sort-menu";
+import { SortToolbar } from "../sort-toolbar";
 
 const SOURCE = { kind: "library" } as const;
 

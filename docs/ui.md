@@ -47,6 +47,13 @@ numbers.
   from Playlist (inside a user playlist), Delete from Library (destructive,
   confirmed with an alert: cancel first, destructive second). Run list
   changes after the menu closes (Vera's `afterMenuCloses`).
+  Built as `NativeRow` (`src/components/native-row.tsx`): the React Native
+  row hosted in a SwiftUI `ContextMenu`, with the `ellipsis` `Menu`
+  beside it. Unlike Vera's rows it has no one-row SwiftUI `List` (for the
+  system highlight and separator): with 3,000 songs that list per row
+  nearly doubled the frames a fling dropped, so the separator is a React
+  Native hairline. Share sends the file as imported until export writes
+  tags into a copy.
 - **Empty states**: centered `ContentUnavailableView`-style symbol, title,
   and one action where there is one (e.g. "No Music Yet" + Import Music).
 - **Errors**: `Alert.alert("Couldn't <Verb> <Noun>", "Try again.")`.
@@ -76,7 +83,10 @@ toolbar (`arrow.up.arrow.down`: the sort keys as a checked group and
 Ascending/Descending as a second group). Sort keys: songs Title / Artist /
 Album / Date Added; albums Name / Year / Artist; artists Name; playlists
 Name / Date Added, Liked Songs always first. Songs starts with Play /
-Shuffle. Playlists' toolbar adds `plus` (New Playlist).
+Shuffle. Playlists' toolbar adds `plus` (New Playlist), and Albums' and
+Artists' add `plus` for New Album and New Artist (2.5.2 could create
+both). The search bars hide under the large title until pulled down, as
+in Apple Music. Liked Songs is the playlist screen (it's a playlist row).
 
 ### Playlist, Album, Artist
 
@@ -90,8 +100,12 @@ of 140 pt album cards, then "Songs".
 
 ### Editing (form sheets)
 
-Native forms (`FieldGroup`) in form sheets with Cancel and Done in the
-toolbar:
+Native forms (`FieldGroup`) with Cancel (`xmark`) and Done (`checkmark`,
+prominent) in the toolbar. The small sheets (New Playlist / Album /
+Artist, Add to Playlist) are form sheets; the edit sheets push lists (Edit
+Songs, Artists, Albums, Reorder Tracks) inside their own stack, which a
+form sheet can't hold, so they're page sheets, and Done saves everything
+the sheet changed (`src/features/editing/draft.ts`):
 - **Playlist**: artwork (tap to choose a photo, cropped square), name,
   and Edit Songs (a SwiftUI `List` in edit mode: drag to reorder, swipe to
   remove).

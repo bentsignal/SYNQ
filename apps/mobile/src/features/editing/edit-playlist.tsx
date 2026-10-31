@@ -11,16 +11,16 @@ import {
   setPlaylistOrder,
 } from "@synq/db";
 
-import type { ArtworkChange } from "./artwork-field";
+import type { ArtworkChange } from "./artwork-change";
 import type { ReorderRow } from "./reorder-list";
 import { NativeHost } from "~/components/native-host";
 import { TextInput } from "~/components/text-input";
 import { tryWrite } from "~/features/library/actions";
-import { songCount } from "~/features/library/format";
+import { songCount, songDetail } from "~/features/library/format";
 import { useIdParam } from "~/features/library/params";
 import { useLibraryQuery } from "~/features/library/queries";
-import { songDetail } from "~/features/library/song-row";
-import { ArtworkField, KEEP_ARTWORK, saveArtworkChange } from "./artwork-field";
+import { KEEP_ARTWORK, saveArtworkChange } from "./artwork-change";
+import { ArtworkField } from "./artwork-field";
 import { createDraft } from "./draft";
 import { LinkRow } from "./link-row";
 import { moveItems, removeItems } from "./reorder";

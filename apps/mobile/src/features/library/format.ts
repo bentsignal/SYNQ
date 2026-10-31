@@ -1,4 +1,5 @@
 /** Words for library counts and durations, as Apple Music writes them. */
+import type { AlbumListItem, SongListItem } from "@synq/db";
 
 function plural(count: number, one: string, many: string) {
   return `${count.toLocaleString("en-US")} ${count === 1 ? one : many}`;
@@ -20,7 +21,9 @@ export function totalDuration(durationMs: number) {
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
   const hourText = plural(hours, "hour", "hours");
-  return rest === 0 ? hourText : `${hourText}, ${plural(rest, "minute", "minutes")}`;
+  return rest === 0
+    ? hourText
+    : `${hourText}, ${plural(rest, "minute", "minutes")}`;
 }
 
 /** "14 songs, 52 minutes", or just "No songs". */
@@ -54,3 +57,13 @@ export function dotted(...parts: (string | number | null | undefined)[]) {
 
 /** The unknown artist's name where a song credits nobody. */
 export const UNKNOWN_ARTIST = "Unknown Artist";
+
+/** `artist · album` under a song's title. */
+export function songDetail(song: SongListItem) {
+  return dotted(names(song.artists) || UNKNOWN_ARTIST, song.albums[0]?.name);
+}
+
+/** "Mara Lind · 2023" under an album's name. */
+export function albumDetail(album: AlbumListItem) {
+  return dotted(names(album.artists), album.year);
+}

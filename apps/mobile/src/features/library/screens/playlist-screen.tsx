@@ -15,8 +15,8 @@ import {
 } from "../collection-header";
 import { collectionSummary } from "../format";
 import { openLibraryScreen } from "../links";
-import { PlayShuffleButtons } from "../play-shuffle-buttons";
 import { useIdParam } from "../params";
+import { PlayShuffleButtons } from "../play-shuffle-buttons";
 import { useLibraryQuery } from "../queries";
 import { SONG_ROW_HEIGHT, SongRow } from "../song-row";
 import { playlistSongSort } from "../sort";
@@ -92,9 +92,12 @@ function Playlist({ playlist }: { playlist: PlaylistListItem }) {
             placeholder={placeholder}
             name={playlist.name}
             lines={
-              <HeaderLine>
-                {collectionSummary(playlist.songCount, playlist.durationMs)}
-              </HeaderLine>
+              // An empty playlist says so below, in its empty state.
+              playlist.songCount > 0 && (
+                <HeaderLine>
+                  {collectionSummary(playlist.songCount, playlist.durationMs)}
+                </HeaderLine>
+              )
             }
           >
             {songs.length > 0 && (

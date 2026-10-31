@@ -39,7 +39,8 @@ export function libraryDb() {
  * need SQL the library API doesn't offer (the dev seed). Never for features.
  */
 export function libraryClientForDev() {
-  if (currentClient === undefined) throw new Error("The library isn't open yet.");
+  if (currentClient === undefined)
+    throw new Error("The library isn't open yet.");
   return currentClient;
 }
 

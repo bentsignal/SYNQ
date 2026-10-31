@@ -9,7 +9,7 @@ import { NativeRow } from "~/components/native-row";
 import { SymbolIcon } from "~/components/symbol-icon";
 import { useNowPlaying } from "~/features/player/now-playing";
 import { cn } from "~/lib/cn";
-import { dotted, names, UNKNOWN_ARTIST } from "./format";
+import { songDetail } from "./format";
 import { useLibraryQuery } from "./queries";
 import { songMenu } from "./song-menu";
 
@@ -29,11 +29,6 @@ function useIsLiked(songId: number) {
     read: listLikedSongIds,
     select: (ids) => ids.includes(songId),
   });
-}
-
-/** `artist · album` under a song's title. */
-export function songDetail(song: SongListItem) {
-  return dotted(names(song.artists) || UNKNOWN_ARTIST, song.albums[0]?.name);
 }
 
 /** The animated `waveform` beside the playing song (still while paused). */

@@ -8,7 +8,7 @@ import { EmptyState } from "~/components/empty-state";
 import { ScreenList } from "~/components/screen-list";
 import { TabTitle } from "~/components/tab-title";
 import { COLLECTION_ROW_HEIGHT, CollectionRow } from "../collection-row";
-import { dotted, names } from "../format";
+import { albumDetail } from "../format";
 import { openLibraryScreen } from "../links";
 import {
   LibrarySearchBar,
@@ -16,7 +16,7 @@ import {
   useSearchableList,
 } from "../searchable-list";
 import { albumSort } from "../sort";
-import { SortToolbar } from "../sort-menu";
+import { SortToolbar } from "../sort-toolbar";
 
 type AlbumSortKey = (typeof albumSort.keys)[number]["value"];
 
@@ -40,11 +40,6 @@ function readAlbums(db: LibraryDb, sort: Sort<AlbumSortKey>, search?: string) {
     return byArtist(listAlbums(db, { search }), sort.order);
   }
   return listAlbums(db, { order: sort.order, search, sort: sort.key });
-}
-
-/** "Mara Lind · 2023" under an album's name. */
-export function albumDetail(album: AlbumListItem) {
-  return dotted(names(album.artists), album.year);
 }
 
 function Empty({ query }: { query: string }) {

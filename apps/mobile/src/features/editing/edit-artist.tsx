@@ -5,17 +5,20 @@ import { FieldGroup } from "@expo/ui";
 import type { ArtistListItem } from "@synq/db";
 import { getArtist, renameArtist } from "@synq/db";
 
-import type { ArtworkChange } from "./artwork-field";
+import type { ArtworkChange } from "./artwork-change";
 import { NativeHost } from "~/components/native-host";
 import { TextInput } from "~/components/text-input";
 import { tryWrite } from "~/features/library/actions";
 import { useIdParam } from "~/features/library/params";
 import { useLibraryQuery } from "~/features/library/queries";
-import { ArtworkField, KEEP_ARTWORK, saveArtworkChange } from "./artwork-field";
+import { KEEP_ARTWORK, saveArtworkChange } from "./artwork-change";
+import { ArtworkField } from "./artwork-field";
 import { SheetToolbar } from "./sheet-toolbar";
 
 function Form({ artist }: { artist: ArtistListItem }) {
-  const [name, setName] = useState(artist.name);
+  // The typed name; undefined until the field changes.
+  const [typed, setTyped] = useState<string>();
+  const name = typed ?? artist.name;
   const [artwork, setArtwork] = useState<ArtworkChange>(KEEP_ARTWORK);
   function save() {
     if (name.trim() !== artist.name) {
@@ -50,7 +53,7 @@ function Form({ artist }: { artist: ArtistListItem }) {
               defaultValue={artist.name}
               placeholder="Artist Name"
               autoCapitalize="words"
-              onChangeText={setName}
+              onChangeText={setTyped}
             />
           </FieldGroup.Section>
         </FieldGroup>

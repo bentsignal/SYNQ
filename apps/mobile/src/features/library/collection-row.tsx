@@ -39,7 +39,11 @@ export function CollectionRow({
       style={{ height: COLLECTION_ROW_HEIGHT }}
       onPress={onPress}
     >
-      <Artwork artwork={artwork} placeholder={placeholder} size={ARTWORK_SIZE} />
+      <Artwork
+        artwork={artwork}
+        placeholder={placeholder}
+        size={ARTWORK_SIZE}
+      />
       <View className="border-b-hairline border-separator ml-3 h-full flex-1 flex-row items-center pr-4">
         <View className="flex-1 justify-center">
           <Text numberOfLines={1} className="text-body text-foreground">

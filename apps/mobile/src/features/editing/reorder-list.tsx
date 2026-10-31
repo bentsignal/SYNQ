@@ -1,11 +1,5 @@
 import { View } from "react-native";
-import {
-  HStack,
-  List,
-  RNHostView,
-  Text,
-  VStack,
-} from "@expo/ui/swift-ui";
+import { HStack, List, RNHostView, Text, VStack } from "@expo/ui/swift-ui";
 import {
   deleteDisabled,
   environment,
@@ -46,9 +40,7 @@ export function ReorderList({
 }) {
   return (
     <NativeHost style={{ flex: 1 }}>
-      <List
-        modifiers={[listStyle("plain"), environment("editMode", "active")]}
-      >
+      <List modifiers={[listStyle("plain"), environment("editMode", "active")]}>
         <List.ForEach onMove={onMove} onDelete={onDelete}>
           {rows.map((row) => (
             <HStack
@@ -68,14 +60,19 @@ export function ReorderList({
               <VStack
                 alignment="leading"
                 spacing={2}
-                modifiers={[frame({ alignment: "leading", maxWidth: Infinity })]}
+                modifiers={[
+                  frame({ alignment: "leading", maxWidth: Infinity }),
+                ]}
               >
                 <Text modifiers={[lineLimit(1)]}>{row.title}</Text>
                 <Text
                   modifiers={[
                     lineLimit(1),
                     font({ size: 15 }),
-                    foregroundStyle({ style: "secondary", type: "hierarchical" }),
+                    foregroundStyle({
+                      style: "secondary",
+                      type: "hierarchical",
+                    }),
                   ]}
                 >
                   {row.subtitle}

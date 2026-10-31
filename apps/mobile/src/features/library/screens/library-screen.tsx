@@ -1,76 +1,29 @@
-import type { SFSymbol } from "expo-symbols";
 import { Pressable, Text, useWindowDimensions, View } from "react-native";
 import { Stack } from "expo-router";
 
 import type { SongListItem } from "@synq/db";
 import { findLikedPlaylistId, listSongs } from "@synq/db";
 
-import type { LibraryScreen as LibraryTarget } from "../links";
 import { Artwork } from "~/components/artwork";
 import { EmptyState } from "~/components/empty-state";
 import { ScreenScroll } from "~/components/screen-scroll";
-import { SymbolIcon } from "~/components/symbol-icon";
 import { TabTitle } from "~/components/tab-title";
 import { playSongs } from "~/features/player/actions";
 import { names, UNKNOWN_ARTIST } from "../format";
-import { openImport } from "../import-links";
-import { openLibraryScreen } from "../links";
+import { LibraryLinkRow } from "../library-link-row";
+import {
+  LIBRARY_ROWS,
+  openImport,
+  openLibraryScreen,
+  openNewPlaylist,
+} from "../links";
 import { useLibraryQuery } from "../queries";
 import { songSort } from "../sort";
-import { openNewPlaylist } from "./playlists-screen";
 
 /** How many of the newest songs Recently Added shows. */
 const RECENT_COUNT = 12;
 const GRID_GAP = 16;
 const GRID_PADDING = 16;
-
-/** The Library tab's rows, in docs/ui.md's order. */
-export const LIBRARY_ROWS = [
-  { icon: "music.note.list", label: "Playlists", screen: "playlists" },
-  { icon: "music.microphone", label: "Artists", screen: "artists" },
-  { icon: "square.stack", label: "Albums", screen: "albums" },
-  { icon: "music.note", label: "Songs", screen: "songs" },
-] as const satisfies readonly {
-  icon: SFSymbol;
-  label: string;
-  screen: LibraryTarget["screen"];
-}[];
-
-/**
- * A row that opens a library list: the accent symbol, its label, and a
- * chevron, with a hairline under the label as in Apple Music.
- */
-export function LibraryLinkRow({
-  icon,
-  label,
-  onPress,
-}: {
-  icon: SFSymbol;
-  label: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      className="active:bg-fill h-13 flex-row items-center pl-4"
-      onPress={onPress}
-    >
-      <View className="w-8 items-center">
-        <SymbolIcon name={icon} size={22} tintColorClassName="accent-accent" />
-      </View>
-      <View className="border-b-hairline border-separator ml-3 h-full flex-1 flex-row items-center pr-4">
-        <Text className="text-foreground flex-1 text-[20px]">{label}</Text>
-        <SymbolIcon
-          name="chevron.right"
-          size={13}
-          weight="semibold"
-          tintColorClassName="accent-subtle"
-        />
-      </View>
-    </Pressable>
-  );
-}
 
 function LikedSongsRow() {
   const likedId = useLibraryQuery({

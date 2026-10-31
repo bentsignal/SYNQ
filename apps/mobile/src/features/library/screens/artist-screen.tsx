@@ -16,8 +16,8 @@ import {
   useHeaderTitle,
 } from "../collection-header";
 import { albumCount, dotted, songCount } from "../format";
-import { PlayShuffleButtons } from "../play-shuffle-buttons";
 import { useIdParam } from "../params";
+import { PlayShuffleButtons } from "../play-shuffle-buttons";
 import { useLibraryQuery } from "../queries";
 import { SONG_ROW_HEIGHT, SongRow } from "../song-row";
 

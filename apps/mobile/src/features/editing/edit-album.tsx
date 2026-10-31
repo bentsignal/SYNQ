@@ -2,9 +2,8 @@ import { useState } from "react";
 import { router, Stack } from "expo-router";
 import { FieldGroup } from "@expo/ui";
 
-import type { AlbumListItem, AlbumTrack, LibraryDb } from "@synq/db";
+import type { AlbumListItem, AlbumTrack } from "@synq/db";
 import {
-  createArtist,
   getAlbum,
   listAlbumTracks,
   listArtists,
@@ -12,8 +11,8 @@ import {
   updateAlbum,
 } from "@synq/db";
 
-import type { ArtworkChange } from "./artwork-field";
-import type { Pick } from "./choice-list";
+import type { ArtworkChange } from "./artwork-change";
+import type { Pick } from "./pick";
 import type { ReorderRow } from "./reorder-list";
 import { NativeHost } from "~/components/native-host";
 import { TextInput } from "~/components/text-input";
@@ -21,10 +20,12 @@ import { tryWrite } from "~/features/library/actions";
 import { names, songCount } from "~/features/library/format";
 import { useIdParam } from "~/features/library/params";
 import { useLibraryQuery } from "~/features/library/queries";
-import { ArtworkField, KEEP_ARTWORK, saveArtworkChange } from "./artwork-field";
+import { KEEP_ARTWORK, saveArtworkChange } from "./artwork-change";
+import { ArtworkField } from "./artwork-field";
 import { ChoiceList } from "./choice-list";
 import { createDraft } from "./draft";
 import { LinkRow } from "./link-row";
+import { artistIds } from "./pick";
 import { moveItems } from "./reorder";
 import { ReorderList } from "./reorder-list";
 import { SheetToolbar } from "./sheet-toolbar";
@@ -44,7 +45,7 @@ function toRow(track: AlbumTrack) {
   return {
     artwork: track.artwork,
     key: String(track.id),
-    subtitle: track.track === null ? names(track.artists) : `Track ${track.track}`,
+    subtitle: names(track.artists),
     title: track.title,
   } satisfies ReorderRow;
 }
@@ -53,13 +54,6 @@ function toRow(track: AlbumTrack) {
 function parseYear(text: string) {
   const year = Number.parseInt(text.trim(), 10);
   return Number.isInteger(year) && year > 0 && year < 10_000 ? year : null;
-}
-
-/** Artist ids for picks, creating the new ones (inside the album's write). */
-export function artistIds(db: LibraryDb, picks: readonly Pick[]) {
-  return picks.map((pick) =>
-    "id" in pick ? pick.id : createArtist(db, pick.name).value.id,
-  );
 }
 
 function save(album: AlbumListItem) {

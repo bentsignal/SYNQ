@@ -1,27 +1,19 @@
 import type { ReactNode } from "react";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import {
   Button,
   ContextMenu,
   HStack,
   Image,
-  List,
   Menu,
   RNHostView,
 } from "@expo/ui/swift-ui";
 import {
   accessibilityLabel,
-  alignmentGuide,
   buttonStyle,
   contentShape,
   frame,
-  listRowBackground,
-  listRowInsets,
-  listRowSeparator,
-  listStyle,
   menuIndicator,
-  scrollContentBackground,
-  scrollDisabled,
   shapes,
 } from "@expo/ui/swift-ui/modifiers";
 
@@ -33,13 +25,17 @@ import { NativeHost, useNativeColor } from "./native-host";
 const MENU_WIDTH = 44;
 
 /**
- * A list row hosted in SwiftUI, like Vera's Inbox rows: a one-row plain
- * `List`, so a tap gets the system's own highlight and a long press lifts
- * the row into a native context menu. `menu` fills both that context menu
- * and the trailing `ellipsis` menu. `children` is the row's React Native
- * look, ignoring touches so SwiftUI handles them, and hidden from
- * accessibility (the button reads `label`; see Vera's `inbox-row.ios.tsx`
- * for why).
+ * A list row hosted in SwiftUI, after Vera's Inbox rows: a long press
+ * lifts the row into a native context menu, and a tap dims it as a
+ * SwiftUI button does. `menu` fills both that context menu and the
+ * trailing `ellipsis` menu. `children` is the row's React Native look,
+ * ignoring touches so SwiftUI handles them, and hidden from accessibility
+ * (the button reads `label`; see Vera's `inbox-row.ios.tsx` for why).
+ *
+ * Unlike Vera's rows there's no one-row SwiftUI `List` around it (for the
+ * system's highlight and separator): with thousands of songs, a list per
+ * row nearly doubled the frames a fling dropped (265 against 145 in the
+ * same conditions), so the separator is a React Native hairline.
  */
 export function NativeRow({
   height,
@@ -58,32 +54,16 @@ export function NativeRow({
   separatorInset: number;
   children: ReactNode;
 }) {
-  const background = useNativeColor("--color-background");
   const muted = useNativeColor("--color-muted");
   return (
-    <NativeHost style={{ height }}>
-      <List
-        modifiers={[
-          listStyle("plain"),
-          scrollDisabled(true),
-          scrollContentBackground("hidden"),
-        ]}
-      >
-        <ContextMenu
-          modifiers={[
-            listRowInsets({ bottom: 0, leading: 0, top: 0, trailing: 0 }),
-            listRowSeparator("visible", "bottom"),
-            ...(background === undefined ? [] : [listRowBackground(background)]),
-          ]}
-        >
+    <View style={{ height }}>
+      <NativeHost style={{ height }}>
+        <ContextMenu>
           <ContextMenu.Items>
             <MenuItems groups={menu} />
           </ContextMenu.Items>
           <ContextMenu.Trigger>
-            <HStack
-              spacing={0}
-              modifiers={[alignmentGuide("listRowSeparatorLeading", separatorInset)]}
-            >
+            <HStack spacing={0}>
               <Button
                 modifiers={[
                   buttonStyle("plain"),
@@ -99,8 +79,16 @@ export function NativeRow({
                   <View
                     pointerEvents="none"
                     accessibilityElementsHidden
-                    className="flex-row items-center"
-                    style={{ height }}
+                    // Opaque, so the row lifted into its context menu
+                    // doesn't show the rows behind it, and starting a
+                    // hairline down: rows under a header of fractional
+                    // height overlap by that much, which hid the
+                    // separator above.
+                    className="bg-background flex-row items-center"
+                    style={{
+                      height: height - StyleSheet.hairlineWidth,
+                      marginTop: StyleSheet.hairlineWidth,
+                    }}
                   >
                     {children}
                   </View>
@@ -126,7 +114,12 @@ export function NativeRow({
             </HStack>
           </ContextMenu.Trigger>
         </ContextMenu>
-      </List>
-    </NativeHost>
+      </NativeHost>
+      <View
+        pointerEvents="none"
+        className="border-b-hairline border-separator absolute right-4 bottom-0"
+        style={{ left: separatorInset }}
+      />
+    </View>
   );
 }

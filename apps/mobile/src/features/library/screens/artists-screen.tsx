@@ -14,7 +14,7 @@ import {
   useSearchableList,
 } from "../searchable-list";
 import { artistSort } from "../sort";
-import { SortToolbar } from "../sort-menu";
+import { SortToolbar } from "../sort-toolbar";
 
 function Empty({ query }: { query: string }) {
   if (query !== "") return <NoResults query={query} />;
@@ -51,9 +51,7 @@ export default function ArtistsScreen() {
             placeholder="artist"
             name={item.name}
             detail={songCount(item.songCount)}
-            onPress={() =>
-              openLibraryScreen({ id: item.id, screen: "artist" })
-            }
+            onPress={() => openLibraryScreen({ id: item.id, screen: "artist" })}
           />
         )}
       />

@@ -22,13 +22,12 @@ import {
   useSearchText,
 } from "~/features/search/use-search-query";
 import { COLLECTION_ROW_HEIGHT, CollectionRow } from "../collection-row";
-import { songCount } from "../format";
-import { openLibraryScreen } from "../links";
+import { albumDetail, songCount } from "../format";
+import { LibraryLinkRow } from "../library-link-row";
+import { LIBRARY_ROWS, openLibraryScreen } from "../links";
 import { libraryQueryOptions } from "../queries";
 import { NoResults } from "../searchable-list";
 import { SONG_ROW_HEIGHT, SongRow } from "../song-row";
-import { albumDetail } from "./albums-screen";
-import { LIBRARY_ROWS, LibraryLinkRow } from "./library-screen";
 
 const TITLE_HEIGHT = 48;
 
@@ -85,7 +84,10 @@ function ResultRow({ item }: { item: SearchItem }) {
   switch (item.type) {
     case "title":
       return (
-        <View className="justify-end px-4 pb-1.5" style={{ height: TITLE_HEIGHT }}>
+        <View
+          className="justify-end px-4 pb-1.5"
+          style={{ height: TITLE_HEIGHT }}
+        >
           <Text className="text-foreground text-[22px] font-bold">
             {item.title}
           </Text>
@@ -110,7 +112,9 @@ function ResultRow({ item }: { item: SearchItem }) {
           placeholder="album"
           name={item.album.name}
           detail={albumDetail(item.album)}
-          onPress={() => openLibraryScreen({ id: item.album.id, screen: "album" })}
+          onPress={() =>
+            openLibraryScreen({ id: item.album.id, screen: "album" })
+          }
         />
       );
     case "artist":

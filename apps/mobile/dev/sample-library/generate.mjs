@@ -65,7 +65,11 @@ const LIKED = [0, 5, 9, 12, 16];
 const ARTIST_COVERS = { "Aurora Fields": "aurora-fields", Kestrel: "kestrel" };
 
 function run(args) {
-  execFileSync("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", ...args], { stdio: "inherit" });
+  execFileSync(
+    "ffmpeg",
+    ["-hide_banner", "-loglevel", "error", "-y", ...args],
+    { stdio: "inherit" },
+  );
 }
 
 function slug(text) {
@@ -95,11 +99,21 @@ function melody(base, mode) {
 
 function cover(name, size) {
   const [c0, c1, c2, type, seed] = COVERS[name];
-  const file = join(ROOT, "covers", `${name}_${size === 600 ? "full" : "small"}.jpg`);
+  const file = join(
+    ROOT,
+    "covers",
+    `${name}_${size === 600 ? "full" : "small"}.jpg`,
+  );
   run([
-    "-f", "lavfi",
-    "-i", `gradients=s=${size}x${size}:c0=${c0}:c1=${c1}:c2=${c2}:nb_colors=3:type=${type}:seed=${seed}`,
-    "-frames:v", "1", "-q:v", "5", file,
+    "-f",
+    "lavfi",
+    "-i",
+    `gradients=s=${size}x${size}:c0=${c0}:c1=${c1}:c2=${c2}:nb_colors=3:type=${type}:seed=${seed}`,
+    "-frames:v",
+    "1",
+    "-q:v",
+    "5",
+    file,
   ]);
   return file;
 }
@@ -113,52 +127,85 @@ for (const name of Object.keys(COVERS)) {
   cover(name, 200);
 }
 
-const songs = SONGS.map(([title, artist, album, year, track, format, base, mode, art], index) => {
-  const file = `${String(index + 1).padStart(2, "0")}-${slug(title)}.${format}`;
-  const out = join(ROOT, "audio", file);
-  const tags = [
-    "-metadata", `title=${title}`,
-    ...(artist ? ["-metadata", `artist=${artist}`] : []),
-    ...(album ? ["-metadata", `album=${album}`] : []),
-    ...(year ? ["-metadata", `date=${year}`] : []),
-    ...(track ? ["-metadata", `track=${track}`] : []),
-  ];
-  const audio = [
-    "-f", "lavfi", "-i", `aevalsrc=exprs='${melody(base, mode)}':s=44100:d=${SECONDS}`,
-  ];
-  const fade = ["-af", `afade=t=in:d=0.3,afade=t=out:st=${SECONDS - 1}:d=1`];
-  const codec =
-    format === "m4a"
-      ? ["-c:a", "aac", "-b:a", "40k", "-ac", "1"]
-      : ["-c:a", "libmp3lame", "-b:a", "40k", "-ac", "1", "-id3v2_version", "3"];
-  if (art) {
-    run([
-      ...audio, "-i", join(ROOT, "covers", `${art}_small.jpg`),
-      "-map", "0:a", "-map", "1:v", ...fade, ...codec,
-      "-c:v", "copy", "-disposition:v", "attached_pic", ...tags, out,
-    ]);
-  } else {
-    run([...audio, ...fade, ...codec, ...tags, out]);
-  }
-  const durationMs = Math.round(
-    Number(
-      execFileSync("ffprobe", [
-        "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", out,
-      ]).toString(),
-    ) * 1000,
-  );
-  return {
-    file,
-    title,
-    artists: artist,
-    album,
-    year,
-    track,
-    durationMs,
-    mimeType: format === "m4a" ? "audio/mp4" : "audio/mpeg",
-    cover: art,
-  };
-});
+const songs = SONGS.map(
+  ([title, artist, album, year, track, format, base, mode, art], index) => {
+    const file = `${String(index + 1).padStart(2, "0")}-${slug(title)}.${format}`;
+    const out = join(ROOT, "audio", file);
+    const tags = [
+      "-metadata",
+      `title=${title}`,
+      ...(artist ? ["-metadata", `artist=${artist}`] : []),
+      ...(album ? ["-metadata", `album=${album}`] : []),
+      ...(year ? ["-metadata", `date=${year}`] : []),
+      ...(track ? ["-metadata", `track=${track}`] : []),
+    ];
+    const audio = [
+      "-f",
+      "lavfi",
+      "-i",
+      `aevalsrc=exprs='${melody(base, mode)}':s=44100:d=${SECONDS}`,
+    ];
+    const fade = ["-af", `afade=t=in:d=0.3,afade=t=out:st=${SECONDS - 1}:d=1`];
+    const codec =
+      format === "m4a"
+        ? ["-c:a", "aac", "-b:a", "40k", "-ac", "1"]
+        : [
+            "-c:a",
+            "libmp3lame",
+            "-b:a",
+            "40k",
+            "-ac",
+            "1",
+            "-id3v2_version",
+            "3",
+          ];
+    if (art) {
+      run([
+        ...audio,
+        "-i",
+        join(ROOT, "covers", `${art}_small.jpg`),
+        "-map",
+        "0:a",
+        "-map",
+        "1:v",
+        ...fade,
+        ...codec,
+        "-c:v",
+        "copy",
+        "-disposition:v",
+        "attached_pic",
+        ...tags,
+        out,
+      ]);
+    } else {
+      run([...audio, ...fade, ...codec, ...tags, out]);
+    }
+    const durationMs = Math.round(
+      Number(
+        execFileSync("ffprobe", [
+          "-v",
+          "error",
+          "-show_entries",
+          "format=duration",
+          "-of",
+          "csv=p=0",
+          out,
+        ]).toString(),
+      ) * 1000,
+    );
+    return {
+      file,
+      title,
+      artists: artist,
+      album,
+      year,
+      track,
+      durationMs,
+      mimeType: format === "m4a" ? "audio/mp4" : "audio/mpeg",
+      cover: art,
+    };
+  },
+);
 
 const manifest = {
   songs,
@@ -169,7 +216,12 @@ const manifest = {
   liked: LIKED.map((index) => songs[index].file),
   artistCovers: ARTIST_COVERS,
 };
-writeFileSync(join(ROOT, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
+writeFileSync(
+  join(ROOT, "manifest.json"),
+  `${JSON.stringify(manifest, null, 2)}\n`,
+);
 
 const total = execFileSync("du", ["-sk", ROOT]).toString().split("\t")[0];
-console.log(`${songs.length} songs, ${total} KB (${statSync(join(ROOT, "manifest.json")).size} B manifest)`);
+console.log(
+  `${songs.length} songs, ${total} KB (${statSync(join(ROOT, "manifest.json")).size} B manifest)`,
+);

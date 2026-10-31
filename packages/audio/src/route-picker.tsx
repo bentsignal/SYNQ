@@ -1,6 +1,6 @@
 import type { ColorValue, ProcessedColorValue, ViewProps } from "react-native";
-import { requireNativeView } from "expo";
 import { processColor } from "react-native";
+import { requireNativeView } from "expo";
 
 export type RoutePickerButtonProps = ViewProps & {
   /** The AirPlay symbol's color. */
@@ -21,12 +21,18 @@ const NativeRoutePicker = requireNativeView<NativeProps>("SynqAudio");
  * route picker, and the symbol takes `activeColor` while another device
  * plays. Give it a size (28 pt fits a row of player controls).
  */
-export function RoutePickerButton({ color, activeColor, ...props }: RoutePickerButtonProps) {
+export function RoutePickerButton({
+  color,
+  activeColor,
+  ...props
+}: RoutePickerButtonProps) {
   return (
     <NativeRoutePicker
       {...props}
       color={color === undefined ? undefined : processColor(color)}
-      activeColor={activeColor === undefined ? undefined : processColor(activeColor)}
+      activeColor={
+        activeColor === undefined ? undefined : processColor(activeColor)
+      }
     />
   );
 }

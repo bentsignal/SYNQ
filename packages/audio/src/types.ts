@@ -1,5 +1,5 @@
 /** A playable item. Durations are milliseconds. */
-export type Track = {
+export interface Track {
   id: string;
   /** Absolute local file URL (`file:///…/Documents/library/…`). */
   url: string;
@@ -9,7 +9,7 @@ export type Track = {
   /** Absolute local file URL of the cover shown on the lock screen. */
   artworkUrl?: string;
   durationMs?: number;
-};
+}
 
 export type RepeatMode = "off" | "all" | "one";
 
@@ -25,7 +25,7 @@ export type PlaybackStatus =
   /** Nothing in the queue could play. */
   | "error";
 
-export type PlaybackState = {
+export interface PlaybackState {
   status: PlaybackStatus;
   /**
    * Index of the current queue entry. While the interstitial plays, the
@@ -42,17 +42,17 @@ export type PlaybackState = {
   interstitial: boolean;
   /** Listening time counted toward the interstitial (persist it). */
   listenedMs: number;
-};
+}
 
-export type Progress = {
+export interface Progress {
   positionMs: number;
   durationMs: number;
-};
+}
 
-export type QueueChange = {
+export interface QueueChange {
   length: number;
   index: number | null;
-};
+}
 
 export type PlaybackErrorCode =
   | "file-missing"
@@ -61,14 +61,14 @@ export type PlaybackErrorCode =
   | "interstitial-failed"
   | "audio-session";
 
-export type PlaybackError = {
+export interface PlaybackError {
   code: PlaybackErrorCode;
   message: string;
   trackId: string | null;
   index: number | null;
-};
+}
 
-export type SetQueueOptions = {
+export interface SetQueueOptions {
   /** Default 0. */
   startIndex?: number;
   /**
@@ -81,9 +81,9 @@ export type SetQueueOptions = {
    * state is kept unless this is given. Restore at launch with `false`.
    */
   play?: boolean;
-};
+}
 
-export type InterstitialConfig = {
+export interface InterstitialConfig {
   track: Track;
   /** Listening time after which the next transition plays `track` first. */
   afterListeningMs: number;
@@ -92,8 +92,9 @@ export type InterstitialConfig = {
    * to keep the count native already has (e.g. when reconfiguring).
    */
   listenedMs?: number;
-};
+}
 
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- expo's `NativeModule<EventsMap>` needs an index signature, which interfaces lack
 export type AudioEvents = {
   state: (state: PlaybackState) => void;
   /** About twice a second while playing, and on seeks and track changes. */
@@ -106,4 +107,6 @@ export type AudioEvents = {
 
 export type AudioEventName = keyof AudioEvents;
 
-export type Subscription = { remove(): void };
+export interface Subscription {
+  remove(): void;
+}

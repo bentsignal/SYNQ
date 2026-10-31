@@ -14,7 +14,10 @@
     "clean": "git clean -xdf .build .swiftpm .cache .turbo node_modules",
     "test": "node --test 'src/**/*.test.ts'",
     "test:swift": "swift test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsgo --noEmit",
+    "lint": "eslint --flag unstable_native_nodejs_ts_config",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "format:fix": "prettier --write . --ignore-path ../../.gitignore"
   },
   "peerDependencies": {
     "expo": "*",
@@ -22,10 +25,17 @@
     "react-native": "*"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
+    "@synq/eslint-config": "workspace:*",
+    "@synq/prettier-config": "workspace:*",
+    "@synq/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
     "@types/react": "~19.2.17",
+    "@typescript/native-preview": "catalog:",
+    "eslint": "catalog:",
     "expo": "~57.0.26",
-    "react": "19.2.3",
-    "typescript": "~6.0.3"
-  }
+    "prettier": "catalog:",
+    "react": "catalog:react19",
+    "typescript": "catalog:"
+  },
+  "prettier": "@synq/prettier-config"
 }

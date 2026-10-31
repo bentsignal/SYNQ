@@ -1,7 +1,6 @@
-import { NativeModule, requireNativeModule } from "expo";
 import { useSyncExternalStore } from "react";
+import { NativeModule, requireNativeModule } from "expo";
 
-import { createSnapshotStore } from "./store.ts";
 import type {
   AudioEventName,
   AudioEvents,
@@ -10,12 +9,15 @@ import type {
   Progress,
   RepeatMode,
   SetQueueOptions,
-  Subscription,
   Track,
 } from "./types.ts";
+import { createSnapshotStore } from "./store.ts";
 
 export type * from "./types.ts";
-export { RoutePickerButton, type RoutePickerButtonProps } from "./route-picker.tsx";
+export {
+  RoutePickerButton,
+  type RoutePickerButtonProps,
+} from "./route-picker.tsx";
 
 declare class SynqAudioModule extends NativeModule<AudioEvents> {
   setQueue(tracks: readonly Track[], options: SetQueueOptions): Promise<void>;
@@ -41,7 +43,10 @@ const native = requireNativeModule<SynqAudioModule>("SynqAudio");
  * Replaces the queue. If the track at `startIndex` is the one playing (same
  * id), it keeps playing without a gap; use this to apply a new shuffle order.
  */
-export function setQueue(tracks: readonly Track[], options: SetQueueOptions = {}) {
+export function setQueue(
+  tracks: readonly Track[],
+  options: SetQueueOptions = {},
+) {
   return native.setQueue(tracks, options);
 }
 
@@ -115,11 +120,14 @@ export function getQueue() {
  * Subscribes to a native event. `progress` is only produced while it has a
  * listener.
  */
-export function addListener<E extends AudioEventName>(event: E, listener: AudioEvents[E]): Subscription {
+export function addListener<E extends AudioEventName>(
+  event: E,
+  listener: AudioEvents[E],
+) {
   return native.addListener(event, listener);
 }
 
-const idleState: PlaybackState = {
+const idleState = {
   status: "idle",
   index: null,
   trackId: null,
@@ -129,7 +137,7 @@ const idleState: PlaybackState = {
   queueLength: 0,
   interstitial: false,
   listenedMs: 0,
-};
+} satisfies PlaybackState;
 
 const stateStore = createSnapshotStore<PlaybackState>(
   {
@@ -146,23 +154,32 @@ const progressStore = createSnapshotStore<Progress>(
   {
     listen(set) {
       const progress = addListener("progress", set);
-      const state = addListener("state", ({ positionMs, durationMs }) => set({ positionMs, durationMs }));
+      const state = addListener("state", ({ positionMs, durationMs }) =>
+        set({ positionMs, durationMs }),
+      );
       return () => {
         progress.remove();
         state.remove();
       };
     },
-    read: () => getState().then(({ positionMs, durationMs }) => ({ positionMs, durationMs })),
+    read: () =>
+      getState().then(({ positionMs, durationMs }) => ({
+        positionMs,
+        durationMs,
+      })),
   },
   { positionMs: 0, durationMs: 0 },
 );
 
 /** The latest playback state; re-renders on state events only. */
-export function usePlaybackState(): PlaybackState {
+export function usePlaybackState() {
   return useSyncExternalStore(stateStore.subscribe, stateStore.getSnapshot);
 }
 
 /** Position and duration, about twice a second while playing. */
-export function useProgress(): Progress {
-  return useSyncExternalStore(progressStore.subscribe, progressStore.getSnapshot);
+export function useProgress() {
+  return useSyncExternalStore(
+    progressStore.subscribe,
+    progressStore.getSnapshot,
+  );
 }

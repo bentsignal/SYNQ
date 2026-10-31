@@ -69,14 +69,14 @@ type PlaybackState = {
 
 ### Events
 
-| Event | Payload | When |
-|---|---|---|
-| `state` | `PlaybackState` | status, index, track, repeat mode, queue length, or interstitial changed |
-| `progress` | `{ positionMs, durationMs }` | about twice a second while playing, plus seeks and track changes; **only produced while it has a listener** |
-| `queue` | `{ length, index }` | after any queue change (call `getQueue()` for the tracks) |
-| `error` | `{ code, message, trackId, index }` | a file is missing (`file-missing`), can't be decoded (`load-failed`), fails mid-play (`playback-failed`), the interstitial can't play (`interstitial-failed`), or the audio session can't activate (`audio-session`) |
-| `interstitialStart` | `{}` | the interstitial started |
-| `interstitialEnd` | `{ listenedMs: 0 }` | it ended (or was stopped); the counter is back to 0 |
+| Event               | Payload                             | When                                                                                                                                                                                                                 |
+| ------------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `state`             | `PlaybackState`                     | status, index, track, repeat mode, queue length, or interstitial changed                                                                                                                                             |
+| `progress`          | `{ positionMs, durationMs }`        | about twice a second while playing, plus seeks and track changes; **only produced while it has a listener**                                                                                                          |
+| `queue`             | `{ length, index }`                 | after any queue change (call `getQueue()` for the tracks)                                                                                                                                                            |
+| `error`             | `{ code, message, trackId, index }` | a file is missing (`file-missing`), can't be decoded (`load-failed`), fails mid-play (`playback-failed`), the interstitial can't play (`interstitial-failed`), or the audio session can't activate (`audio-session`) |
+| `interstitialStart` | `{}`                                | the interstitial started                                                                                                                                                                                             |
+| `interstitialEnd`   | `{ listenedMs: 0 }`                 | it ended (or was stopped); the counter is back to 0                                                                                                                                                                  |
 
 ## Behavior
 

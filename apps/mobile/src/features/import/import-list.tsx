@@ -1,22 +1,17 @@
 import type { ReactNode } from "react";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { Button } from "@expo/ui";
-import {
-  buttonBorderShape,
-  buttonStyle,
-  controlSize,
-  frame,
-} from "@expo/ui/swift-ui/modifiers";
+import { LegendList } from "@legendapp/list/react-native";
 
 import type { ImportItem, ImportSessionState } from "./session";
 import { SymbolIcon } from "~/components/symbol-icon";
 import { track } from "~/features/analytics/analytics";
-import { FormHost } from "~/features/settings/form";
+import { ProminentButton } from "~/features/premium/prominent-button";
 import mark from "../../../assets/icons/icon-blue.png";
-import { PENDING, useImportSession } from "./session";
+import { progressLine } from "./progress-line";
+import { useImportSession } from "./session";
 
 function itemsOf(session: ImportSessionState) {
   return session.items;
@@ -24,29 +19,6 @@ function itemsOf(session: ImportSessionState) {
 
 function waitOf(session: ImportSessionState) {
   return session.wait;
-}
-
-function songs(n: number) {
-  return `${String(n)} ${n === 1 ? "Song" : "Songs"}`;
-}
-
-/** "Importing 3 of 12", "12 Songs Imported", "1 Song Imported · 4 Need Premium". */
-export function progressLine(items: readonly ImportItem[]) {
-  const imported = items.filter((item) => item.status === "imported").length;
-  const locked = items.filter((item) => item.status === "locked").length;
-  const failed = items.filter((item) => item.status === "failed").length;
-  const pending = items.some((item) => PENDING.has(item.status));
-  if (pending) {
-    const total = items.length - failed - locked;
-    return `Importing ${String(Math.min(imported + 1, total))} of ${String(total)}`;
-  }
-  return [
-    imported > 0 ? `${songs(imported)} Imported` : null,
-    locked > 0 ? `${String(locked)} Need Premium` : null,
-    failed > 0 ? `${String(failed)} Couldn't Import` : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
 }
 
 function StatusAccessory({ item }: { item: ImportItem }) {
@@ -71,7 +43,13 @@ function StatusAccessory({ item }: { item: ImportItem }) {
         />
       );
     case "locked":
-      return <SymbolIcon name="lock.fill" size={15} tintColorClassName="accent-subtle" />;
+      return (
+        <SymbolIcon
+          name="lock.fill"
+          size={15}
+          tintColorClassName="accent-subtle"
+        />
+      );
     case "failed":
       return (
         <SymbolIcon
@@ -92,7 +70,11 @@ function ItemRow({ item }: { item: ImportItem }) {
     >
       <View className="bg-fill size-12 items-center justify-center overflow-hidden rounded-md">
         {item.coverUri === null ? (
-          <SymbolIcon name="music.note" size={19} tintColorClassName="accent-subtle" />
+          <SymbolIcon
+            name="music.note"
+            size={19}
+            tintColorClassName="accent-subtle"
+          />
         ) : (
           <Image
             source={{ uri: item.coverUri }}
@@ -163,22 +145,40 @@ function LockedFooter() {
   const router = useRouter();
   return (
     <View className="px-5 pt-3 pb-8">
-      <FormHost matchContents={{ vertical: true }}>
-        <Button
-          label="Import All with Premium"
-          onPress={() => {
-            track("check_premium", { premium: false });
-            router.push("/premium");
-          }}
-          modifiers={[
-            buttonStyle("glassProminent"),
-            buttonBorderShape("capsule"),
-            controlSize("large"),
-            frame({ maxWidth: Infinity }),
-          ]}
-        />
-      </FormHost>
+      <ProminentButton
+        label="Import All with Premium"
+        onPress={() => {
+          track("check_premium", { premium: false });
+          router.push("/premium");
+        }}
+      />
     </View>
+  );
+}
+
+function ListFooter({ locked }: { locked: boolean }) {
+  return locked ? <LockedFooter /> : <View className="h-10" />;
+}
+
+function ListHeader({
+  header,
+  line,
+  wait,
+}: {
+  header: ReactNode;
+  line: string;
+  wait: number | null;
+}) {
+  return (
+    <>
+      {header}
+      {line !== "" && (
+        <Text className="text-footnote text-muted px-5 pt-2 pb-3 tabular-nums">
+          {line}
+        </Text>
+      )}
+      {wait !== null && <WaitCard wait={wait} />}
+    </>
   );
 }
 
@@ -191,26 +191,25 @@ export function ImportList({ header }: { header?: ReactNode }) {
   const items = useImportSession(itemsOf);
   const wait = useImportSession(waitOf);
   const line = items.length > 0 ? progressLine(items) : "";
-  const locked = items.some((item) => item.status === "locked");
   return (
-    <ScrollView
+    <LegendList
       className="bg-background flex-1"
       contentInsetAdjustmentBehavior="automatic"
-      contentContainerClassName="pb-10"
-    >
-      {header}
-      {line !== "" && (
-        <Text className="text-footnote text-muted px-5 pt-2 pb-3 tabular-nums">
-          {line}
-        </Text>
-      )}
-      {wait !== null && <WaitCard wait={wait} />}
-      {items.map((item) => (
-        <Animated.View key={item.key} entering={FadeIn.duration(180)}>
+      data={items}
+      keyExtractor={(item) => item.key}
+      estimatedItemSize={64}
+      recycleItems={false}
+      ListHeaderComponent={
+        <ListHeader header={header} line={line} wait={wait} />
+      }
+      ListFooterComponent={
+        <ListFooter locked={items.some((item) => item.status === "locked")} />
+      }
+      renderItem={({ item }) => (
+        <Animated.View entering={FadeIn.duration(180)}>
           <ItemRow item={item} />
         </Animated.View>
-      ))}
-      {locked && <LockedFooter />}
-    </ScrollView>
+      )}
+    />
   );
 }

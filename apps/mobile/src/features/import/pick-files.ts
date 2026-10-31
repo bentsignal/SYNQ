@@ -6,8 +6,6 @@ import type { ImportSource } from "./pipeline";
 import { PICKER_TYPES } from "./clean-tags";
 import { addImportSources, getImportSession } from "./session";
 
-let picks = 0;
-
 /**
  * Opens the Files picker for audio (several at once). The picked files are
  * copied into the cache, which the import moves into the library. An empty
@@ -20,10 +18,11 @@ export async function pickAudioFiles() {
     type: PICKER_TYPES,
   });
   if (result.canceled) return [];
-  picks += 1;
+  // Unique across launches: staged covers are cached by their path.
+  const batch = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
   return result.assets.map(
     (asset, index): ImportSource => ({
-      key: `files-${String(picks)}-${String(index)}`,
+      key: `files-${batch}-${String(index)}`,
       mimeType: asset.mimeType ?? null,
       name: asset.name,
       uri: asset.uri,

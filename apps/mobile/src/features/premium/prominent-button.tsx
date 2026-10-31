@@ -44,7 +44,10 @@ export function ProminentButton({
         ]}
       >
         <ZStack modifiers={FILL}>
-          <Text modifiers={[...FILL, opacity(loading ? 0 : 1)]} textStyle={LABEL}>
+          <Text
+            modifiers={[...FILL, opacity(loading ? 0 : 1)]}
+            textStyle={LABEL}
+          >
             {label}
           </Text>
           {loading && <ProgressView modifiers={[tint("white")]} />}

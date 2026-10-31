@@ -1,10 +1,9 @@
+import { listContents, subscribe, unzip, zip } from "react-native-zip-archive";
 import Constants from "expo-constants";
 import { Directory, File, Paths } from "expo-file-system";
 import * as Sharing from "expo-sharing";
-import { listContents, subscribe, unzip, zip } from "react-native-zip-archive";
 
-import type { LibraryDb } from "@synq/db";
-import { ensureLikedPlaylist, libraryMigrations } from "@synq/db";
+import { ensureLikedPlaylist } from "@synq/db";
 import {
   createExpoLegacyFileSystem,
   openLegacyDatabaseCopy,
@@ -15,12 +14,21 @@ import { libraryDb } from "~/features/library/database";
 import { synqMedia } from "~/features/media/native";
 import { queryClient } from "~/lib/query-client";
 import {
-  backupKind,
   BACKUP_FORMAT,
   BACKUP_VERSION,
+  backupKind,
   LIBRARY_FOLDERS,
   manifestFrom,
 } from "./manifest";
+import {
+  countRows,
+  RestoreError,
+  restoreRows,
+  sqlString,
+  TABLES,
+} from "./restore-rows";
+
+export { RestoreError } from "./restore-rows";
 
 /**
  * Backup & Restore (Premium). A backup is a zip of a consistent copy of
@@ -43,10 +51,6 @@ function pathOf(entry: File | Directory) {
     /\/$/,
     "",
   );
-}
-
-function sqlString(value: string) {
-  return `'${value.replaceAll("'", "''")}'`;
 }
 
 function resetWork() {
@@ -80,11 +84,6 @@ async function withZipProgress<Value>(
   );
 }
 
-function countRows(db: LibraryDb, table: string) {
-  const row = db.get<{ n: number }>(`SELECT count(*) AS n FROM ${table}`);
-  return row.n;
-}
-
 /** Builds a backup and shares it. Resolves once the share sheet closes. */
 export async function backUpLibrary(onProgress: (fraction: number) => void) {
   resetWork();
@@ -94,12 +93,16 @@ export async function backUpLibrary(onProgress: (fraction: number) => void) {
   const db = libraryDb();
   // A consistent snapshot, whatever the WAL holds, without pausing writes.
   db.run(`VACUUM INTO ${sqlString(pathOf(new File(staging, "library.db")))}`);
-  for (const name of LIBRARY_FOLDERS) {
-    const folder = new Directory(Paths.document, name);
-    if (folder.exists) {
-      await synqMedia().linkTree(folder.uri, new Directory(staging, name).uri);
-    }
-  }
+  await Promise.all(
+    LIBRARY_FOLDERS.map((name) => new Directory(Paths.document, name))
+      .filter((folder) => folder.exists)
+      .map((folder) =>
+        synqMedia().linkTree(
+          folder.uri,
+          new Directory(staging, folder.name).uri,
+        ),
+      ),
+  );
   new File(staging, "manifest.json").write(
     JSON.stringify(
       {
@@ -141,84 +144,6 @@ export async function inspectBackup(uri: string) {
   return { kind, hasManifest: manifestPath !== undefined };
 }
 
-/** The tables a 3.0 backup's rows replace, children last. */
-const TABLES = [
-  "artists",
-  "albums",
-  "songs",
-  "playlists",
-  "song_artists",
-  "album_songs",
-  "album_artists",
-  "playlist_songs",
-] as const;
-
-function columns(db: LibraryDb, schemaName: string, table: string) {
-  return db
-    .all<{ name: string }>(`PRAGMA ${schemaName}.table_info(${table})`)
-    .map((column) => column.name);
-}
-
-/**
- * Replaces the library's rows with a 3.0 backup's, in one transaction:
- * the columns both share, `sqlite_sequence` never lowered (so ids, and
- * the folders named by them, are never reissued), and this device's
- * record of its 2.5.2 import kept unless the backup has one, so the
- * importer never runs over a restored library.
- */
-function restoreRows(db: LibraryDb, backupPath: string) {
-  db.run(`ATTACH DATABASE ${sqlString(backupPath)} AS backup`);
-  try {
-    const newest = libraryMigrations.journal.entries.at(-1)?.when ?? 0;
-    const backupNewest =
-      db.get<{ when: number | null } | undefined>(
-        "SELECT max(created_at) AS \"when\" FROM backup.__drizzle_migrations",
-      )?.when ?? 0;
-    if (backupNewest > newest) {
-      throw new RestoreError("newer", "This backup is from a newer SYNQ.");
-    }
-    db.transaction((tx) => {
-      for (const table of [...TABLES].reverse()) tx.run(`DELETE FROM main.${table}`);
-      for (const table of TABLES) {
-        const shared = columns(tx, "backup", table).filter((name) =>
-          columns(tx, "main", table).includes(name),
-        );
-        if (shared.length === 0) continue;
-        const list = shared.map((name) => `"${name}"`).join(", ");
-        tx.run(
-          `INSERT INTO main.${table} (${list}) SELECT ${list} FROM backup.${table}`,
-        );
-      }
-      if (countRows(tx, "backup.legacy_import") > 0) {
-        tx.run("DELETE FROM main.legacy_import");
-        const list = columns(tx, "backup", "legacy_import")
-          .filter((name) => columns(tx, "main", "legacy_import").includes(name))
-          .map((name) => `"${name}"`)
-          .join(", ");
-        tx.run(
-          `INSERT INTO main.legacy_import (${list}) SELECT ${list} FROM backup.legacy_import`,
-        );
-      }
-      tx.run(
-        `UPDATE main.sqlite_sequence SET seq = max(seq, coalesce((SELECT b.seq FROM backup.sqlite_sequence b WHERE b.name = main.sqlite_sequence.name), 0))`,
-      );
-    });
-  } catch (error) {
-    db.run("DETACH DATABASE backup");
-    throw error;
-  }
-  db.run("DETACH DATABASE backup");
-}
-
-export class RestoreError extends Error {
-  readonly code: "newer" | "not-a-backup" | "files";
-
-  constructor(code: RestoreError["code"], message: string) {
-    super(message);
-    this.code = code;
-  }
-}
-
 /**
  * Moves the backup's media folders into Documents in place of the
  * library's (the database already points at them). Safe to run again if
@@ -227,17 +152,16 @@ export class RestoreError extends Error {
 async function replaceFolders(root: Directory) {
   const trash = new Directory(WORK, "previous");
   trash.create({ idempotent: true, intermediates: true });
-  for (const name of LIBRARY_FOLDERS) {
-    const incoming = new Directory(root, name);
-    const current = new Directory(Paths.document, name);
-    if (!incoming.exists) {
-      // The backup had none (an empty library): the library has none either.
+  await Promise.all(
+    LIBRARY_FOLDERS.map(async (name) => {
+      const incoming = new Directory(root, name);
+      const current = new Directory(Paths.document, name);
       if (current.exists) await current.move(new Directory(trash, name));
-      continue;
-    }
-    if (current.exists) await current.move(new Directory(trash, name));
-    await incoming.move(new Directory(Paths.document, name));
-  }
+      // A backup without the folder (an empty library) leaves none.
+      if (incoming.exists)
+        await incoming.move(new Directory(Paths.document, name));
+    }),
+  );
 }
 
 /** Finds a 3.0 backup's root: the extraction folder or one level down. */
@@ -338,10 +262,11 @@ export async function eraseLibrary() {
   ensureLikedPlaylist(db);
   libraryReplaced();
   resetWork();
-  for (const name of LIBRARY_FOLDERS) {
-    const folder = new Directory(Paths.document, name);
-    if (folder.exists) await folder.move(new Directory(WORK, name));
-  }
+  await Promise.all(
+    LIBRARY_FOLDERS.map((name) => new Directory(Paths.document, name))
+      .filter((folder) => folder.exists)
+      .map((folder) => folder.move(new Directory(WORK, folder.name))),
+  );
   clearWork();
 }
 

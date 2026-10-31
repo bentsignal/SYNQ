@@ -42,7 +42,11 @@ function atRootOrOneDown(paths: readonly string[], file: string) {
   return paths.some((path) => {
     const parts = path.replace(/^\/+/, "").split("/");
     const at = parts.slice(-file.split("/").length).join("/");
-    return at === file && parts.length - file.split("/").length <= 1 && !parts[0]?.startsWith("__MACOSX");
+    return (
+      at === file &&
+      parts.length - file.split("/").length <= 1 &&
+      !parts[0]?.startsWith("__MACOSX")
+    );
   });
 }
 
@@ -51,7 +55,10 @@ function atRootOrOneDown(paths: readonly string[], file: string) {
  * and `library.db`), "legacy" for 2.5.2 (`SQLite/synq.db`), else null.
  */
 export function backupKind(paths: readonly string[]) {
-  if (atRootOrOneDown(paths, "manifest.json") && atRootOrOneDown(paths, "library.db")) {
+  if (
+    atRootOrOneDown(paths, "manifest.json") &&
+    atRootOrOneDown(paths, "library.db")
+  ) {
     return "synq" as const;
   }
   if (atRootOrOneDown(paths, "SQLite/synq.db")) return "legacy" as const;

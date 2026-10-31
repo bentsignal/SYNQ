@@ -10,7 +10,13 @@ import {
   splitTrackPrefix,
 } from "./clean-tags.ts";
 
-const NO_TAGS = { title: null, artist: null, album: null, year: null, track: null };
+const NO_TAGS = {
+  title: null,
+  artist: null,
+  album: null,
+  year: null,
+  track: null,
+};
 
 void test("strips 2.5.2's two-digit track prefix", () => {
   assert.deepEqual(splitTrackPrefix("03 Song"), { track: 3, rest: "Song" });
@@ -36,10 +42,17 @@ void test("tags win; the title loses a track prefix", () => {
       year: "2019",
       track: null,
     }),
-    { title: "Real Title", artists: "Tyler, The Creator", album: "Igor", year: 2019, track: 5 },
+    {
+      title: "Real Title",
+      artists: "Tyler, The Creator",
+      album: "Igor",
+      year: 2019,
+      track: 5,
+    },
   );
   assert.equal(
-    cleanTags("01 file.mp3", { ...NO_TAGS, title: "05 Song", track: "9/10" }).track,
+    cleanTags("01 file.mp3", { ...NO_TAGS, title: "05 Song", track: "9/10" })
+      .track,
     9,
   );
 });

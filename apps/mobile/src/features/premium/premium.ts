@@ -67,6 +67,7 @@ export function applyCustomerInfo(info: CustomerInfo) {
   const next = premiumFromCustomerInfo(info, Date.now());
   writeJson(STORAGE_KEY, next);
   confirmed = true;
+  if (developmentOverride) return next;
   publish(next);
   if (!next.active) resetPremiumAppearance();
   return next;
@@ -106,12 +107,42 @@ function whenLibraryOpens(run: () => void) {
 let started = false;
 
 /**
+ * Development builds only: SYNQ Dev's bundle id has no App Store products,
+ * so Premium can't be bought there. `globalThis.synqPremium.set(true)` (or
+ * `scripts/sim.sh eval`) turns it on until the next launch; RevenueCat's
+ * answers are ignored meanwhile. Never stored.
+ */
+let developmentOverride = false;
+
+function installDevelopmentOverride() {
+  if (!__DEV__) return;
+  Object.assign(globalThis, {
+    synqPremium: {
+      set(active: boolean) {
+        developmentOverride = true;
+        publish(
+          active
+            ? {
+                active: true,
+                expiresAt: null,
+                plan: "lifetime",
+                willRenew: false,
+              }
+            : premiumFromStored(null),
+        );
+      },
+    },
+  });
+}
+
+/**
  * Configures RevenueCat and starts following the customer's status. Call
  * once at startup.
  */
 export function startPremium() {
   if (started) return;
   started = true;
+  installDevelopmentOverride();
   whenLibraryOpens(adoptLegacyCache);
   try {
     if (__DEV__) void Purchases.setLogLevel(LOG_LEVEL.WARN);
@@ -144,16 +175,21 @@ export function subscribePremium(listener: () => void) {
   };
 }
 
+function activeSnapshot() {
+  return status.active;
+}
+
+/** Whether someone has Premium, re-rendering when it changes. */
+export function usePremium() {
+  return useSyncExternalStore(subscribePremium, activeSnapshot);
+}
+
 /**
- * Whether someone has Premium (or, with `select`, part of the status),
- * re-rendering when it changes. `select` must return a primitive or a part
- * of the status as it is, never a new object.
+ * Part of the Premium status, re-rendering when it changes. `select`
+ * returns a primitive or a part of the status as it is, never a new object.
  */
-export function usePremium<Selected = boolean>(
-  select: (status: PremiumStatus) => Selected = (status) =>
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- The default selector returns `active`, which is what `Selected` defaults to.
-    status.active as Selected,
+export function usePremiumStatus<Selected>(
+  select: (current: PremiumStatus) => Selected,
 ) {
   return useSyncExternalStore(subscribePremium, () => select(status));
 }
-

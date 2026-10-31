@@ -23,9 +23,35 @@ import { jpegSize } from "./jpeg.ts";
 
 /** A minimal JPEG: SOI, an APP0 segment, then SOF0 for 640×480. */
 const JPEG = Uint8Array.of(
-  0xff, 0xd8, 0xff, 0xe0, 0x00, 0x04, 0x00, 0x00, 0xff, 0xc0, 0x00, 0x11, 0x08,
-  0x01, 0xe0, 0x02, 0x80, 0x03, 0x01, 0x22, 0x00, 0x02, 0x11, 0x01, 0x03, 0x11,
-  0x01, 0xff, 0xd9,
+  0xff,
+  0xd8,
+  0xff,
+  0xe0,
+  0x00,
+  0x04,
+  0x00,
+  0x00,
+  0xff,
+  0xc0,
+  0x00,
+  0x11,
+  0x08,
+  0x01,
+  0xe0,
+  0x02,
+  0x80,
+  0x03,
+  0x01,
+  0x22,
+  0x00,
+  0x02,
+  0x11,
+  0x01,
+  0x03,
+  0x11,
+  0x01,
+  0xff,
+  0xd9,
 );
 
 const TAGS = {
@@ -51,7 +77,12 @@ void test("reads a JPEG's size from its frame header", () => {
 function id3v23(frames: readonly (readonly [string, Uint8Array])[]) {
   const encoded = concatBytes(
     frames.map(([id, body]) =>
-      concatBytes([latin1Bytes(id), uint32BE(body.length), Uint8Array.of(0, 0), body]),
+      concatBytes([
+        latin1Bytes(id),
+        uint32BE(body.length),
+        Uint8Array.of(0, 0),
+        body,
+      ]),
     ),
   );
   const size = encoded.length + 20;
@@ -76,7 +107,10 @@ function textFrame(id: string, text: string) {
 void test("sizes an ID3 tag from its header, and finds none in plain audio", () => {
   const tag = id3v23([textFrame("TIT2", "Old")]);
   assert.equal(id3TagLength(tag), tag.length);
-  assert.equal(id3TagLength(Uint8Array.of(0xff, 0xfb, 0x90, 0, 0, 0, 0, 0, 0, 0)), 0);
+  assert.equal(
+    id3TagLength(Uint8Array.of(0xff, 0xfb, 0x90, 0, 0, 0, 0, 0, 0, 0)),
+    0,
+  );
 });
 
 void test("an MP3 export replaces SYNQ's frames and keeps the others", () => {
@@ -94,10 +128,22 @@ void test("an MP3 export replaces SYNQ's frames and keeps the others", () => {
   assert.ok(parsed);
   assert.equal(parsed.version, 3);
   const ids = parsed.frames.map((frame) => frame.id);
-  assert.deepEqual(ids, ["TIT2", "TPE1", "TALB", "TYER", "TRCK", "APIC", "TCON", "COMM"]);
+  assert.deepEqual(ids, [
+    "TIT2",
+    "TPE1",
+    "TALB",
+    "TYER",
+    "TRCK",
+    "APIC",
+    "TCON",
+    "COMM",
+  ]);
   // Kept frames are byte for byte what they were.
   const genre = parsed.frames.find((frame) => frame.id === "TCON");
-  assert.equal(latin1Text(genre?.bytes.subarray(11) ?? new Uint8Array()), "Pop");
+  assert.equal(
+    latin1Text(genre?.bytes.subarray(11) ?? new Uint8Array()),
+    "Pop",
+  );
   // The new title is UTF-16 with a byte order mark (2.3).
   const title = parsed.frames[0]?.bytes ?? new Uint8Array();
   assert.equal(title[10], 1);
@@ -105,8 +151,12 @@ void test("an MP3 export replaces SYNQ's frames and keeps the others", () => {
 });
 
 void test("an MP3 export keeps the file's artwork when SYNQ has none", () => {
-  const existing = id3v23([["APIC", Uint8Array.of(0, 0x69, 0, 0, 0, 9)]] as const);
-  const parsed = parseId3Frames(buildId3Tag({ ...TAGS, artwork: null }, existing));
+  const existing = id3v23([
+    ["APIC", Uint8Array.of(0, 0x69, 0, 0, 0, 9)],
+  ] as const);
+  const parsed = parseId3Frames(
+    buildId3Tag({ ...TAGS, artwork: null }, existing),
+  );
   assert.deepEqual(
     parsed?.frames.map((frame) => frame.id),
     ["TIT2", "TPE1", "TALB", "TYER", "TRCK", "APIC"],
@@ -121,13 +171,24 @@ void test("an MP3 without a tag gets a fresh ID3v2.3 one", () => {
 });
 
 function le(value: number) {
-  return Uint8Array.of(value & 0xff, (value >> 8) & 0xff, (value >> 16) & 0xff, value >>> 24);
+  return Uint8Array.of(
+    value & 0xff,
+    (value >> 8) & 0xff,
+    (value >> 16) & 0xff,
+    value >>> 24,
+  );
 }
 
 /** A FLAC head: STREAMINFO, a Vorbis comment, a picture, and padding. */
 function flacBlocks() {
   const vendor = utf8Bytes("reference libFLAC 1.4.3");
-  const comments = ["TITLE=Old", "artist=A", "ARTIST=B", "GENRE=Jazz", "TRACKNUMBER=07"].map(utf8Bytes);
+  const comments = [
+    "TITLE=Old",
+    "artist=A",
+    "ARTIST=B",
+    "GENRE=Jazz",
+    "TRACKNUMBER=07",
+  ].map(utf8Bytes);
   const comment = concatBytes([
     le(vendor.length),
     vendor,
@@ -135,8 +196,9 @@ function flacBlocks() {
     ...comments.flatMap((field) => [le(field.length), field]),
   ]);
   const mime = latin1Bytes("image/png");
+  // Type 0 ("other"), as ffmpeg writes covers: still replaced on export.
   const picture = concatBytes([
-    uint32BE(3),
+    uint32BE(0),
     uint32BE(mime.length),
     mime,
     uint32BE(0),
@@ -159,7 +221,10 @@ function blocksOf(head: Uint8Array) {
   let offset = 4;
   for (;;) {
     const header = parseFlacBlockHeader(head.subarray(offset, offset + 4));
-    blocks.push({ type: header.type, body: head.subarray(offset + 4, offset + 4 + header.length) });
+    blocks.push({
+      type: header.type,
+      body: head.subarray(offset + 4, offset + 4 + header.length),
+    });
     offset += 4 + header.length;
     if (header.last) break;
   }
@@ -183,7 +248,12 @@ void test("a FLAC export rewrites the comments and cover, keeping the rest", () 
   const blocks = blocksOf(buildFlacHead(flacBlocks(), TAGS));
   assert.deepEqual(
     blocks.map((block) => block.type),
-    [FLAC_BLOCK.streamInfo, FLAC_BLOCK.vorbisComment, FLAC_BLOCK.picture, FLAC_BLOCK.padding],
+    [
+      FLAC_BLOCK.streamInfo,
+      FLAC_BLOCK.vorbisComment,
+      FLAC_BLOCK.picture,
+      FLAC_BLOCK.padding,
+    ],
   );
   assert.deepEqual([...(blocks[0]?.body ?? [])], new Array(34).fill(5));
   const comment = parseVorbisComment(blocks[1]?.body ?? new Uint8Array());
@@ -211,7 +281,12 @@ void test("a FLAC export rewrites the comments and cover, keeping the rest", () 
 });
 
 void test("a FLAC export keeps the file's cover when SYNQ has none", () => {
-  const blocks = blocksOf(buildFlacHead(flacBlocks(), { ...TAGS, artwork: null }));
+  const blocks = blocksOf(
+    buildFlacHead(flacBlocks(), { ...TAGS, artwork: null }),
+  );
   const picture = blocks.find((block) => block.type === FLAC_BLOCK.picture);
-  assert.deepEqual([...parsePicture(picture?.body ?? new Uint8Array()).data], [7, 8, 9]);
+  assert.deepEqual(
+    [...parsePicture(picture?.body ?? new Uint8Array()).data],
+    [7, 8, 9],
+  );
 });

@@ -82,15 +82,13 @@ function stripExtension(fileName: string) {
 export function cleanTags(fileName: string, raw: RawTags) {
   const fromName = splitTrackPrefix(stripExtension(fileName).trim());
   const tagTitle = present(raw.title);
-  const fromTitle =
-    tagTitle === null ? null : splitTrackPrefix(tagTitle);
+  const fromTitle = tagTitle === null ? null : splitTrackPrefix(tagTitle);
   const title = (fromTitle?.rest ?? fromName.rest).trim();
   return {
     title: title === "" ? stripExtension(fileName).trim() : title,
     artists: present(raw.artist),
     album: present(raw.album),
     year: parseYear(raw.year),
-    track:
-      parseTrack(raw.track) ?? fromTitle?.track ?? fromName.track ?? null,
+    track: parseTrack(raw.track) ?? fromTitle?.track ?? fromName.track ?? null,
   };
 }

@@ -32,7 +32,10 @@ export interface TransferEvents {
 
 /** `modules/synq-media` (Swift). */
 interface SynqMediaModule {
-  readAudioFile: (fileUri: string, artworkUri: string) => Promise<NativeAudioInfo>;
+  readAudioFile: (
+    fileUri: string,
+    artworkUri: string,
+  ) => Promise<NativeAudioInfo>;
   writeCovers: (imageUri: string, directoryUri: string) => Promise<void>;
   spliceFile: (
     sourceUri: string,

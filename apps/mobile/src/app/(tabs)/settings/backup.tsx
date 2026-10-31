@@ -48,10 +48,16 @@ export default function BackupScreen() {
         </FieldGroup.Section>
         <FieldGroup.Section>
           <ListItem
-            leading={<SymbolIcon name="trash" size={19} tintColor={DESTRUCTIVE} />}
+            leading={
+              <SymbolIcon name="trash" size={19} tintColor={DESTRUCTIVE} />
+            }
             onPress={task === null ? erase : undefined}
           >
-            <Text textStyle={{ color: task === null ? DESTRUCTIVE : SECONDARY_LABEL }}>
+            <Text
+              textStyle={{
+                color: task === null ? DESTRUCTIVE : SECONDARY_LABEL,
+              }}
+            >
               Erase Library
             </Text>
           </ListItem>

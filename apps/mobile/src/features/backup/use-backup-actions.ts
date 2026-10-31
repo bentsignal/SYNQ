@@ -47,7 +47,10 @@ function restoreFailed(error: unknown, retry: () => void) {
       failed("Couldn't Finish Restoring", retry);
       return;
     case "newer":
-      Alert.alert("Update SYNQ to Restore", "This backup was made by a newer version of SYNQ.");
+      Alert.alert(
+        "Update SYNQ to Restore",
+        "This backup was made by a newer version of SYNQ.",
+      );
       return;
     case "not-a-backup":
       Alert.alert("Not a SYNQ Backup", "Choose a backup made by SYNQ.");
@@ -80,7 +83,10 @@ export function useBackupActions() {
   // One operation at a time; a second tap while one runs does nothing.
   const running = useRef(false);
 
-  function run(label: string, work: (progress: (value: number) => void) => Promise<void>) {
+  function run(
+    label: string,
+    work: (progress: (value: number) => void) => Promise<void>,
+  ) {
     if (running.current) return Promise.resolve(false);
     running.current = true;
     setTask({ label, progress: null });
@@ -107,7 +113,9 @@ export function useBackupActions() {
 
   function backUp() {
     if (!requirePremium()) return;
-    run("Backing Up", backUpLibrary).catch(() => failed("Couldn't Back Up Library"));
+    run("Backing Up", backUpLibrary).catch(() =>
+      failed("Couldn't Back Up Library"),
+    );
   }
 
   function retryFiles() {
@@ -136,7 +144,11 @@ export function useBackupActions() {
       "Everything in your library is replaced by the backup. This can't be undone.",
       [
         { style: "cancel", text: "Cancel" },
-        { onPress: () => restoreFrom(uri), style: "destructive", text: "Restore" },
+        {
+          onPress: () => restoreFrom(uri),
+          style: "destructive",
+          text: "Restore",
+        },
       ],
     );
   }

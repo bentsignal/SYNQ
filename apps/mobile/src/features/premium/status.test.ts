@@ -68,7 +68,9 @@ void test("a lifetime transaction alone counts", () => {
   const status = premiumFromCustomerInfo(
     {
       ...NOTHING,
-      nonSubscriptionTransactions: [{ productIdentifier: "SYNQPremiumLifetime" }],
+      nonSubscriptionTransactions: [
+        { productIdentifier: "SYNQPremiumLifetime" },
+      ],
     },
     NOW,
   );
@@ -79,7 +81,9 @@ void test("a subscription counts until it expires", () => {
   function info(expires: number) {
     return {
       ...NOTHING,
-      allExpirationDates: { SYNQPremiumMonthly: new Date(expires).toISOString() },
+      allExpirationDates: {
+        SYNQPremiumMonthly: new Date(expires).toISOString(),
+      },
       allPurchasedProductIdentifiers: ["SYNQPremiumMonthly"],
     } satisfies CustomerInfoLike;
   }
@@ -100,7 +104,10 @@ void test("other apps' products don't count", () => {
 });
 
 void test("2.5.2's cached expiration is a hint until RevenueCat answers", () => {
-  assert.equal(premiumFromLegacyCache({ kind: "lifetime" }, NOW).plan, "lifetime");
+  assert.equal(
+    premiumFromLegacyCache({ kind: "lifetime" }, NOW).plan,
+    "lifetime",
+  );
   assert.equal(
     premiumFromLegacyCache({ expiresAt: NOW + DAY, kind: "until" }, NOW).active,
     true,

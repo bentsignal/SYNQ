@@ -143,7 +143,9 @@ export function transferPage({
   accent: string;
   deviceName: string;
 }) {
-  const accept = TRANSFER_EXTENSIONS.map((extension) => `.${extension}`).join(",");
+  const accept = TRANSFER_EXTENSIONS.map((extension) => `.${extension}`).join(
+    ",",
+  );
   const color = /^#[0-9a-f]{6}$/i.test(accent) ? accent : "#77adf8";
   return `<!doctype html>
 <html lang="en">

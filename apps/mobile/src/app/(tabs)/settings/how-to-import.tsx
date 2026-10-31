@@ -23,7 +23,9 @@ function Step({
 }) {
   return (
     <View className="gap-2">
-      <Text className="text-headline text-foreground font-semibold">{title}</Text>
+      <Text className="text-headline text-foreground font-semibold">
+        {title}
+      </Text>
       {path !== undefined && (
         <Text className="text-subhead text-muted">{path}</Text>
       )}
@@ -38,7 +40,13 @@ function Step({
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <View className="gap-5">
       <Text className="text-title text-foreground font-bold">{title}</Text>

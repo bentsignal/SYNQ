@@ -1,7 +1,14 @@
 import { Alert, Linking, View } from "react-native";
 import * as Application from "expo-application";
 import { useRouter } from "expo-router";
-import { Button, FieldGroup, RNHostView, Row as UIRow, Switch, Text } from "@expo/ui";
+import {
+  Button,
+  FieldGroup,
+  RNHostView,
+  Switch,
+  Text,
+  Row as UIRow,
+} from "@expo/ui";
 import {
   accessibilityAddTraits,
   accessibilityElement,
@@ -15,10 +22,11 @@ import { track } from "~/features/analytics/analytics";
 import { APP_ICONS } from "~/features/app-icon/app-icon";
 import { setPreference, usePreference } from "~/features/preferences/store";
 import { THEMES } from "~/features/preferences/themes";
-import { usePremium } from "~/features/premium/premium";
+import { usePremium, usePremiumStatus } from "~/features/premium/premium";
 import { restorePremium } from "~/features/premium/purchases";
 import { selectionTick } from "~/lib/haptics";
 import { Row, SECONDARY_LABEL } from "./form";
+import { planDetail } from "./plan-detail";
 import { useAppIcon } from "./use-app-icon";
 
 const LINKS = {
@@ -38,26 +46,12 @@ function useOpenPaywall() {
   };
 }
 
-const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
-
-/** "Yearly · Renews Oct 31, 2027", "Lifetime". */
-export function planDetail(status: PremiumStatus) {
-  if (status.plan === "lifetime") return "Lifetime";
-  const plan =
-    status.plan === "monthly" ? "Monthly" : status.plan === "yearly" ? "Yearly" : null;
-  const until =
-    status.expiresAt === null
-      ? null
-      : `${status.willRenew ? "Renews" : "Ends"} ${dateFormat.format(status.expiresAt)}`;
-  return [plan, until].filter(Boolean).join(" · ") || "Active";
-}
-
 function premiumStatus(status: PremiumStatus) {
   return status;
 }
 
 export function PremiumSection() {
-  const status = usePremium(premiumStatus);
+  const status = usePremiumStatus(premiumStatus);
   const openPaywall = useOpenPaywall();
   return (
     <FieldGroup.Section>
@@ -100,7 +94,9 @@ function Swatch({
       modifiers={[
         accessibilityElement("ignore"),
         accessibilityLabel(`${name} theme`),
-        accessibilityAddTraits(selected ? ["isButton", "isSelected"] : ["isButton"]),
+        accessibilityAddTraits(
+          selected ? ["isButton", "isSelected"] : ["isButton"],
+        ),
       ]}
     >
       <RNHostView matchContents>
@@ -113,7 +109,12 @@ function Swatch({
             style={{ backgroundColor: color }}
           >
             {selected ? (
-              <SymbolIcon name="checkmark" size={12} weight="bold" tintColor="#141414" />
+              <SymbolIcon
+                name="checkmark"
+                size={12}
+                weight="bold"
+                tintColor="#141414"
+              />
             ) : locked ? (
               <SymbolIcon name="lock.fill" size={10} tintColor="#14141499" />
             ) : null}

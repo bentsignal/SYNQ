@@ -14,8 +14,11 @@ import type { PaywallPlan } from "./purchases";
 import type { PremiumStatus } from "./status";
 import { SymbolIcon } from "~/components/symbol-icon";
 import { track } from "~/features/analytics/analytics";
+import { cn } from "~/lib/cn";
+import { successFeedback } from "~/lib/haptics";
+import hero from "../../../assets/images/premium-hero.png";
 import { PLAN_OFFERINGS, PLANS, PRIVACY_URL, TERMS_URL } from "./config";
-import { usePremium } from "./premium";
+import { usePremiumStatus } from "./premium";
 import { ProminentButton } from "./prominent-button";
 import {
   introPeriod,
@@ -23,16 +26,16 @@ import {
   purchasePlan,
   restorePremium,
 } from "./purchases";
-import { cn } from "~/lib/cn";
-import { successFeedback } from "~/lib/haptics";
-import hero from "../../../assets/images/premium-hero.png";
 
 const FEATURES = [
   { icon: "speaker.slash", title: "Ad-Free Listening" },
   { icon: "square.and.arrow.down.on.square", title: "Bulk Import and Export" },
   { icon: "paintpalette", title: "Themes and App Icons" },
   { icon: "externaldrive", title: "Backup and Restore" },
-] as const satisfies readonly { icon: SymbolViewProps["name"]; title: string }[];
+] as const satisfies readonly {
+  icon: SymbolViewProps["name"];
+  title: string;
+}[];
 
 const PLAN_NAMES = {
   lifetime: "Lifetime",
@@ -136,7 +139,13 @@ function Hero() {
       />
       <LinearGradient
         colors={["#14141400", "#141414"]}
-        style={{ bottom: 0, height: "45%", left: 0, position: "absolute", right: 0 }}
+        style={{
+          bottom: 0,
+          height: "45%",
+          left: 0,
+          position: "absolute",
+          right: 0,
+        }}
       />
     </View>
   );
@@ -148,7 +157,11 @@ function Features() {
       {FEATURES.map((feature) => (
         <View key={feature.title} className="flex-row items-center gap-4">
           <View className="w-7 items-center">
-            <SymbolIcon name={feature.icon} size={20} tintColorClassName="accent-accent" />
+            <SymbolIcon
+              name={feature.icon}
+              size={20}
+              tintColorClassName="accent-accent"
+            />
           </View>
           <Text className="text-body text-foreground">{feature.title}</Text>
         </View>
@@ -215,7 +228,10 @@ function usePaywallActions() {
       (active) => {
         busy.current = false;
         if (!active) {
-          Alert.alert("No Purchases Found", "This Apple Account hasn't bought SYNQ Premium.");
+          Alert.alert(
+            "No Purchases Found",
+            "This Apple Account hasn't bought SYNQ Premium.",
+          );
           return;
         }
         successFeedback();
@@ -245,7 +261,7 @@ function pressedPlan(plan: Plan, options: PaywallPlan[] | undefined) {
  * and the person's trial eligibility.
  */
 export function Paywall() {
-  const status = usePremium(statusOf);
+  const status = usePremiumStatus(statusOf);
   const plans = useQuery({
     queryFn: loadPaywallPlans,
     queryKey: ["premium", "plans"],
@@ -264,7 +280,9 @@ export function Paywall() {
     >
       <Hero />
       <View className="-mt-4 gap-7 px-5">
-        <Text className="text-large-title text-foreground font-bold">SYNQ Premium</Text>
+        <Text className="text-large-title text-foreground font-bold">
+          SYNQ Premium
+        </Text>
         <Features />
         <View className="gap-3">
           {PLANS.map((plan) => (
@@ -286,7 +304,8 @@ export function Paywall() {
               className="items-center py-2"
             >
               <Text className="text-subhead text-muted">
-                Couldn&apos;t load prices. <Text className="text-accent">Try Again</Text>
+                Couldn&apos;t load prices.{" "}
+                <Text className="text-accent">Try Again</Text>
               </Text>
             </Pressable>
           )}
@@ -294,7 +313,10 @@ export function Paywall() {
         <ProminentButton
           label={actionLabel(choice, status)}
           loading={buying}
-          disabled={choice === undefined || (status.active && choice.plan === status.plan)}
+          disabled={
+            choice === undefined ||
+            (status.active && choice.plan === status.plan)
+          }
           onPress={() => buy(choice)}
         />
         <FooterLinks onRestore={restore} />

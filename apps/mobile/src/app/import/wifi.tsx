@@ -94,7 +94,11 @@ function Header({ server, onRetry }: { server: Server; onRetry: () => void }) {
       return <Address address={server.address} />;
     case "offline":
       return (
-        <Unavailable title="Connect to Wi-Fi" symbol="wifi.slash" onRetry={onRetry} />
+        <Unavailable
+          title="Connect to Wi-Fi"
+          symbol="wifi.slash"
+          onRetry={onRetry}
+        />
       );
     case "failed":
       return (
@@ -120,10 +124,12 @@ function serverState(
 ) {
   if (!synqMediaAvailable()) return { state: "failed" } satisfies Server;
   if (address === null) return { state: "offline" } satisfies Server;
-  if (started?.attempt !== attempt) return { state: "starting" } satisfies Server;
+  if (started?.attempt !== attempt)
+    return { state: "starting" } satisfies Server;
   if (started.port === null) return { state: "failed" } satisfies Server;
   return {
-    address: started.port === 80 ? address : `${address}:${String(started.port)}`,
+    address:
+      started.port === 80 ? address : `${address}:${String(started.port)}`,
     state: "ready",
   } satisfies Server;
 }
@@ -178,7 +184,12 @@ export default function ImportWifiScreen() {
     });
     const uploads = new Directory(IMPORT_DIRECTORY, "wifi");
     media
-      .startTransferServer(PREFERRED_PORT, page, uploads.uri, TRANSFER_EXTENSIONS)
+      .startTransferServer(
+        PREFERRED_PORT,
+        page,
+        uploads.uri,
+        TRANSFER_EXTENSIONS,
+      )
       .then(settle, () => settle(null));
     return () => {
       live = false;

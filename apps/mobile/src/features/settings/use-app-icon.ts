@@ -1,8 +1,8 @@
-import type { AppIconName } from "~/features/app-icon/app-icon";
 import { useSyncExternalStore } from "react";
 import { Alert } from "react-native";
 import Constants from "expo-constants";
 
+import type { AppIconName } from "~/features/app-icon/app-icon";
 import { track } from "~/features/analytics/analytics";
 import {
   APP_ICONS,

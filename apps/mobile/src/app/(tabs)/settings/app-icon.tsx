@@ -61,7 +61,12 @@ function IconChoice({
         />
         {selected && (
           <View className="bg-accent border-background absolute -right-1.5 -bottom-1.5 size-6 items-center justify-center rounded-full border-2">
-            <SymbolIcon name="checkmark" size={11} weight="bold" tintColor="#141414" />
+            <SymbolIcon
+              name="checkmark"
+              size={11}
+              weight="bold"
+              tintColor="#141414"
+            />
           </View>
         )}
       </View>
@@ -77,35 +82,44 @@ function IconChoice({
   );
 }
 
-/** The seven 2.5.2 icons (Premium), the current one checked. */
-export default function AppIconScreen() {
+function IconGrid() {
   const router = useRouter();
   const premium = usePremium();
   const { current } = useAppIcon();
   return (
+    <View className="flex-row flex-wrap px-4 pt-4">
+      {APP_ICONS.map((icon) => (
+        <IconChoice
+          key={icon.name}
+          name={icon.name}
+          label={icon.label}
+          selected={current === icon.name}
+          onPress={() => {
+            if (premium) {
+              chooseAppIcon(icon.name);
+              return;
+            }
+            track("check_premium", { premium: false });
+            router.push("/premium");
+          }}
+        />
+      ))}
+    </View>
+  );
+}
+
+/** The seven 2.5.2 icons (Premium), the current one checked. */
+export default function AppIconScreen() {
+  return (
     <>
-      <Stack.Screen options={{ headerLargeTitleEnabled: false, title: "App Icon" }} />
+      <Stack.Screen
+        options={{ headerLargeTitleEnabled: false, title: "App Icon" }}
+      />
       <ScrollView
         className="bg-background flex-1"
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerClassName="flex-row flex-wrap px-4 pt-4"
       >
-        {APP_ICONS.map((icon) => (
-          <IconChoice
-            key={icon.name}
-            name={icon.name}
-            label={icon.label}
-            selected={current === icon.name}
-            onPress={() => {
-              if (premium) {
-                chooseAppIcon(icon.name);
-                return;
-              }
-              track("check_premium", { premium: false });
-              router.push("/premium");
-            }}
-          />
-        ))}
+        <IconGrid />
       </ScrollView>
     </>
   );

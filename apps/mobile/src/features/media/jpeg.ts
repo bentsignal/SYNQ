@@ -19,7 +19,10 @@ export function jpegSize(bytes: Uint8Array) {
   for (let offset = 2; offset + 9 < bytes.length; ) {
     if (bytes[offset] !== 0xff) return null;
     if (isStartOfFrame(bytes[offset + 1] ?? 0)) {
-      return { height: uint16(bytes, offset + 5), width: uint16(bytes, offset + 7) };
+      return {
+        height: uint16(bytes, offset + 5),
+        width: uint16(bytes, offset + 7),
+      };
     }
     offset += 2 + uint16(bytes, offset + 2);
   }

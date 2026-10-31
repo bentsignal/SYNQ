@@ -1,16 +1,16 @@
 import "~/global.css";
 
+import type { NativeStackNavigationOptions } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { DarkTheme, Stack, ThemeProvider } from "expo-router";
-import type { NativeStackNavigationOptions } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { useCSSVariable } from "uniwind";
 
 import { installDevAutomation } from "~/features/dev/automation";
+import { pickIntoImport } from "~/features/import/pick-files";
 import { LibraryGate } from "~/features/library/library-gate";
 import { applyStoredPreferences } from "~/features/preferences/store";
-import { pickIntoImport } from "~/features/import/pick-files";
 import { startPremium } from "~/features/premium/premium";
 import { queryClient } from "~/lib/query-client";
 

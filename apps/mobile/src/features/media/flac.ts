@@ -110,7 +110,9 @@ export function parsePicture(body: Uint8Array) {
   const type = readUint32BE(body, offset);
   offset += 4;
   const mimeLength = readUint32BE(body, offset);
-  const mimeType = latin1Text(body.subarray(offset + 4, offset + 4 + mimeLength));
+  const mimeType = latin1Text(
+    body.subarray(offset + 4, offset + 4 + mimeLength),
+  );
   offset += 4 + mimeLength;
   offset += 4 + readUint32BE(body, offset); // description
   offset += 16; // width, height, depth, colors
@@ -199,22 +201,22 @@ function ownFields(tags: SongTags) {
   ].filter((field) => field !== null);
 }
 
-/** Blocks an export keeps as they are: all but comments, padding, and a replaced cover. */
+/**
+ * Blocks an export keeps as they are: all but comments, padding, and (when
+ * SYNQ has a cover) pictures, which players show in file order, so an old
+ * cover would win.
+ */
 function keptBlock(block: FlacBlock, replacingCover: boolean) {
   if (block.type === FLAC_BLOCK.vorbisComment) return false;
   if (block.type === FLAC_BLOCK.padding) return false;
-  return !(
-    replacingCover &&
-    block.type === FLAC_BLOCK.picture &&
-    parsePicture(block.body).type === 3
-  );
+  return !(replacingCover && block.type === FLAC_BLOCK.picture);
 }
 
 /**
  * `fLaC` and new metadata blocks for `tags`: STREAMINFO and the file's
  * other blocks as they were, its Vorbis comments with SYNQ's fields
- * replaced, the cover replaced when `tags.artwork` is set, and fresh
- * padding.
+ * replaced, its pictures replaced by the cover when `tags.artwork` is set,
+ * and fresh padding.
  */
 export function buildFlacHead(blocks: readonly FlacBlock[], tags: SongTags) {
   const comment = blocks.find(

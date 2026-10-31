@@ -2,7 +2,6 @@ import { Directory, File, Paths } from "expo-file-system";
 import { router } from "expo-router";
 import * as Sharing from "expo-sharing";
 
-import type { SongTags } from "~/features/media/song-tags";
 import type { SongListItem } from "@synq/db";
 import {
   artworkPath,
@@ -17,12 +16,16 @@ import {
 } from "@synq/db";
 import { documentFile } from "@synq/db/expo";
 
+import type { SongTags } from "~/features/media/song-tags";
 import { track } from "~/features/analytics/analytics";
-import { getBookkeeping, updateBookkeeping } from "~/features/import/bookkeeping";
+import {
+  getBookkeeping,
+  updateBookkeeping,
+} from "~/features/import/bookkeeping";
 import { audioExtension } from "~/features/import/clean-tags";
 import { libraryDb } from "~/features/library/database";
-import { readFlacBlocks, readId3Tag } from "~/features/media/heads";
 import { buildFlacHead } from "~/features/media/flac";
+import { readFlacBlocks, readId3Tag } from "~/features/media/heads";
 import { buildId3Tag } from "~/features/media/id3";
 import { synqMedia } from "~/features/media/native";
 import { isPremium } from "~/features/premium/premium";
@@ -59,7 +62,9 @@ function uniqueFile(folder: Directory, name: string) {
 function tagsFor(song: SongListItem, cover: File | null) {
   const album = song.albums[0];
   const year =
-    album === undefined ? null : (getAlbum(libraryDb(), album.id)?.year ?? null);
+    album === undefined
+      ? null
+      : (getAlbum(libraryDb(), album.id)?.year ?? null);
   return {
     album: album?.name ?? null,
     artists: song.artists.map((artist) => artist.name),
@@ -88,7 +93,12 @@ function coverFile(song: SongListItem) {
 async function writeMp3(source: File, destination: File, tags: SongTags) {
   const existing = readId3Tag(source);
   const head = buildId3Tag(tags, existing);
-  await synqMedia().spliceFile(source.uri, destination.uri, existing?.length ?? 0, head);
+  await synqMedia().spliceFile(
+    source.uri,
+    destination.uri,
+    existing?.length ?? 0,
+    head,
+  );
   return true;
 }
 
@@ -153,9 +163,12 @@ async function exportCopy(song: SongListItem, folder: Directory) {
   const destination = uniqueFile(folder, source.name);
   const cover = coverFile(song);
   // Shared as it is when retagging fails: the music matters more than the tags.
-  const tagged = await writeTagged(source, destination, tagsFor(song, cover), cover).catch(
-    () => false,
-  );
+  const tagged = await writeTagged(
+    source,
+    destination,
+    tagsFor(song, cover),
+    cover,
+  ).catch(() => false);
   if (!tagged) {
     if (destination.exists) destination.delete();
     await source.copy(destination);

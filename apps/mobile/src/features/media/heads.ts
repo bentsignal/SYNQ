@@ -43,7 +43,9 @@ function readBlocks(handle: FileHandle, start: number) {
   let end = start;
   handle.offset = start;
   for (;;) {
-    const header = parseFlacBlockHeader(handle.readBytes(FLAC_BLOCK_HEADER_LENGTH));
+    const header = parseFlacBlockHeader(
+      handle.readBytes(FLAC_BLOCK_HEADER_LENGTH),
+    );
     const body = handle.readBytes(header.length);
     if (body.length < header.length) throw new Error("Truncated FLAC.");
     blocks.push({ body, type: header.type });

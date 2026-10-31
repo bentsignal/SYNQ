@@ -1,10 +1,10 @@
 import { Directory, File, Paths } from "expo-file-system";
 
-import type { NativeAudioInfo } from "~/features/media/native";
-import type { RawTags } from "~/features/media/song-tags";
 import { addSongs, deleteSongs, setArtwork } from "@synq/db";
 import { documentFile } from "@synq/db/expo";
 
+import type { NativeAudioInfo } from "~/features/media/native";
+import type { RawTags } from "~/features/media/song-tags";
 import { libraryDb } from "~/features/library/database";
 import { readFlacTags } from "~/features/media/flac";
 import { readFlacBlocks } from "~/features/media/heads";
@@ -166,9 +166,12 @@ export async function importSong(source: ImportSource, read: ReadSong) {
       const folder = new Directory(Paths.document, ...target.dir.split("/"));
       folder.create({ idempotent: true, intermediates: true });
       // Copied: the staged covers stay as the import list's thumbnails.
-      for (const name of ["cover_full.jpg", "cover_small.jpg"]) {
-        await copyInto(new File(read.covers, name), new File(folder, name));
-      }
+      const covers = read.covers;
+      await Promise.all(
+        ["cover_full.jpg", "cover_small.jpg"].map((name) =>
+          copyInto(new File(covers, name), new File(folder, name)),
+        ),
+      );
     } catch {
       // The song stays; it just has no artwork.
       setArtwork(db, target.kind, target.id, false);

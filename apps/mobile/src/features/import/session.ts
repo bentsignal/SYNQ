@@ -87,6 +87,8 @@ interface Run {
 
 let state = EMPTY;
 let run: Run | undefined;
+/** An ended batch's imports are still finishing; its staging is in use. */
+let working = false;
 const listeners = new Set<() => void>();
 
 function publish(next: ImportSessionState) {
@@ -198,6 +200,8 @@ function schedule(current: Run, key: string) {
 /** Starts a batch, ending any earlier one. */
 export function startImportSession(kind: ImportKind) {
   endImportSession();
+  // Whatever an earlier launch left staged (it ended without cleaning up).
+  if (!working) clearImportStaging();
   run = {
     closed: false,
     freeSongUsed: false,
@@ -246,7 +250,10 @@ export function addImportSources(sources: readonly ImportSource[]) {
 /** Wi-Fi Transfer started receiving a file. */
 export function receivingImport(key: string, name: string) {
   if (run === undefined || state.items.some((item) => item.key === key)) return;
-  publish({ ...state, items: [...state.items, newItem(key, name, "receiving")] });
+  publish({
+    ...state,
+    items: [...state.items, newItem(key, name, "receiving")],
+  });
 }
 
 export function receivedProgress(key: string, received: number) {
@@ -261,7 +268,11 @@ export function receiveFailed(key: string) {
 export function receivedImport(source: ImportSource) {
   const current = run;
   if (current === undefined) return;
-  update(current, source.key, { name: source.name, received: 1, status: "reading" });
+  update(current, source.key, {
+    name: source.name,
+    received: 1,
+    status: "reading",
+  });
   current.sources.set(source.key, source);
   schedule(current, source.key);
 }
@@ -290,7 +301,9 @@ export function endImportSession() {
     }
   }
   publish(EMPTY);
+  working = true;
   void Promise.all([current.reading, current.importing]).then(() => {
+    working = false;
     if (run === undefined) clearImportStaging();
   });
 }

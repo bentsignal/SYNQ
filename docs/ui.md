@@ -160,9 +160,10 @@ A native form (`FieldGroup`):
   rules: the first file is imported, the rest show locked with Import All
   with Premium; the import wait shows as the ad card with progress.
 - **Wi-Fi Transfer**: a screen showing the address to open on a computer
-  (large, selectable, with the network name) while a local server runs
-  only while this screen is open; received files list in as they arrive,
-  then import like Files.
+  (large, selectable) while a local server runs only while this screen is
+  open; received files list in as they arrive, then import like Files. (The
+  network's name would need location permission and the Wi-Fi Information
+  entitlement, so it isn't shown.)
 - **Export / Share**: tags written into a copy, then the share sheet.
 
 ## Paywall

@@ -5,8 +5,8 @@ import {
   latin1Text,
   readUint32BE,
   uint32BE,
-  utf16Bytes,
   utf8Bytes,
+  utf16Bytes,
 } from "./bytes.ts";
 
 /**
@@ -137,7 +137,10 @@ function ownFrames(tags: SongTags, version: 3 | 4) {
     ["TIT2", tags.title === "" ? null : tags.title],
     ["TPE1", tags.artists.length === 0 ? null : tags.artists.join(", ")],
     ["TALB", tags.album],
-    [version === 4 ? "TDRC" : "TYER", tags.year === null ? null : String(tags.year)],
+    [
+      version === 4 ? "TDRC" : "TYER",
+      tags.year === null ? null : String(tags.year),
+    ],
     ["TRCK", tags.track === null ? null : String(tags.track)],
   ] as const;
   return [

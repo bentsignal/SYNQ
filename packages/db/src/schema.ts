@@ -24,6 +24,9 @@ import {
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 
+import type { LegacySettings } from "./legacy/settings.ts";
+import type { LegacyImportWarning } from "./legacy/types.ts";
+
 /**
  * A song is one audio file under `Documents/library/{id}/`.
  *
@@ -209,11 +212,15 @@ export const legacyImport = sqliteTable("legacy_import", {
   source: text("source", { enum: ["install", "backup"] }).notNull(),
   importedAt: integer("imported_at").notNull(),
   legacyDbVersion: integer("legacy_db_version"),
-  counts: text("counts", { mode: "json" }).$type<LegacyImportCounts>().notNull(),
+  counts: text("counts", { mode: "json" })
+    .$type<LegacyImportCounts>()
+    .notNull(),
   /** `LegacySettings` as JSON; null for backups (they carry no AsyncStorage). */
-  settings: text("settings", { mode: "json" }).$type<unknown>(),
+  settings: text("settings", { mode: "json" }).$type<LegacySettings>(),
   /** `LegacyImportWarning[]` as JSON. */
-  warnings: text("warnings", { mode: "json" }).$type<unknown[]>().notNull(),
+  warnings: text("warnings", { mode: "json" })
+    .$type<LegacyImportWarning[]>()
+    .notNull(),
 });
 
 export type Song = typeof songs.$inferSelect;

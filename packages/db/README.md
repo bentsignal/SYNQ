@@ -5,12 +5,12 @@ migrations, typed library queries and writes, and the 2.5.2 importer. The
 plan of record is `docs/rewrite.md` ("Data"); the 2.5.2 → 3.0 mapping and the
 importer's contract are in `docs/migration.md`.
 
-| Entry | What |
-| --- | --- |
-| `@synq/db` | `LibraryDb`, `schema`, `libraryMigrations`, every query and write |
-| `@synq/db/legacy` | `importLegacyLibrary`, `readLegacyAsyncStorage`, `findLegacyBackupRoot`, settings types |
-| `@synq/db/expo` | App wiring: `openLibraryDb`, `migrateLibraryDb`, `openLegacyDatabaseCopy`, `createExpoLegacyFileSystem`, `documentFile` |
-| `@synq/db/schema` | The Drizzle tables, for ad-hoc queries |
+| Entry             | What                                                                                                                    |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `@synq/db`        | `LibraryDb`, `schema`, `libraryMigrations`, every query and write                                                       |
+| `@synq/db/legacy` | `importLegacyLibrary`, `readLegacyAsyncStorage`, `findLegacyBackupRoot`, settings types                                 |
+| `@synq/db/expo`   | App wiring: `openLibraryDb`, `migrateLibraryDb`, `openLegacyDatabaseCopy`, `createExpoLegacyFileSystem`, `documentFile` |
+| `@synq/db/schema` | The Drizzle tables, for ad-hoc queries                                                                                  |
 
 Only `@synq/db/expo` imports native modules (`expo-sqlite`,
 `expo-file-system`); everything else runs in node.
@@ -38,7 +38,7 @@ Only `@synq/db/expo` imports native modules (`expo-sqlite`,
   `cover_full.jpg` (≤1500 px) and `cover_small.jpg` (≤200 px) in the
   entity's folder. `artworkUri(Paths.document.uri, ref, size)` adds
   `?v=version` so expo-image never shows a stale cover. After writing or
-  deleting cover files, call `setArtwork(db, kind, id, present)`. A legacy
+  deleting cover files, call `setArtwork(db, { kind, id, present })`. A legacy
   entity may have only one of the two sizes; fall back to the other.
 - **Sorting and search run in JS** with `Intl.Collator` (ICU), because
   SQLite's `NOCASE`/`LOWER` fold only ASCII. Search matches every
@@ -52,20 +52,32 @@ Only `@synq/db/expo` imports native modules (`expo-sqlite`,
 ## Wiring it into the app
 
 ```ts
-import { ensureLikedPlaylist } from "@synq/db";
-import {
-  createExpoLegacyFileSystem, hasLegacyDatabase, legacyAsyncStorageDirectory,
-  migrateLibraryDb, openLegacyDatabaseCopy, openLibraryDb,
-} from "@synq/db/expo";
-import { importLegacyLibrary, getLegacyImport, readLegacyAsyncStorage } from "@synq/db/legacy";
 import { Paths } from "expo-file-system";
 
-export async function openLibrary() {
-  const { db } = openLibraryDb();      // foreign_keys ON, WAL
-  await migrateLibraryDb(db);          // 1. Drizzle migrations first
+import { ensureLikedPlaylist } from "@synq/db";
+import {
+  createExpoLegacyFileSystem,
+  hasLegacyDatabase,
+  legacyAsyncStorageDirectory,
+  migrateLibraryDb,
+  openLegacyDatabaseCopy,
+  openLibraryDb,
+} from "@synq/db/expo";
+import {
+  getLegacyImport,
+  importLegacyLibrary,
+  readLegacyAsyncStorage,
+} from "@synq/db/legacy";
 
-  if (hasLegacyDatabase() && !getLegacyImport(db)) {  // 2. then the 2.5.2 import (splash stays up)
-    const asyncStorageDir = legacyAsyncStorageDirectory("com.directedbyshawn.synq");
+export async function openLibrary() {
+  const { db } = openLibraryDb(); // foreign_keys ON, WAL
+  await migrateLibraryDb(db); // 1. Drizzle migrations first
+
+  if (hasLegacyDatabase() && !getLegacyImport(db)) {
+    // 2. then the 2.5.2 import (splash stays up)
+    const asyncStorageDir = legacyAsyncStorageDirectory(
+      "com.directedbyshawn.synq",
+    );
     const fs = createExpoLegacyFileSystem([Paths.document, asyncStorageDir]);
     const legacy = await openLegacyDatabaseCopy();
     try {
@@ -82,7 +94,7 @@ export async function openLibrary() {
       await legacy.close();
     }
   }
-  ensureLikedPlaylist(db);             // 3. a fresh install needs Liked Songs
+  ensureLikedPlaylist(db); // 3. a fresh install needs Liked Songs
   return db;
 }
 ```
@@ -96,24 +108,24 @@ extensions (Vera's config already does).
 
 ### Query invalidation
 
-| Table changed | Queries to invalidate |
-| --- | --- |
-| `songs` | songs list, song detail, playlist songs, album tracks, artist detail, search, playlist/album totals |
-| `song_artists`, `artists` | songs list, song detail, artists list, artist detail, search |
-| `album_songs`, `albums`, `album_artists` | songs list (album names, artwork), albums list, album detail/tracks, artist detail, search |
-| `playlists`, `playlist_songs` | playlists list, playlist detail/songs, song detail (`liked`, `playlistIds`) |
+| Table changed                            | Queries to invalidate                                                                               |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `songs`                                  | songs list, song detail, playlist songs, album tracks, artist detail, search, playlist/album totals |
+| `song_artists`, `artists`                | songs list, song detail, artists list, artist detail, search                                        |
+| `album_songs`, `albums`, `album_artists` | songs list (album names, artwork), albums list, album detail/tracks, artist detail, search          |
+| `playlists`, `playlist_songs`            | playlists list, playlist detail/songs, song detail (`liked`, `playlistIds`)                         |
 
 A simple start: key every query `["library", table, ...]` by its primary
 table and invalidate `["library"]` for any write. Refine using `changed`.
 
 ## Scripts
 
-| Script | Does |
-| --- | --- |
-| `pnpm test` | `node --test` on every `src/**/*.test.ts` (Node 24, built-in `node:sqlite`; no native builds) |
-| `pnpm typecheck` | `tsgo --noEmit` (strict, `noUncheckedIndexedAccess`, erasable syntax only) |
-| `pnpm lint` | Placeholder until `tooling/eslint` lands: unused-code check plus a check that `src/migrations.ts` matches `drizzle/` |
-| `pnpm db:generate` | After a schema change: `drizzle-kit generate`, then re-bundle `src/migrations.ts`. Commit both |
+| Script             | Does                                                                                                                 |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| `pnpm test`        | `node --test` on every `src/**/*.test.ts` (Node 24, built-in `node:sqlite`; no native builds)                        |
+| `pnpm typecheck`   | `tsgo --noEmit` (strict, `noUncheckedIndexedAccess`, erasable syntax only)                                           |
+| `pnpm lint`        | Placeholder until `tooling/eslint` lands: unused-code check plus a check that `src/migrations.ts` matches `drizzle/` |
+| `pnpm db:generate` | After a schema change: `drizzle-kit generate`, then re-bundle `src/migrations.ts`. Commit both                       |
 
 ## Tests
 

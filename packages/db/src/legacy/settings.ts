@@ -29,7 +29,9 @@ export interface LegacyPlaybackSession {
 }
 
 /** 2.5.2's cached premium status (`expiration`), a hint until RevenueCat answers. */
-export type LegacyPremiumCache = { kind: "lifetime" } | { kind: "until"; expiresAt: number };
+export type LegacyPremiumCache =
+  | { kind: "lifetime" }
+  | { kind: "until"; expiresAt: number };
 
 export interface LegacySettings {
   preferences: {
@@ -94,19 +96,22 @@ const AD_TRACK_ID = -2;
 export function parseLegacySettings(
   values: Readonly<Record<string, string>>,
   library: LegacyLibraryIds,
-): LegacySettings {
+) {
   return {
     preferences: {
       accent: parseAccent(values.theme),
       // 2.5.2: `haptic === 'false' ? false : true`.
       haptics: values.haptic !== "false",
       shuffle: values.shuffle === "true",
-      repeat: values.loop === "true" ? "all" : "off",
+      repeat: values.loop === "true" ? ("all" as const) : ("off" as const),
     },
     session: parseSession(values, library),
     premiumCache: parsePremiumCache(values.expiration),
     ads: {
-      listenedMs: Math.max(0, Math.round((parseNumber(values.timePlayed) ?? 0) * 1000)),
+      listenedMs: Math.max(
+        0,
+        Math.round((parseNumber(values.timePlayed) ?? 0) * 1000),
+      ),
       due: values.playAd === "true",
     },
     bookkeeping: {
@@ -121,35 +126,51 @@ export function parseLegacySettings(
   };
 }
 
-function parseAccent(value: string | undefined): string | null {
-  return value && /^#[0-9a-f]{6}$/i.test(value.trim()) ? value.trim().toLowerCase() : null;
+function parseAccent(value: string | undefined) {
+  return value && /^#[0-9a-f]{6}$/i.test(value.trim())
+    ? value.trim().toLowerCase()
+    : null;
 }
 
-function parsePremiumCache(value: string | undefined): LegacyPremiumCache | null {
+function parsePremiumCache(value: string | undefined) {
   if (!value || value === "null") return null;
-  if (value === "never") return { kind: "lifetime" };
+  if (value === "never") return { kind: "lifetime" as const };
   const expiresAt = Date.parse(value);
-  return Number.isFinite(expiresAt) ? { kind: "until", expiresAt } : null;
+  return Number.isFinite(expiresAt)
+    ? { kind: "until" as const, expiresAt }
+    : null;
 }
 
-function parseSession(values: Readonly<Record<string, string>>, library: LegacyLibraryIds): LegacyPlaybackSession | null {
-  if (!values.queue) return null;
+/** The stored queue as a list, or null if it is missing, malformed, or empty. */
+function parseQueue(queue: string | undefined) {
+  if (!queue) return null;
   let tracks: unknown;
   try {
-    tracks = JSON.parse(values.queue);
+    tracks = JSON.parse(queue);
   } catch {
     return null;
   }
-  if (!Array.isArray(tracks) || tracks.length === 0) return null;
+  return isNonEmptyList(tracks) ? tracks : null;
+}
 
-  const kept: { songId: number; from: number }[] = [];
-  tracks.forEach((track: unknown, from) => {
-    const id = typeof track === "object" && track !== null ? toInteger((track as { id?: unknown }).id) : null;
-    if (id !== null && id !== AD_TRACK_ID && id > 0 && library.songIds.has(id)) kept.push({ songId: id, from });
-  });
+function isNonEmptyList(value: unknown): value is unknown[] {
+  return Array.isArray(value) && value.length > 0;
+}
+
+function parseSession(
+  values: Readonly<Record<string, string>>,
+  library: LegacyLibraryIds,
+) {
+  const tracks = parseQueue(values.queue);
+  if (!tracks) return null;
+
+  const kept = keptTracks(tracks, library);
   if (kept.length === 0) return null;
 
-  const stored = Math.min(Math.max(parseInteger(values.lastTrackIndex) ?? 0, 0), tracks.length - 1);
+  const stored = Math.min(
+    Math.max(parseInteger(values.lastTrackIndex) ?? 0, 0),
+    tracks.length - 1,
+  );
   // The stored current track, or the next one kept after it (an ad skipped forward), else the last kept.
   let currentIndex = kept.findIndex((entry) => entry.from >= stored);
   if (currentIndex === -1) currentIndex = kept.length - 1;
@@ -158,44 +179,62 @@ function parseSession(values: Readonly<Record<string, string>>, library: LegacyL
   return {
     queueSongIds: kept.map((entry) => entry.songId),
     currentIndex,
-    positionMs: sameTrack ? Math.max(0, Math.round((parseNumber(values.position) ?? 0) * 1000)) : 0,
+    positionMs: sameTrack
+      ? Math.max(0, Math.round((parseNumber(values.position) ?? 0) * 1000))
+      : 0,
     source: parseSource(values.sourceType, values.sourceId, library),
     insertOffset: Math.max(0, parseInteger(values.addOffset) ?? 0),
   };
 }
 
-function parseSource(type: string | undefined, id: string | undefined, library: LegacyLibraryIds): LegacyPlaybackSource | null {
+/** Queue entries that are library songs (not ad tracks), with their index in the stored queue. */
+function keptTracks(tracks: readonly unknown[], library: LegacyLibraryIds) {
+  const kept = new Array<{ songId: number; from: number }>();
+  tracks.forEach((track, from) => {
+    const id =
+      typeof track === "object" && track !== null && "id" in track
+        ? toInteger(track.id)
+        : null;
+    if (id !== null && id !== AD_TRACK_ID && id > 0 && library.songIds.has(id))
+      kept.push({ songId: id, from });
+  });
+  return kept;
+}
+
+function parseSource(
+  type: string | undefined,
+  id: string | undefined,
+  library: LegacyLibraryIds,
+) {
   const sourceType = parseInteger(type);
   const sourceId = parseInteger(id);
   if (sourceType === null || sourceId === null) return null;
-  switch (sourceType) {
-    case 1:
-      if (sourceId === 1) return { kind: "library" };
-      return library.playlistIds.has(sourceId) ? { kind: "playlist", id: sourceId } : null;
-    case 2:
-      return library.albumIds.has(sourceId) ? { kind: "album", id: sourceId } : null;
-    case 3:
-      return library.artistIds.has(sourceId) ? { kind: "artist", id: sourceId } : null;
-    case 4:
-      return library.songIds.has(sourceId) ? { kind: "song", id: sourceId } : null;
-    default:
-      return null;
-  }
+  if (sourceType === 1 && sourceId === 1) return { kind: "library" as const };
+  // 2.5.2's `sourceType` numbering; a source whose entity is gone is dropped.
+  const source = [
+    [1, "playlist", library.playlistIds],
+    [2, "album", library.albumIds],
+    [3, "artist", library.artistIds],
+    [4, "song", library.songIds],
+  ] as const;
+  const match = source.find(([number]) => number === sourceType);
+  return match?.[2].has(sourceId) ? { kind: match[1], id: sourceId } : null;
 }
 
-function parseNumber(value: string | undefined): number | null {
+function parseNumber(value: string | undefined) {
   if (value === undefined || value.trim() === "") return null;
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
 }
 
-function parseInteger(value: string | undefined): number | null {
+function parseInteger(value: string | undefined) {
   const number = parseNumber(value);
   return number === null ? null : Math.trunc(number);
 }
 
-function toInteger(value: unknown): number | null {
+function toInteger(value: unknown) {
   if (typeof value === "number") return Number.isInteger(value) ? value : null;
-  if (typeof value === "string" && /^-?\d+$/.test(value.trim())) return Number(value);
+  if (typeof value === "string" && /^-?\d+$/.test(value.trim()))
+    return Number(value);
   return null;
 }

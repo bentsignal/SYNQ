@@ -18,7 +18,7 @@ export interface WriteResult<T> {
   changed: LibraryTable[];
 }
 
-export function written<T>(value: T, changed: Iterable<LibraryTable>): WriteResult<T> {
+export function written<T>(value: T, changed: Iterable<LibraryTable>) {
   return { value, changed: [...new Set(changed)].sort() };
 }
 
@@ -27,6 +27,16 @@ export interface WriteOptions {
   now?: number;
 }
 
-export function nowFrom(options: WriteOptions | undefined): number {
+export function nowFrom(options: WriteOptions | undefined) {
   return options?.now ?? Date.now();
+}
+
+/** Rows a `.run()` touched. Drizzle types the run result per driver, so this reads it defensively. */
+export function changesOf(result: unknown) {
+  return typeof result === "object" &&
+    result !== null &&
+    "changes" in result &&
+    typeof result.changes === "number"
+    ? result.changes
+    : 0;
 }

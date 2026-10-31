@@ -2,6 +2,7 @@
 // Regenerate with `pnpm db:generate`.
 
 /** Drizzle migrations for library.db, for `migrate()` from `drizzle-orm/expo-sqlite/migrator`. */
+// prettier-ignore
 export const libraryMigrations = {
   journal: {
     "entries": [

@@ -29,18 +29,29 @@ export class EntityResolver {
   }
 
   get artistMatcher() {
-    this.#artists ??= new NameMatcher(this.#db.select({ id: artists.id, name: artists.name }).from(artists).all());
+    this.#artists ??= new NameMatcher(
+      this.#db
+        .select({ id: artists.id, name: artists.name })
+        .from(artists)
+        .all(),
+    );
     return this.#artists;
   }
 
   get albumMatcher() {
-    this.#albums ??= new NameMatcher(this.#db.select({ id: albums.id, name: albums.name }).from(albums).all());
+    this.#albums ??= new NameMatcher(
+      this.#db.select({ id: albums.id, name: albums.name }).from(albums).all(),
+    );
     return this.#albums;
   }
 
   artist(ref: ArtistRef): number {
     if ("id" in ref) {
-      const row = this.#db.select({ id: artists.id }).from(artists).where(eq(artists.id, ref.id)).get();
+      const row = this.#db
+        .select({ id: artists.id })
+        .from(artists)
+        .where(eq(artists.id, ref.id))
+        .get();
       if (!row) throw new LibraryError("not-found", `No artist ${ref.id}`);
       return row.id;
     }
@@ -59,7 +70,11 @@ export class EntityResolver {
 
   album(ref: AlbumRef): number {
     if ("id" in ref) {
-      const row = this.#db.select({ id: albums.id }).from(albums).where(eq(albums.id, ref.id)).get();
+      const row = this.#db
+        .select({ id: albums.id })
+        .from(albums)
+        .where(eq(albums.id, ref.id))
+        .get();
       if (!row) throw new LibraryError("not-found", `No album ${ref.id}`);
       return row.id;
     }
@@ -77,13 +92,14 @@ export class EntityResolver {
   }
 }
 
-export function requireName(name: string, what: string): string {
+export function requireName(name: string, what: string) {
   const cleaned = cleanName(name);
-  if (cleaned === "") throw new LibraryError("empty-name", `${what} name is required`);
+  if (cleaned === "")
+    throw new LibraryError("empty-name", `${what} name is required`);
   return cleaned;
 }
 
-export function uniqueIds(ids: readonly number[]): number[] {
+export function uniqueIds(ids: readonly number[]) {
   return [...new Set(ids)];
 }
 
@@ -98,9 +114,17 @@ export function assertUniqueName(
   name: string,
   currentName: string | null,
   what: string,
-): void {
+) {
   const key = nameKey(name);
   const caseOnly = currentName !== null && nameKey(currentName) === key;
-  const conflict = others.some((other) => nameKey(other.name) === key && (!caseOnly || cleanName(other.name) === cleanName(name)));
-  if (conflict) throw new LibraryError("duplicate-name", `${what} named "${name}" already exists`);
+  const conflict = others.some(
+    (other) =>
+      nameKey(other.name) === key &&
+      (!caseOnly || cleanName(other.name) === cleanName(name)),
+  );
+  if (conflict)
+    throw new LibraryError(
+      "duplicate-name",
+      `${what} named "${name}" already exists`,
+    );
 }

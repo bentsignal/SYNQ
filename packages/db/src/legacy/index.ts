@@ -39,7 +39,10 @@ export const LEGACY_DB_PATH = "SQLite/synq.db";
  * zips) or one level down (a zip someone re-made from a folder). Null if
  * neither holds a 2.5.2 database.
  */
-export async function findLegacyBackupRoot(fs: LegacyFileSystem, extractedDir: string): Promise<string | null> {
+export async function findLegacyBackupRoot(
+  fs: LegacyFileSystem,
+  extractedDir: string,
+) {
   const base = extractedDir.replace(/\/+$/, "");
   if (await fs.exists(`${base}/${LEGACY_DB_PATH}`)) return base;
   for (const name of await fs.list(base)) {

@@ -17,7 +17,7 @@ import type { LegacyTextFileSystem } from "./types.ts";
  * MD5 file names of every key 2.5.2 wrote, precomputed so the app needs no
  * MD5 implementation (a test checks them against `node:crypto`).
  */
-export const LEGACY_ASYNC_STORAGE_KEY_FILES: Readonly<Record<string, string>> = {
+export const LEGACY_ASYNC_STORAGE_KEY_FILES = {
   theme: "f484570d7cf557020e11ace406901b10",
   haptic: "3c434c2d01b9818524ee50aa9578c458",
   shuffle: "644c45fc2b003bf415a3fb655412508d",
@@ -36,7 +36,11 @@ export const LEGACY_ASYNC_STORAGE_KEY_FILES: Readonly<Record<string, string>> = 
   exportNumber: "a794eb9bf5a39e32657effbe770924e8",
   dbVersion: "2d85ebe33b5f7825f69013d14eadb759",
   allowAnalytics: "8c7e0acd3b46c3797ded0b9ab21b730c",
-};
+} satisfies Readonly<Record<string, string>>;
+
+const keyFiles = new Map<string, string>(
+  Object.entries(LEGACY_ASYNC_STORAGE_KEY_FILES),
+);
 
 /** `RCTAsyncLocalStorage_V1`, relative to `Library/Application Support/{bundleId}/`. */
 export const LEGACY_ASYNC_STORAGE_DIR_NAME = "RCTAsyncLocalStorage_V1";
@@ -48,6 +52,57 @@ export interface LegacyAsyncStorage {
   problems: string[];
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+async function readManifest(base: string, fs: LegacyTextFileSystem) {
+  let manifestText: string | null;
+  try {
+    manifestText = await fs.readText(`${base}/manifest.json`);
+  } catch (error) {
+    return {
+      manifest: null,
+      problem: `manifest.json unreadable: ${String(error)}`,
+    };
+  }
+  if (manifestText === null) return null;
+
+  let manifest: unknown;
+  try {
+    manifest = JSON.parse(manifestText);
+  } catch {
+    return { manifest: null, problem: "manifest.json is not valid JSON" };
+  }
+  if (!isRecord(manifest)) {
+    return { manifest: null, problem: "manifest.json is not an object" };
+  }
+  return { manifest, problem: null };
+}
+
+/** A value AsyncStorage wrote to its own file because it was too large for the manifest. */
+async function readOutOfLine(
+  key: string,
+  base: string,
+  fs: LegacyTextFileSystem,
+) {
+  const fileName = keyFiles.get(key);
+  if (!fileName) {
+    return {
+      text: null,
+      problem: `${key}: stored out of line under an unknown key`,
+    };
+  }
+  try {
+    return { text: await fs.readText(`${base}/${fileName}`), problem: null };
+  } catch (error) {
+    return {
+      text: null,
+      problem: `${key}: value file unreadable: ${String(error)}`,
+    };
+  }
+}
+
 /**
  * Parses the AsyncStorage directory. Returns null when there is no manifest
  * (a fresh install, or the user never changed a setting); never throws for
@@ -56,46 +111,24 @@ export interface LegacyAsyncStorage {
 export async function readLegacyAsyncStorage(
   dir: string,
   fs: LegacyTextFileSystem,
-): Promise<LegacyAsyncStorage | null> {
+) {
   const base = dir.replace(/\/+$/, "");
-  let manifestText: string | null;
-  try {
-    manifestText = await fs.readText(`${base}/manifest.json`);
-  } catch (error) {
-    return { values: {}, problems: [`manifest.json unreadable: ${String(error)}`] };
-  }
-  if (manifestText === null) return null;
+  const read = await readManifest(base, fs);
+  if (read === null) return null;
+  if (read.manifest === null) return { values: {}, problems: [read.problem] };
 
-  let manifest: unknown;
-  try {
-    manifest = JSON.parse(manifestText);
-  } catch {
-    return { values: {}, problems: ["manifest.json is not valid JSON"] };
-  }
-  if (typeof manifest !== "object" || manifest === null || Array.isArray(manifest)) {
-    return { values: {}, problems: ["manifest.json is not an object"] };
-  }
-
-  const values: Record<string, string> = {};
-  const problems: string[] = [];
-  for (const [key, value] of Object.entries(manifest as Record<string, unknown>)) {
+  const values = new Map<string, string>();
+  const problems = new Array<string>();
+  for (const [key, value] of Object.entries(read.manifest)) {
     if (typeof value === "string") {
-      values[key] = value;
+      values.set(key, value);
     } else if (value === null) {
-      const fileName = LEGACY_ASYNC_STORAGE_KEY_FILES[key];
-      if (!fileName) {
-        problems.push(`${key}: stored out of line under an unknown key`);
-        continue;
-      }
-      try {
-        const text = await fs.readText(`${base}/${fileName}`);
-        if (text !== null) values[key] = text;
-      } catch (error) {
-        problems.push(`${key}: value file unreadable: ${String(error)}`);
-      }
+      const outOfLine = await readOutOfLine(key, base, fs);
+      if (outOfLine.problem !== null) problems.push(outOfLine.problem);
+      else if (outOfLine.text !== null) values.set(key, outOfLine.text);
     } else {
       problems.push(`${key}: unexpected ${typeof value} in manifest`);
     }
   }
-  return { values, problems };
+  return { values: Object.fromEntries(values), problems };
 }

@@ -40,7 +40,9 @@ export class NameMatcher<T extends NamedRow> {
     const candidates = this.#byKey.get(nameKey(name));
     if (!candidates) return undefined;
     const exact = cleanName(name);
-    return candidates.find((row) => cleanName(row.name) === exact) ?? candidates[0];
+    return (
+      candidates.find((row) => cleanName(row.name) === exact) ?? candidates[0]
+    );
   }
 
   has(name: string): boolean {
@@ -57,7 +59,10 @@ export class NameMatcher<T extends NamedRow> {
  * ["Tyler, The Creator", "Kali Uchis"]; with nothing known it gives three
  * names, as 2.5.2 did.
  */
-export function splitArtistNames(tag: string, isKnown: (name: string) => boolean): string[] {
+export function splitArtistNames(
+  tag: string,
+  isKnown: (name: string) => boolean,
+) {
   const whole = cleanName(tag);
   if (whole === "") return [];
   if (isKnown(whole)) return [whole];
@@ -65,20 +70,21 @@ export function splitArtistNames(tag: string, isKnown: (name: string) => boolean
     .split(",")
     .map(cleanName)
     .filter((piece) => piece !== "");
-  const names: string[] = [];
+  const names = [];
   let start = 0;
   while (start < pieces.length) {
     let end = pieces.length;
-    while (end > start + 1 && !isKnown(pieces.slice(start, end).join(", "))) end--;
+    while (end > start + 1 && !isKnown(pieces.slice(start, end).join(", ")))
+      end--;
     names.push(pieces.slice(start, end).join(", "));
     start = end;
   }
   return dedupeNames(names);
 }
 
-export function dedupeNames(names: readonly string[]): string[] {
+export function dedupeNames(names: readonly string[]) {
   const seen = new Set<string>();
-  const result: string[] = [];
+  const result = [];
   for (const name of names) {
     const key = nameKey(name);
     if (key === "" || seen.has(key)) continue;

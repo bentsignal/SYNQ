@@ -7,8 +7,9 @@
 import { eq, inArray } from "drizzle-orm";
 
 import type { LibraryDb } from "../client.ts";
+import type { LibraryTable, WriteOptions } from "./changes.ts";
 import { albums, albumSongs, artists, playlists, songs } from "../schema.ts";
-import { nowFrom, written, type LibraryTable, type WriteOptions, type WriteResult } from "./changes.ts";
+import { changesOf, nowFrom, written } from "./changes.ts";
 import { LibraryError } from "./errors.ts";
 
 export type ArtworkKind = "song" | "album" | "artist" | "playlist";
@@ -20,7 +21,7 @@ export interface ArtworkRef {
   version: number;
 }
 
-const folders: Record<ArtworkKind, string> = {
+const folders = {
   song: "library",
   album: "albums",
   artist: "artists",
@@ -28,12 +29,15 @@ const folders: Record<ArtworkKind, string> = {
 };
 
 /** The entity's folder relative to `Documents/`, e.g. `albums/12`. */
-export function artworkDir(kind: ArtworkKind, id: number): string {
+export function artworkDir(kind: ArtworkKind, id: number) {
   return `${folders[kind]}/${id}`;
 }
 
 /** e.g. `albums/12/cover_small.jpg`, relative to `Documents/`. */
-export function artworkPath(ref: Pick<ArtworkRef, "kind" | "id">, size: ArtworkSize): string {
+export function artworkPath(
+  ref: Pick<ArtworkRef, "kind" | "id">,
+  size: ArtworkSize,
+) {
   return `${artworkDir(ref.kind, ref.id)}/cover_${size}.jpg`;
 }
 
@@ -41,11 +45,19 @@ export function artworkPath(ref: Pick<ArtworkRef, "kind" | "id">, size: ArtworkS
  * A cache-busted URI for `expo-image`: `documentsUri` is `Paths.document.uri`
  * (with its trailing slash).
  */
-export function artworkUri(documentsUri: string, ref: ArtworkRef, size: ArtworkSize): string {
+export function artworkUri(
+  documentsUri: string,
+  ref: ArtworkRef,
+  size: ArtworkSize,
+) {
   return `${documentsUri}${artworkPath(ref, size)}?v=${ref.version}`;
 }
 
-export function artworkRef(kind: ArtworkKind, id: number, version: number | null): ArtworkRef | null {
+export function artworkRef(
+  kind: ArtworkKind,
+  id: number,
+  version: number | null,
+) {
   return version === null ? null : { kind, id, version };
 }
 
@@ -63,39 +75,63 @@ export interface SetArtworkResult {
  */
 export function setArtwork(
   db: LibraryDb,
-  kind: ArtworkKind,
-  id: number,
-  present: boolean,
+  target: { kind: ArtworkKind; id: number; present: boolean },
   options?: WriteOptions,
-): WriteResult<SetArtworkResult> {
+) {
+  const { kind, id, present } = target;
   const version = present ? nowFrom(options) : null;
-  const changed: LibraryTable[] = [];
+  const changed = new Array<LibraryTable>();
   db.transaction((tx) => {
     let updated = 0;
     if (kind === "song") {
-      updated = tx
-        .update(songs)
-        .set({ artworkVersion: version, modifiedSinceExport: true })
-        .where(eq(songs.id, id))
-        .run().changes;
+      updated = changesOf(
+        tx
+          .update(songs)
+          .set({ artworkVersion: version, modifiedSinceExport: true })
+          .where(eq(songs.id, id))
+          .run(),
+      );
       changed.push("songs");
     } else if (kind === "album") {
-      updated = tx.update(albums).set({ artworkVersion: version }).where(eq(albums.id, id)).run().changes;
-      const albumSongIds = tx.select({ id: albumSongs.songId }).from(albumSongs).where(eq(albumSongs.albumId, id));
-      tx.update(songs).set({ modifiedSinceExport: true }).where(inArray(songs.id, albumSongIds)).run();
+      updated = changesOf(
+        tx
+          .update(albums)
+          .set({ artworkVersion: version })
+          .where(eq(albums.id, id))
+          .run(),
+      );
+      const albumSongIds = tx
+        .select({ id: albumSongs.songId })
+        .from(albumSongs)
+        .where(eq(albumSongs.albumId, id));
+      tx.update(songs)
+        .set({ modifiedSinceExport: true })
+        .where(inArray(songs.id, albumSongIds))
+        .run();
       changed.push("albums", "songs");
     } else if (kind === "artist") {
-      updated = tx.update(artists).set({ artworkVersion: version }).where(eq(artists.id, id)).run().changes;
+      updated = changesOf(
+        tx
+          .update(artists)
+          .set({ artworkVersion: version })
+          .where(eq(artists.id, id))
+          .run(),
+      );
       changed.push("artists");
     } else {
-      updated = tx
-        .update(playlists)
-        .set({ artworkVersion: version, updatedAt: nowFrom(options) })
-        .where(eq(playlists.id, id))
-        .run().changes;
+      updated = changesOf(
+        tx
+          .update(playlists)
+          .set({ artworkVersion: version, updatedAt: nowFrom(options) })
+          .where(eq(playlists.id, id))
+          .run(),
+      );
       changed.push("playlists");
     }
     if (updated === 0) throw new LibraryError("not-found", `No ${kind} ${id}`);
   });
-  return written({ artwork: artworkRef(kind, id, version), dir: artworkDir(kind, id) }, changed);
+  return written(
+    { artwork: artworkRef(kind, id, version), dir: artworkDir(kind, id) },
+    changed,
+  );
 }

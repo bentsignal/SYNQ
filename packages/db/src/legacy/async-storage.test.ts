@@ -6,32 +6,48 @@ import { join } from "node:path";
 import { describe, test } from "node:test";
 
 import { nodeFileSystem } from "../testing/node-fs.ts";
-import { LEGACY_ASYNC_STORAGE_KEY_FILES, parseLegacySettings, readLegacyAsyncStorage, type LegacyLibraryIds } from "./index.ts";
+import {
+  LEGACY_ASYNC_STORAGE_KEY_FILES,
+  parseLegacySettings,
+  readLegacyAsyncStorage,
+} from "./index.ts";
 
-const md5 = (key: string) => createHash("md5").update(key, "utf8").digest("hex");
+function md5(key: string) {
+  return createHash("md5").update(key, "utf8").digest("hex");
+}
 
-function storageDir(manifest: unknown, files: Record<string, string> = {}): string {
+function storageDir(manifest: unknown, files: Record<string, string> = {}) {
   const dir = mkdtempSync(join(tmpdir(), "synq-async-storage-"));
-  writeFileSync(join(dir, "manifest.json"), typeof manifest === "string" ? manifest : JSON.stringify(manifest));
-  for (const [key, value] of Object.entries(files)) writeFileSync(join(dir, md5(key)), value);
+  writeFileSync(
+    join(dir, "manifest.json"),
+    typeof manifest === "string" ? manifest : JSON.stringify(manifest),
+  );
+  for (const [key, value] of Object.entries(files))
+    writeFileSync(join(dir, md5(key)), value);
   return dir;
 }
 
-const library: LegacyLibraryIds = {
+const library = {
   songIds: new Set([1, 2, 3, 4]),
   playlistIds: new Set([2, 3]),
   albumIds: new Set([7]),
   artistIds: new Set([8]),
 };
 
-describe("readLegacyAsyncStorage", () => {
-  test("precomputed key file names are the MD5 of the key (RCTMD5Hash)", () => {
-    for (const [key, fileName] of Object.entries(LEGACY_ASYNC_STORAGE_KEY_FILES)) assert.equal(fileName, md5(key), key);
+void describe("readLegacyAsyncStorage", () => {
+  void test("precomputed key file names are the MD5 of the key (RCTMD5Hash)", () => {
+    for (const [key, fileName] of Object.entries(
+      LEGACY_ASYNC_STORAGE_KEY_FILES,
+    ))
+      assert.equal(fileName, md5(key), key);
   });
 
-  test("reads inline values and out-of-line (null) values from MD5-named files", async () => {
+  void test("reads inline values and out-of-line (null) values from MD5-named files", async () => {
     const long = "x".repeat(2000);
-    const dir = storageDir({ theme: "#77adf8", queue: null, position: null }, { queue: long });
+    const dir = storageDir(
+      { theme: "#77adf8", queue: null, position: null },
+      { queue: long },
+    );
     assert.deepEqual(await readLegacyAsyncStorage(dir, nodeFileSystem), {
       // `position` is null with no file: AsyncStorage itself treats that as missing.
       values: { theme: "#77adf8", queue: long },
@@ -39,34 +55,76 @@ describe("readLegacyAsyncStorage", () => {
     });
   });
 
-  test("returns null without a manifest and reports malformed ones without throwing", async () => {
-    assert.equal(await readLegacyAsyncStorage(mkdtempSync(join(tmpdir(), "synq-empty-")), nodeFileSystem), null);
-    assert.deepEqual(await readLegacyAsyncStorage(storageDir("{not json"), nodeFileSystem), {
-      values: {},
-      problems: ["manifest.json is not valid JSON"],
-    });
-    assert.deepEqual(await readLegacyAsyncStorage(storageDir({ odd: 3, mystery: null }), nodeFileSystem), {
-      values: {},
-      problems: ["odd: unexpected number in manifest", "mystery: stored out of line under an unknown key"],
-    });
+  void test("returns null without a manifest and reports malformed ones without throwing", async () => {
+    assert.equal(
+      await readLegacyAsyncStorage(
+        mkdtempSync(join(tmpdir(), "synq-empty-")),
+        nodeFileSystem,
+      ),
+      null,
+    );
+    assert.deepEqual(
+      await readLegacyAsyncStorage(storageDir("{not json"), nodeFileSystem),
+      {
+        values: {},
+        problems: ["manifest.json is not valid JSON"],
+      },
+    );
+    assert.deepEqual(
+      await readLegacyAsyncStorage(
+        storageDir({ odd: 3, mystery: null }),
+        nodeFileSystem,
+      ),
+      {
+        values: {},
+        problems: [
+          "odd: unexpected number in manifest",
+          "mystery: stored out of line under an unknown key",
+        ],
+      },
+    );
   });
 });
 
-describe("parseLegacySettings", () => {
-  test("applies 2.5.2's defaults when nothing was stored", () => {
+void describe("parseLegacySettings", () => {
+  void test("applies 2.5.2's defaults when nothing was stored", () => {
     assert.deepEqual(parseLegacySettings({}, library), {
-      preferences: { accent: null, haptics: true, shuffle: false, repeat: "off" },
+      preferences: {
+        accent: null,
+        haptics: true,
+        shuffle: false,
+        repeat: "off",
+      },
       session: null,
       premiumCache: null,
       ads: { listenedMs: 0, due: false },
-      bookkeeping: { importCount: 0, reviewRequested: false, exportNumber: null, legacyDbVersion: null },
+      bookkeeping: {
+        importCount: 0,
+        reviewRequested: false,
+        exportNumber: null,
+        legacyDbVersion: null,
+      },
       unknownKeys: [],
     });
   });
 
-  test("a current index on the ad moves to the next song, with position reset", () => {
-    const queue = JSON.stringify([{ id: 1 }, { id: -2 }, { id: 2 }, { id: "3" }]);
-    const settings = parseLegacySettings({ queue, lastTrackIndex: "1", position: "12.5", sourceType: "1", sourceId: "1" }, library);
+  void test("a current index on the ad moves to the next song, with position reset", () => {
+    const queue = JSON.stringify([
+      { id: 1 },
+      { id: -2 },
+      { id: 2 },
+      { id: "3" },
+    ]);
+    const settings = parseLegacySettings(
+      {
+        queue,
+        lastTrackIndex: "1",
+        position: "12.5",
+        sourceType: "1",
+        sourceId: "1",
+      },
+      library,
+    );
     assert.deepEqual(settings.session, {
       queueSongIds: [1, 2, 3],
       currentIndex: 1,
@@ -76,18 +134,36 @@ describe("parseLegacySettings", () => {
     });
   });
 
-  test("an index past the end clamps to the last kept song", () => {
+  void test("an index past the end clamps to the last kept song", () => {
     const queue = JSON.stringify([{ id: 1 }, { id: 2 }, { id: 99 }]);
-    const settings = parseLegacySettings({ queue, lastTrackIndex: "40", position: "3" }, library);
+    const settings = parseLegacySettings(
+      { queue, lastTrackIndex: "40", position: "3" },
+      library,
+    );
     assert.equal(settings.session?.currentIndex, 1);
-    assert.equal(settings.session?.positionMs, 0);
+    assert.equal(settings.session.positionMs, 0);
   });
+});
 
-  test("drops a queue with nothing playable, and sources that no longer exist", () => {
-    assert.equal(parseLegacySettings({ queue: JSON.stringify([{ id: -2 }, { id: 50 }]) }, library).session, null);
-    assert.equal(parseLegacySettings({ queue: "garbage" }, library).session, null);
-    const session = (sourceType: string, sourceId: string) =>
-      parseLegacySettings({ queue: JSON.stringify([{ id: 1 }]), sourceType, sourceId }, library).session?.source;
+void describe("parseLegacySettings sources and cached state", () => {
+  void test("drops a queue with nothing playable, and sources that no longer exist", () => {
+    assert.equal(
+      parseLegacySettings(
+        { queue: JSON.stringify([{ id: -2 }, { id: 50 }]) },
+        library,
+      ).session,
+      null,
+    );
+    assert.equal(
+      parseLegacySettings({ queue: "garbage" }, library).session,
+      null,
+    );
+    function session(sourceType: string, sourceId: string) {
+      return parseLegacySettings(
+        { queue: JSON.stringify([{ id: 1 }]), sourceType, sourceId },
+        library,
+      ).session?.source;
+    }
     assert.deepEqual(session("1", "2"), { kind: "playlist", id: 2 });
     assert.equal(session("1", "4"), null);
     assert.deepEqual(session("2", "7"), { kind: "album", id: 7 });
@@ -96,14 +172,30 @@ describe("parseLegacySettings", () => {
     assert.equal(session("9", "1"), null);
   });
 
-  test("parses premium cache, accent, and ad state", () => {
-    assert.deepEqual(parseLegacySettings({ expiration: "2027-01-02T03:04:05.000Z" }, library).premiumCache, {
-      kind: "until",
-      expiresAt: Date.UTC(2027, 0, 2, 3, 4, 5),
-    });
-    assert.equal(parseLegacySettings({ expiration: "null" }, library).premiumCache, null);
-    assert.equal(parseLegacySettings({ theme: "blue" }, library).preferences.accent, null);
-    assert.equal(parseLegacySettings({ theme: " #EDDD92 " }, library).preferences.accent, "#eddd92");
-    assert.deepEqual(parseLegacySettings({ timePlayed: "605", playAd: "true" }, library).ads, { listenedMs: 605_000, due: true });
+  void test("parses premium cache, accent, and ad state", () => {
+    assert.deepEqual(
+      parseLegacySettings({ expiration: "2027-01-02T03:04:05.000Z" }, library)
+        .premiumCache,
+      {
+        kind: "until",
+        expiresAt: Date.UTC(2027, 0, 2, 3, 4, 5),
+      },
+    );
+    assert.equal(
+      parseLegacySettings({ expiration: "null" }, library).premiumCache,
+      null,
+    );
+    assert.equal(
+      parseLegacySettings({ theme: "blue" }, library).preferences.accent,
+      null,
+    );
+    assert.equal(
+      parseLegacySettings({ theme: " #EDDD92 " }, library).preferences.accent,
+      "#eddd92",
+    );
+    assert.deepEqual(
+      parseLegacySettings({ timePlayed: "605", playAd: "true" }, library).ads,
+      { listenedMs: 605_000, due: true },
+    );
   });
 });

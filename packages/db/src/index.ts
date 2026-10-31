@@ -17,6 +17,7 @@ export type {
 } from "./schema.ts";
 export { libraryMigrations } from "./migrations.ts";
 
+export * from "./library/album-tracks.ts";
 export * from "./library/albums.ts";
 export * from "./library/artists.ts";
 export * from "./library/artwork.ts";
@@ -24,8 +25,15 @@ export * from "./library/changes.ts";
 export * from "./library/errors.ts";
 export type { AlbumRef, ArtistRef } from "./library/find-or-create.ts";
 export { splitArtistNames } from "./library/matching.ts";
+export * from "./library/playlist-songs.ts";
 export * from "./library/playlists.ts";
 export * from "./library/search.ts";
-export type { AlbumCredit, ArtistCredit, SongListItem } from "./library/song-items.ts";
+export type {
+  AlbumCredit,
+  ArtistCredit,
+  SongListItem,
+} from "./library/song-items.ts";
+export * from "./library/song-files.ts";
+export * from "./library/song-writes.ts";
 export * from "./library/songs.ts";
 export { compareText, matchesSearch, type SortOrder } from "./library/text.ts";

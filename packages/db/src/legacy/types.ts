@@ -13,7 +13,10 @@ export type LegacyRow = Record<string, unknown>;
  * only ever issues `SELECT` and `PRAGMA table_info`.
  */
 export interface LegacyDatabase {
-  all(sql: string, params?: readonly (string | number | null)[]): Awaitable<LegacyRow[]>;
+  all(
+    sql: string,
+    params?: readonly (string | number | null)[],
+  ): Awaitable<LegacyRow[]>;
 }
 
 export interface LegacyFileStat {

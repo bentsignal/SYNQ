@@ -12,32 +12,40 @@
   "scripts": {
     "clean": "git clean -xdf .cache .turbo node_modules",
     "db:generate": "drizzle-kit generate && node scripts/bundle-migrations.ts",
-    "lint": "tsgo --noEmit --noUnusedLocals --noUnusedParameters && node scripts/bundle-migrations.ts --check",
+    "lint": "eslint --flag unstable_native_nodejs_ts_config && node scripts/bundle-migrations.ts --check",
     "test": "node --disable-warning=ExperimentalWarning --test 'src/**/*.test.ts'",
-    "typecheck": "tsgo --noEmit"
+    "typecheck": "tsgo --noEmit",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "format:fix": "prettier --write . --ignore-path ../../.gitignore"
   },
   "dependencies": {
     "drizzle-orm": "0.45.4"
   },
   "devDependencies": {
-    "@types/node": "^24",
-    "@typescript/native-preview": "7.0.0-dev.20260707.2",
+    "@synq/eslint-config": "workspace:*",
+    "@synq/prettier-config": "workspace:*",
+    "@synq/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "@typescript/native-preview": "catalog:",
     "drizzle-kit": "0.31.11",
-    "typescript": "~6.0.3",
-    "react": "19.2.3",
+    "eslint": "catalog:",
+    "expo-file-system": "~57.0.7",
     "expo-sqlite": "~57.0.4",
-    "expo-file-system": "~57.0.7"
+    "prettier": "catalog:",
+    "react": "catalog:react19",
+    "typescript": "catalog:"
   },
   "peerDependencies": {
-    "expo-sqlite": "*",
-    "expo-file-system": "*"
+    "expo-file-system": "*",
+    "expo-sqlite": "*"
   },
   "peerDependenciesMeta": {
-    "expo-sqlite": {
-      "optional": true
-    },
     "expo-file-system": {
       "optional": true
+    },
+    "expo-sqlite": {
+      "optional": true
     }
-  }
+  },
+  "prettier": "@synq/prettier-config"
 }

@@ -11,8 +11,8 @@ export interface MenuRowViewProps extends ViewProps {
   buttonColor: ProcessedColorValue | ColorValue | null | undefined;
   rowColor: ProcessedColorValue | ColorValue | null | undefined;
   highlightColor: ProcessedColorValue | ColorValue | null | undefined;
-  onPress: () => void;
-  onMenuAction: (event: { nativeEvent: { id: string } }) => void;
+  onRowPress: () => void;
+  onRowMenuAction: (event: { nativeEvent: { id: string } }) => void;
 }
 
 /**

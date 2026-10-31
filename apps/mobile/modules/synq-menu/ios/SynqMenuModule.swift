@@ -8,7 +8,7 @@ public class SynqMenuModule: Module {
     Name("SynqMenu")
 
     View(MenuRowView.self) {
-      Events("onPress", "onMenuAction")
+      Events("onRowPress", "onRowMenuAction")
 
       Prop("menu") { (view: MenuRowView, json: String) in
         view.menuJSON = json

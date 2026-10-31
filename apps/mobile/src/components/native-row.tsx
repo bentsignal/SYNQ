@@ -52,8 +52,8 @@ function MenuRow({
         buttonColor={processColor(muted)}
         rowColor={processColor(background)}
         highlightColor={processColor(fill)}
-        onPress={onPress}
-        onMenuAction={({ nativeEvent }) => {
+        onRowPress={onPress}
+        onRowMenuAction={({ nativeEvent }) => {
           const action = menuAction(menu, nativeEvent.id);
           if (action !== undefined) afterMenuCloses(action.onPress);
         }}

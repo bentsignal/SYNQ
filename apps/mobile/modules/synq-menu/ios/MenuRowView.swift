@@ -2,7 +2,7 @@ import ExpoModulesCore
 import UIKit
 
 /// A list row: React Native draws its look, and UIKit handles the touch.
-/// A tap highlights the row and sends `onPress`; a long press lifts it into
+/// A tap highlights the row and sends `onRowPress`; a long press lifts it into
 /// a context menu; the trailing `ellipsis` button opens the same menu.
 ///
 /// It replaces a SwiftUI `Host` per row (`ContextMenu`, `Button`, `Menu`),
@@ -11,8 +11,8 @@ import UIKit
 /// parsed only when a menu opens, so a recycled row's new props cost a
 /// string comparison.
 final class MenuRowView: ExpoView, UIContextMenuInteractionDelegate {
-  let onPress = EventDispatcher()
-  let onMenuAction = EventDispatcher()
+  let onRowPress = EventDispatcher()
+  let onRowMenuAction = EventDispatcher()
 
   var menuJSON = ""
   var label = "" {
@@ -47,7 +47,7 @@ final class MenuRowView: ExpoView, UIContextMenuInteractionDelegate {
     content.isUserInteractionEnabled = false
     content.isAccessibilityElement = true
     content.accessibilityTraits = .button
-    content.activate = { [weak self] in self?.onPress() }
+    content.activate = { [weak self] in self?.onRowPress() }
     addSubview(content)
 
     button.setImage(
@@ -114,7 +114,7 @@ final class MenuRowView: ExpoView, UIContextMenuInteractionDelegate {
     pendingHighlight = nil
     touching = false
     setHighlighted(true)
-    onPress()
+    onRowPress()
     UIView.animate(withDuration: 0.3, delay: 0.05, options: [.allowUserInteraction]) {
       self.setHighlighted(false)
     }
@@ -151,7 +151,7 @@ final class MenuRowView: ExpoView, UIContextMenuInteractionDelegate {
 
   private func menuElements() -> [UIMenuElement] {
     Menu.elements(json: menuJSON) { [weak self] id in
-      self?.onMenuAction(["id": id])
+      self?.onRowMenuAction(["id": id])
     }
   }
 

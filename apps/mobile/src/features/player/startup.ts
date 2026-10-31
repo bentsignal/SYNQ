@@ -1,6 +1,7 @@
-import type { PlaybackState } from "@synq/audio";
 import { AppState } from "react-native";
 import { hashKey } from "@tanstack/react-query";
+
+import type { PlaybackState } from "@synq/audio";
 import * as Audio from "@synq/audio";
 
 import type { PlayerSongs } from "./songs";
@@ -9,7 +10,12 @@ import { configureAd } from "./ad-config";
 import { forgetSongs } from "./commands";
 import { reportPlaybackError } from "./errors";
 import { pushedTrack, resyncNative } from "./native-queue";
-import { noteNativeState, persist, restoreSession, saveFromNative } from "./persistence";
+import {
+  noteNativeState,
+  persist,
+  restoreSession,
+  saveFromNative,
+} from "./persistence";
 import { subscribePremiumTier } from "./premium-gate";
 import { isSettingSongs, PLAYER_SONGS_QUERY } from "./songs";
 import { getPlayerState, onFirstUse, setPlayerState } from "./store";

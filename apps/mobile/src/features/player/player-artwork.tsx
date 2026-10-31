@@ -1,6 +1,7 @@
-import type { ArtworkRef } from "@synq/db";
 import { View } from "react-native";
 import Animated, { cubicBezier } from "react-native-reanimated";
+
+import type { ArtworkRef } from "@synq/db";
 
 import { Artwork } from "~/components/artwork";
 import { AdCard } from "./ad-card";
@@ -27,13 +28,10 @@ export function PlayerArtwork({
   return (
     <Animated.View
       style={{
-        shadowColor: "#000000",
-        shadowOffset: { height: 16, width: 0 },
-        shadowOpacity: playing ? 0.45 : 0.25,
-        shadowRadius: 28,
+        boxShadow: "0 16px 28px rgba(0, 0, 0, 0.4)",
         transform: [{ scale: playing || interstitial ? 1 : PAUSED_SCALE }],
         transitionDuration: 420,
-        transitionProperty: ["transform", "shadowOpacity"],
+        transitionProperty: "transform",
         transitionTimingFunction: EASE,
       }}
     >

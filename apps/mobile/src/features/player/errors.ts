@@ -1,5 +1,6 @@
-import type { PlaybackError } from "@synq/audio";
 import { Alert } from "react-native";
+
+import type { PlaybackError } from "@synq/audio";
 
 import { errorFeedback } from "~/lib/haptics";
 import { songTitle } from "./songs";

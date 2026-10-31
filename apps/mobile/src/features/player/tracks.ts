@@ -26,7 +26,10 @@ export function artworkFileUri(
   if (artwork === null) return undefined;
   const cacheKey = `${artwork.kind}/${artwork.id}/${artwork.version}/${size}`;
   if (artworkFiles.has(cacheKey)) return artworkFiles.get(cacheKey);
-  const sizes = size === "full" ? (["full", "small"] as const) : (["small", "full"] as const);
+  const sizes =
+    size === "full"
+      ? (["full", "small"] as const)
+      : (["small", "full"] as const);
   const file = sizes
     .map((candidate) => documentFile(artworkPath(artwork, candidate)))
     .find((candidate) => candidate.exists);

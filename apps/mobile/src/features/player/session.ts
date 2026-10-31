@@ -9,8 +9,8 @@ import type {
   LegacySettings,
 } from "@synq/db/legacy";
 
-import type { PlaybackSource } from "./types";
 import type { Queue, QueueEntry } from "./queue-model";
+import type { PlaybackSource } from "./types";
 import { currentIndex, EMPTY_QUEUE, nextKey } from "./queue-model.ts";
 
 export interface StoredSession {
@@ -232,7 +232,8 @@ function repeatMode(value: unknown) {
 function numbers(value: unknown) {
   if (!Array.isArray(value)) return [];
   return value.filter(
-    (item): item is number => typeof item === "number" && Number.isInteger(item) && item >= 0,
+    (item): item is number =>
+      typeof item === "number" && Number.isInteger(item) && item >= 0,
   );
 }
 

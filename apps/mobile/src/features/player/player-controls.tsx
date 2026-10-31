@@ -1,6 +1,7 @@
-import { useCSSVariable } from "uniwind";
-import { router } from "expo-router";
 import { View } from "react-native";
+import { router } from "expo-router";
+import { useCSSVariable } from "uniwind";
+
 import { RoutePickerButton } from "@synq/audio";
 
 import {
@@ -54,10 +55,7 @@ const REPEAT_LABEL = {
 export function PlayerOptions() {
   const shuffle = usePlayer((state) => state.shuffle);
   const repeat = usePlayer((state) => state.repeat);
-  const [accent, muted] = useCSSVariable([
-    "--color-accent",
-    "--color-muted",
-  ]);
+  const [accent, muted] = useCSSVariable(["--color-accent", "--color-muted"]);
   return (
     <View className="flex-row items-center justify-between">
       <IconButton

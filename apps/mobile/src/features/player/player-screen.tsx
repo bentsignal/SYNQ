@@ -1,6 +1,7 @@
-import type { SongListItem } from "@synq/db";
 import { Text, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import type { SongListItem } from "@synq/db";
 
 import { usePlayer } from "./hooks";
 import { IconButton } from "./icon-button";

@@ -1,7 +1,7 @@
+import type { SharedValue } from "react-native-reanimated";
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import type { SharedValue } from "react-native-reanimated";
 import Animated, {
   useAnimatedReaction,
   useAnimatedStyle,
@@ -9,6 +9,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
+
 import { useProgress } from "@synq/audio";
 
 import { selectionTick } from "~/lib/haptics";
@@ -46,7 +47,9 @@ export function Scrubber({
   const start = useSharedValue(0);
   const dragX = useSharedValue(0);
   const fraction =
-    durationMs > 0 ? Math.min(Math.max(progress.positionMs / durationMs, 0), 1) : 0;
+    durationMs > 0
+      ? Math.min(Math.max(progress.positionMs / durationMs, 0), 1)
+      : 0;
 
   function commit(positionMs: number) {
     selectionTick();

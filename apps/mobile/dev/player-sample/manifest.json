@@ -1,9 +1,54 @@
 {
   "songs": [
-    { "file": "01 Morning Light.m4a", "title": "Morning Light", "artists": "Sample Quartet", "album": "Glass Hours", "year": 2024, "track": 1, "durationMs": 30000, "cover": "glass-hours" },
-    { "file": "Song #2 & more.m4a", "title": "Song #2 & More", "artists": "Sample Quartet, Guest", "album": "Glass Hours", "year": 2024, "track": 2, "durationMs": 24000, "cover": "glass-hours" },
-    { "file": "Night Drive.m4a", "title": "Night Drive", "artists": "Low Tide", "album": "Night Drive", "year": 2021, "track": 1, "durationMs": 28000, "cover": "night-drive" },
-    { "file": "Loose Thread.m4a", "title": "Loose Thread", "artists": "Paper Kites Club", "album": null, "year": null, "track": null, "durationMs": 26000, "cover": "loose-thread" },
-    { "file": "No Cover.m4a", "title": "No Cover", "artists": "Low Tide", "album": null, "year": null, "track": null, "durationMs": 22000, "cover": null }
+    {
+      "file": "01 Morning Light.m4a",
+      "title": "Morning Light",
+      "artists": "Sample Quartet",
+      "album": "Glass Hours",
+      "year": 2024,
+      "track": 1,
+      "durationMs": 30000,
+      "cover": "glass-hours"
+    },
+    {
+      "file": "Song #2 & more.m4a",
+      "title": "Song #2 & More",
+      "artists": "Sample Quartet, Guest",
+      "album": "Glass Hours",
+      "year": 2024,
+      "track": 2,
+      "durationMs": 24000,
+      "cover": "glass-hours"
+    },
+    {
+      "file": "Night Drive.m4a",
+      "title": "Night Drive",
+      "artists": "Low Tide",
+      "album": "Night Drive",
+      "year": 2021,
+      "track": 1,
+      "durationMs": 28000,
+      "cover": "night-drive"
+    },
+    {
+      "file": "Loose Thread.m4a",
+      "title": "Loose Thread",
+      "artists": "Paper Kites Club",
+      "album": null,
+      "year": null,
+      "track": null,
+      "durationMs": 26000,
+      "cover": "loose-thread"
+    },
+    {
+      "file": "No Cover.m4a",
+      "title": "No Cover",
+      "artists": "Low Tide",
+      "album": null,
+      "year": null,
+      "track": null,
+      "durationMs": 22000,
+      "cover": null
+    }
   ]
 }

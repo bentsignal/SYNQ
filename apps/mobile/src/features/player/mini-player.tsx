@@ -1,7 +1,8 @@
-import type { SongListItem } from "@synq/db";
 import { Pressable, Text, View } from "react-native";
-import { NativeTabs } from "expo-router/unstable-native-tabs";
 import { router } from "expo-router";
+import { NativeTabs } from "expo-router/unstable-native-tabs";
+
+import type { SongListItem } from "@synq/db";
 
 import { Artwork } from "~/components/artwork";
 import { SymbolIcon } from "~/components/symbol-icon";
@@ -28,7 +29,9 @@ export function MiniPlayer() {
     <View className="flex-1 flex-row items-center gap-1 pr-2 pl-3">
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={shown.empty ? shown.title : `${shown.title}, open player`}
+        accessibilityLabel={
+          shown.empty ? shown.title : `${shown.title}, open player`
+        }
         className="flex-1 flex-row items-center gap-3 self-stretch active:opacity-70"
         disabled={shown.empty}
         onPress={() => router.push("/player")}
@@ -70,7 +73,12 @@ export function MiniPlayer() {
 /** What the accessory shows: the song, the ad, or Not Playing. */
 function describe(song: SongListItem | null, interstitial: boolean) {
   if (interstitial) {
-    return { artwork: null, empty: false, subtitle: "SYNQ", title: "Premium Ad" };
+    return {
+      artwork: null,
+      empty: false,
+      subtitle: "SYNQ",
+      title: "Premium Ad",
+    };
   }
   if (song === null) {
     return { artwork: null, empty: true, subtitle: null, title: "Not Playing" };

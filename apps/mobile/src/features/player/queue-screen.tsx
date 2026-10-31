@@ -38,7 +38,8 @@ export function QueueScreen() {
   const accent = useCSSVariable("--color-accent");
   const index = currentIndex(queue);
   const current = queue.entries[index];
-  const currentSong = current === undefined ? undefined : songs.get(current.songId);
+  const currentSong =
+    current === undefined ? undefined : songs.get(current.songId);
   const upNext = queue.entries.slice(index + 1);
   const offset = index + 1;
   return (
@@ -49,10 +50,16 @@ export function QueueScreen() {
         colorScheme="dark"
         seedColor={typeof accent === "string" ? accent : undefined}
       >
-        <List modifiers={[listStyle("plain"), scrollContentBackground("hidden")]}>
+        <List
+          modifiers={[listStyle("plain"), scrollContentBackground("hidden")]}
+        >
           {currentSong !== undefined && (
             <Section
-              title={sourceName === null ? "Now Playing" : `Playing from ${sourceName}`}
+              title={
+                sourceName === null
+                  ? "Now Playing"
+                  : `Playing from ${sourceName}`
+              }
             >
               <QueueRow song={currentSong} modifiers={clearRow} />
             </Section>
@@ -64,7 +71,8 @@ export function QueueScreen() {
                   const [moved] = from;
                   if (moved === undefined) return;
                   selectionTick();
-                  const to = destination > moved ? destination - 1 : destination;
+                  const to =
+                    destination > moved ? destination - 1 : destination;
                   moveInQueue(offset + moved, offset + to);
                 }}
                 onDelete={(indices) =>

@@ -1,6 +1,6 @@
-import type { PlaybackSource } from "~/features/player/types";
 import * as Audio from "@synq/audio";
 
+import type { PlaybackSource } from "~/features/player/types";
 import { setAdThresholdForDevelopment } from "~/features/player/ad-config";
 import {
   addToQueue,

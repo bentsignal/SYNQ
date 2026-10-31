@@ -252,10 +252,10 @@ export function unshuffleQueue(queue: Queue) {
   } else {
     // The current song was added with Play Next: it goes after the nearest
     // song before it that is in the original order.
+    const basePosition = new Map(base.map((entry, i) => [entry.key, i]));
     for (let i = index - 1; i >= 0; i -= 1) {
-      const key = queue.entries[i]?.key;
-      const found = base.findIndex((entry) => entry.key === key);
-      if (found !== -1) {
+      const found = basePosition.get(queue.entries[i]?.key ?? "");
+      if (found !== undefined) {
         insertAt = found + 1;
         break;
       }

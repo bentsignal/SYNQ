@@ -1,5 +1,6 @@
-import type { NewSongInput } from "@synq/db";
 import { Directory, File, Paths } from "expo-file-system";
+
+import type { NewSongInput } from "@synq/db";
 import { addSongs, setArtwork } from "@synq/db";
 import { documentFile } from "@synq/db/expo";
 
@@ -26,19 +27,35 @@ interface SampleSong {
 }
 
 function sampleSongs(text: string) {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Development only: the manifest is committed next to the files it describes.
-  const { songs } = JSON.parse(text) as { songs: SampleSong[] };
-  return songs;
+  try {
+    const songs = songsField(JSON.parse(text));
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Development only: the manifest is committed next to the files it describes.
+    return Array.isArray(songs) ? (songs as SampleSong[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function songsField(manifest: unknown) {
+  return typeof manifest === "object" && manifest !== null
+    ? asUnknown(Reflect.get(manifest, "songs"))
+    : undefined;
+}
+
+function asUnknown(value: unknown) {
+  return value;
 }
 
 async function copyCover(sample: Directory, cover: string, dir: string) {
   const target = new Directory(Paths.document, ...dir.split("/"));
   target.create({ idempotent: true, intermediates: true });
-  for (const size of ["full", "small"] as const) {
-    const file = new File(target, `cover_${size}.jpg`);
-    if (file.exists) file.delete();
-    await new File(sample, `${cover}_${size}.jpg`).copy(file);
-  }
+  await Promise.all(
+    (["full", "small"] as const).map((size) => {
+      const file = new File(target, `cover_${size}.jpg`);
+      if (file.exists) file.delete();
+      return new File(sample, `${cover}_${size}.jpg`).copy(file);
+    }),
+  );
 }
 
 async function importSample(
@@ -80,14 +97,13 @@ export async function seedPlayer({ fillers = 0 }: { fillers?: number } = {}) {
     throw new Error("Run apps/mobile/dev/player-sample/push.sh first.");
   }
   const songs = sampleSongs(await manifest.text());
-  const ids = new Array<number>();
-  for (let i = 0; i < songs.length + fillers; i += 1) {
+  const imports = Array.from({ length: songs.length + fillers }, (_, i) => {
     const song = songs[i % songs.length];
-    if (song === undefined) break;
+    if (song === undefined) return Promise.resolve(null);
     const title =
       i < songs.length ? song.title : `Filler ${i - songs.length + 1}`;
-    const id = await importSample(sample, song, title);
-    if (id !== null) ids.push(id);
-  }
-  return ids;
+    return importSample(sample, song, title);
+  });
+  const ids = await Promise.all(imports);
+  return ids.filter((id) => id !== null);
 }

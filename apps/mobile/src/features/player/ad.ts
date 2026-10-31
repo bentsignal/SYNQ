@@ -1,5 +1,6 @@
-import type { Track } from "@synq/audio";
 import { Asset } from "expo-asset";
+
+import type { Track } from "@synq/audio";
 
 import adAudio from "../../../assets/audio/ad.mp3";
 

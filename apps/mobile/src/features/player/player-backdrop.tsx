@@ -1,7 +1,8 @@
-import type { ArtworkRef } from "@synq/db";
 import { View } from "react-native";
 import { Paths } from "expo-file-system";
 import { Image } from "expo-image";
+
+import type { ArtworkRef } from "@synq/db";
 import { artworkUri } from "@synq/db";
 
 /**

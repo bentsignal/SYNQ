@@ -1,13 +1,5 @@
 import type { ModifierConfig } from "@expo/ui/swift-ui/modifiers";
-import type { SongListItem } from "@synq/db";
-import {
-  Button,
-  HStack,
-  Image,
-  Spacer,
-  Text,
-  VStack,
-} from "@expo/ui/swift-ui";
+import { Button, HStack, Image, Spacer, Text, VStack } from "@expo/ui/swift-ui";
 import {
   aspectRatio,
   background,
@@ -19,11 +11,17 @@ import {
   resizable,
 } from "@expo/ui/swift-ui/modifiers";
 
+import type { SongListItem } from "@synq/db";
+
 import { artistLine, artworkFileUri } from "./tracks";
 
 const ARTWORK = 44;
 const artworkFrame = [frame({ height: ARTWORK, width: ARTWORK })];
-const title = [font({ textStyle: "body" }), lineLimit(1), foregroundStyle("primary")];
+const title = [
+  font({ textStyle: "body" }),
+  lineLimit(1),
+  foregroundStyle("primary"),
+];
 const subtitle = [
   font({ textStyle: "subheadline" }),
   lineLimit(1),

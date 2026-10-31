@@ -98,6 +98,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ["./plugins/with-alternate-icons.cjs", { icons: ALTERNATE_ICONS }],
     "expo-router",
     ["react-native-fbsdk-next", FACEBOOK],
+    // Playback in the background and on the lock screen (packages/audio).
+    "@synq/audio",
     [
       "expo-splash-screen",
       {

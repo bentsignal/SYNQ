@@ -43,6 +43,9 @@ addListener(event, listener): { remove(): void }
 // React (useSyncExternalStore; no effects)
 usePlaybackState(): PlaybackState
 useProgress(): { positionMs: number; durationMs: number }
+
+// The system AirPlay button (AVRoutePickerView); give it a size.
+<RoutePickerButton color={muted} activeColor={accent} style={{ width: 36, height: 36 }} />
 ```
 
 All durations and positions are milliseconds. The functions that can be
@@ -193,6 +196,7 @@ ios/
     AudioSession.swift    AVAudioSession (iOS only)
     MainThread.swift
   Module/SynqAudioModule.swift   Expo glue: argument conversion, events
+  Module/RoutePickerView.swift   the AirPlay button (an Expo view)
   Tests/SynqAudioEngineTests/    XCTest, real audio through AVQueuePlayer on macOS
   SynqAudio.podspec
 Package.swift             SwiftPM package for Engine/ + tests

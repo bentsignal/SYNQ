@@ -7,6 +7,7 @@ import {
   artworkUri,
   getArtistDetail,
   getSong,
+  getSongItems,
   listAlbums,
   listAlbumTracks,
   listArtists,
@@ -98,6 +99,18 @@ void describe("songs", () => {
     assert.equal(getSong(db, 4)?.artwork, null);
     assert.equal(getSong(db, 3)?.liked, true);
     assert.equal(getSong(db, 999), null);
+  });
+
+  void test("loads songs by id in one pass, skipping missing and repeated ids", () => {
+    assert.deepEqual(ids(getSongItems(db, [5, 2, 999, 5, 12])), [2, 5, 12]);
+    const [item] = getSongItems(db, [2]);
+    const {
+      liked: _liked,
+      playlistIds: _playlistIds,
+      ...detail
+    } = getSong(db, 2) ?? {};
+    assert.deepEqual(item, detail);
+    assert.deepEqual(getSongItems(db, []), []);
   });
 
   void test("artwork paths and URIs are relative to Documents and cache-busted", () => {

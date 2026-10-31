@@ -64,6 +64,21 @@ export default function RootLayout() {
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen
+                name="player"
+                // A sheet over the tabs, closed with a swipe down.
+                options={{ presentation: "modal" }}
+              />
+              <Stack.Screen
+                name="queue"
+                options={{
+                  headerShown: true,
+                  presentation: "formSheet",
+                  sheetAllowedDetents: [0.5, 1],
+                  sheetGrabberVisible: true,
+                  title: "Queue",
+                }}
+              />
+              <Stack.Screen
                 name="import/files"
                 options={{ ...IMPORT_SHEET, title: "Import" }}
                 listeners={{

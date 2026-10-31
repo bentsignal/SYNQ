@@ -23,5 +23,5 @@ Pod::Spec.new do |s|
   # Engine/ is plain Swift, also built and tested as a Swift package
   # (../Package.swift). Module/ is the Expo glue.
   s.source_files = 'Engine/**/*.swift', 'Module/**/*.swift'
-  s.frameworks = 'AVFoundation', 'MediaPlayer'
+  s.frameworks = 'AVFoundation', 'AVKit', 'MediaPlayer'
 end

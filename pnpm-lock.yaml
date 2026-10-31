@@ -73,6 +73,9 @@ importers:
       '@legendapp/list':
         specifier: ^3.6.0
         version: 3.6.0(react-dom@19.2.3(react@19.2.3))(react-native@0.86.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      '@synq/audio':
+        specifier: workspace:*
+        version: link:../../packages/audio
       '@synq/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -88,6 +91,9 @@ importers:
       expo-application:
         specifier: ~57.0.3
         version: 57.0.3(expo@57.0.26)
+      expo-asset:
+        specifier: ~57.0.18
+        version: 57.0.18(expo@57.0.26)(react-native@0.86.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
       expo-blur:
         specifier: ~57.0.3
         version: 57.0.3(expo@57.0.26)(react-native@0.86.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)

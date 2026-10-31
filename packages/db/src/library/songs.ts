@@ -53,6 +53,16 @@ export function sortSongs<T extends SongListItem>(
   }
 }
 
+/**
+ * The songs with these ids (in id order; missing ids are skipped), loaded
+ * in one pass however many there are, as for the playback queue.
+ */
+export function getSongItems(db: LibraryDb, ids: readonly number[]) {
+  const unique = uniqueIds(ids);
+  if (unique.length === 0) return [];
+  return loadSongItems(db, inArray(songs.id, unique));
+}
+
 export interface SongDetail extends SongListItem {
   liked: boolean;
   /** User playlists (and Liked Songs) containing the song. */

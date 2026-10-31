@@ -70,3 +70,9 @@ jest.mock("@expo/ui", () => {
   const { View } = require("react-native");
   return { Host: View };
 });
+// The UIKit menu row (modules/synq-menu), drawn as a plain view with its
+// React Native children, so song lists measure the rows the app draws.
+jest.mock("~/components/native-menu-row", () => {
+  const { View } = require("react-native");
+  return { MenuRowView: View };
+});

@@ -48,12 +48,20 @@ numbers.
   confirmed with an alert: cancel first, destructive second). Run list
   changes after the menu closes (Vera's `afterMenuCloses`).
   Built as `NativeRow` (`src/components/native-row.tsx`): the React Native
-  row hosted in a SwiftUI `ContextMenu`, with the `ellipsis` `Menu`
-  beside it. Unlike Vera's rows it has no one-row SwiftUI `List` (for the
-  system highlight and separator): with 3,000 songs that list per row
-  nearly doubled the frames a fling dropped, so the separator is a React
-  Native hairline. Share sends the file as imported until export writes
-  tags into a copy.
+  row inside a UIKit view (`modules/synq-menu`) that handles the touches.
+  A tap highlights the row in `fill`, a long press lifts it into a
+  `UIContextMenuInteraction`, and the trailing `ellipsis` is a `UIButton`
+  showing the same menu as its primary action. The menu goes to native as
+  JSON and is only built when a menu opens, so a recycled row costs a
+  string compare. This replaced a SwiftUI `Host` per row (`ContextMenu`
+  around a `Button`, plus a `Menu`): with 3,000 songs and six identical
+  flings in a production bundle, SwiftUI rows dropped about 600 frames
+  (100 slow), UIKit rows about 410 (60 slow), and plain React Native rows
+  with no menus about 350 (60 slow), on a Mac at full load. Binaries
+  without the module fall back to the SwiftUI row
+  (`src/components/swiftui-row.tsx`). The separator is a React Native
+  hairline. Share sends the file as imported until export writes tags into
+  a copy.
 - **Empty states**: centered `ContentUnavailableView`-style symbol, title,
   and one action where there is one (e.g. "No Music Yet" + Import Music).
 - **Errors**: `Alert.alert("Couldn't <Verb> <Noun>", "Try again.")`.

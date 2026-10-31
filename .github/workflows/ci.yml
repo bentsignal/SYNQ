@@ -1,0 +1,131 @@
+name: CI
+
+on:
+  # Every PR, whatever its base (stacked PRs target feature branches;
+  # `"*"` would skip bases with a slash).
+  pull_request:
+  push:
+    branches: ["main"]
+  merge_group:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  FORCE_COLOR: 3
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup
+        uses: ./tooling/github/setup
+
+      - name: Lint
+        run: pnpm lint && pnpm lint:ws
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup
+        uses: ./tooling/github/setup
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup
+        uses: ./tooling/github/setup
+
+      - name: Test
+        run: pnpm test
+
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup
+        uses: ./tooling/github/setup
+
+      - name: Format
+        run: pnpm format
+
+  # React-specific problems (effects, state, React Native lists, ...) in the
+  # files this PR touches. Any warning fails it; fix the code rather than
+  # suppressing the rule.
+  react-doctor:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup
+        uses: ./tooling/github/setup
+
+      - name: React Doctor
+        run: pnpm run react-doctor --base "${{ github.event.pull_request.base.sha }}"
+
+  # Reassure: how long React takes to render components and their updates
+  # (perf/*.perf-test.tsx), on the PR's base and on the PR, with the same
+  # tests and dependencies: only the app's source differs. A report in the
+  # job summary, not a gate, since timings vary from run to run; the
+  # compiler check in `pnpm test` is the gate.
+  performance:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup
+        uses: ./tooling/github/setup
+
+      - name: Measure the base
+        # The base may not render with this PR's tests; then there's no
+        # comparison, just this PR's numbers.
+        continue-on-error: true
+        run: |
+          git restore --source "${{ github.event.pull_request.base.sha }}" --worktree apps/mobile/src
+          pnpm perf --baseline
+
+      - name: Measure this PR
+        run: |
+          git restore --source HEAD --worktree apps/mobile/src
+          git clean -fdq apps/mobile/src
+          pnpm perf
+
+      - name: Report
+        if: always()
+        run: |
+          if [ -f apps/mobile/.reassure/output.md ]; then
+            cat apps/mobile/.reassure/output.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No comparison: the base didn't measure." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  # The iOS JavaScript bundle still builds (Metro resolution, Babel, the
+  # React Compiler), as release builds and OTA updates will bundle it.
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup
+        uses: ./tooling/github/setup
+
+      - name: Export the iOS bundle
+        working-directory: apps/mobile
+        run: pnpm exec expo export --platform ios --output-dir "$RUNNER_TEMP/export"

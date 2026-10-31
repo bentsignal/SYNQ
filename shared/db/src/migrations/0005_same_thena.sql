@@ -1,1 +1,0 @@
-ALTER TABLE `songs` ADD `ingestComplete` integer DEFAULT 0;

@@ -2,43 +2,48 @@
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
   "tasks": {
+    "topo": {
+      "dependsOn": ["^topo"]
+    },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".expo/**"]
+      "outputs": [".cache/tsbuildinfo.json", "dist/**"]
     },
     "dev": {
+      "dependsOn": ["^topo"],
       "cache": false,
       "persistent": true
     },
     "format": {
-      "outputs": [],
+      "outputs": [".cache/.prettiercache"],
       "outputLogs": "new-only"
     },
     "lint": {
+      "dependsOn": ["^topo"],
+      "outputs": [".cache/.eslintcache"]
+    },
+    "test": {
+      "dependsOn": ["^topo"],
       "outputs": []
     },
     "typecheck": {
-      "outputs": []
+      "dependsOn": ["^topo"],
+      "outputs": [".cache/tsbuildinfo.json"]
     },
     "clean": {
       "cache": false
     },
-    "migrate": {
-      "cache": false
-    },
-    "prebuild": {
+    "//#clean": {
       "cache": false
     }
   },
+  "globalEnv": ["APP_VARIANT"],
   "globalPassThroughEnv": [
-    "CI",
-    "DEV",
-    "EXPO_UNSTABLE_ATLAS",
     "NODE_ENV",
+    "CI",
     "npm_lifecycle_event",
     "PORT",
     "HOST",
-    "PORTLESS_URL",
     "NODE_EXTRA_CA_CERTS"
   ]
 }

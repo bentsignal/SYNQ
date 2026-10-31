@@ -61,6 +61,13 @@ native stacks), `@expo/ui` (SwiftUI), `expo-symbols`, Uniwind (Tailwind 4),
 TanStack Query for reading the library, `react-native-purchases`
 (RevenueCat), `posthog-react-native`, `expo-updates`.
 
+From Vera's native setup, SYNQ carries the iOS 27 search tab patch
+(`patches/react-native-screens@4.26.2.patch`) and the UIScene life cycle
+plugin. It doesn't carry Vera's React Native dictation patch: that needs
+React Native built from source (a much slower build) and fixes dictation
+in React Native text inputs, which SYNQ barely has; revisit if editing
+fields need it.
+
 ## Variants
 
 `apps/mobile/app.config.ts` with `APP_VARIANT`:
@@ -70,10 +77,14 @@ TanStack Query for reading the library, `react-native-purchases`
 | Name | SYNQ | SYNQ Dev |
 | Bundle id | `com.directedbyshawn.synq` | `com.directedbyshawn.synq.dev` |
 | Scheme | `synq` | `synq-dev` |
-| Icon | `icon-blue` (alternates `icon-blue`, `icon-mint`, `icon-red`, `icon-yellow`, `icon-purple`, `icon-orange`, `icon-pink`; names must stay exactly these, iOS remembers the user's choice by name) | a visibly different dev icon |
+| Icon | `icon-blue` (alternates `icon-blue`, `icon-mint`, `icon-red`, `icon-yellow`, `icon-purple`, `icon-orange`, `icon-pink`; names must stay exactly these, iOS remembers the user's choice by name) | `synq-dev`: the same arrows, dark on amber (rendered by `apps/mobile/assets/icons/render-dev-icon.swift`) |
 
 EAS project `df86bb9d-1587-48b7-a40e-85a09eee2a72` (the production
-project). Version 3.0.0; build numbers continue above 99.
+project). Version 3.0.0; build numbers continue above 99 (EAS remote
+versioning; its counter still reads 1 and must be set to 99 before the
+first store build, see `apps/mobile/README.md`). Runtime version `ios-1`,
+set by hand like Vera's. Both variants are on Shawn's Apple team, signed
+through its App Store Connect API key (`~/.appstoreconnect/vera.env`).
 
 ## Data
 

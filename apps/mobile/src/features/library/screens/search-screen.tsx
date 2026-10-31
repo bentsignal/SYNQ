@@ -174,11 +174,13 @@ export default function SearchScreen() {
   });
 
   // Selecting the tab opens the search field over the keyboard. The frame
-  // waits for the native search bar to attach on the first visit.
+  // waits for the native search bar to attach on the first visit. Coming
+  // back from a result leaves the results up, without the keyboard.
   useFocusEffect(() => {
-    const frame = requestAnimationFrame(focusNativeSearch);
+    const frame =
+      query === "" ? requestAnimationFrame(focusNativeSearch) : undefined;
     return () => {
-      cancelAnimationFrame(frame);
+      if (frame !== undefined) cancelAnimationFrame(frame);
       blurNativeSearch();
     };
   });

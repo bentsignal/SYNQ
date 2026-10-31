@@ -89,10 +89,12 @@ scripts/sim.sh down           # delete the device; Metro stops with it
   `press @e3`, `fill`, `longpress`, `scroll`). Its refs (`@e12`) expire
   after every action, so take a fresh `snapshot -i` before each tap. In
   zsh, put the flags in an array (`F=(--platform ios ...)` then `"$F[@]"`).
-- Music needs files: put test audio into the simulator's SYNQ Dev
-  Documents folder (`xcrun simctl get_app_container <udid>
-  com.directedbyshawn.synq.dev data`) or import through the app's own
-  import flow, never into another worktree's device.
+- Music needs files: `scripts/sim.sh seed` fills a fresh simulator's
+  library with the dev sample library (`apps/mobile/dev/sample-library`:
+  20 short, playable, tagged songs with covers, three playlists, and
+  likes); `scripts/sim.sh seed 3000 --reset` erases the library and adds
+  made-up songs up to 3,000 for measuring lists. Otherwise import through
+  the app's own import flow, never into another worktree's device.
 - Check Metro's log (`.cache/sim/metro.log`) for red boxes and warnings you
   introduced.
 

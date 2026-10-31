@@ -1,3 +1,5 @@
+import { router } from "expo-router";
+
 import type { AlbumListItem, LibraryDb, SortOrder } from "@synq/db";
 import { compareText, listAlbums } from "@synq/db";
 
@@ -59,7 +61,11 @@ export default function AlbumsScreen() {
   return (
     <>
       <TabTitle title="Albums" />
-      <SortToolbar store={albumSort} sort={sort} />
+      <SortToolbar
+        store={albumSort}
+        sort={sort}
+        add={{ label: "New Album", onPress: () => router.push("/new-album") }}
+      />
       <LibrarySearchBar placeholder="Search Albums" search={search} />
       <ScreenList
         data={items}

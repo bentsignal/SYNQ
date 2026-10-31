@@ -1,3 +1,5 @@
+import { router } from "expo-router";
+
 import { listArtists } from "@synq/db";
 
 import { EmptyState } from "~/components/empty-state";
@@ -31,7 +33,11 @@ export default function ArtistsScreen() {
   return (
     <>
       <TabTitle title="Artists" />
-      <SortToolbar store={artistSort} sort={sort} />
+      <SortToolbar
+        store={artistSort}
+        sort={sort}
+        add={{ label: "New Artist", onPress: () => router.push("/new-artist") }}
+      />
       <LibrarySearchBar placeholder="Search Artists" search={search} />
       <ScreenList
         data={items}

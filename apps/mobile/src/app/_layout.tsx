@@ -7,10 +7,12 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { useCSSVariable } from "uniwind";
 
 import { installDevAutomation } from "~/features/dev/automation";
+import { applyStoredPreferences } from "~/features/preferences/store";
 import { queryClient } from "~/lib/query-client";
 
 // The splash is a plain background, so the app fades in over it.
 SplashScreen.setOptions({ duration: 250, fade: true });
+applyStoredPreferences();
 installDevAutomation();
 
 function color<Fallback>(

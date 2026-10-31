@@ -9,6 +9,7 @@ import {
   appIconsAvailable,
   currentAppIcon,
   setAppIcon,
+  subscribeAppIcon,
 } from "~/features/app-icon/app-icon";
 import { selectionTick } from "~/lib/haptics";
 
@@ -19,30 +20,9 @@ import { selectionTick } from "~/lib/haptics";
 const PRIMARY =
   Constants.expoConfig?.scheme === "synq" ? APP_ICONS[0].name : null;
 
-function read() {
+function snapshot() {
   const name = currentAppIcon();
   return APP_ICONS.find((icon) => icon.name === name)?.name ?? PRIMARY;
-}
-
-/** Undefined until first read. */
-let current: AppIconName | null | undefined;
-const listeners = new Set<() => void>();
-
-function snapshot() {
-  current ??= read();
-  return current;
-}
-
-function publish(next: AppIconName | null) {
-  current = next;
-  for (const listener of listeners) listener();
-}
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => {
-    listeners.delete(listener);
-  };
 }
 
 /**
@@ -53,13 +33,12 @@ function subscribe(listener: () => void) {
 export function chooseAppIcon(name: AppIconName) {
   const previous = snapshot();
   if (name === previous) return;
-  publish(name);
   selectionTick();
   track("app_icon_change", {
     icon: APP_ICONS.find((icon) => icon.name === name)?.label ?? name,
   });
+  // It reads as chosen at once, and goes back if iOS refuses.
   setAppIcon(name).catch(() => {
-    publish(previous);
     Alert.alert("Couldn't Change App Icon", "Try again.");
   });
 }
@@ -68,6 +47,6 @@ export function chooseAppIcon(name: AppIconName) {
 export function useAppIcon() {
   return {
     available: appIconsAvailable(),
-    current: useSyncExternalStore(subscribe, snapshot),
+    current: useSyncExternalStore(subscribeAppIcon, snapshot),
   };
 }

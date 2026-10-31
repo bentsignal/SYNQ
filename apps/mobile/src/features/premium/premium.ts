@@ -69,7 +69,11 @@ export function applyCustomerInfo(info: CustomerInfo) {
   confirmed = true;
   if (developmentOverride) return next;
   publish(next);
-  if (!next.active) resetPremiumAppearance();
+  // After the library opens: on the first launch after updating from 2.5.2,
+  // that's when 2.5.2's theme is applied, which RevenueCat often answers
+  // before. Resetting earlier would find the default and leave the Premium
+  // theme on.
+  if (!next.active) whenLibraryOpens(resetPremiumAppearance);
   return next;
 }
 

@@ -206,18 +206,25 @@ function grouped<T, R>(
   );
 }
 
-/** The whole library in 2.5.2's terms; artwork as presence, file names NFC. */
-export function expectedLibrary() {
+/**
+ * The whole library in 2.5.2's terms, imported at `now`; artwork as
+ * presence, file names NFC. `fileNames` replaces songs' file names, for a
+ * copy of the fixture with a file renamed.
+ */
+export function expectedLibrary(
+  now = NOW,
+  fileNames: Readonly<Record<number, string>> = {},
+) {
   return {
     songs: SONGS.map(
       ([id, title, fileName, mimeType, seconds, edited, cover], index) => ({
         id,
         title,
-        filePath: `library/${id}/${fileName}`,
+        filePath: `library/${id}/${fileNames[id] ?? fileName}`,
         mimeType,
         durationMs: seconds * 1000,
         artwork: cover,
-        addedAt: NOW - SONGS.length + index,
+        addedAt: now - SONGS.length + index,
         modifiedSinceExport: edited,
       }),
     ),
@@ -225,22 +232,22 @@ export function expectedLibrary() {
       id,
       name,
       artwork,
-      addedAt: NOW - ARTISTS.length + index,
+      addedAt: now - ARTISTS.length + index,
     })),
     albums: ALBUMS.map(([id, name, year, artwork], index) => ({
       id,
       name,
       year,
       artwork,
-      addedAt: NOW - ALBUMS.length + index,
+      addedAt: now - ALBUMS.length + index,
     })),
     playlists: PLAYLISTS.map(([id, name, kind, artwork], index) => ({
       id,
       name,
       kind,
       artwork,
-      createdAt: NOW - PLAYLISTS.length + index,
-      updatedAt: NOW - PLAYLISTS.length + index,
+      createdAt: now - PLAYLISTS.length + index,
+      updatedAt: now - PLAYLISTS.length + index,
     })),
     songArtists: grouped(SONG_ARTISTS, (songId, artistId, position) => ({
       songId,

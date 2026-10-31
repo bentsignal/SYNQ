@@ -7,6 +7,12 @@
 #
 #   up               build or reuse the dev client, boot, start Metro, open the app
 #   build            cache the dev client without entering the device queue
+#   build-release    cache SYNQ (the production variant, bundle
+#                    com.directedbyshawn.synq) as a Release simulator app
+#                    with its JavaScript embedded; prints its path
+#   boot             wait for a slot and boot this worktree's simulator, with
+#                    no app or Metro (for installing other builds, such as
+#                    scripts/upgrade-test.sh does); prints the device id
 #   open <path>      go to a route, such as `/settings` or `/search`
 #   shot <name>      screenshot to .cache/evidence/<name>.png
 #   record <name>    start a video to .cache/evidence/<name>.mp4
@@ -121,30 +127,89 @@ build_ios_client() {
   cp -R "ios/build/Build/Products/Debug-iphonesimulator/$project.app" "$1"
 }
 
-# Builds the dev client for this fingerprint unless a worktree already did.
-ensure_client() {
-  local hash dir lock artifact
-  hash="$(fingerprint)"
-  dir="$CACHE/dev-client-$PLATFORM/$hash"
-  artifact="$dir/SYNQ.app"
-  CLIENT="$artifact"
+# Builds `artifact` with `scripts/sim.sh <internal command> <path>` under
+# the heavy-work lock, unless a worktree already did. Sets BUILT.
+ensure_built() {
+  local dir="$1" artifact="$2" command="$3" what="$4" lock
+  BUILT="$artifact"
   [ -e "$artifact" ] && return
   mkdir -p "$(dirname "$dir")"
   lock="$dir.lock"
   until mkdir "$lock" 2>/dev/null; do
-    echo "another worktree is building this dev client; waiting"
+    echo "another worktree is building this $what; waiting"
     sleep 15
     [ -e "$artifact" ] && return
   done
-  trap 'rmdir "$lock" 2>/dev/null || true' EXIT
-  echo "building the iOS dev client for fingerprint $hash (native code changed or first run)"
+  # shellcheck disable=SC2064 # the path now: lock is local
+  trap "rmdir '$lock' 2>/dev/null || true" EXIT
   rm -rf "$dir.partial"
   mkdir -p "$dir.partial"
   # Under the heavy-work lock SYNQ and Vera share, so builds never overlap.
-  (cd "$MOBILE" && "$ROOT/scripts/bench/with-lock.sh" "$ROOT/scripts/sim.sh" build-client "$dir.partial/$(basename "$artifact")")
+  (cd "$MOBILE" && "$ROOT/scripts/bench/with-lock.sh" "$ROOT/scripts/sim.sh" "$command" "$dir.partial/$(basename "$artifact")")
   mv "$dir.partial" "$dir"
   rmdir "$lock"
   trap - EXIT
+}
+
+# Builds the dev client for this fingerprint unless a worktree already did.
+ensure_client() {
+  local hash dir
+  hash="$(fingerprint)"
+  dir="$CACHE/dev-client-$PLATFORM/$hash"
+  if [ ! -e "$dir/SYNQ.app" ]; then
+    echo "building the iOS dev client for fingerprint $hash (native code changed or first run)"
+  fi
+  ensure_built "$dir" "$dir/SYNQ.app" build-client "dev client"
+  CLIENT="$BUILT"
+}
+
+# SYNQ, the production variant (no APP_VARIANT), as a Release simulator
+# build: what people get from the App Store, with the JavaScript embedded,
+# so it needs no Metro. Used to install 3.0 over 2.5.2
+# (scripts/upgrade-test.sh). metro.sh exports the dev variant, so this
+# overrides it for the fingerprint and the build.
+build_ios_release() {
+  export APP_VARIANT=production
+  npx expo prebuild --platform ios --clean </dev/null
+  local project
+  project="$(basename ios/*.xcworkspace .xcworkspace)"
+  xcodebuild -workspace "ios/$project.xcworkspace" -scheme "$project" -configuration Release \
+    -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' ARCHS=arm64 \
+    ONLY_ACTIVE_ARCH=YES -derivedDataPath ios/build CODE_SIGN_IDENTITY=- \
+    CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=39K6A9FP99 \
+    PROVISIONING_PROFILE_SPECIFIER= -quiet build
+  cp -R "ios/build/Build/Products/Release-iphonesimulator/$project.app" "$1"
+}
+
+# What the embedded JavaScript is built from: the app's and packages'
+# source files as they are in this worktree (tests, fixtures, and scripts
+# left out). With the native fingerprint, it names a release build.
+javascript_hash() {
+  (
+    cd "$ROOT"
+    git ls-files -z --cached --others --exclude-standard -- apps/mobile packages pnpm-lock.yaml \
+      ':!*.test.ts' ':!*.test.tsx' ':!*.md' ':!apps/mobile/perf/*' ':!apps/mobile/dev/*' \
+      ':!packages/*/scripts/*' ':!packages/*/fixtures/*' ':!packages/*/src/testing/*' |
+      xargs -0 shasum 2>/dev/null | shasum | cut -c1-12
+  )
+}
+
+# The production Release build for this worktree's code; the newest three
+# are kept.
+ensure_release() {
+  local hash dir old
+  hash="$(APP_VARIANT=production fingerprint)-$(javascript_hash)"
+  dir="$CACHE/release-$PLATFORM/$hash"
+  if [ ! -e "$dir/SYNQ.app" ]; then
+    echo "building SYNQ (production, Release) for $hash; about 15 minutes" >&2
+  fi
+  ensure_built "$dir" "$dir/SYNQ.app" build-release-app "release build" >&2
+  RELEASE="$BUILT"
+  touch "$dir"
+  # shellcheck disable=SC2012 # names are hashes
+  for old in $(ls -t "$CACHE/release-$PLATFORM" | grep -v '\.' | tail -n +4); do
+    rm -rf "${CACHE:?}/release-$PLATFORM/$old"
+  done
 }
 
 latest_ios_runtime() {
@@ -304,6 +369,18 @@ up() {
   echo "when done: device_close, then scripts/sim.sh down, before you end your turn"
 }
 
+# A device for this worktree with no app or Metro: the queue slot, the
+# clone, and the state `down` reads, as `up` makes them.
+boot() {
+  load
+  rm -f "$STATE_DIR/$PLATFORM.reclaimed"
+  queue acquire "$PLATFORM" >&2
+  ensure_ios_device >&2
+  save
+  queue ready "$PLATFORM" --device "$DEVICE" >&2
+  echo "$DEVICE"
+}
+
 status() {
   load
   echo "ios: ${DEVICE:-none}"
@@ -374,14 +451,17 @@ shift || true
 # The state file's mtime is when this worktree last used its device; the
 # queue shuts down devices unused for a while when others are waiting.
 case "$command" in
-  up | down | queue) ;;
+  up | boot | down | queue) ;;
   *) [ -f "$STATE_DIR/$PLATFORM" ] && touch "$STATE_DIR/$PLATFORM" ;;
 esac
 case "$command" in
   build) ensure_client && echo "$CLIENT" ;;
-  # Internal: ensure_client runs it under the heavy-work lock.
+  build-release) ensure_release && echo "$RELEASE" ;;
+  # Internal: ensure_client and ensure_release run these under the heavy-work lock.
   build-client) (cd "$MOBILE" && build_ios_client "${1:?artifact}") ;;
+  build-release-app) (cd "$MOBILE" && build_ios_release "${1:?artifact}") ;;
   up) up ;;
+  boot) boot ;;
   open) require_up && open_path "${1:?path}" ;;
   eval) require_up && app_eval "${1:?expression}" ;;
   seed) require_up && seed "$@" ;;
@@ -422,7 +502,7 @@ case "$command" in
   queue) queue status ;;
   down) down ;;
   *)
-    sed -n '2,54p' "$0" | sed 's/^# \{0,1\}//'
+    sed -n '2,60p' "$0" | sed 's/^# \{0,1\}//'
     exit 2
     ;;
 esac

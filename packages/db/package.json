@@ -1,0 +1,43 @@
+{
+  "name": "@synq/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema.ts",
+    "./legacy": "./src/legacy/index.ts",
+    "./expo": "./src/expo.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo node_modules",
+    "db:generate": "drizzle-kit generate && node scripts/bundle-migrations.ts",
+    "lint": "tsgo --noEmit --noUnusedLocals --noUnusedParameters && node scripts/bundle-migrations.ts --check",
+    "test": "node --disable-warning=ExperimentalWarning --test 'src/**/*.test.ts'",
+    "typecheck": "tsgo --noEmit"
+  },
+  "dependencies": {
+    "drizzle-orm": "0.45.4"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "@typescript/native-preview": "7.0.0-dev.20260707.2",
+    "drizzle-kit": "0.31.11",
+    "typescript": "~6.0.3",
+    "react": "19.2.3",
+    "expo-sqlite": "~57.0.4",
+    "expo-file-system": "~57.0.7"
+  },
+  "peerDependencies": {
+    "expo-sqlite": "*",
+    "expo-file-system": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo-sqlite": {
+      "optional": true
+    },
+    "expo-file-system": {
+      "optional": true
+    }
+  }
+}

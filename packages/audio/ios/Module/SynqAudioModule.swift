@@ -126,6 +126,15 @@ public final class SynqAudioModule: Module {
       return ["tracks": tracks.map(Self.payload), "index": index]
     }.runOnQueue(.main)
 
+    View(RoutePickerView.self) {
+      Prop("color") { (view: RoutePickerView, color: UIColor?) in
+        view.picker.tintColor = color
+      }
+      Prop("activeColor") { (view: RoutePickerView, color: UIColor?) in
+        view.picker.activeTintColor = color
+      }
+    }
+
     OnDestroy {
       let module = ModuleBox(self)
       DispatchQueue.main.async {

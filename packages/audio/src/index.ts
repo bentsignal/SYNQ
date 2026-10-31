@@ -15,6 +15,7 @@ import type {
 } from "./types.ts";
 
 export type * from "./types.ts";
+export { RoutePickerButton, type RoutePickerButtonProps } from "./route-picker.tsx";
 
 declare class SynqAudioModule extends NativeModule<AudioEvents> {
   setQueue(tracks: readonly Track[], options: SetQueueOptions): Promise<void>;

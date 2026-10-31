@@ -81,6 +81,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "./plugins/with-ios-scene-lifecycle.cjs",
     ["./plugins/with-alternate-icons.cjs", { icons: ALTERNATE_ICONS }],
     "expo-router",
+    // Playback in the background and on the lock screen (packages/audio).
+    "@synq/audio",
     [
       "expo-splash-screen",
       {

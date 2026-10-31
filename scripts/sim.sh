@@ -14,6 +14,11 @@
 #   reload           reload the JavaScript
 #   relaunch         restart the app (clears in-memory state)
 #   eval "<js>"      evaluate JavaScript in the running app
+#   seed [songs] [--reset]
+#                    fill the library with the dev sample library
+#                    (apps/mobile/dev/sample-library): 20 playable songs,
+#                    covers, playlists, and likes; `songs` (e.g. 3000) adds
+#                    made-up songs up to that many; --reset erases first
 #   frames start     record the UI thread's frames (to measure an animation);
 #                    waits until no device on the Mac is booting
 #   frames stop      stop, and report the frames that drew slowly and how
@@ -246,6 +251,27 @@ open_path() {
   echo "opened $path"
 }
 
+# Copies apps/mobile/dev/sample-library into the app's caches, where the
+# dev-only `synqDev.seed()` (src/features/dev/seed.ts) reads it.
+seed() {
+  local songs=0 reset=false arg
+  for arg in "$@"; do
+    case "$arg" in
+      --reset) reset=true ;;
+      *[!0-9]* | "") echo "usage: scripts/sim.sh seed [songs] [--reset]" >&2 && exit 2 ;;
+      *) songs="$arg" ;;
+    esac
+  done
+  local container staged
+  container="$(xcrun simctl get_app_container "$DEVICE" "$BUNDLE_ID" data)"
+  staged="$container/Library/Caches/synq-seed"
+  rm -rf "$staged"
+  mkdir -p "$staged"
+  cp -R "$MOBILE/dev/sample-library/audio" "$MOBILE/dev/sample-library/covers" \
+    "$MOBILE/dev/sample-library/manifest.json" "$staged/"
+  app_eval "globalThis.synqDev.seed({ reset: $reset, songs: $songs })"
+}
+
 launch() {
   xcrun simctl terminate "$DEVICE" "$BUNDLE_ID" 2>/dev/null || true
   xcrun simctl launch "$DEVICE" "$BUNDLE_ID" --initialUrl "http://127.0.0.1:$PORT" >/dev/null
@@ -357,6 +383,7 @@ case "$command" in
   up) up ;;
   open) require_up && open_path "${1:?path}" ;;
   eval) require_up && app_eval "${1:?expression}" ;;
+  seed) require_up && seed "$@" ;;
   frames)
     require_up
     case "${1:-}" in
@@ -394,7 +421,7 @@ case "$command" in
   queue) queue status ;;
   down) down ;;
   *)
-    sed -n '2,49p' "$0" | sed 's/^# \{0,1\}//'
+    sed -n '2,54p' "$0" | sed 's/^# \{0,1\}//'
     exit 2
     ;;
 esac

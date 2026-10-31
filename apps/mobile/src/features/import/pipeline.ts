@@ -174,7 +174,7 @@ export async function importSong(source: ImportSource, read: ReadSong) {
       );
     } catch {
       // The song stays; it just has no artwork.
-      setArtwork(db, target.kind, target.id, false);
+      setArtwork(db, { id: target.id, kind: target.kind, present: false });
     }
   }
   void queryClient.invalidateQueries({ queryKey: ["library"] });

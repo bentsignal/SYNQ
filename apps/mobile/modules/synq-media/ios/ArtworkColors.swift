@@ -26,8 +26,10 @@ enum ArtworkColors {
       let output = filter.outputImage
     else { return nil }
     var pixel = [UInt8](repeating: 0, count: 4)
+    // The one-pixel average sits at the region's origin, not at zero.
     context.render(
-      output, toBitmap: &pixel, rowBytes: 4, bounds: CGRect(x: 0, y: 0, width: 1, height: 1),
+      output, toBitmap: &pixel, rowBytes: 4,
+      bounds: CGRect(x: rect.minX, y: rect.minY, width: 1, height: 1),
       format: .RGBA8, colorSpace: CGColorSpaceCreateDeviceRGB())
     return String(format: "#%02x%02x%02x", pixel[0], pixel[1], pixel[2])
   }

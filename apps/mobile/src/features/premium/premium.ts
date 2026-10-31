@@ -1,5 +1,6 @@
 import type { CustomerInfo } from "react-native-purchases";
 import { useSyncExternalStore } from "react";
+import { LogBox } from "react-native";
 import Purchases, { LOG_LEVEL } from "react-native-purchases";
 
 import type { PremiumStatus } from "./status";
@@ -145,7 +146,12 @@ export function startPremium() {
   installDevelopmentOverride();
   whenLibraryOpens(adoptLegacyCache);
   try {
-    if (__DEV__) void Purchases.setLogLevel(LOG_LEVEL.WARN);
+    if (__DEV__) {
+      void Purchases.setLogLevel(LOG_LEVEL.WARN);
+      // SYNQ Dev has no products in RevenueCat, so fetching offerings
+      // always fails there: keep it in Metro's log, not over the app.
+      LogBox.ignoreLogs(["[RevenueCat]"]);
+    }
     Purchases.configure({ apiKey: REVENUECAT_IOS_KEY });
   } catch {
     // A build without the native SDK stays on the cached status.

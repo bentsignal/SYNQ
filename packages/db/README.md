@@ -136,13 +136,15 @@ the same SQL the app does.
 - `src/testing/legacy-ddl.ts` is 2.5.2's DDL, verbatim from its `Model.ts`.
 - `src/testing/synthetic-install.ts` builds a messy 2.5.2 container on disk
   (database written with 2.5.2's own model SQL, audio, covers, and an
-  AsyncStorage directory with an MD5-named queue file).
+  AsyncStorage directory with an MD5-named queue file). It also carries the
+  cases the real fixture revealed (untitled songs, a packed m4a track), so
+  they stay covered if the fixture ever changes.
 - `src/legacy/import-legacy-library.test.ts` asserts the whole migrated
   library row by row, the settings, idempotency, rollback, legacy files left
   untouched, v1-era and damaged databases, and backup roots.
-- `src/legacy/real-fixture.test.ts` imports the real 2.5.2 container
-  captured from the simulator when it exists
-  (`/Users/shawn/dev/worktrees/synq-legacy-fixture/container`, or
-  `SYNQ_LEGACY_FIXTURE`); it's skipped otherwise. To pin exact
-  expectations, add `expected.json` (`{ counts, settings }`) next to
-  `container/`.
+- `src/legacy/real-fixture.test.ts` imports a real 2.5.2 install captured
+  from the simulator (`fixtures/legacy-2.5.2/`, see its README and
+  `EXPECTED.md`) and asserts the exact library, settings, and warnings, then
+  restores the real 2.5.2 backup zip of the same library
+  (`src/testing/unzip.ts` extracts it) and asserts the same library. The
+  expected rows are in `src/testing/real-fixture-expected.ts`.

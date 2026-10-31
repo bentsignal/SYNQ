@@ -53,6 +53,8 @@ export type LegacyImportWarningCode =
   | "invalid-row"
   /** `fileName` was empty, missing, or wrong; the only audio file in the song's folder was used. */
   | "audio-file-recovered"
+  /** The title was empty (2.5.2 showed the file name instead); the file name without its extension became the title. */
+  | "title-from-file-name"
   /** No audio file was found; the song was kept with its recorded path (or none). */
   | "audio-file-missing"
   /** A song row 2.5.2 never showed (absent from its hidden Library playlist) with no audio file: skipped. */
@@ -65,6 +67,8 @@ export type LegacyImportWarningCode =
   | "orphan-join-rows"
   /** Repeated join rows were dropped, keeping the first. */
   | "duplicate-join-rows"
+  /** An m4a track number stored packed with its total (`total << 16 | n`); decoded to `n`. */
+  | "packed-track-number"
   /** Only one of `cover_full.jpg` / `cover_small.jpg` exists. */
   | "partial-artwork"
   /** Playlist 2 (Liked Songs) had no row; it was recreated with the default name. */

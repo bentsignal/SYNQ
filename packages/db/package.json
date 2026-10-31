@@ -15,8 +15,8 @@
     "lint": "eslint --flag unstable_native_nodejs_ts_config && node scripts/bundle-migrations.ts --check",
     "test": "node --disable-warning=ExperimentalWarning --test 'src/**/*.test.ts'",
     "typecheck": "tsgo --noEmit",
-    "format": "prettier --check . --ignore-path ../../.gitignore",
-    "format:fix": "prettier --write . --ignore-path ../../.gitignore"
+    "format": "prettier --check . --ignore-path ../../.gitignore --ignore-path .prettierignore",
+    "format:fix": "prettier --write . --ignore-path ../../.gitignore --ignore-path .prettierignore"
   },
   "dependencies": {
     "drizzle-orm": "0.45.4"

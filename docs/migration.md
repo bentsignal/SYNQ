@@ -29,7 +29,7 @@ through `PRAGMA table_info`, so all of these import.
 | 2.5.2 | 3.0 | Notes |
 | --- | --- | --- |
 | `songs.id` | `songs.id` | Preserved, so `library/{id}/` stays valid |
-| `songs.title` | `songs.title` | `NULL` → `''` (the UI shows the file name) |
+| `songs.title` | `songs.title` | Kept. Empty or `NULL` → the file name without its extension (see "Untitled songs") |
 | `songs.edited` | `songs.modified_since_export` | `0/1`, `'true'`, and `TRUE` all accepted |
 | `songs.duration` (seconds) | `songs.duration_ms` | × 1000. 2.5.2 floored to whole seconds; `NULL`/0 → 0 |
 | `songs.fileType` (a MIME type) | `songs.mime_type` | Kept as-is; `''` → `NULL` |
@@ -43,9 +43,9 @@ through `PRAGMA table_info`, so all of these import.
 | `playlists` id 2 | `playlists` id 2, `kind = 'liked'` | Keeps the user's name ("Favs ♥"); `NULL`/blank → "Liked Songs". Recreated if its row is missing |
 | other `playlists` | `playlists`, `kind = 'user'` | Ids and names preserved |
 | `artistSongs` (artistId, songId) | `song_artists` (song_id, artist_id, position) | Position = rowid order per song (2.5.2 listed credits by rowid) |
-| `albumSongs` (albumId, songId, track) | `album_songs` (album_id, song_id, track, position) | Position = rowid order per song (the first is the primary album, whose cover wins). Track: first non-null across duplicates; missing column → `NULL` |
+| `albumSongs` (albumId, songId, track) | `album_songs` (album_id, song_id, track, position) | Position = rowid order per song (the first is the primary album, whose cover wins). Track: first non-null across duplicates; packed m4a values decoded (see "Edge cases"); missing column → `NULL` |
 | `artistsAlbums` (artistId, albumId) | `album_artists` (album_id, artist_id, position) | Position = rowid order per album |
-| `playlistSongs` (id, playlistId, songId) | `playlist_songs` (id, playlist_id, song_id, position) | Playlist 1 rows dropped. Ids preserved. Position = 1..n in rowid order (2.5.2's "date added" playlist order) |
+| `playlistSongs` (id, playlistId, songId) | `playlist_songs` (id, playlist_id, song_id, position) | Playlist 1 rows dropped. Ids preserved. Position = 1..n in `playlistSongs.id` order, the order songs were added (see "Playlist order") |
 | `sqlite_sequence` | `sqlite_sequence` | Each counter is raised to at least 2.5.2's value, so an id 2.5.2 handed out (and whose folder may linger) is never reissued |
 | (none) | `legacy_import` | One row: source, time, counts, the parsed settings, warnings |
 
@@ -94,7 +94,9 @@ and 3.0 keeps the names (`docs/rewrite.md`, "Variants").
 | Song rows not in the hidden Library playlist (an import that failed after the row was written; 2.5.2 never showed them) | Imported if their audio file exists; skipped if not (nothing to play, never visible) | `hidden-song-imported`, `hidden-song-skipped` |
 | Library playlist empty (damaged database) | Every song row is treated as visible | `library-playlist-empty` |
 | Empty `fileName`: 2.5.2 stored `song.audio/mpeg` (it appended the MIME type) and copied to the folder itself | Uses the folder's only non-cover file, else keeps the row with `file_path` null or as recorded | `audio-file-recovered`, `audio-file-missing` |
-| `fileName` spelled in NFC, file on disk in NFD (or vice versa) | Matched ignoring Unicode normalization; the on-disk spelling is stored | none |
+| `fileName` spelled in NFC, file on disk in NFD (or vice versa). Seen in the real capture: a Wi-Fi transfer stored `Café Ünïcødé.mp3` NFC in `synq.db` and NFD on disk | Matched ignoring Unicode normalization; the on-disk spelling (its exact bytes) is stored, so the app opens the file by the name the file system lists | none |
+| Empty or `NULL` title: 2.5.2's tag reader returned none for WAV, uppercase `.MP3` (it chose a parser by lowercase extension), FLAC with lowercase Vorbis keys, and untagged files, and the UI showed `title ? title : fileName` | Titled with the file name without its extension (`LOUD.MP3` → `LOUD`, `field recording.wav` → `field recording`), in NFC. A name that is all extension stays whole; no file at all leaves `''` | `title-from-file-name` |
+| m4a track "n of total" read as one integer, `total << 16 \| n` (1 of 3 → 196609) | Any track above 0xFFFF becomes its low 16 bits (`NULL` if those are 0). Album order is unchanged | `packed-track-number` |
 | Audio file deleted via the Files app | Row kept with the recorded path, so restoring the file brings it back | `audio-file-missing` |
 | `#`, `&`, `%`, unicode in file names | Stored verbatim. The app must resolve paths by segments (`documentFile`) | none |
 | Only one cover size present | `artwork_version` set; the UI falls back to the other size | `partial-artwork` |
@@ -106,10 +108,29 @@ and 3.0 keeps the names (`docs/rewrite.md`, "Variants").
 | Malformed AsyncStorage (bad JSON, a `null` value whose file is gone) | Ignored key by key; never blocks the library import | `async-storage` |
 | 2.5.2's Playlists tab `splice(…, 2)` bug hid the playlist sorted after Liked Songs | Nothing to fix in data; 3.0 shows every playlist | none |
 
+### Untitled songs
+
+2.5.2 never wrote a title it couldn't read from tags; it stored `''` and
+showed the file name in every list and in the player. 3.0 shows titles, so
+the importer gives those songs a title: the file name, minus the extension,
+so they read like the titled songs around them. The user sees the name they
+recognize and can edit it. The rows are listed in the
+`title-from-file-name` warning.
+
+### Playlist order
+
+2.5.2 stored the order songs were added (`playlistSongs.id`, ascending) but
+never showed it: its playlist query joined `songs` with no `ORDER BY`, so
+SQLite returned songs-table order, and the default "Date Added" sort really
+sorted by song id. The importer deliberately keeps the add order, the only
+order the user ever expressed. In the real capture, Focus was built
+Glasshouse → Fern Light → Keystone → Lost Signal → field recording; 2.5.2
+listed it Glasshouse → Fern Light → Lost Signal → field recording →
+Keystone, and 3.0 shows the order it was built in.
+
 ### Timestamps
 
-2.5.2 recorded no dates. "Date added" was id order (and `playlistSongs`
-rowid order). The importer gives the n rows of each table `added_at` (or
+2.5.2 recorded no dates. "Date added" was id order. The importer gives the n rows of each table `added_at` (or
 `created_at`/`updated_at`) `now - n + rank` ms in id order. Sorting by date
 matches 2.5.2, and everything added in 3.0 sorts after.
 
@@ -186,7 +207,11 @@ filled by 2.5.2's own model SQL, and covers every row of the edge-case
 table above. It also checks idempotency, rollback on a failure injected
 mid-import, that the legacy tree hashes the same before and after, a
 v1-era database, missing tables, and backup roots.
-`src/legacy/real-fixture.test.ts` runs the same import on the real
-container captured from the 2.5.2 app in the simulator, when present. The
-end-to-end upgrade test (install 2.5.2, add data, install 3.0 over it) is
+`src/legacy/real-fixture.test.ts` imports a real 2.5.2 install built
+through the app's UI in the simulator (`packages/db/fixtures/legacy-2.5.2/`;
+its `EXPECTED.md` lists every action) and asserts the exact library, the
+settings and queue from AsyncStorage, and the warnings, with the legacy
+tree unchanged. It then restores the real 2.5.2 backup zip of the same
+library over it and asserts the same library, including the device's NFD
+file names. The end-to-end upgrade test (install 2.5.2, add data, install 3.0 over it) is
 the app's, not this package's.

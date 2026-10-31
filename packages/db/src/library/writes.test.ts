@@ -104,8 +104,8 @@ void describe("addSongs", () => {
       "songs",
     ]);
     assert.deepEqual(whoDat, {
-      id: 14,
-      filePath: "library/14/who.mp3",
+      id: 17,
+      filePath: "library/17/who.mp3",
       artistIds: [1, 2],
       albumId: 1,
       artworkTarget: null,
@@ -117,25 +117,25 @@ void describe("addSongs", () => {
       dir: "albums/7",
     });
     assert.deepEqual(dynamite?.artistIds, [3]);
-    assert.equal(nameless?.filePath, "library/17/song.mp3");
+    assert.equal(nameless?.filePath, "library/20/song.mp3");
     assert.deepEqual(nameless.artworkTarget, {
       kind: "song",
-      id: 17,
-      dir: "library/17",
+      id: 20,
+      dir: "library/20",
     });
 
-    const song = getSong(db, 14);
+    const song = getSong(db, 17);
     assert.equal(song?.durationMs, 205_400);
     assert.deepEqual(
       song.albums.map((a) => [a.id, a.track]),
       [[1, 2]],
     );
     assert.equal(song.addedAt, NOW);
-    assert.equal(getSong(db, 15)?.addedAt, NOW + 1);
+    assert.equal(getSong(db, 18)?.addedAt, NOW + 1);
     // Flower Boy already credited both artists; Butter gets bts.
     assert.deepEqual(
       listAlbumTracks(db, 1).map((s) => s.id),
-      [1, 14],
+      [1, 17],
     );
   });
 

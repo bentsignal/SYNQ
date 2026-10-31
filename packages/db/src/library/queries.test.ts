@@ -29,31 +29,34 @@ before(async () => {
 
 void describe("songs", () => {
   void test("default order is newest first (2.5.2's date-added order)", () => {
-    assert.deepEqual(ids(listSongs(db)), [12, 10, 8, 7, 6, 5, 4, 3, 2, 1]);
+    assert.deepEqual(
+      ids(listSongs(db)),
+      [16, 15, 14, 12, 10, 8, 7, 6, 5, 4, 3, 2, 1],
+    );
     assert.deepEqual(
       ids(listSongs(db, { sort: "addedAt", order: "asc" })),
-      [1, 2, 3, 4, 5, 6, 7, 8, 10, 12],
+      [1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 15, 16],
     );
   });
 
   void test("sorts by title with locale collation (case and accents fold, ties by id)", () => {
     assert.deepEqual(
       ids(listSongs(db, { sort: "title", order: "asc" })),
-      [2, 6, 5, 7, 10, 8, 3, 4, 1, 12],
+      [2, 6, 14, 5, 7, 10, 15, 8, 3, 4, 16, 1, 12],
     );
   });
 
   void test("sorts by first artist, songs without artists last", () => {
     assert.deepEqual(
       ids(listSongs(db, { sort: "artist", order: "asc" })),
-      [5, 3, 4, 2, 1, 12, 6, 7, 10, 8],
+      [5, 3, 4, 2, 1, 12, 6, 14, 7, 10, 15, 8, 16],
     );
   });
 
   void test("sorts by primary album then track", () => {
     assert.deepEqual(
-      ids(listSongs(db, { sort: "album", order: "asc" })).slice(0, 5),
-      [1, 2, 5, 3, 6],
+      ids(listSongs(db, { sort: "album", order: "asc" })).slice(0, 6),
+      [16, 1, 2, 5, 3, 6],
     );
   });
 

@@ -72,6 +72,7 @@ function planSongs({ snapshot, scan, now, warnings }: PlanContext) {
     });
   }
   const recovered = new Array<number>();
+  const untitled = new Array<number>();
   const missing = new Array<number>();
   const hiddenSkipped = new Array<number>();
   const hiddenImported = new Array<number>();
@@ -90,7 +91,7 @@ function planSongs({ snapshot, scan, now, warnings }: PlanContext) {
   const songTime = synthesizedTimes(songRows.length, now);
   const planned = songRows.map(({ song, audio }, index) => ({
     id: song.id,
-    title: song.title ?? "",
+    title: titleOf(song.title, audio.filePath, () => untitled.push(song.id)),
     filePath: audio.filePath,
     mimeType: (song.fileType?.trim() ?? "") || null,
     durationMs:
@@ -106,6 +107,12 @@ function planSongs({ snapshot, scan, now, warnings }: PlanContext) {
     "audio-file-recovered",
     "Used the only audio file in the folder (fileName empty or wrong)",
     recovered,
+  );
+  pushIds(
+    warnings,
+    "title-from-file-name",
+    "Titled untitled songs with their file name",
+    untitled,
   );
   pushIds(
     warnings,
@@ -126,6 +133,27 @@ function planSongs({ snapshot, scan, now, warnings }: PlanContext) {
     hiddenImported,
   );
   return planned;
+}
+
+/**
+ * 2.5.2 stored an empty title for files whose tags it couldn't read (WAV,
+ * uppercase `.MP3`, FLAC with lowercase Vorbis keys, untagged files) and
+ * showed `title ? title : fileName` instead. Those songs get the file name
+ * without its extension, so they keep a recognizable name in 3.0.
+ */
+function titleOf(
+  title: string | null,
+  filePath: string | null,
+  onDerived: () => void,
+) {
+  if (title !== null && title.trim() !== "") return title;
+  const fileName = filePath?.slice(filePath.lastIndexOf("/") + 1) ?? "";
+  const name = fileName.normalize("NFC").trim();
+  // A name that is all extension (".mp3") stays whole.
+  const stem = name.replace(/\.[^.\s]{1,5}$/, "").trim() || name;
+  if (stem === "") return title ?? "";
+  onDerived();
+  return stem;
 }
 
 function planArtists({ snapshot, scan, now }: PlanContext) {

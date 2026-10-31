@@ -19,6 +19,8 @@ export function planLinks(
     duplicates: new Map<string, number>(),
   };
 
+  const packedTracks = new Array<number>();
+
   const songArtists = linkRows(
     {
       table: "artistSongs",
@@ -41,14 +43,14 @@ export function planLinks(
       groupOf: (l) => l.right,
     },
     tally,
-  ).map(({ link, position, duplicates }) => ({
-    albumId: link.left,
-    songId: link.right,
+  ).map(({ link, position, duplicates }) => {
     // 2.5.2 updated every duplicate's track together; take the first one set.
-    track:
-      link.track ?? duplicates.find((d) => d.track !== null)?.track ?? null,
-    position,
-  }));
+    const stored =
+      link.track ?? duplicates.find((d) => d.track !== null)?.track ?? null;
+    const track = unpackTrack(stored);
+    if (track !== stored) packedTracks.push(link.right);
+    return { albumId: link.left, songId: link.right, track, position };
+  });
 
   const albumArtists = linkRows(
     {
@@ -64,6 +66,8 @@ export function planLinks(
     position,
   }));
 
+  // Positions follow playlistSongs.id, the add order. 2.5.2 queried with no
+  // ORDER BY and so displayed songs-table order; see docs/migration.md.
   const playlistSongs = linkRows(
     {
       table: "playlistSongs",
@@ -93,7 +97,25 @@ export function planLinks(
       message: `Dropped duplicate rows: ${describe(tally.duplicates)}`,
     });
   }
+  if (packedTracks.length > 0) {
+    warnings.push({
+      code: "packed-track-number",
+      message: `Decoded packed m4a track numbers (${packedTracks.length})`,
+      ids: [...new Set(packedTracks)].sort((a, b) => a - b),
+    });
+  }
   return { songArtists, albumSongs, albumArtists, playlistSongs };
+}
+
+/**
+ * 2.5.2 read an m4a's `trkn` atom ("1 of 3") as one integer,
+ * `total << 16 | n` (196609 for 1 of 3). No real track number exceeds
+ * 0xFFFF, so anything larger is decoded to its low 16 bits (null if those
+ * are 0, as 2.5.2 stored "no track").
+ */
+function unpackTrack(track: number | null) {
+  if (track === null || track <= 0xffff) return track;
+  return track % 0x10000 || null;
 }
 
 /**

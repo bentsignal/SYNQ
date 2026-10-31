@@ -29,12 +29,12 @@ void describe("importLegacyLibrary (synthetic 2.5.2 install)", () => {
     assert.equal(result.status, "imported");
     assert.deepEqual(dumpLibrary(db), EXPECTED_LIBRARY);
     assert.deepEqual(result.counts, {
-      songs: 10,
+      songs: 13,
       artists: 7,
       albums: 6,
       playlists: 3,
       songArtists: 7,
-      albumSongs: 5,
+      albumSongs: 6,
       albumArtists: 6,
       playlistSongs: 9,
     });
@@ -60,12 +60,16 @@ void describe("importLegacyLibrary (synthetic 2.5.2 install)", () => {
       "hidden-song-skipped",
       "orphan-folders",
       "orphan-join-rows",
+      "packed-track-number",
       "partial-artwork",
+      "title-from-file-name",
     ]);
     assert.deepEqual(idsOf(warnings, "audio-file-missing"), [7]);
     assert.deepEqual(idsOf(warnings, "audio-file-recovered"), [8]);
     assert.deepEqual(idsOf(warnings, "hidden-song-skipped"), [9]);
     assert.deepEqual(idsOf(warnings, "hidden-song-imported"), [10]);
+    assert.deepEqual(idsOf(warnings, "title-from-file-name"), [14, 15]);
+    assert.deepEqual(idsOf(warnings, "packed-track-number"), [16]);
     assert.match(
       messageOf(warnings, "orphan-join-rows"),
       /artistSongs 2, albumSongs 1, artistsAlbums 1, playlistSongs 2/,
@@ -93,16 +97,16 @@ void describe("importLegacyLibrary (guarantees)", () => {
         }>(sql`SELECT name, seq FROM sqlite_sequence`)
         .map((r) => [r.name, r.seq]),
     );
-    // Song 13 was the last 2.5.2 import (deleted); playlist 5 the last playlist; playlistSongs reached 23.
-    assert.equal(sequences.songs, 13);
+    // Song 16 was the last 2.5.2 import; playlist 5 the last playlist; playlistSongs reached 26.
+    assert.equal(sequences.songs, 16);
     assert.equal(sequences.playlists, 5);
-    assert.equal(sequences.playlist_songs, 23);
+    assert.equal(sequences.playlist_songs, 26);
     const added = addSongs(
       db,
       [{ title: "New", fileName: "new.mp3", durationMs: 1 }],
       { now: NOW },
     );
-    assert.equal(added.value[0]?.id, 14);
+    assert.equal(added.value[0]?.id, 17);
   });
 
   void test("never modifies legacy files", async () => {

@@ -1,0 +1,3 @@
+# The captured 2.5.2 install and its notes stay byte-for-byte as captured.
+fixtures/legacy-2.5.2/container/
+fixtures/legacy-2.5.2/EXPECTED.md

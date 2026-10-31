@@ -119,7 +119,7 @@ void describe("importLegacyLibrary (older and partial installs)", () => {
     const library = dumpLibrary(db);
     assert.equal(library.albums.length, 0);
     assert.equal(library.albumSongs.length, 0);
-    assert.equal(library.songs.length, 10);
+    assert.equal(library.songs.length, 13);
     assert.deepEqual(
       result.warnings
         .filter((w) => w.code === "missing-table")

@@ -70,6 +70,7 @@ export function buildSyntheticInstall(options: SyntheticInstallOptions = {}) {
   const songIds = addSongs(legacy, entities);
   const roadTrip = addPlaylists(legacy, songIds);
   addTampering(legacy, entities, songIds);
+  addTaglessSongs(legacy, entities);
   db.close();
 
   writeCovers(documents, legacy.files, { ...entities, ...songIds, roadTrip });
@@ -286,6 +287,37 @@ function addPlaylists(
   legacy.addToPlaylist(gym, s4);
   legacy.removeSong(s11);
   return roadTrip;
+}
+
+/**
+ * Songs 14 to 16, what 2.5.2's tag reader got wrong: no title for a WAV or
+ * an uppercase `.MP3` (stored as `''`, or `NULL` from a v1-era import), and
+ * an m4a "2 of 3" read as `(3 << 16) | 2`.
+ */
+function addTaglessSongs(
+  legacy: LegacyWriter,
+  { compilation }: ReturnType<typeof addArtistsAndAlbums>,
+) {
+  legacy.importSong({
+    title: "",
+    fileName: "field recording.wav",
+    type: "audio/wav",
+    seconds: 6,
+  });
+  const loud = legacy.importSong({
+    title: "",
+    fileName: "LOUD.MP3",
+    type: "audio/mpeg",
+    seconds: 8,
+  });
+  legacy.raw("UPDATE songs SET title = NULL WHERE id = ?;", [loud]);
+  const packed = legacy.importSong({
+    title: "Scaffold & Steel",
+    fileName: "Blueprints - Scaffold & Steel.m4a",
+    type: "audio/x-m4a",
+    seconds: 7,
+  });
+  legacy.addAlbumToSong(compilation, packed, (3 << 16) | 2);
 }
 
 function addTampering(

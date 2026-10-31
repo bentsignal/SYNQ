@@ -1,0 +1,246 @@
+# SYNQ 3.0 rewrite
+
+This is the plan of record for the 3.0 rewrite. Treat decisions here as
+settled unless Shawn changes them; record new decisions here in the same PR
+that makes them.
+
+## Goals
+
+- Ship 3.0 as an update to the App Store app (`com.directedbyshawn.synq`,
+  live version **2.5.2**, build 77). 3.0.0 builds up to 99 went to
+  TestFlight only and never shipped.
+- **Every 2.5.2 user's library survives the update untouched**: songs,
+  files, artwork, artists, albums, track numbers, playlists and their order,
+  Liked Songs (including a renamed one), theme, app icon, haptics, shuffle and
+  repeat, and premium status. This is the one hard constraint.
+- Code that is easy to extend: Vera's conventions, lint rules, React Doctor,
+  perf gates, simulator workflow, and agent skills.
+- A native-feeling iOS app (native tabs with the mini player as the tab bar
+  accessory, native stacks with large titles, SwiftUI menus and lists, SF
+  Symbols) that keeps SYNQ's tone: dark, charcoal grays, one pastel accent,
+  quiet and elegant.
+- Fast: lists virtualized, React Compiler on, playback owned by native code.
+- SYNQ Dev and SYNQ install side by side on Shawn's phone.
+
+## Scope
+
+- **iOS only.** SYNQ has only ever shipped on iOS. Don't write Android code
+  or `.android.tsx` files; keep native modules' JS API platform-neutral so
+  Android can be added later.
+- Feature parity with 2.5.2 (see "Feature checklist"), with the same
+  monetization: free users hear the bundled audio ad after 10 minutes of
+  listening and see the import wait; Premium (monthly, yearly, lifetime)
+  removes both and unlocks bulk import/export, themes, app icons, and backup.
+
+## Repository layout
+
+Mirrors Vera (`~/dev/vera`), pnpm + turbo:
+
+```
+apps/mobile/          @synq/mobile, the Expo app (expo-router, src/app routes, src/features/*)
+packages/audio/       @synq/audio, Expo native module (Swift): queue playback, Now Playing, remote commands
+packages/db/          @synq/db, Drizzle schema + migrations, library queries, legacy (2.5.2) importer
+tooling/{eslint,prettier,typescript}
+scripts/              sim.sh, simq.ts (shared simulator queue), phone.sh, evidence.sh, ...
+.agents/skills/       synq-feature, synq-simulator, merge, unslop (.claude -> .agents)
+docs/                 this file, migration.md, ...
+```
+
+`apps/new`, `apps/old`, `shared/*`, `tooling/rewrite-smoke`, and
+`packages/native-audio` from the rewrite-2 branch are retired. Read them in
+git history (`git show rewrite-2:<path>`) if useful; don't copy their
+structure. The production 2.5.2 source is `origin/2.5.2`.
+
+## Stack
+
+Same versions as Vera's `apps/mobile` unless a reason is recorded here:
+Expo SDK 57, React Native 0.86.3 (New Architecture), React 19, React
+Compiler, expo-router (`NativeTabs` from `expo-router/unstable-native-tabs`,
+native stacks), `@expo/ui` (SwiftUI), `expo-symbols`, Uniwind (Tailwind 4),
+`@legendapp/list`, Reanimated 4.5, `expo-image`, `expo-sqlite` + Drizzle,
+TanStack Query for reading the library, `react-native-purchases`
+(RevenueCat), `posthog-react-native`, `expo-updates`.
+
+## Variants
+
+`apps/mobile/app.config.ts` with `APP_VARIANT`:
+
+| | Production | Development |
+|---|---|---|
+| Name | SYNQ | SYNQ Dev |
+| Bundle id | `com.directedbyshawn.synq` | `com.directedbyshawn.synq.dev` |
+| Scheme | `synq` | `synq-dev` |
+| Icon | `icon-blue` (alternates `icon-blue`, `icon-mint`, `icon-red`, `icon-yellow`, `icon-purple`, `icon-orange`, `icon-pink`; names must stay exactly these, iOS remembers the user's choice by name) | a visibly different dev icon |
+
+EAS project `df86bb9d-1587-48b7-a40e-85a09eee2a72` (the production
+project). Version 3.0.0; build numbers continue above 99.
+
+## Data
+
+### On disk (unchanged from 2.5.2)
+
+Audio and artwork stay where 2.5.2 put them, relative to the app's
+`Documents/` directory, so the update moves no files:
+
+```
+Documents/library/{songId}/{fileName}                audio, as imported
+Documents/library/{songId}/cover_{full,small}.jpg    song artwork (songs without an album cover)
+Documents/albums/{albumId}/cover_{full,small}.jpg
+Documents/artists/{artistId}/cover_{full,small}.jpg
+Documents/playlists/{playlistId}/cover_{full,small}.jpg
+Documents/SQLite/synq.db                             the 2.5.2 database (left in place, read once)
+```
+
+`cover_full.jpg` is at most 1500 px, `cover_small.jpg` at most 200 px.
+Paths are always stored **relative to Documents** and resolved at runtime;
+the container path changes across updates.
+
+### The 3.0 database
+
+A new file, `Documents/SQLite/library.db`, owned by Drizzle migrations
+(`packages/db`). Ids of songs, albums, artists, and playlists are preserved
+from 2.5.2 so the folders above stay valid. Shape (snake_case columns,
+foreign keys on with `ON DELETE CASCADE` for join rows, indexes on join
+columns and names):
+
+- `songs`: `id`, `title`, `file_path` (relative), `mime_type`,
+  `duration_ms`, `artwork_version` (null = no song artwork; otherwise a
+  cache-busting number), `added_at` (ms), `modified_since_export` (2.5.2's
+  `edited`).
+- `artists`: `id`, `name`, `artwork_version`, `added_at`.
+- `albums`: `id`, `name`, `year`, `artwork_version`, `added_at`.
+- `song_artists`: `song_id`, `artist_id`, `position` (unique pair).
+- `album_songs`: `album_id`, `song_id`, `track` (nullable), `position` (the
+  song's album order; the first is its primary album) (unique pair).
+- `album_artists`: `album_id`, `artist_id`, `position` (unique pair).
+- `playlists`: `id`, `name`, `kind` (`liked` for Liked Songs, else `user`),
+  `artwork_version`, `created_at`, `updated_at`. Liked Songs is a playlist
+  row, so renames and order survive. 2.5.2's hidden "Library" playlist
+  (id 1) is not migrated: the library is the `songs` table.
+- `playlist_songs`: `id`, `playlist_id`, `song_id`, `position` (REAL, so a
+  move writes one row), unique `(playlist_id, song_id)`.
+- `legacy_import`: one row recording when and what was imported from 2.5.2.
+
+Durations are **milliseconds** everywhere in 3.0 (2.5.2 stored seconds).
+
+A song's artwork is its first album (by `album_songs.position`) that has
+artwork, else its own, else the placeholder (2.5.2's precedence).
+
+Preferences (accent, haptics, shuffle, repeat, ad listening time, review
+bookkeeping) and the playback session (queue song ids, index, position,
+source) live in `expo-sqlite/kv-store` behind a small typed store, read
+synchronously at startup.
+
+### Migrating a 2.5.2 install
+
+Details and test fixtures: `docs/migration.md` (written with the
+importer). The contract:
+
+1. On launch, before any UI that reads the library, if
+   `Documents/SQLite/synq.db` exists and `library.db` has no
+   `legacy_import` row, run the importer. A splash-style screen covers it.
+2. The importer reads the legacy database read-only (tolerating missing
+   tables and columns, orphaned join rows, duplicate playlist entries,
+   empty `fileName`, songs whose file is missing) and 2.5.2's AsyncStorage
+   (`Library/Application Support/com.directedbyshawn.synq/RCTAsyncLocalStorage_V1/manifest.json`,
+   plus per-key files named by the key's MD5 for long values), and writes
+   everything into `library.db` and the kv-store **in one transaction**.
+   It never modifies or deletes legacy files. A failure rolls back and the
+   next launch retries; the app shows an error with a retry, never an empty
+   library.
+3. The same importer restores 2.5.2 backup zips (which hold `SQLite/synq.db`
+   and the folders above, but no AsyncStorage).
+4. Covered by node tests against a synthetic 2.5.2 database and a real one
+   captured from the 2.5.2 app in the simulator, and by an end-to-end
+   upgrade test: install 2.5.2, add data, install 3.0 over it.
+
+## Playback (`packages/audio`)
+
+Native owns the queue and playback, so playback, lock screen, remote
+commands, and auto-advance work with no JavaScript in the loop. JavaScript
+owns policy (what to queue, shuffle order, persistence).
+
+- `AVQueuePlayer` with the next item preloaded (gapless), KVO on item
+  status and `timeControlStatus`, all state on the main queue.
+- Now Playing info updated on item change, seek, and rate change; remote
+  commands: play, pause, toggle, next, previous, change position.
+- Interruptions pause and resume when iOS says to; a route losing its
+  output pauses. The audio session is `.playback`.
+- A file that fails to load reports an error and advances.
+- Previous restarts the track after 3 seconds, else goes back.
+- Repeat off / all / one. Shuffle is a JavaScript-computed order; replacing
+  the queue keeps the current item playing seamlessly when it's the same
+  track.
+- **Interstitial (the free tier's ad)**: configured with a track and a
+  listening threshold. Native counts listened time; once past it, the next
+  transition (track end, next, previous to another track, skip, or a new
+  queue) plays the interstitial first, then continues. During it seeking
+  and skipping are disabled (remote commands too); pause works. Premium
+  configures none.
+- JavaScript API (async functions + events): `setQueue(tracks, {startIndex,
+  positionMs, play})`, `insert(tracks, index)`, `remove(indices)`,
+  `move(from, to)`, `play`, `pause`, `toggle`, `seekTo(ms)`, `next`,
+  `previous`, `skipTo(index)`, `setRepeatMode`, `configureInterstitial`,
+  `getState`, and events `state` (status, index, track id), `progress`
+  (position/duration about twice a second while playing, only when
+  subscribed), `queue` (native changed the queue), `error`.
+
+## UI direction
+
+Native first, then SYNQ's tone on top:
+
+- Always dark. Near-black background (2.5.2 used `#141414`), iOS dark
+  system grays for grouped and elevated surfaces, white primary text, gray
+  secondary text, hairline separators. The accent is the user's theme
+  color (2.5.2's pastel set: blue `#77adf8` default, purple `#a888ec`, pink
+  `#f6ace5`, red `#ff8585`, orange `#efa28a`, yellow `#eddd92`, mint
+  `#61ae7f`), used as the tint, sparingly.
+- `NativeTabs` (Liquid Glass): Library, Search (search role), Settings,
+  plus the **mini player as the tab bar's bottom accessory** (like Apple
+  Music). Importing lives in the Library toolbar's "+" menu (and an empty
+  state that invites it).
+- Native stacks, large titles, `Stack.Toolbar` buttons and menus,
+  `Stack.SearchBar`, form sheets with detents, SwiftUI context menus on
+  rows, SwiftUI `List` with native drag reordering for the queue and
+  playlist editing, `@expo/ui` forms for settings.
+- Full player: large artwork over a blurred artwork backdrop, native-feeling
+  scrubber and controls with SF Symbols, AirPlay route button, queue
+  sheet.
+- SF Symbols everywhere; no PNG icons.
+- No explanation text under self-explanatory UI. Nothing pops in.
+
+## Feature checklist (2.5.2 parity)
+
+- Import from Files (multi-select) and over Wi-Fi (local web page);
+  metadata and embedded artwork read on import; free tier keeps 2.5.2's
+  rules (one song per batch, import wait), Premium is unlimited.
+- Library: Playlists, Artists, Albums, Songs with search and sort;
+  detail pages for each; Liked Songs first.
+- Song actions: like, add to playlist, remove from playlist, play next /
+  add to queue, edit (title, artwork, albums, artists), export (with tags),
+  delete.
+- Playlist, album, artist: create, edit (name, artwork, year, artists),
+  delete, export (Premium), album track reorder.
+- Player, mini player, queue with drag reordering, shuffle, repeat.
+- Settings: Premium, theme accent, app icon, haptics, backup / restore /
+  erase (Premium), review, support and social links.
+- Premium paywall: monthly, yearly, lifetime (`Premium Monthly`,
+  `Premium Yearly`, `Premium Lifetime` offerings; products
+  `SYNQPremiumMonthly`, `SYNQPremiumYearly`, `SYNQPremiumLifetime`;
+  entitlement `Premium`), restore, terms and privacy links.
+- PostHog events as in 2.5.2; Facebook SDK initialization (install
+  attribution).
+
+## Working on a shared Mac
+
+Shawn's laptop runs SYNQ and Vera agents side by side.
+
+- Simulators start only through `scripts/sim.sh`, which waits in the
+  **same** machine-wide queue as Vera (`scripts/simq.ts` is a verbatim copy
+  of Vera's; both talk to one daemon in `~/Library/Caches/vera/simq`).
+  Never boot one any other way, and take it down as soon as you have your
+  evidence.
+- Native builds (`xcodebuild`, `expo prebuild` + build, EAS local builds)
+  run under the shared heavy-work lock:
+  `~/dev/vera/scripts/bench/with-lock.sh <command>` (until SYNQ has its own
+  copy at `scripts/bench/with-lock.sh`, which uses the same lock file).

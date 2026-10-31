@@ -112,8 +112,9 @@ toolbar:
   `pause.fill` and `forward.fill`. Tap opens the player. In the inline
   placement (tab bar minimized) it drops the artist line. "Not Playing"
   when the queue is empty.
-- **Full player** (modal sheet, swipe down to close): the artwork blurred
-  and darkened behind everything; large artwork (screen width minus 64,
+- **Full player** (modal sheet, swipe down to close): behind everything, a
+  soft gradient in the artwork's own colors, darkened enough for white text
+  (2.5.2's signature look; a blur of the artwork is the fallback); large artwork (screen width minus 64,
   radius 12, soft shadow) that eases to 85% scale when paused; title
   (`text-title` semibold, one line) over the artist (muted, tappable);
   `heart` toggle and `ellipsis` menu on the right; a thin scrubber whose

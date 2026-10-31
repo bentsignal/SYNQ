@@ -5,8 +5,9 @@ import type { ArtistDetail, ArtistListItem } from "@synq/db";
 import { getArtistDetail } from "@synq/db";
 
 import { ScreenList } from "~/components/screen-list";
+import { exportArtist } from "~/features/export/export";
 import { playSongs } from "~/features/player/actions";
-import { confirmDeleteArtist } from "../actions";
+import { confirmDeleteArtist, failed } from "../actions";
 import {
   AlbumCards,
   CollectionHeader,
@@ -35,6 +36,16 @@ function ArtistMenu({ artist }: { artist: ArtistListItem }) {
           }
         >
           Edit
+        </Stack.Toolbar.MenuAction>
+        <Stack.Toolbar.MenuAction
+          icon="square.and.arrow.up"
+          onPress={() =>
+            exportArtist(artist.id).catch(() =>
+              failed("Couldn't Export Artist"),
+            )
+          }
+        >
+          Export
         </Stack.Toolbar.MenuAction>
         <Stack.Toolbar.MenuAction
           icon="trash"

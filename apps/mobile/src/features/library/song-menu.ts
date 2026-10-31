@@ -1,8 +1,6 @@
 import { router } from "expo-router";
-import { isAvailableAsync, shareAsync } from "expo-sharing";
 
 import type { SongListItem } from "@synq/db";
-import { documentFile } from "@synq/db/expo";
 
 import type {
   MenuAction,
@@ -10,6 +8,7 @@ import type {
   MenuItem,
   MenuSubmenu,
 } from "~/components/menu";
+import { exportSongs } from "~/features/export/export";
 import { addToQueue, playNext } from "~/features/player/actions";
 import {
   confirmDeleteSongs,
@@ -31,19 +30,9 @@ export interface SongMenuPlace {
   artistId?: number;
 }
 
-/**
- * Shares the song's file. TODO(export): write the library's current tags
- * into a copy first (docs/ui.md → Export / Share), once tag writing exists.
- */
-async function shareSong(song: SongListItem) {
-  if (song.filePath === null || !(await isAvailableAsync())) {
-    failed("Couldn't Share Song");
-    return;
-  }
-  await shareAsync(documentFile(song.filePath).uri, {
-    dialogTitle: song.title,
-    mimeType: song.mimeType ?? undefined,
-  }).catch(() => failed("Couldn't Share Song"));
+/** Shares the song with the library's current tags written in (features/export). */
+function shareSong(song: SongListItem) {
+  exportSongs([song.id]).catch(() => failed("Couldn't Share Song"));
 }
 
 function goToArtist(song: SongListItem, place: SongMenuPlace) {
@@ -152,7 +141,7 @@ export function songMenu(song: SongListItem, place: SongMenuPlace) {
       icon: "square.and.arrow.up",
       key: "share",
       label: "Share",
-      onPress: () => void shareSong(song),
+      onPress: () => shareSong(song),
     },
   ] satisfies MenuItem[];
   const { playlistId } = place;

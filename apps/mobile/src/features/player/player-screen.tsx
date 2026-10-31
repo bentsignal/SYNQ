@@ -4,12 +4,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { SongListItem } from "@synq/db";
 
 import { usePlayer } from "./hooks";
-import { IconButton } from "./icon-button";
 import { LikeButton } from "./like-button";
 import { PlayerArtwork } from "./player-artwork";
 import { PlayerBackdrop } from "./player-backdrop";
 import { PlayerOptions, Transport } from "./player-controls";
 import { Scrubber } from "./scrubber";
+import { SongMenuButton } from "./song-menu-button";
 import { isPlaying } from "./store";
 import { artistLine } from "./tracks";
 import { useCurrentSong } from "./use-player-songs";
@@ -85,14 +85,9 @@ function SongTitle({
       {song !== null && !interstitial && (
         <>
           <LikeButton songId={song.id} />
-          {/* The song menu from the library screens goes here. */}
-          <IconButton label="More" symbol="ellipsis" size={20} onPress={noop} />
+          <SongMenuButton song={song} />
         </>
       )}
     </View>
   );
-}
-
-function noop() {
-  return undefined;
 }

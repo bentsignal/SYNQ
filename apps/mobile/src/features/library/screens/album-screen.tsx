@@ -5,8 +5,9 @@ import type { AlbumListItem, AlbumTrack } from "@synq/db";
 import { getAlbum, listAlbumTracks } from "@synq/db";
 
 import { ScreenList } from "~/components/screen-list";
+import { exportAlbum } from "~/features/export/export";
 import { playSongs } from "~/features/player/actions";
-import { confirmDeleteAlbum } from "../actions";
+import { confirmDeleteAlbum, failed } from "../actions";
 import {
   ArtistLinks,
   CollectionHeader,
@@ -45,6 +46,14 @@ function AlbumMenu({ album }: { album: AlbumListItem }) {
           }
         >
           Edit
+        </Stack.Toolbar.MenuAction>
+        <Stack.Toolbar.MenuAction
+          icon="square.and.arrow.up"
+          onPress={() =>
+            exportAlbum(album.id).catch(() => failed("Couldn't Export Album"))
+          }
+        >
+          Export
         </Stack.Toolbar.MenuAction>
         <Stack.Toolbar.MenuAction
           icon="trash"

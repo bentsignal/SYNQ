@@ -5,8 +5,9 @@ import { getPlaylist, listPlaylistSongs } from "@synq/db";
 
 import { EmptyState } from "~/components/empty-state";
 import { ScreenList } from "~/components/screen-list";
+import { exportPlaylist } from "~/features/export/export";
 import { playSongs } from "~/features/player/actions";
-import { confirmDeletePlaylist } from "../actions";
+import { confirmDeletePlaylist, failed } from "../actions";
 import {
   CollectionHeader,
   DetailTitle,
@@ -44,6 +45,16 @@ function PlaylistMenu({ playlist }: { playlist: PlaylistListItem }) {
           store: playlistSongSort,
           submenu: true,
         })}
+        <Stack.Toolbar.MenuAction
+          icon="square.and.arrow.up"
+          onPress={() =>
+            exportPlaylist(playlist.id).catch(() =>
+              failed("Couldn't Export Playlist"),
+            )
+          }
+        >
+          Export
+        </Stack.Toolbar.MenuAction>
         {playlist.kind !== "liked" && (
           <Stack.Toolbar.MenuAction
             icon="trash"

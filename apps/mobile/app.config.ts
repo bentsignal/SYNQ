@@ -41,6 +41,19 @@ const ALTERNATE_ICONS = [
 /** The app's background, behind the splash and every screen. */
 const BACKGROUND = "#141414";
 
+/**
+ * Facebook's SDK, which 2.5.2 initialized for install attribution (the app
+ * ID and client token are 2.5.2's). SYNQ Dev starts it too, so both builds
+ * run the same native code, but never logs app events.
+ */
+const FACEBOOK = {
+  appID: "666565396036070",
+  clientToken: "061ab03cceff44df511a1f07a8f5416c",
+  displayName: "SYNQ",
+  scheme: "fb666565396036070",
+  ...(dev && { autoLogAppEventsEnabled: false }),
+};
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: dev ? "SYNQ Dev" : "SYNQ",
@@ -74,6 +87,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       // 2.5.2 showed its Documents folder in the Files app; keep it there.
       UIFileSharingEnabled: true,
       LSSupportsOpeningDocumentsInPlace: true,
+      // Wi-Fi Transfer runs a web server on the local network while it's open.
+      NSLocalNetworkUsageDescription:
+        "SYNQ receives music from your computer over Wi-Fi while Wi-Fi Transfer is open.",
     },
   },
   plugins: [
@@ -81,6 +97,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "./plugins/with-ios-scene-lifecycle.cjs",
     ["./plugins/with-alternate-icons.cjs", { icons: ALTERNATE_ICONS }],
     "expo-router",
+    ["react-native-fbsdk-next", FACEBOOK],
     [
       "expo-splash-screen",
       {

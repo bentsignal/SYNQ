@@ -183,14 +183,16 @@ build_ios_release() {
 
 # What the embedded JavaScript is built from: the app's and packages'
 # source files as they are in this worktree (tests, fixtures, and scripts
-# left out). With the native fingerprint, it names a release build.
+# left out), sorted, since git lists tracked files before untracked ones and
+# a commit mustn't change the name. With the native fingerprint, it names a
+# release build.
 javascript_hash() {
   (
     cd "$ROOT"
     git ls-files -z --cached --others --exclude-standard -- apps/mobile packages pnpm-lock.yaml \
       ':!*.test.ts' ':!*.test.tsx' ':!*.md' ':!apps/mobile/perf/*' ':!apps/mobile/dev/*' \
       ':!packages/*/scripts/*' ':!packages/*/fixtures/*' ':!packages/*/src/testing/*' |
-      xargs -0 shasum 2>/dev/null | shasum | cut -c1-12
+      xargs -0 shasum 2>/dev/null | LC_ALL=C sort -k2 | shasum | cut -c1-12
   )
 }
 

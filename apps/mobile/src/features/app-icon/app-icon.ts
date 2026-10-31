@@ -1,5 +1,7 @@
 import { requireOptionalNativeModule } from "expo";
 
+import { createIconState } from "./icon-state";
+
 /** The native side of `expo-alternate-app-icons`. */
 interface AlternateIconsModule {
   readonly supportsAlternateIcons: boolean;
@@ -36,13 +38,20 @@ export function appIconsAvailable() {
   return native?.supportsAlternateIcons === true;
 }
 
-/** The alternate icon in use, or null for the primary icon. */
+// Native is asked for the icon once; see icon-state.ts for why.
+const icon = createIconState(native);
+
+/** The alternate icon in use (or being switched to), or null for the primary icon. */
 export function currentAppIcon() {
-  return native?.getAppIconName() ?? null;
+  return icon.get();
 }
 
 /** Switches the home screen icon; iOS shows its own confirmation. */
 export function setAppIcon(name: AppIconName) {
-  if (native === null) return Promise.resolve(null);
-  return native.setAlternateAppIcon(name);
+  return icon.set(name);
+}
+
+/** Calls `listener` when the icon changes (here or from premium); returns an unsubscribe. */
+export function subscribeAppIcon(listener: () => void) {
+  return icon.subscribe(listener);
 }

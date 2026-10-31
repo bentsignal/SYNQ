@@ -213,5 +213,44 @@ its `EXPECTED.md` lists every action) and asserts the exact library, the
 settings and queue from AsyncStorage, and the warnings, with the legacy
 tree unchanged. It then restores the real 2.5.2 backup zip of the same
 library over it and asserts the same library, including the device's NFD
-file names. The end-to-end upgrade test (install 2.5.2, add data, install 3.0 over it) is
-the app's, not this package's.
+file names.
+
+### The upgrade in the simulator
+
+`scripts/upgrade-test.sh` runs the real upgrade: the unmodified 2.5.2
+Release build (`~/Library/Caches/synq/legacy-2.5.2/`, see `BUILD.md`
+there) with this fixture restored into its data container, then SYNQ 3.0
+(the production variant as a Release build, `scripts/sim.sh
+build-release`) installed over it with `simctl install`, which keeps the
+container as an App Store update does. The simulator comes from the queue
+(`scripts/sim.sh boot`).
+
+```sh
+scripts/upgrade-test.sh            # all of it, then the device goes down
+scripts/upgrade-test.sh legacy     # or step by step, driving screens in between
+scripts/upgrade-test.sh upgrade
+scripts/upgrade-test.sh relaunch --fresh-session
+scripts/upgrade-test.sh failure    # a corrupt synq.db: the error screen, never an empty library
+scripts/upgrade-test.sh recover    # the good synq.db back; tap Try Again, then the verify it prints
+scripts/upgrade-test.sh down
+```
+
+The container is restored with the device's bytes: the two NFD file names
+and the empty cover folders come from the backup zip. The failure run's
+copy also renames song 9's file to `Interlude #7.mp3` (in `synq.db` too),
+since the captured library has no `#` in a name.
+
+`packages/db/scripts/verify-upgrade.ts` then checks the container: every
+2.5.2 file byte for byte (PostHog's own files aside), the import recorded
+once, `library.db` against `real-fixture-assert.ts` (the same assertion
+as the node test, with the stored paths matching the on-disk NFD bytes),
+and the kv-store: settings applied once, haptics off, 2.5.2's session, and
+the theme (purple while premium is active, blue once RevenueCat says
+otherwise: the fixture's premium came from a test toggle, so in the
+simulator RevenueCat resets it, as 2.5.2 would have). Relaunches compare
+the library with the first launch's snapshot. Screenshots go to
+`.cache/evidence/upgrade-*.png`, results to `.cache/upgrade-test/`.
+
+What it can't show: a real Lifetime purchase surviving (that needs the
+App Store and the person's RevenueCat id), and over-the-air updates (a
+local build has no channel).

@@ -66,6 +66,9 @@ scripts/sim.sh eval "<js>"    # evaluate JavaScript in the app
 scripts/sim.sh status         # this worktree's device and Metro
 scripts/sim.sh queue          # every device on the Mac, who is waiting, and why
 scripts/sim.sh down           # delete the device; Metro stops with it
+scripts/sim.sh boot           # a device with no app or Metro (for other builds)
+scripts/sim.sh build-release  # SYNQ (production) as a cached Release simulator app
+scripts/upgrade-test.sh       # 2.5.2 → 3.0 upgrade test (docs/migration.md)
 ```
 
 - `up` reuses the cached SYNQ Dev dev client unless native code changed.

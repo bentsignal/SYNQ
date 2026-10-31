@@ -3,10 +3,16 @@
 require("react-native-gesture-handler/jestSetup");
 
 // Uniwind has no stylesheet here, so it warns about every themed color on
-// every render; that's noise, and printing it slows the measurements.
+// every render; that's noise, and printing it slows the measurements. So is
+// expo-constants noting that its native module isn't linked.
 const warn = console.warn;
 console.warn = (...args: unknown[]) => {
-  if (typeof args[0] === "string" && args[0].startsWith("Uniwind")) return;
+  if (
+    typeof args[0] === "string" &&
+    (args[0].startsWith("Uniwind") ||
+      args[0].startsWith("No native ExponentConstants module"))
+  )
+    return;
   warn(...args);
 };
 
@@ -25,6 +31,11 @@ jest.mock("expo-image", () => {
   return { Image: Object.assign(View, { prefetch: () => Promise.resolve() }) };
 });
 
+// The mini player is the tab bar's bottom accessory; outside the tab bar,
+// the placement is the regular (expanded) one.
+jest.mock("expo-router/unstable-native-tabs", () => ({
+  NativeTabs: { BottomAccessory: { usePlacement: () => "regular" } },
+}));
 jest.mock("expo-router", () => ({
   useFocusEffect: jest.fn(),
   useIsFocused: () => true,
@@ -76,3 +87,116 @@ jest.mock("~/components/native-menu-row", () => {
   const { View } = require("react-native");
   return { MenuRowView: View };
 });
+
+// Native modules the app reaches at import time. Without a device there is
+// nothing to load, and `pnpm perf` fails while loading the test files.
+
+// jest-expo's `requireNativeModule` finds modules on `globalThis.expo.modules`
+// and throws for any that isn't there. SynqAudio (packages/audio) becomes an
+// idle player that accepts every command and reports nothing.
+Object.assign(Reflect.get(globalThis, "expo").modules, {
+  SynqAudio: {
+    addListener: jest.fn(() => ({ remove: jest.fn() })),
+    configureInterstitial: jest.fn(() => Promise.resolve()),
+    getQueue: () => Promise.resolve({ index: null, tracks: [] }),
+    getState: () =>
+      Promise.resolve({
+        durationMs: 0,
+        index: null,
+        interstitial: false,
+        listenedMs: 0,
+        positionMs: 0,
+        queueLength: 0,
+        repeatMode: "off",
+        status: "idle",
+        trackId: null,
+      }),
+    next: jest.fn(() => Promise.resolve(false)),
+    pause: jest.fn(() => Promise.resolve()),
+    play: jest.fn(() => Promise.resolve()),
+    previous: jest.fn(() => Promise.resolve(false)),
+    seekTo: jest.fn(() => Promise.resolve(false)),
+    setQueue: jest.fn(() => Promise.resolve()),
+    setRepeatMode: jest.fn(() => Promise.resolve()),
+    skipTo: jest.fn(() => Promise.resolve(false)),
+    toggle: jest.fn(() => Promise.resolve()),
+  },
+});
+
+// The preferences store (src/lib/kv.ts) is a SQLite file; an in-memory
+// map answers the same synchronous calls.
+jest.mock("expo-sqlite/kv-store", () => ({
+  SQLiteStorage: class {
+    items = new Map<string, string>();
+    getItemSync(key: string) {
+      return this.items.get(key) ?? null;
+    }
+    setItemSync(key: string, value: string) {
+      this.items.set(key, value);
+    }
+  },
+}));
+
+// The AirPlay route picker is a native view (SynqAudio's view manager),
+// which jest-expo has no stand-in for; draw it as a plain view.
+jest.mock("../../../packages/audio/src/route-picker.tsx", () => {
+  const { View } = require("react-native");
+  return { RoutePickerButton: View };
+});
+
+// The library database and the files under Documents/ are native. Screens
+// read the library through the query cache, which a scenario seeds, so
+// opening the database is a mistake worth failing on.
+jest.mock("~/features/library/database", () => ({
+  libraryDb: () => {
+    throw new Error("Seed the query cache instead.");
+  },
+}));
+jest.mock("@synq/db/expo", () => ({ documentFile: jest.fn() }));
+jest.mock("expo-file-system", () => {
+  class Entry {}
+  return {
+    Directory: Entry,
+    File: Entry,
+    Paths: { cache: "", document: "" },
+  };
+});
+jest.mock("expo-image-manipulator", () => ({}));
+jest.mock("expo-sharing", () => ({}));
+
+// RevenueCat's SDK is ESM and native; premium status stays unresolved, as
+// before the first customer info arrives.
+jest.mock("react-native-purchases", () => ({
+  __esModule: true,
+  default: {
+    addCustomerInfoUpdateListener: jest.fn(),
+    configure: jest.fn(),
+    getCustomerInfo: () => new Promise(() => undefined),
+    setLogLevel: jest.fn(),
+  },
+  LOG_LEVEL: { WARN: "WARN" },
+}));
+
+// Saving and restoring the player's session reads and writes the library
+// database and the preferences file; the scenarios start from an empty
+// player.
+jest.mock("~/features/player/persistence", () => ({
+  noteNativeState: jest.fn(),
+  persist: jest.fn(),
+  restoredListening: () => 0,
+  restoreSession: jest.fn(),
+  saveFromNative: jest.fn(),
+}));
+
+// The player saves its session on an interval for as long as the app runs;
+// in Jest that would keep the process from exiting once the tests finish.
+const setIntervalNow = globalThis.setInterval;
+Reflect.set(
+  globalThis,
+  "setInterval",
+  (...args: Parameters<typeof setInterval>) => {
+    const timer = setIntervalNow(...args);
+    if (typeof timer === "object") timer.unref();
+    return timer;
+  },
+);
